@@ -1,0 +1,567 @@
+---
+title: "Typography"
+description: "Typography utilities - headings, paragraphs, lists, and inline styles with shadcn design tokens."
+slug: "typography"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="typography" title="Typography" component="typography">
+  Styles for headings, paragraphs, lists, blockquotes, and inline code. Built on native HTML text elements with utility classes. No JavaScript required.
+</PageHeader>
+
+<SkillPanel component="typography">
+  <SkillField label="Native basis">
+<SkillText>Native HTML text elements: <code>&lt;h1&gt;</code>–<code>&lt;h4&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code>, <code>&lt;small&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements" title="semantic heading hierarchy"><code>&lt;h1&gt;–&lt;h6&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/blockquote" title="quoted block content"><code>&lt;blockquote&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code" title="inline code fragment"><code>&lt;code&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small" title="side comments and small print"><code>&lt;small&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="balanced line wrapping for headings"><code>text-wrap: balance</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="orphan prevention for body text"><code>text-wrap: pretty</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation" title="optical quote alignment for blockquotes"><code>hanging-punctuation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values" title="border-inline-start, padding-inline-start for RTL support"><code>Logical properties</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="enhanced contrast for high-contrast preference"><code>prefers-contrast</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode with system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.h1</code>
+    <code>.h2</code>
+    <code>.h3</code>
+    <code>.h4</code>
+    <code>.p</code>
+    <code>.lead</code>
+    <code>.large</code>
+    <code>.small</code>
+    <code>.muted</code>
+    <code>.blockquote</code>
+    <code>.inline-code</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Use heading levels in order (<code>h1</code> → <code>h2</code> → <code>h3</code>). Do not skip levels.</SkillText>
+  <SkillText dense>• Headings create the document outline used by screen readers for navigation.</SkillText>
+  <SkillText dense>• <code>&lt;blockquote&gt;</code> is announced as a quote by assistive technology - no extra ARIA needed.</SkillText>
+  <SkillText dense>• <code>&lt;code&gt;</code> is announced as code - no extra ARIA needed.</SkillText>
+  <SkillText dense>• <code>prefers-contrast: more</code> - removes tight letter-spacing, adds outline to inline code, thickens blockquote border, promotes muted text to foreground color.</SkillText>
+  <p class="text-muted-foreground m-0">• <code>forced-colors: active</code> - blockquote border and inline code adapt to system colors.</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• These are utility classes for prose content - not a component with variants/sizes.</SkillText>
+  <SkillText dense>• The <code>.h1</code>–<code>.h4</code> classes allow applying heading styles to non-heading elements when semantic headings aren't appropriate.</SkillText>
+  <SkillText dense>• Typography classes compose freely with other components (Card content, Dialog body, Alert description).</SkillText>
+  <SkillText dense>• <code>text-wrap: balance</code> is used on all headings (h1–h4) for better visual line distribution.</SkillText>
+  <SkillText dense>• <code>text-wrap: pretty</code> is used on paragraphs and lead text for orphan prevention.</SkillText>
+  <SkillText dense>• <code>hanging-punctuation</code> is used on blockquotes for optical quote alignment.</SkillText>
+  <SkillText dense>• Blockquote uses logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) for automatic RTL support.</SkillText>
+  <SkillText dense>• For lists, use the List component (<code>list.css</code>) - typography does not ship its own list styles.</SkillText>
+  <p class="text-muted-foreground m-0">• For prose tables, use the Table component (<code>table.css</code>) - typography does not ship its own table styles.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Headings" hint="Four heading levels - h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold." previewStyle="justify-content:flex-start;text-align:left;"
+<h1 class="h1">Taxing Laughter</h1>
+<h2 class="h2">The People of the Kingdom</h2>
+<h3 class="h3">The Joke Tax</h3>
+<h4 class="h4">People stopped telling jokes</h4>
+```
+
+```html example label="Paragraph" hint="Standard body text with generous line height." previewStyle="justify-content:flex-start;text-align:left;"
+<p class="p"
+  >The king, seeing how much happier his subjects were, realized the error of his ways and repealed the joke tax.</p
+>
+```
+
+```html example label="Lead" hint="Larger, muted intro paragraph." previewStyle="justify-content:flex-start;text-align:left;"
+<p class="lead">A modal dialog that interrupts the user...</p>
+```
+
+```html example label="Large / Small / Muted" hint="Text size variations."
+<div class="large">Are you absolutely sure?</div>
+<small class="small">Email address</small>
+<p class="muted">Enter your email address.</p>
+```
+
+```html example label="Blockquote" hint="Quoted block with left border and italic style." previewStyle="justify-content:flex-start;text-align:left;"
+<blockquote class="blockquote">
+  <p>"After all," he said, "everyone enjoys a good joke..."</p>
+</blockquote>
+```
+
+```html example label="Inline code" hint="Monospace code snippet within text."
+<code class="inline-code">default-semantic-tokens.css</code>
+```
+
+```html example label="Link" hint="A link in running text: the primary colour, the line from --link-text-decoration (underline) and its gap from --link-underline-offset (4px) - two theme tokens the Theme Designer sets under Typography. The second paragraph overrides both inline."
+<p class="p">Read the <a class="link" href="#">installation guide</a> first.</p>
+<p class="p" style="--link-text-decoration: underline dotted; --link-underline-offset: 2px"
+  >The same <a class="link" href="#">link</a> with a dotted line closer to the text.</p
+>
+```
+
+```html example label="Font stacks" hint="Three token-driven stacks - components reference the tokens, never a hardcoded family."
+<p style="font-family: var(--font-serif)">Display headings</p>
+```
+
+```html example label="Prose Composition" hint="All typography classes combined in a full prose layout - matching the shadcn/ui demo." previewStyle="justify-content:flex-start;text-align:left;"
+<h1 class="h1" style="text-align: center">Taxing Laughter</h1>
+<p class="p">Once upon a time...</p>
+<h2 class="h2">The King's Plan</h2>
+<p class="p">The king thought long and hard...</p>
+<blockquote class="blockquote">
+  <p>"After all," he said...</p>
+</blockquote>
+<h3 class="h3">The Joke Tax</h3>
+<ul class="list">
+  <li>1st level of puns: 5 gold coins</li>
+  <li>2nd level of jokes: 10 gold coins</li>
+</ul>
+```
+
+```html example label="RTL support" hint="Blockquotes use logical properties (border-inline-start, padding-inline-start) - they flip automatically in RTL contexts." previewStyle="justify-content:flex-start;text-align:left;"
+<div dir="rtl">
+  <h3 class="h3">ضريبة النكتة</h3>
+  <p class="p">فكر الملك طويلاً وبجد...</p>
+  <blockquote class="blockquote">
+    <p>"في النهاية،" قال...</p>
+  </blockquote>
+</div>
+```
+
+```html example label="Chinese" hint="lang='zh-Hans' switches the paragraph to CJK rules: justified between characters, strict line breaks (no 。or ， at a line start) and a line-end 。 or ， kept inside a straight right edge (Safari hangs it, Chromium trims its blank half). Latin words and digits get their thin gap automatically (text-autospace); headings drop the Latin tracking, emphasis uses dots under the characters instead of italics." previewStyle="justify-content:flex-start;text-align:left;"
+<article lang="zh-Hans" style="max-width: 22em">
+  <h3 class="h3">排版的细节</h3>
+  <p class="p"
+    >好的中文排版，讲究的是节奏与留白。标点不能出现在行首，句末的句号和逗号可以悬挂在行外，让每一行的右边缘保持整齐。使用
+    CSS 3 与 HTML 5，这些规则都由浏览器完成，<em class="text-emphasis">无需任何脚本</em>。</p
+  >
+  <blockquote class="blockquote"><p>「设计不只是外观和感觉，设计是它如何运作。」</p></blockquote>
+</article>
+```
+
+```html example label="Chinese: aligning the line ends" hint="The same paragraph twice in a narrow column. Left: start-aligned, the lines end ragged and a comma may be pushed to the next line's start. Right: the .p rules - justified, strict breaking, the line-end 。/， hung (Safari) or half-width (Chromium) - a straight edge." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns: repeat(2, 13em)" lang="zh-Hans">
+  <div>
+    <p class="demo-label">text-align: start</p>
+    <p style="line-height: 1.9; border-inline-end: 1px dashed var(--border)"
+      >中文段落在窄栏中排版时，如果只是左对齐，每行的结尾参差不齐，逗号、句号有时还会落到下一行的开头，看起来很不整齐。</p
+    >
+  </div>
+  <div>
+    <p class="demo-label">.p (CJK rules)</p>
+    <p class="p" style="border-inline-end: 1px dashed var(--border)"
+      >中文段落在窄栏中排版时，如果只是左对齐，每行的结尾参差不齐，逗号、句号有时还会落到下一行的开头，看起来很不整齐。</p
+    >
+  </div>
+</div>
+```
+
+```html example label="Japanese, top to bottom" hint="text-vertical sets tategaki: columns run top to bottom, right to left. Ruby (furigana) sits beside the kanji, .text-upright stands a two-digit number upright in one cell (tate-chu-yoko), emphasis marks become sesame dots, and the heading, paragraph gap and blockquote rule turn with the text - they are logical properties." height="30" previewStyle="justify-content:center;"
+<article class="text-vertical" lang="ja" style="block-size: auto; inline-size: 18em">
+  <h3 class="h3"
+    >縦書きの<ruby>美<rt>うつく</rt></ruby
+    >しさ</h3
+  >
+  <p class="p"
+    >日本語は、上から下へ、右から左へと読み進めます。<span class="text-upright">12</span>月<span class="text-upright"
+      >24</span
+    >日のような数字は、一文字分の幅に収めて立てて組みます。<em class="text-emphasis">傍点</em>は斜体の代わりです。</p
+  >
+  <blockquote class="blockquote"><p>「書くことは、考えることである。」</p></blockquote>
+</article>
+```
+
+```html example label="Traditional Chinese, vertical" hint="The same vertical rules for zh-Hant: punctuation takes its vertical form (。、「」 rotate or reposition), bopomofo / pinyin ruby sits to the right." height="26" previewStyle="justify-content:center;"
+<p class="p text-vertical" lang="zh-Hant" style="inline-size: 14em">
+  <ruby>書<rt>ㄕㄨ</rt></ruby
+  ><ruby>法<rt>ㄈㄚˇ</rt></ruby
+  >是中國傳統藝術之一，講究筆畫、結構與章法。「字如其人」，一筆一畫都見性情。
+</p>
+```
+
+<H2 id="typesetting">Typesetting (Satz)</H2>
+
+<p class="text-sm text-muted-foreground mb-3">Continuous text set like a book or a journal page: one <code>.typeset</code> block, plain paragraphs inside, and each classic rule of the compositor's craft an opt-in attribute. The examples show every rule on its own first, then captions, separators, leading and figure groups, and only then pages that combine them. The <code>--typeset-*</code> properties tune each block; they are this component's knobs, not theme tokens, so a theme stays the tweakcn token set.</p>
+
+```html example label="Columns" hint="data-columns='2' sets two columns, data-rule a hairline between them. No column is narrower than --typeset-column-width (18rem): switch the preview to Phone and the block sets one column - no media query. A .typeset-span heading or figure crosses both columns, and the columns below it start level." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-columns="2" data-rule style="font-family: var(--font-serif)">
+  <p
+    >A printed column is a measure of even grey. Two columns halve the measure and keep a line within the sixty to
+    seventy characters a reader takes in at a glance.</p
+  >
+  <p
+    >The column property takes a count and a minimum width; when the page grows too narrow for two columns of that
+    width, the block sets one, and a phone reads a single column.</p
+  >
+  <h3 class="h4 typeset-span">Across both columns</h3>
+  <h4>Below the span</h4>
+  <p
+    >A heading or a figure with .typeset-span crosses both columns. The text after it fills two new columns, and the
+    first block starts at the top of the left one, level with the right.</p
+  >
+  <p
+    >Without that, a subheading's top margin would push the left column below the right: across a column break the
+    margin cannot collapse into the spanner's.</p
+  >
+</div>
+```
+
+```html example label="Columns in a sans and a monospace face" hint="The setting is not tied to the serif: the same two ruled columns in the theme's sans (left) and monospace (right) stacks - a technical note or a listing's commentary. The monospace column hyphenates less (hyphens: manual) and keeps the figures lining." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-8" style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr))">
+  <div class="typeset" lang="en" data-align="justify" data-indent style="font-family: var(--font-sans)">
+    <h3 class="h4">In the sans</h3>
+    <p
+      >A technical note reads well in the theme's sans face: justified, indented, the same rules as the book page
+      without the serif's formality.</p
+    >
+    <p>The second paragraph follows with its indent, as in any typeset block.</p>
+  </div>
+  <div
+    class="typeset"
+    lang="en"
+    data-align="justify"
+    data-indent
+    style="font-family: var(--font-mono); font-size: 0.875em; hyphens: manual"
+  >
+    <h3 class="h4">In the monospace</h3>
+    <p
+      >A monospace column suits commentary beside code: every character the same width, figures lining, the
+      justification spreading only the spaces.</p
+    >
+    <p>Hyphenation is manual here - monospace words break badly at syllables.</p>
+  </div>
+</div>
+```
+
+```html example label="Blocksatz (justified)" hint="data-align='justify' justifies the lines and hyphenates long words by the rules of the block's language (lang='en'); the last line of each paragraph stays flush to the start. Headings are never justified: they stay flush start, unhyphenated." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-align="justify" style="font-family: var(--font-serif); max-width: 28rem">
+  <h3 class="h4">How the compositor justified a line of movable type by hand</h3>
+  <p
+    >The compositor justified each line by adding space between words and, where the space grew too wide, broke a word
+    at a syllable. Typographically, interdisciplinary and internationalization break where the language allows them
+    to.</p
+  >
+</div>
+```
+
+```html example label="Einzug (indent)" hint="data-indent: paragraphs follow without a gap and indent their first line by --typeset-indent (1em). The first paragraph after a heading starts flush (stumpf) - the heading has already opened it." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-indent style="font-family: var(--font-serif); max-width: 28rem">
+  <h3 class="h4">Einzug</h3>
+  <p>A book keeps the column whole and marks a new paragraph by its indent alone.</p>
+  <p>The second paragraph steps in by one em; there is no blank line between the two.</p>
+  <p>Nor between the second and the third.</p>
+</div>
+```
+
+```html example label="Initiale: drop" hint="data-initial='drop' sinks the first letter three lines deep (initial-letter); its top is level with the top of the first line, and --typeset-initial-gap keeps it clear of the text to its right." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-initial="drop" style="font-family: var(--font-serif); max-width: 28rem">
+  <p
+    >Printing is the art of multiplying writing by movable type. The first letter of a chapter was once painted by hand
+    into a space the printer left free; a drop initial keeps that space, three lines deep.</p
+  >
+</div>
+```
+
+```html example label="Initiale: raised" hint="data-initial='raised' stands the letter on the first baseline and lets it rise above the line - here two lines tall (--typeset-initial-lines) in chart colour 1 (--typeset-initial-color)." previewStyle="justify-content:flex-start;text-align:left;"
+<div
+  class="typeset"
+  lang="en"
+  data-initial="raised"
+  style="
+    font-family: var(--font-serif);
+    max-width: 28rem;
+    --typeset-initial-lines: 2;
+    --typeset-initial-color: var(--chart-1);
+  "
+>
+  <p
+    >Raised: the initial stands on the first baseline and rises above the line, a lighter opening than the drop, used
+    where the column starts high on the page.</p
+  >
+</div>
+```
+
+```html example label="Opening line: small capitals or capitals" hint="data-lead='smallcaps' sets the first line in small capitals (Kapitälchen); data-lead='caps' in letterspaced capitals (Versalien). Either opens a chapter without an initial." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div class="typeset" lang="en" data-lead="smallcaps" style="font-family: var(--font-serif)">
+    <p
+      >Small capitals carry the opening line at the height of the lowercase, so the chapter begins quietly and the eye
+      slides into the text.</p
+    >
+  </div>
+  <div class="typeset" lang="en" data-lead="caps" style="font-family: var(--font-serif)">
+    <p
+      >Letterspaced capitals give the opening line more weight - the classic Versalien opening of a title page or a
+      chapter.</p
+    >
+  </div>
+</div>
+```
+
+```html example label="Classic ligatures and old-style figures" hint="data-ligatures='classic' turns on discretionary and historical ligatures (ct, st) and old-style figures (1450, 1469) - where the font carries the features; a font without them sets the plain forms." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" data-ligatures="classic" style="font-family: var(--font-serif); max-width: 28rem">
+  <p>The fine office of the compositor, strict in its rules, reached Mainz in 1450 and Venice by 1469.</p>
+</div>
+```
+
+```html example label="Leading: tight, normal, loose" hint="data-leading moves the line height and the tracking together: tight (1.45, -0.01em) for dense columns, the default (1.65), loose (1.9, +0.01em) for airy reading. Tracking that follows the leading keeps the grey of the column even." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr))">
+  <div class="typeset" lang="en" data-leading="tight" data-align="justify" style="font-family: var(--font-serif)">
+    <p
+      >Tight leading closes the lines up and the tracking closes a little with it: a dense column for notes, tables of
+      contents and long reference lists.</p
+    >
+  </div>
+  <div class="typeset" lang="en" data-align="justify" style="font-family: var(--font-serif)">
+    <p
+      >The default leading suits continuous reading: one line flows into the next without the eye losing its place at
+      the start of the line.</p
+    >
+  </div>
+  <div class="typeset" lang="en" data-leading="loose" data-align="justify" style="font-family: var(--font-serif)">
+    <p
+      >Loose leading opens the lines and the tracking opens with them: an airy setting for introductions, abstracts and
+      short pieces.</p
+    >
+  </div>
+</div>
+```
+
+```html example label="Separators" hint="A pause in the text is the Separator component - a short rule, a glyph between lines, or a bare glyph (data-line='none'): asterism, dinkus, fleuron. aria-hidden marks the ones that only decorate. Inside .typeset each keeps --typeset-gap from the text, like a figure." previewStyle="justify-content:flex-start;text-align:left;"
+<div class="typeset" lang="en" style="font-family: var(--font-serif); max-width: 28rem">
+  <p>A short rule, centred:</p>
+  <hr class="separator" role="none" style="width: 4rem; margin-inline: auto" />
+  <p>An asterism, the oldest mark of a section break:</p>
+  <div class="separator" aria-hidden="true" data-line="none" style="font-size: 1.125rem">⁂</div>
+  <p>A dinkus, three spaced asterisks:</p>
+  <div class="separator" aria-hidden="true" data-line="none" data-gap="lg">* * *</div>
+  <p>A fleuron, the printer's flower:</p>
+  <div class="separator" aria-hidden="true" data-line="none" style="font-size: 1.25rem">❦</div>
+  <p>An ornament, the glyph between two lines:</p>
+  <div class="separator" aria-hidden="true" data-gap="lg" style="width: 14rem; margin-inline: auto">◆</div>
+  <p>And the text resumes.</p>
+</div>
+```
+
+```html example label="Numbered captions: picture, table, video, chart" hint=".typeset-numbered numbers every .typeset-caption in order - figures (pictures, videos, charts) and tables on their own counters. Captions are flush start (picture), centred (table, data-align='center') or justified (video, chart, data-align='justify'). Every figure keeps --typeset-gap from the text." previewStyle="justify-content:flex-start;text-align:left;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<div
+  class="typeset typeset-numbered"
+  lang="en"
+  data-align="justify"
+  style="font-family: var(--font-serif); max-width: 34rem"
+>
+  <p>A paragraph before the picture: the figure keeps the same distance above as below.</p>
+  <figure>
+    <img
+      src="images/mk-wide2.png"
+      alt="A placeholder scene in cool blue-grey"
+      style="width: 100%; border-radius: var(--radius-md)"
+    />
+    <figcaption class="typeset-caption"
+      >This picture shows a placeholder scene in a cool tone; the caption is flush start.</figcaption
+    >
+  </figure>
+  <p>Between the picture and the table the text keeps the gap on both sides.</p>
+  <figure>
+    <table class="table">
+      <thead
+        ><tr><th>Format</th><th>Sheet folded</th><th>Leaves</th></tr></thead
+      >
+      <tbody
+        ><tr><td>Folio</td><td>once</td><td>2</td></tr
+        ><tr><td>Quarto</td><td>twice</td><td>4</td></tr
+        ><tr><td>Octavo</td><td>three times</td><td>8</td></tr></tbody
+      >
+    </table>
+    <figcaption class="typeset-caption" data-align="center">Two book formats and the folds behind them.</figcaption>
+  </figure>
+  <p>The video and the chart that follow are figures too, so they continue the figure count.</p>
+  <figure>
+    <video
+      controls
+      preload="metadata"
+      playsinline
+      poster="images/mk-wide3.png"
+      style="width: 100%; border-radius: var(--radius-md)"
+    >
+      <source src="videos/demo.webm" type="video/webm" />
+      <source src="videos/demo.mp4" type="video/mp4" />
+    </video>
+    <figcaption class="typeset-caption" data-align="justify"
+      >A six-second clip; a justified caption sets its longer lines flush on both sides and its last line flush
+      start.</figcaption
+    >
+  </figure>
+  <figure>
+    <div
+      class="chart"
+      style="height: 12rem"
+      role="img"
+      aria-label="Bar chart: leaves per sheet - folio 2, quarto 4, octavo 8"
+      data-chart='{"grid":{"left":40,"right":16,"top":16,"bottom":28},"xAxis":{"type":"category","data":["Folio","Quarto","Octavo"]},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[2,4,8],"label":{"show":true,"position":"top"}}]}'
+    ></div>
+    <figcaption class="typeset-caption" data-align="justify">Leaves per sheet: each fold doubles them.</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Figure groups: two charts; a chart, a picture and a table; cards" hint="figure.typeset-group sets two or three figures side by side with lettered sub-captions and one numbered caption; subgrid rows keep the captions of a row level. First: two charts, divided by a hairline, media centred (data-divided, data-align='middle'). Second: a chart, a picture and a table in one box. Third: data-variant='cards' - each figure its own card. Narrow the preview: they stack, and the hairlines run between the rows instead." previewStyle="justify-content:flex-start;text-align:left;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<div class="typeset typeset-numbered" lang="en" style="font-family: var(--font-serif); max-width: 40rem">
+  <p>Two charts compared side by side, a hairline between them:</p>
+  <figure class="typeset-group" data-divided data-align="middle">
+    <figure>
+      <div
+        class="chart"
+        style="height: 9rem"
+        role="img"
+        aria-label="Line chart, before: 4.1, 3.9, 3.8, 3.6"
+        data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["W1","W2","W3","W4"]},"yAxis":{"type":"value","min":3},"series":[{"type":"line","data":[4.1,3.9,3.8,3.6]}]}'
+      ></div>
+      <figcaption class="typeset-subcaption">Before the fix.</figcaption>
+    </figure>
+    <figure>
+      <div
+        class="chart"
+        style="height: 7rem"
+        role="img"
+        aria-label="Line chart, after: 3.4, 3.3, 3.2, 3.1"
+        data-chart='{"grid":{"left":32,"right":8,"top":12,"bottom":24},"xAxis":{"type":"category","data":["W1","W2","W3","W4"]},"yAxis":{"type":"value","min":3},"series":[{"type":"line","data":[3.4,3.3,3.2,3.1]}]}'
+      ></div>
+      <figcaption class="typeset-subcaption"
+        >After the fix - a shorter chart, its caption level with the first.</figcaption
+      >
+    </figure>
+    <figcaption class="typeset-caption">An error rate before and after a fix, per week (synthetic).</figcaption>
+  </figure>
+  <p>Three kinds of figure in one box:</p>
+  <figure class="typeset-group">
+    <figure>
+      <div
+        class="chart"
+        style="height: 8rem"
+        role="img"
+        aria-label="Pie chart: text 60, figures 25, tables 15"
+        data-chart='{"series":[{"type":"pie","radius":["40%","70%"],"data":[{"name":"Text","value":60},{"name":"Figures","value":25},{"name":"Tables","value":15}],"label":{"show":false}}]}'
+      ></div>
+      <figcaption class="typeset-subcaption">A page by area.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/mk-square.png" alt="A placeholder scene, square" />
+      <figcaption class="typeset-subcaption">A square picture.</figcaption>
+    </figure>
+    <figure>
+      <table class="table"
+        ><tbody
+          ><tr><td>Text</td><td>60 %</td></tr
+          ><tr><td>Figures</td><td>25 %</td></tr
+          ><tr><td>Tables</td><td>15 %</td></tr></tbody
+        ></table
+      >
+      <figcaption class="typeset-subcaption">The same as a table.</figcaption>
+    </figure>
+    <figcaption class="typeset-caption" data-align="center">A chart, a picture and a table in one box.</figcaption>
+  </figure>
+  <p>And the same three as cards, each in its own frame:</p>
+  <figure class="typeset-group" data-variant="cards" data-align="middle">
+    <figure>
+      <img src="images/mk-wide2.png" alt="A placeholder scene, cool blue-grey" />
+      <figcaption class="typeset-subcaption">A wide picture.</figcaption>
+    </figure>
+    <figure>
+      <div
+        class="chart"
+        style="height: 7rem"
+        role="img"
+        aria-label="Bar chart: 2, 4, 8"
+        data-chart='{"grid":{"left":28,"right":8,"top":10,"bottom":22},"xAxis":{"type":"category","data":["Folio","Quarto","Octavo"]},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[2,4,8]}]}'
+      ></div>
+      <figcaption class="typeset-subcaption">Leaves per sheet.</figcaption>
+    </figure>
+    <figure>
+      <table class="table"
+        ><tbody
+          ><tr><td>Folio</td><td>2</td></tr
+          ><tr><td>Quarto</td><td>4</td></tr
+          ><tr><td>Octavo</td><td>8</td></tr></tbody
+        ></table
+      >
+      <figcaption class="typeset-subcaption">The same as a table.</figcaption>
+    </figure>
+    <figcaption class="typeset-caption"
+      >Cards: no outer box; the media sit centred in their row, the captions level below.</figcaption
+    >
+  </figure>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Combined</p>
+<p class="text-sm text-muted-foreground mb-3">The rules compose. A book page puts them all together; the same page without the initial is the quieter setting the technical report on the <DocLink href="paper.html">Modern Paper</DocLink> page uses.</p>
+
+```html example label="Book page" hint="All rules at once: two ruled columns, Blocksatz, a drop initial, the opening line in capitals (beside an initial the small-caps lead sets capitals, so the line's top meets the initial's), Einzug, classic ligatures. Narrow the preview: below two columns of 18rem the block sets one." previewStyle="justify-content:flex-start;text-align:left;"
+<article
+  class="typeset"
+  lang="en"
+  data-columns="2"
+  data-rule
+  data-align="justify"
+  data-indent
+  data-initial="drop"
+  data-lead="smallcaps"
+  data-ligatures="classic"
+  style="font-family: var(--font-serif)"
+>
+  <h2 class="h3 typeset-span">Of the Art of Printing</h2>
+  <p
+    >Printing is the art of multiplying writing by movable type. The compositor takes each letter from the case, sets it
+    in the stick, justifies the line with spaces of different widths and locks the finished forme before a single sheet
+    is pulled - a craft that reached Mainz in 1450 and Venice by 1469.</p
+  >
+  <p
+    >Each following paragraph runs on without a gap; only its first line steps in by one em. The column therefore reads
+    as one even grey, and the eye finds the start of a thought by the indent alone.</p
+  >
+  <p
+    >A justified column hyphenates its longer words - typographical, interdisciplinary, internationalization - so that
+    the spaces between words stay close to one width, and its last line stays flush to the start.</p
+  >
+</article>
+```
+
+```html example label="Book page without an initial" hint="The same rules without data-initial: Blocksatz, Einzug, the opening line in small capitals, classic ligatures - a quieter opening for a report or a paper, where a large letter would compete with the title. The Modern Paper's technical report sets its sections this way." previewStyle="justify-content:flex-start;text-align:left;"
+<article
+  class="typeset"
+  lang="en"
+  data-align="justify"
+  data-indent
+  data-lead="smallcaps"
+  data-ligatures="classic"
+  style="font-family: var(--font-serif)"
+>
+  <h2 class="h3">Of the Art of Printing</h2>
+  <p
+    >Printing is the art of multiplying writing by movable type. The compositor takes each letter from the case, sets it
+    in the stick and justifies the line with spaces of different widths before a single sheet is pulled.</p
+  >
+  <p
+    >Each following paragraph runs on without a gap; only its first line steps in by one em, and the opening line in
+    small capitals marks the start without a large letter.</p
+  >
+</article>
+```
+
+<SourceFiles component="typography" section="css" />
+
+</DocPage>

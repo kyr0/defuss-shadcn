@@ -384,7 +384,8 @@
       return;
     }
     var script = document.createElement('script');
-    script.src = 'js/theme-designer.js';
+    // from the docs root: the page may sit in a section folder (page-dirs.ts)
+    script.src = (document.documentElement.dataset.docsRoot || '') + 'js/theme-designer.js';
     script.onload = function () {
       if (docs.initThemeDesigner && document.contains(root)) docs.initThemeDesigner(root);
     };

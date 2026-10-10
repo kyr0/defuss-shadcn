@@ -1,3 +1,5 @@
+import { pageFile } from '../../src/documentation/lib/page-dirs-files.ts';
+import { pageSourceRel } from '../../src/documentation/lib/page-dirs.ts';
 /**
  * Why: besides the reference skill (skills/defuss-shadcn - how to write the
  * markup), the plugin ships three task skills an agent runs for a job:
@@ -40,7 +42,7 @@ type NavSection = { heading: string; items: Nav[] };
 
 /** Frontmatter `description:` of a docs page. */
 function pageDescription(root: string, slug: string): string {
-  const file = join(root, 'src/documentation/pages', `${slug}.mdx`);
+  const file = pageFile(join(root, 'src/documentation/pages'), slug);
   if (!existsSync(file)) return '';
   const m = readFileSync(file, 'utf8').match(/^description:\s*["']?(.+?)["']?\s*$/m);
   return m ? m[1] : '';
@@ -137,8 +139,8 @@ export function guidesText(root: string, sections: readonly NavSection[], rawBas
   ];
   for (const item of guides.items) {
     const slug = item.href.replace(/\.html$/, '');
-    lines.push(`- **[${item.label}](../../../src/documentation/pages/${slug}.mdx)** - ${pageDescription(root, slug)}`);
-    if (item.children?.length) lines.push(`  - ${item.children.map((c) => `[${c.label}](../../../src/documentation/pages/${c.href.replace(/\.html$/, '')}.mdx)`).join(', ')}`);
+    lines.push(`- **[${item.label}](../../../src/documentation/pages/${pageSourceRel(slug)})** - ${pageDescription(root, slug)}`);
+    if (item.children?.length) lines.push(`  - ${item.children.map((c) => `[${c.label}](../../../src/documentation/pages/${pageSourceRel(c.href.replace(/\.html$/, ''))})`).join(', ')}`);
   }
   return `${lines.join('\n')}\n`;
 }

@@ -1,0 +1,68 @@
+---
+title: "Heading Anchor"
+description: "Heading Anchor component - a quiet § permalink before or after any heading, no JavaScript."
+slug: "heading-anchor"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="heading-anchor" title="Heading Anchor" component="heading-anchor">
+  A quiet § permalink on any heading - visible on hover, copyable as a deep link. Placed before or after the heading text. No JavaScript required.
+</PageHeader>
+
+<SkillPanel component="heading-anchor">
+  <SkillField label="Native basis">
+    <SkillText><code>&lt;a&gt;</code> element containing the section glyph §, placed as the first or last child of the heading it links to. The browser's native fragment navigation does the work.</SkillText>
+  </SkillField>
+  <SkillField label="Web Platform APIs">
+    <SkillRow>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a" title="native anchor with href"><code>&lt;a&gt;</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:target" title="native deep links, no JS scroll logic"><code>:target</code></ApiPill>
+      <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-label" title="the glyph alone is not a name"><code>aria-label</code></ApiPill>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Classes">
+    <SkillRow>
+      <code>.heading-anchor</code>
+    </SkillRow>
+  </SkillField>
+  <SkillField label="Placements (data-placement)">
+    <SkillGrid>
+      <Variant name="before" description="margin-right - the default slot" />
+      <Variant name="after" description="margin-left - trailing the text" />
+    </SkillGrid>
+  </SkillField>
+  <SkillField label="Sizes (data-size)">
+    <SkillGrid>
+      <Variant name="xs" description="0.75rem - fine print, captions" />
+      <Variant name="sm" description="0.875rem - small headings" />
+      <Variant name="md" description="1rem - default heading size" />
+      <Variant name="lg" description="1.125rem - section headings" />
+      <Variant name="xl" description="1.25rem - page titles" />
+    </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Before the heading (default)" hint="The anchor rides the heading's baseline, quiet until hovered."
+<h3 id="tokens">
+  <a class="heading-anchor" href="#tokens" aria-label="Link to section: Tokens">§</a>
+  Tokens
+</h3>
+```
+
+```html example label="After the heading" hint="data-placement='after' swaps the margin side."
+<h3 id="tokens">
+  Tokens
+  <a class="heading-anchor" href="#tokens" data-placement="after" aria-label="Link to section: Tokens">§</a>
+</h3>
+```
+
+```html example label="Sizes" hint="data-size pins the glyph size explicitly; without it the glyph inherits the heading's own font size (recommended - it then tracks the heading automatically). The glyph always inherits the heading's font family - var(--font-sans), var(--font-serif) and var(--font-mono) all work."
+<a class="heading-anchor" data-size="sm" href="#intro" aria-label="Link to section: Intro">§</a>
+```
+
+<SourceFiles component="heading-anchor" />
+
+</DocPage>

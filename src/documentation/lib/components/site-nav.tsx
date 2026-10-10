@@ -1,6 +1,8 @@
 import type { Props } from 'defuss';
 import { ALWAYS_OPEN_SECTION, flattenNav, NAV, type NavItem } from '../nav';
 import { NAV_ICONS } from '../nav-icons';
+import { pageRel } from '../page-dirs';
+// VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
 import { readSkillMeta } from '../repo';
 import { NavTypeBadge } from './type-badge';
 
@@ -50,6 +52,7 @@ function NavItemLink({ item, active }: { item: NavItem; active: string }) {
     <a
       class={isActive ? 'nav-link sidebar-link active' : 'nav-link sidebar-link'}
       href={item.href}
+      data-page={pageRel(item.href.replace(/\.html$/, ''))}
       {...(isActive ? { 'aria-current': 'page' } : {})}
     >
       <span>{item.label}</span>
@@ -73,6 +76,7 @@ function NavItemSubmenu({ item, active }: { item: NavItem; active: string }) {
         <a
           class={item.href === active ? 'nav-link sidebar-link active' : 'nav-link sidebar-link'}
           href={item.href}
+          data-page={pageRel(item.href.replace(/\.html$/, ''))}
           {...(item.href === active ? { 'aria-current': 'page' } : {})}
         >
           <span>{item.label}</span>

@@ -1,0 +1,604 @@
+---
+title: "Dropdown Menu"
+description: "Dropdown Menu component - action menus using native popover API."
+slug: "dropdown"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="dropdown" title="Dropdown Menu" component="dropdown">
+  Context menu built on the <code>popover</code> API. Light-dismiss is automatic. Supports groups, shortcuts, separators, and destructive items. Animated with <code>@starting-style</code>.
+</PageHeader>
+
+<SkillPanel component="dropdown">
+  <SkillField label="Native basis">
+<SkillText><code>popover</code> API + <code>&lt;button&gt;</code> trigger. The browser provides light-dismiss</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="top-layer rendering and light-dismiss (click outside to close)"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="positions dropdown relative to trigger without JavaScript"><code>CSS Anchor Positioning</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="keyboard navigation and role contract for menu items"><code>WAI-ARIA Menu pattern</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation for popover"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses open/close animation"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps to system colors"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.dropdown-content</code>
+    <code>.dropdown-item</code>
+    <code>.dropdown-separator</code>
+    <code>.dropdown-label</code>
+    <code>.dropdown-shortcut</code>
+    <code>.dropdown-check</code>
+    <code>.dropdown-radio</code>
+    <code>.dropdown-sub</code>
+    <code>.dropdown-sub-trigger</code>
+    <code>.dropdown-sub-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="destructive" description="Alternate background styling" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-dropdown-trigger</code></SkillText>
+  </SkillField>
+
+  <SkillField label="State attributes (managed by JS)">
+<SkillText>• <code>data-highlighted</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Wiring conventions">
+<SkillText>• <code>data-dropdown-trigger</code> on a <code>&lt;button&gt;</code> - opens the component (JS adds the native <code>popovertarget</code> command)</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Always use <code>popover</code> attribute for the menu - it renders in the top layer and avoids overflow clipping</SkillText>
+  <SkillText dense>• CSS anchor positioning (<code>position-anchor</code>, <code>anchor()</code>) handles placement - no JS positioning needed</SkillText>
+  <SkillText dense>• <code>position-try: flip-block</code> automatically flips the menu above the trigger if there's no room below</SkillText>
+  <SkillText dense>• The <code>popover</code> API handles light-dismiss (click outside) automatically</SkillText>
+  <SkillText dense>• For submenus, nest another <code>\[popover\]</code> element triggered by a <code>menuitem</code> with <code>aria-haspopup="menu"</code></SkillText>
+  <SkillText dense>• Escape closes the menu and returns focus to the trigger</SkillText>
+  <p class="text-muted-foreground m-0">• Menu items use <code>tabindex="-1"</code> - only arrow keys move focus (roving focus pattern)</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Standard Menu" hint="Full-featured menu with icons, keyboard shortcuts, groups, separators, a disabled item, and a destructive action." height="24"
+<button
+  class="btn"
+  data-variant="default"
+  aria-haspopup="menu"
+  aria-expanded="false"
+  aria-controls="demo-dropdown"
+  data-dropdown-trigger="demo-dropdown"
+>
+  Options
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"></path></svg
+></button>
+<div id="demo-dropdown" role="menu" popover class="dropdown-content" aria-label="Options menu" style="min-width: 12rem">
+  <div class="dropdown-label">My Account</div>
+  <div role="group" aria-label="Navigation">
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+      </svg>
+      Profile <span class="dropdown-shortcut">⇧⌘P</span></button
+    >
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+        ></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      Settings <span class="dropdown-shortcut">⌘S</span></button
+    >
+    <button role="menuitem" class="dropdown-item" tabindex="-1" disabled
+      ><svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" x2="12" y1="3" y2="15"></line>
+      </svg>
+      Upload <span class="dropdown-shortcut">⌘U</span></button
+    >
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <div role="group" aria-label="Actions">
+    <button role="menuitem" class="dropdown-item" tabindex="-1"
+      ><svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+      </svg>
+      Export <span class="dropdown-shortcut">⌘E</span></button
+    >
+    <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1"
+      ><svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+      </svg>
+      Delete <span class="dropdown-shortcut">⌘⌫</span></button
+    >
+  </div>
+</div>
+```
+
+```html example label="Checkbox &amp; Radio" hint="Use menuitemcheckbox for toggleable options and menuitemradio inside a role='group' for exclusive choices - a click or Enter / Space toggles them and the menu stays open." height="24"
+<button
+  class="btn"
+  data-variant="outline"
+  aria-haspopup="menu"
+  aria-expanded="false"
+  aria-controls="demo-dropdown-checks"
+  data-dropdown-trigger="demo-dropdown-checks"
+>
+  View
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"></path></svg
+></button>
+<div
+  id="demo-dropdown-checks"
+  role="menu"
+  popover
+  class="dropdown-content"
+  aria-label="View options"
+  style="min-width: 11rem"
+>
+  <div class="dropdown-label">Appearance</div>
+  <div role="group" aria-label="Toggle columns">
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1"
+      >Status Bar</button
+    >
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="false" tabindex="-1"
+      >Activity Bar</button
+    >
+    <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1"
+      >Panel</button
+    >
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <div class="dropdown-label">Layout</div>
+  <div role="group" aria-label="Layout style">
+    <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="true" tabindex="-1"
+      >Sidebar Left</button
+    >
+    <button role="menuitemradio" class="dropdown-item dropdown-radio" aria-checked="false" tabindex="-1"
+      >Sidebar Right</button
+    >
+  </div>
+</div>
+```
+
+```html example label="Live checkbox and radio state" schema="none" hint="Checkbox items toggle and radio items switch on click (or Enter / Space) - the menu stays open so several can be set at once. Every change fires dropdown:select; the line under the trigger reads the live aria-checked state." height="26"
+<button class="btn" data-variant="outline" data-dropdown-trigger="dd-live"
+  >Appearance
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"></path></svg
+></button>
+<div id="dd-live" role="menu" popover class="dropdown-content" aria-label="Appearance" style="min-width: 13rem">
+  <div class="dropdown-label">Panels</div>
+  <div role="group" aria-label="Panels">
+    <button
+      role="menuitemcheckbox"
+      class="dropdown-item dropdown-check"
+      aria-checked="true"
+      tabindex="-1"
+      data-value="status-bar"
+      >Status Bar</button
+    >
+    <button
+      role="menuitemcheckbox"
+      class="dropdown-item dropdown-check"
+      aria-checked="false"
+      tabindex="-1"
+      data-value="activity-bar"
+      >Activity Bar</button
+    >
+    <button
+      role="menuitemcheckbox"
+      class="dropdown-item dropdown-check"
+      aria-checked="true"
+      tabindex="-1"
+      data-value="minimap"
+      >Minimap</button
+    >
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <div class="dropdown-label">Theme</div>
+  <div role="group" aria-label="Theme">
+    <button
+      role="menuitemradio"
+      class="dropdown-item dropdown-radio"
+      aria-checked="false"
+      tabindex="-1"
+      data-value="light"
+      >Light</button
+    >
+    <button
+      role="menuitemradio"
+      class="dropdown-item dropdown-radio"
+      aria-checked="true"
+      tabindex="-1"
+      data-value="dark"
+      >Dark</button
+    >
+    <button
+      role="menuitemradio"
+      class="dropdown-item dropdown-radio"
+      aria-checked="false"
+      tabindex="-1"
+      data-value="system"
+      >System</button
+    >
+  </div>
+</div>
+<p class="text-sm text-muted-foreground mt-3" id="dd-live-state" aria-live="polite"></p>
+<script>
+  const liveMenu = document.getElementById('dd-live');
+  const showLive = () => {
+    const on = [...liveMenu.querySelectorAll('[role="menuitemcheckbox"][aria-checked="true"]')].map((i) =>
+      i.textContent.trim(),
+    );
+    const theme = liveMenu.querySelector('[role="menuitemradio"][aria-checked="true"]').textContent.trim();
+    document.getElementById('dd-live-state').textContent =
+      'Panels: ' + (on.join(', ') || 'none') + ' · Theme: ' + theme;
+  };
+  liveMenu.addEventListener('dropdown:select', showLive);
+  showLive();
+</script>
+```
+
+```html example label="Submenus" schema="none" hint="Nest .dropdown-sub (a .dropdown-sub-trigger + its .dropdown-sub-content menu) - any depth; here three levels. Hover or click opens, → / Enter / Space opens by keyboard, ← / Esc closes one level. Submenus flip to the other side near the viewport edge." height="32"
+<button class="btn" data-variant="outline" data-dropdown-trigger="dd-subs"
+  >Project
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"></path></svg
+></button>
+<div id="dd-subs" role="menu" popover class="dropdown-content" aria-label="Project" style="min-width: 12rem">
+  <button role="menuitem" class="dropdown-item" tabindex="-1"
+    ><i data-lucide="file-plus"></i>New file<span class="dropdown-shortcut">⌘N</span></button
+  >
+  <div class="dropdown-sub">
+    <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"
+      ><i data-lucide="history"></i>Open recent</button
+    >
+    <div id="dd-recent" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Open recent">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-code"></i>dashboard.tsx</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="file-text"></i>README.md</button>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"
+          ><i data-lucide="folder"></i>More projects</button
+        >
+        <div
+          id="dd-projects"
+          role="menu"
+          popover
+          class="dropdown-content dropdown-sub-content"
+          aria-label="More projects"
+        >
+          <button role="menuitem" class="dropdown-item" tabindex="-1">defuss-shadcn</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1">defuss-ssg</button>
+          <div class="dropdown-sub">
+            <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1">Archived</button>
+            <div
+              id="dd-archived"
+              role="menu"
+              popover
+              class="dropdown-content dropdown-sub-content"
+              aria-label="Archived"
+            >
+              <button role="menuitem" class="dropdown-item" tabindex="-1">shadcn-html (2025)</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1">legacy-docs (2024)</button>
+              <button role="menuitem" class="dropdown-item" tabindex="-1" data-variant="destructive"
+                >Clear archive</button
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dropdown-sub">
+    <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"
+      ><i data-lucide="send"></i>Share</button
+    >
+    <div id="dd-share" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Share">
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="link"></i>Copy link</button>
+      <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="mail"></i>Email</button>
+      <div class="dropdown-sub">
+        <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1"
+          ><i data-lucide="share-2"></i>Social</button
+        >
+        <div id="dd-social" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Social">
+          <button role="menuitem" class="dropdown-item" tabindex="-1">Mastodon</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1">Bluesky</button>
+          <button role="menuitem" class="dropdown-item" tabindex="-1">LinkedIn</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" tabindex="-1"
+    ><i data-lucide="settings"></i>Settings<span class="dropdown-shortcut">⌘,</span></button
+  >
+</div>
+```
+
+```html example label="Disabled items" schema="none" hint="disabled (a <button>) or aria-disabled='true': dimmed, skipped by the arrow keys and typeahead, clicks ignored - a disabled submenu trigger never opens its submenu." height="26"
+<button class="btn" data-variant="outline" data-dropdown-trigger="dd-disabled"
+  >Edit
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"></path></svg
+></button>
+<div id="dd-disabled" role="menu" popover class="dropdown-content" aria-label="Edit" style="min-width: 12rem">
+  <button role="menuitem" class="dropdown-item" tabindex="-1"
+    ><i data-lucide="undo-2"></i>Undo<span class="dropdown-shortcut">⌘Z</span></button
+  >
+  <button role="menuitem" class="dropdown-item" tabindex="-1" disabled
+    ><i data-lucide="redo-2"></i>Redo<span class="dropdown-shortcut">⇧⌘Z</span></button
+  >
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" tabindex="-1"
+    ><i data-lucide="scissors"></i>Cut<span class="dropdown-shortcut">⌘X</span></button
+  >
+  <button role="menuitem" class="dropdown-item" tabindex="-1"
+    ><i data-lucide="copy"></i>Copy<span class="dropdown-shortcut">⌘C</span></button
+  >
+  <button role="menuitem" class="dropdown-item" tabindex="-1" aria-disabled="true"
+    ><i data-lucide="clipboard"></i>Paste<span class="dropdown-shortcut">⌘V</span></button
+  >
+  <div class="dropdown-separator" role="separator"></div>
+  <div class="dropdown-sub">
+    <button role="menuitem" class="dropdown-item dropdown-sub-trigger" tabindex="-1" disabled
+      ><i data-lucide="languages"></i>Translate</button
+    >
+    <div id="dd-translate" role="menu" popover class="dropdown-content dropdown-sub-content" aria-label="Translate">
+      <button role="menuitem" class="dropdown-item" tabindex="-1">English</button>
+    </div>
+  </div>
+  <button role="menuitemcheckbox" class="dropdown-item dropdown-check" aria-checked="true" tabindex="-1" disabled
+    >Spell check (managed)</button
+  >
+</div>
+```
+
+```html example label="Trigger Variants" hint="Any button variant can serve as a dropdown trigger. Here a secondary button and a ghost icon-only button open simple menus; the icon menu carries data-align=&quot;end&quot;, so its end edge lines up with the button instead of hanging out past it." height="24"
+<button
+  class="btn"
+  data-variant="secondary"
+  aria-haspopup="menu"
+  aria-expanded="false"
+  aria-controls="demo-dropdown-3"
+  data-dropdown-trigger="demo-dropdown-3"
+>
+  More
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="m6 9 6 6 6-6"></path></svg
+></button>
+<button
+  class="btn"
+  data-variant="ghost"
+  data-size="icon"
+  aria-haspopup="menu"
+  aria-expanded="false"
+  aria-controls="demo-dropdown-4"
+  data-dropdown-trigger="demo-dropdown-4"
+  aria-label="More options"
+>
+  <svg
+    aria-hidden="true"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+  >
+    <circle cx="12" cy="12" r="1"></circle>
+    <circle cx="12" cy="5" r="1"></circle>
+    <circle cx="12" cy="19" r="1"></circle>
+  </svg>
+</button>
+<div
+  id="demo-dropdown-3"
+  role="menu"
+  popover
+  class="dropdown-content"
+  aria-label="More options"
+  style="min-width: 10rem"
+>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Copy</button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Paste</button>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Select All</button>
+</div>
+<div
+  id="demo-dropdown-4"
+  role="menu"
+  popover
+  class="dropdown-content"
+  data-align="end"
+  aria-label="Actions"
+  style="min-width: 10rem"
+>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Edit</button>
+  <button role="menuitem" class="dropdown-item" tabindex="-1">Duplicate</button>
+  <div class="dropdown-separator" role="separator"></div>
+  <button role="menuitem" class="dropdown-item" data-variant="destructive" tabindex="-1">Delete</button>
+</div>
+```
+
+```html example label="Sizes" hint="Set data-size on the .dropdown-content menu; items scale with it. The trigger keeps its own .btn size." height="24"
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="xs"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="sz-dd-xs"
+    data-dropdown-trigger="sz-dd-xs"
+    >Options</button
+  >
+  <div id="sz-dd-xs" role="menu" popover class="dropdown-content" data-size="xs" aria-label="Options xs">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+  </div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="sm"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="sz-dd-sm"
+    data-dropdown-trigger="sz-dd-sm"
+    >Options</button
+  >
+  <div id="sz-dd-sm" role="menu" popover class="dropdown-content" data-size="sm" aria-label="Options sm">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+  </div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="md"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="sz-dd-md"
+    data-dropdown-trigger="sz-dd-md"
+    >Options</button
+  >
+  <div id="sz-dd-md" role="menu" popover class="dropdown-content" data-size="md" aria-label="Options md">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+  </div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="lg"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="sz-dd-lg"
+    data-dropdown-trigger="sz-dd-lg"
+    >Options</button
+  >
+  <div id="sz-dd-lg" role="menu" popover class="dropdown-content" data-size="lg" aria-label="Options lg">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+  </div>
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <button
+    class="btn"
+    data-variant="outline"
+    data-size="xl"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="sz-dd-xl"
+    data-dropdown-trigger="sz-dd-xl"
+    >Options</button
+  >
+  <div id="sz-dd-xl" role="menu" popover class="dropdown-content" data-size="xl" aria-label="Options xl">
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Profile</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1">Settings</button>
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per menu through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - closed (the authored state; the trigger toggles it)</li>
+    <li><code>open</code> - shown via the native <code>showPopover()</code>, first item highlighted</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/dropdown-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/dropdown.schema.json"><code>dropdown.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | Shown - driven through the component's own State API. |
+```
+
+</StatesSection>
+
+<ApiSection component="dropdown" />
+
+<SourceFiles component="dropdown" section="css" />
+
+<SourceFiles component="dropdown" section="js">
+  <SourceNote for="js">Wires triggers to popover menus. CSS anchor positioning handles placement. Keyboard navigation (Arrow keys, Home/End, Escape, Enter/Space), typeahead, and checkbox/radio state management.</SourceNote>
+</SourceFiles>
+
+</DocPage>

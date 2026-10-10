@@ -118,187 +118,187 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Introduction
 
 - [Getting Started](../../src/documentation/pages/index.mdx) - A UI component system built with semantic HTML, shadcn design tokens, and plain CSS. No frameworks, no build step - just native web platform.
-- [Installation](../../src/documentation/pages/installation.mdx) - Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path.
-  - [Bundles & Downloads](../../src/documentation/pages/bundles.mdx) - Load defuss-shadcn whole, per sidebar section, or per component - from the jsDelivr CDN, with npm, or as a ZIP you vendor into your project.
-- [Vibe Coding / Agentic Engineering](../../src/documentation/pages/vibe-coding.mdx) - Build with defuss-shadcn through an AI coding agent - install the Agent Skill into Claude Code, Codex, Cursor, Gemini CLI, Copilot or Windsurf, then describe the UI and let the agent write the HTML.
-- [Anatomy of a Component](../../src/documentation/pages/anatomy.mdx) - How one component's parts meet: the tokens it reads, its markup, its stylesheet, its script, the named states it exposes, and the skill and schema that describe it - each a plain file you copy or link.
-- [Component Skills](../../src/documentation/pages/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
-- [Verified Agentic Engineering (VAE)](../../src/documentation/pages/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces and instructs, the agent extends its checks, screenshots record every state, humans review before release.
-- [Changelog](../../src/documentation/pages/changelog.mdx) - Release history and changelog for defuss-shadcn.
+- [Installation](../../src/documentation/pages/introduction/installation.mdx) - Install defuss-shadcn - straight from the jsDelivr CDN into plain HTML, or with npm into a bundled project. No framework, no build step for the CDN path.
+  - [Bundles & Downloads](../../src/documentation/pages/introduction/bundles.mdx) - Load defuss-shadcn whole, per sidebar section, or per component - from the jsDelivr CDN, with npm, or as a ZIP you vendor into your project.
+- [Vibe Coding / Agentic Engineering](../../src/documentation/pages/introduction/vibe-coding.mdx) - Build with defuss-shadcn through an AI coding agent - install the Agent Skill into Claude Code, Codex, Cursor, Gemini CLI, Copilot or Windsurf, then describe the UI and let the agent write the HTML.
+- [Anatomy of a Component](../../src/documentation/pages/introduction/anatomy.mdx) - How one component's parts meet: the tokens it reads, its markup, its stylesheet, its script, the named states it exposes, and the skill and schema that describe it - each a plain file you copy or link.
+- [Component Skills](../../src/documentation/pages/introduction/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
+- [Verified Agentic Engineering (VAE)](../../src/documentation/pages/introduction/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces and instructs, the agent extends its checks, screenshots record every state, humans review before release.
+- [Changelog](../../src/documentation/pages/introduction/changelog.mdx) - Release history and changelog for defuss-shadcn.
 
 ### Guides
 
-- [Theming](../../src/documentation/pages/theming.mdx) - Customize defuss-shadcn with CSS custom properties. Design your own theme in the built-in Theme Designer, or drop in any tweakcn.com theme.
-  - [Theme Designer](../../src/documentation/pages/theme-designer.mdx) - Design your own theme, the tweakcn way, right in the docs: pick a theme, change any colour for light and dark, Google Fonts for sans, serif and mono, radius, shadows, letter spacing and links - with a live preview of every component and the seven example apps. Every change saves as you go to a theme in your browser, on top of the theme menu; export the CSS to use it anywhere.
-- [Dark Mode](../../src/documentation/pages/dark-mode.mdx) - How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation.
-- [Data Attribute API](../../src/documentation/pages/data-attribute-api.mdx) - Use data attributes to configure component variants, sizes, and states directly in HTML markup.
-- [State API](../../src/documentation/pages/state-api.mdx) - Every interactive component declares its UI states by name and exposes them per element - el.api.setState('open') / el.api.getState() - for agents, tests, and code.
-- [DOM Querying & Morphing](../../src/documentation/pages/dom-querying.mdx) - The df$ runtime shipped in core.js - defuss-query for selection, traversal, scalar writes and events; defuss-morph for key-aware DOM reconciliation. One callable, no framework.
-- [Global Key Commands](../../src/documentation/pages/global-keys.mdx) - One shared, typing-safe document keydown listener - df$.shadcn.shared.bindGlobalKeys - that components and pages register shortcuts into. Registration order, stop semantics, unbinding, and every shortcut the components ship.
-- [Cascade Layers](../../src/documentation/pages/cascade-layers.mdx) - How defuss-shadcn uses CSS @layer to keep component styles predictable and easy to override.
-- [JavaScript Modules](../../src/documentation/pages/es-modules.mdx) - How interactive components ship as native ES modules on one runtime - core.js installs df$ (defuss-query + defuss-morph), components bind to it. No bundler needed.
-- [Native Web APIs](../../src/documentation/pages/native-web-apis.mdx) - defuss-shadcn uses 50+ native browser APIs - Popover, Anchor Positioning, Dialog, Invoker Commands, oklch(), View Transitions, Scroll-Driven Animations, @starting-style - instead of JavaScript libraries.
-- [Animations](../../src/documentation/pages/animations.mdx) - CSS-only enter and exit animations using @starting-style, allow-discrete transitions, and ::details-content.
-  - [Fade](../../src/documentation/pages/anim-fade.mdx) - The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim.
-  - [Slide Up](../../src/documentation/pages/anim-up.mdx) - The imperative slide-up entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
-  - [Slide Down](../../src/documentation/pages/anim-down.mdx) - The slide animation in depth - slideIn/slideOut channels with direction, distance, duration and easing, driven imperatively by df$.anim and bindable to scroll.
-  - [Slide Left](../../src/documentation/pages/anim-left.mdx) - The imperative slide-left entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
-  - [Slide Right](../../src/documentation/pages/anim-right.mdx) - The slide animation in depth - the target starts at the west edge and glides right into place (slideIn) or exits toward a named edge (slideOut), driven by df$.anim.
-  - [Zoom](../../src/documentation/pages/anim-zoom.mdx) - The zoom channel of the df$.anim engine - scale-and-fade entrances and exits with a configurable transform origin, driven imperatively or bound to scroll.
-  - [Zoom Out](../../src/documentation/pages/anim-zoom-out.mdx) - The shrink-in entrance and grow-away exit of the df$.anim zoom pair - driven imperatively via the zoomIn / zoomOut channels.
-  - [Pop](../../src/documentation/pages/anim-pop.mdx) - The springy overshoot scale animation - popIn grows the element from 0.65 through a 1.07 overshoot back to 1, popOut reverses it - driven imperatively by df$.anim.popIn / df$.anim.popOut.
-  - [Spin](../../src/documentation/pages/anim-spin.mdx) - The spin channel of the df$.anim engine - a rotational entrance and exit driven imperatively via df$.anim.spinIn / spinOut.
-  - [Flip](../../src/documentation/pages/anim-flip.mdx) - The flipIn / flipOut animation channels - a 3D perspective turn around rotateX (north/south) or rotateY (west/east), driven by df$.anim.
-  - [Skew](../../src/documentation/pages/anim-skew.mdx) - The skewIn/skewOut animation channels: a directional shear entrance and exit driven imperatively by df$.anim, with full lifecycle control and scroll binding.
-  - [Blur](../../src/documentation/pages/anim-blur.mdx) - The blur channel in depth - a focus pull with paired blurIn/blurOut variants, driven imperatively by df$.anim with duration and easing config plus scroll binding.
-  - [Wipe](../../src/documentation/pages/anim-wipe.mdx) - The clip-path wipe channels of the df$.anim engine - a directional reveal (or exit) from one edge, with full lifecycle control and scroll binding.
-  - [Wipe Up](../../src/documentation/pages/anim-wipe-up.mdx) - The clip-path wipe entrance/exit - reveal from the bottom edge, driven imperatively by df$.anim.wipeIn / wipeOut with direction, duration and easing config.
-  - [Iris](../../src/documentation/pages/anim-iris.mdx) - The iris reveal: a clip-path circle that opens or closes around a configurable origin, driven by the df$.anim engine.
-- [Sizing](../../src/documentation/pages/sizing.mdx) - A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.
-  - [Width & Height](../../src/documentation/pages/width-height.mdx) - Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.
-  - [Spacing](../../src/documentation/pages/spacing.mdx) - One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
-  - [Density](../../src/documentation/pages/density.mdx) - Compactness is an explicit whitespace policy, not a global zoom factor. Keep typography, geometry and target sizes independent.
-- [Layout](../../src/documentation/pages/layout.mdx) - Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime.
-  - [Container](../../src/documentation/pages/container.mdx) - Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice.
-  - [Flex](../../src/documentation/pages/flex.mdx) - Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.
-  - [Grid](../../src/documentation/pages/grid.mdx) - Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.
-- [Shapes](../../src/documentation/pages/shapes.mdx) - A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, shape-* silhouettes, section edges, shadows, frames and patterns - one opt-in stylesheet.
-- [Accessibility](../../src/documentation/pages/accessibility.mdx) - Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.
+- [Theming](../../src/documentation/pages/guides/theming.mdx) - Customize defuss-shadcn with CSS custom properties. Design your own theme in the built-in Theme Designer, or drop in any tweakcn.com theme.
+  - [Theme Designer](../../src/documentation/pages/guides/theme-designer.mdx) - Design your own theme, the tweakcn way, right in the docs: pick a theme, change any colour for light and dark, Google Fonts for sans, serif and mono, radius, shadows, letter spacing and links - with a live preview of every component and the seven example apps. Every change saves as you go to a theme in your browser, on top of the theme menu; export the CSS to use it anywhere.
+- [Dark Mode](../../src/documentation/pages/guides/dark-mode.mdx) - How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation.
+- [Data Attribute API](../../src/documentation/pages/guides/data-attribute-api.mdx) - Use data attributes to configure component variants, sizes, and states directly in HTML markup.
+- [State API](../../src/documentation/pages/guides/state-api.mdx) - Every interactive component declares its UI states by name and exposes them per element - el.api.setState('open') / el.api.getState() - for agents, tests, and code.
+- [DOM Querying & Morphing](../../src/documentation/pages/guides/dom-querying.mdx) - The df$ runtime shipped in core.js - defuss-query for selection, traversal, scalar writes and events; defuss-morph for key-aware DOM reconciliation. One callable, no framework.
+- [Global Key Commands](../../src/documentation/pages/guides/global-keys.mdx) - One shared, typing-safe document keydown listener - df$.shadcn.shared.bindGlobalKeys - that components and pages register shortcuts into. Registration order, stop semantics, unbinding, and every shortcut the components ship.
+- [Cascade Layers](../../src/documentation/pages/guides/cascade-layers.mdx) - How defuss-shadcn uses CSS @layer to keep component styles predictable and easy to override.
+- [JavaScript Modules](../../src/documentation/pages/guides/es-modules.mdx) - How interactive components ship as native ES modules on one runtime - core.js installs df$ (defuss-query + defuss-morph), components bind to it. No bundler needed.
+- [Native Web APIs](../../src/documentation/pages/guides/native-web-apis.mdx) - defuss-shadcn uses 50+ native browser APIs - Popover, Anchor Positioning, Dialog, Invoker Commands, oklch(), View Transitions, Scroll-Driven Animations, @starting-style - instead of JavaScript libraries.
+- [Animations](../../src/documentation/pages/guides/animations.mdx) - CSS-only enter and exit animations using @starting-style, allow-discrete transitions, and ::details-content.
+  - [Fade](../../src/documentation/pages/guides/anim-fade.mdx) - The fade animation channel: a pure opacity cross-fade with paired fadeIn/fadeOut variants, driven imperatively by df$.anim.
+  - [Slide Up](../../src/documentation/pages/guides/anim-up.mdx) - The imperative slide-up entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
+  - [Slide Down](../../src/documentation/pages/guides/anim-down.mdx) - The slide animation in depth - slideIn/slideOut channels with direction, distance, duration and easing, driven imperatively by df$.anim and bindable to scroll.
+  - [Slide Left](../../src/documentation/pages/guides/anim-left.mdx) - The imperative slide-left entrance/exit pair - df$.anim.slideIn / df$.anim.slideOut - with direction, distance, duration and easing as runtime config, plus scroll-bound progress.
+  - [Slide Right](../../src/documentation/pages/guides/anim-right.mdx) - The slide animation in depth - the target starts at the west edge and glides right into place (slideIn) or exits toward a named edge (slideOut), driven by df$.anim.
+  - [Zoom](../../src/documentation/pages/guides/anim-zoom.mdx) - The zoom channel of the df$.anim engine - scale-and-fade entrances and exits with a configurable transform origin, driven imperatively or bound to scroll.
+  - [Zoom Out](../../src/documentation/pages/guides/anim-zoom-out.mdx) - The shrink-in entrance and grow-away exit of the df$.anim zoom pair - driven imperatively via the zoomIn / zoomOut channels.
+  - [Pop](../../src/documentation/pages/guides/anim-pop.mdx) - The springy overshoot scale animation - popIn grows the element from 0.65 through a 1.07 overshoot back to 1, popOut reverses it - driven imperatively by df$.anim.popIn / df$.anim.popOut.
+  - [Spin](../../src/documentation/pages/guides/anim-spin.mdx) - The spin channel of the df$.anim engine - a rotational entrance and exit driven imperatively via df$.anim.spinIn / spinOut.
+  - [Flip](../../src/documentation/pages/guides/anim-flip.mdx) - The flipIn / flipOut animation channels - a 3D perspective turn around rotateX (north/south) or rotateY (west/east), driven by df$.anim.
+  - [Skew](../../src/documentation/pages/guides/anim-skew.mdx) - The skewIn/skewOut animation channels: a directional shear entrance and exit driven imperatively by df$.anim, with full lifecycle control and scroll binding.
+  - [Blur](../../src/documentation/pages/guides/anim-blur.mdx) - The blur channel in depth - a focus pull with paired blurIn/blurOut variants, driven imperatively by df$.anim with duration and easing config plus scroll binding.
+  - [Wipe](../../src/documentation/pages/guides/anim-wipe.mdx) - The clip-path wipe channels of the df$.anim engine - a directional reveal (or exit) from one edge, with full lifecycle control and scroll binding.
+  - [Wipe Up](../../src/documentation/pages/guides/anim-wipe-up.mdx) - The clip-path wipe entrance/exit - reveal from the bottom edge, driven imperatively by df$.anim.wipeIn / wipeOut with direction, duration and easing config.
+  - [Iris](../../src/documentation/pages/guides/anim-iris.mdx) - The iris reveal: a clip-path circle that opens or closes around a configurable origin, driven by the df$.anim engine.
+- [Sizing](../../src/documentation/pages/guides/sizing.mdx) - A single geometric scale, explicit density, and independent interaction targets. Familiar classes, native CSS, no Tailwind dependency.
+  - [Width & Height](../../src/documentation/pages/guides/width-height.mdx) - Arithmetic dimensions, fractions, content and viewport sizing, and explicit constraints. Density does not change geometric sizes.
+  - [Spacing](../../src/documentation/pages/guides/spacing.mdx) - One arithmetic spacing scale for gaps, padding and margins, with optional density and direction-aware helpers.
+  - [Density](../../src/documentation/pages/guides/density.mdx) - Compactness is an explicit whitespace policy, not a global zoom factor. Keep typography, geometry and target sizes independent.
+- [Layout](../../src/documentation/pages/guides/layout.mdx) - Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime.
+  - [Container](../../src/documentation/pages/guides/container.mdx) - Centered, bounded content with logical gutters. Query containment remains a separate, explicit choice.
+  - [Flex](../../src/documentation/pages/guides/flex.mdx) - Direction, wrapping, alignment and flexible sizing using native Flexbox. No implicit gap and no visual reordering helpers.
+  - [Grid](../../src/documentation/pages/guides/grid.mdx) - Intrinsic card grids, explicit tracks and aligned subgrids. Responsive to available space without a breakpoint utility generator.
+- [Shapes](../../src/documentation/pages/guides/shapes.mdx) - A catalog of reusable silhouettes to mix a design up: radius scale, organic and cut corners, shape-* silhouettes, section edges, shadows, frames and patterns - one opt-in stylesheet.
+- [Accessibility](../../src/documentation/pages/guides/accessibility.mdx) - Accessibility patterns in defuss-shadcn: ARIA roles, keyboard navigation, focus management, and screen reader support.
 
 ### Questionnaire
 
-- [Branching](../../src/documentation/pages/questionnaire-branching.mdx) - Branching questionnaires - the flow graph: an option's data-goto, conditional rules over earlier answers (all / any, numbers, field references), a step's data-next, the markup order; the walk shown as it happens.
-- [Validation](../../src/documentation/pages/questionnaire-validation.mdx) - Validating a questionnaire step by step - native constraints (required, min, pattern, type=email), choice counts (data-min / data-max), cross-field assertions over earlier answers, and validator functions in code; the reason shown in role=alert, the field focused.
-- [Drafts & History](../../src/documentation/pages/questionnaire-drafts.mdx) - Questionnaire drafts and branch history - every keystroke kept in session storage (or local, or nowhere) and restored on load, back navigation along the steps actually taken, jumping back from the trail or the review, forward again without losing the way, start over.
-- [Dependent Answers](../../src/documentation/pages/questionnaire-dependencies.mdx) - Dependent-answer invalidation in a branching questionnaire - answers on a branch the walk abandoned are cleared (reachability over the flow graph), answers that declare data-depends-on a changed field are cleared, the user is told, and only answers on the path are submitted.
-- [Flow Graph](../../src/documentation/pages/questionnaire-graph.mdx) - The questionnaire as a graph - analyze() checks a flow for missing targets, cycles, dead ends, unreachable steps and fields a rule may read unanswered (dominators); toDiagram() / linkDiagram() draw it as an interactive diagram that also drives the form; toMermaid() exports it as a Mermaid flowchart.
+- [Branching](../../src/documentation/pages/questionnaire/questionnaire-branching.mdx) - Branching questionnaires - the flow graph: an option's data-goto, conditional rules over earlier answers (all / any, numbers, field references), a step's data-next, the markup order; the walk shown as it happens.
+- [Validation](../../src/documentation/pages/questionnaire/questionnaire-validation.mdx) - Validating a questionnaire step by step - native constraints (required, min, pattern, type=email), choice counts (data-min / data-max), cross-field assertions over earlier answers, and validator functions in code; the reason shown in role=alert, the field focused.
+- [Drafts & History](../../src/documentation/pages/questionnaire/questionnaire-drafts.mdx) - Questionnaire drafts and branch history - every keystroke kept in session storage (or local, or nowhere) and restored on load, back navigation along the steps actually taken, jumping back from the trail or the review, forward again without losing the way, start over.
+- [Dependent Answers](../../src/documentation/pages/questionnaire/questionnaire-dependencies.mdx) - Dependent-answer invalidation in a branching questionnaire - answers on a branch the walk abandoned are cleared (reachability over the flow graph), answers that declare data-depends-on a changed field are cleared, the user is told, and only answers on the path are submitted.
+- [Flow Graph](../../src/documentation/pages/questionnaire/questionnaire-graph.mdx) - The questionnaire as a graph - analyze() checks a flow for missing targets, cycles, dead ends, unreachable steps and fields a rule may read unanswered (dominators); toDiagram() / linkDiagram() draw it as an interactive diagram that also drives the form; toMermaid() exports it as a Mermaid flowchart.
 
 ### Data Display
 
-- [Image Gallery](../../src/documentation/pages/image-gallery.mdx) - Auto-advancing image gallery composed from figure.image slides - per-slide data-duration dwell times, an abortable setTimeout chain, and every DOM touch routed through defuss-query (df$).
+- [Image Gallery](../../src/documentation/pages/data-display/image-gallery.mdx) - Auto-advancing image gallery composed from figure.image slides - per-slide data-duration dwell times, an abortable setTimeout chain, and every DOM touch routed through defuss-query (df$).
 
 ### Big Data
 
-- [Tree Grid](../../src/documentation/pages/tree-grid.mdx) - Tree Grid - the Data Grid with parents: every row may have a parent, so it pages, filters, multisorts and locks columns like a grid and opens and closes like a tree. 111,000 rows, ARIA treegrid, keyboard, store-driven.
+- [Tree Grid](../../src/documentation/pages/big-data/tree-grid.mdx) - Tree Grid - the Data Grid with parents: every row may have a parent, so it pages, filters, multisorts and locks columns like a grid and opens and closes like a tree. 111,000 rows, ARIA treegrid, keyboard, store-driven.
 
 ### Charts
 
-- [Comparison](../../src/documentation/pages/charts-comparison.mdx) - Comparison chart patterns on the chart component - highlight bars, lollipop ranking, dumbbell before/after, slopegraph, and diverging bars, all themed by the token adapter.
-- [Change over time](../../src/documentation/pages/charts-change.mdx) - Change-over-time chart patterns on the chart component - waterfall decomposition, normalized stacked bars, bump ranking, and annotated time series, all themed by the token adapter.
-- [Distribution](../../src/documentation/pages/charts-distribution.mdx) - Distribution and density chart patterns with the chart component: confidence bands, quadrant scatter, jittered strips, matrix and calendar heatmaps, boxplots, and a custom-series violin - all themed from the design tokens.
-- [Composition](../../src/documentation/pages/charts-composition.mdx) - Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens.
-- [Election](../../src/documentation/pages/charts-election.mdx) - Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens.
-- [Narrative](../../src/documentation/pages/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (baseline → comparison → composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
+- [Comparison](../../src/documentation/pages/charts/charts-comparison.mdx) - Comparison chart patterns on the chart component - highlight bars, lollipop ranking, dumbbell before/after, slopegraph, and diverging bars, all themed by the token adapter.
+- [Change over time](../../src/documentation/pages/charts/charts-change.mdx) - Change-over-time chart patterns on the chart component - waterfall decomposition, normalized stacked bars, bump ranking, and annotated time series, all themed by the token adapter.
+- [Distribution](../../src/documentation/pages/charts/charts-distribution.mdx) - Distribution and density chart patterns with the chart component: confidence bands, quadrant scatter, jittered strips, matrix and calendar heatmaps, boxplots, and a custom-series violin - all themed from the design tokens.
+- [Composition](../../src/documentation/pages/charts/charts-composition.mdx) - Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens.
+- [Election](../../src/documentation/pages/charts/charts-election.mdx) - Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens.
+- [Narrative](../../src/documentation/pages/charts/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (baseline → comparison → composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
 
 ### Diagrams
 
-- [Architecture](../../src/documentation/pages/diagram-architecture.mdx) - Architecture diagrams with the diagram component - services, stores and external systems on a grid, zones behind them, labelled rounded-elbow connectors; step by step and as a before/changes/after delta.
-- [Flow](../../src/documentation/pages/diagram-flow.mdx) - Flowcharts with the diagram component - pills for start and end, diamonds for decisions, labelled exits; animated step by step and as a before/changes/after delta.
-- [State](../../src/documentation/pages/diagram-state.mdx) - State machines with the diagram component - start and end dots, labelled transitions (event [guard] / action), self loops; plus a complex current-state landscape; step by step and as deltas.
-- [State Lifecycle](../../src/documentation/pages/diagram-state-lifecycle.mdx) - Lifecycle phase maps with the diagram component - primary phases on a rail, waits and recovery above, terminal outcomes below; step by step and as a delta.
-- [ER](../../src/documentation/pages/diagram-er.mdx) - Entity-relationship diagrams with the diagram component - entities with field lists, crow's-foot cardinality, relationship labels; plus physical database schemas with column-to-column foreign keys; step by step and as deltas.
-- [Timeline](../../src/documentation/pages/diagram-timeline.mdx) - Timelines with the diagram component - one honest axis, events at their dates above and below, ticks and ranges; step by step and as a delta with moved events.
-- [Swimlane](../../src/documentation/pages/diagram-swimlane.mdx) - Swimlane diagrams with the diagram component - one lane per team, steps in the lane of who does them, handoffs across lanes; step by step and as a delta.
-- [Nested](../../src/documentation/pages/diagram-nested.mdx) - Nested containment diagrams with the diagram component - trust zones, scopes and blast radius as groups inside groups; step by step and as a delta.
-- [Organigram](../../src/documentation/pages/diagram-organigram.mdx) - Organigrams (org charts) with the diagram component - owners, how to reach them and what they own, bus connectors per parent; step by step and as a re-org delta.
-- [Layers](../../src/documentation/pages/diagram-layers.mdx) - Layer stack diagrams with the diagram component - full-width bands with index, name and note, one focal layer; built bottom-up step by step and as a delta.
-- [Loop](../../src/documentation/pages/diagram-loop.mdx) - Loop and flywheel diagrams with the diagram component - stations on a ring around a hub that accumulates state, curved arcs and dashed write-backs, a flow token; step by step and as a delta.
-- [Data Lake](../../src/documentation/pages/diagram-data-lake.mdx) - Data lake architecture diagrams with the diagram component - a phase banner over sources, ingest, lake zones, query engine and consumers; step by step and as a delta.
-- [Medallion](../../src/documentation/pages/diagram-medallion.mdx) - Medallion architecture diagrams with the diagram component - bronze, silver and gold tiers with tool, format and writer, an archive; step by step and as a delta.
-- [High-level](../../src/documentation/pages/diagram-high-level.mdx) - High-level stack diagrams with the diagram component - a phase banner, external sources, the cluster boundary, orchestration and identity bars; step by step and as a delta.
-- [High-level Parametric](../../src/documentation/pages/diagram-high-level-parametric.mdx) - Parametric diagrams - a JSON spec renders into the same markup (script.diagram-spec or df$.shadcn.diagram.build), two specs diff into a delta, inputs regenerate the picture.
-- [Process](../../src/documentation/pages/diagram-process.mdx) - Process diagrams with the diagram component - responsible lanes, numbered steps with tools and IN/OUT payload chips; step by step and as a delta.
-- [Data Flow](../../src/documentation/pages/diagram-data-flow.mdx) - Data flow diagrams with the diagram component - phases as columns, platform roles as lanes, typed payloads on every arrow; step by step and as a delta.
-- [Topology](../../src/documentation/pages/diagram-topology.mdx) - Integration topology diagrams with the diagram component - sources and consumer surfaces around a platform boundary, protocols on every connection; step by step and as a delta.
-- [Matrix](../../src/documentation/pages/diagram-matrix.mdx) - Matrix diagrams with the diagram component - access/security matrices, Bayesian update and base-rate tables, RACI, risk, weighted decision and traceability matrices; a Bayesian update step by step and an access-review delta.
-- [Fishbone](../../src/documentation/pages/diagram-fishbone.mdx) - Fishbone (Ishikawa) diagrams with the diagram component - categories on 60° bones above and below a spine into the effect, the confirmed root cause in the accent; step by step and as a delta.
-- [Wardley Map](../../src/documentation/pages/diagram-wardley.mdx) - Wardley maps with the diagram component - a value chain against evolution, four bands, dependency lines and a movement arrow; step by step and as a delta.
-- [Kanban](../../src/documentation/pages/diagram-kanban.mdx) - Kanban board snapshots with the diagram component - columns with WIP chips, card states blocked / waiting / done, a breached limit; column by column and as a week-over-week delta.
-- [User Journey](../../src/documentation/pages/diagram-journey.mdx) - User journey maps with the diagram component - stages, a sentiment curve on a high/neutral/low band, actions, touchpoints and pain points; stage by stage and as a delta.
-- [Deployment](../../src/documentation/pages/diagram-deployment.mdx) - Deployment diagrams with the diagram component - network zones, hosts and managed services with artifact chips and replica badges, protocol:port paths; step by step and as a release delta.
-- [Dependency Graph](../../src/documentation/pages/diagram-dependency.mdx) - Dependency graphs with the diagram component - packages ranked by depth, fan-in badges, external and leaf treatments, one cycle routed around the stack; step by step and as a delta.
-- [UML Class](../../src/documentation/pages/diagram-uml-class.mdx) - UML class diagrams with the diagram component - name, attribute and operation compartments, stereotypes, abstract classes, and the typed relationship ends; step by step and as a delta.
-- [Story Map](../../src/documentation/pages/diagram-story-map.mdx) - User story maps with the diagram component - a backbone of activities, the walking skeleton, release bands and the release cut, the riskiest story marked; step by step and as a delta.
-- [Sequence](../../src/documentation/pages/diagram-sequence.mdx) - Sequence diagrams with the diagram component - participants, lifelines, calls and dashed returns, self messages, a flow token; message by message and as a protocol delta.
-- [Quadrant](../../src/documentation/pages/diagram-quadrant.mdx) - Consultant-style 2×2 scenario matrices with the diagram component - two driver ranges, four named scenarios, the bet in the accent; step by step and as a delta.
-- [Policy Trace](../../src/documentation/pages/diagram-policy-trace.mdx) - Animated policy evaluation traces with the diagram component - ordered rules, two requests side by side, pass / fail / skipped / not reached, the first divergence; played rule by rule and as a policy delta.
+- [Architecture](../../src/documentation/pages/diagrams/diagram-architecture.mdx) - Architecture diagrams with the diagram component - services, stores and external systems on a grid, zones behind them, labelled rounded-elbow connectors; step by step and as a before/changes/after delta.
+- [Flow](../../src/documentation/pages/diagrams/diagram-flow.mdx) - Flowcharts with the diagram component - pills for start and end, diamonds for decisions, labelled exits; animated step by step and as a before/changes/after delta.
+- [State](../../src/documentation/pages/diagrams/diagram-state.mdx) - State machines with the diagram component - start and end dots, labelled transitions (event [guard] / action), self loops; plus a complex current-state landscape; step by step and as deltas.
+- [State Lifecycle](../../src/documentation/pages/diagrams/diagram-state-lifecycle.mdx) - Lifecycle phase maps with the diagram component - primary phases on a rail, waits and recovery above, terminal outcomes below; step by step and as a delta.
+- [ER](../../src/documentation/pages/diagrams/diagram-er.mdx) - Entity-relationship diagrams with the diagram component - entities with field lists, crow's-foot cardinality, relationship labels; plus physical database schemas with column-to-column foreign keys; step by step and as deltas.
+- [Timeline](../../src/documentation/pages/diagrams/diagram-timeline.mdx) - Timelines with the diagram component - one honest axis, events at their dates above and below, ticks and ranges; step by step and as a delta with moved events.
+- [Swimlane](../../src/documentation/pages/diagrams/diagram-swimlane.mdx) - Swimlane diagrams with the diagram component - one lane per team, steps in the lane of who does them, handoffs across lanes; step by step and as a delta.
+- [Nested](../../src/documentation/pages/diagrams/diagram-nested.mdx) - Nested containment diagrams with the diagram component - trust zones, scopes and blast radius as groups inside groups; step by step and as a delta.
+- [Organigram](../../src/documentation/pages/diagrams/diagram-organigram.mdx) - Organigrams (org charts) with the diagram component - owners, how to reach them and what they own, bus connectors per parent; step by step and as a re-org delta.
+- [Layers](../../src/documentation/pages/diagrams/diagram-layers.mdx) - Layer stack diagrams with the diagram component - full-width bands with index, name and note, one focal layer; built bottom-up step by step and as a delta.
+- [Loop](../../src/documentation/pages/diagrams/diagram-loop.mdx) - Loop and flywheel diagrams with the diagram component - stations on a ring around a hub that accumulates state, curved arcs and dashed write-backs, a flow token; step by step and as a delta.
+- [Data Lake](../../src/documentation/pages/diagrams/diagram-data-lake.mdx) - Data lake architecture diagrams with the diagram component - a phase banner over sources, ingest, lake zones, query engine and consumers; step by step and as a delta.
+- [Medallion](../../src/documentation/pages/diagrams/diagram-medallion.mdx) - Medallion architecture diagrams with the diagram component - bronze, silver and gold tiers with tool, format and writer, an archive; step by step and as a delta.
+- [High-level](../../src/documentation/pages/diagrams/diagram-high-level.mdx) - High-level stack diagrams with the diagram component - a phase banner, external sources, the cluster boundary, orchestration and identity bars; step by step and as a delta.
+- [High-level Parametric](../../src/documentation/pages/diagrams/diagram-high-level-parametric.mdx) - Parametric diagrams - a JSON spec renders into the same markup (script.diagram-spec or df$.shadcn.diagram.build), two specs diff into a delta, inputs regenerate the picture.
+- [Process](../../src/documentation/pages/diagrams/diagram-process.mdx) - Process diagrams with the diagram component - responsible lanes, numbered steps with tools and IN/OUT payload chips; step by step and as a delta.
+- [Data Flow](../../src/documentation/pages/diagrams/diagram-data-flow.mdx) - Data flow diagrams with the diagram component - phases as columns, platform roles as lanes, typed payloads on every arrow; step by step and as a delta.
+- [Topology](../../src/documentation/pages/diagrams/diagram-topology.mdx) - Integration topology diagrams with the diagram component - sources and consumer surfaces around a platform boundary, protocols on every connection; step by step and as a delta.
+- [Matrix](../../src/documentation/pages/diagrams/diagram-matrix.mdx) - Matrix diagrams with the diagram component - access/security matrices, Bayesian update and base-rate tables, RACI, risk, weighted decision and traceability matrices; a Bayesian update step by step and an access-review delta.
+- [Fishbone](../../src/documentation/pages/diagrams/diagram-fishbone.mdx) - Fishbone (Ishikawa) diagrams with the diagram component - categories on 60° bones above and below a spine into the effect, the confirmed root cause in the accent; step by step and as a delta.
+- [Wardley Map](../../src/documentation/pages/diagrams/diagram-wardley.mdx) - Wardley maps with the diagram component - a value chain against evolution, four bands, dependency lines and a movement arrow; step by step and as a delta.
+- [Kanban](../../src/documentation/pages/diagrams/diagram-kanban.mdx) - Kanban board snapshots with the diagram component - columns with WIP chips, card states blocked / waiting / done, a breached limit; column by column and as a week-over-week delta.
+- [User Journey](../../src/documentation/pages/diagrams/diagram-journey.mdx) - User journey maps with the diagram component - stages, a sentiment curve on a high/neutral/low band, actions, touchpoints and pain points; stage by stage and as a delta.
+- [Deployment](../../src/documentation/pages/diagrams/diagram-deployment.mdx) - Deployment diagrams with the diagram component - network zones, hosts and managed services with artifact chips and replica badges, protocol:port paths; step by step and as a release delta.
+- [Dependency Graph](../../src/documentation/pages/diagrams/diagram-dependency.mdx) - Dependency graphs with the diagram component - packages ranked by depth, fan-in badges, external and leaf treatments, one cycle routed around the stack; step by step and as a delta.
+- [UML Class](../../src/documentation/pages/diagrams/diagram-uml-class.mdx) - UML class diagrams with the diagram component - name, attribute and operation compartments, stereotypes, abstract classes, and the typed relationship ends; step by step and as a delta.
+- [Story Map](../../src/documentation/pages/diagrams/diagram-story-map.mdx) - User story maps with the diagram component - a backbone of activities, the walking skeleton, release bands and the release cut, the riskiest story marked; step by step and as a delta.
+- [Sequence](../../src/documentation/pages/diagrams/diagram-sequence.mdx) - Sequence diagrams with the diagram component - participants, lifelines, calls and dashed returns, self messages, a flow token; message by message and as a protocol delta.
+- [Quadrant](../../src/documentation/pages/diagrams/diagram-quadrant.mdx) - Consultant-style 2×2 scenario matrices with the diagram component - two driver ranges, four named scenarios, the bet in the accent; step by step and as a delta.
+- [Policy Trace](../../src/documentation/pages/diagrams/diagram-policy-trace.mdx) - Animated policy evaluation traces with the diagram component - ordered rules, two requests side by side, pass / fail / skipped / not reached, the first divergence; played rule by rule and as a policy delta.
 
 ### Application
 
-- [Scaffolds](../../src/documentation/pages/application-scaffolds.mdx) - Complete, clickable application UIs built only from the shipped components - start a product from a working shell instead of a blank page.
-  - [Admin Dashboard](../../src/documentation/pages/scaffold-admin-dashboard.mdx) - Application scaffold: a complete, clickable admin dashboard - sidebar, command palette, KPIs with live charts, orders with bulk actions, customers, settings - built only from the shipped components.
-  - [Messenger](../../src/documentation/pages/scaffold-messenger.mdx) - Application scaffold: a WhatsApp-style messenger - chat list with filters, conversations with voice notes, photos, replies and reactions, live sending with read receipts and replies, calls, contact info and dark mode - built only from the shipped components.
-  - [Issue Tracker](../../src/documentation/pages/scaffold-issue-tracker.mdx) - Application scaffold: a Linear-style issue tracker - issues by status as a list or a drag-and-drop board, issue pages with editable properties and comments, a context menu, a ⌘K palette, keyboard shortcuts, inbox, cycles with a burn-up chart and projects - built only from the shipped components.
-  - [Notes & Docs](../../src/documentation/pages/scaffold-notes.mdx) - Application scaffold: a Notion-style workspace - a page tree, a block editor with a slash menu, markdown shortcuts, a floating format bar and drag to move, covers and icons, sharing, favorites and trash, and a roadmap database with table, board and gallery views - built only from the shipped components.
-  - [Status Page](../../src/documentation/pages/scaffold-status-page.mdx) - Application scaffold: a Statuspage-style status page - overall status, active incidents with their timeline, scheduled maintenance with a countdown, component groups with 90-day uptime bars, response-time metrics, past incidents and history - plus the operator console that creates, updates and resolves incidents live; built only from the shipped components.
-  - [Desktop](../../src/documentation/pages/scaffold-desktop.mdx) - Application scaffold: a Windows-style desktop - wallpaper and icons, movable windows, a taskbar with a start menu, quick settings and a clock with a calendar, context menus to change the layout and the theme, and working apps: an editor, a calculator, a browser, settings and a recycle bin - built only from the shipped components.
-  - [Document Editor](../../src/documentation/pages/scaffold-document-editor.mdx) - Application scaffold: a Google-Docs-style document editor - Markdown documents in Editor.js with a formatting toolbar, a comment column that scrolls on its own with comments tied to spans of the text, replies and quotes, a document list, sharing and autosave - built only from the shipped components.
+- [Scaffolds](../../src/documentation/pages/application/application-scaffolds.mdx) - Complete, clickable application UIs built only from the shipped components - start a product from a working shell instead of a blank page.
+  - [Admin Dashboard](../../src/documentation/pages/application/scaffold-admin-dashboard.mdx) - Application scaffold: a complete, clickable admin dashboard - sidebar, command palette, KPIs with live charts, orders with bulk actions, customers, settings - built only from the shipped components.
+  - [Messenger](../../src/documentation/pages/application/scaffold-messenger.mdx) - Application scaffold: a WhatsApp-style messenger - chat list with filters, conversations with voice notes, photos, replies and reactions, live sending with read receipts and replies, calls, contact info and dark mode - built only from the shipped components.
+  - [Issue Tracker](../../src/documentation/pages/application/scaffold-issue-tracker.mdx) - Application scaffold: a Linear-style issue tracker - issues by status as a list or a drag-and-drop board, issue pages with editable properties and comments, a context menu, a ⌘K palette, keyboard shortcuts, inbox, cycles with a burn-up chart and projects - built only from the shipped components.
+  - [Notes & Docs](../../src/documentation/pages/application/scaffold-notes.mdx) - Application scaffold: a Notion-style workspace - a page tree, a block editor with a slash menu, markdown shortcuts, a floating format bar and drag to move, covers and icons, sharing, favorites and trash, and a roadmap database with table, board and gallery views - built only from the shipped components.
+  - [Status Page](../../src/documentation/pages/application/scaffold-status-page.mdx) - Application scaffold: a Statuspage-style status page - overall status, active incidents with their timeline, scheduled maintenance with a countdown, component groups with 90-day uptime bars, response-time metrics, past incidents and history - plus the operator console that creates, updates and resolves incidents live; built only from the shipped components.
+  - [Desktop](../../src/documentation/pages/application/scaffold-desktop.mdx) - Application scaffold: a Windows-style desktop - wallpaper and icons, movable windows, a taskbar with a start menu, quick settings and a clock with a calendar, context menus to change the layout and the theme, and working apps: an editor, a calculator, a browser, settings and a recycle bin - built only from the shipped components.
+  - [Document Editor](../../src/documentation/pages/application/scaffold-document-editor.mdx) - Application scaffold: a Google-Docs-style document editor - Markdown documents in Editor.js with a formatting toolbar, a comment column that scrolls on its own with comments tied to spans of the text, replies and quotes, a document list, sharing and autosave - built only from the shipped components.
 
 ### Presentations
 
-- [Deck Gallery](../../src/documentation/pages/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
-  - [The System in Numbers](../../src/documentation/pages/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship deck with the system's real, measured numbers: glyph cover, unit dots, the feature line map, bundle and app sizes, the method (RAD + VAE) as live diagrams - the loop and the gate on two slides -, the timed verifier, the four ways in, one pitch per skill and the map of both skill families.
-  - [Editorial Highlight Bars](../../src/documentation/pages/editorial-highlight-bars.mdx) - Swiss International design language presenting a region's commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
-  - [Lollipop Ranking](../../src/documentation/pages/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
-  - [Dumbbell Before/After](../../src/documentation/pages/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city's rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
-  - [Slopegraph](../../src/documentation/pages/slopegraph.mdx) - Terminal Data Noir design language presenting the shift in programming languages asked for in job ads, 2020–2025, as a 12-slide deck - slopes that isolate the risers, then morph from change bars into the 2025 ranking.
-  - [Diverging Bars](../../src/documentation/pages/diverging-bars.mdx) - Neo-Brutalist Zine design language presenting support for a four-day work week by industry as a 12-slide deck - net bars that split into support vs oppose, scatter against remote work and land on pilot results, one morphing chart.
-  - [Waterfall](../../src/documentation/pages/waterfall.mdx) - Art Deco Night design language presenting a cinema chain's revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut.
-  - [Normalized Stack](../../src/documentation/pages/normalized-stack.mdx) - Engineering Blueprint design language presenting a decade of electricity generation mix as a 12-slide deck - 100% columns that flow into areas, collapse into fossil vs low-carbon and close as a 2025 donut, one morphing chart.
-  - [Bump Ranking](../../src/documentation/pages/bump-ranking.mdx) - Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 13-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars.
-  - [Bar Race](../../src/documentation/pages/bar-race.mdx) - Sports Broadcast design language presenting a fictional league's golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines.
-  - [Confidence Band](../../src/documentation/pages/confidence-band.mdx) - Scientific Journal design language presenting a flu-season hospital forecast as a 12-slide deck - observed weeks grow a median forecast, nested 50% and 90% bands and finally the realized values, on one morphing chart.
-  - [Annotated Time Series](../../src/documentation/pages/annotated-timeseries.mdx) - Sunday Magazine design language presenting the first year of a new tram line as a 12-slide deck - a ridership line that gains its annotations, zooms into the fare cut and folds into a weekday profile, one morphing chart.
-  - [Small Multiples](../../src/documentation/pages/small-multiples.mdx) - 1960s Modernist Grid design language presenting rooftop solar yield by roof orientation as a 12-slide deck - six panels that collapse into one overlay, sum into annual bars and end on a summer-day profile, one morphing chart.
-  - [Scatter Quadrants](../../src/documentation/pages/scatter-quadrants.mdx) - Annual Report Corporate design language presenting a software portfolio (growth × net revenue retention × ARR) as a 12-slide deck - a quadrant map that isolates the stars, collapses into ARR bars and moves to the 2026 plan, one morphing chart.
-  - [Jittered Distribution](../../src/documentation/pages/jittered-distribution.mdx) - Organic Data Garden design language presenting raspberry yield per plant under four growing methods as a 12-slide deck - every plant as a dot, then groups collapsing into mean bars and boxplots, one morphing chart.
-  - [Heatmap Matrix](../../src/documentation/pages/heatmap-matrix.mdx) - Cyber Matrix design language presenting one week of security alerts as a 12-slide deck - a 7 × 24 heatmap that exposes a 3 a.m. burst, re-cuts by alert type and collapses into an hourly profile, one morphing chart.
-  - [Calendar Heatmap](../../src/documentation/pages/calendar-heatmap.mdx) - Pastel Stationery design language presenting a runner's training year as a 12-slide deck - a calendar heatmap of 365 days that folds into months, weekdays and the 16-week marathon build, one morphing chart.
-  - [Theme River](../../src/documentation/pages/theme-river.mdx) - Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck - a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart.
-  - [Treemap](../../src/documentation/pages/treemap.mdx) - Mondrian Composition design language presenting a city's €2.4 billion budget as a 12-slide deck - a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart.
-  - [Sunburst](../../src/documentation/pages/sunburst.mdx) - Celestial Observatory design language presenting one year of telescope time as a 12-slide deck - a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart.
-  - [Sankey](../../src/documentation/pages/sankey.mdx) - Industrial Schematic design language presenting a year of a city's waste as a 13-slide deck - a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
-  - [Chord](../../src/documentation/pages/chord.mdx) - Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck - a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart.
-  - [Editorial Gauge](../../src/documentation/pages/editorial-gauge.mdx) - Aviation Cockpit design language presenting an airport's on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart.
-  - [Parliament Hemicycle](../../src/documentation/pages/parliament-hemicycle.mdx) - Civic Parchment design language presenting a fictional national assembly as a 13-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart.
-  - [Election Majority Bar](../../src/documentation/pages/election-majority-bar.mdx) - Live News Election Desk design language presenting a fictional city-council election as a 12-slide deck - one stacked seat bar that moves from the early projection to the result, splits into coalition options and ends on votes versus seats.
-  - [Election Hex Cartogram](../../src/documentation/pages/election-hex-cartogram.mdx) - Election Night Newspaper design language presenting a fictional county's rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart.
-  - [Election Shift Arrows](../../src/documentation/pages/election-shift-arrows.mdx) - Transit Infographic design language presenting the change in turnout across twelve city districts as a 12-slide deck - arrows along a metro line that re-rank, grow into turnout levels and fly into an age scatter, one morphing chart.
-  - [Universal Transition](../../src/documentation/pages/universal-transition.mdx) - Kinetic Typography design language presenting a music festival's 120,000 tickets by sales channel as a 12-slide deck - the same five channels morph from bars to donut to dots to revenue bars on one continuous chart.
-  - [Waffle Dot Matrix](../../src/documentation/pages/waffle-dot-matrix.mdx) - Pixel Arcade design language presenting how players split across gaming platforms as a 12-slide deck - a 10 × 10 pixel waffle that re-colours from 2020 to 2025, merges into bars and re-sorts by play time, one morphing chart.
-  - [Boxplot](../../src/documentation/pages/boxplot.mdx) - Academic Monograph design language presenting a study of reading scores under five teaching methods as a 12-slide deck - boxplots that collapse into means, open into spreads and end on learning gains, one morphing chart.
-  - [Violin - Custom Series](../../src/documentation/pages/violin-custom.mdx) - Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage.
-  - [Custom Wind Vectors](../../src/documentation/pages/custom-wind-vectors.mdx) - Meteorological Radar design language presenting a coastal storm as a 12-slide deck - a custom-series wind field whose arrows turn and grow as the storm crosses between 06:00, 12:00 and 18:00, then gust curves at three stations.
-  - [Story State Machine](../../src/documentation/pages/story-state-machine.mdx) - Cinematic Presentation design language presenting five fictional streaming services as a 13-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next.
+- [Deck Gallery](../../src/documentation/pages/presentations/presentations.mdx) - 33 presentation decks - the flagship System in Numbers plus 32 ECharts design studies, each a 12-slide English deck on its own topic with its own numbers, animated slide transitions and one morphing chart per deck.
+  - [The System in Numbers](../../src/documentation/pages/presentations/system-in-numbers.mdx) - defuss-shadcn presents itself - the flagship deck with the system's real, measured numbers: glyph cover, unit dots, the feature line map, bundle and app sizes, the method (RAD + VAE) as live diagrams - the loop and the gate on two slides -, the timed verifier, the four ways in, one pitch per skill and the map of both skill families.
+  - [Editorial Highlight Bars](../../src/documentation/pages/presentations/editorial-highlight-bars.mdx) - Swiss International design language presenting a region's commuting shift as a 10-slide deck - one highlighted bar, recolored, re-ranked by volume and folded into a mode-share donut on a single morphing chart.
+  - [Lollipop Ranking](../../src/documentation/pages/presentations/lollipop-ranking.mdx) - Bauhaus Primary Poster design language presenting caffeine by brew method as a 10-slide deck - lollipops that re-rank per 100 ml, burst into a bubble scatter and settle into columns on one morphing chart.
+  - [Dumbbell Before/After](../../src/documentation/pages/presentations/dumbbell-before-after.mdx) - Financial Broadsheet design language presenting a city's rent rise 2019–2025 as a 12-slide deck - dumbbells that re-sort by growth, collapse into change bars and split into rent-burden columns on one morphing chart.
+  - [Slopegraph](../../src/documentation/pages/presentations/slopegraph.mdx) - Terminal Data Noir design language presenting the shift in programming languages asked for in job ads, 2020–2025, as a 12-slide deck - slopes that isolate the risers, then morph from change bars into the 2025 ranking.
+  - [Diverging Bars](../../src/documentation/pages/presentations/diverging-bars.mdx) - Neo-Brutalist Zine design language presenting support for a four-day work week by industry as a 12-slide deck - net bars that split into support vs oppose, scatter against remote work and land on pilot results, one morphing chart.
+  - [Waterfall](../../src/documentation/pages/presentations/waterfall.mdx) - Art Deco Night design language presenting a cinema chain's revenue bridge as a 12-slide deck - one chart morphing from waterfall to running total, ranked movers and a revenue donut.
+  - [Normalized Stack](../../src/documentation/pages/presentations/normalized-stack.mdx) - Engineering Blueprint design language presenting a decade of electricity generation mix as a 12-slide deck - 100% columns that flow into areas, collapse into fossil vs low-carbon and close as a 2025 donut, one morphing chart.
+  - [Bump Ranking](../../src/documentation/pages/presentations/bump-ranking.mdx) - Neo Tokyo Neon design language presenting seven years of music-genre rankings on a streaming platform as a 13-slide deck - a bump chart that isolates the climbers, then morphs into 2025 streams and growth bars.
+  - [Bar Race](../../src/documentation/pages/presentations/bar-race.mdx) - Sports Broadcast design language presenting a fictional league's golden-boot race as a 12-slide deck - a live bar race that runs while its slide is on air, then morphs into the final table, efficiency ranking and season lines.
+  - [Confidence Band](../../src/documentation/pages/presentations/confidence-band.mdx) - Scientific Journal design language presenting a flu-season hospital forecast as a 12-slide deck - observed weeks grow a median forecast, nested 50% and 90% bands and finally the realized values, on one morphing chart.
+  - [Annotated Time Series](../../src/documentation/pages/presentations/annotated-timeseries.mdx) - Sunday Magazine design language presenting the first year of a new tram line as a 12-slide deck - a ridership line that gains its annotations, zooms into the fare cut and folds into a weekday profile, one morphing chart.
+  - [Small Multiples](../../src/documentation/pages/presentations/small-multiples.mdx) - 1960s Modernist Grid design language presenting rooftop solar yield by roof orientation as a 12-slide deck - six panels that collapse into one overlay, sum into annual bars and end on a summer-day profile, one morphing chart.
+  - [Scatter Quadrants](../../src/documentation/pages/presentations/scatter-quadrants.mdx) - Annual Report Corporate design language presenting a software portfolio (growth × net revenue retention × ARR) as a 12-slide deck - a quadrant map that isolates the stars, collapses into ARR bars and moves to the 2026 plan, one morphing chart.
+  - [Jittered Distribution](../../src/documentation/pages/presentations/jittered-distribution.mdx) - Organic Data Garden design language presenting raspberry yield per plant under four growing methods as a 12-slide deck - every plant as a dot, then groups collapsing into mean bars and boxplots, one morphing chart.
+  - [Heatmap Matrix](../../src/documentation/pages/presentations/heatmap-matrix.mdx) - Cyber Matrix design language presenting one week of security alerts as a 12-slide deck - a 7 × 24 heatmap that exposes a 3 a.m. burst, re-cuts by alert type and collapses into an hourly profile, one morphing chart.
+  - [Calendar Heatmap](../../src/documentation/pages/presentations/calendar-heatmap.mdx) - Pastel Stationery design language presenting a runner's training year as a 12-slide deck - a calendar heatmap of 365 days that folds into months, weekdays and the 16-week marathon build, one morphing chart.
+  - [Theme River](../../src/documentation/pages/presentations/theme-river.mdx) - Aurora Gradient design language presenting three years of loans at a city library as a 12-slide deck - a theme river of four lending formats that isolates audiobooks, then re-reads the same streams as yearly stacks and growth bars, one continuous chart.
+  - [Treemap](../../src/documentation/pages/presentations/treemap.mdx) - Mondrian Composition design language presenting a city's €2.4 billion budget as a 12-slide deck - a treemap of departments and programmes that isolates transport, morphs into a sunburst of the same hierarchy, then into change since 2020, one continuous chart.
+  - [Sunburst](../../src/documentation/pages/presentations/sunburst.mdx) - Celestial Observatory design language presenting one year of telescope time as a 12-slide deck - a sunburst of science fields and programmes that isolates exoplanets, morphs into a treemap of the same hierarchy, then into oversubscription bars, one continuous chart.
+  - [Sankey](../../src/documentation/pages/presentations/sankey.mdx) - Industrial Schematic design language presenting a year of a city's waste as a 13-slide deck - a Sankey from sources through material streams to outcomes that isolates plastics, then re-reads the flow as outcome and recovery-rate bars, one continuous chart.
+  - [Chord](../../src/documentation/pages/presentations/chord.mdx) - Glass Hologram design language presenting air-passenger flows between six world regions as a 12-slide deck - a chord ring that isolates Europe, then morphs into regional totals and growth bars, one continuous chart.
+  - [Editorial Gauge](../../src/documentation/pages/presentations/editorial-gauge.mdx) - Aviation Cockpit design language presenting an airport's on-time departure rate as a 12-slide deck - a gauge whose needle swings from last summer to this one, then morphs into delay causes and a monthly trend, one continuous chart.
+  - [Parliament Hemicycle](../../src/documentation/pages/presentations/parliament-hemicycle.mdx) - Civic Parchment design language presenting a fictional national assembly as a 13-slide deck - 400 seats on an arc that light up a coalition, merge into party bars and end on seat changes, one morphing chart.
+  - [Election Majority Bar](../../src/documentation/pages/presentations/election-majority-bar.mdx) - Live News Election Desk design language presenting a fictional city-council election as a 12-slide deck - one stacked seat bar that moves from the early projection to the result, splits into coalition options and ends on votes versus seats.
+  - [Election Hex Cartogram](../../src/documentation/pages/presentations/election-hex-cartogram.mdx) - Election Night Newspaper design language presenting a fictional county's rail-link referendum as a 12-slide deck - 64 equal hexagons that recolour by margin, fly into a distance scatter and merge into band averages, one morphing chart.
+  - [Election Shift Arrows](../../src/documentation/pages/presentations/election-shift-arrows.mdx) - Transit Infographic design language presenting the change in turnout across twelve city districts as a 12-slide deck - arrows along a metro line that re-rank, grow into turnout levels and fly into an age scatter, one morphing chart.
+  - [Universal Transition](../../src/documentation/pages/presentations/universal-transition.mdx) - Kinetic Typography design language presenting a music festival's 120,000 tickets by sales channel as a 12-slide deck - the same five channels morph from bars to donut to dots to revenue bars on one continuous chart.
+  - [Waffle Dot Matrix](../../src/documentation/pages/presentations/waffle-dot-matrix.mdx) - Pixel Arcade design language presenting how players split across gaming platforms as a 12-slide deck - a 10 × 10 pixel waffle that re-colours from 2020 to 2025, merges into bars and re-sorts by play time, one morphing chart.
+  - [Boxplot](../../src/documentation/pages/presentations/boxplot.mdx) - Academic Monograph design language presenting a study of reading scores under five teaching methods as a 12-slide deck - boxplots that collapse into means, open into spreads and end on learning gains, one morphing chart.
+  - [Violin - Custom Series](../../src/documentation/pages/presentations/violin-custom.mdx) - Fashion Editorial design language presenting resale price premiums for sneakers as a 12-slide deck - custom-series violins that isolate the collaborations, then give way to medians and market share, one continuous stage.
+  - [Custom Wind Vectors](../../src/documentation/pages/presentations/custom-wind-vectors.mdx) - Meteorological Radar design language presenting a coastal storm as a 12-slide deck - a custom-series wind field whose arrows turn and grow as the storm crosses between 06:00, 12:00 and 18:00, then gust curves at three stations.
+  - [Story State Machine](../../src/documentation/pages/presentations/story-state-machine.mdx) - Cinematic Presentation design language presenting five fictional streaming services as a 13-slide deck of claims - baseline, comparison, composition and churn, each claim a state of one chart that morphs into the next.
 
 ### Papers
 
-- [Paper Gallery](../../src/documentation/pages/paper-gallery.mdx) - Ten short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, a database schema, images and video, big data and a replayed chat.
-  - [Theme Chooser](../../src/documentation/pages/paper-themes.mdx) - A short paper with a Theme Switcher of four themes: the whole page - title, abstract, table, statistics - rethemes from its tokens.
-  - [Light and Dark](../../src/documentation/pages/paper-dark-mode.mdx) - A short paper with only a Swap in its title block: the sun and the moon toggle the dark palette of the same theme.
-  - [House Styles](../../src/documentation/pages/paper-styles.mdx) - One short paper in three house styles - modern, classic and minimal - switched in place by a Toggle Group.
-  - [Two Columns](../../src/documentation/pages/paper-two-column.mdx) - A classic two-column journal page: justified and hyphenated columns, a drop initial, a small-caps opening line and an indent instead of paragraph gaps - one column on a phone.
-  - [Redeschrift 1.0](../../src/documentation/pages/paper-redeschrift.mdx) - A short paper on Redeschrift 1.0, a German speech recognition model that runs on the CPU: an embedded model card (Iframe) controls the paper around it - choose a variant inside the frame and the paper's table and statistics follow.
-  - [Code Listings](../../src/documentation/pages/paper-code.mdx) - A short paper whose evidence is code: terminal sessions and a diff in Code Mockup windows, telling how one missing line made every OKLCH contrast too dark.
-  - [Database Schema](../../src/documentation/pages/paper-schema.mdx) - A short paper with an ER diagram at its centre: the contract of one defuss-shadcn component - its states, skill, schema, page, fixture and screenshots - drawn by the Illustrative Diagram component.
-  - [Images and Video](../../src/documentation/pages/paper-media.mdx) - A short paper with figures: Image figures with a lightbox, a hover gallery and a captioned video - all native elements, all inside the paper's grid.
-  - [Big Data](../../src/documentation/pages/paper-big-data.mdx) - A short paper that carries its data: a Data Grid of 100,000 synthetic evaluation utterances to sort and filter, and a Data Tree of their corpus hierarchy - windowed, inside the paper.
-  - [Chat Replay](../../src/documentation/pages/paper-chat.mdx) - A short paper whose evidence is a conversation: a Session replays it turn by turn, the questions anchoring near the top and the replies streaming in word by word.
+- [Paper Gallery](../../src/documentation/pages/papers/paper-gallery.mdx) - Ten short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, a database schema, images and video, big data and a replayed chat.
+  - [Theme Chooser](../../src/documentation/pages/papers/paper-themes.mdx) - A short paper with a Theme Switcher of four themes: the whole page - title, abstract, table, statistics - rethemes from its tokens.
+  - [Light and Dark](../../src/documentation/pages/papers/paper-dark-mode.mdx) - A short paper with only a Swap in its title block: the sun and the moon toggle the dark palette of the same theme.
+  - [House Styles](../../src/documentation/pages/papers/paper-styles.mdx) - One short paper in three house styles - modern, classic and minimal - switched in place by a Toggle Group.
+  - [Two Columns](../../src/documentation/pages/papers/paper-two-column.mdx) - A classic two-column journal page: justified and hyphenated columns, a drop initial, a small-caps opening line and an indent instead of paragraph gaps - one column on a phone.
+  - [Redeschrift 1.0](../../src/documentation/pages/papers/paper-redeschrift.mdx) - A short paper on Redeschrift 1.0, a German speech recognition model that runs on the CPU: an embedded model card (Iframe) controls the paper around it - choose a variant inside the frame and the paper's table and statistics follow.
+  - [Code Listings](../../src/documentation/pages/papers/paper-code.mdx) - A short paper whose evidence is code: terminal sessions and a diff in Code Mockup windows, telling how one missing line made every OKLCH contrast too dark.
+  - [Database Schema](../../src/documentation/pages/papers/paper-schema.mdx) - A short paper with an ER diagram at its centre: the contract of one defuss-shadcn component - its states, skill, schema, page, fixture and screenshots - drawn by the Illustrative Diagram component.
+  - [Images and Video](../../src/documentation/pages/papers/paper-media.mdx) - A short paper with figures: Image figures with a lightbox, a hover gallery and a captioned video - all native elements, all inside the paper's grid.
+  - [Big Data](../../src/documentation/pages/papers/paper-big-data.mdx) - A short paper that carries its data: a Data Grid of 100,000 synthetic evaluation utterances to sort and filter, and a Data Tree of their corpus hierarchy - windowed, inside the paper.
+  - [Chat Replay](../../src/documentation/pages/papers/paper-chat.mdx) - A short paper whose evidence is a conversation: a Session replays it turn by turn, the questions anchoring near the top and the replies streaming in word by word.
 
 ### Website
 
-- [Landing Page](../../src/documentation/pages/website-landing-page.mdx) - Website blocks - Landing Page: The sections of a product or marketing page, top to bottom: the site header, a hero, product showcase and logos, section headers to introduce the parts, features, testimonials, stats, pricing, blog teasers, FAQ, contact, newsletter and the footer.
-- [News](../../src/documentation/pages/website-news.mdx) - Website blocks - News: Blocks for a newsroom, a press page or a changelog front: the header with its topics, a ticker of the latest headlines and the stories themselves - as the lead, as rows with thumbnails, or as a compact list.
-- [Blog](../../src/documentation/pages/website-blog.mdx) - Website blocks - Blog: Blocks for the front of a blog or a category: the header with subscribe actions and category chips, the post previews - card, horizontal or featured - and the archive by year and month.
-- [Article](../../src/documentation/pages/website-article.mdx) - Website blocks - Article: Blocks for a single article or post, top to bottom: its header, the formatted body, share links, the author's bio and the contributors, related reading and the previous / next articles.
-- [Comments](../../src/documentation/pages/website-comments.mdx) - Website blocks - Comments: Blocks for a discussion under an article or a product: the header with the count and sort order, the form for a new comment, and the comments with their nested replies.
-- [Company](../../src/documentation/pages/website-company.mdx) - Website blocks - Company: Blocks for the pages about the organization itself: who you are, the team, open roles and applications, services and how you work, use cases and case studies, portfolio projects, history, integrations, comparisons, credentials and press.
-- [Events & Promotions](../../src/documentation/pages/website-events-promotions.mdx) - Website blocks - Events & Promotions: Blocks for campaigns, events and places: calls to action, announcements, offers and countdowns, bookings, event listings and pages - header, description, speakers, sessions and registration - and locations with maps, a store finder and opening hours.
-- [Media](../../src/documentation/pages/website-media.mdx) - Website blocks - Media: Blocks for pictures, video, audio and social content: single pictures with a large view, galleries with shared controls, text beside media, native video and audio players, playlists, before / after comparisons and locally rendered social posts.
-- [Shop](../../src/documentation/pages/website-shop.mdx) - Website blocks - Shop: Blocks for a store front and its checkout: collections and products, the cart and its summary, discount codes, address, delivery and payment, the order summary and confirmation, shipment tracking and the wishlist.
-- [Account & States](../../src/documentation/pages/website-account-states.mdx) - Website blocks - Account & States: Blocks for accounts and the moments around them: sign in, providers, sign up and password resets, profiles and settings, support, feedback and surveys and form progress - and the states every product needs: empty, error, success, coming soon, maintenance and 404.
-- [Docs & Help](../../src/documentation/pages/website-docs-help.mdx) - Website blocks - Docs & Help: Blocks for documentation, help centers and release communication: resources and downloads, the docs navigation and page body, code examples with tabs and copy, release headers and items, roadmap cards, help categories and how-to articles.
-- [Search & Navigation](../../src/documentation/pages/website-search-navigation.mdx) - Website blocks - Search & Navigation: Blocks for finding and moving around: the search box and its suggestions, the results summary and results, filter bars and sidebars, active filters, sort and view controls, pagination and load more, tags, category menus, breadcrumbs, on-page contents and quick links.
+- [Landing Page](../../src/documentation/pages/website/website-landing-page.mdx) - Website blocks - Landing Page: The sections of a product or marketing page, top to bottom: the site header, a hero, product showcase and logos, section headers to introduce the parts, features, testimonials, stats, pricing, blog teasers, FAQ, contact, newsletter and the footer.
+- [News](../../src/documentation/pages/website/website-news.mdx) - Website blocks - News: Blocks for a newsroom, a press page or a changelog front: the header with its topics, a ticker of the latest headlines and the stories themselves - as the lead, as rows with thumbnails, or as a compact list.
+- [Blog](../../src/documentation/pages/website/website-blog.mdx) - Website blocks - Blog: Blocks for the front of a blog or a category: the header with subscribe actions and category chips, the post previews - card, horizontal or featured - and the archive by year and month.
+- [Article](../../src/documentation/pages/website/website-article.mdx) - Website blocks - Article: Blocks for a single article or post, top to bottom: its header, the formatted body, share links, the author's bio and the contributors, related reading and the previous / next articles.
+- [Comments](../../src/documentation/pages/website/website-comments.mdx) - Website blocks - Comments: Blocks for a discussion under an article or a product: the header with the count and sort order, the form for a new comment, and the comments with their nested replies.
+- [Company](../../src/documentation/pages/website/website-company.mdx) - Website blocks - Company: Blocks for the pages about the organization itself: who you are, the team, open roles and applications, services and how you work, use cases and case studies, portfolio projects, history, integrations, comparisons, credentials and press.
+- [Events & Promotions](../../src/documentation/pages/website/website-events-promotions.mdx) - Website blocks - Events & Promotions: Blocks for campaigns, events and places: calls to action, announcements, offers and countdowns, bookings, event listings and pages - header, description, speakers, sessions and registration - and locations with maps, a store finder and opening hours.
+- [Media](../../src/documentation/pages/website/website-media.mdx) - Website blocks - Media: Blocks for pictures, video, audio and social content: single pictures with a large view, galleries with shared controls, text beside media, native video and audio players, playlists, before / after comparisons and locally rendered social posts.
+- [Shop](../../src/documentation/pages/website/website-shop.mdx) - Website blocks - Shop: Blocks for a store front and its checkout: collections and products, the cart and its summary, discount codes, address, delivery and payment, the order summary and confirmation, shipment tracking and the wishlist.
+- [Account & States](../../src/documentation/pages/website/website-account-states.mdx) - Website blocks - Account & States: Blocks for accounts and the moments around them: sign in, providers, sign up and password resets, profiles and settings, support, feedback and surveys and form progress - and the states every product needs: empty, error, success, coming soon, maintenance and 404.
+- [Docs & Help](../../src/documentation/pages/website/website-docs-help.mdx) - Website blocks - Docs & Help: Blocks for documentation, help centers and release communication: resources and downloads, the docs navigation and page body, code examples with tabs and copy, release headers and items, roadmap cards, help categories and how-to articles.
+- [Search & Navigation](../../src/documentation/pages/website/website-search-navigation.mdx) - Website blocks - Search & Navigation: Blocks for finding and moving around: the search box and its suggestions, the results summary and results, filter bars and sidebars, active filters, sort and view controls, pagination and load more, tags, category menus, breadcrumbs, on-page contents and quick links.
 
 ## 4. Component index
 
@@ -310,19 +310,19 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** CSS @keyframes are the single source of truth for the entrance vocabulary; animation-composition:add keeps pre-existing transforms intact, and animations (unlike transitions) fire deterministically on first application.
 - **When:** Entrance/draw-in animations for ANY element - decks (presentation), cards, lists, dialogs - not just slides. Reach for it before writing bespoke keyframes.
-- **States:** `default` · **Skill:** [references/components/motion.md](references/components/motion.md) · **Examples:** [src/documentation/pages/motion.mdx](../../src/documentation/pages/motion.mdx)
+- **States:** `default` · **Skill:** [references/components/motion.md](references/components/motion.md) · **Examples:** [src/documentation/pages/guides/motion.mdx](../../src/documentation/pages/guides/motion.mdx)
 
 #### Animation Canvas · TPL · JS
 
 - **Why:** One board, slides side by side like a chess board - the viewport pan is one WAAPI transform and only the arriving slide animates, through the shared df$.anim engine (data-attribute declared) plus the shared motion entrances for its content; no canvas-private animation exists.
 - **When:** Spatial slide boards and zoomable story maps with directional navigation + an at-a-glance overview - not linear decks (use Presentation) and not scrollable pages.
-- **States:** `default`, `overview` · **Skill:** [references/components/anim-canvas.md](references/components/anim-canvas.md) · **Examples:** [src/documentation/pages/anim-canvas.mdx](../../src/documentation/pages/anim-canvas.mdx)
+- **States:** `default`, `overview` · **Skill:** [references/components/anim-canvas.md](references/components/anim-canvas.md) · **Examples:** [src/documentation/pages/guides/anim-canvas.mdx](../../src/documentation/pages/guides/anim-canvas.mdx)
 
 #### Parallax · ATM · CSS
 
 - **Why:** Scroll-driven animations - a view timeline on the scene drives each layer's translate, animation-timeline view() drives the reveals; the compositor runs it, no scroll listener or IntersectionObserver.
 - **When:** Depth in heroes and illustrations, a photo drifting behind copy, sections and cards that rise into view on a long page. Entrance animations that play once on load take motion; animations that play on demand take anim-canvas / the df$.anim engine.
-- **States:** `default` · **Skill:** [references/components/parallax.md](references/components/parallax.md) · **Examples:** [src/documentation/pages/parallax.mdx](../../src/documentation/pages/parallax.mdx)
+- **States:** `default` · **Skill:** [references/components/parallax.md](references/components/parallax.md) · **Examples:** [src/documentation/pages/guides/parallax.mdx](../../src/documentation/pages/guides/parallax.mdx)
 
 ### Primitives
 
@@ -330,43 +330,43 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Type styling for raw content elements - headings, lists, blockquotes, code.
 - **When:** Rendering markdown or CMS output where you cannot add classes.
-- **States:** `default` · **Skill:** [references/components/typography.md](references/components/typography.md) · **Examples:** [src/documentation/pages/typography.mdx](../../src/documentation/pages/typography.mdx)
+- **States:** `default` · **Skill:** [references/components/typography.md](references/components/typography.md) · **Examples:** [src/documentation/pages/primitives/typography.mdx](../../src/documentation/pages/primitives/typography.mdx)
 
 #### Text Rotate · ATM · CSS
 
 - **Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
 - **When:** A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
-- **States:** `default` · **Skill:** [references/components/text-rotate.md](references/components/text-rotate.md) · **Examples:** [src/documentation/pages/text-rotate.mdx](../../src/documentation/pages/text-rotate.mdx)
+- **States:** `default` · **Skill:** [references/components/text-rotate.md](references/components/text-rotate.md) · **Examples:** [src/documentation/pages/primitives/text-rotate.mdx](../../src/documentation/pages/primitives/text-rotate.mdx)
 
 #### Typewriter · ATM · JS
 
 - **Why:** The strings are authored as elements - readable without script and read once, in full, by assistive tech - while the runtime types an aria-hidden copy behind a CSS cursor that is solid while typing and blinks idle.
 - **When:** A headline or hero line that types itself - cycling taglines ("Build design systems / prototypes / dashboards"), a terminal-style intro, a line that types once when it scrolls into view. For a word that rolls without typing use text-rotate; for a count use countdown.
-- **States:** `default`, `paused`, `done` · **Skill:** [references/components/typewriter.md](references/components/typewriter.md) · **Examples:** [src/documentation/pages/typewriter.mdx](../../src/documentation/pages/typewriter.mdx)
+- **States:** `default`, `paused`, `done` · **Skill:** [references/components/typewriter.md](references/components/typewriter.md) · **Examples:** [src/documentation/pages/primitives/typewriter.mdx](../../src/documentation/pages/primitives/typewriter.mdx)
 
 #### Separator · ATM · CSS
 
 - **Why:** An `<hr>` (or role=separator with aria-orientation) - semantic and free.
 - **When:** Dividing content groups visually and semantically.
-- **States:** `default` · **Skill:** [references/components/separator.md](references/components/separator.md) · **Examples:** [src/documentation/pages/separator.mdx](../../src/documentation/pages/separator.mdx)
+- **States:** `default` · **Skill:** [references/components/separator.md](references/components/separator.md) · **Examples:** [src/documentation/pages/primitives/separator.mdx](../../src/documentation/pages/primitives/separator.mdx)
 
 #### Icon · ATM · CSS
 
 - **Why:** Consistent 24px stroke wrappers around lucide icons, sized via data-size.
 - **When:** Any icon anywhere in the system - keeps size and stroke uniform across components.
-- **States:** `default` · **Skill:** [references/components/icon.md](references/components/icon.md) · **Examples:** [src/documentation/pages/icon.mdx](../../src/documentation/pages/icon.mdx)
+- **States:** `default` · **Skill:** [references/components/icon.md](references/components/icon.md) · **Examples:** [src/documentation/pages/primitives/icon.mdx](../../src/documentation/pages/primitives/icon.mdx)
 
 #### Kbd · ATM · CSS
 
 - **Why:** Native `<kbd>`, and a combination is `<kbd>` nested inside `<kbd>` exactly as the HTML spec prescribes, so the markup already says "these keys together".
 - **When:** Showing a shortcut in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code.
-- **States:** `default` · **Skill:** [references/components/kbd.md](references/components/kbd.md) · **Examples:** [src/documentation/pages/kbd.mdx](../../src/documentation/pages/kbd.mdx)
+- **States:** `default` · **Skill:** [references/components/kbd.md](references/components/kbd.md) · **Examples:** [src/documentation/pages/primitives/kbd.mdx](../../src/documentation/pages/primitives/kbd.mdx)
 
 #### Heading Anchor · ATM · CSS
 
 - **Why:** A quiet § permalink on any heading - a visible, copyable deep link with zero JavaScript.
 - **When:** Section permalinks in docs/blogs/specs - before or after the heading text.
-- **States:** `default` · **Skill:** [references/components/heading-anchor.md](references/components/heading-anchor.md) · **Examples:** [src/documentation/pages/heading-anchor.mdx](../../src/documentation/pages/heading-anchor.mdx)
+- **States:** `default` · **Skill:** [references/components/heading-anchor.md](references/components/heading-anchor.md) · **Examples:** [src/documentation/pages/primitives/heading-anchor.mdx](../../src/documentation/pages/primitives/heading-anchor.mdx)
 
 ### Actions
 
@@ -374,49 +374,49 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Native `<button>` styled through data-variant/data-size - disabled, form submission, and focus are browser-provided.
 - **When:** Every single action trigger - forms, dialogs, toolbars.
-- **States:** `default` · **Skill:** [references/components/button.md](references/components/button.md) · **Examples:** [src/documentation/pages/button.mdx](../../src/documentation/pages/button.mdx)
+- **States:** `default` · **Skill:** [references/components/button.md](references/components/button.md) · **Examples:** [src/documentation/pages/actions/button.mdx](../../src/documentation/pages/actions/button.mdx)
 
 #### FAB · MOL · CSS
 
 - **Why:** A floating action button whose speed dial is a native popover - toggle, Escape, outside-click close and aria-expanded come from the browser; anchor positioning stacks the actions, no JavaScript.
 - **When:** The one primary action of a screen (compose, add, new) that stays in reach while scrolling - with a speed dial when 2-6 related actions share it. For a bar of actions use toolbar; for an ordinary menu use dropdown-menu.
-- **States:** `default` · **Skill:** [references/components/fab.md](references/components/fab.md) · **Examples:** [src/documentation/pages/fab.mdx](../../src/documentation/pages/fab.mdx)
+- **States:** `default` · **Skill:** [references/components/fab.md](references/components/fab.md) · **Examples:** [src/documentation/pages/actions/fab.mdx](../../src/documentation/pages/actions/fab.mdx)
 
 #### Play Button · ATM · CSS
 
 - **Why:** A native button - focus, Enter / Space and the disabled state come from the browser; the round shape and the triangle are pure CSS (clip-path), so one element with an accessible name is the whole component.
 - **When:** The one action that starts something - a video, a deck, a demo, content that loads on demand (the Teaser). For any other action use button; for the floating screen action use fab.
-- **States:** `default` · **Skill:** [references/components/play-button.md](references/components/play-button.md) · **Examples:** [src/documentation/pages/play-button.mdx](../../src/documentation/pages/play-button.mdx)
+- **States:** `default` · **Skill:** [references/components/play-button.md](references/components/play-button.md) · **Examples:** [src/documentation/pages/actions/play-button.mdx](../../src/documentation/pages/actions/play-button.mdx)
 
 #### Toggle · ATM · JS
 
 - **Why:** Two-state button carrying aria-pressed - activation is native.
 - **When:** A single on/off action: mute, bold, favorite.
-- **States:** `default`, `pressed` · **Skill:** [references/components/toggle.md](references/components/toggle.md) · **Examples:** [src/documentation/pages/toggle.mdx](../../src/documentation/pages/toggle.mdx)
+- **States:** `default`, `pressed` · **Skill:** [references/components/toggle.md](references/components/toggle.md) · **Examples:** [src/documentation/pages/actions/toggle.mdx](../../src/documentation/pages/actions/toggle.mdx)
 
 #### Swap · ATM · CSS
 
 - **Why:** A hidden `<input type="checkbox">` inside a `<label>` is the whole state machine; :checked, :indeterminate and :has() pick the visible face, and CSS transforms animate it.
 - **When:** Toggling between two (or three) glyphs or words in place (theme icons, play/pause, hamburger/close); use toggle or switch when the control needs a pressed button or form-field appearance.
-- **States:** `default` · **Skill:** [references/components/swap.md](references/components/swap.md) · **Examples:** [src/documentation/pages/swap.mdx](../../src/documentation/pages/swap.mdx)
+- **States:** `default` · **Skill:** [references/components/swap.md](references/components/swap.md) · **Examples:** [src/documentation/pages/actions/swap.mdx](../../src/documentation/pages/actions/swap.mdx)
 
 #### Toggle Group · MOL · JS
 
 - **Why:** Grouped toggle buttons with roving focus and single or multiple selection.
 - **When:** Sets of on/off options like text formatting (bold/italic/underline).
-- **States:** `default`, `disabled` · **Skill:** [references/components/toggle-group.md](references/components/toggle-group.md) · **Examples:** [src/documentation/pages/toggle-group.mdx](../../src/documentation/pages/toggle-group.mdx)
+- **States:** `default`, `disabled` · **Skill:** [references/components/toggle-group.md](references/components/toggle-group.md) · **Examples:** [src/documentation/pages/actions/toggle-group.mdx](../../src/documentation/pages/actions/toggle-group.mdx)
 
 #### Button Group · MOL · CSS
 
 - **Why:** Adjacent buttons fused into one visual unit via border collapse on first/last children.
 - **When:** Tightly related actions (Save + Cancel, split buttons, icon actions) that belong together.
-- **States:** `default` · **Skill:** [references/components/button-group.md](references/components/button-group.md) · **Examples:** [src/documentation/pages/button-group.mdx](../../src/documentation/pages/button-group.mdx)
+- **States:** `default` · **Skill:** [references/components/button-group.md](references/components/button-group.md) · **Examples:** [src/documentation/pages/actions/button-group.mdx](../../src/documentation/pages/actions/button-group.mdx)
 
 #### Toolbar · ORG · JS
 
 - **Why:** role=toolbar with arrow-key focus management across a button cluster.
 - **When:** Editor-style action bars above a content region.
-- **States:** `default` · **Skill:** [references/components/toolbar.md](references/components/toolbar.md) · **Examples:** [src/documentation/pages/toolbar.mdx](../../src/documentation/pages/toolbar.mdx)
+- **States:** `default` · **Skill:** [references/components/toolbar.md](references/components/toolbar.md) · **Examples:** [src/documentation/pages/actions/toolbar.mdx](../../src/documentation/pages/actions/toolbar.mdx)
 
 ### Forms & Inputs
 
@@ -424,103 +424,103 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Native `<label for>` association - click-to-focus and announcement are free.
 - **When:** Every form control, always - never a placeholder standing in for a label.
-- **States:** `default` · **Skill:** [references/components/label.md](references/components/label.md) · **Examples:** [src/documentation/pages/label.mdx](../../src/documentation/pages/label.mdx)
+- **States:** `default` · **Skill:** [references/components/label.md](references/components/label.md) · **Examples:** [src/documentation/pages/forms-inputs/label.mdx](../../src/documentation/pages/forms-inputs/label.mdx)
 
 #### Input · ATM · CSS
 
 - **Why:** Native text inputs - validation via :user-invalid, autofill and keyboards via inputmode/autocomplete.
 - **When:** Short single-line text; multi-line text takes textarea instead.
-- **States:** `default` · **Skill:** [references/components/input.md](references/components/input.md) · **Examples:** [src/documentation/pages/input.mdx](../../src/documentation/pages/input.mdx)
+- **States:** `default` · **Skill:** [references/components/input.md](references/components/input.md) · **Examples:** [src/documentation/pages/forms-inputs/input.mdx](../../src/documentation/pages/forms-inputs/input.mdx)
 
 #### OTP Input · MOL · JS
 
 - **Why:** One real input under a row of slots, so paste, one-time-code autofill, selection and form submission stay native, and a screen reader hears one field rather than six.
 - **When:** Short codes typed once (SMS verification, email confirmation, a PIN). Use input for anything longer or free-form.
-- **States:** `default`, `filled`, `invalid` · **Skill:** [references/components/otp-input.md](references/components/otp-input.md) · **Examples:** [src/documentation/pages/otp-input.mdx](../../src/documentation/pages/otp-input.mdx)
+- **States:** `default`, `filled`, `invalid` · **Skill:** [references/components/otp-input.md](references/components/otp-input.md) · **Examples:** [src/documentation/pages/forms-inputs/otp-input.mdx](../../src/documentation/pages/forms-inputs/otp-input.mdx)
 
 #### Textarea · ATM · CSS
 
 - **Why:** Native textarea with field-sizing: content - auto-grows with zero JavaScript, between row limits in lh; a .textarea-group turns it into a composer frame.
 - **When:** Multi-line text input - notes, bios, comments; a chat or comment composer with attachments and a send button (.textarea-group). Single-line values take input.
-- **States:** `default` · **Skill:** [references/components/textarea.md](references/components/textarea.md) · **Examples:** [src/documentation/pages/textarea.mdx](../../src/documentation/pages/textarea.mdx)
+- **States:** `default` · **Skill:** [references/components/textarea.md](references/components/textarea.md) · **Examples:** [src/documentation/pages/forms-inputs/textarea.mdx](../../src/documentation/pages/forms-inputs/textarea.mdx)
 
 #### Checkbox · ATM · CSS
 
 - **Why:** Native input[type=checkbox] including the indeterminate state - themed with accent-color, no custom widget.
 - **When:** Independent on/off selections in a form, one or many at once.
-- **States:** `default` · **Skill:** [references/components/checkbox.md](references/components/checkbox.md) · **Examples:** [src/documentation/pages/checkbox.mdx](../../src/documentation/pages/checkbox.mdx)
+- **States:** `default` · **Skill:** [references/components/checkbox.md](references/components/checkbox.md) · **Examples:** [src/documentation/pages/forms-inputs/checkbox.mdx](../../src/documentation/pages/forms-inputs/checkbox.mdx)
 
 #### Radio Group · MOL · CSS
 
 - **Why:** Native radio group with arrow-key grouping and accent-color theming.
 - **When:** A mutually exclusive choice among a short, visible set of options.
-- **States:** `default` · **Skill:** [references/components/radio.md](references/components/radio.md) · **Examples:** [src/documentation/pages/radio.mdx](../../src/documentation/pages/radio.mdx)
+- **States:** `default` · **Skill:** [references/components/radio.md](references/components/radio.md) · **Examples:** [src/documentation/pages/forms-inputs/radio.mdx](../../src/documentation/pages/forms-inputs/radio.mdx)
 
 #### Switch · ATM · CSS
 
 - **Why:** Native checkbox styled as a sliding toggle - Space/Enter toggling is native.
 - **When:** Settings that apply immediately; a checkbox + submit fits explicit forms better.
-- **States:** `default` · **Skill:** [references/components/switch.md](references/components/switch.md) · **Examples:** [src/documentation/pages/switch.mdx](../../src/documentation/pages/switch.mdx)
+- **States:** `default` · **Skill:** [references/components/switch.md](references/components/switch.md) · **Examples:** [src/documentation/pages/forms-inputs/switch.mdx](../../src/documentation/pages/forms-inputs/switch.mdx)
 
 #### Slider · ATM · JS
 
 - **Why:** Native range input with styled track and thumb - keyboard and announcement are built in.
 - **When:** Continuous numeric values or ranges - volume, price bounds.
-- **States:** `default`, `disabled` · **Skill:** [references/components/slider.md](references/components/slider.md) · **Examples:** [src/documentation/pages/slider.mdx](../../src/documentation/pages/slider.mdx)
+- **States:** `default`, `disabled` · **Skill:** [references/components/slider.md](references/components/slider.md) · **Examples:** [src/documentation/pages/forms-inputs/slider.mdx](../../src/documentation/pages/forms-inputs/slider.mdx)
 
 #### Rating · MOL · CSS
 
 - **Why:** Native radio group styled as stars; keyboard, form submission and exclusivity are the browser's, so no JavaScript.
 - **When:** Collecting or displaying a score out of five (reviews, feedback, quality scores). Use radio for a general small choice set.
-- **States:** `default` · **Skill:** [references/components/rating.md](references/components/rating.md) · **Examples:** [src/documentation/pages/rating.mdx](../../src/documentation/pages/rating.mdx)
+- **States:** `default` · **Skill:** [references/components/rating.md](references/components/rating.md) · **Examples:** [src/documentation/pages/forms-inputs/rating.mdx](../../src/documentation/pages/forms-inputs/rating.mdx)
 
 #### Select · ATM · CSS
 
 - **Why:** Native `<select>` - the OS renders the options list, fully accessible on every platform.
 - **When:** Pick one value from a list; prefer it over custom listboxes and comboboxes. Several values from a short fixed list: select[multiple]; tags / people / long lists: combobox data-multiple; a handful of options: checkboxes.
-- **States:** `default` · **Skill:** [references/components/select.md](references/components/select.md) · **Examples:** [src/documentation/pages/select.mdx](../../src/documentation/pages/select.mdx)
+- **States:** `default` · **Skill:** [references/components/select.md](references/components/select.md) · **Examples:** [src/documentation/pages/forms-inputs/select.mdx](../../src/documentation/pages/forms-inputs/select.mdx)
 
 #### Number Input · ATM · JS
 
 - **Why:** Input plus stepper buttons bound to native min/max/step and arrow-key behavior.
 - **When:** Numeric values where nudging, a bounded range, a unit or fixed decimals matter - quantity, temperature (19.0 °C), percent, weight, duration - and money with a locale-aware currency mask (data-currency + data-locale: separators, symbol side, minor unit via Intl). For a free-form range pick use slider.
-- **States:** `default` · **Skill:** [references/components/number-input.md](references/components/number-input.md) · **Examples:** [src/documentation/pages/number-input.mdx](../../src/documentation/pages/number-input.mdx)
+- **States:** `default` · **Skill:** [references/components/number-input.md](references/components/number-input.md) · **Examples:** [src/documentation/pages/forms-inputs/number-input.mdx](../../src/documentation/pages/forms-inputs/number-input.mdx)
 
 #### File Input · ATM · JS
 
 - **Why:** The native file input - styled, and as a drag & drop card whose invisible input takes the click AND the drop natively; the script filters, appends and lists the files.
 - **When:** Uploads - a compact field in forms, a drop zone card when files are the main task. Filter by type with accept, by size / count with data-max-size / data-max-files.
-- **States:** `default`, `dragover`, `selected`, `error` · **Skill:** [references/components/file-input.md](references/components/file-input.md) · **Examples:** [src/documentation/pages/file-input.mdx](../../src/documentation/pages/file-input.mdx)
+- **States:** `default`, `dragover`, `selected`, `error` · **Skill:** [references/components/file-input.md](references/components/file-input.md) · **Examples:** [src/documentation/pages/forms-inputs/file-input.mdx](../../src/documentation/pages/forms-inputs/file-input.mdx)
 
 #### Color Picker · ATM · JS
 
 - **Why:** Native `<input type=color>` plus a swatch popover - the browser owns the picking itself; the value shows (and submits) in the notation you need - hex, rgb, hsl or oklch.
 - **When:** A form field where the user chooses a color; use the bare native input when a popover is overkill.
-- **States:** `default` · **Skill:** [references/components/color-picker.md](references/components/color-picker.md) · **Examples:** [src/documentation/pages/color-picker.mdx](../../src/documentation/pages/color-picker.mdx)
+- **States:** `default` · **Skill:** [references/components/color-picker.md](references/components/color-picker.md) · **Examples:** [src/documentation/pages/forms-inputs/color-picker.mdx](../../src/documentation/pages/forms-inputs/color-picker.mdx)
 
 #### Date Picker · ATM · CSS
 
 - **Why:** Text field plus calendar in a popover, wired declaratively with command/commandfor attributes.
 - **When:** A form field where users type or pick a date - for a start-end date RANGE use the calendar's range mode (one span, one answer) instead of two separate fields.
-- **States:** `default` · **Skill:** [references/components/date-picker.md](references/components/date-picker.md) · **Examples:** [src/documentation/pages/date-picker.mdx](../../src/documentation/pages/date-picker.mdx)
+- **States:** `default` · **Skill:** [references/components/date-picker.md](references/components/date-picker.md) · **Examples:** [src/documentation/pages/forms-inputs/date-picker.mdx](../../src/documentation/pages/forms-inputs/date-picker.mdx)
 
 #### Combobox · MOL · JS
 
 - **Why:** Text input filtering an anchored list with the aria-activedescendant keyboard model.
 - **When:** Choosing from a long list the user narrows by typing - states, tags, users; data-multiple picks SEVERAL (tags, countries you ship to, people to invite, filter categories) with checkboxes + removable tags. For one value from a short list use select; for a handful of options checkboxes.
-- **States:** `default`, `open` · **Skill:** [references/components/combobox.md](references/components/combobox.md) · **Examples:** [src/documentation/pages/combobox.mdx](../../src/documentation/pages/combobox.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/combobox.md](references/components/combobox.md) · **Examples:** [src/documentation/pages/forms-inputs/combobox.mdx](../../src/documentation/pages/forms-inputs/combobox.mdx)
 
 #### Search & Filter · ATM · JS
 
 - **Why:** A native type="search" field and native radios / checkboxes - the value, the form submission, the radio group's arrow keys and the reset button stay the browser's; CSS draws the chips and hides the unchosen ones, JS only clears the box.
 - **When:** Narrowing a list - a search box with a clear (×) button for free text, filter chips for categories (one with radios, several with checkboxes). Use combobox when the text picks one item from suggestions, command for a command palette.
-- **States:** `default`, `filled`, `searching` · **Skill:** [references/components/search-filter.md](references/components/search-filter.md) · **Examples:** [src/documentation/pages/search-filter.mdx](../../src/documentation/pages/search-filter.mdx)
+- **States:** `default`, `filled`, `searching` · **Skill:** [references/components/search-filter.md](references/components/search-filter.md) · **Examples:** [src/documentation/pages/forms-inputs/search-filter.mdx](../../src/documentation/pages/forms-inputs/search-filter.mdx)
 
 #### Form · MOL · CSS
 
 - **Why:** Layout conventions - label/control/error slots and :user-invalid validation styling - around native form semantics.
 - **When:** Composing multiple inputs into one labeled, validated submit.
-- **States:** `default` · **Skill:** [references/components/form.md](references/components/form.md) · **Examples:** [src/documentation/pages/form.mdx](../../src/documentation/pages/form.mdx)
+- **States:** `default` · **Skill:** [references/components/form.md](references/components/form.md) · **Examples:** [src/documentation/pages/forms-inputs/form.mdx](../../src/documentation/pages/forms-inputs/form.mdx)
 
 ### WYSIWYG Editors
 
@@ -528,13 +528,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** One source, two views - the `<textarea>` you edit is the srcdoc the sandboxed `<iframe>` runs, so the code shown and the code run cannot differ; the preview runs in an opaque origin, device emulation is CSS zoom over a real viewport, highlighting is Shiki.
 - **When:** Live, editable HTML examples - a design-system docs site, a playground, a template editor with a preview. Showing code without running it is a code block or mockup-code; a plain text field is textarea.
-- **States:** `default`, `code`, `state`, `fullscreen` · **Skill:** [references/components/code-example.md](references/components/code-example.md) · **Examples:** [src/documentation/pages/code-example.mdx](../../src/documentation/pages/code-example.mdx)
+- **States:** `default`, `code`, `state`, `fullscreen` · **Skill:** [references/components/code-example.md](references/components/code-example.md) · **Examples:** [src/documentation/pages/wysiwyg-editors/code-example.mdx](../../src/documentation/pages/wysiwyg-editors/code-example.mdx)
 
 #### Editor.js · MOL · JS
 
 - **Why:** The official Editor.js block editor - clean JSON blocks, a + menu, an inline toolbar - loaded on demand from a pinned build; the component adds the theme, Markdown in and out, a Toolbar binding and the State API.
 - **When:** Long-form documents people edit as blocks - notes, briefs, articles - that are stored as Markdown or as Editor.js JSON; for an editable live example of HTML use the HTML Preview Editor, for a single field a Textarea.
-- **States:** `default`, `readonly` · **Skill:** [references/components/editorjs.md](references/components/editorjs.md) · **Examples:** [src/documentation/pages/editorjs.mdx](../../src/documentation/pages/editorjs.mdx)
+- **States:** `default`, `readonly` · **Skill:** [references/components/editorjs.md](references/components/editorjs.md) · **Examples:** [src/documentation/pages/wysiwyg-editors/editorjs.mdx](../../src/documentation/pages/wysiwyg-editors/editorjs.mdx)
 
 ### Questionnaire
 
@@ -542,7 +542,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** One native `<form>`, one `<fieldset>` per step - the controller walks a flow graph (option data-goto, conditional rules, data-next, markup order) one validated step at a time, keeps a branch history and a session draft, and invalidates answers a changed answer cut off. Without JavaScript it is a plain long form.
 - **When:** Multi-step forms that ask different people different questions - intake, onboarding, surveys, quotes, triage - where the next question depends on the answers. A plain Form for one screen of fields; Steps for a fixed, linear progress indicator.
-- **States:** `default`, `answering`, `review`, `submitted` · **Skill:** [references/components/questionnaire.md](references/components/questionnaire.md) · **Examples:** [src/documentation/pages/questionnaire.mdx](../../src/documentation/pages/questionnaire.mdx)
+- **States:** `default`, `answering`, `review`, `submitted` · **Skill:** [references/components/questionnaire.md](references/components/questionnaire.md) · **Examples:** [src/documentation/pages/questionnaire/questionnaire.mdx](../../src/documentation/pages/questionnaire/questionnaire.mdx)
 
 ### Data Display
 
@@ -550,121 +550,121 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Pure-CSS `<span>` chip with emphasis variants - nothing to wire up.
 - **When:** Short status, version, or count labels next to content - not for actions.
-- **States:** `default` · **Skill:** [references/components/badge.md](references/components/badge.md) · **Examples:** [src/documentation/pages/badge.mdx](../../src/documentation/pages/badge.mdx)
+- **States:** `default` · **Skill:** [references/components/badge.md](references/components/badge.md) · **Examples:** [src/documentation/pages/data-display/badge.mdx](../../src/documentation/pages/data-display/badge.mdx)
 
 #### Type Badge · ATM · CSS
 
 - **Why:** A mono chip marking a component's atomic-design type - one color identity per type, in both schemes.
 - **When:** Tag components by taxonomy in docs, inventories, or design reviews (ATM/MOL/ORG/BLK/TPL).
-- **States:** `default` · **Skill:** [references/components/type-badge.md](references/components/type-badge.md) · **Examples:** [src/documentation/pages/type-badge.mdx](../../src/documentation/pages/type-badge.mdx)
+- **States:** `default` · **Skill:** [references/components/type-badge.md](references/components/type-badge.md) · **Examples:** [src/documentation/pages/data-display/type-badge.mdx](../../src/documentation/pages/data-display/type-badge.mdx)
 
 #### Avatar · ATM · JS
 
 - **Why:** Circular image with an initials fallback and an error state exposed through the State API.
 - **When:** Representing a person or entity - alone, stacked in a group, or beside a name.
-- **States:** `default`, `error` · **Skill:** [references/components/avatar.md](references/components/avatar.md) · **Examples:** [src/documentation/pages/avatar.mdx](../../src/documentation/pages/avatar.mdx)
+- **States:** `default`, `error` · **Skill:** [references/components/avatar.md](references/components/avatar.md) · **Examples:** [src/documentation/pages/data-display/avatar.mdx](../../src/documentation/pages/data-display/avatar.mdx)
 
 #### Indicator · MOL · CSS
 
 - **Why:** A positioned wrapper - pins badges, status dots or buttons to any of nine points of an element with CSS only.
 - **When:** A count on a button or tab, a status dot on an avatar or card, a "New" / "Required" tag on a box or input - for presence ON an avatar prefer .avatar-badge.
-- **States:** `default` · **Skill:** [references/components/indicator.md](references/components/indicator.md) · **Examples:** [src/documentation/pages/indicator.mdx](../../src/documentation/pages/indicator.mdx)
+- **States:** `default` · **Skill:** [references/components/indicator.md](references/components/indicator.md) · **Examples:** [src/documentation/pages/data-display/indicator.mdx](../../src/documentation/pages/data-display/indicator.mdx)
 
 #### Diff · ATM · JS
 
 - **Why:** Two stacked layers split by a native `<input type="range">` - drag anywhere, arrow keys, touch and a screen-reader value come from the platform; a clip-path does the reveal.
 - **When:** Before / after comparisons - photo edits, redesigns, old vs new screenshots, rendered vs source text. For side-by-side panels the user resizes use resizer.
-- **States:** `default`, `before`, `after` · **Skill:** [references/components/diff.md](references/components/diff.md) · **Examples:** [src/documentation/pages/diff.mdx](../../src/documentation/pages/diff.mdx)
+- **States:** `default`, `before`, `after` · **Skill:** [references/components/diff.md](references/components/diff.md) · **Examples:** [src/documentation/pages/data-display/diff.mdx](../../src/documentation/pages/data-display/diff.mdx)
 
 #### Countdown · ATM · JS
 
 - **Why:** Numbers that roll to a new value with CSS alone - set --value, the digits turn like an odometer (mod() / round() pick each digit column); the optional script makes it a live, accessible timer.
 - **When:** Launch / sale / event countdowns, timers, clocks, animated counters (0-999 per value). For a progress fraction use progress; for a static figure use statistic.
-- **States:** `default`, `running`, `paused`, `finished` · **Skill:** [references/components/countdown.md](references/components/countdown.md) · **Examples:** [src/documentation/pages/countdown.mdx](../../src/documentation/pages/countdown.mdx)
+- **States:** `default`, `running`, `paused`, `finished` · **Skill:** [references/components/countdown.md](references/components/countdown.md) · **Examples:** [src/documentation/pages/data-display/countdown.mdx](../../src/documentation/pages/data-display/countdown.mdx)
 
 #### Card · MOL · CSS
 
 - **Why:** Token-backed surface with header/content/footer slots - one container for anything boxed.
 - **When:** Grouping related content and actions on a page - dashboards, lists, modal bodies.
-- **States:** `default` · **Skill:** [references/components/card.md](references/components/card.md) · **Examples:** [src/documentation/pages/card.mdx](../../src/documentation/pages/card.mdx)
+- **States:** `default` · **Skill:** [references/components/card.md](references/components/card.md) · **Examples:** [src/documentation/pages/data-display/card.mdx](../../src/documentation/pages/data-display/card.mdx)
 
 #### Teaser · MOL · JS
 
 - **Why:** Template content is inert - nothing inside a `<template>` loads, runs or renders - so a teaser can stand in for a deck, a video or an iframe at the cost of a card; its play button (a native button) morphs the content into place through defuss-morph.
 - **When:** Content that is heavy or should start on purpose - a slide deck, a video, an embedded app, a demo - shown as an inviting card first. For media that is always loaded use the Video Player block or Iframe; for a call to action that navigates use CTA.
-- **States:** `default`, `played` · **Skill:** [references/components/teaser.md](references/components/teaser.md) · **Examples:** [src/documentation/pages/teaser.mdx](../../src/documentation/pages/teaser.mdx)
+- **States:** `default`, `played` · **Skill:** [references/components/teaser.md](references/components/teaser.md) · **Examples:** [src/documentation/pages/data-display/teaser.mdx](../../src/documentation/pages/data-display/teaser.mdx)
 
 #### Image · ATM · JS
 
 - **Why:** Content image with lazy loading, aspect-ratio control, and an error-state fallback via the State API.
 - **When:** Remote images whose loading or failure must be visually controlled.
-- **States:** `default`, `error` · **Skill:** [references/components/image.md](references/components/image.md) · **Examples:** [src/documentation/pages/image.mdx](../../src/documentation/pages/image.mdx)
+- **States:** `default`, `error` · **Skill:** [references/components/image.md](references/components/image.md) · **Examples:** [src/documentation/pages/data-display/image.mdx](../../src/documentation/pages/data-display/image.mdx)
 
 #### Iframe · ATM · JS
 
 - **Why:** The native iframe embeds a whole page in isolation; this adds what it lacks - a size that fits its container (ratio, the container's height, or the framed page's content height) and a checked postMessage bridge in both directions.
 - **When:** Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame.
-- **States:** `default`, `loaded` · **Skill:** [references/components/iframe.md](references/components/iframe.md) · **Examples:** [src/documentation/pages/iframe.mdx](../../src/documentation/pages/iframe.mdx)
+- **States:** `default`, `loaded` · **Skill:** [references/components/iframe.md](references/components/iframe.md) · **Examples:** [src/documentation/pages/data-display/iframe.mdx](../../src/documentation/pages/data-display/iframe.mdx)
 
 #### Statistic · ATM · CSS
 
 - **Why:** Labelled metric with a delta indicator - tokens and plain text only.
 - **When:** Dashboards showing one value and its trend.
-- **States:** `default` · **Skill:** [references/components/statistic.md](references/components/statistic.md) · **Examples:** [src/documentation/pages/statistic.mdx](../../src/documentation/pages/statistic.mdx)
+- **States:** `default` · **Skill:** [references/components/statistic.md](references/components/statistic.md) · **Examples:** [src/documentation/pages/data-display/statistic.mdx](../../src/documentation/pages/data-display/statistic.mdx)
 
 #### QR Code · ATM · JS
 
 - **Why:** Native SVG renders a local QR matrix sharply at any size; the figure, accessible image label and output provide ordinary document semantics.
 - **When:** Share a URL or exact text with a scanning device. Keep an explicit link or text alternative beside the figure when the destination is actionable.
-- **States:** `default`, `empty`, `error` · **Skill:** [references/components/qr-code.md](references/components/qr-code.md) · **Examples:** [src/documentation/pages/qr-code.mdx](../../src/documentation/pages/qr-code.mdx)
+- **States:** `default`, `empty`, `error` · **Skill:** [references/components/qr-code.md](references/components/qr-code.md) · **Examples:** [src/documentation/pages/data-display/qr-code.mdx](../../src/documentation/pages/data-display/qr-code.mdx)
 
 #### Table · ATM · JS
 
 - **Why:** Semantic `<table>` - headers, captions and sort state stay accessible; table.js adds sorting (aria-sort, Intl.Collator), row selection, drag reordering and locked-column offsets on top.
 - **When:** Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids.
-- **States:** `default`, `sorted`, `selected` · **Skill:** [references/components/table.md](references/components/table.md) · **Examples:** [src/documentation/pages/table.mdx](../../src/documentation/pages/table.mdx)
+- **States:** `default`, `sorted`, `selected` · **Skill:** [references/components/table.md](references/components/table.md) · **Examples:** [src/documentation/pages/data-display/table.mdx](../../src/documentation/pages/data-display/table.mdx)
 
 #### Collapsible · ATM · CSS
 
 - **Why:** A single `<details>` disclosure with smooth height animation via interpolate-size.
 - **When:** Revealing or hiding one content region - an accordion of exactly one item, e.g. advanced options.
-- **States:** `default` · **Skill:** [references/components/collapsible.md](references/components/collapsible.md) · **Examples:** [src/documentation/pages/collapsible.mdx](../../src/documentation/pages/collapsible.mdx)
+- **States:** `default` · **Skill:** [references/components/collapsible.md](references/components/collapsible.md) · **Examples:** [src/documentation/pages/data-display/collapsible.mdx](../../src/documentation/pages/data-display/collapsible.mdx)
 
 #### Timeline · ATM · CSS
 
 - **Why:** Ordered list laid out on a vertical or horizontal rail - the `<ol>` keeps the chronological semantics.
 - **When:** Event history: activity logs, order tracking, changelog-style lists, roadmaps and release lines (horizontal) - for a process the user moves through, use steps.
-- **States:** `default` · **Skill:** [references/components/timeline.md](references/components/timeline.md) · **Examples:** [src/documentation/pages/timeline.mdx](../../src/documentation/pages/timeline.mdx)
+- **States:** `default` · **Skill:** [references/components/timeline.md](references/components/timeline.md) · **Examples:** [src/documentation/pages/data-display/timeline.mdx](../../src/documentation/pages/data-display/timeline.mdx)
 
 #### Tree View · ATM · JS
 
 - **Why:** role=tree with expandable nodes and the full arrow-key interaction model.
 - **When:** Any hierarchy the user browses or picks from - file explorers, product categories, org charts, docs navigation menus (links as leaves); single selection, checkboxes (tri-state cascade), drag & drop reordering and disabled items built in. For one flat level use a list; for show/hide sections use accordion.
-- **States:** `default`, `expanded` · **Skill:** [references/components/tree-view.md](references/components/tree-view.md) · **Examples:** [src/documentation/pages/tree-view.mdx](../../src/documentation/pages/tree-view.mdx)
+- **States:** `default`, `expanded` · **Skill:** [references/components/tree-view.md](references/components/tree-view.md) · **Examples:** [src/documentation/pages/data-display/tree-view.mdx](../../src/documentation/pages/data-display/tree-view.mdx)
 
 #### Calendar · ATM · JS
 
 - **Why:** Month grid with keyboard navigation and selection state via the State API - a single date or a start-end range (one span across one or several months).
 - **When:** Picking a day, or a date RANGE as one answer (a stay, a report period, a holiday request, a filter) - data-mode="range" or a two-month .calendar-range; pair with a popover for a full picker. For a plain native date field use date-picker.
-- **States:** `default` · **Skill:** [references/components/calendar.md](references/components/calendar.md) · **Examples:** [src/documentation/pages/calendar.mdx](../../src/documentation/pages/calendar.mdx)
+- **States:** `default` · **Skill:** [references/components/calendar.md](references/components/calendar.md) · **Examples:** [src/documentation/pages/data-display/calendar.mdx](../../src/documentation/pages/data-display/calendar.mdx)
 
 #### Carousel · ATM · JS
 
 - **Why:** Native scroll-snap track with prev/next controls - scrolling, swiping, and snapping stay browser features.
 - **When:** Presenting a finite set of large items (hero slides, galleries) one or a few at a time.
-- **States:** `default` · **Skill:** [references/components/carousel.md](references/components/carousel.md) · **Examples:** [src/documentation/pages/carousel.mdx](../../src/documentation/pages/carousel.mdx)
+- **States:** `default` · **Skill:** [references/components/carousel.md](references/components/carousel.md) · **Examples:** [src/documentation/pages/data-display/carousel.mdx](../../src/documentation/pages/data-display/carousel.mdx)
 
 #### Scroll Area · ATM · CSS
 
 - **Why:** Overflow container with styled scrollbars and edge fade - pure CSS.
 - **When:** Fixed-height regions that scroll: menu bodies, sidebars, code panes.
-- **States:** `default` · **Skill:** [references/components/scroll-area.md](references/components/scroll-area.md) · **Examples:** [src/documentation/pages/scroll-area.mdx](../../src/documentation/pages/scroll-area.mdx)
+- **States:** `default` · **Skill:** [references/components/scroll-area.md](references/components/scroll-area.md) · **Examples:** [src/documentation/pages/data-display/scroll-area.mdx](../../src/documentation/pages/data-display/scroll-area.mdx)
 
 #### Sortable · ATM · JS
 
 - **Why:** Native HTML drag-and-drop reordering with a handle and a drop indicator.
 - **When:** Lists whose order the user controls - todo lists, table row ordering.
-- **States:** `default` · **Skill:** [references/components/sortable.md](references/components/sortable.md) · **Examples:** [src/documentation/pages/sortable.mdx](../../src/documentation/pages/sortable.mdx)
+- **States:** `default` · **Skill:** [references/components/sortable.md](references/components/sortable.md) · **Examples:** [src/documentation/pages/data-display/sortable.mdx](../../src/documentation/pages/data-display/sortable.mdx)
 
 ### Big Data
 
@@ -672,25 +672,25 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Only the rows on screen exist in the DOM and their elements are recycled, so ten rows and ten million cost the same; records behind a defuss-dataview source filter and sort locally.
 - **When:** Lists too long to render, such as search results, logs, pickers over large sets. Use a plain list or table when every row can exist at once; a Data Grid for columns, a Data Tree for a hierarchy.
-- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/virtual-list.md](references/components/virtual-list.md) · **Examples:** [src/documentation/pages/virtual-list.mdx](../../src/documentation/pages/virtual-list.mdx)
+- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/virtual-list.md](references/components/virtual-list.md) · **Examples:** [src/documentation/pages/big-data/virtual-list.mdx](../../src/documentation/pages/big-data/virtual-list.mdx)
 
 #### Data Tree · ATM · JS
 
 - **Why:** A windowed ARIA tree - only the items on screen exist and focus stays on the tree (aria-activedescendant) - over records that name their parent; hierarchy, filtering and sorting run locally over every node through defuss-dataview.
 - **When:** Hierarchies too big for nested markup - catalogs, file systems, org charts, taxonomies - that people filter and walk with the keyboard. Tree View for a small tree written as markup; Tree Grid when each node has columns.
-- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-tree.md](references/components/data-tree.md) · **Examples:** [src/documentation/pages/data-tree.mdx](../../src/documentation/pages/data-tree.mdx)
+- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-tree.md](references/components/data-tree.md) · **Examples:** [src/documentation/pages/big-data/data-tree.mdx](../../src/documentation/pages/big-data/data-tree.mdx)
 
 #### Data Grid · ATM · JS
 
 - **Why:** One scroll container with a sticky head and a windowed body - only the rows on screen exist, sticky columns need no JS - while every query (multisort, column filters, pages) runs locally over all rows through defuss-dataview.
 - **When:** Tables of thousands to millions of records that people sort, filter, lock columns of, page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
-- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-grid.md](references/components/data-grid.md) · **Examples:** [src/documentation/pages/data-grid.mdx](../../src/documentation/pages/data-grid.mdx)
+- **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-grid.md](references/components/data-grid.md) · **Examples:** [src/documentation/pages/big-data/data-grid.mdx](../../src/documentation/pages/big-data/data-grid.mdx)
 
 #### Autocomplete · MOL · JS
 
 - **Why:** An input with a manual popover listbox anchored under it (CSS anchor positioning, APG combobox) - suggestions from local records, a URL or your own network client, every request a defuss-dataview request; debounced, the in-flight request aborted by the next keystroke, pages loaded as the list scrolls.
 - **When:** Searching data too big or too remote to put in a select - places, people, products, tickets - as the user types. A Combobox for a short fixed list of options; a Select when typing adds nothing.
-- **States:** `default`, `open`, `loading`, `empty`, `error` · **Skill:** [references/components/autocomplete.md](references/components/autocomplete.md) · **Examples:** [src/documentation/pages/autocomplete.mdx](../../src/documentation/pages/autocomplete.mdx)
+- **States:** `default`, `open`, `loading`, `empty`, `error` · **Skill:** [references/components/autocomplete.md](references/components/autocomplete.md) · **Examples:** [src/documentation/pages/big-data/autocomplete.mdx](../../src/documentation/pages/big-data/autocomplete.mdx)
 
 ### Charts
 
@@ -698,7 +698,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Apache ECharts does the drawing; the component is the thin token bridge - the tokens become an ECharts theme (resolved to sRGB), options may name tokens as var(--x), and theme or dark-mode switches re-theme live.
 - **When:** Any data visualization (bar/line/pie/scatter...) - declarative via data-chart JSON, imperative via df$.chart.mount(), storytelling via df$.chartStory(), one morphing chart per presentation via df$.chart.deck(). Not for single values (progress/meter) or sparkline-less stat tiles.
-- **States:** `default` · **Skill:** [references/components/chart.md](references/components/chart.md) · **Examples:** [src/documentation/pages/chart.mdx](../../src/documentation/pages/chart.mdx)
+- **States:** `default` · **Skill:** [references/components/chart.md](references/components/chart.md) · **Examples:** [src/documentation/pages/charts/chart.mdx](../../src/documentation/pages/charts/chart.mdx)
 
 ### Diagrams
 
@@ -706,13 +706,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Illustrative diagrams an agent can write as plain HTML - nodes on a CSS grid, relationships as an ordered list (readable without JavaScript), wires drawn into an SVG layer from the measured layout, labels kept clear of every box, wire and text. The theme's colors (chart colors for accents and changes), radius and monospace; the only state is the picture's - step-by-step reveal, an activated box or arrow (click, keyboard or outside controls) and a before / changes / after delta from one annotated source. No Mermaid, no dependency.
 - **When:** Architecture, flows, state machines, ER and schema, sequences, org charts, swimlanes, layers, containment, loops, data platforms, matrices, fishbones, Wardley maps, journeys, kanban, story maps, quadrants, policy traces. Data charts (values on axes) are chart; text-defined diagrams you already have in Mermaid syntax are mermaid.
-- **States:** `default`, `playing`, `paused`, `active` · **Skill:** [references/components/diagram.md](references/components/diagram.md) · **Examples:** [src/documentation/pages/diagram.mdx](../../src/documentation/pages/diagram.mdx)
+- **States:** `default`, `playing`, `paused`, `active` · **Skill:** [references/components/diagram.md](references/components/diagram.md) · **Examples:** [src/documentation/pages/diagrams/diagram.mdx](../../src/documentation/pages/diagrams/diagram.mdx)
 
 #### Mermaid · ATM · JS
 
 - **Why:** Mermaid's own `<pre class="mermaid">` text becomes a token-themed SVG - the official renderer, lazy-loaded, locked to strict security; readable source without JavaScript.
 - **When:** Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts).
-- **States:** `default`, `rendered`, `error` · **Skill:** [references/components/mermaid.md](references/components/mermaid.md) · **Examples:** [src/documentation/pages/mermaid.mdx](../../src/documentation/pages/mermaid.mdx)
+- **States:** `default`, `rendered`, `error` · **Skill:** [references/components/mermaid.md](references/components/mermaid.md) · **Examples:** [src/documentation/pages/diagrams/mermaid.mdx](../../src/documentation/pages/diagrams/mermaid.mdx)
 
 ### Feedback & Status
 
@@ -720,43 +720,43 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Animated indicator with role=status announcing "loading".
 - **When:** Unbounded waits where the total is unknown; known total takes progress.
-- **States:** `default` · **Skill:** [references/components/spinner.md](references/components/spinner.md) · **Examples:** [src/documentation/pages/spinner.mdx](../../src/documentation/pages/spinner.mdx)
+- **States:** `default` · **Skill:** [references/components/spinner.md](references/components/spinner.md) · **Examples:** [src/documentation/pages/feedback-status/spinner.mdx](../../src/documentation/pages/feedback-status/spinner.mdx)
 
 #### Skeleton · ATM · CSS
 
 - **Why:** Shimmering placeholder blocks shaped like the content that will arrive.
 - **When:** Loading known layout without layout shift; unknown layout takes the spinner.
-- **States:** `default` · **Skill:** [references/components/skeleton.md](references/components/skeleton.md) · **Examples:** [src/documentation/pages/skeleton.mdx](../../src/documentation/pages/skeleton.mdx)
+- **States:** `default` · **Skill:** [references/components/skeleton.md](references/components/skeleton.md) · **Examples:** [src/documentation/pages/feedback-status/skeleton.mdx](../../src/documentation/pages/feedback-status/skeleton.mdx)
 
 #### Progress · ATM · JS
 
 - **Why:** Native `<progress value max>` - semantics and rendering come free; `<output for>` readouts, tones and a small State API make it a live, resettable, animatable bar.
 - **When:** Completion of a task with a known total (an unknown total: omit the value, or take the spinner). A percentage that must sit inside a ring takes radial-progress.
-- **States:** `default`, `indeterminate`, `complete` · **Skill:** [references/components/progress.md](references/components/progress.md) · **Examples:** [src/documentation/pages/progress.mdx](../../src/documentation/pages/progress.mdx)
+- **States:** `default`, `indeterminate`, `complete` · **Skill:** [references/components/progress.md](references/components/progress.md) · **Examples:** [src/documentation/pages/feedback-status/progress.mdx](../../src/documentation/pages/feedback-status/progress.mdx)
 
 #### Radial Progress · ATM · JS
 
 - **Why:** A conic-gradient masked to a ring plus a typed @property draws the arc with no SVG; the optional script makes it state - tones, percent / x of n / template labels, step jumps or a linear glide, and reset / step / play buttons.
 - **When:** A percentage of a known total that must read at a glance with the number inside it; a linear bar takes progress, an unknown total can spin (indeterminate) or take spinner.
-- **States:** `default`, `indeterminate`, `complete` · **Skill:** [references/components/radial-progress.md](references/components/radial-progress.md) · **Examples:** [src/documentation/pages/radial-progress.mdx](../../src/documentation/pages/radial-progress.mdx)
+- **States:** `default`, `indeterminate`, `complete` · **Skill:** [references/components/radial-progress.md](references/components/radial-progress.md) · **Examples:** [src/documentation/pages/feedback-status/radial-progress.mdx](../../src/documentation/pages/feedback-status/radial-progress.mdx)
 
 #### Alert · MOL · CSS
 
 - **Why:** Styled container using role=status/aria-live so the message is announced inline - no modal logic involved.
 - **When:** Inline, non-blocking notices (error, warning, info) tied to surrounding content.
-- **States:** `default` · **Skill:** [references/components/alert.md](references/components/alert.md) · **Examples:** [src/documentation/pages/alert.mdx](../../src/documentation/pages/alert.mdx)
+- **States:** `default` · **Skill:** [references/components/alert.md](references/components/alert.md) · **Examples:** [src/documentation/pages/feedback-status/alert.mdx](../../src/documentation/pages/feedback-status/alert.mdx)
 
 #### Alert Dialog · MOL · JS
 
 - **Why:** A `<dialog>` that demands an answer - Escape and backdrop clicks deliberately do not dismiss it, forcing an explicit confirm or cancel.
 - **When:** Destructive or irreversible actions (delete, discard) that must be confirmed.
-- **States:** `default`, `open` · **Skill:** [references/components/alert-dialog.md](references/components/alert-dialog.md) · **Examples:** [src/documentation/pages/alert-dialog.mdx](../../src/documentation/pages/alert-dialog.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/alert-dialog.md](references/components/alert-dialog.md) · **Examples:** [src/documentation/pages/feedback-status/alert-dialog.mdx](../../src/documentation/pages/feedback-status/alert-dialog.mdx)
 
 #### Toast · MOL · JS
 
 - **Why:** Transient notification via the Popover API plus the df$.shadcn.toast factory - auto-dismisses.
 - **When:** Post-action feedback that must not interrupt the user.
-- **States:** `default` · **Skill:** [references/components/toast.md](references/components/toast.md) · **Examples:** [src/documentation/pages/toast.mdx](../../src/documentation/pages/toast.mdx)
+- **States:** `default` · **Skill:** [references/components/toast.md](references/components/toast.md) · **Examples:** [src/documentation/pages/feedback-status/toast.mdx](../../src/documentation/pages/feedback-status/toast.mdx)
 
 ### Overlays
 
@@ -764,43 +764,43 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Native Popover API with CSS anchor positioning - show, dismiss, and placement owned by the browser.
 - **When:** Lightweight panel anchored to a trigger - info, mini-forms, menus.
-- **States:** `default`, `open` · **Skill:** [references/components/popover.md](references/components/popover.md) · **Examples:** [src/documentation/pages/popover.mdx](../../src/documentation/pages/popover.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/popover.md](references/components/popover.md) · **Examples:** [src/documentation/pages/overlays/popover.mdx](../../src/documentation/pages/overlays/popover.mdx)
 
 #### Tooltip · ATM · JS
 
 - **Why:** popover="hint" anchored label - shows on hover/focus without stealing dismissals from other popovers.
 - **When:** Brief clarifying text for icon-only controls; never for essential information.
-- **States:** `default`, `visible` · **Skill:** [references/components/tooltip.md](references/components/tooltip.md) · **Examples:** [src/documentation/pages/tooltip.mdx](../../src/documentation/pages/tooltip.mdx)
+- **States:** `default`, `visible` · **Skill:** [references/components/tooltip.md](references/components/tooltip.md) · **Examples:** [src/documentation/pages/overlays/tooltip.mdx](../../src/documentation/pages/overlays/tooltip.mdx)
 
 #### Context Menu · ATM · JS
 
 - **Why:** Popover anchored to the pointer position on contextmenu - no positioning library involved.
 - **When:** Secondary per-item actions invoked with right-click or long-press.
-- **States:** `default`, `open` · **Skill:** [references/components/context-menu.md](references/components/context-menu.md) · **Examples:** [src/documentation/pages/context-menu.mdx](../../src/documentation/pages/context-menu.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/context-menu.md](references/components/context-menu.md) · **Examples:** [src/documentation/pages/overlays/context-menu.mdx](../../src/documentation/pages/overlays/context-menu.mdx)
 
 #### Dialog · MOL · JS
 
 - **Why:** Native `<dialog>` + showModal(): focus trap, Escape-to-close, ::backdrop, and inert background all come from the browser.
 - **When:** Modals for forms, detail views, or previews - unless the answer is mandatory (then alert-dialog).
-- **States:** `default`, `open` · **Skill:** [references/components/dialog.md](references/components/dialog.md) · **Examples:** [src/documentation/pages/dialog.mdx](../../src/documentation/pages/dialog.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/dialog.md](references/components/dialog.md) · **Examples:** [src/documentation/pages/overlays/dialog.mdx](../../src/documentation/pages/overlays/dialog.mdx)
 
 #### Sheet · MOL · JS
 
 - **Why:** A `<dialog>` variant that slides in from an edge - native modal semantics with transform-only animation.
 - **When:** Off-canvas panels: mobile menus, filter drawers, detail side panels.
-- **States:** `default`, `open` · **Skill:** [references/components/sheet.md](references/components/sheet.md) · **Examples:** [src/documentation/pages/sheet.mdx](../../src/documentation/pages/sheet.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/sheet.md](references/components/sheet.md) · **Examples:** [src/documentation/pages/overlays/sheet.mdx](../../src/documentation/pages/overlays/sheet.mdx)
 
 #### Accordion · ATM · JS
 
 - **Why:** Native `<details>`/`<summary>` disclosure - the browser owns open/close, and `<details name="group">` gives exclusive (single-open) behavior with zero JS.
 - **When:** Grouped content sections on one page (FAQs, settings, progressive disclosure) that expand independently or mutually exclusively.
-- **States:** `default`, `all-open`, `all-closed` · **Skill:** [references/components/accordion.md](references/components/accordion.md) · **Examples:** [src/documentation/pages/accordion.mdx](../../src/documentation/pages/accordion.mdx)
+- **States:** `default`, `all-open`, `all-closed` · **Skill:** [references/components/accordion.md](references/components/accordion.md) · **Examples:** [src/documentation/pages/overlays/accordion.mdx](../../src/documentation/pages/overlays/accordion.mdx)
 
 #### Command Palette · ATM · JS
 
 - **Why:** A `<dialog class="command">` palette - filtering and keyboard navigation are the only JS; the modal is native.
 - **When:** ⌘K-style search or command surface across app features or documentation pages.
-- **States:** `default`, `open` · **Skill:** [references/components/command.md](references/components/command.md) · **Examples:** [src/documentation/pages/command.mdx](../../src/documentation/pages/command.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/command.md](references/components/command.md) · **Examples:** [src/documentation/pages/overlays/command.mdx](../../src/documentation/pages/overlays/command.mdx)
 
 ### Navigation
 
@@ -808,67 +808,67 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** A `<nav>` app bar with start / center / end regions; the responsive menu is ONE popover shown inline on wide screens and opened by a toggle on narrow ones - no JavaScript.
 - **When:** The top bar of an app or site - brand, primary links, search, account menu. For a marketing page header block use site-header; for mega-menus use navigation-menu.
-- **States:** `default` · **Skill:** [references/components/navbar.md](references/components/navbar.md) · **Examples:** [src/documentation/pages/navbar.mdx](../../src/documentation/pages/navbar.mdx)
+- **States:** `default` · **Skill:** [references/components/navbar.md](references/components/navbar.md) · **Examples:** [src/documentation/pages/navigation/navbar.mdx](../../src/documentation/pages/navigation/navbar.mdx)
 
 #### Dock · ATM · CSS
 
 - **Why:** A navigation bar of links / buttons with icons and labels - on the bottom (above the device's safe area), top, left or right edge; the active item is plain ARIA (aria-current / aria-pressed) or a checked radio, so a radio dock switches items AND the card content they own with no JavaScript.
 - **When:** The 3 - 5 top-level destinations of a mobile app or app-like page (Home, Search, Inbox, Profile). For a desktop app bar use navbar, for a side menu use sidebar, for one floating action use fab.
-- **States:** `default` · **Skill:** [references/components/dock.md](references/components/dock.md) · **Examples:** [src/documentation/pages/dock.mdx](../../src/documentation/pages/dock.mdx)
+- **States:** `default` · **Skill:** [references/components/dock.md](references/components/dock.md) · **Examples:** [src/documentation/pages/navigation/dock.mdx](../../src/documentation/pages/navigation/dock.mdx)
 
 #### Breadcrumb · ATM · CSS
 
 - **Why:** nav > ol markup with aria-current="page" - the accessibility comes free with the markup, not from JS.
 - **When:** Showing hierarchy in multi-level sites/apps so users know where they are and can jump up.
-- **States:** `default` · **Skill:** [references/components/breadcrumb.md](references/components/breadcrumb.md) · **Examples:** [src/documentation/pages/breadcrumb.mdx](../../src/documentation/pages/breadcrumb.mdx)
+- **States:** `default` · **Skill:** [references/components/breadcrumb.md](references/components/breadcrumb.md) · **Examples:** [src/documentation/pages/navigation/breadcrumb.mdx](../../src/documentation/pages/navigation/breadcrumb.mdx)
 
 #### Table of Contents · MOL · CSS
 
 - **Why:** A section-nav block of heading links with active-section tracking classes - pure markup, the observer is the host's.
 - **When:** Docs/blog/spec pages with in-page sections that deserve a persistent rail.
-- **States:** `default` · **Skill:** [references/components/toc.md](references/components/toc.md) · **Examples:** [src/documentation/pages/toc.mdx](../../src/documentation/pages/toc.mdx)
+- **States:** `default` · **Skill:** [references/components/toc.md](references/components/toc.md) · **Examples:** [src/documentation/pages/navigation/toc.mdx](../../src/documentation/pages/navigation/toc.mdx)
 
 #### Pagination · MOL · JS
 
 - **Why:** Numbered page links in a nav > ol with aria-current="page" on the active page - a composition of button atoms (page/prev/next).
 - **When:** Splitting long lists or tables across pages.
-- **States:** `default` · **Skill:** [references/components/pagination.md](references/components/pagination.md) · **Examples:** [src/documentation/pages/pagination.mdx](../../src/documentation/pages/pagination.mdx)
+- **States:** `default` · **Skill:** [references/components/pagination.md](references/components/pagination.md) · **Examples:** [src/documentation/pages/navigation/pagination.mdx](../../src/documentation/pages/navigation/pagination.mdx)
 
 #### Steps · ATM · JS
 
 - **Why:** Ordered list of process steps with aria-current="step" on the active one.
 - **When:** Multi-step flows: wizards, checkout, onboarding progress.
-- **States:** `default` · **Skill:** [references/components/steps.md](references/components/steps.md) · **Examples:** [src/documentation/pages/steps.mdx](../../src/documentation/pages/steps.mdx)
+- **States:** `default` · **Skill:** [references/components/steps.md](references/components/steps.md) · **Examples:** [src/documentation/pages/navigation/steps.mdx](../../src/documentation/pages/navigation/steps.mdx)
 
 #### Tabs · ATM · JS
 
 - **Why:** role=tablist with arrow-key roving focus; panels toggle via data-state.
 - **When:** Switching views within one context without navigating away.
-- **States:** `default`, `active`, `disabled` · **Skill:** [references/components/tabs.md](references/components/tabs.md) · **Examples:** [src/documentation/pages/tabs.mdx](../../src/documentation/pages/tabs.mdx)
+- **States:** `default`, `active`, `disabled` · **Skill:** [references/components/tabs.md](references/components/tabs.md) · **Examples:** [src/documentation/pages/navigation/tabs.mdx](../../src/documentation/pages/navigation/tabs.mdx)
 
 #### Dropdown Menu · ATM · JS
 
 - **Why:** Button-triggered menu as a Popover positioned by CSS anchor positioning - dismiss and placement are browser-owned.
 - **When:** The go-to menu of actions or options anchored to a trigger button.
-- **States:** `default`, `open` · **Skill:** [references/components/dropdown.md](references/components/dropdown.md) · **Examples:** [src/documentation/pages/dropdown.mdx](../../src/documentation/pages/dropdown.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/dropdown.md](references/components/dropdown.md) · **Examples:** [src/documentation/pages/navigation/dropdown.mdx](../../src/documentation/pages/navigation/dropdown.mdx)
 
 #### Menubar · MOL · JS
 
 - **Why:** A row of menu triggers that each open a dropdown menu (Popover API, anchor-positioned, submenus any depth); menubar.js adds the APG menubar keyboard model - one tab stop, arrows between menus, hover switching while one is open.
 - **When:** The persistent command bar of an app-like page - File / Edit / View / Help. One menu of actions takes dropdown; site navigation takes navbar or navigation-menu.
-- **States:** `default`, `open` · **Skill:** [references/components/menubar.md](references/components/menubar.md) · **Examples:** [src/documentation/pages/menubar.mdx](../../src/documentation/pages/menubar.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/menubar.md](references/components/menubar.md) · **Examples:** [src/documentation/pages/navigation/menubar.mdx](../../src/documentation/pages/navigation/menubar.mdx)
 
 #### Navigation Menu · ATM · JS
 
 - **Why:** Primary site/app menu with hover/focus-triggered popover panels.
 - **When:** Top-level navigation, optionally with mega-menu panels per item.
-- **States:** `default`, `open` · **Skill:** [references/components/navigation-menu.md](references/components/navigation-menu.md) · **Examples:** [src/documentation/pages/navigation-menu.mdx](../../src/documentation/pages/navigation-menu.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/navigation-menu.md](references/components/navigation-menu.md) · **Examples:** [src/documentation/pages/navigation/navigation-menu.mdx](../../src/documentation/pages/navigation/navigation-menu.mdx)
 
 #### Theme Switcher · MOL · JS
 
 - **Why:** Switches the color theme by loading/unloading ONE generated stylesheet (`<link id="theme-css">`) - tokens stay static, no JS token objects, dark mode needs no re-apply because each theme file carries :root + .dark.
 - **When:** Live theme pickers for docs sites, previews, or settings pages - unless the theme is fixed at deploy time (then just link the file directly).
-- **States:** `default`, `open` · **Skill:** [references/components/theme-switcher.md](references/components/theme-switcher.md) · **Examples:** [src/documentation/pages/theme-switcher.mdx](../../src/documentation/pages/theme-switcher.mdx)
+- **States:** `default`, `open` · **Skill:** [references/components/theme-switcher.md](references/components/theme-switcher.md) · **Examples:** [src/documentation/pages/navigation/theme-switcher.mdx](../../src/documentation/pages/navigation/theme-switcher.mdx)
 
 ### Application
 
@@ -876,43 +876,43 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** App-shell navigation rail with a collapsible state (State API) and a mobile overlay mode.
 - **When:** Persistent primary navigation beside the app content.
-- **States:** `default`, `collapsed` · **Skill:** [references/components/sidebar.md](references/components/sidebar.md) · **Examples:** [src/documentation/pages/sidebar.mdx](../../src/documentation/pages/sidebar.mdx)
+- **States:** `default`, `collapsed` · **Skill:** [references/components/sidebar.md](references/components/sidebar.md) · **Examples:** [src/documentation/pages/application/sidebar.mdx](../../src/documentation/pages/application/sidebar.mdx)
 
 #### Resizer · ATM · JS
 
 - **Why:** Pointer capture + box geometry give edge/corner drag handles for any single container - with a classes mode that keeps sizing declarative (the sizing.css ladder stays the source of truth).
 - **When:** When a demo surface, canvas, or panel must be user-resizable on more than the native CSS `resize` corner - or when the size should stay expressed as w-/h- classes instead of inline px.
-- **States:** `default` · **Skill:** [references/components/resizer.md](references/components/resizer.md) · **Examples:** [src/documentation/pages/resizer.mdx](../../src/documentation/pages/resizer.mdx)
+- **States:** `default` · **Skill:** [references/components/resizer.md](references/components/resizer.md) · **Examples:** [src/documentation/pages/application/resizer.mdx](../../src/documentation/pages/application/resizer.mdx)
 
 #### Border Layout · ORG · JS
 
 - **Why:** A CSS grid with named areas places north, south, west and east around a center; each resizable region reuses the Resizer (pointer capture, keyboard, clamps) with its handle redrawn as a full-length divider - the runtime adds the layout rules: the center's minimum, collapsing, remembered sizes.
 - **When:** Application frames - an editor with a file tree and a terminal, a mail client, a dashboard with an inspector; any split that the user should be able to resize: two panes side by side (horizontal split), stacked (vertical split), three columns, nested splits. A single resizable box takes resizer; fixed columns take the grid utilities.
-- **States:** `default`, `collapsed` · **Skill:** [references/components/border-layout.md](references/components/border-layout.md) · **Examples:** [src/documentation/pages/border-layout.mdx](../../src/documentation/pages/border-layout.mdx)
+- **States:** `default`, `collapsed` · **Skill:** [references/components/border-layout.md](references/components/border-layout.md) · **Examples:** [src/documentation/pages/application/border-layout.mdx](../../src/documentation/pages/application/border-layout.mdx)
 
 #### Panel · MOL · JS
 
 - **Why:** A titled .card whose minimize / maximize tools are Swaps - a native checkbox each, so the face and the keyboard are the browser's; the runtime keeps the state in step and makes the panel a border-layout region that folds to its title bar (a vertical tab in west / east) like the ExtJS 4 border layout.
 - **When:** Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window.
-- **States:** `default`, `minimized`, `maximized`, `closed` · **Skill:** [references/components/panel.md](references/components/panel.md) · **Examples:** [src/documentation/pages/panel.mdx](../../src/documentation/pages/panel.mdx)
+- **States:** `default`, `minimized`, `maximized`, `closed` · **Skill:** [references/components/panel.md](references/components/panel.md) · **Examples:** [src/documentation/pages/application/panel.mdx](../../src/documentation/pages/application/panel.mdx)
 
 #### Property Grid · ATM · JS
 
 - **Why:** The ExtJS property grid as a native table - one JSON object as two dense columns (key, value), nested objects and arrays as folding groups, in-place editors chosen by type (or by getEditorFn), keyRenderFn / valueRenderFn for the cells; the object is the store's state, replaced on every committed edit.
 - **When:** Inspecting and editing one object - the selection of a designer (Studio), a service's settings, a node's properties, a record's raw fields. Many records with the same columns are data-grid; a form a user fills in once is form.
-- **States:** `default`, `editing` · **Skill:** [references/components/property-grid.md](references/components/property-grid.md) · **Examples:** [src/documentation/pages/property-grid.mdx](../../src/documentation/pages/property-grid.mdx)
+- **States:** `default`, `editing` · **Skill:** [references/components/property-grid.md](references/components/property-grid.md) · **Examples:** [src/documentation/pages/application/property-grid.mdx](../../src/documentation/pages/application/property-grid.mdx)
 
 #### Window · ATM · JS
 
 - **Why:** A non-modal `<dialog>` - open / close, the close event and the × (a `<form method="dialog">` submit) are the browser's, and resizing is native CSS resize; the runtime only moves windows by their title bar, raises the clicked one to the front and maximizes / minimizes.
 - **When:** Desktop-style UIs - several movable panels over one area (an editor, an inspector, a chat), app mockups, retro pages, tool palettes. For a single blocking question use dialog / alert-dialog; for a panel from an edge use sheet; for splitting fixed panes use resizer.
-- **States:** `default`, `maximized`, `minimized`, `closed` · **Skill:** [references/components/window.md](references/components/window.md) · **Examples:** [src/documentation/pages/window.mdx](../../src/documentation/pages/window.mdx)
+- **States:** `default`, `maximized`, `minimized`, `closed` · **Skill:** [references/components/window.md](references/components/window.md) · **Examples:** [src/documentation/pages/application/window.mdx](../../src/documentation/pages/application/window.mdx)
 
 #### Document Comments · ORG · JS
 
 - **Why:** Comments on spans of a document as Cards in a column that scrolls on its own - the anchors are marks the runtime wraps around the exact text (block id + text), so a click on the text finds the comment and a click on the comment finds the text; one JSON model carries it all.
 - **When:** Reviewing a document - a Google-Docs-style editor (the Document Editor scaffold on Editor.js), a rendered article, any markup whose blocks carry ids; for a chat about the whole thing use Session, for a plain list of remarks Comment Item.
-- **States:** `default`, `current` · **Skill:** [references/components/doc-comments.md](references/components/doc-comments.md) · **Examples:** [src/documentation/pages/doc-comments.mdx](../../src/documentation/pages/doc-comments.mdx)
+- **States:** `default`, `current` · **Skill:** [references/components/doc-comments.md](references/components/doc-comments.md) · **Examples:** [src/documentation/pages/application/doc-comments.mdx](../../src/documentation/pages/application/doc-comments.mdx)
 
 ### Chat
 
@@ -920,25 +920,25 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** A chat bubble is a styled block - variants, alignment, groups with tightened corners, tails, overlapped reactions and typing dots are all CSS; interactive bubbles are real `<a>`/`<button>`, collapsible ones a native `<details>`.
 - **When:** The message surface of a chat, assistant reply or comment thread. Avatars, names, timestamps and message actions belong to the message row around it; a system notice across the thread is an alert.
-- **States:** `default` · **Skill:** [references/components/bubble.md](references/components/bubble.md) · **Examples:** [src/documentation/pages/bubble.mdx](../../src/documentation/pages/bubble.mdx)
+- **States:** `default` · **Skill:** [references/components/bubble.md](references/components/bubble.md) · **Examples:** [src/documentation/pages/chat/bubble.mdx](../../src/documentation/pages/chat/bubble.mdx)
 
 #### Marker · ATM · CSS
 
 - **Why:** A small flex row of icon + words is all an inline status needs; separators draw their rules with pseudo-elements, the shimmer is background-clip text, links and buttons are real `<a>`/`<button>`.
 - **When:** Inline status, system notes and dividers inside a conversation ("Explored 4 files", "Thinking...", "Today", "Conversation compacted"). A message from a person takes bubble; a page-level notice takes alert; a plain rule takes separator.
-- **States:** `default` · **Skill:** [references/components/marker.md](references/components/marker.md) · **Examples:** [src/documentation/pages/marker.mdx](../../src/documentation/pages/marker.mdx)
+- **States:** `default` · **Skill:** [references/components/marker.md](references/components/marker.md) · **Examples:** [src/documentation/pages/chat/marker.mdx](../../src/documentation/pages/chat/marker.mdx)
 
 #### Message · MOL · CSS
 
 - **Why:** A message row is layout - an avatar column beside a header / surface / footer column, start or end - so it is CSS; the avatar lines up with the surface's bottom edge (not the footer's), groups keep one avatar and one header.
 - **When:** Each row of a chat or an assistant thread - sender avatar, name and time, the bubble (or attachment), delivery status and actions. The bare surface is bubble; inline status lines between rows are marker.
-- **States:** `default` · **Skill:** [references/components/message.md](references/components/message.md) · **Examples:** [src/documentation/pages/message.mdx](../../src/documentation/pages/message.mdx)
+- **States:** `default` · **Skill:** [references/components/message.md](references/components/message.md) · **Examples:** [src/documentation/pages/chat/message.mdx](../../src/documentation/pages/chat/message.mdx)
 
 #### Session · ORG · JS
 
 - **Why:** A native scroll region with a role="log" transcript - the keyboard scrolls it, a screen reader hears new messages; the runtime only decides where the scroll goes - follow the live edge, let go when the reader scrolls away, keep the place when history loads, anchor new turns - and turns dropped files into an event.
 - **When:** A whole chat or assistant conversation - messages (message + bubble + marker) in a transcript that scrolls, with a composer (textarea-group) below. A short static exchange takes a plain .message-list; a feed of cards takes a list.
-- **States:** `default`, `detached`, `streaming` · **Skill:** [references/components/session.md](references/components/session.md) · **Examples:** [src/documentation/pages/session.mdx](../../src/documentation/pages/session.mdx)
+- **States:** `default`, `detached`, `streaming` · **Skill:** [references/components/session.md](references/components/session.md) · **Examples:** [src/documentation/pages/chat/session.mdx](../../src/documentation/pages/chat/session.mdx)
 
 ### Mockup
 
@@ -946,7 +946,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** A terminal window is a stack of `<pre>` lines under CSS window chrome; prompts, line numbers, diff signs and the cursor are generated content, so selecting and copying the commands never picks them up - no script, no copy clean-up.
 - **When:** Showing commands and their output as a terminal - install steps, CLI docs, a session transcript - or a change as a git-style diff (added / removed lines, word changes, an animated reveal). Source code with syntax colours takes a highlighted code block; a single inline key takes kbd.
-- **States:** `default` · **Skill:** [references/components/mockup-code.md](references/components/mockup-code.md) · **Examples:** [src/documentation/pages/mockup-code.mdx](../../src/documentation/pages/mockup-code.mdx)
+- **States:** `default` · **Skill:** [references/components/mockup-code.md](references/components/mockup-code.md) · **Examples:** [src/documentation/pages/mockup/mockup-code.mdx](../../src/documentation/pages/mockup/mockup-code.mdx)
 
 ### Presentations
 
@@ -954,7 +954,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** Fixed artboard slides + df$.anim slide transitions + the shared Motion entrance vocabulary + native `<progress>` - the deck engine needs no presentation library.
 - **When:** Slide decks and keynotes on a fixed coordinate canvas (1600×900 default) - not scrollable content (that is a page, use blocks).
-- **States:** `default`, `notes`, `fullscreen` · **Skill:** [references/components/presentation.md](references/components/presentation.md) · **Examples:** [src/documentation/pages/presentation.mdx](../../src/documentation/pages/presentation.mdx)
+- **States:** `default`, `notes`, `fullscreen` · **Skill:** [references/components/presentation.md](references/components/presentation.md) · **Examples:** [src/documentation/pages/presentations/presentation.mdx](../../src/documentation/pages/presentations/presentation.mdx)
 
 ### Papers
 
@@ -962,13 +962,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** A research-paper project page as one `<article>` on a named grid - a centered reading column, a wider track for the title block and figures, all type and color from the theme tokens; CSS-only.
 - **When:** The web page of a paper, a technical report or a project write-up - title, authors, resources, abstract, sections, figures, results and the citation. A product landing page is the Landing Page template; long documentation is Docs Content.
-- **States:** `default` · **Skill:** [references/components/paper.md](references/components/paper.md) · **Examples:** [src/documentation/pages/paper.mdx](../../src/documentation/pages/paper.mdx)
+- **States:** `default` · **Skill:** [references/components/paper.md](references/components/paper.md) · **Examples:** [src/documentation/pages/papers/paper.mdx](../../src/documentation/pages/papers/paper.mdx)
 
 #### BibTeX · ATM · JS
 
 - **Why:** The authored BibTeX stays the one source - parsed once, shown as BibTeX (normalized, aligned, highlighted) or as an APA, MLA, Chicago, Harvard or IEEE reference, copied with the Clipboard API exactly as shown; without JS the source is still readable.
 - **When:** Wherever a reader should cite something - a paper page, a dataset, a release, a references section (several entries become a list). A terminal transcript is mockup-code; source code is a code block.
-- **States:** `default`, `copied` · **Skill:** [references/components/bibtex.md](references/components/bibtex.md) · **Examples:** [src/documentation/pages/bibtex.mdx](../../src/documentation/pages/bibtex.mdx)
+- **States:** `default`, `copied` · **Skill:** [references/components/bibtex.md](references/components/bibtex.md) · **Examples:** [src/documentation/pages/papers/bibtex.mdx](../../src/documentation/pages/papers/bibtex.mdx)
 
 ### Website
 
@@ -976,772 +976,772 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 - **Why:** A marketing page header is pure layout - flexbox + a container query replace any JS show/hide of the nav.
 - **When:** Top of a marketing/landing page - for the doc site's own chrome use `<site-header>` instead.
-- **States:** `default` · **Skill:** [references/components/site-header.md](references/components/site-header.md) · **Examples:** [src/documentation/pages/site-header.mdx](../../src/documentation/pages/site-header.mdx)
+- **States:** `default` · **Skill:** [references/components/site-header.md](references/components/site-header.md) · **Examples:** [src/documentation/pages/website/site-header.mdx](../../src/documentation/pages/website/site-header.mdx)
 
 #### Hero · BLK · CSS
 
 - **Why:** Headline, description and CTAs in one centered copy block - native flow layout and container queries, nothing to script.
 - **When:** First section of a marketing page; pair with the Product Showcase block when you need a video.
-- **States:** `default` · **Skill:** [references/components/hero.md](references/components/hero.md) · **Examples:** [src/documentation/pages/hero.mdx](../../src/documentation/pages/hero.mdx)
+- **States:** `default` · **Skill:** [references/components/hero.md](references/components/hero.md) · **Examples:** [src/documentation/pages/website/hero.mdx](../../src/documentation/pages/website/hero.mdx)
 
 #### Product Showcase · BLK · JS
 
 - **Why:** A poster frame + one real `<button>` starts a native `<video controls>` - the browser draws every playback affordance once the video is visible.
 - **When:** Hero pairing or standalone product video; a static screenshot needs only the poster `<img>` (drop the video and button).
-- **States:** `default`, `playing` · **Skill:** [references/components/product-showcase.md](references/components/product-showcase.md) · **Examples:** [src/documentation/pages/product-showcase.mdx](../../src/documentation/pages/product-showcase.mdx)
+- **States:** `default`, `playing` · **Skill:** [references/components/product-showcase.md](references/components/product-showcase.md) · **Examples:** [src/documentation/pages/website/product-showcase.mdx](../../src/documentation/pages/website/product-showcase.mdx)
 
 #### Brand Logos · BLK · CSS
 
 - **Why:** Logos as currentColor SVGs recolor with the theme automatically - a row of marks needs zero behavior.
 - **When:** "Trusted by" social proof band under a Hero - not for user-uploaded arbitrary images.
-- **States:** `default` · **Skill:** [references/components/brand-logos.md](references/components/brand-logos.md) · **Examples:** [src/documentation/pages/brand-logos.mdx](../../src/documentation/pages/brand-logos.mdx)
+- **States:** `default` · **Skill:** [references/components/brand-logos.md](references/components/brand-logos.md) · **Examples:** [src/documentation/pages/website/brand-logos.mdx](../../src/documentation/pages/website/brand-logos.mdx)
 
 #### Section Header · BLK · CSS
 
 - **Why:** Plain heading + paragraph + links; flex-wrap gives the split layout its fallback and a container query scales the title - no breakpoints, no script.
 - **When:** Above any page section (features, pricing, a list of posts). A whole-page opener with media takes hero; a news or blog front takes news-header / blog-header.
-- **States:** `default` · **Skill:** [references/components/section-header.md](references/components/section-header.md) · **Examples:** [src/documentation/pages/section-header.mdx](../../src/documentation/pages/section-header.mdx)
+- **States:** `default` · **Skill:** [references/components/section-header.md](references/components/section-header.md) · **Examples:** [src/documentation/pages/website/section-header.mdx](../../src/documentation/pages/website/section-header.mdx)
 
 #### Feature Details · BLK · CSS
 
 - **Why:** Two-image feature split with a rule between - a grid with an auto-stretched divider column, no JS.
 - **When:** "Benefits" section of a marketing page; for a feature list without imagery use cards instead.
-- **States:** `default` · **Skill:** [references/components/feature-details.md](references/components/feature-details.md) · **Examples:** [src/documentation/pages/feature-details.mdx](../../src/documentation/pages/feature-details.mdx)
+- **States:** `default` · **Skill:** [references/components/feature-details.md](references/components/feature-details.md) · **Examples:** [src/documentation/pages/website/feature-details.mdx](../../src/documentation/pages/website/feature-details.mdx)
 
 #### Testimonials · BLK · CSS
 
 - **Why:** A pull-quote plus photo cards with floating review overlays - backdrop-filter and stacking replace any JS layering.
 - **When:** Social-proof band on a marketing page; for short quotes without photos a plain blockquote is enough.
-- **States:** `default` · **Skill:** [references/components/testimonials.md](references/components/testimonials.md) · **Examples:** [src/documentation/pages/testimonials.mdx](../../src/documentation/pages/testimonials.mdx)
+- **States:** `default` · **Skill:** [references/components/testimonials.md](references/components/testimonials.md) · **Examples:** [src/documentation/pages/website/testimonials.mdx](../../src/documentation/pages/website/testimonials.mdx)
 
 #### Stats · BLK · CSS
 
 - **Why:** Metric band = a grid of rule-led numbers; text alignment and tabular-nums do what a chart library would.
 - **When:** "Trusted by teams everywhere" social proof with hard numbers; not a data dashboard.
-- **States:** `default` · **Skill:** [references/components/stats.md](references/components/stats.md) · **Examples:** [src/documentation/pages/stats.mdx](../../src/documentation/pages/stats.mdx)
+- **States:** `default` · **Skill:** [references/components/stats.md](references/components/stats.md) · **Examples:** [src/documentation/pages/website/stats.mdx](../../src/documentation/pages/website/stats.mdx)
 
 #### Pricing · BLK · CSS
 
 - **Why:** Plan cards are a stretch-aligned grid; the billing toggle is native radios plus :has(), so one checked input flips every plan with zero JS.
 - **When:** Plans/tiers section of a marketing page; a single plan needs no grid - one card suffices.
-- **States:** `default` · **Skill:** [references/components/pricing.md](references/components/pricing.md) · **Examples:** [src/documentation/pages/pricing.mdx](../../src/documentation/pages/pricing.mdx)
+- **States:** `default` · **Skill:** [references/components/pricing.md](references/components/pricing.md) · **Examples:** [src/documentation/pages/website/pricing.mdx](../../src/documentation/pages/website/pricing.mdx)
 
 #### Blog · BLK · CSS
 
 - **Why:** Post cards are `<a>` + `<img>` + clamped text - line-clamp and aspect-ratio give the editorial layout for free.
 - **When:** Insights/news teasers on a marketing page; the full article list is a table or card grid instead.
-- **States:** `default` · **Skill:** [references/components/blog.md](references/components/blog.md) · **Examples:** [src/documentation/pages/blog.mdx](../../src/documentation/pages/blog.mdx)
+- **States:** `default` · **Skill:** [references/components/blog.md](references/components/blog.md) · **Examples:** [src/documentation/pages/website/blog.mdx](../../src/documentation/pages/website/blog.mdx)
 
 #### FAQ · BLK · CSS
 
 - **Why:** Icon-card answers stay visible - no disclosure widget to wire, so screen readers and crawlers see every answer.
 - **When:** Support section on a marketing page; for many long Q&As use the Accordion (native `<details>`) instead.
-- **States:** `default` · **Skill:** [references/components/faq.md](references/components/faq.md) · **Examples:** [src/documentation/pages/faq.mdx](../../src/documentation/pages/faq.mdx)
+- **States:** `default` · **Skill:** [references/components/faq.md](references/components/faq.md) · **Examples:** [src/documentation/pages/website/faq.mdx](../../src/documentation/pages/website/faq.mdx)
 
 #### Get In Touch · BLK · CSS
 
 - **Why:** A bordered contact CTA card - avatar overlap is negative margins + outline, not positioning math.
 - **When:** End-of-page "want to know more?" band; for an actual contact form use Form + Input components.
-- **States:** `default` · **Skill:** [references/components/get-in-touch.md](references/components/get-in-touch.md) · **Examples:** [src/documentation/pages/get-in-touch.mdx](../../src/documentation/pages/get-in-touch.mdx)
+- **States:** `default` · **Skill:** [references/components/get-in-touch.md](references/components/get-in-touch.md) · **Examples:** [src/documentation/pages/website/get-in-touch.mdx](../../src/documentation/pages/website/get-in-touch.mdx)
 
 #### Newsletter · BLK · CSS
 
 - **Why:** A real `<form>` with `<input type="email">` - native validation, keyboard, and autofill come free.
 - **When:** Sign-up band on a marketing page; for multi-field sign-up use the Form component.
-- **States:** `default` · **Skill:** [references/components/newsletter.md](references/components/newsletter.md) · **Examples:** [src/documentation/pages/newsletter.mdx](../../src/documentation/pages/newsletter.mdx)
+- **States:** `default` · **Skill:** [references/components/newsletter.md](references/components/newsletter.md) · **Examples:** [src/documentation/pages/website/newsletter.mdx](../../src/documentation/pages/website/newsletter.mdx)
 
 #### Cookie Consent · ORG · JS
 
 - **Why:** Built from the library - a Dialog (native modal, focus, Escape, backdrop) holding Buttons, a Select, Tabs, Checkbox rows and Badges; defuss-query owns querying and DOM writes, so consent logic is the only new code.
 - **When:** Collect, persist, reopen, or withdraw service-specific privacy choices and gate optional scripts or embeds.
-- **States:** `default`, `open`, `preferences`, `services` · **Skill:** [references/components/cookie-consent.md](references/components/cookie-consent.md) · **Examples:** [src/documentation/pages/cookie-consent.mdx](../../src/documentation/pages/cookie-consent.mdx)
+- **States:** `default`, `open`, `preferences`, `services` · **Skill:** [references/components/cookie-consent.md](references/components/cookie-consent.md) · **Examples:** [src/documentation/pages/website/cookie-consent.mdx](../../src/documentation/pages/website/cookie-consent.mdx)
 
 #### Site Footer · BLK · CSS
 
 - **Why:** Link columns + social row is pure grid/flex markup in a `<footer>` landmark - no behavior to script.
 - **When:** Bottom of marketing pages; the doc site's own footer is separate chrome (`<footer>` in layout.js).
-- **States:** `default` · **Skill:** [references/components/site-footer.md](references/components/site-footer.md) · **Examples:** [src/documentation/pages/site-footer.mdx](../../src/documentation/pages/site-footer.mdx)
+- **States:** `default` · **Skill:** [references/components/site-footer.md](references/components/site-footer.md) · **Examples:** [src/documentation/pages/website/site-footer.mdx](../../src/documentation/pages/website/site-footer.mdx)
 
 #### News Header · BLK · CSS
 
 - **Why:** A header with an h1, a `<time>` dateline and a nav of topic links (aria-current marks the current one) - the topic row scrolls natively, no tab script.
 - **When:** On a newsroom / press / changelog front. A blog front takes blog-header; a single story takes article-header.
-- **States:** `default` · **Skill:** [references/components/news-header.md](references/components/news-header.md) · **Examples:** [src/documentation/pages/news-header.mdx](../../src/documentation/pages/news-header.mdx)
+- **States:** `default` · **Skill:** [references/components/news-header.md](references/components/news-header.md) · **Examples:** [src/documentation/pages/website/news-header.mdx](../../src/documentation/pages/website/news-header.mdx)
 
 #### News Item · BLK · CSS
 
 - **Why:** An `<article>` whose headline link stretches over the whole item (::after inset 0) - one tab stop, one click target, the headline as its name; line-clamp trims the summary.
 - **When:** News fronts, press pages, "latest updates" lists. A blog post preview with byline takes blog-item; a link under an article takes related-item.
-- **States:** `default` · **Skill:** [references/components/news-item.md](references/components/news-item.md) · **Examples:** [src/documentation/pages/news-item.mdx](../../src/documentation/pages/news-item.mdx)
+- **States:** `default` · **Skill:** [references/components/news-item.md](references/components/news-item.md) · **Examples:** [src/documentation/pages/website/news-item.mdx](../../src/documentation/pages/website/news-item.mdx)
 
 #### News Ticker · BLK · CSS
 
 - **Why:** The headline list runs twice in one track (the copy is inert and aria-hidden) sliding by half its width - a seamless loop in pure CSS; :hover / :focus-within pause it, prefers-reduced-motion turns it into a scrolling row.
 - **When:** A strip of latest or breaking headlines above a news front. A list someone should read takes news-item (compact).
-- **States:** `default` · **Skill:** [references/components/news-ticker.md](references/components/news-ticker.md) · **Examples:** [src/documentation/pages/news-ticker.mdx](../../src/documentation/pages/news-ticker.mdx)
+- **States:** `default` · **Skill:** [references/components/news-ticker.md](references/components/news-ticker.md) · **Examples:** [src/documentation/pages/website/news-ticker.mdx](../../src/documentation/pages/website/news-ticker.mdx)
 
 #### Blog Header · BLK · CSS
 
 - **Why:** An h1, a description, Buttons and a nav of category links (aria-current marks the current one) - chips are plain links, so filtering is a real URL with no script.
 - **When:** The front of a blog or a category page. A news front takes news-header; a single post takes article-header.
-- **States:** `default` · **Skill:** [references/components/blog-header.md](references/components/blog-header.md) · **Examples:** [src/documentation/pages/blog-header.mdx](../../src/documentation/pages/blog-header.mdx)
+- **States:** `default` · **Skill:** [references/components/blog-header.md](references/components/blog-header.md) · **Examples:** [src/documentation/pages/website/blog-header.mdx](../../src/documentation/pages/website/blog-header.mdx)
 
 #### Blog Item · BLK · CSS
 
 - **Why:** An `<article>` whose title link stretches over the item - one tab stop and click target; a Badge for the category, an Avatar byline, line-clamp for the excerpt, flex-wrap for the horizontal fallback.
 - **When:** Post lists and grids on a blog front or a category page. A news story takes news-item; a link under an article takes related-item; a landing-page teaser row takes blog.
-- **States:** `default` · **Skill:** [references/components/blog-item.md](references/components/blog-item.md) · **Examples:** [src/documentation/pages/blog-item.mdx](../../src/documentation/pages/blog-item.mdx)
+- **States:** `default` · **Skill:** [references/components/blog-item.md](references/components/blog-item.md) · **Examples:** [src/documentation/pages/website/blog-item.mdx](../../src/documentation/pages/website/blog-item.mdx)
 
 #### Archive Index · BLK · CSS
 
 - **Why:** Each year is a native `<details name="archive">` - exclusive, keyboard-operable, animated with ::details-content and interpolate-size; months are plain links with counts.
 - **When:** A blog or news archive in a sidebar or on its own page. Topic-based navigation takes blog-header categories; deep trees take tree-view.
-- **States:** `default` · **Skill:** [references/components/archive-index.md](references/components/archive-index.md) · **Examples:** [src/documentation/pages/archive-index.mdx](../../src/documentation/pages/archive-index.mdx)
+- **States:** `default` · **Skill:** [references/components/archive-index.md](references/components/archive-index.md) · **Examples:** [src/documentation/pages/website/archive-index.mdx](../../src/documentation/pages/website/archive-index.mdx)
 
 #### Article Header · BLK · CSS
 
 - **Why:** An h1, a subtitle, a byline from Avatar + `<time>`, and a `<figure>` with `<figcaption>` - the cover variant layers the copy over the figure with a gradient, all CSS.
 - **When:** The top of a single article or post. A blog or news front takes blog-header / news-header.
-- **States:** `default` · **Skill:** [references/components/article-header.md](references/components/article-header.md) · **Examples:** [src/documentation/pages/article-header.mdx](../../src/documentation/pages/article-header.mdx)
+- **States:** `default` · **Skill:** [references/components/article-header.md](references/components/article-header.md) · **Examples:** [src/documentation/pages/website/article-header.mdx](../../src/documentation/pages/website/article-header.mdx)
 
 #### Article Body · BLK · CSS
 
 - **Why:** Styles the plain elements a CMS or Markdown renderer emits - no classes inside - at one readable measure; hanging-punctuation, text-wrap: pretty and ::first-letter do the typography.
 - **When:** The running text of an article, post or docs page. Short UI copy takes typography; a single quote block takes blockquote.
-- **States:** `default` · **Skill:** [references/components/article-body.md](references/components/article-body.md) · **Examples:** [src/documentation/pages/article-body.mdx](../../src/documentation/pages/article-body.mdx)
+- **States:** `default` · **Skill:** [references/components/article-body.md](references/components/article-body.md) · **Examples:** [src/documentation/pages/website/article-body.mdx](../../src/documentation/pages/website/article-body.mdx)
 
 #### Author Bio · BLK · CSS
 
 - **Why:** An Avatar, a heading with the author link, a role, a paragraph and a list of icon Buttons - semantic HTML, no script.
 - **When:** Under an article, on an author page, in a sidebar. Several contributors take author-list.
-- **States:** `default` · **Skill:** [references/components/author-bio.md](references/components/author-bio.md) · **Examples:** [src/documentation/pages/author-bio.mdx](../../src/documentation/pages/author-bio.mdx)
+- **States:** `default` · **Skill:** [references/components/author-bio.md](references/components/author-bio.md) · **Examples:** [src/documentation/pages/website/author-bio.mdx](../../src/documentation/pages/website/author-bio.mdx)
 
 #### Author List · BLK · CSS
 
 - **Why:** A list of Avatars with name links and roles; the stack variant overlaps them and hides the names visually - they stay in the accessibility tree and the tab order.
 - **When:** Article contributors, a publication's masthead, an authors page. One author takes author-bio.
-- **States:** `default` · **Skill:** [references/components/author-list.md](references/components/author-list.md) · **Examples:** [src/documentation/pages/author-list.mdx](../../src/documentation/pages/author-list.mdx)
+- **States:** `default` · **Skill:** [references/components/author-list.md](references/components/author-list.md) · **Examples:** [src/documentation/pages/website/author-list.mdx](../../src/documentation/pages/website/author-list.mdx)
 
 #### Related Item · BLK · CSS
 
 - **Why:** An `<article>` whose title link stretches over the item - a thumbnail, a kind label and meta; line-clamp keeps titles to two lines.
 - **When:** "Read next" under an article, sidebars, resource lists. A story in a news list takes news-item; a post on a blog front takes blog-item.
-- **States:** `default` · **Skill:** [references/components/related-item.md](references/components/related-item.md) · **Examples:** [src/documentation/pages/related-item.mdx](../../src/documentation/pages/related-item.mdx)
+- **States:** `default` · **Skill:** [references/components/related-item.md](references/components/related-item.md) · **Examples:** [src/documentation/pages/website/related-item.mdx](../../src/documentation/pages/website/related-item.mdx)
 
 #### Share Links · BLK · CSS
 
 - **Why:** Share intents are plain `<a href>` URLs - no third-party scripts, no tracking; copy link and the native share sheet are two lines of page script (navigator.clipboard / navigator.share).
 - **When:** Under or beside an article, on a product page. A single "copy link" action can stay a Button.
-- **States:** `default` · **Skill:** [references/components/share-links.md](references/components/share-links.md) · **Examples:** [src/documentation/pages/share-links.mdx](../../src/documentation/pages/share-links.mdx)
+- **States:** `default` · **Skill:** [references/components/share-links.md](references/components/share-links.md) · **Examples:** [src/documentation/pages/website/share-links.mdx](../../src/documentation/pages/website/share-links.mdx)
 
 #### Article Navigation · BLK · CSS
 
 - **Why:** Two links with rel="prev" / rel="next" in a nav - the relations are machine-readable; a two-column grid keeps a lone next link on its side, a container query stacks them when narrow.
 - **When:** At the end of an article or docs page. Page numbers take pagination; a list of further reading takes related-item.
-- **States:** `default` · **Skill:** [references/components/article-navigation.md](references/components/article-navigation.md) · **Examples:** [src/documentation/pages/article-navigation.mdx](../../src/documentation/pages/article-navigation.mdx)
+- **States:** `default` · **Skill:** [references/components/article-navigation.md](references/components/article-navigation.md) · **Examples:** [src/documentation/pages/website/article-navigation.mdx](../../src/documentation/pages/website/article-navigation.mdx)
 
 #### Comment Header · BLK · CSS
 
 - **Why:** A heading with the count (Badge) and a native Select (or links with aria-current) for the order - the page re-renders by the chosen order, no list script.
 - **When:** Above a comment thread or a reviews list. A section intro without sorting takes section-header.
-- **States:** `default` · **Skill:** [references/components/comment-header.md](references/components/comment-header.md) · **Examples:** [src/documentation/pages/comment-header.mdx](../../src/documentation/pages/comment-header.mdx)
+- **States:** `default` · **Skill:** [references/components/comment-header.md](references/components/comment-header.md) · **Examples:** [src/documentation/pages/website/comment-header.mdx](../../src/documentation/pages/website/comment-header.mdx)
 
 #### Comment Item · BLK · CSS
 
 - **Why:** An `<article>` with an Avatar, an author link, a `<time>` permalink to the comment's own id, the text and ghost Buttons - replies nest in an `<ol>`; :target highlights the comment a permalink opens.
 - **When:** Comment threads, reviews, discussion boards. Chat messages take message / bubble.
-- **States:** `default` · **Skill:** [references/components/comment-item.md](references/components/comment-item.md) · **Examples:** [src/documentation/pages/comment-item.mdx](../../src/documentation/pages/comment-item.mdx)
+- **States:** `default` · **Skill:** [references/components/comment-item.md](references/components/comment-item.md) · **Examples:** [src/documentation/pages/website/comment-item.mdx](../../src/documentation/pages/website/comment-item.mdx)
 
 #### Comment Form · BLK · CSS
 
 - **Why:** A real `<form>` with a Textarea that grows with field-sizing: content, Inputs for guests and native validation (required, minlength, type=email) - :user-invalid marks fields only after an attempt.
 - **When:** Under a comment thread, inline under a comment (reply). A chat composer takes textarea-group.
-- **States:** `default` · **Skill:** [references/components/comment-form.md](references/components/comment-form.md) · **Examples:** [src/documentation/pages/comment-form.mdx](../../src/documentation/pages/comment-form.mdx)
+- **States:** `default` · **Skill:** [references/components/comment-form.md](references/components/comment-form.md) · **Examples:** [src/documentation/pages/website/comment-form.mdx](../../src/documentation/pages/website/comment-form.mdx)
 
 #### About Intro · BLK · CSS
 
 - **Why:** Headings, paragraphs and a definition list for the facts; container queries switch the split - no script.
 - **When:** The opening of an about or company page. For one person use team-member; for dated history use timeline-item.
-- **States:** `default` · **Skill:** [references/components/about-intro.md](references/components/about-intro.md) · **Examples:** [src/documentation/pages/about-intro.mdx](../../src/documentation/pages/about-intro.mdx)
+- **States:** `default` · **Skill:** [references/components/about-intro.md](references/components/about-intro.md) · **Examples:** [src/documentation/pages/website/about-intro.mdx](../../src/documentation/pages/website/about-intro.mdx)
 
 #### Team Member · BLK · CSS
 
 - **Why:** An `<article>` per person with a real portrait, a heading and labelled links; the reveal is a :hover / :focus-within transition - keyboard users get it too, touch screens always show the links. No script.
 - **When:** Team, leadership and board pages. For an article author use author-bio; for event speakers use speaker-item.
-- **States:** `default` · **Skill:** [references/components/team-member.md](references/components/team-member.md) · **Examples:** [src/documentation/pages/team-member.mdx](../../src/documentation/pages/team-member.mdx)
+- **States:** `default` · **Skill:** [references/components/team-member.md](references/components/team-member.md) · **Examples:** [src/documentation/pages/website/team-member.mdx](../../src/documentation/pages/website/team-member.mdx)
 
 #### Job Item · BLK · CSS
 
 - **Why:** A heading link stretched over the row, the facts as a list, a `<time>` for the posting date - no script.
 - **When:** Careers pages and job boards. The full posting is job-details; the form is application-form.
-- **States:** `default` · **Skill:** [references/components/job-item.md](references/components/job-item.md) · **Examples:** [src/documentation/pages/job-item.mdx](../../src/documentation/pages/job-item.mdx)
+- **States:** `default` · **Skill:** [references/components/job-item.md](references/components/job-item.md) · **Examples:** [src/documentation/pages/website/job-item.mdx](../../src/documentation/pages/website/job-item.mdx)
 
 #### Job Details · BLK · CSS
 
 - **Why:** Sections with headings, check lists and a `<dl>` summary; the summary is sticky from 52rem - CSS only.
 - **When:** The page for one vacancy. Lists of vacancies use job-item; the form below uses application-form.
-- **States:** `default` · **Skill:** [references/components/job-details.md](references/components/job-details.md) · **Examples:** [src/documentation/pages/job-details.mdx](../../src/documentation/pages/job-details.mdx)
+- **States:** `default` · **Skill:** [references/components/job-details.md](references/components/job-details.md) · **Examples:** [src/documentation/pages/website/job-details.mdx](../../src/documentation/pages/website/job-details.mdx)
 
 #### Application Form · BLK · CSS
 
 - **Why:** Native form fields with autocomplete, required and type checks; a file input styled as a drop zone; :user-invalid shows errors only after trying - no script.
 - **When:** Below a job-details page or on its own page. A general contact form is get-in-touch; support requests use support-form.
-- **States:** `default` · **Skill:** [references/components/application-form.md](references/components/application-form.md) · **Examples:** [src/documentation/pages/application-form.mdx](../../src/documentation/pages/application-form.mdx)
+- **States:** `default` · **Skill:** [references/components/application-form.md](references/components/application-form.md) · **Examples:** [src/documentation/pages/website/application-form.mdx](../../src/documentation/pages/website/application-form.mdx)
 
 #### Service Item · BLK · CSS
 
 - **Why:** One heading link stretched over the card; the hover lift and arrow are CSS transitions - no script.
 - **When:** Agency and consultancy service grids. Product capabilities use feature-details; an applied scenario uses use-case.
-- **States:** `default` · **Skill:** [references/components/service-item.md](references/components/service-item.md) · **Examples:** [src/documentation/pages/service-item.mdx](../../src/documentation/pages/service-item.mdx)
+- **States:** `default` · **Skill:** [references/components/service-item.md](references/components/service-item.md) · **Examples:** [src/documentation/pages/website/service-item.mdx](../../src/documentation/pages/website/service-item.mdx)
 
 #### Process Step · BLK · CSS
 
 - **Why:** An ordered list (`<ol>`) carries the sequence; the connector line and numbers are pure CSS - no script.
 - **When:** How-we-work, onboarding or "how it works" sections. For dated history use timeline-item; for a form wizard use form-progress.
-- **States:** `default` · **Skill:** [references/components/process-step.md](references/components/process-step.md) · **Examples:** [src/documentation/pages/process-step.mdx](../../src/documentation/pages/process-step.mdx)
+- **States:** `default` · **Skill:** [references/components/process-step.md](references/components/process-step.md) · **Examples:** [src/documentation/pages/website/process-step.mdx](../../src/documentation/pages/website/process-step.mdx)
 
 #### Use Case · BLK · CSS
 
 - **Why:** A heading, lists and one figure; the split layout and the alternating side are container-query CSS - no script.
 - **When:** Solution pages by industry, role or job-to-be-done. A customer story with real numbers is case-preview / case-study.
-- **States:** `default` · **Skill:** [references/components/use-case.md](references/components/use-case.md) · **Examples:** [src/documentation/pages/use-case.mdx](../../src/documentation/pages/use-case.mdx)
+- **States:** `default` · **Skill:** [references/components/use-case.md](references/components/use-case.md) · **Examples:** [src/documentation/pages/website/use-case.mdx](../../src/documentation/pages/website/use-case.mdx)
 
 #### Case Preview · BLK · CSS
 
 - **Why:** A stretched heading link and a figure; the picture zooms on hover with a CSS transition - no script.
 - **When:** Customer and portfolio grids. The full story is case-study; anonymous scenarios are use-case.
-- **States:** `default` · **Skill:** [references/components/case-preview.md](references/components/case-preview.md) · **Examples:** [src/documentation/pages/case-preview.mdx](../../src/documentation/pages/case-preview.mdx)
+- **States:** `default` · **Skill:** [references/components/case-preview.md](references/components/case-preview.md) · **Examples:** [src/documentation/pages/website/case-preview.mdx](../../src/documentation/pages/website/case-preview.mdx)
 
 #### Case Study · BLK · CSS
 
 - **Why:** Sections, an ordered list for the approach, a `<dl>` for the results and a `<blockquote>` - long-form structure the browser and readers already know.
 - **When:** The full story behind a case-preview. For a short anonymous scenario use use-case.
-- **States:** `default` · **Skill:** [references/components/case-study.md](references/components/case-study.md) · **Examples:** [src/documentation/pages/case-study.mdx](../../src/documentation/pages/case-study.mdx)
+- **States:** `default` · **Skill:** [references/components/case-study.md](references/components/case-study.md) · **Examples:** [src/documentation/pages/website/case-study.mdx](../../src/documentation/pages/website/case-study.mdx)
 
 #### Project Item · BLK · CSS
 
 - **Why:** A figure and a stretched heading link; the caption reveal and zoom are CSS transitions keyed to :hover and :focus-within - no script.
 - **When:** Portfolio and work grids. The full project page is project-details; client results are case-preview.
-- **States:** `default` · **Skill:** [references/components/project-item.md](references/components/project-item.md) · **Examples:** [src/documentation/pages/project-item.mdx](../../src/documentation/pages/project-item.mdx)
+- **States:** `default` · **Skill:** [references/components/project-item.md](references/components/project-item.md) · **Examples:** [src/documentation/pages/website/project-item.mdx](../../src/documentation/pages/website/project-item.mdx)
 
 #### Project Details · BLK · CSS
 
 - **Why:** A header, a `<dl>` of facts, a list of deliverables and a grid of figures - the gallery mixes wide and tall pictures with CSS grid only.
 - **When:** The page behind a project-item. A client result story is case-study.
-- **States:** `default` · **Skill:** [references/components/project-details.md](references/components/project-details.md) · **Examples:** [src/documentation/pages/project-details.mdx](../../src/documentation/pages/project-details.mdx)
+- **States:** `default` · **Skill:** [references/components/project-details.md](references/components/project-details.md) · **Examples:** [src/documentation/pages/website/project-details.mdx](../../src/documentation/pages/website/project-details.mdx)
 
 #### Timeline Item · BLK · CSS
 
 - **Why:** A `<time>` and a heading in a list item; the line and dots are borders and pseudo-elements - no script.
 - **When:** Company history, "our story" and milestone pages. Generic event lists are the timeline component; numbered workflow stages are process-step.
-- **States:** `default` · **Skill:** [references/components/timeline-item.md](references/components/timeline-item.md) · **Examples:** [src/documentation/pages/timeline-item.mdx](../../src/documentation/pages/timeline-item.mdx)
+- **States:** `default` · **Skill:** [references/components/timeline-item.md](references/components/timeline-item.md) · **Examples:** [src/documentation/pages/website/timeline-item.mdx](../../src/documentation/pages/website/timeline-item.mdx)
 
 #### Integration Item · BLK · CSS
 
 - **Why:** A small article with a labelled action; the logo tile is a text mark tinted by one custom property - no images needed.
 - **When:** Integration directories and "works with your tools" sections. A grid of logos only is brand-logos.
-- **States:** `default` · **Skill:** [references/components/integration-item.md](references/components/integration-item.md) · **Examples:** [src/documentation/pages/integration-item.mdx](../../src/documentation/pages/integration-item.mdx)
+- **States:** `default` · **Skill:** [references/components/integration-item.md](references/components/integration-item.md) · **Examples:** [src/documentation/pages/website/integration-item.mdx](../../src/documentation/pages/website/integration-item.mdx)
 
 #### Comparison Table · BLK · CSS
 
 - **Why:** A `<table>` with row and column headers is the accessible way to compare; position: sticky keeps the criteria in view while the table scrolls sideways.
 - **When:** Product vs. competitors, plan vs. plan, before vs. after. Plan prices with buy buttons use pricing.
-- **States:** `default` · **Skill:** [references/components/comparison-table.md](references/components/comparison-table.md) · **Examples:** [src/documentation/pages/comparison-table.mdx](../../src/documentation/pages/comparison-table.mdx)
+- **States:** `default` · **Skill:** [references/components/comparison-table.md](references/components/comparison-table.md) · **Examples:** [src/documentation/pages/website/comparison-table.mdx](../../src/documentation/pages/website/comparison-table.mdx)
 
 #### Credential Item · BLK · CSS
 
 - **Why:** An article with a `<dl>` of dates (`<time>`) and an external verify link with full context for screen readers - no script.
 - **When:** Trust, security and compliance pages. Customer logos are brand-logos; press coverage is press-item.
-- **States:** `default` · **Skill:** [references/components/credential-item.md](references/components/credential-item.md) · **Examples:** [src/documentation/pages/credential-item.mdx](../../src/documentation/pages/credential-item.mdx)
+- **States:** `default` · **Skill:** [references/components/credential-item.md](references/components/credential-item.md) · **Examples:** [src/documentation/pages/website/credential-item.mdx](../../src/documentation/pages/website/credential-item.mdx)
 
 #### Press Item · BLK · CSS
 
 - **Why:** An article whose external headline link covers the item, with the outlet and a `<time>` - and a new-tab hint for screen readers. No script.
 - **When:** Press and "in the news" pages. Your own announcements are news-item; customer quotes are testimonials.
-- **States:** `default` · **Skill:** [references/components/press-item.md](references/components/press-item.md) · **Examples:** [src/documentation/pages/press-item.mdx](../../src/documentation/pages/press-item.mdx)
+- **States:** `default` · **Skill:** [references/components/press-item.md](references/components/press-item.md) · **Examples:** [src/documentation/pages/website/press-item.mdx](../../src/documentation/pages/website/press-item.mdx)
 
 #### CTA · BLK · CSS
 
 - **Why:** A heading, one sentence and links styled as Buttons; container queries switch the split - no script.
 - **When:** Between sections or at the end of a page, whenever one action matters most. A list of choices is pricing; an email field alone is newsletter.
-- **States:** `default` · **Skill:** [references/components/cta.md](references/components/cta.md) · **Examples:** [src/documentation/pages/cta.mdx](../../src/documentation/pages/cta.mdx)
+- **States:** `default` · **Skill:** [references/components/cta.md](references/components/cta.md) · **Examples:** [src/documentation/pages/website/cta.mdx](../../src/documentation/pages/website/cta.mdx)
 
 #### Announcement · BLK · CSS
 
 - **Why:** A non-modal `<dialog open>`: a `<form method="dialog">` button dismisses it natively - no script, and Escape-free so it never steals focus.
 - **When:** Releases, outages, policy changes, events. Promotions with a code are offer-banner; transient feedback is the toast component.
-- **States:** `default` · **Skill:** [references/components/announcement.md](references/components/announcement.md) · **Examples:** [src/documentation/pages/announcement.mdx](../../src/documentation/pages/announcement.mdx)
+- **States:** `default` · **Skill:** [references/components/announcement.md](references/components/announcement.md) · **Examples:** [src/documentation/pages/website/announcement.mdx](../../src/documentation/pages/website/announcement.mdx)
 
 #### Offer Banner · BLK · CSS
 
 - **Why:** Text, a `<code>` for the code, `<time>` for the deadline and `<small>` for the conditions; the coupon notches are a CSS mask - no images, no script.
 - **When:** Sales, launch discounts, seasonal offers. Plain news is announcement; a plan list is pricing.
-- **States:** `default` · **Skill:** [references/components/offer-banner.md](references/components/offer-banner.md) · **Examples:** [src/documentation/pages/offer-banner.mdx](../../src/documentation/pages/offer-banner.mdx)
+- **States:** `default` · **Skill:** [references/components/offer-banner.md](references/components/offer-banner.md) · **Examples:** [src/documentation/pages/website/offer-banner.mdx](../../src/documentation/pages/website/offer-banner.mdx)
 
 #### Event Countdown · BLK · CSS
 
 - **Why:** The Countdown component ticks from one data-until date and announces itself as a timer; the block only lays out the date, the units and the action.
 - **When:** Launches, sales deadlines, event openings. A static date is enough for most events - use event-header; for a page before launch use coming-soon.
-- **States:** `default` · **Skill:** [references/components/event-countdown.md](references/components/event-countdown.md) · **Examples:** [src/documentation/pages/event-countdown.mdx](../../src/documentation/pages/event-countdown.mdx)
+- **States:** `default` · **Skill:** [references/components/event-countdown.md](references/components/event-countdown.md) · **Examples:** [src/documentation/pages/website/event-countdown.mdx](../../src/documentation/pages/website/event-countdown.mdx)
 
 #### Booking Form · BLK · CSS
 
 - **Why:** Radio inputs are the selection state: :has(:checked) highlights the card or chip, disabled marks booked slots, the browser validates - no script.
 - **When:** Appointments, demos, consultations, table reservations. Event tickets use registration-form.
-- **States:** `default` · **Skill:** [references/components/booking-form.md](references/components/booking-form.md) · **Examples:** [src/documentation/pages/booking-form.mdx](../../src/documentation/pages/booking-form.mdx)
+- **States:** `default` · **Skill:** [references/components/booking-form.md](references/components/booking-form.md) · **Examples:** [src/documentation/pages/website/booking-form.mdx](../../src/documentation/pages/website/booking-form.mdx)
 
 #### Event Item · BLK · CSS
 
 - **Why:** A `<time>` tile, a stretched title link and a separately labelled register link - two targets, no script.
 - **When:** Event listings, meetups, webinars. The event page itself starts with event-header.
-- **States:** `default` · **Skill:** [references/components/event-item.md](references/components/event-item.md) · **Examples:** [src/documentation/pages/event-item.mdx](../../src/documentation/pages/event-item.mdx)
+- **States:** `default` · **Skill:** [references/components/event-item.md](references/components/event-item.md) · **Examples:** [src/documentation/pages/website/event-item.mdx](../../src/documentation/pages/website/event-item.mdx)
 
 #### Event Header · BLK · CSS
 
 - **Why:** A header with a `<time>` range, the venue in `<address>` and two links - registration and an .ics calendar file - no script.
 - **When:** The top of an event or conference page. A list of events uses event-item; the details below are event-description.
-- **States:** `default` · **Skill:** [references/components/event-header.md](references/components/event-header.md) · **Examples:** [src/documentation/pages/event-header.mdx](../../src/documentation/pages/event-header.mdx)
+- **States:** `default` · **Skill:** [references/components/event-header.md](references/components/event-header.md) · **Examples:** [src/documentation/pages/website/event-header.mdx](../../src/documentation/pages/website/event-header.mdx)
 
 #### Event Description · BLK · CSS
 
 - **Why:** Sections and lists for the story, a `<dl>` for the facts and a `<meter>` for the seats left - all native, no script.
 - **When:** Below an event-header. Times and talks go in session-item; the people in speaker-item.
-- **States:** `default` · **Skill:** [references/components/event-description.md](references/components/event-description.md) · **Examples:** [src/documentation/pages/event-description.mdx](../../src/documentation/pages/event-description.mdx)
+- **States:** `default` · **Skill:** [references/components/event-description.md](references/components/event-description.md) · **Examples:** [src/documentation/pages/website/event-description.mdx](../../src/documentation/pages/website/event-description.mdx)
 
 #### Speaker Item · BLK · CSS
 
 - **Why:** An article with a portrait, a heading and a link to the talk; the duotone-to-color hover is a CSS filter transition - no script.
 - **When:** Conference and event speaker grids. Your own team uses team-member; article authors use author-bio.
-- **States:** `default` · **Skill:** [references/components/speaker-item.md](references/components/speaker-item.md) · **Examples:** [src/documentation/pages/speaker-item.mdx](../../src/documentation/pages/speaker-item.mdx)
+- **States:** `default` · **Skill:** [references/components/speaker-item.md](references/components/speaker-item.md) · **Examples:** [src/documentation/pages/website/speaker-item.mdx](../../src/documentation/pages/website/speaker-item.mdx)
 
 #### Session Item · BLK · CSS
 
 - **Why:** The toggle is a checkbox in a label - :has(:checked) swaps "Add" for "Added" with no script; times are `<time>`.
 - **When:** Conference agendas and event schedules. Speakers on their own are speaker-item; a single event is event-item.
-- **States:** `default` · **Skill:** [references/components/session-item.md](references/components/session-item.md) · **Examples:** [src/documentation/pages/session-item.mdx](../../src/documentation/pages/session-item.mdx)
+- **States:** `default` · **Skill:** [references/components/session-item.md](references/components/session-item.md) · **Examples:** [src/documentation/pages/website/session-item.mdx](../../src/documentation/pages/website/session-item.mdx)
 
 #### Registration Form · BLK · CSS
 
 - **Why:** Radio cards and checkboxes hold every choice (:has(:checked) shows it); fieldsets name the groups; the browser validates - no script.
 - **When:** Conference and event sign-up. Appointments use booking-form; account creation is signup-form.
-- **States:** `default` · **Skill:** [references/components/registration-form.md](references/components/registration-form.md) · **Examples:** [src/documentation/pages/registration-form.mdx](../../src/documentation/pages/registration-form.mdx)
+- **States:** `default` · **Skill:** [references/components/registration-form.md](references/components/registration-form.md) · **Examples:** [src/documentation/pages/website/registration-form.mdx](../../src/documentation/pages/website/registration-form.mdx)
 
 #### Location Item · BLK · CSS
 
 - **Why:** An `<address>` with real tel: and maps links; the open / closed state is one data attribute - no script.
 - **When:** Store, office and venue lists. Several places on a map use location-map; finding the nearest uses locator-search.
-- **States:** `default` · **Skill:** [references/components/location-item.md](references/components/location-item.md) · **Examples:** [src/documentation/pages/location-item.mdx](../../src/documentation/pages/location-item.mdx)
+- **States:** `default` · **Skill:** [references/components/location-item.md](references/components/location-item.md) · **Examples:** [src/documentation/pages/website/location-item.mdx](../../src/documentation/pages/website/location-item.mdx)
 
 #### Location Map · BLK · CSS
 
 - **Why:** Pins are buttons with popovertarget; their cards are popovers placed by CSS anchor positioning - interactive, keyboard-accessible, no script and no map library.
 - **When:** A handful of places on a stylized map. Searching many places uses locator-search; a single address is location-item. Swap the SVG for an embedded map provider when you need real streets.
-- **States:** `default` · **Skill:** [references/components/location-map.md](references/components/location-map.md) · **Examples:** [src/documentation/pages/location-map.mdx](../../src/documentation/pages/location-map.mdx)
+- **States:** `default` · **Skill:** [references/components/location-map.md](references/components/location-map.md) · **Examples:** [src/documentation/pages/website/location-map.mdx](../../src/documentation/pages/website/location-map.mdx)
 
 #### Locator Search · BLK · CSS
 
 - **Why:** A `<search>` landmark and a GET form work without script; the "use my location" button is the one progressive addition (Geolocation API, on request only).
 - **When:** Store finders and venue locators with many places. A handful of places fit on location-map.
-- **States:** `default` · **Skill:** [references/components/locator-search.md](references/components/locator-search.md) · **Examples:** [src/documentation/pages/locator-search.mdx](../../src/documentation/pages/locator-search.mdx)
+- **States:** `default` · **Skill:** [references/components/locator-search.md](references/components/locator-search.md) · **Examples:** [src/documentation/pages/website/locator-search.mdx](../../src/documentation/pages/website/locator-search.mdx)
 
 #### Opening Hours · BLK · CSS
 
 - **Why:** A `<dl>` of days; aria-current="date" marks today for assistive technology and styling alike; exceptions are `<time>`s - no script.
 - **When:** Stores, offices, venues, support desks. Use inside location-item or on its own.
-- **States:** `default` · **Skill:** [references/components/opening-hours.md](references/components/opening-hours.md) · **Examples:** [src/documentation/pages/opening-hours.mdx](../../src/documentation/pages/opening-hours.mdx)
+- **States:** `default` · **Skill:** [references/components/opening-hours.md](references/components/opening-hours.md) · **Examples:** [src/documentation/pages/website/opening-hours.mdx](../../src/documentation/pages/website/opening-hours.mdx)
 
 #### Gallery Item · BLK · CSS
 
 - **Why:** A button with commandfor / command="show-modal" opens a `<dialog>` - focus trap, Escape and backdrop are the browser's; a method="dialog" form closes it. No script.
 - **When:** Photo grids, portfolios, product shots. A whole collection with shared controls is media-gallery; a plain responsive picture is the image component.
-- **States:** `default` · **Skill:** [references/components/gallery-item.md](references/components/gallery-item.md) · **Examples:** [src/documentation/pages/gallery-item.mdx](../../src/documentation/pages/gallery-item.mdx)
+- **States:** `default` · **Skill:** [references/components/gallery-item.md](references/components/gallery-item.md) · **Examples:** [src/documentation/pages/website/gallery-item.mdx](../../src/documentation/pages/website/gallery-item.mdx)
 
 #### Media Gallery · BLK · CSS
 
 - **Why:** The layout switch is three radio inputs read by :has() - no script; the slideshow is a modal `<dialog>` with a scroll-snapped track.
 - **When:** Albums, project galleries, event photos. One picture with a large view is gallery-item; a single hero picture is the image component.
-- **States:** `default` · **Skill:** [references/components/media-gallery.md](references/components/media-gallery.md) · **Examples:** [src/documentation/pages/media-gallery.mdx](../../src/documentation/pages/media-gallery.mdx)
+- **States:** `default` · **Skill:** [references/components/media-gallery.md](references/components/media-gallery.md) · **Examples:** [src/documentation/pages/website/media-gallery.mdx](../../src/documentation/pages/website/media-gallery.mdx)
 
 #### Text Media · BLK · CSS
 
 - **Why:** Copy and a figure in a two-column container-query grid; the overlap is a negative margin - no script.
 - **When:** Explaining one idea with a visual. Product features in a row use feature-details; a whole scenario uses use-case.
-- **States:** `default` · **Skill:** [references/components/text-media.md](references/components/text-media.md) · **Examples:** [src/documentation/pages/text-media.mdx](../../src/documentation/pages/text-media.mdx)
+- **States:** `default` · **Skill:** [references/components/text-media.md](references/components/text-media.md) · **Examples:** [src/documentation/pages/website/text-media.mdx](../../src/documentation/pages/website/text-media.mdx)
 
 #### Video Player · BLK · CSS
 
 - **Why:** The browser's own `<video controls>` plays, seeks, goes fullscreen and shows captions from a `<track>` - accessible and keyboard-ready, no player library.
 - **When:** Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media.
-- **States:** `default` · **Skill:** [references/components/video-player.md](references/components/video-player.md) · **Examples:** [src/documentation/pages/video-player.mdx](../../src/documentation/pages/video-player.mdx)
+- **States:** `default` · **Skill:** [references/components/video-player.md](references/components/video-player.md) · **Examples:** [src/documentation/pages/website/video-player.mdx](../../src/documentation/pages/website/video-player.mdx)
 
 #### Audio Player · BLK · CSS
 
 - **Why:** The browser's `<audio controls>` plays, seeks and handles media keys; the block styles the frame around it - no player library.
 - **When:** Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player.
-- **States:** `default` · **Skill:** [references/components/audio-player.md](references/components/audio-player.md) · **Examples:** [src/documentation/pages/audio-player.mdx](../../src/documentation/pages/audio-player.mdx)
+- **States:** `default` · **Skill:** [references/components/audio-player.md](references/components/audio-player.md) · **Examples:** [src/documentation/pages/website/audio-player.mdx](../../src/documentation/pages/website/audio-player.mdx)
 
 #### Playlist Item · BLK · CSS
 
 - **Why:** Each item is a radio input in a label: one selection, arrow keys move it, :has(:checked) highlights it and animates the bars - no script.
 - **When:** Track lists, episode lists, lesson lists. The player itself is audio-player or video-player.
-- **States:** `default` · **Skill:** [references/components/playlist-item.md](references/components/playlist-item.md) · **Examples:** [src/documentation/pages/playlist-item.mdx](../../src/documentation/pages/playlist-item.mdx)
+- **States:** `default` · **Skill:** [references/components/playlist-item.md](references/components/playlist-item.md) · **Examples:** [src/documentation/pages/website/playlist-item.mdx](../../src/documentation/pages/website/playlist-item.mdx)
 
 #### Before After · BLK · CSS
 
 - **Why:** One custom property (--mk-ba-pos) drives a clip-path; the slider is a native range input (keyboard-operable); the toggle variant is a checkbox read by :has() - CSS-only.
 - **When:** Edits, renovations, redesigns, restorations. Two unrelated pictures belong in a gallery.
-- **States:** `default` · **Skill:** [references/components/before-after.md](references/components/before-after.md) · **Examples:** [src/documentation/pages/before-after.mdx](../../src/documentation/pages/before-after.mdx)
+- **States:** `default` · **Skill:** [references/components/before-after.md](references/components/before-after.md) · **Examples:** [src/documentation/pages/website/before-after.mdx](../../src/documentation/pages/website/before-after.mdx)
 
 #### Social Post · BLK · CSS
 
 - **Why:** Rendered locally from your own markup: no third-party embed script, no tracking, no layout shift - an article with a `<time>` and labelled numbers.
 - **When:** Social proof, "what people say" walls, press kits. Curated customer quotes are testimonials; a feed of your own updates is news-item.
-- **States:** `default` · **Skill:** [references/components/social-post.md](references/components/social-post.md) · **Examples:** [src/documentation/pages/social-post.mdx](../../src/documentation/pages/social-post.mdx)
+- **States:** `default` · **Skill:** [references/components/social-post.md](references/components/social-post.md) · **Examples:** [src/documentation/pages/website/social-post.mdx](../../src/documentation/pages/website/social-post.mdx)
 
 #### Collection Item · BLK · CSS
 
 - **Why:** A picture and a heading link stretched over the card; the zoom and arrow are CSS transitions - no script.
 - **When:** Shop home pages and category overviews. A single product is product-item; editorial categories are category-menu.
-- **States:** `default` · **Skill:** [references/components/collection-item.md](references/components/collection-item.md) · **Examples:** [src/documentation/pages/collection-item.mdx](../../src/documentation/pages/collection-item.mdx)
+- **States:** `default` · **Skill:** [references/components/collection-item.md](references/components/collection-item.md) · **Examples:** [src/documentation/pages/website/collection-item.mdx](../../src/documentation/pages/website/collection-item.mdx)
 
 #### Product Item · BLK · CSS
 
 - **Why:** The name link covers the card; the heart is a checkbox read by :has(), the hover picture a CSS crossfade, the stars a clipped background - no script for any of it.
 - **When:** Product grids, carousels and search results. Cart lines are cart-item; saved items are wishlist-item.
-- **States:** `default` · **Skill:** [references/components/product-item.md](references/components/product-item.md) · **Examples:** [src/documentation/pages/product-item.mdx](../../src/documentation/pages/product-item.mdx)
+- **States:** `default` · **Skill:** [references/components/product-item.md](references/components/product-item.md) · **Examples:** [src/documentation/pages/website/product-item.mdx](../../src/documentation/pages/website/product-item.mdx)
 
 #### Cart Item · BLK · CSS
 
 - **Why:** The Number Input component steps the quantity; the line total is an `<output>`; remove is a labelled button - all native controls.
 - **When:** Cart pages and mini carts. The totals go in cart-summary; checkout recap uses order-summary.
-- **States:** `default` · **Skill:** [references/components/cart-item.md](references/components/cart-item.md) · **Examples:** [src/documentation/pages/cart-item.mdx](../../src/documentation/pages/cart-item.mdx)
+- **States:** `default` · **Skill:** [references/components/cart-item.md](references/components/cart-item.md) · **Examples:** [src/documentation/pages/website/cart-item.mdx](../../src/documentation/pages/website/cart-item.mdx)
 
 #### Cart Summary · BLK · CSS
 
 - **Why:** A `<dl>` for the breakdown, a native `<progress>` toward free shipping and a polite live region for the total - no script needed to render.
 - **When:** Beside cart-item rows, or in a mini cart. During checkout use order-summary.
-- **States:** `default` · **Skill:** [references/components/cart-summary.md](references/components/cart-summary.md) · **Examples:** [src/documentation/pages/cart-summary.mdx](../../src/documentation/pages/cart-summary.mdx)
+- **States:** `default` · **Skill:** [references/components/cart-summary.md](references/components/cart-summary.md) · **Examples:** [src/documentation/pages/website/cart-summary.mdx](../../src/documentation/pages/website/cart-summary.mdx)
 
 #### Discount Form · BLK · CSS
 
 - **Why:** pattern + required check the format in the browser, :user-invalid and aria-invalid show the error - the applied state is plain markup with a remove button.
 - **When:** Cart and checkout. Gift cards with a balance need their own form; a promotion banner is offer-banner.
-- **States:** `default` · **Skill:** [references/components/discount-form.md](references/components/discount-form.md) · **Examples:** [src/documentation/pages/discount-form.mdx](../../src/documentation/pages/discount-form.mdx)
+- **States:** `default` · **Skill:** [references/components/discount-form.md](references/components/discount-form.md) · **Examples:** [src/documentation/pages/website/discount-form.mdx](../../src/documentation/pages/website/discount-form.mdx)
 
 #### Address Form · BLK · CSS
 
 - **Why:** The autocomplete tokens (name, address-line1, postal-code, country...) let browsers and password managers fill the whole form in one tap - no script.
 - **When:** Checkout, account settings, event shipping. Payment details are payment-form.
-- **States:** `default` · **Skill:** [references/components/address-form.md](references/components/address-form.md) · **Examples:** [src/documentation/pages/address-form.mdx](../../src/documentation/pages/address-form.mdx)
+- **States:** `default` · **Skill:** [references/components/address-form.md](references/components/address-form.md) · **Examples:** [src/documentation/pages/website/address-form.mdx](../../src/documentation/pages/website/address-form.mdx)
 
 #### Delivery Options · BLK · CSS
 
 - **Why:** A radio group is the selection; :has(:checked) highlights the card; arrival dates are `<time>`s - no script.
 - **When:** Checkout, between address-form and payment-form.
-- **States:** `default` · **Skill:** [references/components/delivery-options.md](references/components/delivery-options.md) · **Examples:** [src/documentation/pages/delivery-options.mdx](../../src/documentation/pages/delivery-options.mdx)
+- **States:** `default` · **Skill:** [references/components/delivery-options.md](references/components/delivery-options.md) · **Examples:** [src/documentation/pages/website/delivery-options.mdx](../../src/documentation/pages/website/delivery-options.mdx)
 
 #### Payment Form · BLK · CSS
 
 - **Why:** The method tabs are radio inputs and :has(:checked) shows the matching panel; the card fields use cc-* autocomplete tokens and inputmode - no script.
 - **When:** The last step of checkout. Shipping comes from address-form and delivery-options.
-- **States:** `default` · **Skill:** [references/components/payment-form.md](references/components/payment-form.md) · **Examples:** [src/documentation/pages/payment-form.mdx](../../src/documentation/pages/payment-form.mdx)
+- **States:** `default` · **Skill:** [references/components/payment-form.md](references/components/payment-form.md) · **Examples:** [src/documentation/pages/website/payment-form.mdx](../../src/documentation/pages/website/payment-form.mdx)
 
 #### Order Summary · BLK · CSS
 
 - **Why:** A list and a `<dl>`; the mobile version is a `<details>` whose summary shows the total - opens and closes natively, no script.
 - **When:** Beside the checkout steps and on the confirmation page. In the cart use cart-item + cart-summary.
-- **States:** `default` · **Skill:** [references/components/order-summary.md](references/components/order-summary.md) · **Examples:** [src/documentation/pages/order-summary.mdx](../../src/documentation/pages/order-summary.mdx)
+- **States:** `default` · **Skill:** [references/components/order-summary.md](references/components/order-summary.md) · **Examples:** [src/documentation/pages/website/order-summary.mdx](../../src/documentation/pages/website/order-summary.mdx)
 
 #### Order Confirmation · BLK · CSS
 
 - **Why:** Headings, a `<dl>` of the details and an ordered list of next steps; the check animation is SVG stroke-dashoffset with @starting-style-free CSS keyframes, off under reduced motion.
 - **When:** After payment succeeds. Shipment progress afterwards is tracking-status; a generic success is success-state.
-- **States:** `default` · **Skill:** [references/components/order-confirmation.md](references/components/order-confirmation.md) · **Examples:** [src/documentation/pages/order-confirmation.mdx](../../src/documentation/pages/order-confirmation.mdx)
+- **States:** `default` · **Skill:** [references/components/order-confirmation.md](references/components/order-confirmation.md) · **Examples:** [src/documentation/pages/website/order-confirmation.mdx](../../src/documentation/pages/website/order-confirmation.mdx)
 
 #### Tracking Status · BLK · CSS
 
 - **Why:** An ordered list with aria-current="step" carries the progress; the line fills by a custom property; the log is a `<details>` - no script.
 - **When:** Order pages and tracking emails' landing pages. Before shipping, show order-confirmation.
-- **States:** `default` · **Skill:** [references/components/tracking-status.md](references/components/tracking-status.md) · **Examples:** [src/documentation/pages/tracking-status.mdx](../../src/documentation/pages/tracking-status.mdx)
+- **States:** `default` · **Skill:** [references/components/tracking-status.md](references/components/tracking-status.md) · **Examples:** [src/documentation/pages/website/tracking-status.mdx](../../src/documentation/pages/website/tracking-status.mdx)
 
 #### Wishlist Item · BLK · CSS
 
 - **Why:** A list item with real buttons and a stock state in one data attribute - status reads as text, not color alone. No script.
 - **When:** Wishlists and "saved for later" lists. Items in the cart are cart-item; catalog cards are product-item.
-- **States:** `default` · **Skill:** [references/components/wishlist-item.md](references/components/wishlist-item.md) · **Examples:** [src/documentation/pages/wishlist-item.mdx](../../src/documentation/pages/wishlist-item.mdx)
+- **States:** `default` · **Skill:** [references/components/wishlist-item.md](references/components/wishlist-item.md) · **Examples:** [src/documentation/pages/website/wishlist-item.mdx](../../src/documentation/pages/website/wishlist-item.mdx)
 
 #### Login Form · BLK · CSS
 
 - **Why:** A real `<form>` with autocomplete="username" / "current-password" lets password managers fill and save it; validation is the browser's - no script.
 - **When:** The sign-in page or a sign-in dialog. External providers are social-login; creating an account is signup-form.
-- **States:** `default` · **Skill:** [references/components/login-form.md](references/components/login-form.md) · **Examples:** [src/documentation/pages/login-form.mdx](../../src/documentation/pages/login-form.mdx)
+- **States:** `default` · **Skill:** [references/components/login-form.md](references/components/login-form.md) · **Examples:** [src/documentation/pages/website/login-form.mdx](../../src/documentation/pages/website/login-form.mdx)
 
 #### Social Login · BLK · CSS
 
 - **Why:** Links to each provider's sign-in flow (OAuth / OpenID Connect redirects) - no SDK, no script in the page; brand marks are inline SVG.
 - **When:** Above or below a login-form or signup-form. Single sign-on for companies is usually one "Continue with SSO" button.
-- **States:** `default` · **Skill:** [references/components/social-login.md](references/components/social-login.md) · **Examples:** [src/documentation/pages/social-login.mdx](../../src/documentation/pages/social-login.mdx)
+- **States:** `default` · **Skill:** [references/components/social-login.md](references/components/social-login.md) · **Examples:** [src/documentation/pages/website/social-login.mdx](../../src/documentation/pages/website/social-login.mdx)
 
 #### Signup Form · BLK · CSS
 
 - **Why:** autocomplete="new-password" lets the browser suggest a strong password; minlength and pattern check it; :user-valid confirms each field - no script.
 - **When:** Account creation. Existing users sign in with login-form; providers are social-login.
-- **States:** `default` · **Skill:** [references/components/signup-form.md](references/components/signup-form.md) · **Examples:** [src/documentation/pages/signup-form.mdx](../../src/documentation/pages/signup-form.mdx)
+- **States:** `default` · **Skill:** [references/components/signup-form.md](references/components/signup-form.md) · **Examples:** [src/documentation/pages/website/signup-form.mdx](../../src/documentation/pages/website/signup-form.mdx)
 
 #### Reset Request · BLK · CSS
 
 - **Why:** One field and a submit; the sent state is plain markup with role="status" - no script.
 - **When:** Linked from login-form. Setting the new password is password-reset.
-- **States:** `default` · **Skill:** [references/components/reset-request.md](references/components/reset-request.md) · **Examples:** [src/documentation/pages/reset-request.mdx](../../src/documentation/pages/reset-request.mdx)
+- **States:** `default` · **Skill:** [references/components/reset-request.md](references/components/reset-request.md) · **Examples:** [src/documentation/pages/website/reset-request.mdx](../../src/documentation/pages/website/reset-request.mdx)
 
 #### Password Reset · BLK · CSS
 
 - **Why:** autocomplete="new-password" on both fields lets the browser generate and fill one strong password; minlength checks it - no script for the form itself.
 - **When:** The page behind the reset link from reset-request. Changing a password while signed in lives in security-settings.
-- **States:** `default` · **Skill:** [references/components/password-reset.md](references/components/password-reset.md) · **Examples:** [src/documentation/pages/password-reset.mdx](../../src/documentation/pages/password-reset.mdx)
+- **States:** `default` · **Skill:** [references/components/password-reset.md](references/components/password-reset.md) · **Examples:** [src/documentation/pages/website/password-reset.mdx](../../src/documentation/pages/website/password-reset.mdx)
 
 #### Profile Header · BLK · CSS
 
 - **Why:** A header with an `<h1>`, a `<dl>` for the counts and real links / buttons - the overlap is a negative margin, no script.
 - **When:** Public profile pages, community members, creators. Your own team pages use team-member; article bylines use author-bio.
-- **States:** `default` · **Skill:** [references/components/profile-header.md](references/components/profile-header.md) · **Examples:** [src/documentation/pages/profile-header.mdx](../../src/documentation/pages/profile-header.mdx)
+- **States:** `default` · **Skill:** [references/components/profile-header.md](references/components/profile-header.md) · **Examples:** [src/documentation/pages/website/profile-header.mdx](../../src/documentation/pages/website/profile-header.mdx)
 
 #### Profile Form · BLK · CSS
 
 - **Why:** Native fields with autocomplete and maxlength; the username prefix is an addon beside the input; the form submits like any other - no script.
 - **When:** Account settings. Passwords, two-factor and sessions are security-settings; notifications are notification-settings.
-- **States:** `default` · **Skill:** [references/components/profile-form.md](references/components/profile-form.md) · **Examples:** [src/documentation/pages/profile-form.mdx](../../src/documentation/pages/profile-form.mdx)
+- **States:** `default` · **Skill:** [references/components/profile-form.md](references/components/profile-form.md) · **Examples:** [src/documentation/pages/website/profile-form.mdx](../../src/documentation/pages/website/profile-form.mdx)
 
 #### Security Settings · BLK · CSS
 
 - **Why:** Sections of rows with real buttons; two-factor is a Switch (a checkbox); sessions are a list with labelled actions - no script in the markup.
 - **When:** Account settings. Profile details are profile-form; notifications are notification-settings.
-- **States:** `default` · **Skill:** [references/components/security-settings.md](references/components/security-settings.md) · **Examples:** [src/documentation/pages/security-settings.mdx](../../src/documentation/pages/security-settings.mdx)
+- **States:** `default` · **Skill:** [references/components/security-settings.md](references/components/security-settings.md) · **Examples:** [src/documentation/pages/website/security-settings.mdx](../../src/documentation/pages/website/security-settings.mdx)
 
 #### Notification Settings · BLK · CSS
 
 - **Why:** A real `<table>` of checkboxes - every box labelled "Mentions by email" - or a list of Switches; nothing but form controls.
 - **When:** Account or workspace settings. Marketing email preferences belong in an unsubscribe page; cookie choices in the Cookie Consent component.
-- **States:** `default` · **Skill:** [references/components/notification-settings.md](references/components/notification-settings.md) · **Examples:** [src/documentation/pages/notification-settings.mdx](../../src/documentation/pages/notification-settings.mdx)
+- **States:** `default` · **Skill:** [references/components/notification-settings.md](references/components/notification-settings.md) · **Examples:** [src/documentation/pages/website/notification-settings.mdx](../../src/documentation/pages/website/notification-settings.mdx)
 
 #### Support Form · BLK · CSS
 
 - **Why:** Native form fields; priority is a radio group styled as a segmented control; attachments are a multiple file input in a drop zone - no script.
 - **When:** Help centers and in-app support. General contact is get-in-touch; product feedback is feedback-form.
-- **States:** `default` · **Skill:** [references/components/support-form.md](references/components/support-form.md) · **Examples:** [src/documentation/pages/support-form.mdx](../../src/documentation/pages/support-form.mdx)
+- **States:** `default` · **Skill:** [references/components/support-form.md](references/components/support-form.md) · **Examples:** [src/documentation/pages/website/support-form.mdx](../../src/documentation/pages/website/support-form.mdx)
 
 #### Feedback Form · BLK · CSS
 
 - **Why:** Ratings are radio inputs; :has(:checked) highlights the choice and - in the inline variant - swaps the question for a thank-you. No script.
 - **When:** After a task, at the end of a help article, in a periodic survey. Bug reports go through support-form; multi-question surveys use survey-question.
-- **States:** `default` · **Skill:** [references/components/feedback-form.md](references/components/feedback-form.md) · **Examples:** [src/documentation/pages/feedback-form.mdx](../../src/documentation/pages/feedback-form.mdx)
+- **States:** `default` · **Skill:** [references/components/feedback-form.md](references/components/feedback-form.md) · **Examples:** [src/documentation/pages/website/feedback-form.mdx](../../src/documentation/pages/website/feedback-form.mdx)
 
 #### Survey Question · BLK · CSS
 
 - **Why:** Each question is a `<fieldset>` with its `<legend>`; responses are native radios, checkboxes or a textarea; :has(:checked) styles the choice. No script.
 - **When:** Surveys, onboarding questionnaires, research screeners. A single quick rating is feedback-form.
-- **States:** `default` · **Skill:** [references/components/survey-question.md](references/components/survey-question.md) · **Examples:** [src/documentation/pages/survey-question.mdx](../../src/documentation/pages/survey-question.mdx)
+- **States:** `default` · **Skill:** [references/components/survey-question.md](references/components/survey-question.md) · **Examples:** [src/documentation/pages/website/survey-question.mdx](../../src/documentation/pages/website/survey-question.mdx)
 
 #### Form Progress · BLK · CSS
 
 - **Why:** A native `<progress>` for the fraction and an ordered list with aria-current="step" for the stages - no script.
 - **When:** Multi-step forms: checkout, onboarding, applications. A workflow explanation is process-step; shipment progress is tracking-status.
-- **States:** `default` · **Skill:** [references/components/form-progress.md](references/components/form-progress.md) · **Examples:** [src/documentation/pages/form-progress.mdx](../../src/documentation/pages/form-progress.mdx)
+- **States:** `default` · **Skill:** [references/components/form-progress.md](references/components/form-progress.md) · **Examples:** [src/documentation/pages/website/form-progress.mdx](../../src/documentation/pages/website/form-progress.mdx)
 
 #### Empty State · BLK · CSS
 
 - **Why:** A heading, a sentence and one or two real actions - no script, no illustration library.
 - **When:** An empty list, inbox, search, project or dashboard. A failure is error-state; "nothing found" for a query also fits here.
-- **States:** `default` · **Skill:** [references/components/empty-state.md](references/components/empty-state.md) · **Examples:** [src/documentation/pages/empty-state.mdx](../../src/documentation/pages/empty-state.mdx)
+- **States:** `default` · **Skill:** [references/components/empty-state.md](references/components/empty-state.md) · **Examples:** [src/documentation/pages/website/empty-state.mdx](../../src/documentation/pages/website/empty-state.mdx)
 
 #### Error State · BLK · CSS
 
 - **Why:** role="alert" announces it; the details are a `<details>` with the error code in `<code>` - copyable, no script.
 - **When:** Failed loads, server errors, lost connections. A missing page is page-not-found; a field error belongs next to the field.
-- **States:** `default` · **Skill:** [references/components/error-state.md](references/components/error-state.md) · **Examples:** [src/documentation/pages/error-state.mdx](../../src/documentation/pages/error-state.mdx)
+- **States:** `default` · **Skill:** [references/components/error-state.md](references/components/error-state.md) · **Examples:** [src/documentation/pages/website/error-state.mdx](../../src/documentation/pages/website/error-state.mdx)
 
 #### Success State · BLK · CSS
 
 - **Why:** role="status" announces it politely; the ripple is a CSS animation that stands still under reduced motion.
 - **When:** After saving, sending, inviting, publishing. A completed purchase is order-confirmation; transient confirmations are toasts.
-- **States:** `default` · **Skill:** [references/components/success-state.md](references/components/success-state.md) · **Examples:** [src/documentation/pages/success-state.mdx](../../src/documentation/pages/success-state.mdx)
+- **States:** `default` · **Skill:** [references/components/success-state.md](references/components/success-state.md) · **Examples:** [src/documentation/pages/website/success-state.mdx](../../src/documentation/pages/website/success-state.mdx)
 
 #### Coming Soon · BLK · CSS
 
 - **Why:** A plain page section: the Countdown component ticks from data-until, the notify form is a real form - and everything reads without script.
 - **When:** A pre-launch page or a feature that is not out yet. A live launch event uses event-countdown; downtime uses maintenance.
-- **States:** `default` · **Skill:** [references/components/coming-soon.md](references/components/coming-soon.md) · **Examples:** [src/documentation/pages/coming-soon.mdx](../../src/documentation/pages/coming-soon.mdx)
+- **States:** `default` · **Skill:** [references/components/coming-soon.md](references/components/coming-soon.md) · **Examples:** [src/documentation/pages/website/coming-soon.mdx](../../src/documentation/pages/website/coming-soon.mdx)
 
 #### Maintenance · BLK · CSS
 
 - **Why:** Text, a `<time>` for the expected end and an indeterminate `<progress>` - honest, readable, no script.
 - **When:** Planned downtime and degraded service. A failed request is error-state; a release in the future is coming-soon.
-- **States:** `default` · **Skill:** [references/components/maintenance.md](references/components/maintenance.md) · **Examples:** [src/documentation/pages/maintenance.mdx](../../src/documentation/pages/maintenance.mdx)
+- **States:** `default` · **Skill:** [references/components/maintenance.md](references/components/maintenance.md) · **Examples:** [src/documentation/pages/website/maintenance.mdx](../../src/documentation/pages/website/maintenance.mdx)
 
 #### 404 Page · BLK · CSS
 
 - **Why:** A heading, a GET search form and a list of links - the page works fully without script, as an error page must.
 - **When:** The 404 page of a site. Server failures are error-state (data-variant="page").
-- **States:** `default` · **Skill:** [references/components/page-not-found.md](references/components/page-not-found.md) · **Examples:** [src/documentation/pages/page-not-found.mdx](../../src/documentation/pages/page-not-found.mdx)
+- **States:** `default` · **Skill:** [references/components/page-not-found.md](references/components/page-not-found.md) · **Examples:** [src/documentation/pages/website/page-not-found.mdx](../../src/documentation/pages/website/page-not-found.mdx)
 
 #### Resource Item · BLK · CSS
 
 - **Why:** A card whose title link covers it; the type label and the action cue change with the resource - no script.
 - **When:** Resource libraries, learning centers, "further reading". A file with format and size is download-item; a help topic is help-category.
-- **States:** `default` · **Skill:** [references/components/resource-item.md](references/components/resource-item.md) · **Examples:** [src/documentation/pages/resource-item.mdx](../../src/documentation/pages/resource-item.mdx)
+- **States:** `default` · **Skill:** [references/components/resource-item.md](references/components/resource-item.md) · **Examples:** [src/documentation/pages/website/resource-item.mdx](../../src/documentation/pages/website/resource-item.mdx)
 
 #### Download Item · BLK · CSS
 
 - **Why:** An `<a download>` link with the format and size in its name; the checksum is a `<details>` - no script.
 - **When:** Download pages, release assets, press kits. A resource to read online is resource-item.
-- **States:** `default` · **Skill:** [references/components/download-item.md](references/components/download-item.md) · **Examples:** [src/documentation/pages/download-item.mdx](../../src/documentation/pages/download-item.mdx)
+- **States:** `default` · **Skill:** [references/components/download-item.md](references/components/download-item.md) · **Examples:** [src/documentation/pages/website/download-item.mdx](../../src/documentation/pages/website/download-item.mdx)
 
 #### Docs Navigation · BLK · CSS
 
 - **Why:** Lists inside a `<nav>`, groups as `<details>` - collapsible without script; aria-current="page" marks where you are.
 - **When:** The sidebar of a documentation site or help center. The headings of one page are contents; a trail is breadcrumbs.
-- **States:** `default` · **Skill:** [references/components/docs-navigation.md](references/components/docs-navigation.md) · **Examples:** [src/documentation/pages/docs-navigation.mdx](../../src/documentation/pages/docs-navigation.mdx)
+- **States:** `default` · **Skill:** [references/components/docs-navigation.md](references/components/docs-navigation.md) · **Examples:** [src/documentation/pages/website/docs-navigation.mdx](../../src/documentation/pages/website/docs-navigation.mdx)
 
 #### Docs Content · BLK · CSS
 
 - **Why:** Long-form HTML - headings, paragraphs, `<pre>``<code>`, tables, notes - styled for reading in one class scope; no script.
 - **When:** A page of documentation. The surrounding nav is docs-navigation; a how-to answer is help-article; code with tabs and copy is code-block.
-- **States:** `default` · **Skill:** [references/components/docs-content.md](references/components/docs-content.md) · **Examples:** [src/documentation/pages/docs-content.mdx](../../src/documentation/pages/docs-content.mdx)
+- **States:** `default` · **Skill:** [references/components/docs-content.md](references/components/docs-content.md) · **Examples:** [src/documentation/pages/website/docs-content.mdx](../../src/documentation/pages/website/docs-content.mdx)
 
 #### Code Example · BLK · CSS
 
 - **Why:** The tabs are radio inputs read by :has() - no script to switch; line numbers are CSS counters; copying is the one line of page script (Clipboard API).
 - **When:** Install instructions, snippets and examples in docs and blog posts. A full terminal mockup is the Code mockup component.
-- **States:** `default` · **Skill:** [references/components/code-block.md](references/components/code-block.md) · **Examples:** [src/documentation/pages/code-block.mdx](../../src/documentation/pages/code-block.mdx)
+- **States:** `default` · **Skill:** [references/components/code-block.md](references/components/code-block.md) · **Examples:** [src/documentation/pages/website/code-block.mdx](../../src/documentation/pages/website/code-block.mdx)
 
 #### Release Header · BLK · CSS
 
 - **Why:** A header with a `<time>`, badges and links - nothing to run.
 - **When:** The top of a changelog entry or release page. The individual changes are release-item; plans are roadmap-item.
-- **States:** `default` · **Skill:** [references/components/release-header.md](references/components/release-header.md) · **Examples:** [src/documentation/pages/release-header.mdx](../../src/documentation/pages/release-header.mdx)
+- **States:** `default` · **Skill:** [references/components/release-header.md](references/components/release-header.md) · **Examples:** [src/documentation/pages/website/release-header.mdx](../../src/documentation/pages/website/release-header.mdx)
 
 #### Release Item · BLK · CSS
 
 - **Why:** An article with a typed label (one data attribute colors it) - the kind is always written, not only colored. No script.
 - **When:** The entries under a release-header. Future work is roadmap-item.
-- **States:** `default` · **Skill:** [references/components/release-item.md](references/components/release-item.md) · **Examples:** [src/documentation/pages/release-item.mdx](../../src/documentation/pages/release-item.mdx)
+- **States:** `default` · **Skill:** [references/components/release-item.md](references/components/release-item.md) · **Examples:** [src/documentation/pages/website/release-item.mdx](../../src/documentation/pages/website/release-item.mdx)
 
 #### Roadmap Item · BLK · CSS
 
 - **Why:** Status is one data attribute, progress a native `<progress>`, the vote a checkbox read by :has() - no script.
 - **When:** Public roadmaps and feature boards. Shipped changes belong in release-item.
-- **States:** `default` · **Skill:** [references/components/roadmap-item.md](references/components/roadmap-item.md) · **Examples:** [src/documentation/pages/roadmap-item.mdx](../../src/documentation/pages/roadmap-item.mdx)
+- **States:** `default` · **Skill:** [references/components/roadmap-item.md](references/components/roadmap-item.md) · **Examples:** [src/documentation/pages/website/roadmap-item.mdx](../../src/documentation/pages/website/roadmap-item.mdx)
 
 #### Help Category · BLK · CSS
 
 - **Why:** The title link covers the card; the popular-article links stay clickable above it - two levels of targets, no script.
 - **When:** Help-center front pages. A single article is help-article; a resource library is resource-item.
-- **States:** `default` · **Skill:** [references/components/help-category.md](references/components/help-category.md) · **Examples:** [src/documentation/pages/help-category.mdx](../../src/documentation/pages/help-category.mdx)
+- **States:** `default` · **Skill:** [references/components/help-category.md](references/components/help-category.md) · **Examples:** [src/documentation/pages/website/help-category.mdx](../../src/documentation/pages/website/help-category.mdx)
 
 #### Help Article · BLK · CSS
 
 - **Why:** An ordered list of steps with counters, a `<details>` for "still stuck", a CSS-only "was this helpful?" - no script.
 - **When:** Help-center articles and how-tos. Reference documentation is docs-content.
-- **States:** `default` · **Skill:** [references/components/help-article.md](references/components/help-article.md) · **Examples:** [src/documentation/pages/help-article.mdx](../../src/documentation/pages/help-article.mdx)
+- **States:** `default` · **Skill:** [references/components/help-article.md](references/components/help-article.md) · **Examples:** [src/documentation/pages/website/help-article.mdx](../../src/documentation/pages/website/help-article.mdx)
 
 #### Search Box · BLK · CSS
 
 - **Why:** A `<search>` landmark around a GET form: it works without script and the URL is shareable; the expanding variant is a :focus-within transition.
 - **When:** Site and app search. Suggestions while typing are search-suggestions; the results page uses search-summary and search-result.
-- **States:** `default` · **Skill:** [references/components/search-box.md](references/components/search-box.md) · **Examples:** [src/documentation/pages/search-box.mdx](../../src/documentation/pages/search-box.mdx)
+- **States:** `default` · **Skill:** [references/components/search-box.md](references/components/search-box.md) · **Examples:** [src/documentation/pages/website/search-box.mdx](../../src/documentation/pages/website/search-box.mdx)
 
 #### Search Suggestions · BLK · CSS
 
 - **Why:** The panel follows the ARIA combobox / listbox pattern; matches are `<mark>`s. The native variant is a `<datalist>` - zero script.
 - **When:** Under a search-box. The full results page is search-summary + search-result.
-- **States:** `default` · **Skill:** [references/components/search-suggestions.md](references/components/search-suggestions.md) · **Examples:** [src/documentation/pages/search-suggestions.mdx](../../src/documentation/pages/search-suggestions.mdx)
+- **States:** `default` · **Skill:** [references/components/search-suggestions.md](references/components/search-suggestions.md) · **Examples:** [src/documentation/pages/website/search-suggestions.mdx](../../src/documentation/pages/website/search-suggestions.mdx)
 
 #### Search Summary · BLK · CSS
 
 - **Why:** A polite live region (role="status") announces new counts as filters change - a sentence, not a widget.
 - **When:** At the top of search results and filtered collections. The query field itself is search-box.
-- **States:** `default` · **Skill:** [references/components/search-summary.md](references/components/search-summary.md) · **Examples:** [src/documentation/pages/search-summary.mdx](../../src/documentation/pages/search-summary.mdx)
+- **States:** `default` · **Skill:** [references/components/search-summary.md](references/components/search-summary.md) · **Examples:** [src/documentation/pages/website/search-summary.mdx](../../src/documentation/pages/website/search-summary.mdx)
 
 #### Search Result · BLK · CSS
 
 - **Why:** An article with a stretched title link and `<mark>`ed matches - all text, all native.
 - **When:** Search results pages and command-palette lists. Catalog grids are product-item.
-- **States:** `default` · **Skill:** [references/components/search-result.md](references/components/search-result.md) · **Examples:** [src/documentation/pages/search-result.mdx](../../src/documentation/pages/search-result.mdx)
+- **States:** `default` · **Skill:** [references/components/search-result.md](references/components/search-result.md) · **Examples:** [src/documentation/pages/website/search-result.mdx](../../src/documentation/pages/website/search-result.mdx)
 
 #### Filter Bar · BLK · CSS
 
 - **Why:** A GET form of native selects and checkbox chips (:has(:checked) fills them) - filters are shareable URLs; the row scrolls sideways when narrow.
 - **When:** Above product grids, listings and tables with a few filters. Many filters belong in filter-sidebar; applied ones show in active-filters.
-- **States:** `default` · **Skill:** [references/components/filter-bar.md](references/components/filter-bar.md) · **Examples:** [src/documentation/pages/filter-bar.mdx](../../src/documentation/pages/filter-bar.mdx)
+- **States:** `default` · **Skill:** [references/components/filter-bar.md](references/components/filter-bar.md) · **Examples:** [src/documentation/pages/website/filter-bar.mdx](../../src/documentation/pages/website/filter-bar.mdx)
 
 #### Filter Sidebar · BLK · CSS
 
 - **Why:** Groups are `<details>`, controls are checkboxes, radios, number inputs and a switch in one GET form - the filter state is the URL. No script.
 - **When:** Catalogs and listings with many facets. A few quick filters fit in filter-bar.
-- **States:** `default` · **Skill:** [references/components/filter-sidebar.md](references/components/filter-sidebar.md) · **Examples:** [src/documentation/pages/filter-sidebar.mdx](../../src/documentation/pages/filter-sidebar.mdx)
+- **States:** `default` · **Skill:** [references/components/filter-sidebar.md](references/components/filter-sidebar.md) · **Examples:** [src/documentation/pages/website/filter-sidebar.mdx](../../src/documentation/pages/website/filter-sidebar.mdx)
 
 #### Active Filters · BLK · CSS
 
 - **Why:** Each chip is a link to the same results without that filter - removal works without script, and every link says what it removes.
 - **When:** Above filtered results, under filter-bar or beside filter-sidebar.
-- **States:** `default` · **Skill:** [references/components/active-filters.md](references/components/active-filters.md) · **Examples:** [src/documentation/pages/active-filters.mdx](../../src/documentation/pages/active-filters.mdx)
+- **States:** `default` · **Skill:** [references/components/active-filters.md](references/components/active-filters.md) · **Examples:** [src/documentation/pages/website/active-filters.mdx](../../src/documentation/pages/website/active-filters.mdx)
 
 #### Sort Control · BLK · CSS
 
 - **Why:** A native Select, a radio group, or a popover holding radios - each submits with the form; none needs script to render or choose.
 - **When:** Above lists, grids and tables. Narrowing is filter-bar; changing the layout is view-switcher.
-- **States:** `default` · **Skill:** [references/components/sort-control.md](references/components/sort-control.md) · **Examples:** [src/documentation/pages/sort-control.mdx](../../src/documentation/pages/sort-control.mdx)
+- **States:** `default` · **Skill:** [references/components/sort-control.md](references/components/sort-control.md) · **Examples:** [src/documentation/pages/website/sort-control.mdx](../../src/documentation/pages/website/sort-control.mdx)
 
 #### View Switcher · BLK · CSS
 
 - **Why:** Radio inputs read by :has() on the shared parent switch the collection's layout - the choice is keyboard-accessible and survives as a form value.
 - **When:** Above galleries, file lists, products. Ordering is sort-control; narrowing is filter-bar.
-- **States:** `default` · **Skill:** [references/components/view-switcher.md](references/components/view-switcher.md) · **Examples:** [src/documentation/pages/view-switcher.mdx](../../src/documentation/pages/view-switcher.mdx)
+- **States:** `default` · **Skill:** [references/components/view-switcher.md](references/components/view-switcher.md) · **Examples:** [src/documentation/pages/website/view-switcher.mdx](../../src/documentation/pages/website/view-switcher.mdx)
 
 #### Collection Pagination · BLK · CSS
 
 - **Why:** Links, not buttons - every page has a URL; the per-page choice is a GET Select. No script.
 - **When:** Under search results, tables and catalogs. An endless list uses load-more.
-- **States:** `default` · **Skill:** [references/components/collection-pagination.md](references/components/collection-pagination.md) · **Examples:** [src/documentation/pages/collection-pagination.mdx](../../src/documentation/pages/collection-pagination.mdx)
+- **States:** `default` · **Skill:** [references/components/collection-pagination.md](references/components/collection-pagination.md) · **Examples:** [src/documentation/pages/website/collection-pagination.mdx](../../src/documentation/pages/website/collection-pagination.mdx)
 
 #### Load More · BLK · CSS
 
 - **Why:** The button is a link to the next page (works without script); aria-busy on it switches the label to a spinner in CSS while your script fetches.
 - **When:** Feeds, galleries and catalogs where page numbers matter less. Exact pages use collection-pagination.
-- **States:** `default` · **Skill:** [references/components/load-more.md](references/components/load-more.md) · **Examples:** [src/documentation/pages/load-more.mdx](../../src/documentation/pages/load-more.mdx)
+- **States:** `default` · **Skill:** [references/components/load-more.md](references/components/load-more.md) · **Examples:** [src/documentation/pages/website/load-more.mdx](../../src/documentation/pages/website/load-more.mdx)
 
 #### Tag Cloud · BLK · CSS
 
 - **Why:** A list of links; one data attribute sets the size step, the count is text - no script.
 - **When:** Blog and knowledge-base sidebars, archive pages. The tags of one item are tag-list.
-- **States:** `default` · **Skill:** [references/components/tag-cloud.md](references/components/tag-cloud.md) · **Examples:** [src/documentation/pages/tag-cloud.mdx](../../src/documentation/pages/tag-cloud.mdx)
+- **States:** `default` · **Skill:** [references/components/tag-cloud.md](references/components/tag-cloud.md) · **Examples:** [src/documentation/pages/website/tag-cloud.mdx](../../src/documentation/pages/website/tag-cloud.mdx)
 
 #### Tag List · BLK · CSS
 
 - **Why:** A labelled list of links; colors come from one custom property per tag. No script.
 - **When:** Under a post title, on a card, in a task. All tags of a site are tag-cloud.
-- **States:** `default` · **Skill:** [references/components/tag-list.md](references/components/tag-list.md) · **Examples:** [src/documentation/pages/tag-list.mdx](../../src/documentation/pages/tag-list.mdx)
+- **States:** `default` · **Skill:** [references/components/tag-list.md](references/components/tag-list.md) · **Examples:** [src/documentation/pages/website/tag-list.mdx](../../src/documentation/pages/website/tag-list.mdx)
 
 #### Category Menu · BLK · CSS
 
 - **Why:** A `<nav>` of links with aria-current - each category has its own URL; the variants are layout only. No script.
 - **When:** Blog, shop and help-center category navigation. Facets that combine are filter-bar; page sections are contents.
-- **States:** `default` · **Skill:** [references/components/category-menu.md](references/components/category-menu.md) · **Examples:** [src/documentation/pages/category-menu.mdx](../../src/documentation/pages/category-menu.mdx)
+- **States:** `default` · **Skill:** [references/components/category-menu.md](references/components/category-menu.md) · **Examples:** [src/documentation/pages/website/category-menu.mdx](../../src/documentation/pages/website/category-menu.mdx)
 
 #### Breadcrumbs · BLK · CSS
 
 - **Why:** The Breadcrumb component in a `<nav>`; a container query swaps the trail for a back link when narrow; the collapsed levels are a popover - no script.
 - **When:** Above the title of nested pages: docs, help, shop categories. Sibling sections are category-menu.
-- **States:** `default` · **Skill:** [references/components/breadcrumbs.md](references/components/breadcrumbs.md) · **Examples:** [src/documentation/pages/breadcrumbs.mdx](../../src/documentation/pages/breadcrumbs.mdx)
+- **States:** `default` · **Skill:** [references/components/breadcrumbs.md](references/components/breadcrumbs.md) · **Examples:** [src/documentation/pages/website/breadcrumbs.mdx](../../src/documentation/pages/website/breadcrumbs.mdx)
 
 #### Contents · BLK · CSS
 
 - **Why:** A nav of fragment links; nesting shows the outline, aria-current="location" the section in view (set by your scroll observer or server-side) - the links work alone.
 - **When:** Long articles and docs pages. Navigation between pages is docs-navigation; the site-wide trail is breadcrumbs.
-- **States:** `default` · **Skill:** [references/components/contents.md](references/components/contents.md) · **Examples:** [src/documentation/pages/contents.mdx](../../src/documentation/pages/contents.mdx)
+- **States:** `default` · **Skill:** [references/components/contents.md](references/components/contents.md) · **Examples:** [src/documentation/pages/website/contents.mdx](../../src/documentation/pages/website/contents.mdx)
 
 #### Quick Links · BLK · CSS
 
 - **Why:** A nav of plain links - the variants are layout and emphasis only. No script.
 - **When:** Dashboards, help-center fronts, 404 pages, footers of long pages. Content categories are category-menu.
-- **States:** `default` · **Skill:** [references/components/quick-links.md](references/components/quick-links.md) · **Examples:** [src/documentation/pages/quick-links.mdx](../../src/documentation/pages/quick-links.mdx)
+- **States:** `default` · **Skill:** [references/components/quick-links.md](references/components/quick-links.md) · **Examples:** [src/documentation/pages/website/quick-links.mdx](../../src/documentation/pages/website/quick-links.mdx)

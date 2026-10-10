@@ -1,6 +1,7 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { flattenNav, NAV } from './nav';
+import { pageRel, resolvePageRefs } from './page-dirs';
 import { readSkillMeta } from './repo';
 import { capturePageWindowPlugin, releasePagesPlugin } from './release-pages';
 /**
@@ -28,6 +29,15 @@ export const doctypePlugin = {
         });
         return cleaned.startsWith('<!DOCTYPE') ? cleaned : `<!DOCTYPE html>\n${cleaned}`;
     },
+};
+/** page-html: pages render into section folders (page-dirs.ts), so every link
+ *  and asset reference is resolved from the page's own folder - the owner's
+ *  resolvePageRefs, run here on every rendered page. */
+export const pageRefsPlugin = {
+    name: 'page-refs',
+    phase: 'page-html',
+    mode: 'build',
+    fn: (html, relativeOutputHtmlFilePath) => resolvePageRefs(String(html), String(relativeOutputHtmlFilePath)),
 };
 /** TOC-compatible id, same slug rule as the old runtime buildToc. */
 const tocId = (text) => 'toc-' + text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -146,15 +156,17 @@ export const searchIndexPlugin = {
             // submenu children (e.g. Width & Height under Sizing) are first-class pages
             for (const item of flattenNav(section.items)) {
                 const meta = readSkillMeta(item.href.replace(/\.html$/, ''));
+                // h: the page from the docs root (`data-display/badge.html`) - the palette
+                // joins it with <html data-docs-root> (layout.ts), whatever page is open
                 entries.push({
                     t: item.label,
-                    h: item.href,
+                    h: pageRel(item.href.replace(/\.html$/, '')),
                     s: section.heading,
                     // explicit page-level type (sub-pages) wins over the component skill
                     ...(item.type ? { d: item.type } : meta ? { d: meta.type } : {}),
                 });
-                for (const sec of collected.get(item.href) ?? []) {
-                    entries.push({ t: sec.text, h: `${item.href}#${sec.id}`, s: item.label });
+                for (const sec of collected.get(pageRel(item.href.replace(/\.html$/, ''))) ?? collected.get(item.href) ?? []) {
+                    entries.push({ t: sec.text, h: `${pageRel(item.href.replace(/\.html$/, ''))}#${sec.id}`, s: item.label });
                 }
             }
         }
@@ -192,6 +204,7 @@ export const cleanHydrationRuntimePlugin = {
     },
 };
 export const docsPlugins = [
+    pageRefsPlugin,
     doctypePlugin,
     tocPlugin,
     searchIndexPlugin,

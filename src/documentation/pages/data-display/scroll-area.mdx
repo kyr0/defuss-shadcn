@@ -1,0 +1,127 @@
+---
+title: "Scroll Area"
+description: "Scroll Area component - custom-styled scrollable containers."
+slug: "scroll-area"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="scroll-area" title="Scroll Area" component="scroll-area">
+  Scrollable container with custom-styled thin scrollbars.
+</PageHeader>
+
+<SkillPanel component="scroll-area">
+  <SkillField label="Native basis">
+<SkillText>CSS overflow with custom-styled scrollbars.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" title="scrollable container"><code>overflow</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-width" title="standard thin scrollbar"><code>scrollbar-width</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter" title="prevents layout shift from scrollbar appearance"><code>scrollbar-gutter</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior" title="prevents scroll chaining"><code>overscroll-behavior</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar" title="custom scrollbar styling"><code>::-webkit-scrollbar</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.scroll-area</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default"
+<div
+  class="scroll-area"
+  style="
+    height: 12rem;
+    max-width: 20rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+  "
+>
+  <div style="font-size: 0.8125rem; color: var(--foreground)">
+    <p style="margin: 0 0 0.75rem; font-weight: 500">Release history</p>
+    <p style="margin: 0 0 0.5rem">v1.0.0-alpha</p><p style="margin: 0 0 0.5rem">v0.9.0</p
+    ><p style="margin: 0 0 0.5rem">v0.8.2</p><p style="margin: 0 0 0.5rem">v0.8.1</p
+    ><p style="margin: 0 0 0.5rem">v0.8.0</p><p style="margin: 0 0 0.5rem">v0.7.0</p
+    ><p style="margin: 0 0 0.5rem">v0.6.0</p><p style="margin: 0 0 0.5rem">v0.5.0</p
+    ><p style="margin: 0 0 0.5rem">v0.4.0</p><p style="margin: 0 0 0.5rem">v0.3.0</p>
+  </div>
+</div>
+```
+
+```html example label="Density" hint="For a scroll area the whitespace policy is the scrollbar gutter: data-density scales the thumb thickness - compact 4px, comfortable 6px (the unsized default), spacious 8px (standard scrollbar-width: medium)." previewStyle="align-items:flex-start;gap:1.5rem;"
+<div class="flex flex-wrap gap-4" style="align-items: flex-start">
+  <div>
+    <p class="demo-label">Compact</p>
+    <div
+      class="scroll-area"
+      data-density="compact"
+      style="
+        height: 9rem;
+        width: 14rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 0.75rem;
+      "
+    >
+      <p class="m-0" style="width: 28rem">Overflowing content - the 4px thumb keeps the gutter minimal.</p>
+    </div>
+  </div>
+  <div>
+    <p class="demo-label">Comfortable</p>
+    <div
+      class="scroll-area"
+      data-density="comfortable"
+      style="
+        height: 9rem;
+        width: 14rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 0.75rem;
+      "
+    >
+      <p class="m-0" style="width: 28rem">Overflowing content - the default 6px thumb.</p>
+    </div>
+  </div>
+  <div>
+    <p class="demo-label">Spacious</p>
+    <div
+      class="scroll-area"
+      data-density="spacious"
+      style="
+        height: 9rem;
+        width: 14rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 0.75rem;
+      "
+    >
+      <p class="m-0" style="width: 28rem">Overflowing content - an 8px thumb, easier to grab.</p>
+    </div>
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract - verified against <a class="link" href="../schemas/scroll-area.schema.json"><code>scroll-area.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `scrollTop` | `number` | `—` | `0` | Vertical scroll position in px - set by the panel, tracked while scrolling inside the preview. |
+```
+
+</StatesSection>
+
+<SourceFiles component="scroll-area" section="css">
+  <SourceNote for="css">Styles for the scroll-area component. Uses design tokens for colors, spacing, and radius.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -39,7 +39,8 @@ const isShellFile = (rel: string): boolean =>
   SHELL_FILES.includes(rel) || SHELL_DIRS.some((d) => rel.startsWith(`${d}/`));
 
 const isOwnFile = (rel: string, name: string): boolean =>
-  rel === `documentation/${name}.html` || rel.startsWith(`components/${name}/`);
+  // VERIFIED: the page sits in its section folder (page-dirs.ts): documentation/<section>/<name>.html
+  new RegExp(`^documentation/(?:[a-z0-9-]+/)?${name}\\.html$`).test(rel) || rel.startsWith(`components/${name}/`);
 
 const ENCODER = new TextEncoder();
 

@@ -1,0 +1,227 @@
+---
+title: "Vibe Coding / Agentic Engineering"
+description: "Build with defuss-shadcn through an AI coding agent - install the Agent Skill into Claude Code, Codex, Cursor, Gemini CLI, Copilot or Windsurf, then describe the UI and let the agent write the HTML."
+slug: "vibe-coding"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Terminal, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="vibe-coding" title="Vibe Coding / Agentic Engineering">
+  defuss-shadcn is written for agents as much as for people: every component documents its exact HTML in a component skill, and one Agent Skill ties them together. Install it into your coding agent, describe the UI you want, and the agent composes it from the real components - no framework, no build step.
+</PageHeader>
+
+<h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">How the agent knows the system</h2>
+
+<p class="text-sm text-muted-foreground mb-3">The skill is one file - <DocLink href="https://github.com/kyr0/defuss-shadcn/blob/main/skills/defuss-shadcn/SKILL.md" target="_blank"><code>skills/defuss-shadcn/SKILL.md</code></DocLink> - with the install paths, the rules, a map of every documentation page and an index of every component skill. From there the agent reads the <DocLink href="component-skills.html">component skills</DocLink> it needs (structure, attributes, variants, ARIA) and copies the pattern - the same files you would read.</p>
+<p class="text-sm text-muted-foreground mb-6">Vibe coding gets you a first draft fast; agentic engineering keeps it right. The system itself is built that way - every claim in these docs is checked by the verifier, see <DocLink href="architecture.html">Verified Agentic Engineering (VAE)</DocLink>.</p>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 id="install-as-an-ai-agent-skill" style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Install as an AI Agent Skill</h2>
+  <p class="text-sm text-muted-foreground mb-3"><code>defuss-shadcn</code> can be installed directly into Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, Windsurf, and other Agent Skills-compatible coding agents.</p>
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Claude Code</h3>
+  <p class="text-sm text-muted-foreground mb-3">Claude Code can install <code>defuss-shadcn</code> directly from its native plugin marketplace. Inside Claude Code:</p>
+  <Terminal commands={"/plugin marketplace add kyr0/defuss-shadcn\n/plugin install defuss-shadcn@defuss-shadcn"} prompt="›" title="Claude Code" />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">Or from your shell:</p>
+  <Terminal commands={"claude plugin marketplace add kyr0/defuss-shadcn\nclaude plugin install defuss-shadcn@defuss-shadcn"} />
+  <p class="text-sm text-muted-foreground mt-2">Start a new Claude Code session after installation.</p>
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Codex, Cursor, Gemini CLI, Copilot, Windsurf, and others</h3>
+  <p class="text-sm text-muted-foreground mb-3">The repository also exposes <code>defuss-shadcn</code> as a standard Agent Skill. The simplest cross-agent installation uses the open <DocLink href="https://skills.sh/" target="_blank"><code>skills</code></DocLink> CLI:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn --skill defuss-shadcn"} />
+  <p class="text-sm text-muted-foreground mt-2 mb-3">The installer detects/selects supported coding agents interactively.</p>
+  <p class="text-sm text-muted-foreground mb-3">Install specifically for <strong>Codex</strong>:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Claude Code</strong>:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Cursor</strong>:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent cursor"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Gemini CLI</strong>:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent gemini-cli"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>GitHub Copilot</strong>:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent github-copilot"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For <strong>Windsurf</strong>:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent windsurf"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">Install for several agents at once:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent claude-code \\\n  --agent codex \\\n  --agent cursor \\\n  --agent gemini-cli"} />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Global installation</h3>
+  <p class="text-sm text-muted-foreground mb-3">By default, <code>skills</code> installs into the current project. Use <code>--global</code> / <code>-g</code> to make <code>defuss-shadcn</code> available across projects:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">Or interactively choose an agent and global scope:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn"} />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Non-interactive installation</h3>
+  <p class="text-sm text-muted-foreground mb-3">Useful for bootstrap scripts and development environments:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn \\\n  --skill defuss-shadcn \\\n  --agent codex \\\n  --global \\\n  --yes"} />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Update installed skills</h3>
+  <Terminal commands={"npx skills update"} />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">For Claude Code's native marketplace:</p>
+  <Terminal commands={"/plugin marketplace update defuss-shadcn"} prompt="›" title="Claude Code" />
+
+  <h3 style="margin:1.75rem 0 0.5rem;font-size:1rem;font-weight:500;">Using the skill</h3>
+  <p class="text-sm text-muted-foreground mb-3">Once installed, simply ask the agent to build UI with <code>defuss-shadcn</code>. Codex can also invoke the skill explicitly:</p>
+  <Terminal commands={"$defuss-shadcn build a settings page with a sidebar, tabs and a form"} prompt="›" title="Codex" />
+</div>
+
+<div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);">
+  <h2 id="task-skills" style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.02em;margin:0 0 0.75rem;">Task skills: plan, theme, review</h2>
+  <p class="text-sm text-muted-foreground mb-3">The <code>defuss-shadcn</code> skill teaches the markup. Three task skills ship next to it, for three jobs. They add only what is specific to defuss-shadcn and leave the process - evidence, tests, gates - to the method a project already uses, such as <DocLink href="https://github.com/kyr0/defuss-vae" target="_blank">defuss-vae</DocLink>. Their names carry a <code>shadcn-</code> prefix so they install next to defuss-vae's <code>plan</code> and <code>review</code> in harnesses that copy skills by folder name. Each folder is self-contained and generated from the release it ships with: the catalog, the token roles and the checkers' vocabulary cannot drift from the components.</p>
+  <div class="table-container mb-3">
+    <table class="table">
+      <thead>
+        <tr class="table-row"><th class="table-head">Skill</th><th class="table-head">What it does</th><th class="table-head">What checks it</th></tr>
+      </thead>
+      <tbody>
+        <tr class="table-row"><td class="table-cell"><code>shadcn-plan</code></td><td class="table-cell">Plans a page, a whole frontend or a new component: it first finds the reusable units across the whole plan and composes the larger parts from them, prefers an existing component or one of its variants over a new one, and gives every unit a type (ATM to TPL), its tokens, states, APIs, boundaries, docs and examples.</td><td class="table-cell">A plan names a check for every invariant.</td></tr>
+        <tr class="table-row"><td class="table-cell"><code>shadcn-theme</code></td><td class="table-cell">Creates or updates a theme from text, colours, a design guide or images (when the agent can read them): every token in light and dark, in the format the <DocLink href="theme-designer.html">Theme Designer</DocLink> imports.</td><td class="table-cell"><code>scripts/theme-check.mjs</code>: unknown and missing tokens, one radius, WCAG contrast per pair - with the nearest lightness that passes.</td></tr>
+        <tr class="table-row"><td class="table-cell"><code>shadcn-review</code></td><td class="table-cell">Reviews markup or a new component against the guides: native elements first, the data-attribute API, the State API, composition and boundaries, tokens, accessibility - and fixes what it confirms.</td><td class="table-cell"><code>scripts/markup-check.mjs</code>: modifier classes, parts and values a component does not have, invented tokens, loading order, globals, unnamed icon buttons.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-sm text-muted-foreground mb-3">How the two skill families divide - defuss-shadcn's tell the agent <em>what</em> to build, defuss-vae's <em>how</em> to work:</p>
+
+```html example label="How the skills divide" schema="none" hint="defuss-shadcn's skills tell the agent what to build - the components as their documented markup, a plan from reusable units, a checked theme, a review - and lead to a consistent UI. defuss-vae's skills tell it how to work - plan, implement, the gate, finalize - and lead to quality that scales. Play the steps, or click a node."
+<figure
+  class="diagram"
+  id="skills-map"
+  aria-label="How the skills divide: defuss-shadcn's skills tell the agent what to build - the components, their guidelines, a plan, a theme, a review - and lead to a consistent UI; defuss-vae's skills tell it how to work - plan, implement, gate, finalize - and lead to quality that scales"
+  style="--diagram-node-w: 8rem"
+  ><script type="application/json" class="diagram-spec">
+    {
+      "type": "flow",
+      "steps": true,
+      "interactive": true,
+      "cols": 6,
+      "nodes": [
+        {
+          "id": "agent",
+          "name": "Your agent",
+          "meta": "Claude Code · Codex · Cursor · Gemini CLI · Copilot · Windsurf",
+          "col": 1,
+          "row": 2,
+          "step": 1,
+          "tone": "accent"
+        },
+        {
+          "id": "ref",
+          "name": "defuss-shadcn",
+          "eyebrow": "defuss-shadcn",
+          "meta": "every component as its documented markup; the rules",
+          "col": 2,
+          "row": 1,
+          "step": 2
+        },
+        {
+          "id": "plan",
+          "name": "shadcn-plan",
+          "eyebrow": "defuss-shadcn",
+          "meta": "reusable units first, then compose",
+          "col": 3,
+          "row": 1,
+          "step": 3
+        },
+        {
+          "id": "theme",
+          "name": "shadcn-theme",
+          "eyebrow": "defuss-shadcn",
+          "meta": "a theme from a brief, checked",
+          "col": 4,
+          "row": 1,
+          "step": 4
+        },
+        {
+          "id": "review",
+          "name": "shadcn-review",
+          "eyebrow": "defuss-shadcn",
+          "meta": "the checker, then judgment",
+          "col": 5,
+          "row": 1,
+          "step": 5
+        },
+        {
+          "id": "ui",
+          "name": "A consistent UI",
+          "meta": "no invented classes, no slop",
+          "col": 6,
+          "row": 1,
+          "step": 6,
+          "shape": "pill",
+          "tone": "ok"
+        },
+        {
+          "id": "vplan",
+          "name": "plan",
+          "eyebrow": "defuss-vae",
+          "meta": "trace · probe · the smallest plan",
+          "col": 2,
+          "row": 3,
+          "step": 7
+        },
+        {
+          "id": "vimpl",
+          "name": "implement",
+          "eyebrow": "defuss-vae",
+          "meta": "fully agentic",
+          "col": 3,
+          "row": 3,
+          "step": 8
+        },
+        {
+          "id": "vgate",
+          "name": "gate",
+          "eyebrow": "defuss-vae",
+          "meta": "verify → review → docs",
+          "col": 4,
+          "row": 3,
+          "step": 9,
+          "tone": "warn"
+        },
+        {
+          "id": "vfinal",
+          "name": "finalize",
+          "eyebrow": "defuss-vae",
+          "meta": "commits · changelog · memory",
+          "col": 5,
+          "row": 3,
+          "step": 10
+        },
+        {
+          "id": "quality",
+          "name": "Quality that scales",
+          "meta": "failure modes fixed, docs that hold",
+          "col": 6,
+          "row": 3,
+          "step": 11,
+          "shape": "pill",
+          "tone": "ok"
+        }
+      ],
+      "edges": [
+        { "from": "agent", "to": "ref", "label": "what to build" },
+        { "from": "ref", "to": "plan" },
+        { "from": "plan", "to": "theme" },
+        { "from": "theme", "to": "review" },
+        { "from": "review", "to": "ui" },
+        { "from": "agent", "to": "vplan", "label": "how to work" },
+        { "from": "vplan", "to": "vimpl" },
+        { "from": "vimpl", "to": "vgate" },
+        { "from": "vgate", "to": "vimpl", "label": "fix", "tone": "warn" },
+        { "from": "vgate", "to": "vfinal" },
+        { "from": "vfinal", "to": "quality" }
+      ]
+    }
+  </script></figure
+>
+```
+
+  <p class="text-sm text-muted-foreground mb-3">The checkers run with Node 18 or later (or Bun) and have no dependencies. In Claude Code the plugin installs all four skills; plan and review run when you ask for them:</p>
+  <Terminal commands={"/defuss-shadcn:shadcn-theme a calm Nordic theme: slate blues, a teal brand, soft corners\n/defuss-shadcn:shadcn-plan an issue tracker with a board, a list and a detail sheet\n/defuss-shadcn:shadcn-review src/pages/settings.html"} prompt="›" title="Claude Code" />
+  <p class="text-sm text-muted-foreground mt-3 mb-3">With the skills CLI, add all four, or one by name:</p>
+  <Terminal commands={"npx skills add kyr0/defuss-shadcn --skill '*'\nnpx skills add kyr0/defuss-shadcn --skill shadcn-theme"} />
+</div>
+
+</DocPage>

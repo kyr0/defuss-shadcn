@@ -1,3 +1,6 @@
+import { pageFile } from '../../src/documentation/lib/page-dirs-files.ts';
+import { pageSourceRel } from '../../src/documentation/lib/page-dirs.ts';
+// VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { componentDirs } from '../../src/documentation/lib/component-dirs.ts';
@@ -28,8 +31,8 @@ export type AppPlan = { slug: string; name: string; components: string[] };
 export function appPlans(): AppPlan[] {
   const resolve = appResolver(componentSources());
   return STANDALONE_APPS.map((slug) => {
-    const fence = exampleFence(read(join(PAGES, `${slug}.mdx`)));
-    if (fence === null) throw new Error(`apps: pages/${slug}.mdx has no \`\`\`html example fence`);
+    const fence = exampleFence(read(pageFile(PAGES, slug)));
+    if (fence === null) throw new Error(`apps: pages/${pageSourceRel(slug)} has no \`\`\`html example fence`);
     return { slug, name: appName(slug), components: resolve(fence) };
   });
 }

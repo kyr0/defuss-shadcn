@@ -1,4 +1,5 @@
 import type { NavItem, NavSection } from '../../src/documentation/lib/nav.ts';
+import { sectionSlug } from '../../src/documentation/lib/page-dirs.ts';
 
 /**
  * Why: all.* (every component) and core + one file per component are the two
@@ -37,10 +38,9 @@ export type SectionPlan = {
   hasJs: boolean;
 };
 
-/** `Forms & Inputs` → `forms-inputs` */
-export function sectionSlug(heading: string): string {
-  return heading.toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
+// the section folder rule is the docs lib's (page-dirs.ts owns the layout);
+// re-exported for the scripts that import it from here
+export { sectionSlug };
 
 const flatten = (items: readonly NavItem[]): NavItem[] => items.flatMap((i) => [i, ...flatten(i.children ?? [])]);
 

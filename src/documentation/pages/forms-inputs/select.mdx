@@ -1,0 +1,186 @@
+---
+title: "Select"
+description: "Select component - native <select> dropdowns with custom styling."
+slug: "select"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="select" title="Select" component="select">
+  A native dropdown for choosing from a list of options. Built on <code>&lt;select&gt;</code> with <code>appearance: none</code> and a custom chevron. The empty-value placeholder option stays selectable, so it doubles as the clear/reset entry: re-choosing it empties the box again (add <code>required</code> for mandatory fields).
+</PageHeader>
+
+<SkillPanel component="select">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;select&gt;</code> element with custom styling via <code>appearance: none</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select" title="native dropdown with keyboard navigation and form integration"><code>&lt;select&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/optgroup" title="groups options with a label"><code>&lt;optgroup&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.select</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Height: 1.75rem" />
+    <Variant name="sm" description="Height: 2rem" />
+    <Variant name="md" description="Height: 2.25rem" />
+    <Variant name="lg" description="Height: 2.75rem" />
+    <Variant name="xl" description="Height: 3.25rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Native <code>&lt;select&gt;</code> provides full keyboard navigation (arrow keys, type-ahead).</SkillText>
+  <SkillText dense>• Use <code>&lt;label&gt;</code> with <code>for</code> for description.</SkillText>
+  <p class="text-muted-foreground m-0">• The placeholder is a <code>&lt;option value="" selected&gt;</code><strong>without</strong><code>disabled</code> - a disabled placeholder cannot be re-selected, so a made selection could never be cleared (issue #32). Keep it selectable and mark the field <code>required</code> if empty must not submit; the control reads as a placeholder while the empty option is selected (muted text via <code>:has(option:checked)</code>).</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Uses <code>appearance: none</code> with a custom chevron via <code>background-image</code> SVG.</SkillText>
+  <SkillText dense>• The dropdown list is rendered by the browser - it cannot be styled.</SkillText>
+  <SkillText dense>• For a fully custom dropdown, use the Combobox component instead.</SkillText>
+  <p class="text-muted-foreground m-0">• While the empty option is selected the closed control renders muted (<code>:has(&gt; option\[value=""\]:checked)</code>); choosing a value restores the foreground color.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Native select with a clearable placeholder - re-choose 'Select a fruit' to empty it again." previewStyle="margin:1.25rem;"
+<div class="max-w-80">
+  <select class="select">
+    <option value="" selected>Select a fruit</option>
+    <option value="apple">Apple</option>
+    ...
+  </select>
+</div>
+```
+
+```html example label="With groups" previewStyle="margin:1.25rem;"
+<div class="max-w-80">
+  <select class="select">
+    <optgroup label="Americas">
+      <option>New York</option>
+      ...
+    </optgroup>
+  </select>
+</div>
+```
+
+```html example label="Multiple" hint="The native multi-select: add multiple (and size='N' for the visible rows) and the browser shows a list box - Ctrl/⌘-click adds or removes an option, Shift-click or Shift+arrows pick a run, and the form submits every chosen value under the same name. Best for a short, fixed list on desktop; for tags, people or a long searchable list use the Combobox multi-select, for a handful of options checkboxes."
+<div style="max-width: 16rem">
+  <label class="label" for="ship-to">Ship to</label>
+  <select class="select" id="ship-to" name="ship-to" multiple size="6" aria-describedby="ship-to-hint">
+    <option value="at" selected>Austria</option>
+    <option value="be">Belgium</option>
+    <option value="de" selected>Germany</option>
+    <option value="fr">France</option>
+    <option value="nl">Netherlands</option>
+    <option value="ch">Switzerland</option>
+  </select>
+  <p class="text-sm text-muted-foreground" id="ship-to-hint" style="margin: 0.375rem 0 0"
+    >Hold Ctrl (⌘ on Mac) to pick several.</p
+  >
+</div>
+```
+
+<div class="card" style="margin:0 0 2rem;">
+  <div class="card-header">
+    <h3 class="card-title">Several choices? Pick the control by the list</h3>
+  </div>
+  <div class="card-content">
+    <ul class="text-sm" style="margin:0;padding-left:1.25rem;display:flex;flex-direction:column;gap:0.375rem;">
+      <li><strong>A handful of options, all worth seeing</strong> (2-7): a group of <DocLink href="checkbox.html">checkboxes</DocLink> - every choice visible, one click each.</li>
+      <li><strong>A short fixed list, mostly desktop</strong>: <code>&lt;select multiple&gt;</code> (above) - zero JavaScript, native keyboard and form behaviour; the Ctrl/⌘-click gesture needs a hint.</li>
+      <li><strong>Tags, people, countries - long or searchable lists</strong>: the <DocLink href="combobox.html">Combobox multi-select</DocLink> - type to filter, checkboxes in the list, removable tags, one hidden input per value.</li>
+    </ul>
+  </div>
+</div>
+
+```html example label="Unavailable options" hint="disabled on an <option> greys out ONE choice in an otherwise usable list - a size that's out of stock, a plan you're not eligible for. It can't be chosen by click or keyboard, and the browser skips it. Say why in the option text ('out of stock'), so the state isn't carried by grey alone. <optgroup disabled> switches off a whole group. (The empty 'Select …' placeholder is different: it stays enabled so it can clear the choice.)" previewStyle="margin:1.25rem;"
+<div class="grid grid-cols-auto gap-4" style="--layout-min: 14rem">
+  <div>
+    <label class="label" for="shirt-size">Size</label>
+    <select class="select" id="shirt-size" name="size">
+      <option value="" selected>Select a size</option>
+      <option value="s">S</option>
+      <option value="m">M</option>
+      <option value="l" disabled>L - out of stock</option>
+      <option value="xl">XL</option>
+    </select>
+  </div>
+  <div>
+    <label class="label" for="plan">Plan</label>
+    <select class="select" id="plan" name="plan">
+      <optgroup label="Current plans">
+        <option value="free">Free</option>
+        <option value="pro" selected>Pro</option>
+        <option value="team" disabled>Team - needs 3+ seats</option>
+      </optgroup>
+      <optgroup label="Legacy plans (no longer offered)" disabled>
+        <option value="starter">Starter</option>
+        <option value="business">Business</option>
+      </optgroup>
+    </select>
+  </div>
+</div>
+```
+
+```html example label="Disabled" hint="disabled on the <select> itself switches off the whole control - nothing can be chosen and it leaves the tab order. For one unavailable choice in a usable list, disable the <option> instead (above)." previewStyle="margin:1.25rem;"
+<div class="max-w-80">
+  <label class="label" for="region">Region</label>
+  <select class="select" id="region" disabled>
+    <option selected>Europe (locked by your organisation)</option>
+    <option>North America</option>
+  </select>
+</div>
+```
+
+```html example label="Sizes" hint="The full five-step scale via data-size - the unlabeled default IS md (2.25rem)." previewStyle="margin:1.25rem;"
+<div class="stack gap-3 max-w-80">
+  <select class="select" data-size="xs">
+    <option>Extra small</option>
+  </select>
+
+  <select class="select" data-size="sm">
+    <option>Small</option>
+  </select>
+
+  <select class="select" data-size="md">
+    <option>Medium</option>
+  </select>
+
+  <select class="select" data-size="lg">
+    <option>Large</option>
+  </select>
+
+  <select class="select" data-size="xl">
+    <option>Extra large</option>
+  </select>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract - verified against <a class="link" href="../schemas/select.schema.json"><code>select.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | `—` | `"apple"` | Selected option (`select.value`), changed by panel or by picking. |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off (native `disabled` attribute). |
+| `required` | `boolean` | `true`, `false` | `false` | Post-validation marks the field invalid (`:user-invalid`). |
+```
+
+</StatesSection>
+
+<SourceFiles component="select" section="css" />
+
+</DocPage>

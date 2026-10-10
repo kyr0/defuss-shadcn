@@ -7,10 +7,11 @@ import estree from 'prettier/plugins/estree';
 import { fenceLengthFor, formatFences } from '../scripts/lib/format-pages.ts';
 import { exampleFence } from '../scripts/lib/docs-ssg.ts';
 import { exampleFences } from '../scripts/lib/schema.ts';
+import { pageSourceRel } from '../src/documentation/lib/page-dirs.ts';
 
 /** a real page's source: Vite serves any file as a string module with `?raw`
  * (a plain fetch would run the .mdx through its JS import analysis) */
-const page = async (name: string): Promise<string> => (await import(/* @vite-ignore */ `/src/documentation/pages/${name}.mdx?raw`)).default;
+const page = async (name: string): Promise<string> => (await import(/* @vite-ignore */ `/src/documentation/pages/${pageSourceRel(name)}?raw`)).default;
 
 /**
  * Why: scripts/format-pages.ts reflows the html example fences of the doc

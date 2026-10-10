@@ -11,7 +11,7 @@
 
 **A UI component system that scales with AI.** Themeable components built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. The simplest possible foundation for AI-driven prototyping.
 
-**234 components - 64 with JavaScript, 170 CSS-only - 417.9 KiB minified + compressed - 279.8 KiB as the all.css/all.js bundle**
+**234 components - 64 with JavaScript, 170 CSS-only - 418.0 KiB minified + compressed - 279.8 KiB as the all.css/all.js bundle**
 170 of 234 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as
@@ -273,14 +273,15 @@ bun run test:coverage
 
 The first run needs Playwright's browser: `bunx playwright install chromium`.
 
-Each component also gets an E2E smoke test in [`tests/e2e/`](tests/e2e/): a static
+Each component also gets an E2E smoke test in [`tests/e2e/<section>/`](tests/e2e/) - the
+folder of its sidebar section, like `src/components/<section>/` and the doc pages: a static
 fixture page using the component in **all** of its documented configurations (every
 variant, size, and State API state), driven by plain Playwright against the unmodified
 files in `dist/` (`bun run e2e`). This is the verification loop a coding agent runs
 after touching any component - the shipped files themselves are asserted, so "it
 compiles" is never mistaken for "it works". Every component ships one (the gate is
 hard), and its parity rule keeps fixture, docs and code in lockstep as they change.
-The documentation site itself is covered too ([`tests/e2e/documentation.e2e.ts`](tests/e2e/documentation.e2e.ts)):
+The documentation site itself is covered too ([`tests/e2e/site/documentation.e2e.ts`](tests/e2e/site/documentation.e2e.ts)):
 the intro page renders, the SPA router navigates, and the header search opens the command palette (generated index, page + section results).
 
 ## Credits

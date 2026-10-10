@@ -1,3 +1,4 @@
+import { pageFile } from '../../src/documentation/lib/page-dirs-files.ts';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { componentDirs, componentFile } from '../../src/documentation/lib/component-dirs.ts';
@@ -52,7 +53,7 @@ export function buildSkillText(src: string): string {
 
 /** Page frontmatter (`title:` / `description:`) of one docs page, or blanks. */
 function pageMeta(pagesDir: string, slug: string): { title: string; description: string } {
-  const file = join(pagesDir, `${slug}.mdx`);
+  const file = pageFile(pagesDir, slug);
   if (!existsSync(file)) return { title: '', description: '' };
   const fm = readFileSync(file, 'utf8').match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
   const field = (k: string): string =>

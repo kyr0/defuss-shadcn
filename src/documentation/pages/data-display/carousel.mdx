@@ -1,0 +1,617 @@
+---
+title: "Carousel"
+description: "Carousel component - scrollable content slider with CSS scroll-snap."
+slug: "carousel"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="carousel" title="Carousel" component="carousel">
+  A scrollable content slider built on CSS scroll-snap with keyboard navigation, dot indicators, loop, and autoplay support. No libraries needed.
+</PageHeader>
+
+<SkillPanel component="carousel">
+  <SkillField label="Native basis">
+<SkillText>CSS <code>scroll-snap</code> on an overflow container, with <code>IntersectionObserver</code> for active-slide tracking and native <code>&lt;button&gt;</code> elements for navigation.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type" title="mandatory snap scrolling"><code>scroll-snap-type</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-align" title="snap point alignment per slide"><code>scroll-snap-align</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-stop" title="forces snap to each slide"><code>scroll-snap-stop</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior" title="prevents scroll chaining"><code>overscroll-behavior</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="tracks visible slide"><code>IntersectionObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus rings"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses smooth scroll"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="high contrast support"><code>prefers-contrast</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast"><code>forced-colors</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/carousel/" title="WAI-ARIA Carousel pattern"><code>WAI-ARIA Carousel</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.carousel</code>
+    <code>.carousel-viewport</code>
+    <code>.carousel-slide</code>
+    <code>.carousel-prev</code>
+    <code>.carousel-next</code>
+    <code>.carousel-dots</code>
+    <code>.carousel-dot</code>
+    <code>.carousel-counter</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" height="18"
+<div
+  class="carousel"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Default demo"
+  style="max-width: 24rem; margin: 0 auto"
+>
+  <div class="carousel-viewport" aria-live="polite">
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="1 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >1</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="2 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >2</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="3 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >3</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="4 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >4</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="5 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >5</div
+    >
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-right"></i>
+  </button>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Sizes</p>
+
+<p class="text-muted-foreground text-sm mb-4">Set <code>flex</code> on <code>.carousel-slide</code> to show multiple slides. Use <code>calc()</code> to account for the gap.</p>
+
+```html example height="18"
+<div
+  class="carousel"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Multi-slide demo"
+  style="max-width: 30rem; margin: 0 auto"
+>
+  <div class="carousel-viewport" aria-live="polite">
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="1 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >1</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="2 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >2</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="3 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >3</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="4 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >4</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="5 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >5</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="6 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >6</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="7 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >7</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="8 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >8</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="9 of 9"
+      style="flex: 0 0 calc(33.333% - 0.667rem); min-height: 10rem"
+      >9</div
+    >
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-right"></i>
+  </button>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">With Dot Indicators</p>
+
+<p class="text-muted-foreground text-sm mb-4">Add an empty <code>.carousel-dots</code> container - dots are auto-generated from the slide count.</p>
+
+```html example height="18"
+<div
+  class="carousel"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Dots demo"
+  style="max-width: 24rem; margin: 0 auto"
+>
+  <div class="carousel-viewport" aria-live="polite">
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="1 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >1</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="2 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >2</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="3 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >3</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="4 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >4</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="5 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >5</div
+    >
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-right"></i>
+  </button>
+  <div class="carousel-dots" role="group" aria-label="Choose slide to display"></div>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">With Counter</p>
+
+<p class="text-muted-foreground text-sm mb-4">Add a <code>.carousel-counter</code> element - JS updates it automatically.</p>
+
+```html example height="18"
+<div
+  class="carousel"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Counter demo"
+  style="max-width: 24rem; margin: 0 auto"
+>
+  <div class="carousel-viewport" aria-live="polite">
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="1 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >1</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="2 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >2</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="3 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >3</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="4 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >4</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="5 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >5</div
+    >
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-right"></i>
+  </button>
+  <div class="carousel-counter" aria-live="polite">Slide 1 of 5</div>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Vertical</p>
+
+<p class="text-muted-foreground text-sm mb-4">Set <code>data-orientation="vertical"</code> and give the viewport a fixed height.</p>
+
+```html example height="18"
+<div
+  class="carousel"
+  data-orientation="vertical"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Vertical demo"
+  style="max-width: 24rem; margin: 2rem auto"
+>
+  <div class="carousel-viewport" aria-live="polite" style="height: 14rem">
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="1 of 5"
+      style="flex: 0 0 100%; min-height: 14rem"
+      >1</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="2 of 5"
+      style="flex: 0 0 100%; min-height: 14rem"
+      >2</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="3 of 5"
+      style="flex: 0 0 100%; min-height: 14rem"
+      >3</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="4 of 5"
+      style="flex: 0 0 100%; min-height: 14rem"
+      >4</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="5 of 5"
+      style="flex: 0 0 100%; min-height: 14rem"
+      >5</div
+    >
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-up"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-down"></i>
+  </button>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Loop</p>
+
+<p class="text-muted-foreground text-sm mb-4">Add <code>data-loop</code> for infinite circular navigation - buttons never disable.</p>
+
+```html example height="18"
+<div
+  class="carousel"
+  data-loop
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Loop demo"
+  style="max-width: 24rem; margin: 0 auto"
+>
+  <div class="carousel-viewport" aria-live="polite">
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="1 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >1</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="2 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >2</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="3 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >3</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="4 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >4</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="5 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >5</div
+    >
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-right"></i>
+  </button>
+  <div class="carousel-dots" role="group" aria-label="Choose slide to display"></div>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Autoplay</p>
+
+<p class="text-muted-foreground text-sm mb-4">Set <code>data-autoplay="3000"</code> (in milliseconds). Pauses on hover and focus per WAI-ARIA requirements.</p>
+
+```html example height="18"
+<div
+  class="carousel"
+  data-autoplay="3000"
+  data-loop
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Auto-rotating demo"
+  style="max-width: 24rem; margin: 0 auto"
+>
+  <div class="carousel-viewport" aria-live="off">
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="1 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >1</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="2 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >2</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="3 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >3</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="4 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >4</div
+    >
+    <div
+      class="carousel-slide demo-preview"
+      role="group"
+      aria-roledescription="slide"
+      aria-label="5 of 5"
+      style="flex: 0 0 100%; min-height: 12rem"
+      >5</div
+    >
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-right"></i>
+  </button>
+  <div class="carousel-dots" role="group" aria-label="Choose slide to display"></div>
+</div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">With Cards</p>
+
+<p class="text-muted-foreground text-sm mb-4">Compose with the Card component for richer slide content.</p>
+
+```html example height="18"
+<div
+  class="carousel"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Card carousel"
+  style="max-width: 24rem; margin: 0 auto"
+>
+  <div class="carousel-viewport" aria-live="polite">
+    <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="1 of 3" style="flex: 0 0 100%">
+      <div class="card w-full">
+        <div class="card-header">
+          <h3 class="card-title">Project Alpha</h3>
+          <p class="card-description">A new design system built from scratch</p>
+        </div>
+        <div class="card-content">
+          <p class="text-muted-foreground" style="font-size: 0.875rem"
+            >Built with modern CSS and native web APIs. No frameworks, no libraries - just the platform.</p
+          >
+        </div>
+      </div>
+    </div>
+    <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="2 of 3" style="flex: 0 0 100%">
+      <div class="card w-full">
+        <div class="card-header">
+          <h3 class="card-title">Project Beta</h3>
+          <p class="card-description">Performance-first component library</p>
+        </div>
+        <div class="card-content">
+          <p class="text-muted-foreground" style="font-size: 0.875rem"
+            >Zero JavaScript for static components. Interaction JS only where HTML and CSS can't express it.</p
+          >
+        </div>
+      </div>
+    </div>
+    <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="3 of 3" style="flex: 0 0 100%">
+      <div class="card w-full">
+        <div class="card-header">
+          <h3 class="card-title">Project Gamma</h3>
+          <p class="card-description">Accessible by default</p>
+        </div>
+        <div class="card-content">
+          <p class="text-muted-foreground" style="font-size: 0.875rem"
+            >WAI-ARIA patterns, keyboard navigation, reduced motion, high contrast - all built in.</p
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-prev" aria-label="Previous slide">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <button class="carousel-next" aria-label="Next slide">
+    <i data-lucide="chevron-right"></i>
+  </button>
+  <div class="carousel-dots" role="group" aria-label="Choose slide to display"></div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - showing a slide; <code>setState('default', \{ index \})</code> scrolls to that slide (loop-aware), and <code>getState().config.index</code> reports the live index</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/carousel-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/carousel.schema.json"><code>carousel.schema.json</code></a> by <code>bun run verify</code>:
+
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `activeSlide` | `number` | `—` | `0` | Index of the slide in view (`setState('default', { index })`); mirrored as `data-current-index` and updated by nav/dots/swipe. |
+```
+
+</StatesSection>
+
+<ApiSection component="carousel" />
+
+<SourceFiles component="carousel" section="css" cssLang="css">
+  <SourceNote for="css">Component styles using scroll-snap, design tokens, and accessibility media queries.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="carousel" section="js">
+  <SourceNote for="js">Scroll-snap carousel with IntersectionObserver tracking, ARIA, keyboard navigation, dots, loop, and autoplay.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -39,8 +39,10 @@ export const RELEASE_STAMP = 'release.json';
  * dist-relative path and must stay verbatim). [^>] cannot span two tags, and
  * escaped samples never contain a literal `<tag`.
  */
+// one `../` per folder below the docs root plus one for dist/ - a section page
+// VERIFIED: writes `../../components/…` (page-dirs.ts docsRoot)
 const LIVE_REF =
-  /(<(?:a|link|script|img|iframe|source|span)\b[^>]*?(?:href|src|data-spec-href)=")\.\.\/(components|theme|apps)\//g;
+  /(<(?:a|link|script|img|iframe|source|span)\b[^>]*?(?:href|src|data-spec-href)=")(?:\.\.\/)+(components|theme|apps)\//g;
 
 /**
  * Mirror rewrite for one text file: live `../components/…`, `../theme/…` and

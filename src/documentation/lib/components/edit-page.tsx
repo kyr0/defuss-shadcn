@@ -1,6 +1,8 @@
 import type { Props } from 'defuss';
 import { repoWebUrl, repoFile } from '../repo';
 import { existsSync } from 'node:fs';
+import { pageSourceRel } from '../page-dirs';
+// VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
 
 /**
  * The page's feedback line, centred under the prev/next pager: an invitation
@@ -9,7 +11,7 @@ import { existsSync } from 'node:fs';
  * when the source file exists, so the link can never point at nothing.
  */
 export function EditPage({ slug }: Props & { slug: string }) {
-  const path = `src/documentation/pages/${slug}.mdx`;
+  const path = `src/documentation/pages/${pageSourceRel(slug)}`;
   if (!existsSync(repoFile(path))) return null;
   const href = `${repoWebUrl()}/blob/main/${path}`;
   return (

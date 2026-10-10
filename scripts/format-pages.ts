@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { pageDirs } from '../src/documentation/lib/page-dirs-files.ts';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as prettier from 'prettier';
@@ -41,7 +42,8 @@ const stale: string[] = [];
 /** fences Prettier's HTML parser refuses - markup a browser repairs silently (an unclosed element, a stray closing tag) */
 const broken: string[] = [];
 let fences = 0;
-const pages = readdirSync(PAGES).filter((n) => n.endsWith('.mdx')).sort();
+// every page, in its section folder (page-dirs-files.ts) - `f` is the path from pages/
+const pages = pageDirs(PAGES).map((p) => (p.folder ? `${p.folder}/${p.slug}.mdx` : `${p.slug}.mdx`)).sort();
 for (const f of pages) {
   const file = join(PAGES, f);
   const text = readFileSync(file, 'utf8');

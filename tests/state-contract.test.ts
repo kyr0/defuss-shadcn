@@ -13,7 +13,8 @@ import { waitFor } from './helpers';
 
 // the interactive fixtures: an e2e fixture that loads a component script, by <script src> or a module
 // import (CSS-only components' fixtures load none). Eager raw, as theme-css.test.ts reads the themes.
-const RAW = import.meta.glob('/tests/e2e/*.e2e-fixture.html', { query: '?raw', import: 'default', eager: true });
+// fixtures sit in their component's section folder (tests/e2e/<section>/)
+const RAW = import.meta.glob('/tests/e2e/*/*.e2e-fixture.html', { query: '?raw', import: 'default', eager: true });
 const FIXTURES = Object.entries(RAW)
   .filter(([, html]) => /\/dist\/components\/[\w./-]+\.js\b/.test(String(html)))
   .map(([p]) => ({ path: p, name: /([^/]+)\.e2e-fixture\.html$/.exec(p)![1] }))

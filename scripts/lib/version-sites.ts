@@ -37,7 +37,8 @@ export const VERSION_SITES: VersionSite[] = [
   site('.codex-plugin/plugin.json', 'Codex plugin version', /^ {2}"version": "([^"]+)"/m),
   site('plugin.json', 'agent-plugins.org manifest version', /^ {2}"version": "([^"]+)"/m),
   site('src/shared/version.ts', 'shared ABI stamp (df$.shadcn.shared.abi)', /SHARED_ABI = '([^']+)'/),
-  site('src/documentation/pages/system-in-numbers.mdx', 'deck cover eyebrow', /defuss-shadcn · v(\d+\.\d+\.\d+(?:-[\w.]+)?)</),
+  // VERIFIED: the deck page sits in its section folder (page-dirs.ts) - the flat path missed the cover and the gate reported no deck version site
+  site('src/documentation/pages/presentations/system-in-numbers.mdx', 'deck cover eyebrow', /defuss-shadcn · v(\d+\.\d+\.\d+(?:-[\w.]+)?)</),
 ];
 
 /** Every site that disagrees with `version` (empty = all in step). */

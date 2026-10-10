@@ -1,0 +1,258 @@
+---
+title: "Radio Group"
+description: "Radio Group component - native radio buttons with card and button-style variants."
+slug: "radio"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="radio" title="Radio Group" component="radio">
+  A set of mutually exclusive options, built on native <code>&lt;input type="radio"&gt;</code>. What makes radios one set is a shared <code>name</code>: pick one and the browser clears the previous choice. The <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> only label the set - for sighted readers and screen readers - they do not make it exclusive.
+</PageHeader>
+
+<SkillPanel component="radio">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="radio"&gt;</code> elements with shared <code>name</code> attribute for mutual exclusivity.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio" title="native radio button with group exclusivity via name"><code>&lt;input type="radio"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="semantic group container with native disabled propagation"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked" title="matches selected state"><code>:checked</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent-state styling for card variant"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppress transitions for motion-sensitive users"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode support"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.radio-group</code>
+    <code>.radio-item</code>
+    <code>.radio-item-block</code>
+    <code>.radio-card</code>
+    <code>.radio</code>
+    <code>.radio-description</code>
+    <code>.radio-group-description</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data Attributes">
+<SkillRow>
+    <code>data-orientation="horizontal"</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Native <code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code> provides group labeling.</SkillText>
+  <SkillText dense>• Radio buttons sharing the same <code>name</code> are mutually exclusive by default.</SkillText>
+  <SkillText dense>• Arrow keys navigate between options (native browser behavior).</SkillText>
+  <SkillText dense>• <code>:focus-visible</code> provides keyboard-only focus rings.</SkillText>
+  <SkillText dense>• <code>prefers-reduced-motion</code> disables transitions.</SkillText>
+  <p class="text-muted-foreground m-0">• <code>forced-colors</code> provides Windows High Contrast Mode support.</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Styled with <code>appearance: none</code> and a custom dot via <code>::after</code>.</SkillText>
+  <SkillText dense>• The shared <code>name</code> IS the set: same name (in the same form) = one exclusive set. <code>&lt;fieldset&gt;</code> only labels it - radios with different names in one fieldset are independent.</SkillText>
+  <SkillText dense>• No JavaScript needed - browsers handle group behavior natively.</SkillText>
+  <SkillText dense>• Use <code>.radio-item</code> for simple label. Use <code>.radio-item-block</code> for label + description.</SkillText>
+  <SkillText dense>• Use <code>.radio-card</code> for card-style selection with <code>:has()</code> highlight.</SkillText>
+  <SkillText dense>• Add <code>data-orientation="horizontal"</code> for horizontal layout.</SkillText>
+  <p class="text-muted-foreground m-0">• <code>&lt;fieldset disabled&gt;</code> disables all radios in the group natively.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Three radios share name=&quot;plan&quot; - that shared name is what makes them one set (pick one, the previous clears) and what the form submits (plan=free). The fieldset + legend give the set its label."
+<fieldset class="radio-group">
+  <legend class="label">Choose a plan</legend>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="free" value="free" checked />
+    <label for="free">Free</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="pro" value="pro" />
+    <label for="pro">Pro</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="plan" id="ent" value="enterprise" />
+    <label for="ent">Enterprise</label>
+  </div>
+</fieldset>
+```
+
+```html example label="The name makes the set" hint="Try both. Left: every radio has name=&quot;size&quot;, so picking one clears the other - one set, and the form submits one size. Right: same fieldset, but each radio has its own name, so each is a set of one - all three stay selected and none can be cleared by clicking. The fieldset groups nothing; the name does. Radios with a shared name behave as one set even with no fieldset at all (still add one - the legend is the set's accessible label). The set is scoped to its form: the same name in two different forms is two sets."
+<form class="flex flex-wrap gap-8" onsubmit="event.preventDefault()">
+  <fieldset class="radio-group">
+    <legend class="label">Shared name - one set</legend>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-s" value="s" checked />
+      <label for="sz-s">Small</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-m" value="m" />
+      <label for="sz-m">Medium</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-l" value="l" />
+      <label for="sz-l">Large</label>
+    </div>
+  </fieldset>
+  <fieldset class="radio-group">
+    <legend class="label">Different names - broken</legend>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-small" id="bad-s" value="s" />
+      <label for="bad-s">Small</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-medium" id="bad-m" value="m" />
+      <label for="bad-m">Medium</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-large" id="bad-l" value="l" />
+      <label for="bad-l">Large</label>
+    </div>
+  </fieldset>
+  <p class="text-sm text-muted-foreground w-full m-0">Form submits: <output id="size-out">size=s</output></p>
+</form>
+<script>
+  const form = document.getElementById('size-out').form;
+  const show = () => {
+    const pairs = [...new FormData(form)].map(([k, v]) => k + '=' + v);
+    document.getElementById('size-out').value = pairs.join('&') || '(nothing)';
+  };
+  form.addEventListener('change', show);
+  show();
+</script>
+```
+
+```html example label="With Description" hint="Radio items with label and description text using .radio-item-block."
+<fieldset class="radio-group">
+  <legend class="label">Spacing</legend>
+  <div class="radio-item-block">
+    <input class="radio" type="radio" name="spacing" id="sp-default" value="default" checked />
+    <label for="sp-default">Default</label>
+    <span class="radio-description">Standard spacing for most use cases.</span>
+  </div>
+  <div class="radio-item-block">
+    <input class="radio" type="radio" name="spacing" id="sp-comfortable" value="comfortable" />
+    <label for="sp-comfortable">Comfortable</label>
+    <span class="radio-description">More space between elements.</span>
+  </div>
+</fieldset>
+```
+
+```html example label="Choice Card" hint="Card-style radios using .radio-card with :has() for checked highlight."
+<fieldset class="radio-group">
+  <legend class="label">Select a plan</legend>
+  <label class="radio-card" for="c-plus">
+    <input class="radio" type="radio" name="card" id="c-plus" value="plus" />
+    <label for="c-plus">Plus</label>
+    <span class="radio-description">For individuals and small teams.</span>
+  </label>
+  <label class="radio-card" for="c-pro">
+    <input class="radio" type="radio" name="card" id="c-pro" value="pro" checked />
+    <label for="c-pro">Pro</label>
+    <span class="radio-description">For growing businesses.</span>
+  </label>
+</fieldset>
+```
+
+```html example label="Horizontal" hint="Horizontal layout with data-orientation='horizontal'."
+<fieldset class="radio-group" data-orientation="horizontal">
+  <legend class="label">Alignment</legend>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="left" value="left" checked />
+    <label for="left">Left</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="center" value="center" />
+    <label for="center">Center</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="align" id="right" value="right" />
+    <label for="right">Right</label>
+  </div>
+</fieldset>
+```
+
+```html example label="Disabled" hint="Individual or group-level disabling via disabled attribute."
+<fieldset class="radio-group">
+  <legend class="label">Disabled group</legend>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="dis" id="d1" disabled checked />
+    <label for="d1">Option A</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="dis" id="d2" disabled />
+    <label for="d2">Option B</label>
+  </div>
+</fieldset>
+```
+
+```html example label="Invalid" hint="Validation error state with aria-invalid='true'."
+<fieldset class="radio-group">
+  <legend class="label">Notification Preferences</legend>
+  <p class="radio-group-description">Choose how you want to receive notifications.</p>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="notif" id="inv1" value="email" aria-invalid="true" />
+    <label for="inv1">Email only</label>
+  </div>
+  <div class="radio-item">
+    <input class="radio" type="radio" name="notif" id="inv2" value="sms" aria-invalid="true" />
+    <label for="inv2">SMS only</label>
+  </div>
+</fieldset>
+```
+
+```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."
+<div class="flex flex-wrap gap-8">
+  <fieldset class="radio-group" data-density="compact">
+    <legend class="label">Compact</legend>
+    <div class="radio-item"
+      ><input class="radio" type="radio" name="den-a" id="den-a1" checked /><label for="den-a1">Free</label></div
+    >
+    <div class="radio-item"
+      ><input class="radio" type="radio" name="den-a" id="den-a2" /><label for="den-a2">Pro</label></div
+    >
+  </fieldset>
+  <fieldset class="radio-group" data-density="comfortable">
+    <legend class="label">Comfortable</legend>
+    <div class="radio-item"
+      ><input class="radio" type="radio" name="den-b" id="den-b1" checked /><label for="den-b1">Free</label></div
+    >
+    <div class="radio-item"
+      ><input class="radio" type="radio" name="den-b" id="den-b2" /><label for="den-b2">Pro</label></div
+    >
+  </fieldset>
+  <fieldset class="radio-group" data-density="spacious">
+    <legend class="label">Spacious</legend>
+    <div class="radio-item"
+      ><input class="radio" type="radio" name="den-c" id="den-c1" checked /><label for="den-c1">Free</label></div
+    >
+    <div class="radio-item"
+      ><input class="radio" type="radio" name="den-c" id="den-c2" /><label for="den-c2">Pro</label></div
+    >
+  </fieldset>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract - verified against <a class="link" href="../schemas/radio.schema.json"><code>radio.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off for the first option (native `disabled` attribute). |
+| `invalid` | `boolean` | `true`, `false` | `false` | Manual invalid flag (`aria-invalid="true"`). |
+```
+
+</StatesSection>
+
+<SourceFiles component="radio" section="css" />
+
+</DocPage>

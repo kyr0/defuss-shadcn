@@ -1,0 +1,282 @@
+---
+title: "Layout"
+description: "Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime."
+slug: "layout"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="layout" title="Layout" introStyle="max-width:38rem;">
+  Native Grid, Flexbox and container queries with a small, optional class API. Compose layouts without a compiler or runtime. Every code block is the live demo - the shown source is the executed source, and each card carries a device toolbar (Phone, Tablet, Desktop, Full) that really resizes the sandbox.
+</PageHeader>
+
+<h2 id="small-surface" class="h2-display">A small surface over native layout</h2>
+
+<DocText>Use short, familiar classes for common operations; keep configuration properties descriptive. <code>flex</code> selects Flexbox and <code>grid</code> selects Grid. Neither silently chooses a gap, wrapping or columns. More opinionated composition is explicit.</DocText>
+
+<div class="overflow-x-auto mb-6">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Class</th>
+        <th scope="col">Contract</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>flex</code> / <code>inline-flex</code></td>
+        <td>Flex formatting context; native row and nowrap defaults.</td>
+      </tr>
+      <tr>
+        <td><code>grid</code> / <code>inline-grid</code></td>
+        <td>Grid formatting context; no prescribed tracks.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>stack</code>
+        </td>
+        <td>Flex column; default gap of four density-adjusted base units.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>container</code>
+        </td>
+        <td>Centered border-box container; 80rem maximum; inline gutters.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>center</code>
+        </td>
+        <td>Grid with centered items; no implicit viewport height.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>query</code>
+        </td>
+        <td>Named <code>layout</code> inline-size query boundary.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+```html example hint="A stack of a flex row and an intrinsic grid - switch the card to Phone or Tablet to watch both halves re-flow." schema="none"
+<div class="stack gap-6" data-demo="layout-composition">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <h3>Projects</h3>
+    <button class="btn" type="button">New project</button>
+  </div>
+  <div class="grid grid-cols-auto gap-4" style="--layout-min: 12rem">
+    <div class="demo-box">Research</div>
+    <div class="demo-box">Design</div>
+    <div class="demo-box">Engineering</div>
+  </div>
+</div>
+```
+
+
+<div class="sep" />
+
+<h2 id="intrinsic" class="h2-display">Let available space do the work</h2>
+
+<DocText>Use wrapping Flexbox for one-dimensional content and an intrinsic Grid for equal-width cards - the two halves of the composition demo above, which reacts when you resize it with the width toolbar. A grid can adapt inside a sidebar, dialog or full page without viewport breakpoints. Use container queries only when the structure must change.</DocText>
+
+```html
+<!-- One-dimensional content: wrap with the available width. -->
+<div class="flex flex-wrap items-center justify-between gap-3">…</div>
+
+<!-- Equal-width cards: intrinsic auto-fit grid, no breakpoints. -->
+<div class="grid grid-cols-auto gap-4" style="--layout-min: 12rem">…</div>
+```
+
+
+<div class="sep" />
+
+<h2 id="overflow" class="h2-display">Handle overflow deliberately</h2>
+
+<DocText>Every constrained container eventually overflows; the question is only which policy you choose. The overflow family covers the box axes, <code>truncate</code> bundles the classic single-line ellipsis recipe, and the break/wrap family decides what happens to <em>words</em> that don't fit - <code>wrap-anywhere</code> is the flex <code>min-w-0</code> companion that lets a long identifier wrap inside a shrinkable track.</DocText>
+
+<div class="overflow-x-auto mb-6">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Class</th>
+        <th scope="col">Contract</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>overflow-auto</code> / <code>-x-auto</code> / <code>-y-auto</code></td>
+        <td>Scroll the box on the chosen axes.</td>
+      </tr>
+      <tr>
+        <td><code>overflow-hidden</code> / <code>-x-hidden</code> / <code>-y-hidden</code></td>
+        <td>Clip at the padding edge, no scrolling.</td>
+      </tr>
+      <tr>
+        <td><code>overflow-clip</code> / <code>overflow-visible</code></td>
+        <td>Hard clip (no scrollable overflow area at all) / the native default.</td>
+      </tr>
+      <tr>
+        <td><code>truncate</code></td>
+        <td><code>overflow-hidden</code> + <code>text-overflow:ellipsis</code> + <code>nowrap</code> in one class.</td>
+      </tr>
+      <tr>
+        <td><code>text-ellipsis</code> / <code>text-clip</code></td>
+        <td>How an overflowing inline box ends - needs an overflow context.</td>
+      </tr>
+      <tr>
+        <td><code>break-words</code> / <code>break-all</code> / <code>break-normal</code></td>
+        <td>Word-breaking policy: break on demand, break anywhere per character, native.</td>
+      </tr>
+      <tr>
+        <td><code>wrap-anywhere</code></td>
+        <td><code>overflow-wrap:anywhere</code> - also shrinks min-content, the partner of <code>min-w-0</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+```html example hint="Three overflow policies at work - shrink the canvas (Phone) and watch each box react on its own axis." schema="none"
+<div class="stack gap-4" data-demo="layout-overflow">
+  <div class="overflow-x-auto h-8 demo-tile" data-variant="muted" style="justify-content: flex-start"
+    ><span class="w-64 shrink-0" style="padding-inline: 0.5rem"
+      >overflow-x-auto - the tile scrolls instead of widening the page when the stage gets narrower →</span
+    ></div
+  >
+  <div
+    class="truncate h-8 demo-tile"
+    data-variant="outline"
+    style="display: block; line-height: 2rem; padding-inline: 0.5rem"
+    >truncate - a single line that must not widen its container collapses to an ellipsis exactly like a UI list row</div
+  >
+  <div class="h-auto p-2 demo-tile wrap-anywhere" data-variant="secondary" style="justify-content: flex-start"
+    >wrap-anywhere - PneumonoultramicroscopicsilicovolcanoconiosisLongIdentifiers break here instead of pushing the
+    track open</div
+  >
+</div>
+```
+
+
+<div class="sep" />
+
+<h2 id="guides" class="h2-display">Guides</h2>
+
+<DocText>Each primitive has its own page with rendered demos and the full class reference:</DocText>
+
+<div class="grid grid-cols-auto gap-4" style="--layout-min:11rem;margin-bottom:1.5rem;">
+  <a href="container.html" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Container</h3>
+      <p class="card-description card-desc-sm">Centered, bounded content with logical gutters - and named containment when you need it.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+  <a href="flex.html" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Flex</h3>
+      <p class="card-description card-desc-sm">Direction, wrapping, alignment and flexible sizing using native Flexbox.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+  <a href="grid.html" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Grid</h3>
+      <p class="card-description card-desc-sm">Intrinsic card grids, explicit tracks and aligned subgrids - responsive without breakpoints.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+  <a href="#overflow" class="card" style="display:block;text-decoration:none;color:inherit;">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Overflow</h3>
+      <p class="card-description card-desc-sm">Box clipping/scrolling and text-flow policies for constrained containers - the overflow, truncate and wrap families.</p>
+    </div>
+    <div style="height:1.25rem;" />
+  </a>
+</div>
+
+<div class="sep" />
+
+<h2 id="ownership" class="h2-display">Each primitive owns its parameters</h2>
+
+<div class="overflow-x-auto mb-6">
+  <table class="table" data-variant="simple">
+    <thead>
+      <tr>
+        <th scope="col">Property</th>
+        <th scope="col">Owner / default</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <code>--layout-gap</code>
+        </td>
+        <td>Flex/grid/stack/center instance; resets at each nested root.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--layout-min</code>
+        </td>
+        <td>Grid instance; 16rem preferred auto-fit track minimum.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--layout-max</code>
+        </td>
+        <td>Container instance; 80rem outer maximum.</td>
+      </tr>
+      <tr>
+        <td>
+          <code>--layout-gutter</code>
+        </td>
+        <td>Container instance; four density-adjusted base units.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<DocText>An outer grid's track minimum must not accidentally configure an inner grid. Defaults are declared on each owning root; override that root with inline properties or unlayered application CSS. An explicit helper such as <code>gap-2</code> takes precedence over a primitive's default gap.</DocText>
+
+```css
+.project-grid { --layout-min: 18rem; --layout-gap: 1.25rem; }
+.reading-area { --layout-max: 70ch; --layout-gutter: clamp(1rem, 3vw, 2rem); }
+```
+
+
+<div class="sep" />
+
+<h2 id="compatibility" class="h2-display">Familiar names, not a Tailwind compiler</h2>
+
+<DocText>Numeric sizing, spacing, alignment, flex and fixed-grid names follow familiar Tailwind conventions at the default scale. <code>stack</code>, <code>center</code>, <code>query</code>, <code>grid-cols-auto</code> and the centered/guttered <code>container</code> are deliberate extensions. There are no arbitrary-value brackets, generated breakpoint prefixes, class scanning or runtime layout scripts. Use ordinary CSS for exceptional layouts.</DocText>
+
+<DocText>Generic names can collide with other utility libraries. This module is optional; layers control precedence, not selector isolation. Documentation previews use separate documents so the legacy, unlayered docs utilities cannot mask the public CSS.</DocText>
+
+<div class="sep" />
+
+<h2 id="semantics" class="h2-display">Keep semantics and reading order</h2>
+
+<DocText>CSS Grid does not imply an ARIA grid widget. Preserve meaningful DOM order; no dense placement or visual-reordering helpers are shipped. Display helpers leave native hidden elements, until-found content, closed dialogs and closed popovers under native control. Long content still needs an explicit wrapping or scrolling policy; the module does not hide overflow.</DocText>
+
+<div class="sep" />
+
+<h2 id="install" class="h2-display">Load the optional modules</h2>
+
+```html
+<link rel="stylesheet" href="../theme/utils/default-semantic-tokens.css" />
+<link rel="stylesheet" href="../theme/utils/sizing.css" />
+<link rel="stylesheet" href="../theme/utils/layout.css" />
+<link rel="stylesheet" href="../theme/utils/accessibility.css" />
+<!-- Load the component stylesheets you actually use next. -->
+<link rel="stylesheet" href="../components/button/button.css" />
+```
+
+
+<div class="sep" />
+
+<h2 id="references" class="h2-display">Platform references</h2>
+
+<DocText><a class="link" href="https://www.w3.org/TR/css-grid-2/" target="_blank" rel="noopener">CSS Grid and subgrid</a> · <a class="link" href="https://www.w3.org/TR/css-flexbox-1/" target="_blank" rel="noopener">CSS Flexible Box Layout</a> · <a class="link" href="https://www.w3.org/TR/css-contain-3/" target="_blank" rel="noopener">CSS container queries</a> · <a class="link" href="https://html.spec.whatwg.org/multipage/interaction.html#the-hidden-attribute" target="_blank" rel="noopener">HTML hidden states</a></DocText>
+
+</DocPage>

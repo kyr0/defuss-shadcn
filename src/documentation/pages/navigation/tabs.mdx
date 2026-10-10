@@ -1,0 +1,1014 @@
+---
+title: "Tabs"
+description: "Tabs component - tabbed content panels with keyboard navigation."
+slug: "tabs"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tabs" title="Tabs" component="tabs">
+  Organize content into switchable panels. Uses WAI-ARIA Tabs pattern with roving <code>tabindex</code> and arrow key navigation. Available in pill and line variants.
+</PageHeader>
+
+<SkillPanel component="tabs">
+  <SkillField label="Native basis">
+<SkillText><code>role="tablist"</code> + <code>role="tab"</code> + <code>role="tabpanel"</code>. No native HTML element</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="role contract (`tablist`, `tab`, `tabpanel`) and roving tabindex keyboard navigation"><code>WAI-ARIA Tabs pattern</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="auto-detects vertical orientation for layout switching"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppresses tab transitions"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="maps active tab to system Highlight"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.tab-list</code>
+    <code>.tab-trigger</code>
+    <code>.tabs</code>
+    <code>.tab-content</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="line" description="Underline indicator, transparent background" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Keyboard">
+<SkillGrid>
+    <Variant name="Key" description="Behavior" />
+    <Variant name="Tab" description="Move focus to active tab, then into the active panel" />
+    <Variant name="ArrowRight" description="Move to next tab (horizontal) and activate" />
+    <Variant name="ArrowLeft" description="Move to previous tab (horizontal) and activate" />
+    <Variant name="ArrowDown" description="Move to next tab (vertical) and activate" />
+    <Variant name="ArrowUp" description="Move to previous tab (vertical) and activate" />
+    <Variant name="Home" description="Move to first tab and activate" />
+    <Variant name="End" description="Move to last tab and activate" />
+    <Variant name="Space/Enter" description="Activate focused tab (manual activation mode)" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Only the active tab is in the tab order (<code>tabindex="0"</code>) - inactive tabs use <code>tabindex="-1"</code></SkillText>
+  <SkillText dense>• Arrow keys cycle through tabs (wrap around) - this is the roving tabindex pattern</SkillText>
+  <SkillText dense>• The active panel uses <code>tabindex="0"</code> so it can receive focus from the tab trigger</SkillText>
+  <SkillText dense>• Use <code>hidden</code> attribute on inactive panels for accessibility (screen readers skip them)</SkillText>
+  <SkillText dense>• Disabled tabs should have <code>disabled</code> attribute and be skipped by keyboard navigation</SkillText>
+  <p class="text-muted-foreground m-0">• For lazy-loaded content, panels can be rendered empty and populated on activation</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Pill Variant (Default)" hint="Default style with --muted background. Active tab gets --background fill and shadow." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Account settings" id="demo-tablist-pill">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="pill-panel-account" id="pill-tab-account"
+      >Account</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="pill-panel-password"
+      id="pill-tab-password"
+      tabindex="-1"
+      >Password</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="pill-panel-account" aria-labelledby="pill-tab-account" tabindex="0">
+    <div class="card" style="max-width: 24rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Account</h3>
+        <p class="card-description">Make changes to your account here.</p>
+      </div>
+      <div class="card-content" style="display: flex; flex-direction: column; gap: 0.75rem">
+        <div>
+          <label class="label" for="demo-tab-name">Name</label>
+          <input class="input" id="demo-tab-name" type="text" value="Aron Homberg" />
+        </div>
+        <div>
+          <label class="label" for="demo-tab-user">Username</label>
+          <input class="input" id="demo-tab-user" type="text" value="@kyr0" />
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn" data-variant="default">Save changes</button>
+      </div>
+    </div>
+  </div>
+  <div
+    class="tab-content"
+    role="tabpanel"
+    id="pill-panel-password"
+    aria-labelledby="pill-tab-password"
+    tabindex="0"
+    hidden
+  >
+    <div class="card" style="max-width: 24rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Password</h3>
+        <p class="card-description">Change your password here.</p>
+      </div>
+      <div class="card-content" style="display: flex; flex-direction: column; gap: 0.75rem">
+        <div>
+          <label class="label" for="demo-tab-current">Current password</label>
+          <input class="input" id="demo-tab-current" type="password" />
+        </div>
+        <div>
+          <label class="label" for="demo-tab-new">New password</label>
+          <input class="input" id="demo-tab-new" type="password" />
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn" data-variant="default">Save password</button>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Line Variant with Disabled Tab" hint="Add data-variant='line' to the .tab-list for an underline style. Disabled tabs use the native disabled attribute." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Dashboard" data-variant="line" id="demo-tablist-line">
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="true"
+      aria-controls="line-panel-overview"
+      id="line-tab-overview"
+      >Overview</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="line-panel-analytics"
+      id="line-tab-analytics"
+      tabindex="-1"
+      >Analytics</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="line-panel-reports"
+      id="line-tab-reports"
+      tabindex="-1"
+      disabled
+      >Reports</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="line-panel-overview" aria-labelledby="line-tab-overview" tabindex="0">
+    <p class="text-muted-foreground" style="font-size: 0.875rem; padding: 1rem 0"
+      >Overview dashboard content goes here. This is the default active panel.</p
+    >
+  </div>
+  <div
+    class="tab-content"
+    role="tabpanel"
+    id="line-panel-analytics"
+    aria-labelledby="line-tab-analytics"
+    tabindex="0"
+    hidden
+  >
+    <p class="text-muted-foreground" style="font-size: 0.875rem; padding: 1rem 0"
+      >Analytics panel with charts and metrics.</p
+    >
+  </div>
+  <div
+    class="tab-content"
+    role="tabpanel"
+    id="line-panel-reports"
+    aria-labelledby="line-tab-reports"
+    tabindex="0"
+    hidden
+  >
+    <p class="text-muted-foreground" style="font-size: 0.875rem; padding: 1rem 0"
+      >Reports panel with exportable data tables.</p
+    >
+  </div>
+</div>
+```
+
+```html example label="Vertical Orientation" hint="Set aria-orientation='vertical' on the tablist. CSS uses :has() to switch to a side-by-side layout automatically - a settings nav with horizontal labels. For tabs whose labels run vertically along the panel edge, use data-side (below)." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Settings" aria-orientation="vertical" id="demo-tablist-vert">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="vert-panel-general" id="vert-tab-general"
+      >General</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="vert-panel-security"
+      id="vert-tab-security"
+      tabindex="-1"
+      >Security</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="vert-panel-notif"
+      id="vert-tab-notif"
+      tabindex="-1"
+      >Notifications</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="vert-panel-general" aria-labelledby="vert-tab-general" tabindex="0">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">General Settings</h3>
+        <p class="card-description">Manage your general account preferences.</p>
+      </div>
+      <div class="card-content" style="display: flex; flex-direction: column; gap: 0.75rem">
+        <div>
+          <label class="label" for="vert-display">Display name</label>
+          <input class="input" id="vert-display" type="text" value="Aron Homberg" />
+        </div>
+        <div>
+          <label class="label" for="vert-email">Email</label>
+          <input class="input" id="vert-email" type="email" value="aron@example.com" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="tab-content"
+    role="tabpanel"
+    id="vert-panel-security"
+    aria-labelledby="vert-tab-security"
+    tabindex="0"
+    hidden
+  >
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Security</h3>
+        <p class="card-description">Configure your security settings.</p>
+      </div>
+      <div class="card-content">
+        <p class="text-muted-foreground" style="font-size: 0.875rem"
+          >Two-factor authentication, session management, and login history.</p
+        >
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="vert-panel-notif" aria-labelledby="vert-tab-notif" tabindex="0" hidden>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Notifications</h3>
+        <p class="card-description">Choose what you want to be notified about.</p>
+      </div>
+      <div class="card-content">
+        <p class="text-muted-foreground" style="font-size: 0.875rem"
+          >Email notifications, push alerts, and digest preferences.</p
+        >
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Attached to the card" hint="data-variant=&quot;attached&quot; on the .tab-list turns the tabs into folder tabs joined to the panel's .card: the selected tab takes the card surface and covers the card border where they meet, so tab and card read as one shape. The card corner the tabs grow from is squared." height="16"
+<div class="tabs" style="max-width: 28rem">
+  <div class="tab-list" role="tablist" aria-label="Project" data-variant="attached">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="att-top-panel-0" id="att-top-tab-0"
+      >Overview</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="att-top-panel-1"
+      id="att-top-tab-1"
+      tabindex="-1"
+      >Activity</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="att-top-panel-2"
+      id="att-top-tab-2"
+      tabindex="-1"
+      >Settings</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="att-top-panel-0" aria-labelledby="att-top-tab-0" tabindex="0">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Overview</h3>
+        <p class="card-description">Status, owners and the next milestone at a glance.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="att-top-panel-1" aria-labelledby="att-top-tab-1" tabindex="0" hidden>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Activity</h3>
+        <p class="card-description">Every change to the project, newest first.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="att-top-panel-2" aria-labelledby="att-top-tab-2" tabindex="0" hidden>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Settings</h3>
+        <p class="card-description">Name, visibility and integrations.</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Tabs below the card" hint="data-side=&quot;bottom&quot; on .tabs puts the tab row under the panel it switches - here attached and right-aligned with data-align=&quot;end&quot; (a player's lyrics / queue / devices switcher). The DOM order stays tablist-first; only the visual side changes." height="16"
+<div class="tabs" data-side="bottom" data-align="end" style="max-width: 28rem">
+  <div class="tab-list" role="tablist" aria-label="Player panels" data-variant="attached">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="att-bottom-panel-0" id="att-bottom-tab-0"
+      >Lyrics</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="att-bottom-panel-1"
+      id="att-bottom-tab-1"
+      tabindex="-1"
+      >Queue</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="att-bottom-panel-2"
+      id="att-bottom-tab-2"
+      tabindex="-1"
+      >Devices</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="att-bottom-panel-0" aria-labelledby="att-bottom-tab-0" tabindex="0">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Lyrics</h3>
+        <p class="card-description">Synced lyrics for the current track.</p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="tab-content"
+    role="tabpanel"
+    id="att-bottom-panel-1"
+    aria-labelledby="att-bottom-tab-1"
+    tabindex="0"
+    hidden
+  >
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Up next</h3>
+        <p class="card-description">Twelve tracks, 48 minutes.</p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="tab-content"
+    role="tabpanel"
+    id="att-bottom-panel-2"
+    aria-labelledby="att-bottom-tab-2"
+    tabindex="0"
+    hidden
+  >
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Devices</h3>
+        <p class="card-description">Kitchen speaker · Laptop · Phone</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Vertical, attached - left and right" hint="data-side=&quot;left&quot; or &quot;right&quot; stacks the tabs along that edge of the card, and their labels turn vertical with it - read bottom to top on the left, top to bottom on the right, like book spines (tabs.ts sets aria-orientation=&quot;vertical&quot;, so Up / Down move between tabs). data-align picks where they start: the left one from the top (start), the right one from the bottom (data-align=&quot;end&quot;)." height="20"
+<div class="grid grid-cols-auto gap-8" style="--layout-min: 18rem">
+  <div class="tabs" data-side="left">
+    <div class="tab-list" role="tablist" aria-label="Account (left)" data-variant="attached">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="att-left-panel-0" id="att-left-tab-0"
+        >General</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="att-left-panel-1"
+        id="att-left-tab-1"
+        tabindex="-1"
+        >Security</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="att-left-panel-2"
+        id="att-left-tab-2"
+        tabindex="-1"
+        >Billing</button
+      >
+    </div>
+    <div class="tab-content" role="tabpanel" id="att-left-panel-0" aria-labelledby="att-left-tab-0" tabindex="0">
+      <div class="card" style="min-height: 16rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">General</h3>
+          <p class="card-description">Display name, email and language.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="att-left-panel-1" aria-labelledby="att-left-tab-1" tabindex="0" hidden>
+      <div class="card" style="min-height: 16rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Security</h3>
+          <p class="card-description">Password, two-factor authentication and sessions.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="att-left-panel-2" aria-labelledby="att-left-tab-2" tabindex="0" hidden>
+      <div class="card" style="min-height: 16rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Billing</h3>
+          <p class="card-description">Plan, invoices and payment method.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs" data-side="right" data-align="end">
+    <div class="tab-list" role="tablist" aria-label="Account (right)" data-variant="attached">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="att-r-panel-0" id="att-r-tab-0"
+        >General</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="att-r-panel-1"
+        id="att-r-tab-1"
+        tabindex="-1"
+        >Security</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="att-r-panel-2"
+        id="att-r-tab-2"
+        tabindex="-1"
+        >Billing</button
+      >
+    </div>
+    <div class="tab-content" role="tabpanel" id="att-r-panel-0" aria-labelledby="att-r-tab-0" tabindex="0">
+      <div class="card" style="min-height: 16rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">General</h3>
+          <p class="card-description">Display name, email and language.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="att-r-panel-1" aria-labelledby="att-r-tab-1" tabindex="0" hidden>
+      <div class="card" style="min-height: 16rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Security</h3>
+          <p class="card-description">Password, two-factor authentication and sessions.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="att-r-panel-2" aria-labelledby="att-r-tab-2" tabindex="0" hidden>
+      <div class="card" style="min-height: 16rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Billing</h3>
+          <p class="card-description">Plan, invoices and payment method.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Side and alignment" hint="Every combination, live: data-side (top / bottom / left / right) sets the edge, data-align (start / center / end) where the tabs cluster along it, and any variant - pill, line or attached - follows the side. Pick one below; the tabs keep working, and the arrow keys switch to Up / Down on the left and right." height="24"
+<div class="flex flex-wrap gap-4 mb-5">
+  <label class="text-sm"
+    >Side
+    <select class="select" id="tabs-pg-side" style="width: 8rem">
+      <option>top</option
+      ><option selected>bottom</option
+      ><option>left</option
+      ><option>right</option>
+    </select>
+  </label>
+  <label class="text-sm"
+    >Align
+    <select class="select" id="tabs-pg-align" style="width: 8rem">
+      <option>start</option
+      ><option>center</option
+      ><option selected>end</option>
+    </select>
+  </label>
+  <label class="text-sm"
+    >Variant
+    <select class="select" id="tabs-pg-variant" style="width: 8rem">
+      <option value="">pill</option
+      ><option>line</option
+      ><option selected>attached</option>
+    </select>
+  </label>
+</div>
+<div class="tabs" id="tabs-pg" data-side="bottom" data-align="end">
+  <div class="tab-list" role="tablist" aria-label="Playground" id="tabs-pg-list" data-variant="attached">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="tabs-pg-panel-0" id="tabs-pg-tab-0"
+      >Overview</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="tabs-pg-panel-1"
+      id="tabs-pg-tab-1"
+      tabindex="-1"
+      >Activity</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="tabs-pg-panel-2"
+      id="tabs-pg-tab-2"
+      tabindex="-1"
+      >Settings</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="tabs-pg-panel-0" aria-labelledby="tabs-pg-tab-0" tabindex="0">
+    <div class="card" style="min-height: 8rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Overview</h3>
+        <p class="card-description">Status, owners and the next milestone at a glance.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="tabs-pg-panel-1" aria-labelledby="tabs-pg-tab-1" tabindex="0" hidden>
+    <div class="card" style="min-height: 8rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Activity</h3>
+        <p class="card-description">Every change to the project, newest first.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="tabs-pg-panel-2" aria-labelledby="tabs-pg-tab-2" tabindex="0" hidden>
+    <div class="card" style="min-height: 8rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Settings</h3>
+        <p class="card-description">Name, visibility and integrations.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const root = document.getElementById('tabs-pg');
+  const list = document.getElementById('tabs-pg-list');
+  const apply = () => {
+    const side = document.getElementById('tabs-pg-side').value;
+    root.dataset.side = side;
+    root.dataset.align = document.getElementById('tabs-pg-align').value;
+    const variant = document.getElementById('tabs-pg-variant').value;
+    if (variant) list.dataset.variant = variant;
+    else delete list.dataset.variant;
+    // the tablist's ARIA orientation follows the side
+    const vertical = side === 'left' || side === 'right';
+    if (vertical) list.setAttribute('aria-orientation', 'vertical');
+    else list.removeAttribute('aria-orientation');
+    // vertical labels need a taller panel: beside it, the panel sets the height
+    root.querySelectorAll('.card').forEach((card) => {
+      card.style.minHeight = vertical ? '17rem' : '8rem';
+    });
+  };
+  ['tabs-pg-side', 'tabs-pg-align', 'tabs-pg-variant'].forEach((id) =>
+    document.getElementById(id).addEventListener('change', apply),
+  );
+</script>
+```
+
+```html example label="Icons and emoji" hint="Put an icon in front of the label: an svg, an img, a lucide <i data-lucide>, or an emoji in a <span class=&quot;tab-icon&quot;>. It sits inline before the text, 0.5em apart, sized 1em - and turns with the label when the tabs run vertically, so icons and emoji read the same way as the text." height="22"
+<div class="flex flex-col gap-6">
+  <div class="tabs">
+    <div class="tab-list" role="tablist" aria-label="Mail">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="ico-mail-panel-0" id="ico-mail-tab-0"
+        ><i data-lucide="inbox"></i>Inbox</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="ico-mail-panel-1"
+        id="ico-mail-tab-1"
+        tabindex="-1"
+        ><i data-lucide="send"></i>Sent</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="ico-mail-panel-2"
+        id="ico-mail-tab-2"
+        tabindex="-1"
+        ><i data-lucide="archive"></i>Archive</button
+      >
+    </div>
+    <div class="tab-content" role="tabpanel" id="ico-mail-panel-0" aria-labelledby="ico-mail-tab-0" tabindex="0">
+      <div class="card" style="max-width: 28rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Inbox</h3>
+          <p class="card-description">Twelve unread, three flagged.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="ico-mail-panel-1" aria-labelledby="ico-mail-tab-1" tabindex="0" hidden>
+      <div class="card" style="max-width: 28rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Sent</h3>
+          <p class="card-description">Everything you sent this month.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="ico-mail-panel-2" aria-labelledby="ico-mail-tab-2" tabindex="0" hidden>
+      <div class="card" style="max-width: 28rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Archive</h3>
+          <p class="card-description">Read and filed away.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs" data-side="left">
+    <div class="tab-list" role="tablist" aria-label="Trips" data-variant="attached">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="ico-trip-panel-0" id="ico-trip-tab-0"
+        ><span class="tab-icon" aria-hidden="true">🏖️</span>Beach</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="ico-trip-panel-1"
+        id="ico-trip-tab-1"
+        tabindex="-1"
+        ><span class="tab-icon" aria-hidden="true">🏔️</span>Mountains</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="ico-trip-panel-2"
+        id="ico-trip-tab-2"
+        tabindex="-1"
+        ><span class="tab-icon" aria-hidden="true">🏙️</span>City</button
+      >
+    </div>
+    <div class="tab-content" role="tabpanel" id="ico-trip-panel-0" aria-labelledby="ico-trip-tab-0" tabindex="0">
+      <div class="card" style="min-height: 21rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Beach</h3>
+          <p class="card-description">Lisbon, five nights in July.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="ico-trip-panel-1" aria-labelledby="ico-trip-tab-1" tabindex="0" hidden>
+      <div class="card" style="min-height: 21rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Mountains</h3>
+          <p class="card-description">Chamonix, a week of hiking.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="ico-trip-panel-2" aria-labelledby="ico-trip-tab-2" tabindex="0" hidden>
+      <div class="card" style="min-height: 21rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">City</h3>
+          <p class="card-description">Tokyo, ten days in autumn.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Long labels" hint="When the labels need more room than there is, they shrink and end in an ellipsis - the full text stays the accessible name. Horizontal tabs never grow wider than their container; vertical ones never taller than the panel beside them (the panel sets the height, the tab column fills it)." height="24"
+<div class="flex flex-col gap-6">
+  <div class="tabs" style="max-width: 22rem">
+    <div class="tab-list" role="tablist" aria-label="Reports" data-variant="attached">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="long-h-panel-0" id="long-h-tab-0"
+        >Quarterly revenue by region</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="long-h-panel-1"
+        id="long-h-tab-1"
+        tabindex="-1"
+        >Customer acquisition cost</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="long-h-panel-2"
+        id="long-h-tab-2"
+        tabindex="-1"
+        >Churn</button
+      >
+    </div>
+    <div class="tab-content" role="tabpanel" id="long-h-panel-0" aria-labelledby="long-h-tab-0" tabindex="0">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Quarterly revenue by region</h3>
+          <p class="card-description">The tab row is 22rem wide; the labels share it.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="long-h-panel-1" aria-labelledby="long-h-tab-1" tabindex="0" hidden>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Customer acquisition cost</h3>
+          <p class="card-description">The tab row is 22rem wide; the labels share it.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="long-h-panel-2" aria-labelledby="long-h-tab-2" tabindex="0" hidden>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Churn</h3>
+          <p class="card-description">The tab row is 22rem wide; the labels share it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs" data-side="right">
+    <div class="tab-list" role="tablist" aria-label="Chapters" data-variant="attached">
+      <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="long-v-panel-0" id="long-v-tab-0"
+        >Introduction and motivation</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="long-v-panel-1"
+        id="long-v-tab-1"
+        tabindex="-1"
+        >Related work</button
+      >
+      <button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="false"
+        aria-controls="long-v-panel-2"
+        id="long-v-tab-2"
+        tabindex="-1"
+        >Method and evaluation</button
+      >
+    </div>
+    <div class="tab-content" role="tabpanel" id="long-v-panel-0" aria-labelledby="long-v-tab-0" tabindex="0">
+      <div class="card" style="height: 12rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Introduction and motivation</h3>
+          <p class="card-description">This panel is 12rem tall, so the vertical labels are shortened.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="long-v-panel-1" aria-labelledby="long-v-tab-1" tabindex="0" hidden>
+      <div class="card" style="height: 12rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Related work</h3>
+          <p class="card-description">This panel is 12rem tall, so the vertical labels are shortened.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" role="tabpanel" id="long-v-panel-2" aria-labelledby="long-v-tab-2" tabindex="0" hidden>
+      <div class="card" style="height: 12rem">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 1rem">Method and evaluation</h3>
+          <p class="card-description">This panel is 12rem tall, so the vertical labels are shortened.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="A tab in its own color" hint="Any tab can carry its own text color - here the destructive color marks a danger zone. It holds in every state, selected or not." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Repository settings" data-variant="line">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="color-panel-0" id="color-tab-0"
+      >General</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="color-panel-1"
+      id="color-tab-1"
+      tabindex="-1"
+      >Collaborators</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="color-panel-2"
+      id="color-tab-2"
+      tabindex="-1"
+      style="color: var(--destructive)"
+      ><i data-lucide="triangle-alert"></i>Danger zone</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="color-panel-0" aria-labelledby="color-tab-0" tabindex="0">
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">General</h3>
+        <p class="card-description">Name, description and topics.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="color-panel-1" aria-labelledby="color-tab-1" tabindex="0" hidden>
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Collaborators</h3>
+        <p class="card-description">Who can push, review and merge.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="color-panel-2" aria-labelledby="color-tab-2" tabindex="0" hidden>
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Danger zone</h3>
+        <p class="card-description">Transfer, archive or delete this repository.</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Disabled tabs and the State API" hint="disabled is a state, not only a style: a native disabled trigger is skipped by the arrow keys and cannot be selected, and api.setState('disabled') / setState('default') switch it at runtime - a selected tab that gets disabled hands the selection on. The tablist has its own api too: setState('active', { index }) picks the selected tab, and each tab's setState(currentState, { label, icon }) renames and re-icons it without touching the selection." height="22"
+<div class="flex flex-wrap gap-2 mb-4">
+  <button class="btn" data-variant="outline" data-size="sm" id="st-toggle">Toggle Billing disabled</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="st-select">Select Team (index 2)</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="st-rename">Rename Team</button>
+</div>
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Workspace" id="st-list">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="st-panel-0" id="st-tab-0"
+      ><i data-lucide="user"></i>Profile</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="st-panel-1"
+      id="st-tab-1"
+      tabindex="-1"
+      disabled
+      ><i data-lucide="credit-card"></i>Billing</button
+    >
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="st-panel-2" id="st-tab-2" tabindex="-1"
+      ><i data-lucide="users"></i>Team</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="st-panel-0" aria-labelledby="st-tab-0" tabindex="0">
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Profile</h3>
+        <p class="card-description">Your name, avatar and time zone.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="st-panel-1" aria-labelledby="st-tab-1" tabindex="0" hidden>
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Billing</h3>
+        <p class="card-description">Plan and invoices - locked until you verify your email.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="st-panel-2" aria-labelledby="st-tab-2" tabindex="0" hidden>
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Team</h3>
+        <p class="card-description">Invite people and manage their roles.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="text-sm text-muted-foreground mt-3">State: <output id="st-out"></output></p>
+<script>
+  const list = document.getElementById('st-list');
+  const billing = document.getElementById('st-tab-1');
+  const team = document.getElementById('st-tab-2');
+  const show = () => {
+    const s = list.api.getState();
+    document.getElementById('st-out').textContent =
+      'selected index ' +
+      s.config.index +
+      ' · Billing ' +
+      billing.api.getState().name +
+      ' · Team label "' +
+      team.api.getState().config.label +
+      '"';
+  };
+  document.getElementById('st-toggle').addEventListener('click', () => {
+    billing.api.setState(billing.api.getState().name === 'disabled' ? 'active' : 'disabled');
+    show();
+  });
+  document.getElementById('st-select').addEventListener('click', () => {
+    list.api.setState('active', { index: 2 });
+    show();
+  });
+  document.getElementById('st-rename').addEventListener('click', () => {
+    team.api.setState(team.api.getState().name, { label: 'People', icon: '👥' });
+    show();
+  });
+  list.addEventListener('click', show);
+  setTimeout(show);
+</script>
+```
+
+```html example label="Sizes" hint="Set data-size on the .tab-list; triggers scale with it - the default equals md." height="16"
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra small</span>
+  <div class="tab-list" role="tablist" aria-label="Demo xs" data-size="xs"
+    ><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xs-a">Account</button
+    ><button class="tab-trigger" role="tab" id="sz-xs-b" tabindex="-1">Password</button></div
+  >
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Small</span>
+  <div class="tab-list" role="tablist" aria-label="Demo sm" data-size="sm"
+    ><button class="tab-trigger" role="tab" aria-selected="true" id="sz-sm-a">Account</button
+    ><button class="tab-trigger" role="tab" id="sz-sm-b" tabindex="-1">Password</button></div
+  >
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Medium</span>
+  <div class="tab-list" role="tablist" aria-label="Demo md" data-size="md"
+    ><button class="tab-trigger" role="tab" aria-selected="true" id="sz-md-a">Account</button
+    ><button class="tab-trigger" role="tab" id="sz-md-b" tabindex="-1">Password</button></div
+  >
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Large</span>
+  <div class="tab-list" role="tablist" aria-label="Demo lg" data-size="lg"
+    ><button class="tab-trigger" role="tab" aria-selected="true" id="sz-lg-a">Account</button
+    ><button class="tab-trigger" role="tab" id="sz-lg-b" tabindex="-1">Password</button></div
+  >
+</div>
+<div class="flex items-center gap-4 mb-3">
+  <span class="demo-label demo-label-w5">Extra large</span>
+  <div class="tab-list" role="tablist" aria-label="Demo xl" data-size="xl"
+    ><button class="tab-trigger" role="tab" aria-selected="true" id="sz-xl-a">Account</button
+    ><button class="tab-trigger" role="tab" id="sz-xl-b" tabindex="-1">Password</button></div
+  >
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - on a tab, enabled and not picked (the authored selection stands; label and icon stay); on the tablist, everything as authored - selection, disabled flags, labels, icons (the init snapshot)</li>
+    <li><code>active</code> - on a tab, this tab selected and its panel visible (selection stays exclusive); on the tablist, the tab at <code>config.index</code> (or <code>config.id</code>) selected</li>
+    <li><code>disabled</code> - on a tab, not selectable and skipped by the arrow keys (a selected tab hands the selection on); on the tablist, every tab disabled</li>
+    <li>config <code>{'{ label, icon }'}</code> on a tab renames / re-icons it (a lucide name mounts <code>&lt;i data-lucide&gt;</code>, anything else - an emoji - a <code>.tab-icon</code> span, <code>''</code> removes it); re-entering the current state with a config applies just the config</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tabs-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/tabs.schema.json"><code>tabs.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `selected` | `number` | — | `0` | Index of the selected tab - the tablist's own api: `setState('active', { index })`, read back from `getState().config.index`. |
+| `active` | `boolean` | `true`, `false` | `false` | The demo’s second tab activated (its panel shown, others `hidden`) - the State API binds per `.tab-trigger`. |
+| `disabled` | `boolean` | `true`, `false` | `false` | The second tab disabled - `setState('disabled')`; unchecking enables it with `setState('default')`. |
+| `label` | `string` | — | — | The second tab's text - `setState(current, { label })`, selection untouched. |
+| `icon` | `string` | — | — | The second tab's icon: a lucide name, an emoji, or empty for none - `setState(current, { icon })`. |
+```
+
+</StatesSection>
+
+<ApiSection component="tabs" />
+
+<SourceFiles component="tabs" section="css" />
+
+<SourceFiles component="tabs" section="js">
+  <SourceNote for="js">Panel switching + WAI-ARIA keyboard navigation. Arrow keys cycle tabs, Home/End jump to first/last, disabled tabs are skipped automatically.</SourceNote>
+</SourceFiles>
+
+</DocPage>

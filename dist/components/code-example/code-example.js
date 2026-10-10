@@ -86,6 +86,7 @@ const config = {
     scripts: null,
     tail: '',
     theme: null,
+    base: null,
     highlight: null,
     shiki: SHIKI_URL,
     themes: { light: 'github-light', dark: 'github-dark' },
@@ -485,7 +486,11 @@ function buildSrcdoc(root, source) {
         const schema = c.schema ? JSON.stringify(c.schema).replace(/</g, '\\u003c') : 'null';
         // a source that nests this component hands its preview the same assets
         const nested = /\bcode-example\b/.test(source) ? nestedConfig(source) : Promise.resolve('');
-        return nested.then((nestedScript) => `<!DOCTYPE html>\n<html lang="en"${dark ? ' class="dark" style="color-scheme:dark"' : ''}>\n<head>\n<meta charset="UTF-8">\n${styles}\n` +
+        // a configured base resolves the example's relative references (images, videos) where the
+        // host says, not against the host page's own folder; links stay in the preview regardless
+        // (the bridge cancels navigation and jumps fragments itself)
+        const base = config.base ? `<base href="${String(config.base).replace(/"/g, '&quot;')}">\n` : '';
+        return nested.then((nestedScript) => `<!DOCTYPE html>\n<html lang="en"${dark ? ' class="dark" style="color-scheme:dark"' : ''}>\n<head>\n<meta charset="UTF-8">\n${base}${styles}\n` +
             `<style id="ce-theme" data-ce-chrome>${theme.replace(/<\/style/gi, '<\\/style')}</style>\n` +
             `<style data-ce-chrome>body{display:flow-root;margin:2.5rem 1.5rem;background:var(--background);color:var(--foreground);${stage}}</style>\n</head>\n<body>\n` +
             `${source}\n${scripts}\n${nestedScript}${tail}\n` +

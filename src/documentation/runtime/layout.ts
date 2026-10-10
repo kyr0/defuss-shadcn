@@ -78,8 +78,23 @@ import { prefs } from './prefs.js';
     (docs.__spaInits = docs.__spaInits || []).push(fn);
   };
 
-  /* Detect current filename */
-  var currentPage = location.pathname.split('/').pop() || 'index.html';
+  /* VERIFIED: where this page sits: pages render into section folders (page-dirs.ts),
+     so DocPage writes <html data-page="data-display/badge.html"
+     data-docs-root="../">. Every page id the runtime handles (the palette's
+     index, the chrome links' data-page) is resolved against the docs root,
+     never against the current folder. */
+  var root = document.documentElement;
+  var docsRoot = new URL(root.getAttribute('data-docs-root') || '', location.href);
+  var currentPage = root.getAttribute('data-page') || 'index.html';
+  var pageUrl = function (rel) { return new URL(rel, docsRoot); };
+  /* chrome links (sidebar, header) are written for the page that rendered
+     them - after an SPA hop into another folder they must point from here */
+  var resolveChromeLinks = function () {
+    /* runs after a navigation - the library runtime (df$) is installed by then */
+    globalThis.df$('.site-sidebar a[data-page], .site-header a[data-page]').each(function (_i, a) {
+      a.setAttribute('href', pageUrl(a.getAttribute('data-page')).pathname);
+    });
+  };
 
   /* -- Component type badges -----------------------------------
      The palette's nav hits render the same badge the sidebar and doc pages
@@ -163,7 +178,8 @@ import { prefs } from './prefs.js';
       go.className = 'btn nav-link';
       go.setAttribute('data-variant', 'outline');
       go.setAttribute('data-size', 'sm');
-      go.href = 'theme-designer.html';
+      var designer = globalThis.df$('.site-header a.theme-design-btn').get(0);
+      go.href = designer ? pageUrl(designer.getAttribute('data-page') || 'index.html').pathname : '#';
       go.textContent = 'Continue designing';
       var drop = document.createElement('button');
       drop.className = 'btn';
@@ -291,7 +307,8 @@ import { prefs } from './prefs.js';
           if (id) { var el = document.getElementById(id); if (el) { el.scrollIntoView({ block: 'start' }); if (docs.realignWhenSettled) docs.realignWhenSettled(id); } }
           else window.scrollTo(0, 0);
         } else {
-          navigateTo(page, true);
+          /* the index carries docs-root-relative pages (lib/plugins.ts) */
+          navigateTo(pageUrl(page).pathname, true);
           if (id) scrollToWhenReady(id, 0);
         }
       });
@@ -441,7 +458,7 @@ import { prefs } from './prefs.js';
   /* (With SPA router, sidebar persists - this handles fallback */
   /* cases: first load, hard refresh, external navigation.)     */
   document.addEventListener('click', function (e) {
-    var link = e.target.closest('a.nav-link, .site-header a[href="index.html"]');
+    var link = e.target.closest('a.nav-link, .site-header a.header-brand');
     if (!link) return;
     var sidebar = document.querySelector('.site-sidebar .sidebar-content');
     if (sidebar) prefs.navScroll.set(sidebar.scrollTop);
@@ -485,10 +502,14 @@ import { prefs } from './prefs.js';
 
   function navigateTo(href, pushState) {
     if (navigating) return;
-    if (href === currentPage && pushState !== false) return;
+    /* href: relative to the current page (an <a> in it) or an absolute path
+       (the palette, popstate) - one URL to compare, fetch and push */
+    var target = new URL(href, location.href);
+    if (target.pathname === location.pathname && pushState !== false) return;
     navigating = true;
+    href = target.pathname;
 
-    fetch(href)
+    fetch(target.href)
       .then(function (r) {
         if (!r.ok) throw new Error(r.status);
         return r.text();
@@ -545,14 +566,19 @@ import { prefs } from './prefs.js';
           /* Update document title */
           document.title = doc.title;
 
-          /* Update current page tracker */
-          currentPage = href;
+          /* Update current page tracker: the fetched page says where it sits */
+          var newRoot = doc.documentElement;
+          currentPage = newRoot.getAttribute('data-page') || currentPage;
+          root.setAttribute('data-page', currentPage);
+          root.setAttribute('data-docs-root', newRoot.getAttribute('data-docs-root') || '');
+          docsRoot = new URL(root.getAttribute('data-docs-root') || '', target.href);
+          resolveChromeLinks();
 
           /* Update active nav link - `.active` for tests/hooks, aria-current
              for the look: the sidebar component styles [aria-current="page"]
              (unlayered .nav-link.active would override component CSS). */
           document.querySelectorAll('.nav-link').forEach(function (link) {
-            var isActive = link.getAttribute('href') === currentPage;
+            var isActive = (link.getAttribute('data-page') || link.getAttribute('href')) === currentPage;
             link.classList.toggle('active', isActive);
             if (isActive) link.setAttribute('aria-current', 'page');
             else link.removeAttribute('aria-current');
@@ -615,7 +641,7 @@ import { prefs } from './prefs.js';
   document.addEventListener('click', function (e) {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (e.defaultPrevented) return;
-    var link = e.target.closest('a.nav-link:not(.disabled), .site-header a[href="index.html"], a.page-nav-link');
+    var link = e.target.closest('a.nav-link:not(.disabled), .site-header a.header-brand, a.page-nav-link');
     if (!link) return;
     var href = link.getAttribute('href');
     if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:')) return;
@@ -625,8 +651,7 @@ import { prefs } from './prefs.js';
 
   /* Handle browser back/forward */
   window.addEventListener('popstate', function () {
-    var page = location.pathname.split('/').pop() || 'index.html';
-    navigateTo(page, false);
+    navigateTo(location.pathname, false);
   });
 
   /* -- Anchor clearance (--anchor-pad) --------------------------

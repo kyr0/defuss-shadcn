@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CORE_INPUTS, SITE_INPUTS, coveredBy, e2eInputs, fixturesNamed } from '../scripts/lib/e2e-select.ts';
+import { CORE_INPUTS, SITE_INPUTS, coveredBy, e2eFolder, e2eInputs, fixturesNamed } from '../scripts/lib/e2e-select.ts';
 
 /**
  * Why: `bun run e2e` runs a file again only when its inputs changed - the
@@ -24,7 +24,12 @@ describe('e2eInputs', () => {
       fixtures: { 'accordion.e2e-fixture.html': '<script type="module" src="/dist/components/core.js"></script><script type="module" src="/dist/components/accordion/accordion.js"></script>' },
     });
     expect(inputs).toContain('src/components/overlays/accordion/');
-    expect(inputs).toContain('tests/e2e/accordion.e2e-fixture.html');
+    // the test and its fixtures live in the component's section folder (e2eFolder)
+    expect(inputs).toContain('tests/e2e/overlays/accordion.e2e-fixture.html');
+    expect(inputs).toContain('tests/e2e/overlays/accordion.e2e.ts');
+    expect(e2eFolder('accordion', (n) => base.componentDir(n)?.split('/')[2])).toBe('overlays');
+    expect(e2eFolder('documentation', (n) => base.componentDir(n)?.split('/')[2])).toBe('site');
+    expect(e2eInputs({ ...base, name: 'documentation', test: 'openDocPage', fixtures: {} })).toContain('tests/e2e/site/documentation.e2e.ts');
     for (const c of CORE_INPUTS) expect(inputs).toContain(c);
     expect(inputs).toContain('tests/e2e/lib/');
     expect(inputs).not.toContain('src/components/overlays/dialog/');

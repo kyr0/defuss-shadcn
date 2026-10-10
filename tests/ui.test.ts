@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 import { clickSelector, openDocPage, waitFor } from './helpers.ts';
+import { pageRel } from '../src/documentation/lib/page-dirs.ts';
 import type { StatsDoc } from '../scripts/lib/stats.ts';
 
 declare const __TIMEOUT_SCALE__: number; // vitest.config.ts: 3 on CI, 2 under coverage, 1 locally
@@ -34,14 +35,14 @@ test('site shell renders header and sidebar from layout.js web components', asyn
   // checkVisibility() runs in the iframe's document, since Vitest's ARIA-based
   // expect.element doesn't traverse into child frames reliably.
   // Installation lives in the always-open Introduction section → visible.
-  const navLink: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="installation.html"]');
+  const navLink: HTMLElementOrNull = doc.querySelector('.site-sidebar a[data-page="' + pageRel('installation') + '"]');
   expect(navLink, 'sidebar link to Installation').toBeTruthy();
   expect(navLink!.checkVisibility({ opacityProperty: true, visibilityProperty: true })).toBe(true);
   // collapsed-by-default sections keep their links in the DOM (the group
   // holds them closed - checkVisibility() can't see the closed state, since
   // Blink hides <details> content via content-visibility, which that API
   // ignores without checkVisibilityCSS)
-  const accordion: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="accordion.html"]');
+  const accordion: HTMLElementOrNull = doc.querySelector('.site-sidebar a[data-page="' + pageRel('accordion') + '"]');
   expect(accordion, 'sidebar link to Accordion').toBeTruthy();
   expect((accordion!.closest('details') as HTMLDetailsElement).open, 'Accordion section closed').toBe(false);
 });
@@ -88,15 +89,15 @@ test('header: panel-left toggle docks the sidebar; version badge + separators si
 
 test('sidebar shows component type badges (taxonomy), never the generic PREVIEW marker', async () => {
   const { doc } = await openDocPage('index.html');
-  await waitFor(() => doc.querySelector('.site-sidebar a[href="accordion.html"]'), 'sidebar links');
+  await waitFor(() => doc.querySelector('.site-sidebar a[data-page="' + pageRel('accordion') + '"]'), 'sidebar links');
 
   // badge type must match the skill frontmatter (accordion is an ATM - verified
   // against src/ by `bun run verify`'s `component type badges` gate)
-  const atm: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="accordion.html"] .type-badge');
+  const atm: HTMLElementOrNull = doc.querySelector('.site-sidebar a[data-page="' + pageRel('accordion') + '"] .type-badge');
   expect(atm, 'Accordion type badge').toBeTruthy();
   expect(atm!.dataset.type).toBe('ATM');
   expect(atm!.textContent).toBe('ATM');
-  const blk: HTMLElementOrNull = doc.querySelector('.site-sidebar a[href="hero.html"] .type-badge');
+  const blk: HTMLElementOrNull = doc.querySelector('.site-sidebar a[data-page="' + pageRel('hero') + '"] .type-badge');
   expect(blk, 'Hero type badge').toBeTruthy();
   expect(blk!.dataset.type).toBe('BLK');
   // the old generic PREVIEW marker is gone everywhere in the sidebar
@@ -125,7 +126,7 @@ test('SPA router swaps <main> content on nav click without reloading', async () 
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'shell to render');
 
   await expandSection(doc, 'Navigation');
-  await clickSelector(doc, '.site-sidebar a[href="tabs.html"]');
+  await clickSelector(doc, '.site-sidebar a[data-page="' + pageRel('tabs') + '"]');
 
   // the router replaces <main> innerHTML - new page shows its own <h1>
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Tabs'), 'tabs page content');
@@ -304,7 +305,7 @@ test('SPA navigation boots the State API example (dialog inside its own sandbox)
   await waitFor(() => doc.querySelector('.site-header button#theme-toggle'), 'shell to render');
 
   await expandSection(doc, 'Guides');
-  await clickSelector(doc, '.site-sidebar a[href="state-api.html"]');
+  await clickSelector(doc, '.site-sidebar a[data-page="' + pageRel('state-api') + '"]');
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('State API'), 'state-api page content');
   await waitFor(() => doc.querySelector('main .code-example'), 'example card');
   const card = doc.querySelector('main .code-example') as HTMLElement;
@@ -333,7 +334,7 @@ test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', 
 
   // clicking the summary expands the section - but only for this page: a
   // non-Introduction toggle is never stored (13 sections used to pile up open)
-  expect(forms.querySelector('a[href="input.html"]'), 'section contains its links').toBeTruthy();
+  expect(forms.querySelector('a[data-page="' + pageRel('input') + '"]'), 'section contains its links').toBeTruthy();
   doc.defaultView!.localStorage.setItem('defuss-shadcn-nav-collapsed', JSON.stringify({ 'Forms & Inputs': '1', Charts: '1' }));
   await clickSelector(doc, 'details[data-nav-section="Forms & Inputs"] > summary');
   await waitFor(() => forms.open, 'Forms & Inputs to expand');
@@ -343,7 +344,7 @@ test('sidebar sections are collapsible (dogfood of the sidebar-group pattern)', 
 
   // SPA-navigating to a page in Forms & Inputs keeps that section open and
   // closes every other one except Introduction
-  await clickSelector(doc, '.site-sidebar a[href="input.html"]');
+  await clickSelector(doc, '.site-sidebar a[data-page="' + pageRel('input') + '"]');
   await waitFor(() => doc.querySelector('main h1')?.textContent?.includes('Input'), 'input page content');
   await waitFor(() => forms.open && !charts.open, 'navigation keeps the active section open and closes the rest');
   expect(intro.open, 'Introduction keeps its own state').toBe(true);

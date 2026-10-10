@@ -1,6 +1,13 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
+import { join } from 'node:path';
 import { startServer } from '../server.ts';
+import { componentDirs } from '../../../src/documentation/lib/component-dirs.ts';
+import { e2eFolder } from '../../../scripts/lib/e2e-select.ts';
+
+/** the fixture of a component sits in its section folder: tests/e2e/<section>/<name>.e2e-fixture.html */
+const fixtureUrl = (component: string): string =>
+  `/tests/e2e/${e2eFolder(component, (n) => componentDirs(join(import.meta.dirname, '..', '..', '..', 'src', 'components')).find((c) => c.name === n)?.section)}/${component}.e2e-fixture.html`;
 
 /**
  * Why: CSS-only components (no .js) have no behavior to drive - their shipped
@@ -41,7 +48,7 @@ export async function cssSmoke(component: string, checks: Check[]): Promise<void
 
   try {
     const page = await browser.newPage();
-    await page.goto(`${server.url}/tests/e2e/${component}.e2e-fixture.html`);
+    await page.goto(`${server.url}${fixtureUrl(component)}`);
     // fixture files carry ids per variant/size - make sure they all rendered
     await page.waitForFunction(() => document.body.childElementCount > 0);
 

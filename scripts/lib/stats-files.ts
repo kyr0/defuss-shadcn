@@ -1,3 +1,4 @@
+import { pageDirs } from '../../src/documentation/lib/page-dirs-files.ts';
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
@@ -28,9 +29,7 @@ export function countUnitTestFiles(distDir: string): number {
  *  fence in the MDX sources (each renders one CodeExample). */
 export function countExamples(): number {
   const dir = join(import.meta.dirname, '..', '..', 'src', 'documentation', 'pages');
-  if (!existsSync(dir)) return 0;
-  return readdirSync(dir).filter((f) => f.endsWith('.mdx'))
-    .reduce((n, f) => n + (readFileSync(join(dir, f), 'utf8').match(/^```[a-z]+ example\b/gm)?.length ?? 0), 0);
+  return pageDirs(dir).reduce((n, p) => n + (readFileSync(p.file, 'utf8').match(/^```[a-z]+ example\b/gm)?.length ?? 0), 0);
 }
 
 /** Template pages: nav items typed TPL that are pages, not component folders
@@ -174,9 +173,10 @@ export function measureCore(componentsDir: string): BundleStats {
  * when a scaffold's markup changed but dist/apps/ was not rebuilt.
  */
 export function measureApps(distDir: string): Record<string, AppStats> {
-  const dir = join(distDir, 'apps');
   const out: Record<string, AppStats> = {};
   for (const plan of appPlans()) {
+    // one folder per app: dist/apps/<app>/<app>.*
+    const dir = join(distDir, 'apps', plan.name);
     const js = bytesOf(join(dir, `${plan.name}.js`));
     const jsMin = bytesOf(join(dir, `${plan.name}.min.js`));
     const css = bytesOf(join(dir, `${plan.name}.css`));

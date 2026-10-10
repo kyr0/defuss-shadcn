@@ -28,11 +28,13 @@ const args = process.argv.slice(2);
 const runAll = args.includes('--all') || process.env.E2E_ALL === '1';
 const picked = args.filter((a) => !a.startsWith('--'));
 
-const files = readdirSync(dir)
-  .filter((f) => f.endsWith('.e2e.ts'))
+// tests/e2e/<folder>/<name>.e2e.ts - one folder per sidebar section + `site` (scripts/lib/e2e-select.ts e2eFolder)
+const files = readdirSync(dir, { withFileTypes: true })
+  .filter((d) => d.isDirectory())
+  .flatMap((d) => readdirSync(join(dir, d.name)).filter((f) => f.endsWith('.e2e.ts')).map((f) => `${d.name}/${f}`))
   .sort();
 if (files.length === 0) {
-  console.error('No *.e2e.ts tests found in tests/e2e/');
+  console.error('No *.e2e.ts tests found in tests/e2e/<folder>/');
   process.exit(1);
 }
 
@@ -85,12 +87,13 @@ const componentDir = (name: string): string | undefined => {
   return c ? `${relative(ROOT, c.dir).split(sep).join('/')}/` : undefined;
 };
 const plan = files.map((file) => {
-  const name = file.replace(/\.e2e\.ts$/, '');
+  const folder = file.slice(0, file.indexOf('/'));
+  const name = file.slice(folder.length + 1).replace(/\.e2e\.ts$/, '');
   const test = readFileSync(join(dir, file), 'utf8');
   const fixtures: Record<string, string> = {};
-  for (const fx of fixturesNamed(test)) if (existsSync(join(dir, fx))) fixtures[fx] = readFileSync(join(dir, fx), 'utf8');
+  for (const fx of fixturesNamed(test)) if (existsSync(join(dir, folder, fx))) fixtures[fx] = readFileSync(join(dir, folder, fx), 'utf8');
   const own = `${name}.e2e-fixture.html`;
-  if (!fixtures[own] && existsSync(join(dir, own))) fixtures[own] = readFileSync(join(dir, own), 'utf8');
+  if (!fixtures[own] && existsSync(join(dir, folder, own))) fixtures[own] = readFileSync(join(dir, folder, own), 'utf8');
   const inputs = e2eInputs({ name, test, fixtures, componentsOf: resolve, componentDir });
   return { file, name, print: fingerprint(inputs) };
 });

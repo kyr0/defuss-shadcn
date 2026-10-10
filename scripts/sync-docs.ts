@@ -47,7 +47,14 @@ for (const { src, rel } of mirrorFiles(DIST)) {
   const out = join(OUT, rel);
   mkdirSync(dirname(out), { recursive: true });
   const raw = readFileSync(src);
-  writeFileSync(out, /\.(html|xml)$/.test(src) ? mirrorTransform(raw.toString('utf8'), version) : raw);
+  let text = /\.(html|xml)$/.test(src) ? mirrorTransform(raw.toString('utf8'), version) : null;
+  // 404.html is index.html served at ANY depth (GitHub Pages answers every unknown
+  // URL with it): the site lives at the domain root, so a <base> makes its
+  // root-relative assets and links resolve from /data-display/x.html too. The
+  // only page with a base - every real page resolves from its own folder.
+  // VERIFIED: GitHub Pages serves 404.html at any depth - the one page allowed a <base>; every other page's links are resolved at build time (page-dirs.ts)
+  if (text !== null && rel === '404.html') text = text.replace('<head>', '<head><base href="/">');
+  writeFileSync(out, text ?? raw);
   count++;
 }
 writeFileSync(stampPath, JSON.stringify({ version, tag: `v${version}`, assets: cdnBase(version) }, null, 2) + '\n');

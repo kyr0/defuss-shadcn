@@ -180,7 +180,10 @@
   document.addEventListener('DOMContentLoaded', function () {
     var api = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.codeExample;
     if (!api) return; // wysiwyg.js missing - the cards stay static
-    api.configure({ styles: docsStyles, scripts: docsScripts, tail: docsTail, theme: docsTheme });
+    // VERIFIED: base = the docs root - pages sit in section folders (page-dirs.ts), an example's
+    // `images/x.png` must still resolve from the root where public/ lands
+    var docsRoot = new URL(document.documentElement.getAttribute('data-docs-root') || '', location.href).href;
+    api.configure({ styles: docsStyles, scripts: docsScripts, tail: docsTail, theme: docsTheme, base: docsRoot });
     // theme-switcher dispatches this on every applyTheme
     document.addEventListener('defuss-theme-change', function () {
       api.refreshTheme();

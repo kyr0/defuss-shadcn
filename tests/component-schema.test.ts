@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 // these tests pin the actual files, not fixtures (plans/cmp-schemas-and-codeexample.md §27).
 import inputSchemaJson from '../src/components/forms-inputs/input/input.schema.json?raw';
 import dialogSchemaJson from '../src/components/overlays/dialog/dialog.schema.json?raw';
-import inputMdx from '../src/documentation/pages/input.mdx?raw';
-import dialogMdx from '../src/documentation/pages/dialog.mdx?raw';
+import inputMdx from '../src/documentation/pages/forms-inputs/input.mdx?raw';
+import dialogMdx from '../src/documentation/pages/overlays/dialog.mdx?raw';
 import {
   codeExampleProblems,
   EDITOR_COMPONENTS,

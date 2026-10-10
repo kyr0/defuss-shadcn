@@ -24,7 +24,7 @@ const path = (el: Element): string | null => el.querySelector('svg path')?.getAt
 
 beforeEach(async () => {
   frame = document.createElement('iframe');
-  frame.src = '/tests/e2e/qr-code.e2e-fixture.html';
+  frame.src = '/tests/e2e/data-display/qr-code.e2e-fixture.html';
   document.body.append(frame);
   await waitFor(() => frame.contentWindow?.location.pathname === frame.getAttribute('src')
     && frame.contentDocument?.readyState === 'complete'

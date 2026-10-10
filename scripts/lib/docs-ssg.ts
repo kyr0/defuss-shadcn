@@ -1,3 +1,4 @@
+import { STANDALONE_APPS, STANDALONE_DECKS, STANDALONE_DOCS, appName, pageRel, pageSourceRel, standaloneAppId, standaloneDeckId, standaloneDocId, standaloneSource } from '../../src/documentation/lib/page-dirs.ts';
 /**
  * Why: src/documentation/ is a defuss-ssg project - the doc pages are authored
  * as MDX (pages/) with TSX components (lib/) and client runtime TS (runtime/),
@@ -13,33 +14,27 @@
  *   tsconfig.json           → (editor-only JSX types for .tsx, never shipped)
  */
 /**
- * Why: pages whose deck is ALSO rendered chrome-free as deck-{slug}.html
- * (scripts/build-docs.ts, from the page's own example fence) so other pages
- * can frame it - the Getting Started rail embeds the flagship deck. One list,
- * shared by the producer and verify (dist 1:1 origin, sidebar exemption).
+ * The standalone pages (a deck rendered chrome-free as deck-<slug>.html so the
+ * Getting Started rail can frame it; a scaffold as app-<name>.html on its own
+ * bundle; a document as full-<slug>.html on the whole system) are listed by
+ * the docs lib's layout owner, src/documentation/lib/page-dirs.ts - the
+ * producer (build-docs.ts), the docs components that link them and verify all
+ * read the same list. Each file sits beside its source page, in the page's
+ * section folder: the *File functions give the docs-root-relative path.
+ * VERIFIED: (paper-fullscreen.e2e) the full-screen document scrolls, its
+ * diagram, charts, BibTeX and icons initialize on all.js, and it follows the
+ * OS color scheme.
  */
-export const STANDALONE_DECKS = ['system-in-numbers'];
+export { STANDALONE_APPS, STANDALONE_DECKS, STANDALONE_DOCS, appName };
 
-/** Application scaffolds with a generated full-screen page (same idea as the
- *  standalone decks: one example fence, two ways to view it). */
-export const STANDALONE_APPS = ['scaffold-admin-dashboard', 'scaffold-messenger', 'scaffold-issue-tracker', 'scaffold-notes', 'scaffold-status-page', 'scaffold-desktop', 'scaffold-document-editor'];
+/** The generated full-screen page of a scaffold page slug, from the docs root (`application/app-notes.html`). */
+export const standaloneAppFile = (slug: string): string => pageRel(standaloneAppId(slug));
 
-/** The generated full-screen page name for a scaffold page slug. */
-export const standaloneAppFile = (slug: string): string => `app-${slug.replace(/^scaffold-/, '')}.html`;
+/** The generated full-screen page of a document page slug, from the docs root. */
+export const standaloneDocFile = (slug: string): string => pageRel(standaloneDocId(slug));
 
-/** Document templates with a generated full-screen reading page (the paper):
- *  like the scaffolds, one example fence and two ways to view it - but a
- *  document scrolls and loads the whole system (all.css + all.js), since it
- *  composes charts, diagrams and BibTeX rather than one app's components.
- *  VERIFIED: (paper-fullscreen.e2e) the page scrolls, its diagram, charts, BibTeX and
- *  icons initialize on all.js, and it follows the OS color scheme. */
-export const STANDALONE_DOCS = ['paper'];
-
-/** The generated full-screen page name for a document page slug. */
-export const standaloneDocFile = (slug: string): string => `full-${slug}.html`;
-
-/** The generated standalone page name for a deck page slug. */
-export const standaloneDeckFile = (slug: string): string => `deck-${slug}.html`;
+/** The generated standalone page of a deck page slug, from the docs root. */
+export const standaloneDeckFile = (slug: string): string => pageRel(standaloneDeckId(slug));
 
 export const DOCS_SSG_AUTHORING = ['pages', 'lib', 'runtime', 'public', 'data', 'config.ts', 'tsconfig.json', 'dist'];
 
@@ -66,17 +61,12 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   if (js) return `documentation/runtime/${js[1]}.ts`;
   // static assets live in public/ (mirrored to output root by defuss-ssg)
   if (/^(css|fonts|images|videos|templates)\//.test(r)) return `documentation/public/${r}`;
-  // standalone decks: deck-{n}.html ← pages/{n}.mdx (its example fence)
-  const deck = STANDALONE_DECKS.find((s) => r === standaloneDeckFile(s));
-  if (deck) return `documentation/pages/${deck}.mdx`;
-  // full-screen scaffolds: app-{n}.html ← pages/scaffold-{n}.mdx (its example fence)
-  const app = STANDALONE_APPS.find((s) => r === standaloneAppFile(s));
-  if (app) return `documentation/pages/${app}.mdx`;
-  // full-screen documents: full-{n}.html ← pages/{n}.mdx (its example fence)
-  const doc = STANDALONE_DOCS.find((s) => r === standaloneDocFile(s));
-  if (doc) return `documentation/pages/${doc}.mdx`;
-  // pages: {n}.html ← pages/{n}.mdx
-  if (r.endsWith('.html')) return `documentation/pages/${r.replace(/\.html$/, '')}.mdx`;
+  // a standalone page (<section>/deck-{n}.html, app-{n}.html, full-{n}.html) ← its source page's
+  // example fence; every other page: <section>/{n}.html ← pages/<section>/{n}.mdx
+  if (r.endsWith('.html')) {
+    const id = r.replace(/^.*\//, '').replace(/\.html$/, '');
+    return `documentation/pages/${pageSourceRel(standaloneSource(id) ?? id)}`;
+  }
   return null;
 }
 
@@ -90,6 +80,3 @@ export function exampleFence(mdx: string): string | null {
   return mdx.match(/^(`{3,})html example[^\n]*\n([\s\S]*?)^\1$/m)?.[2] ?? null;
 }
 
-/** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) -
- *  its bundle is dist/apps/{name}.css + .js. */
-export const appName = (slug: string): string => slug.replace(/^scaffold-/, '');

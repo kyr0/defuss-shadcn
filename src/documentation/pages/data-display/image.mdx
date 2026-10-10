@@ -1,0 +1,230 @@
+---
+title: "Image"
+description: "Image component - figure with fallback, lightbox preview, aspect ratio, and caption."
+slug: "image"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="image" title="Image" component="image">
+  A figure-based image component with fallback, lightbox preview, aspect ratio control, and caption. Built on <code>&lt;figure&gt;</code>, <code>&lt;dialog&gt;</code>, and native CSS.
+</PageHeader>
+
+<p class="text-sm text-muted-foreground mb-6">Sub-pages: <DocLink href="image-gallery.html">Image Gallery</DocLink> - an auto-advancing gallery composed from <code>figure.image</code> slides, with per-slide dwell times and every DOM write routed through defuss-query.</p>
+
+<SkillPanel component="image">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure&gt;</code> wrapping <code>&lt;img&gt;</code> with optional <code>&lt;figcaption&gt;</code>. Uses <code>&lt;dialog&gt;</code> for fullscreen lightbox.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="self-contained content with optional caption"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog" title="native modal for lightbox preview"><code>&lt;dialog&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="intrinsic aspect ratio control"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="entry animation for lightbox"><code>@starting-style</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.image</code>
+    <code>.image-caption</code>
+    <code>.image-fallback</code>
+    <code>.image-lightbox</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-preview</code> - enables click-to-preview lightbox</SkillText>
+  <SkillText dense>• <code>data-ratio</code> - values: <code>1/1</code>, <code>4/3</code>, <code>3/2</code>, <code>16/9</code>, <code>21/9</code>, <code>3/4</code></SkillText>
+  <SkillText dense>• <code>data-fit</code> - values: <code>contain</code>, <code>fill</code>, <code>none</code></SkillText>
+  <SkillText dense>• <code>data-radius</code> - values: <code>none</code>, <code>sm</code>, <code>md</code>, <code>full</code></SkillText>
+  <SkillText dense>• <code>data-src-low</code> - low-res placeholder, swapped for the real source once preloaded</SkillText>
+  <SkillText dense>• <code>data-src-high</code> - high-res source: used on ≥2dppx displays, or on the first lightbox zoom-in</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground m-0">• While the lightbox is modal, <code>html:has(dialog.image-lightbox:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> - the page behind cannot scroll and its position is preserved for when the lightbox closes (no JS scroll-lock).</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Basic image in a figure with rounded corners and cover fit."
+<figure class="image" style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+    alt="Abstract gradient"
+  />
+</figure>
+```
+
+```html example label="With Caption" hint="Semantic &lt;figcaption&gt; for descriptive text below the image."
+<figure class="image" style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+    alt="Abstract gradient"
+  />
+  <figcaption class="image-caption">Photo by Unsplash - Abstract gradient composition</figcaption>
+</figure>
+```
+
+```html example label="Fallback" hint="Shows a placeholder when the image fails to load. Uses :has() to detect error state."
+<figure class="image" style="max-width: 400px; height: 200px">
+  <img src="https://invalid-url-that-will-fail.example/photo.jpg" alt="Broken image example" />
+  <div class="image-fallback">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+      <circle cx="9" cy="9" r="2"></circle>
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+    </svg>
+  </div>
+</figure>
+```
+
+```html example label="Lightbox Preview" hint="Click the image to open a fullscreen preview with zoom and rotate controls. Uses native &lt;dialog&gt;. data-src-full names a much larger original that only the lightbox loads: the preview opens instantly with the inline image, then swaps in the original once it has downloaded."
+<figure class="image" data-preview style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&amp;h=400&amp;fit=crop"
+    data-src-full="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=2400&amp;h=1200&amp;fit=crop&amp;q=85"
+    alt="Mountain landscape"
+  />
+  <figcaption class="image-caption">Click to preview - opens the 2400 px original</figcaption>
+</figure>
+```
+
+```html example label="Progressive Loading" hint="data-src-low paints a blurred placeholder while the real image preloads in the background; data-src-high replaces it on ≥2dppx (retina) displays - and, combined with data-preview, on the first lightbox zoom-in."
+<figure class="image" data-preview style="max-width: 400px">
+  <img
+    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+    data-src-low="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=32&amp;h=16&amp;fit=crop"
+    data-src-high="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1600&amp;h=800&amp;fit=crop"
+    alt="Abstract gradient"
+  />
+  <figcaption class="image-caption">Progressive: low-res placeholder → standard → high-res on retina/zoom</figcaption>
+</figure>
+```
+
+```html example label="Aspect Ratios" hint="Controlled aspect ratios via data-ratio."
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start">
+  <figure class="image" data-ratio="1/1" style="width: 120px">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop" alt="Square" />
+    <figcaption class="image-caption">1:1</figcaption>
+  </figure>
+  <figure class="image" data-ratio="4/3" style="width: 160px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=300&amp;fit=crop"
+      alt="Standard"
+    />
+    <figcaption class="image-caption">4:3</figcaption>
+  </figure>
+  <figure class="image" data-ratio="16/9" style="width: 200px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=225&amp;fit=crop"
+      alt="Widescreen"
+    />
+    <figcaption class="image-caption">16:9</figcaption>
+  </figure>
+  <figure class="image" data-ratio="3/4" style="width: 120px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=300&amp;h=400&amp;fit=crop"
+      alt="Portrait"
+    />
+    <figcaption class="image-caption">3:4</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Object Fit" hint="Control how the image fills its container via data-fit."
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start">
+  <figure class="image" data-ratio="4/3" style="width: 180px; background: var(--muted)">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+      alt="Cover (default)"
+    />
+    <figcaption class="image-caption">cover (default)</figcaption>
+  </figure>
+  <figure class="image" data-ratio="4/3" data-fit="contain" style="width: 180px; background: var(--muted)">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop"
+      alt="Contain"
+    />
+    <figcaption class="image-caption">contain</figcaption>
+  </figure>
+  <figure class="image" data-ratio="4/3" data-fit="none" style="width: 180px; background: var(--muted)">
+    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&amp;h=400&amp;fit=crop" alt="None" />
+    <figcaption class="image-caption">none</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Border Radius" hint="Control border radius via data-radius."
+<div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start">
+  <figure class="image" data-radius="none" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="No radius"
+    />
+    <figcaption class="image-caption">none</figcaption>
+  </figure>
+  <figure class="image" data-radius="sm" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="Small radius"
+    />
+    <figcaption class="image-caption">sm</figcaption>
+  </figure>
+  <figure class="image" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="Default radius"
+    />
+    <figcaption class="image-caption">default (lg)</figcaption>
+  </figure>
+  <figure class="image" data-radius="full" data-ratio="1/1" style="width: 100px">
+    <img
+      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&amp;h=400&amp;fit=crop"
+      alt="Full radius"
+    />
+    <figcaption class="image-caption">full</figcaption>
+  </figure>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - image loaded, caption/fallback hidden</li>
+    <li><code>error</code> - <code>.image-fallback</code> revealed (the same state a failed network load produces)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The demo element carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/image-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/image.schema.json"><code>image.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `error` | `boolean` | `true`, `false` | `false` | Broken-image fallback styling (`img[data-error]`). |
+```
+
+</StatesSection>
+
+<ApiSection component="image" />
+
+<SourceFiles component="image" section="css">
+  <SourceNote for="css">Styles for figure, caption, fallback, and lightbox dialog.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="image" section="js">
+  <SourceNote for="js">Fallback error detection and lightbox preview with zoom/rotate.</SourceNote>
+</SourceFiles>
+
+</DocPage>

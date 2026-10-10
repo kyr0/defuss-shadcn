@@ -1,5 +1,7 @@
 import type { Props } from 'defuss';
 import { repoFile } from '../repo';
+import { pageRel } from '../page-dirs';
+// VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
 import { readFileSync } from 'node:fs';
 
 const pkg = JSON.parse(readFileSync(repoFile('package.json'), 'utf8')) as { version: string };
@@ -17,7 +19,7 @@ export function SiteHeader(_props: Props) {
         {/* Brand: the logo with the version badge centered under it, the
             name beside them - one row at every width (the badge never
             collides with the name). */}
-        <a href="index.html" class="header-brand">
+        <a href="index.html" data-page="index.html" class="header-brand">
           <span class="header-brand-mark">
             <img src="images/favicon.webp" alt="defuss-shadcn logo" class="header-brand-logo" />
             <span class="badge header-version" data-variant="outline">
@@ -98,7 +100,7 @@ export function SiteHeader(_props: Props) {
           <button class="theme-reset-btn" id="theme-reset-btn">Reset</button>
         </div>
         {/* the Theme Designer - designed themes come back on top of the grid */}
-        <a class="btn nav-link theme-design-btn" data-variant="outline" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Design your own</a>
+        <a class="btn nav-link theme-design-btn" data-variant="outline" data-size="sm" href="theme-designer.html" data-page={pageRel('theme-designer')}><i data-lucide="paintbrush"></i> Design your own</a>
         <div class="theme-grid" id="theme-grid"></div>
       </div>
       {/* Docs-wide search palette - the shipped command component, fed by the

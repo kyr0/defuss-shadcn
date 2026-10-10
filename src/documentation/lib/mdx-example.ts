@@ -191,8 +191,8 @@ function codeWindowNode(node: CodeNode): unknown {
   if (attrs.title) attributes.push(jsxAttr('title', attrs.title));
   return { type: 'mdxJsxFlowElement', name: FENCE_WINDOW, attributes, children: [] };
 }
-function fenceWindowImport(): unknown {
-  const from = '../lib/components/copy-button';
+function fenceWindowImport(libBase = '../lib/components/'): unknown {
+  const from = `${libBase}copy-button`;
   return {
     type: 'mdxjsEsm',
     value: `import { CodeWindow as ${FENCE_WINDOW} } from '${from}';`,
@@ -212,7 +212,9 @@ function fenceWindowImport(): unknown {
 }
 
 /** True once the page contains at least one transformed fence (import injected once). */
-function transform(tree: MdastParent, pageComponent: string): boolean {
+/** `libBase`: the docs lib from the page's folder - `../lib/components/` at pages/,
+ *  `../../lib/components/` in a section folder (page-dirs.ts) */
+function transform(tree: MdastParent, pageComponent: string, libBase = '../lib/components/'): boolean {
   let used = false;
   let mermaid = false;
   let diagram = false;
@@ -253,18 +255,22 @@ function transform(tree: MdastParent, pageComponent: string): boolean {
     }
   };
   visit(tree);
-  if (used) tree.children.unshift(importNode());
-  if (mermaid) tree.children.unshift(importNode(['MermaidDiagram'], '../lib/components/mermaid-diagram'));
-  if (diagram) tree.children.unshift(importNode(['SpecDiagram'], '../lib/components/spec-diagram'));
-  if (windows) tree.children.unshift(fenceWindowImport());
+  if (used) tree.children.unshift(importNode(undefined, `${libBase}code-example`));
+  if (mermaid) tree.children.unshift(importNode(['MermaidDiagram'], `${libBase}mermaid-diagram`));
+  if (diagram) tree.children.unshift(importNode(['SpecDiagram'], `${libBase}spec-diagram`));
+  if (windows) tree.children.unshift(fenceWindowImport(libBase));
   return used || mermaid || diagram || windows;
 }
 
 /** remark plugin: ```… example / ```states / ```mermaid / ```diagram / plain fences → CodeExample / StatesTable / MermaidDiagram / SpecDiagram / CodeWindow. */
 export function remarkDocExamples() {
-  return (tree: MdastParent, file: { basename?: string }) => {
-    // pages/{name}.mdx → the page's own component (plan §23)
+  return (tree: MdastParent, file: { basename?: string; dirname?: string }) => {
+    // pages/<section>/{name}.mdx → the page's own component (plan §23)
     const pageComponent = String(file?.basename ?? '').replace(/\.mdx$/, '');
-    transform(tree, /^[a-z0-9-]+$/.test(pageComponent) ? pageComponent : '');
+    // the injected imports reach lib/ from the page's folder: one level more below pages/
+    const dir = String(file?.dirname ?? '').replace(/\\/g, '/');
+    // VERIFIED: a page under pages/<section>/ imports the lib two levels up - the plain ../lib/ failed to load for every moved page
+    const libBase = dir && !/\/pages$/.test(dir) ? '../../lib/components/' : '../lib/components/';
+    transform(tree, /^[a-z0-9-]+$/.test(pageComponent) ? pageComponent : '', libBase);
   };
 }

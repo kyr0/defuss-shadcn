@@ -47,6 +47,10 @@ import { THEME_TOKENS, themeableTokens } from './lib/theme-tokens.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
 import { componentDirs as componentDirsOf, componentFile } from '../src/documentation/lib/component-dirs.ts';
+import { docsRoot, isPage, pageRel, pageSection, pageSourceRel } from '../src/documentation/lib/page-dirs.ts';
+import { pageDirs, pageFile } from '../src/documentation/lib/page-dirs-files.ts';
+import { e2eFolder } from './lib/e2e-select.ts';
+import { appPlans } from './lib/apps-files.ts';
 import { flattenComponentLinks, flattenSkillIndex } from '../src/documentation/lib/component-links.ts';
 import { appName, docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile, STANDALONE_DOCS, standaloneDocFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
@@ -109,9 +113,11 @@ const MODES = ['light', 'dark'];
  * src/documentation/pages/*.mdx (build:docs must run before verify - it does,
  * in every package.json chain). Gates that check the SHIPPED surface read the
  * rendered pages; gates about authoring read the .mdx sources. */
-const docPages = existsSync(DOCS_DIST)
-  ? readdirSync(DOCS_DIST).filter((f) => f.endsWith('.html'))
-  : [];
+// docs-root-relative: `index.html`, `data-display/badge.html` (the layout: page-dirs.ts)
+const docPages = pageDirs(DOCS_DIST, '.html').map((p) => (p.folder ? `${p.folder}/${p.slug}.html` : `${p.slug}.html`));
+/** the section folder an e2e file belongs in: its component's, else `site` */
+const componentSectionOf = (name: string): string | undefined => componentDirsOf(COMPS).find((c) => c.name === name)?.section;
+const e2eFile = (name: string, suffix = '.e2e.ts'): string => join(ROOT, 'tests', 'e2e', e2eFolder(name, componentSectionOf), `${name}${suffix}`);
 
 // 1. every component folder ships a component skill
 check(
@@ -123,21 +129,40 @@ check(
 // 2. every component has a documentation page (MDX source)
 check(
   'documentation pages',
-  componentDirs.filter((c) => !existsSync(join(DOCS_PAGES, `${c}.mdx`))).map((c) => `src/documentation/pages/${c}.mdx missing`),
-  `copy src/documentation/pages/badge.mdx as template`,
+  componentDirs.filter((c) => !existsSync(pageFile(DOCS_PAGES, c))).map((c) => `src/documentation/pages/${isPage(c) ? pageSourceRel(c) : `<section>/${c}.mdx`} missing`),
+  `copy src/documentation/pages/data-display/badge.mdx as template, into the folder of the sidebar section that lists the page`,
 );
+
+// 2b. the pages follow the sidebar sections like the components do:
+// pages/<section>/<slug>.mdx, the root page alone at the root (page-dirs.ts).
+// VERIFIED: one layout for pages, their output, the e2e tests and the app
+// bundles - a page in the wrong folder, or in none, names its `git mv` here.
+{
+  const problems: string[] = [];
+  for (const p of pageDirs(DOCS_PAGES)) {
+    const expected = pageSection(p.slug);
+    const at = p.folder ? `${p.folder}/${p.slug}.mdx` : `${p.slug}.mdx`;
+    if (expected === null) problems.push(`pages/${at}: no sidebar section lists ${p.slug}.html - add it to lib/nav.ts (or remove the page)`);
+    else if (expected !== p.folder) problems.push(`pages/${at} belongs in pages/${pageSourceRel(p.slug)} - git mv src/documentation/pages/${at} src/documentation/pages/${pageSourceRel(p.slug)}`);
+  }
+  check(
+    'page sections',
+    problems,
+    'every page lives in src/documentation/pages/<section>/<slug>.mdx - the slug of the sidebar section that lists it (lib/nav.ts) - and only index.mdx at the root; move files with git mv',
+  );
+}
 
 // 3. every component has an e2e smoke test - rollout complete, hard gate.
 // The fixture/assertions encode the component's documented surface (incl.
 // State API states), so new components land with source + fixture + test
 // together (AGENTS.md "Docs ↔ E2E parity").
 const missingE2e = componentDirs
-  .filter((c) => !existsSync(join(E2E, `${c}.e2e.ts`)))
-  .map((c) => `tests/e2e/${c}.e2e.ts missing`);
+  .filter((c) => !existsSync(e2eFile(c)))
+  .map((c) => `${relative(ROOT, e2eFile(c))} missing`);
 check(
   'e2e smoke tests',
   missingE2e,
-  'add fixture + test: interactive components follow tests/e2e/accordion.e2e.{ts,fixture.html}; CSS-only components use tests/e2e/lib/css-smoke.ts (see tests/e2e/badge.e2e.ts). Then `bun run e2e`',
+  'add fixture + test in the component\'s section folder: interactive components follow tests/e2e/overlays/accordion.e2e.{ts,fixture.html}; CSS-only components use tests/e2e/lib/css-smoke.ts (see tests/e2e/data-display/badge.e2e.ts). Then `bun run e2e`',
 );
 
 // 4. component CSS uses only defined tokens (tweakcn shape) or local defs
@@ -252,38 +277,60 @@ check(
 const importProblems: string[] = [];
 const appPages = new Map(STANDALONE_APPS.map((slug) => [standaloneAppFile(slug), appName(slug)]));
 for (const [page, html] of docHtml) {
-  // a full-screen scaffold loads ONLY its own bundle (dist/apps/) - the page
-  // is the proof of the size stats.json publishes for it
+  // the dist siblings from this page: one `../` per folder below the docs root, plus one for dist/
+  const up = `${docsRoot(page.replace(/^.*\//, '').replace(/\.html$/, ''))}../`;
+  // a full-screen scaffold loads ONLY its own bundle (dist/apps/<app>/) - the
+  // page is the proof of the size stats.json publishes for it
   const app = appPages.get(page);
   if (app) {
-    if (!html.includes(`<link rel="stylesheet" href="../apps/${app}.min.css"`)) importProblems.push(`${page} missing its own app stylesheet ../apps/${app}.min.css`);
-    if (!html.includes(`<script type="module" src="../apps/${app}.min.js"`)) importProblems.push(`${page} missing its own app script ../apps/${app}.min.js`);
-    if (/(?:href|src)="\.\.\/(?:components|theme)\//.test(html)) importProblems.push(`${page} loads system files beside its app bundle - the app bundle must be all it needs`);
+    if (!html.includes(`<link rel="stylesheet" href="${up}apps/${app}/${app}.min.css"`)) importProblems.push(`${page} missing its own app stylesheet ${up}apps/${app}/${app}.min.css`);
+    if (!html.includes(`<script type="module" src="${up}apps/${app}/${app}.min.js"`)) importProblems.push(`${page} missing its own app script ${up}apps/${app}/${app}.min.js`);
+    if (/(?:href|src)="(?:\.\.\/)+(?:components|theme)\//.test(html)) importProblems.push(`${page} loads system files beside its app bundle - the app bundle must be all it needs`);
     continue;
   }
-  if (!html.includes('<link rel="stylesheet" href="../components/all.css"')) {
-    importProblems.push(`${page} missing the all.css bundle link`);
+  if (!html.includes(`<link rel="stylesheet" href="${up}components/all.css"`)) {
+    importProblems.push(`${page} missing the all.css bundle link (${up}components/all.css)`);
   }
-  if (!html.includes('<script type="module" src="../components/all.js"')) {
-    importProblems.push(`${page} missing the all.js bundle script`);
+  if (!html.includes(`<script type="module" src="${up}components/all.js"`)) {
+    importProblems.push(`${page} missing the all.js bundle script (${up}components/all.js)`);
   }
   // a page with live examples (the code-example component) loads the extra
   // bundle it ships in - after all.*
   if (/class="code-example[" ]/.test(html)) {
-    const css = html.indexOf('<link rel="stylesheet" href="../components/wysiwyg.css"');
-    const js = html.indexOf('<script type="module" src="../components/wysiwyg.js"');
-    if (css < 0) importProblems.push(`${page} has live examples but no ../components/wysiwyg.css`);
-    else if (css < html.indexOf('href="../components/all.css"')) importProblems.push(`${page} loads wysiwyg.css before all.css`);
-    if (js < 0) importProblems.push(`${page} has live examples but no ../components/wysiwyg.js`);
-    else if (js < html.indexOf('src="../components/all.js"')) importProblems.push(`${page} loads wysiwyg.js before all.js`);
+    const css = html.indexOf(`<link rel="stylesheet" href="${up}components/wysiwyg.css"`);
+    const js = html.indexOf(`<script type="module" src="${up}components/wysiwyg.js"`);
+    if (css < 0) importProblems.push(`${page} has live examples but no ${up}components/wysiwyg.css`);
+    else if (css < html.indexOf(`href="${up}components/all.css"`)) importProblems.push(`${page} loads wysiwyg.css before all.css`);
+    if (js < 0) importProblems.push(`${page} has live examples but no ${up}components/wysiwyg.js`);
+    else if (js < html.indexOf(`src="${up}components/all.js"`)) importProblems.push(`${page} loads wysiwyg.js before all.js`);
   }
-  for (const m of html.matchAll(/<link\b[^>]*\bhref="\.\.\/components\/[^/"]+\/[^/"]+\.css"/g)) {
+  for (const m of html.matchAll(/<link\b[^>]*\bhref="(?:\.\.\/)+components\/[^/"]+\/[^/"]+\.css"/g)) {
     importProblems.push(`${page} loads a per-component stylesheet (${m[0]}) - the all.css bundle replaced the include lists`);
   }
-  for (const m of html.matchAll(/<script\b[^>]*\bsrc="\.\.\/components\/[^/"]+\/[^/"]+\.js"/g)) {
+  for (const m of html.matchAll(/<script\b[^>]*\bsrc="(?:\.\.\/)+components\/[^/"]+\/[^/"]+\.js"/g)) {
     importProblems.push(`${page} imports a per-component script (${m[0]}) - the all.js bundle replaced the include lists`);
   }
 }
+// 7b. every page link in the rendered output resolves to a rendered file: the links
+// plugin (lib/plugins.ts) turns a page id (`badge.html`) into the path from the
+// linking page's folder; an id it could not place, or a hand-written path that
+// misses, surfaces here. Real tags only (an escaped sample is &lt;a).
+{
+  const problems: string[] = [];
+  for (const [page, html] of docHtml) {
+    const dir = page.includes('/') ? page.slice(0, page.lastIndexOf('/')) : '';
+    for (const m of html.matchAll(/<(?:a|iframe|link|form)\b[^>]*?\b(?:href|src|action)="([^"#?:]+\.html)(?:[#?][^"]*)?"/g)) {
+      const target = join(DOCS_DIST, dir, m[1]);
+      if (!existsSync(target)) problems.push(`${page} links ${m[1]} - no such page (${relative(DOCS_DIST, target)})`);
+    }
+  }
+  check(
+    'page links resolve',
+    problems.slice(0, 20),
+    'link pages by id (`href="badge.html"`, the build resolves the folder); a target that does not exist is a dead link - fix the page or lib/nav.ts',
+  );
+}
+
 check(
   'cross-page imports',
   importProblems,
@@ -295,9 +342,37 @@ check(
 // sidebar (their own .mdx), never navigation targets themselves
 const navSrc = readFileSync(join(DOCS, 'lib/nav.ts'), 'utf8');
 const standaloneDeckPages = new Set([...STANDALONE_DECKS.map(standaloneDeckFile), ...STANDALONE_APPS.map(standaloneAppFile), ...STANDALONE_DOCS.map(standaloneDocFile)]);
+// 3b. the e2e tree follows the sidebar sections too: tests/e2e/<section>/<name>.e2e.ts (+ its
+// fixtures) for a test named after a component, tests/e2e/site/ for the site-level tests;
+// the root keeps only run.ts, server.ts, lib/ and agent-skills/.
+{
+  const problems: string[] = [];
+  const ROOT_KEEP = new Set(['run.ts', 'server.ts', 'lib', 'agent-skills']);
+  const stemOf = (f: string): string | null => f.match(/^([a-z0-9-]+)\.e2e(?:-fixture\.html|\.ts|[-.][a-z0-9.-]+)$/)?.[1] ?? null;
+  for (const entry of readdirSync(E2E, { withFileTypes: true })) {
+    if (ROOT_KEEP.has(entry.name)) continue;
+    if (entry.isFile()) {
+      const stem = stemOf(entry.name);
+      const folder = stem ? e2eFolder(stem, componentSectionOf) : 'site';
+      problems.push(`tests/e2e/${entry.name} belongs in tests/e2e/${folder}/ - git mv tests/e2e/${entry.name} tests/e2e/${folder}/${entry.name}`);
+      continue;
+    }
+    for (const f of readdirSync(join(E2E, entry.name)).filter((n) => /\.e2e(\.ts|-fixture\.html)$/.test(n))) {
+      const stem = stemOf(f);
+      const folder = stem ? e2eFolder(stem, componentSectionOf) : 'site';
+      if (folder !== entry.name) problems.push(`tests/e2e/${entry.name}/${f} belongs in tests/e2e/${folder}/ - git mv`);
+    }
+  }
+  check(
+    'e2e sections',
+    problems,
+    'an e2e file named after a component lives in that component\'s section folder (tests/e2e/<section>/), every other one in tests/e2e/site/ (scripts/lib/e2e-select.ts e2eFolder); move with git mv',
+  );
+}
+
 check(
   'sidebar coverage',
-  docPages.filter((p) => !standaloneDeckPages.has(p) && !navSrc.includes(`'${p}'`)).map((p) => `${p} not referenced in lib/nav.ts`),
+  docPages.filter((p) => !standaloneDeckPages.has(p) && !navSrc.includes(`'${p.replace(/^.*\//, '')}'`)).map((p) => `${p} not referenced in lib/nav.ts`),
   "add the page to the NAV array in src/documentation/lib/nav.ts",
 );
 
@@ -665,6 +740,15 @@ check(
       if (!s.members.includes(c) && existsSync(componentFile(COMPS, c, `${c}.ts`)) && new RegExp(`\\b${camel(c)}States\\s*=`).test(js)) artifactProblems.push(`${file}.js embeds "${c}", which is in another section`);
     if (/(^|\n)\s*import[\s({]|import\(/.test(js)) artifactProblems.push(`${file}.js contains a runtime import - the payload must be self-contained`);
   }
+  // the app bundles (bundle.ts step 3): dist/apps/<app>/<app>.css + .js, one folder per
+  // scaffold like every other tree follows the sidebar; nothing flat in dist/apps/
+  for (const plan of appPlans()) {
+    for (const ext of ['css', 'js']) if (!existsSync(join(DIST, 'apps', plan.name, `${plan.name}.${ext}`))) artifactProblems.push(`dist/apps/${plan.name}/${plan.name}.${ext} missing - run \`bun run build\``);
+  }
+  for (const f of existsSync(join(DIST, 'apps')) ? readdirSync(join(DIST, 'apps'), { withFileTypes: true }) : []) {
+    if (f.isFile()) artifactProblems.push(`dist/apps/${f.name} is flat - an app bundle lives in dist/apps/<app>/ (rebuild)`);
+    else if (!appPlans().some((p) => p.name === f.name)) artifactProblems.push(`dist/apps/${f.name}/ belongs to no scaffold page - rebuild`);
+  }
   check(
     'artifact contract (core/all)',
     artifactProblems,
@@ -677,7 +761,7 @@ check(
 // will attach: same set, same release.
 {
   const zipProblems: string[] = [];
-  const page = join(DIST, 'documentation', 'bundles.html');
+  const page = pageFile(DOCS_DIST, 'bundles', '.html');
   const statsDoc = existsSync(join(DIST, STATS_FILE)) ? (JSON.parse(readFileSync(join(DIST, STATS_FILE), 'utf8')) as StatsDoc) : null;
   if (!existsSync(page) || !statsDoc) zipProblems.push('dist/documentation/bundles.html or dist/stats.json missing - run `bun run build`');
   else {
@@ -768,7 +852,7 @@ check(
 //     contract create-screenshots.ts (and the agent's eye) relies on
 const previewProblems: string[] = [];
 for (const c of componentDirs) {
-  const page = join(DOCS_DIST, `${c}.html`);
+  const page = pageFile(DOCS_DIST, c, '.html');
   // a class token, not the whole attribute: a live example's stage is
   // class="code-example-stage preview" (the shipped component + the docs hook)
   if (existsSync(page) && !/class="(?:[^"]*\s)?preview(?:\s[^"]*)?"/.test(readFileSync(page, 'utf8'))) {
@@ -821,15 +905,13 @@ for (const c of componentDirs) {
   const states = declaredStates(readFileSync(tsFile, 'utf8'));
   if (states.length === 0) continue;
 
-  const doc = existsSync(join(DOCS_DIST, `${c}.html`)) ? readFileSync(join(DOCS_DIST, `${c}.html`), 'utf8') : '';
+  const doc = existsSync(pageFile(DOCS_DIST, c, '.html')) ? readFileSync(pageFile(DOCS_DIST, c, '.html'), 'utf8') : '';
   if (!doc.includes('data-state-demo')) coverageProblems.push(`${c}: doc page lacks a [data-state-demo] anchor for state capture`);
 
   const skill = existsSync(componentFile(COMPS, c, 'component-skill.md'))
     ? readFileSync(componentFile(COMPS, c, 'component-skill.md'), 'utf8')
     : '';
-  const e2e = existsSync(join(ROOT, 'tests', 'e2e', `${c}.e2e.ts`))
-    ? readFileSync(join(ROOT, 'tests', 'e2e', `${c}.e2e.ts`), 'utf8')
-    : '';
+  const e2e = existsSync(e2eFile(c)) ? readFileSync(e2eFile(c), 'utf8') : '';
 
   for (const s of states) {
     // PNG existence is local-only (see #12): a clean checkout - CI - has no screenshots/
@@ -938,7 +1020,7 @@ for (const c of componentDirs) {
   );
   if (tokens.size === 0) continue;
   const skillText = existsSync(skillFile) ? readFileSync(skillFile, 'utf8') : '';
-  const doc = existsSync(join(DOCS_DIST, `${c}.html`)) ? readFileSync(join(DOCS_DIST, `${c}.html`), 'utf8') : '';
+  const doc = existsSync(pageFile(DOCS_DIST, c, '.html')) ? readFileSync(pageFile(DOCS_DIST, c, '.html'), 'utf8') : '';
   const documented = (text: string, t: string) =>
     text.includes(`"${t}"`) || text.includes(`\`${t}\``) || new RegExp(`\\|\\s*${t}\\s*\\|`).test(text);
   const missSkill = [...tokens].filter((t) => !documented(skillText, t));
@@ -963,7 +1045,7 @@ const fieldProblems = fieldFeatureProblems(
     name: c,
     css: existsSync(componentFile(COMPS, c, `${c}.css`)) ? readFileSync(componentFile(COMPS, c, `${c}.css`), 'utf8') : '',
     skill: existsSync(componentFile(COMPS, c, 'component-skill.md')) ? readFileSync(componentFile(COMPS, c, 'component-skill.md'), 'utf8') : '',
-    doc: docHtml.find(([p]) => p === `${c}.html`)?.[1] ?? '',
+    doc: docHtml.find(([p]) => p === pageRel(c))?.[1] ?? '',
   })),
 );
 check(
@@ -1235,7 +1317,8 @@ if (existsSync(DIST)) {
       const path = hashAt >= 0 ? url.slice(0, hashAt) : url;
       const anchor = hashAt >= 0 ? url.slice(hashAt + 1) : '';
       if (!path) continue;
-      const targetAbs = join(DIST, 'documentation', path);
+      // relative to the page's own folder (pages render into section folders)
+      const targetAbs = join(DIST, 'documentation', dirname(f), path);
       if (!existsSync(targetAbs)) {
         linkProblems.push(`${f}: dead link ${url}`);
         continue;
@@ -1286,7 +1369,9 @@ check(
     const abs = join(ROOT, dirname(from), relPath);
     if (abs.startsWith(ROOT + sep) && existsSync(abs)) return true;
     if (!from.startsWith(pagesDir)) return false;
-    if (relPath.endsWith('.html') && existsSync(join(DOCS_PAGES, relPath.replace(/\.html$/, '.mdx')))) return true;
+    // a page links another by its id (`badge.html`, `app-notes.html#x`): the links plugin resolves
+    // the folder at build time (lib/plugins.ts); any sidebar page or standalone page is a target
+    if (/^[a-z0-9-]+\.html$/.test(relPath) && isPage(relPath.replace(/\.html$/, ''))) return true;
     return shippedComponentLink(relPath) || existsSync(join(SRC, relPath.replace(/^\.\.\//, '')));
   };
   check(
@@ -1301,7 +1386,7 @@ check(
 const fixtureProblems: string[] = [];
 for (const c of componentDirs) {
   const cssFile = componentFile(COMPS, c, `${c}.css`);
-  const fixture = join(ROOT, 'tests', 'e2e', `${c}.e2e-fixture.html`);
+  const fixture = e2eFile(c, '.e2e-fixture.html');
   if (!existsSync(cssFile) || !existsSync(fixture)) continue; // missing fixture = check 3
   const tokens = new Set(
     [...readFileSync(cssFile, 'utf8').matchAll(/data-(?:variant|size)="([a-z0-9-]+)"/g)].map((m) => m[1]),
@@ -1585,7 +1670,7 @@ check(
         if (onDf) adoption.push(`${c}: uses df$ now - remove it from DF_ADOPTION_LEGACY`);
         else adoptionDebt.push(c);
       } else if (!onDf) adoption.push(`${c}: JS component without df$ - import defussQuery from the shared state-api module and select/write through it`);
-      const e2ePath = join(ROOT, 'tests', 'e2e', `${c}.e2e.ts`);
+      const e2ePath = e2eFile(c);
       const proven = hasRender(c, src) && existsSync(e2ePath) && /\bassertRenderContract\s*\(/.test(readFileSync(e2ePath, 'utf8'));
       if (RENDER_LEGACY.includes(c)) {
         if (proven) renderProblems.push(`${c}: render() contract in place - remove it from RENDER_LEGACY`);
@@ -1891,8 +1976,8 @@ check(
     try {
       const md = readFileSync(join(ROOT, 'ARCH.md'), 'utf8');
       const expectedBody = archBodyHtml(md.trim());
-      const page = join(DOCS_DIST, 'architecture.html');
-      if (!existsSync(page)) archProblems.push('dist/documentation/architecture.html missing - run `bun run build:docs`');
+      const page = pageFile(DOCS_DIST, 'architecture', '.html');
+      if (!existsSync(page)) archProblems.push(`dist/documentation/${pageRel('architecture')} missing - run \`bun run build:docs\``);
       else {
         const { document } = parseHTML(readFileSync(page, 'utf8'));
         // the § anchors are TOC chrome (the plugin injects them into every
@@ -1928,7 +2013,7 @@ check(
       if (!existsSync(skill)) continue; // reported by "component skills"
       const meta = parseSkillFrontmatter(readFileSync(skill, 'utf8'));
       if (!meta) continue; // reported by "skill frontmatter"
-      const page = join(DOCS_DIST, `${c}.html`);
+      const page = pageFile(DOCS_DIST, c, '.html');
       if (!existsSync(page)) continue; // reported by "documentation pages"
       const html = readFileSync(page, 'utf8');
       // doc page badge: exact generated markup (never hand-written)
@@ -2059,9 +2144,9 @@ check(
   {
     const problems: string[] = [];
     for (const [name, schema] of schemaByName) {
-      const page = join(DOCS_PAGES, `${name}.mdx`);
+      const page = pageFile(DOCS_PAGES, name);
       if (!existsSync(page)) {
-        problems.push(`component "${name}" has a schema but no pages/${name}.mdx - every schema needs its documentation page (plan §25.4)`);
+        problems.push(`component "${name}" has a schema but no pages/${isPage(name) ? pageSourceRel(name) : `<section>/${name}.mdx`} - every schema needs its documentation page (plan §25.4)`);
         continue;
       }
       const mdx = readFileSync(page, 'utf8');

@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { pageDirs } from '../src/documentation/lib/page-dirs-files.ts';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { rewriteStatFigures, type StatSources } from './lib/stat-figures.ts';
@@ -29,8 +30,9 @@ export function statSources(root: string): StatSources {
 if (import.meta.main) {
   const sources = statSources(ROOT);
   let changed = 0;
-  for (const f of readdirSync(PAGES).filter((n) => n.endsWith('.mdx'))) {
-    const file = join(PAGES, f);
+  for (const p of pageDirs(PAGES)) {
+    const f = p.folder ? `${p.folder}/${p.slug}.mdx` : `${p.slug}.mdx`;
+    const file = p.file;
     const text = readFileSync(file, 'utf8');
     const next = rewriteStatFigures(text, sources);
     if (next !== text) {

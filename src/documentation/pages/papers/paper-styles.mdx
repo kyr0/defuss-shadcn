@@ -1,0 +1,146 @@
+---
+title: "House Styles - Paper Gallery"
+description: "One short paper in three house styles - modern, classic and minimal - switched in place by a Toggle Group."
+slug: "paper-styles"
+---
+
+import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-styles" title="House Styles" component="paper">
+  The same paper in the three house styles of Modern Paper. A Toggle Group above the title switches <code>data-variant</code> on the article: the parts stay the same, the house style changes - a project page, a printed journal, a lab note.
+</PageHeader>
+
+```html example label="Three house styles" schema="none" hint="Pick Modern, Classic or Minimal: the Toggle Group sets data-variant on the .paper. Classic sets everything in the serif, justifies the column and centres small-caps heads; Minimal moves the title block flush start and drops the tint and the rules."
+<div
+  class="toggle-group"
+  role="group"
+  aria-label="House style"
+  data-type="single"
+  id="ps-styles"
+  style="margin: 0 auto 1rem; display: flex; justify-content: center"
+>
+  <button class="toggle" aria-pressed="true" data-style="modern">Modern</button>
+  <button class="toggle" aria-pressed="false" data-style="classic">Classic</button>
+  <button class="toggle" aria-pressed="false" data-style="minimal">Minimal</button>
+</div>
+<article class="paper" id="ps-paper" aria-labelledby="ps-title">
+  <header class="paper-hero">
+    <p class="paper-venue"
+      ><span class="badge" data-variant="secondary">Short paper</span
+      ><span>defuss-shadcn · <time datetime="2026-10">October 2026</time></span></p
+    >
+    <h1 class="paper-title" id="ps-title"
+      >Three House Styles<span class="paper-title-sub">One set of parts, three ways to set them</span></h1
+    >
+    <ul class="paper-authors"
+      ><li>Aron Homberg</li
+      ><li>Claude</li></ul
+    >
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="ps-abstract">
+    <h2 id="ps-abstract">Abstract</h2>
+    <p
+      >A research page, a journal article and a lab note share their parts: a title block, an abstract, numbered
+      sections, tables. What differs is the house style. Modern Paper keeps the parts and lets one attribute choose the
+      style, so an author can change the look of a finished paper without touching its markup.</p
+    >
+  </section>
+
+  <nav class="paper-toc" aria-labelledby="ps-toc">
+    <h2 id="ps-toc">Contents</h2>
+    <ol>
+      <li
+        ><a href="#ps-s1"><span class="paper-num">1</span>Modern</a></li
+      >
+      <li
+        ><a href="#ps-s2"><span class="paper-num">2</span>Classic</a></li
+      >
+      <li
+        ><a href="#ps-s3"><span class="paper-num">3</span>Minimal</a></li
+      >
+      <li
+        ><a href="#ps-cite"><span class="paper-num">·</span>Citation and references</a></li
+      >
+    </ol>
+  </nav>
+
+  <section class="paper-section" aria-labelledby="ps-s1">
+    <h2 id="ps-s1"><span class="paper-num">1</span>Modern</h2>
+    <p
+      >The default is a project page: a centred title block, serif headings over a sans body, ruled section heads and a
+      tinted abstract with an accent edge.</p
+    >
+  </section>
+
+  <section class="paper-section" aria-labelledby="ps-s2">
+    <h2 id="ps-s2"><span class="paper-num">2</span>Classic</h2>
+    <p
+      >The classic style sets a printed journal: serif throughout, a narrower column set justified and hyphenated,
+      section heads in small capitals without a rule, and an abstract set in from both sides.</p
+    >
+  </section>
+
+  <section class="paper-section" aria-labelledby="ps-s3">
+    <h2 id="ps-s3"><span class="paper-num">3</span>Minimal</h2>
+    <p
+      >The minimal style is a lab note: everything flush start, a sans title, the abstract under a hairline instead of a
+      tint, no rules under the heads.</p
+    >
+  </section>
+  <section class="paper-bibtex" aria-labelledby="ps-cite">
+    <h2 id="ps-cite">Citation and references</h2>
+    <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this paper">
+      <figcaption>Cite this paper</figcaption>
+      <pre><code class="bibtex-source">@techreport{homberg2026housestyles,
+  title = {Three House Styles: One Set of Parts, Three Ways to Set Them},
+  author = {Homberg, Aron and Claude},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://kyr0.github.io/defuss-shadcn/paper-styles.html}
+}</code></pre>
+    </figure>
+    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+      <figcaption>References</figcaption>
+      <pre><code class="bibtex-source">@book{bringhurst2004elements,
+  author = {Bringhurst, Robert},
+  title = {The Elements of Typographic Style},
+  edition = {3},
+  publisher = {Hartley \& Marks},
+  address = {Vancouver},
+  year = {2004}
+}
+
+@inproceedings{park2021nerfies,
+  author = {Keunhong Park and Utkarsh Sinha and Jonathan T. Barron and Sofien Bouaziz and Dan B. Goldman and Steven M. Seitz and Ricardo Martin-Brualla},
+  title = {Nerfies: Deformable Neural Radiance Fields},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages = {5865--5874},
+  year = {2021}
+}
+
+@misc{homberg2026defussshadcn,
+  author = {Homberg, Aron},
+  title = {defuss-shadcn: shadcn-style components as semantic HTML},
+  year = {2026},
+  howpublished = {GitHub},
+  url = {https://github.com/kyr0/defuss-shadcn}
+}</code></pre>
+    </figure>
+  </section>
+</article>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#ps-styles .toggle').on('click', (e) => {
+      const style = e.currentTarget.dataset.style;
+      df$('#ps-paper').attr('data-variant', style === 'modern' ? null : style);
+    });
+  });
+</script>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

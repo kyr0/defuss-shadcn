@@ -1,0 +1,270 @@
+---
+title: "Theming"
+description: "Customize defuss-shadcn with CSS custom properties. Design your own theme in the built-in Theme Designer, or drop in any tweakcn.com theme."
+slug: "theming"
+---
+
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeWindow, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="theming" title="Theming" introStyle="max-width:38rem;">
+  The theme is defined by semantic tokens - CSS custom properties that match the <a class="link" href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn.com</a> export format. Design a theme in the Theme Designer (or on tweakcn), load its <code>:root</code> and <code>.dark</code> blocks after <code>default-semantic-tokens.css</code>, and every component rethemes instantly.
+</PageHeader>
+
+<div class="alert td-callout mb-10" role="note">
+  <i data-lucide="paintbrush" class="alert-icon"></i>
+  <div class="alert-content">
+    <h5 class="alert-title">Design your own theme</h5>
+    <p class="alert-description">The Theme Designer edits every token on this site's own components and its seven example apps, live - colours for light and dark, Google Fonts, radius, shadows, letter spacing and links. Every change saves as you go to a custom theme on this site's theme menu; export the CSS for your project.</p>
+  </div>
+  <div class="alert-action">
+    <a class="btn nav-link" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Open the Theme Designer</a>
+  </div>
+</div>
+
+<H2>Surface / Foreground pairs</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Every surface token pairs with a foreground token for text/icons placed on it.</p>
+
+<div class="flex flex-col gap-2 mb-10" id="swatch-container" />
+
+<div class="sep" />
+
+<H2>Utility tokens</H2>
+
+<div class="flex flex-col gap-2 mb-10">
+  <div class="swatch-row">
+    <div class="swatch-sq" style="background:var(--border);" />
+    <code>--border</code>
+    <span class="swatch-meta">var(--border)</span>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch-sq" style="background:var(--input);" />
+    <code>--input</code>
+    <span class="swatch-meta">var(--input)</span>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch-sq" style="background:var(--ring);" />
+    <code>--ring</code>
+    <span class="swatch-meta">var(--ring)</span>
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Radius scale</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Set <code>--radius</code> to retheme all border radii. The derived values are computed from it.</p>
+
+<div class="flex flex-col gap-2">
+  <div class="swatch-row">
+    <div class="swatch-chip" style="border-radius:var(--radius);" />
+    <code>--radius</code>
+    <span class="dim text-sm ml-auto">base (0.625rem)</span>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch-chip" style="border-radius:var(--radius-sm);" />
+    <code>--radius-sm</code>
+    <span class="dim text-sm ml-auto">radius − 4px</span>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch-chip" style="border-radius:var(--radius-md);" />
+    <code>--radius-md</code>
+    <span class="dim text-sm ml-auto">radius − 2px</span>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch-chip" style="border-radius:var(--radius-lg);" />
+    <code>--radius-lg</code>
+    <span class="dim text-sm ml-auto">base (--radius)</span>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch-chip" style="border-radius:var(--radius-xl);" />
+    <code>--radius-xl</code>
+    <span class="dim text-sm ml-auto">radius + 4px</span>
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Sidebar tokens</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Full sidebar token set for sidebar-specific theming. Same surface/foreground pair convention.</p>
+
+<div class="flex flex-col gap-2 mb-10" id="sidebar-swatch-container" />
+
+<div class="sep" />
+
+<H2>Chart tokens</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Five chart colors for data visualization.</p>
+
+<div class="flex flex-col gap-2 mb-10">
+  <div class="swatch-row">
+    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-1);flex-shrink:0;" />
+    <code>--chart-1</code>
+    <span class="swatch-meta">var(--chart-1)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-2);flex-shrink:0;" />
+    <code>--chart-2</code>
+    <span class="swatch-meta">var(--chart-2)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-3);flex-shrink:0;" />
+    <code>--chart-3</code>
+    <span class="swatch-meta">var(--chart-3)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-4);flex-shrink:0;" />
+    <code>--chart-4</code>
+    <span class="swatch-meta">var(--chart-4)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:1.875rem;height:1.875rem;border-radius:var(--radius-sm);background:var(--chart-5);flex-shrink:0;" />
+    <code>--chart-5</code>
+    <span class="swatch-meta">var(--chart-5)</span>
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Typography tokens</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Font stacks as CSS custom properties. Themes can override these to change typography globally.</p>
+
+<div class="flex flex-col gap-2 mb-10">
+  <div class="swatch-row">
+    <span style="font-family:var(--font-sans);font-size:0.875rem;flex-shrink:0;width:8rem;">The quick brown fox</span>
+    <code>--font-sans</code>
+    <span class="swatch-meta">var(--font-sans)</span>
+  </div>
+  <div class="swatch-row">
+    <span style="font-family:var(--font-serif);font-size:0.875rem;flex-shrink:0;width:8rem;">The quick brown fox</span>
+    <code>--font-serif</code>
+    <span class="swatch-meta">var(--font-serif)</span>
+  </div>
+  <div class="swatch-row">
+    <span style="font-family:var(--font-mono);font-size:0.875rem;flex-shrink:0;width:8rem;">The quick brown fox</span>
+    <code>--font-mono</code>
+    <span class="swatch-meta">var(--font-mono)</span>
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Shadow scale</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Theme-aware shadows available as CSS custom properties.</p>
+
+<div class="flex flex-col gap-2 mb-10" style="background:light-dark(transparent, oklch(0.25 0 0));border-radius:var(--radius-lg);">
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-2xs);flex-shrink:0;" />
+    <code>--shadow-2xs</code>
+    <span class="swatch-meta">var(--shadow-2xs)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-xs);flex-shrink:0;" />
+    <code>--shadow-xs</code>
+    <span class="swatch-meta">var(--shadow-xs)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-sm);flex-shrink:0;" />
+    <code>--shadow-sm</code>
+    <span class="swatch-meta">var(--shadow-sm)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow);flex-shrink:0;" />
+    <code>--shadow</code>
+    <span class="swatch-meta">var(--shadow)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-md);flex-shrink:0;" />
+    <code>--shadow-md</code>
+    <span class="swatch-meta">var(--shadow-md)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-lg);flex-shrink:0;" />
+    <code>--shadow-lg</code>
+    <span class="swatch-meta">var(--shadow-lg)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-xl);flex-shrink:0;" />
+    <code>--shadow-xl</code>
+    <span class="swatch-meta">var(--shadow-xl)</span>
+  </div>
+  <div class="swatch-row">
+    <div style="width:4rem;height:2rem;background:light-dark(var(--background), oklch(0.35 0 0));border-radius:var(--radius-md);box-shadow:var(--shadow-2xl);flex-shrink:0;" />
+    <code>--shadow-2xl</code>
+    <span class="swatch-meta">var(--shadow-2xl)</span>
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Spacing &amp; Tracking</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Base units that control all spacing and letter-spacing utilities.</p>
+
+<div class="flex flex-col gap-2">
+  <div class="swatch-row">
+    <div style="display:flex;gap:2px;align-items:flex-end;flex-shrink:0;width:4rem;">
+      <div style="width:var(--spacing);height:0.5rem;background:var(--primary);border-radius:1px;" />
+      <div style="width:var(--spacing);height:1rem;background:var(--primary);border-radius:1px;" />
+      <div style="width:var(--spacing);height:1.5rem;background:var(--primary);border-radius:1px;" />
+      <div style="width:var(--spacing);height:1rem;background:var(--primary);border-radius:1px;" />
+    </div>
+    <code>--spacing</code>
+    <span class="dim text-sm ml-auto">0.25rem (4px)</span>
+  </div>
+  <div class="swatch-row">
+    <span style="font-size:0.875rem;letter-spacing:var(--tracking-normal);flex-shrink:0;width:4rem;">Aa Bb Cc</span>
+    <code>--tracking-normal</code>
+    <span class="dim text-sm ml-auto">0em</span>
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Customization</H2>
+
+<p class="text-sm text-muted-foreground mb-5">There are two ways to customize the theme:</p>
+
+<div class="flex flex-col gap-6 mb-10">
+  <div>
+    <h3 style="font-size:1rem;font-weight:500;margin:0 0 0.375rem;">1. Swap the entire theme</h3>
+    <p class="text-sm text-muted-foreground mb-3">Design the theme, export its <code>:root</code> and <code>.dark</code> CSS variable blocks, and load them after (or instead of) <code>default-semantic-tokens.css</code>. Every component updates instantly. Two tools write that shape:</p>
+    <ul class="text-sm text-muted-foreground mb-4 td-ways">
+      <li><strong>The <DocLink href="theme-designer.html">Theme Designer</DocLink> (recommended)</strong> - built into these docs. You see the theme on <em>this</em> system's components while you design it: the whole site follows every edit, and a preview shows a sample of every section at once - or a whole example app (Admin Dashboard, Messenger, Issue Tracker, Notes & Docs, Status Page, Desktop, Document Editor) - and the settings sit in tabs above it: click a colour to change it. Contrast badges flag text that fails WCAG AA on its surface; the radius is the same in light and dark (as every theme here must be); any Google Font can be picked, and the export carries its <code>@import</code>. Your first edit of a built-in theme starts a custom theme, every change saves as you go, and it sits on top of this site's theme menu, in your browser - Duplicate copies a theme, Rename names it - or import a tweakcn export and refine it here.</li>
+      <li><strong><DocLink href="https://tweakcn.com" target="_blank">tweakcn.com</DocLink></strong> - works too: its exports use the same token names, so they drop in unchanged. Its preview renders shadcn/ui's React components, not these, so check the result here (paste it into the designer's Import).</li>
+    </ul>
+    <a class="btn nav-link" data-variant="outline" data-size="sm" href="theme-designer.html"><i data-lucide="paintbrush"></i> Open the Theme Designer</a>
+  </div>
+  <div>
+    <h3 style="font-size:1rem;font-weight:500;margin:0 0 0.375rem;">2. Override individual tokens</h3>
+    <p class="text-sm text-muted-foreground mb-3">Add a stylesheet <strong>after</strong><code>default-semantic-tokens.css</code> and override specific variables:</p>
+    <CodeWindow lang="html" title="override tokens after the token file" code={"<link rel=\"stylesheet\" href=\"default-semantic-tokens.css\">\n<style>\n  :root {\n    --primary: oklch(0.55 0.2 250);\n    --primary-foreground: oklch(1 0 0);\n    --radius: 0.5rem;\n  }\n</style>"} />
+  </div>
+</div>
+
+<div class="sep" />
+
+<H2>Theme files</H2>
+
+<p class="text-sm text-muted-foreground mb-5">Every <a class="link" href="https://tweakcn.com" target="_blank" style="text-decoration:underline;">tweakcn</a> preset ships as a generated stylesheet in <code>{"dist/theme/<id>.css"}</code> - the same <code>:root</code> + <code>.dark</code> token shape as <code>default-semantic-tokens.css</code>. Link one <em>instead of</em> the token file to ship a fixed theme:</p>
+
+<CodeWindow lang="html" title="ship a preset" code={"<!-- instead of theme/utils/default-semantic-tokens.css -->\n<link rel=\"stylesheet\" href=\"theme/claude.css\" />"} />
+
+<p class="text-sm text-muted-foreground mt-5 mb-5">...or load it at runtime on top of the token file - inserting a <code>{"<link id=\"theme-css\">"}</code> right after it re-themes every component instantly (later source order wins the cascade; the file's own <code>.dark</code> block keeps dark mode working, so no re-apply on toggle). The <DocLink href="theme-switcher.html">Theme Switcher</DocLink> component wraps exactly that mechanism in an accessible dropdown, with persistence (a <code>df$.store.persisted</code> store) and a State API. On this site the picker in the header does the same.</p>
+
+<CodeWindow lang="javascript" title="re-theme at runtime with df$" mb="1.5rem" code={"// the preset link sits right after the token file - later source order wins\ndf$('#theme-css').remove();\ndf$('link[href$=\"default-semantic-tokens.css\"]')\n  .after('<link id=\"theme-css\" rel=\"stylesheet\" href=\"theme/claude.css\">');\n\n// presets with fonts ship a resource sidecar - loadTheme() adds those <link>s too\ndf$.shadcn.loadTheme?.('claude');"} />
+
+<p class="text-sm text-muted-foreground mb-5">The preset files are generated from the docs' theme dataset (<code>src/documentation/runtime/themes.ts</code>) by <code>scripts/build.ts</code> - <code>verify</code>'s <code>theme files fresh</code> gate keeps them in lockstep. For your own themes, export one from the <DocLink href="theme-designer.html">Theme Designer</DocLink> (or tweakcn) and link it the same way.</p>
+
+<div class="sep" />
+
+<H2>Dark mode</H2>
+
+<p class="text-sm text-muted-foreground mb-5">The theme file includes both <code>:root</code> (light) and <code>.dark</code> (dark) values. To toggle dark mode, add or remove <code>class="dark"</code> on the <code>&lt;html&gt;</code> element. Every token switches automatically - no per-component overrides needed. See the <a href="dark-mode.html" class="btn" data-variant="link">Dark Mode</a> page for system preference detection, persisting the choice (a <code>df$.store.persisted</code> store), and a step-by-step toggle implementation.</p>
+
+</DocPage>

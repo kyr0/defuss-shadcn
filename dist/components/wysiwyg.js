@@ -48,6 +48,7 @@ var config = {
   scripts: null,
   tail: "",
   theme: null,
+  base: null,
   highlight: null,
   shiki: SHIKI_URL,
   themes: { light: "github-light", dark: "github-dark" }
@@ -404,11 +405,13 @@ function buildSrcdoc(root, source) {
     const tail = typeof config.tail === "function" ? config.tail(source) : config.tail || "";
     const schema = c.schema ? JSON.stringify(c.schema).replace(/</g, "\\u003c") : "null";
     const nested = /\bcode-example\b/.test(source) ? nestedConfig(source) : Promise.resolve("");
+    const base = config.base ? `<base href="${String(config.base).replace(/"/g, "&quot;")}">
+` : "";
     return nested.then((nestedScript) => `<!DOCTYPE html>
 <html lang="en"${dark ? ' class="dark" style="color-scheme:dark"' : ""}>
 <head>
 <meta charset="UTF-8">
-${styles}
+${base}${styles}
 ` + `<style id="ce-theme" data-ce-chrome>${theme.replace(/<\/style/gi, "<\\/style")}</style>
 ` + `<style data-ce-chrome>body{display:flow-root;margin:2.5rem 1.5rem;background:var(--background);color:var(--foreground);${stage}}</style>
 </head>
@@ -1731,5 +1734,5 @@ df$2.editorjs = {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=36E5023240AB90FB64756E2164756E21
+//# debugId=8211933C54ABFACC64756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map

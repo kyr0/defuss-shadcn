@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { pageRel } from '../src/documentation/lib/page-dirs.ts';
 import { chromium, type Locator, type Page } from 'playwright';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -103,7 +104,8 @@ async function shoot(
     // keep lucide (icons!) and demo images loadable; drop the heavyweight
     // shiki highlighter the source sections pull from esm.sh
     await page.route(/^https?:\/\/esm\.sh\//, (route) => route.abort());
-    await page.goto(`${baseUrl}/dist/documentation/${name}.html`, {
+    // VERIFIED: the page URL comes from page-dirs.ts (section folders) - a flat <name>.html is a 404 since the layout move
+    await page.goto(`${baseUrl}/dist/documentation/${pageRel(name)}`, {
       waitUntil: 'domcontentloaded',
       timeout: PAGE_TIMEOUT_MS,
     });

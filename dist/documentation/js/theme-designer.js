@@ -364,7 +364,11 @@
             return;
         var f = document.createElement('iframe');
         f.className = 'td-app-frame';
-        f.src = box.dataset.tdApp;
+        // the page id (`app-notes.html`) is resolved by the build only on real link
+        // attributes (page-dirs.ts resolvePageRefs): read the tab's own "full screen"
+        // anchor, which already points at the app page from this page's folder
+        var link = one(box, 'a[href]');
+        f.src = link ? link.getAttribute('href') : box.dataset.tdApp;
         f.title = box.dataset.title + ' - live preview of your theme';
         f.dataset.loading = '';
         f.addEventListener('load', function () { syncDoc(f.contentDocument); delete f.dataset.loading; });

@@ -1,0 +1,134 @@
+---
+title: "Switch"
+description: "Switch component - toggle switches built on native checkboxes."
+slug: "switch"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="switch" title="Switch" component="switch">
+  A toggle control for on/off states. Built on native <code>&lt;input type="checkbox" role="switch"&gt;</code> with CSS-only thumb animation.
+</PageHeader>
+
+<SkillPanel component="switch">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="checkbox" role="switch"&gt;</code> element styled as a toggle switch.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox" title="native toggle control"><code>&lt;input type="checkbox"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/switch_role" title="communicates on/off semantics"><code>role="switch"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:checked" title="matches the on state"><code>:checked</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="keyboard-only focus ring"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="parent-state styling for disabled label"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="suppress transitions for motion-sensitive users"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode support"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.switch</code>
+    <code>.switch-item</code>
+    <code>.switch-item-block</code>
+    <code>.switch-description</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Sizes (data-size)">
+<SkillGrid>
+    <Variant name="xs" description="Track: 1.5rem × 0.875rem" />
+    <Variant name="sm" description="Track: 1.75rem × 1rem" />
+    <Variant name="md" description="Track: 2.25rem × 1.25rem (default)" />
+    <Variant name="lg" description="Track: 2.75rem × 1.5rem" />
+    <Variant name="xl" description="Track: 3.25rem × 1.75rem" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <code>role="switch"</code> tells screen readers this is an on/off toggle, not a checkbox.</SkillText>
+  <SkillText dense>• <code>aria-checked</code> is automatically set by the browser for <code>type="checkbox"</code>.</SkillText>
+  <SkillText dense>• <code>:focus-visible</code> provides keyboard-only focus ring.</SkillText>
+  <SkillText dense>• <code>prefers-reduced-motion</code> disables all transitions.</SkillText>
+  <p class="text-muted-foreground m-0">• <code>forced-colors</code> provides Windows High Contrast Mode support.</p>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Pure CSS - no JavaScript needed.</SkillText>
+  <SkillText dense>• The thumb slides via <code>:checked</code> and <code>translateX()</code>.</SkillText>
+  <SkillText dense>• Uses <code>appearance: none</code> with <code>::after</code> for the thumb.</SkillText>
+  <SkillText dense>• Wrap in <code>.switch-item</code> for auto disabled label styling via <code>:has()</code>.</SkillText>
+  <p class="text-muted-foreground m-0">• <code>aria-invalid="true"</code> shows the track in the destructive color.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="Toggle switch with label."
+<div class="switch-item">
+  <input class="switch" type="checkbox" role="switch" id="airplane" />
+  <label for="airplane">Airplane Mode</label>
+</div>
+```
+
+```html example label="With Description" hint="Switch with label and description text using .switch-item-block."
+<div class="switch-item-block">
+  <label for="share">Share across devices</label>
+  <input class="switch" type="checkbox" role="switch" id="share" checked />
+  <span class="switch-description">Focus is shared across devices.</span>
+</div>
+```
+
+```html example label="Sizes" hint="The full five-step scale via data-size - the default equals md."
+<input class="switch" data-size="xs" type="checkbox" role="switch" />
+<input class="switch" data-size="sm" type="checkbox" role="switch" />
+<input class="switch" data-size="md" type="checkbox" role="switch" />
+<input class="switch" data-size="lg" type="checkbox" role="switch" />
+<input class="switch" data-size="xl" type="checkbox" role="switch" />
+```
+
+```html example label="Checked by default"
+<div class="switch-item">
+  <input class="switch" type="checkbox" role="switch" id="sw-notify" checked />
+  <label for="sw-notify">Notifications</label>
+</div>
+```
+
+```html example label="Disabled" hint="Disabled stays legible: the track keeps its full shade (a softened primary when on), the knob turns muted, and .switch-item mutes the label and shows the not-allowed cursor over it via :has() - no opacity fade."
+<div class="flex flex-col gap-3">
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="sw-disabled" disabled />
+    <label for="sw-disabled">Disabled</label>
+  </div>
+  <div class="switch-item">
+    <input class="switch" type="checkbox" role="switch" id="sw-disabled-on" disabled checked />
+    <label for="sw-disabled-on">Disabled on</label>
+  </div>
+</div>
+```
+
+```html example label="Invalid" hint="Validation error state with aria-invalid='true'."
+<div class="switch-item-block">
+  <label for="terms">Accept terms and conditions</label>
+  <input class="switch" type="checkbox" role="switch" id="terms" aria-invalid="true" />
+  <span class="switch-description" style="color: var(--destructive)">You must accept the terms.</span>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground">Machine contract - verified against <a class="link" href="../schemas/switch.schema.json"><code>switch.schema.json</code></a> by <code>bun run verify</code>:</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `checked` | `boolean` | `true`, `false` | `false` | Native checked state (`role="switch"` ⇄ panel checkbox). |
+| `disabled` | `boolean` | `true`, `false` | `false` | Interaction off (native `disabled` attribute). |
+| `size` | `enum` | `xs`, `sm`, `md`, `lg`, `xl` | `"md"` | Control scale (display sizes). |
+```
+
+</StatesSection>
+
+<SourceFiles component="switch" section="css" />
+
+</DocPage>

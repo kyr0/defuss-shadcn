@@ -26,7 +26,7 @@ export const SITE_INPUTS = ['src/', 'scripts/', 'package.json', 'tsconfig.json']
 export const SHARED_INPUTS = ['tests/e2e/lib/', 'tests/e2e/server.ts', 'bun.lock'];
 
 export interface E2eSource {
-  /** the test's name: tests/e2e/<name>.e2e.ts */
+  /** the test's name: tests/e2e/<folder>/<name>.e2e.ts (the folder: e2eFolder) */
   name: string;
   /** the test file's text */
   test: string;
@@ -41,15 +41,29 @@ export interface E2eSource {
 /** The fixture files a test text names (`x.e2e-fixture.html`). */
 export const fixturesNamed = (text: string): string[] => [...new Set([...text.matchAll(/([a-z0-9-]+\.e2e-fixture\.html)/g)].map((m) => m[1]))];
 
+/**
+ * The folder of an e2e file under tests/e2e/: the section of the component it
+ * is named after (tests/e2e/overlays/accordion.e2e.ts, like
+ * src/components/overlays/accordion/), `site` for every other test
+ * (documentation, scaffold-*, the bundles…). The one layout rule of the e2e
+ * tree - verify's `e2e sections` gate, the runner and css-smoke ask here.
+ */
+export const e2eFolder = (name: string, sectionOf: (n: string) => string | undefined): string => sectionOf(name) ?? 'site';
+
+/** a component's section from its repo-relative folder (`src/components/<section>/<name>/`) */
+const sectionFromDir = (dir: string | undefined): string | undefined => dir?.split('/')[2];
+
 /** The inputs of one e2e file - sorted repo paths, "dir/" for a directory. */
 export function e2eInputs(src: E2eSource): string[] {
-  const out = new Set<string>([`tests/e2e/${src.name}.e2e.ts`, ...SHARED_INPUTS]);
+  // VERIFIED: a test sits in tests/e2e/<section>/ (its component's section) or site/ - verify's `e2e sections` gate names the move
+  const folder = e2eFolder(src.name, (n) => sectionFromDir(src.componentDir(n)));
+  const out = new Set<string>([`tests/e2e/${folder}/${src.name}.e2e.ts`, ...SHARED_INPUTS]);
   const add = (list: string[]) => list.forEach((p) => out.add(p));
   const component = (c: string) => {
     const dir = src.componentDir(c);
     if (dir) out.add(dir);
   };
-  for (const f of Object.keys(src.fixtures)) out.add(`tests/e2e/${f}`);
+  for (const f of Object.keys(src.fixtures)) out.add(`tests/e2e/${folder}/${f}`);
   const texts = [src.test, ...Object.values(src.fixtures)];
   const all = texts.join('\n');
   let known = false;

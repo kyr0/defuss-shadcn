@@ -1,3 +1,4 @@
+import { pageSourceRel } from '../../src/documentation/lib/page-dirs.ts';
 /**
  * Why: dist/SKILL.md is the single discovery point for a 3rd-party agent
  * dropped into the library - it explains integration, philosophy, and the
@@ -141,7 +142,8 @@ export function referenceSkillText(text: string): string {
   return text.replace(/\]\(\.\.\/(?:\.\.\/[a-z0-9-]+\/)?([a-z0-9-]+)\/component-skill\.md(#[^)]*)?\)/g, (_m, name: string, hash = '') => `](${name}.md${hash})`);
 }
 
-const pagePath = (slug: string): string => `src/documentation/pages/${slug}.mdx`;
+// VERIFIED: the page's folder is the sidebar section's (src/documentation/lib/page-dirs.ts)
+const pagePath = (slug: string): string => `src/documentation/pages/${pageSourceRel(slug)}`;
 
 /** Frontmatter prose may name elements (`An <hr> …`, `<dialog> + showModal()`):
  *  outside code spans a markdown renderer would emit them as REAL elements, so

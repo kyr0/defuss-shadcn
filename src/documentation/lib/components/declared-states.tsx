@@ -2,6 +2,8 @@ import type { Props } from 'defuss';
 import { existsSync } from 'node:fs';
 import { componentHasJs, componentNames, readSkillMeta, repoFile } from '../repo';
 import { DocLink } from './doc-blocks';
+import { isPage, pageSourceRel } from '../page-dirs';
+// VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
 
 /**
  * State API guide: every JS component with more than the `default` state,
@@ -28,7 +30,7 @@ export function DeclaredStatesTable(_props: Props) {
         {rows.map(({ folder, meta }) => (
           <tr>
             <td>
-              {existsSync(repoFile('src', 'documentation', 'pages', `${folder}.mdx`)) ? (
+              {isPage(folder) && existsSync(repoFile('src', 'documentation', 'pages', pageSourceRel(folder))) ? (
                 <DocLink href={`${folder}.html`}>{meta.name}</DocLink>
               ) : (
                 meta.name

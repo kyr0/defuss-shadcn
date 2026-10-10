@@ -1,4 +1,5 @@
 import { page, userEvent } from 'vitest/browser';
+import { isPage, pageRel } from '../src/documentation/lib/page-dirs.ts';
 
 /**
  * Why: Vitest browser mode has no `page.goto()` - tests run inside a fixed
@@ -43,14 +44,17 @@ export async function openDocPage(name: string): Promise<{
     'style',
     'position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff',
   );
-  el.src = `${DOC_BASE}/${name}`;
+  // a page id (`badge.html`, or bare `badge`) opens the page in its section folder (page-dirs.ts); any other path as given
+  const id = name.match(/^([a-z0-9-]+)(?:\.html)?$/)?.[1];
+  const path = id && isPage(id) ? pageRel(id) : name;
+  el.src = `${DOC_BASE}/${path}`;
   document.body.appendChild(el);
   // The initial about:blank document is already "complete" and can even fire a
   // load event before the real navigation, so poll the actual location instead
   // until the iframe shows our page with all scripts executed.
   await waitFor(
     () =>
-      el.contentWindow?.location.pathname.endsWith(`/${name}`) &&
+      el.contentWindow?.location.pathname.endsWith(`/${path}`) &&
       el.contentWindow.document.readyState === 'complete',
     `${name} to load`,
     LOAD_TIMEOUT_MS,

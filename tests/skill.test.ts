@@ -158,17 +158,17 @@ describe('assembleRootSkillText (repo-root SKILL.md)', () => {
 
   it('maps non-component pages to their .mdx source and leaves component pages to the index', () => {
     const out = assembleRootSkillText(tpl, data());
-    expect(out).toContain('- [Theming](src/documentation/pages/theming.mdx) - Tokens.');
-    expect(out).not.toContain('- [Dialog](src/documentation/pages/dialog.mdx)');
+    expect(out).toContain('- [Theming](src/documentation/pages/guides/theming.mdx) - Tokens.');
+    expect(out).not.toContain('- [Dialog](src/documentation/pages/overlays/dialog.mdx)');
   });
 
   it('docs links are relative to the skill folder, component skills live inside it, {{RAW_BASE}} is filled', () => {
     // the plugin cache / npm install carry the package two levels up; the
     // component skills are copied into the skill folder itself
     const out = assembleRootSkillText(tpl + '\nraw: {{RAW_BASE}}', { ...data(), docsPrefix: '../../', rawBase: 'https://raw.example/r/v9.9.9/' });
-    expect(out).toContain('- [Theming](../../src/documentation/pages/theming.mdx) - Tokens.');
+    expect(out).toContain('- [Theming](../../src/documentation/pages/guides/theming.mdx) - Tokens.');
     expect(out).toContain('**Skill:** [references/components/dialog.md](references/components/dialog.md)');
-    expect(out).toContain('**Examples:** [src/documentation/pages/dialog.mdx](../../src/documentation/pages/dialog.mdx)');
+    expect(out).toContain('**Examples:** [src/documentation/pages/overlays/dialog.mdx](../../src/documentation/pages/overlays/dialog.mdx)');
     expect(out).toContain('raw: https://raw.example/r/v9.9.9/');
   });
 
@@ -181,7 +181,7 @@ describe('assembleRootSkillText (repo-root SKILL.md)', () => {
     const out = assembleRootSkillText(tpl, data());
     expect(out).toContain('### Overlays\n\n#### Dialog · MOL · JS');
     expect(out).toContain('**Skill:** [references/components/dialog.md](references/components/dialog.md)');
-    expect(out).toContain('**Examples:** [src/documentation/pages/dialog.mdx](src/documentation/pages/dialog.mdx)');
+    expect(out).toContain('**Examples:** [src/documentation/pages/overlays/dialog.mdx](src/documentation/pages/overlays/dialog.mdx)');
     expect(out).toContain('**States:** `default`, `open`');
     // a component missing from the sidebar still lands in the index
     expect(out).toContain('### Other\n\n#### Badge · ATM · CSS');

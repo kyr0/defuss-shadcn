@@ -17,13 +17,13 @@
   },
   "tokens": 52,
   "examples": 1617,
-  "unitTestFiles": 38,
+  "unitTestFiles": 39,
   "withJs": 64,
   "withoutJs": 170,
-  "totalSize": 2622546,
-  "totalSizeMinified": 1279705,
-  "totalSizeGz": 767447,
-  "totalSizeGzMinified": 427980,
+  "totalSize": 2622943,
+  "totalSizeMinified": 1279793,
+  "totalSizeGz": 767584,
+  "totalSizeGzMinified": 428017,
   "bundle": {
     "jsSize": 869452,
     "jsSizeMinified": 500291,
@@ -46,13 +46,13 @@
   },
   "bundles": {
     "wysiwyg": {
-      "jsSize": 67315,
-      "jsSizeMinified": 42659,
+      "jsSize": 67437,
+      "jsSizeMinified": 42746,
       "cssSize": 24848,
       "cssSizeMinified": 16011,
-      "totalSizeGz": 23759,
-      "totalSizeGzMinified": 18181,
-      "jsSizeGzMinified": 14581,
+      "totalSizeGz": 23799,
+      "totalSizeGzMinified": 18217,
+      "jsSizeGzMinified": 14617,
       "cssSizeGzMinified": 3600
     }
   },
@@ -193,13 +193,13 @@
         "components/wysiwyg.css",
         "components/wysiwyg.js"
       ],
-      "jsSize": 67315,
-      "jsSizeMinified": 42659,
+      "jsSize": 67437,
+      "jsSizeMinified": 42746,
       "cssSize": 24848,
       "cssSizeMinified": 16011,
-      "totalSizeGz": 23759,
-      "totalSizeGzMinified": 18181,
-      "jsSizeGzMinified": 14581,
+      "totalSizeGz": 23799,
+      "totalSizeGzMinified": 18217,
+      "jsSizeGzMinified": 14617,
       "cssSizeGzMinified": 3600
     },
     "questionnaire": {
@@ -715,7 +715,7 @@
     "count": 19,
     "minGzMinified": 1965,
     "maxGzMinified": 60511,
-    "meanGzMinified": 15705
+    "meanGzMinified": 15707
   },
   "components": {
     "about-intro": {
@@ -1281,14 +1281,14 @@
       "name": "code-example",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 71261,
-      "jsSizeMinified": 32950,
+      "jsSize": 71658,
+      "jsSizeMinified": 33038,
       "cssSize": 14874,
       "cssSizeMinified": 9359,
-      "totalSizeGz": 23427,
-      "totalSizeGzMinified": 13589,
-      "totalSize": 86135,
-      "totalSizeMinified": 42309
+      "totalSizeGz": 23564,
+      "totalSizeGzMinified": 13626,
+      "totalSize": 86532,
+      "totalSizeMinified": 42397
     },
     "collapsible": {
       "name": "collapsible",
@@ -3764,7 +3764,7 @@
   "apps": {
     "admin-dashboard": {
       "page": "scaffold-admin-dashboard",
-      "href": "app-admin-dashboard.html",
+      "href": "application/app-admin-dashboard.html",
       "components": [
         "alert-dialog",
         "avatar",
@@ -3808,7 +3808,7 @@
     },
     "messenger": {
       "page": "scaffold-messenger",
-      "href": "app-messenger.html",
+      "href": "application/app-messenger.html",
       "components": [
         "avatar",
         "bubble",
@@ -3838,7 +3838,7 @@
     },
     "issue-tracker": {
       "page": "scaffold-issue-tracker",
-      "href": "app-issue-tracker.html",
+      "href": "application/app-issue-tracker.html",
       "components": [
         "avatar",
         "badge",
@@ -3876,7 +3876,7 @@
     },
     "notes": {
       "page": "scaffold-notes",
-      "href": "app-notes.html",
+      "href": "application/app-notes.html",
       "components": [
         "avatar",
         "badge",
@@ -3914,7 +3914,7 @@
     },
     "status-page": {
       "page": "scaffold-status-page",
-      "href": "app-status-page.html",
+      "href": "application/app-status-page.html",
       "components": [
         "badge",
         "button",
@@ -3947,7 +3947,7 @@
     },
     "desktop": {
       "page": "scaffold-desktop",
-      "href": "app-desktop.html",
+      "href": "application/app-desktop.html",
       "components": [
         "alert-dialog",
         "avatar",
@@ -3994,7 +3994,7 @@
     },
     "document-editor": {
       "page": "scaffold-document-editor",
-      "href": "app-document-editor.html",
+      "href": "application/app-document-editor.html",
       "components": [
         "avatar",
         "badge",

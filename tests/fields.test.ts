@@ -5,8 +5,8 @@ import formCss from '../src/components/forms-inputs/form/form.css?raw';
 import inputCss from '../src/components/forms-inputs/input/input.css?raw';
 import formSkill from '../src/components/forms-inputs/form/component-skill.md?raw';
 import inputSkill from '../src/components/forms-inputs/input/component-skill.md?raw';
-import formDoc from '../dist/documentation/form.html?raw';
-import inputDoc from '../dist/documentation/input.html?raw';
+import formDoc from '../dist/documentation/forms-inputs/form.html?raw';
+import inputDoc from '../dist/documentation/forms-inputs/input.html?raw';
 import {
   ariaDescribedByProblems,
   fieldClasses,

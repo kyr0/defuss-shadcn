@@ -1,3 +1,5 @@
+import { pageFile } from '../../src/documentation/lib/page-dirs-files.ts';
+// VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { componentFingerprintsFrom, SHELL_DIRS, SHELL_FILES, type FileTree } from './inputs.ts';
@@ -44,7 +46,7 @@ export function componentFingerprints(dist: string): Record<string, string> {
       const dir = join(comps, name);
       if (statSync(dir).isDirectory() !== true) continue; // flat bundle files (all.*, core.*, …)
       for (const file of collect(dir)) add(file);
-      const page = join(dist, 'documentation', `${name}.html`);
+      const page = pageFile(join(dist, 'documentation'), name, '.html');
       if (statSync(page, { throwIfNoEntry: false })?.isFile() === true) add(page);
     }
   }

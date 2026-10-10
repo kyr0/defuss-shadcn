@@ -47,7 +47,8 @@ export const BUNDLE_ARTIFACTS: ReadonlySet<string> = new Set([
  *  DERIVED_ARTIFACT matches already). VERIFIED: (verify `dist 1:1` +
  *  `minified artifacts`) dist/sections/ passes both after a build. */
 export function isBundleDirArtifact(relPath: string): boolean {
-  return /^(apps|sections)\/[a-z0-9-]+\.(css|js|min\.css\.map)$/.test(relPath.replace(/\\/g, '/'));
+  // an app bundle sits in its own folder (dist/apps/<app>/<app>.*), the section bundles flat
+  return /^(apps\/[a-z0-9-]+|sections)\/[a-z0-9-]+\.(css|js|min\.css\.map)$/.test(relPath.replace(/\\/g, '/'));
 }
 
 /** True for `x.min.css`, `x.min.js`, `x.js.map` and `x.min.js.map`. */

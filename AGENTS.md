@@ -68,7 +68,7 @@ defuss-shadcn/
 ├── dist/                              ← the distributable (drop into any project)
 │   ├── SKILL.md                       ← agent entry point (generated from src/SKILL_tpl.md + skill frontmatter)
 │   ├── stats.json                     ← generated size/surface summary (counts per type, JS split, byte sizes, template groups, the per-app bundles; `make stats`)
-│   ├── apps/                          ← one bundle per Application Scaffold: {app}.css + .js (+ min twins) = core + only the components its markup uses (bundle.ts step 3, scripts/lib/apps.ts) - the full-screen app-{app}.html loads ONLY this; scaffold-lean.e2e proves it renders exactly as on all.css + all.js
+│   ├── apps/{app}/                    ← one folder per Application Scaffold: {app}.css + .js (+ min twins) = core + only the components its markup uses (bundle.ts step 3, scripts/lib/apps.ts) - the full-screen application/app-{app}.html loads ONLY this; scaffold-lean.e2e proves it renders exactly as on all.css + all.js
 │   ├── sections/                      ← one bundle per sidebar section that holds components: {section}.css (+ .js, + min twins) = ONLY its members, loaded after core.* (bundle.ts step 2c, scripts/lib/sections.ts); WYSIWYG Editors IS components/wysiwyg.*; stats.json `sections` lists members, needs (the other sections its skill markup uses) and sizes; section-bundles.e2e renders every release ZIP against the rest of the system
 │   ├── theme/                        ← design tokens + optional standalone modules
 │   │   ├── {preset}.css              ← generated tweakcn presets (43; from themes.ts by build.ts, drop-in companions to the token file; `theme files fresh` gate)
@@ -89,14 +89,15 @@ defuss-shadcn/
 │   │       ├── {name}.css             ← component stylesheet (edit directly)
 │   │       └── {name}.js              ← interaction JS (only for interactive components)
 │   └── documentation/                 ← defuss-ssg OUTPUT (never edit): the public website
-│       ├── *.html                     ← one page per component + overview pages (rendered from src/documentation/pages/*.mdx)
+│       ├── <section>/*.html           ← one page per component + overview pages, in the folder of its sidebar section (rendered from src/documentation/pages/<section>/*.mdx); only index.html at the root; every link and asset resolved from the page's folder at build (lib/page-dirs.ts resolvePageRefs)
 │       ├── css/ fonts/ images/ videos/  ← copied verbatim from src/documentation/public/
 │       └── js/                        ← compiled docs runtime + generated search index
 │
 ├── src/components/<section>/<name>/   ← component SOURCES, each in its sidebar section's folder (actions/button/, forms-inputs/input/ …) - the folders read like the docs sidebar; the skill's front matter says `section: <section>`; verify's `component sections` gate keeps both equal to nav.ts. dist/components/<name>/ stays flat (the consumers' CDN paths; build.ts flattens). Every script asks src/documentation/lib/component-dirs.ts where a component lives
 ├── src/documentation/                 ← the defuss-ssg project (docs authoring)
 │   ├── config.ts                      ← SSG config: pages → ../../dist/documentation, plugins, no-math remark set
-│   ├── pages/*.mdx                    ← one page per component + overview pages (frontmatter + <DocPage> shell)
+│   ├── pages/<section>/*.mdx          ← one page per component + overview pages (frontmatter + <DocPage> shell), in its sidebar section's folder - the same folders as src/components/; pages/index.mdx alone at the root (`page sections` gate)
+│   ├── lib/page-dirs.ts               ← the ONE owner of page placement and page-to-page links: pageSection / pageRel / pageHref / resolvePageRefs (+ the standalone page ids); page-dirs-files.ts is its fs half (pageDirs, pageFile) - never join `pages/${slug}` or `${slug}.html` yourself
 │   ├── lib/
 │   │   ├── nav.ts                     ← the sidebar NAV data (single source for nav, prev/next, search index)
 │   │   ├── arch-md.ts                 ← ARCH.md → .arch-prose renderer (shared by component + verify gate)
@@ -555,6 +556,26 @@ morph can reconcile it and every component can reproduce its markup
 - The docs head bundle (`js/head.js`: `theme-switcher.ts`, the pre-paint
   part of `layout.ts`) runs before core installs df$ - only its
   pre-DOMContentLoaded code has a reason to stay native.
+
+### One layout: the sidebar sections everywhere (REQUIRED)
+
+Every tree that maps to a component or a page follows the sidebar's sections, the
+way `src/components/<section>/<name>/` does: `src/documentation/pages/<section>/<slug>.mdx`
+renders to `dist/documentation/<section>/<slug>.html` (and `docs/` publishes that -
+the public URLs carry the section), `tests/e2e/<section>/<name>.e2e.ts` + its fixtures
+sit beside the component's section, `tests/e2e/site/` holds the site-level tests, and
+each app bundle has its folder `dist/apps/<app>/`. The standalone pages a page generates
+(`application/app-notes.html`, `presentations/deck-*.html`, `papers/full-paper.html`)
+sit beside their source page. `index.mdx` / `index.html` alone stay at the root with
+the asset folders (`css/ js/ fonts/ images/ videos/`). Nothing hard-codes a folder:
+`src/documentation/lib/page-dirs.ts` owns the mapping (`pageSection`, `pageRel`,
+`pageFile`, `pageHref`, `resolvePageRefs`), `scripts/lib/e2e-select.ts` `e2eFolder`
+the e2e side, and authors write page IDS (`href="badge.html"`), which the build
+resolves from each page's folder. The runtime reads `<html data-page
+data-docs-root>` (DocPage) instead of `location.pathname`. Gates: `page sections`,
+`e2e sections`, `page links resolve`, the app-folder check in `artifact contract`,
+`cross-page imports` (depth-aware). A new page, test or app therefore lands in the
+right folder or fails by name - no memory entry needed.
 
 ### Each component is a self-contained folder
 
@@ -1163,8 +1184,10 @@ support status of newer APIs (`popover`, anchor positioning, `@starting-style`, 
    - This auto-initializes new elements after SPA navigation or dynamic DOM changes
    - No `export`, no `window.onPageReady` - just the init function + MutationObserver
 
-5. **Create the doc page** → `src/documentation/pages/{name}.mdx`
-   - Copy an existing component page as template (e.g., badge.mdx) - the
+5. **Create the doc page** → `src/documentation/pages/<section>/{name}.mdx` - the
+   same section folder as the component (verify's `page sections` gate names the
+   `git mv` otherwise)
+   - Copy an existing component page as template (e.g., data-display/badge.mdx) - the
      `<DocPage>` shell, `<PageHeader>`, `<SkillPanel>`, `<Example>` demos,
      `<StatesSection>` and `<SourceFiles component="{name}">` compose the page;
      no bundle imports needed (all.css / all.js come from DocPage)
@@ -1523,8 +1546,13 @@ covering its JS behavior (see the dialog/accordion tests as templates).
 
 ### Component E2E smoke tests (`bun run e2e`)
 
-Per-component smoke tests live in `tests/e2e/` and run with **plain Playwright**
-(no Vitest). Each component gets two files:
+Per-component smoke tests live in `tests/e2e/<section>/` - the folder of the
+component's sidebar section, like `src/components/<section>/` - and run with
+**plain Playwright** (no Vitest). Site-level tests (documentation, scaffold-*,
+bundles, api-docs, …) live in `tests/e2e/site/`; the root keeps only `run.ts`,
+`server.ts`, `lib/` and `agent-skills/` (`scripts/lib/e2e-select.ts` `e2eFolder`
+is the rule, verify's `e2e sections` gate enforces it). Each component gets two
+files:
 
 - `{name}.e2e-fixture.html` - uses the component **in every configuration** the
   component skill documents (all variants/sizes/states/compositions), linking the
@@ -1621,7 +1649,11 @@ The docs chrome is statically rendered per page by the TSX components in
   IntersectionObserver active tracking
 
 **To add/remove/reorder nav links, edit `src/documentation/lib/nav.ts`.** The
-`sidebar coverage` verify gate fails when a `pages/*.mdx` file isn't listed.
+`sidebar coverage` verify gate fails when a `pages/<section>/*.mdx` file isn't
+listed, and `page sections` when a page sits in another folder than its section's.
+Pages link each other by id (`href="badge.html"`, `<DocLink href="button.html">`):
+the build turns the id into the path from the linking page's folder
+(`../actions/button.html`), and `page links resolve` fails on an id no page owns.
 
 ## Adding a component page
 
