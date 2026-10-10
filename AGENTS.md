@@ -52,7 +52,7 @@ from `docs/release.json` - i.e. in `scripts/deploy.sh`, after the bump (and
 pinned to that tag. deploy.sh pushes the tag BEFORE main, so the tag exists on
 jsDelivr when Pages publishes. Never edit `docs/` directly.
 `bun run purge-cdn` (`make purge-cdn`, run by deploy.sh) still refreshes
-`@latest` for README's CDN quick start; the pinned snapshot needs no purge.
+`@latest` for README's CDN install; the pinned snapshot needs no purge.
 Never edit `dist/` directly; it is deleted and rebuilt on every build.
 
 ---
@@ -162,7 +162,7 @@ defuss-shadcn/
 │   ├── bump-version.ts                ← moves every version site (lib/version-sites.ts) to a new version
 │   ├── lib/version-sites.ts           ← every file that carries the release version (package.json, plugin.json, SHARED_ABI, deck cover) - bump-version writes, verify's `version sites` gate checks; plus every CDN pin `defuss-shadcn@vX.Y.Z` in the authored docs (PIN_GLOBS - the installation page's "Pinning a version"): bump-version moves them, verify's `pinned versions` gate requires the current release
 │   ├── lib/git-push.sh                ← push_ref: push to origin, falling back to HTTPS with gh credentials when SSH is unavailable
-│   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (README quick start; run by deploy.sh - the docs snapshot is pinned to the tag)
+│   └── purge-cdn.ts                   ← purge jsDelivr @latest cache for all dist assets (README CDN install; run by deploy.sh - the docs snapshot is pinned to the tag)
 ├── tests/                             ← UI tests (Vitest browser mode + Playwright)
 │   ├── helpers.ts                     ← loads real doc pages in a same-origin iframe
 │   ├── ui.test.ts                     ← end-to-end tests of the actual site UI
@@ -262,14 +262,14 @@ humans and to browser users - **when you update either, update the other in
 the same commit.** They share two claims that drift independently if you
 forget:
 
-- **Pillar set** - the README intro bullets (`- **Name** - …`, under "What
-  this is" and before "Quick start") and the index pillar cards
+- **Pillar set** - the README intro bullets (`- **Name** - …`, under
+  "TL;DR" and before "How it works"; an emoji may lead the bullet) and the index pillar cards
   (`<h3 class="card-title">`) must list the same set of pillars.
 - **Hero sentence** - the intro paragraph wording must match
   (`"No build step for consumers - dist/ is committed and ready to use
   as-is."` once diverged to a bare `"No build step."`).
 - **CDN dogfooding** - the index carries the "this site loads its assets
-  from the jsDelivr CDN, exactly as README's Via CDN quick start shows - if
+  from the jsDelivr CDN, exactly as README's Via CDN install shows - if
   it renders, the CDN install will also work for you" note, which must stay true if the CDN
   strategy in [`scripts/lib/mirror.ts`](scripts/lib/mirror.ts) ever changes.
 - **CSS-only count** - the "**N of M components need no JavaScript**" line

@@ -37,6 +37,8 @@ export const VERSION_SITES: VersionSite[] = [
   site('.codex-plugin/plugin.json', 'Codex plugin version', /^ {2}"version": "([^"]+)"/m),
   site('plugin.json', 'agent-plugins.org manifest version', /^ {2}"version": "([^"]+)"/m),
   site('src/shared/version.ts', 'shared ABI stamp (df$.shadcn.shared.abi)', /SHARED_ABI = '([^']+)'/),
+  // VERIFIED: README's citation names the release - a reader copies it, so bump-version moves it with the others
+  site('README.md', 'citation version (bibtex)', /^ {2}version {6}= \{([^}]+)\},$/m),
   // VERIFIED: the deck page sits in its section folder (page-dirs.ts) - the flat path missed the cover and the gate reported no deck version site
   site('src/documentation/pages/presentations/system-in-numbers.mdx', 'deck cover eyebrow', /defuss-shadcn · v(\d+\.\d+\.\d+(?:-[\w.]+)?)</),
 ];

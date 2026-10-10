@@ -1468,16 +1468,18 @@ check(
 );
 
 // 26. README ↔ index page parity: the intro pillar lists must say the same
-// thing. README.md leads with `- **Name**` bullets (intro section, before the
-// first `##` heading); pages/index.mdx renders the same pillars as card-title
-// h3s. They diverged once ("Observable state" went into the README only) —
-// now the gate catches it, and AGENTS.md demands both files change together.
+// thing. README.md leads with `- **Name**` bullets (the TL;DR section, before
+// "## How it works"; an emoji may precede the bold name - VERIFIED: the
+// README's bullet style since the defuss-multicore layout, 2026-10-10);
+// pages/index.mdx renders the same pillars as card-title h3s. They diverged
+// once ("Observable state" went into the README only) - the gate catches it,
+// and AGENTS.md demands both files change together.
 {
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
-  // the pillar bullets live under "## What this is", i.e. between the first
-  // `##` and "## Quick start" - scan exactly that range
-  const intro = readme.slice(0, readme.search(/^## Quick start$/m));
-  const readmePillars = [...intro.matchAll(/^- \*\*(.+?)\*\*/gm)].map((m) => m[1].trim());
+  // the pillar bullets live under "## TL;DR", i.e. between the first `##` and
+  // "## How it works" - scan exactly that range
+  const intro = readme.slice(0, readme.search(/^## How it works$/m));
+  const readmePillars = [...intro.matchAll(/^- (?:[^\w\s*]+ )?\*\*(.+?)\*\*/gmu)].map((m) => m[1].trim());
   const indexMdx = readFileSync(join(DOCS_PAGES, 'index.mdx'), 'utf8');
   // pillar cards are the only card-title h3s on the page today; the class
   // attribute may carry additional pattern classes (card-title-sm etc.)

@@ -8,6 +8,7 @@ const files: Record<string, string> = {
   '.codex-plugin/plugin.json': '{\n  "name": "x",\n  "version": "1.2.3"\n}\n',
   'plugin.json': '{\n  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",\n  "name": "x",\n  "version": "1.2.3"\n}\n',
   'src/shared/version.ts': "export const SHARED_ABI = '1.2.3';\n",
+  'README.md': '```bibtex\n@misc{x,\n  year         = {2026},\n  version      = {1.2.3},\n}\n```\n',
   'src/documentation/pages/presentations/system-in-numbers.mdx': '<p class="sys-eyebrow">defuss-shadcn · v1.2.3</p>',
 };
 
