@@ -65,6 +65,9 @@ build: ## Full pipeline: lint → compile → bundle → minify → stats → do
 	bun run test:run
 	bun run e2e
 
+build-docs: ## Build the documentation site only
+	bun run build:docs
+
 minify: ## Post-build: *.min.css + *.min.js (+ source maps) into dist/components/
 	bun run minify
 

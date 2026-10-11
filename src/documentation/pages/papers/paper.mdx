@@ -87,14 +87,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
       ></h1
     >
     <ul class="paper-authors">
-      <li><a href="https://github.com/kyr0" target="_blank" rel="noopener">Aron Homberg</a><sup>1</sup></li>
+      <li><a href="https://www.linkedin.com/in/aronhomberg/" target="_blank" rel="noopener">Aron Homberg</a><sup>1</sup></li>
     </ul>
     <ul class="paper-affiliations">
       <li><sup>1</sup>independent researcher - defuss open-source project</li>
     </ul>
     <p class="paper-note"
-      >Method and data: Aron Homberg. Text: Claude (Opus 5.5), from an editorial specification prepared for the
-      author.</p
+      >Method, data, proofreading and final editing: Aron Homberg. Initial draft: Claude (Opus 5.5) based on an editorial specification prepared
+      by the author.</p
     >
     <nav class="paper-links" aria-label="Resources">
       <a class="btn" data-size="sm" href="https://github.com/kyr0/defuss-vae" target="_blank" rel="noopener"
@@ -252,23 +252,24 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   <section class="paper-abstract" aria-labelledby="paper-abstract">
     <h2 id="paper-abstract">Abstract</h2>
     <p
-      >Verified Agentic Engineering (VAE) uses agent-authored programs to organize work and return instructions to an
-      agent harness. A verifier names unsatisfied acceptance criteria; a windowed review program selects the next part
-      of an artifact and emits the applicable rules. The shown feedback routines run without a model call. The harness
-      supplies their output to the model, which changes the artifact and invokes the next step under policy established
-      by a human. Findings can also change the method: the agent extends checks, revises instructions and reconciles
-      lessons into reusable tools and bounded prompt memory. VAE-DIALECT records evidence and scope compactly, while
-      stack templates supply established commands and conventions.</p
+      >
+      Verified Agentic Engineering (VAE) uses agent-authored programs to check artifacts, select work units and return
+      instructions through an agent harness. A verifier reports unmet acceptance criteria; a document controller presents
+      bounded passages for review. The routines shown here require no model call. The harness passes their output to the
+      model, which edits the artifact and invokes the next step within human-defined policy. Across tasks, the agent can
+      retain findings as checks, instructions, reusable tools or bounded prompt memory. VAE-DIALECT provides compact
+      notation for evidence and scope; stack templates provide toolchain commands and conventions.</p
     >
     <p
-      >This report examines the evolving method in defuss-shadcn, developed by Aron Homberg with diverse model families
-      (Qwen3.8-Flash-Next, Claude Opus 5.5, Claude Fable 5.1) from 2026-09-05 to 2026-10-07. The repository grew from 55
-      to 231 components across 220 commits and 17 releases. In one session, the agent added typed API documentation for
-      all 59 interactive components (241.9 minutes, one human correction), raised reported line coverage from 31.6% to
-      75.6% (20.6 minutes), moved 228 component folders under a new layout rule (43.4 minutes), and removed 1,147 type
-      errors (27.3 minutes to final green gates). For the last change, all 85 compared minified artifacts were
-      byte-identical. These observations demonstrate repository-wide adaptation and architectural consistency in agentic
-      engineering under programmed feedback.</p
+      >
+      This report describes the method's development in defuss-shadcn from September 5 to October 7, 2026, under one
+      maintainer, Aron Homberg, using Qwen3.8-Flash-Next, Claude Opus 5.5 and Claude Fable 5.1. The repository grew from
+      55 to 231 components across 220 commits and 17 releases. In one session, the agent added typed API documentation
+      for all 59 interactive components (241.9 minutes, one human correction), raised reported line coverage from 31.6%
+      to 75.6% (20.6 minutes), moved 228 component folders into a new layout (43.4 minutes), and removed 1,147 type
+      errors (27.3 minutes to the final passing gates). All 85 minified artifacts compared for the type-error change
+      were byte-identical. These observations document repository-wide changes under programmed feedback; the study
+      does not isolate the method's effect on correctness, cost or human review effort.</p
     >
   </section>
 
@@ -334,8 +335,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
       </li>
       <li
         ><a href="#paper-s6"
-          ><span class="paper-num">5</span>How project/task-specific self-learning adapts the method and makes it
-          scalable</a
+          ><span class="paper-num">5</span>Adapting checks, instructions and memory</a
         >
         <ol>
           <li
@@ -343,7 +343,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
           >
           <li
             ><a href="#paper-learning-instructions"
-              ><span class="paper-num">5.2</span>Encoding learnings in persistent instructions</a
+              ><span class="paper-num">5.2</span>Retaining lessons in instructions</a
             ></li
           >
           <li
@@ -351,7 +351,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
           >
           <li
             ><a href="#paper-learning-reconciliation"
-              ><span class="paper-num">5.4</span>Memory reconciliation: forgetting on evidence</a
+              ><span class="paper-num">5.4</span>Reconciling memory</a
             ></li
           >
         </ol>
@@ -383,36 +383,39 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   >
     <h2 id="paper-s1" class="typeset-span"><span class="paper-num">1</span>Contribution and scope</h2>
     <p
-      >Agentic Engineering faces challenges in maintaining consistency, efficiency and correctness when agents
-      autonomously implement change requests in large-scale software repositories - producing potentially inconsistent
-      or incorrect changes that increase the manual review effort by humans. Verified Agentic Engineering (VAE) is a
-      method that addresses these challenges, trading increased time and token spent for higher correctness and reduced
-      human review burden.
-    </p>
-    <p
-      >A typical challenging task for agentic engineering is a repository-wide requirement change, which typically
-      creates two sub-goals: changing every affected module and establishing that the requirement holds across the whole
-      resulting system now and in the future. VAE lets an agent work on both. It can implement a change and write the
-      programs that identify incomplete work, check the result and direct the next action. The same interface can
-      organize a document review by presenting one section at a time, or a data task by presenting one partition at a
-      time.</p
+      >
+      A repository-wide change requires an agent to update every affected module and check that the new requirement
+      holds across the resulting system. Missed modules and inconsistent implementations increase the work left to
+      human reviewers. Verified Agentic Engineering (VAE) addresses this problem by letting the agent write and revise
+      the programs that check its work and direct further action. The intended trade-off is additional automated work
+      in exchange for more reliable changes and less manual review.</p
     >
     <p
-      >The method joins task correction with persistent adaptation through feedback loops. Within a task, program output
-      directs the agent toward a failed condition or the next bounded unit of work. Across tasks, the agent reconciles
-      findings into checks, instructions and selected memory that later sessions inherit. Explicit module contracts give
-      programs something stable to evaluate, and agent harnesses naturally safe split-points to orchestrate work
-      packages in parallel agent swarms. VAE-DIALECT is a superset dialect on top of natural language that expresses
-      formal logic more symbolically and compactly, helping the model to separate between hypothesis, evidence and
-      unknowns more explicitly. Tech-stack templates provide reusable procedures for the toolchains in use, reducing
-      agentic research and debug detours and thus improving overall agentic engineering efficiency.</p
+      >
+      The same programs can support later changes by retaining checks for the requirement. The interface also extends
+      to tasks that need organized review: a controller can present one document section or data partition at a time,
+      together with the applicable instructions.</p
     >
     <p
-      >This report contributes the description of the implemented method and a case study of its operation at project
-      scale. It documents the control interface, the engineering work completed under it and the ways findings by the
-      agent changed it's own subsequent procedures successfully. The study covers one component system (defuss-shadcn),
-      one maintainer, a diverse model family and 33 days. Its results describe the combined system. They do not isolate
-      the effect of the model, harness, verifier, instruction loop, dialect, templates or memory in isolation.</p
+      >
+      VAE combines two feedback loops. Within a task, program output identifies a failed condition or the next work unit.
+      Across tasks, the agent retains findings as checks, instructions and selected memory. Explicit module contracts
+      provide stable conditions to evaluate and boundaries for dividing work among agents. VAE-DIALECT marks evidence,
+      hypotheses and unknowns in compact notation. Stack templates provide reusable toolchain procedures.</p
+    >
+    <p
+      >
+      This report describes the implemented method, four repository-wide tasks and the procedure changes prompted by
+      their findings. It covers one component system, one maintainer, models from the Qwen and Claude families, and
+      33 calendar days. The observations concern the combined system; they do not separate the contributions of the
+      model, harness, verifier, instructions, dialect, templates and memory.
+      </p
+          >
+          <p>
+      The feedback loop has precedents. ReAct interleaves reasoning, actions and observations (<a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">Yao et al., 2023</a>); SWE-agent
+      studies how interfaces for editing, navigation and execution affect software-engineering agents (<a href="https://arxiv.org/abs/2405.15793" target="_blank" rel="noopener">Yang et al., 2024</a>). VAE's
+      emphasis here is the use of agent-authored control programs and retained project procedures during continuing
+      repository development. Section 7 relates this adaptation to prior work on agent memory and reusable skills.</p
     >
   </section>
 
@@ -430,34 +433,33 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
       ><span class="paper-num">2</span>Programmable feedback and persistent adaptation</h2
     >
     <p
-      >VAE operates through a capable language model, an agent harness and programs that the agent itself can create or
-      adapt within the authority granted for the task. The human establishes the objective and governing policy.
-      Programs make parts of that policy executable and turn the current work state into findings or further
-      instructions. The harness returns those outputs to the model, which interprets them, acts and invokes the next
-      step.</p
+      >
+      VAE combines a language model, an agent harness and programs the agent may create or adapt within its authorized
+      scope. The human sets the objective and policy. Programs encode selected requirements and return findings or
+      instructions from the current work state. The harness passes those outputs to the model, which interprets them,
+      acts and invokes the next step.</p
     >
     <p
-      >The model generates its responses autoregressively; the harness and programs form the outer work-and-review loop.
-      Intermediate corrections can proceed without a new human prompt for each iteration. The model must still be
-      capable of interpreting the evidence, editing the artifact and improving the relevant tools. The case study
-      measures that working combination.</p
+      >
+      Autoregressive generation occurs within each model response; the harness and programs provide the outer loop
+      across calls. Intermediate corrections can proceed without a new human prompt at every iteration. The model
+      still has to interpret the evidence, edit the artifact and, when needed, improve the tools.</p
     >
 
     <h3 id="paper-feedback">2.1 General feedback protocol</h3>
     <p
-      >A controller receives the current artifact or task state and produces an actionable result. It may evaluate a
-      predicate, identify the next work unit, supply local context, select applicable instructions or name the next
-      command. The agent responds by changing the artifact (e.g. code or documentation) or task state. When the task
-      exposes a missing capability in the controller (verifier program), the agent can extend that program and validate
-      the change against the governing requirement.</p
+      >
+      A controller receives an artifact or task state and returns a finding or work instruction. It may evaluate a
+      predicate, select the next work unit, supply context and rules, or name a command. The agent then changes the
+      artifact or task state. If a finding exposes a missing check, the agent may extend the controller and validate
+      the extension against the governing requirement.</p
     >
     <p
-      >The common interface is program-generated output returned through the agent harness, when the language model e.g.
-      triggers a shell script for building the code, which itself triggers the verifier program and returns it's
-      instructions back to the language model via stdout. The evidence differs by the verifying controller program: an
-      executable predicate verifier can establish its specified condition (e.g. check for consistent symbol existence or
-      naming), while a document window slicer can organize consistent semantic review of documentation prosa - whose
-      judgments remain with the language model.</p
+      >
+      The interface is ordinary tool output. For example, a build script invokes a verifier, whose standard output
+      returns findings and repair instructions through the harness. Different controllers provide different evidence:
+      a predicate check evaluates its specified condition, while a document controller selects passages and review
+      rules. Semantic judgments about those passages remain with the model.</p
     >
     <figure class="paper-table paper-wide typeset-span">
       <table class="table">
@@ -489,18 +491,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
         </tbody>
       </table>
       <figcaption class="paper-table-caption"
-        ><b>Table 1.</b> Three uses of the same feedback loop inducting controller interface method. Code checks and
-        document windows are inspected implementations in this report.</figcaption
+        ><b>Table 1.</b> Three uses of the controller interface. This report inspects code checks and document
+        windows; the spreadsheet partition is an architectural illustration.</figcaption
       >
     </figure>
 
     <h3 id="paper-s2-4"><span id="paper-s9"></span>2.2 Program output and the model boundary</h3>
     <p
-      >An agent and its verifier controller programs talk to each other through the agent harness, so their exchange
-      reads as a conversation. In this repository the coding agent wrote the project verifier and extends it, on a human
-      instruction such as the layout rule of section 4.4, or as a lesson that reconciliation turns into a rule (section
-      2.4). Figure 2 shows such an exchange with a built-in defuss-vae rule and the document walk on small fixtures, so
-      the program side can be quoted verbatim.</p
+      >
+      The harness carries outputs between the agent and its control programs. In this repository, the coding agent
+      wrote and extended the project verifier in response to new requirements (section 4.4) and retained findings
+      (section 2.4). Figure 2 presents the exchange as a conversation, using small fixtures to show a built-in
+      defuss-vae rule and the document controller's output verbatim.</p
     >
     <p
       >The outputs below were captured from unmodified defuss-vae 0.8.0 functions on controlled fixtures. The verifier
@@ -696,10 +698,17 @@ NEXT: python3 vae.py prose --repo . --walk README.md --part 3</code></pre>
       and a documentation rebuild, and running them resolved the failure.</p
     >
     <p
-      >Its terminal <code>VERIFIED[walk]</code> output depends on the requested terminal part and static findings. The
-      <code>doc</code> and <code>doc-edit</code> skills require following the review procedure; the gate does not
-      validate traversal. A review attestation likewise records the agent's claim, rather than independently
-      establishing the quality of its semantic judgments.</p
+      >
+      The document controller's terminal <code>VERIFIED[walk]</code> output depends on the requested final part and
+      static findings. The <code>doc</code> and <code>doc-edit</code> skills prescribe the review procedure, but the gate
+      does not validate traversal. A review attestation records the agent's claim that it reviewed the artifact.
+      </p
+          >
+          <p>
+      The source of feedback matters. Self-Refine uses an LLM to generate, critique and revise an answer
+      (<a href="https://papers.neurips.cc/paper_files/paper/2023/hash/91edff07232fb1b55a505a9e9f6c0ff3-Abstract-Conference.html" target="_blank" rel="noopener">Madaan et al., 2023</a>). In the examples here, program code generates the predicate result or review window; the model
+      performs the diagnosis or semantic review. A deterministic controller therefore does not make every judgment
+      in the workflow deterministic.</p
     >
 
     <h3 id="paper-s2-1"><span id="paper-s2-2"></span>2.3 Harness enforcement and adaptation authority</h3>
@@ -723,19 +732,18 @@ NEXT: python3 vae.py prose --repo . --walk README.md --part 3</code></pre>
       monitored commit action.</p
     >
     <p
-      >The harness determines which actions a failed check can prevent. The implementation enforces a commit boundary
-      and supplies continuation instructions. There is no guarantee, that every task runs uninterrupted to completion,
-      but VAE guarantees that every task completion implies a green gate - or in other words: None of the programmatic
-      verifications failed anymore.</p
+      >
+      With the commit hook active, a monitored commit requires a passing gate for the relevant work state. A failed
+      gate supplies instructions for further work. This enforces the configured commit boundary; it does not ensure
+      that every task runs uninterrupted or reaches completion.</p
     >
     <p
-      >Authority to adapt is also policy. The agent may add checks, revise its own procedures and create task-specific
-      tools within the current request. Acceptance criteria still derive from that request and the governing project
-      policy. A passing result obtained by weakening the criterion would not establish the original requirement (no
-      "paperclip optimization"). Eventually, the VAE method guarantees that when a person starts the
-      <code>wrap</code> skill, the agent also carries out its reconciliation procedure - clearing agent memory entries
-      that aren't relevant anymore. VAE also allows for many intermediate requirement change iterations without
-      requiring a fresh intervention at each one.</p
+      >
+      Adaptation is subject to the same policy as the task. The agent may add checks, revise procedures and create
+      tools within its authorization, while acceptance criteria remain those of the request and project policy.
+      Weakening a check does not satisfy the original requirement. When a person invokes <code>wrap</code>, the skill
+      prescribes reconciliation of retained lessons and removal or revision of obsolete memory. Within the authorized
+      scope, the agent can carry out intermediate corrections without a separate human prompt for each one.</p
     >
 
     <h3 id="paper-s2-3">2.4 Reconciliation and bounded prompt memory</h3>
@@ -775,7 +783,7 @@ NEXT: python3 vae.py prose --repo . --walk README.md --part 3</code></pre>
         >240 characters per memory line</a
       >, and <code>vae.py doctor</code> checks all three. Unresolved leads are retained for reconciliation. When an
       executable check supersedes a narrative lesson, that narrative can be removed with a reference to the check.
-      Learnings about issues can therefore move from repeatedly injected prose into verifier programs, tools and tests.
+      Lessons can therefore move from repeatedly injected prose into verifier programs, tools and tests.
       The total repository of checks and procedures may grow even while prompt memory remains small. In this repository,
       <a
         href="https://github.com/kyr0/defuss-shadcn/blob/7253195d9a1e32cfeca57ed31ab84ca1b29cff87/.agents/MEMORY.md"
@@ -793,29 +801,31 @@ NEXT: python3 vae.py prose --repo . --walk README.md --part 3</code></pre>
       (October 6) through the end of the study.</p
     >
     <p
-      >Agentic memory (retention) alone does not establish improvement in efficiency and correctness; the relevant
-      question is whether the injected memory addresses the previously observed failure mode without weakening the
-      required behavior.</p
+      >
+      Retention is useful when a later task can apply the lesson within its supported scope. Whether that prevents
+      repeat failures or reduces effort requires measurement; storing a lesson alone establishes neither.</p
     >
 
-    <h3 id="paper-s3">2.5 VAE Dialect and stack templates</h3>
+    <h3 id="paper-s3">2.5 Dialect and stack templates</h3>
     <p
-      >VAE-DIALECT supplies a compact symbolic superset dialect over natural language:
-      <span class="paper-tag" data-tag="verified">VERIFIED[scope]</span> identifies a directly supported statement,
-      <span class="paper-tag" data-tag="hypothesis">HYPOTHESIS[scope]</span> identifies an inference to test, and
-      <span class="paper-tag" data-tag="unknown">UNKNOWN[scope]</span> identifies a material gap in the available
-      evidence. Operators express conditions, precedence and reasons. The scope and evidence remain part of the
-      statement; confident wording does not turn an inference into an observation. Correctness takes precedence over
-      compression.</p
+      >
+      VAE-DIALECT combines natural language with compact operators and evidence labels:
+      <span class="paper-tag" data-tag="verified">VERIFIED[scope]</span> marks a directly supported statement,
+      <span class="paper-tag" data-tag="hypothesis">HYPOTHESIS[scope]</span> marks an inference to test, and
+      <span class="paper-tag" data-tag="unknown">UNKNOWN[scope]</span> marks a material gap in the evidence.
+      Operators express conditions, precedence and reasons. Each statement retains its scope and supporting evidence;
+      correctness takes precedence over compression.</p
     >
     <p
-      >These forms are intended to reduce unsupported assertions and ambiguous instructions by forcing the langage model
-      to declare epistemic status explicit. They also reduce repeated phrasing and thus reduce input and output tokens.
-      A <code>VERIFIED</code> label is useful only within the boundary of the evidence behind it.</p
+      >
+      The notation is intended to make unsupported assertions and ambiguous instructions easier to identify by
+      requiring an explicit epistemic status. Compact forms may also reduce repeated wording; their effects on token
+      use are discussed in section 4.8. A
+      <code>VERIFIED</code> label is meaningful only within the scope of its supporting evidence.</p
     >
     <p
-      >Stack templates provide concrete toolchain procedures before the agent begins work. The verifier controller
-      program selects defaults for the repository's detected stacks and inserts them into session context or the managed
+      >Stack templates provide toolchain procedures before the agent begins work. The controller
+      selects defaults for the repository's detected stacks and inserts them into session context or the managed
       instruction block. When a required command is missing, the verifier includes the corresponding default in its
       repair instruction. For a Python project, the selected defaults include:</p
     >
@@ -830,31 +840,37 @@ python coverage: `uv run pytest --cov`</code></pre>
       use or elapsed time.</p
     >
     <p
-      >The defaults come as flavors, one per stack: Go, Rust, the JVM, .NET, JavaScript and TypeScript, Python and the
-      web. The author chose them from engineering experience and from research into the preferences of senior
-      developers. They are defaults, not mandates. A repository keeps its existing toolchain unless a person approves a
-      migration. <code>.agents/VERIFY.py</code> can point the lint, test, coverage and end-to-end checks at other
-      commands.</p
+      >
+      Templates cover Go, Rust, the JVM, .NET, JavaScript and TypeScript, Python, and web projects. The author selected
+      these as practical defaults based on engineering experience. A repository retains its existing toolchain unless
+      a person approves a migration;
+      <code>.agents/VERIFY.py</code> can configure different lint, test, coverage and end-to-end commands.</p
     >
     <p
-      >The templates also carry the working procedure. They instruct the skills for planning, implementation, review and
-      documentation, for coordinating sub-agents and for organizing long-running work, with resilience and provenance as
-      design goals: a long job runs detached with a pid file and a log that stamps every line with an ISO-8601 time, the
-      gate records every failure and finding with its session, and every attestation names the code fingerprint it
-      covers.</p
+      >
+      The templates also define procedures for planning, implementation, review, documentation, sub-agent coordination
+      and long-running work. A long job runs detached with a PID file and a log whose lines carry ISO 8601 timestamps.
+      The gate records failures and findings with their session identifiers, and each attestation names the code
+      fingerprint it covers.</p
     >
     <p
-      ><code>vae.py init</code> scaffolds a project layout adapted from the Linux Standard Base (LSB) conventions:
-      <code>Makefile</code> verbs (<code>setup</code>, <code>start</code>, <code>stop</code>, <code>status</code>,
-      <code>log</code>, <code>metrics</code>, <code>bench</code>, <code>test</code>, <code>coverage</code>,
-      <code>lint</code>, <code>e2e</code>, <code>verify</code>) with LSB status codes, services that log to
-      <code>var/log/&lt;service&gt;.stdout</code> and <code>.stderr</code> and keep their pid in
-      <code>tmp/&lt;service&gt;.pid</code>, programs that read <code>input/</code> and write <code>output/</code>, and
-      runtime state kept apart from the code. Sub-agents work in their own git worktrees and share one registry,
-      <code>.agents/SWARM_STATUS.yaml</code>. Every write to it is locked, replaced atomically and read back; only the
-      owning process may change its entry; a claim that overlaps another agent's paths is refused; and liveness is read
-      from the process table, not from the file. The agents can therefore organize themselves without races over the
-      registry and without two agents holding the same paths, a split-brain state.</p
+      >
+      <code>vae.py init</code> scaffolds a project layout with <code>Makefile</code> targets for
+      <code>setup</code>, <code>start</code>, <code>stop</code>, <code>status</code>, <code>log</code>,
+      <code>metrics</code>, <code>bench</code>, <code>test</code>, <code>coverage</code>, <code>lint</code>,
+      <code>e2e</code> and <code>verify</code>. The service actions and status codes draw on the
+      <a href="https://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html" target="_blank" rel="noopener">LSB Core Specification 5.0, §22.2</a>; the additional targets and repository paths are project conventions. Services write
+      <code>var/log/&lt;service&gt;.stdout</code> and <code>.stderr</code> and keep their PID in
+      <code>tmp/&lt;service&gt;.pid</code>. Programs read <code>input/</code> and write <code>output/</code>,
+      separating runtime state from source code.
+      </p
+          >
+          <p>
+      Sub-agents use separate git worktrees and a shared registry, <code>.agents/SWARM_STATUS.yaml</code>. Registry
+      writes use a lock, atomic replacement and a read-back check. Only the owning process may change its entry;
+      overlapping path claims are rejected, and liveness is checked against the process table. These rules coordinate
+      agents that use the registry protocol. They do not establish that all concurrent repository activity is free
+      of races.</p
     >
   </section>
 
@@ -872,15 +888,19 @@ python coverage: `uv run pytest --cov`</code></pre>
       ><span id="paper-history"></span><span class="paper-num">3</span>Case study and evidence</h2
     >
     <p
-      >defuss-shadcn is a component system built from semantic HTML, CSS and JavaScript, with TypeScript sources and no
-      framework or build step required by consumers. It was forked from shadcn-html with 55 component folders. This
-      study follows its development from September 5 to October 7, 2026, under one maintainer and one model family.</p
+      >
+      defuss-shadcn is a component system built from semantic HTML, CSS and JavaScript, with TypeScript sources and
+      no framework or build step required by consumers. It was forked from shadcn-html with 55 component folders.
+      The study follows development from September 5 to October 7, 2026, under one maintainer using models from
+      the Qwen and Claude families.</p
     >
     <p id="paper-s5-7"
-      >Components have explicit contracts. Every interactive component exposes named states, a store, a typed API and a
-      <code>render()</code> operation checked against its authored markup. Shared behavior has an identified owner,
-      including DOM access and component-directory discovery. These contracts let a check range across components and
-      let a shared change reach their callers. The four tasks below exercise that structure at repository scale.</p
+      >
+      Each interactive component has an explicit contract: named states, a store, a typed API and a
+      <code>render()</code> operation checked against its authored markup. This use of stated obligations and assertions
+      follows the design-by-contract tradition (<a href="https://se.inf.ethz.ch/~meyer/publications/computer/contract.pdf" target="_blank" rel="noopener">Meyer, 1992</a>). Shared behavior, including DOM access and component-directory
+      discovery, has an identified owner. These conventions allow common checks to run across components and shared
+      changes to reach their callers. The four tasks below use this structure at repository scale.</p
     >
     <p
       >The project had an instruction file and its own verifier from the first commit. defuss-vae was first published on
@@ -891,7 +911,7 @@ python coverage: `uv run pytest --cov`</code></pre>
       <code>claude-opus-5-5</code>; later sessions on October 7 also used <code>claude-fable-5-1</code>, a model of the
       same family.</p
     >
-    <p>In Spetember, Qwen3.8-Flash-Next was used to scale from 55 to 77 components.</p>
+    <p>In September, Qwen3.8-Flash-Next was used while the component count grew from 55 to 77.</p>
   </section>
 
   <section
@@ -906,10 +926,10 @@ python coverage: `uv run pytest --cov`</code></pre>
   >
     <h2 id="paper-s5" class="typeset-span"><span class="paper-num">4</span>Results</h2>
     <p
-      >The strongest evidence is a sequence of four refactorings in the October 6 session. Each applied a requirement
-      across the relevant component population: typed API documentation, shared-contract tests, the repository's
-      component layout and type correctness. The agent also changed verification for long-term stability under the new
-      requirements and adapted supporting tools to evaluate the new state.</p
+      >
+      The October 6 session contains four repository-wide tasks: typed API documentation, shared-contract tests,
+      component layout and type-error correction. For each, the agent applied a requirement across the relevant
+      components and updated checks or supporting tools where the new requirement needed them.</p
     >
     <figure class="paper-table paper-wide typeset-span">
       <table class="table">
@@ -1111,19 +1131,20 @@ python coverage: `uv run pytest --cov`</code></pre>
       >
     </figure>
 
-    <h3 id="paper-s5-6">4.2 Refactoring: Introduction of a new, typed API documentation</h3>
+    <h3 id="paper-s5-6">4.2 Typed API documentation</h3>
     <p
-      >The first requirement was adding a typed API documentation for all 59 interactive components. Every member needed
+      >The first requirement was to add typed API documentation for all 59 interactive components. Every member needed
       a TypeScript signature, every argument a description, every event typed detail, and every state its accepted
       configuration. The shared State API also had to be typed for each component's own states and checked in both
       source and rendered documentation.</p
     >
     <p
-      >The final green gate was reached after 241.9 minutes (including 1h computer hibernate caused by low battery),
-      347,614 output tokens and 437 tool calls, with one human correction. All 59 interactive component sources changed.
-      The source verifier checked all 59 interactive components, and the E2E audit opened all 59 rendered API pages. The
-      first green result had missed configuration information; section 5.1 describes how that finding expanded the
-      verification scope.</p
+      >
+      The final gate passed 241.9 minutes after the request, including one hour of hibernation due to low battery.
+      The task window used 347,614 output tokens and 437 tool calls, with one human correction. All 59 interactive
+      component sources changed. The source verifier checked all 59 components, and the E2E audit opened all 59
+      rendered API pages. The first passing result had missed configuration information; section 5.1 describes how
+      that finding expanded the verification scope.</p
     >
     <figure class="paper-figure" id="paper-api-timeline">
       <ol class="timeline">
@@ -1131,7 +1152,7 @@ python coverage: `uv run pytest --cov`</code></pre>
           <div class="timeline-dot"><i data-lucide="message-square"></i></div>
           <div class="timeline-content">
             <p class="timeline-title">The requirement arrives</p>
-            <p class="timeline-description">...during another task; both get bundled and processed together.</p>
+            <p class="timeline-description">The request arrives during another task; the work proceeds together.</p>
             <time class="timeline-time" datetime="2026-10-06T05:27Z">05:27 UTC</time>
           </div>
         </li>
@@ -1148,8 +1169,8 @@ python coverage: `uv run pytest --cov`</code></pre>
           <div class="timeline-content">
             <p class="timeline-title">One human correction</p>
             <p class="timeline-description"
-              >The maintainer opens a second page: the configuration each state accepts is missing. The human changes
-              the requirement accordingly.</p
+              >The maintainer opens a second page: the configuration each state accepts is missing. The maintainer clarifies
+              the requirement.</p
             >
             <time class="timeline-time" datetime="2026-10-06T07:02Z">07:02 UTC</time>
           </div>
@@ -1179,7 +1200,7 @@ python coverage: `uv run pytest --cov`</code></pre>
       project.</p
     >
 
-    <h3 id="paper-s5-cov">4.3 Task: Increase test coverage</h3>
+    <h3 id="paper-s5-cov">4.3 Test coverage</h3>
     <p
       >The next task raised reported browser-mode Vitest/V8 line coverage from 31.6% to 75.6% in 20.6 minutes, using
       39,926 output tokens and 48 tool calls. Recorded covered lines increased from 5,460 to 15,880. The work added 147
@@ -1191,7 +1212,7 @@ python coverage: `uv run pytest --cov`</code></pre>
       contract test exercised every declared state and checked agreement among <code>getState()</code>, the store and
       <code>render()</code>, while requiring an undeclared state to throw. It exposed a missing
       <code>settled()</code> operation in the cookie-consent controller. The second test operated controls and fields
-      and required that handlers not throw and promises not reject unhandled.</p
+      and checked for thrown exceptions and unhandled promise rejections.</p
     >
     <figure class="paper-table paper-wide typeset-span">
       <table class="table">
@@ -1296,12 +1317,15 @@ python coverage: `uv run pytest --cov`</code></pre>
       >
     </figure>
     <p
-      >The shared fixtures and contracts made it possible for two tests to exercise all interactive components. The
-      assertions give evidence about the stated contracts and error paths; the line-coverage percentage records the
-      proportion of instrumented lines executed. Other behaviors and paths remain outside those assertions.</p
+      >
+      The shared fixtures let two tests exercise all interactive components. Their assertions check the stated
+      contracts and error paths; line coverage records which instrumented lines executed. In a study of five Java
+      systems, Inozemtseva and Holmes found only a low-to-moderate association between coverage and mutation-based test
+      effectiveness after controlling for suite size (<a href="https://cs.uwaterloo.ca/~rtholmes/papers/icse_2014_inozemtseva.pdf" target="_blank" rel="noopener">Inozemtseva and Holmes, 2014</a>). Coverage here should likewise be read as execution
+      coverage, alongside the specific assertions and the defect they exposed.</p
     >
 
-    <h3 id="paper-s5-struct">4.4 Refactoring: Structural change of the repository layout</h3>
+    <h3 id="paper-s5-struct">4.4 Repository layout</h3>
     <p
       >The third request was to make the source tree follow the documentation sidebar. Every component needed a
       <code>section:</code> entry in its skill, a matching section directory and a stable published path. The agent
@@ -1309,10 +1333,11 @@ python coverage: `uv run pytest --cov`</code></pre>
       without a human correction.</p
     >
     <p
-      >The change introduced a shared owner for directory discovery and rewired 11 tooling readers to use it. It
-      affected 611 authored files, with 1,008 additions and 625 deletions after rename detection. The compiler ratchet
-      remained at 1,147 diagnostics; 570 unit tests and 246 E2E files passed at completion. Intermediate failures in
-      path discovery, generated links and configuration were corrected before the final quality gate.</p
+      >
+      The change centralized directory discovery and updated 11 tools to use the shared module. It affected 611
+      authored files, with 1,008 additions and 625 deletions after rename detection. The compiler ratchet remained at
+      1,147 diagnostics; 570 unit tests and 246 E2E files passed at completion. The agent corrected intermediate failures
+      in path discovery, generated links and configuration before the final gate.</p
     >
     <figure class="paper-table paper-wide typeset-span">
       <table class="table">
@@ -1494,13 +1519,12 @@ python coverage: `uv run pytest --cov`</code></pre>
       >
     </figure>
     <p
-      >The new layout rule has three negative cases: a missing <code>section:</code>, a component in the wrong section
+      >The new layout check covers three violations: a missing <code>section:</code>, a component in the wrong section
       and a component outside all sections. Each fails with an instruction identifying the move or front-matter
-      correction. This result shows the agent changing the repository and making the new structural requirement
-      executable for later changes.</p
+      correction. The change thus updated both the repository layout and the checks applied to later work.</p
     >
 
-    <h3 id="paper-s5-types">4.5 Task: Fix type errors under output equivalence</h3>
+    <h3 id="paper-s5-types">4.5 Type errors and output equivalence</h3>
     <p
       >Later in the same session, the agent was asked to remove the remaining 1,147 compiler diagnostics without
       changing the shipped output. It reached zero diagnostics in 12.5 minutes, using 71,958 output tokens and 100 tool
@@ -1605,7 +1629,7 @@ python coverage: `uv run pytest --cov`</code></pre>
       corresponding fix dates.</p
     >
 
-    <h3 id="paper-s5-5">4.7 Changes to committed code (Code Churn Rate)</h3>
+    <h3 id="paper-s5-5">4.7 Changes to committed code</h3>
     <p
       >Across the study interval, git recorded 350,331 additions and 80,999 deletions in authored files, excluding
       generated output. The first day's 56,640 additions include the imported fork. Documentation accounts for 69,338
@@ -1750,13 +1774,12 @@ python coverage: `uv run pytest --cov`</code></pre>
       >
     </figure>
     <p
-      >Caching, compact instructions and reusable procedures address different costs. The observed cache counters
-      describe how input was served. They do not measure the independent token savings of VAE-DIALECT or stack
-      templates, and this report does not calculate a monetary saving from them. A reasonable hypothesis follows from
-      their mechanisms: example templates that work with the project's tooling spare the agent derailing loops of failed
-      attempts, and symbols in place of long-form words shorten every instruction, so each should reduce token use on
-      its own. The mechanisms support that isolated reduction, but no measurement does yet, and the combined effect of
-      all parts of the VAE method has not been measured; the comparisons of section 6 would test both.</p
+      >
+      Caching, compact notation and reusable procedures affect different parts of the cost. The counters show how
+      input was served; they do not measure savings from VAE-DIALECT or templates. Working templates may reduce failed
+      setup attempts, and compact notation may shorten instructions. Shorter text does not necessarily mean fewer
+      tokens: that depends on the tokenizer. The net effect on token use and elapsed time remains unmeasured.
+      The comparisons proposed in section 6 would test those effects separately.</p
     >
   </section>
 
@@ -1771,14 +1794,13 @@ python coverage: `uv run pytest --cov`</code></pre>
     data-rule=""
   >
     <h2 id="paper-s6" class="typeset-span"
-      ><span id="paper-s7"></span><span class="paper-num">5</span>How project/task-specific self-learning adapts the
-      method and makes it scalable</h2
+      ><span id="paper-s7"></span><span class="paper-num">5</span>Adapting checks, instructions and memory</h2
     >
     <p
-      >The following cases distinguish four responses to a finding: extending an executable check, retaining a
-      behavioral instruction, obtaining a human acceptance decision and reconciling what the agent remembers. They are
-      selected to explain the method, rather than to estimate an error distribution. A discovered failure contributes to
-      persistent improvement when its correction is validated and retained at the appropriate scope.</p
+      >
+      The following cases illustrate four responses to findings: extending a check, retaining an instruction,
+      obtaining a human acceptance decision and reconciling memory. They explain how the procedure changed; they are
+      not a sample from which to estimate failure rates or the effectiveness of each response.</p
     >
 
     <h3 id="paper-learning-verifier">5.1 Extending the verifier</h3>
@@ -1806,7 +1828,7 @@ python coverage: `uv run pytest --cov`</code></pre>
       exchange.</p
     >
 
-    <h3 id="paper-learning-instructions">5.2 Encoding learnings in persistent instructions</h3>
+    <h3 id="paper-learning-instructions">5.2 Retaining lessons in instructions</h3>
     <p
       >Working on the project, the agent recorded failures at module boundaries: the dialog script claimed a dialog
       owned by another component, and the tabs script claimed the BibTeX component's tab list. At 03:56 UTC on October 7
@@ -1828,27 +1850,20 @@ python coverage: `uv run pytest --cov`</code></pre>
       day.</p
     >
     <p
-      >This record shows how the agent, working on its own AGENTS.md instructions, links agent-observed failures with
-      guideline fixes - through the report's analysis and human supervision - to the persistent instruction. A guideline
-      line in AGENTS.md is one of the two forms a lesson takes in VAE; the other is a verifier rule. In a later session
-      the agent encoded a new README-parity rule as such a check in the verifier program (commit
-      <a
-        href="https://github.com/kyr0/defuss-shadcn/commit/a658009ac14adf482a88bd1fe2bce73f520e6dac"
-        target="_blank"
-        rel="noopener"
-        ><code>a658009a</code></a
-      >), where it runs deterministically on every gate. Individual code repairs stay separate from the persistent
-      instruction change; consistency across the project is enforced by the rules the agent encoded itself, as guideline
-      lines and as verifier checks, under sparse human supervision. Several lessons can be encoded in one session or
-      even one commit: the same skill update carried two lessons from section 4.5 into <code>implement</code>: compare
-      built artifacts when a change must not alter behavior, and test every source-reading tool when source syntax
-      changes.</p
+      >
+      This sequence links observed ownership failures to a persistent instruction drafted by the agent and revised by
+      the maintainer. Lessons may be retained as instructions, checks or scoped memory entries. In a later session,
+      the agent encoded README parity as a verifier rule in commit
+      <a href="https://github.com/kyr0/defuss-shadcn/commit/a658009ac14adf482a88bd1fe2bce73f520e6dac" target="_blank" rel="noopener"><code>a658009a</code></a>.
+      The same skill update also added two lessons from section 4.5 to <code>implement</code>: compare built artifacts
+      when shipped output must remain unchanged, and test source-reading tools when source syntax changes.</p
     >
     <p
-      >The record also shows resilience against outside changes to the encoded rules and guidelines. The following is
-      the verbatim closing report of a <code>wrap</code> run in a new session without prior context, except the memory
-      injected at session start (section 7). The maintainer had set up the experiment before that session: an external
-      agent's adversarial change to the project's own guidelines.</p
+      >
+      A separate <code>wrap</code> run illustrates recovery from a changed instruction file. The maintainer reports
+      having arranged an adversarial edit by an external agent before starting a fresh session with the normal
+      injected memory. The closing report below records the agent's response. This is a single demonstration, not
+      an evaluation of resistance to instruction tampering.</p
     >
     <pre class="paper-code" style="white-space: pre-wrap"><code>Wrap complete. The release itself is still yours to run.
 VERIFIED[gate] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs@fp=7f9da306f928
@@ -1862,47 +1877,44 @@ Two things you should know about
 - Your paper.mdx edit appeared in the working tree during this session. The gate refused to pass with an unresolved prose finding in it, so I made one minimal fix in your new sentence: "it's own" became "its own", and the sentence now reads "This record shows how the agent, working on its own AGENTS.md instructions, links agent-observed failures with guideline fixes - through the report's analysis and human supervision - to the persistent instruction." Meaning unchanged. The file stays uncommitted for you to finish.
 - vae.py init dropped a maintainer decision. Refreshing the managed block in AGENTS.md removed the "CI is DISABLED" sentence a previous agent had written inside that block, and the plugin's new text says to report CI run URLs after a push. I restored the decision as one line directly below the managed block, where init cannot overwrite it, and recorded the lesson in memory.</code></pre>
     <p
-      >The report shows both sides of that resilience. The regenerated guideline block had dropped a maintainer decision
-      and contradicted a repository file; the agent restored the decision outside the block, where the regeneration
-      cannot reach it, and recorded the lesson in memory. The maintainer's uncommitted edit to this page was left out of
-      the commits.</p
+      >
+      According to the report, regenerating the managed block removed a maintainer decision. The agent restored it
+      outside the block and recorded the lesson in memory. It also left the maintainer's in-progress paper edit out
+      of the commits.</p
     >
 
     <h3 id="paper-learning-acceptance">5.3 Human acceptance</h3>
     <p
-      >Some findings require a preference or acceptance decision that the current specification does not contain. A
-      verifier can check a stated radius, alignment constraint or timing requirement once it is encoded. It cannot
-      derive the author's intended appearance merely from a successful structural check. The human must supply that
-      preference or authorize a source of judgment; the agent can then apply the decision and encode the parts that
-      admit a stable check.</p
+      >
+      Some findings require an acceptance criterion that the specification does not yet contain. A verifier can check
+      an encoded radius, alignment or timing constraint; it cannot infer the author's preferred appearance from a
+      passing structural check. This is an instance of the test-oracle problem: deciding which observed behavior is
+      acceptable (<a href="https://discovery.ucl.ac.uk/id/eprint/1471263/" target="_blank" rel="noopener">Barr et al., 2015</a>). A human can supply the missing criterion or authorize another source of judgment, after
+      which stable parts of the decision can become checks.</p
     >
     <p
-      >One such decision concerned this report's own typesetting. Its sections set the opening line of each first
-      paragraph in small capitals, a Typography option that applied as specified while the paper and typography tests
-      passed. On October 7 the author judged the result ugly: the line read as monospace. The agent traced the
-      appearance to the paper's font, Geist, whose shipped file declares neither of the OpenType small-capital features
-      (<code>smcp</code>, <code>c2sc</code>), so the browser synthesized them from shrunken, letter-spaced capitals. The
-      author's criterion was appearance, not a failed requirement. The agent removed the option from the report's
-      sections, and the change shipped in commit
-      <a
-        href="https://github.com/kyr0/defuss-shadcn/commit/70628bc9de339277e49775c759c1fe696797f763"
-        target="_blank"
-        rel="noopener"
-        ><code>70628bc9</code></a
-      >. No check was added. CSS cannot tell whether a font provides real small capitals; a check over the font's
-      feature tables would be possible, but none exists in the project.</p
+      >
+      This report's typesetting provided an example. The first line of each section's opening paragraph used small
+      capitals, as specified, and the paper and typography tests passed. On October 7 the author rejected the appearance
+      because it resembled monospace. The agent reported that the shipped Geist font lacked the OpenType features
+      <code>smcp</code> and <code>c2sc</code>, and attributed the appearance to synthesized capitals. The option was
+      removed in commit
+      <a href="https://github.com/kyr0/defuss-shadcn/commit/70628bc9de339277e49775c759c1fe696797f763" target="_blank" rel="noopener"><code>70628bc9</code></a>.
+      No font-feature check was added. CSS can disable synthesized small capitals (<a href="https://www.w3.org/TR/2026/WD-css-fonts-4-20260913/#font-synthesis-small-caps" target="_blank" rel="noopener">CSS Fonts Module Level 4, §2.8.3</a>); establishing which features
+      a particular font provides requires inspecting that font. Such a check was absent from the project.</p
     >
     <p
-      >The visual record of October 7 marks the same boundary from the other side. Four screen-reported defects became
-      E2E checks that day. A rotating-glyph artifact remained unresolved because its edges had been measured only in a
-      still frame.</p
+      >
+      Four visual defects reported on October 7 became E2E checks. A rotating-glyph artifact remained unresolved;
+      its edges had been measured only in a still frame.</p
     >
 
-    <h3 id="paper-learning-reconciliation">5.4 Memory reconciliation: forgetting on evidence</h3>
+    <h3 id="paper-learning-reconciliation">5.4 Reconciling memory</h3>
     <p
-      >Under VAE an agent's memory does not grow with the work. The <code>wrap</code> skill, which only a person starts,
-      reflects on both memory files: the episodic <code>EPISODES.md</code> and the long-term
-      <code>MEMORY.md</code> (section 7). The following verbatim quote is the memory section of the same report:</p
+      >
+      VAE bounds injected memory and periodically reconciles its contents. When a person invokes <code>wrap</code>,
+      the agent reviews <code>EPISODES.md</code> and <code>MEMORY.md</code> (section 7). The following verbatim excerpt
+      is the memory section of the same closing report:</p
     >
     <pre class="paper-code" style="white-space: pre-wrap"><code>Memory changes, with evidence
 
@@ -1912,10 +1924,11 @@ Two things you should know about
 - REWROTE MEMORY.md: the screenshots, gate-turn-end and perf lines shortened under 240 chars, content kept.
 - ADDED MEMORY.md: the deploy.sh denial and the managed-block lesson.</code></pre>
     <p
-      >The agent forgets what the evidence settles: a lead whose result is in the committed text, a check a gate or test
-      enforces, a question a probe answered. It keeps what the evidence cannot settle, tagged as open, and adds what
-      will steer later sessions. In this run 60 of 67 open leads were deleted, each with its evidence, 7 were kept,
-      three memory lines were shortened and two added.</p
+      >
+      In this run, the agent removed 60 of 67 open leads, retained 7, shortened three memory lines and added two.
+      The report groups the removals by reason, including facts recoverable from git, checks already enforced and
+      questions settled by probes. Open questions remain available for later investigation. This records a reduction
+      in retained narrative, not a measured improvement in later task performance.</p
     >
   </section>
 
@@ -1933,23 +1946,27 @@ Two things you should know about
       ><span id="paper-future"></span><span class="paper-num">6</span>Scope and remaining limits</h2
     >
     <p
-      >The results presented in this paper come from one project, one maintainer and one model family, without a control
-      group. The maintainer has seen the method applied successfully in other software projects by other experts; as a
-      single case study, this paper contains no evidence of that. Also, as described earlier, the generalized VAE method
-      is a result of ongoing research based on the individual verifiers, agent guidelines, and agent memory systems
-      developed within the defuss-shadcn project. Therefore, the working method changed during the study, and the
-      general package (defuss-vae) was only introduced near its end as a generalization of the VAE method. However, the
-      captured verbatim quotes of the method presented in this paper were already largely produced by defuss-vae itself.
-      The task windows, however, include contemporaneous work and should not be read as controlled latency or cost
-      benchmarks.</p
+      >
+      The study covers one project and one maintainer, without a control group. The wider history includes Qwen and
+      Claude models; the four measured task windows used Claude Opus 5.5. The maintainer reports successful use in
+      other projects, but those cases are not documented here. This report therefore supports an account of the
+      workflow in its project context, rather than an estimate of its causal effect, a distinction discussed in
+      software-engineering case-study methodology (<a href="https://doi.org/10.1007/s10664-008-9102-8" target="_blank" rel="noopener">Runeson and Höst, 2009</a>).
+      </p
+          >
+          <p>
+      The method also changed during the study. Project-specific verifiers, instructions and memory preceded the
+      general defuss-vae package, which was introduced near the study's end. The controlled output captures describe
+      defuss-vae 0.8.0; they should not be read as a record of the earlier production session. Task windows include
+      contemporaneous work, and the API-documentation window includes one hour of hibernation. Their elapsed times
+      and token counts are descriptive measurements, not controlled latency or cost benchmarks.</p
     >
     <p
-      >Static verifier rules - encoded as instructed by the maintainer, self-learned by the agent, or drafted by the
-      agent under active supervision with the maintainer - establish their encoded predicates over their measured
-      inputs. A green result does not establish unspecified behavior, and a review attestation does not independently
-      establish review quality. These boundaries motivate extending coverage and improving instructions when a new
-      failure is understood. Changes to the verifier itself must preserve the governing requirement; making a check
-      easier to pass is not evidence that the original task was solved.</p
+      >
+      A verifier evaluates encoded predicates over the inputs it inspects. A passing result does not establish
+      unspecified behavior, and a review attestation does not independently establish review quality. When the agent
+      changes a verifier, the revised check must still express the governing requirement. Human review and tests of
+      the verifier remain necessary where a faulty or weakened check could accept an incorrect result.</p
     >
     <p
       >The control interface is independent of a particular artifact format: programs can return repairs, document
@@ -1958,9 +1975,11 @@ Two things you should know about
       configurations remains an empirical question.</p
     >
     <p
-      >In scope of future research, the next comparisons should hold the task, model, tool access and acceptance
-      criteria fixed while varying the feedback controller, persistent adaptation, dialect and stack templates. These
-      comparisons would identify which parts of the combination contribute to the observed performance most.</p
+      >
+      Future comparisons should hold the task, model, tool access and acceptance criteria fixed while varying the
+      feedback controller, persistent adaptation, dialect and stack templates. Outcomes should include task success,
+      repeat failures, human review time and total execution cost. This would test which parts of the workflow
+      contribute to its results.</p
     >
   </section>
 
@@ -1976,16 +1995,21 @@ Two things you should know about
   >
     <h2 id="paper-memory" class="typeset-span"><span class="paper-num">7</span>Self-learning and agent memory</h2>
     <p
-      >Memory is where self-learning either compounds or decays. Two problems grow with a project. A memory searched at
-      run time has to retrieve the right entries from a store that keeps growing. A memory injected whole keeps entries
-      that have gone stale, and a stale entry keeps steering the agent after the code has moved on. Ning et al. (<a
-        href="https://arxiv.org/abs/2610.05162"
-        target="_blank"
-        rel="noopener"
-        >MemAdapter</a
-      >, 2026) describe a related effect: persistent memories can make an agent over-align with a user's past beliefs,
-      even when those are inaccurate, outdated or contradicted by evidence.</p
+      >
+      Persistent memory creates two maintenance problems. Retrieved memory must select relevant entries from a growing
+      store; memory injected in full can continue to present obsolete instructions after the code changes. Ning et al.
+      (<a href="https://arxiv.org/abs/2610.05162" target="_blank" rel="noopener">MemAdapter</a>, 2026) study a related
+      risk: memories can bias an agent toward a user's past beliefs even when those beliefs are outdated or conflict
+      with current evidence. Their focus is memory-induced sycophancy, which is related to, but distinct from, stale
+      engineering instructions.</p
     >
+<p>
+  Prior systems also retain experience without updating model weights. Reflexion stores textual reflections
+  for subsequent trials (<a href="https://arxiv.org/abs/2303.11366" target="_blank" rel="noopener">Shinn et al., 2023</a>); Voyager retains executable skills and uses execution feedback to refine
+  programs in Minecraft (<a href="https://arxiv.org/abs/2305.16291" target="_blank" rel="noopener">Wang et al., 2023</a>). VAE applies related ideas to repository procedures, promoting a lesson
+  into a check when possible and reconciling the prose that later sessions receive.
+</p>
+
     <p
       >VAE splits memory in two. Episodic memory is
       <a
@@ -2009,35 +2033,39 @@ Two things you should know about
         target="_blank"
         rel="noopener"
         >command gist</a
-      >, within the budgets of section 2.4. Most of what the project has learned sits outside the prompt altogether, in
-      tests and verifier rules that every later gate runs.</p
+      >, within the budgets of section 2.4. Lessons encoded in tests and verifier rules can be applied by later gates without
+      keeping their full narratives in the prompt.</p
     >
     <p
-      >Every session started in the repository receives this state at start, the orchestrator's and each spawned
-      sub-agent's, and every gate run writes episodes. Reconciliation happens in <code>wrap</code>, which a person
-      starts when a work package is done; spawned sub-agents never run it. It reflects first: each lesson the work
-      taught and each open lead is promoted to the strongest form that fits, a test, a verifier rule or one memory line
-      with its reason, or deleted with evidence. It then audits every entry against the current code and commands. A
-      contradicted entry is rewritten or deleted, an entry a test now enforces is deleted, one wider than its evidence
-      is narrowed, and one it cannot settle stays, tagged <code>UNKNOWN</code>. The aim is that what reaches the next
-      session is still true, still useful and small enough to load in every session; for the last part,
-      <code>wrap</code> runs <code>vae.py doctor</code>, which checks the length and count limits. Two lessons from the
-      days after the study took the strongest form, a test: on October 7 a deadlock between two gates became four
-      unit-test cases, and on October 8 a Firefox scroll loop became an end-to-end test.</p
+      >
+      Session-start hooks supply this state to the orchestrator and spawned sub-agents; gate runs append episodes.
+      Reconciliation runs when a person invokes <code>wrap</code> after a work package. Sub-agents do not run it.
+      The procedure promotes useful findings to tests, verifier rules or scoped memory, then checks retained entries
+      against current code and commands. Contradicted entries are revised or removed; redundant entries are removed;
+      claims wider than their evidence are narrowed; unresolved entries remain marked <code>UNKNOWN</code>.
+      <code>vae.py doctor</code> checks the configured size limits.
+      </p
+          >
+          <p>
+      Additional examples show lessons becoming tests: on October 7, a deadlock between two gates led to four unit-test
+      cases; on October 8, after the study cutoff, a Firefox scroll loop led to an end-to-end test. These examples
+      illustrate retention of a finding; they do not measure the rate of failure recurrence.</p
     >
     <p
-      >Ning et al. also find that a correct memory can still induce sycophancy, and that the same memory warrants
-      different influence in different contexts. MemAdapter answers with three reasoning components that weigh each
-      retrieved memory against the current task and the evidence. defuss-vae answers in the rules for using memory: an
-      entry binds only within the scope its evidence supports, the current request outranks it, and repetition, recency
-      or confident wording widen nothing.</p
+      >
+      MemAdapter further reports that even a correct memory can produce inappropriate agreement, and that its useful
+      influence depends on the current task. Its counterfactual induction, context-aware reflection and evidence-based
+      reasoning components address that risk. VAE expresses a related constraint as an instruction: a memory applies
+      only within its supported scope, and the current request takes precedence. Repetition, recency and confident
+      wording do not expand that scope.</p
     >
     <p
-      >The approach has limits. Reconciliation is only as good as the agent's judgment during <code>wrap</code>, and its
-      attestation records a claim, not its quality. It runs when a person starts it, so lessons wait for the end of a
-      work package. A lesson that cannot be stated as a check stays prose, and the budget forces a choice among such
-      lessons. This study does not measure how much stale or wrong memory the audit removes, or whether retained lessons
-      prevent repeat failures; section 6 names the comparison that would in scope of future research.</p
+      >
+      Reconciliation depends on the agent's judgment and on a person invoking <code>wrap</code>. Its attestation
+      records completion of the procedure, not an independent assessment of the result. Lessons that cannot be
+      expressed as checks remain prose, subject to the memory budget. The study records individual removals and
+      revisions, but does not systematically measure memory accuracy or whether retained lessons prevent repeat
+      failures. Section 6 proposes comparisons for evaluating those effects.</p
     >
   </section>
 
@@ -2053,42 +2081,34 @@ Two things you should know about
   >
     <h2 id="paper-s10" class="typeset-span"><span class="paper-num">8</span>Conclusion</h2>
     <p
-      >Over 33 days, defuss-shadcn grew from 55 to 231 components while its verifier rules, agent guidelines and agent
-      memory evolved with the project: resilient to tampering, efficient and systematic, in a self-learning process that
-      was generalized over time and ran under infrequent supervision by a human expert. The result of that development
-      is defuss-vae, which implements the Verified Agentic Engineering (VAE) method as a generally available, publicly
-      released and commercially usable agent harness skill. Its results are promising. In one session, an agent under
-      the VAE method applied typed API documentation to all 59 interactive components, expanded the shared-contract
-      tests, moved all 228 component folders into a new layout and removed 1,147 type errors, after installing a new
-      type-checker gate in its own verifier program as the result of a self-reflection on code quality. For the type
-      change, all 85 compared minified artifacts remained byte-identical. One human correction to a documentation task
-      was recognized by the agent as an opportunity to generalize, and it became an audit of all rendered pages. Every
-      lesson was encoded by the agent in one of three forms: a static verifier rule that runs without a language model
-      (<code>.agents/VERIFY.py</code>), a guideline for future agent invocations (the project's <code>AGENTS.md</code>),
-      or a line of long-term agent memory that the VAE session-start hook injects into every later session
-      (<code>.agents/MEMORY.md</code>). That memory stays readable for language models and humans alike. Agents and
-      humans share a compact superset dialect of a chosen human language, VAE-DIALECT, which defines epistemic terms
-      such as <code>VERIFIED[&lt;scope&gt;]</code>, <code>HYPOTHESIS[&lt;scope&gt;]</code> and
-      <code>UNKNOWN[&lt;scope&gt;]</code> and a symbolic notation for formal logic. In the authors' observation, the
-      dialect reduces hallucinated readings of instructions and of messages between agents and improves the epistemic
-      quality of the model's predictions, and the stack templates supplied by a human expert reduce how often, and how
-      far, an agent derails into inventing the technical foundation of a project (its architecture and setup); this
-      study does not measure either effect.</p
+      >
+      Over 33 days, defuss-shadcn grew from 55 to 231 components while its checks, instructions and memory evolved with
+      the code. In the measured session, the agent documented all 59 interactive components, expanded shared-contract
+      tests, moved 228 component folders and removed 1,147 type errors. For the type-error change, all 85 compared
+      minified artifacts remained byte-identical. A human correction to the documentation task prompted an audit of
+      all 59 rendered API pages. These results document repository-wide work and corresponding changes to the
+      verification procedure.</p
     >
     <p
-      >The contribution of this work is therefore the demonstration of a working combination: a general skill that puts
-      a capable language model to software engineering tasks in an agent harness, together with agent-authored programs
-      that return actionable instructions, explicit contracts, a compact evidence notation, stack templates and
-      architecture guidelines supplied by a human expert, and a memory the agent reconciles itself. The agent can change
-      the task artifact and, within its authority, the tools and procedures that guide later work. Lessons learned
-      during execution become executable checks or persistent instructions, and memory reconciliation keeps records from
-      going stale, so knowledge remains in the system without every episode staying in the prompt.</p
+      >
+      VAE organizes that workflow around programs that return findings and work instructions through an agent harness.
+      The agent may change both the artifact and, within its authority, the checks and procedures used in later
+      tasks. Tests and verifier rules retain executable lessons; instructions and bounded memory retain those that
+      still require interpretation. The public defuss-vae package provides an implementation of this workflow.</p
     >
     <p
-      >The defuss-shadcn case demonstrates substantial repository-wide work under the Verified Agentic Engineering (VAE)
-      method. Its general interface supports every further task that can be expressed as checks or bounded instructions,
-      which suggests that the method is, in principle, not limited to engineering.</p
+      >
+      The case establishes that this combination was used for substantial repository-wide changes. It does not
+      establish which component caused the observed results or how much review effort it saved. The same controller
+      interface can present document passages or data partitions, but its effectiveness on those tasks and in other
+      projects remains to be evaluated.</p
     >
+    <p
+      >
+      The paper’s own presentation is a concrete result of this process: its entire user interface, 
+      including every interactive component and its unified, responsive two-column layout for both screen and print, 
+      was developed through the workflow described here. Readers can therefore inspect and use a result of 
+      the method as they read about it.</p>
   </section>
 
   <div class="separator" aria-hidden="true" data-gap="lg">✦ ✦ ✦</div>
@@ -2107,7 +2127,7 @@ Two things you should know about
   url = {https://shadcn.defuss.org/papers/paper.html}
 }</code></pre>
     </figure>
-    <figure class="bibtex" data-formats="ieee apa bibtex" data-format="ieee" aria-label="References">
+    <figure class="bibtex" data-formats="apa ieee bibtex" data-format="apa" aria-label="References">
       <figcaption>References</figcaption>
       <pre><code class="bibtex-source">@misc{homberg2026defussvae,
   author = {Homberg, Aron},
@@ -2126,6 +2146,111 @@ Two things you should know about
   howpublished = {GitHub},
   note = {Study cutoff at commit 8cecf4b4, 2026-10-07},
   url = {https://github.com/kyr0/defuss-shadcn/tree/8cecf4b4}
+}
+
+@inproceedings{yao2023react,
+  author = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  title = {{ReAct}: Synergizing Reasoning and Acting in Language Models},
+  booktitle = {International Conference on Learning Representations},
+  year = {2023},
+  url = {https://arxiv.org/abs/2210.03629}
+}
+
+@misc{yang2024sweagent,
+  author = {Yang, John and Jimenez, Carlos E. and Wettig, Alexander and Lieret, Kilian and Yao, Shunyu and Narasimhan, Karthik and Press, Ofir},
+  title = {{SWE-agent}: Agent-Computer Interfaces Enable Automated Software Engineering},
+  year = {2024},
+  eprint = {2405.15793},
+  archiveprefix = {arXiv},
+  url = {https://arxiv.org/abs/2405.15793}
+}
+
+@inproceedings{madaan2023selfrefine,
+  author = {Madaan, Aman and Tandon, Niket and Gupta, Prakhar and Hallinan, Skyler and Gao, Luyu and Wiegreffe, Sarah and Alon, Uri and Dziri, Nouha and Prabhumoye, Shrimai and Yang, Yiming and Gupta, Shashank and Majumder, Bodhisattwa Prasad and Hermann, Katherine and Welleck, Sean and Yazdanbakhsh, Amir and Clark, Peter},
+  title = {{Self-Refine}: Iterative Refinement with Self-Feedback},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume = {36},
+  year = {2023},
+  url = {https://papers.neurips.cc/paper_files/paper/2023/hash/91edff07232fb1b55a505a9e9f6c0ff3-Abstract-Conference.html}
+}
+
+@article{meyer1992contract,
+  author = {Meyer, Bertrand},
+  title = {Applying Design by Contract},
+  journal = {Computer},
+  volume = {25},
+  number = {10},
+  pages = {40--51},
+  year = {1992},
+  url = {https://se.inf.ethz.ch/~meyer/publications/computer/contract.pdf}
+}
+
+@inproceedings{inozemtseva2014coverage,
+  author = {Inozemtseva, Laura and Holmes, Reid},
+  title = {Coverage Is Not Strongly Correlated with Test Suite Effectiveness},
+  booktitle = {Proceedings of the International Conference on Software Engineering},
+  year = {2014},
+  url = {https://cs.uwaterloo.ca/~rtholmes/papers/icse_2014_inozemtseva.pdf}
+}
+
+@article{barr2015oracle,
+  author = {Barr, Earl T. and Harman, Mark and McMinn, Phil and Shahbaz, Muzammil and Yoo, Shin},
+  title = {The Oracle Problem in Software Testing: A Survey},
+  journal = {IEEE Transactions on Software Engineering},
+  volume = {41},
+  number = {5},
+  pages = {507--525},
+  year = {2015},
+  doi = {10.1109/TSE.2014.2372785},
+  url = {https://discovery.ucl.ac.uk/id/eprint/1471263/}
+}
+
+@article{runeson2009casestudy,
+  author = {Runeson, Per and Höst, Martin},
+  title = {Guidelines for Conducting and Reporting Case Study Research in Software Engineering},
+  journal = {Empirical Software Engineering},
+  volume = {14},
+  pages = {131--164},
+  year = {2009},
+  doi = {10.1007/s10664-008-9102-8},
+  url = {https://doi.org/10.1007/s10664-008-9102-8},
+  note = {Published online 19 December 2008; journal issue 2009}
+}
+
+@misc{shinn2023reflexion,
+  author = {Shinn, Noah and Cassano, Federico and Berman, Edward and Gopinath, Ashwin and Narasimhan, Karthik and Yao, Shunyu},
+  title = {{Reflexion}: Language Agents with Verbal Reinforcement Learning},
+  year = {2023},
+  eprint = {2303.11366},
+  archiveprefix = {arXiv},
+  url = {https://arxiv.org/abs/2303.11366},
+  note = {Author list from arXiv version 4}
+}
+
+@misc{wang2023voyager,
+  author = {Wang, Guanzhi and Xie, Yuqi and Jiang, Yunfan and Mandlekar, Ajay and Xiao, Chaowei and Zhu, Yuke and Fan, Linxi and Anandkumar, Anima},
+  title = {{Voyager}: An Open-Ended Embodied Agent with Large Language Models},
+  year = {2023},
+  eprint = {2305.16291},
+  archiveprefix = {arXiv},
+  url = {https://arxiv.org/abs/2305.16291}
+}
+
+@manual{linuxfoundationlsb5,
+  author = {{Linux Foundation}},
+  title = {Linux Standard Base Core Specification, Generic Part: Init Script Actions},
+  edition = {5.0},
+  url = {https://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html},
+  note = {Section 22.2; accessed 2026-10-10}
+}
+
+@techreport{w3c2026cssfonts,
+  author = {{CSS Working Group}},
+  title = {{CSS} Fonts Module Level 4},
+  institution = {W3C},
+  year = {2026},
+  url = {https://www.w3.org/TR/2026/WD-css-fonts-4-20260913/},
+  note = {Working Draft, 13 September 2026; sections 2.8.3 and 6.6}
 }
 
 @misc{ning2026memadapter,
@@ -2174,8 +2299,8 @@ Two things you should know about
 
   <footer class="paper-footer">
     <p
-      >Layout adapted from the Nerfies project-page template (CC BY-SA 4.0), as used by InternVL, rebuilt with
-      defuss-shadcn tokens, typography and components.</p
+      >Initial paper layout inspiration adapted from the Nerfies project-page template (CC BY-SA 4.0), as used by InternVL, rebuilt with
+      defuss-shadcn tokens, two-column responsive typography and interactive components.</p
     >
     <p>Historical results use the fixed study snapshot and their recorded measurements.</p>
   </footer>
