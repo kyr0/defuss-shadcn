@@ -1,5 +1,5 @@
 ---
-title: "Modern Paper"
+title: "Verified Agentic Engineering in Practice - Agent-authored control programs and persistent adaptation across a growing component system - Technical Report - Aron Homberg, independent researcher - defuss open-source project - October 2026"
 description: "A research-paper project page - the layout of the Nerfies / InternVL project pages in the system's tokens: serif title, linked authors and affiliations, resource buttons, a news line, a teaser figure, abstract, a table of contents, numbered sections, findings, epistemic tags, key numbers, charts, tables, a quotation, BibTeX and a footer."
 slug: "paper"
 ---
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 <DocPage meta={meta}>
 
 <PageHeader slug="paper" title="Modern Paper" component="paper">
-  A research-paper project page - the layout of the <DocLink href="https://internvl.github.io/">InternVL</DocLink> / Nerfies project pages, rebuilt in the system's own tokens and typography: a serif title over a centered reading column, linked authors with affiliation marks, pill resource buttons, a news line, a teaser figure, the abstract, a table of contents, numbered sections, findings, epistemic tags, key numbers, charts, tables, a quotation, BibTeX and a footer. The example is a real technical report on Verified Agentic Engineering, applied to this repository: its measurements are frozen at the study's cutoff commit and read from git and the session transcript.
+  A research-paper project page - the initial layout is inspired by the layout of the <DocLink href="https://internvl.github.io/">InternVL</DocLink> / Nerfies project pages, rebuilt in <code>defuss-shadcn</code>'s own design tokens, extended with advanced two-column professional layout and typography, including interactive components: a serif title over a centered reading column, linked authors with affiliation marks, pill resource buttons, a news line, a teaser figure, the abstract, a table of contents, numbered sections, findings, epistemic tags, key numbers, charts, tables, a quotation, BibTeX and a footer. The example is a real technical report on Verified Agentic Engineering, applied to this repository: its measurements are frozen at the study's cutoff commit and read from git and the session transcript.
 </PageHeader>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
@@ -68,19 +68,45 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
-```html example label="Verified Agentic Engineering in Practice - a technical report" schema="none" sandbox="links" hint="The whole page is one .paper article: the title block with a light/dark Swap, a data notice, the teaser (an Illustrative Diagram), the abstract, a table of contents, eight numbered sections, captured program output as a conversation (Session, Message, Bubble, Marker), before/after key numbers (Statistic, a Shapes arrow), one chart (Chart), a Timeline, a Diff of two Code Mockups, seven tables (Table) with colored trends, epistemic tags (VAE-DIALECT), two BibTeX blocks and the footer. Every figure is a study value frozen at the cutoff commit and dated with its source. Every numbered section is set as Typography's Book page without an initial: Blocksatz, Einzug, classic ligatures (.paper-section.typeset)." previewStyle="align-items:stretch;padding:0;"
+```html example label="Verified Agentic Engineering in Practice - a technical report" schema="none" sandbox="links" hint="The whole page is one .paper article: the title block with a light/dark Swap and a paragraph-alignment Swap (Blocksatz / flush left), a data notice, the teaser (an Illustrative Diagram), the abstract, a table of contents, eight numbered sections, captured program output as a conversation (Session, Message, Bubble, Marker), before/after key numbers (Statistic, a Shapes arrow), one chart (Chart), a Timeline, a Diff of two Code Mockups, seven tables (Table) with colored trends, epistemic tags (VAE-DIALECT), two BibTeX blocks and the footer. Every figure is a study value frozen at the cutoff commit and dated with its source. Every numbered section is set as Typography's Book page without an initial: Blocksatz, Einzug, classic ligatures (.paper-section.typeset)." previewStyle="align-items:stretch;padding:0;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<style>
+  /* the hero's tools (dark mode, alignment): one centered row, hidden for print */
+  .paper-tools {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  @media print {
+    .paper-tools {
+      display: none;
+    }
+  }
+  /* the alignment swap: block (justify, the authored default) <-> flush left */
+  html.paper-align-left .paper :is(.paper-section, .paper-abstract) > p {
+    text-align: start;
+    text-align-last: auto;
+    hyphens: manual;
+  }
+</style>
 <article class="paper" aria-labelledby="paper-title">
   <header class="paper-hero">
-    <p class="paper-venue"
-      ><span class="badge" data-variant="secondary">Technical Report</span
-      ><span>defuss · <time datetime="2026-10">October 2026</time></span>
+    <div class="paper-tools">
       <label class="swap" data-variant="rotate" id="paper-mode">
         <input type="checkbox" aria-label="Dark mode" />
         <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
         <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
       </label>
-    </p>
+      <label class="swap" data-variant="rotate" id="paper-align">
+        <input type="checkbox" aria-label="Justify paragraphs" checked />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="align-justify"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="align-left"></i></span>
+      </label>
+    </div>
+    <p class="paper-venue"
+      ><span class="badge" data-variant="secondary">Technical Report</span
+      ><span>defuss · <time datetime="2026-10">October 2026</time></span
+    ></p>
     <h1 class="paper-title" id="paper-title"
       >Verified Agentic Engineering in Practice<span class="paper-title-sub"
         >Agent-authored control programs and persistent adaptation across a growing component system</span
@@ -2315,6 +2341,12 @@ Two things you should know about
     show();
     new MutationObserver(show).observe(root, { attributes: true, attributeFilter: ['class'] });
     mode.on('change', (e) => root.classList.toggle('dark', e.target.checked));
+    // the alignment swap mirrors the class: checked = block (justify, the default)
+    const align = df$('#paper-align input');
+    const showAlign = () => align.prop('checked', !root.classList.contains('paper-align-left'));
+    showAlign();
+    new MutationObserver(showAlign).observe(root, { attributes: true, attributeFilter: ['class'] });
+    align.on('change', (e) => root.classList.toggle('paper-align-left', !e.target.checked));
   });
 </script>
 ```

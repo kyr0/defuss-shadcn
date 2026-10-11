@@ -44,6 +44,9 @@ typecheck: ## Strict tsc type-check of tests/ and scripts/ (no emit)
 docs: ## Build, then mirror dist/ → docs/ for GitHub Pages
 	bun run docs
 
+docs-sync: ## Sync dist/ → docs/ for GitHub Pages without rebuilding
+	bun run scripts/sync-docs.ts --force
+
 purge-cdn: ## Purge jsDelivr @latest cache for all dist assets (run after deploy)
 	bun run purge-cdn
 
