@@ -23,8 +23,11 @@ export type StatSources = Record<string, unknown>;
 export const STAT_FORMATS = ['int', 'kib', 'kib0', 'mib', 's', 'min', 'pct', 'text'] as const;
 export type StatFormat = (typeof STAT_FORMATS)[number];
 
-/** `<tag … data-stat="path" …>figure</tag>` - the figure is plain text */
-const FIGURE = /<([a-z][a-z0-9]*)\b([^>]*?\bdata-stat="([^"]+)"[^>]*)>([^<]*)<\/\1>/g;
+/** `<tag … data-stat="path" …>figure</tag>` - the figure is plain text. The closing tag may
+ * break before its `>` (`</span\n  >`, how Prettier closes an inline element in a fence) and
+ * is written back as it was. VERIFIED: (tests/stat-figures.test.ts) the strict `</tag>` form
+ * left 10 deck figures unread - neither written nor gated */
+const FIGURE = /<([a-z][a-z0-9]*)\b([^>]*?\bdata-stat="([^"]+)"[^>]*)>([^<]*)(<\/\1\s*>)/g;
 
 /** The value at a dotted path (`stats.apps.notes.components.length`). */
 export function statValue(sources: StatSources, path: string): unknown {
@@ -58,14 +61,14 @@ export function formatStat(value: unknown, format: StatFormat = 'int'): string {
   }
 }
 
-type Figure = { index: number; length: number; open: string; tag: string; path: string; format: StatFormat; shown: string };
+type Figure = { index: number; length: number; open: string; close: string; path: string; format: StatFormat; shown: string };
 
 function figures(text: string): Figure[] {
   return [...text.matchAll(FIGURE)].map((m) => {
     const format = (m[2].match(/\bdata-stat-format="([^"]+)"/)?.[1] ?? 'int') as StatFormat;
     // the figure is compared trimmed. VERIFIED: (tests/stat-figures.test.ts) a
     // formatter may set the figure on its own line; the value is the same
-    return { index: m.index!, length: m[0].length, open: `<${m[1]}${m[2]}>`, tag: m[1], path: m[3], format, shown: m[4].trim() };
+    return { index: m.index!, length: m[0].length, open: `<${m[1]}${m[2]}>`, close: m[5], path: m[3], format, shown: m[4].trim() };
   });
 }
 
@@ -95,7 +98,7 @@ export function rewriteStatFigures(text: string, sources: StatSources): string {
   for (const f of figures(text)) {
     const value = statValue(sources, f.path);
     out += text.slice(at, f.index);
-    out += value === undefined ? text.slice(f.index, f.index + f.length) : `${f.open}${formatStat(value, f.format)}</${f.tag}>`;
+    out += value === undefined ? text.slice(f.index, f.index + f.length) : `${f.open}${formatStat(value, f.format)}${f.close}`;
     at = f.index + f.length;
   }
   return out + text.slice(at);

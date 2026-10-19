@@ -40,4 +40,11 @@ describe('figures', () => {
     expect(next).toBe(page.replace('>57.1<', '>58.0<'));
     expect(statFigureProblems(next, sources, 'deck.mdx')).toEqual([]);
   });
+  // VERIFIED: the Prettier-formatted deck fence closes a figure as `</span\n  >`; the reader
+  // missed 10 deck figures in that form, and 9 of them were stale (an app shown at 75.2 KiB, measured 80.2)
+  it('reads a figure whose closing tag the formatter breaks before its >', () => {
+    const split = '<span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">57.1</span\n          ><span>KiB</span>';
+    expect(statFigureProblems(split, sources, 'deck.mdx')).toEqual(['deck.mdx: data-stat="stats.apps.notes.totalSizeGzMinified" shows "57.1" - the measurement says "58.0"']);
+    expect(rewriteStatFigures(split, sources)).toBe(split.replace('>57.1<', '>58.0<'));
+  });
 });
