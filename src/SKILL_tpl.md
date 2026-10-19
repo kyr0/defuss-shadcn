@@ -28,9 +28,17 @@
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 
-<!-- 4. only for the HTML Preview Editor (code-example): the extra bundle, after 3a / 3b -->
+<!-- 4. only on a page that uses them: the extra bundles, after 3a / 3b -
+     wysiwyg (code-example, editorjs), mermaid (mermaid), math (math-renderer, math-editor, math-compute),
+     visual-editor (visual-editor) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/visual-editor.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/visual-editor.js"></script>
 ```
 
 **Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step.
@@ -57,7 +65,10 @@ dist/
 ├── theme/utils/default-semantic-tokens.css ← design tokens (the only theme file)
 ├── components/all.css                ← bundle: every component stylesheet (+ .min twin & map)
 ├── components/all.js                 ← bundle: every component's behavior (+ .min twin & maps)
-├── components/wysiwyg.css / .js      ← the extra bundle: the HTML Preview Editor (code-example) - NOT in all.*; load after all.* / core
+├── components/wysiwyg.css / .js      ← extra bundle: code-example, editorjs - NOT in all.*; load after all.* / core where used
+├── components/mermaid.css / .js      ← extra bundle: mermaid - NOT in all.*; load after all.* / core where used
+├── components/math.css / .js         ← extra bundle: math-renderer, math-editor, math-compute - NOT in all.*; load after all.* / core where used
+├── components/visual-editor.css / .js ← extra bundle: visual-editor - NOT in all.*; load after all.* / core where used
 ├── components/{name}/
 │   ├── component-skill.md            ← HOW to build the HTML - read this before using a component
 │   ├── {name}.css                    ← the stylesheet (tokens only; always include)

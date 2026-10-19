@@ -10,6 +10,8 @@ interface DefussShadcnComponentApi {
   /** The markup of a state (default: the current one) - AGENTS.md "State
    *  API" → render; required of every JS component (RENDER_LEGACY shrinks). */
   render?(state?: DefussShadcnComponentState): string;
+  /** Wait for the last state's DOM work (an async state: a formula typesetting, a chart mounting). */
+  settled?(): Promise<void>;
 }
 
 /** Registry-level State API (`df$.shadcn.{name}Api`): the element comes first
@@ -84,6 +86,12 @@ interface DefussShadcnShared {
   isEditableTarget: typeof import('../shared/keys.js').isEditableTarget;
   /** theme resource loader (src/shared/theme-links.ts; theme/<id>.json sidecars) */
   loadTheme: typeof import('../shared/theme-links.js').loadTheme;
+  /** the URL a stylesheet <link> was loaded from - stable when an SPA router changes the address (src/shared/sheet-url.ts) */
+  sheetUrl: typeof import('../shared/sheet-url.js').sheetUrl;
+  /** the Math components' JSON guard: a validated copy of plain JSON (src/shared/math.ts) */
+  mathClone: typeof import('../shared/math.js').mathClone;
+  /** TeX within the size limit (src/shared/math.ts) */
+  mathText: typeof import('../shared/math.js').mathText;
   /** render() machinery (src/shared/render.ts): authored-markup snapshot + state render */
   elementModel: typeof import('../shared/render.js').elementModel;
   renderModel: typeof import('../shared/render.js').renderModel;
@@ -151,6 +159,16 @@ interface DefussShadcnRegistry {
     command(target: string | HTMLElement, name: string): Promise<boolean>;
     editor(target: string | HTMLElement): unknown;
     toBlocks(target: string | HTMLElement, markdown: string): unknown[];
+    sourceMap(
+      target: string | HTMLElement,
+      markdown: string,
+    ): { block: string; type: string; level?: number; start: number; end: number }[];
+    locate(
+      target: string | HTMLElement,
+      markdown: string,
+      start: number,
+      end: number,
+    ): { block: string; text: string; occurrence: number } | null;
     toMarkdown(blocks: unknown[]): string;
   };
   /** Document comments (src/components/application/doc-comments/doc-comments.ts). Inline, not typeof import(). */
@@ -163,15 +181,74 @@ interface DefussShadcnRegistry {
     next(target: string | HTMLElement): string | null;
     prev(target: string | HTMLElement): string | null;
     flash(target: string | HTMLElement, quote: unknown): boolean;
+    drafts(target: string | HTMLElement): Record<string, string>;
+    setDrafts(target: string | HTMLElement, drafts: Record<string, string>): void;
     refresh(target: string | HTMLElement): void;
+  };
+  /** Video (src/components/multimedia/video/video.ts) - members match df$.video there. */
+  video?: {
+    play(target: string | HTMLElement): Promise<void>;
+    pause(target: string | HTMLElement): void;
+    toggle(target: string | HTMLElement): boolean;
+    seek(target: string | HTMLElement, time: number): void;
+    skip(target: string | HTMLElement, seconds: number): void;
+    mute(target: string | HTMLElement, muted?: boolean): void;
+    volume(target: string | HTMLElement, volume: number): void;
+    rate(target: string | HTMLElement, rate: number): void;
+    captions(target: string | HTMLElement, key?: string | boolean): void;
+    tracks(target: string | HTMLElement, tracks: unknown[], replace?: boolean): string[];
+    fullscreen(target: string | HTMLElement): Promise<void>;
+  };
+  /** Audio (src/components/multimedia/audio/audio.ts) - members match df$.audio there. */
+  audio?: {
+    play(target: string | HTMLElement): Promise<void>;
+    pause(target: string | HTMLElement): void;
+    toggle(target: string | HTMLElement): boolean;
+    seek(target: string | HTMLElement, time: number): void;
+    skip(target: string | HTMLElement, seconds: number): void;
+    mute(target: string | HTMLElement, muted?: boolean): void;
+    volume(target: string | HTMLElement, volume: number): void;
+    rate(target: string | HTMLElement, rate: number): void;
+    captions(target: string | HTMLElement, key?: string | boolean): void;
+    tracks(target: string | HTMLElement, tracks: unknown[], replace?: boolean): string[];
+  };
+  /** Media Timeline (src/components/multimedia/media-timeline/media-timeline.ts) - members match df$.mediaTimeline there. */
+  mediaTimeline?: {
+    load(target: string | HTMLElement, data: unknown): void;
+    data(target: string | HTMLElement): unknown;
+    seek(target: string | HTMLElement, time: number): void;
+    zoom(target: string | HTMLElement, pxPerSecond: number): void;
+    loop(target: string | HTMLElement, start?: number | null, end?: number): { start: number; end: number } | null;
+    active(target: string | HTMLElement, time?: number): unknown[];
   };
   iframe?: {
     post(target: string | HTMLElement, name: string, detail?: unknown): boolean;
     send(name: string, detail?: unknown): boolean;
     resize(target: string | HTMLElement): boolean;
   };
+  /** Visual Editor - members match df$.visualEditor in visual-editor.ts. */
+  visualEditor?: {
+    load(url?: string, css?: string): Promise<unknown>;
+    url: string;
+    html(target: string | HTMLElement): string;
+    css(target: string | HTMLElement): string;
+    setHtml(target: string | HTMLElement, html: string): void;
+    insert(target: string | HTMLElement, html: string): number;
+    select(target: string | HTMLElement, path: string | null): unknown;
+    selection(target: string | HTMLElement): unknown;
+    apply(target: string | HTMLElement, change: { attributes?: Record<string, string | null>; classes?: string[]; text?: string }): unknown;
+    duplicate(target: string | HTMLElement): boolean;
+    remove(target: string | HTMLElement): boolean;
+    lock(target: string | HTMLElement, path: string, locked?: boolean): boolean;
+    replace(target: string | HTMLElement, html: string): unknown;
+    undo(target: string | HTMLElement): boolean;
+    redo(target: string | HTMLElement): boolean;
+    outline(target: string | HTMLElement): { path: string; label: string; children: unknown[] }[];
+    editor(target: string | HTMLElement): unknown;
+  };
   codeExample?: {
     configure(options?: Record<string, unknown>): void;
+    bundlesFor(source: string): string[];
     source(target: string | HTMLElement): string;
     setSource(target: string | HTMLElement, source: string): void;
     run(target: string | HTMLElement): void;
@@ -240,6 +317,34 @@ interface DefussShadcnRegistry {
     theme: typeof import('../components/mermaid/mermaid.js').mermaidTheme;
     url: string;
   };
+  /** Formula Rendering (src/components/math/math-renderer/math-renderer.ts): KaTeX loader, notation serializer, sources, selection, export */
+  mathRenderer?: {
+    load: (url?: string, css?: string) => Promise<unknown>;
+    serialize: (tree: import('../shared/math.js').MathNotation) => { latex: string; marked: string; terms: { id: string; semanticId: string | null; description: string }[] };
+    setSource: (el: HTMLElement | string, source: import('../shared/math.js').MathSource) => Promise<void>;
+    select: (el: HTMLElement | string, ids: string[]) => void;
+    export: (el: HTMLElement | string, format?: 'latex' | 'mathml') => Promise<string>;
+    url: string;
+  };
+  /** Formula Editing (src/components/math/math-editor/math-editor.ts): MathLive loader, value, commands, validation */
+  mathEditor?: {
+    load: (url?: string) => Promise<unknown>;
+    setValue: (el: HTMLElement | string, latex: string) => void;
+    command: (el: HTMLElement | string, name: string) => void;
+    validate: (el: HTMLElement | string) => boolean;
+    url: string;
+  };
+  /** Compute & Explain (src/components/math/math-compute/math-compute.ts): runs, steps, the record, the engine module */
+  mathCompute?: {
+    run: (el: HTMLElement | string, patch?: Record<string, unknown>) => Promise<void>;
+    cancel: (el: HTMLElement | string) => void;
+    go: (el: HTMLElement | string, step: number) => void;
+    next: (el: HTMLElement | string) => void;
+    prev: (el: HTMLElement | string) => void;
+    export: (el: HTMLElement | string) => string | null;
+    engine: (url?: string) => string;
+    url: string;
+  };
   /** chart storytelling driver (src/components/chart/chart.ts) */
   chartStory?: typeof import('../components/chart/chart.js').chartStory;
   docs?: DefussShadcnDocsNamespace;
@@ -280,10 +385,12 @@ interface HTMLElement {
   _model?: import('../shared/render.js').ElementModel;
   /** Resizer-only: authored [width, height] px snapshot at init, for 'default'. */
   _defaultSize?: [number, number];
-  /** The authored open state for 'default': the accordion keeps one flag per item, a tree-view branch its own. */
-  _defaultOpen?: boolean[] | boolean;
+  /** Accordion-only: the authored open flag of each item, for 'default'. */
+  _defaultOpen?: boolean[];
   /** Editor.js-only: the mounted Editor.js instance. */
   _editorjs?: unknown;
+  /** Visual Editor-only: the mounted GrapesJS editor. */
+  _visualEditor?: unknown;
   /** Editor.js-only: the Markdown parser the element loaded (marked). */
   _marked?: unknown;
   /** Editor.js-only: the toolbar whose data-editor-command buttons drive it. */

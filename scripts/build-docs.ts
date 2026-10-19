@@ -15,6 +15,8 @@ import { build } from 'defuss-ssg';
 import { STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile, STANDALONE_DOCS, standaloneDocFile, appName, exampleFence } from './lib/docs-ssg.ts'
 import { pageFile } from '../src/documentation/lib/page-dirs-files.ts'
 import { resolvePageRefs } from '../src/documentation/lib/page-dirs.ts';
+import { bundlesUsedIn } from '../src/documentation/lib/extra-bundles.ts';
+import { studioLibraryFiles } from './lib/studio-library-files.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const DOCS = join(ROOT, 'src', 'documentation');
@@ -148,11 +150,13 @@ ${fence[1].trimEnd()}
   console.log(`full-screen scaffold → dist/documentation/${standaloneAppFile(slug)}`);
 }
 
-// 5. full-screen documents (the paper): a chrome-free reading page generated
+// 5. full-screen documents (the paper, the letter, the invoice, the Studio): a chrome-free page generated
 //    from the document page's own example fence, like the scaffolds - but a
 //    document scrolls, and it loads the whole system (all.css + all.js) with
 //    the docs' typography sheets, as the CodeExample sandbox does, because it
 //    composes charts, diagrams and BibTeX rather than one app's components.
+//    A letter or an invoice prints from it with its page geometry (page 1 without a top margin, page n of m),
+//    which an example card - one sandboxed sheet without pages - cannot show.
 //    VERIFIED: (paper-fullscreen.e2e) it scrolls, has no docs chrome, and every live part works.
 for (const slug of STANDALONE_DOCS) {
   const mdx = readFileSync(pageFile(join(DOCS, 'pages'), slug), 'utf8');
@@ -162,8 +166,12 @@ for (const slug of STANDALONE_DOCS) {
     process.exit(1);
   }
   const title = (mdx.match(/^title:\s*"([^"]*)"/m)?.[1] ?? slug).replace(/[<>&"]/g, '');
+  // the extra bundles the document's own markup uses, after all.* (the docs pages' rule - lib/plugins.ts
+  // extraBundlesPlugin; verify's cross-page imports checks both): the Studio composes the Visual Editor and the
+  // HTML Preview Editor
+  const extra = bundlesUsedIn(fence);
   const html = `<!doctype html>
-<html lang="en">
+<html lang="en" data-docs-root="../">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -179,11 +187,12 @@ for (const slug of STANDALONE_DOCS) {
 <link rel="stylesheet" href="../css/docs-theme.css" />
 <link rel="stylesheet" href="../css/docs-utilities.css" />
 <link rel="stylesheet" href="../../components/all.css" />
-<style>html, body { margin: 0; } body { background: var(--background); color: var(--foreground); }</style>
+${extra.map((b) => `<link rel="stylesheet" href="../../components/${b}.css" />\n`).join('')}<style>:root { --scaffold-height: 100dvh; } html, body { margin: 0; } body { background: var(--background); color: var(--foreground); }</style>
 </head>
 <body>
 ${fence.trimEnd()}
 <script type="module" src="../../components/all.js"></script>
+${extra.map((b) => `<script type="module" src="../../components/${b}.js"></script>\n`).join('')}
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>globalThis.lucide && lucide.createIcons();</script>
 </body>
@@ -191,4 +200,18 @@ ${fence.trimEnd()}
 `;
   writePage(standaloneDocFile(slug), html);
   console.log(`full-screen document → dist/documentation/${standaloneDocFile(slug)}`);
+}
+
+// 6. the Studio's library: every docs example of the sections that hold components, by page
+//    (scripts/lib/studio-library.ts) - the tree in studio/library.json, each page's markup in
+//    studio/examples/<slug>.json, opened when the page is. Written as they are: the examples keep the page ids they
+//    link (writePage would resolve them from the JSON's folder). verify's `studio library fresh` compares them
+{
+  const files = studioLibraryFiles(ROOT);
+  for (const [rel, text] of files) {
+    const file = join(ROOT, 'dist', 'documentation', rel);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, text);
+  }
+  console.log(`studio library → dist/documentation/studio/ (${files.size - 1} pages of examples)`);
 }

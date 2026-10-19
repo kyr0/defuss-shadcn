@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { EXTRA_BUNDLES } from './lib/bundles.ts';
 import { zipPlans } from './lib/release-zips.ts';
 import type { StatsDoc } from './lib/stats.ts';
 
@@ -32,6 +33,7 @@ const plans = zipPlans(
   Object.entries(stats.sections).map(([name, s]) => ({ name, heading: s.heading, members: s.members, needs: s.needs, files: s.files })),
   pkg.version,
   pkg.homepage,
+  EXTRA_BUNDLES,
 );
 
 rmSync(OUT, { recursive: true, force: true });

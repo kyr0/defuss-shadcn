@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { componentFile } from '../../../src/documentation/lib/component-dirs.ts';
+import { EXTRA_BUNDLES } from '../../../scripts/lib/bundles.ts';
 
 /**
  * Why: the section bundles (scripts/lib/sections.ts) and their vendoring ZIPs
@@ -11,7 +12,7 @@ import { componentFile } from '../../../src/documentation/lib/component-dirs.ts'
  * consumes them the way a user does: build the release ZIPs, unzip each,
  * copy the <link>/<script> tags from its README, and render every member's
  * component-skill markup on them - it must render exactly as the same markup
- * on the whole system (core.css + all.* + wysiwyg.*), every element's box,
+ * on the whole system (core.css + all.* + the extra bundles), every element's box,
  * display, colors, font and radius, with the same components initialized and
  * no script error the whole system does not also have. A section missing from
  * "Needs" leaves an element unstyled and fails here.
@@ -63,9 +64,10 @@ function readmeTags(folder: string): string {
 }
 /** the whole system as the reference for the all ZIP - the minified twins, like the README tags
  *  (minification rounds color-mix() results differently) */
-const FULL = ['components/core.min.css', 'components/all.min.css', 'components/wysiwyg.min.css']
+const EXTRA = Object.keys(EXTRA_BUNDLES);
+const FULL = ['components/core.min.css', 'components/all.min.css', ...EXTRA.map((b) => `components/${b}.min.css`)]
   .map((f) => `<link rel="stylesheet" href="/dist/${f}">`)
-  .concat(['components/all.min.js', 'components/wysiwyg.min.js'].map((f) => `<script type="module" src="/dist/${f}"></script>`))
+  .concat(['components/all.min.js', ...EXTRA.map((b) => `components/${b}.min.js`)].map((f) => `<script type="module" src="/dist/${f}"></script>`))
   .join('\n');
 
 /**
@@ -167,6 +169,24 @@ try {
     const lean = await render('all-lean', readmeTags(folder), body, `/zip/${folder}/`);
     const full = await render('all-full', FULL, body, '/');
     assert.deepEqual(lean.errors, full.errors);
+    const [a, b] = [await snapshot(lean.page), await snapshot(full.page)];
+    assert.deepEqual(a, b);
+    await lean.page.close();
+    await full.page.close();
+  });
+
+  await check(`all: the all ZIP's extra bundles (${EXTRA.join(', ')}), added after all.* as its README says, render their members' markup as dist/ does`, async () => {
+    const folder = folders.find((f) => f.endsWith('-all'))!;
+    const readme = readFileSync(join(OUT, folder, 'README.md'), 'utf8');
+    const extras = Object.entries(EXTRA_BUNDLES).filter(([b]) => b !== 'wysiwyg');
+    for (const [b] of Object.entries(EXTRA_BUNDLES)) assert.ok(readme.includes(`components/${b}.min.css\` + \`components/${b}.min.js\``), `the README names ${b}`);
+    const tags = readmeTags(folder) + extras.map(([b]) => `\n<link rel="stylesheet" href="components/${b}.min.css">\n<script type="module" src="components/${b}.min.js"></script>`).join('');
+    const members = extras.flatMap(([, m]) => m);
+    const body = markupOf(members);
+    const lean = await render('all-extras-lean', tags, body, `/zip/${folder}/`);
+    const full = await render('all-extras-full', FULL, body, '/');
+    assert.deepEqual(lean.errors, full.errors);
+    for (const m of members) assert.ok(lean.apis.includes(`${camel(m)}Api`), `${m} registered its State API from its extra bundle`);
     const [a, b] = [await snapshot(lean.page), await snapshot(full.page)];
     assert.deepEqual(a, b);
     await lean.page.close();

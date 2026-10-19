@@ -80,7 +80,7 @@ export function releaseInfo(root: string): { version: string; rawBase: string } 
 export async function buildRootSkillText(root: string): Promise<string> {
   const src = join(root, 'src');
   const pagesDir = join(src, 'documentation', 'pages');
-  const { NAV } = await import(join(src, 'documentation', 'lib', 'nav.ts'));
+  const { NAV, listed } = await import(join(src, 'documentation', 'lib', 'nav.ts'));
   type Nav = { label: string; href: string; children?: Nav[] };
   const toPage = (n: Nav): RootDocPage => {
     const slug = n.href.replace(/\.html$/, '');
@@ -98,7 +98,8 @@ export async function buildRootSkillText(root: string): Promise<string> {
     rawBase,
     total: components.length,
     withJs: components.filter((c) => c.hasJs).length,
-    sections: (NAV as { heading: string; items: Nav[] }[]).map((s) => ({ heading: s.heading, pages: s.items.map(toPage) })),
+    // the sidebar's pages - an alpha page is listed nowhere (nav.ts listed)
+    sections: (NAV as { heading: string; items: Nav[] }[]).map((s) => ({ heading: s.heading, pages: (listed(s.items) as Nav[]).map(toPage) })),
     components,
   });
 }

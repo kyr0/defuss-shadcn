@@ -7,6 +7,7 @@ import {
   isPage,
   pageHref,
   pageIds,
+  pageLinks,
   pageRel,
   pageUrl,
   pageSection,
@@ -106,6 +107,18 @@ describe('paths and links', () => {
     );
     // the root page: ids gain their folder, assets stay
     expect(resolvePageRefs('<a href="button.html">b</a><link href="css/x.css">', 'index.html')).toBe('<a href="actions/button.html">b</a><link href="css/x.css">');
+  });
+
+  it('pageLinks: an example\'s page ids map to their paths from the docs root; other links and escaped samples stay out', () => {
+    const html =
+      '<a href="paper.html" target="_blank">r</a><a href="button.html#variants">b</a><iframe src="deck-system-in-numbers.html"></iframe>' +
+      '<a href="https://x.y/badge.html">e</a><a href="no-such.html">dead</a><img src="images/x.png"><pre>&lt;a href="badge.html"&gt;</pre>';
+    expect(pageLinks(html)).toEqual({
+      'paper.html': 'papers/paper.html',
+      'button.html#variants': 'actions/button.html#variants',
+      'deck-system-in-numbers.html': 'presentations/deck-system-in-numbers.html',
+    });
+    expect(pageLinks('<p>no links</p>')).toEqual({});
   });
 
   it('assets: one level up from a section page, none from the root', () => {

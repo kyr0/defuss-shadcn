@@ -10,6 +10,25 @@
  * enforces the membership).
  */
 export { debounce, type Debounced } from './debounce.js';
+// the Math components' JSON guard: bounded, acyclic, plain JSON and TeX within a byte limit
+export { mathClone, mathText } from './math.js';
+// the media engine of the Video and Audio components (+ the Media Timeline's clock format)
+export {
+  bindMedia,
+  mediaApply,
+  mediaMarkup,
+  mediaOf,
+  mediaPaint,
+  mediaRead,
+  mediaTextTracks,
+  mediaTime,
+  mediaTracks,
+  type MediaConfig,
+  type MediaCue,
+  type MediaReading,
+  type MediaTextEntry,
+  type MediaTextTrack,
+} from './media.js';
 export { textLocale, DEFAULT_LOCALE } from './locale.js';
 export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';
 export { defussGlobals, safeShowPopover } from './state-api.js';
@@ -112,6 +131,10 @@ export {
   type AnimScrollBinding,
   type AnimState,
 } from './anim.js';
+// the URL a stylesheet <link> was loaded from - stable when an SPA router changes the address.
+// VERIFIED: (code-example-docs.e2e K) after a navigation from the docs index into a section, the cards preview
+// and a theme loads its sheet - link.href named the wrong folder there
+export { sheetUrl } from './sheet-url.js';
 // theme resource loader - fetches a theme's <id>.json sidecar (font <link>s
 // as defuss-JSX-as-JSON) and mounts them; installed at df$.shadcn.shared.loadTheme
 // and ddf$.loadTheme so every theme UI and every agent shares one mechanism.

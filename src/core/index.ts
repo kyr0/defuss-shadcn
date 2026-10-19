@@ -28,6 +28,18 @@ import {
   entrance,
   installDdf,
   loadTheme,
+  sheetUrl,
+  mathClone,
+  mathText,
+  bindMedia,
+  mediaApply,
+  mediaMarkup,
+  mediaOf,
+  mediaPaint,
+  mediaRead,
+  mediaTextTracks,
+  mediaTime,
+  mediaTracks,
   presentationScope,
   revealAttr,
   safeShowPopover,
@@ -42,6 +54,7 @@ import {
   reload,
   forget,
   persistOk,
+  storageAvailable,
   viewPersistence,
   dataSource,
   parseFilter,
@@ -83,6 +96,18 @@ type ShadcnNamespace = {
     bindGlobalKeys: typeof bindGlobalKeys;
     isEditableTarget: typeof isEditableTarget;
     loadTheme: typeof loadTheme;
+    sheetUrl: typeof sheetUrl;
+    mathClone: typeof mathClone;
+    mathText: typeof mathText;
+    bindMedia: typeof bindMedia;
+    mediaApply: typeof mediaApply;
+    mediaMarkup: typeof mediaMarkup;
+    mediaOf: typeof mediaOf;
+    mediaPaint: typeof mediaPaint;
+    mediaRead: typeof mediaRead;
+    mediaTextTracks: typeof mediaTextTracks;
+    mediaTime: typeof mediaTime;
+    mediaTracks: typeof mediaTracks;
     elementModel: typeof elementModel;
     renderModel: typeof renderModel;
     settleTemplates: typeof settleTemplates;
@@ -161,6 +186,21 @@ shadcn.shared = {
   isEditableTarget,
   // theme resource loader (theme/<id>.json sidecars, built from themes.ts)
   loadTheme,
+  // the URL a stylesheet <link> was loaded from (src/shared/sheet-url.ts)
+  sheetUrl,
+  // the Math components' JSON guard (src/shared/math.ts)
+  mathClone,
+  mathText,
+  // the media engine of Video and Audio, the Media Timeline's clock (src/shared/media.ts)
+  bindMedia,
+  mediaApply,
+  mediaMarkup,
+  mediaOf,
+  mediaPaint,
+  mediaRead,
+  mediaTextTracks,
+  mediaTime,
+  mediaTracks,
   // render() machinery (src/shared/render.ts): markup model + state render
   elementModel,
   renderModel,
@@ -190,8 +230,11 @@ shadcn.shared = {
 
 // -- df$.store: the one store primitive for pages and apps - observable
 // values (defuss-store), and values kept in local / session storage
-// (validated, memory fallback) - core is the only legal installer (§2.1)
-Reflect.set(df, 'store', { create: createStore, computed, persisted });
+// (validated, memory fallback) - core is the only legal installer (§2.1).
+// available(area) tells a page whether those values reach the browser's
+// storage - VERIFIED: false in the sandboxed docs card, where they live in
+// memory for the visit (scaffold-document-editor.e2e)
+Reflect.set(df, 'store', { create: createStore, computed, persisted, available: storageAvailable });
 
 // -- df$.dataview: query plain row arrays - filter, multisort, page, walk a
 // tree (defuss-dataview) - through a cached source, the same engine the

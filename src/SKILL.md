@@ -28,9 +28,17 @@
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 
-<!-- 4. only for the HTML Preview Editor (code-example): the extra bundle, after 3a / 3b -->
+<!-- 4. only on a page that uses them: the extra bundles, after 3a / 3b -
+     wysiwyg (code-example, editorjs), mermaid (mermaid), math (math-renderer, math-editor, math-compute),
+     visual-editor (visual-editor) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/visual-editor.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/visual-editor.js"></script>
 ```
 
 **Self-hosting:** copy `dist/` into your project and use the same paths without the CDN prefix. No build step.
@@ -57,7 +65,10 @@ dist/
 ├── theme/utils/default-semantic-tokens.css ← design tokens (the only theme file)
 ├── components/all.css                ← bundle: every component stylesheet (+ .min twin & map)
 ├── components/all.js                 ← bundle: every component's behavior (+ .min twin & maps)
-├── components/wysiwyg.css / .js      ← the extra bundle: the HTML Preview Editor (code-example) - NOT in all.*; load after all.* / core
+├── components/wysiwyg.css / .js      ← extra bundle: code-example, editorjs - NOT in all.*; load after all.* / core where used
+├── components/mermaid.css / .js      ← extra bundle: mermaid - NOT in all.*; load after all.* / core where used
+├── components/math.css / .js         ← extra bundle: math-renderer, math-editor, math-compute - NOT in all.*; load after all.* / core where used
+├── components/visual-editor.css / .js ← extra bundle: visual-editor - NOT in all.*; load after all.* / core where used
 ├── components/{name}/
 │   ├── component-skill.md            ← HOW to build the HTML - read this before using a component
 │   ├── {name}.css                    ← the stylesheet (tokens only; always include)
@@ -209,11 +220,21 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/article-navigation.png
 **Skill:** [components/website/article-navigation/component-skill.md](components/website/article-navigation/component-skill.md)
 
+## Audio
+
+**Type:** MOL
+**Why:** The native <audio> decodes, buffers, seeks and keeps the time; the component adds a State API (playing, time, rate, volume, muted, captions), one row of controls, controls anywhere on the page and a transcript line from the active caption cue.
+**When:** Sound the page controls - a podcast episode, an interview, a field recording, a voice note with a Media Timeline. A styled episode card around the browser's own controls is the Website Audio Player block; a list of tracks uses Playlist Item.
+**Files:** dist/components/audio/audio.css + dist/components/audio/audio.js
+**Supported states:** default, playing
+**Screenshots:** screenshots/{light,dark}/audio.png, screenshots/{light,dark}/audio-playing.png
+**Skill:** [components/multimedia/audio/component-skill.md](components/multimedia/audio/component-skill.md)
+
 ## Audio Player
 
 **Type:** BLK
 **Why:** The browser's <audio controls> plays, seeks and handles media keys; the block styles the frame around it - no player library.
-**When:** Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player.
+**When:** Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player. A player the page drives (a State API, controls elsewhere on the page, a Media Timeline) is the Multimedia Audio component.
 **Files:** dist/components/audio-player/audio-player.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/audio-player.png
@@ -1063,7 +1084,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** The native iframe embeds a whole page in isolation; this adds what it lacks - a size that fits its container (ratio, the container's height, or the framed page's content height) and a checked postMessage bridge in both directions.
-**When:** Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame.
+**When:** Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video component (or the Video Player block); your own markup belongs in the page, not in a frame.
 **Files:** dist/components/iframe/iframe.css + dist/components/iframe/iframe.js
 **Supported states:** default, loaded
 **Screenshots:** screenshots/{light,dark}/iframe.png, screenshots/{light,dark}/iframe-loaded.png
@@ -1109,6 +1130,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/integration-item.png
 **Skill:** [components/website/integration-item/component-skill.md](components/website/integration-item/component-skill.md)
 
+## Invoice
+
+**Type:** BLK
+**Why:** The line items stay a semantic Table whose rows carry their values; the runtime numbers, formats (Intl.NumberFormat in the invoice's locale and currency) and adds them up exactly - each line to the cent, the tax once per rate, half away from zero - so the printed totals always match the rows.
+**When:** The body of an invoice, a quote, a credit note or an order confirmation - inside a Letter for a DIN 5008 sheet and a window envelope. A table of figures without totals is a Table; a price list on a website is a Pricing block.
+**Files:** dist/components/invoice/invoice.css + dist/components/invoice/invoice.js
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/invoice.png
+**Skill:** [components/documents/invoice/component-skill.md](components/documents/invoice/component-skill.md)
+
 ## Job Details
 
 **Type:** BLK
@@ -1148,6 +1179,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/label.png
 **Skill:** [components/forms-inputs/label/component-skill.md](components/forms-inputs/label/component-skill.md)
+
+## Letter
+
+**Type:** TPL
+**Why:** One <article> printed by the browser itself - @page profiles, a first page measured from the top edge (no top margin), the page counter in a margin box - so a business letter lays out by DIN 5008 (form A or B, window envelope, fold marks) or as a US letter without a word processor or a PDF library.
+**When:** Business letters, notices, cover letters and anything that goes into a window envelope - and the frame of an invoice (an Invoice is a letter whose body is .invoice). A research document is a Paper; a message in an app is a Card or a Toast.
+**Files:** dist/components/letter/letter.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/letter.png
+**Skill:** [components/documents/letter/component-skill.md](components/documents/letter/component-skill.md)
 
 ## Load More
 
@@ -1219,6 +1260,36 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/marker.png
 **Skill:** [components/chat/marker/component-skill.md](components/chat/marker/component-skill.md)
 
+## Compute & Explain
+
+**Type:** MOL
+**Why:** The official Cortex Compute Engine in a dedicated Worker the component starts from its own source - simplify, solve, differentiate, compare, evaluate - with the engine's own steps, every condition the input needs, and a deadline that terminates the worker.
+**When:** Showing how a result comes about in papers and teaching pages, or checking an identity - to only show a formula use math-renderer, to edit one use math-editor.
+**Files:** dist/components/math.css + dist/components/math.js (the extra bundle of the Math section - load it after all.css / all.js; per component: dist/components/math-compute/math-compute.css + math-compute.js)
+**Supported states:** default, computing, result, explaining, unsupported, error
+**Screenshots:** screenshots/{light,dark}/math-compute.png, screenshots/{light,dark}/math-compute-computing.png, screenshots/{light,dark}/math-compute-result.png, screenshots/{light,dark}/math-compute-explaining.png, screenshots/{light,dark}/math-compute-unsupported.png, screenshots/{light,dark}/math-compute-error.png
+**Skill:** [components/math/math-compute/component-skill.md](components/math/math-compute/component-skill.md)
+
+## Formula Editing
+
+**Type:** MOL
+**Why:** The official MathLive editor, loaded on the first editor, over a native textarea that stays the form control - submission, reset, required and disabled are the browser's; without JavaScript the textarea edits the TeX.
+**When:** Formula input in forms, papers and teaching tools - to show a formula use math-renderer, to compute with it use math-compute.
+**Files:** dist/components/math.css + dist/components/math.js (the extra bundle of the Math section - load it after all.css / all.js; per component: dist/components/math-editor/math-editor.css + math-editor.js)
+**Supported states:** default, readonly, disabled, invalid, keyboard-open
+**Screenshots:** screenshots/{light,dark}/math-editor.png, screenshots/{light,dark}/math-editor-readonly.png, screenshots/{light,dark}/math-editor-disabled.png, screenshots/{light,dark}/math-editor-invalid.png, screenshots/{light,dark}/math-editor-keyboard-open.png
+**Skill:** [components/math/math-editor/component-skill.md](components/math/math-editor/component-skill.md)
+
+## Formula Rendering
+
+**Type:** ATM
+**Why:** The official KaTeX renderer, loaded on the first formula - visual HTML plus MathML for assistive technology from a TeX source that stays readable without JavaScript; a notation tree makes single terms selectable.
+**When:** Display and inline mathematics in papers, docs and teaching pages - for an editable formula use math-editor, to compute with one use math-compute.
+**Files:** dist/components/math.css + dist/components/math.js (the extra bundle of the Math section - load it after all.css / all.js; per component: dist/components/math-renderer/math-renderer.css + math-renderer.js)
+**Supported states:** default, rendered, highlighted, error
+**Screenshots:** screenshots/{light,dark}/math-renderer.png, screenshots/{light,dark}/math-renderer-rendered.png, screenshots/{light,dark}/math-renderer-highlighted.png, screenshots/{light,dark}/math-renderer-error.png
+**Skill:** [components/math/math-renderer/component-skill.md](components/math/math-renderer/component-skill.md)
+
 ## Media Gallery
 
 **Type:** BLK
@@ -1228,6 +1299,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/media-gallery.png
 **Skill:** [components/website/media-gallery/component-skill.md](components/website/media-gallery/component-skill.md)
+
+## Media Timeline
+
+**Type:** MOL
+**Why:** A video or audio has one time; the timeline lays the metadata of that time out under it (regions, markers, spans) from one JSON and keeps both in step - the media moves the playhead, the playhead moves the media - with captions as the media's own text track.
+**When:** Navigating and explaining a recording - chapters, speakers, detected sounds or scenes, annotations, captions - with an info panel that follows the playhead. A record of events with dates (a changelog, a project history) is the Data Display Timeline.
+**Files:** dist/components/media-timeline/media-timeline.css + dist/components/media-timeline/media-timeline.js
+**Supported states:** default, playing
+**Screenshots:** screenshots/{light,dark}/media-timeline.png, screenshots/{light,dark}/media-timeline-playing.png
+**Skill:** [components/multimedia/media-timeline/component-skill.md](components/multimedia/media-timeline/component-skill.md)
 
 ## Menubar
 
@@ -1244,7 +1325,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Type:** ATM
 **Why:** Mermaid's own <pre class="mermaid"> text becomes a token-themed SVG - the official renderer, lazy-loaded, locked to strict security; readable source without JavaScript.
 **When:** Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts).
-**Files:** dist/components/mermaid/mermaid.css + dist/components/mermaid/mermaid.js
+**Files:** dist/components/mermaid.css + dist/components/mermaid.js (the extra bundle - load it after all.css / all.js; per component: dist/components/mermaid/mermaid.css + mermaid.js)
 **Supported states:** default, rendered, error
 **Screenshots:** screenshots/{light,dark}/mermaid.png, screenshots/{light,dark}/mermaid-rendered.png, screenshots/{light,dark}/mermaid-error.png
 **Skill:** [components/diagrams/mermaid/component-skill.md](components/diagrams/mermaid/component-skill.md)
@@ -2369,11 +2450,21 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/use-case.png
 **Skill:** [components/website/use-case/component-skill.md](components/website/use-case/component-skill.md)
 
+## Video
+
+**Type:** MOL
+**Why:** The native <video> decodes, buffers, seeks and keeps the time; the component adds a State API (playing, time, rate, volume, muted, captions), controls anywhere on the page and a captions overlay that also works in full screen.
+**When:** A video the page controls - a lesson, a product film, a clip with a Media Timeline or a transcript beside it. A styled frame around the browser's own controls with nothing to drive it is the Website Video Player block; an animation is a Motion or an Animation Canvas.
+**Files:** dist/components/video/video.css + dist/components/video/video.js
+**Supported states:** default, playing
+**Screenshots:** screenshots/{light,dark}/video.png, screenshots/{light,dark}/video-playing.png
+**Skill:** [components/multimedia/video/component-skill.md](components/multimedia/video/component-skill.md)
+
 ## Video Player
 
 **Type:** BLK
 **Why:** The browser's own <video controls> plays, seeks, goes fullscreen and shows captions from a <track> - accessible and keyboard-ready, no player library.
-**When:** Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media.
+**When:** Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media. A player the page drives (a State API, controls elsewhere on the page, captions from data, a Media Timeline) is the Multimedia Video component.
 **Files:** dist/components/video-player/video-player.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/video-player.png
@@ -2398,6 +2489,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/virtual-list.png, screenshots/{light,dark}/virtual-list-loading.png, screenshots/{light,dark}/virtual-list-empty.png
 **Skill:** [components/big-data/virtual-list/component-skill.md](components/big-data/virtual-list/component-skill.md)
+
+## Visual Editor
+
+**Type:** ATM
+**Why:** GrapesJS, the drag-and-drop HTML editor, loaded on demand from a pinned build, edits the markup the component skills document - blocks drop in, elements select, move and change - and the same markup comes out, inline styles where they were written.
+**When:** Pages people compose visually from the system's components - a landing page, a form, an app screen - and keep as markup; the whole workflow (pages, block library, inspector, preview, export) is the Studio. For an editable live example of HTML use the HTML Preview Editor, for documents edited as blocks Editor.js.
+**Files:** dist/components/visual-editor.css + dist/components/visual-editor.js (the extra bundle - load it after all.css / all.js; per component: dist/components/visual-editor/visual-editor.css + visual-editor.js)
+**Supported states:** default, readonly
+**Screenshots:** screenshots/{light,dark}/visual-editor.png, screenshots/{light,dark}/visual-editor-readonly.png
+**Skill:** [components/wysiwyg-editors/visual-editor/component-skill.md](components/wysiwyg-editors/visual-editor/component-skill.md)
 
 ## Window
 

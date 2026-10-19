@@ -86,6 +86,31 @@ export {
 // the theme resource loader too (the theme-switcher applies a theme's font
 // <link>s through it right after mounting the theme stylesheet)
 export { loadTheme, clearThemeLinks, type ThemeLinkNode } from './theme-links.js';
+// the URL a stylesheet <link> was loaded from (the theme-switcher's theme folder, the code-example's styles).
+// VERIFIED: (tmp/spa-sheet-probe.ts) after an SPA navigation link.href named a 404, link.sheet.href the loaded URL
+export { sheetUrl } from './sheet-url.js';
+// the Math components' state is plain JSON: one guard validates what setState() and authored scripts hand them.
+// VERIFIED: (tests/math.test.ts) cycles, class instances, prototype keys, non-finite numbers and oversized TeX throw
+export { mathClone, mathText } from './math.js';
+// the Video and Audio components are one media engine (HTMLMediaElement state, declarative controls, captions);
+// the Media Timeline formats its clock with the same mediaTime and keys its text rows through mediaTextTracks.
+// VERIFIED: (video.e2e, audio.e2e, media-timeline.e2e) both players and the timeline run on it
+export {
+  bindMedia,
+  mediaApply,
+  mediaMarkup,
+  mediaOf,
+  mediaPaint,
+  mediaRead,
+  mediaTextTracks,
+  mediaTime,
+  mediaTracks,
+  type MediaConfig,
+  type MediaCue,
+  type MediaReading,
+  type MediaTextEntry,
+  type MediaTextTrack,
+} from './media.js';
 
 /**
  * Why: ensures our OWN sub-namespace on the installed runtime - never creates,

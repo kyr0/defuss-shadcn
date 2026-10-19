@@ -9,7 +9,7 @@ import { componentFingerprints } from './lib/inputs-files.ts';
 import { statFigureProblems } from './lib/stat-figures.ts';
 import { statSources } from './stat-figures.ts';
 import { BUNDLE_ARTIFACTS, isBundleDirArtifact, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
-import { EXTRA_BUNDLES, extraBundleOf, inAllBundle } from './lib/bundles.ts';
+import { bundlesUsedIn, EXTRA_BUNDLES, extraBundleOf, inAllBundle } from './lib/bundles.ts';
 import { sectionArtifacts, sectionPlans, sectionSlug } from './lib/sections.ts';
 import { sectionProblems, type ComponentPlacement } from './lib/component-sections.ts';
 import { NAV } from '../src/documentation/lib/nav.ts';
@@ -17,6 +17,9 @@ import { zipPlans } from './lib/release-zips.ts';
 import { tscErrorCounts, typeRatchetProblems } from './lib/type-check.ts';
 import { TYPE_BASELINE } from './lib/type-baseline.ts';
 import { sections, type Section } from './lib/sections-files.ts';
+import { studioLibraryFiles } from './lib/studio-library-files.ts';
+import { examplePartsNow } from './lib/example-parts-files.ts';
+import { isPartMeta } from '../src/documentation/lib/mdx-example.ts';
 import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
@@ -205,8 +208,29 @@ check(
 // "view file" anchor points at (entity-decoded textContent vs file bytes).
 const docHtml = docPages.map((p) => [p, readFileSync(join(DOCS_DIST, p), 'utf8')] as const);
 const snippetProblems: string[] = [];
+// ONE linkedom parse per page feeds four gates: snippet sync (here), field description wiring and aria-describedby
+// resolution (20b), doc link integrity (21) - each gate keeps its place in the output. VERIFIED: (tmp/verify-profile.ts)
+// four passes, link integrity's two of them re-reading the pages from disk, took 8.5 s of a 12.9 s run.
+const descProblems: string[] = [];
+const resolveProblems: string[] = [];
+/** each page's element ids (same-page and cross-page anchors) and its local link targets (href / src) */
+const pageIds = new Map<string, Set<string>>();
+const pageUrls = new Map<string, string[]>();
 for (const [page, html] of docHtml) {
   const { document } = parseHTML(html);
+  pageIds.set(
+    page,
+    new Set(
+      [...document.querySelectorAll('[id]')]
+        .map((el) => el.getAttribute('id'))
+        .filter((v): v is string => !!v),
+    ),
+  );
+  pageUrls.set(
+    page,
+    [...document.querySelectorAll('[href],[src]')].map((el) => (el.getAttribute(el.hasAttribute('href') ? 'href' : 'src') ?? '').trim()),
+  );
+  fieldWiring(page, document);
   for (const section of document.querySelectorAll('section#source-css, section#source-js')) {
     const anchor = section.querySelector('a[href*="/components/"]');
     const href = anchor?.getAttribute('href') ?? '';
@@ -304,6 +328,17 @@ for (const [page, html] of docHtml) {
     if (js < 0) importProblems.push(`${page} has live examples but no ${up}components/wysiwyg.js`);
     else if (js < html.indexOf(`src="${up}components/all.js"`)) importProblems.push(`${page} loads wysiwyg.js before all.js`);
   }
+  // the other extra bundles (mermaid, math): loaded after all.* exactly where the page's OWN markup uses their
+  // components (lib/plugins.ts extraBundlesPlugin) - an example loads its bundles in its sandbox
+  const usedBundles = bundlesUsedIn(html);
+  for (const b of Object.keys(EXTRA_BUNDLES).filter((n) => n !== 'wysiwyg')) {
+    const css = html.indexOf(`<link rel="stylesheet" href="${up}components/${b}.css"`);
+    const js = html.indexOf(`<script type="module" src="${up}components/${b}.js"`);
+    if (usedBundles.includes(b)) {
+      if (css < 0 || js < 0) importProblems.push(`${page} uses ${EXTRA_BUNDLES[b].join(' / ')} in its markup but does not load ${up}components/${b}.css + ${b}.js (the extra bundle)`);
+      else if (css < html.indexOf(`href="${up}components/all.css"`) || js < html.indexOf(`src="${up}components/all.js"`)) importProblems.push(`${page} loads ${b}.* before all.*`);
+    } else if (css >= 0 || js >= 0) importProblems.push(`${page} loads ${b}.* but its markup uses none of ${EXTRA_BUNDLES[b].join(', ')} - examples load it in their sandbox`);
+  }
   for (const m of html.matchAll(/<link\b[^>]*\bhref="(?:\.\.\/)+components\/[^/"]+\/[^/"]+\.css"/g)) {
     importProblems.push(`${page} loads a per-component stylesheet (${m[0]}) - the all.css bundle replaced the include lists`);
   }
@@ -314,27 +349,28 @@ for (const [page, html] of docHtml) {
 // 7b. every page link in the rendered output resolves to a rendered file: the links
 // plugin (lib/plugins.ts) turns a page id (`badge.html`) into the path from the
 // linking page's folder; an id it could not place, or a hand-written path that
-// misses, surfaces here. Real tags only (an escaped sample is &lt;a).
+// misses, surfaces here. Real tags only (an escaped sample is &lt;a). A download
+// (`files/x.pdf`, public/files/) is resolved the same way and checked too.
 {
   const problems: string[] = [];
   for (const [page, html] of docHtml) {
     const dir = page.includes('/') ? page.slice(0, page.lastIndexOf('/')) : '';
-    for (const m of html.matchAll(/<(?:a|iframe|link|form)\b[^>]*?\b(?:href|src|action)="([^"#?:]+\.html)(?:[#?][^"]*)?"/g)) {
+    for (const m of html.matchAll(/<(?:a|iframe|link|form)\b[^>]*?\b(?:href|src|action)="([^"#?:]+\.(?:html|pdf))(?:[#?][^"]*)?"/g)) {
       const target = join(DOCS_DIST, dir, m[1]);
-      if (!existsSync(target)) problems.push(`${page} links ${m[1]} - no such page (${relative(DOCS_DIST, target)})`);
+      if (!existsSync(target)) problems.push(`${page} links ${m[1]} - no such ${m[1].endsWith('.pdf') ? 'file' : 'page'} (${relative(DOCS_DIST, target)})`);
     }
   }
   check(
     'page links resolve',
     problems.slice(0, 20),
-    'link pages by id (`href="badge.html"`, the build resolves the folder); a target that does not exist is a dead link - fix the page or lib/nav.ts',
+    'link pages by id (`href="badge.html"`, the build resolves the folder) and downloads root-relative (`href="files/x.pdf"`, from src/documentation/public/files/); a target that does not exist is a dead link - fix the page or lib/nav.ts',
   );
 }
 
 check(
   'cross-page imports',
   importProblems,
-  'load the bundle on every doc page: <link rel="stylesheet" href="../components/all.css"> and <script type="module" src="../components/all.js"></script>',
+  'load the bundle on every doc page: <link rel="stylesheet" href="../components/all.css"> and <script type="module" src="../components/all.js"></script>; an extra bundle (src/documentation/lib/extra-bundles.ts) after it where the page markup uses its components - DocPage + lib/plugins.ts extraBundlesPlugin write them, rebuild the docs',
 );
 
 // 8. every doc page is reachable from the sidebar (lib/nav.ts NAV) - except
@@ -515,8 +551,9 @@ check(
 const figureProblems: string[] = [];
 if (statsProblems.length === 0) {
   const sources = statSources(ROOT);
-  for (const page of readdirSync(join(DOCS, 'pages')).filter((n) => n.endsWith('.mdx'))) {
-    figureProblems.push(...statFigureProblems(readFileSync(join(DOCS, 'pages', page), 'utf8'), sources, `pages/${page}`));
+  // every page, in its section folder (a flat readdir saw pages/index.mdx alone after the section move)
+  for (const p of pageDirs(DOCS_PAGES)) {
+    figureProblems.push(...statFigureProblems(readFileSync(p.file, 'utf8'), sources, `pages/${relative(DOCS_PAGES, p.file)}`));
   }
 }
 check(
@@ -612,6 +649,26 @@ const VENDOR_IMPORTS: Record<string, { site: RegExp; pinned: string; reason: str
     pinned: 'https://esm.sh/shiki@3.0.0',
     reason: 'loads the Shiki highlighter on the first paint of a source (pinned esm.sh ESM - the module the docs code blocks use; configure({ shiki }) self-hosts it)',
   },
+  'math-renderer': {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?katexUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.mjs',
+    reason: 'loads the official KaTeX build (and links its stylesheet) on the first formula (pinned jsDelivr ESM; <meta name="math-renderer-module"> self-hosts it)',
+  },
+  'math-editor': {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?mathliveUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/mathlive@0.111.0/mathlive.min.mjs',
+    reason: 'loads the official MathLive build on the first editor (pinned jsDelivr ESM; <meta name="math-editor-module"> self-hosts it)',
+  },
+  'math-compute': {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?engineUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.149.0/dist/esm-min/compute-engine.js',
+    reason: 'the compute worker (started from the component\'s own source) imports the official Compute Engine on the first computation (pinned jsDelivr ESM; <meta name="math-compute-engine"> self-hosts it)',
+  },
+  'visual-editor': {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?url\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/grapesjs@0.23.6/dist/grapes.min.js',
+    reason: 'loads the official GrapesJS build (its UMD file, imported as a module - it installs globalThis.grapesjs) on the first editor (pinned jsDelivr; load(url, css) self-hosts it)',
+  },
   editorjs: {
     site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
     pinned: 'https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.31.7/dist/editorjs.mjs',
@@ -628,7 +685,7 @@ function withoutVendorImports(src: string, names: string[], where: string): stri
     if (!v.site.test(out)) vendorProblems.push(`${where}: VENDOR_IMPORTS["${name}"] is stale - its call site is gone; remove the entry`);
     v.site.lastIndex = 0;
     if (!out.includes(v.pinned)) vendorProblems.push(`${where}: ${name}'s vendor URL is not the pinned ${v.pinned}`);
-    if (/(mermaid|shiki|editorjs|marked)@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
+    if (/(mermaid|shiki|editorjs|marked|katex|mathlive|compute-engine|grapesjs)@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
     out = out.replace(v.site, '/* vendor import */');
   }
   return out;
@@ -742,12 +799,13 @@ check(
   }
   // the app bundles (bundle.ts step 3): dist/apps/<app>/<app>.css + .js, one folder per
   // scaffold like every other tree follows the sidebar; nothing flat in dist/apps/
-  for (const plan of appPlans()) {
+  const plans = appPlans(); // reads every app page's fence - once, not once per app folder
+  for (const plan of plans) {
     for (const ext of ['css', 'js']) if (!existsSync(join(DIST, 'apps', plan.name, `${plan.name}.${ext}`))) artifactProblems.push(`dist/apps/${plan.name}/${plan.name}.${ext} missing - run \`bun run build\``);
   }
   for (const f of existsSync(join(DIST, 'apps')) ? readdirSync(join(DIST, 'apps'), { withFileTypes: true }) : []) {
     if (f.isFile()) artifactProblems.push(`dist/apps/${f.name} is flat - an app bundle lives in dist/apps/<app>/ (rebuild)`);
-    else if (!appPlans().some((p) => p.name === f.name)) artifactProblems.push(`dist/apps/${f.name}/ belongs to no scaffold page - rebuild`);
+    else if (!plans.some((p) => p.name === f.name)) artifactProblems.push(`dist/apps/${f.name}/ belongs to no scaffold page - rebuild`);
   }
   check(
     'artifact contract (core/all)',
@@ -774,6 +832,55 @@ check(
     for (const l of linked) if (![...expected].includes(l)) zipProblems.push(`bundles.html links ${l}, which release-zips.ts does not build`);
   }
   check('bundles page ↔ release ZIPs', zipProblems, 'rebuild the docs; keep zipUrl() in lib/components/section-bundles.tsx equal to the naming in scripts/lib/release-zips.ts');
+}
+// 10f3. the Studio's library (dist/documentation/studio/: library.json + examples/<slug>.json) is the docs examples
+// and the components as they read now - scripts/build-docs.ts writes it from scripts/lib/studio-library-files.ts; a
+// page or a schema edited after the docs build shows here, and so does a stray file
+{
+  const libraryProblems: string[] = [];
+  const fresh = studioLibraryFiles(ROOT);
+  for (const [rel, text] of fresh) {
+    const file = join(DOCS_DIST, rel);
+    if (!existsSync(file)) libraryProblems.push(`dist/documentation/${rel} is missing`);
+    else if (readFileSync(file, 'utf8') !== text) libraryProblems.push(`dist/documentation/${rel} differs from its source`);
+  }
+  const dir = join(DOCS_DIST, 'studio', 'examples');
+  if (existsSync(dir))
+    for (const f of readdirSync(dir)) if (!fresh.has(`studio/examples/${f}`)) libraryProblems.push(`dist/documentation/studio/examples/${f} is no page's`);
+  check('studio library fresh', libraryProblems, 'run `bun run build:docs` - scripts/build-docs.ts writes the Studio library from the docs examples and the components (scripts/lib/studio-library-files.ts)');
+}
+// 10f4. individual examples: every component a composite example is made of is also an example of its own - one
+// instance of it, on its component's page, ahead of that page's composite examples, once (scripts/lib/example-parts.ts:
+// the one reader of the contract; the Studio reads the same). Every component names its root (derived from its skill's
+// Structure, else `roots:` in its front matter). A guide (no component, no template) owes each gallery item - a shape,
+// a captioned demo - an example of its own. VERIFIED: (2026-10-16) the docs owe nothing after the migration (713 part
+// fences, 196 moves), so any debt fails; the gate costs 5-7.5 s (one linkedom parse per fence)
+{
+  const { rootless, debt, composites, active } = examplePartsNow(ROOT);
+  check(
+    'part cards show one component',
+    composites,
+    'a ```html example part fence renders as a compact card with no preview: keep one instance of the page\'s component in it, or drop `part` so it renders as a full example',
+  );
+  check(
+    'part cards run nothing',
+    active,
+    'a part card mounts its markup into the docs page itself, unsandboxed: drop the <script> and the on* handler from the part fence (a demo that needs them is a full example - drop `part`)',
+  );
+  check(
+    'component roots',
+    rootless.map((n) => `${n}: its skill's ## Structure shows no class it owns`),
+    'declare the root in the skill\'s front matter: roots: "<selector>" (a class, or an attribute such as "[data-lucide]")',
+  );
+  check(
+    'individual examples',
+    [...debt].flatMap(([slug, d]) => [
+      ...d.missing.map((k) => `${slug}: no individual example of ${k}`),
+      ...d.late.map((l) => `${slug}: "${l}" is an individual example after a composite one`),
+      ...d.duplicates.map((l) => `${slug}: "${l}" repeats an individual example`),
+    ]),
+    '`bun run individual-examples <page>` shows what it would write (--write writes it, then `bun scripts/format-pages.ts --write`): a part fence (```html example part) of one instance of the kind before the page\'s first example, an individual example moved ahead of the composites, a duplicate to remove',
+  );
 }
 check(
   'vendor imports (pinned, allow-listed)',
@@ -873,11 +980,14 @@ check(
 // CI): the gate applies only where a manifest exists, i.e. `bun run
 // screenshots` has run on this machine.
 const shotsManifestPath = join(ROOT, 'screenshots', 'manifest.json');
+/** every component's input fingerprint (a walk of dist/) - read by `screenshots` and `render drift`, computed once */
+let fingerprintsNow: Record<string, string> | undefined;
+const currentFingerprints = (): Record<string, string> => (fingerprintsNow ??= componentFingerprints(DIST));
 const hasShots = existsSync(shotsManifestPath);
 const shotProblems: string[] = [];
 if (existsSync(DIST) && hasShots) {
   const manifest: { fingerprints?: Record<string, string> } = JSON.parse(readFileSync(shotsManifestPath, 'utf8'));
-  const current = componentFingerprints(DIST);
+  const current = currentFingerprints();
   for (const c of componentDirs) {
     for (const mode of ['light', 'dark']) {
       if (!existsSync(join(ROOT, 'screenshots', mode, `${c}.png`))) {
@@ -1230,7 +1340,6 @@ check(
 // readers - the Input "With description" example is the site's established
 // pattern; this gate keeps the other pages from drifting off it. linkedom
 // only sees live elements: escaped snippet markup is text, not DOM.
-const descProblems: string[] = [];
 // issue #18 second half: the wiring must also RESOLVE and sit on the right
 // element. One linkedom pass per page feeds both pure checkers from
 // scripts/lib/fields.ts (unit-tested in tests/fields.test.ts):
@@ -1239,9 +1348,8 @@ const descProblems: string[] = [];
 //  - every referenced .field-description/.field-error must be referenced by
 //    the field itself (input/select/textarea/fieldset), not a wrapper —
 //    aria-describedby on a <div> names nothing for the focused control.
-const resolveProblems: string[] = [];
-for (const [page, html] of docHtml) {
-  const { document } = parseHTML(html);
+// the problems are collected by the one page pass (gate 6), which calls this per parsed page
+function fieldWiring(page: string, document: ReturnType<typeof parseHTML>['document']): void {
   const allRefs = [...document.querySelectorAll('[aria-describedby]')].map((el) => ({
     owner: `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}`,
     tag: el.tagName.toLowerCase(),
@@ -1292,20 +1400,9 @@ check(
 // (parsed once up front), so a renamed heading anchor is a build failure too.
 const linkProblems: string[] = [];
 if (existsSync(DIST)) {
-  const pageIds = new Map<string, Set<string>>(
-    docHtml.map(([page, html]) => [
-      page,
-      new Set(
-        [...parseHTML(html).document.querySelectorAll('[id]')]
-          .map((el) => el.getAttribute('id'))
-          .filter((v): v is string => !!v),
-      ),
-    ]),
-  );
+  // the ids and the links come from the one page pass (gate 6)
   for (const f of docPages) {
-    const { document } = parseHTML(readFileSync(join(DIST, 'documentation', f), 'utf8'));
-    for (const el of document.querySelectorAll('[href],[src]')) {
-      const url = (el.getAttribute(el.hasAttribute('href') ? 'href' : 'src') ?? '').trim();
+    for (const url of pageUrls.get(f) ?? []) {
       if (/^(https?:|mailto:|data:|javascript:)/i.test(url)) continue;
       // demo placeholders: no target at all, or the conventional "..." stub
       if (url === '' || url === '#' || url === '...') continue;
@@ -1405,7 +1502,8 @@ check(
 // sources/scripts/tests (repo rule - these paths break on other systems).
 const pathProblems: string[] = [];
 for (const f of [...walk(SRC, ['']), ...walk(join(ROOT, 'scripts'), ['']), ...walk(join(ROOT, 'tests'), [''])]) {
-  if (/\.(woff2?|png|ico|jpg|jpeg|gif|webp)$/.test(f)) continue;
+  // binary files: their bytes can spell a drive path by chance (the flush-left paper PDF did)
+  if (/\.(woff2?|png|ico|jpg|jpeg|gif|webp|pdf|mp3|mp4|webm)$/.test(f)) continue;
   const hit = readFileSync(f, 'utf8').match(/\/Users\/[a-z]+|[A-Z]:\\|file:\/\/\//);
   if (hit) pathProblems.push(`${relative(ROOT, f)}: ${hit[0]}`);
 }
@@ -1425,7 +1523,7 @@ if (existsSync(driftManifestPath) && existsSync(DIST)) {
     fingerprints?: Record<string, string>;
     renders?: Record<string, string>;
   };
-  const nowFp = componentFingerprints(DIST);
+  const nowFp = currentFingerprints();
   for (const [c, fp] of Object.entries(dm.fingerprints ?? {})) {
     if (nowFp[c] !== fp) continue; // inputs changed → the diff is expected
     for (const [key, hash] of Object.entries(dm.renders ?? {})) {
@@ -2182,9 +2280,11 @@ check(
     const docsCfg = readFileSync(join(DOCS, 'config.ts'), 'utf8');
     if (!docsCfg.includes('remarkDocExamples'))
       problems.push('documentation/config.ts does not wire remarkDocExamples - example fences would render as plain code blocks (§22)');
-    for (const file of readdirSync(DOCS_PAGES).filter((f) => f.endsWith('.mdx'))) {
-      const mdx = readFileSync(join(DOCS_PAGES, file), 'utf8');
-      const page = file.replace(/\.mdx$/, '');
+    // every page, in its section folder (a flat readdir saw pages/index.mdx alone after the section move)
+    for (const p of pageDirs(DOCS_PAGES)) {
+      const file = relative(DOCS_PAGES, p.file);
+      const mdx = readFileSync(p.file, 'utf8');
+      const page = p.slug;
       for (const ex of exampleFences(mdx)) {
         if (ex.body.trim() === '') problems.push(`pages/${file}:${ex.line} empty example fence (plan §21)`);
         const orphan = exampleFragment(ex.body);
@@ -2193,8 +2293,9 @@ check(
         for (const ph of examplePlaceholders(ex.body))
           problems.push(`pages/${file}:${ex.line} placeholder element in an executable example - it renders nothing: ${ph}`);
         // schema="none": guide-page utility demos (layout/sizing/sizing-scale…)
-        // demonstrate the optional modules, not a component - no contract to bind
-        if (ex.schema === 'none') continue;
+        // demonstrate the optional modules, not a component - no contract to bind;
+        // a part fence renders as a part card - no State tab, no schema to bind either
+        if (ex.schema === 'none' || isPartMeta(ex.meta)) continue;
         const comp = ex.component ?? page;
         if (!existsSync(componentFile(COMPS, comp)))
           problems.push(`pages/${file}:${ex.line} example schema component "${comp}" is not a shipped component (pages/${page}.mdx → add component="…"/schema="none" or ship the component)`);

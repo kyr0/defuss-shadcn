@@ -1,6 +1,10 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { startServer } from '../server.ts';
+import { ALL_PAGES } from '../../../src/documentation/lib/nav.ts';
+import { pageRel } from '../../../src/documentation/lib/page-dirs.ts';
 
 /**
  * Why: the documentation site IS the product's public face - if index.html
@@ -18,6 +22,7 @@ const PAGE = '/dist/documentation/index.html';
  *  a sandboxed CI without egress may fail those - only first-party errors count. */
 const VENDOR = /esm\.sh|unpkg\.com|cdnjs|api\.github\.com/;
 
+const ROOT = join(import.meta.dirname, '..', '..', '..');
 const server = startServer();
 const browser = await chromium.launch();
 
@@ -456,6 +461,32 @@ try {
         state.h2s.some((t) => t.toUpperCase().includes(want)),
         `h2 for "${want}" missing - page drifted from ARCH.md? (found: ${state.h2s.join(' | ')})`,
       );
+    }
+  });
+
+  // the maintainer (2026-10-18): the Studio is too fragile to offer - not in the sidebar. An alpha page is listed
+  // nowhere (nav.ts listed): checked on the page before it in the NAV order, whose sidebar and pager would name it
+  await check('an alpha page (the Studio) is listed nowhere - sidebar, pager, search index, root SKILL.md - and still renders', async () => {
+    const index = readFileSync(join(ROOT, 'dist', 'documentation', 'js', 'search-index.js'), 'utf8');
+    const skill = readFileSync(join(ROOT, 'skills', 'defuss-shadcn', 'SKILL.md'), 'utf8');
+    for (const alpha of ALL_PAGES.filter((p) => p.alpha)) {
+      const slug = alpha.href.replace(/\.html$/, '');
+      const rel = pageRel(slug);
+      const before = ALL_PAGES[ALL_PAGES.indexOf(alpha) - 1];
+      await page.goto(`${server.url}/dist/documentation/${pageRel(before.href.replace(/\.html$/, ''))}`);
+      const r = await page.evaluate(
+        (rel) => ({
+          sidebar: [...document.querySelectorAll('.site-sidebar a')].filter((a) => a.getAttribute('data-page') === rel).length,
+          pager: [...document.querySelectorAll('.page-nav a')].map((a) => a.getAttribute('href') ?? ''),
+        }),
+        rel,
+      );
+      assert.equal(r.sidebar, 0, `${before.label}'s sidebar links ${alpha.label}`);
+      assert.ok(!r.pager.some((h) => h.endsWith(alpha.href)), `${before.label}'s pager names ${alpha.label}: ${r.pager.join(', ')}`);
+      assert.ok(!index.includes(`"h":"${rel}`), `the search index lists ${rel}`);
+      assert.ok(!skill.includes(`pages/${rel.replace(/\.html$/, '.mdx')})`), `the root SKILL.md lists ${slug}`);
+      await page.goto(`${server.url}/dist/documentation/${rel}`);
+      assert.equal(await page.evaluate(() => document.querySelector('main h1')?.textContent?.trim()), alpha.label, `${rel} renders`);
     }
   });
 

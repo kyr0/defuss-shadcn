@@ -1,3 +1,4 @@
+import { fenceFlags } from '../../src/documentation/lib/mdx-example.ts';
 import { STANDALONE_APPS, STANDALONE_DECKS, STANDALONE_DOCS, appName, pageRel, pageSourceRel, standaloneAppId, standaloneDeckId, standaloneDocId, standaloneSource } from '../../src/documentation/lib/page-dirs.ts';
 /**
  * Why: src/documentation/ is a defuss-ssg project - the doc pages are authored
@@ -70,13 +71,15 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   return null;
 }
 
-/** The first ```html example fence of a page - the markup a standalone deck /
- *  full-screen scaffold page is generated from (null when the page has none).
- *  A fence may open with more than three backticks when its body holds a
- *  ``` line (CommonMark; scripts/lib/format-pages.ts grows it); its closing
- *  fence is the same length. VERIFIED: (tests/format-pages.test.ts) a grown
- *  fence reads through here as its body. */
+/** The ```html example fence a standalone deck / full-screen scaffold or document page is generated from: the one
+ *  flagged `standalone` (````html example standalone label=...`), else the first that is no part fence - a page
+ *  leads with its individual examples (AGENTS.md "Individual examples"), so its first fence may be a part, or a
+ *  moved individual example (the Invoice page's "Exact amounts" came before its 30-line invoice). Null when the page
+ *  has none. A fence may open with more than three backticks when its body holds a ``` line (CommonMark;
+ *  scripts/lib/format-pages.ts grows it); its closing fence is the same length. VERIFIED: (tests/format-pages.test.ts)
+ *  a grown fence reads through here as its body. */
 export function exampleFence(mdx: string): string | null {
-  return mdx.match(/^(`{3,})html example[^\n]*\n([\s\S]*?)^\1$/m)?.[2] ?? null;
+  const fences = [...mdx.matchAll(/^(`{3,})(html example[^\n]*)\n([\s\S]*?)^\1$/gm)].map((m) => ({ flags: fenceFlags(m[2]), body: m[3] }));
+  return (fences.find((f) => f.flags.includes('standalone')) ?? fences.find((f) => !f.flags.includes('part')))?.body ?? null;
 }
 

@@ -1,7 +1,8 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import type { SsgConfig, SsgPlugin } from 'defuss-ssg';
-import { flattenNav, NAV } from './nav';
+import { bundlesUsedIn } from './extra-bundles';
+import { flattenNav, listed, NAV } from './nav';
 import { pageRel, resolvePageRefs } from './page-dirs';
 import { readSkillMeta } from './repo';
 import { capturePageWindowPlugin, releasePagesPlugin } from './release-pages';
@@ -31,6 +32,37 @@ export const doctypePlugin: SsgPlugin = {
         return `<${tag}${attrs}>${raw}</${tag}>`;
       });
     return cleaned.startsWith('<!DOCTYPE') ? cleaned : `<!DOCTYPE html>\n${cleaned}`;
+  },
+};
+
+/**
+ * page-html: a page whose OWN markup uses an extra bundle's components (Mermaid's in-page diagrams) loads that
+ * bundle - its sheet after the last bundle sheet, its module after the last bundle script, each tag marked
+ * `data-extra-bundle` so the SPA router (runtime/layout.ts) adopts it when it swaps this page in. Examples load
+ * their bundles inside their sandbox (runtime/code-example.ts), so a page with math only in examples loads none.
+ * The href follows all.css's, before or after page-refs resolved it. VERIFIED: (verify `cross-page imports`)
+ * every rendered page loads exactly the extra bundles its markup uses.
+ */
+export const extraBundlesPlugin: SsgPlugin = {
+  name: 'extra-bundles',
+  phase: 'page-html',
+  mode: 'build',
+  fn: (html) => {
+    let out = String(html);
+    const all = /<link rel="stylesheet" href="([^"]*)components\/all\.css"/.exec(out);
+    if (!all) return out;
+    for (const name of bundlesUsedIn(out)) {
+      // a real tag - a code sample's text (`&lt;link ...`) may name the same file
+      if (new RegExp(`<link rel="stylesheet" href="[^"]*components/${name}\\.css"`).test(out)) continue;
+      const sheets = [...out.matchAll(/<link rel="stylesheet" href="[^"]*components\/[a-z0-9-]+\.css"[^>]*>/g)].at(-1)!;
+      const at = sheets.index! + sheets[0].length;
+      out = `${out.slice(0, at)}<link rel="stylesheet" href="${all[1]}components/${name}.css" data-extra-bundle="${name}" />${out.slice(at)}`;
+      const scripts = [...out.matchAll(/<script type="module" src="[^"]*components\/[a-z0-9-]+\.js"><\/script>/g)].at(-1);
+      if (!scripts) throw new Error(`extra-bundles: the page uses the ${name} bundle but loads no bundle script to place it after`);
+      const end = scripts.index! + scripts[0].length;
+      out = `${out.slice(0, end)}<script type="module" src="${all[1]}components/${name}.js" data-extra-bundle="${name}"></script>${out.slice(end)}`;
+    }
+    return out;
   },
 };
 
@@ -172,7 +204,7 @@ export const searchIndexPlugin: SsgPlugin = {
     const entries: Entry[] = [];
     for (const section of NAV) {
       // submenu children (e.g. Width & Height under Sizing) are first-class pages
-      for (const item of flattenNav(section.items)) {
+      for (const item of flattenNav(listed(section.items))) {
         const meta = readSkillMeta(item.href.replace(/\.html$/, ''));
         // h: the page from the docs root (`data-display/badge.html`) - the palette
         // joins it with <html data-docs-root> (layout.ts), whatever page is open
@@ -226,6 +258,7 @@ export const cleanHydrationRuntimePlugin: SsgPlugin = {
 
 export const docsPlugins: SsgPlugin[] = [
   pageRefsPlugin,
+  extraBundlesPlugin,
   doctypePlugin,
   tocPlugin,
   searchIndexPlugin,

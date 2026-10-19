@@ -13,12 +13,12 @@
 
 Themeable, stateful components, built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. A foundation for agentic-first frontend engineering.
 
-**234 components - 64 with JavaScript, 170 CSS-only - 418.0 KiB minified + compressed - 279.8 KiB as the all.css/all.js bundle**
-170 of 234 components need no JavaScript - native HTML and modern CSS cover them entirely.
+**243 components - 72 with JavaScript, 171 CSS-only - 464.5 KiB minified + compressed - 298.4 KiB as the all.css/all.js bundle**
+171 of 243 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
-**[Documentation & Live Demos →](https://shadcn.defuss.org/)** · [Theme Designer](https://shadcn.defuss.org/guides/theme-designer.html) · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md)
+**[Documentation & Live Demos →](https://shadcn.defuss.org/)** · [Theme Designer](https://shadcn.defuss.org/guides/theme-designer.html) · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md) · [Paper (PDF)](src/documentation/public/files/verified-agentic-engineering.pdf)
 
 ## TL;DR
 
@@ -90,12 +90,19 @@ flowchart LR
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.js"></script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/dialog/dialog.js"></script>
 
-<!-- 4. Only with the HTML Preview Editor: the extra bundle, after 3a or 3b -->
+<!-- 4. Only on a page that uses them: the extra bundles, after 3a or 3b -
+     wysiwyg (HTML Preview Editor, Editor.js), mermaid, math (formulas, editor, compute), visual-editor -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.css">
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/wysiwyg.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/visual-editor.css">
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/visual-editor.js"></script>
 ```
 
-Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). One component is kept out of `all.*`: the HTML Preview Editor (`code-example` - editable source + sandboxed live preview, the card every docs example renders in) ships as the extra bundle `wysiwyg.css` / `wysiwyg.js`, loaded after `all.*` or core. Pin a release instead of `@latest` for production: [Installation → Pinning a version](https://shadcn.defuss.org/introduction/installation.html).
+Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). Four groups are kept out of `all.*` and ship as extra bundles, each loaded after `all.*` or core on a page that uses them: `wysiwyg.css` / `wysiwyg.js` (the HTML Preview Editor `code-example` - editable source + sandboxed live preview, the card every docs example renders in - and Editor.js), `mermaid.css` / `mermaid.js` (Mermaid), `math.css` / `math.js` (Formula Rendering, Formula Editing, Compute & Explain) and `visual-editor.css` / `visual-editor.js` (the Visual Editor - GrapesJS over the components' markup, the canvas of the docs' Studio). Pin a release instead of `@latest` for production: [Installation → Pinning a version](https://shadcn.defuss.org/introduction/installation.html).
 
 ### Via npm
 

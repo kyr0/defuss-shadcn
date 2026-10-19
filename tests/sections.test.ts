@@ -39,10 +39,14 @@ describe('sectionPlans', () => {
     expect(plan).toMatchObject({ name: 'wysiwyg', dir: 'components' });
     expect(sectionArtifacts(plan)).toEqual(['components/wysiwyg.css', 'components/wysiwyg.min.css.map', 'components/wysiwyg.js']);
   });
-  it('fails on a component in no section, in two sections, or a half-overlapping extra bundle', () => {
+  it('an extra bundle that is a part of a section stays in the section bundle (Diagrams carries mermaid)', () => {
+    const [plan] = sectionPlans(nav(['Diagrams', ['diagram-js', 'mermaid-js']]), comps('diagram-js', 'mermaid-js'), { mermaid: ['mermaid-js'] });
+    expect(plan).toEqual({ name: 'diagrams', heading: 'Diagrams', members: ['diagram-js', 'mermaid-js'], dir: 'sections', hasJs: true });
+  });
+  it('fails on a component in no section, in two sections, or an extra bundle spread over two sections', () => {
     expect(() => sectionPlans(nav(['A', ['x']]), comps('x', 'y'), {})).toThrow(/not in any sidebar section: y/);
     expect(() => sectionPlans(nav(['A', ['x']], ['B', ['x']]), comps('x'), {})).toThrow(/"x" is in "A" and "B"/);
-    expect(() => sectionPlans(nav(['A', ['x', 'y']]), comps('x', 'y'), { extra: ['x'] })).toThrow(/overlaps the extra bundle only partly/);
+    expect(() => sectionPlans(nav(['A', ['x']], ['B', ['y']]), comps('x', 'y'), { extra: ['x', 'y'] })).toThrow(/the extra bundle lies partly outside "A"/);
   });
   it('a CSS-only section ships no .js', () => {
     expect(sectionArtifacts({ name: 'mockup', heading: 'Mockup', members: ['mockup-code'], dir: 'sections', hasJs: false })).toEqual(['sections/mockup.css', 'sections/mockup.min.css.map']);
@@ -81,6 +85,12 @@ describe('zipPlans', () => {
     expect(all.js).toEqual(['components/all.js']);
     expect(all.files).not.toContain('components/core.js');
     expect(all.css).toEqual(['components/core.css', 'components/all.css']);
+  });
+  it('the all ZIP carries the extra bundles beside all.* - files and twins, named in the README, outside the load order', () => {
+    const [all] = zipPlans(sections, '1.2.3', 'https://example.test/docs/', { math: ['math-renderer', 'math-editor'] });
+    expect(all.files).toEqual(expect.arrayContaining(['components/math.css', 'components/math.min.css', 'components/math.js', 'components/math.min.js.map']));
+    expect(all.js).toEqual(['components/all.js']);
+    expect(all.readme).toContain('- `components/math.min.css` + `components/math.min.js` - math-renderer, math-editor');
   });
   it('fails when a section needs one that does not exist', () => {
     expect(() => zipPlans([{ ...sections[2], needs: ['Nowhere'] }], '1.0.0', 'x')).toThrow(/needs unknown sections: Nowhere/);

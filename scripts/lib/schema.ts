@@ -223,13 +223,15 @@ export function schemaManifestText(components: string[]): string {
 // contract.ts): the SSR component enforces the SAME guard at build time, and
 // verify + the Vitest browser tests consume it through this path - one pure
 // definition, no drift between what ships and what is gated (§5/§10/§27).
+// VERIFIED: (the docs build, 2026-10-15) node - build-docs runs under it and reaches this file through the Studio
+// library - resolves the re-export only with its .ts extension (ERR_MODULE_NOT_FOUND without it).
 export {
   FORBIDDEN_CODE_EXAMPLE_PROPS,
   codeExampleProblems,
   editorFor,
   type EditorKind,
   type EditorStateSpec,
-} from '../../src/documentation/lib/code-example-contract';
+} from '../../src/documentation/lib/code-example-contract.ts';
 
 // ---------------------------------------------------------------------------
 // Markdown `## States` - canonical table parser + schema comparison (§13–18)
@@ -481,7 +483,9 @@ export function exampleFences(mdx: string): ExampleFence[] {
       lang: meta.split(/\s+/)[0] ?? '',
       meta,
       body: m[4],
-      line: mdx.slice(0, m.index!).split('\n').length,
+      // the fence's own line - VERIFIED: counted from the match, which starts at the newline before it, every message
+      // named the line before the fence (tests/example-parts.test.ts compositeParts)
+      line: mdx.slice(0, m.index! + m[1].length).split('\n').length,
       component: attr('component'),
       label: attr('label'),
       hint: attr('hint'),

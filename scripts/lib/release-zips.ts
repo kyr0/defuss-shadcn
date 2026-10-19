@@ -69,19 +69,38 @@ function readme(title: string, version: string, docs: string, intro: string[], c
  * One ZIP per section bundle + `all`. `docsBase` is the documentation site
  * (the Bundles & Downloads page is linked from each README). A section's
  * needs are packed in sidebar order (the order of `sections`), before it.
+ * The all ZIP carries the extra bundles (`extraBundles`, name → members)
+ * beside all.*: a page adds one after all.* where it uses its components -
+ * the Diagrams ZIP would bring Illustrative Diagrams a second time.
  */
-export function zipPlans(sections: readonly ZipSection[], version: string, docsBase: string): ZipPlan[] {
+export function zipPlans(sections: readonly ZipSection[], version: string, docsBase: string, extraBundles: Readonly<Record<string, readonly string[]>> = {}): ZipPlan[] {
   const docs = `${docsBase.replace(/\/$/, '')}/bundles.html`;
   const extras = ['components/NOTICE.txt', 'LICENSE', 'README.md'];
-  const plan = (name: string, title: string, css: string[], js: string[], intro: string[]): ZipPlan => {
+  const plan = (name: string, title: string, css: string[], js: string[], intro: string[], more: string[] = []): ZipPlan => {
     const folder = `defuss-shadcn-v${version}-${name}`;
-    return { zip: `${folder}.zip`, folder, css, js, files: [...[...css, ...js].flatMap(withTwins), ...extras], readme: readme(title, version, docs, intro, css, js) };
+    return { zip: `${folder}.zip`, folder, css, js, files: [...[...css, ...js, ...more].flatMap(withTwins), ...extras], readme: readme(title, version, docs, intro, css, js) };
   };
   const byHeading = new Map(sections.map((s) => [s.heading, s]));
+  const extraNames = Object.keys(extraBundles);
   return [
-    plan('all', 'all components', [CORE_CSS, 'components/all.css'], ['components/all.js'], [
-      'Every component except the extra bundles (wysiwyg) in all.css + all.js. all.js embeds the core runtime, so there is no core.js here; core.css brings the tokens and utilities.',
-    ]),
+    plan(
+      'all',
+      'all components',
+      [CORE_CSS, 'components/all.css'],
+      ['components/all.js'],
+      [
+        `Every component except the extra bundles${extraNames.length ? ` (${extraNames.join(', ')})` : ''} in all.css + all.js. all.js embeds the core runtime, so there is no core.js here; core.css brings the tokens and utilities.`,
+        ...(extraNames.length
+          ? [
+              '',
+              'The extra bundles are in this ZIP too. Add one after all.* on a page that uses its components:',
+              '',
+              ...Object.entries(extraBundles).map(([b, members]) => `- \`components/${b}.min.css\` + \`components/${b}.min.js\` - ${members.join(', ')}`),
+            ]
+          : []),
+      ],
+      extraNames.flatMap((b) => [`components/${b}.css`, `components/${b}.js`]),
+    ),
     ...sections.map((s) => {
       const needs = sections.filter((o) => s.needs.includes(o.heading));
       const missing = s.needs.filter((h) => !byHeading.has(h));

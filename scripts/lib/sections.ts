@@ -16,13 +16,17 @@ import { sectionSlug } from '../../src/documentation/lib/page-dirs.ts';
  * section's markup needs is listed instead (`needs`, computed in
  * ./sections-files.ts from the members' documented markup with the apps
  * resolver). A section whose members are exactly an extra bundle's (WYSIWYG
- * Editors = wysiwyg) IS that bundle - no second copy.
+ * Editors = wysiwyg, Math = math) IS that bundle - no second copy. An extra
+ * bundle that is a PART of a section (mermaid in Diagrams) stays in the
+ * section bundle too: the section path (core + sections) and the all path
+ * (all.* + extra bundles) are two ways to load the system, and no page takes
+ * a file from both.
  *
  * Pure (no fs): bundle.ts, stats-files.ts, verify.ts and release-zips.ts read
  * the plan through ./sections-files.ts.
  *
  * VERIFIED: (tests/sections.test.ts) a component in no section or in two, and
- * a section that overlaps an extra bundle only partly, fail the plan.
+ * an extra bundle spread over two sections, fail the plan.
  */
 
 export type SectionPlan = {
@@ -48,8 +52,8 @@ const flatten = (items: readonly NavItem[]): NavItem[] => items.flatMap((i) => [
  * The section bundles in sidebar order. A component belongs to the section
  * whose items link `{name}.html`; sections without components (Introduction)
  * get no bundle. Throws when a component is in no section or in two, or when
- * a section overlaps an extra bundle only partly - the split must partition
- * the components.
+ * an extra bundle lies partly outside a section it overlaps - the split must
+ * partition the components, and an extra bundle is one area or a part of one.
  */
 export function sectionPlans(
   nav: readonly NavSection[],
@@ -74,8 +78,10 @@ export function sectionPlans(
     for (const [bundle, bundleMembers] of Object.entries(extraBundles)) {
       const shared = bundleMembers.filter((m) => members.includes(m));
       if (!shared.length) continue;
-      if (shared.length !== members.length || shared.length !== bundleMembers.length)
-        throw new Error(`sections: "${sec.heading}" overlaps the ${bundle} bundle only partly - make them the same components`);
+      if (shared.length !== bundleMembers.length)
+        throw new Error(`sections: the ${bundle} bundle lies partly outside "${sec.heading}" - an extra bundle is one section or a part of one`);
+      // a part of the section: the section bundle carries it as well
+      if (shared.length !== members.length) continue;
       name = bundle;
       dir = 'components';
     }
