@@ -195,6 +195,33 @@ try {
     assert.equal(r.vb.l, 12); assert.equal(r.vb.b, 12);
   });
 
+  await check('print: both sides in full, side by side (vertical: one above the other), each at the figure ratio; no divider, no knob', async () => {
+    await page.emulateMedia({ media: 'print' });
+    try {
+      const r = await page.evaluate(() => {
+        const box = (e: Element) => e.getBoundingClientRect();
+        const side = (id: string) => {
+          const f = document.getElementById(id)!;
+          const [a, b] = [f.querySelector('.diff-item-1')!, f.querySelector('.diff-item-2')!];
+          return {
+            beside: box(b).left >= box(a).right - 1 && Math.abs(box(a).top - box(b).top) < 1,
+            below: box(b).top >= box(a).bottom - 1,
+            clip: getComputedStyle(a).clipPath,
+            ratio: Math.round((box(a).width / box(a).height) * 100) / 100,
+            range: getComputedStyle(f.querySelector('.diff-range')!).display,
+            divider: getComputedStyle(f, '::after').display,
+          };
+        };
+        return { d: side('d-default'), v: side('d-vertical'), rtl: side('d-rtl').clip };
+      });
+      assert.deepEqual(r.d, { beside: true, below: false, clip: 'none', ratio: 1.78, range: 'none', divider: 'none' });
+      assert.deepEqual([r.v.below, r.v.clip, r.v.ratio, r.v.range], [true, 'none', 0.75, 'none']);
+      assert.equal(r.rtl, 'none', 'RTL prints item 1 whole too');
+    } finally {
+      await page.emulateMedia({ media: null });
+    }
+  });
+
   await check("state API: setState('before') / 'after' reveal one side; getState reflects it", async () => {
     const r = await page.$eval('#d-start', (el) => {
       const api = (el as HTMLElement & { api: { setState(n: string, c?: object): void; getState(): { name: string; config: { position: number } } } }).api;

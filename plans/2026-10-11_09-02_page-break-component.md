@@ -173,3 +173,64 @@ profile degrades to the browser default and the skill says so.
   case M3 drops the markers and keeps `data-print="a4"` - M3 is separable.
 - Rollback: revert the three source files + the two fixtures + README; no new
   module, nothing depends on the additions.
+
+## Review (2026-10-11) and deviations - implemented
+
+Probes: `tmp/print-probe*.ts` (headless Chromium via Playwright 1.63, `page.pdf()`
+read back from the PDF: MediaBox, one content stream per page, the page
+transform `cm` and text runs `Tm`); support lines from MDN browser-compat-data
+(main, fetched 2026-10-11).
+
+1. VERIFIED[pdf] `page.pdf()` without options prints Letter even with a named
+   A4 page (612x792); `preferCSSPageSize: true` gives A4 (594.96x841.92). The
+   plan's "NO format arg -> A4" assertion would have failed: the tests pass
+   `preferCSSPageSize: true` (the CSS page size, as an author intends), the paper
+   skill says so.
+2. VERIFIED[paper] the A4 profile alone prints the full paper's sections in ONE
+   column: the wide track at 170mm is 611px, two columns need 2 x 18rem + 2.5em
+   = 616px (16 pages). The M3 column-flow premise only holds with a print
+   scale: added `zoom: var(--paper-print-scale, 0.8)` in print for
+   `.paper[data-print]` - two columns, 12 pages, everything scales together
+   (font-size alone would leave the rem headings at screen size). `zoom`:
+   Chrome, Firefox 126+, Safari (BCD).
+3. Markers are hidden on screen by default; `data-show-breaks` on an ancestor
+   shows them (the docs examples). The plan showed them always - the published
+   full paper would have shown readers a "Page break" line before the citations.
+4. `<div class="typeset-break">`, not `<hr>`: a page break is not a thematic
+   break, and `.typeset > hr` / `.paper-section > hr` give an `<hr>` margins
+   that a forced break preserves at the top of the next page.
+5. `.typeset-keep` uses `break-inside: avoid`, not `avoid-page`: avoid-page
+   still lets a column break split the block, and the paper flows in columns.
+   (Also VERIFIED: Chromium computes `avoid-page` as `avoid-page`, not `avoid`
+   as the plan stated.)
+6. `@page` names carry a `paper-` prefix (`paper-a4`, `paper-a4-inner`,
+   `paper-letter`, `paper-letter-inner`): page names are global like keyframes;
+   the attribute values stay `a4` / `letter`.
+7. VERIFIED[grid] a zero-height break box as a grid item (the `.paper`
+   article) breaks the page and leaves no row gap at the top of the new page;
+   `display: none` loses the break (1 page instead of 2).
+8. M4: no PDF text-layer assertion (Skia writes glyph ids, not text); the
+   label's absence in print is the computed `display`/`visibility`. The PDF
+   checks assert page size, page count, the column break by text positions
+   (falsified: without the marker the second paragraph stays in the left
+   column) and the binding by the page origin (25mm / 15mm vs 20mm / 20mm).
+9. `data-orphans` / `data-widows` take 3 and 4 (2 is the `.typeset` default,
+   no rule needed).
+10. VERIFIED[keep] (docs example screenshot) the wrapper broke the setting's
+   spacing: its figure took the browser's 40px indent and its paragraph's 1em
+   top margin pushed the column below a span out of level. The `.typeset`
+   direct-child rules (paragraph, block gap, figure measure, headings, first
+   child, the span rule, Einzug) now also reach through `.typeset-keep`, one
+   selector per path; typography.e2e "keeps: ... spaced as if" failed on the
+   previous dist and passes.
+
+Support (BCD): column breaks Chromium only; `:left` / `:right` not in Firefox;
+`orphans` / `widows` not in Firefox; `@page size` Safari 18.2+.
+
+Not addressed (follow-ups): a dark theme prints its light text colours (print
+from the light theme); the screenshot fingerprint's shell includes
+`dist/documentation/js/` (the search index), so a new `<h2>` on any page
+re-shoots every component.
+
+Milestones M1-M4 done; M5 ran as: build.ts + bundle + minify + stats + figures
++ build:docs, the three affected e2e files, screenshots, then the vae gate.

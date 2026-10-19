@@ -69,6 +69,21 @@ await cssSmoke('mockup-code', [
     },
   },
   {
+    label: 'print: paper cannot scroll - every line wraps as with data-wrap; the window prints its colors as designed',
+    run: async (page) => {
+      await page.emulateMedia({ media: 'print' });
+      try {
+        const r = await page.evaluate(() => {
+          const m = document.getElementById('m-long')!;
+          return { scrolls: m.scrollWidth > m.clientWidth, wrap: getComputedStyle(document.getElementById('l-long')!).whiteSpace, adjust: getComputedStyle(m).printColorAdjust };
+        });
+        assert.deepEqual(r, { scrolls: false, wrap: 'pre-wrap', adjust: 'exact' });
+      } finally {
+        await page.emulateMedia({ media: null });
+      }
+    },
+  },
+  {
     label: 'data-numbers numbers the lines without a prefix; a prefixed line keeps its prompt (the counter still counts it)',
     run: async (page) => {
       const r = await page.evaluate(() => ['n1', 'n2', 'n3', 'n4'].map((id) => getComputedStyle(document.getElementById(id)!, '::before').content));

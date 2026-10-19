@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { cssSmoke } from '../lib/css-smoke.ts';
 import { assertRenderContract } from '../lib/render-contract.ts';
+import { pdfText, perPage } from '../lib/pdf-text.ts';
 
 /**
  * Why: the table's look is CSS - the container (overflow + inline-size container
@@ -255,6 +256,40 @@ await cssSmoke('table', [
       assert.deepEqual(r.def[1], ['s-1', 's-2', 's-3', 's-4', 's-5']);
       assert.ok(r.err.includes('unknown state'));
       assert.deepEqual(r.states, ['default', 'sorted', 'selected']); assert.ok(r.api);
+    },
+  },
+  {
+    label: 'print: the header row repeats on every page, the footer prints once after the last row, the last three rows stay with it, rows stay whole; data-repeat-footer prints the footer on every page',
+    run: async (page) => {
+      // a page of its own with only the 60-row table, each row's first cell renamed to a marker (ROW001...)
+      const p = await page.context().browser()!.newPage();
+      try {
+        await p.goto(page.url());
+        await p.waitForFunction(() => !!document.querySelector('#t-print[data-init]'));
+        await p.evaluate(() => {
+          document.body.replaceChildren(document.getElementById('tc-print')!);
+          document.querySelectorAll<HTMLTableRowElement>('#t-print tbody tr').forEach((tr, i) => (tr.cells[0].textContent = `ROW${String(i + 1).padStart(3, '0')}`));
+        });
+        const print = async () => pdfText(await p.pdf({ format: 'A4', margin: { top: '20mm', bottom: '20mm', left: '20mm', right: '20mm' } }));
+        const pages = await print();
+        assert.ok(pages.length >= 3, `${pages.length} pages`);
+        assert.deepEqual(perPage(pages, 'Line item'), pages.map(() => 1), 'the header on every page');
+        assert.deepEqual(perPage(pages, 'Grand total'), pages.map((_, i) => (i === pages.length - 1 ? 1 : 0)), 'the footer once, on the last page');
+        const rowsOn = pages.map((t) => [...t.matchAll(/ROW(\d{3})/g)].map((m) => +m[1]));
+        assert.deepEqual(rowsOn.flat(), Array.from({ length: 60 }, (_, i) => i + 1), 'every row once, in order');
+        assert.ok(rowsOn.at(-1)!.length >= 3 && rowsOn.at(-1)!.includes(58), `the last page holds the last three rows: ${rowsOn.at(-1)}`);
+        await p.emulateMedia({ media: 'print' });
+        const styles = await p.evaluate(() => [getComputedStyle(document.querySelector('#t-print tbody tr')!).breakInside, getComputedStyle(document.getElementById('tc-print')!).overflowX]);
+        assert.deepEqual(styles, ['avoid', 'visible'], 'rows whole, the wrapper lets go');
+        await p.evaluate(() => document.getElementById('t-print')!.setAttribute('data-break-inside', 'allow'));
+        assert.equal(await p.evaluate(() => getComputedStyle(document.querySelector('#t-print tbody tr')!).breakInside), 'auto', 'data-break-inside="allow" lets a row split');
+        await p.emulateMedia({ media: null });
+        await p.evaluate(() => document.getElementById('t-print')!.setAttribute('data-repeat-footer', ''));
+        const repeated = await print();
+        assert.deepEqual(perPage(repeated, 'Grand total'), repeated.map(() => 1), 'data-repeat-footer: the footer on every page');
+      } finally {
+        await p.close();
+      }
     },
   },
   {

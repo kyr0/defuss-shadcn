@@ -90,6 +90,75 @@
   <div dir="rtl" class="table-container" style="width:400px;margin-top:1rem;">
     <table class="table" id="t-rtl" aria-label="RTL"><thead><tr class="table-row"><th class="table-head" scope="col" id="rtl-h">الاسم</th><th class="table-head" scope="col">x</th></tr></thead><tbody><tr class="table-row"><td class="table-cell" id="rtl-c">ليلى</td><td class="table-cell">1</td></tr></tbody></table>
   </div>
+  <!-- print: 60 rows over pages - the header repeats, the footer prints once, rows stay whole, the end stays together -->
+  <div class="table-container" id="tc-print" style="width:640px;margin-top:1rem;">
+    <table class="table" id="t-print" data-keep-last aria-label="Parts list">
+      <thead><tr class="table-row"><th class="table-head" scope="col" data-numeric>Pos.</th><th class="table-head" scope="col">Line item</th><th class="table-head" scope="col" data-numeric>Qty</th><th class="table-head" scope="col" data-numeric>Amount</th></tr></thead>
+      <tbody>
+        <tr class="table-row"><td class="table-cell" data-numeric>1</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>1.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>2</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>5.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>3</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>11.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>4</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>20.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>5</td><td class="table-cell">Wall plug 10</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>31.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>6</td><td class="table-cell">Cable tie 200</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>7.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>7</td><td class="table-cell">Hinge 60</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>17.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>8</td><td class="table-cell">Bracket 90°</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>3.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>9</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>10.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>10</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>18.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>11</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>5.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>12</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>12.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>13</td><td class="table-cell">Wall plug 10</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>22.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>14</td><td class="table-cell">Cable tie 200</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>35.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>15</td><td class="table-cell">Hinge 60</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>6.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>16</td><td class="table-cell">Bracket 90°</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>2.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>17</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>7.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>18</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>15.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>19</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>25.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>20</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>37.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>21</td><td class="table-cell">Wall plug 10</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>8.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>22</td><td class="table-cell">Cable tie 200</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>2.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>23</td><td class="table-cell">Hinge 60</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>7.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>24</td><td class="table-cell">Bracket 90°</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>15.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>25</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>25.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>26</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>6.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>27</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>15.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>28</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>26.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>29</td><td class="table-cell">Wall plug 10</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>5.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>30</td><td class="table-cell">Cable tie 200</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>12.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>31</td><td class="table-cell">Hinge 60</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>3.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>32</td><td class="table-cell">Bracket 90°</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>10.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>33</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>18.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>34</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>30.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>35</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>43.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>36</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>1.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>37</td><td class="table-cell">Wall plug 10</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>5.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>38</td><td class="table-cell">Cable tie 200</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>11.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>39</td><td class="table-cell">Hinge 60</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>20.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>40</td><td class="table-cell">Bracket 90°</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>31.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>41</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>7.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>42</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>17.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>43</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>3.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>44</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>10.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>45</td><td class="table-cell">Wall plug 10</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>18.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>46</td><td class="table-cell">Cable tie 200</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>5.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>47</td><td class="table-cell">Hinge 60</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>12.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>48</td><td class="table-cell">Bracket 90°</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>22.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>49</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>35.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>50</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>6.25</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>51</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>2.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>52</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>7.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>53</td><td class="table-cell">Wall plug 10</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>15.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>54</td><td class="table-cell">Cable tie 200</td><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>25.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>55</td><td class="table-cell">Hinge 60</td><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>37.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>56</td><td class="table-cell">Bracket 90°</td><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>8.75</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>57</td><td class="table-cell">Hex bolt M8x40</td><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>2.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>58</td><td class="table-cell">Washer 8.4</td><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>7.50</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>59</td><td class="table-cell">Nut M8</td><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>15.00</td></tr>
+        <tr class="table-row"><td class="table-cell" data-numeric>60</td><td class="table-cell">Threaded rod M10</td><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>25.00</td></tr>
+      </tbody>
+      <tfoot><tr class="table-row"><td class="table-cell" colspan="3">Grand total</td><td class="table-cell" data-numeric>878.75</td></tr></tfoot>
+    </table>
+  </div>
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/table/table.js"></script>
 </body>

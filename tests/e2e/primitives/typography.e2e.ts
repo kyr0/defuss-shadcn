@@ -13,6 +13,20 @@ await cssSmoke('typography', [
     css: { 'font-size': '14px', 'line-height': '21px' },
   },
   {
+    label: 'base layer sets bare code, kbd and pre in the theme monospace stack (--font-mono), not the browser default',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const probe = document.createElement('span');
+        probe.style.fontFamily = 'var(--font-mono)';
+        document.body.append(probe);
+        const want = getComputedStyle(probe).fontFamily;
+        probe.remove();
+        return { want, got: ['ty-bare-code', 'ty-bare-kbd', 'ty-bare-pre'].map((id) => getComputedStyle(document.getElementById(id)!).fontFamily) };
+      });
+      assert.deepEqual(r.got, [r.want, r.want, r.want]);
+    },
+  },
+  {
     label: 'heading scale h1→h4: 36/30/24/20 with descending weights',
     run: async (page) => {
       const scale = await page.evaluate(
@@ -274,6 +288,114 @@ await cssSmoke('typography', [
       const r = await page.evaluate(() => ({ reset: getComputedStyle(document.getElementById('ty-group')!).counterReset, sub: getComputedStyle(document.getElementById('ty-sub-a')!, '::before').content }));
       assert.deepEqual(r, { reset: 'typeset-sub 0', sub: '"(" counter(typeset-sub, lower-alpha) ") "' });
       assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById('ty-group')!).borderTopStyle), 'solid');
+    },
+  },
+  {
+    label: 'breaks: hidden on screen; [data-show-breaks] shows each marker as a labelled dashed line',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string, pseudo?: string) => getComputedStyle(document.getElementById(id)!, pseudo);
+        return {
+          hidden: ['ty-break-column', 'ty-break-page', 'ty-break-left', 'ty-break-right'].map((id) => cs(id).display),
+          shown: cs('ty-show-page').display,
+          labels: ['ty-show-page', 'ty-show-column', 'ty-show-left', 'ty-show-right'].map((id) => cs(id, '::before').content),
+          line: cs('ty-show-page', '::after').borderTopStyle,
+        };
+      });
+      assert.deepEqual(r.hidden, ['none', 'none', 'none', 'none'], 'no marker shows by default');
+      assert.equal(r.shown, 'flex');
+      assert.deepEqual(r.labels, ['"Page break"', '"Column break"', '"Page break - left page"', '"Page break - right page"']);
+      assert.equal(r.line, 'dashed');
+    },
+  },
+  {
+    label: 'breaks: in print each marker is a zero-height box that forces its break - page, column, left, right (display: none would drop it); a setting with spanners prints without its column rule',
+    run: async (page) => {
+      await page.emulateMedia({ media: 'print' });
+      try {
+        const r = await page.evaluate(() =>
+          ['ty-break-page', 'ty-break-column', 'ty-break-left', 'ty-break-right', 'ty-show-page'].map((id) => {
+            const el = document.getElementById(id)!;
+            const cs = getComputedStyle(el);
+            return [cs.breakBefore, cs.display, el.getBoundingClientRect().height, cs.visibility];
+          }),
+        );
+        assert.deepEqual(r, [
+          ['page', 'block', 0, 'hidden'],
+          ['column', 'block', 0, 'hidden'],
+          ['left', 'block', 0, 'hidden'],
+          ['right', 'block', 0, 'hidden'],
+          ['page', 'block', 0, 'hidden'],
+        ]);
+        // a printed column rule runs through a spanner that starts a page: a setting with spanners prints
+        // without it, one without keeps it
+        const rules = await page.evaluate(() => ['ty-set', 'ty-rule'].map((id) => getComputedStyle(document.getElementById(id)!).columnRuleStyle));
+        assert.deepEqual(rules, ['none', 'solid'], 'print column rules: with a spanner / without');
+      } finally {
+        await page.emulateMedia({ media: null });
+      }
+      // on screen nothing breaks: a column break in a balanced screen column would pile the text into the last one
+      assert.equal(await page.$eval('#ty-show-column', (e) => getComputedStyle(e).breakBefore), 'auto');
+      // a marker between two paragraphs of an indented setting keeps the second one's Einzug
+      const indent = await page.$eval('#ty-break-indent-p', (p) => [getComputedStyle(p).textIndent, getComputedStyle(p).fontSize]);
+      assert.equal(indent[0], indent[1], 'text-indent 1em');
+    },
+  },
+  {
+    label: 'keeps: .typeset-keep avoids every break, data-break-inside="allow" lets a figure split, headings keep with the next block, data-orphans / data-widows',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const cs = (id: string) => getComputedStyle(document.getElementById(id)!);
+        return {
+          keep: cs('ty-keep').breakInside,
+          allow: cs('ty-fig-allow').breakInside,
+          kept: cs('ty-pre-kept').breakInside,
+          heading: cs('ty-breaks-h').breakAfter,
+          lines: [cs('ty-breaks').orphans, cs('ty-breaks').widows],
+          defaults: [cs('ty-set').orphans, cs('ty-set').widows],
+        };
+      });
+      assert.deepEqual(r, { keep: 'avoid', allow: 'auto', kept: 'avoid', heading: 'avoid', lines: ['3', '4'], defaults: ['2', '2'] });
+    },
+  },
+  {
+    label: 'splits: a listing allowed to split runs over two columns, each piece framed (clone), not scrolling; its caption stays with the last piece (the figure is a block - a grid ignored the keep); a justified setting leaves the verbatim flush and unhyphenated',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const el = (id: string) => document.getElementById(id)!;
+        const pre = getComputedStyle(el('ty-split-pre'));
+        const pieces = [...el('ty-split-pre').getClientRects()];
+        const last = pieces[pieces.length - 1];
+        const cap = el('ty-split-cap').getBoundingClientRect();
+        return {
+          figure: getComputedStyle(el('ty-split-fig')).display,
+          pre: [pre.breakInside, pre.boxDecorationBreak, pre.overflowX, pre.textAlign, pre.hyphens],
+          caption: getComputedStyle(el('ty-split-cap')).breakBefore,
+          pieces: pieces.length,
+          // one piece per column: the second opens the next column at the head of the setting
+          columns: pieces.length === 2 && pieces[1].left > pieces[0].right && Math.abs(pieces[1].top - el('ty-split').getBoundingClientRect().top) < 2,
+          withLast: Math.abs(cap.left - last.left) < 2 && cap.top >= last.bottom - 1,
+        };
+      });
+      assert.deepEqual(r, { figure: 'block', pre: ['auto', 'clone', 'visible', 'start', 'manual'], caption: 'avoid', pieces: 2, columns: true, withLast: true });
+    },
+  },
+  {
+    label: 'keeps: .typeset-keep is spaced as if its content sat in the setting - the columns below a span start level, a figure spans the measure with the block gap',
+    run: async (page) => {
+      const r = await page.evaluate(() => {
+        const el = (id: string) => document.getElementById(id)!;
+        const em = parseFloat(getComputedStyle(el('ty-breaks')).fontSize);
+        const p = getComputedStyle(el('ty-keep-p')), fig = getComputedStyle(el('ty-keep-fig'));
+        return {
+          // the paragraph starts right below the spanning heading's own bottom margin
+          level: Math.abs(Math.round(el('ty-keep-p').getBoundingClientRect().top - el('ty-breaks-h').getBoundingClientRect().bottom - parseFloat(getComputedStyle(el('ty-breaks-h')).marginBottom))),
+          p: [p.marginTop, parseFloat(p.marginBottom) / em],
+          fig: [fig.marginLeft, parseFloat(fig.marginTop) / em],
+        };
+      });
+      // the browser's defaults would give the paragraph a 1em top margin (collapsing out of the wrapper) and the figure 40px / 1em
+      assert.deepEqual(r, { level: 0, p: ['0px', 1], fig: ['0px', 1.5] });
     },
   },
 ]);

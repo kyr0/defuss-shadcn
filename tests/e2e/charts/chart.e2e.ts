@@ -296,6 +296,36 @@ try {
     assert.equal(r.state3, null);
   });
 
+  await check('print: a chart drawn at the screen width resizes and paints in the print layout - its svg takes the printed box, its paths end inside it', async () => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await page.waitForTimeout(400);
+    const screen = await page.$$eval('.chart svg', (s) => Math.max(...s.map((e) => e.getBoundingClientRect().width)));
+    assert.ok(screen > 800, `a chart wider than a printed page (${screen}px)`);
+    // registered after chart.js's own listener: it reads what the print paints
+    await page.evaluate(() => {
+      const rows: number[][] = ((globalThis as any).__printRows = []);
+      matchMedia('print').addEventListener('change', (e) => {
+        if (!e.matches) return;
+        for (const el of document.querySelectorAll<HTMLElement>('.chart[data-init]')) {
+          const svg = el.querySelector('svg');
+          if (!svg || !el.clientWidth) continue;
+          const right = Math.max(0, ...[...svg.querySelectorAll('path')].map((p) => { const b = p.getBBox(); return b.x + b.width; }));
+          rows.push([el.clientWidth, Number(svg.getAttribute('width')), Math.round(right)]);
+        }
+      }, { once: true });
+    });
+    await page.pdf();
+    const rows: number[][] = await page.evaluate(() => (globalThis as any).__printRows);
+    assert.ok(rows.length > 0, 'charts drawn in the print layout');
+    for (const [box, svg, right] of rows) {
+      assert.ok(box < screen, `the printed box (${box}px) is narrower than the screen chart (${screen}px)`);
+      assert.ok(Math.abs(svg - box) <= 1, `svg ${svg}px in a ${box}px box`);
+      assert.ok(right <= svg + 1, `a path ends at ${right}px in a ${svg}px svg (painted before the print)`);
+    }
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.waitForTimeout(200);
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await assertRenderContract(page, '.chart[id]', ['default'], { runtimeAttrs: ['style','_echarts_instance_'], runtimeOwned: '.chart[id] > *, .chart[id] > * *' });
   });

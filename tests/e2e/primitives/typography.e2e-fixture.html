@@ -5,6 +5,14 @@
     <title>typography e2e fixture</title>
     <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
     <link rel="stylesheet" href="/dist/components/typography/typography.css" />
+    <!-- a component's own figure and listing, as a paper's: a grid figure, a framed listing that scrolls sideways
+         (same layer, lower specificity than Typography's split rule) -->
+    <style>
+      @layer components {
+        .fx-grid-figure { display: grid; gap: 8px; margin: 0; }
+        .fx-listing { overflow-x: auto; white-space: pre-wrap; border: 1px solid #888; border-radius: 8px; padding: 8px; }
+      }
+    </style>
   </head>
   <!-- the component also styles <body> (base layer): 14px / 1.5 -->
   <body style="padding:2rem;">
@@ -22,6 +30,7 @@
     <p style="--link-text-decoration: underline dotted; --link-underline-offset: 2px;">The <a class="link" id="ty-link-themed" href="#">same link</a>, themed.</p>
     <blockquote class="blockquote" id="ty-quote"><p>Quoted text.</p></blockquote>
     <p>Inline <code class="inline-code" id="ty-code">code</code> sample.</p>
+    <p>Bare <code id="ty-bare-code">code</code>, <kbd id="ty-bare-kbd">Ctrl</kbd> and</p><pre id="ty-bare-pre">a listing</pre>
     <article id="ty-zh" lang="zh-Hans" style="width:13em;"><h3 class="h3" id="ty-zh-h">排版的细节</h3><p class="p" id="ty-zh-p">中文段落在窄栏中排版时，逗号、句号不能出现在行首。使用 CSS 3 与 HTML 5，<em class="text-emphasis" id="ty-zh-em">无需脚本</em>。</p><blockquote class="blockquote" id="ty-zh-q"><p>「设计是它如何运作。」</p></blockquote></article>
     <article class="text-vertical" id="ty-ja" lang="ja" style="inline-size:14em;"><h3 class="h3" id="ty-ja-h">縦書きの<ruby>美<rt id="ty-rt">うつく</rt></ruby>しさ</h3><p class="p" id="ty-ja-p"><span class="text-upright" id="ty-tcy">12</span>月、<em class="text-emphasis" id="ty-ja-em">傍点</em>です。</p><p class="p" id="ty-ja-p2">二段落目。</p></article>
     <p class="p" id="ty-en" lang="en">Latin paragraph.</p>
@@ -36,6 +45,10 @@
       <figure class="typeset-span" id="ty-span-fig"><div style="height:20px;background:#ccc"></div></figure>
       <h3 id="ty-span-h">Below the span</h3>
       <p id="ty-span-p">The first block below a spanning figure starts at the top of its column, level with the text beside it.</p>
+    </div>
+    <div class="typeset" id="ty-rule" lang="en" data-columns="2" data-rule style="width:44rem;">
+      <p>A ruled setting without a spanner keeps its column rule in print.</p>
+      <p>The second paragraph runs on in the next column.</p>
     </div>
     <div class="typeset" id="ty-set-narrow" lang="en" data-columns="2" style="width:20rem;">
       <p id="ty-set-n1">A column of twenty rem is narrower than two columns of eighteen, so the block sets a single column - the responsive case, with no media query.</p>
@@ -67,6 +80,59 @@
         <figure><div style="height:20px;background:#ccc"></div><figcaption class="typeset-subcaption">A.</figcaption></figure>
         <figure id="ty-gn-b"><div style="height:20px;background:#ccc"></div><figcaption class="typeset-subcaption">B.</figcaption></figure>
       </figure>
+    </div>
+    <!-- breaks and keeps: every break marker, the keep wrapper, a figure allowed to split, orphans / widows -->
+    <div class="typeset" id="ty-breaks" lang="en" data-columns="2" data-orphans="3" data-widows="4" style="width:44rem;">
+      <h3 class="typeset-span" id="ty-breaks-h">Breaks</h3>
+      <div class="typeset-keep" id="ty-keep"><p id="ty-keep-p">A paragraph and its figure, kept together.</p><figure id="ty-keep-fig"><div style="height:20px;background:#ccc"></div></figure></div>
+      <p>Before the column break.</p>
+      <div class="typeset-break" id="ty-break-column" data-break="column" aria-hidden="true"></div>
+      <p>After it.</p>
+      <div class="typeset-break" id="ty-break-page" aria-hidden="true"></div>
+      <div class="typeset-break" id="ty-break-left" data-break="left" aria-hidden="true"></div>
+      <div class="typeset-break" id="ty-break-right" data-break="right" aria-hidden="true"></div>
+      <figure id="ty-fig-allow" data-break-inside="allow"><table class="table"><tbody><tr><td>a long table may split</td></tr></tbody></table></figure>
+      <pre id="ty-pre-kept">a short listing stays whole</pre>
+    </div>
+    <!-- a listing allowed to split over two columns: one piece per column, each framed, the caption with the last -->
+    <div class="typeset" id="ty-split" lang="en" data-columns="2" data-align="justify" style="width:44rem;">
+      <p>Before the listing.</p>
+      <figure class="fx-grid-figure" id="ty-split-fig" data-break-inside="allow"><pre class="fx-listing" id="ty-split-pre">line 1: the overseer logged a forme, a proof or a sheet
+line 2: the overseer logged a forme, a proof or a sheet
+line 3: the overseer logged a forme, a proof or a sheet
+line 4: the overseer logged a forme, a proof or a sheet
+line 5: the overseer logged a forme, a proof or a sheet
+line 6: the overseer logged a forme, a proof or a sheet
+line 7: the overseer logged a forme, a proof or a sheet
+line 8: the overseer logged a forme, a proof or a sheet
+line 9: the overseer logged a forme, a proof or a sheet
+line 10: the overseer logged a forme, a proof or a sheet
+line 11: the overseer logged a forme, a proof or a sheet
+line 12: the overseer logged a forme, a proof or a sheet
+line 13: the overseer logged a forme, a proof or a sheet
+line 14: the overseer logged a forme, a proof or a sheet
+line 15: the overseer logged a forme, a proof or a sheet
+line 16: the overseer logged a forme, a proof or a sheet
+line 17: the overseer logged a forme, a proof or a sheet
+line 18: the overseer logged a forme, a proof or a sheet
+line 19: the overseer logged a forme, a proof or a sheet
+line 20: the overseer logged a forme, a proof or a sheet
+line 21: the overseer logged a forme, a proof or a sheet
+line 22: the overseer logged a forme, a proof or a sheet
+line 23: the overseer logged a forme, a proof or a sheet
+line 24: the overseer logged a forme, a proof or a sheet</pre><figcaption id="ty-split-cap">The caption stays with the last piece.</figcaption></figure>
+      <p>After it.</p>
+    </div>
+    <div class="typeset" id="ty-break-indent" lang="en" data-indent style="width:30rem;">
+      <p>The paragraph before a break.</p>
+      <div class="typeset-break" data-break="column" aria-hidden="true"></div>
+      <p id="ty-break-indent-p">The paragraph after it keeps its indent.</p>
+    </div>
+    <div id="ty-show" data-show-breaks>
+      <div class="typeset-break" id="ty-show-page" aria-hidden="true"></div>
+      <div class="typeset-break" id="ty-show-column" data-break="column" aria-hidden="true"></div>
+      <div class="typeset-break" id="ty-show-left" data-break="left" aria-hidden="true"></div>
+      <div class="typeset-break" id="ty-show-right" data-break="right" aria-hidden="true"></div>
     </div>
   </body>
 </html>

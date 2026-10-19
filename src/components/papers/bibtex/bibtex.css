@@ -320,6 +320,32 @@
     }
   }
 
+  /* paper has no horizontal scroll: in print a long field wraps instead of
+     running past the frame (a report's printed title lost its end). Paper has
+     no tabs to switch and nothing to copy: the bar goes, and the block prints
+     the one format it shows - data-format, else the first of data-formats -
+     its frame closed on every page a long list runs over. */
+  @media print {
+    .bibtex-code {
+      overflow-x: visible;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .bibtex > .bibtex-bar {
+      display: none;
+    }
+    /* the caption never stays alone at a page foot: a block, so its keep
+       holds (Chromium ignores it between grid rows) */
+    .bibtex:not([data-variant="inline"]) {
+      display: block;
+      box-decoration-break: clone;
+
+      & > figcaption {
+        break-after: avoid;
+      }
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .bibtex-tab,
     .bibtex-copy,

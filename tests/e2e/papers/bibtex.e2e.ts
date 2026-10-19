@@ -221,6 +221,25 @@ try {
     assert.ok(size[0] < size[1], String(size));
   });
 
+  await check('print: the BibTeX view wraps a long field instead of scrolling sideways; the bar (tabs, copy) goes and the block prints its chosen format, its caption kept with the view, its frame closed on every page', async () => {
+    const css = () => page.evaluate(() => {
+      const cs = (sel: string) => getComputedStyle(document.querySelector(sel)!);
+      return {
+        code: [cs('#cite-plain .bibtex-code').whiteSpace, cs('#cite-plain .bibtex-code').overflowX],
+        bar: cs('#cite-list > .bibtex-bar').display,
+        block: [cs('#cite-list').display, cs('#cite-list').boxDecorationBreak, cs('#cite-list > figcaption').breakAfter],
+        view: cs('#cite-list .bibtex-view').display,
+      };
+    });
+    assert.deepEqual(await css(), { code: ['pre', 'auto'], bar: 'flex', block: ['grid', 'slice', 'auto'], view: 'block' });
+    await page.emulateMedia({ media: 'print' });
+    try {
+      assert.deepEqual(await css(), { code: ['pre-wrap', 'visible'], bar: 'none', block: ['block', 'clone', 'avoid'], view: 'block' });
+    } finally {
+      await page.emulateMedia({ media: null });
+    }
+  });
+
   await check('df$.shadcn.bibtex: parse, format without an element, entries (a copy)', async () => {
     const r = await page.evaluate(() => {
       const lib = (globalThis as any).df$.shadcn.bibtex;

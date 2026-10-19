@@ -537,6 +537,42 @@
       font-size: 0.8125rem;
     }
   }
+
+  /* -- Print: a long table runs over pages. VERIFIED: (tmp/print-table-probe.ts + -probe2.ts, Chromium 153, A4)
+     the header row repeats on every page and in every column by itself - inside this scroll wrapper too; the
+     footer row repeats as well, so a total printed on every page: tfoot prints once, at the end, unless the
+     table asks for a running footer (data-repeat-footer); a row taller than the rest of its page split over
+     two, so rows stay whole unless data-break-inside="allow" lets them split; data-keep-last keeps the last
+     three rows with the footer and with what follows the table (a totals block that sets break-before: avoid
+     pulls them along), so the end never lands alone on a page. */
+  @media print {
+    .table-container {
+      /* Chromium fragments a scroll box in print anyway; another engine may clip it */
+      overflow: visible;
+      /* each page's piece of the table keeps its frame */
+      box-decoration-break: clone;
+    }
+    .table-container:has(> .table[data-sticky-header]) {
+      overflow: visible;
+      max-height: none;
+    }
+    .table[data-sticky-header] thead .table-head {
+      position: static;
+    }
+    .table:not([data-repeat-footer]) > tfoot {
+      display: table-row-group;
+
+      & > tr:first-child {
+        break-before: avoid;
+      }
+    }
+    .table:not([data-break-inside="allow"]) tr {
+      break-inside: avoid;
+    }
+    .table[data-keep-last] > tbody:last-of-type > tr:nth-last-child(-n + 3) {
+      break-before: avoid;
+    }
+  }
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all

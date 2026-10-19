@@ -1,3 +1,4 @@
+import { inflateSync } from 'node:zlib';
 import { cssSmoke } from '../lib/css-smoke.ts';
 
 /**
@@ -8,6 +9,44 @@ import { cssSmoke } from '../lib/css-smoke.ts';
  * full-width footer - and that the parts it is built from render inside it.
  */
 const box = (sel: string) => `(() => { const r = document.querySelector('${sel}').getBoundingClientRect(); return { l: Math.round(r.left), w: Math.round(r.width) }; })()`;
+
+/**
+ * What a printed PDF says about its pages, read from Chromium's (Skia's) output:
+ * the page boxes, and per page content stream its `cm` operators - Skia writes
+ * the device scale (72/300) first, then the CSS scale translated to the page's
+ * content origin, whose x is the left page margin - and the [x, y] of every
+ * text run (`Tm`, in CSS px inside the page). A page margin box (the page
+ * number) is painted first, under a CSS scale at the page's own origin (0, 0):
+ * its runs are `marginRuns`, in CSS px from the page's top left. VERIFIED:
+ * (probes 2026-10-11, 2026-10-12) one stream per page, in page order.
+ */
+const pdfPages = (pdf: Buffer) => {
+  const s = pdf.toString('latin1');
+  const boxes = [...s.matchAll(/\/MediaBox\s*\[([^\]]+)\]/g)].map((m) => m[1].trim().split(/\s+/).map(Number));
+  const pages: { marginLeftMm: number; runs: number[][]; marginRuns: number[][] }[] = [];
+  for (const m of s.matchAll(/<<([^>]*?\/FlateDecode[^>]*?)>>\s*stream\r?\n/g)) {
+    const start = m.index! + m[0].length;
+    let ops: string;
+    try {
+      ops = inflateSync(pdf.subarray(start, start + Number(/\/Length\s+(\d+)/.exec(m[1])?.[1]))).toString('latin1');
+    } catch {
+      continue;
+    }
+    const cms = [...ops.matchAll(/([-\d.]+)\s+[-\d.]+\s+[-\d.]+\s+[-\d.]+\s+([-\d.]+)\s+([-\d.]+)\s+cm/g)];
+    if (!/\bBT\b/.test(ops) || cms.length < 2) continue; // fonts, CMaps
+    // each text run belongs to the last transform before it: the page's origin (a margin box) or the content's
+    const origin = (at: number) => cms.filter((c) => c.index! < at).pop()!;
+    const atPageOrigin = (c: RegExpMatchArray) => +c[2] === 0 && +c[3] === 0;
+    const content = cms.slice(1).find((c) => !atPageOrigin(c)) ?? cms[1];
+    const runs = [...ops.matchAll(/([-\d.]+)\s+([-\d.]+)\s+Tm/g)];
+    pages.push({
+      marginLeftMm: Math.round(((+content[2] * +cms[0][1]) / 72) * 25.4 * 10) / 10,
+      runs: runs.filter((t) => !atPageOrigin(origin(t.index!))).map((t) => [+t[1], +t[2]]),
+      marginRuns: runs.filter((t) => atPageOrigin(origin(t.index!))).map((t) => [+t[1], +t[2]]),
+    });
+  }
+  return { boxes, pages };
+};
 
 await cssSmoke('paper', [
   { label: 'the title is the theme serif, centered in the title block', selector: '.paper-title', css: { textAlign: 'center', fontWeight: '500' } },
@@ -116,6 +155,73 @@ await cssSmoke('paper', [
   { label: 'a wrapping caption inside a justified setting keeps every line centered (text-align-last does not leak)', run: async (page) => {
     const r = await page.$eval('#pv-cap-wrap', (c) => { const range = document.createRange(); range.selectNodeContents(c); const lines = [...range.getClientRects()].filter((x) => x.width > 40); const box = c.getBoundingClientRect(); const last = lines[lines.length - 1]; return { lines: lines.length, off: Math.abs((last.left + last.right) / 2 - (box.left + box.right) / 2), lastAlign: getComputedStyle(c).textAlignLast }; });
     if (r.lines < 2 || r.off > 2) throw new Error(JSON.stringify(r));
+  } },
+  { label: 'print: data-print sizes the PDF (A4 / Letter) without a format argument, the 0.8 scale keeps two columns, a column break and a page break land, inner binding mirrors the margins', run: async (page) => {
+    // the print article alone, printed on the CSS page size (preferCSSPageSize - Letter otherwise)
+    const p = await page.context().browser()!.newPage();
+    try {
+      await p.goto(page.url());
+      await p.evaluate(() => document.body.replaceChildren(document.getElementById('pv-print')!));
+      const print = async (attrs: Record<string, string | null>) => {
+        await p.evaluate((a) => { const el = document.getElementById('pv-print')!; for (const [k, v] of Object.entries(a)) { if (v === null) el.removeAttribute(k); else el.setAttribute(k, v); } }, attrs);
+        return pdfPages(await p.pdf({ preferCSSPageSize: true }));
+      };
+      const near = (got: number[], want: number[], tol: number) => got.length === want.length && got.every((v, i) => Math.abs(v - want[i]) <= tol);
+      const a4 = await print({});
+      const sizes = a4.boxes.map((b) => [b[2], b[3]]);
+      if (!sizes.every((b) => near(b, [595.28, 841.89], 1.5))) throw new Error(`not A4: ${JSON.stringify(sizes)}`);
+      if (a4.pages.length !== 2) throw new Error(`the page break: ${a4.pages.length} pages`);
+      // page 1 paints the heading, then the three paragraphs: balanced columns alone would set the
+      // first two in the left column - the break starts the right column with the second
+      const [, p1, p2, p3] = a4.pages[0].runs;
+      if (!(p3 && Math.abs(p1[1] - p2[1]) < 1 && p2[0] - p1[0] > 200 && p3[0] === p2[0] && p3[1] > p2[1])) throw new Error(`the column break: ${JSON.stringify(a4.pages[0].runs)}`);
+      if (!near(a4.pages.map((pg) => pg.marginLeftMm), [20, 20], 1)) throw new Error(`A4 margins: ${JSON.stringify(a4.pages.map((pg) => pg.marginLeftMm))}`);
+      // the page number: none on the first page, one run on the second - centered (210mm = 794px), in the 20mm bottom margin
+      const [n1, n2] = a4.pages.map((pg) => pg.marginRuns);
+      if (!(n1.length === 0 && n2.length === 1 && Math.abs(n2[0][0] - 397) < 12 && n2[0][1] > 1123 - 76 && n2[0][1] < 1123)) throw new Error(`page numbers: ${JSON.stringify([n1, n2])}`);
+      // bound: page 1 is a right page (inner margin left, 25mm), page 2 a left page (outer margin left, 15mm)
+      const bound = await print({ 'data-binding': 'inner' });
+      if (!near(bound.pages.map((pg) => pg.marginLeftMm), [25, 15], 1)) throw new Error(`inner binding: ${JSON.stringify(bound.pages.map((pg) => pg.marginLeftMm))}`);
+      const letter = await print({ 'data-print': 'letter', 'data-binding': null });
+      if (!letter.boxes.every((b) => near([b[2], b[3]], [612, 792], 1))) throw new Error(`not Letter: ${JSON.stringify(letter.boxes)}`);
+    } finally {
+      await p.close();
+    }
+  } },
+  { label: 'a record that may split runs over the two columns, each piece framed and wrapping (a scroll container never splits); its caption stays with the last piece - on screen and in print', run: async (page) => {
+    for (const media of ['screen', 'print'] as const) {
+      await page.emulateMedia({ media });
+      const r = await page.evaluate(() => {
+        const el = (id: string) => document.getElementById(id)!;
+        const pre = getComputedStyle(el('pv-split-pre'));
+        const pieces = [...el('pv-split-pre').getClientRects()];
+        const last = pieces[pieces.length - 1];
+        const cap = el('pv-split-cap').getBoundingClientRect();
+        return {
+          figure: getComputedStyle(el('pv-split-fig')).display,
+          pre: [pre.overflowX, pre.whiteSpace, pre.boxDecorationBreak, pre.textAlign],
+          pieces: pieces.length,
+          withLast: Math.abs(cap.left - last.left) < 2 && cap.top >= last.bottom - 1,
+        };
+      });
+      await page.emulateMedia({ media: null });
+      const want = { figure: 'block', pre: ['visible', 'pre-wrap', 'clone', 'start'], pieces: 2, withLast: true };
+      if (JSON.stringify(r) !== JSON.stringify(want)) throw new Error(`${media}: ${JSON.stringify(r)}`);
+    }
+  } },
+  { label: 'print: every figure prints whole unless it may split; the contents list stays on screen; the A4 page numbers its pages from the second (a margin box)', run: async (page) => {
+    await page.emulateMedia({ media: 'print' });
+    const r = await page.evaluate(() => ({
+      kept: [...new Set([...document.querySelectorAll('.paper figure:not([data-break-inside="allow"], .bibtex)')].map((f) => getComputedStyle(f).breakInside))],
+      toc: getComputedStyle(document.getElementById('pv-print-toc')!).display,
+      // the @page rules: a number at the foot of every page, none on the first
+      foot: [...document.styleSheets].flatMap((s) => { try { return [...s.cssRules]; } catch { return []; } })
+        .flatMap((r) => (r instanceof CSSLayerBlockRule ? [...r.cssRules] : [r]))
+        .filter((r): r is CSSPageRule => r instanceof CSSPageRule && /^paper-a4(:first)?$/.test(r.selectorText))
+        .map((r) => `${r.selectorText} ${[...r.cssRules].map((m) => (m as CSSStyleRule & { name: string }).name + ' ' + (m as CSSStyleRule).style.getPropertyValue('content')).join(' ')}`),
+    }));
+    await page.emulateMedia({ media: null });
+    if (JSON.stringify(r) !== JSON.stringify({ kept: ['avoid'], toc: 'none', foot: ['paper-a4 bottom-center counter(page)', 'paper-a4:first bottom-center none'] })) throw new Error(JSON.stringify(r));
   } },
   { label: 'narrow page: the abstract stops justifying (container query)', run: async (page) => {
     await page.setViewportSize({ width: 480, height: 900 });

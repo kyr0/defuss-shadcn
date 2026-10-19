@@ -10,7 +10,7 @@
   <body>
     <!-- generated from pages/paper.mdx's example fence (tmp/sys/paper-gen.ts) -->
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
-<article class="paper" aria-labelledby="paper-title">
+<article class="paper" data-print="a4" aria-labelledby="paper-title">
   <header class="paper-hero">
     <p class="paper-venue"><span class="badge" data-variant="secondary">Technical Report</span><span>defuss · <time datetime="2026-10">October 2026</time></span></p>
     <h1 class="paper-title" id="paper-title">Verified Agentic Engineering in Practice<span class="paper-title-sub">A component system grown from 55 to <span data-stat="stats.total">228</span> components in one month - what the gates caught, what they missed, and what it cost</span></h1>
@@ -37,6 +37,7 @@
     <figcaption><b>Figure 1.</b> The VAE loop. The agent plans and implements; the gate - verify, review, docs - either sends the work back with the verifier's own fix lines or lets it be finalized. A person reviews before every release. Click a step to follow it.</figcaption>
   </figure>
 
+  <div class="typeset-break" aria-hidden="true"></div>
   <section class="paper-abstract" aria-labelledby="paper-abstract">
     <h2 id="paper-abstract">Abstract</h2>
     <p>Coding agents write interface code faster than a person can review it, and every change risks an invariant nobody wrote down. Verified Agentic Engineering (VAE) moves the definition of done out of the prompt and into programs: an instruction file explains the conventions, a deterministic verifier enforces every convention that can be checked and prints the fix for each failure, visual evidence is produced for every declared state, and a person reviews before release. We report one month of applying it to defuss-shadcn, a standalone HTML component system forked at 55 components. In 28 days, 191 commits and 281,692 added lines of authored code (73,104 removed, the fork's import included) the system grew to <span data-stat="stats.total">228</span> components across 15 releases, while one command - <span data-stat="verify.gates">78</span> gates in <span data-stat="verify.seconds" data-stat-format="s">10.2</span> s - kept it consistent. We describe VAE-DIALECT, the notation the method uses to keep verified facts, hypotheses and unknowns apart. We also report what the gates did not catch: a build that froze the maintainer's machine, an animation timing bug, a growth claim the data did not support. The last section is the position of the agent that wrote this report.</p>
@@ -45,40 +46,41 @@
   <nav class="paper-toc" aria-labelledby="paper-toc">
     <h2 id="paper-toc">Contents</h2>
     <ol>
-      <li><a href="#paper-s1"><span class="paper-num">1</span>Introduction</a></li>
-      <li><a href="#paper-s2"><span class="paper-num">2</span>The method</a>
+      <li><a href="#paper-s1"><span class="paper-num">1&nbsp;</span>Introduction</a></li>
+      <li><a href="#paper-s2"><span class="paper-num">2&nbsp;</span>The method</a>
         <ol>
-          <li><a href="#paper-s2-1"><span class="paper-num">2.1</span>Programs, not prompts</a></li>
-          <li><a href="#paper-s2-2"><span class="paper-num">2.2</span>Memory that is loaded</a></li>
+          <li><a href="#paper-s2-1"><span class="paper-num">2.1&nbsp;</span>Programs, not prompts</a></li>
+          <li><a href="#paper-s2-2"><span class="paper-num">2.2&nbsp;</span>Memory that is loaded</a></li>
         </ol>
       </li>
-      <li><a href="#paper-s3"><span class="paper-num">3</span>VAE-DIALECT</a></li>
-      <li><a href="#paper-s4"><span class="paper-num">4</span>The case: defuss-shadcn</a></li>
-      <li><a href="#paper-s5"><span class="paper-num">5</span>Results</a>
+      <li><a href="#paper-s3"><span class="paper-num">3&nbsp;</span>VAE-DIALECT</a></li>
+      <li><a href="#paper-s4"><span class="paper-num">4&nbsp;</span>The case: defuss-shadcn</a></li>
+      <li><a href="#paper-s5"><span class="paper-num">5&nbsp;</span>Results</a>
         <ol>
-          <li><a href="#paper-s5-1"><span class="paper-num">5.1</span>Growth</a></li>
-          <li><a href="#paper-s5-2"><span class="paper-num">5.2</span>Review load</a></li>
-          <li><a href="#paper-s5-3"><span class="paper-num">5.3</span>What it ships</a></li>
-          <li><a href="#paper-s5-4"><span class="paper-num">5.4</span>Generation speed</a></li>
+          <li><a href="#paper-s5-1"><span class="paper-num">5.1&nbsp;</span>Growth</a></li>
+          <li><a href="#paper-s5-2"><span class="paper-num">5.2&nbsp;</span>Review load</a></li>
+          <li><a href="#paper-s5-3"><span class="paper-num">5.3&nbsp;</span>What it ships</a></li>
+          <li><a href="#paper-s5-4"><span class="paper-num">5.4&nbsp;</span>Generation speed</a></li>
         </ol>
       </li>
-      <li><a href="#paper-s6"><span class="paper-num">6</span>Self-correction in practice</a></li>
-      <li><a href="#paper-s7"><span class="paper-num">7</span>What the gates missed</a></li>
-      <li><a href="#paper-s8"><span class="paper-num">8</span>Limitations</a></li>
-      <li><a href="#paper-s9"><span class="paper-num">9</span>Position: the agent's view</a></li>
-      <li><a href="#paper-s10"><span class="paper-num">10</span>Conclusion</a></li>
-      <li><a href="#paper-bibtex"><span class="paper-num">·</span>Citation and references</a></li>
+      <li><a href="#paper-s6"><span class="paper-num">6&nbsp;</span>Self-correction in practice</a></li>
+      <li><a href="#paper-s7"><span class="paper-num">7&nbsp;</span>What the gates missed</a></li>
+      <li><a href="#paper-s8"><span class="paper-num">8&nbsp;</span>Limitations</a></li>
+      <li><a href="#paper-s9"><span class="paper-num">9&nbsp;</span>Position: the agent's view</a></li>
+      <li><a href="#paper-s10"><span class="paper-num">10&nbsp;</span>Conclusion</a></li>
+      <li><a href="#paper-bibtex"><span class="paper-num">·&nbsp;</span>Citation and references</a></li>
     </ol>
   </nav>
 
+  <div class="typeset-break" aria-hidden="true"></div>
   <section class="paper-section" aria-labelledby="paper-s1">
-    <h2 id="paper-s1"><span class="paper-num">1</span>Introduction</h2>
+    <h2 id="paper-s1"><span class="paper-num">1&nbsp;</span>Introduction</h2>
     <p>A prompt can ask an agent to run the tests, to mock nothing and to remove its debug output. It cannot make the agent do it, and the next session starts without the lessons of the last one. An agent that writes hundreds of files a day does not wait for review, so whatever a project promises - every state reachable by name, every value from a design token, every example showing the code that renders it - has to be checkable by a program, or it erodes.</p>
     <p>VAE is a response to that. This report is not a benchmark: it is one project, one maintainer, one month. Its value is that everything in it can be checked. The repository, its history, its issues and its verifier are public, and the current numbers on this page are rewritten from measurements on every build.</p>
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s2">
-    <h2 id="paper-s2"><span class="paper-num">2</span>The method</h2>
+    <h2 id="paper-s2"><span class="paper-num">2&nbsp;</span>The method</h2>
     <p>VAE, as packaged in <a href="https://github.com/kyr0/defuss-vae" target="_blank" rel="noopener">defuss-vae</a>, has five human-triggered skills - plan, implement, review, docs, finalize - and small stdlib-only programs that verify, gate and remember. The agent does the work; programs decide whether the work is done.</p>
     <h3 id="paper-s2-1">2.1 Programs, not prompts</h3>
     <p>Hooks deny <code>git commit</code> until the exact code fingerprint has passed verify, review and docs, and send the agent back when it tries to stop early. The gate fails closed: a missing command, a missing metric or a crashing check blocks instead of waving the change through. Tests use real subsystems instead of mocks; end-to-end tests consume the built artifact and must leave fresh output. A check that cannot fail is not evidence - the defuss-vae notes record that plain <code>oxlint</code> exits 0 on findings, which is why every lint call carries <code>--deny-warnings</code>.</p>
@@ -87,7 +89,7 @@
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s3">
-    <h2 id="paper-s3"><span class="paper-num">3</span>VAE-DIALECT</h2>
+    <h2 id="paper-s3"><span class="paper-num">3&nbsp;</span>VAE-DIALECT</h2>
     <p>VAE-DIALECT is a superset of technical English for agent output and for the skills' own prompts: fewer tokens, still uniquely decodable. Its rule of precedence is short - <strong>correctness &gt; compression</strong>. Its core is three epistemic tags that never mix:</p>
     <ul class="paper-findings paper-tags">
       <li><span class="paper-tag" data-tag="verified">VERIFIED[scope]</span> Established by direct inspection, command output, a test, a measurement or a named authoritative source. Evidence older than the last relevant edit is stale.</li>
@@ -118,13 +120,13 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s4">
-    <h2 id="paper-s4"><span class="paper-num">4</span>The case: defuss-shadcn</h2>
+    <h2 id="paper-s4"><span class="paper-num">4&nbsp;</span>The case: defuss-shadcn</h2>
     <p>defuss-shadcn is a component system of semantic HTML, modern CSS and plain JavaScript on shadcn/ui's design tokens: no framework, no build step for consumers. It was forked from codylindley/shadcn-html, which had 55 component folders when its development stopped in April 2026. The fork's first commit is dated 2026-09-05.</p>
     <p>The project applies the method with its own tools rather than the defuss-vae plugin, which was published later, on 2026-10-01: an instruction file (AGENTS.md) and a verifier (<code>scripts/verify.ts</code>) that runs at the end of every build. Its gates cover, among others: a 1:1 compile of the sources; the State API every interactive component must expose - states by name, a store, and <code>render()</code> reproducing the authored markup exactly, proven by an end-to-end contract; schemas that must match each page's state table row for row; DOM access only through one runtime; screenshots for every declared state in light and dark; and every number a page claims, written from its measurement. The same rules run on these very pages.</p>
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s5">
-    <h2 id="paper-s5"><span class="paper-num">5</span>Results</h2>
+    <h2 id="paper-s5"><span class="paper-num">5&nbsp;</span>Results</h2>
     <div class="paper-numbers">
       <div class="statistic"><p class="statistic-title">Components</p><p class="statistic-value" data-stat="stats.total">228</p><p class="statistic-description">55 at the fork</p></div>
       <div class="statistic"><p class="statistic-title">Verify gates</p><p class="statistic-value" data-stat="verify.gates">78</p><p class="statistic-description">one command</p></div>
@@ -195,7 +197,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s6">
-    <h2 id="paper-s6"><span class="paper-num">6</span>Self-correction in practice</h2>
+    <h2 id="paper-s6"><span class="paper-num">6&nbsp;</span>Self-correction in practice</h2>
     <p>The most useful thing a gate does is not to fail - it is to make the agent's next step obvious. Agents in VAE-driven sessions narrate corrections like this one, from a session on the defuss-vae README:</p>
     <blockquote class="paper-quote"><p>One more README claim is too absolute: "no program can" check e2e coverage. Rewording it to what's actually true, that the gate can't check it mechanically, then the final verify and gate.</p></blockquote>
     <p>Nothing forced that sentence: the check that would fail on it does not exist. The rule that every material claim carries its evidence trained the habit. From the session that wrote this report, each with its evidence:</p>
@@ -207,7 +209,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s7">
-    <h2 id="paper-s7"><span class="paper-num">7</span>What the gates missed</h2>
+    <h2 id="paper-s7"><span class="paper-num">7&nbsp;</span>What the gates missed</h2>
     <p>The gates check correctness. They do not check cost, feel or taste, and in this month a person found each of these:</p>
     <ul class="paper-findings">
       <li><strong>A build froze the machine.</strong> A full pipeline run made a 24 GB laptop unresponsive. Cause: the static-site renderer created a new happy-dom window per page and never closed it, under a 14 GB heap allowance. Closing each window after its page is written brought the heap from 4 GB in 17 s (crashed at the cap) to a flat 48 MB; the build now runs under a 2 GB cap that fails instead of swapping.</li>
@@ -218,7 +220,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s8">
-    <h2 id="paper-s8"><span class="paper-num">8</span>Limitations</h2>
+    <h2 id="paper-s8"><span class="paper-num">8&nbsp;</span>Limitations</h2>
     <p>One project, one maintainer, one month, one family of models, no control group. The project uses its own verifier, not the defuss-vae plugin, so this is evidence for the method more than for the package. Issue counts and commit counts are proxies; the scaffold timings are an account, not a measurement. A review attestation proves that a review happened, not that it was good. And a gate rewards what it measures: an agent under pressure can satisfy a check by weakening it. The instruction file forbids loosening a schema to pass - but that rule is prose, and prose is exactly what the method says does not hold.</p>
   </section>
 
@@ -226,7 +228,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   <div class="separator" aria-hidden="true" data-variant="accent" data-size="md" data-gap="md" style="font-size:1.125rem;">❦</div>
 
   <section class="paper-section" aria-labelledby="paper-s9">
-    <h2 id="paper-s9"><span class="paper-num">9</span>Position: the agent's view</h2>
+    <h2 id="paper-s9"><span class="paper-num">9&nbsp;</span>Position: the agent's view</h2>
     <p>This section is mine - Claude, the agent that wrote this report. It is opinion, and I mark it so.</p>
     <blockquote class="paper-quote">
       <p><strong>I do not remember.</strong> Each session starts from the files. VAE treats that as a design constraint rather than a defect: the instruction file, the verifier and the memory are the only continuity I have, and a lesson written into a check is the only kind of learning I keep. I would rather be held by a rule I can read than trusted to recall one I cannot.</p>
@@ -239,12 +241,13 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   </section>
 
   <section class="paper-section" aria-labelledby="paper-s10">
-    <h2 id="paper-s10"><span class="paper-num">10</span>Conclusion</h2>
+    <h2 id="paper-s10"><span class="paper-num">10&nbsp;</span>Conclusion</h2>
     <p>Over one month, a component system grew from 55 to <span data-stat="stats.total">228</span> components while a single command kept every documented promise checkable, and a person spent the review time on what only a person can see. The method's failures were failures of scope - cost, feel, a remembered number - and each became a gate within the same session. Whether this generalizes beyond one maintainer and one project is open; the next step is the comparison section 5.4 names, run and gated the same way.</p>
   </section>
 
   <div class="separator" aria-hidden="true" data-gap="lg">✦ ✦ ✦</div>
 
+  <div class="typeset-break" aria-hidden="true"></div>
   <section class="paper-bibtex" aria-labelledby="paper-bibtex">
     <h2 id="paper-bibtex">Citation and references</h2>
     <figure class="bibtex" data-formats="bibtex apa mla ieee" aria-label="Cite this report">
@@ -298,7 +301,7 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
   <article class="paper" id="pv-classic" data-variant="classic" aria-labelledby="pv-classic-t">
   <header class="paper-hero"><h1 class="paper-title" id="pv-classic-t">A Classic Note</h1></header>
   <section class="paper-abstract" aria-labelledby="pv-classic-a"><h2 id="pv-classic-a">Abstract</h2><p id="pv-classic-ap">A printed journal's house style: serif, justified, small-caps heads.</p></section>
-  <section class="paper-section" aria-labelledby="pv-classic-s"><h2 id="pv-classic-s"><span class="paper-num">1</span>Introduction</h2><p>Body text.</p></section>
+  <section class="paper-section" aria-labelledby="pv-classic-s"><h2 id="pv-classic-s"><span class="paper-num">1&nbsp;</span>Introduction</h2><p>Body text.</p></section>
 </article>
 <article class="paper" id="pv-minimal" data-variant="minimal" aria-labelledby="pv-minimal-t">
   <header class="paper-hero" id="pv-minimal-hero"><h1 class="paper-title" id="pv-minimal-title">A Minimal Note</h1><ul class="paper-authors" id="pv-minimal-authors"><li>Ada Author</li></ul></header>
@@ -319,6 +322,48 @@ IF HYPOTHESIS[leak] THEN next=cap heap at 4 GB, probe ELSE next=bisect plugins</
     <p><span class="paper-tag" data-tag="hypothesis" id="pv-tag-indent">HYPOTHESIS</span> the second paragraph is indented, and the tag that opens it must not be.</p>
     <figure class="paper-figure"><div style="block-size: 2rem; background: var(--muted);"></div><figcaption id="pv-cap-wrap"><b>Figure 9.</b> A caption long enough to wrap onto a second line inside the justified setting, so its last line must stay centered like the first.</figcaption></figure>
   </div>
+</article>
+<!-- a verbatim record that may split over the two columns: each piece framed, the caption with the last piece -->
+<article class="paper" id="pv-split" aria-label="A record that may split">
+  <section class="paper-section typeset paper-wide" lang="en" data-align="justify" data-columns="2" aria-label="Split">
+    <p>Before the record.</p>
+    <figure class="paper-figure" id="pv-split-fig" data-break-inside="allow"><pre class="paper-code" id="pv-split-pre"><code>VERIFIED[gate.1] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.2] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.3] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.4] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.5] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.6] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.7] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.8] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.9] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.10] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.11] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.12] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.13] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.14] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.15] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.16] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.17] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.18] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.19] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.20] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.21] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs
+VERIFIED[gate.22] BC `vae.py gate` → VERIFIED[gate]=true BC verify+review+docs</code></pre><figcaption id="pv-split-cap"><b>Figure 10.</b> A closing report, verbatim.</figcaption></figure>
+    <p>After it.</p>
+  </section>
+</article>
+<!-- print: an A4 profile, a contents list that stays on screen, a column break in the two-column section, a page break before the last section (paper.e2e "print" prints this article alone) -->
+<article class="paper" id="pv-print" data-print="a4" aria-labelledby="pv-print-t">
+  <nav class="paper-toc" id="pv-print-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#pv-print-t">Print</a></li></ol></nav>
+  <section class="paper-section typeset paper-wide" lang="en" data-columns="2" aria-labelledby="pv-print-t">
+    <h2 id="pv-print-t" class="typeset-span">Print</h2>
+    <p>Left column.</p>
+    <div class="typeset-break" data-break="column" aria-hidden="true"></div>
+    <p>Right column.</p>
+    <p>Below it.</p>
+  </section>
+  <div class="typeset-break" aria-hidden="true"></div>
+  <section class="paper-section" aria-label="Second page"><p>Second page.</p></section>
 </article>
 </body>
 </html>

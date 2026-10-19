@@ -29,6 +29,9 @@ Built from: [Badge](../../data-display/badge/component-skill.md), [BibTeX](../..
 - [`Container queries`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) - the title size and the abstract follow the page width, not the viewport
 - [`CSS counters`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters) - findings number themselves ("Finding 1")
 - [`text-wrap`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) - balanced titles and captions, pretty prose
+- [`@page`](https://developer.mozilla.org/en-US/docs/Web/CSS/@page) + [`page`](https://developer.mozilla.org/en-US/docs/Web/CSS/page) - named pages: the print profiles' sheet size and margins, only where a paper names them
+- [`:left`](https://developer.mozilla.org/en-US/docs/Web/CSS/:left) / [`:right`](https://developer.mozilla.org/en-US/docs/Web/CSS/:right) - mirrored margins for a bound duplex print
+- [`zoom`](https://developer.mozilla.org/en-US/docs/Web/CSS/zoom) - the print scale
 - [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) · [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) · [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
 
 ---
@@ -68,7 +71,7 @@ Built from: [Badge](../../data-display/badge/component-skill.md), [BibTeX](../..
   </section>
 
   <section class="paper-section" aria-labelledby="s1">
-    <h2 id="s1"><span class="paper-num">1</span>Introduction</h2>
+    <h2 id="s1"><span class="paper-num">1&nbsp;</span>Introduction</h2>
     <p>…</p>
     <h3>1.1 A subsection</h3>
     <ul class="paper-findings">
@@ -119,12 +122,13 @@ Built from: [Badge](../../data-display/badge/component-skill.md), [BibTeX](../..
 | `.paper-code` | `<pre>` | A code or record block in the reading column |
 | `.paper-quote` | `<blockquote>` | A quotation - serif, italic, a rule at the start; several `<p>` and a `<footer>` attribution for a longer one (a position statement) |
 | `.paper-chart` | a [Chart](../../charts/chart/component-skill.md) | Inside a `.paper-figure`: 20rem tall, full width |
+| `.paper-equation` / `.paper-equation-num` | `<div>` / `<span>` | A numbered display equation: a [Formula Rendering](../../math/math-renderer/component-skill.md) element centered in the column, its number - `(1)` - at the end edge; the text refers to it by that number. Printed, it stays whole |
 | `.paper-table` | `<figure>` | A Table + `.paper-table-caption`; `data-num` right-aligns a cell, `data-best` on a row bolds it |
 | `.paper-wide` | any child | Use the wide track |
 | `.paper-bibtex` | `<section>` | The citation - a [BibTeX](../../papers/bibtex/component-skill.md) block (format tabs, copy), or a plain mono `<pre>` |
 | `.paper-footer` | `<footer>` | Full width, muted, centered |
 
-Custom properties: `--paper-measure` (46rem), `--paper-wide` (64rem), `--paper-gap` (2.5rem).
+Custom properties: `--paper-measure` (46rem), `--paper-wide` (64rem), `--paper-gap` (2.5rem), `--paper-print-scale` (0.8, see Print).
 
 ---
 
@@ -140,6 +144,102 @@ Two columns are a composition, not a variant: put the body in a Typography
 `<div class="typeset paper-wide" data-columns="2" data-align="justify" lang="en">`
 (headings `.h3 typeset-span`, figures `.typeset-span`). Below two columns of
 `--typeset-column-width` it sets one column on its own - the phone case.
+
+## Print
+
+`data-print` on the `.paper` picks a print profile: the sheet, its margins
+and a print scale. Without it the browser's print defaults apply.
+
+```html
+<article class="paper" data-print="a4" data-binding="inner" aria-labelledby="paper-title">
+  <header class="paper-hero">...</header>
+  <section class="paper-abstract" aria-labelledby="paper-abstract">...</section>
+  <nav class="paper-toc" aria-labelledby="paper-toc">...</nav>
+  <div class="typeset-break" aria-hidden="true"></div>
+  <section class="paper-section typeset paper-wide" aria-labelledby="paper-s1">...</section>
+  <section class="paper-section typeset paper-wide" aria-labelledby="paper-s2">
+    ...
+    <figure class="paper-figure" data-break-inside="allow">
+      <pre class="paper-code"><code>a long verbatim record [...]</code></pre>
+      <figcaption><b>Figure 7.</b> ...</figcaption>
+    </figure>
+  </section>
+  ...
+</article>
+```
+
+| Attribute | Print |
+|---|---|
+| `data-print="a4"` | DIN A4, 20mm margins (named page `paper-a4`) |
+| `data-print="letter"` | US Letter, 1in margins (`paper-letter`) |
+| `data-binding="inner"` (with `data-print`) | mirrored margins for a bound duplex print: the inner margin is 10mm (0.5in) wider than the outer one - left on a right page, right on a left page - with the same text width |
+| `--paper-print-scale` | the print scale, 0.8 by default: the 16px body prints at 9.6pt, and two columns of `--typeset-column-width` fit the 170mm text width of A4; at 1 the two-column sections print in one column |
+
+- Breaks and keeps are Typography's: a `.typeset-break` before a section
+  starts it on a new page, `data-break="column"` inside a two-column section
+  starts the next column; figures and tables stay whole unless they carry
+  `data-break-inside="allow"`. See
+  [Typography](../../primitives/typography/component-skill.md), "Breaks and
+  keeps (print)".
+- Where to break: before the first section (the title block and the
+  abstract share the first page) and before the references; the other
+  sections run on. Then print the paper, look at every page and add a break
+  where a heading fell to the foot of a page - Chromium does not keep a
+  heading that spans the columns with the text below it. A break before
+  every section left most pages half empty. The print profile keeps the
+  rest: the paper's own headings with the next block, the teaser with its
+  caption, the key numbers in one piece, the end ornament and the footer
+  with what precedes them. The breaks depend on the text: change it, print
+  again.
+- A caption never breaks alone to the next column or page - on screen,
+  where the two columns balance, as in print. Every figure prints whole. A
+  long record may split over two columns or pages
+  (`data-break-inside="allow"` on its `figure`): each piece keeps its
+  frame, the record wraps instead of scrolling (a box that scrolls sideways
+  never splits), and the figure is a block, so its caption stays with the
+  last piece (in a grid figure Chromium ignored that keep). Shorten a long
+  verbatim record with `[...]` and say so in its caption; give every record
+  a numbered caption.
+- Every page but the first carries its number at the foot, centered in the
+  bottom margin (an `@page` margin box of the profile's named page).
+- The table of contents stays on screen: its links do nothing on paper, and
+  a printed line could not point to a page - Chromium has no
+  `target-counter()`.
+- Its parts print as paper can show them: a [BibTeX](../bibtex/component-skill.md)
+  block without its tabs and copy button (the format it is set to), a
+  [Diff](../../data-display/diff/component-skill.md) with both sides in full,
+  a [Code Mockup](../../mockup/mockup-code/component-skill.md) with its lines
+  wrapped. The HTML Preview Editor's Print device shows these print styles
+  on one A4 sheet - without pages, so the breaks and page numbers show only
+  in a real print.
+- In print a profiled paper is a block, not a grid: a page has one text
+  width, every part fills it, and the grid gap becomes margins. A grid would
+  lose text - Chromium set the end of a two-column section that runs over
+  several pages as a one-line row of columns, clipped at the page edge.
+- Its colors print as designed (`print-color-adjust: exact`): a print
+  dialog drops background graphics by default, and text set for a fill (a
+  chat bubble, a code window, an epistemic tag, a filled button) printed pale
+  on white paper.
+- The profiles are named pages: they apply only where a paper names them, so
+  loading `all.css` never changes the print dialog of another page. The page
+  names carry the `paper-` prefix because `@page` names are global, like
+  keyframe names.
+- End a heading's or a contents line's number with a no-break space:
+  `<span class="paper-num">1&nbsp;</span>Introduction`. A PDF's bookmarks
+  (`page.pdf({ outline: true })`) take each heading's laid-out text, and a
+  space after the number's flex item is dropped there ("1Introduction"); the
+  span's `word-spacing: -1ch` takes the no-break space's width back, so the
+  screen shows the same gap. A number without it still reads as before.
+- A headless print takes the CSS page size only when asked to (Playwright
+  `page.pdf({ preferCSSPageSize: true })`, Chrome DevTools Protocol
+  `preferCSSPageSize`); without it, Chromium prints on Letter.
+- Support (MDN compat data, 2026-10): `@page` with a `size` and the `page`
+  property in Chromium, Firefox and Safari 18.2+; `:left` / `:right` margins
+  in Chromium and Safari - Firefox prints both sides with the same margins.
+- Not covered: running heads, footnotes, and page numbers outside Chromium
+  (`@page` margin boxes are Chromium-only in MDN compat data, 2026-10;
+  checked in Chromium 153). A dark theme prints as it shows - print from the
+  light theme.
 
 ## ARIA
 

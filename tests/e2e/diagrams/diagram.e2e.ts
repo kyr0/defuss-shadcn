@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { startServer } from '../server.ts';
 import { assertRenderContract } from '../lib/render-contract.ts';
+import { pdfCssScale, UNSHRUNK } from '../lib/pdf-scale.ts';
 
 /**
  * Why: a diagram is only as good as its wires - drawn from the measured
@@ -644,6 +645,13 @@ try {
   });
 
   // render() contract last - it reloads the page
+  await check('print: diagrams drawn wider than the page redraw in the print layout - nothing shrinks the print', async () => {
+    const wide = await page.$$eval('.diagram', (d) => Math.max(...d.map((e) => e.getBoundingClientRect().width)));
+    assert.ok(wide > 800, `a diagram wider than a printed page (${wide}px)`);
+    const scale = pdfCssScale(await page.pdf());
+    assert.ok(Math.abs((scale ?? 0) - UNSHRUNK) < 0.01, `print scale ${scale} (300/96 = unshrunk)`);
+  });
+
   await check('render() contract: default / playing / paused', async () => {
     await ready();
     await assertRenderContract(page, '#dg-state', ['default', 'playing', 'paused', 'active'], {
