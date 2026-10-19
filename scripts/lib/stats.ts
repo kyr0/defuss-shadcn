@@ -268,3 +268,17 @@ export function statsClaimProblems(text: string, file: string, doc: StatsDoc): s
   if (normalizeForClaim(text).includes(claim)) return [];
   return [`${file} does not state the current footprint verbatim - expected: "${claim}"`];
 }
+
+/** the claim sentence as statsClaimText writes it, whatever its numbers */
+const CLAIM_SHAPE =
+  /\d+ components - \d+ with JavaScript, \d+ CSS-only - \d+\.\d KiB minified \+ compressed - \d+\.\d KiB as the all\.css\/all\.js bundle/g;
+
+/**
+ * Why: a release moves the version stamp core ships (src/shared/version.ts) - "0.9.9" to "0.9.10" is one byte
+ * longer, every bundle grows by it and the claim's rounded KiB can move: the v0.9.10 release stopped at verify on
+ * README's old figures. `bun run figures` (make build, after stats) writes the sentence from the measurement, as it
+ * writes the pages' data-stat figures. Text without the sentence stays as it is - the gate still names it.
+ */
+export function rewriteStatsClaim(text: string, doc: StatsDoc): string {
+  return text.replace(CLAIM_SHAPE, statsClaimText(doc));
+}

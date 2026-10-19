@@ -3,6 +3,7 @@ import {
   aggregateStats,
   buildStatsText,
   formatKiB,
+  rewriteStatsClaim,
   statsClaimProblems,
   statsClaimText,
   STATS_FILE,
@@ -164,6 +165,14 @@ describe('statsClaimText / statsClaimProblems', () => {
     expect(problems).toHaveLength(1);
     expect(problems[0]).toContain('README.md');
     expect(problems[0]).toContain(statsClaimText(doc));
+  });
+
+  it('rewrites a stale claim in place from the measurement and leaves the rest of the text (bun run figures)', () => {
+    const stale = statsClaimText(doc).replace('2 components', '3 components').replace('0.0 KiB minified', '9.9 KiB minified');
+    const text = `intro\n**${stale}**\n3 components elsewhere`;
+    expect(rewriteStatsClaim(text, doc)).toBe(`intro\n**${statsClaimText(doc)}**\n3 components elsewhere`);
+    expect(statsClaimProblems(rewriteStatsClaim(text, doc), 'README.md', doc)).toEqual([]);
+    expect(rewriteStatsClaim('no claim here', doc)).toBe('no claim here');
   });
 
   it('flags scattered numbers that do not form the contiguous sentence', () => {

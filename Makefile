@@ -55,12 +55,13 @@ purge-cdn: ## Purge jsDelivr @latest cache for all dist assets (run after deploy
 # docs pages are part of every component's fingerprint), screenshots, docs
 # mirror, gate + tests. Calls scripts/build.ts directly because `bun run build`
 # would run verify BEFORE the screenshots could be refreshed.
-build: ## Full pipeline: lint → compile → bundle → minify → stats → docs SSG → screenshots → docs → verify → tests → e2e
+build: ## Full pipeline: lint → compile → bundle → minify → stats → figures → docs SSG → screenshots → docs → verify → tests → e2e
 	bun run lint
 	bun scripts/build.ts
 	bun scripts/bundle.ts
 	bun run minify
 	bun run stats
+	bun run figures
 	bun run build:docs
 	bun run screenshots
 	bun run docs

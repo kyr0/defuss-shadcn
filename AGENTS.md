@@ -297,7 +297,9 @@ forget:
   from `dist/stats.json` by `statsClaimText()`; the index shows the same
   numbers as the `StatsCards` (whole KiB, generated at build time - no
   sentence); `verify`'s `stats claim (README)` gate fails when README's
-  sentence no longer matches the measurement.
+  sentence no longer matches the measurement. `bun run figures` writes it
+  (make build runs it after stats): a release's version bump moves the
+  shipped bytes - "0.9.9" to "0.9.10" stopped the v0.9.10 release at verify.
 
 `verify` enforces the pillar set (`README ↔ index parity`, hard gate) and the
 **`README ↔ index commit window`** gate: if the two files' last-touch commits
@@ -1538,7 +1540,7 @@ of removing it).
 `make help` lists the shortcuts (`setup`, `dev`, `test`, `test-run`, `coverage`, `e2e`, `lint`,
 `verify`, `screenshots`, `minify`, `stats`, `build`) - they wrap the equivalent `bun run <script>` commands;
 package.json stays the single source of truth. `make build` is the full pipeline:
-lint → compile → bundle → minify → stats → screenshots → docs-mirror → verify → tests → e2e (it calls `scripts/build.ts` +
+lint → compile → bundle → minify → stats → figures (the data-stat figures and README's stats claim) → screenshots → docs-mirror → verify → tests → e2e (it calls `scripts/build.ts` +
 `scripts/bundle.ts` directly, since `bun run build` runs `verify` before screenshots could be refreshed).
 `make minify` alone re-runs just the minify post-pass over `dist/components/` (every shipped `.css` gains a
 `.min.css`, every `.js` a `.min.js` + `.min.js.map`; tsc already emits the readable `.js.map`). verify's
