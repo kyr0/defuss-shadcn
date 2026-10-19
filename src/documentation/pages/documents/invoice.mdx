@@ -1,0 +1,578 @@
+---
+title: "Invoice"
+description: "The body of an invoice: line items as a Table whose rows carry their values, numbered, formatted with Intl in the invoice's locale and currency, and added up exactly - each line to the cent, the tax once per rate, rounded the German way. In a Letter it prints over pages with the header row on every page."
+slug: "invoice"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="invoice" title="Invoice" component="invoice">
+  The body of an invoice. The line items are a <DocLink href="table.html">Table</DocLink> whose rows carry their values - quantity, net unit price, tax rate - and the runtime numbers them, formats every amount in the invoice's locale and currency (<code>Intl.NumberFormat</code>) and writes the totals: the net sum, the tax per rate and the amount due. The arithmetic is exact and rounds as usual in Germany - each line to the cent, the tax once per rate on that rate's net sum, half away from zero. Put it into a <DocLink href="letter.html">Letter</DocLink> for the letterhead and the window envelope: printed, the items run over pages with the header row on every page, and the totals never start a page alone. German comes first, English second; <code>df$.shadcn.invoice.labels()</code> adds a language.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-invoice.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+  <a class="btn" data-variant="outline" href="files/invoice-din-5008.pdf" target="_blank" rel="noopener"><i data-lucide="file-down"></i> PDF</a>
+  <span class="text-sm text-muted-foreground">The first example printed: three A4 pages, the header row on each, the totals and the payment code on the last.</span>
+</div>
+
+<SkillPanel component="invoice">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section class="invoice"&gt;</code>: the invoice data in a <code>&lt;dl&gt;</code>, the line items in a <code>&lt;table&gt;</code> whose body rows carry <code>data-quantity</code>, <code>data-price</code> and <code>data-vat</code> and mark the cells to fill with <code>data-invoice</code>, and an empty <code>&lt;table class="invoice-totals"&gt;</code> the runtime fills.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="table.html">Table</DocLink> for the line items, a <DocLink href="qr-code.html">QR Code</DocLink> for the payment code, inside a <DocLink href="letter.html">Letter</DocLink> for the sheet.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="currency, quantity and percent in the invoice's locale"><code>Intl.NumberFormat</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt" title="exact decimal arithmetic - 3 x 0.335 rounds to 1.01"><code>BigInt</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="a changed line is added up again"><code>MutationObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/thead" title="the header row repeats on every printed page"><code>&lt;thead&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.invoice</code>
+    <code>.invoice-title</code>
+    <code>.invoice-meta</code>
+    <code>.invoice-items</code>
+    <code>.invoice-totals</code>
+    <code>.invoice-net</code>
+    <code>.invoice-tax</code>
+    <code>.invoice-total</code>
+    <code>.invoice-note</code>
+    <code>.invoice-payment</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>On a line row: <code>data-quantity</code>, <code>data-price</code> (net unit price), <code>data-vat</code> (rate in percent) - machine values with a dot. On its cells: <code>data-invoice="position|quantity|price|vat|amount"</code>. On the section: <code>data-currency</code> (ISO 4217, default EUR), <code>lang</code> (or an ancestor's) for the locale; the runtime writes <code>data-locale</code>. A value that is no number (<code>data-price="12,50"</code>, a comma) never counts as 0: the runtime marks its row with <code>data-invalid</code> and puts the reason where the totals were. The payment code: <code>data-iban</code>, <code>data-payee</code>, optional <code>data-bic</code> and <code>data-remittance</code> on the section, and a QR Code in <code>.invoice-payment</code> - the runtime writes the EPC transfer of the amount due into its <code>data-value</code> (error level M) and hides it when there is no transfer to scan (another currency than the euro, nothing due). Bank data the code cannot carry - an IBAN whose check digits fail, a name over 70 characters - is named under the totals.</SkillText>
+  </SkillField>
+
+  <SkillField label="Print">
+<SkillText>The items table follows Table's print rules: the header row on every page, rows whole, <code>data-keep-last</code> keeps the last three rows with the totals, which never start a page alone. In a Letter, page 1 carries the letterhead and the address field and later pages "Seite 2 von 3".</SkillText>
+  </SkillField>
+</SkillPanel>
+
+## Rounded the German way
+
+```html example label="Exact amounts" hint="Three SMS at 0,335 € are 1,005 € and round to 1,01 € (floating point would give 1,00 €). The 19 % tax is computed once on the 19 % lines' net sum - 2.898,51 € x 19 % = 550,7169 € → 550,72 € -, the 7 % tax on the book's 49,90 € (3,49 €); the amount due is 3.502,62 €. Rounding is half away from zero, credits included." previewStyle="align-items:stretch;padding:1.5rem;"
+<section class="invoice" id="inv-round" lang="de" data-currency="EUR" aria-labelledby="inv-round-title">
+  <h2 class="invoice-title" id="inv-round-title">Rechnung 2026-0143</h2>
+  <div class="table-container">
+    <table class="table invoice-items" data-keep-last>
+      <thead
+        ><tr class="table-row"
+          ><th class="table-head" scope="col" data-numeric>Pos.</th><th class="table-head" scope="col">Leistung</th
+          ><th class="table-head" scope="col" data-numeric>Menge</th><th class="table-head" scope="col">Einheit</th
+          ><th class="table-head" scope="col" data-numeric>Einzelpreis</th
+          ><th class="table-head" scope="col" data-numeric>USt.</th
+          ><th class="table-head" scope="col" data-numeric>Betrag</th></tr
+        ></thead
+      >
+      <tbody>
+        <tr class="table-row" data-quantity="12" data-price="95.00" data-vat="19"
+          ><td class="table-cell" data-numeric data-invoice="position"></td><td class="table-cell">Konzeption</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+        <tr class="table-row" data-quantity="18.5" data-price="95.00" data-vat="19"
+          ><td class="table-cell" data-numeric data-invoice="position"></td><td class="table-cell">Umsetzung</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+        <tr class="table-row" data-quantity="3" data-price="0.335" data-vat="19"
+          ><td class="table-cell" data-numeric data-invoice="position"></td
+          ><td class="table-cell">SMS-Benachrichtigungen</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Stk.</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+        <tr class="table-row" data-quantity="1" data-price="49.90" data-vat="7"
+          ><td class="table-cell" data-numeric data-invoice="position"></td><td class="table-cell">Fachbuch</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Stk.</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+      </tbody>
+    </table>
+  </div>
+  <table class="invoice-totals" aria-label="Summen"></table>
+</section>
+```
+
+## US invoice
+
+```html example label="Invoice 1087 in US dollars" hint="lang='en-US' and data-currency='USD': $1,200.00, 8.875%, the English totals (Subtotal, Tax 8.875% on $1,439.88, Total). The consulting line has a rate of 0: it counts toward the subtotal and gets no tax row." previewStyle="align-items:stretch;padding:1.5rem;"
+<section class="invoice" id="inv-us" lang="en-US" data-currency="USD" aria-labelledby="inv-us-title">
+  <h2 class="invoice-title" id="inv-us-title">Invoice 1087</h2>
+  <dl class="invoice-meta">
+    <div
+      ><dt>Invoice date</dt><dd><time datetime="2026-10-12">Oct 12, 2026</time></dd></div
+    >
+    <div
+      ><dt>Due date</dt><dd><time datetime="2026-11-11">Nov 11, 2026</time></dd></div
+    >
+    <div><dt>Bill to</dt><dd>Riverside Library</dd></div>
+  </dl>
+  <div class="table-container">
+    <table class="table invoice-items" data-keep-last>
+      <thead
+        ><tr class="table-row"
+          ><th class="table-head" scope="col" data-numeric>#</th><th class="table-head" scope="col">Description</th
+          ><th class="table-head" scope="col" data-numeric>Qty</th><th class="table-head" scope="col">Unit</th
+          ><th class="table-head" scope="col" data-numeric>Unit price</th
+          ><th class="table-head" scope="col" data-numeric>Tax</th
+          ><th class="table-head" scope="col" data-numeric>Amount</th></tr
+        ></thead
+      >
+      <tbody>
+        <tr class="table-row" data-quantity="10" data-price="120.00" data-vat="8.875"
+          ><td class="table-cell" data-numeric data-invoice="position"></td
+          ><td class="table-cell">Website design, phase 2</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">h</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+        <tr class="table-row" data-quantity="12" data-price="19.99" data-vat="8.875"
+          ><td class="table-cell" data-numeric data-invoice="position"></td
+          ><td class="table-cell">Hosting, 12 months</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">mo</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+        <tr class="table-row" data-quantity="2" data-price="150.00" data-vat="0"
+          ><td class="table-cell" data-numeric data-invoice="position"></td
+          ><td class="table-cell">Accessibility consulting (exempt)</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">h</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+      </tbody>
+    </table>
+  </div>
+  <table class="invoice-totals" aria-label="Totals"></table>
+  <p class="invoice-note">Payment due within 30 days. Sales tax: 8.875%; consulting is exempt.</p>
+</section>
+```
+
+## In a letter, over three pages
+
+```html example standalone label="Rechnung 2026-0142: 30 lines in a DIN 5008 letter" hint="An invoice inside a Letter (form B). The rows carry their values; the runtime numbers them, formats every amount in German (1.140,00 €) and writes the totals: the net sum, 19 % and 7 % tax on their own net sums, the amount due. Open it full screen and print: the 30 lines run over three pages, the header row on each, the totals with the last three rows. The bank data on the section (data-iban, data-bic, data-payee, data-remittance) becomes a GiroCode beside the payment terms: an EPC QR code that hands the transfer of the amount due to a banking app. The State tab switches the locale and the currency - the column headers stay your text, and in another currency than the euro the code hides (a SEPA transfer is in euro)." previewStyle="align-items:stretch;padding:1.5rem;"
+<article class="letter" lang="de" aria-label="Rechnung 2026-0142 an die Stadtbibliothek Musterstadt">
+  <header class="letter-head">
+    <div class="letter-brand">
+      <div><strong>Beispiel GmbH</strong>Software und Beratung</div>
+      <address>Musterstraße 12 · 10115 Berlin<br />Telefon 030 1234567<br />rechnung@beispiel.example</address>
+    </div>
+    <div class="letter-address">
+      <p class="letter-return">Beispiel GmbH · Musterstraße 12 · 10115 Berlin</p>
+      <address class="letter-recipient"
+        >Stadtbibliothek Musterstadt<br />Frau Erika Mustermann<br />Musterweg 1<br />12345 Musterstadt</address
+      >
+    </div>
+    <dl class="letter-info">
+      <div><dt>Kundennummer</dt><dd>K-1042</dd></div>
+      <div><dt>Unser Zeichen</dt><dd>AH</dd></div>
+      <div
+        ><dt>Datum</dt><dd><time datetime="2026-10-12">12. Oktober 2026</time></dd></div
+      >
+    </dl>
+  </header>
+  <h1 class="letter-subject" id="inv-de-title">Rechnung 2026-0142</h1>
+  <div class="letter-body">
+    <section
+      class="invoice"
+      id="inv-de"
+      data-currency="EUR"
+      data-iban="DE02 1203 0000 0000 2020 51"
+      data-bic="BYLADEM1001"
+      data-payee="Beispiel GmbH"
+      data-remittance="Rechnung 2026-0142"
+      data-state-demo
+      aria-labelledby="inv-de-title"
+    >
+      <dl class="invoice-meta">
+        <div><dt>Rechnungsnummer</dt><dd>2026-0142</dd></div>
+        <div
+          ><dt>Rechnungsdatum</dt><dd><time datetime="2026-10-12">12.10.2026</time></dd></div
+        >
+        <div><dt>Leistungszeitraum</dt><dd>01.-30.09.2026</dd></div>
+        <div
+          ><dt>Fällig am</dt><dd><time datetime="2026-10-26">26.10.2026</time></dd></div
+        >
+      </dl>
+      <p>Sehr geehrte Frau Mustermann, für die Betreuung Ihrer Website im September berechnen wir:</p>
+      <div class="table-container">
+        <table class="table invoice-items" data-keep-last>
+          <thead
+            ><tr class="table-row"
+              ><th class="table-head" scope="col" data-numeric>Pos.</th><th class="table-head" scope="col">Leistung</th
+              ><th class="table-head" scope="col" data-numeric>Menge</th><th class="table-head" scope="col">Einheit</th
+              ><th class="table-head" scope="col" data-numeric>Einzelpreis</th
+              ><th class="table-head" scope="col" data-numeric>USt.</th
+              ><th class="table-head" scope="col" data-numeric>Betrag</th></tr
+            ></thead
+          >
+          <tbody>
+            <tr class="table-row" data-quantity="1" data-price="240.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Wartungspauschale September 2026</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Monat</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="1.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Sicherheitsupdate CMS 6.4.2, Kopie und Live-System</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="2" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Sicherheitsupdates der Erweiterungen (12)</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.75" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Änderung der Startseite, Ticket 1012</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="3.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Neue Seite „Programm Herbst“, Ticket 1015</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="14" data-price="4.50" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Bildbearbeitung für das Programm</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Stk.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="3" data-price="0.335" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">SMS-Benachrichtigungen bei Ausfällen</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Stk.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="1" data-price="49.90" data-vat="7"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Fachbuch „Barrierefreie Websites“</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Stk.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Wöchentliche Prüfung der Updates, KW 36</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Wöchentliche Prüfung der Updates, KW 37</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Wöchentliche Prüfung der Updates, KW 38</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Wöchentliche Prüfung der Updates, KW 39</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Test der Datensicherung, KW 36</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Test der Datensicherung, KW 37</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Test der Datensicherung, KW 38</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Test der Datensicherung, KW 39</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Tippfehler im Impressum, Ticket 1016</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Öffnungszeiten aktualisiert, Ticket 1017</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.75" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Formular „Anmeldung“ ergänzt, Ticket 1018</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="1" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Veranstaltung eingetragen, Ticket 1019</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Bild der Woche getauscht, Ticket 1020</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Link im Newsletter korrigiert, Ticket 1021</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.75" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Pressemitteilung veröffentlicht, Ticket 1022</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="1" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Download „Satzung“ ersetzt, Ticket 1023</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Kontaktperson geändert, Ticket 1024</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Galerie „Sommerfest“ angelegt, Ticket 1025</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.75" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Weiterleitung eingerichtet, Ticket 1026</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="1" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Barrierefreiheit: Alternativtexte ergänzt, Ticket 1027</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.25" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Karte auf der Anfahrtsseite erneuert, Ticket 1028</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+            <tr class="table-row" data-quantity="0.5" data-price="95.00" data-vat="19"
+              ><td class="table-cell" data-numeric data-invoice="position"></td
+              ><td class="table-cell">Suchindex neu aufgebaut, Ticket 1029</td
+              ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">Std.</td
+              ><td class="table-cell" data-numeric data-invoice="price"></td
+              ><td class="table-cell" data-numeric data-invoice="vat"></td
+              ><td class="table-cell" data-numeric data-invoice="amount"></td
+            ></tr>
+          </tbody>
+        </table>
+      </div>
+      <table class="invoice-totals" aria-label="Summen"></table>
+      <div class="invoice-payment">
+        <figure class="qr-code" data-ecc="M" data-size="sm" hidden>
+          <div class="qr-code-symbol" role="img" aria-label="GiroCode: Überweisung des Rechnungsbetrags"></div>
+          <output class="qr-code-status" hidden></output>
+        </figure>
+        <p class="invoice-note"
+          >Zahlbar ohne Abzug bis zum 26.10.2026 auf das unten genannte Konto, mit der Rechnungsnummer als
+          Verwendungszweck - oder den GiroCode mit Ihrer Banking-App scannen.</p
+        >
+      </div>
+    </section>
+  </div>
+  <footer class="letter-footer">
+    <span>Beispiel GmbH · Sitz Berlin</span>
+    <span>Registergericht Musterstadt HRB 12345</span>
+    <span>Geschäftsführer: Max Muster</span>
+    <span>USt-IdNr. DE123456789</span>
+    <span>IBAN DE02 1203 0000 0000 2020 51</span>
+  </footer>
+</article>
+```
+
+## The totals follow the lines
+
+```html example label="Live: add a line, switch the language" hint="Add a line appends a row with its values (df$): the invoice adds it up again and fires invoice-totals. Deutsch / English set the state's locale - the numbers and the totals' words follow; the column headers are the page's text." previewStyle="align-items:stretch;padding:1.5rem;"
+<section class="invoice" id="inv-live" lang="en" data-currency="EUR" aria-label="A live invoice">
+  <div class="table-container">
+    <table class="table invoice-items" data-keep-last>
+      <thead
+        ><tr class="table-row"
+          ><th class="table-head" scope="col" data-numeric>#</th><th class="table-head" scope="col">Description</th
+          ><th class="table-head" scope="col" data-numeric>Qty</th><th class="table-head" scope="col">Unit</th
+          ><th class="table-head" scope="col" data-numeric>Unit price</th
+          ><th class="table-head" scope="col" data-numeric>Tax</th
+          ><th class="table-head" scope="col" data-numeric>Amount</th></tr
+        ></thead
+      >
+      <tbody>
+        <tr class="table-row" data-quantity="1" data-price="1200.00" data-vat="19"
+          ><td class="table-cell" data-numeric data-invoice="position"></td><td class="table-cell">Workshop</td
+          ><td class="table-cell" data-numeric data-invoice="quantity"></td><td class="table-cell">day</td
+          ><td class="table-cell" data-numeric data-invoice="price"></td
+          ><td class="table-cell" data-numeric data-invoice="vat"></td
+          ><td class="table-cell" data-numeric data-invoice="amount"></td
+        ></tr>
+      </tbody>
+    </table>
+  </div>
+  <table class="invoice-totals" aria-label="Totals"></table>
+</section>
+<div class="flex flex-wrap items-center gap-2 mt-4">
+  <button class="btn" data-variant="outline" data-size="sm" id="inv-live-add">Add a line</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="inv-live-de">Deutsch</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="inv-live-en">English</button>
+  <output id="inv-live-log" class="text-sm text-muted-foreground"></output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const invoice = df$('#inv-live');
+    const log = df$('#inv-live-log');
+    invoice.on('invoice-totals', (e) =>
+      log.text('invoice-totals: ' + e.detail.totals.total + ' ' + e.detail.totals.currency),
+    );
+    df$('#inv-live-add').on('click', () => {
+      const row = invoice.find('tbody tr').get(0).cloneNode(true);
+      row.dataset.quantity = '2.5';
+      row.dataset.price = '180.00';
+      row.cells[1].textContent = 'Follow-up session';
+      row.cells[3].textContent = 'h';
+      invoice.find('tbody').append(row);
+    });
+    df$('#inv-live-de').on('click', () => invoice.get(0).api.setState('default', { locale: 'de-DE' }));
+    df$('#inv-live-en').on('click', () => invoice.get(0).api.setState('default', { locale: 'en' }));
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each invoice:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the invoice formatted and added up in the locale and currency of its config (<code>data-locale</code> / <code>data-currency</code> on the section)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The config is <code>&#123; locale, currency &#125;</code>; a setState merges it, so a locale alone keeps the currency. The first example's invoice carries <code>data-state-demo</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/invoice.schema.json"><code>invoice.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `locale` | `enum` | `de-DE`, `de-CH`, `en-US`, `en-GB` | `de-DE` | The locale numbers and the totals' words are formatted in - `setState('default', { locale: 'en-US' })`; mirrored as `data-locale`. |
+| `currency` | `enum` | `EUR`, `USD`, `CHF`, `GBP`, `JPY` | `EUR` | The currency amounts are shown and rounded in - `setState('default', { currency: 'USD' })`; mirrored as `data-currency`. |
+```
+
+</StatesSection>
+
+<ApiSection component="invoice" />
+
+<SourceFiles component="invoice" section="css" />
+
+<SourceFiles component="invoice" section="js" jsTitle="JS" />
+
+</DocPage>

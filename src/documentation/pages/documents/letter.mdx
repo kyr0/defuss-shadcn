@@ -1,0 +1,204 @@
+---
+title: "Letter"
+description: "A business letter as one HTML article that prints by itself: DIN 5008 form B or A (letterhead, address field for a window envelope, information block, fold marks, page n of m) or a US business letter - a sheet at paper scale on screen, the page geometry in print."
+slug: "letter"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="letter" title="Letter" component="letter">
+  A business letter as one <code>&lt;article&gt;</code> that the browser prints by itself - no word processor, no PDF library. In print the page is the sheet: the first page has no top margin, so the letterhead, the address field for a window envelope and the information block sit at their DIN 5008 distances from the top edge; the fold and hole marks are drawn in the page margin; later pages carry "Seite 2 von 3". On screen the letter is a sheet at paper scale that follows the theme, and on a narrow screen its parts stack. Form B is the default, form A sits 18mm higher, <code>data-form="us"</code> sets a US business letter on US Letter. An <DocLink href="invoice.html">Invoice</DocLink> is a letter whose body is an invoice.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-letter.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+  <a class="btn" data-variant="outline" href="files/letter-din-5008.pdf" target="_blank" rel="noopener"><i data-lucide="file-down"></i> PDF</a>
+  <span class="text-sm text-muted-foreground">The first example printed: two A4 pages - open it full screen and print, or download the PDF.</span>
+</div>
+
+<SkillPanel component="letter">
+  <SkillField label="Native basis">
+<SkillText>One <code>&lt;article class="letter"&gt;</code>: a <code>&lt;header&gt;</code> with the letterhead, the address field (return line + <code>&lt;address&gt;</code>) and the information block (<code>&lt;dl&gt;</code>), the subject as a heading, the text, the enclosures and a <code>&lt;footer&gt;</code> with the company details. The page geometry is CSS Paged Media: <code>@page letter</code> (A4) and <code>@page letter-us</code> (US Letter).</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@page" title="the A4 and US Letter profiles, page 1 without a top margin, the margin boxes"><code>@page</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@page#page-margin_boxes" title="Seite 2 von 3 - counter(page) and counter(pages)"><code>Page margin boxes</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="from 174mm of text width the DIN geometry, below it the parts stack"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio" title="the screen sheet is at least A4 tall"><code>aspect-ratio</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="the page labels follow the letter's language, the marks its form"><code>:has()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.letter</code>
+    <code>.letter-head</code>
+    <code>.letter-brand</code>
+    <code>.letter-address</code>
+    <code>.letter-return</code>
+    <code>.letter-recipient</code>
+    <code>.letter-info</code>
+    <code>.letter-subject</code>
+    <code>.letter-body</code>
+    <code>.letter-signature</code>
+    <code>.letter-enclosures</code>
+    <code>.letter-footer</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-form="b|a|us"</code> (DIN 5008 form B - the default -, form A, a US business letter), <code>data-marks="none"</code> (no fold and hole marks), <code>lang</code> (<code>de</code> prints "Seite 2 von 3", every other language "Page 2 of 3").</SkillText>
+  </SkillField>
+
+  <SkillField label="Print">
+<SkillText>The letter prints on its named page: page 1 without a top margin, the address text 25mm from the left edge and 50mm from the top (form B; form A 32mm), the information block from 125mm, "Seite 2 von 3" from page 2, fold marks at 105 / 210mm (form A 87 / 192mm) and the hole mark at 148.5mm in page 1's margin. Black on white, whatever the theme. The company footer prints once, after the text: a footer on every page would need running elements, which Chromium does not support.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+## DIN 5008, form B
+
+```html example standalone label="Form B: a two-page letter" schema="none" hint="The default form: the letterhead (.letter-brand) in the top 45mm, the address field from 45mm - the return line above the recipient, both on the 25mm line a window envelope shows -, the information block from 125mm and 50mm down, the fold and hole marks at the left edge. Below 174mm of text width (a narrow card, a phone) the parts stack in reading order: widen the preview to Full. Open it full screen and print: page 1 is measured from the top edge, page 2 says Seite 2 von 2." previewStyle="align-items:stretch;padding:1.5rem;"
+<article class="letter" lang="de" aria-label="Brief an Erika Mustermann">
+  <header class="letter-head">
+    <div class="letter-brand">
+      <div><strong>Beispiel GmbH</strong>Software und Beratung</div>
+      <address>Musterstraße 12 · 10115 Berlin<br />Telefon 030 1234567<br />info@beispiel.example</address>
+    </div>
+    <div class="letter-address">
+      <p class="letter-return">Beispiel GmbH · Musterstraße 12 · 10115 Berlin</p>
+      <address class="letter-recipient">Frau<br />Erika Mustermann<br />Musterweg 1<br />20095 Hamburg</address>
+    </div>
+    <dl class="letter-info">
+      <div><dt>Ihr Zeichen</dt><dd>EM-17</dd></div>
+      <div><dt>Ihre Nachricht vom</dt><dd>05.10.2026</dd></div>
+      <div><dt>Unser Zeichen</dt><dd>AH-2026-031</dd></div>
+      <div><dt>Telefon</dt><dd>030 1234567-12</dd></div>
+      <div
+        ><dt>Datum</dt><dd><time datetime="2026-10-12">12. Oktober 2026</time></dd></div
+      >
+    </dl>
+  </header>
+  <h1 class="letter-subject">Angebot für die Wartung Ihrer Website</h1>
+  <div class="letter-body">
+    <p>Sehr geehrte Frau Mustermann,</p>
+    <p
+      >vielen Dank für Ihre Anfrage vom 5. Oktober. Gern bieten wir Ihnen an, die Website Ihres Hauses ab dem 1.
+      November zu betreuen: Aktualisierungen, Sicherheitsupdates und kleine Änderungen an Texten und Bildern, mit einer
+      festen Ansprechpartnerin in unserem Team.</p
+    >
+    <p
+      >Wir prüfen jede Woche, ob neue Versionen der eingesetzten Software vorliegen, spielen sie zuerst auf einer Kopie
+      der Website ein und übernehmen sie erst, wenn alle Seiten wie vorher funktionieren. Über jede Änderung erhalten
+      Sie am Monatsende einen kurzen Bericht.</p
+    >
+    <p
+      >Kleine Änderungen - ein neuer Text, ein Bild, ein Termin - erledigen wir innerhalb von zwei Werktagen nach Ihrer
+      Nachricht. Größere Vorhaben, etwa eine neue Seite für Ihr Programm im Frühjahr, besprechen wir vorher mit Ihnen
+      und bieten sie gesondert an.</p
+    >
+    <p
+      >Für die Betreuung berechnen wir eine monatliche Pauschale von 240,00 Euro zuzüglich Umsatzsteuer. Darin sind bis
+      zu vier Stunden für Änderungen enthalten; weitere Stunden berechnen wir mit 95,00 Euro. Die Pauschale ist
+      monatlich kündbar, erstmals zum Ende des dritten Monats.</p
+    >
+    <p
+      >Die Daten Ihrer Website sichern wir täglich in einem Rechenzentrum in Deutschland und bewahren jede Sicherung
+      dreißig Tage auf. Fällt die Website aus, benachrichtigt uns die Überwachung, und wir beginnen innerhalb einer
+      Stunde mit der Behebung - an Werktagen zwischen 8 und 18 Uhr.</p
+    >
+    <p
+      >Den Vertrag mit allen Einzelheiten fügen wir diesem Schreiben bei. Wenn Sie einverstanden sind, senden Sie uns
+      bitte ein unterschriebenes Exemplar zurück; wir melden uns dann für ein erstes Gespräch, in dem wir die Zugänge
+      und die Abläufe abstimmen.</p
+    >
+    <p
+      >Für Fragen erreichen Sie mich unter der oben genannten Durchwahl oder per E-Mail. Wir freuen uns darauf, Ihre
+      Website zu betreuen.</p
+    >
+    <p class="letter-signature">Mit freundlichen Grüßen<span>Aron Homberg</span></p>
+  </div>
+  <p class="letter-enclosures"><span>Anlage</span><br />Wartungsvertrag AH-2026-031</p>
+  <footer class="letter-footer">
+    <span>Beispiel GmbH · Sitz Berlin</span>
+    <span>Registergericht Musterstadt HRB 12345</span>
+    <span>Geschäftsführer: Max Muster</span>
+    <span>USt-IdNr. DE123456789</span>
+    <span>IBAN DE02 1203 0000 0000 2020 51</span>
+  </footer>
+</article>
+```
+
+## DIN 5008, form A
+
+```html example label="Form A: 18mm higher" schema="none" hint="data-form='a' moves the letterhead to 27mm, the address field to 27mm and the information block to 32mm; the fold marks sit at 87mm and 192mm. data-marks='none' would hide the marks." previewStyle="align-items:stretch;padding:1.5rem;"
+<article class="letter" data-form="a" lang="de" aria-label="Brief an das Ordnungsamt Musterstadt">
+  <header class="letter-head">
+    <div class="letter-brand">
+      <div><strong>Beispiel GmbH</strong></div>
+      <address>Musterstraße 12 · 10115 Berlin</address>
+    </div>
+    <div class="letter-address">
+      <p class="letter-return">Beispiel GmbH · Musterstraße 12 · 10115 Berlin</p>
+      <address class="letter-recipient"
+        >Stadtverwaltung Musterstadt<br />Ordnungsamt<br />Rathausplatz 1<br />12345 Musterstadt</address
+      >
+    </div>
+    <dl class="letter-info">
+      <div><dt>Aktenzeichen</dt><dd>OA-2026-4471</dd></div>
+      <div
+        ><dt>Datum</dt><dd><time datetime="2026-10-12">12.10.2026</time></dd></div
+      >
+    </dl>
+  </header>
+  <h1 class="letter-subject">Sondernutzung des Gehwegs am 24. Oktober 2026</h1>
+  <div class="letter-body">
+    <p>Sehr geehrte Damen und Herren,</p>
+    <p
+      >für die Anlieferung neuer Server stellen wir am 24. Oktober zwischen 7 und 11 Uhr einen Lieferwagen vor unserem
+      Haus ab. Die Genehmigung liegt diesem Schreiben bei.</p
+    >
+    <p class="letter-signature">Mit freundlichen Grüßen<span>Max Muster</span></p>
+  </div>
+</article>
+```
+
+## US business letter
+
+```html example label="US: block format on US Letter" schema="none" hint="data-form='us': US Letter (8.5 x 11in) with 1in margins, block format - letterhead, date, inside address, salutation, body, closing - everything flush left in reading order, no fold marks. Printed, page 2 would say Page 2 of 2." previewStyle="align-items:stretch;padding:1.5rem;"
+<article class="letter" data-form="us" lang="en" aria-label="Letter to Jordan Lee">
+  <header class="letter-head">
+    <div class="letter-brand">
+      <div><strong>Example Studio LLC</strong>Design and Development</div>
+      <address>100 Example Street, Suite 4<br />Springfield, IL 62704</address>
+    </div>
+    <dl class="letter-info">
+      <div
+        ><dt>Date</dt><dd><time datetime="2026-10-12">October 12, 2026</time></dd></div
+      >
+    </dl>
+    <div class="letter-address">
+      <address class="letter-recipient"
+        >Jordan Lee<br />Riverside Library<br />200 Main Street<br />Springfield, IL 62701</address
+      >
+    </div>
+  </header>
+  <h1 class="letter-subject">Re: Website maintenance proposal</h1>
+  <div class="letter-body">
+    <p>Dear Jordan Lee,</p>
+    <p
+      >Thank you for your call last week. As discussed, we propose to maintain the library's website from November 1:
+      updates, security patches and small changes to text and images, with one contact person on our team.</p
+    >
+    <p>The enclosed agreement lists the details. We look forward to working with you.</p>
+    <p class="letter-signature">Sincerely,<span>Aron Homberg</span></p>
+  </div>
+  <p class="letter-enclosures"><span>Enclosure</span><br />Maintenance agreement</p>
+</article>
+```
+
+<SourceFiles component="letter" />
+</DocPage>
