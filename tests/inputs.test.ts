@@ -84,6 +84,12 @@ describe('componentFingerprintsFrom', () => {
     }
   });
 
+  it('the search index (every page\'s headings) stales nothing - only the closed palette reads it', () => {
+    const base = componentFingerprintsFrom({ ...tree(), 'documentation/js/search-index.js': 'index-1' });
+    const next = componentFingerprintsFrom({ ...tree(), 'documentation/js/search-index.js': 'index-2' });
+    expect(next).toEqual(base);
+  });
+
   it('is deterministic regardless of key insertion order', () => {
     const entries = Object.entries(tree()).reverse() as [string, Uint8Array | string][];
     expect(componentFingerprintsFrom(Object.fromEntries(entries))).toEqual(componentFingerprintsFrom(tree()));

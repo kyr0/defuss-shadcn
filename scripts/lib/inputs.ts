@@ -6,7 +6,7 @@
  *
  * Fingerprint per component = global shell (theme tokens, doc css/js/fonts,
  * the core runtime) + that component's shipped files + its doc page. The
- * all.* and wysiwyg.* bundles are deliberately NOT part of it: they contain every
+ * all.* bundle and the extra bundles (wysiwyg.*, mermaid.*, math.*) are deliberately NOT part of it: they contain every
  * component's code, so hashing them would re-shoot everything on any single
  * component edit - the exact cost this fingerprint exists to avoid.
  * Known ceiling (ponytail): cross-component demo bleed-through (a .btn inside
@@ -30,13 +30,20 @@ export const SHELL_DIRS = ['theme', 'documentation/css', 'documentation/js', 'do
  * Standalone global-runtime files (exported for the fs half's walker): the
  * core runtime every page embeds first inside its bundle (df$ + the shared
  * state/render helpers) - a core change legitimately re-shoots EVERY
- * component. The all.* and wysiwyg.* bundles stay out on purpose - see the header.
+ * component. The all.* and extra bundles stay out on purpose - see the header.
  */
 export const SHELL_FILES = ['components/core.css', 'components/core.js'];
 
+/**
+ * Files inside SHELL_DIRS no screenshot can show: the generated search index holds every page's <h2>, so a heading
+ * added or renamed on ANY page re-shot all ~236 components (~8 min) - yet only the docs palette reads it, lazily on
+ * its first open (runtime/layout.ts), and the shots crop to `main .preview` and the state anchors, the palette closed.
+ */
+export const SHELL_IGNORED = ['documentation/js/search-index.js'];
+
 /** The membership rules - ONE source shared by the pure core (partitioning) and the fs half (walking). */
 const isShellFile = (rel: string): boolean =>
-  SHELL_FILES.includes(rel) || SHELL_DIRS.some((d) => rel.startsWith(`${d}/`));
+  !SHELL_IGNORED.includes(rel) && (SHELL_FILES.includes(rel) || SHELL_DIRS.some((d) => rel.startsWith(`${d}/`)));
 
 const isOwnFile = (rel: string, name: string): boolean =>
   // VERIFIED: the page sits in its section folder (page-dirs.ts): documentation/<section>/<name>.html

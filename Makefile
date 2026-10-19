@@ -93,7 +93,7 @@ start stop restart status log: ; @echo "∅ $@: no service"
 # purpose. `make bench AGENT="Claude Code · Opus 5.5 (high effort)"` times one
 # green verify run into src/documentation/data/verify-timing.json (machine,
 # chip, OS, Bun, agent) and rewrites the data-stat figures that cite it.
-AGENT ?= none (run by hand)
+AGENT ?= hand
 bench: ## Benchmarks (on demand): time the verifier → data/verify-timing.json, then rewrite the cited figures
 	bun run time-verify --agent "$(AGENT)"
 	bun run figures

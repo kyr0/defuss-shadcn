@@ -4,14 +4,14 @@ import { join, relative, sep } from 'node:path';
 import { componentDirs } from '../../src/documentation/lib/component-dirs.ts';
 import { appResolver } from '../../scripts/lib/apps.ts';
 import { componentSources } from '../../scripts/lib/apps-files.ts';
-import { e2eInputs, fixturesNamed } from '../../scripts/lib/e2e-select.ts';
+import { e2eInputs, fixturesNamed, inputContent } from '../../scripts/lib/e2e-select.ts';
 
 /**
  * Why: `bun run e2e` runs tests/e2e/*.e2e.ts as isolated child processes (one
  * crash must not hide the other components' results) - and only the ones whose
  * inputs changed since they last passed. Each file's inputs come from what it
- * loads (scripts/lib/e2e-select.ts: its fixtures, the dist files they link and
- * the sources behind them); their content is fingerprinted, and a pass records
+ * loads (scripts/lib/e2e-select.ts: its fixtures and the built dist files they
+ * link); their content is fingerprinted, and a pass records
  * the fingerprint in .cache/e2e-manifest.json. A failed or never-run file
  * always runs.
  *
@@ -45,7 +45,7 @@ const fileHash = new Map<string, string>();
 const hashOf = (rel: string): string => {
   let h = fileHash.get(rel);
   if (!h) {
-    h = createHash('sha256').update(readFileSync(join(ROOT, rel))).digest('hex');
+    h = createHash('sha256').update(inputContent(rel, readFileSync(join(ROOT, rel)))).digest('hex');
     fileHash.set(rel, h);
   }
   return h;

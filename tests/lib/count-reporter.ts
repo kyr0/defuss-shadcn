@@ -19,9 +19,13 @@ const ROOT = join(import.meta.dirname, '..', '..');
 const OUT = join(ROOT, 'src', 'documentation', 'data', 'unit-tests.json');
 
 export default class CountReporter implements Reporter {
-  onTestRunEnd(testModules: ReadonlyArray<TestModule>): void {
+  onTestRunEnd(testModules: ReadonlyArray<TestModule>, unhandledErrors: ReadonlyArray<unknown> = [], reason?: string): void {
     const onDisk = readdirSync(join(ROOT, 'tests')).filter((f) => f.endsWith('.test.ts')).length;
     if (testModules.length < onDisk) return; // a filtered run - not the suite
+    // a run that broke off is no count of the suite either. VERIFIED: (the 2026-10-13 gate) the browser connection
+    // closed in one file ("VITEST_BROWSER_CONNECTION_CLOSED", 1 error) and the record became 634 passed of 685 - the
+    // docs' figures and verify's `stat figures` gate then read a number no suite produced
+    if (unhandledErrors.length || reason === 'interrupted') return;
     let tests = 0;
     let passed = 0;
     for (const m of testModules) {

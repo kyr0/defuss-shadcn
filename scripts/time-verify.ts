@@ -48,7 +48,8 @@ if (run.status !== 0 || !/verify: OK/.test(out)) {
   process.exit(1);
 }
 const gates = out.split('\n').filter((l) => /^\s+✓ /.test(l)).length;
-const e2eFiles = readdirSync(join(ROOT, 'tests', 'e2e')).filter((f) => f.endsWith('.e2e.ts')).length;
+// VERIFIED: (the 2026-10-13 bench) the e2e files sit in section folders (tests/e2e/<section>/) - a flat listing counted 0
+const e2eFiles = readdirSync(join(ROOT, 'tests', 'e2e'), { recursive: true, encoding: 'utf8' }).filter((f) => f.endsWith('.e2e.ts')).length;
 const { name, chip } = machine();
 const timing = {
   command: 'bun scripts/verify.ts',
@@ -61,7 +62,8 @@ const timing = {
   memoryGB: Math.round(totalmem() / 1024 ** 3),
   os: platform() === 'darwin' ? `macOS ${execSync('sw_vers -productVersion', { encoding: 'utf8' }).trim()}` : `${platform()} ${release()}`,
   bun: Bun.version,
-  agent: arg('agent') ?? 'none (run by hand)',
+  // the deck reads "run by <agent> on <date>"
+  agent: arg('agent') ?? 'hand',
   date: new Date().toISOString().slice(0, 10),
 };
 writeFileSync(OUT, `${JSON.stringify(timing, null, 2)}\n`);

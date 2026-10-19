@@ -31,7 +31,9 @@ CONFIG = {
     "arch": {"exclude": []},       # folder globs exempt from ARCH.md coverage; False drops it
     # Changed package.json: packageManager, description, license, author; new packages also type, linter, library build.
     "package": {"manager": "bun", "type": "module", "lint": "oxlint", "library_build": "pkgroll"},  # False disables
-    "prose": {"allow": {}, "phrases": []},
+    # The Document Editor's sample inputs are data, not doc pages: a German report in German typography that the
+    # review pipeline quotes byte for byte - rewriting a character would break the quotes that anchor in it.
+    "prose": {"allow": {"plans/document-editor-loading/input/*.md": "–‘’“”„…"}, "phrases": []},
 }
 
 # Deterministic invariants only; no semantic guesses.
@@ -47,4 +49,21 @@ RULES = [{
     "pattern": r"unittest\.mock|from\s+unittest\s+import\s+mock|MagicMock\(|mock\.patch|mocker\.|"
                r"jest\.(?:mock|fn|spyOn)\(|vi\.(?:mock|fn|spyOn)\(|sinon\.|gomock\.|mock\.Mock\b|Mockito\.|@Mock\s|mockk\(",
     "claim": "tests exercise real subsystems, not mock frameworks",
+}, {
+    # VERIFIED (2026-10-13): `stat figures` and `example fences` read the pages folder with a flat readdirSync, so
+    # after the pages moved into section folders they checked pages/index.mdx alone - 390 pages unchecked, green.
+    # Every page walk goes through pageDirs (src/documentation/lib/page-dirs-files.ts).
+    "id": "verify.pages-walk",
+    "kind": "not_regex",
+    "path": "scripts/verify.ts",
+    "pattern": r"readdirSync\(\s*(?:DOCS_PAGES|join\(\s*DOCS\s*,\s*'pages'\s*\))\s*[,)]",
+    "claim": "verify walks the doc pages through pageDirs, never a flat readdir of the pages folder",
+}, {
+    # VERIFIED (2026-10-13): `make bench` recorded e2eFiles 0 - time-verify.ts listed tests/e2e/ flat, but the e2e files
+    # sit in section folders since the move; the flagship deck showed "E2E test files 0".
+    "id": "bench.e2e-count",
+    "kind": "regex",
+    "path": "scripts/time-verify.ts",
+    "pattern": r"readdirSync\(\s*join\(\s*ROOT\s*,\s*'tests'\s*,\s*'e2e'\s*\)\s*,\s*\{[^}]*recursive:\s*true",
+    "claim": "time-verify counts the e2e files in their section folders (a recursive listing)",
 }]
