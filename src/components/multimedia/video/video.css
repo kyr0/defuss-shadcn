@@ -1,0 +1,267 @@
+/* -- Video component ------------------------------------------ */
+/* A native <video> in a frame of its ratio, a captions overlay   */
+/* the runtime fills from the active cue, and a control bar of    */
+/* Buttons, Sliders and readouts (data-video-action / -output).   */
+/* data-variant="overlay" lays the bar over the picture; it hides */
+/* while the video plays and nothing points at it.                */
+@layer components {
+  .video {
+    --video-ratio: 16 / 9;
+
+    position: relative;
+    display: grid;
+    margin: 0;
+    inline-size: 100%;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+  }
+
+  .video-frame {
+    position: relative;
+    aspect-ratio: var(--video-ratio);
+    background-color: #000;
+
+    & > video {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: contain;
+    }
+  }
+
+  /* the active cue - empty when captions are off or nothing is said */
+  .video-captions {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0.75rem;
+    inline-size: fit-content;
+    max-inline-size: 90%;
+    margin-inline: auto;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-sm);
+    background-color: rgb(0 0 0 / 0.75);
+    color: #fff;
+    font-size: clamp(0.8125rem, 3.4cqi, 1.375rem);
+    line-height: 1.35;
+    text-align: center;
+    white-space: pre-line;
+    text-wrap: balance;
+    pointer-events: none;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .video-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    padding: 0.375rem 0.5rem;
+    border-block-start: 1px solid var(--border);
+
+    & > [data-video-action="seek"] {
+      flex: 1;
+      min-inline-size: 3rem;
+    }
+
+    & > [data-video-action="volume"] {
+      inline-size: 4.5rem;
+    }
+  }
+
+  /* a readout: m:ss in even digits, so the bar does not jitter */
+  .video-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* a toggle with two icons shows the first when off, the second when on (play / pause, sound / muted) */
+  [data-video-action][aria-pressed="false"] > :nth-child(2),
+  [data-video-action][aria-pressed="true"] > :nth-child(1):not(:only-child) {
+    display: none;
+  }
+
+  /* a control the page may not use (full screen in a frame without it) - over the Button's own display */
+  [data-video-action][hidden] {
+    display: none;
+  }
+
+  /* a rate select keeps its own width in the row (a Select is as wide as its box) */
+  select[data-video-action="rate"] {
+    flex: none;
+    inline-size: auto;
+  }
+
+  /* the sound button with a vertical volume in a panel above it (below with data-side="bottom"), shown while the
+     pointer or the focus is on either - the row keeps one button's width */
+  .video-volume {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .video-volume-panel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    margin-block-end: 0.375rem;
+    padding: 0.75rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    box-shadow: var(--shadow-md);
+    translate: -50% 0;
+    visibility: hidden;
+    opacity: 0;
+
+    /* the gap to the button belongs to the hover */
+    &::after {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 100%;
+      block-size: 0.5rem;
+      content: "";
+    }
+
+    /* a vertical range's block axis is horizontal: its length is its height */
+    & > .slider[data-orientation="vertical"] {
+      height: 5.5rem;
+    }
+
+    .video-volume:is(:hover, :focus-within) > & {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .video-volume[data-side="bottom"] > & {
+      inset-block: 100% auto;
+      margin-block: 0.375rem 0;
+
+      &::after {
+        inset-block: auto 100%;
+      }
+    }
+  }
+
+  /* the bar over the picture: a dark scrim, light controls */
+  .video[data-variant="overlay"] {
+    & > .video-controls {
+      --foreground: #fff;
+      --muted-foreground: rgb(255 255 255 / 0.8);
+      --accent: rgb(255 255 255 / 0.16);
+      --accent-foreground: #fff;
+      --primary: #fff;
+      --primary-foreground: #000;
+      --input: rgb(255 255 255 / 0.35);
+
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: 0;
+      padding-block-start: 1.5rem;
+      border-block-start: 0;
+      background-image: linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.72));
+      color: #fff;
+    }
+
+    & .video-volume-panel {
+      border-color: rgb(255 255 255 / 0.2);
+      background-color: rgb(0 0 0 / 0.78);
+    }
+
+    /* the captions sit above the bar while it shows */
+    &:is(:hover, :focus-within, :not([data-state-name="playing"])) .video-captions {
+      inset-block-end: 3.25rem;
+    }
+
+    &[data-state-name="playing"]:not(:hover, :focus-within) > .video-controls {
+      opacity: 0;
+    }
+  }
+
+  /* full screen: the picture takes what the bar leaves */
+  .video:fullscreen {
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+    background-color: #000;
+
+    & > .video-frame {
+      flex: 1;
+      aspect-ratio: auto;
+    }
+  }
+
+  /* a narrow player keeps play, the scrubber, the time and the sound */
+  @container (inline-size < 26rem) {
+    .video-controls > [data-video-action="volume"],
+    .video-controls > [data-video-output="duration"],
+    .video-controls > [data-video-action="skip"] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .video[data-variant="overlay"] {
+      & > .video-controls {
+        transition: opacity 0.2s ease;
+      }
+
+      & .video-captions {
+        transition: inset-block-end 0.2s ease;
+      }
+    }
+
+    .video-volume-panel {
+      transition:
+        opacity 0.15s ease,
+        visibility 0.15s allow-discrete;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .video-captions {
+      background-color: #000;
+    }
+
+    .video-time {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .video {
+      border-color: CanvasText;
+    }
+
+    .video-captions {
+      border: 1px solid CanvasText;
+      background-color: Canvas;
+      color: CanvasText;
+      forced-color-adjust: none;
+    }
+
+    .video[data-variant="overlay"] > .video-controls {
+      background: Canvas;
+      opacity: 1;
+    }
+
+    .video-volume-panel {
+      border-color: CanvasText;
+      background-color: Canvas;
+    }
+  }
+}

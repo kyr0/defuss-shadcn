@@ -3,7 +3,7 @@ name: Video Player
 type: BLK
 section: website
 why: The browser's own <video controls> plays, seeks, goes fullscreen and shows captions from a <track> - accessible and keyboard-ready, no player library.
-when: Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media.
+when: Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media. A player the page drives (a State API, controls elsewhere on the page, captions from data, a Media Timeline) is the Multimedia Video component.
 where: dist/components/video-player/video-player.css
 supportedStates: default
 ---

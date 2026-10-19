@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>media-timeline e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/card/card.css" />
+    <link rel="stylesheet" href="/dist/components/slider/slider.css" />
+    <link rel="stylesheet" href="/dist/components/dropdown/dropdown.css" />
+    <link rel="stylesheet" href="/dist/components/video/video.css" />
+    <link rel="stylesheet" href="/dist/components/media-timeline/media-timeline.css" />
+  </head>
+  <!-- mirrors the doc page: a timeline alone (scenes, markers, a span), one zoomed with header controls, one driving a
+       Video (scenes with info, sounds in lanes, captions) with an info outlet, readouts and loop controls outside it,
+       one driving a bare <video> with a captions track, one of content and annotation rows (for, backgrounds, CSS
+       colours) under two scale rows with an events outlet, one of seconds over frames, and one whose text rows a
+       Video lists in its captions menu -->
+  <body style="padding: 2rem; display: grid; gap: 1.5rem; width: 760px">
+    <div class="media-timeline" id="mt-alone" role="group" aria-label="A day at the harbour">
+      <script type="application/json" class="media-timeline-source">
+        {
+          "version": 1,
+          "duration": 24,
+          "tracks": [
+            {
+              "id": "scenes",
+              "label": "Scenes",
+              "items": [
+                { "id": "dawn", "start": 0, "end": 6, "label": "Dawn", "color": "chart-1" },
+                { "id": "morning", "start": 6, "end": 12, "label": "Morning", "color": "chart-2" },
+                { "id": "noon", "start": 12, "end": 18, "label": "Noon", "color": "chart-3" },
+                { "id": "dusk", "start": 18, "end": 24, "label": "Dusk", "color": "chart-5" }
+              ]
+            },
+            { "id": "cuts", "label": "Cuts", "kind": "markers", "items": [{ "time": 6, "label": "Cut" }, { "time": 12, "label": "Cut" }, { "time": 18, "label": "Cut" }, { "time": 30, "label": "Past the end" }] },
+            { "id": "light", "label": "Daylight", "color": "chart-4", "items": [{ "id": "full", "span": ["morning", "noon"], "label": "Full daylight" }, { "id": "nested", "span": ["full", "dusk"], "label": "Until night" }, { "id": "late", "start": 22, "end": 30, "label": "Past the end" }] }
+          ]
+        }
+      </script>
+    </div>
+
+    <div class="media-timeline" id="mt-zoom" role="group" aria-label="Harbour sounds" data-zoom="60">
+      <div class="media-timeline-header">
+        <span class="media-timeline-title">Sounds</span>
+        <output class="media-timeline-time" data-media-timeline-output="time" id="mt-zoom-time">0:00</output>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-media-timeline-action="zoom-out" aria-label="Zoom out" id="mt-zoom-out">-</button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-media-timeline-action="fit" aria-label="Fit" id="mt-zoom-fit">[]</button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-media-timeline-action="zoom-in" aria-label="Zoom in" id="mt-zoom-in">+</button>
+      </div>
+      <script type="application/json" class="media-timeline-source">
+        { "version": 1, "duration": 24, "tracks": [{ "id": "sound", "label": "Sound", "items": [{ "start": 0, "end": 6.6, "label": "Surf" }, { "start": 6.6, "end": 9.4, "label": "Gulls" }, { "start": 21, "end": 24, "label": "Silence", "color": "muted" }] }] }
+      </script>
+    </div>
+
+    <figure class="video" id="mt-player">
+      <div class="video-frame">
+        <video preload="auto" playsinline>
+          <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+          <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+        </video>
+        <div class="video-captions"></div>
+      </div>
+      <div class="video-controls">
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="toggle" aria-pressed="false" aria-label="Play" id="mt-player-toggle"><span>▶</span><span>❚❚</span></button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="captions" aria-pressed="true" aria-label="Captions" id="mt-player-cc"><span>cc</span><span>CC</span></button>
+      </div>
+    </figure>
+    <div class="media-timeline" id="mt-video" role="group" aria-label="Harbour timeline" data-media="mt-player">
+      <script type="application/json" class="media-timeline-source">
+        {
+          "version": 1,
+          "tracks": [
+            {
+              "id": "scenes",
+              "label": "Scenes",
+              "items": [
+                { "id": "dawn", "start": 0, "end": 6, "label": "Dawn", "info": { "text": "First light over the harbour.", "fields": { "Sun": "2°", "Tide": "Rising" } } },
+                { "id": "morning", "start": 6, "end": 12, "label": "Morning", "info": { "text": "A boat leaves the harbour." } },
+                { "id": "noon", "start": 12, "end": 18, "label": "Noon", "info": { "title": "High noon", "text": "The bell rings <twice>.", "fields": { "Bell": "13 s and 15 s" } } },
+                { "id": "dusk", "start": 18, "end": 24, "label": "Dusk" }
+              ]
+            },
+            {
+              "id": "sound",
+              "label": "Sound",
+              "items": [
+                { "id": "surf", "start": 0, "end": 21, "label": "Surf" },
+                { "id": "gulls", "start": 6.6, "end": 9.4, "label": "Gulls", "info": { "text": "Three gulls." } },
+                { "id": "bell", "start": 13, "end": 17, "label": "Bell" }
+              ]
+            },
+            {
+              "id": "cc",
+              "label": "Captions",
+              "kind": "captions",
+              "lang": "en",
+              "items": [
+                { "start": 0.5, "end": 4.5, "text": "[Waves roll in under the dawn sky]" },
+                { "start": 13, "end": 14.8, "text": "[The harbour bell rings]" }
+              ]
+            }
+          ]
+        }
+      </script>
+    </div>
+    <aside id="mt-info" data-media-timeline-for="mt-video" data-media-timeline-outlet="info"><p id="mt-info-empty">Nothing here.</p></aside>
+    <p data-media-timeline-for="mt-video">
+      <output data-media-timeline-output="time" id="mt-video-time">0:00</output> /
+      <output data-media-timeline-output="duration" id="mt-video-length">0:00</output> -
+      <output data-media-timeline-output="active" id="mt-video-active"></output>
+      <button class="btn" data-variant="outline" data-size="sm" data-media-timeline-action="toggle" id="mt-video-toggle">Play</button>
+      <output data-media-timeline-output="loop" id="mt-video-loop"></output>
+      <button class="btn" data-variant="outline" data-size="sm" data-media-timeline-action="loop-clear" disabled id="mt-video-unloop">Clear loop</button>
+    </p>
+
+    <video id="mt-bare-player" controls preload="metadata" playsinline style="width: 320px">
+      <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+      <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+    </video>
+    <div class="media-timeline" id="mt-bare" role="group" aria-label="Harbour captions" data-media="mt-bare-player">
+      <script type="application/json" class="media-timeline-source">
+        { "version": 1, "tracks": [{ "id": "captions", "label": "Captions", "kind": "captions", "lang": "en", "items": [{ "start": 0.5, "end": 4.5, "text": "[Waves]" }, { "start": 6.6, "end": 9.4, "text": "[Gulls]" }] }] }
+      </script>
+    </div>
+
+    <div class="media-timeline" id="mt-rows" role="group" aria-label="Rows and annotations">
+      <script type="application/json" class="media-timeline-source">
+        {
+          "version": 1,
+          "duration": 24,
+          "scales": [{ "unit": "min", "label": "min" }, { "unit": "s", "divisions": 2, "label": "s" }],
+          "tracks": [
+            { "id": "picture", "label": "Picture", "kind": "video", "items": [{ "id": "shot-1", "start": 0, "end": 12, "label": "Shot 1" }, { "id": "shot-2", "start": 12, "end": 24, "label": "Shot 2" }] },
+            { "id": "sound", "label": "Sound", "kind": "audio", "items": [{ "id": "bed", "start": 0, "end": 24, "label": "Ambience" }] },
+            { "id": "verses", "label": "Verses", "for": "sound", "background": "chart-2", "items": [{ "id": "v1", "start": 0, "end": 8, "label": "First verse", "color": "#e11d48" }, { "id": "v2", "start": 8, "end": 16, "label": "Second verse", "color": "oklch(0.6 0.2 250)" }] },
+            { "id": "news", "label": "News", "for": "picture", "background": "rgb(250 204 21)", "items": [{ "id": "flash-1", "start": 2, "end": 6, "label": "News flash #1" }] },
+            { "id": "notes", "label": "Notes", "for": "sound", "items": [{ "id": "n1", "start": 4, "end": 6, "label": "Gull", "color": "red; background: url(x)" }] },
+            { "id": "orphan", "label": "Orphan", "for": "nowhere", "items": [{ "id": "o1", "start": 0, "end": 1, "label": "o" }] }
+          ],
+          "events": [{ "time": 13, "text": "The bell, first stroke" }, { "time": 6.6, "text": "Gulls <three>" }, { "time": 15, "text": "The bell, again" }]
+        }
+      </script>
+    </div>
+    <aside id="mt-events" data-media-timeline-for="mt-rows" data-media-timeline-outlet="events"><p>No events.</p></aside>
+
+    <div class="media-timeline" id="mt-frames" role="group" aria-label="Seconds and frames" data-zoom="200">
+      <script type="application/json" class="media-timeline-source">
+        { "version": 1, "duration": 3, "scales": [{ "unit": "s" }, { "unit": "frame", "fps": 25 }], "tracks": [{ "id": "shots", "label": "Shots", "items": [{ "start": 0, "end": 1.4, "label": "A" }, { "start": 1.4, "end": 3, "label": "B" }] }] }
+      </script>
+    </div>
+
+    <figure class="video" id="mt-menu-player">
+      <div class="video-frame">
+        <video preload="auto" playsinline muted>
+          <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+          <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+        </video>
+        <div class="video-captions"></div>
+      </div>
+      <div class="video-controls">
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="captions" aria-pressed="true" aria-label="Captions" id="mt-menu-cc"><span>cc</span><span>CC</span></button>
+      </div>
+    </figure>
+    <div class="media-timeline" id="mt-menu" role="group" aria-label="Harbour subtitles" data-media="mt-menu-player">
+      <script type="application/json" class="media-timeline-source">
+        {
+          "version": 1,
+          "tracks": [
+            { "id": "sound", "label": "Sound", "kind": "audio", "items": [{ "start": 0, "end": 21, "label": "Surf" }] },
+            { "id": "sub-en", "label": "English", "kind": "subtitles", "lang": "en", "for": "sound", "items": [{ "start": 0.5, "end": 4.5, "text": "Waves roll in" }] },
+            { "id": "sub-de", "label": "Deutsch", "kind": "subtitles", "lang": "de", "for": "sound", "items": [{ "start": 0.5, "end": 4.5, "text": "Wellen rollen heran" }] },
+            { "id": "desc-de", "label": "Bild (Deutsch)", "kind": "descriptions", "lang": "de", "default": true, "items": [{ "start": 0, "end": 6, "text": "Morgendämmerung" }] }
+          ]
+        }
+      </script>
+    </div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/video/video.js"></script>
+    <script type="module" src="/dist/components/media-timeline/media-timeline.js"></script>
+    <script type="module" src="/dist/components/dropdown/dropdown.js"></script>
+  </body>
+</html>

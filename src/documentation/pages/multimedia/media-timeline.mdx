@@ -1,0 +1,955 @@
+---
+title: "Media Timeline"
+description: "Media Timeline component - a timeline rendered from a JSON of timeline metadata (regions, markers, spans, captions) that drives a video or audio: the media moves the playhead, the playhead moves the media, and an info outlet shows what is under it."
+slug: "media-timeline"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="media-timeline" title="Media Timeline" component="media-timeline">
+  The time of a recording, laid out from one JSON: tracks of regions (scenes, speakers, sounds), markers (cuts) and spans (a region derived from others), drawn under a ruler with a playhead. It drives a <DocLink href="video.html">Video</DocLink>, an <DocLink href="audio.html">Audio</DocLink> or a bare media element both ways - the media moves the playhead, a click, a drag or a key on the timeline moves the media - turns its text rows into keyed text tracks of the media (subtitles, captions, picture descriptions - a Video offers them in its captions menu), and fills outlets anywhere on the page with the items under the playhead and a log of timed events. Annotation rows sit above the content row they name, the ruler may stack several scales, and a drag on it loops a region. New data re-renders it; the playhead stays where it is. Not the <DocLink href="timeline.html">Timeline</DocLink> of dated events.
+</PageHeader>
+
+<SkillPanel component="media-timeline">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div class="media-timeline" role="group"&gt;</code> with a <code>&lt;script type="application/json" class="media-timeline-source"&gt;</code> of timeline metadata and an optional <code>.media-timeline-header</code>; <code>data-media</code> names the media. The runtime renders the rows, the ruler and the playhead - a native slider in the keyboard order.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement" title="the clock: currentTime, play(), pause() and their events"><code>HTMLMediaElement</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/VTTCue" title="a captions track becomes the media's own captions"><code>TextTrack + VTTCue</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API" title="the playhead runs without a script per frame"><code>Web Animations</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture" title="a drag keeps seeking"><code>setPointerCapture()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the ruler follows the width"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/slider_role" title="the playhead as a slider"><code>role="slider"</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.media-timeline</code>
+    <code>.media-timeline-source</code>
+    <code>.media-timeline-header</code>
+    <code>.media-timeline-title</code>
+    <code>.media-timeline-time</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-media="id"</code> - the Video, Audio or bare <code>&lt;video&gt;</code> / <code>&lt;audio&gt;</code> it drives</SkillText>
+  <SkillText dense>• <code>data-zoom</code> - pixels per second to start with (default: fit the width)</SkillText>
+  <SkillText dense>• <code>data-media-timeline-action</code> - <code>zoom-in</code>, <code>zoom-out</code>, <code>fit</code>, <code>toggle</code>; <code>data-media-timeline-output</code> - <code>time</code>, <code>duration</code>, <code>active</code></SkillText>
+  <SkillText dense>• <code>data-media-timeline-for="id"</code> + <code>data-media-timeline-outlet="info"</code> - an info outlet anywhere on the page: a Card per item under the playhead that carries <code>info</code></SkillText>
+  <SkillText dense>• <code>data-media-timeline-outlet="events"</code> - the data's <code>events</code> as a list, each time a link that seeks there and pauses</SkillText>
+  <SkillText dense>• <code>data-media-timeline-action="loop-clear"</code>, <code>"seek"</code> (+ <code>data-value</code>); <code>data-media-timeline-output="loop"</code></SkillText>
+  <SkillText>In the JSON: <code>for</code> puts a row above the row it names, <code>background</code> tints it, <code>color</code> takes a theme name or a CSS colour, <code>scales</code> stacks ruler rows (h, min, s, frame), <code>kind</code> <code>video</code> / <code>audio</code> marks content rows and <code>subtitles</code> / <code>captions</code> / <code>descriptions</code> text rows</SkillText>
+  </SkillField>
+
+  <SkillField label="Keyboard">
+<SkillText dense>• <kbd>Left</kbd> / <kbd>Right</kbd> - 1 second (<kbd>Shift</kbd>: 5)</SkillText>
+  <SkillText dense>• <kbd>Page Up</kbd> / <kbd>Page Down</kbd> - 10 seconds</SkillText>
+  <SkillText dense>• <kbd>Home</kbd> / <kbd>End</kbd> - the start, the end</SkillText>
+  <SkillText dense>• <kbd>[</kbd> / <kbd>]</kbd> - the loop starts / ends at the playhead; <kbd>Escape</kbd> clears it</SkillText>
+  <SkillText>• A drag on the ruler draws a loop, a double click there clears it</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Media Timeline" hint="A timeline from its JSON alone - scenes, cuts as markers and a span derived from two scenes. With no media it keeps its own clock: click, drag or use the arrow keys on it, or check playing in the State tab - the playhead runs to the end and stops. The State tab sets the time and the zoom too."
+<div class="media-timeline" id="mt-basic" role="group" aria-label="A day at the harbour" data-state-demo>
+  <script type="application/json" class="media-timeline-source">
+    {
+      "version": 1,
+      "duration": 24,
+      "tracks": [
+        {
+          "id": "scenes",
+          "label": "Scenes",
+          "items": [
+            { "id": "dawn", "start": 0, "end": 6, "label": "Dawn", "color": "chart-1" },
+            { "id": "morning", "start": 6, "end": 12, "label": "Morning", "color": "chart-2" },
+            { "id": "noon", "start": 12, "end": 18, "label": "Noon", "color": "chart-3" },
+            { "id": "dusk", "start": 18, "end": 24, "label": "Dusk", "color": "chart-5" }
+          ]
+        },
+        {
+          "id": "cuts",
+          "label": "Cuts",
+          "kind": "markers",
+          "items": [
+            { "time": 6, "label": "Cut" },
+            { "time": 12, "label": "Cut" },
+            { "time": 18, "label": "Cut" }
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Daylight",
+          "color": "chart-4",
+          "items": [{ "span": ["morning", "noon"], "label": "Full daylight" }]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Zoomed in" hint="data-zoom='60' starts at 60 pixels per second: the rows scroll, the ruler labels every second. The header's buttons zoom by half again, back, or fit the whole length; its readout follows the playhead."
+<div class="media-timeline" id="mt-zoom" role="group" aria-label="Harbour sounds" data-zoom="60">
+  <div class="media-timeline-header">
+    <span class="media-timeline-title">Sounds</span>
+    <output class="media-timeline-time" data-media-timeline-output="time">0:00</output>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-media-timeline-action="zoom-out"
+      aria-label="Zoom out"
+      ><i data-lucide="zoom-out"></i
+    ></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-media-timeline-action="fit" aria-label="Fit"
+      ><i data-lucide="scan"></i
+    ></button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-media-timeline-action="zoom-in"
+      aria-label="Zoom in"
+      ><i data-lucide="zoom-in"></i
+    ></button>
+  </div>
+  <script type="application/json" class="media-timeline-source">
+    {
+      "version": 1,
+      "duration": 24,
+      "tracks": [
+        {
+          "id": "sound",
+          "label": "Sound",
+          "items": [
+            { "start": 0, "end": 6.6, "label": "Surf", "color": "chart-2" },
+            { "start": 6.6, "end": 9.4, "label": "Gulls", "color": "chart-4" },
+            { "start": 9.4, "end": 13, "label": "Surf", "color": "chart-2" },
+            { "start": 13, "end": 14.8, "label": "Bell", "color": "chart-1" },
+            { "start": 15, "end": 17, "label": "Bell", "color": "chart-1" },
+            { "start": 17, "end": 21, "label": "Surf", "color": "chart-2" },
+            { "start": 21, "end": 24, "label": "Silence", "color": "muted" }
+          ]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Annotation rows" hint="Content rows (kind video and audio, a glyph by their label) carry annotation rows: a row with for renders directly above the row it names - two for one row in data order, the first on top -, background tints it, and every clip takes its own colour, a theme name or any CSS colour. The aggregations of a recording - a verse of a song, a news flash of a broadcast - are such rows."
+<div class="media-timeline" id="mt-rows" role="group" aria-label="Harbour picture and sound, annotated">
+  <script type="application/json" class="media-timeline-source">
+    {
+      "version": 1,
+      "duration": 24,
+      "tracks": [
+        {
+          "id": "picture",
+          "label": "Picture",
+          "kind": "video",
+          "color": "chart-1",
+          "items": [
+            { "start": 0, "end": 6, "label": "Dawn" },
+            { "start": 6, "end": 12, "label": "Morning" },
+            { "start": 12, "end": 18, "label": "Noon" },
+            { "start": 18, "end": 24, "label": "Dusk" }
+          ]
+        },
+        {
+          "id": "sound",
+          "label": "Sound",
+          "kind": "audio",
+          "color": "chart-2",
+          "items": [
+            { "start": 0, "end": 21, "label": "Surf" },
+            { "start": 6.6, "end": 9.4, "label": "Gulls" },
+            { "start": 13, "end": 17, "label": "Bell" },
+            { "start": 21, "end": 24, "label": "Silence", "color": "muted" }
+          ]
+        },
+        {
+          "id": "chapters",
+          "label": "Chapters",
+          "for": "picture",
+          "background": "chart-1",
+          "items": [
+            { "start": 0, "end": 12, "label": "Departure", "color": "#e11d48" },
+            { "start": 12, "end": 24, "label": "Homecoming", "color": "#0891b2" }
+          ]
+        },
+        {
+          "id": "events",
+          "label": "Sound events",
+          "for": "sound",
+          "background": "chart-4",
+          "items": [
+            { "start": 6.6, "end": 9.4, "label": "Gull flight", "color": "chart-4" },
+            { "start": 13, "end": 17, "label": "Bell strokes", "color": "chart-5" }
+          ]
+        },
+        {
+          "id": "mix",
+          "label": "Mix",
+          "for": "sound",
+          "items": [
+            { "start": 0, "end": 3, "label": "Fade in", "color": "oklch(0.7 0.15 150)" },
+            { "start": 21, "end": 24, "label": "Fade out", "color": "oklch(0.7 0.15 150)" }
+          ]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Time scales" hint="scales stacks ruler rows, coarsest first - here minutes, seconds with quarter-second ticks (divisions: 4) and the clip's 15 frames per second. Each row labels its unit within the row above it (frames 0, 5, 10 in every second), thinned so its labels stand apart; the units are h, min, s and frame (with fps). Without scales the timeline keeps its one ruler that picks its own interval."
+<div class="media-timeline" id="mt-scales" role="group" aria-label="Minutes, seconds and frames" data-zoom="120">
+  <script type="application/json" class="media-timeline-source">
+    {
+      "version": 1,
+      "duration": 24,
+      "scales": [
+        { "unit": "min", "label": "min" },
+        { "unit": "s", "divisions": 4, "label": "s" },
+        { "unit": "frame", "fps": 15, "label": "frames" }
+      ],
+      "tracks": [
+        {
+          "id": "scenes",
+          "label": "Scenes",
+          "kind": "video",
+          "items": [
+            { "start": 0, "end": 6, "label": "Dawn", "color": "chart-1" },
+            { "start": 6, "end": 12, "label": "Morning", "color": "chart-2" },
+            { "start": 12, "end": 18, "label": "Noon", "color": "chart-3" },
+            { "start": 18, "end": 24, "label": "Dusk", "color": "chart-5" }
+          ]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Driving a video" hint="data-media='mt-video-player' binds the timeline to the Video above it. Play the video: the playhead moves with it. Click or drag on the rows: the video goes there - playing stays playing. The sound button carries the volume as a vertical slider (.video-volume) - point at it."
+<div class="grid gap-3" style="max-inline-size: 44rem">
+  <figure class="video" id="mt-video-player">
+    <div class="video-frame">
+      <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+        <source src="videos/harbour.webm" type="video/webm" />
+        <source src="videos/harbour.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="video-controls">
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-video-action="toggle"
+        aria-pressed="false"
+        aria-label="Play"
+      >
+        <i data-lucide="play"></i><i data-lucide="pause"></i>
+      </button>
+      <output class="video-time" data-video-output="time">0:00</output>
+      <input
+        class="slider"
+        data-size="sm"
+        type="range"
+        min="0"
+        max="24"
+        step="0.1"
+        value="0"
+        data-video-action="seek"
+        aria-label="Seek"
+      />
+      <output class="video-time" data-video-output="duration">0:24</output>
+      <div class="video-volume">
+        <button
+          class="btn"
+          data-variant="ghost"
+          data-size="icon-sm"
+          data-video-action="mute"
+          aria-pressed="false"
+          aria-label="Mute"
+        >
+          <i data-lucide="volume-2"></i><i data-lucide="volume-x"></i>
+        </button>
+        <div class="video-volume-panel">
+          <input
+            class="slider"
+            data-orientation="vertical"
+            data-size="xs"
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value="1"
+            data-video-action="volume"
+            aria-label="Volume"
+          />
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div class="media-timeline" id="mt-video" role="group" aria-label="Harbour timeline" data-media="mt-video-player">
+    <script type="application/json" class="media-timeline-source">
+      {
+        "version": 1,
+        "tracks": [
+          {
+            "id": "scenes",
+            "label": "Scenes",
+            "items": [
+              { "id": "dawn", "start": 0, "end": 6, "label": "Dawn", "color": "chart-1" },
+              { "id": "morning", "start": 6, "end": 12, "label": "Morning", "color": "chart-2" },
+              { "id": "noon", "start": 12, "end": 18, "label": "Noon", "color": "chart-3" },
+              { "id": "dusk", "start": 18, "end": 24, "label": "Dusk", "color": "chart-5" }
+            ]
+          },
+          {
+            "id": "sound",
+            "label": "Sound",
+            "items": [
+              { "start": 0, "end": 6.6, "label": "Surf", "color": "chart-2" },
+              { "start": 6.6, "end": 9.4, "label": "Gulls", "color": "chart-4" },
+              { "start": 9.4, "end": 13, "label": "Surf", "color": "chart-2" },
+              { "start": 13, "end": 14.8, "label": "Bell", "color": "chart-1" },
+              { "start": 15, "end": 17, "label": "Bell", "color": "chart-1" },
+              { "start": 17, "end": 21, "label": "Surf", "color": "chart-2" },
+              { "start": 21, "end": 24, "label": "Silence", "color": "muted" }
+            ]
+          },
+          {
+            "id": "boat",
+            "label": "Boat",
+            "color": "chart-3",
+            "items": [{ "start": 6, "end": 18, "label": "Sailing boat in view" }]
+          }
+        ]
+      }
+    </script>
+  </div>
+</div>
+```
+
+```html example label="Looping a region" hint="Press on the ruler and drag: the span becomes a loop (yellow), the video goes to its start, and while it plays it returns there at the loop's end - play from outside the loop starts at its start. A click on the ruler still seeks; a double click there, Escape or Clear loop removes it; [ and ] set its ends at the playhead. The readout beside the button shows the loop (data-media-timeline-output='loop')."
+<div class="grid gap-3" style="max-inline-size: 44rem">
+  <figure class="video" id="mt-loop-player">
+    <div class="video-frame">
+      <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+        <source src="videos/harbour.webm" type="video/webm" />
+        <source src="videos/harbour.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="video-controls">
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-video-action="toggle"
+        aria-pressed="false"
+        aria-label="Play"
+      >
+        <i data-lucide="play"></i><i data-lucide="pause"></i>
+      </button>
+      <output class="video-time" data-video-output="time">0:00</output>
+      <input
+        class="slider"
+        data-size="sm"
+        type="range"
+        min="0"
+        max="24"
+        step="0.1"
+        value="0"
+        data-video-action="seek"
+        aria-label="Seek"
+      />
+      <output class="video-time" data-video-output="duration">0:24</output>
+    </div>
+  </figure>
+  <div
+    class="media-timeline"
+    id="mt-loop"
+    role="group"
+    aria-label="Harbour timeline with a loop"
+    data-media="mt-loop-player"
+  >
+    <div class="media-timeline-header">
+      <span class="media-timeline-title">Drag on the ruler to loop</span>
+      <output class="media-timeline-time" data-media-timeline-output="loop"></output>
+      <button class="btn" data-variant="outline" data-size="sm" data-media-timeline-action="loop-clear" disabled>
+        <i data-lucide="repeat"></i> Clear loop
+      </button>
+    </div>
+    <script type="application/json" class="media-timeline-source">
+      {
+        "version": 1,
+        "tracks": [
+          {
+            "id": "scenes",
+            "label": "Scenes",
+            "items": [
+              { "start": 0, "end": 6, "label": "Dawn", "color": "chart-1" },
+              { "start": 6, "end": 12, "label": "Morning", "color": "chart-2" },
+              { "start": 12, "end": 18, "label": "Noon", "color": "chart-3" },
+              { "start": 18, "end": 24, "label": "Dusk", "color": "chart-5" }
+            ]
+          },
+          {
+            "id": "sound",
+            "label": "Sound",
+            "items": [
+              { "start": 6.6, "end": 9.4, "label": "Gulls", "color": "chart-4" },
+              { "start": 13, "end": 14.8, "label": "Bell", "color": "chart-1" },
+              { "start": 15, "end": 17, "label": "Bell", "color": "chart-1" }
+            ]
+          }
+        ]
+      }
+    </script>
+  </div>
+</div>
+```
+
+```html example label="Analysis layers" hint="The layers of an audio analysis over an Audio: detected sound types, events summarized from them, and a group spanning two events - its extent derived from the items it names (span), whatever order the data lists them in. Overlapping regions of one track stack in lanes."
+<div class="grid gap-3" style="max-inline-size: 44rem">
+  <div class="audio" id="mt-audio-player" role="group" aria-label="A day at the harbour">
+    <audio preload="metadata" src="videos/harbour.mp3"></audio>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon"
+      data-audio-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <div class="audio-body">
+      <span class="audio-title">A day at the harbour - field recording</span>
+      <div class="audio-progress">
+        <output class="audio-time" data-audio-output="time">0:00</output>
+        <input
+          class="slider"
+          data-size="sm"
+          type="range"
+          min="0"
+          max="24"
+          step="0.1"
+          value="0"
+          data-audio-action="seek"
+          aria-label="Seek"
+        />
+        <output class="audio-time" data-audio-output="duration">0:24</output>
+      </div>
+    </div>
+  </div>
+  <div class="media-timeline" id="mt-audio" role="group" aria-label="Sound analysis" data-media="mt-audio-player">
+    <div class="media-timeline-header">
+      <span class="media-timeline-title">Sound analysis</span>
+      <output class="text-sm text-muted-foreground" data-media-timeline-output="active"></output>
+    </div>
+    <script type="application/json" class="media-timeline-source">
+      {
+        "version": 1,
+        "tracks": [
+          {
+            "id": "groups",
+            "label": "Groups",
+            "color": "chart-5",
+            "items": [{ "id": "busy", "span": ["gulls", "bells"], "label": "A busy harbour" }]
+          },
+          {
+            "id": "events",
+            "label": "Events",
+            "color": "chart-4",
+            "items": [
+              { "id": "gulls", "start": 6.6, "end": 9.4, "label": "Gulls pass" },
+              { "id": "bells", "start": 13, "end": 17, "label": "Bell rings twice" },
+              { "id": "calm", "start": 18.5, "end": 21, "label": "The wind drops" }
+            ]
+          },
+          {
+            "id": "types",
+            "label": "Sound type",
+            "items": [
+              { "start": 0, "end": 21, "label": "Ambience - surf", "color": "chart-2" },
+              { "start": 6.6, "end": 9.4, "label": "Birdsong", "color": "chart-3" },
+              { "start": 13, "end": 14.8, "label": "Harmonic", "color": "chart-1" },
+              { "start": 15, "end": 17, "label": "Harmonic", "color": "chart-1" },
+              { "start": 21, "end": 24, "label": "Silence", "color": "muted" }
+            ]
+          }
+        ]
+      }
+    </script>
+  </div>
+</div>
+```
+
+```html example label="Information sidebar" hint="A Border Layout: the video in the center, the timeline in the south, two outlets in the east. The info outlet (data-media-timeline-outlet='info') renders a Card for each item under the playhead that carries info in the JSON - its title, text and fields; between items it shows its own content again. Under it the events outlet lists the JSON's events - moments with a text and no row on the timeline: the one the playhead passed last is marked, and a click on a time goes there and pauses; play goes on from there."
+<div class="border-layout" style="height: 36rem">
+  <main class="border-layout-center border-layout-pane" style="display: grid; place-items: center">
+    <figure class="video" id="mt-side-player" style="max-inline-size: 36rem">
+      <div class="video-frame">
+        <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+          <source src="videos/harbour.webm" type="video/webm" />
+          <source src="videos/harbour.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <div class="video-controls">
+        <button
+          class="btn"
+          data-variant="ghost"
+          data-size="icon-sm"
+          data-video-action="toggle"
+          aria-pressed="false"
+          aria-label="Play"
+        >
+          <i data-lucide="play"></i><i data-lucide="pause"></i>
+        </button>
+        <output class="video-time" data-video-output="time">0:00</output>
+        <input
+          class="slider"
+          data-size="sm"
+          type="range"
+          min="0"
+          max="24"
+          step="0.1"
+          value="0"
+          data-video-action="seek"
+          aria-label="Seek"
+        />
+        <output class="video-time" data-video-output="duration">0:24</output>
+      </div>
+    </figure>
+  </main>
+  <div class="resizer border-layout-east">
+    <aside
+      class="border-layout-pane"
+      style="width: 17rem; display: grid; gap: 1rem; align-content: start; overflow: auto"
+      aria-label="At the playhead"
+    >
+      <div style="display: grid; gap: 0.75rem" data-media-timeline-for="mt-side" data-media-timeline-outlet="info">
+        <p class="text-sm text-muted-foreground m-0"
+          >Play the clip or click the timeline - what happens at the playhead shows here.</p
+        >
+      </div>
+      <section style="display: grid; gap: 0.375rem">
+        <h3 class="text-sm font-medium m-0">Log</h3>
+        <div data-media-timeline-for="mt-side" data-media-timeline-outlet="events">
+          <p class="text-sm text-muted-foreground m-0">Nothing logged.</p>
+        </div>
+      </section>
+    </aside>
+  </div>
+  <div class="border-layout-south border-layout-pane" data-fit>
+    <div class="media-timeline" id="mt-side" role="group" aria-label="Harbour timeline" data-media="mt-side-player">
+      <script type="application/json" class="media-timeline-source">
+        {
+          "version": 1,
+          "tracks": [
+            {
+              "id": "scenes",
+              "label": "Scenes",
+              "items": [
+                {
+                  "start": 0,
+                  "end": 6,
+                  "label": "Dawn",
+                  "color": "chart-1",
+                  "info": {
+                    "text": "First light over the harbour; the lighthouse is still lit.",
+                    "fields": { "Sun": "2° above the horizon", "Tide": "Rising", "Wind": "NE 2 Bft" }
+                  }
+                },
+                {
+                  "start": 6,
+                  "end": 12,
+                  "label": "Morning",
+                  "color": "chart-2",
+                  "info": {
+                    "text": "A sailing boat leaves the harbour; gulls follow it out.",
+                    "fields": { "Sun": "38°", "Tide": "High at 09:40", "Boats out": 1 }
+                  }
+                },
+                {
+                  "start": 12,
+                  "end": 18,
+                  "label": "Noon",
+                  "color": "chart-3",
+                  "info": {
+                    "text": "The harbour bell rings as the boat passes the buoy.",
+                    "fields": { "Sun": "61°", "Tide": "Falling", "Bell": "13 s and 15 s" }
+                  }
+                },
+                {
+                  "start": 18,
+                  "end": 24,
+                  "label": "Dusk",
+                  "color": "chart-5",
+                  "info": {
+                    "text": "The sun sets behind the lighthouse and its lamp comes on.",
+                    "fields": { "Sun": "Setting", "Lamp": "On", "Stars": "From 20 s" }
+                  }
+                }
+              ]
+            },
+            {
+              "id": "sound",
+              "label": "Sound",
+              "items": [
+                {
+                  "start": 6.6,
+                  "end": 9.4,
+                  "label": "Gulls",
+                  "color": "chart-4",
+                  "info": { "title": "Herring gulls", "text": "Three gulls cross from the left, calling as they go." }
+                },
+                {
+                  "start": 13,
+                  "end": 17,
+                  "label": "Bell",
+                  "color": "chart-1",
+                  "info": {
+                    "title": "Harbour bell",
+                    "text": "Two strokes on the bell buoy, G4 with its overtones.",
+                    "fields": { "Strokes": 2 }
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            { "time": 1, "text": "The lighthouse lamp goes out." },
+            { "time": 4, "text": "First light on the harbour wall." },
+            { "time": 6.6, "text": "Three gulls cross from the left." },
+            { "time": 10, "text": "The sailing boat clears the pier." },
+            { "time": 13, "text": "The bell buoy rings." },
+            { "time": 15, "text": "It rings a second time." },
+            { "time": 20, "text": "The first star." },
+            { "time": 21, "text": "The sun is down." }
+          ]
+        }
+      </script>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Captions from the metadata" hint="Text rows in the JSON become keyed text tracks of the video - subtitles of what is heard above the Sound row, video captions of what is seen above the Picture row (for), each in English and German. The Video draws the chosen one in its overlay, and its captions button now opens a menu of them: Off, Subtitles and Video captions, a submenu each. The key is the row's id - setState({ captions: 'sub-de' }) picks one. New data replaces their cues while the video plays."
+<div class="grid gap-3" style="max-inline-size: 44rem">
+  <figure class="video" id="mt-cc-player" data-variant="overlay">
+    <div class="video-frame">
+      <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+        <source src="videos/harbour.webm" type="video/webm" />
+        <source src="videos/harbour.mp4" type="video/mp4" />
+      </video>
+      <div class="video-captions"></div>
+    </div>
+    <div class="video-controls">
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-video-action="toggle"
+        aria-pressed="false"
+        aria-label="Play"
+      >
+        <i data-lucide="play"></i><i data-lucide="pause"></i>
+      </button>
+      <output class="video-time" data-video-output="time">0:00</output>
+      <input
+        class="slider"
+        data-size="sm"
+        type="range"
+        min="0"
+        max="24"
+        step="0.1"
+        value="0"
+        data-video-action="seek"
+        aria-label="Seek"
+      />
+      <output class="video-time" data-video-output="duration">0:24</output>
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-video-action="captions"
+        aria-pressed="true"
+        aria-label="Captions"
+      >
+        <i data-lucide="captions-off"></i><i data-lucide="captions"></i>
+      </button>
+    </div>
+  </figure>
+  <div class="media-timeline" id="mt-cc" role="group" aria-label="Captions timeline" data-media="mt-cc-player">
+    <script type="application/json" class="media-timeline-source">
+      {
+        "version": 1,
+        "tracks": [
+          {
+            "id": "picture",
+            "label": "Picture",
+            "kind": "video",
+            "items": [
+              { "start": 0, "end": 6, "label": "Dawn", "color": "chart-1" },
+              { "start": 6, "end": 12, "label": "Morning", "color": "chart-2" },
+              { "start": 12, "end": 18, "label": "Noon", "color": "chart-3" },
+              { "start": 18, "end": 24, "label": "Dusk", "color": "chart-5" }
+            ]
+          },
+          {
+            "id": "sound",
+            "label": "Sound",
+            "kind": "audio",
+            "color": "chart-2",
+            "items": [
+              { "start": 0, "end": 21, "label": "Surf" },
+              { "start": 21, "end": 24, "label": "Silence", "color": "muted" }
+            ]
+          },
+          {
+            "id": "sub-en",
+            "label": "English",
+            "kind": "subtitles",
+            "lang": "en",
+            "for": "sound",
+            "default": true,
+            "color": "chart-3",
+            "items": [
+              { "start": 0.5, "end": 4.5, "text": "[Waves roll in under the dawn sky]" },
+              { "start": 6.6, "end": 9.4, "text": "[Gulls cry over the harbour]" },
+              { "start": 13, "end": 14.8, "text": "[The harbour bell rings]" },
+              { "start": 15, "end": 17, "text": "[It rings a second time]" },
+              { "start": 18.5, "end": 21, "text": "[The waves calm as the sun sets]" },
+              { "start": 21.2, "end": 23.8, "text": "[Silence]" }
+            ]
+          },
+          {
+            "id": "sub-de",
+            "label": "Deutsch",
+            "kind": "subtitles",
+            "lang": "de",
+            "for": "sound",
+            "color": "chart-3",
+            "items": [
+              { "start": 0.5, "end": 4.5, "text": "[Wellen rollen unter dem Morgenhimmel heran]" },
+              { "start": 6.6, "end": 9.4, "text": "[Möwen schreien über dem Hafen]" },
+              { "start": 13, "end": 14.8, "text": "[Die Hafenglocke schlägt]" },
+              { "start": 15, "end": 17, "text": "[Sie schlägt ein zweites Mal]" },
+              { "start": 18.5, "end": 21, "text": "[Die Wellen beruhigen sich, die Sonne geht unter]" },
+              { "start": 21.2, "end": 23.8, "text": "[Stille]" }
+            ]
+          },
+          {
+            "id": "seen-en",
+            "label": "English",
+            "kind": "descriptions",
+            "lang": "en",
+            "for": "picture",
+            "color": "chart-4",
+            "items": [
+              { "start": 0, "end": 6, "text": "The sun rises over the harbour, the lighthouse in the first light." },
+              { "start": 6, "end": 12, "text": "A sailing boat leaves the harbour, gulls cross the water." },
+              { "start": 12, "end": 18, "text": "The boat passes the yellow bell buoy, which rings twice." },
+              { "start": 18, "end": 24, "text": "The sun sets into the sea, the first stars come out." }
+            ]
+          },
+          {
+            "id": "seen-de",
+            "label": "Deutsch",
+            "kind": "descriptions",
+            "lang": "de",
+            "for": "picture",
+            "color": "chart-4",
+            "items": [
+              {
+                "start": 0,
+                "end": 6,
+                "text": "Die Sonne geht über dem Hafen auf, der Leuchtturm steht im ersten Licht."
+              },
+              { "start": 6, "end": 12, "text": "Ein Segelboot läuft aus, Möwen ziehen über das Wasser." },
+              { "start": 12, "end": 18, "text": "Das Boot passiert die gelbe Glockentonne, sie schlägt zweimal." },
+              { "start": 18, "end": 24, "text": "Die Sonne sinkt ins Meer, die ersten Sterne erscheinen." }
+            ]
+          }
+        ]
+      }
+    </script>
+  </div>
+</div>
+```
+
+```html example label="New data, same playhead" hint="df$.shadcn.mediaTimeline.load() (or setState with { data }) replaces the metadata and re-renders - the playhead, the zoom and the media stay where they are. Play, then switch the layers."
+<div class="grid gap-3" style="max-inline-size: 44rem">
+  <div class="audio" id="mt-swap-player" role="group" aria-label="A day at the harbour">
+    <audio preload="metadata" src="videos/harbour.mp3"></audio>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon"
+      data-audio-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <div class="audio-body">
+      <div class="audio-progress">
+        <output class="audio-time" data-audio-output="time">0:00</output>
+        <input
+          class="slider"
+          data-size="sm"
+          type="range"
+          min="0"
+          max="24"
+          step="0.1"
+          value="0"
+          data-audio-action="seek"
+          aria-label="Seek"
+        />
+        <output class="audio-time" data-audio-output="duration">0:24</output>
+      </div>
+    </div>
+  </div>
+  <div class="flex gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" id="mt-swap-scenes">Scenes</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="mt-swap-sounds">Sounds</button>
+  </div>
+  <div class="media-timeline" id="mt-swap" role="group" aria-label="Harbour layers" data-media="mt-swap-player">
+    <script type="application/json" class="media-timeline-source">
+      {
+        "version": 1,
+        "tracks": [
+          {
+            "id": "scenes",
+            "label": "Scenes",
+            "items": [
+              { "start": 0, "end": 6, "label": "Dawn", "color": "chart-1" },
+              { "start": 6, "end": 12, "label": "Morning", "color": "chart-2" },
+              { "start": 12, "end": 18, "label": "Noon", "color": "chart-3" },
+              { "start": 18, "end": 24, "label": "Dusk", "color": "chart-5" }
+            ]
+          }
+        ]
+      }
+    </script>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const scenes = df$.shadcn.mediaTimeline.data('#mt-swap');
+    const sounds = {
+      version: 1,
+      tracks: [
+        {
+          id: 'sound',
+          label: 'Sound',
+          items: [
+            { start: 0, end: 6.6, label: 'Surf', color: 'chart-2' },
+            { start: 6.6, end: 9.4, label: 'Gulls', color: 'chart-4' },
+            { start: 9.4, end: 13, label: 'Surf', color: 'chart-2' },
+            { start: 13, end: 17, label: 'Bell', color: 'chart-1' },
+            { start: 17, end: 21, label: 'Surf', color: 'chart-2' },
+            { start: 21, end: 24, label: 'Silence', color: 'muted' },
+          ],
+        },
+        {
+          id: 'bell',
+          label: 'Strokes',
+          kind: 'markers',
+          items: [
+            { time: 13, label: '1' },
+            { time: 15, label: '2' },
+          ],
+        },
+      ],
+    };
+    df$('#mt-swap-scenes').on('click', () => df$.shadcn.mediaTimeline.load('#mt-swap', scenes));
+    df$('#mt-swap-sounds').on('click', () => df$.shadcn.mediaTimeline.load('#mt-swap', sounds));
+  });
+</script>
+```
+
+```html example label="A bare video element" hint="The timeline drives any media element - here a plain video with the browser's own controls. Its captions track is the video's own text track, so the browser draws the captions and lists them in its captions menu."
+<div class="grid gap-3" style="max-inline-size: 44rem">
+  <video
+    id="mt-bare-player"
+    controls
+    preload="metadata"
+    playsinline
+    poster="videos/harbour-poster.jpg"
+    style="inline-size: 100%; border-radius: var(--radius-lg)"
+  >
+    <source src="videos/harbour.webm" type="video/webm" />
+    <source src="videos/harbour.mp4" type="video/mp4" />
+  </video>
+  <div class="media-timeline" id="mt-bare" role="group" aria-label="Harbour captions" data-media="mt-bare-player">
+    <script type="application/json" class="media-timeline-source">
+      {
+        "version": 1,
+        "tracks": [
+          {
+            "id": "captions",
+            "label": "Captions",
+            "kind": "captions",
+            "lang": "en",
+            "items": [
+              { "start": 0.5, "end": 4.5, "text": "[Waves roll in under the dawn sky]" },
+              { "start": 6.6, "end": 9.4, "text": "[Gulls cry over the harbour]" },
+              { "start": 13, "end": 14.8, "text": "[The harbour bell rings]" },
+              { "start": 15, "end": 17, "text": "[It rings a second time]" },
+              { "start": 18.5, "end": 21, "text": "[The waves calm as the sun sets]" },
+              { "start": 21.2, "end": 23.8, "text": "[Silence]" }
+            ]
+          }
+        ]
+      }
+    </script>
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.media-timeline</code> - it mirrors the media it drives:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the media is paused (without media: the timeline's own clock stands) - the playhead stands</li>
+    <li><code>playing</code> - the media plays and the playhead moves with it; without media the timeline's own clock runs to the end of the length and lands in <code>default</code>; a browser may refuse to start sound without a click (autoplay rules), and the state then stays <code>default</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Both take the same config, merged into the current one - only the keys passed change something: <code>time</code> (the media seeks there), <code>zoom</code> (pixels per second, 0 fits), <code>data</code> (re-renders, the playhead stays), <code>loop</code> (<code>\{ start, end \}</code> - playback stays inside it - or <code>null</code>). The event <code>media-timeline-change</code> reports the items under the playhead whenever they change, <code>media-timeline-loop</code> the loop.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code> (its own clock plays it); <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/media-timeline-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/media-timeline.schema.json"><code>media-timeline.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `playing` | `boolean` | `true`, `false` | `false` | The controlled media plays (`setState('playing')`); unchecked it pauses. |
+| `time` | `number` | | `0` | The playhead's time in seconds - the media seeks there; observed from `getState().config.time`. |
+| `zoom` | `number` | | `0` | Pixels per second; 0 fits the whole length into the width. |
+```
+
+</StatesSection>
+
+<ApiSection component="media-timeline" />
+
+<SourceFiles component="media-timeline" section="css">
+  <SourceNote for="css">The label column, the ruler's gradient ticks, the rows and their lanes, markers, the playhead and the info cards - every colour a theme token.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="media-timeline" section="js">
+  <SourceNote for="js">Placing the data (spans, lanes, colours), rendering, the media binding, the captions text tracks, the playhead animation and the info outlets.</SourceNote>
+</SourceFiles>
+
+</DocPage>

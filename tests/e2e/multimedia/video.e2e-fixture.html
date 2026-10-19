@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>video e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/slider/slider.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/dropdown/dropdown.css" />
+    <link rel="stylesheet" href="/dist/components/video/video.css" />
+  </head>
+  <!-- mirrors the doc page: the full bar (with a caption track), the overlay variant, native controls, a player
+       driven from outside (data-video-for) and one for the API, a player with text tracks of its own (the captions
+       menu) and a vertical volume -->
+  <body style="padding: 2rem; display: grid; gap: 1.5rem; width: 640px">
+    <figure class="video" id="vid-bar">
+      <div class="video-frame">
+        <video preload="auto" playsinline poster="/dist/documentation/videos/harbour-poster.jpg">
+          <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+          <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+          <track kind="captions" src="/dist/documentation/videos/harbour.en.vtt" srclang="en" label="English" default />
+        </video>
+        <div class="video-captions"></div>
+      </div>
+      <div class="video-controls">
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="toggle" aria-pressed="false" aria-label="Play" id="vid-bar-toggle"><span>▶</span><span>❚❚</span></button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="skip" data-value="-5" aria-label="Back 5 seconds" id="vid-bar-back">-5</button>
+        <output class="video-time" data-video-output="time">0:00</output>
+        <input class="slider" data-size="sm" type="range" min="0" max="24" step="0.1" value="0" data-video-action="seek" aria-label="Seek" id="vid-bar-seek" />
+        <output class="video-time" data-video-output="duration">0:24</output>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="mute" aria-pressed="false" aria-label="Mute" id="vid-bar-mute"><span>🔊</span><span>🔇</span></button>
+        <input class="slider" data-size="xs" type="range" min="0" max="1" step="0.05" value="1" data-video-action="volume" aria-label="Volume" id="vid-bar-volume" />
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="captions" aria-pressed="true" aria-label="Captions" id="vid-bar-cc"><span>cc</span><span>CC</span></button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="fullscreen" aria-pressed="false" aria-label="Full screen" id="vid-bar-fs"><span>⤢</span><span>⤡</span></button>
+      </div>
+    </figure>
+
+    <figure class="video" id="vid-overlay" data-variant="overlay">
+      <div class="video-frame">
+        <video preload="metadata" playsinline>
+          <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+          <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+        </video>
+        <div class="video-captions"></div>
+      </div>
+      <div class="video-controls">
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="toggle" aria-pressed="false" aria-label="Play"><span>▶</span><span>❚❚</span></button>
+        <output class="video-time" data-video-output="time">0:00</output>
+        <input class="slider" data-size="sm" type="range" min="0" max="24" step="0.1" value="0" data-video-action="seek" aria-label="Seek" />
+        <output class="video-time" data-video-output="remaining">-0:24</output>
+      </div>
+    </figure>
+
+    <figure class="video" id="vid-native">
+      <div class="video-frame">
+        <video controls preload="metadata" playsinline>
+          <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+          <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </figure>
+
+    <figure class="video" id="vid-remote">
+      <div class="video-frame">
+        <video preload="metadata" playsinline muted>
+          <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+          <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </figure>
+    <div id="vid-remote-controls" data-video-for="vid-remote">
+      <button class="btn" data-variant="outline" data-size="icon-sm" data-video-action="toggle" aria-pressed="false" aria-label="Play" id="vid-remote-toggle"><span>▶</span><span>❚❚</span></button>
+      <button class="btn" data-variant="outline" data-size="sm" data-video-action="skip" data-value="5" id="vid-remote-fwd">+5 s</button>
+      <button class="btn" data-variant="outline" data-size="sm" data-video-action="rate" data-value="2" aria-pressed="false" id="vid-remote-2x">2×</button>
+      <select class="select" data-size="sm" data-video-action="rate" aria-label="Speed" id="vid-remote-rate">
+        <option value="0.5">0.5×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+      </select>
+      <output data-video-output="time" id="vid-remote-time">0:00</output>
+    </div>
+    <button class="btn" data-video-for="vid-remote" data-video-action="pause" id="vid-remote-pause">Pause</button>
+
+    <figure class="video" id="vid-menu">
+      <div class="video-frame">
+        <video preload="auto" playsinline muted>
+          <source src="/dist/documentation/videos/harbour.webm" type="video/webm" />
+          <source src="/dist/documentation/videos/harbour.mp4" type="video/mp4" />
+        </video>
+        <div class="video-captions"></div>
+      </div>
+      <div class="video-controls">
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="toggle" aria-pressed="false" aria-label="Play" id="vid-menu-toggle"><span>▶</span><span>❚❚</span></button>
+        <div class="video-volume" id="vid-menu-sound">
+          <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="mute" aria-pressed="false" aria-label="Mute" id="vid-menu-mute"><span>🔊</span><span>🔇</span></button>
+          <div class="video-volume-panel">
+            <input class="slider" data-orientation="vertical" data-size="xs" type="range" min="0" max="1" step="0.05" value="1" data-video-action="volume" aria-label="Volume" id="vid-menu-volume" />
+          </div>
+        </div>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-video-action="captions" aria-pressed="true" aria-label="Captions" id="vid-menu-cc"><span>cc</span><span>CC</span></button>
+      </div>
+      <script type="application/json" class="video-tracks">
+        {
+          "version": 1,
+          "labels": { "descriptions": "Picture" },
+          "tracks": [
+            { "id": "sub-en", "kind": "subtitles", "label": "English", "lang": "en", "items": [{ "start": 0, "end": 6, "text": "Waves roll in" }, { "start": 6, "end": 24, "text": "Gulls, then a bell" }] },
+            { "id": "sub-de", "kind": "subtitles", "label": "Deutsch", "lang": "de", "items": [{ "start": 0, "end": 6, "text": "Wellen rollen heran" }, { "start": 6, "end": 24, "text": "Möwen, dann eine Glocke" }] },
+            { "id": "desc-de", "kind": "descriptions", "label": "Deutsch", "lang": "de", "default": true, "items": [{ "start": 0, "end": 6, "text": "Morgendämmerung über dem Hafen" }, { "start": 6, "end": 24, "text": "Ein Segelboot läuft aus" }] }
+          ]
+        }
+      </script>
+    </figure>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/slider/slider.js"></script>
+    <script type="module" src="/dist/components/video/video.js"></script>
+    <script type="module" src="/dist/components/dropdown/dropdown.js"></script>
+  </body>
+</html>

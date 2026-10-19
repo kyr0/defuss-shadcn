@@ -1,0 +1,616 @@
+---
+title: "Video"
+description: "Video component - a stateful player over the native <video>: playing, time, rate, volume, muted and captions as named state, controls inside the player or anywhere on the page, captions in an overlay."
+slug: "video"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="video" title="Video" component="video">
+  A video player the page can drive. The native <code>&lt;video&gt;</code> plays it; the component makes its playback a named state - <code>default</code> (paused) or <code>playing</code>, with the time, rate, volume, muted and captions as its config - binds controls inside the player or anywhere on the page, and draws captions in an overlay that also works in full screen. Its text tracks are keyed - its own JSON, a timeline's rows, <code>&lt;track&gt;</code> elements - and with more than one the captions button offers them in a menu: subtitles of what is heard, video captions of what is seen. A <DocLink href="media-timeline.html">Media Timeline</DocLink> drives it from a JSON of timeline metadata.
+</PageHeader>
+
+<SkillPanel component="video">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure class="video"&gt;</code> around a <code>.video-frame</code> with the native <code>&lt;video&gt;</code> and an optional <code>.video-captions</code> overlay, then an optional <code>.video-controls</code> bar of Buttons, Sliders and readouts.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video" title="playback, seeking, the time and the poster"><code>&lt;video&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement" title="play(), pause(), currentTime, playbackRate, volume, muted"><code>HTMLMediaElement</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/TextTrack" title="caption cues for the overlay"><code>TextTrack</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API" title="the whole player full screen"><code>Fullscreen API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" title="play, mute and captions as toggle buttons"><code>aria-pressed</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="a narrow player drops the volume, skip and length"><code>@container</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.video</code>
+    <code>.video-frame</code>
+    <code>.video-captions</code>
+    <code>.video-controls</code>
+    <code>.video-time</code>
+    <code>.video-volume</code>
+    <code>.video-volume-panel</code>
+    <code>.video-tracks</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-video-action</code> - <code>toggle</code>, <code>play</code>, <code>pause</code>, <code>skip</code> (+ <code>data-value</code> seconds), <code>seek</code> (a range), <code>mute</code>, <code>volume</code> (a range), <code>rate</code> (a select, or a button with <code>data-value</code>), <code>captions</code>, <code>fullscreen</code></SkillText>
+  <SkillText dense>• <code>data-video-output</code> - <code>time</code>, <code>duration</code>, <code>remaining</code></SkillText>
+  <SkillText dense>• <code>data-video-for="id"</code> - a control (or a container of controls) outside the player drives the player with that id</SkillText>
+  <SkillText dense>• <code>&lt;script type="application/json" class="video-tracks"&gt;</code> - the player's own text tracks by key (subtitles, captions, descriptions); two or more turn the captions button into a Dropdown Menu</SkillText>
+  <SkillText dense>• <code>.video-volume</code> - the sound button with a vertical volume in a <code>.video-volume-panel</code> above it (<code>data-side="bottom"</code>: below)</SkillText>
+  <SkillText><code>data-variant="overlay"</code> - the bar over the picture, hidden while it plays; <code>--video-ratio</code> - the frame's ratio (16 / 9)</SkillText>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• Play, mute and captions are toggle buttons: a constant <code>aria-label</code>, <code>aria-pressed</code> for on</SkillText>
+  <SkillText dense>• The scrubber is a native range; the runtime writes <code>aria-valuetext</code> ("0:12 of 0:24")</SkillText>
+  <SkillText dense>• Captions are text over the picture, on by default where a text track exists</SkillText>
+  <SkillText>• With two or more text tracks the captions button is a menu button: the Dropdown Menu's keyboard (arrows, Enter, Escape) and radio items</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Video" sandbox="fullscreen" hint="The native video with a bar of Buttons and Sliders: play, back 5 seconds, the scrubber between the time and the length, sound, volume, captions, full screen. The player's own text track (script.video-tracks) describes the picture in German, a line per scene - the captions button turns it off and on, in full screen too. Open the State tab - playing, time, rate, volume, muted and captions (the key of the track shown) are the player's state: change one there, or play the video and watch them follow."
+<figure class="video" id="video-basic" data-state-demo style="max-inline-size: 40rem">
+  <div class="video-frame">
+    <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+      <source src="videos/harbour.webm" type="video/webm" />
+      <source src="videos/harbour.mp4" type="video/mp4" />
+    </video>
+    <div class="video-captions"></div>
+  </div>
+  <div class="video-controls">
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="skip"
+      data-value="-5"
+      aria-label="Back 5 seconds"
+    >
+      <i data-lucide="rotate-ccw"></i>
+    </button>
+    <output class="video-time" data-video-output="time">0:00</output>
+    <input
+      class="slider"
+      data-size="sm"
+      type="range"
+      min="0"
+      max="24"
+      step="0.1"
+      value="0"
+      data-video-action="seek"
+      aria-label="Seek"
+    />
+    <output class="video-time" data-video-output="duration">0:24</output>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="mute"
+      aria-pressed="false"
+      aria-label="Mute"
+    >
+      <i data-lucide="volume-2"></i><i data-lucide="volume-x"></i>
+    </button>
+    <input
+      class="slider"
+      data-size="xs"
+      type="range"
+      min="0"
+      max="1"
+      step="0.05"
+      value="1"
+      data-video-action="volume"
+      aria-label="Volume"
+    />
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="captions"
+      aria-pressed="true"
+      aria-label="Captions"
+    >
+      <i data-lucide="captions-off"></i><i data-lucide="captions"></i>
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="fullscreen"
+      aria-pressed="false"
+      aria-label="Full screen"
+    >
+      <i data-lucide="maximize"></i><i data-lucide="minimize"></i>
+    </button>
+  </div>
+  <script type="application/json" class="video-tracks">
+    {
+      "version": 1,
+      "tracks": [
+        {
+          "id": "bild-de",
+          "kind": "descriptions",
+          "label": "Deutsch",
+          "lang": "de",
+          "items": [
+            {
+              "start": 0,
+              "end": 6,
+              "text": "Morgendämmerung: Links über dem Hafen geht die Sonne auf, rechts steht der Leuchtturm im ersten Licht."
+            },
+            { "start": 6, "end": 9.4, "text": "Vormittag: Ein Segelboot läuft aus, Möwen ziehen über das Wasser." },
+            { "start": 9.4, "end": 12, "text": "Das Segelboot fährt unter der steigenden Sonne nach rechts." },
+            {
+              "start": 12,
+              "end": 13,
+              "text": "Mittag: Die Sonne steht hoch, das Boot nähert sich der gelben Glockentonne."
+            },
+            {
+              "start": 13,
+              "end": 17,
+              "text": "Die Glockentonne schlägt zweimal, Ringe breiten sich auf dem Wasser aus."
+            },
+            { "start": 17, "end": 18, "text": "Das Segelboot verlässt das Bild nach rechts." },
+            { "start": 18, "end": 21, "text": "Abend: Die Sonne sinkt rechts ins Meer." },
+            { "start": 21, "end": 24, "text": "Nacht: Über dem stillen Hafen erscheinen die ersten Sterne." }
+          ]
+        }
+      ]
+    }
+  </script>
+</figure>
+```
+
+```html example label="Overlay controls" sandbox="fullscreen" hint="data-variant='overlay' lays the bar over the foot of the picture on a dark scrim. While the video plays it hides until a pointer or the focus comes back to the player."
+<figure class="video" id="video-overlay" data-variant="overlay" style="max-inline-size: 40rem">
+  <div class="video-frame">
+    <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+      <source src="videos/harbour.webm" type="video/webm" />
+      <source src="videos/harbour.mp4" type="video/mp4" />
+    </video>
+    <div class="video-captions"></div>
+  </div>
+  <div class="video-controls">
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <output class="video-time" data-video-output="time">0:00</output>
+    <input
+      class="slider"
+      data-size="sm"
+      type="range"
+      min="0"
+      max="24"
+      step="0.1"
+      value="0"
+      data-video-action="seek"
+      aria-label="Seek"
+    />
+    <output class="video-time" data-video-output="remaining">-0:24</output>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="mute"
+      aria-pressed="false"
+      aria-label="Mute"
+    >
+      <i data-lucide="volume-2"></i><i data-lucide="volume-x"></i>
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="fullscreen"
+      aria-pressed="false"
+      aria-label="Full screen"
+    >
+      <i data-lucide="maximize"></i><i data-lucide="minimize"></i>
+    </button>
+  </div>
+</figure>
+```
+
+```html example label="Native controls" hint="No bar: the video keeps the browser's own controls. The state follows them all the same - play, seek or mute with the native bar and watch the State tab."
+<figure class="video" id="video-native" style="max-inline-size: 40rem">
+  <div class="video-frame">
+    <video controls preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+      <source src="videos/harbour.webm" type="video/webm" />
+      <source src="videos/harbour.mp4" type="video/mp4" />
+    </video>
+  </div>
+</figure>
+```
+
+```html example label="Subtitles and video captions" sandbox="fullscreen" hint="Four text tracks of the player's own: subtitles of what is heard and video captions of what is seen, each in English and German. With two or more, the captions button opens a Dropdown Menu - Off, then a submenu per group that offers more than one (a group with one track is one item); the choice is the state's captions key. The sound button carries the volume as a vertical slider in a panel above it (.video-volume), shown while the pointer or the focus is there."
+<figure class="video" id="video-tracks" style="max-inline-size: 40rem">
+  <div class="video-frame">
+    <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+      <source src="videos/harbour.webm" type="video/webm" />
+      <source src="videos/harbour.mp4" type="video/mp4" />
+    </video>
+    <div class="video-captions"></div>
+  </div>
+  <div class="video-controls">
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <output class="video-time" data-video-output="time">0:00</output>
+    <input
+      class="slider"
+      data-size="sm"
+      type="range"
+      min="0"
+      max="24"
+      step="0.1"
+      value="0"
+      data-video-action="seek"
+      aria-label="Seek"
+    />
+    <output class="video-time" data-video-output="duration">0:24</output>
+    <div class="video-volume">
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-video-action="mute"
+        aria-pressed="false"
+        aria-label="Mute"
+      >
+        <i data-lucide="volume-2"></i><i data-lucide="volume-x"></i>
+      </button>
+      <div class="video-volume-panel">
+        <input
+          class="slider"
+          data-orientation="vertical"
+          data-size="xs"
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value="1"
+          data-video-action="volume"
+          aria-label="Volume"
+        />
+      </div>
+    </div>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="captions"
+      aria-pressed="true"
+      aria-label="Captions"
+    >
+      <i data-lucide="captions-off"></i><i data-lucide="captions"></i>
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-video-action="fullscreen"
+      aria-pressed="false"
+      aria-label="Full screen"
+    >
+      <i data-lucide="maximize"></i><i data-lucide="minimize"></i>
+    </button>
+  </div>
+  <script type="application/json" class="video-tracks">
+    {
+      "version": 1,
+      "tracks": [
+        {
+          "id": "sub-en",
+          "kind": "subtitles",
+          "label": "English",
+          "lang": "en",
+          "default": true,
+          "items": [
+            { "start": 0.5, "end": 4.5, "text": "[Waves roll in under the dawn sky]" },
+            { "start": 6.6, "end": 9.4, "text": "[Gulls cry over the harbour]" },
+            { "start": 13, "end": 14.8, "text": "[The harbour bell rings]" },
+            { "start": 15, "end": 17, "text": "[It rings a second time]" },
+            { "start": 18.5, "end": 21, "text": "[The waves calm as the sun sets]" },
+            { "start": 21.2, "end": 23.8, "text": "[Silence]" }
+          ]
+        },
+        {
+          "id": "sub-de",
+          "kind": "subtitles",
+          "label": "Deutsch",
+          "lang": "de",
+          "items": [
+            { "start": 0.5, "end": 4.5, "text": "[Wellen rollen unter dem Morgenhimmel heran]" },
+            { "start": 6.6, "end": 9.4, "text": "[Möwen schreien über dem Hafen]" },
+            { "start": 13, "end": 14.8, "text": "[Die Hafenglocke schlägt]" },
+            { "start": 15, "end": 17, "text": "[Sie schlägt ein zweites Mal]" },
+            { "start": 18.5, "end": 21, "text": "[Die Wellen beruhigen sich, die Sonne geht unter]" },
+            { "start": 21.2, "end": 23.8, "text": "[Stille]" }
+          ]
+        },
+        {
+          "id": "seen-en",
+          "kind": "descriptions",
+          "label": "English",
+          "lang": "en",
+          "items": [
+            {
+              "start": 0,
+              "end": 6,
+              "text": "Dawn: the sun rises over the harbour on the left, the lighthouse stands in the first light."
+            },
+            { "start": 6, "end": 12, "text": "Morning: a sailing boat leaves the harbour, gulls cross the water." },
+            { "start": 12, "end": 18, "text": "Noon: the boat passes the yellow bell buoy, which rings twice." },
+            { "start": 18, "end": 24, "text": "Dusk: the sun sets into the sea, the first stars come out." }
+          ]
+        },
+        {
+          "id": "seen-de",
+          "kind": "descriptions",
+          "label": "Deutsch",
+          "lang": "de",
+          "items": [
+            {
+              "start": 0,
+              "end": 6,
+              "text": "Morgendämmerung: Links über dem Hafen geht die Sonne auf, rechts steht der Leuchtturm im ersten Licht."
+            },
+            { "start": 6, "end": 12, "text": "Vormittag: Ein Segelboot läuft aus, Möwen ziehen über das Wasser." },
+            {
+              "start": 12,
+              "end": 18,
+              "text": "Mittag: Die Sonne steht hoch, das Boot nähert sich der gelben Glockentonne."
+            },
+            { "start": 18, "end": 24, "text": "Abend: Die Sonne sinkt rechts ins Meer." }
+          ]
+        }
+      ]
+    }
+  </script>
+</figure>
+```
+
+```html example label="Controls anywhere on the page" hint="A row outside the player names it once with data-video-for: the toggle, the skips, the rate select and the readouts drive and follow the player with that id."
+<div class="grid gap-3" style="max-inline-size: 40rem">
+  <figure class="video" id="video-remote">
+    <div class="video-frame">
+      <video preload="metadata" playsinline poster="videos/harbour-poster.jpg">
+        <source src="videos/harbour.webm" type="video/webm" />
+        <source src="videos/harbour.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </figure>
+  <div class="flex flex-wrap items-center gap-2" data-video-for="video-remote">
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="icon-sm"
+      data-video-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <button class="btn" data-variant="outline" data-size="sm" data-video-action="skip" data-value="-5">-5 s</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-video-action="skip" data-value="5">+5 s</button>
+    <select class="select" data-size="sm" data-video-action="rate" aria-label="Speed">
+      <option value="0.5">0.5×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.5">1.5×</option>
+      <option value="2">2×</option>
+    </select>
+    <span class="text-sm text-muted-foreground"
+      ><output data-video-output="time">0:00</output> / <output data-video-output="duration">0:24</output></span
+    >
+  </div>
+</div>
+```
+
+```html example label="The API and the store" hint="df$.shadcn.video plays, pauses, seeks and skips by name; el.store reports every change - the line under the buttons is written by a store subscriber, at the media's own pace (about four times a second while it plays)."
+<div class="grid gap-3" style="max-inline-size: 40rem">
+  <figure class="video" id="video-api">
+    <div class="video-frame">
+      <video preload="metadata" playsinline muted poster="videos/harbour-poster.jpg">
+        <source src="videos/harbour.webm" type="video/webm" />
+        <source src="videos/harbour.mp4" type="video/mp4" />
+      </video>
+      <div class="video-captions"></div>
+    </div>
+  </figure>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" id="video-api-play">play()</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="video-api-pause">pause()</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="video-api-noon">seek(12)</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="video-api-rate">rate(2)</button>
+  </div>
+  <output class="text-sm text-muted-foreground" id="video-api-state">default</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('video-api');
+    const video = df$.shadcn.video;
+    df$('#video-api-play').on('click', () => video.play(el));
+    df$('#video-api-pause').on('click', () => video.pause(el));
+    df$('#video-api-noon').on('click', () => video.seek(el, 12));
+    df$('#video-api-rate').on('click', () => video.rate(el, 2));
+    const out = document.getElementById('video-api-state');
+    el.store.subscribe(({ name, config }) => {
+      out.value = `${name} at ${config.time.toFixed(1)} s of ${config.duration.toFixed(1)} s, rate ${config.rate}, muted ${config.muted}`;
+    });
+  });
+</script>
+```
+
+```html example label="A track changes while it plays" hint="df$.shadcn.video.tracks() adds or updates the player's own text tracks by key - also while the video plays: the track shown keeps showing with its new cues, a new key joins the captions menu. Play, then rewrite the notes or add a French track."
+<div class="grid gap-3" style="max-inline-size: 40rem">
+  <figure class="video" id="video-live">
+    <div class="video-frame">
+      <video preload="metadata" playsinline muted poster="videos/harbour-poster.jpg">
+        <source src="videos/harbour.webm" type="video/webm" />
+        <source src="videos/harbour.mp4" type="video/mp4" />
+      </video>
+      <div class="video-captions"></div>
+    </div>
+    <div class="video-controls">
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-video-action="toggle"
+        aria-pressed="false"
+        aria-label="Play"
+      >
+        <i data-lucide="play"></i><i data-lucide="pause"></i>
+      </button>
+      <output class="video-time" data-video-output="time">0:00</output>
+      <input
+        class="slider"
+        data-size="sm"
+        type="range"
+        min="0"
+        max="24"
+        step="0.1"
+        value="0"
+        data-video-action="seek"
+        aria-label="Seek"
+      />
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-sm"
+        data-video-action="captions"
+        aria-pressed="true"
+        aria-label="Captions"
+      >
+        <i data-lucide="captions-off"></i><i data-lucide="captions"></i>
+      </button>
+    </div>
+    <script type="application/json" class="video-tracks">
+      {
+        "version": 1,
+        "tracks": [
+          {
+            "id": "notes",
+            "kind": "descriptions",
+            "label": "Notes",
+            "lang": "en",
+            "items": [{ "start": 0, "end": 24, "text": "Notes: the harbour from dawn to dusk" }]
+          }
+        ]
+      }
+    </script>
+  </figure>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" id="video-live-notes">Rewrite the notes</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="video-live-fr">Add French subtitles</button>
+  </div>
+  <output class="text-sm text-muted-foreground" id="video-live-keys">notes</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('video-live');
+    const video = df$.shadcn.video;
+    const out = document.getElementById('video-live-keys');
+    let round = 0;
+    df$('#video-live-notes').on('click', () => {
+      round += 1;
+      const t = Math.floor(el.api.getState().config.time);
+      video.tracks(el, [
+        {
+          id: 'notes',
+          kind: 'descriptions',
+          label: 'Notes',
+          lang: 'en',
+          items: [{ start: 0, end: 24, text: `Notes, version ${round + 1}: rewritten at ${t} s` }],
+        },
+      ]);
+    });
+    df$('#video-live-fr').on('click', () => {
+      const keys = video.tracks(el, [
+        {
+          id: 'sub-fr',
+          kind: 'subtitles',
+          label: 'Français',
+          lang: 'fr',
+          items: [
+            { start: 0.5, end: 4.5, text: "[Les vagues roulent sous le ciel de l'aube]" },
+            { start: 6.6, end: 9.4, text: '[Les mouettes crient au-dessus du port]' },
+            { start: 13, end: 17, text: '[La cloche du port sonne deux fois]' },
+          ],
+        },
+      ]);
+      out.value = `notes, ${keys.join(', ')} - open the captions menu`;
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.video</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - paused: at the start, wherever it was paused, or at the end</li>
+    <li><code>playing</code> - playing; a browser may refuse to start sound without a click on the page (autoplay rules), and the state then stays <code>default</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Both take the same config, merged into the current one - only the keys passed change something: <code>time</code> (seek), <code>rate</code>, <code>volume</code>, <code>muted</code>, <code>captions</code> (the key of the text track shown, <code>""</code> for none). <code>getState()</code> reports them live, with the <code>duration</code>.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/video-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/video.schema.json"><code>video.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `playing` | `boolean` | `true`, `false` | `false` | The video plays (`setState('playing')`); unchecked it pauses. |
+| `time` | `number` | | `0` | The playback position in seconds - `setState(current, { time })` seeks; observed from `getState().config.time`. |
+| `rate` | `number` | | `1` | The playback rate - 1 is normal speed. |
+| `volume` | `number` | | `1` | The volume, 0 to 1. |
+| `muted` | `boolean` | `true`, `false` | `false` | The sound is off. |
+| `captions` | `string` | | `""` | The key of the text track the overlay shows (a track's id, a `<track>`'s id or srclang), empty for none - `true` and `false` are accepted. |
+```
+
+</StatesSection>
+
+<ApiSection component="video" />
+
+<SourceFiles component="video" section="css">
+  <SourceNote for="css">The frame, the captions overlay, the bar, the icon swap of the toggles and the overlay variant.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="video" section="js">
+  <SourceNote for="js">The states, the API and the init - the media engine itself (reading and driving the element, the controls, the captions) is shared with Audio in core: src/shared/media.ts.</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>audio e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/slider/slider.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/audio/audio.css" />
+  </head>
+  <!-- mirrors the doc page: the default row (with a transcript line from a caption track), the compact variant with a
+       vertical volume, rate and skip in the row, and a player driven from outside -->
+  <body style="padding: 2rem; display: grid; gap: 1.5rem; width: 640px">
+    <div class="audio" id="aud-basic" role="group" aria-label="A day at the harbour">
+      <audio preload="auto" src="/dist/documentation/videos/harbour.mp3">
+        <track kind="captions" src="/dist/documentation/videos/harbour.en.vtt" srclang="en" label="English" default />
+      </audio>
+      <button class="btn" data-variant="ghost" data-size="icon" data-audio-action="toggle" aria-pressed="false" aria-label="Play" id="aud-basic-toggle"><span>▶</span><span>❚❚</span></button>
+      <div class="audio-body">
+        <span class="audio-title">A day at the harbour</span>
+        <div class="audio-progress">
+          <output class="audio-time" data-audio-output="time">0:00</output>
+          <input class="slider" data-size="sm" type="range" min="0" max="24" step="0.1" value="0" data-audio-action="seek" aria-label="Seek" id="aud-basic-seek" />
+          <output class="audio-time" data-audio-output="duration">0:24</output>
+        </div>
+        <p class="audio-captions"></p>
+      </div>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-audio-action="mute" aria-pressed="false" aria-label="Mute" id="aud-basic-mute"><span>🔊</span><span>🔇</span></button>
+      <input class="slider" data-size="xs" type="range" min="0" max="1" step="0.05" value="0.6" data-audio-action="volume" aria-label="Volume" id="aud-basic-volume" />
+    </div>
+
+    <div class="audio" id="aud-compact" data-variant="compact" role="group" aria-label="Harbour bell">
+      <audio preload="metadata" src="/dist/documentation/videos/harbour.mp3"></audio>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-audio-action="toggle" aria-pressed="false" aria-label="Play"><span>▶</span><span>❚❚</span></button>
+      <div class="audio-body">
+        <div class="audio-progress">
+          <input class="slider" data-size="sm" type="range" min="0" max="24" step="0.1" value="0" data-audio-action="seek" aria-label="Seek" />
+          <output class="audio-time" data-audio-output="remaining" id="aud-compact-left">-0:24</output>
+        </div>
+      </div>
+      <div class="audio-volume" id="aud-compact-sound" data-side="bottom">
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-audio-action="mute" aria-pressed="false" aria-label="Mute" id="aud-compact-mute"><span>🔊</span><span>🔇</span></button>
+        <div class="audio-volume-panel">
+          <input class="slider" data-orientation="vertical" data-size="xs" type="range" min="0" max="1" step="0.05" value="0.8" data-audio-action="volume" aria-label="Volume" id="aud-compact-volume" />
+        </div>
+      </div>
+    </div>
+
+    <div class="audio" id="aud-rate" role="group" aria-label="A day at the harbour, at your speed">
+      <audio preload="metadata" src="/dist/documentation/videos/harbour.mp3"></audio>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-audio-action="skip" data-value="-5" aria-label="Back 5 seconds" id="aud-rate-back">-5</button>
+      <button class="btn" data-variant="ghost" data-size="icon" data-audio-action="toggle" aria-pressed="false" aria-label="Play"><span>▶</span><span>❚❚</span></button>
+      <button class="btn" data-variant="ghost" data-size="icon-sm" data-audio-action="skip" data-value="5" aria-label="Forward 5 seconds" id="aud-rate-fwd">+5</button>
+      <div class="audio-body">
+        <span class="audio-title">A day at the harbour</span>
+        <div class="audio-progress">
+          <output class="audio-time" data-audio-output="time" id="aud-rate-time">0:00</output>
+          <input class="slider" data-size="sm" type="range" min="0" max="24" step="0.1" value="0" data-audio-action="seek" aria-label="Seek" />
+          <output class="audio-time" data-audio-output="duration">0:24</output>
+        </div>
+      </div>
+      <select class="select" data-size="sm" data-audio-action="rate" aria-label="Speed" id="aud-rate-select">
+        <option value="0.75">0.75×</option>
+        <option value="1.5" selected>1.5×</option>
+        <option value="2">2×</option>
+      </select>
+    </div>
+
+    <div class="audio" id="aud-remote" role="group" aria-label="A day at the harbour">
+      <audio preload="metadata" src="/dist/documentation/videos/harbour.mp3"></audio>
+    </div>
+    <p>
+      <button class="btn" data-variant="link" data-size="sm" data-audio-for="aud-remote" data-audio-action="toggle" aria-pressed="false" id="aud-remote-toggle">Play</button>
+      <output data-audio-for="aud-remote" data-audio-output="time" id="aud-remote-time">0:00</output>
+    </p>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/slider/slider.js"></script>
+    <script type="module" src="/dist/components/audio/audio.js"></script>
+  </body>
+</html>

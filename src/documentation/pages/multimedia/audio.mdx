@@ -1,0 +1,400 @@
+---
+title: "Audio"
+description: "Audio component - a stateful player over the native <audio>: playing, time, rate, volume, muted and captions as named state, one row of controls, controls anywhere on the page, a transcript line from the active caption."
+slug: "audio"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="audio" title="Audio" component="audio">
+  An audio player the page can drive. The native <code>&lt;audio&gt;</code> plays it; the component makes its playback a named state - <code>default</code> (paused) or <code>playing</code>, with the time, rate, volume, muted and captions as its config - in one row of Buttons, Sliders and readouts, binds controls anywhere on the page and shows the active caption as a transcript line. It runs on the same media engine as <DocLink href="video.html">Video</DocLink>, and a <DocLink href="media-timeline.html">Media Timeline</DocLink> drives it the same way.
+</PageHeader>
+
+<SkillPanel component="audio">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div class="audio" role="group"&gt;</code> holding a native <code>&lt;audio&gt;</code> without controls, the play toggle, a <code>.audio-body</code> (title, <code>.audio-progress</code> scrubber, optional <code>.audio-captions</code> line) and the sound controls.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio" title="playback, seeking and the time"><code>&lt;audio&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement" title="play(), pause(), currentTime, playbackRate, volume, muted"><code>HTMLMediaElement</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/TextTrack" title="caption cues for the transcript line"><code>TextTrack</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" title="play and mute as toggle buttons"><code>aria-pressed</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="a narrow player drops the volume, rate and length"><code>@container</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.audio</code>
+    <code>.audio-body</code>
+    <code>.audio-title</code>
+    <code>.audio-progress</code>
+    <code>.audio-time</code>
+    <code>.audio-captions</code>
+    <code>.audio-volume</code>
+    <code>.audio-volume-panel</code>
+    <code>.audio-tracks</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-audio-action</code> - <code>toggle</code>, <code>play</code>, <code>pause</code>, <code>skip</code> (+ <code>data-value</code> seconds), <code>seek</code> (a range), <code>mute</code>, <code>volume</code> (a range), <code>rate</code> (a select, or a button with <code>data-value</code>), <code>captions</code></SkillText>
+  <SkillText dense>• <code>data-audio-output</code> - <code>time</code>, <code>duration</code>, <code>remaining</code></SkillText>
+  <SkillText dense>• <code>data-audio-for="id"</code> - a control (or a container of controls) outside the player drives the player with that id</SkillText>
+  <SkillText dense>• <code>&lt;script type="application/json" class="audio-tracks"&gt;</code> - the player's own text tracks by key; two or more turn a captions button into a Dropdown Menu</SkillText>
+  <SkillText dense>• <code>.audio-volume</code> - the sound button with a vertical volume in a <code>.audio-volume-panel</code> above it (<code>data-side="bottom"</code>: below)</SkillText>
+  <SkillText><code>data-variant="compact"</code> - no frame and no title</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Audio" hint="One row: play, the title over the scrubber and its readouts, sound and volume. Open the State tab - playing, time, rate, volume, muted and captions are the player's state."
+<div
+  class="audio"
+  id="audio-basic"
+  role="group"
+  aria-label="A day at the harbour"
+  data-state-demo
+  style="max-inline-size: 32rem"
+>
+  <audio preload="metadata" src="videos/harbour.mp3"></audio>
+  <button
+    class="btn"
+    data-variant="ghost"
+    data-size="icon"
+    data-audio-action="toggle"
+    aria-pressed="false"
+    aria-label="Play"
+  >
+    <i data-lucide="play"></i><i data-lucide="pause"></i>
+  </button>
+  <div class="audio-body">
+    <span class="audio-title">A day at the harbour</span>
+    <div class="audio-progress">
+      <output class="audio-time" data-audio-output="time">0:00</output>
+      <input
+        class="slider"
+        data-size="sm"
+        type="range"
+        min="0"
+        max="24"
+        step="0.1"
+        value="0"
+        data-audio-action="seek"
+        aria-label="Seek"
+      />
+      <output class="audio-time" data-audio-output="duration">0:24</output>
+    </div>
+  </div>
+  <button
+    class="btn"
+    data-variant="ghost"
+    data-size="icon-sm"
+    data-audio-action="mute"
+    aria-pressed="false"
+    aria-label="Mute"
+  >
+    <i data-lucide="volume-2"></i><i data-lucide="volume-x"></i>
+  </button>
+  <input
+    class="slider"
+    data-size="xs"
+    type="range"
+    min="0"
+    max="1"
+    step="0.05"
+    value="1"
+    data-audio-action="volume"
+    aria-label="Volume"
+  />
+</div>
+```
+
+```html example label="Compact" height="12" hint="data-variant='compact' drops the frame and the title - the controls alone, for a row in a list or a line of text. The sound button carries the volume as a vertical slider (.audio-volume): its panel opens below the row (data-side='bottom') while the pointer or the focus is on it, so the row stays one line."
+<div
+  class="audio"
+  id="audio-compact"
+  data-variant="compact"
+  role="group"
+  aria-label="Harbour bell"
+  style="max-inline-size: 24rem"
+>
+  <audio preload="metadata" src="videos/harbour.mp3"></audio>
+  <button
+    class="btn"
+    data-variant="ghost"
+    data-size="icon-sm"
+    data-audio-action="toggle"
+    aria-pressed="false"
+    aria-label="Play"
+  >
+    <i data-lucide="play"></i><i data-lucide="pause"></i>
+  </button>
+  <div class="audio-body">
+    <div class="audio-progress">
+      <input
+        class="slider"
+        data-size="sm"
+        type="range"
+        min="0"
+        max="24"
+        step="0.1"
+        value="0"
+        data-audio-action="seek"
+        aria-label="Seek"
+      />
+      <output class="audio-time" data-audio-output="remaining">-0:24</output>
+    </div>
+  </div>
+  <div class="audio-volume" data-side="bottom">
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-audio-action="mute"
+      aria-pressed="false"
+      aria-label="Mute"
+    >
+      <i data-lucide="volume-2"></i><i data-lucide="volume-x"></i>
+    </button>
+    <div class="audio-volume-panel">
+      <input
+        class="slider"
+        data-orientation="vertical"
+        data-size="xs"
+        type="range"
+        min="0"
+        max="1"
+        step="0.05"
+        value="0.8"
+        data-audio-action="volume"
+        aria-label="Volume"
+      />
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Rate and skip" hint="A select of rates and two skip buttons inside the row - the select shows the rate that plays, whoever set it."
+<div
+  class="audio"
+  id="audio-rate"
+  role="group"
+  aria-label="A day at the harbour, at your speed"
+  style="max-inline-size: 36rem"
+>
+  <audio preload="metadata" src="videos/harbour.mp3"></audio>
+  <button
+    class="btn"
+    data-variant="ghost"
+    data-size="icon-sm"
+    data-audio-action="skip"
+    data-value="-5"
+    aria-label="Back 5 seconds"
+  >
+    <i data-lucide="rotate-ccw"></i>
+  </button>
+  <button
+    class="btn"
+    data-variant="ghost"
+    data-size="icon"
+    data-audio-action="toggle"
+    aria-pressed="false"
+    aria-label="Play"
+  >
+    <i data-lucide="play"></i><i data-lucide="pause"></i>
+  </button>
+  <button
+    class="btn"
+    data-variant="ghost"
+    data-size="icon-sm"
+    data-audio-action="skip"
+    data-value="5"
+    aria-label="Forward 5 seconds"
+  >
+    <i data-lucide="rotate-cw"></i>
+  </button>
+  <div class="audio-body">
+    <span class="audio-title">A day at the harbour</span>
+    <div class="audio-progress">
+      <output class="audio-time" data-audio-output="time">0:00</output>
+      <input
+        class="slider"
+        data-size="sm"
+        type="range"
+        min="0"
+        max="24"
+        step="0.1"
+        value="0"
+        data-audio-action="seek"
+        aria-label="Seek"
+      />
+      <output class="audio-time" data-audio-output="duration">0:24</output>
+    </div>
+  </div>
+  <select class="select" data-size="sm" data-audio-action="rate" aria-label="Speed">
+    <option value="0.75">0.75×</option>
+    <option value="1" selected>1×</option>
+    <option value="1.5">1.5×</option>
+    <option value="2">2×</option>
+  </select>
+</div>
+```
+
+```html example label="Controls anywhere on the page" hint="A row outside the player names it once with data-audio-for: its toggle and its readout drive and follow the player. The three buttons call df$.shadcn.audio - each jumps to a sound of the recording and plays from there."
+<div class="grid gap-3" style="max-inline-size: 32rem">
+  <div class="audio" id="audio-remote" role="group" aria-label="A day at the harbour">
+    <audio preload="metadata" src="videos/harbour.mp3"></audio>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon"
+      data-audio-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <div class="audio-body">
+      <span class="audio-title">A day at the harbour</span>
+      <div class="audio-progress">
+        <output class="audio-time" data-audio-output="time">0:00</output>
+        <input
+          class="slider"
+          data-size="sm"
+          type="range"
+          min="0"
+          max="24"
+          step="0.1"
+          value="0"
+          data-audio-action="seek"
+          aria-label="Seek"
+        />
+        <output class="audio-time" data-audio-output="duration">0:24</output>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2" data-audio-for="audio-remote">
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="icon-sm"
+      data-audio-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <output class="audio-time" data-audio-output="remaining">-0:24</output>
+    <button class="btn" data-variant="outline" data-size="sm" id="audio-remote-gulls">Gulls 0:07</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="audio-remote-bell">Bell 0:13</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="audio-remote-silence">Silence 0:21</button>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const at = (id, time) =>
+      df$(id).on('click', () => {
+        df$.shadcn.audio.seek('#audio-remote', time);
+        df$.shadcn.audio.play('#audio-remote');
+      });
+    at('#audio-remote-gulls', 6.6);
+    at('#audio-remote-bell', 12.8);
+    at('#audio-remote-silence', 20.5);
+  });
+</script>
+```
+
+```html example label="The API and the store" hint="df$.shadcn.audio plays, pauses, seeks and mutes by name; el.store reports every change - the line under the buttons is written by a store subscriber."
+<div class="grid gap-3" style="max-inline-size: 32rem">
+  <div class="audio" id="audio-api" role="group" aria-label="A day at the harbour">
+    <audio preload="metadata" src="videos/harbour.mp3"></audio>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon"
+      data-audio-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+    >
+      <i data-lucide="play"></i><i data-lucide="pause"></i>
+    </button>
+    <div class="audio-body">
+      <span class="audio-title">A day at the harbour</span>
+      <div class="audio-progress">
+        <output class="audio-time" data-audio-output="time">0:00</output>
+        <input
+          class="slider"
+          data-size="sm"
+          type="range"
+          min="0"
+          max="24"
+          step="0.1"
+          value="0"
+          data-audio-action="seek"
+          aria-label="Seek"
+        />
+        <output class="audio-time" data-audio-output="duration">0:24</output>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" id="audio-api-toggle">toggle()</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="audio-api-skip">skip(5)</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="audio-api-mute">mute()</button>
+  </div>
+  <output class="text-sm text-muted-foreground" id="audio-api-state">default</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('audio-api');
+    const audio = df$.shadcn.audio;
+    df$('#audio-api-toggle').on('click', () => audio.toggle(el));
+    df$('#audio-api-skip').on('click', () => audio.skip(el, 5));
+    df$('#audio-api-mute').on('click', () => audio.mute(el));
+    const out = document.getElementById('audio-api-state');
+    el.store.subscribe(({ name, config }) => {
+      out.value = `${name} at ${config.time.toFixed(1)} s, volume ${config.volume}, muted ${config.muted}`;
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.audio</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - paused: at the start, wherever it was paused, or at the end</li>
+    <li><code>playing</code> - playing; a browser may refuse to start sound without a click on the page (autoplay rules), and the state then stays <code>default</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Both take the same config, merged into the current one - only the keys passed change something: <code>time</code> (seek), <code>rate</code>, <code>volume</code>, <code>muted</code>, <code>captions</code> (the key of the text track shown, <code>""</code> for none). <code>getState()</code> reports them live, with the <code>duration</code>.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/audio-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/audio.schema.json"><code>audio.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `playing` | `boolean` | `true`, `false` | `false` | The audio plays (`setState('playing')`); unchecked it pauses. |
+| `time` | `number` | | `0` | The playback position in seconds - `setState(current, { time })` seeks; observed from `getState().config.time`. |
+| `rate` | `number` | | `1` | The playback rate - 1 is normal speed. |
+| `volume` | `number` | | `1` | The volume, 0 to 1. |
+| `muted` | `boolean` | `true`, `false` | `false` | The sound is off. |
+| `captions` | `string` | | `""` | The key of the text track the transcript line shows (a track's id, a `<track>`'s id or srclang), empty for none - `true` and `false` are accepted. |
+```
+
+</StatesSection>
+
+<ApiSection component="audio" />
+
+<SourceFiles component="audio" section="css">
+  <SourceNote for="css">The row, the body and its scrubber, the transcript line, the icon swap of the toggles and the compact variant.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="audio" section="js">
+  <SourceNote for="js">The states, the API and the init - the media engine itself is shared with Video in core: src/shared/media.ts.</SourceNote>
+</SourceFiles>
+
+</DocPage>
