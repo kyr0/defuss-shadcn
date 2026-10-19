@@ -69,7 +69,12 @@ try {
   await check('many formulas → the pinned module and stylesheet are each requested exactly once', async () => {
     assert.deepEqual(requests.filter((u) => u.endsWith('/katex.mjs')), [`${PINNED}katex.mjs`]);
     assert.deepEqual(requests.filter((u) => u.endsWith('/katex.min.css')), [`${PINNED}katex.min.css`]);
-    assert.ok(requests.some((u) => /\/fonts\/KaTeX_.+\.woff2$/.test(u)), 'the KaTeX fonts load relative to the stylesheet');
+    // a font is requested when text is first laid out in it - after the typeset settles, on a loaded machine later:
+    // the release's full run once checked before any font request (270 of 271 files passed; alone it passes)
+    const font = (u: string) => /\/fonts\/KaTeX_.+\.woff2$/.test(u);
+    const until = Date.now() + 10_000;
+    while (!requests.some(font) && Date.now() < until) await page.waitForTimeout(100);
+    assert.ok(requests.some(font), 'the KaTeX fonts load relative to the stylesheet');
   });
 
   await check('valid formulas typeset: visual HTML + MathML; the TeX source stays, hidden', async () => {
