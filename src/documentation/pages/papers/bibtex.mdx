@@ -45,9 +45,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
   <SkillField label="Data attributes">
 <SkillText><code>data-formats</code> (the tabs: <code>bibtex apa mla chicago harvard ieee</code>), <code>data-format</code> (the first shown), <code>data-variant="minimal|inline"</code>, <code>data-size="sm"</code>, <code>data-align="none"</code>, <code>data-highlight="none"</code>, <code>data-copy="none"</code>.</SkillText>
   </SkillField>
+
+  <SkillField label="Print">
+<SkillText>Paper has no tabs to switch and nothing to copy: printed, the bar goes and the block shows the one format it is set to (<code>data-format</code>, else the first of <code>data-formats</code>), its frame closed on every page a long list runs over. A long BibTeX field scrolls sideways on screen and wraps in print.</SkillText>
+  </SkillField>
 </SkillPanel>
 
 ## Formats
+
+```html example part label="BibTeX (inline)"
+<span class="bibtex" id="cite-inline" data-variant="inline" data-formats="mla"
+  ><code class="bibtex-source"
+    >@article{knuth1984literate, author = {Knuth, Donald E.}, title = {Literate Programming}, journal = {The Computer
+    Journal}, volume = {27}, number = {2}, pages = {97--111}, year = {1984}, doi = {10.1093/comjnl/27.2.97} }</code
+  ></span
+>
+```
 
 ```html example label="Six formats, one source" sandbox="links" hint="The authored BibTeX is parsed once; the tabs show it as BibTeX (normalized, aligned, highlighted) or as an APA, MLA, Chicago, Harvard or IEEE reference. DOIs and URLs are links (a new tab); Copy takes exactly what is shown, as plain text. ← / → move between the tabs." previewStyle="align-items:stretch;"
 <figure class="bibtex" id="cite-report" data-state-demo aria-label="Cite this report">
@@ -122,21 +135,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 </figure>
 ```
 
-## Inline
-
-```html example label="Inline - a reference inside running text" sandbox="links" hint="data-variant=&quot;inline&quot; on a <span>: the formatted reference flows with the sentence, a small copy icon follows it." previewStyle="align-items:stretch;"
-<p style="max-width: 40rem; margin: 0; line-height: 1.7"
-  >The idea of writing programs as literature goes back to
-  <span class="bibtex" id="cite-inline" data-variant="inline" data-formats="mla"
-    ><code class="bibtex-source"
-      >@article{knuth1984literate, author = {Knuth, Donald E.}, title = {Literate Programming}, journal = {The Computer
-      Journal}, volume = {27}, number = {2}, pages = {97--111}, year = {1984}, doi = {10.1093/comjnl/27.2.97} }</code
-    ></span
-  >
-  - and it shaped how documentation tools work today.</p
->
-```
-
 ## Rendering options
 
 ```html example label="Small, plain BibTeX, no copy button" sandbox="links" hint="data-size=&quot;sm&quot; for dense pages, data-align=&quot;none&quot; keeps the fields unaligned, data-highlight=&quot;none&quot; drops the colors, data-copy=&quot;none&quot; removes the copy button." previewStyle="align-items:stretch;"
@@ -158,6 +156,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
   year = {1984}
 }</code></pre>
 </figure>
+```
+
+## Inline
+
+```html example label="Inline - a reference inside running text" sandbox="links" hint="data-variant=&quot;inline&quot; on a <span>: the formatted reference flows with the sentence, a small copy icon follows it." previewStyle="align-items:stretch;"
+<p style="max-width: 40rem; margin: 0; line-height: 1.7"
+  >The idea of writing programs as literature goes back to
+  <span class="bibtex" id="cite-inline" data-variant="inline" data-formats="mla"
+    ><code class="bibtex-source"
+      >@article{knuth1984literate, author = {Knuth, Donald E.}, title = {Literate Programming}, journal = {The Computer
+      Journal}, volume = {27}, number = {2}, pages = {97--111}, year = {1984}, doi = {10.1093/comjnl/27.2.97} }</code
+    ></span
+  >
+  - and it shaped how documentation tools work today.</p
+>
 ```
 
 ## From script
@@ -201,6 +214,43 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
     });
   });
 </script>
+```
+
+## Print
+
+```html example label="Printed: the chosen format, no bar" mode="print" sandbox="links" hint="The preview boots in the Print device, whose print styles apply: no tabs, no copy button - each block prints the format it is set to. The citation is BibTeX (the first of data-formats), the reference list APA (data-format). Choose the printed format with data-format; switch the preview to Full for the tabs." previewStyle="align-items:stretch;"
+<figure class="bibtex" id="print-cite" data-formats="bibtex apa ieee" aria-label="Cite this note">
+  <figcaption>Cite this note</figcaption>
+  <pre><code class="bibtex-source">@techreport{claude2026printing,
+  title = {Printing a Paper: Profiles, Breaks and What Stays on Screen},
+  author = {Claude and Homberg, Aron},
+  institution = {defuss},
+  year = {2026},
+  month = oct,
+  url = {https://shadcn.defuss.org/papers/paper.html}
+}</code></pre>
+</figure>
+<figure class="bibtex" id="print-refs" data-formats="apa ieee bibtex" data-format="apa" aria-label="References">
+  <figcaption>References</figcaption>
+  <pre><code class="bibtex-source">@article{knuth1984literate,
+  author = {Knuth, Donald E.},
+  title = {Literate Programming},
+  journal = {The Computer Journal},
+  volume = {27},
+  number = {2},
+  pages = {97--111},
+  year = {1984},
+  doi = {10.1093/comjnl/27.2.97}
+}
+
+@book{knuth1984texbook,
+  author = {Donald E. Knuth},
+  title = {The {\TeX}book},
+  publisher = {Addison-Wesley},
+  address = {Reading, MA},
+  year = {1984}
+}</code></pre>
+</figure>
 ```
 
 <StatesSection>

@@ -42,22 +42,22 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/
     <h2 id="pc-toc">Contents</h2>
     <ol>
       <li
-        ><a href="#pc-s1"><span class="paper-num">1</span>The probe</a></li
+        ><a href="#pc-s1"><span class="paper-num">1&nbsp;</span>The probe</a></li
       >
       <li
-        ><a href="#pc-s2"><span class="paper-num">2</span>The fix</a></li
+        ><a href="#pc-s2"><span class="paper-num">2&nbsp;</span>The fix</a></li
       >
       <li
-        ><a href="#pc-s3"><span class="paper-num">3</span>The test</a></li
+        ><a href="#pc-s3"><span class="paper-num">3&nbsp;</span>The test</a></li
       >
       <li
-        ><a href="#pc-cite"><span class="paper-num">·</span>Citation and references</a></li
+        ><a href="#pc-cite"><span class="paper-num">·&nbsp;</span>Citation and references</a></li
       >
     </ol>
   </nav>
 
   <section class="paper-section" aria-labelledby="pc-s1">
-    <h2 id="pc-s1"><span class="paper-num">1</span>The probe</h2>
+    <h2 id="pc-s1"><span class="paper-num">1&nbsp;</span>The probe</h2>
     <p>Reference colours from CSS Color 4, converted by the verifier's parser:</p>
     <div class="mockup-code" data-chrome="mac" data-title="zsh - defuss-shadcn">
       <pre data-prefix="$"><code>bun tmp/oklch-probe.ts</code></pre>
@@ -76,7 +76,7 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/
   </section>
 
   <section class="paper-section" aria-labelledby="pc-s2">
-    <h2 id="pc-s2"><span class="paper-num">2</span>The fix</h2>
+    <h2 id="pc-s2"><span class="paper-num">2&nbsp;</span>The fix</h2>
     <div class="mockup-code" data-numbers data-title="scripts/lib/contrast.ts">
       <pre><code>  const lin = [ /* LMS → linear sRGB */ ];</code></pre>
       <pre
@@ -92,7 +92,7 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/
   </section>
 
   <section class="paper-section" aria-labelledby="pc-s3">
-    <h2 id="pc-s3"><span class="paper-num">3</span>The test</h2>
+    <h2 id="pc-s3"><span class="paper-num">3&nbsp;</span>The test</h2>
     <div class="mockup-code" data-title="tests/contrast.test.ts">
       <pre data-prefix="$"><code>bun test tests/contrast.test.ts</code></pre>
       <pre data-tone="success"><code>✓ gamma-encodes oklch: mid tones match the CSS Color 4 reference</code></pre>
@@ -149,6 +149,53 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/
   url = {https://github.com/kyr0/defuss-shadcn}
 }</code></pre>
     </figure>
+  </section>
+</article>
+```
+
+## Print layout
+
+```html example label="Printed: a listing over two columns" mode="print" schema="none" hint="The preview boots in the Print device: an A4 sheet whose print styles apply. The test run is longer than a column; data-break-inside='allow' on its figure lets it run on into the next column instead of leaving the first half empty, each piece in a closed window frame, the caption under the last; its lines wrap (data-wrap), since a window that scrolls sideways cannot split. The window keeps its dark surface on paper: a printed paper prints its colors as designed. Switch to Full for the screen layout." previewStyle="align-items:stretch;padding:0;"
+<article class="paper" data-variant="minimal" data-print="a4" aria-labelledby="pcp-title">
+  <header class="paper-hero">
+    <h1 class="paper-title" id="pcp-title">The Missing Gamma Step</h1>
+  </header>
+  <section
+    class="paper-section typeset paper-wide"
+    lang="en"
+    data-align="justify"
+    data-columns="2"
+    aria-labelledby="pcp-s3"
+  >
+    <h2 id="pcp-s3" class="typeset-span"><span class="paper-num">3&nbsp;</span>The test</h2>
+    <p
+      >A mid-tone test now pins the conversion; the primaries, black and white could not tell linear light from gamma
+      encoding.</p
+    >
+    <figure class="paper-figure" data-break-inside="allow">
+      <div class="mockup-code" data-title="zsh - defuss-shadcn" data-wrap>
+        <pre data-prefix="$"><code>bun test tests/contrast.test.ts</code></pre>
+        <pre data-tone="success"><code>✓ parses 3/6/8-digit hex</code></pre>
+        <pre data-tone="success"><code>✓ parses rgb()/rgba() with percentages</code></pre>
+        <pre data-tone="success"><code>✓ parses oklch and clamps out-of-gamut</code></pre>
+        <pre data-tone="success"><code>✓ gamma-encodes oklch: mid tones match the CSS Color 4 reference (extremes alone hid a linear-light bug)</code></pre>
+        <pre data-tone="success"><code>✓ parses oklch percentages and alpha, and hsl</code></pre>
+        <pre data-tone="success"><code>✓ returns null for unknown formats</code></pre>
+        <pre data-tone="success"><code>✓ is 21:1 for black/white and 1:1 for identical colors</code></pre>
+        <pre data-tone="success"><code>✓ is symmetric</code></pre>
+        <pre data-tone="success"><code>✓ flags the known-bad catppuccin-light active pair (2.79)</code></pre>
+        <pre data-tone="success"><code>✓ returns null when a color is unparsable</code></pre>
+        <pre data-tone="muted"><code>[...]</code></pre>
+        <pre data-tone="muted"><code>22 pass · 0 fail</code></pre>
+      </div>
+      <figcaption
+        ><b>Figure 3.</b> The test run after the fix: the first ten of its 22 tests; [...] marks the rest.</figcaption
+      >
+    </figure>
+    <p
+      >The sidebar contrast gate still passes every preset after the fix: their sidebar pairs were readable all along,
+      only the measurement was wrong.</p
+    >
   </section>
 </article>
 ```

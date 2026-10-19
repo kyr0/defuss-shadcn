@@ -1,6 +1,6 @@
 ---
 title: "Paper Gallery"
-description: "Ten short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, a database schema, images and video, big data and a replayed chat."
+description: "Fifteen short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, charts, before-and-after figures, a table of contents, a database schema, images and video, big data, a replayed chat, numbered equations and interactive math."
 slug: "paper-gallery"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/
 <DocPage meta={meta}>
 
 <PageHeader slug="paper-gallery" title="Paper Gallery" component="paper" introStyle="max-width:40rem;">
-  Ten short papers, each one <DocLink href="paper.html">Modern Paper</DocLink> composed with other components of the system - so a research page can carry a theme chooser, a classic two-column body, an embedded page that talks to it, code, a schema, media, a hundred thousand rows or a replayed conversation. Every paper is one example: open it, edit it, take it.
+  Fifteen short papers, each one <DocLink href="paper.html">Modern Paper</DocLink> composed with other components of the system - so a research page can carry a theme chooser, a classic two-column body, an embedded page that talks to it, code, charts, a comparison, a table of contents, a schema, media, a hundred thousand rows, a replayed conversation, numbered equations or mathematics the reader works with. Every paper is one example: open it, edit it, take it. Code Listings, Charts and Figures, Before and After, Table of Contents and Formulas add a print layout example each, shown in the preview's Print device.
 </PageHeader>
 
 <div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));">
@@ -19,10 +19,15 @@ import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/
   <a class="card" href="paper-two-column.html"><div class="card-header"><h3 class="card-title">Two Columns</h3><p class="card-description">A classic journal page: two justified columns, an initial, small capitals - one column on a phone.</p></div></a>
   <a class="card" href="paper-redeschrift.html"><div class="card-header"><h3 class="card-title">Redeschrift 1.0</h3><p class="card-description">A German speech recognition model; an embedded model card controls the paper around it (Iframe).</p></div></a>
   <a class="card" href="paper-code.html"><div class="card-header"><h3 class="card-title">Code Listings</h3><p class="card-description">Terminal sessions and a diff in Code Mockup windows - the story of one colour bug.</p></div></a>
+  <a class="card" href="paper-charts.html"><div class="card-header"><h3 class="card-title">Charts and Figures</h3><p class="card-description">A line chart across both columns, a bar chart in one - numbered figures that redraw at the print width.</p></div></a>
+  <a class="card" href="paper-diff.html"><div class="card-header"><h3 class="card-title">Before and After</h3><p class="card-description">Two Diff figures - a tree moved, a code window fixed - that print both sides in full.</p></div></a>
+  <a class="card" href="paper-toc.html"><div class="card-header"><h3 class="card-title">Table of Contents</h3><p class="card-description">Two levels of numbered sections, kept on screen and left out of the print.</p></div></a>
   <a class="card" href="paper-schema.html"><div class="card-header"><h3 class="card-title">Database Schema</h3><p class="card-description">An ER diagram of a component's contract, drawn by the Illustrative Diagram component.</p></div></a>
   <a class="card" href="paper-media.html"><div class="card-header"><h3 class="card-title">Images and Video</h3><p class="card-description">Figures with a lightbox, a hover gallery and a captioned video.</p></div></a>
   <a class="card" href="paper-big-data.html"><div class="card-header"><h3 class="card-title">Big Data</h3><p class="card-description">A hundred thousand rows in a Data Grid and a corpus hierarchy in a Data Tree, inside the paper.</p></div></a>
   <a class="card" href="paper-chat.html"><div class="card-header"><h3 class="card-title">Chat Replay</h3><p class="card-description">A conversation replayed turn by turn in a Session, the replies streaming in.</p></div></a>
+  <a class="card" href="paper-math.html"><div class="card-header"><h3 class="card-title">Formulas</h3><p class="card-description">Why the sample variance divides by n - 1: numbered equations, inline math, an aligned derivation - and its print.</p></div></a>
+  <a class="card" href="paper-math-interactive.html"><div class="card-header"><h3 class="card-title">Interactive Math</h3><p class="card-description">A growth model to point at, change and differentiate - a linked symbol table, an editor, the engine's steps.</p></div></a>
 </div>
 
 <SourceFiles component="paper" />

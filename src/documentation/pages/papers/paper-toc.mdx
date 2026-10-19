@@ -1,0 +1,128 @@
+---
+title: "Table of Contents - Paper Gallery"
+description: "A short paper led by a two-level table of contents: numbered sections and subsections, every line a link into the page - kept on screen, left out of the print."
+slug: "paper-toc"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-toc" title="Table of Contents" component="paper">
+  A longer paper opens with its contents: <code>.paper-toc</code> lists the numbered sections and their subsections in two columns, each line a link into the page. On paper the links do nothing and no line can point to a page, so a printed <DocLink href="paper.html">Modern Paper</DocLink> leaves the contents out and numbers its pages instead.
+</PageHeader>
+
+```html example label="Two levels, two columns" schema="none" hint="A nav.paper-toc with an h2 and a nested ordered list: sections, then their subsections, numbered by .paper-num. The outer list sets two columns of at least 15rem (one on a phone), and a section never splits from its subsections' column. Every line jumps to its heading in the page." previewStyle="align-items:stretch;padding:0;"
+<article class="paper" data-variant="minimal" data-print="a4" aria-labelledby="pt-title">
+  <header class="paper-hero">
+    <p class="paper-venue"
+      ><span class="badge" data-variant="secondary">Guide</span
+      ><span>defuss-shadcn · <time datetime="2026-10-12">12 October 2026</time></span></p
+    >
+    <h1 class="paper-title" id="pt-title"
+      >Printing a Paper<span class="paper-title-sub">From the screen to an A4 page</span></h1
+    >
+    <ul class="paper-authors"
+      ><li>Claude</li
+      ><li>Aron Homberg</li></ul
+    >
+  </header>
+
+  <nav class="paper-toc" aria-labelledby="pt-toc">
+    <h2 id="pt-toc">Contents</h2>
+    <ol>
+      <li
+        ><a href="#pt-s1"><span class="paper-num">1&nbsp;</span>The page</a>
+        <ol>
+          <li
+            ><a href="#pt-s1-1"><span class="paper-num">1.1&nbsp;</span>Sheet and margins</a></li
+          >
+          <li
+            ><a href="#pt-s1-2"><span class="paper-num">1.2&nbsp;</span>Page numbers</a></li
+          >
+        </ol>
+      </li>
+      <li
+        ><a href="#pt-s2"><span class="paper-num">2&nbsp;</span>The breaks</a>
+        <ol>
+          <li
+            ><a href="#pt-s2-1"><span class="paper-num">2.1&nbsp;</span>Where a page ends</a></li
+          >
+          <li
+            ><a href="#pt-s2-2"><span class="paper-num">2.2&nbsp;</span>What may split</a></li
+          >
+        </ol>
+      </li>
+      <li
+        ><a href="#pt-s3"><span class="paper-num">3&nbsp;</span>What stays on screen</a></li
+      >
+    </ol>
+  </nav>
+
+  <section class="paper-section" aria-labelledby="pt-s1">
+    <h2 id="pt-s1"><span class="paper-num">1&nbsp;</span>The page</h2>
+    <h3 id="pt-s1-1">1.1 Sheet and margins</h3>
+    <p
+      ><code>data-print="a4"</code> or <code>"letter"</code> names the page the paper prints on: the sheet, its margins
+      and a print scale of 0.8 that keeps two columns on the text width.</p
+    >
+    <h3 id="pt-s1-2">1.2 Page numbers</h3>
+    <p>Every page but the first carries its number at the foot, in the page's bottom margin.</p>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pt-s2">
+    <h2 id="pt-s2"><span class="paper-num">2&nbsp;</span>The breaks</h2>
+    <h3 id="pt-s2-1">2.1 Where a page ends</h3>
+    <p
+      >A <code>.typeset-break</code> before a block starts it on a new page - in print only; a screen has no pages.
+      Choose the breaks from the printed pages, not in advance.</p
+    >
+    <h3 id="pt-s2-2">2.2 What may split</h3>
+    <p
+      >Figures, tables and listings stay whole. <code>data-break-inside="allow"</code> lets a long one run on into the
+      next column or page, its frame closed on every piece.</p
+    >
+  </section>
+
+  <section class="paper-section" aria-labelledby="pt-s3">
+    <h2 id="pt-s3"><span class="paper-num">3&nbsp;</span>What stays on screen</h2>
+    <p
+      >The contents list, a citation's format tabs and copy button, a comparison's divider: printed, each gives way to
+      what paper can show.</p
+    >
+  </section>
+</article>
+```
+
+## Print layout
+
+```html example label="Printed: the contents give way" mode="print" schema="none" hint="The preview boots in the Print device: an A4 sheet whose print styles apply. The contents list is gone - its links do nothing on paper, and Chromium prints no page number a line could point to (no target-counter()). In a real print the .typeset-break starts section 1 on a new page, and every page but the first carries its number. Switch to Full and the contents return." previewStyle="align-items:stretch;padding:0;"
+<article class="paper" data-variant="minimal" data-print="a4" aria-labelledby="ptp-title">
+  <header class="paper-hero">
+    <h1 class="paper-title" id="ptp-title">Printing a Paper</h1>
+  </header>
+  <nav class="paper-toc" aria-labelledby="ptp-toc">
+    <h2 id="ptp-toc">Contents</h2>
+    <ol>
+      <li
+        ><a href="#ptp-s1"><span class="paper-num">1&nbsp;</span>The page</a></li
+      >
+      <li
+        ><a href="#ptp-s2"><span class="paper-num">2&nbsp;</span>The breaks</a></li
+      >
+    </ol>
+  </nav>
+  <div class="typeset-break" aria-hidden="true"></div>
+  <section class="paper-section" aria-labelledby="ptp-s1">
+    <h2 id="ptp-s1"><span class="paper-num">1&nbsp;</span>The page</h2>
+    <p>Every page but the first carries its number at the foot, in the page's bottom margin.</p>
+  </section>
+  <section class="paper-section" aria-labelledby="ptp-s2">
+    <h2 id="ptp-s2"><span class="paper-num">2&nbsp;</span>The breaks</h2>
+    <p>A <code>.typeset-break</code> before a block starts it on a new page - in print only.</p>
+  </section>
+</article>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

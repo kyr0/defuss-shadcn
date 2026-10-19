@@ -2,12 +2,13 @@ import assert from 'node:assert/strict';
 import { chromium, type Frame, type Page } from 'playwright';
 import { startServer } from '../server.ts';
 import { pageRel } from '../../../src/documentation/lib/page-dirs.ts';
+import { offlineJsdelivr } from '../lib/vendor-offline.ts';
 
 /**
  * Why: the Paper Gallery pages are templates composed from other components -
  * each paper promises one behavior of the component it shows (a theme chooser
  * rethemes, a swap darkens, a framed model card controls the paper, a session
- * replays). This loads every gallery page like a reader, boots its example in
+ * replays, a formula is typeset and numbered, a model answers back). This loads every gallery page like a reader, boots its example in
  * the docs sandbox, and drives that behavior; the Iframe docs page's bridge
  * example rides along. Known, unrelated noise is ignored: the header's GitHub
  * star request (rate-limited in CI) and the sandbox's refusal of a captions
@@ -28,23 +29,25 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 }
 const NOISE = /api\.github\.com|status of 403|Unsafe attempt to load URL .*\.vtt/;
 
-/** Open a docs page and return its first example's sandbox, booted. */
-async function open(slug: string): Promise<{ page: Page; frame: Frame; errors: string[] }> {
+/** Open a docs page and return one of its examples' sandbox (the first by default), booted. */
+async function open(slug: string, nth = 0): Promise<{ page: Page; frame: Frame; errors: string[] }> {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   page.setDefaultTimeout(20_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error' && !NOISE.test(m.text())) errors.push(m.text()); });
+  // the pinned vendors the math papers load (KaTeX, MathLive, the Compute Engine) come from node_modules
+  await offlineJsdelivr(page);
   await page.goto(`${server.url}/dist/documentation/${pageRel(slug)}`, { waitUntil: 'load' });
   assert.equal(await page.locator('main h1').count(), 1, `${slug}: h1`);
-  const card = page.locator('.code-example').first();
+  const card = page.locator('.code-example').nth(nth);
   await card.scrollIntoViewIfNeeded();
   const frame = (await (await card.locator('iframe').first().elementHandle())!.contentFrame())!;
   await frame.waitForFunction(() => typeof (globalThis as any).df$ === 'function' && document.querySelector('.paper, .iframe'));
   return { page, frame, errors };
 }
 
-const PAPERS = ['paper-themes', 'paper-dark-mode', 'paper-styles', 'paper-two-column', 'paper-redeschrift', 'paper-code', 'paper-schema', 'paper-media', 'paper-big-data', 'paper-chat'];
+const PAPERS = ['paper-themes', 'paper-dark-mode', 'paper-styles', 'paper-two-column', 'paper-redeschrift', 'paper-code', 'paper-charts', 'paper-diff', 'paper-toc', 'paper-schema', 'paper-media', 'paper-big-data', 'paper-chat', 'paper-math', 'paper-math-interactive'];
 
 try {
   await check('the gallery page links every paper, and the sidebar lists each', async () => {
@@ -124,6 +127,66 @@ try {
     await page.close();
   });
 
+  await check('Code Listings, print layout: in the Print device the test run splits over the two columns, each piece a framed window, its caption with the last piece', async () => {
+    const { page, frame, errors } = await open('paper-code', 1);
+    await frame.waitForFunction(() => document.documentElement.hasAttribute('data-ce-print'));
+    const r = await frame.evaluate(() => {
+      const win = document.querySelector('.paper-figure[data-break-inside="allow"] .mockup-code')!;
+      const pieces = [...win.getClientRects()];
+      const last = pieces[pieces.length - 1];
+      const cap = document.querySelector('.paper-figure[data-break-inside="allow"] > figcaption')!.getBoundingClientRect();
+      return { pieces: pieces.length, clone: getComputedStyle(win).boxDecorationBreak, withLast: Math.abs(cap.left - last.left) < 2 && cap.top >= last.bottom - 1 };
+    });
+    assert.deepEqual(r, { pieces: 2, clone: 'clone', withLast: true });
+    assert.deepEqual(errors, []);
+    await page.close();
+  });
+
+  await check('Charts and Figures: both charts draw; in the Print device the paper is a block at the print scale and each chart fits its column', async () => {
+    const { page, frame, errors } = await open('paper-charts');
+    await frame.waitForFunction(() => document.querySelectorAll('.paper-chart svg, .paper-chart canvas').length === 2, undefined, { timeout: 15_000 });
+    await page.close();
+    const printed = await open('paper-charts', 1);
+    await printed.frame.waitForFunction(() => document.documentElement.hasAttribute('data-ce-print'));
+    await printed.frame.waitForFunction(() => document.querySelectorAll('.paper-chart svg, .paper-chart canvas').length === 2, undefined, { timeout: 15_000 });
+    const r = await printed.frame.evaluate(() => {
+      const paper = document.querySelector('.paper')!;
+      return {
+        paper: [getComputedStyle(paper).display, getComputedStyle(paper).zoom],
+        fit: [...document.querySelectorAll('.paper-chart')].every((c) => c.querySelector('svg, canvas')!.getBoundingClientRect().width <= c.getBoundingClientRect().width + 1),
+      };
+    });
+    assert.deepEqual(r, { paper: ['block', '0.8'], fit: true });
+    assert.deepEqual([...errors, ...printed.errors], []);
+    await printed.page.close();
+  });
+
+  await check('Before and After: two Diff figures; in the Print device both sides stand side by side, no divider', async () => {
+    const { page, frame, errors } = await open('paper-diff');
+    await frame.waitForFunction(() => document.querySelectorAll('.diff[data-init]').length === 2);
+    await page.close();
+    const printed = await open('paper-diff', 1);
+    await printed.frame.waitForFunction(() => document.documentElement.hasAttribute('data-ce-print'));
+    const r = await printed.frame.evaluate(() => {
+      const [a, b] = [document.querySelector('.diff-item-1')!, document.querySelector('.diff-item-2')!].map((e) => e.getBoundingClientRect());
+      return { beside: b.left >= a.right - 1 && Math.abs(a.top - b.top) < 1, range: getComputedStyle(document.querySelector('.diff-range')!).display };
+    });
+    assert.deepEqual(r, { beside: true, range: 'none' });
+    assert.deepEqual([...errors, ...printed.errors], []);
+    await printed.page.close();
+  });
+
+  await check('Table of Contents: two levels of numbered links; in the Print device the contents are left out', async () => {
+    const { page, frame, errors } = await open('paper-toc');
+    assert.deepEqual(await frame.evaluate(() => [document.querySelectorAll('.paper-toc > ol > li').length, document.querySelectorAll('.paper-toc li li').length, getComputedStyle(document.querySelector('.paper-toc')!).display]), [3, 4, 'grid']);
+    await page.close();
+    const printed = await open('paper-toc', 1);
+    await printed.frame.waitForFunction(() => document.documentElement.hasAttribute('data-ce-print'));
+    assert.equal(await printed.frame.evaluate(() => getComputedStyle(document.querySelector('.paper-toc')!).display), 'none');
+    assert.deepEqual([...errors, ...printed.errors], []);
+    await printed.page.close();
+  });
+
   await check('Database Schema: the ER diagram draws its six relations', async () => {
     const { page, frame, errors } = await open('paper-schema');
     await frame.waitForFunction(() => document.querySelectorAll('#pe-er .diagram-wire').length >= 6);
@@ -155,6 +218,66 @@ try {
     await frame.waitForFunction(() => document.getElementById('pr-status')!.textContent === 'Replayed - 3 turns.', undefined, { timeout: 30_000 });
     assert.equal(await frame.locator('#pr-chat .session-item').count(), 6);
     assert.notEqual(await frame.getAttribute('#pr-chat', 'data-state-name'), 'streaming');
+    assert.deepEqual(errors, []);
+    await page.close();
+  });
+
+  await check('Formulas: every formula typeset; five numbered equations, each centered with its number at the column edge', async () => {
+    const { page, frame, errors } = await open('paper-math');
+    await frame.waitForFunction(() => [...document.querySelectorAll('.math-renderer')].every((f) => (f as HTMLElement).dataset.state === 'rendered'), undefined, { timeout: 15_000 });
+    const r = await frame.evaluate(() => {
+      const column = document.querySelector('.paper-section')!.getBoundingClientRect();
+      return [...document.querySelectorAll('.paper-equation')].map((eq) => {
+        const num = eq.querySelector('.paper-equation-num')!.getBoundingClientRect();
+        const formula = eq.querySelector('.katex-html')!.getBoundingClientRect();
+        return {
+          num: eq.querySelector('.paper-equation-num')!.textContent,
+          atEdge: Math.abs(num.right - column.right) < 2,
+          centered: Math.abs(formula.left + formula.width / 2 - (column.left + column.width / 2)) < 24,
+          sameLine: num.top < formula.bottom && num.bottom > formula.top,
+        };
+      });
+    });
+    assert.deepEqual(r.map((e) => e.num), ['(1)', '(2)', '(3)', '(4)', '(5)']);
+    assert.ok(r.every((e) => e.atEdge && e.centered && e.sameLine), JSON.stringify(r));
+    const inline = await frame.evaluate(() => document.querySelectorAll('.paper-section .math-renderer[data-variant="inline"] .katex').length);
+    assert.ok(inline >= 8, `${inline} inline formulas`);
+    assert.deepEqual(errors, []);
+    await page.close();
+  });
+
+  await check('Formulas, print layout: in the Print device an equation is kept whole and keeps its number', async () => {
+    const { page, frame, errors } = await open('paper-math', 1);
+    await frame.waitForFunction(() => document.documentElement.hasAttribute('data-ce-print'));
+    await frame.waitForFunction(() => [...document.querySelectorAll('.math-renderer')].every((f) => (f as HTMLElement).dataset.state === 'rendered'), undefined, { timeout: 15_000 });
+    const r = await frame.evaluate(() => [...document.querySelectorAll('.paper-equation')].map((eq) => [getComputedStyle(eq).breakInside, eq.querySelector('.paper-equation-num')!.textContent]));
+    assert.deepEqual(r, [['avoid', '(3)'], ['avoid', '(4)']]);
+    assert.deepEqual(errors, []);
+    await page.close();
+  });
+
+  await check('Interactive Math: a table row selects its term in the formula; the editor drives equation (2); the engine differentiates with six steps and keeps the denominator condition', async () => {
+    const { page, frame, errors } = await open('paper-math-interactive');
+    await frame.waitForFunction(() => document.querySelector('#pmi-model')?.getAttribute('data-state') === 'rendered' && document.querySelector('.math-editor[data-ready]'), undefined, { timeout: 15_000 });
+    await frame.click('tr[data-math-term="r"]');
+    const selected = await frame.evaluate(() => ({
+      state: (document.getElementById('pmi-model') as HTMLElement).dataset.stateName,
+      marked: [...document.querySelectorAll('#pmi-model .katex-html [data-selected]')].map((n) => (n as HTMLElement).dataset.dfMathId),
+      pressed: document.querySelector('#pmi-model .math-renderer-term[aria-pressed="true"]')?.textContent,
+      row: !!document.querySelector('tr[data-math-term="r"][data-selected]'),
+    }));
+    assert.deepEqual(selected, { state: 'highlighted', marked: ['r'], pressed: 'r - the growth rate', row: true });
+    await frame.evaluate(() => (globalThis as any).df$.shadcn.mathEditor.setValue(document.querySelector('.math-editor')!, 'P(t) = K e^{-A e^{-rt}}'));
+    await frame.waitForFunction(() => document.querySelector('#pmi-yours annotation')?.textContent === 'P(t) = K e^{-A e^{-rt}}', undefined, { timeout: 15_000 });
+    await frame.click('[data-math-run]');
+    await frame.waitForFunction(() => (document.querySelector('.math-compute') as HTMLElement).dataset.stateName === 'result', undefined, { timeout: 30_000 });
+    const r = await frame.evaluate(() => {
+      const c = (document.querySelector('.math-compute') as any).api.getState().config;
+      return { rules: c.result.steps.map((s: any) => s.rule), condition: c.result.conditions.map((k: any) => k.json[0]), coverage: c.result.coverage, result: c.result.result.latex };
+    });
+    assert.deepEqual(r.rules, ['derivative.quotient-rule', 'derivative.sum-rule', 'derivative.product-rule', 'derivative.exponential-rule', 'derivative.constant-multiple', 'derivative.product-rule']);
+    assert.deepEqual([r.condition, r.coverage], [['NotEqual'], 'partial']);
+    assert.match(r.result, /^\\frac\{AKr/);
     assert.deepEqual(errors, []);
     await page.close();
   });

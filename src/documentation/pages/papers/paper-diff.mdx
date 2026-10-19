@@ -1,0 +1,164 @@
+---
+title: "Before and After - Paper Gallery"
+description: "A short paper that compares: a source tree before and after a move, a code window before and after a fix - two Diff figures that print both sides in full."
+slug: "paper-diff"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-diff" title="Before and After" component="paper">
+  When the evidence is a change, the paper shows it as a <DocLink href="diff.html">Diff</DocLink>: the before over the after, a divider to drag between them. Both stories are real - the move of 228 component folders into the sidebar's sections, and the code window that printed a dark terminal on a light page in the technical report on the <DocLink href="paper.html">Modern Paper</DocLink> page.
+</PageHeader>
+
+```html example label="Two changes, two Diff figures" schema="none" hint="Each figure is a Diff of two Code Mockup windows in the theme's muted surface (data-variant='muted' - the default window is a dark terminal in both themes). Drag a divider, or focus it and use the arrow keys. Printed, a Diff has no divider to drag: both sides print in full, side by side." previewStyle="align-items:stretch;padding:0;"
+<article class="paper" data-variant="minimal" data-print="a4" aria-labelledby="pd-title">
+  <header class="paper-hero">
+    <p class="paper-venue"
+      ><span class="badge" data-variant="secondary">Change report</span
+      ><span>defuss-shadcn · <time datetime="2026-10-12">12 October 2026</time></span></p
+    >
+    <h1 class="paper-title" id="pd-title"
+      >Before and After<span class="paper-title-sub">A source tree moved, a code window fixed</span></h1
+    >
+    <ul class="paper-authors"
+      ><li>Claude</li
+      ><li>Aron Homberg</li></ul
+    >
+  </header>
+
+  <section class="paper-section" aria-labelledby="pd-s1">
+    <h2 id="pd-s1"><span class="paper-num">1&nbsp;</span>The move</h2>
+    <p
+      >Each of the 228 component folders moved into the folder of the sidebar section that lists it, and kept its
+      files.</p
+    >
+    <figure class="paper-figure">
+      <figure class="diff" aria-label="The source tree before and after the move: drag the divider to compare">
+        <div class="diff-item-1">
+          <div class="mockup-code" data-chrome="none" data-variant="muted" style="padding-block-start: 2.75rem">
+            <pre><code>src/components/</code></pre>
+            <pre data-diff="remove"><code>  button/</code></pre>
+            <pre><code>    button.css</code></pre>
+            <pre data-diff="remove"><code>  dialog/</code></pre>
+            <pre><code>    dialog.ts</code></pre>
+          </div>
+          <span class="diff-label">Before</span>
+        </div>
+        <div class="diff-item-2">
+          <div class="mockup-code" data-chrome="none" data-variant="muted" style="padding-block-start: 2.75rem">
+            <pre><code>src/components/</code></pre>
+            <pre data-diff="add"><code>  actions/button/</code></pre>
+            <pre><code>    button.css</code></pre>
+            <pre data-diff="add"><code>  overlays/dialog/</code></pre>
+            <pre><code>    dialog.ts</code></pre>
+          </div>
+          <span class="diff-label">After</span>
+        </div>
+        <input
+          class="diff-range"
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          step="0.1"
+          aria-label="Comparison divider"
+        />
+      </figure>
+      <figcaption><b>Figure 1.</b> Two of the 228 component folders before and after the move.</figcaption>
+    </figure>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pd-s2">
+    <h2 id="pd-s2"><span class="paper-num">2&nbsp;</span>The fix</h2>
+    <p
+      >The report's tree windows used the default Code Mockup, a dark terminal in both themes: on a light page, and on
+      paper, it stood out as a dark block. The muted variant takes the theme's surface.</p
+    >
+    <figure class="paper-figure">
+      <figure class="diff" aria-label="The code window before and after the fix: drag the divider to compare">
+        <div class="diff-item-1">
+          <div class="mockup-code" data-chrome="none" style="padding-block-start: 2.75rem">
+            <pre><code>src/components/</code></pre>
+            <pre data-diff="add"><code>  actions/button/</code></pre>
+            <pre><code>    button.css</code></pre>
+          </div>
+          <span class="diff-label">Before</span>
+        </div>
+        <div class="diff-item-2">
+          <div class="mockup-code" data-chrome="none" data-variant="muted" style="padding-block-start: 2.75rem">
+            <pre><code>src/components/</code></pre>
+            <pre data-diff="add"><code>  actions/button/</code></pre>
+            <pre><code>    button.css</code></pre>
+          </div>
+          <span class="diff-label">After</span>
+        </div>
+        <input
+          class="diff-range"
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          step="0.1"
+          aria-label="Comparison divider"
+        />
+      </figure>
+      <figcaption
+        ><b>Figure 2.</b> One tree window before and after the fix: the default terminal, then
+        <code>data-variant="muted"</code>.</figcaption
+      >
+    </figure>
+  </section>
+</article>
+```
+
+## Print layout
+
+```html example label="Printed: both sides in full" mode="print" schema="none" hint="The preview boots in the Print device: an A4 sheet whose print styles apply. Paper has no divider to drag, so the Diff prints the before and the after side by side, each with its label; the divider and the knob are gone. Switch to Full to compare by dragging." previewStyle="align-items:stretch;padding:0;"
+<article class="paper" data-variant="minimal" data-print="a4" aria-labelledby="pdp-title">
+  <header class="paper-hero">
+    <h1 class="paper-title" id="pdp-title">Before and After</h1>
+  </header>
+  <section class="paper-section" aria-labelledby="pdp-s1">
+    <h2 id="pdp-s1"><span class="paper-num">1&nbsp;</span>The move</h2>
+    <figure class="paper-figure">
+      <figure class="diff" aria-label="The source tree before and after the move: drag the divider to compare">
+        <div class="diff-item-1">
+          <div class="mockup-code" data-chrome="none" data-variant="muted" style="padding-block-start: 2.75rem">
+            <pre><code>src/components/</code></pre>
+            <pre data-diff="remove"><code>  button/</code></pre>
+            <pre><code>    button.css</code></pre>
+            <pre data-diff="remove"><code>  dialog/</code></pre>
+            <pre><code>    dialog.ts</code></pre>
+          </div>
+          <span class="diff-label">Before</span>
+        </div>
+        <div class="diff-item-2">
+          <div class="mockup-code" data-chrome="none" data-variant="muted" style="padding-block-start: 2.75rem">
+            <pre><code>src/components/</code></pre>
+            <pre data-diff="add"><code>  actions/button/</code></pre>
+            <pre><code>    button.css</code></pre>
+            <pre data-diff="add"><code>  overlays/dialog/</code></pre>
+            <pre><code>    dialog.ts</code></pre>
+          </div>
+          <span class="diff-label">After</span>
+        </div>
+        <input
+          class="diff-range"
+          type="range"
+          min="0"
+          max="100"
+          value="30"
+          step="0.1"
+          aria-label="Comparison divider"
+        />
+      </figure>
+      <figcaption><b>Figure 1.</b> Two of the 228 component folders before and after the move.</figcaption>
+    </figure>
+  </section>
+</article>
+```
+
+<SourceFiles component="paper" />
+</DocPage>
