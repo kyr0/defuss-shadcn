@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/dist/components/core.css" />
     <link rel="stylesheet" href="/dist/components/all.css" />
     <link rel="stylesheet" href="/dist/components/wysiwyg.css" />
+    <link rel="stylesheet" href="/dist/components/math.css" />
     <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 2.5rem; }</style>
   </head>
   <body>
@@ -30,6 +31,31 @@
 </div>
     </section>
     <section class="fx">
+<!-- data-links: what the docs cards carry for their page ids (lib/components/code-example.tsx) -->
+<div class="code-example" id="cx-links" aria-label="Mapped links" data-links='{"target.html":"links/target.html"}'>
+  <textarea>
+<a id="cx-a" href="target.html" target="_blank">A mapped page</a>
+<a id="cx-b" href="other.html">Not mapped</a>
+<details id="cx-more"><summary>More</summary><p>Opened.</p></details>
+  </textarea>
+</div>
+    </section>
+    <section class="fx">
+<div class="code-example" id="cx-print" aria-label="Print styles" data-vp-mode="print">
+  <textarea>
+<style>
+  .cx-media { color: rgb(0, 0, 255); }
+  @media print { .cx-media { color: rgb(255, 0, 0); } }
+  @media screen { .cx-screen-only { display: block; } }
+  @media not screen { .cx-screen-only { display: none; } }
+  @media print { .cx-page { break-before: page; } }
+</style>
+<p class="cx-media">Blue on screen, red in print.</p>
+<p class="cx-screen-only">Only on screen.</p>
+<p class="cx-page">A new page in print.</p>
+  </textarea>
+</div>
+
 <div class="code-example" id="cx-phone" aria-label="Responsive grid" data-vp-mode="phone">
   <textarea>
 <div class="grid gap-3" style="grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))">
@@ -71,5 +97,6 @@
     </section>
     <script type="module" src="/dist/components/all.js"></script>
     <script type="module" src="/dist/components/wysiwyg.js"></script>
+    <script type="module" src="/dist/components/math.js"></script>
   </body>
 </html>

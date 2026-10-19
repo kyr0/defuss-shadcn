@@ -52,6 +52,30 @@ export interface EditorjsBlock {
   data: Record<string, unknown>;
 }
 
+/** Where one block of a Markdown document comes from. */
+export interface EditorjsSourceRange {
+  /** the block's id (b1, b2, ... - the id setMarkdown() renders it with) */
+  block: string;
+  /** the tool that renders it: header, paragraph, list, quote, code, delimiter, table */
+  type: string;
+  /** the heading level, for a header block */
+  level?: number;
+  /** where the block starts in the Markdown (UTF-16 offset) */
+  start: number;
+  /** where it ends, exclusive (the blank lines after it belong to the gap, not the block) */
+  end: number;
+}
+
+/** A span of the Markdown source as the editor shows it - the shape a Document Comments span takes. */
+export interface EditorjsLocation {
+  /** the id of the block that renders the span */
+  block: string;
+  /** the span's text as rendered in that block: no heading marks, list markers or inline Markdown */
+  text: string;
+  /** which occurrence of that text in the block it is (0 = the first) */
+  occurrence: number;
+}
+
 /** The saved document: Editor.js output data. */
 export interface EditorjsDocument {
   /** the blocks, in order */
@@ -146,9 +170,20 @@ async function loadVendor(
   return { EditorJS, marked: marked as MarkedLike, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
 }
 
+/** a heading's trailing attribute block - `{#id}` / `{.class}` (Pandoc, kramdown, a Google Docs export): an id,
+ * not text, so it is neither shown nor part of a located span's text */
+const HEADING_ATTRS = /[ \t]*\{[#.][^{}]*\}[ \t]*$/;
+
 /** Markdown → Editor.js blocks (marked's tokens, inline Markdown as the tools' HTML). Block ids are
  * deterministic (b1, b2, ... in document order), so comments and links can address a Markdown document. */
 function markdownToBlocks(md: string, marked: MarkedLike): EditorjsBlock[] {
+  return parseMarkdown(md, marked).blocks;
+}
+
+/** The blocks and, from the same loop, each block's range in the source - marked's top-level token raws
+ * rebuild the source exactly (VERIFIED: marked@18.1.0 on a 96 KB Google Docs export, 2026-10-11), so the
+ * running sum of their lengths is the offset. */
+function parseMarkdown(md: string, marked: MarkedLike): { blocks: EditorjsBlock[]; ranges: EditorjsSourceRange[] } {
   // the tools' sanitizer keeps <b> / <i> (the inline tools' tags), not <strong> / <em>
   const inline = (t: string) =>
     marked
@@ -158,7 +193,8 @@ function markdownToBlocks(md: string, marked: MarkedLike): EditorjsBlock[] {
       .replace(/<(\/?)em>/g, '<$1i>');
   const items = (list: MarkedToken): { content: string; meta: Record<string, unknown>; items: unknown[] }[] =>
     (list.items ?? []).map((it) => {
-      const own = (it.tokens ?? []).filter((t) => t.type !== 'list');
+      // a task item's `[x] ` is a token of its own (VERIFIED: marked@18.1.0) - the checklist's meta, not text
+      const own = (it.tokens ?? []).filter((t) => t.type !== 'list' && t.type !== 'checkbox');
       const sub = (it.tokens ?? []).find((t) => t.type === 'list');
       return {
         content: inline(
@@ -172,12 +208,21 @@ function markdownToBlocks(md: string, marked: MarkedLike): EditorjsBlock[] {
       };
     });
   const blocks: EditorjsBlock[] = [];
+  const ranges: EditorjsSourceRange[] = [];
+  let offset = 0;
   for (const t of marked.lexer(md)) {
+    const raw = t.raw ?? '';
+    const start = offset;
+    const count = blocks.length;
+    offset += raw.length;
     switch (t.type) {
       case 'heading':
         blocks.push({
           type: 'header',
-          data: { text: inline(t.text ?? ''), level: Math.min(6, Math.max(1, t.depth ?? 2)) },
+          data: {
+            text: inline((t.text ?? '').replace(HEADING_ATTRS, '')),
+            level: Math.min(6, Math.max(1, t.depth ?? 2)),
+          },
         });
         break;
       case 'paragraph':
@@ -223,11 +268,62 @@ function markdownToBlocks(md: string, marked: MarkedLike): EditorjsBlock[] {
       default:
         break; // space
     }
+    const block = blocks[count];
+    if (block) {
+      const level = block.type === 'header' ? (block.data.level as number) : undefined;
+      ranges.push({
+        block: '',
+        type: block.type,
+        ...(level ? { level } : {}),
+        start,
+        end: start + raw.trimEnd().length,
+      });
+    }
   }
   blocks.forEach((b, i) => {
     b.id = `b${i + 1}`;
+    ranges[i]!.block = b.id;
   });
-  return blocks;
+  return { blocks, ranges };
+}
+
+/** the text a slice of a block's Markdown renders as - the block syntax and the inline Markdown removed,
+ * entities decoded - so it can be found in the block's DOM text */
+function renderedText(slice: string, type: string, marked: MarkedLike): string {
+  if (type === 'delimiter') return '';
+  if (type === 'code')
+    return slice.replace(/^[ \t]*(`{3,}|~{3,}).*\n?/, '').replace(/\n?[ \t]*(`{3,}|~{3,})[ \t]*$/, '');
+  let s = slice;
+  if (type === 'header')
+    s = s
+      .replace(/^[ \t]{0,3}#{1,6}(?:[ \t]+|$)/, '')
+      .replace(HEADING_ATTRS, '')
+      .replace(/[ \t]+#+[ \t]*$/, '');
+  else if (type === 'list') s = s.replace(/^[ \t]*(?:[*+-]|\d+[.)])[ \t]+(?:\[[ xX]\][ \t]+)?/gm, '');
+  else if (type === 'quote') s = s.replace(/^[ \t]*>[ \t]?/gm, '');
+  else if (type === 'table') s = s.replace(/^[\s|]+|[\s|]+$/g, '');
+  return new DOMParser().parseFromString(marked.parseInline(s), 'text/html').body.textContent ?? '';
+}
+
+/** the ranges of the last document asked for: an annotation file locates many spans in one document */
+let lastRanges: { md: string; ranges: EditorjsSourceRange[] } | null = null;
+function sourceRanges(md: string, marked: MarkedLike): EditorjsSourceRange[] {
+  if (lastRanges?.md !== md) lastRanges = { md, ranges: parseMarkdown(md, marked).ranges };
+  return lastRanges.ranges;
+}
+
+/** a span of the source → the block that renders it, its rendered text and that text's occurrence there */
+function locate(md: string, marked: MarkedLike, start: number, end: number): EditorjsLocation | null {
+  const range = sourceRanges(md, marked).find((r) => start >= r.start && start < r.end);
+  if (!range) return null;
+  const stop = Math.min(Math.max(end, start), range.end);
+  const text = renderedText(md.slice(start, stop), range.type, marked).trim();
+  if (!text) return null;
+  // the occurrences of the text in what the block renders up to the span's end - the last one is the span
+  const upTo = renderedText(md.slice(range.start, stop), range.type, marked);
+  let occurrence = -1;
+  for (let at = upTo.indexOf(text); at >= 0; at = upTo.indexOf(text, at + 1)) occurrence++;
+  return { block: range.block, text, occurrence: Math.max(0, occurrence) };
 }
 
 /** the tools' inline HTML back to Markdown (marks for comments drop to their text) */
@@ -442,9 +538,9 @@ function syncToolbar(el: HTMLElement): void {
   const level = holder ? (dfDollar(holder).find('.ce-header').get(0)?.tagName.replace(/^H/i, '') ?? '') : '';
   const listStyle =
     holder && dfDollar(holder).find('.cdx-list').length
-      ? dfDollar(holder).find('.cdx-list--checklist').length
+      ? dfDollar(holder).find('.cdx-list-checklist').length
         ? 'checklist'
-        : dfDollar(holder).find('.cdx-list--ordered').length
+        : dfDollar(holder).find('.cdx-list-ordered').length
           ? 'ordered'
           : 'unordered'
       : '';
@@ -640,6 +736,31 @@ df$.editorjs = {
   toBlocks: (target: string | HTMLElement, markdown: string): EditorjsBlock[] => {
     const marked = resolve(target)?._marked as MarkedLike | undefined;
     return marked ? markdownToBlocks(markdown, marked) : [];
+  },
+  /**
+   * Where each block of a Markdown document comes from - its id, its tool and its range in the source, the
+   * blocks setMarkdown() renders from the same Markdown.
+   * @param target - any mounted .editorjs element or its selector (its parser is used)
+   * @param markdown - the Markdown the blocks are rendered from
+   * @returns one range per block, in document order; [] before a parser is loaded
+   */
+  sourceMap: (target: string | HTMLElement, markdown: string): EditorjsSourceRange[] => {
+    const marked = resolve(target)?._marked as MarkedLike | undefined;
+    return marked ? structuredClone(sourceRanges(markdown, marked)) : [];
+  },
+  /**
+   * A span of the Markdown source as the editor shows it: the block that renders it, its text there and which
+   * occurrence of that text it is - the anchor an annotation made against the Markdown needs (a Document
+   * Comments span). A span that runs past its block is cut at the block's end.
+   * @param target - any mounted .editorjs element or its selector (its parser is used)
+   * @param markdown - the Markdown the editor rendered (setMarkdown() or the element's source)
+   * @param start - where the span starts in the source (UTF-16 offset)
+   * @param end - where it ends, exclusive
+   * @returns the block, the rendered text and its occurrence (0 = the first); null when the span holds no text of a block
+   */
+  locate: (target: string | HTMLElement, markdown: string, start: number, end: number): EditorjsLocation | null => {
+    const marked = resolve(target)?._marked as MarkedLike | undefined;
+    return marked ? locate(markdown, marked, start, end) : null;
   },
   /**
    * Editor.js blocks → Markdown.

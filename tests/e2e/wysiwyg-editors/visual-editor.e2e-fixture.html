@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>visual-editor e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/core.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/card/card.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/input/input.css" />
+    <link rel="stylesheet" href="/dist/components/alert/alert.css" />
+    <link rel="stylesheet" href="/dist/components/toolbar/toolbar.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/visual-editor/visual-editor.css" />
+  </head>
+  <body style="padding:2rem;">
+    <!-- mirrors the doc page: blocks + controls around an editor, an editor to inspect, a read-only phone editor,
+         an editor for the project and outline -->
+    <div class="flex flex-wrap gap-2" data-visual-editor-for="ve-compose" aria-label="Blocks">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block id="blk-button">
+        Button
+        <template><button class="btn">Get started</button></template>
+      </button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block id="blk-email">
+        Email field
+        <template><div class="stack gap-2"><label class="label" for="email">Email</label><input class="input" id="email" type="email" placeholder="you@example.com" aria-describedby="email-hint" /><p id="email-hint">We never share it.</p></div></template>
+      </button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block id="blk-badge">
+        Badge
+        <script type="text/html"><span class="badge" data-variant="secondary">New</span></script>
+      </button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block id="blk-alert">
+        Alert
+        <template><div class="alert" role="status"><h5 class="alert-title">Saved</h5><div class="alert-description">Your changes are live.</div></div></template>
+      </button>
+    </div>
+    <div class="toolbar" role="toolbar" aria-label="Editor" data-size="sm">
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-visual-editor-for="ve-compose" data-visual-editor-action="undo" id="ctl-undo">Undo</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-visual-editor-for="ve-compose" data-visual-editor-action="redo" id="ctl-redo">Redo</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-visual-editor-for="ve-compose" data-visual-editor-action="duplicate" id="ctl-duplicate">Duplicate</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-visual-editor-for="ve-compose" data-visual-editor-action="remove" id="ctl-remove">Remove</button>
+    </div>
+    <div class="visual-editor" id="ve-compose" aria-label="A welcome card" style="--visual-editor-height: 22rem">
+      <script type="text/html" class="visual-editor-source">
+        <section class="card" style="max-width: 26rem; margin: 1.5rem auto">
+          <div class="card-header">
+            <h3 class="card-title">Welcome</h3>
+            <p class="card-description">Drop components into this card.</p>
+          </div>
+          <div class="card-content stack gap-3"><p>Select me, then click a block.</p></div>
+        </section>
+      </script>
+    </div>
+
+    <div class="visual-editor" id="ve-inspect" aria-label="A call to action" style="--visual-editor-height: 16rem">
+      <script type="text/html" class="visual-editor-source">
+        <div class="flex items-center gap-3" style="padding: 2rem">
+          <h3 class="h3">Ready to ship?</h3>
+          <button class="btn">Deploy</button>
+          <button class="btn" data-variant="outline">Preview</button>
+        </div>
+      </script>
+    </div>
+
+    <select class="select" data-size="sm" aria-label="Device" data-visual-editor-for="ve-phone" data-visual-editor-action="device" id="ctl-device">
+      <option value="desktop">Desktop</option>
+      <option value="tablet">Tablet</option>
+      <option value="phone" selected>Phone</option>
+    </select>
+    <div class="visual-editor" id="ve-phone" data-readonly data-device="phone" aria-label="A sign-in form" style="--visual-editor-height: 24rem">
+      <script type="text/html" class="visual-editor-source">
+        <form class="card stack gap-3" style="margin: 1.5rem; padding: 1.5rem">
+          <h3 class="card-title">Sign in</h3>
+          <label class="label" for="si-email">Email</label>
+          <input class="input" id="si-email" type="email" placeholder="you@example.com" />
+          <button class="btn" type="submit">Continue</button>
+        </form>
+      </script>
+    </div>
+
+    <div class="visual-editor" id="ve-project" aria-label="A pricing teaser" style="--visual-editor-height: 16rem">
+      <script type="text/html" class="visual-editor-source">
+        <section style="padding: 1.5rem">
+          <h3 class="h3">Pro</h3>
+          <p class="text-muted-foreground">Everything in Free, plus teams.</p>
+          <button class="btn">Upgrade</button>
+        </section>
+      </script>
+    </div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/visual-editor/visual-editor.js"></script>
+  </body>
+</html>

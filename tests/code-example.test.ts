@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import { clickSelector, openDocPage, waitFor } from './helpers';
 import { fenceAttrs, normalizeFenceHtml, remarkDocExamples } from '../src/documentation/lib/mdx-example';
 import { archBodyHtml } from '../src/documentation/lib/arch-md';
@@ -11,9 +12,25 @@ import { archBodyHtml } from '../src/documentation/lib/arch-md';
  * and `data-state-values` (the §11 observation mirror the bridge syncs).
  */
 
-/** First CodeExample card (the "Default" input example). */
+/**
+ * The page's "Default" CodeExample card (the Input page's "Default" input example) - found by its label: a page leads
+ * with its individual examples (AGENTS.md "Individual examples"), so the Default card is not always the first one.
+ * Falls back to the first card on a page without one.
+ */
 function firstCard(doc: Document): HTMLElement {
-  return doc.querySelector('.code-example') as HTMLElement;
+  const cards = [...doc.querySelectorAll('.code-example')] as HTMLElement[];
+  // the label paragraph carries the docs' § permalink (lib/plugins.ts toc) - compared without it
+  return cards.find((c) => c.querySelector(':scope > p')?.textContent?.replace('§', '').trim() === 'Default') ?? cards[0];
+}
+/**
+ * Open the Default card's State tab, with the card in view as for a reader who opens it (the Input page leads with
+ * its part cards, which put the Default card below the 900px test viewport). Scrolling did not cure the typing test's
+ * timeouts - its unfocused write did (see that test).
+ */
+async function openStateTab(doc: Document): Promise<void> {
+  await waitFor(() => doc.querySelector('.code-example[data-init]'), 'cards built');
+  firstCard(doc).scrollIntoView({ block: 'start' });
+  await userEvent.click(firstCard(doc).querySelector('.code-example-tab[data-tab="state"]') as Element);
 }
 function textareaOf(card: HTMLElement): HTMLTextAreaElement {
   return card.querySelector('.code-example-src') as HTMLTextAreaElement;
@@ -93,11 +110,43 @@ describe('CodeExample (input page)', () => {
     expect(frames.length).toBeGreaterThan(3);
   });
 
+  it('sandbox="fullscreen" delegates full screen to exactly its own cards (a Video\'s full screen control) - the frame stays opaque', async () => {
+    const { doc } = await openDocPage('video.html');
+    const frames = Array.from(doc.querySelectorAll('.code-example')).map((c) => ({
+      label: c.querySelector('p')?.textContent?.replace(/^§/, ''),
+      sandbox: c.querySelector('.code-example-frame')?.getAttribute('sandbox'),
+      allow: c.querySelector('.code-example-frame')?.getAttribute('allow'),
+    }));
+    const wide = frames.filter((f) => f.allow !== 'clipboard-write');
+    expect(wide.map((f) => f.label)).toEqual(['Video', 'Overlay controls', 'Subtitles and video captions']);
+    for (const f of wide) {
+      // WebKit grants an opaque origin full screen only with the * allowlist (tmp/probe-fs-sandbox.ts)
+      expect(f.allow).toBe('clipboard-write; fullscreen *');
+      expect(f.sandbox).toBe('allow-scripts allow-forms');
+    }
+  });
+
   it('sandbox="links" lets exactly its own card open new tabs - popups only, never same-origin', async () => {
     const { doc } = await openDocPage('system-in-numbers.html');
     const frame = doc.querySelector('.code-example .code-example-frame');
     expect(frame?.getAttribute('sandbox')).toBe('allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox');
     expect(frame?.getAttribute('allow')).toBe('clipboard-write');
+  });
+
+  it('sandbox="downloads" lets exactly its own card save a file - the frame stays opaque', async () => {
+    const { doc } = await openDocPage('scaffold-document-editor.html');
+    const frame = doc.querySelector('.code-example .code-example-frame');
+    expect(frame?.getAttribute('sandbox')).toBe('allow-scripts allow-forms allow-downloads');
+    expect(frame?.getAttribute('allow')).toBe('clipboard-write');
+  });
+
+  it('sandbox="editor" makes exactly the Visual Editor\'s cards same-origin (GrapesJS writes into its canvas iframe)', async () => {
+    const { doc } = await openDocPage('visual-editor.html');
+    const frames = Array.from(doc.querySelectorAll('.code-example .code-example-frame')).map((f) => f.getAttribute('sandbox'));
+    expect(frames.length).toBeGreaterThan(1);
+    expect(new Set(frames)).toEqual(new Set(['allow-scripts allow-forms allow-same-origin allow-downloads']));
+    const strict = await openDocPage('editorjs.html');
+    for (const f of strict.doc.querySelectorAll('.code-example .code-example-frame')) expect(f.getAttribute('sandbox')).not.toContain('allow-same-origin');
   });
 
   it('displayed source === executed source (§4: one source, verbatim)', async () => {
@@ -122,7 +171,7 @@ describe('CodeExample (input page)', () => {
     const original = textareaOf(card).value;
     await editSource(doc, card, '<input data-example-root class="input" value="edited-source-marker" />');
     await waitForObserved(card, 'value', 'edited-source-marker');
-    await clickSelector(doc, '.code-example-reset');
+    await userEvent.click(card.querySelector('.code-example-reset') as Element);
     await new Promise((r) => setTimeout(r, 500)); // debounced rerun restores
     expect(textareaOf(card).value).toBe(original);
   });
@@ -175,7 +224,7 @@ describe('CodeExample (input page)', () => {
     const card = firstCard(doc);
     // lazy boot (IO/idle): wait for the card to build its controls before clicking
     await waitFor(() => card.querySelectorAll('.code-example-row').length > 0, 'state rows built');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const rows = card.querySelectorAll('.code-example-row');
     expect(rows.length).toBe(7); // value, disabled, readonly, required, invalid, type, size
     const control = (state: string) =>
@@ -190,7 +239,7 @@ describe('CodeExample (input page)', () => {
 
   it('mutating a state control changes the live preview (§11 round-trip)', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const card = firstCard(doc);
     await waitForSandboxReady(card);
     const disabled = card.querySelector(
@@ -212,7 +261,7 @@ describe('CodeExample (input page)', () => {
 
   it('direct preview interaction updates the state control (DOM is authoritative)', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const card = firstCard(doc);
     await waitForSandboxReady(card);
     // drive the sandbox through the per-instance State API handle the host
@@ -231,7 +280,7 @@ describe('CodeExample (input page)', () => {
 
   it('panel edits land in the code and survive a later code edit (code is the truth)', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const card = firstCard(doc);
     await waitForSandboxReady(card);
     const disabled = card.querySelector(
@@ -253,10 +302,15 @@ describe('CodeExample (input page)', () => {
 
   it('typing in a text editor syncs the preview (250ms debounce, no blur)', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const card = firstCard(doc);
     await waitForSandboxReady(card);
     const value = card.querySelector('.code-example-row[data-state-name="value"] .code-example-control') as HTMLInputElement;
+    // typed with focus, as a user types: the panel writes every observed value into its control unless the control has
+    // focus, so a report inside the debounce wiped an unfocused write. VERIFIED: (tmp/probe-state-overwrite.ts,
+    // 2026-10-18) a report after an unfocused write left the control '', after a focused one 'x'; the test timed out
+    // with an empty control in the gate's run (2026-10-18) and in two of three full runs before (2026-10-16)
+    value.focus();
     value.value = 'typed-live';
     value.dispatchEvent(new Event('keyup', { bubbles: true })); // NO change event fired
     // hang guards, like the rebuild wait above: VERIFIED: (2026-10-08) 1.6 s alone, past 3 s in four full
@@ -269,7 +323,7 @@ describe('CodeExample (input page)', () => {
 
   it('state edits sync bidirectionally: panel edit updates the editor source', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const card = firstCard(doc);
     await waitForSandboxReady(card);
     const editor = textareaOf(card);
@@ -286,7 +340,7 @@ describe('CodeExample (input page)', () => {
 
   it('height stops growing: repeated state changes keep the frame stable', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const card = firstCard(doc);
     await waitForSandboxReady(card);
     await new Promise((r) => setTimeout(r, 400)); // settle initial height
@@ -305,7 +359,7 @@ describe('CodeExample (input page)', () => {
 
   it('schema actions generate working action buttons', async () => {
     const { doc } = await openDocPage('input.html');
-    await clickSelector(doc, '.code-example .code-example-tab[data-tab="state"]');
+    await openStateTab(doc);
     const card = firstCard(doc);
     await waitForSandboxReady(card);
     const focusBtn = card.querySelector('.code-example-actions button[data-action="focus"]') as HTMLElement;

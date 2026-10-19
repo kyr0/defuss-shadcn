@@ -47,6 +47,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example label="A subset of tools, an empty document" hint="data-tools limits what the + menu offers - here headings and lists only - and a document without a source starts empty with its placeholder. Only the listed tools are requested." previewStyle="justify-content:flex-start;"
+<div
+  class="editorjs"
+  id="ed-notes"
+  data-tools="header list"
+  data-placeholder="Meeting notes - press / for a heading or a list"
+  style="max-inline-size: 44rem; --editorjs-min-height: 8rem"
+></div>
+```
+
 ```html example label="Markdown in, Markdown out" hint="The document is Markdown inside the element. Edit it - the + menu adds blocks, the inline toolbar formats a selection - and read it back as Markdown: headings, lists (nested, checklists), quotes, code, rules, tables and the inline formatting survive the round trip." previewStyle="justify-content:flex-start;"
 <div class="stack gap-3" style="max-inline-size: 44rem">
   <div class="editorjs" id="ed-brief" data-state-demo data-placeholder="Write the brief...">
@@ -258,16 +268,6 @@ A second paragraph, to convert into a quote.
     });
   });
 </script>
-```
-
-```html example label="A subset of tools, an empty document" hint="data-tools limits what the + menu offers - here headings and lists only - and a document without a source starts empty with its placeholder. Only the listed tools are requested." previewStyle="justify-content:flex-start;"
-<div
-  class="editorjs"
-  id="ed-notes"
-  data-tools="header list"
-  data-placeholder="Meeting notes - press / for a heading or a list"
-  style="max-inline-size: 44rem; --editorjs-min-height: 8rem"
-></div>
 ```
 
 ```html example label="Save and restore" hint="The blocks API: Save keeps the Editor.js data, Restore renders it again, Load Markdown replaces the document from a textarea - the same calls a page would make against its own storage." previewStyle="justify-content:flex-start;"

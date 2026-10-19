@@ -262,6 +262,55 @@ try {
     assert.deepEqual(r.parsed, ['header', 'paragraph']);
   });
 
+  await check('source map: every block\'s range in the Markdown; locate() turns a source span (heading marks and {#id}, inline Markdown, a repeated sentence, a list item, a table cell) into the block, its rendered text and occurrence - findable in the rendered block', async () => {
+    const r = await page.evaluate(async () => {
+      const api = globalThis.df$.shadcn.editorjs!;
+      const md = '# Import **check**\n\nThe check runs daily. The check runs daily, and the check is fast.\n\n- first item\n- the [second](https://example.org) item\n\n| Verdict | Colour |\n| --- | --- |\n| correct | green |\n\n> A quote.\n\n## Method {#method}\n';
+      const span = (quote: string, nth = 1) => {
+        let at = -1;
+        for (let i = 0; i < nth; i++) at = md.indexOf(quote, at + 1);
+        return api.locate('#ed-json', md, at, at + quote.length);
+      };
+      const map = api.sourceMap('#ed-json', md);
+      const located = {
+        heading: span('# Import **check**'),
+        repeated: span('The check runs daily', 2),
+        item: span('the [second](https://example.org) item'),
+        cell: span('correct'),
+        attrs: span('## Method {#method}'),
+        gap: api.locate('#ed-json', md, md.indexOf('\n\n'), md.indexOf('\n\n') + 2),
+      };
+      // the rendered document: each location is found by the rule Document Comments places marks with
+      await api.setMarkdown('#ed-json', md);
+      const findable = Object.values(located).filter(Boolean).map((l) => {
+        const text = document.querySelector(`#ed-json .ce-block[data-id="${l!.block}"]`)?.textContent ?? '';
+        let at = -1;
+        for (let i = 0; i <= l!.occurrence; i++) at = text.indexOf(l!.text, at + 1);
+        return at >= 0;
+      });
+      const heading = document.querySelector('#ed-json .ce-block[data-id="b6"] .ce-header')?.textContent;
+      return { map: map.map((b) => [b.block, b.type, b.level ?? null, md.slice(b.start, b.end).split('\n')[0]]), located, findable, heading };
+    });
+    assert.deepEqual(r.map, [
+      ['b1', 'header', 1, '# Import **check**'],
+      ['b2', 'paragraph', null, 'The check runs daily. The check runs daily, and the check is fast.'],
+      ['b3', 'list', null, '- first item'],
+      ['b4', 'table', null, '| Verdict | Colour |'],
+      ['b5', 'quote', null, '> A quote.'],
+      ['b6', 'header', 2, '## Method {#method}'],
+    ]);
+    assert.deepEqual(r.located, {
+      heading: { block: 'b1', text: 'Import check', occurrence: 0 },
+      repeated: { block: 'b2', text: 'The check runs daily', occurrence: 1 },
+      item: { block: 'b3', text: 'the second item', occurrence: 0 },
+      cell: { block: 'b4', text: 'correct', occurrence: 0 },
+      attrs: { block: 'b6', text: 'Method', occurrence: 0 },
+      gap: null,
+    });
+    assert.deepEqual(r.findable, [true, true, true, true, true]);
+    assert.equal(r.heading, 'Method', 'a heading\'s {#id} is an id, not text');
+  });
+
   await check("state API: setState('readonly') marks the element and switches the editor; 'default' switches back", async () => {
     await page.evaluate(() => document.getElementById('ed-md')!.api!.setState('readonly'));
     await page.waitForFunction(() => (globalThis.df$.shadcn.editorjs!.editor('#ed-md') as any).readOnly.isEnabled === true);
@@ -281,6 +330,31 @@ try {
     assert.match(r.err, /unknown state/);
     assert.deepEqual(r.states, ['default', 'readonly']);
     assert.equal(r.url, EDITOR);
+  });
+
+  await check('a task list renders as a checklist: the items read without their [x] / [ ] markers, checked as authored, nested too, and the Markdown gives them back; the list toggle knows a checklist and a numbered list from a bulleted one', async () => {
+    const md = '- [x] Toolbar bound to the **editor**\n- [ ] Replies notify the thread\n  - [x] nested\n\n1. first\n2. second\n\n- bullet\n';
+    const r = await page.evaluate(async (md) => {
+      const api = globalThis.df$.shadcn.editorjs!;
+      await api.setMarkdown('#ed-md', md);
+      const items = [...document.querySelectorAll('#ed-md .cdx-list-checklist .cdx-list__item')];
+      return {
+        texts: items.map((i) => i.querySelector('.cdx-list__item-content')?.textContent),
+        checked: items.map((i) => i.querySelector(':scope > .cdx-list__checkbox')?.classList.contains('cdx-list__checkbox--checked')),
+        md: await api.markdown('#ed-md'),
+      };
+    }, md);
+    assert.deepEqual(r.texts, ['Toolbar bound to the editor', 'Replies notify the thread', 'nested']);
+    assert.deepEqual(r.checked, [true, false, true]);
+    assert.equal(r.md, md);
+    const pressed = async (sel: string, text: string) => {
+      assert.equal(await select(page, sel, text), true);
+      await page.waitForTimeout(100);
+      return page.$eval('#ed-bar [data-editor-command="list:unordered"]', (b) => b.getAttribute('aria-pressed'));
+    };
+    assert.equal(await pressed('#ed-md .cdx-list-checklist > .cdx-list__item:nth-child(2) > .cdx-list__item-content', 'Replies'), 'false', 'a checklist is not a bulleted list');
+    assert.equal(await pressed('#ed-md .cdx-list-ordered .cdx-list__item-content', 'first'), 'false', 'nor is a numbered one');
+    assert.equal(await pressed('#ed-md .cdx-list-unordered .cdx-list__item-content', 'bullet'), 'true');
   });
 
   await check('no page errors', async () => {

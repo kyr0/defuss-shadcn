@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
 import { startServer } from '../server.ts';
 import { assertRenderContract } from '../lib/render-contract.ts';
+import { EXTRA_BUNDLES } from '../../../scripts/lib/bundles.ts';
 
 /**
  * Why: E2E smoke test for the shipped HTML Preview Editor (code-example, the
@@ -71,12 +72,12 @@ try {
         title: el.querySelector('iframe')!.getAttribute('title'),
       })),
     );
-    assert.equal(r.length, 4);
+    assert.equal(r.length, 6);
     for (const c of r) {
       assert.ok(c.frame && c.toolbar && c.src, `#${c.id} shell`);
       assert.equal(c.paint, 'true', `#${c.id} paint layer is aria-hidden`);
     }
-    assert.deepEqual(r.map((c) => c.stateTab), [true, false, false, false], 'only the schema card has a State tab');
+    assert.deepEqual(r.map((c) => c.stateTab), [true, false, false, false, false, false], 'only the schema card has a State tab');
     assert.equal(r[0].title, 'Switch preview', 'the frame title comes from aria-label');
   });
 
@@ -91,6 +92,24 @@ try {
       };
     });
     assert.deepEqual(r, { stage: 'flex', toolbar: 'flex', panel: 'none', exit: 'none' });
+  });
+
+  // reported (2026-10-16): the docs' "Studio" link in a card's toolbar rendered as a blue underlined page link
+  await check('a link a page adds to the toolbar looks like its other tools, not like a page link', async () => {
+    const r = await page.evaluate(() => {
+      const bar = document.querySelector('#cx-buttons .code-example-toolbar')!;
+      const a = Object.assign(document.createElement('a'), { href: '#studio', className: 'code-example-tab', textContent: 'Studio' });
+      bar.append(a);
+      const look = (e: Element) => {
+        const c = getComputedStyle(e);
+        return { color: c.color, decoration: c.textDecorationLine, size: c.fontSize, padding: c.padding, display: c.display };
+      };
+      const out = { link: look(a), button: look(bar.querySelector('.code-example-reset')!) };
+      a.remove();
+      return out;
+    });
+    assert.deepEqual(r.link, r.button);
+    assert.equal(r.link.decoration, 'none');
   });
 
   await check('preview: the source runs in the sandbox with the page\'s runtime (data-state-values mirror)', async () => {
@@ -111,6 +130,18 @@ try {
     // a click inside the preview flows back the same way
     await page.frameLocator('#cx-switch .code-example-frame').locator('.switch').click();
     await page.waitForFunction(() => JSON.parse((document.querySelector('#cx-switch') as HTMLElement).dataset.stateValues || '{}').checked === false);
+  });
+
+  await check('data-links: the preview uses the mapped link targets; the source keeps what was written, also after a write-back', async () => {
+    await ready(page, 'cx-links');
+    const frame = page.frameLocator('#cx-links .code-example-frame');
+    assert.equal(await frame.locator('#cx-a').getAttribute('href'), 'links/target.html');
+    assert.equal(await frame.locator('#cx-b').getAttribute('href'), 'other.html');
+    // a change in the preview writes the markup back into the source (open="") - with the authored target
+    await frame.locator('#cx-more summary').click();
+    await page.waitForFunction(() => (document.querySelector('#cx-links textarea') as HTMLTextAreaElement).value.includes('open=""'));
+    const source = await page.$eval('#cx-links textarea', (el) => (el as HTMLTextAreaElement).value);
+    assert.ok(source.includes('href="target.html"') && !source.includes('links/target.html'), source);
   });
 
   await check('state "code": the source opens, the tab presses, Shiki paints it', async () => {
@@ -201,6 +232,61 @@ try {
     await page.click('#cx-reset');
   });
 
+  await check('bundlesFor: a source that names an extra bundle\'s component needs that bundle - the build\'s list (src/documentation/lib/extra-bundles.ts)', async () => {
+    const r = await page.evaluate((bundles) => {
+      const api = (globalThis as any).df$.shadcn.codeExample;
+      const each = Object.fromEntries(Object.values(bundles).flat().map((m) => [m, api.bundlesFor(`<div class="${m}"></div>`)]));
+      return { each, none: api.bundlesFor('<button class="btn">Save</button>'), both: api.bundlesFor('<figure class="math-renderer"></figure><figure class="mermaid-diagram"></figure>') };
+    }, EXTRA_BUNDLES as Record<string, string[]>);
+    for (const [b, members] of Object.entries(EXTRA_BUNDLES)) for (const m of members) assert.deepEqual(r.each[m], [b], m);
+    assert.deepEqual(r.none, []);
+    assert.deepEqual(r.both, ['mermaid', 'math'], 'in the list\'s order');
+  });
+
+  await check('default scripts: a preview whose source names a math component gets the page\'s math.js after all.js; any other gets all.js alone', async () => {
+    /** the preview frame's df$.shadcn.mathRendererApi, once the rebuilt preview reported ready */
+    const mathIn = async (source: string) => {
+      await page.$eval('#cx-play', (el, s) => (globalThis as any).df$.shadcn.codeExample.setSource(el, s), source);
+      await page.waitForFunction((s) => (document.querySelector('#cx-play .code-example-frame') as HTMLIFrameElement | null)?.srcdoc.includes(s.slice(0, 40)), source);
+      await ready(page, 'cx-play');
+      const frame = await (await page.$('#cx-play .code-example-frame'))!.contentFrame();
+      await frame!.waitForFunction(() => document.readyState === 'complete' && !!(globalThis as any).df$?.shadcn);
+      return frame!.evaluate(() => typeof (globalThis as any).df$.shadcn.mathRendererApi);
+    };
+    assert.equal(await mathIn('<figure class="math-renderer" id="m"><code class="math-renderer-source">x^2</code></figure>'), 'object');
+    assert.equal(await mathIn('<button class="btn" id="b">No formula here</button>'), 'undefined');
+    await page.$eval('#cx-play', (el) => (globalThis as any).df$.shadcn.codeExample.reset(el));
+  });
+
+  await check('devices: data-vp-mode="print" boots an A4 sheet whose preview applies its print rules (print and screen swap in every media query); Full restores the screen', async () => {
+    const frame = page.frameLocator('#cx-print .code-example-frame');
+    await frame.locator('html[data-ce-print]').waitFor({ state: 'attached', timeout: 10_000 });
+    const read = () => frame.locator('html').evaluate(() => [getComputedStyle(document.querySelector('.cx-media')!).color, getComputedStyle(document.querySelector('.cx-screen-only')!).display, document.documentElement.hasAttribute('data-ce-print')]);
+    assert.deepEqual(await read(), ['rgb(255, 0, 0)', 'none', true]);
+    const card = await page.$eval('#cx-print', (el) => ({ mode: (el as HTMLElement).dataset.vpMode, w: (el.querySelector('.code-example-vp-w') as HTMLInputElement).value, pressed: el.querySelector('.code-example-vp[data-vp="print"]')!.getAttribute('aria-pressed') }));
+    assert.deepEqual(card, { mode: 'print', w: '794', pressed: 'true' });
+    await page.click('#cx-print .code-example-vp[data-vp="full"]');
+    await frame.locator('html:not([data-ce-print])').waitFor({ state: 'attached', timeout: 5000 });
+    assert.deepEqual(await read(), ['rgb(0, 0, 255)', 'block', false]);
+    // and back: the swap is its own inverse
+    await page.click('#cx-print .code-example-vp[data-vp="print"]');
+    await frame.locator('html[data-ce-print]').waitFor({ state: 'attached', timeout: 5000 });
+    assert.deepEqual(await read(), ['rgb(255, 0, 0)', 'none', true]);
+  });
+
+  await check('devices: the Print sheet has no pages - a forced page break shows as a dashed line with room above it; the mark stays out of the source', async () => {
+    const frame = page.frameLocator('#cx-print .code-example-frame');
+    const mark = () => frame.locator('.cx-page').evaluate((el) => [el.hasAttribute('data-ce-page-break'), getComputedStyle(el).borderTopStyle, parseFloat(getComputedStyle(el).marginTop) >= 16]);
+    assert.deepEqual(await mark(), [true, 'dashed', true]);
+    await page.click('#cx-print .code-example-vp[data-vp="full"]');
+    await frame.locator('html:not([data-ce-print])').waitFor({ state: 'attached', timeout: 5000 });
+    assert.deepEqual((await mark())[0], false, 'on screen: no mark');
+    await page.click('#cx-print .code-example-vp[data-vp="print"]');
+    await frame.locator('html[data-ce-print]').waitFor({ state: 'attached', timeout: 5000 });
+    const source = await page.$eval('#cx-print', (el: any) => el.api.getState().config.source as string);
+    assert.ok(source.includes('cx-page') && !source.includes('data-ce-page-break'), 'the source holds no mark');
+  });
+
   await check('devices: data-vp-mode boots a phone; Rotate swaps; Full releases', async () => {
     const boot = await page.$eval('#cx-phone', (el) => ({ mode: (el as HTMLElement).dataset.vpMode, w: (el.querySelector('.code-example-vp-w') as HTMLInputElement).value, h: (el.querySelector('.code-example-vp-h') as HTMLInputElement).value, zoom: (el as HTMLElement).dataset.vpZoom }));
     assert.deepEqual({ mode: boot.mode, w: boot.w, h: boot.h }, { mode: 'phone', w: '390', h: '844' });
@@ -219,6 +305,34 @@ try {
     await page.frameLocator('#cx-buttons .code-example-frame').locator('html.dark').waitFor({ state: 'attached', timeout: 5000 });
     assert.equal(await page.$eval('#cx-buttons .code-example-frame', (f) => f.getAttribute('srcdoc')!.length), before, 'same srcdoc');
     await page.evaluate(() => document.documentElement.classList.remove('dark'));
+  });
+
+  // VERIFIED (tmp/probe-ce-roloop.ts): Chromium dispatches "ResizeObserver loop completed with undelivered
+  // notifications" as a window error - a callback that resizes its box once showed it as the example's error for good
+  await check('a ResizeObserver loop: a one-off notice is no error; a loop still running after 5 s is reported', async () => {
+    const box = '<div id="ro-box" style="height:20px;background:#ccc"></div>';
+    const once = `${box}<script>const b = document.getElementById('ro-box'); let n = 0; new ResizeObserver(() => { if (n++ < 1) b.style.height = '40px'; }).observe(b);</script>`;
+    const forever = `${box}<script>const b = document.getElementById('ro-box'); new ResizeObserver(() => { b.style.height = b.style.height === '40px' ? '20px' : '40px'; }).observe(b);</script>`;
+    const shown = () => page.$eval('#cx-buttons .code-example-error', (e) => ((e as HTMLElement).hidden ? '' : e.textContent ?? ''));
+    // in view - VERIFIED (2026-10-15): with the card scrolled away by earlier checks the frame's observer never fired
+    await page.locator('#cx-buttons').scrollIntoViewIfNeeded();
+    const run = async (src: string) => {
+      await page.$eval('#cx-buttons', (el, s) => (globalThis as any).df$.shadcn.codeExample.setSource(el, s), src);
+      await page.frameLocator('#cx-buttons .code-example-frame').locator('#ro-box').waitFor({ state: 'attached', timeout: 10_000 });
+    };
+    await run(once);
+    // the box grew: the callback ran and changed the layout inside the delivery
+    await page.frameLocator('#cx-buttons .code-example-frame').locator('#ro-box[style*="40px"]').waitFor({ state: 'attached', timeout: 5000 });
+    await page.waitForTimeout(1500);
+    assert.equal(await shown(), '', 'a one-off loop notice is not shown');
+    await run(forever);
+    await page.waitForFunction(
+      () => !(document.querySelector('#cx-buttons .code-example-error') as HTMLElement).hidden,
+      undefined,
+      { timeout: 12_000 },
+    );
+    assert.match(await shown(), /ResizeObserver loop has not settled for 5 s/);
+    await page.$eval('#cx-buttons', (el) => (globalThis as any).df$.shadcn.codeExample.reset(el));
   });
 
   await check('unknown states throw', async () => {
@@ -240,7 +354,7 @@ try {
       runtimeAttrs: ['data-state-values', 'data-vp-mode', 'data-vp-zoom', 'data-painted'],
       runtimeOwned: '.code-example-stage, .code-example-paint, .code-example-panel[data-panel="state"] > *',
     });
-    assert.equal(n, 4, 'every card in the fixture');
+    assert.equal(n, 6, 'every card in the fixture');
   });
 } finally {
   await browser.close();

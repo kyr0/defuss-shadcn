@@ -1,0 +1,354 @@
+---
+title: "Visual Editor"
+description: "Visual Editor component - GrapesJS, the drag-and-drop HTML editor, over the system's own markup: blocks drop in, elements select and change, the same markup comes out. Loaded on demand from a pinned build."
+slug: "visual-editor"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="visual-editor" title="Visual Editor" component="visual-editor">
+  <a class="link" href="https://grapesjs.com" target="_blank" rel="noopener">GrapesJS</a>, the drag-and-drop HTML editor, over the markup the component skills document. Write the page in the element's <code>&lt;script type="text/html"&gt;</code> source block; the first editor on a page loads the pinned GrapesJS build and shows that page in a canvas styled by the page's own sheets. Blocks - any button with a <code>&lt;template&gt;</code> of markup - drop in or insert at the selection; elements select, move and change; <code>html()</code> hands back the same markup the skills describe. The <DocLink href="studio.html">Studio</DocLink> builds whole apps on it.
+</PageHeader>
+
+<SkillPanel component="visual-editor">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div class="visual-editor"&gt;</code> with the page in a <code>&lt;script type="text/html" class="visual-editor-source"&gt;</code> (a data block - neither run nor rendered, so no component starts inside it); GrapesJS mounts in <code>.visual-editor-canvas</code>. Blocks are elements with <code>data-visual-editor-block</code> and a <code>&lt;template&gt;</code>; controls name the editor with <code>data-visual-editor-for</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script#embedding_data_in_html" title="the page source, neither run nor rendered"><code>&lt;script type="text/html"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template" title="each block's markup, inert"><code>&lt;template&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" title="the pinned GrapesJS build, loaded once"><code>import()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" title="a block drops into the canvas">Drag and Drop</ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert" title="the canvas in the readonly state"><code>inert</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/DOMParser" title="inserted markup gets free ids"><code>DOMParser</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.visual-editor</code>
+    <code>.visual-editor-source</code>
+    <code>.visual-editor-canvas</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-readonly</code> - read only (the <code>readonly</code> state); <code>data-device="tablet|phone"</code> - the canvas width</SkillText>
+  <SkillText dense>• <code>data-visual-editor-for="id"</code> - on a control or a block list: the editor it drives; <code>data-visual-editor-action</code> - <code>undo</code> <code>redo</code> <code>duplicate</code> <code>remove</code> <code>device</code> (a select)</SkillText>
+  <SkillText dense>• <code>data-visual-editor-block</code> - a block: its first <code>&lt;template&gt;</code> is the markup it inserts</SkillText>
+  <SkillText dense>• <code>data-ready</code> / <code>data-error</code> - written by the runtime once the editor mounted, or when GrapesJS could not be loaded</SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<p class="text-muted-foreground m-0">• GrapesJS is the official package, pinned (<code>grapesjs@0.23.6</code>) and requested from jsDelivr by the first editor on a page - a page without one never loads it. Its telemetry is off. Its canvas is an iframe it writes into, so a sandboxed frame needs <code>allow-same-origin</code>: these examples use <code>sandbox="editor"</code>. The canvas runs no scripts - a component shows its markup there, the <DocLink href="code-example.html">HTML Preview Editor</DocLink> runs it.</p>
+<p class="text-muted-foreground m-0">• Nothing that runs gets in: every markup that enters (the source, <code>setHtml()</code>, <code>insert()</code>, <code>replace()</code>, a dragged block) is cleaned first - scripts, frames, <code>&lt;object&gt;</code>, <code>&lt;embed&gt;</code>, <code>&lt;base&gt;</code>, <code>on*</code> handlers, <code>srcdoc</code>, URLs that run code (also when obfuscated) and SVG animations of an <code>href</code> go, in a template's content too. A stateful component is one locked unit (<code>lock()</code>): it changes through its state and <code>replace()</code>.</p>
+  </SkillField>
+</SkillPanel>
+
+```html example part label="Visual Editor"
+<div class="visual-editor" id="ve-compose" aria-label="A welcome card" style="--visual-editor-height: 22rem"> </div>
+```
+
+```html example label="Compose with blocks" hint="Drag a block into the canvas, or select an element and click a block to put it inside (or after) the selection. Undo, Redo, Duplicate and Remove follow the editor; Read the markup shows what html() returns - the markup the skills document, inline styles where they were written." sandbox="editor" previewStyle="justify-content:flex-start;"
+<div class="stack gap-3">
+  <div class="flex flex-wrap gap-2" data-visual-editor-for="ve-compose" aria-label="Blocks">
+    <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block>
+      Button
+      <template><button class="btn">Get started</button></template>
+    </button>
+    <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block>
+      Badge
+      <template><span class="badge" data-variant="secondary">New</span></template>
+    </button>
+    <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block>
+      Email field
+      <template
+        ><div class="stack gap-2">
+          <label class="label" for="email">Email</label
+          ><input class="input" id="email" type="email" placeholder="you@example.com" /></div
+      ></template>
+    </button>
+    <button type="button" class="btn" data-variant="outline" data-size="sm" draggable="true" data-visual-editor-block>
+      Alert
+      <template
+        ><div class="alert" role="status">
+          <h5 class="alert-title">Saved</h5>
+          <div class="alert-description">Your changes are live.</div>
+        </div></template
+      >
+    </button>
+  </div>
+  <div class="toolbar" role="toolbar" aria-label="Editor" data-size="sm">
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-visual-editor-for="ve-compose"
+      data-visual-editor-action="undo"
+    >
+      <i data-lucide="undo-2"></i> Undo
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-visual-editor-for="ve-compose"
+      data-visual-editor-action="redo"
+    >
+      <i data-lucide="redo-2"></i> Redo
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-visual-editor-for="ve-compose"
+      data-visual-editor-action="duplicate"
+    >
+      <i data-lucide="copy"></i> Duplicate
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-visual-editor-for="ve-compose"
+      data-visual-editor-action="remove"
+    >
+      <i data-lucide="trash-2"></i> Remove
+    </button>
+  </div>
+  <div
+    class="visual-editor"
+    id="ve-compose"
+    data-state-demo
+    aria-label="A welcome card"
+    style="--visual-editor-height: 22rem"
+  >
+    <script type="text/html" class="visual-editor-source">
+      <section class="card" style="max-width: 26rem; margin: 1.5rem auto">
+        <div class="card-header">
+          <h3 class="card-title">Welcome</h3>
+          <p class="card-description">Drop components into this card.</p>
+        </div>
+        <div class="card-content stack gap-3"><p>Select me, then click a block.</p></div>
+      </section>
+    </script>
+  </div>
+  <button class="btn" data-variant="outline" data-size="sm" type="button" id="ve-compose-read">
+    <i data-lucide="code"></i> Read the markup
+  </button>
+  <textarea class="textarea" id="ve-compose-out" rows="6" readonly aria-label="The page markup" placeholder="Click Read the markup"></textarea>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#ve-compose-read').on('click', () => df$('#ve-compose-out').val(df$.shadcn.visualEditor.html('#ve-compose')));
+  });
+</script>
+```
+
+```html example label="Inspect the selection" hint="Click an element in the canvas: visual-editor-select reports it, and the fields below change it through apply() - the text of a text-only element, a button's data-variant. A handler or a javascript: URL is refused." sandbox="editor" previewStyle="justify-content:flex-start;"
+<div class="stack gap-3">
+  <div class="visual-editor" id="ve-inspect" aria-label="A call to action" style="--visual-editor-height: 16rem">
+    <script type="text/html" class="visual-editor-source">
+      <div class="flex items-center gap-3" style="padding: 2rem">
+        <h3 class="h3">Ready to ship?</h3>
+        <button class="btn">Deploy</button>
+        <button class="btn" data-variant="outline">Preview</button>
+      </div>
+    </script>
+  </div>
+  <div class="flex flex-wrap items-end gap-3">
+    <div class="stack gap-1">
+      <label class="label" for="ve-inspect-text">Text</label>
+      <input class="input" id="ve-inspect-text" disabled />
+    </div>
+    <div class="stack gap-1">
+      <label class="label" for="ve-inspect-variant">Variant</label>
+      <select class="select" id="ve-inspect-variant" disabled>
+        <option value="">default</option>
+        <option>secondary</option>
+        <option>outline</option>
+        <option>ghost</option>
+        <option>destructive</option>
+      </select>
+    </div>
+    <output class="text-sm text-muted-foreground" id="ve-inspect-out" for="ve-inspect">Nothing selected</output>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const ve = df$.shadcn.visualEditor;
+    df$('#ve-inspect').on('visual-editor-select', (e) => {
+      const s = e.detail.selection;
+      df$('#ve-inspect-out').text(
+        s ? `${s.tag}${s.classes.length ? '.' + s.classes.join('.') : ''} at ${s.path}` : 'Nothing selected',
+      );
+      df$('#ve-inspect-text')
+        .prop('disabled', !s || s.text === null)
+        .val(s?.text ?? '');
+      df$('#ve-inspect-variant')
+        .prop('disabled', !s)
+        .val(s?.attributes['data-variant'] ?? '');
+    });
+    df$('#ve-inspect-text').on('input', (e) => ve.apply('#ve-inspect', { text: e.target.value }));
+    df$('#ve-inspect-variant').on('change', (e) =>
+      ve.apply('#ve-inspect', { attributes: { 'data-variant': e.target.value || null } }),
+    );
+  });
+</script>
+```
+
+```html example label="Read only, on a phone" hint="data-readonly makes the canvas inert - the page shows as authored, nothing selects; data-device sets the canvas width (tablet 834px, phone 390px). The select drives the device through the editor's State API." sandbox="editor" previewStyle="justify-content:flex-start;"
+<div class="stack gap-3">
+  <select
+    class="select"
+    data-size="sm"
+    aria-label="Device"
+    data-visual-editor-for="ve-phone"
+    data-visual-editor-action="device"
+  >
+    <option value="desktop">Desktop</option>
+    <option value="tablet">Tablet</option>
+    <option value="phone" selected>Phone</option>
+  </select>
+  <div
+    class="visual-editor"
+    id="ve-phone"
+    data-readonly
+    data-device="phone"
+    aria-label="A sign-in form"
+    style="--visual-editor-height: 24rem"
+  >
+    <script type="text/html" class="visual-editor-source">
+      <form class="card stack gap-3" style="margin: 1.5rem; padding: 1.5rem">
+        <h3 class="card-title">Sign in</h3>
+        <label class="label" for="si-email">Email</label>
+        <input class="input" id="si-email" type="email" placeholder="you@example.com" />
+        <button class="btn" type="submit">Continue</button>
+      </form>
+    </script>
+  </div>
+</div>
+```
+
+```html example label="The markup and its outline" hint="The page is its markup: html() hands it out - store it anywhere, an agent reads it too - and setHtml() loads it back. outline() is the element tree a layers view shows; select(path) selects from it." sandbox="editor" previewStyle="justify-content:flex-start;"
+<div class="stack gap-3">
+  <div class="visual-editor" id="ve-project" aria-label="A pricing teaser" style="--visual-editor-height: 16rem">
+    <script type="text/html" class="visual-editor-source">
+      <section style="padding: 1.5rem">
+        <h3 class="h3">Pro</h3>
+        <p class="text-muted-foreground">Everything in Free, plus teams.</p>
+        <button class="btn">Upgrade</button>
+      </section>
+    </script>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ve-project-save"
+      >Keep the markup</button
+    >
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ve-project-load">Load it back</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ve-project-outline"
+      >Show the outline</button
+    >
+  </div>
+  <pre class="text-xs" id="ve-project-out" style="max-block-size: 12rem; overflow: auto"></pre>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const ve = df$.shadcn.visualEditor;
+    let kept = null;
+    df$('#ve-project-save').on('click', () => {
+      kept = ve.html('#ve-project');
+      df$('#ve-project-out').text(kept);
+    });
+    df$('#ve-project-load').on('click', () => kept && ve.setHtml('#ve-project', kept));
+    df$('#ve-project-outline').on('click', () =>
+      df$('#ve-project-out').text(JSON.stringify(ve.outline('#ve-project'), null, 2)),
+    );
+  });
+</script>
+```
+
+```html example label="A locked component" hint="lock(path) makes the accordion one unit: it moves, copies and goes as a whole, but nothing in it is edited, moved or removed and nothing drops into it - its markup is a function of its state (render()), so it changes through its state. Click a part of it, then the heading: selection().unit tells them apart. replace() swaps the selected element for new markup (here: every item open) and keeps it locked." sandbox="editor" previewStyle="justify-content:flex-start;"
+<div class="stack gap-3">
+  <div class="visual-editor" id="ve-locked" aria-label="Questions" style="--visual-editor-height: 18rem">
+    <script type="text/html" class="visual-editor-source">
+      <section style="padding: 1.5rem">
+        <h3 class="h3">Questions</h3>
+        <div class="accordion">
+          <details class="accordion-item"><summary class="accordion-trigger"><span>Is it accessible?</span></summary><div class="accordion-content"><p>Yes - native details and summary.</p></div></details>
+          <details class="accordion-item"><summary class="accordion-trigger"><span>Is it styled?</span></summary><div class="accordion-content"><p>Yes - the theme's tokens.</p></div></details>
+        </div>
+      </section>
+    </script>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="ve-locked-open">Open every item</button>
+    <span class="text-muted-foreground" id="ve-locked-info">Select an element.</span>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const ve = df$.shadcn.visualEditor;
+    const el = df$('#ve-locked').get(0);
+    const lock = () => ve.lock(el, '0.1');
+    if (el.hasAttribute('data-ready')) lock();
+    else df$(el).on('visual-editor-ready', lock);
+    df$(el).on('visual-editor-select', (e) => {
+      const s = e.detail.selection;
+      df$('#ve-locked-info').text(
+        !s
+          ? 'Select an element.'
+          : s.unit
+            ? `<${s.tag}> belongs to the locked unit at ${s.unit}`
+            : `<${s.tag}> is free to edit`,
+      );
+    });
+    // the accordion in another state: the markup its render() gives for that state, from its markup now
+    df$('#ve-locked-open').on('click', () => {
+      const page = new DOMParser().parseFromString(ve.html(el), 'text/html');
+      const model = df$.shadcn.shared.elementModel(df$(page.body).find('.accordion').get(0));
+      ve.select(el, '0.1');
+      ve.replace(el, df$.shadcn.accordionApi.render({ name: 'all-open', config: {}, model }));
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - editing: elements select, blocks drop, the changes of <code>apply()</code> land; config <code>&#123; device &#125;</code></li>
+    <li><code>readonly</code> - <code>data-readonly</code> on the element: the canvas is inert, the selection chrome hidden; config <code>&#123; device &#125;</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/visual-editor-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/visual-editor.schema.json"><code>visual-editor.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `readonly` | `boolean` | `true`, `false` | `false` | Read only: `data-readonly` on the element, the canvas inert. |
+| `device` | `enum` | `desktop`, `tablet`, `phone` | `desktop` | The canvas width: `data-device` on the element (tablet 834px, phone 390px). |
+```
+
+</StatesSection>
+
+<ApiSection component="visual-editor" />
+
+<SourceFiles component="visual-editor" section="css">
+  <SourceNote for="css">GrapesJS's chrome colours through its --gjs-* properties, the frame, the loading and error notes, readonly.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="visual-editor" section="js">
+  <SourceNote for="js">The pinned engine loader, the canvas over the host's styles, id remapping, the outside controls and blocks, the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

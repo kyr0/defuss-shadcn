@@ -43,7 +43,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-schema</code>, <code>data-vp-mode="phone|tablet|desktop|full"</code>, <code>data-height</code>, <code>data-preview-style</code>, <code>data-language</code>, <code>data-sandbox="embed|links"</code>; set by the runtime: <code>data-fullscreen</code>, <code>data-edited</code>, <code>data-state-values</code>.</SkillText>
+<SkillText><code>data-schema</code>, <code>data-vp-mode="phone|tablet|desktop|full"</code>, <code>data-height</code>, <code>data-preview-style</code>, <code>data-language</code>, <code>data-sandbox="embed|links|downloads"</code>, <code>data-links</code> (link targets the preview uses in place of the source's; the docs map page ids to their paths); set by the runtime: <code>data-fullscreen</code>, <code>data-edited</code>, <code>data-state-values</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -107,6 +107,21 @@ The component ships in the extra bundle - include it after the system:
   <div class="card"><div class="card-header"><p class="card-description">Orders</p><h3 class="card-title">1,284</h3></div></div>
   <div class="card"><div class="card-header"><p class="card-description">Refunds</p><h3 class="card-title">12</h3></div></div>
 </div>
+  </textarea>
+</div>
+```
+
+```html example label="Booting as a print sheet" hint="data-vp-mode=&quot;print&quot; (the Print button) shows the preview as an A4 sheet in its print styles: print and screen trade places in every media query the preview can read, so a rule for print applies and a rule for screen does not - here the paragraph turns red and the screen-only line goes. A sheet has no pages: breaks and page numbers show only in a real print. Full restores the screen styles."
+<div class="code-example" id="cx-print" aria-label="Print styles" data-vp-mode="print">
+  <textarea>
+<style>
+  .cx-media { color: rgb(0, 0, 255); }
+  @media print { .cx-media { color: rgb(255, 0, 0); } }
+  @media screen { .cx-screen-only { display: block; } }
+  @media not screen { .cx-screen-only { display: none; } }
+</style>
+<p class="cx-media">Blue on screen, red in print.</p>
+<p class="cx-screen-only">Only on screen.</p>
   </textarea>
 </div>
 ```
