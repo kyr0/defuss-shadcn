@@ -1,7 +1,7 @@
 // dist/components/visual-editor/visual-editor.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.9") {
+if (!__df$shared || __df$shared.abi !== "0.9.10") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, sheetUrl } = __df$shared;
@@ -588,5 +588,5 @@ df$.visualEditor = {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=71FCEF4BD8FC4B5964756E2164756E21
+//# debugId=84DE4EB1A997D04F64756E2164756E21
 //# sourceMappingURL=visual-editor.js.map

@@ -13,7 +13,7 @@
 
 Themeable, stateful components, built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. A foundation for agentic-first frontend engineering.
 
-**243 components - 72 with JavaScript, 171 CSS-only - 464.5 KiB minified + compressed - 298.4 KiB as the all.css/all.js bundle**
+**243 components - 72 with JavaScript, 171 CSS-only - 464.6 KiB minified + compressed - 298.4 KiB as the all.css/all.js bundle**
 171 of 243 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
@@ -386,7 +386,7 @@ If you use defuss-shadcn in research or want to reference it, cite it as:
   affiliation  = {Independent Researcher},
   title        = {defuss-shadcn: A Themeable, Skill-Described UI Component System in Semantic HTML, CSS and Vanilla JavaScript},
   year         = {2026},
-  version      = {0.9.9},
+  version      = {0.9.10},
   howpublished = {\url{https://www.npmjs.com/package/defuss-shadcn}},
   note         = {npm package, MIT License}
 }

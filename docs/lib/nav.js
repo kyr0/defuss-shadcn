@@ -132,6 +132,10 @@ export const NAV = [
     { heading: 'WYSIWYG Editors', icon: 'square-pen', items: [
             { label: 'HTML Preview Editor', href: 'code-example.html', isNew: true },
             { label: 'Editor.js', href: 'editorjs.html', isNew: true },
+            { label: 'Visual Editor', href: 'visual-editor.html', isNew: true },
+            // ALPHA (maintainer, 2026-10-18): too fragile to offer - typing a space in a dropped Button's text, drag and drop
+            // of many examples (Button icon-sm, charts) - plans/2026-10-14_19-33_visual-editor-studio.md "Alpha"
+            { label: 'Studio', href: 'studio.html', type: 'TPL', isNew: true, alpha: true },
         ] },
     { heading: 'Questionnaire', icon: 'list-checks', items: [
             { label: 'Questionnaire', href: 'questionnaire.html', isNew: true },
@@ -166,6 +170,13 @@ export const NAV = [
             { label: 'Carousel', href: 'carousel.html' },
             { label: 'Scroll Area', href: 'scroll-area.html' },
             { label: 'Sortable', href: 'sortable.html' },
+        ] },
+    // players with a State API and a timeline that drives them - the Website Video / Audio Player blocks are their
+    // CSS-only cousins
+    { heading: 'Multimedia', icon: 'clapperboard', items: [
+            { label: 'Video', href: 'video.html', isNew: true },
+            { label: 'Audio', href: 'audio.html', isNew: true },
+            { label: 'Media Timeline', href: 'media-timeline.html', isNew: true },
         ] },
     // records by the hundred thousand: windowed DOM, every query local over all
     // rows (defuss-dataview) - Tree Grid is the Data Grid with parents
@@ -224,6 +235,12 @@ export const NAV = [
                 ],
             },
             { label: 'Mermaid', href: 'mermaid.html', isNew: true },
+        ] },
+    { heading: 'Math', icon: 'sigma', items: [
+            { label: 'Math Overview', href: 'math.html', isNew: true },
+            { label: 'Formula Rendering', href: 'math-renderer.html', isNew: true },
+            { label: 'Formula Editing', href: 'math-editor.html', isNew: true },
+            { label: 'Compute & Explain', href: 'math-compute.html', isNew: true },
         ] },
     { heading: 'Feedback & Status', icon: 'bell-ring', items: [
             { label: 'Spinner', href: 'spinner.html' },
@@ -336,12 +353,21 @@ export const NAV = [
                     { label: 'Two Columns', href: 'paper-two-column.html', type: 'TPL' },
                     { label: 'Redeschrift 1.0', href: 'paper-redeschrift.html', type: 'TPL' },
                     { label: 'Code Listings', href: 'paper-code.html', type: 'TPL' },
+                    { label: 'Charts and Figures', href: 'paper-charts.html', type: 'TPL', isNew: true },
+                    { label: 'Before and After', href: 'paper-diff.html', type: 'TPL', isNew: true },
+                    { label: 'Table of Contents', href: 'paper-toc.html', type: 'TPL', isNew: true },
                     { label: 'Database Schema', href: 'paper-schema.html', type: 'TPL' },
                     { label: 'Images and Video', href: 'paper-media.html', type: 'TPL' },
                     { label: 'Big Data', href: 'paper-big-data.html', type: 'TPL' },
                     { label: 'Chat Replay', href: 'paper-chat.html', type: 'TPL' },
+                    { label: 'Formulas', href: 'paper-math.html', type: 'TPL', isNew: true },
+                    { label: 'Interactive Math', href: 'paper-math-interactive.html', type: 'TPL', isNew: true },
                 ] },
             { label: 'BibTeX', href: 'bibtex.html', isNew: true },
+        ] },
+    { heading: 'Documents', icon: 'files', items: [
+            { label: 'Letter', href: 'letter.html', isNew: true },
+            { label: 'Invoice', href: 'invoice.html', isNew: true },
         ] },
     { heading: 'Website', icon: 'globe', items: [
             {
@@ -575,8 +601,17 @@ export const NAV = [
 export function flattenNav(items) {
     return items.flatMap((i) => [i, ...flattenNav(i.children ?? [])]);
 }
-/** Flat ordered list of all pages - the prev/next pager's universe. */
+/** Flat ordered list of all pages, alpha ones included. */
 export const ALL_PAGES = NAV.flatMap((s) => flattenNav(s.items));
+/** The items a listing shows: every one but the alpha pages, children included - the sidebar, the pager, the search
+ *  index and the root SKILL.md list what this returns. VERIFIED: (2026-10-18) documentation.e2e finds the alpha
+ *  Studio in none of them and its page rendered; with this returning every item the check failed. */
+export function listed(items) {
+    return items.filter((i) => !i.alpha).map((i) => (i.children ? { ...i, children: listed(i.children) } : i));
+}
+/** Flat ordered list of the listed pages - the prev/next pager's universe (an alpha page has no neighbours and is
+ *  no one's). */
+export const LISTED_PAGES = NAV.flatMap((s) => flattenNav(listed(s.items)));
 /** The section heading a page belongs to (drives the always-open rule). */
 export function sectionOf(href) {
     for (const s of NAV)

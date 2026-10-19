@@ -1,7 +1,7 @@
 // dist/components/video/video.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.9") {
+if (!__df$shared || __df$shared.abi !== "0.9.10") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, bindMedia, mediaApply, mediaMarkup, mediaRead, mediaTracks } = __df$shared;
@@ -108,7 +108,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // dist/components/audio/audio.js
 var __df$core2 = globalThis.df$;
 var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
-if (!__df$shared2 || __df$shared2.abi !== "0.9.9") {
+if (!__df$shared2 || __df$shared2.abi !== "0.9.10") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, bindMedia: bindMedia2, mediaApply: mediaApply2, mediaMarkup: mediaMarkup2, mediaRead: mediaRead2, mediaTracks: mediaTracks2 } = __df$shared2;
@@ -202,7 +202,7 @@ new MutationObserver(init2).observe(document, { childList: true, subtree: true }
 // dist/components/media-timeline/media-timeline.js
 var __df$core3 = globalThis.df$;
 var __df$shared3 = __df$core3 && __df$core3.shadcn && __df$core3.shadcn.shared;
-if (!__df$shared3 || __df$shared3.abi !== "0.9.9") {
+if (!__df$shared3 || __df$shared3.abi !== "0.9.10") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, componentState: componentState3, bindComponent: bindComponent3, mediaOf, mediaTextTracks, mediaTime, textLocale } = __df$shared3;
@@ -1022,5 +1022,5 @@ df$3.mediaTimeline = {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-//# debugId=A595AF0244B565DD64756E2164756E21
+//# debugId=C5B2B09CE503226264756E2164756E21
 //# sourceMappingURL=multimedia.js.map

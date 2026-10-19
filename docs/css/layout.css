@@ -363,6 +363,77 @@ code:not(.mockup-code code, [class*="mk-"] code, .bibtex code) {
 }
 pre code { background: none; padding: 0; border: none; font-size: inherit; }
 
+/* -- Part cards (lib/components/part-card.tsx) -----------------
+   A page's individual examples, ahead of its composite ones: a grid of
+   compact cards - the part rendered in a shadow root (runtime/
+   code-example.ts), its label, the Studio link, its code on demand. */
+/* a wrapping row, every card growing: each row - the last one too - spans the whole width (a grid's last
+   row kept its column width; auto-fill kept empty tracks) */
+.part-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 0.75rem 1.5rem;
+}
+.part-card {
+  flex: 1 1 14rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--background);
+  overflow: hidden;
+}
+/* the view takes the card's free height: the bar and the Code row are the card's footer, level across a row of cards */
+.part-card-view {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 5rem;
+  padding: 1rem;
+  overflow: auto;
+}
+.part-card-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem 0.375rem 0.75rem;
+  border-top: 1px solid var(--border);
+  background: var(--muted);
+  font-size: 0.75rem;
+}
+.part-card-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.part-card-studio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+.part-card-studio:hover { color: var(--foreground); }
+.part-card-studio svg { width: 0.875rem; height: 0.875rem; }
+.part-card-code {
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+}
+.part-card-code > summary {
+  padding: 0.25rem 0.75rem;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.part-card-code > div { margin: 0 !important; }
+.part-card-code .mockup-code { border-radius: 0; }
+
 /* -- Demo design system (guide pages) -------------------------
    One card per example: .demo wraps the rendered .demo-stage and
    optionally its matching code block (.demo-code). Replaces the

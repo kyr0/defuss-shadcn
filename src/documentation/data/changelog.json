@@ -23,7 +23,8 @@
         "docs: updated paper layout, added plan",
         "docs: sync",
         "docs: final editing of the paper; added build-docs target to Makefiel"
-      ]
+      ],
+      "hash": "2575b077"
     },
     {
       "version": "v0.9.9",
