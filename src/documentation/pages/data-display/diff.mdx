@@ -41,7 +41,38 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <SkillField label="Data attributes">
 <SkillText><code>data-ratio</code> (<code>16/9</code>, <code>4/3</code>, <code>1/1</code>, <code>3/4</code>), <code>data-variant</code> (<code>line</code>, <code>primary</code>), <code>data-orientation="vertical"</code>, <code>data-follow="hover"</code>.</SkillText>
   </SkillField>
+
+  <SkillField label="Print">
+<SkillText>Paper has no divider to drag: printed, both items show in full, side by side - one above the other when vertical - each with its label and the figure's ratio; the divider line and the knob go.</SkillText>
+  </SkillField>
 </SkillPanel>
+
+```html example part label="Diff (line)"
+<figure class="diff" data-ratio="4/3" data-variant="line">
+  <div class="diff-item-1"
+    ><img src="https://picsum.photos/id/1039/800/600" alt="A waterfall in a green forest, sharp"
+  /></div>
+  <div class="diff-item-2"
+    ><img src="https://picsum.photos/id/1039/800/600?blur=4" alt="The same waterfall, blurred"
+  /></div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider" />
+</figure>
+```
+
+```html example part label="Diff (primary)"
+<figure class="diff" data-ratio="4/3" data-variant="primary">
+  <div class="diff-item-1"
+    ><img src="https://picsum.photos/id/1016/800/600" alt="A red canyon at sunset, warm grade"
+  /></div>
+  <div class="diff-item-2"
+    ><img
+      src="https://picsum.photos/id/1016/800/600"
+      alt="The same canyon, cool grade"
+      style="filter: hue-rotate(170deg) saturate(1.1)"
+  /></div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider" />
+</figure>
+```
 
 ```html example label="Default" hint="Item 1 (left of the divider) over item 2 - the same photo in color and in black and white. Drag anywhere on the picture, or focus the knob and use the arrow keys, Home and End." height="36"
 <figure class="diff" data-ratio="16/9">
@@ -124,32 +155,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 
-```html example label="Variants" hint="data-variant='line' drops the knob (it appears on keyboard focus); 'primary' colors the divider and the knob ring." height="22"
-<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
-  <figure class="diff" data-ratio="4/3" data-variant="line">
-    <div class="diff-item-1"
-      ><img src="https://picsum.photos/id/1039/800/600" alt="A waterfall in a green forest, sharp"
-    /></div>
-    <div class="diff-item-2"
-      ><img src="https://picsum.photos/id/1039/800/600?blur=4" alt="The same waterfall, blurred"
-    /></div>
-    <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider" />
-  </figure>
-  <figure class="diff" data-ratio="4/3" data-variant="primary">
-    <div class="diff-item-1"
-      ><img src="https://picsum.photos/id/1016/800/600" alt="A red canyon at sunset, warm grade"
-    /></div>
-    <div class="diff-item-2"
-      ><img
-        src="https://picsum.photos/id/1016/800/600"
-        alt="The same canyon, cool grade"
-        style="filter: hue-rotate(170deg) saturate(1.1)"
-    /></div>
-    <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider" />
-  </figure>
-</div>
-```
-
 ```html example label="Vertical" hint="data-orientation='vertical': item 1 on top, item 2 below, the divider drags up and down (arrow keys too)." height="30"
 <figure class="diff" data-ratio="3/4" data-orientation="vertical" style="max-width: 20rem">
   <div class="diff-item-1">
@@ -203,6 +208,46 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </div>
   <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="مقسم المقارنة" />
 </figure>
+```
+
+```html example label="Printed: both sides in full" mode="print" hint="The preview boots in the Print device, whose print styles apply: the before and the after stand side by side, each at the figure's 16 / 9, with their labels - no divider, no knob. Wherever a reader had dragged the divider, a print would have shown only part of each side. Switch to Full to compare by dragging." height="20"
+<figure class="diff" data-ratio="16/9">
+  <div class="diff-item-1">
+    <img src="https://picsum.photos/id/1015/1200/675" alt="A fjord between steep cliffs, in color" />
+    <span class="diff-label">Color</span>
+  </div>
+  <div class="diff-item-2">
+    <img src="https://picsum.photos/id/1015/1200/675?grayscale" alt="The same fjord in black and white" />
+    <span class="diff-label">Black &amp; white</span>
+  </div>
+  <input class="diff-range" type="range" min="0" max="100" value="30" step="0.1" aria-label="Comparison divider" />
+</figure>
+```
+
+```html example label="Variants" hint="data-variant='line' drops the knob (it appears on keyboard focus); 'primary' colors the divider and the knob ring." height="22"
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
+  <figure class="diff" data-ratio="4/3" data-variant="line">
+    <div class="diff-item-1"
+      ><img src="https://picsum.photos/id/1039/800/600" alt="A waterfall in a green forest, sharp"
+    /></div>
+    <div class="diff-item-2"
+      ><img src="https://picsum.photos/id/1039/800/600?blur=4" alt="The same waterfall, blurred"
+    /></div>
+    <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider" />
+  </figure>
+  <figure class="diff" data-ratio="4/3" data-variant="primary">
+    <div class="diff-item-1"
+      ><img src="https://picsum.photos/id/1016/800/600" alt="A red canyon at sunset, warm grade"
+    /></div>
+    <div class="diff-item-2"
+      ><img
+        src="https://picsum.photos/id/1016/800/600"
+        alt="The same canyon, cool grade"
+        style="filter: hue-rotate(170deg) saturate(1.1)"
+    /></div>
+    <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider" />
+  </figure>
+</div>
 ```
 
 <StatesSection>

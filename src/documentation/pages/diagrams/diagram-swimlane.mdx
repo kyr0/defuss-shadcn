@@ -170,6 +170,56 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="A bot does the first triage" component="diagram" hint="A whole lane can be added: data-change on the lane group."
+<figure class="diagram" id="dg-swim-delta" data-type="swimlane" data-delta aria-label="Escalation with a bot triage">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Process change</span>
+    <span class="diagram-title">A bot does the first triage</span>
+  </figcaption>
+  <div
+    class="diagram-canvas"
+    style="grid-template-columns: 6rem repeat(4, minmax(7rem, 1fr)); --diagram-node-w: 8.5rem"
+  >
+    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 1; --span: 5"
+      ><span class="diagram-group-label">Customer</span></div
+    >
+    <div class="diagram-group" data-shape="lane" data-change="added" style="--col: 1; --row: 2; --span: 5"
+      ><span class="diagram-group-label">Bot</span></div
+    >
+    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 3; --span: 5"
+      ><span class="diagram-group-label">Support</span></div
+    >
+    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 4; --span: 5"
+      ><span class="diagram-group-label">Engineering</span></div
+    >
+    <div class="diagram-node" data-node="report" data-shape="pill" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">Reports a bug</span></div
+    >
+    <div class="diagram-node" data-node="bot" data-tone="accent" data-change="added" style="--col: 3; --row: 2">
+      <span class="diagram-node-name">Auto-triage</span>
+      <span class="diagram-node-meta">dedupe · label</span>
+    </div>
+    <div class="diagram-node" data-node="triage" data-change="changed" style="--col: 3; --row: 3">
+      <span class="diagram-node-name">Triage</span>
+      <span class="diagram-node-meta" data-before="every ticket">only new issues</span>
+    </div>
+    <div class="diagram-node" data-node="fix" style="--col: 5; --row: 4"
+      ><span class="diagram-node-name">Fix</span></div
+    >
+    <div class="diagram-node" data-node="macro" data-change="removed" style="--col: 4; --row: 3"
+      ><span class="diagram-node-name">Macro reply</span></div
+    >
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="report" data-to="bot" data-change="added">ticket</li>
+    <li class="diagram-edge" data-from="bot" data-to="triage" data-change="added">new</li>
+    <li class="diagram-edge" data-from="report" data-to="triage" data-change="removed">ticket</li>
+    <li class="diagram-edge" data-from="triage" data-to="macro" data-change="removed">known</li>
+    <li class="diagram-edge" data-from="triage" data-to="fix" data-tone="accent">handoff</li>
+  </ol>
+</figure>
+```
+
 ```html example label="Swimlane, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-swim-live" data-diagram-action="prev"
@@ -398,56 +448,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```
 
 <H2 id="delta">Delta</H2>
-
-```html example label="A bot does the first triage" component="diagram" hint="A whole lane can be added: data-change on the lane group."
-<figure class="diagram" id="dg-swim-delta" data-type="swimlane" data-delta aria-label="Escalation with a bot triage">
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Process change</span>
-    <span class="diagram-title">A bot does the first triage</span>
-  </figcaption>
-  <div
-    class="diagram-canvas"
-    style="grid-template-columns: 6rem repeat(4, minmax(7rem, 1fr)); --diagram-node-w: 8.5rem"
-  >
-    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 1; --span: 5"
-      ><span class="diagram-group-label">Customer</span></div
-    >
-    <div class="diagram-group" data-shape="lane" data-change="added" style="--col: 1; --row: 2; --span: 5"
-      ><span class="diagram-group-label">Bot</span></div
-    >
-    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 3; --span: 5"
-      ><span class="diagram-group-label">Support</span></div
-    >
-    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 4; --span: 5"
-      ><span class="diagram-group-label">Engineering</span></div
-    >
-    <div class="diagram-node" data-node="report" data-shape="pill" style="--col: 2; --row: 1"
-      ><span class="diagram-node-name">Reports a bug</span></div
-    >
-    <div class="diagram-node" data-node="bot" data-tone="accent" data-change="added" style="--col: 3; --row: 2">
-      <span class="diagram-node-name">Auto-triage</span>
-      <span class="diagram-node-meta">dedupe · label</span>
-    </div>
-    <div class="diagram-node" data-node="triage" data-change="changed" style="--col: 3; --row: 3">
-      <span class="diagram-node-name">Triage</span>
-      <span class="diagram-node-meta" data-before="every ticket">only new issues</span>
-    </div>
-    <div class="diagram-node" data-node="fix" style="--col: 5; --row: 4"
-      ><span class="diagram-node-name">Fix</span></div
-    >
-    <div class="diagram-node" data-node="macro" data-change="removed" style="--col: 4; --row: 3"
-      ><span class="diagram-node-name">Macro reply</span></div
-    >
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="report" data-to="bot" data-change="added">ticket</li>
-    <li class="diagram-edge" data-from="bot" data-to="triage" data-change="added">new</li>
-    <li class="diagram-edge" data-from="report" data-to="triage" data-change="removed">ticket</li>
-    <li class="diagram-edge" data-from="triage" data-to="macro" data-change="removed">known</li>
-    <li class="diagram-edge" data-from="triage" data-to="fix" data-tone="accent">handoff</li>
-  </ol>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

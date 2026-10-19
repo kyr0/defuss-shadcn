@@ -44,52 +44,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="111,110 nodes" hint="Ten regions × ten countries × a hundred cities × ten districts. Open branches with the chevrons or the keyboard (↑ ↓ → ← Home End, Enter selects, * opens every sibling). The input is bound by data-tree-filter: type 'district 7.3.4' - every match shows with the path to it opened, the first match becomes active. The line below subscribes to the tree's store."
-<div class="flex flex-col gap-2" style="max-width: 26rem">
-  <input class="input" data-tree-filter="dt-geo" aria-label="Filter places" placeholder="Filter places…" />
-  <div
-    class="data-tree"
-    id="dt-geo"
-    aria-label="Places"
-    data-empty-text="No place matches."
-    style="height: 20rem"
-  ></div>
-  <p class="text-sm text-muted-foreground m-0" id="dt-geo-line" aria-live="polite"></p>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // one flat array: every record names its parent (null = a root)
-    const rows = [];
-    let id = 0;
-    for (let a = 1; a <= 10; a++) {
-      const region = ++id;
-      rows.push({ id: region, parentId: null, name: 'Region ' + a });
-      for (let b = 1; b <= 10; b++) {
-        const country = ++id;
-        rows.push({ id: country, parentId: region, name: 'Country ' + a + '.' + b });
-        for (let c = 1; c <= 100; c++) {
-          const city = ++id;
-          rows.push({ id: city, parentId: country, name: 'City ' + a + '.' + b + '.' + c });
-          for (let d = 1; d <= 10; d++)
-            rows.push({ id: ++id, parentId: city, name: 'District ' + a + '.' + b + '.' + c + '.' + d });
-        }
-      }
-    }
-    const tree = document.getElementById('dt-geo');
-    df$.shadcn.dataTree.setSource(tree, rows);
-    const line = document.getElementById('dt-geo-line');
-    tree.store.subscribe(
-      ({ config }) => {
-        const picked = df$.shadcn.dataTree.selected(tree);
-        line.textContent =
-          config.expanded.length + ' open · ' + (picked ? 'selected: ' + picked.name : 'nothing selected');
-      },
-      { immediate: true },
-    );
-  });
-</script>
-```
-
 ```html example label="Custom labels and a kept view" schema="none" hint="render(label, record, meta) fills each label - an icon, the name, a size. The open branches, the filters, the sort and the selection are kept: in session storage by default, here in local storage under its own key (data-persist='local', data-persist-key) - on your page they survive a reload and the next visit (this sandboxed example has no storage)."
 <div
   class="data-tree"
@@ -135,6 +89,52 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
         globalThis.lucide?.createIcons({ root: label });
       },
     });
+  });
+</script>
+```
+
+```html example label="111,110 nodes" hint="Ten regions × ten countries × a hundred cities × ten districts. Open branches with the chevrons or the keyboard (↑ ↓ → ← Home End, Enter selects, * opens every sibling). The input is bound by data-tree-filter: type 'district 7.3.4' - every match shows with the path to it opened, the first match becomes active. The line below subscribes to the tree's store."
+<div class="flex flex-col gap-2" style="max-width: 26rem">
+  <input class="input" data-tree-filter="dt-geo" aria-label="Filter places" placeholder="Filter places…" />
+  <div
+    class="data-tree"
+    id="dt-geo"
+    aria-label="Places"
+    data-empty-text="No place matches."
+    style="height: 20rem"
+  ></div>
+  <p class="text-sm text-muted-foreground m-0" id="dt-geo-line" aria-live="polite"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // one flat array: every record names its parent (null = a root)
+    const rows = [];
+    let id = 0;
+    for (let a = 1; a <= 10; a++) {
+      const region = ++id;
+      rows.push({ id: region, parentId: null, name: 'Region ' + a });
+      for (let b = 1; b <= 10; b++) {
+        const country = ++id;
+        rows.push({ id: country, parentId: region, name: 'Country ' + a + '.' + b });
+        for (let c = 1; c <= 100; c++) {
+          const city = ++id;
+          rows.push({ id: city, parentId: country, name: 'City ' + a + '.' + b + '.' + c });
+          for (let d = 1; d <= 10; d++)
+            rows.push({ id: ++id, parentId: city, name: 'District ' + a + '.' + b + '.' + c + '.' + d });
+        }
+      }
+    }
+    const tree = document.getElementById('dt-geo');
+    df$.shadcn.dataTree.setSource(tree, rows);
+    const line = document.getElementById('dt-geo-line');
+    tree.store.subscribe(
+      ({ config }) => {
+        const picked = df$.shadcn.dataTree.selected(tree);
+        line.textContent =
+          config.expanded.length + ' open · ' + (picked ? 'selected: ' + picked.name : 'nothing selected');
+      },
+      { immediate: true },
+    );
   });
 </script>
 ```

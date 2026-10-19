@@ -45,6 +45,94 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="bubble"
+<div class="bubble"><div class="bubble-content">Oh, no worries!</div></div>
+```
+
+```html example part label="bubble (secondary, sm)"
+<div class="bubble" data-variant="secondary" data-size="sm"
+  ><div class="bubble-content">Small - dense threads and sidebars</div></div
+>
+```
+
+```html example part label="bubble (secondary, lg)"
+<div class="bubble" data-variant="secondary" data-size="lg"
+  ><div class="bubble-content">Large - a focused conversation</div></div
+>
+```
+
+```html example part label="bubble (muted)"
+<div class="bubble" data-variant="muted"><div class="bubble-content">Muted - supporting, lower emphasis</div></div>
+```
+
+```html example part label="bubble (tinted)"
+<div class="bubble" data-variant="tinted" data-align="end"
+  ><div class="bubble-content">Tinted - a subtle primary bubble</div></div
+>
+```
+
+```html example part label="bubble (outline)"
+<div class="bubble" data-variant="outline"
+  ><div class="bubble-content">Outline - options, cards, rich content</div></div
+>
+```
+
+```html example part label="bubble (destructive)"
+<div class="bubble" data-variant="destructive" data-align="end"
+  ><div class="bubble-content">Not delivered - tap to retry</div></div
+>
+```
+
+```html example part label="bubble (ghost)"
+<div class="bubble" data-variant="ghost"
+  ><div class="bubble-content"
+    ><p
+      ><strong>Ghost</strong> - an assistant reply without a frame. It runs the full width, like the markdown answer of
+      a chat model, with <code>inline code</code> and lists:</p
+    ><ul
+      ><li>no background</li
+      ><li>no side padding</li></ul
+    ></div
+  ></div
+>
+```
+
+```html example part label="bubble-group"
+<div class="bubble-group" data-tail="">
+  <div class="bubble" data-variant="secondary"
+    ><div class="bubble-content">Hi, I can't log in since this morning.</div></div
+  >
+  <div class="bubble" data-variant="secondary"><div class="bubble-content">It says my password is wrong.</div></div>
+  <div class="bubble" data-variant="secondary"><div class="bubble-content">But I didn't change it 🤔</div></div>
+</div>
+```
+
+```html example label="Collapsible content" schema="none" hint="A long message folds: the preview stays, the rest sits in a <details class='bubble-more'> - its summary toggles Show more / Show less and the height animates (::details-content). Keyboard-operable, no script."
+<div class="flex flex-col gap-3" style="max-width: 28rem">
+  <div class="bubble" data-variant="secondary">
+    <div class="bubble-content">
+      <p
+        >Accessibility review of the checkout: the form is mostly in good shape - labels are present and the error
+        summary is announced.</p
+      >
+      <details class="bubble-more">
+        <summary
+          ><span class="bubble-more-closed">Show more</span><span class="bubble-more-open">Show less</span></summary
+        >
+        <p
+          >Three things to fix before launch: the card-number field lacks an autocomplete hint, the date picker traps
+          focus in Safari, and the "Pay" button contrast is 3.9:1 in the dark theme - it needs 4.5:1.</p
+        >
+        <p
+          >Everything else passes: headings are in order, the progress steps are announced and the timeout warning can
+          be extended.</p
+        >
+      </details>
+    </div>
+  </div>
+</div>
+```
+
 ```html example label="Chat" schema="none" hint="Received bubbles sit at the start (secondary), your own at the end (the default primary bubble); a .bubble-reactions pill hangs on the edge - role='img' with an aria-label reads it once."
 <div class="flex flex-col gap-3" style="max-width: 28rem">
   <div class="bubble" data-variant="secondary">
@@ -143,32 +231,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       ><span>👍</span><span>😮</span></div
     >
     <div class="bubble-content">Launch party on Friday?</div>
-  </div>
-</div>
-```
-
-```html example label="Collapsible content" schema="none" hint="A long message folds: the preview stays, the rest sits in a <details class='bubble-more'> - its summary toggles Show more / Show less and the height animates (::details-content). Keyboard-operable, no script."
-<div class="flex flex-col gap-3" style="max-width: 28rem">
-  <div class="bubble" data-variant="secondary">
-    <div class="bubble-content">
-      <p
-        >Accessibility review of the checkout: the form is mostly in good shape - labels are present and the error
-        summary is announced.</p
-      >
-      <details class="bubble-more">
-        <summary
-          ><span class="bubble-more-closed">Show more</span><span class="bubble-more-open">Show less</span></summary
-        >
-        <p
-          >Three things to fix before launch: the card-number field lacks an autocomplete hint, the date picker traps
-          focus in Safari, and the "Pay" button contrast is 3.9:1 in the dark theme - it needs 4.5:1.</p
-        >
-        <p
-          >Everything else passes: headings are in order, the progress steps are announced and the timeout warning can
-          be extended.</p
-        >
-      </details>
-    </div>
   </div>
 </div>
 ```

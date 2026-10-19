@@ -69,6 +69,45 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Grid" schema="none" hint="data-columns puts several items in a row (role='grid', aria-rowcount / aria-colcount); the renderer is called per cell with the ITEM index. A million photos - each cell composes the image component; seeded URLs give a recycled cell its own picture back."
+<div
+  class="virtual-list"
+  id="vl-grid"
+  data-columns="3"
+  aria-label="Photo grid"
+  style="--virtual-list-row-height: 96px; height: 18rem; max-width: 28rem"
+></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { virtualList } = df$.shadcn;
+    virtualList.setData(document.getElementById('vl-grid'), 1_000_000, (cell, index) => {
+      cell.textContent = '';
+      const figure = document.createElement('figure');
+      figure.className = 'image';
+      figure.dataset.ratio = '1/1';
+      const img = document.createElement('img');
+      img.src = 'https://picsum.photos/seed/' + index + '/88/88';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.alt = '';
+      figure.append(img);
+      const label = document.createElement('span');
+      label.textContent = 'Photo ' + (index + 1).toLocaleString('en');
+      cell.append(figure, label);
+    });
+  });
+</script>
+```
+
+```html example label="Empty" schema="none" hint="A list with no items enters the empty state and shows its data-empty-text."
+<div
+  class="virtual-list"
+  data-empty-text="No results found"
+  aria-label="Empty list"
+  style="height: 10rem; max-width: 28rem"
+></div>
+```
+
 ```html example label="Records: filter and sort locally" schema="none" hint="setSource hands the list 250,000 records behind a defuss-dataview source. The input and the select are bound by data-virtual-list-filter / data-virtual-list-sort - no listener code: every keystroke filters ALL records (case-insensitive; 'age' takes > 40, <= 30 …), sorting reorders them, and the window shows the result. The query is the list's store: the line below subscribes to it."
 <div class="flex flex-col gap-3" style="max-width: 28rem">
   <div class="flex flex-wrap gap-2">
@@ -207,36 +246,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
-```html example label="Grid" schema="none" hint="data-columns puts several items in a row (role='grid', aria-rowcount / aria-colcount); the renderer is called per cell with the ITEM index. A million photos - each cell composes the image component; seeded URLs give a recycled cell its own picture back."
-<div
-  class="virtual-list"
-  id="vl-grid"
-  data-columns="3"
-  aria-label="Photo grid"
-  style="--virtual-list-row-height: 96px; height: 18rem; max-width: 28rem"
-></div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const { virtualList } = df$.shadcn;
-    virtualList.setData(document.getElementById('vl-grid'), 1_000_000, (cell, index) => {
-      cell.textContent = '';
-      const figure = document.createElement('figure');
-      figure.className = 'image';
-      figure.dataset.ratio = '1/1';
-      const img = document.createElement('img');
-      img.src = 'https://picsum.photos/seed/' + index + '/88/88';
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.alt = '';
-      figure.append(img);
-      const label = document.createElement('span');
-      label.textContent = 'Photo ' + (index + 1).toLocaleString('en');
-      cell.append(figure, label);
-    });
-  });
-</script>
-```
-
 ```html example label="Rich rows and one listener" schema="none" hint="Rows can hold anything - an avatar, a name, a badge. Because the elements are recycled, never attach a listener per row: one delegated listener on the list reads row.dataset.index."
 <div class="flex flex-col gap-2" style="max-width: 28rem">
   <div
@@ -313,15 +322,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     load();
   });
 </script>
-```
-
-```html example label="Empty" schema="none" hint="A list with no items enters the empty state and shows its data-empty-text."
-<div
-  class="virtual-list"
-  data-empty-text="No results found"
-  aria-label="Empty list"
-  style="height: 10rem; max-width: 28rem"
-></div>
 ```
 
 <StatesSection>

@@ -146,6 +146,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </nav>
 ```
 
+```html example label="Sizes" hint="Set data-size on the .breadcrumb nav to scale the trail's type and separators together - the ladder mirrors the shared field sizes (md matches the unsized default)." previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;"
+<nav class="breadcrumb" aria-label="Breadcrumb" data-size="lg">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Home</a></li>
+    <li class="breadcrumb-separator" aria-hidden="true">/</li>
+    <li class="breadcrumb-item"><span class="breadcrumb-page">Current</span></li>
+  </ol>
+</nav>
+
+<!-- xs 0.75rem · sm 0.8125rem · md 0.875rem (default) · lg 1rem · xl 1.125rem -->
+```
+
 ```html example label="Icons scale with the size" hint="Icons and emojis are 1em, so data-size grows them with the labels."
 <div class="stack gap-4">
   <nav class="breadcrumb" aria-label="Breadcrumb" data-size="sm">
@@ -175,18 +187,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </ol>
   </nav>
 </div>
-```
-
-```html example label="Sizes" hint="Set data-size on the .breadcrumb nav to scale the trail's type and separators together - the ladder mirrors the shared field sizes (md matches the unsized default)." previewStyle="align-items:flex-start;flex-direction:column;gap:1rem;"
-<nav class="breadcrumb" aria-label="Breadcrumb" data-size="lg">
-  <ol class="breadcrumb-list">
-    <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Home</a></li>
-    <li class="breadcrumb-separator" aria-hidden="true">/</li>
-    <li class="breadcrumb-item"><span class="breadcrumb-page">Current</span></li>
-  </ol>
-</nav>
-
-<!-- xs 0.75rem · sm 0.8125rem · md 0.875rem (default) · lg 1rem · xl 1.125rem -->
 ```
 
 <SourceFiles component="breadcrumb" section="css">

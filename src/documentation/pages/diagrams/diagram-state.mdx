@@ -128,189 +128,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
-```html example label="State, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
-<div class="flex flex-wrap items-center gap-2 mb-3">
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="prev"
-    >Previous</button
-  >
-  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="next"
-    >Next</button
-  >
-  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="clear"
-    >Clear</button
-  >
-  <output class="text-sm text-muted-foreground" data-diagram-for="dg-state-live"
-    >Click a box or an arrow - or press Next.</output
-  >
-</div>
-<figure class="diagram" id="dg-state-live" data-interactive data-type="state" aria-label="Order state machine">
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">State machine</span>
-    <span class="diagram-title">An order, from cart to delivery</span>
-  </figcaption>
-  <div
-    class="diagram-canvas"
-    style="
-      --cols: 5;
-      grid-template-columns: 2.5rem repeat(4, minmax(7.5rem, 1fr));
-      --diagram-node-w: 8rem;
-      --diagram-gap-x: 3.25rem;
-    "
-  >
-    <div class="diagram-node" data-node="s0" data-shape="start" style="--col: 1; --row: 1"
-      ><span class="diagram-node-name">new</span></div
-    >
-    <div class="diagram-node" data-node="cart" style="--col: 2; --row: 1"
-      ><span class="diagram-node-name">Cart</span></div
-    >
-    <div class="diagram-node" data-node="paid" style="--col: 3; --row: 1"
-      ><span class="diagram-node-name">Paid</span></div
-    >
-    <div class="diagram-node" data-node="shipped" style="--col: 4; --row: 1"
-      ><span class="diagram-node-name">Shipped</span></div
-    >
-    <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col: 5; --row: 1"
-      ><span class="diagram-node-name">Delivered</span></div
-    >
-    <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col: 3; --row: 2"
-      ><span class="diagram-node-name">Cancelled</span></div
-    >
-    <div class="diagram-node" data-node="returned" style="--col: 4; --row: 2"
-      ><span class="diagram-node-name">Returned</span></div
-    >
-    <div class="diagram-node" data-node="s1" data-shape="end" style="--col: 5; --row: 2"
-      ><span class="diagram-node-name">closed</span></div
-    >
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="s0" data-to="cart"></li>
-    <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
-    <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
-    <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
-    <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
-    <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
-    <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
-    <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
-    <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
-  </ol>
-</figure>
-```
-
-<H2 id="inspect">Inspect and edit</H2>
-
-<DocText>Select, inspect, edit: a click hands the selection to a <a class="link" href="property-grid.html">Property Grid</a> in a closable <a class="link" href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
-
-```html example label="State, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
-<div class="flex items-center gap-2 mb-3">
-  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-state-edit-panel"
-    ><i data-lucide="panel-right"></i> Inspector</button
-  >
-  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
-</div>
-<div class="flex flex-col gap-3">
-  <div style="flex: 1 1 0; min-width: 0">
-    <figure class="diagram" id="dg-state-edit" data-interactive data-type="state" aria-label="Order state machine">
-      <figcaption class="diagram-caption">
-        <span class="diagram-eyebrow">State machine</span>
-        <span class="diagram-title">An order, from cart to delivery</span>
-      </figcaption>
-      <div
-        class="diagram-canvas"
-        style="
-          --cols: 5;
-          grid-template-columns: 2.5rem repeat(4, minmax(7.5rem, 1fr));
-          --diagram-node-w: 8rem;
-          --diagram-gap-x: 3.25rem;
-        "
-      >
-        <div class="diagram-node" data-node="s0" data-shape="start" style="--col: 1; --row: 1"
-          ><span class="diagram-node-name">new</span></div
-        >
-        <div class="diagram-node" data-node="cart" style="--col: 2; --row: 1"
-          ><span class="diagram-node-name">Cart</span></div
-        >
-        <div class="diagram-node" data-node="paid" style="--col: 3; --row: 1"
-          ><span class="diagram-node-name">Paid</span></div
-        >
-        <div class="diagram-node" data-node="shipped" style="--col: 4; --row: 1"
-          ><span class="diagram-node-name">Shipped</span></div
-        >
-        <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col: 5; --row: 1"
-          ><span class="diagram-node-name">Delivered</span></div
-        >
-        <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col: 3; --row: 2"
-          ><span class="diagram-node-name">Cancelled</span></div
-        >
-        <div class="diagram-node" data-node="returned" style="--col: 4; --row: 2"
-          ><span class="diagram-node-name">Returned</span></div
-        >
-        <div class="diagram-node" data-node="s1" data-shape="end" style="--col: 5; --row: 2"
-          ><span class="diagram-node-name">closed</span></div
-        >
-      </div>
-      <ol class="diagram-edges">
-        <li class="diagram-edge" data-from="s0" data-to="cart"></li>
-        <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
-        <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
-        <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
-        <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
-        <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
-        <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
-        <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
-        <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
-      </ol>
-    </figure>
-  </div>
-  <section class="card panel" id="dg-state-edit-panel" aria-labelledby="dg-state-edit-title" style="">
-    <header class="panel-header">
-      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
-      <h3 class="panel-title" id="dg-state-edit-title">Inspector</h3>
-      <div class="panel-tools">
-        <button
-          type="button"
-          class="btn panel-close"
-          data-variant="ghost"
-          data-size="icon-sm"
-          aria-label="Close Inspector"
-          ><i data-lucide="x"></i
-        ></button>
-      </div>
-    </header>
-    <div class="panel-body" data-flush>
-      <div
-        class="property-grid"
-        id="dg-state-edit-grid"
-        data-frame="none"
-        data-empty-text="Click a box or an arrow."
-        aria-label="Selection properties"
-      ></div>
-    </div>
-  </section>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const { diagram, propertyGrid } = df$.shadcn;
-    const fig = document.getElementById('dg-state-edit');
-    const grid = document.getElementById('dg-state-edit-grid');
-    const title = document.getElementById('dg-state-edit-title');
-    let ref = null;
-    // a selection: its properties (and their options) into the grid
-    fig.addEventListener('diagram-activate', (e) => {
-      ref = e.detail.ref;
-      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
-      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
-      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
-    });
-    // an edit: back into the diagram, which redraws
-    grid.addEventListener('property-grid-change', (e) => {
-      if (ref) diagram.setProperties(fig, ref, e.detail.source);
-    });
-  });
-</script>
-```
-
-<H2 id="delta">Delta</H2>
-
 ```html example label="Partial shipping" component="diagram" hint="An added state, a changed state (its meta in data-before), a removed one - and the transitions that come and go with them."
 <figure
   class="diagram"
@@ -350,10 +167,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   </ol>
 </figure>
 ```
-
-<H2 id="complex-state">Complex state</H2>
-
-<DocText>A current-state landscape: departments as zones, systems with their pain points (<code>data-tone="warn"</code>, a <code>SPOF</code> badge), file hand-offs dashed. It is a state too - the state of the organization before the change.</DocText>
 
 ```html example label="Before the platform" component="diagram" hint="Groups as zones spanning three rows; badges via data-badge; pain points via data-tone=warn."
 <figure
@@ -582,6 +395,193 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
   </ol>
 </figure>
 ```
+
+```html example label="State, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
+<div class="flex flex-wrap items-center gap-2 mb-3">
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="prev"
+    >Previous</button
+  >
+  <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="next"
+    >Next</button
+  >
+  <button class="btn" data-variant="ghost" data-size="sm" data-diagram-for="dg-state-live" data-diagram-action="clear"
+    >Clear</button
+  >
+  <output class="text-sm text-muted-foreground" data-diagram-for="dg-state-live"
+    >Click a box or an arrow - or press Next.</output
+  >
+</div>
+<figure class="diagram" id="dg-state-live" data-interactive data-type="state" aria-label="Order state machine">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">State machine</span>
+    <span class="diagram-title">An order, from cart to delivery</span>
+  </figcaption>
+  <div
+    class="diagram-canvas"
+    style="
+      --cols: 5;
+      grid-template-columns: 2.5rem repeat(4, minmax(7.5rem, 1fr));
+      --diagram-node-w: 8rem;
+      --diagram-gap-x: 3.25rem;
+    "
+  >
+    <div class="diagram-node" data-node="s0" data-shape="start" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">new</span></div
+    >
+    <div class="diagram-node" data-node="cart" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">Cart</span></div
+    >
+    <div class="diagram-node" data-node="paid" style="--col: 3; --row: 1"
+      ><span class="diagram-node-name">Paid</span></div
+    >
+    <div class="diagram-node" data-node="shipped" style="--col: 4; --row: 1"
+      ><span class="diagram-node-name">Shipped</span></div
+    >
+    <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col: 5; --row: 1"
+      ><span class="diagram-node-name">Delivered</span></div
+    >
+    <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col: 3; --row: 2"
+      ><span class="diagram-node-name">Cancelled</span></div
+    >
+    <div class="diagram-node" data-node="returned" style="--col: 4; --row: 2"
+      ><span class="diagram-node-name">Returned</span></div
+    >
+    <div class="diagram-node" data-node="s1" data-shape="end" style="--col: 5; --row: 2"
+      ><span class="diagram-node-name">closed</span></div
+    >
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="s0" data-to="cart"></li>
+    <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
+    <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
+    <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
+    <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
+    <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
+    <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
+    <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
+    <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
+  </ol>
+</figure>
+```
+
+<H2 id="inspect">Inspect and edit</H2>
+
+<DocText>Select, inspect, edit: a click hands the selection to a <a class="link" href="property-grid.html">Property Grid</a> in a closable <a class="link" href="panel.html">Panel</a> - <code>df$.shadcn.diagram.properties()</code> reads the box or the arrow as JSON, <code>propertySchema()</code> gives the grid its options, <code>setProperties()</code> writes an edit back and the diagram redraws. The × closes the panel, the Inspector button toggles it.</DocText>
+
+```html example label="State, inspect and edit" component="diagram" hint="Edit a name, the tone, the shape - or an arrow's label, line and ends: the diagram follows."
+<div class="flex items-center gap-2 mb-3">
+  <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-toggle="dg-state-edit-panel"
+    ><i data-lucide="panel-right"></i> Inspector</button
+  >
+  <span class="text-sm text-muted-foreground">Click a box or an arrow, then edit it.</span>
+</div>
+<div class="flex flex-col gap-3">
+  <div style="flex: 1 1 0; min-width: 0">
+    <figure class="diagram" id="dg-state-edit" data-interactive data-type="state" aria-label="Order state machine">
+      <figcaption class="diagram-caption">
+        <span class="diagram-eyebrow">State machine</span>
+        <span class="diagram-title">An order, from cart to delivery</span>
+      </figcaption>
+      <div
+        class="diagram-canvas"
+        style="
+          --cols: 5;
+          grid-template-columns: 2.5rem repeat(4, minmax(7.5rem, 1fr));
+          --diagram-node-w: 8rem;
+          --diagram-gap-x: 3.25rem;
+        "
+      >
+        <div class="diagram-node" data-node="s0" data-shape="start" style="--col: 1; --row: 1"
+          ><span class="diagram-node-name">new</span></div
+        >
+        <div class="diagram-node" data-node="cart" style="--col: 2; --row: 1"
+          ><span class="diagram-node-name">Cart</span></div
+        >
+        <div class="diagram-node" data-node="paid" style="--col: 3; --row: 1"
+          ><span class="diagram-node-name">Paid</span></div
+        >
+        <div class="diagram-node" data-node="shipped" style="--col: 4; --row: 1"
+          ><span class="diagram-node-name">Shipped</span></div
+        >
+        <div class="diagram-node" data-node="delivered" data-tone="accent" style="--col: 5; --row: 1"
+          ><span class="diagram-node-name">Delivered</span></div
+        >
+        <div class="diagram-node" data-node="cancel" data-tone="muted" style="--col: 3; --row: 2"
+          ><span class="diagram-node-name">Cancelled</span></div
+        >
+        <div class="diagram-node" data-node="returned" style="--col: 4; --row: 2"
+          ><span class="diagram-node-name">Returned</span></div
+        >
+        <div class="diagram-node" data-node="s1" data-shape="end" style="--col: 5; --row: 2"
+          ><span class="diagram-node-name">closed</span></div
+        >
+      </div>
+      <ol class="diagram-edges">
+        <li class="diagram-edge" data-from="s0" data-to="cart"></li>
+        <li class="diagram-edge" data-from="cart" data-to="paid">checkout</li>
+        <li class="diagram-edge" data-from="cart" data-to="cart">add item</li>
+        <li class="diagram-edge" data-from="paid" data-to="shipped">dispatch</li>
+        <li class="diagram-edge" data-from="shipped" data-to="delivered">scan</li>
+        <li class="diagram-edge" data-from="paid" data-to="cancel">cancel / refund</li>
+        <li class="diagram-edge" data-from="delivered" data-to="returned">return ≤ 30d</li>
+        <li class="diagram-edge" data-from="delivered" data-to="s1"></li>
+        <li class="diagram-edge" data-from="returned" data-to="s1">refund</li>
+      </ol>
+    </figure>
+  </div>
+  <section class="card panel" id="dg-state-edit-panel" aria-labelledby="dg-state-edit-title" style="">
+    <header class="panel-header">
+      <i data-lucide="sliders-horizontal" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="dg-state-edit-title">Inspector</h3>
+      <div class="panel-tools">
+        <button
+          type="button"
+          class="btn panel-close"
+          data-variant="ghost"
+          data-size="icon-sm"
+          aria-label="Close Inspector"
+          ><i data-lucide="x"></i
+        ></button>
+      </div>
+    </header>
+    <div class="panel-body" data-flush>
+      <div
+        class="property-grid"
+        id="dg-state-edit-grid"
+        data-frame="none"
+        data-empty-text="Click a box or an arrow."
+        aria-label="Selection properties"
+      ></div>
+    </div>
+  </section>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { diagram, propertyGrid } = df$.shadcn;
+    const fig = document.getElementById('dg-state-edit');
+    const grid = document.getElementById('dg-state-edit-grid');
+    const title = document.getElementById('dg-state-edit-title');
+    let ref = null;
+    // a selection: its properties (and their options) into the grid
+    fig.addEventListener('diagram-activate', (e) => {
+      ref = e.detail.ref;
+      title.textContent = ref ? 'Inspector · ' + e.detail.label : 'Inspector';
+      propertyGrid.configure(grid, { sourceConfig: ref ? diagram.propertySchema(fig, ref) : {} });
+      propertyGrid.setSource(grid, ref ? diagram.properties(fig, ref) : {});
+    });
+    // an edit: back into the diagram, which redraws
+    grid.addEventListener('property-grid-change', (e) => {
+      if (ref) diagram.setProperties(fig, ref, e.detail.source);
+    });
+  });
+</script>
+```
+
+<H2 id="delta">Delta</H2>
+
+<H2 id="complex-state">Complex state</H2>
+
+<DocText>A current-state landscape: departments as zones, systems with their pain points (<code>data-tone="warn"</code>, a <code>SPOF</code> badge), file hand-offs dashed. It is a state too - the state of the organization before the change.</DocText>
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

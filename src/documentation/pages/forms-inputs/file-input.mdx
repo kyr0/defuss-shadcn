@@ -48,6 +48,44 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="File Input (xs)"
+<input class="file-input flex-1" type="file" data-size="xs" aria-label="Upload xs" style="max-width: 40rem" />
+```
+
+```html example part label="File Input (sm)"
+<input class="file-input flex-1" type="file" data-size="sm" aria-label="Upload sm" style="max-width: 40rem" />
+```
+
+```html example part label="File Input (md)"
+<input class="file-input flex-1" type="file" data-size="md" aria-label="Upload md" style="max-width: 40rem" />
+```
+
+```html example part label="File Input (lg)"
+<input class="file-input flex-1" type="file" data-size="lg" aria-label="Upload lg" style="max-width: 40rem" />
+```
+
+```html example part label="File Input (xl)"
+<input class="file-input flex-1" type="file" data-size="xl" aria-label="Upload xl" style="max-width: 40rem" />
+```
+
+```html example label="Default" hint="Single file selection." previewStyle="margin:1.25rem;"
+<div style="max-width: 40rem">
+  <input class="file-input" type="file" id="avatar" />
+</div>
+```
+
+```html example label="Multiple files" hint="The native multiple attribute - the picker allows several files; the field names the count." previewStyle="margin:1.25rem;"
+<div style="max-width: 40rem">
+  <input class="file-input" type="file" multiple />
+</div>
+```
+
+```html example label="Accept filter" hint="accept limits the picker to types - here images; list extensions and MIME types comma-separated (.pdf,image/*)." previewStyle="margin:1.25rem;"
+<div style="max-width: 40rem">
+  <input class="file-input" type="file" accept="image/*" />
+</div>
+```
+
 ```html example label="Drag and drop" hint="A card to drop files on - or click it. The native input covers the card, so the drop lands on it and forms submit it as usual; the script highlights the drag, keeps only images and PDFs up to 10 MB (a drop bypasses accept), appends to the selection and lists the files with previews and remove buttons." height="30"
 <div class="file-drop" data-max-size="10000000" style="max-width: 32rem">
   <label class="file-drop-zone">
@@ -96,24 +134,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="file-drop-hint">Drop them here or click to choose</span>
   </label>
   <ul class="file-drop-list" aria-live="polite"></ul>
-</div>
-```
-
-```html example label="Default" hint="Single file selection." previewStyle="margin:1.25rem;"
-<div style="max-width: 40rem">
-  <input class="file-input" type="file" id="avatar" />
-</div>
-```
-
-```html example label="Multiple files" hint="The native multiple attribute - the picker allows several files; the field names the count." previewStyle="margin:1.25rem;"
-<div style="max-width: 40rem">
-  <input class="file-input" type="file" multiple />
-</div>
-```
-
-```html example label="Accept filter" hint="accept limits the picker to types - here images; list extensions and MIME types comma-separated (.pdf,image/*)." previewStyle="margin:1.25rem;"
-<div style="max-width: 40rem">
-  <input class="file-input" type="file" accept="image/*" />
 </div>
 ```
 

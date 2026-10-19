@@ -39,6 +39,19 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
+```html example part label="Announcement (floating, open)"
+<dialog class="mk-announcement" data-variant="floating" open aria-labelledby="ann-4">
+  <div class="mk-announcement-inner">
+    <i data-lucide="sparkles"></i>
+    <p id="ann-4">You can now share spaces with guests.</p>
+    <a href="#">Try it</a>
+    <form method="dialog"
+      ><button class="mk-announcement-close" aria-label="Dismiss tip"><i data-lucide="x"></i></button
+    ></form>
+  </div>
+</dialog>
+```
+
 ```html example label="Bar" hint="Default: a muted bar - a non-modal <dialog open>; the close button sits in a <form method=&quot;dialog&quot;> and dismisses it without script. Try it." previewStyle="align-items:stretch;"
 <dialog class="mk-announcement" open aria-labelledby="ann-1">
   <div class="mk-announcement-inner">

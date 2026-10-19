@@ -85,51 +85,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </fieldset>
 ```
 
-```html example label="The name makes the set" hint="Try both. Left: every radio has name=&quot;size&quot;, so picking one clears the other - one set, and the form submits one size. Right: same fieldset, but each radio has its own name, so each is a set of one - all three stay selected and none can be cleared by clicking. The fieldset groups nothing; the name does. Radios with a shared name behave as one set even with no fieldset at all (still add one - the legend is the set's accessible label). The set is scoped to its form: the same name in two different forms is two sets."
-<form class="flex flex-wrap gap-8" onsubmit="event.preventDefault()">
-  <fieldset class="radio-group">
-    <legend class="label">Shared name - one set</legend>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="size" id="sz-s" value="s" checked />
-      <label for="sz-s">Small</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="size" id="sz-m" value="m" />
-      <label for="sz-m">Medium</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="size" id="sz-l" value="l" />
-      <label for="sz-l">Large</label>
-    </div>
-  </fieldset>
-  <fieldset class="radio-group">
-    <legend class="label">Different names - broken</legend>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="size-small" id="bad-s" value="s" />
-      <label for="bad-s">Small</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="size-medium" id="bad-m" value="m" />
-      <label for="bad-m">Medium</label>
-    </div>
-    <div class="radio-item">
-      <input class="radio" type="radio" name="size-large" id="bad-l" value="l" />
-      <label for="bad-l">Large</label>
-    </div>
-  </fieldset>
-  <p class="text-sm text-muted-foreground w-full m-0">Form submits: <output id="size-out">size=s</output></p>
-</form>
-<script>
-  const form = document.getElementById('size-out').form;
-  const show = () => {
-    const pairs = [...new FormData(form)].map(([k, v]) => k + '=' + v);
-    document.getElementById('size-out').value = pairs.join('&') || '(nothing)';
-  };
-  form.addEventListener('change', show);
-  show();
-</script>
-```
-
 ```html example label="With Description" hint="Radio items with label and description text using .radio-item-block."
 <fieldset class="radio-group">
   <legend class="label">Spacing</legend>
@@ -207,6 +162,51 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <label for="inv2">SMS only</label>
   </div>
 </fieldset>
+```
+
+```html example label="The name makes the set" hint="Try both. Left: every radio has name=&quot;size&quot;, so picking one clears the other - one set, and the form submits one size. Right: same fieldset, but each radio has its own name, so each is a set of one - all three stay selected and none can be cleared by clicking. The fieldset groups nothing; the name does. Radios with a shared name behave as one set even with no fieldset at all (still add one - the legend is the set's accessible label). The set is scoped to its form: the same name in two different forms is two sets."
+<form class="flex flex-wrap gap-8" onsubmit="event.preventDefault()">
+  <fieldset class="radio-group">
+    <legend class="label">Shared name - one set</legend>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-s" value="s" checked />
+      <label for="sz-s">Small</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-m" value="m" />
+      <label for="sz-m">Medium</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size" id="sz-l" value="l" />
+      <label for="sz-l">Large</label>
+    </div>
+  </fieldset>
+  <fieldset class="radio-group">
+    <legend class="label">Different names - broken</legend>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-small" id="bad-s" value="s" />
+      <label for="bad-s">Small</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-medium" id="bad-m" value="m" />
+      <label for="bad-m">Medium</label>
+    </div>
+    <div class="radio-item">
+      <input class="radio" type="radio" name="size-large" id="bad-l" value="l" />
+      <label for="bad-l">Large</label>
+    </div>
+  </fieldset>
+  <p class="text-sm text-muted-foreground w-full m-0">Form submits: <output id="size-out">size=s</output></p>
+</form>
+<script>
+  const form = document.getElementById('size-out').form;
+  const show = () => {
+    const pairs = [...new FormData(form)].map(([k, v]) => k + '=' + v);
+    document.getElementById('size-out').value = pairs.join('&') || '(nothing)';
+  };
+  form.addEventListener('change', show);
+  show();
+</script>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."

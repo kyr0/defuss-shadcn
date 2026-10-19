@@ -1,5 +1,5 @@
 import type { Props } from 'defuss';
-import { ALWAYS_OPEN_SECTION, flattenNav, NAV, type NavItem } from '../nav';
+import { ALWAYS_OPEN_SECTION, flattenNav, listed, NAV, type NavItem } from '../nav';
 import { NAV_ICONS } from '../nav-icons';
 import { pageRel } from '../page-dirs';
 // VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
@@ -99,7 +99,8 @@ export function SiteNav({ active }: Props & { active: string }) {
     <aside class="app-sidebar site-sidebar" id="docs-sidebar" data-state="expanded">
       <div class="sidebar-content">
         {NAV.map((section) => {
-          const containsActive = flattenNav(section.items).some((i) => i.href === active);
+          const items = listed(section.items);
+          const containsActive = flattenNav(items).some((i) => i.href === active);
           const expanded = containsActive || section.heading === ALWAYS_OPEN_SECTION;
           return (
             <details
@@ -111,11 +112,11 @@ export function SiteNav({ active }: Props & { active: string }) {
               <summary>
                 <SectionIcon name={section.icon} />
                 <span>{section.heading}</span>
-                {flattenNav(section.items).some((i) => i.isNew) ? <NewDot /> : null}
+                {flattenNav(items).some((i) => i.isNew) ? <NewDot /> : null}
                 {CHEVRON}
               </summary>
               <nav class="sidebar-nav">
-                {section.items.map((item) =>
+                {items.map((item) =>
                   item.children?.length ? (
                     <NavItemSubmenu item={item} active={active} />
                   ) : (

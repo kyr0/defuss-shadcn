@@ -57,6 +57,77 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="indicator-dot (neutral, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="neutral" role="img" aria-label="neutral"></span>
+```
+
+```html example part label="indicator-dot (primary)"
+<span
+  class="indicator-item indicator-dot"
+  data-variant="primary"
+  data-animate="ping"
+  data-inset="lg"
+  role="img"
+  aria-label="New notifications"
+></span>
+```
+
+```html example part label="indicator-dot (primary, xs)"
+<span class="indicator-dot" data-size="xs" data-variant="primary" role="img" aria-label="xs"></span>
+```
+
+```html example part label="indicator-dot (primary, sm)"
+<span class="indicator-dot" data-size="sm" data-variant="primary" role="img" aria-label="sm"></span>
+```
+
+```html example part label="indicator-dot (primary, md)"
+<span class="indicator-dot" data-size="md" data-variant="primary" role="img" aria-label="md"></span>
+```
+
+```html example part label="indicator-dot (primary, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="primary" role="img" aria-label="lg"></span>
+```
+
+```html example part label="indicator-dot (primary, xl)"
+<span class="indicator-dot" data-size="xl" data-variant="primary" role="img" aria-label="xl"></span>
+```
+
+```html example part label="indicator-dot (secondary, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="secondary" role="img" aria-label="secondary"></span>
+```
+
+```html example part label="indicator-dot (accent, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="accent" role="img" aria-label="accent"></span>
+```
+
+```html example part label="indicator-dot (destructive)"
+<span class="indicator-dot" data-variant="destructive" data-animate="ping" role="img" aria-label="Down"></span>
+```
+
+```html example part label="indicator-dot (destructive, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="destructive" role="img" aria-label="destructive"></span>
+```
+
+```html example part label="indicator-dot (success)"
+<span class="indicator-dot" data-variant="success" role="img" aria-label="Online"></span>
+```
+
+```html example part label="indicator-dot (success, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="success" role="img" aria-label="success"></span>
+```
+
+```html example part label="indicator-dot (warning, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="warning" role="img" aria-label="warning"></span>
+```
+
+```html example part label="indicator-dot (info)"
+<span class="indicator-dot" data-variant="info" data-animate="bounce" role="img" aria-label="Unread"></span>
+```
+
+```html example part label="indicator-dot (info, lg)"
+<span class="indicator-dot" data-size="lg" data-variant="info" role="img" aria-label="info"></span>
+```
+
 ```html example label="Status indicator" hint="A status dot pinned to the top-end corner (the default) of a box."
 <div class="indicator">
   <span class="indicator-item indicator-dot" data-variant="success" role="img" aria-label="Online"></span>
@@ -83,34 +154,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <div class="indicator">
   <span class="indicator-item badge" data-variant="secondary" aria-hidden="true">12</span>
   <button class="btn" data-variant="outline" aria-label="Inbox, 12 unread">Inbox</button>
-</div>
-```
-
-```html example label="For a tab" hint="Wrap the tab trigger: the tablist keeps working, the count rides on the tab."
-<div class="tabs">
-  <div class="tab-list" role="tablist" aria-label="Mail">
-    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ind-p0" id="ind-t0" tabindex="-1"
-      >Drafts</button
-    >
-    <span class="indicator"
-      ><span class="indicator-item badge" data-variant="default" data-size="xs" aria-hidden="true">8</span
-      ><button
-        class="tab-trigger"
-        role="tab"
-        aria-selected="true"
-        aria-controls="ind-p1"
-        id="ind-t1"
-        aria-label="Messages, 8 new"
-        >Messages</button
-      ></span
-    >
-    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ind-p2" id="ind-t2" tabindex="-1"
-      >Archive</button
-    >
-  </div>
-  <div class="tab-content" role="tabpanel" id="ind-p0" aria-labelledby="ind-t0" tabindex="0" hidden>Drafts</div>
-  <div class="tab-content" role="tabpanel" id="ind-p1" aria-labelledby="ind-t1" tabindex="0">8 new messages.</div>
-  <div class="tab-content" role="tabpanel" id="ind-p2" aria-labelledby="ind-t2" tabindex="0" hidden>Archive</div>
 </div>
 ```
 
@@ -152,6 +195,65 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     >Only available for Pro users</span
   >
   <img src="images/mk-wide.png" alt="" class="rounded-lg" style="width: 20rem; height: auto; display: block" />
+</div>
+```
+
+```html example label="Multiple indicators" hint="One wrapper, nine items - one per anchor point."
+<div class="indicator m-4">
+  <span class="indicator-item badge" data-variant="secondary" data-position="top-start" aria-hidden="true">↖︎</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="top-center" aria-hidden="true">↑</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="top-end" aria-hidden="true">↗︎</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="middle-start" aria-hidden="true">←</span>
+  <span class="indicator-item badge" data-variant="default" data-position="middle-center" aria-hidden="true">●</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="middle-end" aria-hidden="true">→</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-start" aria-hidden="true">↙︎</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-center" aria-hidden="true">↓</span>
+  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-end" aria-hidden="true">↘︎</span>
+  <div class="grid place-items-center rounded-lg" style="width: 16rem; height: 8rem; background: var(--muted)"></div>
+</div>
+```
+
+```html example label="Responsive" hint="data-position-sm / -md / -lg / -xl take effect from 40 / 48 / 64 / 80rem wide: this badge moves start → center → end → start → end. Try the device sizes in the toolbar."
+<div class="indicator">
+  <span
+    class="indicator-item badge"
+    data-variant="default"
+    data-position="start"
+    data-position-sm="center"
+    data-position-md="end"
+    data-position-lg="start"
+    data-position-xl="end"
+    >Responsive</span
+  >
+  <div class="grid place-items-center rounded-lg" style="width: 16rem; height: 6rem; background: var(--muted)"></div>
+</div>
+```
+
+```html example label="For a tab" hint="Wrap the tab trigger: the tablist keeps working, the count rides on the tab."
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Mail">
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ind-p0" id="ind-t0" tabindex="-1"
+      >Drafts</button
+    >
+    <span class="indicator"
+      ><span class="indicator-item badge" data-variant="default" data-size="xs" aria-hidden="true">8</span
+      ><button
+        class="tab-trigger"
+        role="tab"
+        aria-selected="true"
+        aria-controls="ind-p1"
+        id="ind-t1"
+        aria-label="Messages, 8 new"
+        >Messages</button
+      ></span
+    >
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="ind-p2" id="ind-t2" tabindex="-1"
+      >Archive</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="ind-p0" aria-labelledby="ind-t0" tabindex="0" hidden>Drafts</div>
+  <div class="tab-content" role="tabpanel" id="ind-p1" aria-labelledby="ind-t1" tabindex="0">8 new messages.</div>
+  <div class="tab-content" role="tabpanel" id="ind-p2" aria-labelledby="ind-t2" tabindex="0" hidden>Archive</div>
 </div>
 ```
 
@@ -220,37 +322,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       style="width: 8rem; height: 5rem; background: var(--muted); color: var(--muted-foreground); font-size: 0.75rem"
     ></div
   ></div>
-</div>
-```
-
-```html example label="Multiple indicators" hint="One wrapper, nine items - one per anchor point."
-<div class="indicator m-4">
-  <span class="indicator-item badge" data-variant="secondary" data-position="top-start" aria-hidden="true">↖︎</span>
-  <span class="indicator-item badge" data-variant="secondary" data-position="top-center" aria-hidden="true">↑</span>
-  <span class="indicator-item badge" data-variant="secondary" data-position="top-end" aria-hidden="true">↗︎</span>
-  <span class="indicator-item badge" data-variant="secondary" data-position="middle-start" aria-hidden="true">←</span>
-  <span class="indicator-item badge" data-variant="default" data-position="middle-center" aria-hidden="true">●</span>
-  <span class="indicator-item badge" data-variant="secondary" data-position="middle-end" aria-hidden="true">→</span>
-  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-start" aria-hidden="true">↙︎</span>
-  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-center" aria-hidden="true">↓</span>
-  <span class="indicator-item badge" data-variant="secondary" data-position="bottom-end" aria-hidden="true">↘︎</span>
-  <div class="grid place-items-center rounded-lg" style="width: 16rem; height: 8rem; background: var(--muted)"></div>
-</div>
-```
-
-```html example label="Responsive" hint="data-position-sm / -md / -lg / -xl take effect from 40 / 48 / 64 / 80rem wide: this badge moves start → center → end → start → end. Try the device sizes in the toolbar."
-<div class="indicator">
-  <span
-    class="indicator-item badge"
-    data-variant="default"
-    data-position="start"
-    data-position-sm="center"
-    data-position-md="end"
-    data-position-lg="start"
-    data-position-xl="end"
-    >Responsive</span
-  >
-  <div class="grid place-items-center rounded-lg" style="width: 16rem; height: 6rem; background: var(--muted)"></div>
 </div>
 ```
 

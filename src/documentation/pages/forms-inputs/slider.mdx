@@ -69,9 +69,39 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
+```html example part label="Slider (xs)"
+<input class="slider flex-1" type="range" value="60" data-size="xs" aria-label="Volume xs" style="max-width: 16rem" />
+```
+
+```html example part label="Slider (sm)"
+<input class="slider flex-1" type="range" value="60" data-size="sm" aria-label="Volume sm" style="max-width: 16rem" />
+```
+
+```html example part label="Slider (md)"
+<input class="slider flex-1" type="range" value="60" data-size="md" aria-label="Volume md" style="max-width: 16rem" />
+```
+
+```html example part label="Slider (lg)"
+<input class="slider flex-1" type="range" value="60" data-size="lg" aria-label="Volume lg" style="max-width: 16rem" />
+```
+
+```html example part label="Slider (xl)"
+<input class="slider flex-1" type="range" value="60" data-size="xl" aria-label="Volume xl" style="max-width: 16rem" />
+```
+
 ```html example label="Default" hint="Range slider with default value."
 <div class="w-full max-w-80">
   <input class="slider" type="range" min="0" max="100" value="50" />
+</div>
+```
+
+```html example label="Vertical" hint="Vertical orientation using data-orientation='vertical'." height="14"
+<input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="60" />
+```
+
+```html example label="Disabled" hint="Slider in disabled state."
+<div class="w-full max-w-80">
+  <input class="slider" type="range" min="0" max="100" value="30" disabled />
 </div>
 ```
 
@@ -158,16 +188,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <span>1★</span><span></span><span>3★</span><span></span><span>5★</span>
     </div>
   </div>
-</div>
-```
-
-```html example label="Vertical" hint="Vertical orientation using data-orientation='vertical'." height="14"
-<input class="slider" type="range" data-orientation="vertical" min="0" max="100" value="60" />
-```
-
-```html example label="Disabled" hint="Slider in disabled state."
-<div class="w-full max-w-80">
-  <input class="slider" type="range" min="0" max="100" value="30" disabled />
 </div>
 ```
 

@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-dominant</code> (<code>ns</code>, <code>we</code>), <code>data-center-min</code>, <code>data-collapsible</code>, <code>data-save</code>, <code>data-frame="none"</code>, <code>data-divider</code> (<code>dashed</code>, <code>dotted</code>, <code>double</code>, <code>thick</code>, <code>none</code>, <code>gap</code>), <code>data-grip</code> (<code>dots</code>, <code>bar</code>, <code>none</code>); on a region's resizer: <code>data-min</code> / <code>data-max</code>, <code>data-collapsible</code>, <code>data-divider</code>, <code>data-grip</code>; <code>--border-layout-divider-color</code> / <code>-width</code>, <code>--border-layout-accent</code>; events <code>resizer-resize</code>, <code>border-layout-collapse</code>; API <code>df$.shadcn.borderLayout</code>.</SkillText>
+<SkillText><code>data-dominant</code> (<code>ns</code>, <code>we</code>), <code>data-center-min</code>, <code>data-collapsible</code>, <code>data-save</code>, <code>data-frame="none"</code>, <code>data-divider</code> (<code>dashed</code>, <code>dotted</code>, <code>double</code>, <code>thick</code>, <code>none</code>, <code>gap</code>), <code>data-grip</code> (<code>dots</code>, <code>bar</code>, <code>none</code>); on a region's resizer: <code>data-min</code> / <code>data-max</code>, <code>data-collapsible</code>, <code>data-divider</code>, <code>data-grip</code>; on a fixed region: <code>data-fit</code> with <code>--border-layout-fit-min</code> / <code>-max</code>; <code>--border-layout-divider-color</code> / <code>-width</code>, <code>--border-layout-accent</code>; events <code>resizer-resize</code>, <code>border-layout-collapse</code>; API <code>df$.shadcn.borderLayout</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -168,6 +168,68 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 </div>
 ```
 
+```html example label="Regions that fit their content" schema="none" hint="data-fit on a fixed region (no resizer): it is as high as its content, between --border-layout-fit-min and --border-layout-fit-max (half the layout by default), and scrolls past the maximum. Add steps: the south grows until it reaches half the frame, then its list scrolls and the editor keeps the rest. The north keeps at least a fifth of the frame. CSS only - the layout is a size container for the bounds, so it takes its height from outside."
+<div class="border-layout" style="height: 20rem">
+  <header class="border-layout-north border-layout-pane" data-fit style="--border-layout-fit-min: 20cqh">
+    <span class="text-sm font-medium">Toolbar - at least a fifth of the frame</span>
+  </header>
+  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Editor</span></main>
+  <footer class="border-layout-south border-layout-pane" data-fit>
+    <div class="flex items-center justify-between gap-2 mb-2">
+      <span class="text-sm font-medium">Steps</span>
+      <button class="btn" data-size="sm" data-variant="outline" type="button" id="fit-add">Add a step</button>
+    </div>
+    <ol class="text-sm m-0" id="fit-steps">
+      <li>Build</li>
+      <li>Test</li>
+    </ol>
+  </footer>
+</div>
+<script>
+  df$('#fit-add').on('click', () => {
+    const steps = df$('#fit-steps');
+    steps.append(df$(`<li>Step ${steps.children().toArray().length + 1}</li>`));
+  });
+</script>
+```
+
+```html example label="Custom handle" schema="none" hint="The divider is a .resizer-handle: --border-layout-divider-color / -width / --border-layout-accent retheme it, and plain CSS on its ::before (the line) and ::after (the grip) makes any handle - here a bold primary rail with a round knob."
+<style>
+  .rail-layout {
+    --border-layout-divider-color: color-mix(in oklch, var(--primary) 35%, transparent);
+    --border-layout-divider-width: 3px;
+    --border-layout-accent: var(--primary);
+  }
+  .rail-layout > .resizer > .resizer-handle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 999px;
+    background: var(--primary);
+    box-shadow:
+      0 0 0 3px var(--background),
+      var(--shadow-sm);
+  }
+</style>
+<div class="border-layout rail-layout" style="height: 12rem">
+  <div class="resizer border-layout-west"
+    ><div class="border-layout-pane" style="width: 40%" aria-label="Custom"
+      ><span class="text-sm font-medium">Custom</span></div
+    ></div
+  >
+  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
+  <div class="resizer border-layout-south"
+    ><div class="border-layout-pane" style="height: 3.5rem" aria-label="South"
+      ><span class="text-sm font-medium">South</span></div
+    ></div
+  >
+</div>
+```
+
 ```html example label="Grips" schema="none" hint="data-grip on the layout draws a handle on every divider: dots (a small dotted card) or bar (a pill); on one region's resizer it overrides the layout - data-grip='none' switches it off there."
 <div class="flex flex-col gap-4">
   <div class="border-layout" data-grip="dots" style="height: 9rem">
@@ -244,43 +306,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
     >
     <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
   </div>
-</div>
-```
-
-```html example label="Custom handle" schema="none" hint="The divider is a .resizer-handle: --border-layout-divider-color / -width / --border-layout-accent retheme it, and plain CSS on its ::before (the line) and ::after (the grip) makes any handle - here a bold primary rail with a round knob."
-<style>
-  .rail-layout {
-    --border-layout-divider-color: color-mix(in oklch, var(--primary) 35%, transparent);
-    --border-layout-divider-width: 3px;
-    --border-layout-accent: var(--primary);
-  }
-  .rail-layout > .resizer > .resizer-handle::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    width: 1rem;
-    height: 1rem;
-    border-radius: 999px;
-    background: var(--primary);
-    box-shadow:
-      0 0 0 3px var(--background),
-      var(--shadow-sm);
-  }
-</style>
-<div class="border-layout rail-layout" style="height: 12rem">
-  <div class="resizer border-layout-west"
-    ><div class="border-layout-pane" style="width: 40%" aria-label="Custom"
-      ><span class="text-sm font-medium">Custom</span></div
-    ></div
-  >
-  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Center</span></main>
-  <div class="resizer border-layout-south"
-    ><div class="border-layout-pane" style="height: 3.5rem" aria-label="South"
-      ><span class="text-sm font-medium">South</span></div
-    ></div
-  >
 </div>
 ```
 

@@ -42,6 +42,39 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
+```html example part label="Collection Item"
+<article class="mk-collection-item">
+  <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-linen/800/1000" alt="" />
+  <div class="mk-collection-item-body">
+    <h3 class="mk-collection-item-title"><a href="#">Linen basics</a></h3>
+    <p class="mk-collection-item-count">24 products</p>
+    <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+  </div>
+</article>
+```
+
+```html example part label="Collection Item (overlay)"
+<article class="mk-collection-item" data-variant="overlay">
+  <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-o1/800/1000" alt="" />
+  <div class="mk-collection-item-body">
+    <h3 class="mk-collection-item-title"><a href="#">New in</a></h3>
+    <p class="mk-collection-item-count">This week</p>
+    <span class="mk-collection-item-more" aria-hidden="true">Shop now <i data-lucide="arrow-right"></i></span>
+  </div>
+</article>
+```
+
+```html example label="Banner" hint="data-variant='banner': a wide 21:9 picture with the copy on the start side and a pill cue." previewStyle="align-items:stretch;"
+<article class="mk-collection-item" data-variant="banner">
+  <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-banner/1600/690" alt="" />
+  <div class="mk-collection-item-body">
+    <h3 class="mk-collection-item-title"><a href="#">The autumn edit</a></h3>
+    <p class="mk-collection-item-count">Warm layers, soft colors - 56 pieces</p>
+    <span class="mk-collection-item-more" aria-hidden="true">Discover <i data-lucide="arrow-right"></i></span>
+  </div>
+</article>
+```
+
 ```html example label="Grid" hint="Default: a 4:5 picture, the collection name - a link covering the card - the count and a &quot;Shop now&quot; cue." previewStyle="align-items:stretch;"
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 1.5rem 1rem; width: 100%">
   <article class="mk-collection-item">
@@ -98,17 +131,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     </div>
   </article>
 </div>
-```
-
-```html example label="Banner" hint="data-variant='banner': a wide 21:9 picture with the copy on the start side and a pill cue." previewStyle="align-items:stretch;"
-<article class="mk-collection-item" data-variant="banner">
-  <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-banner/1600/690" alt="" />
-  <div class="mk-collection-item-body">
-    <h3 class="mk-collection-item-title"><a href="#">The autumn edit</a></h3>
-    <p class="mk-collection-item-count">Warm layers, soft colors - 56 pieces</p>
-    <span class="mk-collection-item-more" aria-hidden="true">Discover <i data-lucide="arrow-right"></i></span>
-  </div>
-</article>
 ```
 
 <SourceFiles component="collection-item" section="css" />

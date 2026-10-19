@@ -177,6 +177,51 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="Legal review added" component="diagram" hint="A new wait state and the transition that now passes through it."
+<figure
+  class="diagram"
+  id="dg-life-delta"
+  data-type="state-lifecycle"
+  data-delta
+  aria-label="Lifecycle with legal review"
+>
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Policy change</span>
+    <span class="diagram-title">Legal review before scheduling</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 1; --span: 4"
+      ><span class="diagram-group-label">Wait</span></div
+    >
+    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 2; --span: 4"
+      ><span class="diagram-group-label">Primary</span></div
+    >
+    <div class="diagram-node" data-node="edit" style="--col: 2; --row: 2"
+      ><span class="diagram-node-name">Editing</span></div
+    >
+    <div class="diagram-node" data-node="approval" data-tone="muted" data-change="changed" style="--col: 2; --row: 1">
+      <span class="diagram-node-eyebrow">Wait</span>
+      <span class="diagram-node-name">Approval</span>
+      <span class="diagram-node-meta" data-before="editor or owner">editor</span>
+    </div>
+    <div class="diagram-node" data-node="legal" data-tone="accent" data-change="added" style="--col: 3; --row: 1">
+      <span class="diagram-node-eyebrow">Wait</span>
+      <span class="diagram-node-name">Legal review</span>
+      <span class="diagram-node-meta">48h SLA</span>
+    </div>
+    <div class="diagram-node" data-node="sched" style="--col: 4; --row: 2"
+      ><span class="diagram-node-name">Scheduled</span></div
+    >
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="edit" data-to="approval">submit</li>
+    <li class="diagram-edge" data-from="approval" data-to="legal" data-change="added">approve</li>
+    <li class="diagram-edge" data-from="legal" data-to="sched" data-change="added">clear</li>
+    <li class="diagram-edge" data-from="approval" data-to="sched" data-change="removed">approve</li>
+  </ol>
+</figure>
+```
+
 ```html example label="State Lifecycle, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-life-live" data-diagram-action="prev"
@@ -413,51 +458,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```
 
 <H2 id="delta">Delta</H2>
-
-```html example label="Legal review added" component="diagram" hint="A new wait state and the transition that now passes through it."
-<figure
-  class="diagram"
-  id="dg-life-delta"
-  data-type="state-lifecycle"
-  data-delta
-  aria-label="Lifecycle with legal review"
->
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Policy change</span>
-    <span class="diagram-title">Legal review before scheduling</span>
-  </figcaption>
-  <div class="diagram-canvas" style="--cols: 4">
-    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 1; --span: 4"
-      ><span class="diagram-group-label">Wait</span></div
-    >
-    <div class="diagram-group" data-shape="lane" style="--col: 1; --row: 2; --span: 4"
-      ><span class="diagram-group-label">Primary</span></div
-    >
-    <div class="diagram-node" data-node="edit" style="--col: 2; --row: 2"
-      ><span class="diagram-node-name">Editing</span></div
-    >
-    <div class="diagram-node" data-node="approval" data-tone="muted" data-change="changed" style="--col: 2; --row: 1">
-      <span class="diagram-node-eyebrow">Wait</span>
-      <span class="diagram-node-name">Approval</span>
-      <span class="diagram-node-meta" data-before="editor or owner">editor</span>
-    </div>
-    <div class="diagram-node" data-node="legal" data-tone="accent" data-change="added" style="--col: 3; --row: 1">
-      <span class="diagram-node-eyebrow">Wait</span>
-      <span class="diagram-node-name">Legal review</span>
-      <span class="diagram-node-meta">48h SLA</span>
-    </div>
-    <div class="diagram-node" data-node="sched" style="--col: 4; --row: 2"
-      ><span class="diagram-node-name">Scheduled</span></div
-    >
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="edit" data-to="approval">submit</li>
-    <li class="diagram-edge" data-from="approval" data-to="legal" data-change="added">approve</li>
-    <li class="diagram-edge" data-from="legal" data-to="sched" data-change="added">clear</li>
-    <li class="diagram-edge" data-from="approval" data-to="sched" data-change="removed">approve</li>
-  </ol>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

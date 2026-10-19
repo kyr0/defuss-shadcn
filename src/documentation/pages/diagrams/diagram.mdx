@@ -46,6 +46,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <SkillField label="Data attributes">
 <SkillText><code>data-type</code>, <code>data-node</code>, <code>data-shape</code>, <code>data-tone</code>, <code>data-from</code> / <code>data-to</code>, <code>data-curve</code>, <code>data-line</code>, <code>data-head</code> / <code>data-tail</code>, <code>data-steps</code>, <code>data-step</code>, <code>data-autoplay</code>, <code>data-delta</code>, <code>data-change</code>, <code>data-before</code></SkillText>
   </SkillField>
+
+  <SkillField label="Print">
+<SkillText>Paper does not scroll: a printed diagram redraws in the print layout (a ResizeObserver delivers nothing there), and the redraw fits a canvas wider than the figure as a narrow screen does - zoomed, never below 0.7, the wires following. Its wire labels carry size containment in print, so the screen drawing never widens the printed page - Chromium would shrink the whole print to fit.</SkillText>
+  </SkillField>
 </SkillPanel>
 
 ```html example label="A request, end to end" hint="data-steps adds the toolbar: play, step, replay, show all. The edge list under the canvas is the source of the wires - and what a screen reader reads."
@@ -458,6 +462,183 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <DocText><code>data-interactive</code> makes every box and every arrow activatable: a click (or Tab + Enter) activates it, what it touches stays lit, the rest steps back; a second click, a click on the empty canvas or Escape clears; the arrow keys walk on. The activation is state <code>active</code> (<code>setState('active', &#123; ref &#125;)</code> - a <code>data-node</code>, or an edge's <code>data-edge</code> / <code>"from->to"</code>), so it can be driven from outside with no script: buttons with <code>data-diagram-for="id"</code> and <code>data-diagram-action="next|prev|clear|activate"</code>, and an <code>&lt;output data-diagram-for="id"&gt;</code> that names what is active (its <code>data-detail</code>, else its meta). <code>df$.shadcn.diagram.activate / activateNext / activatePrev / active / order</code> and the <code>diagram-activate</code> event do the same in code.</DocText>
 
+```html example label="The fulfilment flow, flowing" hint="Every edge flows: two tokens each, started 600 ms after the previous edge."
+<figure class="diagram" id="dg-shapes-flow" data-type="flow" aria-label="Order fulfilment flow">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Flow</span>
+    <span class="diagram-title">Order fulfilment</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-node" data-node="placed" data-shape="pill" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Order placed</span></div
+    >
+    <div class="diagram-node" data-node="stock" data-shape="diamond" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">In stock?</span></div
+    >
+    <div class="diagram-node" data-node="pick" data-tone="accent" style="--col: 3; --row: 1">
+      <span class="diagram-node-name">Pick & pack</span>
+      <span class="diagram-node-meta">warehouse</span>
+    </div>
+    <div class="diagram-node" data-node="shipped" data-shape="pill" style="--col: 4; --row: 1"
+      ><span class="diagram-node-name">Shipped</span></div
+    >
+    <div class="diagram-node" data-node="inventory" data-shape="store" style="--col: 2; --row: 2">
+      <span class="diagram-node-name">Inventory</span>
+      <span class="diagram-node-meta">stock levels</span>
+    </div>
+    <div class="diagram-node" data-node="backorder" style="--col: 3; --row: 2">
+      <span class="diagram-node-name">Back-order</span>
+      <span class="diagram-node-meta">customer notified</span>
+    </div>
+    <div class="diagram-node" data-node="supplier" data-tone="external" style="--col: 4; --row: 2">
+      <span class="diagram-node-name">Supplier</span>
+      <span class="diagram-node-meta">EDI</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li
+      class="diagram-edge"
+      data-from="placed"
+      data-to="stock"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="0"
+    ></li>
+    <li
+      class="diagram-edge"
+      data-from="stock"
+      data-to="pick"
+      data-tone="accent"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="600"
+      >yes</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="pick"
+      data-to="shipped"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="1200"
+    ></li>
+    <li
+      class="diagram-edge"
+      data-from="stock"
+      data-to="inventory"
+      data-line="dashed"
+      data-head="open"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="1800"
+      >reads</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="stock"
+      data-to="backorder"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="2400"
+      >no</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="backorder"
+      data-to="supplier"
+      data-line="dashed"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="3000"
+      >reorder</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="supplier"
+      data-to="pick"
+      data-flow="2400"
+      data-flow-tokens="2"
+      data-flow-delay="3600"
+      >delivery</li
+    >
+  </ol>
+</figure>
+```
+
+```html example label="Side by side" hint="data-delta=columns forces the three columns; data-delta-labels renames the panels."
+<figure
+  class="diagram"
+  id="dg-delta-cols"
+  data-type="flow"
+  data-delta="columns"
+  data-delta-labels="v1|What changed|v2"
+  aria-label="A small delta, side by side"
+>
+  <div class="diagram-canvas" style="--cols: 3">
+    <div class="diagram-node" data-node="a" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Upload</span></div
+    >
+    <div class="diagram-node" data-node="b" data-tone="accent" data-change="added" style="--col: 2; --row: 1"
+      ><span class="diagram-node-name">Virus scan</span></div
+    >
+    <div class="diagram-node" data-node="c" data-change="changed" style="--col: 3; --row: 1">
+      <span class="diagram-node-name">Store</span>
+      <span class="diagram-node-meta" data-before="S3">S3 · encrypted</span>
+    </div>
+    <div class="diagram-node" data-node="d" data-change="removed" style="--col: 3; --row: 2"
+      ><span class="diagram-node-name">Email link</span></div
+    >
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="a" data-to="b" data-change="added"></li>
+    <li class="diagram-edge" data-from="b" data-to="c" data-change="added"></li>
+    <li class="diagram-edge" data-from="a" data-to="c" data-change="removed"></li>
+    <li class="diagram-edge" data-from="c" data-to="d" data-change="removed"></li>
+  </ol>
+</figure>
+```
+
+```html example label="Incident escalation" hint="style='--diagram-accent: var(--destructive)' on the figure. The other knobs: --diagram-link, --diagram-added, --diagram-removed, --diagram-changed, --diagram-gap-x / -y, --diagram-col-min, --diagram-node-w, --diagram-element-ms (900ms between two elements), --diagram-step-ms (800ms to appear) and --diagram-hold (400ms rest after a step)."
+<figure
+  class="diagram"
+  id="dg-rekey"
+  data-type="flow"
+  style="--diagram-accent: var(--destructive)"
+  aria-label="Incident escalation"
+>
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Re-keyed accent</span>
+    <span class="diagram-title">Incident escalation</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-node" data-node="alert" data-shape="pill" style="--col: 1; --row: 1"
+      ><span class="diagram-node-name">Alert fires</span></div
+    >
+    <div class="diagram-node" data-node="oncall" style="--col: 2; --row: 1">
+      <span class="diagram-node-name">On-call</span>
+      <span class="diagram-node-meta">acks in 5 min</span>
+    </div>
+    <div class="diagram-node" data-node="sev" data-shape="diamond" style="--col: 3; --row: 1"
+      ><span class="diagram-node-name">SEV-1?</span></div
+    >
+    <div class="diagram-node" data-node="ic" data-tone="accent" style="--col: 4; --row: 1">
+      <span class="diagram-node-name">Incident commander</span>
+      <span class="diagram-node-meta">war room</span>
+    </div>
+    <div class="diagram-node" data-node="ticket" style="--col: 3; --row: 2">
+      <span class="diagram-node-name">Ticket</span>
+      <span class="diagram-node-meta">next business day</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="alert" data-to="oncall">page</li>
+    <li class="diagram-edge" data-from="oncall" data-to="sev"></li>
+    <li class="diagram-edge" data-from="sev" data-to="ic" data-tone="accent">yes</li>
+    <li class="diagram-edge" data-from="sev" data-to="ticket">no</li>
+  </ol>
+</figure>
+```
+
 ```html example label="Walk the system" hint="Press Next again and again: the activation walks the boxes in order and the output reads each box's data-detail."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-tones-live" data-diagram-action="prev"
@@ -735,109 +916,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <DocText>Tokens travel wires that carry <code>data-flow</code> (ms a pass). <code>data-flow-tokens</code> puts several on one wire, <code>data-flow-delay</code> starts a wire later - so a whole pipeline can flow, handing the stream on edge by edge. Dimmed wires and future steps carry no tokens; reduced motion shows none.</DocText>
 
-```html example label="The fulfilment flow, flowing" hint="Every edge flows: two tokens each, started 600 ms after the previous edge."
-<figure class="diagram" id="dg-shapes-flow" data-type="flow" aria-label="Order fulfilment flow">
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Flow</span>
-    <span class="diagram-title">Order fulfilment</span>
-  </figcaption>
-  <div class="diagram-canvas" style="--cols: 4">
-    <div class="diagram-node" data-node="placed" data-shape="pill" style="--col: 1; --row: 1"
-      ><span class="diagram-node-name">Order placed</span></div
-    >
-    <div class="diagram-node" data-node="stock" data-shape="diamond" style="--col: 2; --row: 1"
-      ><span class="diagram-node-name">In stock?</span></div
-    >
-    <div class="diagram-node" data-node="pick" data-tone="accent" style="--col: 3; --row: 1">
-      <span class="diagram-node-name">Pick & pack</span>
-      <span class="diagram-node-meta">warehouse</span>
-    </div>
-    <div class="diagram-node" data-node="shipped" data-shape="pill" style="--col: 4; --row: 1"
-      ><span class="diagram-node-name">Shipped</span></div
-    >
-    <div class="diagram-node" data-node="inventory" data-shape="store" style="--col: 2; --row: 2">
-      <span class="diagram-node-name">Inventory</span>
-      <span class="diagram-node-meta">stock levels</span>
-    </div>
-    <div class="diagram-node" data-node="backorder" style="--col: 3; --row: 2">
-      <span class="diagram-node-name">Back-order</span>
-      <span class="diagram-node-meta">customer notified</span>
-    </div>
-    <div class="diagram-node" data-node="supplier" data-tone="external" style="--col: 4; --row: 2">
-      <span class="diagram-node-name">Supplier</span>
-      <span class="diagram-node-meta">EDI</span>
-    </div>
-  </div>
-  <ol class="diagram-edges">
-    <li
-      class="diagram-edge"
-      data-from="placed"
-      data-to="stock"
-      data-flow="2400"
-      data-flow-tokens="2"
-      data-flow-delay="0"
-    ></li>
-    <li
-      class="diagram-edge"
-      data-from="stock"
-      data-to="pick"
-      data-tone="accent"
-      data-flow="2400"
-      data-flow-tokens="2"
-      data-flow-delay="600"
-      >yes</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="pick"
-      data-to="shipped"
-      data-flow="2400"
-      data-flow-tokens="2"
-      data-flow-delay="1200"
-    ></li>
-    <li
-      class="diagram-edge"
-      data-from="stock"
-      data-to="inventory"
-      data-line="dashed"
-      data-head="open"
-      data-flow="2400"
-      data-flow-tokens="2"
-      data-flow-delay="1800"
-      >reads</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="stock"
-      data-to="backorder"
-      data-flow="2400"
-      data-flow-tokens="2"
-      data-flow-delay="2400"
-      >no</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="backorder"
-      data-to="supplier"
-      data-line="dashed"
-      data-flow="2400"
-      data-flow-tokens="2"
-      data-flow-delay="3000"
-      >reorder</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="supplier"
-      data-to="pick"
-      data-flow="2400"
-      data-flow-tokens="2"
-      data-flow-delay="3600"
-      >delivery</li
-    >
-  </ol>
-</figure>
-```
-
 <H2 id="steps">Steps</H2>
 
 <DocText><code>data-steps</code> adds the toolbar; <code>data-autoplay</code> plays once when the figure scrolls into view (never under reduced motion). With <code>data-step="N"</code> on any element the order is explicit - descendants follow, <code>0</code> is always shown, <code>data-step-label</code> names the step; without it nodes enter in document order. An edge enters with its later endpoint. The states are the API: <code>setState('paused', &#123; step &#125;)</code>, <code>setState('playing', &#123; step &#125;)</code>, <code>setState('default')</code>.</DocText>
@@ -915,39 +993,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <DocText>Mark what changed on the one source - <code>data-change="added|removed|changed|moved|rewired"</code>, the old text in <code>data-before</code>, the old placement in <code>data-before-style</code>, old ends in <code>data-before-from</code> / <code>-to</code>, an old status / tone / badge in <code>data-before-status</code> / <code>-tone</code> / <code>-badge</code> - and add <code>data-delta</code>. The component derives three panels: Before, Changes (badges + ledger) and After; stacked (top, center, bottom) by default, side by side from a 96rem container or with <code>data-delta="columns"</code>.</DocText>
 
-```html example label="Side by side" hint="data-delta=columns forces the three columns; data-delta-labels renames the panels."
-<figure
-  class="diagram"
-  id="dg-delta-cols"
-  data-type="flow"
-  data-delta="columns"
-  data-delta-labels="v1|What changed|v2"
-  aria-label="A small delta, side by side"
->
-  <div class="diagram-canvas" style="--cols: 3">
-    <div class="diagram-node" data-node="a" style="--col: 1; --row: 1"
-      ><span class="diagram-node-name">Upload</span></div
-    >
-    <div class="diagram-node" data-node="b" data-tone="accent" data-change="added" style="--col: 2; --row: 1"
-      ><span class="diagram-node-name">Virus scan</span></div
-    >
-    <div class="diagram-node" data-node="c" data-change="changed" style="--col: 3; --row: 1">
-      <span class="diagram-node-name">Store</span>
-      <span class="diagram-node-meta" data-before="S3">S3 · encrypted</span>
-    </div>
-    <div class="diagram-node" data-node="d" data-change="removed" style="--col: 3; --row: 2"
-      ><span class="diagram-node-name">Email link</span></div
-    >
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="a" data-to="b" data-change="added"></li>
-    <li class="diagram-edge" data-from="b" data-to="c" data-change="added"></li>
-    <li class="diagram-edge" data-from="a" data-to="c" data-change="removed"></li>
-    <li class="diagram-edge" data-from="c" data-to="d" data-change="removed"></li>
-  </ol>
-</figure>
-```
-
 <H2 id="parametric">Parametric</H2>
 
 <DocText>A spec renders into the same markup: put it in a <code>&lt;script type="application/json" class="diagram-spec"&gt;</code> inside an empty figure, or call <code>df$.shadcn.diagram.build(el, spec)</code>; <code>markup(spec)</code> returns the HTML, <code>diff(before, after)</code> annotates a delta. See <DocLink href="diagram-high-level-parametric.html">High-level Parametric</DocLink> for specs, a spec delta and a live parameter form.</DocText>
@@ -955,47 +1000,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <H2 id="theming">Theming</H2>
 
 <DocText>Everything comes from the theme: paper is <code>--card</code>, ink <code>--foreground</code>, lines mix from them; the accent is <code>--chart-2</code>, links <code>--chart-4</code>, added / changed / removed <code>--chart-3</code> / <code>--chart-1</code> / <code>--destructive</code>; corners follow <code>--radius</code> (the wire elbows too), all text is <code>--font-mono</code>. The component-local properties re-key a figure:</DocText>
-
-```html example label="Incident escalation" hint="style='--diagram-accent: var(--destructive)' on the figure. The other knobs: --diagram-link, --diagram-added, --diagram-removed, --diagram-changed, --diagram-gap-x / -y, --diagram-col-min, --diagram-node-w, --diagram-element-ms (900ms between two elements), --diagram-step-ms (800ms to appear) and --diagram-hold (400ms rest after a step)."
-<figure
-  class="diagram"
-  id="dg-rekey"
-  data-type="flow"
-  style="--diagram-accent: var(--destructive)"
-  aria-label="Incident escalation"
->
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Re-keyed accent</span>
-    <span class="diagram-title">Incident escalation</span>
-  </figcaption>
-  <div class="diagram-canvas" style="--cols: 4">
-    <div class="diagram-node" data-node="alert" data-shape="pill" style="--col: 1; --row: 1"
-      ><span class="diagram-node-name">Alert fires</span></div
-    >
-    <div class="diagram-node" data-node="oncall" style="--col: 2; --row: 1">
-      <span class="diagram-node-name">On-call</span>
-      <span class="diagram-node-meta">acks in 5 min</span>
-    </div>
-    <div class="diagram-node" data-node="sev" data-shape="diamond" style="--col: 3; --row: 1"
-      ><span class="diagram-node-name">SEV-1?</span></div
-    >
-    <div class="diagram-node" data-node="ic" data-tone="accent" style="--col: 4; --row: 1">
-      <span class="diagram-node-name">Incident commander</span>
-      <span class="diagram-node-meta">war room</span>
-    </div>
-    <div class="diagram-node" data-node="ticket" style="--col: 3; --row: 2">
-      <span class="diagram-node-name">Ticket</span>
-      <span class="diagram-node-meta">next business day</span>
-    </div>
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="alert" data-to="oncall">page</li>
-    <li class="diagram-edge" data-from="oncall" data-to="sev"></li>
-    <li class="diagram-edge" data-from="sev" data-to="ic" data-tone="accent">yes</li>
-    <li class="diagram-edge" data-from="sev" data-to="ticket">no</li>
-  </ol>
-</figure>
-```
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each figure:</p>

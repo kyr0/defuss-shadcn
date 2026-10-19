@@ -199,6 +199,62 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="After the onboarding redesign" component="diagram" hint="The dot moved (its old --sentiment in data-before-style), a touchpoint was added, the pain point removed."
+<figure
+  class="diagram"
+  id="dg-journey-delta"
+  data-type="journey"
+  data-delta
+  aria-label="Journey after the onboarding redesign"
+>
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">User journey · after the redesign</span>
+    <span class="diagram-title">Onboarding no longer the trough</span>
+  </figcaption>
+  <div class="diagram-canvas" style="--cols: 3; --band: 7rem">
+    <div class="diagram-cell" data-role="head" style="--col: 2; --row: 1">Sign up</div>
+    <div class="diagram-cell" data-role="head" style="--col: 3; --row: 1">Onboard</div>
+    <div class="diagram-cell" data-role="head" style="--col: 4; --row: 1">First value</div>
+    <div class="diagram-band-labels" style="--col: 1; --row: 2"
+      ><span>High</span><span>Neutral</span><span>Low</span></div
+    >
+    <div class="diagram-band" style="--col: 2; --row: 2; --span: 3"></div>
+    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col: 2; --row: 2; --sentiment: 0.55"
+      ><span class="diagram-node-name">hopeful</span></div
+    >
+    <div
+      class="diagram-node"
+      data-node="s2"
+      data-shape="dot"
+      data-tone="accent"
+      data-change="moved"
+      data-change-note="sentiment low → neutral-high"
+      data-before-style="--col:3;--row:2;--sentiment:0.15"
+      style="--col: 3; --row: 2; --sentiment: 0.62"
+      ><span class="diagram-node-name" data-before="lost">guided</span></div
+    >
+    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col: 4; --row: 2; --sentiment: 0.7"
+      ><span class="diagram-node-name">relieved</span></div
+    >
+    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 3">Touchpoints</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 2; --row: 3">web app</div>
+    <div class="diagram-cell" data-role="mono" data-change="added" style="--col: 3; --row: 3">sample workspace</div>
+    <div class="diagram-cell" data-role="mono" style="--col: 4; --row: 3">email · Slack</div>
+    <span
+      class="diagram-tag"
+      data-change="removed"
+      data-change-label="Pain: CSV errors unexplained"
+      style="--col: 3; --row: 4"
+      >CSV errors unexplained</span
+    >
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="s1" data-to="s2" data-curve="straight" data-tone="ink" data-head="none"></li>
+    <li class="diagram-edge" data-from="s2" data-to="s3" data-curve="straight" data-tone="ink" data-head="none"></li>
+  </ol>
+</figure>
+```
+
 ```html example label="User Journey, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button
@@ -477,62 +533,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```
 
 <H2 id="delta">Delta</H2>
-
-```html example label="After the onboarding redesign" component="diagram" hint="The dot moved (its old --sentiment in data-before-style), a touchpoint was added, the pain point removed."
-<figure
-  class="diagram"
-  id="dg-journey-delta"
-  data-type="journey"
-  data-delta
-  aria-label="Journey after the onboarding redesign"
->
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">User journey · after the redesign</span>
-    <span class="diagram-title">Onboarding no longer the trough</span>
-  </figcaption>
-  <div class="diagram-canvas" style="--cols: 3; --band: 7rem">
-    <div class="diagram-cell" data-role="head" style="--col: 2; --row: 1">Sign up</div>
-    <div class="diagram-cell" data-role="head" style="--col: 3; --row: 1">Onboard</div>
-    <div class="diagram-cell" data-role="head" style="--col: 4; --row: 1">First value</div>
-    <div class="diagram-band-labels" style="--col: 1; --row: 2"
-      ><span>High</span><span>Neutral</span><span>Low</span></div
-    >
-    <div class="diagram-band" style="--col: 2; --row: 2; --span: 3"></div>
-    <div class="diagram-node" data-node="s1" data-shape="dot" style="--col: 2; --row: 2; --sentiment: 0.55"
-      ><span class="diagram-node-name">hopeful</span></div
-    >
-    <div
-      class="diagram-node"
-      data-node="s2"
-      data-shape="dot"
-      data-tone="accent"
-      data-change="moved"
-      data-change-note="sentiment low → neutral-high"
-      data-before-style="--col:3;--row:2;--sentiment:0.15"
-      style="--col: 3; --row: 2; --sentiment: 0.62"
-      ><span class="diagram-node-name" data-before="lost">guided</span></div
-    >
-    <div class="diagram-node" data-node="s3" data-shape="dot" style="--col: 4; --row: 2; --sentiment: 0.7"
-      ><span class="diagram-node-name">relieved</span></div
-    >
-    <div class="diagram-cell" data-role="label" style="--col: 1; --row: 3">Touchpoints</div>
-    <div class="diagram-cell" data-role="mono" style="--col: 2; --row: 3">web app</div>
-    <div class="diagram-cell" data-role="mono" data-change="added" style="--col: 3; --row: 3">sample workspace</div>
-    <div class="diagram-cell" data-role="mono" style="--col: 4; --row: 3">email · Slack</div>
-    <span
-      class="diagram-tag"
-      data-change="removed"
-      data-change-label="Pain: CSV errors unexplained"
-      style="--col: 3; --row: 4"
-      >CSV errors unexplained</span
-    >
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="s1" data-to="s2" data-curve="straight" data-tone="ink" data-head="none"></li>
-    <li class="diagram-edge" data-from="s2" data-to="s3" data-curve="straight" data-tone="ink" data-head="none"></li>
-  </ol>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

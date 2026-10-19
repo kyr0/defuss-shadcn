@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { codeExampleProblems } from '../code-example-contract';
+import { pageLinks } from '../page-dirs';
 import { componentPath } from '../repo';
 
 /**
@@ -32,13 +33,28 @@ import { componentPath } from '../repo';
 /**
  * The example frame's sandbox. Every example runs in an opaque origin
  * (allow-scripts allow-forms) - isolated from the docs page and from each
- * other. Two opt-ins widen one card: `sandbox="embed"`, for an example that
+ * other. Three opt-ins widen one card: `sandbox="embed"`, for an example that
  * hosts a third-party player (YouTube): such players need their own origin's
  * storage, which a nested frame only gets when this frame is same-origin - and
  * the player's permissions must be delegated through this frame;
  * `sandbox="links"`, for an example whose links open a page in a new tab (the
  * flagship deck's full-screen apps): popups only, the frame stays opaque, the
- * opened page runs unsandboxed like any link the reader follows.
+ * opened page runs unsandboxed like any link the reader follows;
+ * `sandbox="downloads"`, for an example that saves a file (the Document
+ * Editor's Save as and Export): a sandboxed frame may not start a download
+ * without allow-downloads - the frame stays opaque;
+ * `sandbox="editor"`, for an example that runs the Visual Editor (or the
+ * Studio built on it): GrapesJS writes into its own canvas iframe, which an
+ * opaque-origin frame forbids - the card is same-origin (scripts plus
+ * same-origin can reach the docs page, so only our own examples get it) and
+ * may save a file (the Studio's exports). VERIFIED: (tmp/probe-grapes-
+ * sameorigin.ts) GrapesJS fails in the strict frame and runs with
+ * allow-same-origin.
+ * `sandbox="fullscreen"`, for an example with a full screen control (the
+ * Video): the permissions policy of the frame delegates full screen, the frame
+ * stays opaque. VERIFIED: (tmp/probe-fs-sandbox.ts, 2026-10-19) without it
+ * document.fullscreenEnabled is false in the frame; WebKit takes only
+ * `fullscreen *` - an opaque origin matches no 'src'.
  */
 export const EXAMPLE_SANDBOX = {
   default: { sandbox: 'allow-scripts allow-forms', allow: 'clipboard-write' },
@@ -47,6 +63,9 @@ export const EXAMPLE_SANDBOX = {
     allow: 'clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture',
   },
   links: { sandbox: 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox', allow: 'clipboard-write' },
+  downloads: { sandbox: 'allow-scripts allow-forms allow-downloads', allow: 'clipboard-write' },
+  editor: { sandbox: 'allow-scripts allow-forms allow-same-origin allow-downloads', allow: 'clipboard-write' },
+  fullscreen: { sandbox: 'allow-scripts allow-forms', allow: 'clipboard-write; fullscreen *' },
 } as const;
 
 export interface CodeExampleProps {
@@ -58,12 +77,12 @@ export interface CodeExampleProps {
   label?: string;
   /** demo hint (rendered like <ExampleHint>) */
   hint?: string;
-  /** fence attr sandbox="embed": the opt-in for a third-party player (EXAMPLE_SANDBOX) */
+  /** fence attr sandbox="embed|links|downloads|editor|fullscreen": the opt-ins that widen this card's frame (EXAMPLE_SANDBOX) */
   sandbox?: string;
   /** min frame height in rem (fence attr height="N") - floors the sandbox while
    * the true content height arrives (mirrors the old previewStyle min-height) */
   height?: string;
-  /** viewport toolbar boot mode (fence attr mode="phone|tablet|desktop|full"):
+  /** viewport toolbar boot mode (fence attr mode="phone|tablet|desktop|print|full" - print: an A4 sheet in the print styles):
    * media-query components (sidebar) need the sandbox viewport ≥ their
    * breakpoint - a fence decides what the demo boots as */
   mode?: string;
@@ -123,7 +142,7 @@ const ICONS: Record<string, string> = (() => {
   return out;
 })();
 
-function Icon({ name }: { name: string }) {
+export function Icon({ name }: { name: string }) {
   if (!ICONS[name]) throw new Error(`CodeExample: no icon "${name}" in components/code-example`);
   return (
     <svg class={`lucide lucide-${name}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICONS[name] }}></svg>
@@ -136,11 +155,13 @@ const H2_HINT = 'text-xs text-muted-foreground mb-3';
 export function CodeExample({ source, component, label, hint, height, mode, previewStyle, sandbox, children, code, preview, previewSource }: CodeExampleProps) {
   const problems = codeExampleProblems({ source, children, code, preview, previewSource });
   if (problems.length) throw new Error(`CodeExample: ${problems.join(' | ')}`);
-  if (sandbox !== undefined && sandbox !== 'embed' && sandbox !== 'links') throw new Error(`CodeExample: sandbox="${sandbox}" - the opt-ins are sandbox="embed" and sandbox="links"`);
+  if (sandbox !== undefined && !(sandbox in EXAMPLE_SANDBOX && sandbox !== 'default')) throw new Error(`CodeExample: sandbox="${sandbox}" - the opt-ins are sandbox="embed", sandbox="links", sandbox="downloads", sandbox="editor" and sandbox="fullscreen"`);
   const frame = EXAMPLE_SANDBOX[(sandbox ?? 'default') as keyof typeof EXAMPLE_SANDBOX];
   const schemaText = readSchema(component);
   const stateTab = showsStateTab(schemaText);
   const name = label ?? `${component ?? 'Example'} example`;
+  // the source names pages by id; the preview resolves against the docs root, so the card maps them
+  const links = pageLinks(source);
   // State-capture anchor (AGENTS.md "State API" rule 7): the card owns the
   // state demo now - its sandbox runs the one true source and the host api on
   // the card drives it, so create-screenshots captures the live sandbox
@@ -157,6 +178,7 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
       // previewStyle = stage chrome for the sandbox body (mirrors the old
       // <Example previewStyle>): layout of the demo area, never source bytes
       {...(previewStyle ? { 'data-preview-style': previewStyle } : {})}
+      {...(Object.keys(links).length ? { 'data-links': JSON.stringify(links) } : {})}
     >
       {label ? <p class={H2_LABEL}>{label}</p> : null}
       {hint ? <p class={H2_HINT}>{hint}</p> : null}
@@ -199,6 +221,10 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
             <Icon name="monitor" />
             <span>Desktop</span>
           </button>
+          <button type="button" class="code-example-vp" data-vp="print" aria-pressed="false" title="Print: an A4 sheet in the print styles">
+            <Icon name="printer" />
+            <span>Print</span>
+          </button>
           <button type="button" class="code-example-vp" data-vp="full" aria-pressed="true" title="Full width">
             <Icon name="app-window" />
             <span>Full</span>
@@ -236,6 +262,12 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           <Icon name="maximize" />
           <span>Fullscreen</span>
         </button>
+        {/* docs only (Rapid Agentic Development): the example - its current source, edits included - opens in the
+            Studio; runtime/code-example.ts puts the source into the address fragment on click */}
+        <a class="code-example-tab" href="full-studio.html" target="_blank" rel="noopener" data-open-studio title="Open this example in the Studio">
+          <Icon name="app-window" />
+          <span>Studio</span>
+        </a>
       </div>
       <div class="code-example-panel" data-panel="code" hidden>
         <button type="button" class="code-example-copy" title="Copy the source">

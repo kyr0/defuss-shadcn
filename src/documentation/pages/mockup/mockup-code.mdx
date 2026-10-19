@@ -36,7 +36,43 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <SkillField label="Data attributes">
 <SkillText>Window: <code>data-chrome</code> (<code>mac</code>, <code>none</code>), <code>data-title</code>, <code>data-numbers</code>, <code>data-wrap</code>, <code>data-strike</code>, <code>data-animate</code>, <code>data-variant</code> (<code>muted</code>, <code>outline</code>, <code>primary</code>), <code>data-size</code> (<code>sm</code>, <code>lg</code>); lines: <code>data-prefix</code>, <code>data-tone</code> (<code>success</code>, <code>warning</code>, <code>info</code>, <code>destructive</code>, <code>muted</code>), <code>data-highlight</code> (<code>solid</code>), <code>data-cursor</code>, <code>data-diff</code> (<code>add</code>, <code>remove</code>); <code>&lt;ins&gt;</code> / <code>&lt;del&gt;</code> for word changes.</SkillText>
   </SkillField>
+
+  <SkillField label="Print">
+<SkillText>Paper cannot scroll: printed, every line wraps as with <code>data-wrap</code>, and the window prints its colors as designed - a print dialog drops background graphics by default, which left the terminal's light text pale on white paper. An animated diff prints its end state.</SkillText>
+  </SkillField>
 </SkillPanel>
+
+```html example part label="Code Mockup (sm)"
+<div class="mockup-code" data-size="sm">
+  <pre data-prefix="$"><code>npm i defuss-shadcn</code></pre>
+</div>
+```
+
+```html example part label="Code Mockup (lg)"
+<div class="mockup-code" data-size="lg">
+  <pre data-prefix="$"><code>npm i defuss-shadcn</code></pre>
+</div>
+```
+
+```html example part label="Code Mockup (muted)"
+<div class="mockup-code" data-variant="muted">
+  <pre data-prefix="$"><code>bun run build</code></pre>
+  <pre data-prefix=">" data-tone="success"><code>verify: OK</code></pre>
+</div>
+```
+
+```html example part label="Code Mockup (outline)"
+<div class="mockup-code" data-variant="outline">
+  <pre data-prefix="$"><code>bun run e2e</code></pre>
+  <pre data-prefix=">" data-tone="destructive"><code>1 check failed</code></pre>
+</div>
+```
+
+```html example part label="Code Mockup (primary)"
+<div class="mockup-code" data-variant="primary">
+  <pre><code>can be any color!</code></pre>
+</div>
+```
 
 ```html example label="Prompt" schema="none" hint="data-prefix='$' draws the prompt. It is generated content: select the line or copy it - you get the command, never the $."
 <div class="mockup-code">
@@ -60,53 +96,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Long lines" schema="none" hint="A long line scrolls the window sideways (the lines keep one width, so the scroll is shared); data-wrap wraps instead, with a hanging indent under the prompt."
-<div class="flex flex-col gap-4" style="max-width: 32rem">
-  <div class="mockup-code">
-    <pre
-      data-prefix="~"
-    ><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
-  </div>
-  <div class="mockup-code" data-wrap>
-    <pre
-      data-prefix="~"
-    ><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
-  </div>
-</div>
-```
-
 ```html example label="Without prefix" schema="none" hint="A line without data-prefix has no prompt - plain output, or a file."
 <div class="mockup-code">
   <pre><code>without prefix</code></pre>
-</div>
-```
-
-```html example label="Colors" schema="none" hint="data-variant: muted and outline for a light terminal (the tones darken for contrast), primary for any brand colour."
-<div class="flex flex-col gap-4">
-  <div class="mockup-code" data-variant="primary">
-    <pre><code>can be any color!</code></pre>
-  </div>
-  <div class="mockup-code" data-variant="muted">
-    <pre data-prefix="$"><code>bun run build</code></pre>
-    <pre data-prefix=">" data-tone="success"><code>verify: OK</code></pre>
-  </div>
-  <div class="mockup-code" data-variant="outline">
-    <pre data-prefix="$"><code>bun run e2e</code></pre>
-    <pre data-prefix=">" data-tone="destructive"><code>1 check failed</code></pre>
-  </div>
-</div>
-```
-
-```html example label="Window and title" schema="none" hint="data-chrome='mac' colours the dots, data-title puts a title in the bar, data-chrome='none' drops the bar."
-<div class="flex flex-col gap-4">
-  <div class="mockup-code" data-chrome="mac" data-title="zsh - defuss-shadcn">
-    <pre data-prefix="~"><code>git status</code></pre>
-    <pre data-tone="muted"><code>On branch main - nothing to commit, working tree clean</code></pre>
-  </div>
-  <div class="mockup-code" data-chrome="none">
-    <pre data-prefix="$"><code>bun --version</code></pre>
-    <pre><code>1.3.11</code></pre>
-  </div>
 </div>
 ```
 
@@ -150,6 +142,66 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Multi-line commands" schema="none" hint="One command per line; a command continued with a backslash goes on lines with data-prefix='' - the prompt column stays empty, so everything lines up, and a copy is still a valid shell command."
+<div class="mockup-code" data-title="bash">
+  <pre data-prefix="$"><code>npx skills add kyr0/defuss-shadcn \</code></pre>
+  <pre data-prefix=""><code>  --skill defuss-shadcn \</code></pre>
+  <pre data-prefix=""><code>  --agent claude-code</code></pre>
+</div>
+```
+
+```html example label="Cursor" schema="none" hint="data-cursor adds a blinking block after the line - a prompt waiting for input (still under reduced motion)."
+<div class="mockup-code" data-chrome="mac">
+  <pre data-prefix="$"><code>bun run deploy</code></pre>
+  <pre data-prefix=">" data-tone="success"><code>Released v0.9.3</code></pre>
+  <pre data-prefix="$" data-cursor><code></code></pre>
+</div>
+```
+
+```html example label="Long lines" schema="none" hint="A long line scrolls the window sideways (the lines keep one width, so the scroll is shared); data-wrap wraps instead, with a hanging indent under the prompt."
+<div class="flex flex-col gap-4" style="max-width: 32rem">
+  <div class="mockup-code">
+    <pre
+      data-prefix="~"
+    ><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
+  </div>
+  <div class="mockup-code" data-wrap>
+    <pre
+      data-prefix="~"
+    ><code>Magnam dolore beatae necessitatibus nemo ipsum itaque sit. Et porro quae qui et et dolore ratione.</code></pre>
+  </div>
+</div>
+```
+
+```html example label="Colors" schema="none" hint="data-variant: muted and outline for a light terminal (the tones darken for contrast), primary for any brand colour."
+<div class="flex flex-col gap-4">
+  <div class="mockup-code" data-variant="primary">
+    <pre><code>can be any color!</code></pre>
+  </div>
+  <div class="mockup-code" data-variant="muted">
+    <pre data-prefix="$"><code>bun run build</code></pre>
+    <pre data-prefix=">" data-tone="success"><code>verify: OK</code></pre>
+  </div>
+  <div class="mockup-code" data-variant="outline">
+    <pre data-prefix="$"><code>bun run e2e</code></pre>
+    <pre data-prefix=">" data-tone="destructive"><code>1 check failed</code></pre>
+  </div>
+</div>
+```
+
+```html example label="Window and title" schema="none" hint="data-chrome='mac' colours the dots, data-title puts a title in the bar, data-chrome='none' drops the bar."
+<div class="flex flex-col gap-4">
+  <div class="mockup-code" data-chrome="mac" data-title="zsh - defuss-shadcn">
+    <pre data-prefix="~"><code>git status</code></pre>
+    <pre data-tone="muted"><code>On branch main - nothing to commit, working tree clean</code></pre>
+  </div>
+  <div class="mockup-code" data-chrome="none">
+    <pre data-prefix="$"><code>bun --version</code></pre>
+    <pre><code>1.3.11</code></pre>
+  </div>
+</div>
+```
+
 ```html example label="Animated diff" schema="none" hint="data-animate plays the change: removed lines turn red and strike through, then the added lines slide in green, one after another (sibling-index() staggers them; --mockup-code-delay / --mockup-code-stagger tune it). CSS only - the script here only starts it when the window scrolls into view and replays it on click."
 <div class="flex flex-col gap-3 items-start">
   <div class="mockup-code w-full" id="diff-demo" data-chrome="mac" data-title="release.md">
@@ -178,22 +230,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   }).observe(win);
   document.getElementById('diff-replay').addEventListener('click', play);
 </script>
-```
-
-```html example label="Multi-line commands" schema="none" hint="One command per line; a command continued with a backslash goes on lines with data-prefix='' - the prompt column stays empty, so everything lines up, and a copy is still a valid shell command."
-<div class="mockup-code" data-title="bash">
-  <pre data-prefix="$"><code>npx skills add kyr0/defuss-shadcn \</code></pre>
-  <pre data-prefix=""><code>  --skill defuss-shadcn \</code></pre>
-  <pre data-prefix=""><code>  --agent claude-code</code></pre>
-</div>
-```
-
-```html example label="Cursor" schema="none" hint="data-cursor adds a blinking block after the line - a prompt waiting for input (still under reduced motion)."
-<div class="mockup-code" data-chrome="mac">
-  <pre data-prefix="$"><code>bun run deploy</code></pre>
-  <pre data-prefix=">" data-tone="success"><code>Released v0.9.3</code></pre>
-  <pre data-prefix="$" data-cursor><code></code></pre>
-</div>
 ```
 
 ```html example label="Sizes" schema="none" hint="data-size sm · (default) · lg - text, padding and the bar scale together."

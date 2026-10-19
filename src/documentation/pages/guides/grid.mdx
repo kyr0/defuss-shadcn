@@ -16,6 +16,22 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText><code>grid</code> only enables Grid. Add <code>grid-cols-auto</code> for auto-fit columns with a preferred minimum; <code>--layout-min</code> defaults to 16rem. Empty tracks collapse, and populated tracks share spare space. This is the card-wall pattern: team directories, feature matrices and gallery grids that reflow as the page widens - no media queries. Resize the demo with the toolbar and watch tracks appear and collapse.</DocText>
 
+```html example part label="place-items-center on the grid"
+<div class="grid grid-cols-3 gap-2 place-items-center demo-outline" style="grid-auto-rows: 4rem">
+  <div class="demo-tile size-8"></div>
+  <div class="demo-tile size-8"></div>
+  <div class="demo-tile size-8"></div>
+</div>
+```
+
+```html example part label="justify-self-\* / place-self-\* per item"
+<div class="grid grid-cols-3 gap-2 demo-outline" style="grid-auto-rows: 4rem">
+  <div class="demo-tile size-8 justify-self-start" data-variant="accent"></div>
+  <div class="demo-tile size-8 place-self-center" data-variant="accent"></div>
+  <div class="demo-tile size-8 justify-self-end" data-variant="accent"></div>
+</div>
+```
+
 ```html example schema="none"
 <div class="grid grid-cols-auto gap-4" style="--layout-min: 12rem" data-demo="grid">
   <div class="demo-tile p-4" data-variant="muted">Research</div>

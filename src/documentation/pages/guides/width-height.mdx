@@ -16,6 +16,30 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText><code>w-n</code>, <code>h-n</code> and <code>size-n</code> map directly to <code>n × --size-base</code> - <code>w-48</code> is 48 × 4px = 192px at the default root. Width and height are physical axes, matching their CSS names, and density does not change them.</DocText>
 
+```html example part label="size-8 - same in both axes"
+<div class="demo-tile size-8"></div>
+```
+
+```html example part label="LTR"
+<div
+  class="demo-tile inline-40 block-24 ps-4"
+  data-variant="outline"
+  style="padding-block: 0.25rem; padding-inline-end: 0.25rem"
+>
+  <div class="demo-tile h-full" data-variant="muted" style="flex: 1">content</div>
+</div>
+```
+
+```html example part label="vertical-rl - same classes"
+<div
+  class="demo-tile inline-40 block-24 ps-4"
+  data-variant="outline"
+  style="writing-mode: vertical-rl; padding-block: 0.25rem; padding-inline-end: 0.25rem"
+>
+  <div class="demo-tile" data-variant="muted" style="flex: 1; inline-size: 100%">content</div>
+</div>
+```
+
 ```html example schema="none"
 <div class="stack gap-4" data-demo="width-height">
   <div class="demo-tile w-48 h-8">w-48 h-8</div>

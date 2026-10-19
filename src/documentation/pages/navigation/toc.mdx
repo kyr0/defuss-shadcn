@@ -34,6 +34,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="Table of Contents"
+<nav class="toc" aria-label="On this page" style="align-self: start">
+  <p class="toc-title">On This Page</p>
+  <a class="toc-link" href="#tl-install" aria-current="location">Installation</a>
+  <a class="toc-link" href="#tl-usage">Usage</a>
+  <a class="toc-link" href="#tl-api">API</a>
+  <a class="toc-link" href="#tl-faq">FAQ</a>
+</nav>
+```
+
 ```html example label="Default" hint="A section nav with the current section marked via aria-current='location' - here as a left rail beside the main content. Scroll the content or click a link: a few lines of host script move the marker with an IntersectionObserver, exactly what the docs' own runtime does. The component itself ships no JavaScript." previewStyle="align-items:stretch;"
 <div
   id="toc-left"

@@ -45,97 +45,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="100,000 orders" hint="Click a header to sort, Shift+click to add a column to the sort. Type in the filter row - every filter runs over all 100,000 rows (text anywhere, case-insensitive; numbers take > 500, <= 20 …). The pin in a header locks the column: it moves into the sticky group and stays while the rest scrolls sideways. Click / Shift+click / Ctrl+click select rows; arrows move cell by cell. The line under the grid subscribes to the grid's store."
-<div class="flex flex-col gap-2">
-  <div
-    class="data-grid"
-    id="dg-orders"
-    aria-label="Orders"
-    data-select="multiple"
-    data-empty-text="No orders match."
-    style="height: 24rem"
-  >
-    <div class="data-grid-viewport">
-      <div class="data-grid-head">
-        <div class="data-grid-row">
-          <div
-            class="data-grid-header"
-            data-field="id"
-            data-type="number"
-            data-format=""
-            data-width="6rem"
-            data-filter="number"
-            data-locked
-            >Order</div
-          >
-          <div class="data-grid-header" data-field="customer" data-width="11rem" data-filter="text">Customer</div>
-          <div class="data-grid-header" data-field="country" data-width="9rem" data-filter="select">Country</div>
-          <div class="data-grid-header" data-field="product" data-width="10rem" data-filter="text">Product</div>
-          <div class="data-grid-header" data-field="quantity" data-type="number" data-width="6rem" data-filter="number"
-            >Qty</div
-          >
-          <div
-            class="data-grid-header"
-            data-field="total"
-            data-type="number"
-            data-format="currency:EUR"
-            data-width="8rem"
-            data-filter="number"
-            >Total</div
-          >
-          <div class="data-grid-header" data-field="status" data-width="8rem" data-filter="select">Status</div>
-          <div class="data-grid-header" data-field="date" data-format="date" data-width="8rem">Date</div>
-        </div>
-      </div>
-      <div class="data-grid-body"></div>
-    </div>
-  </div>
-  <p class="text-sm text-muted-foreground m-0" id="dg-orders-query" aria-live="polite"></p>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const first = ['Sofia', 'Jackson', 'Isabella', 'William', 'Olivia', 'Liam', 'Mia', 'Noah', 'Emma', 'Lucas'];
-    const countries = ['Germany', 'Portugal', 'Japan', 'Canada', 'Kenya', 'Peru', 'France', 'India'];
-    const products = ['Desk lamp', 'Notebook', 'Headphones', 'Backpack', 'Mug', 'Keyboard', 'Monitor arm', 'Plant pot'];
-    const statuses = ['open', 'paid', 'shipped', 'delivered', 'refunded'];
-    const day = 86_400_000;
-    const start = Date.UTC(2025, 0, 1);
-    // deterministic synthetic data: order i always reads the same
-    const orders = Array.from({ length: 100_000 }, (_, i) => {
-      const quantity = 1 + ((i * 7) % 9);
-      return {
-        id: 100_001 + i,
-        customer: first[i % 10] + ' ' + String.fromCharCode(65 + ((i * 11) % 26)) + '.',
-        country: countries[(i * 3) % 8],
-        product: products[(i * 5) % 8],
-        quantity,
-        total: Math.round(quantity * (4 + ((i * 7919) % 9600) / 100) * 100) / 100,
-        status: statuses[(i * 13) % 5],
-        date: start + ((i * 37) % 640) * day,
-      };
-    });
-    const grid = document.getElementById('dg-orders');
-    df$.shadcn.dataGrid.setSource(grid, orders);
-    // the query IS the store: follow it
-    const line = document.getElementById('dg-orders-query');
-    const describe = ({ config }) => {
-      const sort = config.sorters.map((s) => s.field + ' ' + s.direction).join(', ') || 'none';
-      line.textContent =
-        'Sorted by: ' +
-        sort +
-        ' · filters: ' +
-        config.filters.length +
-        ' · locked: ' +
-        config.locked.join(', ') +
-        ' · selected: ' +
-        config.selected.length;
-    };
-    grid.store.subscribe(describe);
-    describe(grid.store.value);
-  });
-</script>
-```
-
 ```html example label="Pages" schema="none" hint="data-paging='pages' shows data-page-size rows a page and a pager below; the page is config.page (0-based), so sorting or filtering starts again at page 1."
 <div
   class="data-grid"
@@ -230,6 +139,149 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Custom cells" schema="none" hint="cells: { field: (el, record) } fills a column with anything - a badge, a meter. Cells are recycled with their rows; the function gets a fresh .data-grid-content element each time. A control in a cell (a field, a checkbox, a select) keeps its clicks and its keys - the grid does not take them for row selection or navigation."
+<div class="data-grid" id="dg-cells" aria-label="Deployments" style="height: 16rem; max-width: 40rem">
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="service" data-width="minmax(9rem, 1fr)">Service</div>
+        <div class="data-grid-header" data-field="status" data-width="8rem">Status</div>
+        <div class="data-grid-header" data-field="coverage" data-type="number" data-width="10rem">Coverage</div>
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const states = [
+      ['healthy', 'default'],
+      ['degraded', 'secondary'],
+      ['down', 'destructive'],
+    ];
+    const rows = Array.from({ length: 2000 }, (_, i) => ({
+      id: i + 1,
+      service: 'service-' + String(i + 1).padStart(4, '0'),
+      status: (i * 7) % 11 === 0 ? 2 : (i * 3) % 7 === 0 ? 1 : 0,
+      coverage: 40 + ((i * 13) % 60),
+    }));
+    df$.shadcn.dataGrid.setSource(document.getElementById('dg-cells'), rows, {
+      cells: {
+        status: (el, record) => {
+          const [label, variant] = states[record.status];
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.dataset.variant = variant;
+          badge.textContent = label;
+          el.append(badge);
+        },
+        coverage: (el, record) => {
+          const meter = document.createElement('meter');
+          meter.min = 0;
+          meter.max = 100;
+          meter.value = record.coverage;
+          meter.style.width = '5rem';
+          const text = document.createElement('span');
+          text.textContent = ' ' + record.coverage + '%';
+          el.append(meter, text);
+        },
+      },
+    });
+  });
+</script>
+```
+
+```html example label="100,000 orders" hint="Click a header to sort, Shift+click to add a column to the sort. Type in the filter row - every filter runs over all 100,000 rows (text anywhere, case-insensitive; numbers take > 500, <= 20 …). The pin in a header locks the column: it moves into the sticky group and stays while the rest scrolls sideways. Click / Shift+click / Ctrl+click select rows; arrows move cell by cell. The line under the grid subscribes to the grid's store."
+<div class="flex flex-col gap-2">
+  <div
+    class="data-grid"
+    id="dg-orders"
+    aria-label="Orders"
+    data-select="multiple"
+    data-empty-text="No orders match."
+    style="height: 24rem"
+  >
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div
+            class="data-grid-header"
+            data-field="id"
+            data-type="number"
+            data-format=""
+            data-width="6rem"
+            data-filter="number"
+            data-locked
+            >Order</div
+          >
+          <div class="data-grid-header" data-field="customer" data-width="11rem" data-filter="text">Customer</div>
+          <div class="data-grid-header" data-field="country" data-width="9rem" data-filter="select">Country</div>
+          <div class="data-grid-header" data-field="product" data-width="10rem" data-filter="text">Product</div>
+          <div class="data-grid-header" data-field="quantity" data-type="number" data-width="6rem" data-filter="number"
+            >Qty</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="total"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="8rem"
+            data-filter="number"
+            >Total</div
+          >
+          <div class="data-grid-header" data-field="status" data-width="8rem" data-filter="select">Status</div>
+          <div class="data-grid-header" data-field="date" data-format="date" data-width="8rem">Date</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <p class="text-sm text-muted-foreground m-0" id="dg-orders-query" aria-live="polite"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const first = ['Sofia', 'Jackson', 'Isabella', 'William', 'Olivia', 'Liam', 'Mia', 'Noah', 'Emma', 'Lucas'];
+    const countries = ['Germany', 'Portugal', 'Japan', 'Canada', 'Kenya', 'Peru', 'France', 'India'];
+    const products = ['Desk lamp', 'Notebook', 'Headphones', 'Backpack', 'Mug', 'Keyboard', 'Monitor arm', 'Plant pot'];
+    const statuses = ['open', 'paid', 'shipped', 'delivered', 'refunded'];
+    const day = 86_400_000;
+    const start = Date.UTC(2025, 0, 1);
+    // deterministic synthetic data: order i always reads the same
+    const orders = Array.from({ length: 100_000 }, (_, i) => {
+      const quantity = 1 + ((i * 7) % 9);
+      return {
+        id: 100_001 + i,
+        customer: first[i % 10] + ' ' + String.fromCharCode(65 + ((i * 11) % 26)) + '.',
+        country: countries[(i * 3) % 8],
+        product: products[(i * 5) % 8],
+        quantity,
+        total: Math.round(quantity * (4 + ((i * 7919) % 9600) / 100) * 100) / 100,
+        status: statuses[(i * 13) % 5],
+        date: start + ((i * 37) % 640) * day,
+      };
+    });
+    const grid = document.getElementById('dg-orders');
+    df$.shadcn.dataGrid.setSource(grid, orders);
+    // the query IS the store: follow it
+    const line = document.getElementById('dg-orders-query');
+    const describe = ({ config }) => {
+      const sort = config.sorters.map((s) => s.field + ' ' + s.direction).join(', ') || 'none';
+      line.textContent =
+        'Sorted by: ' +
+        sort +
+        ' · filters: ' +
+        config.filters.length +
+        ' · locked: ' +
+        config.locked.join(', ') +
+        ' · selected: ' +
+        config.selected.length;
+    };
+    grid.store.subscribe(describe);
+    describe(grid.store.value);
+  });
+</script>
+```
+
 ```html example label="The store is the query" schema="none" hint="Everything the grid shows is el.store.value.config - plain JSON. These buttons only write the query (df$.shadcn.dataGrid.query merges into it); the panel below only subscribes to the store. The grid does the rest."
 <div class="flex flex-col gap-3">
   <div class="flex flex-wrap gap-2">
@@ -302,58 +354,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       },
       { immediate: true },
     );
-  });
-</script>
-```
-
-```html example label="Custom cells" schema="none" hint="cells: { field: (el, record) } fills a column with anything - a badge, a meter. Cells are recycled with their rows; the function gets a fresh .data-grid-content element each time."
-<div class="data-grid" id="dg-cells" aria-label="Deployments" style="height: 16rem; max-width: 40rem">
-  <div class="data-grid-viewport">
-    <div class="data-grid-head">
-      <div class="data-grid-row">
-        <div class="data-grid-header" data-field="service" data-width="minmax(9rem, 1fr)">Service</div>
-        <div class="data-grid-header" data-field="status" data-width="8rem">Status</div>
-        <div class="data-grid-header" data-field="coverage" data-type="number" data-width="10rem">Coverage</div>
-      </div>
-    </div>
-    <div class="data-grid-body"></div>
-  </div>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const states = [
-      ['healthy', 'default'],
-      ['degraded', 'secondary'],
-      ['down', 'destructive'],
-    ];
-    const rows = Array.from({ length: 2000 }, (_, i) => ({
-      id: i + 1,
-      service: 'service-' + String(i + 1).padStart(4, '0'),
-      status: (i * 7) % 11 === 0 ? 2 : (i * 3) % 7 === 0 ? 1 : 0,
-      coverage: 40 + ((i * 13) % 60),
-    }));
-    df$.shadcn.dataGrid.setSource(document.getElementById('dg-cells'), rows, {
-      cells: {
-        status: (el, record) => {
-          const [label, variant] = states[record.status];
-          const badge = document.createElement('span');
-          badge.className = 'badge';
-          badge.dataset.variant = variant;
-          badge.textContent = label;
-          el.append(badge);
-        },
-        coverage: (el, record) => {
-          const meter = document.createElement('meter');
-          meter.min = 0;
-          meter.max = 100;
-          meter.value = record.coverage;
-          meter.style.width = '5rem';
-          const text = document.createElement('span');
-          text.textContent = ' ' + record.coverage + '%';
-          el.append(meter, text);
-        },
-      },
-    });
   });
 </script>
 ```

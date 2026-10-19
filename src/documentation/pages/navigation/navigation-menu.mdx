@@ -57,6 +57,76 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
+```html example part label="Navigation Menu (xs)"
+<nav class="nav-menu" data-size="xs" aria-label="Site xs"
+  ><ul class="nav-menu-list"
+    ><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li
+    ><li class="nav-menu-item"
+      ><button class="nav-menu-trigger" popovertarget="sz-nav-xs">Products</button
+      ><div class="nav-menu-content" id="sz-nav-xs" popover=""
+        ><a class="nav-menu-content-link" href="#">Analytics</a></div
+      ></li
+    ></ul
+  ></nav
+>
+```
+
+```html example part label="Navigation Menu (sm)"
+<nav class="nav-menu" data-size="sm" aria-label="Site sm"
+  ><ul class="nav-menu-list"
+    ><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li
+    ><li class="nav-menu-item"
+      ><button class="nav-menu-trigger" popovertarget="sz-nav-sm">Products</button
+      ><div class="nav-menu-content" id="sz-nav-sm" popover=""
+        ><a class="nav-menu-content-link" href="#">Analytics</a></div
+      ></li
+    ></ul
+  ></nav
+>
+```
+
+```html example part label="Navigation Menu (md)"
+<nav class="nav-menu" data-size="md" aria-label="Site md"
+  ><ul class="nav-menu-list"
+    ><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li
+    ><li class="nav-menu-item"
+      ><button class="nav-menu-trigger" popovertarget="sz-nav-md">Products</button
+      ><div class="nav-menu-content" id="sz-nav-md" popover=""
+        ><a class="nav-menu-content-link" href="#">Analytics</a></div
+      ></li
+    ></ul
+  ></nav
+>
+```
+
+```html example part label="Navigation Menu (lg)"
+<nav class="nav-menu" data-size="lg" aria-label="Site lg"
+  ><ul class="nav-menu-list"
+    ><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li
+    ><li class="nav-menu-item"
+      ><button class="nav-menu-trigger" popovertarget="sz-nav-lg">Products</button
+      ><div class="nav-menu-content" id="sz-nav-lg" popover=""
+        ><a class="nav-menu-content-link" href="#">Analytics</a></div
+      ></li
+    ></ul
+  ></nav
+>
+```
+
+```html example part label="Navigation Menu (xl)"
+<nav class="nav-menu" data-size="xl" aria-label="Site xl"
+  ><ul class="nav-menu-list"
+    ><li class="nav-menu-item"><a class="nav-menu-link" href="#">Home</a></li
+    ><li class="nav-menu-item"
+      ><button class="nav-menu-trigger" popovertarget="sz-nav-xl">Products</button
+      ><div class="nav-menu-content" id="sz-nav-xl" popover=""
+        ><a class="nav-menu-content-link" href="#">Analytics</a></div
+      ></li
+    ></ul
+  ></nav
+>
+```
+
 ```html example label="Default" height="24"
 <nav class="nav-menu" aria-label="Main">
   <ul class="nav-menu-list">
@@ -319,79 +389,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </nav>
 ```
 
-```html example label="Full width in a navbar" hint="A .navbar with the menu in its center; data-width=&quot;full&quot; spans the panel across the page and keeps its content to 72rem." height="36"
-<nav class="navbar" aria-label="Site">
-  <div class="navbar-start"
-    ><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div
-  >
-  <div class="navbar-center">
-    <div class="nav-menu" role="presentation">
-      <ul class="nav-menu-list">
-        <li class="nav-menu-item">
-          <button class="nav-menu-trigger" popovertarget="mm-full">
-            Products
-            <svg
-              aria-hidden="true"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="m6 9 6 6 6-6"></path></svg
-          ></button>
-          <div class="nav-menu-content" id="mm-full" data-width="full" popover>
-            <div class="nav-menu-grid" data-columns="4">
-              <div class="nav-menu-section">
-                <p class="nav-menu-heading">Analytics</p>
-                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
-                  ><span class="nav-menu-icon"><i data-lucide="chart-line"></i></span><strong>Dashboards</strong
-                  ><p>Every metric, live</p></a
-                >
-                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
-                  ><span class="nav-menu-icon"><i data-lucide="bell"></i></span><strong>Alerts</strong
-                  ><p>Know first</p></a
-                >
-              </div>
-              <div class="nav-menu-section">
-                <p class="nav-menu-heading">Automation</p>
-                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
-                  ><span class="nav-menu-icon"><i data-lucide="workflow"></i></span><strong>Workflows</strong
-                  ><p>Drag, drop, done</p></a
-                >
-                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
-                  ><span class="nav-menu-icon"><i data-lucide="plug"></i></span><strong>Integrations</strong
-                  ><p>300+ apps</p></a
-                >
-              </div>
-              <div class="nav-menu-section">
-                <p class="nav-menu-heading">Security</p>
-                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
-                  ><span class="nav-menu-icon"><i data-lucide="lock"></i></span><strong>Access</strong
-                  ><p>Roles and SSO</p></a
-                >
-                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
-                  ><span class="nav-menu-icon"><i data-lucide="file-check"></i></span><strong>Audit</strong
-                  ><p>Every change logged</p></a
-                >
-              </div>
-              <a class="nav-menu-feature" href="#" onclick="event.preventDefault()"
-                ><strong>Start free</strong><p>No card, no time limit.</p></a
-              >
-            </div>
-          </div>
-        </li>
-        <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="navbar-end"><button class="btn" data-size="sm">Sign in</button></div>
-</nav>
-```
-
 ```html example label="Vertical" hint="data-orientation=&quot;vertical&quot;: a side menu; each panel flies out to the right of its trigger and drops below it when there is no room at the side." height="30"
 <nav class="nav-menu" data-orientation="vertical" aria-label="Sections" style="width: 14rem">
   <ul class="nav-menu-list">
@@ -509,6 +506,79 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     </li>
     <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Blog</a></li>
   </ul>
+</nav>
+```
+
+```html example label="Full width in a navbar" hint="A .navbar with the menu in its center; data-width=&quot;full&quot; spans the panel across the page and keeps its content to 72rem." height="36"
+<nav class="navbar" aria-label="Site">
+  <div class="navbar-start"
+    ><a class="navbar-brand" href="#top"><i data-lucide="hexagon"></i> Acme</a></div
+  >
+  <div class="navbar-center">
+    <div class="nav-menu" role="presentation">
+      <ul class="nav-menu-list">
+        <li class="nav-menu-item">
+          <button class="nav-menu-trigger" popovertarget="mm-full">
+            Products
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m6 9 6 6 6-6"></path></svg
+          ></button>
+          <div class="nav-menu-content" id="mm-full" data-width="full" popover>
+            <div class="nav-menu-grid" data-columns="4">
+              <div class="nav-menu-section">
+                <p class="nav-menu-heading">Analytics</p>
+                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
+                  ><span class="nav-menu-icon"><i data-lucide="chart-line"></i></span><strong>Dashboards</strong
+                  ><p>Every metric, live</p></a
+                >
+                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
+                  ><span class="nav-menu-icon"><i data-lucide="bell"></i></span><strong>Alerts</strong
+                  ><p>Know first</p></a
+                >
+              </div>
+              <div class="nav-menu-section">
+                <p class="nav-menu-heading">Automation</p>
+                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
+                  ><span class="nav-menu-icon"><i data-lucide="workflow"></i></span><strong>Workflows</strong
+                  ><p>Drag, drop, done</p></a
+                >
+                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
+                  ><span class="nav-menu-icon"><i data-lucide="plug"></i></span><strong>Integrations</strong
+                  ><p>300+ apps</p></a
+                >
+              </div>
+              <div class="nav-menu-section">
+                <p class="nav-menu-heading">Security</p>
+                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
+                  ><span class="nav-menu-icon"><i data-lucide="lock"></i></span><strong>Access</strong
+                  ><p>Roles and SSO</p></a
+                >
+                <a class="nav-menu-content-link" href="#" onclick="event.preventDefault()"
+                  ><span class="nav-menu-icon"><i data-lucide="file-check"></i></span><strong>Audit</strong
+                  ><p>Every change logged</p></a
+                >
+              </div>
+              <a class="nav-menu-feature" href="#" onclick="event.preventDefault()"
+                ><strong>Start free</strong><p>No card, no time limit.</p></a
+              >
+            </div>
+          </div>
+        </li>
+        <li class="nav-menu-item"><a class="nav-menu-link" href="#" onclick="event.preventDefault()">Pricing</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="navbar-end"><button class="btn" data-size="sm">Sign in</button></div>
 </nav>
 ```
 

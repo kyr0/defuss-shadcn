@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { pageDirs } from '../src/documentation/lib/page-dirs-files.ts';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as prettier from 'prettier';
 import { formatFences } from './lib/format-pages.ts';
@@ -13,6 +14,13 @@ import { formatFences } from './lib/format-pages.ts';
  * runs the check (`bun run format` the write).
  * VERIFIED: (tests/format-pages.test.ts) a formatted fence renders the same
  * DOM - elements, attributes and text - as the authored one.
+ *
+ * A page whose exact text this formatter found formatted before is not printed
+ * again: .cache/format-pages.json keeps the hashes of formatted page texts,
+ * keyed by the formatter (this script, lib/format-pages.ts, Prettier's version,
+ * the options) - an edited page, or any formatter change, formats for real.
+ * VERIFIED: (tmp/format-cache-probe.ts) the same output with and without the
+ * cache, an unformatted edit still fails the check; 3.2 s -> 0.03 s warm.
  */
 
 const ROOT = join(import.meta.dirname, '..');
@@ -38,6 +46,16 @@ if (check === write) {
   process.exit(2);
 }
 
+const sha = (data: string | Buffer) => createHash('sha256').update(data).digest('hex');
+const CACHE = join(ROOT, '.cache', 'format-pages.json');
+const formatter = sha(
+  [readFileSync(import.meta.filename), readFileSync(join(import.meta.dirname, 'lib', 'format-pages.ts')), prettier.version, JSON.stringify(HTML_OPTIONS)].join('\0'),
+);
+const cached: { formatter?: string; formatted?: Record<string, number> } = existsSync(CACHE) ? JSON.parse(readFileSync(CACHE, 'utf8')) : {};
+/** page text hash -> its fence count, for every page text found formatted (this run's pages only) */
+const known = cached.formatter === formatter ? (cached.formatted ?? {}) : {};
+const formatted: Record<string, number> = {};
+
 const stale: string[] = [];
 /** fences Prettier's HTML parser refuses - markup a browser repairs silently (an unclosed element, a stray closing tag) */
 const broken: string[] = [];
@@ -47,6 +65,12 @@ const pages = pageDirs(PAGES).map((p) => (p.folder ? `${p.folder}/${p.slug}.mdx`
 for (const f of pages) {
   const file = join(PAGES, f);
   const text = readFileSync(file, 'utf8');
+  const textHash = sha(text);
+  if (known[textHash] !== undefined) {
+    fences += known[textHash];
+    formatted[textHash] = known[textHash];
+    continue;
+  }
   const fmt = async (html: string) => {
     try {
       return await prettier.format(html, HTML_OPTIONS);
@@ -73,10 +97,14 @@ for (const f of pages) {
     continue;
   }
   fences += result.fences;
+  // --write formats to the fixpoint, so the text it writes is formatted too
+  if (result.text === text || write) formatted[sha(result.text)] = result.fences;
   if (result.text === text) continue;
   stale.push(f);
   if (write) writeFileSync(file, result.text);
 }
+mkdirSync(join(ROOT, '.cache'), { recursive: true });
+writeFileSync(CACHE, `${JSON.stringify({ formatter, formatted })}\n`);
 for (const b of broken) console.log(`format-pages: ${b}`);
 if (broken.length) console.log(`format-pages: ${broken.length} page(s) with markup Prettier cannot parse\n  fix: repair the named fence (the browser repairs it silently; the shown source is wrong)`);
 if (check && stale.length) {

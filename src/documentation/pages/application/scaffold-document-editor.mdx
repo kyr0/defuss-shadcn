@@ -9,7 +9,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <DocPage meta={meta}>
 
 <PageHeader slug="scaffold-document-editor" title="Document Editor" introStyle="max-width:44rem;">
-  A Google-Docs-style editor as a clickdummy - "Margin". Three Markdown documents open in the <DocLink href="editorjs.html">Editor.js</DocLink> block editor, the <DocLink href="toolbar.html">Toolbar</DocLink> formats the selection and the current block, and the <DocLink href="doc-comments.html">Document Comments</DocLink> column on the right scrolls on its own: select text and press Comment to open a thread on it, click a highlight to find its card, click a card to find its text, walk the comments with ↑ ↓, reply in place, follow a quote to another span. Every control is a shipped component. Part of the <DocLink href="application-scaffolds.html">Application Scaffolds</DocLink>.
+  A Google-Docs-style editor as a clickdummy - "Margin". Four Markdown documents open in the <DocLink href="editorjs.html">Editor.js</DocLink> block editor, the <DocLink href="toolbar.html">Toolbar</DocLink> formats the selection and the current block, and the <DocLink href="doc-comments.html">Document Comments</DocLink> column on the right scrolls on its own: select text and press Comment to open a thread on it, click a highlight to find its card, click a card to find its text, walk the comments with ↑ ↓, reply in place, follow a quote to another span. A <DocLink href="menubar.html">Menubar</DocLink> carries the commands: File opens a Markdown file or its annotations (or drop the files on the editor) - a comments model, or the JSON an editorial review pipeline wrote for that Markdown, which becomes comments anchored to the quoted text - saves the document in this browser, saves it as a Markdown file and exports its comments as JSON. Comments, replies and replies still being typed are kept as they happen, so a reload loses none of them. Every control is a shipped component. Part of the <DocLink href="application-scaffolds.html">Application Scaffolds</DocLink>.
 </PageHeader>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
@@ -17,12 +17,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <a class="btn" data-variant="outline" href="#how-it-works">How it works</a>
 </div>
 
-```html example label="Document editor" schema="none" height="50" mode="desktop" hint="The whole editor in one source. The documents are Markdown in a JSON script; opening one renders it in Editor.js and loads its comments; switching keeps the edits. Comments are a JSON model - comment on a selection with the toolbar's Comment button, reply under a card, follow a quote." previewStyle="align-items:stretch;padding:0;"
+```html example label="Document editor" schema="none" height="50" mode="desktop" sandbox="downloads" hint="The whole editor in one source. The documents are Markdown in a JSON script; opening one renders it in Editor.js and loads its comments; switching keeps the edits. Comments are a JSON model - comment on a selection with the toolbar's Comment button, reply under a card, follow a quote. File > Open loads a Markdown file, then its annotations - or drop them on the editor; Save keeps the document in this browser (this preview has no storage - full screen keeps it across reloads), Save as and Export download it as Markdown and its comments as JSON; comments, replies and open reply drafts are kept as they happen. Importprüfung shows a review pipeline's run as comments: findings by severity, summary entries linked to the entries they refer to, Findings / Summary layers in the status bar." previewStyle="align-items:stretch;padding:0;"
 <style>
   /* Margin: the scaffold's own glue - the three-column layout and the page
-     look. Every control is a shipped component (Sidebar, Toolbar, Toggle
-     Group, Button, Badge, Avatar, Input, Kbd, Dialog, Textarea, Toast,
-     Editor.js, Document Comments) */
+     look. Every control is a shipped component (Sidebar, Menubar, Toolbar,
+     Toggle Group, Button, Badge, Avatar, Input, Kbd, Dialog, Textarea,
+     Toast, Editor.js, Document Comments) */
   .de {
     container: de / inline-size;
     position: relative;
@@ -33,6 +33,31 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     background: var(--background);
     color: var(--foreground);
     font-size: 0.875rem;
+  }
+  /* files dragged over the editor: the drop target (the Chat Session's look), its label says what a drop does */
+  .de[data-drop-active]::after {
+    content: attr(data-drop-label);
+    position: absolute;
+    inset: 0.75rem;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    border: 2px dashed var(--ring);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklch, var(--background) 92%, transparent);
+    color: var(--foreground);
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-align: center;
+    text-wrap: balance;
+    pointer-events: none;
+  }
+  @media (forced-colors: active) {
+    .de[data-drop-active]::after {
+      border-color: Highlight;
+      forced-color-adjust: none;
+    }
   }
   /* the document list is open or closed, never an icon rail, and sits in the flow (the page
      narrows, nothing overlays it) - the trigger in the header stays visible either way */
@@ -63,15 +88,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     flex: none;
     align-items: center;
     gap: 0.5rem;
-    height: 3.25rem;
+    height: 4rem;
     padding-inline: 0.75rem;
     border-block-end: 1px solid var(--border);
   }
-  .de-title {
+  /* the title above the menubar, as in Google Docs */
+  .de-heading {
+    display: flex;
     flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
     min-width: 0;
+  }
+  .de-title {
+    max-width: 100%;
     margin: 0;
-    padding: 0.25rem 0.5rem;
+    padding: 0.0625rem 0.375rem;
     border: 1px solid transparent;
     border-radius: var(--radius-md);
     background: none;
@@ -159,6 +191,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   .de-status-spacer {
     flex: 1;
   }
+  /* the annotation layers fit the status bar */
+  .de-status .toggle {
+    height: 1.5rem;
+    padding-inline: 0.5rem;
+    font-size: 0.75rem;
+    & span {
+      color: var(--muted-foreground);
+    }
+  }
   .de-quote {
     margin: 0 0 0.75rem;
     padding: 0.5rem 0.75rem;
@@ -204,7 +245,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     .de[data-comments] .doc-comments {
       display: flex;
       position: absolute;
-      inset-block: 3.25rem 2rem;
+      inset-block: 4rem 2rem;
       inset-inline-end: 0;
       z-index: 2;
       box-shadow: var(--shadow-lg);
@@ -230,7 +271,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <div class="sidebar-content">
       <details class="sidebar-group" open>
         <summary><span>My documents</span><i data-lucide="chevron-right"></i></summary>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" id="de-doc-nav">
           <a class="sidebar-link" href="#" data-de-doc="launch" aria-current="page"
             ><i data-lucide="file-text"></i> <span>Q4 launch plan</span
             ><span class="badge" data-variant="secondary" data-de-count="launch">5</span></a
@@ -242,6 +283,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <a class="sidebar-link" href="#" data-de-doc="notes"
             ><i data-lucide="file-text"></i> <span>Meeting notes</span
             ><span class="badge" data-variant="secondary" data-de-count="notes" hidden>0</span></a
+          >
+          <a class="sidebar-link" href="#" data-de-doc="pruefung"
+            ><i data-lucide="file-search"></i> <span>Importprüfung</span
+            ><span class="badge" data-variant="secondary" data-de-count="pruefung" hidden>0</span></a
           >
         </nav>
       </details>
@@ -263,7 +308,171 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <button class="sidebar-trigger" data-sidebar-trigger="de-sidebar" aria-label="Toggle documents"
         ><i data-lucide="panel-left"></i
       ></button>
-      <h1 class="de-title" id="de-title">Q4 launch plan</h1>
+      <div class="de-heading">
+        <h1 class="de-title" id="de-title">Q4 launch plan</h1>
+        <div class="menubar" role="menubar" aria-label="Document" data-variant="ghost" data-size="sm" id="de-menu">
+          <button class="menubar-trigger" data-dropdown-trigger="de-m-file">File</button>
+          <div class="dropdown-content" id="de-m-file" role="menu" popover aria-label="File">
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="new"
+              ><i data-lucide="file-plus"></i> New document</button
+            >
+            <div class="dropdown-sub">
+              <button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1"
+                ><i data-lucide="folder-open"></i> Open</button
+              >
+              <div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="Open">
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="open-markdown"
+                  ><i data-lucide="file-text"></i> Markdown...</button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="open-annotations"
+                  ><i data-lucide="message-square-text"></i> Comment annotations...</button
+                >
+              </div>
+            </div>
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="save"
+              ><i data-lucide="save"></i> Save <span class="dropdown-shortcut">⌘S</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="save-as"
+              ><i data-lucide="download"></i> Save as... <span class="dropdown-shortcut">⇧⌘S</span></button
+            >
+            <div class="dropdown-sub">
+              <button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1"
+                ><i data-lucide="file-output"></i> Export</button
+              >
+              <div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="Export">
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="export-annotations"
+                  ><i data-lucide="file-json"></i> Comment annotations (JSON)</button
+                >
+              </div>
+            </div>
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="share"
+              ><i data-lucide="share-2"></i> Share...</button
+            >
+          </div>
+          <button class="menubar-trigger" data-dropdown-trigger="de-m-edit">Edit</button>
+          <div class="dropdown-content" id="de-m-edit" role="menu" popover aria-label="Edit">
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="comment"
+              ><i data-lucide="message-square-plus"></i> Comment <span class="dropdown-shortcut">⌘K</span></button
+            >
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="prev-comment"
+              ><i data-lucide="chevron-up"></i> Previous comment</button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-action="next-comment"
+              ><i data-lucide="chevron-down"></i> Next comment</button
+            >
+          </div>
+          <button class="menubar-trigger" data-dropdown-trigger="de-m-insert">Insert</button>
+          <div class="dropdown-content" id="de-m-insert" role="menu" popover aria-label="Insert">
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="table"
+              ><i data-lucide="table"></i> Table</button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="delimiter"
+              ><i data-lucide="minus"></i> Divider</button
+            >
+          </div>
+          <button class="menubar-trigger" data-dropdown-trigger="de-m-format">Format</button>
+          <div class="dropdown-content" id="de-m-format" role="menu" popover aria-label="Format">
+            <div class="dropdown-sub">
+              <button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1"
+                ><i data-lucide="bold"></i> Text</button
+              >
+              <div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="Text">
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="bold"
+                  ><i data-lucide="bold"></i> Bold <span class="dropdown-shortcut">⌘B</span></button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="italic"
+                  ><i data-lucide="italic"></i> Italic <span class="dropdown-shortcut">⌘I</span></button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="underline"
+                  ><i data-lucide="underline"></i> Underline <span class="dropdown-shortcut">⌘U</span></button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="marker"
+                  ><i data-lucide="highlighter"></i> Highlight</button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="inline-code"
+                  ><i data-lucide="code"></i> Inline code</button
+                >
+              </div>
+            </div>
+            <div class="dropdown-sub">
+              <button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1"
+                ><i data-lucide="heading"></i> Paragraph styles</button
+              >
+              <div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="Paragraph styles">
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="paragraph"
+                  ><i data-lucide="pilcrow"></i> Normal text</button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="header:1"
+                  ><i data-lucide="heading-1"></i> Heading 1</button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="header:2"
+                  ><i data-lucide="heading-2"></i> Heading 2</button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="header:3"
+                  ><i data-lucide="heading-3"></i> Heading 3</button
+                >
+              </div>
+            </div>
+            <div class="dropdown-sub">
+              <button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1"
+                ><i data-lucide="list"></i> Bullets &amp; numbering</button
+              >
+              <div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="Bullets and numbering">
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="list:unordered"
+                  ><i data-lucide="list"></i> Bulleted list</button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="list:ordered"
+                  ><i data-lucide="list-ordered"></i> Numbered list</button
+                >
+                <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="list:checklist"
+                  ><i data-lucide="list-checks"></i> Checklist</button
+                >
+              </div>
+            </div>
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="quote"
+              ><i data-lucide="quote"></i> Quote</button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1" data-de-command="code"
+              ><i data-lucide="square-code"></i> Code block</button
+            >
+          </div>
+          <button class="menubar-trigger" data-dropdown-trigger="de-m-view">View</button>
+          <div class="dropdown-content" id="de-m-view" role="menu" popover aria-label="View">
+            <button
+              class="dropdown-item dropdown-check"
+              role="menuitemcheckbox"
+              aria-checked="false"
+              tabindex="-1"
+              data-de-view="sidebar"
+              >Document list</button
+            >
+            <div class="dropdown-separator" role="separator"></div>
+            <div role="group" aria-label="Annotation layers">
+              <div class="dropdown-label" data-inset>Annotation layers</div>
+              <button
+                class="dropdown-item dropdown-check"
+                role="menuitemcheckbox"
+                aria-checked="true"
+                tabindex="-1"
+                data-de-view="findings"
+                >Findings</button
+              >
+              <button
+                class="dropdown-item dropdown-check"
+                role="menuitemcheckbox"
+                aria-checked="true"
+                tabindex="-1"
+                data-de-view="summary"
+                >Summary</button
+              >
+            </div>
+          </div>
+        </div>
+      </div>
       <span class="de-saved" id="de-saved" data-state="saved"><i data-lucide="cloud"></i> <span>Saved</span></span>
       <div class="avatar-group" aria-label="Editing now">
         <span class="avatar" data-size="sm"><span class="avatar-fallback">MC</span></span>
@@ -495,6 +704,14 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
     <footer class="de-status">
       <span id="de-words">0 words</span>
       <span class="badge" data-variant="outline">Markdown</span>
+      <div class="toggle-group" role="group" aria-label="Annotation layers" data-type="multiple" id="de-layers" hidden>
+        <button class="toggle" type="button" data-size="sm" aria-pressed="true" data-de-layer="findings"
+          >Findings <span data-de-layer-count="findings">0</span></button
+        >
+        <button class="toggle" type="button" data-size="sm" aria-pressed="true" data-de-layer="summary"
+          >Summary <span data-de-layer-count="summary">0</span></button
+        >
+      </div>
       <span class="de-status-spacer"></span>
       <span><kbd class="kbd">⌘</kbd> <kbd class="kbd">K</kbd> comment on the selection</span>
     </footer>
@@ -601,6 +818,16 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
     </form>
   </dialog>
 
+  <!-- File > Open: the menu items open these pickers (a hidden file input, clicked) -->
+  <input
+    type="file"
+    id="de-file-md"
+    accept=".md,.markdown,text/markdown,text/plain"
+    hidden
+    aria-label="Open a Markdown file"
+  />
+  <input type="file" id="de-file-json" accept=".json,application/json" hidden aria-label="Open comment annotations" />
+
   <script type="application/json" id="de-docs">
     {
       "brief": {
@@ -612,7 +839,10 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
             "author": "Ada Novak",
             "time": "2026-10-05T15:10:00Z",
             "color": "chart-3",
-            "anchor": { "block": "b2", "text": "scrolls independently" },
+            "anchor": {
+              "block": "b2",
+              "text": "scrolls independently"
+            },
             "body": "Done in the scaffold - try the wheel over the column."
           },
           {
@@ -620,9 +850,18 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
             "author": "Jon Park",
             "time": "2026-10-05T16:00:00Z",
             "color": "chart-2",
-            "anchor": { "block": "b6", "text": "the legend says which" },
+            "anchor": {
+              "block": "b6",
+              "text": "the legend says which"
+            },
             "body": "We have no legend yet. A small list under the title?",
-            "quotes": [{ "block": "b4", "text": "A JSON format", "note": "the colour is one field of it" }]
+            "quotes": [
+              {
+                "block": "b4",
+                "text": "A JSON format",
+                "note": "the colour is one field of it"
+              }
+            ]
           }
         ]
       },
@@ -630,12 +869,330 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
         "title": "Meeting notes",
         "markdown": "# Meeting notes - October 6\n\nPresent: Mira, Jon, Ada, Lin. Fifteen minutes.\n\n## Decisions\n\n1. The launch date stays October 28.\n2. Comments ship with the editor, not after it.\n3. Lin writes the anchoring section of the docs.\n\n## Open\n\n- Do replies notify the thread by email or in the app?\n\n> Next sync: Thursday, same slot.\n",
         "comments": []
+      },
+      "pruefung": {
+        "title": "Importprüfung",
+        "markdown": "# Importprüfung\n\nDieses Dokument beschreibt einen konstruierten Testfall, keine reale Studie.\n\n## Pilotversuch\n\nIn der Pilotgruppe mit 40 Erwachsenen könnte die Vorlage unter Aufsicht die Bearbeitungszeit um 12 % verringern. Eine Wirkung auf die Fehlerquote wurde nicht nachgewiesen.\n\n## Betrieb\n\nDie Durchführung der Prüfung erfolgt täglich. Alle Importvorgänge werden automatisch geprüft.\n\n## Einschränkung\n\nDie automatische Prüfung gilt nicht für manuell hochgeladene CSV-Dateien. Die tägliche Prüfung beweist die einzigartige Zuverlässigkeit des Verfahren.\n",
+        "file": "example.md",
+        "annotations": {
+          "source": "example.md",
+          "steps": 4,
+          "summary": {
+            "revision": 4,
+            "bis_seite": 4,
+            "naechste_id": 15,
+            "eintraege": [
+              {
+                "id": "M000001",
+                "typ": "struktur",
+                "inhalt": "Teil 1 trägt die Überschrift „Importprüfung“; damit ist der sichtbare Gegenstandsbezeichner dieses Teils gegeben. Weiterer Sachinhalt als die Einordnung in M000002 ist in Teil 1 nicht vorhanden.",
+                "woertlich": ["Importprüfung"],
+                "belege": [
+                  {
+                    "seite": 1,
+                    "zitat": "# Importprüfung",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000002"]
+              },
+              {
+                "id": "M000002",
+                "typ": "aussage",
+                "inhalt": "Das Dokument (Überschrift siehe M000001) beschreibt nach eigener Angabe einen konstruierten Testfall und ausdrücklich keine reale Studie. Diese Einschränkung gilt für den Dokumentcharakter und schließt die Einordnung als real untersuchte Studie aus.",
+                "woertlich": ["konstruierten Testfall", "keine reale Studie"],
+                "belege": [
+                  {
+                    "seite": 1,
+                    "zitat": "Dieses Dokument beschreibt einen konstruierten Testfall, keine reale Studie.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000001"]
+              },
+              {
+                "id": "M000003",
+                "typ": "struktur",
+                "inhalt": "Teil 2 trägt die Überschrift „Pilotversuch“ und steht als Unterabschnitt hinter dem in M000001 genannten Gegenstandsbezeichner „Importprüfung“. Der sichtbare Sachinhalt unter dieser Überschrift besteht aus genau zwei Sätzen, gespeichert in M000004 und M000007; eine weitere Gliederung, Gliederungspunkt oder Textankündigung enthält Teil 2 nicht.",
+                "woertlich": ["Pilotversuch"],
+                "belege": [
+                  {
+                    "seite": 2,
+                    "zitat": "## Pilotversuch",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000004", "M000007"]
+              },
+              {
+                "id": "M000004",
+                "typ": "aussage",
+                "inhalt": "Für die Pilotgruppe mit 40 Erwachsenen wird nur eine Möglichkeit behauptet: Die Vorlage könnte unter Aufsicht die Bearbeitungszeit um 12 % verringern. Zur Aussage gehören die Bedingung „unter Aufsicht“, der Umfang „Pilotgruppe mit 40 Erwachsenen“, die Bezugsgröße Bearbeitungszeit und der Wert 12 %. Es wird keine bestätigte Verringerung behauptet, und über Gruppen außerhalb der genannten Pilotgruppe wird nichts ausgesagt. Die Bezugsgröße ist die Bearbeitungszeit; die Fehlerquote wird davon getrennt in M000007 behandelt.",
+                "woertlich": [
+                  "Pilotgruppe",
+                  "40 Erwachsenen",
+                  "könnte",
+                  "unter Aufsicht",
+                  "Bearbeitungszeit",
+                  "12 %",
+                  "Vorlage"
+                ],
+                "belege": [
+                  {
+                    "seite": 2,
+                    "zitat": "In der Pilotgruppe mit 40 Erwachsenen könnte die Vorlage unter Aufsicht die Bearbeitungszeit um 12 % verringern.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000003", "M000005", "M000006", "M000007"]
+              },
+              {
+                "id": "M000005",
+                "typ": "offen",
+                "inhalt": "Der in M000004 gebrauchte Ausdruck „die Vorlage“ wird im sichtbaren Material nicht definiert und nicht eingeführt. Ob er dasselbe bezeichnet wie den in M000001 als Überschrift genannten Gegenstandsbezeichner „Importprüfung“ oder einen davon zu unterscheidenden Gegenstand, bleibt innerhalb der sichtbaren Teile offen.",
+                "woertlich": ["die Vorlage"],
+                "belege": [
+                  {
+                    "seite": 2,
+                    "zitat": "In der Pilotgruppe mit 40 Erwachsenen könnte die Vorlage unter Aufsicht die Bearbeitungszeit um 12 % verringern.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000001", "M000004"]
+              },
+              {
+                "id": "M000006",
+                "typ": "offen",
+                "inhalt": "Spannung zwischen der in M000002 mit wörtlichem Beleg gespeicherten Eigencharakteristik des Dokuments („einen konstruierten Testfall, keine reale Studie“) und den in M000004 genannten Pilotangaben „Pilotgruppe mit 40 Erwachsenen“ sowie „12 %“: Im sichtbaren Material wird nicht ausdrücklich eingeordnet, ob diese Angaben als reale Messung oder als Bestandteil des konstruierten Szenarios gemeint sind. Die Spannung bleibt als offen erhalten und wird nicht aufgelöst.",
+                "woertlich": ["Pilotgruppe mit 40 Erwachsenen", "12 %"],
+                "belege": [
+                  {
+                    "seite": 2,
+                    "zitat": "In der Pilotgruppe mit 40 Erwachsenen könnte die Vorlage unter Aufsicht die Bearbeitungszeit um 12 % verringern.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000002", "M000004"]
+              },
+              {
+                "id": "M000007",
+                "typ": "aussage",
+                "inhalt": "Zur Fehlerquote hält Teil 2 nur fest: Eine Wirkung auf die Fehlerquote wurde nicht nachgewiesen. Dokumentiert ist damit das Fehlen eines Nachweises, nicht ein Nachweis der Wirkungslosigkeit und auch keine verneinte oder ausgeschlossene Wirkung. Diese Aussage betrifft die Fehlerquote und nicht die in M000004 genannte Bearbeitungszeit.",
+                "woertlich": ["Fehlerquote", "nicht nachgewiesen"],
+                "belege": [
+                  {
+                    "seite": 2,
+                    "zitat": "Eine Wirkung auf die Fehlerquote wurde nicht nachgewiesen.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000003", "M000004"]
+              },
+              {
+                "id": "M000008",
+                "typ": "struktur",
+                "inhalt": "Teil 3 trägt die Überschrift „Betrieb“ und steht als weiterer Unterabschnitt hinter dem in M000001 genannten Gegenstandsbezeichner „Importprüfung“ und dem in M000003 genannten Unterabschnitt „Pilotversuch“. Der sichtbare Sachinhalt unter dieser Überschrift besteht aus genau zwei Sätzen, gespeichert in M000009 und M000011; die zugehörige offene Begriffsfrage ist M000010. Weitere Gliederungspunkte, Textankündigungen oder Einschränkungen enthält Teil 3 nicht.",
+                "woertlich": ["Betrieb"],
+                "belege": [
+                  {
+                    "seite": 3,
+                    "zitat": "## Betrieb",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000001", "M000003", "M000009", "M000010", "M000011"]
+              },
+              {
+                "id": "M000009",
+                "typ": "aussage",
+                "inhalt": "Für den in M000008 genannten Abschnitt „Betrieb“ hält Teil 3 fest: „Die Durchführung der Prüfung erfolgt täglich.“ Behauptet wird die tägliche Häufigkeit der Durchführung der Prüfung im Indikativ, nicht als Möglichkeit, Empfehlung oder Bedingung. Welche Prüfung genau gemeint ist, bleibt im sichtbaren Material unbestimmt (siehe M000010).",
+                "woertlich": ["Durchführung der Prüfung", "täglich"],
+                "belege": [
+                  {
+                    "seite": 3,
+                    "zitat": "Die Durchführung der Prüfung erfolgt täglich.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000008", "M000010"]
+              },
+              {
+                "id": "M000010",
+                "typ": "offen",
+                "inhalt": "Der in Teil 3 gebrauchte Ausdruck „Prüfung“ (in „Die Durchführung der Prüfung erfolgt täglich“ und „Alle Importvorgänge werden automatisch geprüft“) wird im sichtbaren Material nicht definiert. Offen bleibt, ob er denselben Gegenstand bezeichnet wie den in M000001 als Überschrift genannten Gegenstandsbezeichner „Importprüfung“ und/oder wie den in M000005 offenen Ausdruck „die Vorlage“, oder ob unterscheidbare Bezeichnungen vorliegen. Diese Begriffsfrage wird nicht aufgelöst, sondern für eine spätere Konsistenzprüfung gehalten; der Beleg für die Überschrift „Importprüfung“ ist bei M000001 gespeichert.",
+                "woertlich": ["Prüfung"],
+                "belege": [
+                  {
+                    "seite": 3,
+                    "zitat": "Die Durchführung der Prüfung erfolgt täglich.",
+                    "vorkommen": 1
+                  },
+                  {
+                    "seite": 3,
+                    "zitat": "Alle Importvorgänge werden automatisch geprüft.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000001", "M000005", "M000009", "M000011"]
+              },
+              {
+                "id": "M000011",
+                "typ": "aussage",
+                "inhalt": "Ebenfalls in Teil 3 („Betrieb“, M000008) steht der unbeschränkte Geltungsanspruch: „Alle Importvorgänge werden automatisch geprüft.“ Zum Aussagekern gehören der Totalquantor „Alle“ über Importvorgänge und die Automatik der Prüfung. Innerhalb der sichtbaren Teile 1 bis 3 ist zu diesem Satz keine Ausnahme genannt; ob das Dokument an anderer Stelle eine Ausnahme ergänzt, ist damit nicht entschieden. Die Aussage steht im Indikativ und ist von der in M000004 nur als Möglichkeit geäußerten Wirkung der Vorlage auf die Bearbeitungszeit zu unterscheiden; das sichtbare Material ordnet nicht ausdrücklich ein, ob zwischen beiden ein Zusammenhang oder eine Spannung besteht.",
+                "woertlich": ["Alle Importvorgänge", "automatisch geprüft"],
+                "belege": [
+                  {
+                    "seite": 3,
+                    "zitat": "Alle Importvorgänge werden automatisch geprüft.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000004", "M000008", "M000010"]
+              },
+              {
+                "id": "M000012",
+                "typ": "struktur",
+                "inhalt": "Teil 4 trägt die Überschrift „Einschränkung“ und steht als weiterer Unterabschnitt hinter den in M000001 (Überschrift „Importprüfung“), M000003 („Pilotversuch“) und M000008 („Betrieb“) genannten Abschnitten. Der sichtbare Sachinhalt unter dieser Überschrift besteht aus genau zwei Sätzen, gespeichert in M000013 und M000014. Nach dem vom Aufrufer gelieferten Fensterstatus (dokumentende=true) ist Teil 4 der letzte Teil des vorliegenden Dokumentstands; das beschreibt nur diesen Dokumentstand, nicht eine Vollständigkeit der Sachinformationen.",
+                "woertlich": ["Einschränkung"],
+                "belege": [
+                  {
+                    "seite": 4,
+                    "zitat": "## Einschränkung",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000001", "M000003", "M000008", "M000013", "M000014"]
+              },
+              {
+                "id": "M000013",
+                "typ": "aussage",
+                "inhalt": "Teil 4 („Einschränkung“, M000012) nennt eine ausdrückliche Ausnahme: „Die automatische Prüfung gilt nicht für manuell hochgeladene CSV-Dateien.“ Erhalten bleiben die Negation „gilt nicht“, der Geltungsbereich „automatische Prüfung“ und die Bedingung „manuell hochgeladene CSV-Dateien“. Diese im späteren Teil 4 nachgetragene Einschränkung steht neben dem in M000011 gespeicherten unbeschränkten Anspruch „Alle Importvorgänge werden automatisch geprüft.“; das Dokument ordnet diese Spannung nicht selbst ein, und M000011 wird deshalb nicht rückwirkend umgeschrieben. Ob die Ausnahme auch die in M000009 genannte tägliche Durchführung der Prüfung berührt, bleibt im sichtbaren Material offen; zur Begriffsfrage „Prüfung“ siehe M000010.",
+                "woertlich": ["automatische Prüfung", "gilt nicht", "manuell hochgeladene CSV-Dateien"],
+                "belege": [
+                  {
+                    "seite": 4,
+                    "zitat": "Die automatische Prüfung gilt nicht für manuell hochgeladene CSV-Dateien.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000011", "M000009", "M000010", "M000012"]
+              },
+              {
+                "id": "M000014",
+                "typ": "argument",
+                "inhalt": "Ebenfalls in Teil 4 („Einschränkung“, M000012) steht die behauptete Schlussbeziehung im Wortlaut: „Die tägliche Prüfung beweist die einzigartige Zuverlässigkeit des Verfahren.“ Bewahrt wird die grammatische Abweichung „des Verfahren“ ohne Korrektur. Behauptet wird, dass die tägliche Prüfung (siehe M000009) die Zuverlässigkeit des Verfahrens beweise, und zwar ausdrücklich als „einzigartige Zuverlässigkeit“; Gründe oder Belege für diese Folgerung werden im sichtbaren Material nicht genannt. Die Aussage bleibt als Textbehauptung des Dokuments gespeichert, nicht als geprüfte Tatsache. Der Begriff „Verfahren“ wird im sichtbaren Material nicht definiert; ob er denselben Gegenstand bezeichnet wie der in M000010 offene Begriff „Prüfung“, bleibt offen. Eine mögliche Spannung zu M000013 (Ausnahme von der automatischen Prüfung) ist nur als Prüfbedarf notiert und nicht aufgelöst.",
+                "woertlich": ["beweist", "einzigartige Zuverlässigkeit", "des Verfahren"],
+                "belege": [
+                  {
+                    "seite": 4,
+                    "zitat": "Die tägliche Prüfung beweist die einzigartige Zuverlässigkeit des Verfahren.",
+                    "vorkommen": 1
+                  }
+                ],
+                "bezug_ids": ["M000012", "M000013", "M000009", "M000010"]
+              }
+            ]
+          },
+          "custom": [
+            {
+              "zitat": "## Einschränkung",
+              "vorkommen": 1,
+              "typ": "ueberschrift",
+              "befunde": [
+                {
+                  "regel": "A04",
+                  "schwere": "wesentlich",
+                  "sicherheit": "hoch",
+                  "aktion": "umstrukturieren",
+                  "kommentar": "Die Überschrift kündigt eine Einschränkung an; gedeckt wird das nur vom CSV-Satz. Der zweite Satz behauptet im Gegenteil eine positive Eigenschaft des Verfahrens und gehört nicht unter diese Überschrift. Entweder den Zuverlässigkeitssatz in den Abschnitt Betrieb verschieben oder die Überschrift so fassen, dass sie beide Inhalte benennt.",
+                  "belege": [
+                    {
+                      "quelle": "text",
+                      "zitat": "Die tägliche Prüfung beweist die einzigartige Zuverlässigkeit des Verfahren.",
+                      "vorkommen": 1
+                    }
+                  ]
+                }
+              ],
+              "umformulierung": null
+            },
+            {
+              "zitat": "Die automatische Prüfung gilt nicht für manuell hochgeladene CSV-Dateien.",
+              "vorkommen": 1,
+              "typ": "satz",
+              "befunde": [
+                {
+                  "regel": "L03",
+                  "schwere": "wesentlich",
+                  "sicherheit": "mittel",
+                  "aktion": "pruefen",
+                  "kommentar": "Der Satz im Abschnitt Betrieb behauptet ohne Ausnahme, alle Importvorgänge würden automatisch geprüft; hier steht eine Ausnahme. Prüfen, ob manuell hochgeladene CSV-Dateien zu den Importvorgängen im Sinne jenes Satzes zählen. Wenn ja, Totalquantor im Abschnitt Betrieb einschränken; wenn nein, die Abgrenzung ausdrücklich sagen.",
+                  "belege": [
+                    {
+                      "quelle": "text",
+                      "zitat": "Alle Importvorgänge werden automatisch geprüft.",
+                      "vorkommen": 1
+                    }
+                  ]
+                },
+                {
+                  "regel": "P07",
+                  "schwere": "wesentlich",
+                  "sicherheit": "mittel",
+                  "aktion": "praezisieren",
+                  "kommentar": "Grammatisch nahe liegt die Schnittmenge: nur manuell hochgeladene Dateien im Format CSV sind ausgenommen. Offen bleibt, welches Kriterium tatsächlich trägt und ob manuell hochgeladene Dateien anderen Formats weiter automatisch geprüft werden. Ausnahme nach dem geltenden Kriterium eindeutig formulieren.",
+                  "belege": []
+                }
+              ],
+              "umformulierung": null
+            },
+            {
+              "zitat": "Die tägliche Prüfung beweist die einzigartige Zuverlässigkeit des Verfahren.",
+              "vorkommen": 1,
+              "typ": "satz",
+              "befunde": [
+                {
+                  "regel": "L01",
+                  "schwere": "wesentlich",
+                  "sicherheit": "hoch",
+                  "aktion": "pruefen",
+                  "kommentar": "Aus der täglichen Durchführung der Prüfung folgt keine Zuverlässigkeit: Die Häufigkeit sagt nichts über Trefferquote, Fehlerquote oder Ausfallverhalten. Beweist ist damit zu stark. Benennen, durch welche Messung die Zuverlässigkeit belegt wird, oder den Satz auf die tatsächlich belegbare Aussage zurückführen.",
+                  "belege": [
+                    {
+                      "quelle": "text",
+                      "zitat": "Die Durchführung der Prüfung erfolgt täglich.",
+                      "vorkommen": 1
+                    }
+                  ]
+                },
+                {
+                  "regel": "B06",
+                  "schwere": "wesentlich",
+                  "sicherheit": "hoch",
+                  "aktion": "belegen",
+                  "kommentar": "Einzigartige Zuverlässigkeit ist eine Vergleichsbehauptung ohne definiertes Vergleichsfeld und ohne Nachweis im sichtbaren Material. Angeben, gegenüber welchen Alternativen die Einzigartigkeit bestehen soll, oder die Wertung durch die konkret belegte Eigenschaft ersetzen.",
+                  "belege": []
+                },
+                {
+                  "regel": "T03",
+                  "schwere": "gering",
+                  "sicherheit": "hoch",
+                  "aktion": "umformulieren",
+                  "kommentar": "Genitivfehler: des Verfahren muss des Verfahrens heißen. Die Korrektur lässt sich einsetzen, sobald der Geltungsanspruch des Satzes geklärt ist.",
+                  "belege": []
+                }
+              ],
+              "umformulierung": null
+            }
+          ]
+        }
       }
     }
   </script>
 </div>
 <script>
-  // Margin - the scaffold's glue: open documents, comment on a selection, autosave, word count, narrow layout
+  // Margin - the scaffold's glue: the menus, documents and files, annotations, comment on a selection, saving in
+  // this browser (documents on Save; comments, replies and reply drafts as they happen), word count, narrow layout
   document.addEventListener('DOMContentLoaded', () => {
     const $ = df$;
     const editor = '#de-editor';
@@ -644,26 +1201,56 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
     // the launch plan is the authored one: its Markdown and comments live in the markup
     docs.launch = { title: 'Q4 launch plan', markdown: null, comments: null };
     let current = 'launch';
-    let saveTimer = 0;
     let wordTimer = 0;
 
-    const words = async () => {
+    // ---- this browser keeps the work (persisted stores; memory only where the browser refuses storage, as in
+    // a sandboxed preview): File > Save stores a document - title, Markdown, comments; comments and replies are
+    // stored the moment they are added, and every open reply composer as it is typed in, per document
+    let refused = false;
+    const kept = $.store.persisted(
+      'margin:workspace',
+      { current: 'launch', made: 0, order: [], docs: {} },
+      { onError: () => (refused = true) },
+    );
+    const drafts = $.store.persisted('margin:drafts', {});
+    // the stores take JSON only: a field left undefined (a comment without a colour, a document without a
+    // file) would make the browser refuse the whole value
+    const plain = (value) => JSON.parse(JSON.stringify(value));
+    const keep = (id, patch) =>
+      kept.set({ ...kept.value, docs: { ...kept.value.docs, [id]: plain({ ...kept.value.docs[id], ...patch }) } });
+    const allComments = () => [...$.shadcn.docComments.data(column).comments, ...(docs[current].hidden ?? [])];
+    const keepComments = () => keep(current, { comments: allComments(), layers: docs[current].layers ?? {} });
+    const restoreDrafts = () => $.shadcn.docComments.setDrafts(column, drafts.value[current] ?? {});
+    $(column).on('doc-comments-draft', (e) => {
+      const mine = { ...(drafts.value[current] ?? {}) };
+      if (e.detail.text === null) delete mine[e.detail.id];
+      else mine[e.detail.id] = e.detail.text;
+      drafts.set({ ...drafts.value, [current]: mine });
+    });
+
+    // the status bar: words, and whether the document differs from what was opened or last saved
+    const status = () => {
+      const doc = docs[current];
+      const time = doc.savedAt
+        ? ` ${new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date(doc.savedAt))}`
+        : '';
+      $('#de-saved')
+        .attr('data-state', doc.dirty ? 'editing' : 'saved')
+        .find('span')
+        .text(doc.dirty ? 'Unsaved changes' : `Saved${time}`);
+    };
+    const refresh = async () => {
+      const id = current;
       const md = await $.shadcn.editorjs.markdown(editor);
+      if (id !== current) return; // another document opened meanwhile - it measures itself
       const n = md
         .replace(/[#>*`|\-\[\]]/g, ' ')
         .split(/\s+/)
         .filter(Boolean).length;
       $('#de-words').text(`${n} words`);
-    };
-    const saved = (state) => {
-      $('#de-saved')
-        .attr('data-state', state)
-        .find('span')
-        .text(
-          state === 'editing'
-            ? 'Editing...'
-            : `Saved ${new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date())}`,
-        );
+      const doc = docs[current];
+      doc.dirty = doc.clean !== undefined && md !== doc.clean;
+      status();
     };
     const counts = () => {
       const n = $.shadcn.docComments.data(column).comments.length;
@@ -673,24 +1260,427 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
         .prop('hidden', n === 0);
     };
 
-    // open a document: keep the current one's edits, render the next one and its comments
+    // ---- annotations: a comments model, or the JSON of the editorial review pipeline -----------------
+    // The pipeline quotes the Markdown SOURCE - { seite: part, zitat: exact text, vorkommen: n-th occurrence
+    // in that part } - and splits the Markdown into parts at headings; its run says how many (steps).
+    // editorjs.locate() turns a source span into the block + rendered text a comment anchors to.
+    const SEVERITY = { kritisch: 'chart-1', wesentlich: 'chart-4', gering: 'chart-2' };
+    const KIND = { aussage: 'chart-3', argument: 'chart-5', offen: 'chart-4', struktur: 'chart-2', begriff: 'chart-1' };
+    const quoted = (s) => `„${s}“`;
+    const occurrences = (text, quote) => {
+      const at = [];
+      for (let i = text.indexOf(quote); i >= 0; i = text.indexOf(quote, i + 1)) at.push(i);
+      return at;
+    };
+    // the pipeline's parts: a heading chain stays with its first block, a heading of depth <= d starts a part;
+    // d is the smallest depth that gives the run's number of parts - without one, quotes count in the whole text
+    const partsOf = (md, steps) => {
+      const map = $.shadcn.editorjs.sourceMap(editor, md);
+      const spans = map.map((b, i) => ({ ...b, start: i ? b.start : 0, end: map[i + 1]?.start ?? md.length }));
+      for (let d = 1; steps && d <= 6; d++) {
+        const parts = [];
+        for (let i = 0; i < spans.length;) {
+          const first = i;
+          let boundary = false;
+          for (; i < spans.length && spans[i].type === 'header'; i++) if (spans[i].level <= d) boundary = true;
+          if (i < spans.length) i++;
+          if (!parts.length || boundary) parts.push({ start: spans[first].start, end: spans[i - 1].end });
+          else parts[parts.length - 1].end = spans[i - 1].end;
+        }
+        if (parts.length === steps) return parts;
+      }
+      return null;
+    };
+    // a quote -> the span a comment anchors to: its n-th occurrence in its scope, else the first in the document
+    const anchorFor = (md, quote, nth = 1, scope = null) => {
+      const text = String(quote ?? '').replace(/\r\n?/g, '\n');
+      if (!text) return null;
+      const inScope = scope ? occurrences(md.slice(scope.start, scope.end), text)[nth - 1] : undefined;
+      const all = occurrences(md, text);
+      const at = inScope !== undefined ? scope.start + inScope : scope ? all[0] : (all[nth - 1] ?? all[0]);
+      return at === undefined ? null : $.shadcn.editorjs.locate(editor, md, at, at + text.length);
+    };
+    // a pipeline run (summary.eintraege + custom) -> comments: one per finding, one per summary entry
+    const fromPipeline = (run, md) => {
+      const parts = partsOf(md, run.steps);
+      const entries = run.summary?.eintraege ?? [];
+      const comments = [];
+      const layers = {};
+      const missing = (quote) => `*Nicht im Dokument:* ${quoted(quote)}\n\n`;
+      // the run keeps the review of its last part, made on that part and the one before it
+      const last = run.steps ?? 0;
+      const reviewed = parts && last ? { start: parts[Math.max(0, last - 2)].start, end: parts[last - 1].end } : null;
+      (Array.isArray(run.custom) ? run.custom : []).forEach((f, i) => {
+        const id = `f${i + 1}`;
+        const issues = f.befunde ?? [];
+        const anchor = anchorFor(md, f.zitat, f.vorkommen, reviewed);
+        const worst = ['kritisch', 'wesentlich', 'gering'].find((s) => issues.some((b) => b.schwere === s));
+        const quotes = [];
+        for (const b of issues)
+          for (const e of b.belege ?? []) {
+            if (e.quelle === 'zusammenfassung') {
+              const entry = entries.find(
+                (x) =>
+                  String(x.inhalt).includes(e.zitat) || (x.belege ?? []).some((y) => String(y.zitat).includes(e.zitat)),
+              );
+              if (entry) quotes.push({ comment: entry.id, note: `${b.regel}: Beleg aus der Zusammenfassung` });
+              continue;
+            }
+            const span = anchorFor(
+              md,
+              e.zitat,
+              e.vorkommen,
+              e.quelle === 'dokument' && parts ? parts[e.teil - 1] : reviewed,
+            );
+            if (span) quotes.push({ ...span, note: `${b.regel}: Beleg` });
+          }
+        layers[id] = 'findings';
+        comments.push({
+          id,
+          author: 'Redaktionsprüfung',
+          color: SEVERITY[worst] ?? 'chart-4',
+          ...(anchor ? { anchor } : {}),
+          body:
+            (anchor ? '' : missing(f.zitat)) +
+            issues
+              .map((b) => `**${b.regel}** · ${b.schwere} · Sicherheit ${b.sicherheit} · ${b.aktion}\n\n${b.kommentar}`)
+              .join('\n\n') +
+            (f.umformulierung ? `\n\n**Umformulierung:** ${f.umformulierung}` : ''),
+          quotes,
+        });
+      });
+      for (const e of entries) {
+        const [first, ...more] = e.belege ?? [];
+        const anchor = first ? anchorFor(md, first.zitat, first.vorkommen, parts?.[first.seite - 1]) : null;
+        const evidence = more
+          .map((b) => ({
+            ...anchorFor(md, b.zitat, b.vorkommen, parts?.[b.seite - 1]),
+            note: `Beleg, Teil ${b.seite}`,
+          }))
+          .filter((q) => q.block);
+        layers[e.id] = 'summary';
+        comments.push({
+          id: e.id,
+          author: 'Semantikspeicher',
+          color: KIND[e.typ] ?? 'chart-2',
+          ...(anchor ? { anchor } : {}),
+          body:
+            (anchor || !first ? '' : missing(first.zitat)) +
+            `**${e.id}** · ${e.typ}\n\n${e.inhalt}` +
+            (e.woertlich?.length ? `\n\nWörtlich: ${e.woertlich.map(quoted).join(', ')}` : ''),
+          quotes: [
+            ...evidence,
+            ...(e.bezug_ids ?? []).map((ref) => ({
+              comment: ref,
+              note: `Bezug: ${ref} · ${entries.find((x) => x.id === ref)?.typ ?? ''}`,
+            })),
+          ],
+        });
+      }
+      return { comments, layers };
+    };
+    // what an annotation file holds: a comments model (File > Export writes one, with its layers), a pipeline
+    // run, its review alone (an array) or its summary alone
+    const commentsFor = (json, md) => {
+      if (json?.version === 1 && Array.isArray(json.comments))
+        return { comments: json.comments, layers: json.layers && typeof json.layers === 'object' ? json.layers : {} };
+      if (Array.isArray(json)) return fromPipeline({ custom: json }, md);
+      if (json?.eintraege) return fromPipeline({ summary: json }, md);
+      if (json?.summary?.eintraege || Array.isArray(json?.custom)) return fromPipeline(json, md);
+      return null;
+    };
+
+    // the layers: Findings / Summary toggles in the status bar (and the View menu); the hidden comments wait
+    // with their document
+    const rootLayer = (all, layers, c) => {
+      let cur = c;
+      while (cur?.parent) cur = all.find((x) => x.id === cur.parent);
+      return layers[cur?.id];
+    };
+    const layerBar = () => {
+      const layers = Object.values(docs[current].layers ?? {});
+      $('#de-layers').prop('hidden', !layers.length);
+      $('[data-de-layer-count]').each((_i, s) =>
+        $(s).text(String(layers.filter((l) => l === s.dataset.deLayerCount).length)),
+      );
+    };
+    const showLayers = () => {
+      const doc = docs[current];
+      const on = new Set(
+        $('[data-de-layer][aria-pressed="true"]')
+          .toArray()
+          .map((b) => b.dataset.deLayer),
+      );
+      const all = allComments();
+      const shown = all.filter((c) => {
+        const layer = rootLayer(all, doc.layers ?? {}, c);
+        return !layer || on.has(layer);
+      });
+      doc.hidden = all.filter((c) => !shown.includes(c));
+      $.shadcn.docComments.load(column, { version: 1, comments: shown });
+      restoreDrafts();
+    };
+    $('#de-layers').on('click', (e) => {
+      if (e.target.closest('[data-de-layer]')) showLayers();
+    });
+
+    // annotations against a Markdown string: convert (locate() reads the string, not the DOM), then render it
+    // when asked - a refused file leaves the document as it was - load, say what found its text
+    const annotate = async (json, md, file, render) => {
+      let result = null;
+      try {
+        result = commentsFor(json, md);
+      } catch {
+        // a file in a known shape with a broken entry (a field of the wrong type)
+      }
+      if (!result) {
+        df$.shadcn.toast.show({
+          title: 'Unknown annotation format',
+          description: 'Expected a comments model or a review pipeline run.',
+        });
+        return false;
+      }
+      if (render) await render();
+      docs[current].layers = result.layers;
+      docs[current].hidden = [];
+      $.shadcn.docComments.load(column, { version: 1, comments: result.comments });
+      layerBar();
+      const tops = result.comments.filter((c) => !c.parent).length;
+      const placed = new Set(
+        $('#de-editor mark.doc-comments-mark')
+          .toArray()
+          .map((m) => m.dataset.comment),
+      ).size;
+      const other = json?.source && file && json.source !== file ? ` They were made for ${json.source}.` : '';
+      df$.shadcn.toast.show({
+        title: `${tops} annotations`,
+        description:
+          (placed === tops
+            ? 'Every one is anchored in the text.'
+            : `${placed} anchored, ${tops - placed} not found in this document.`) + other,
+      });
+      return true;
+    };
+
+    // ---- documents: open one - keep the current one's edits, render the next one and its comments
+    const leave = async () => {
+      const doc = docs[current];
+      doc.markdown = await $.shadcn.editorjs.markdown(editor);
+      doc.comments = allComments();
+      doc.hidden = [];
+    };
+    const show = async (id) => {
+      current = id;
+      const doc = docs[id];
+      kept.set({ ...kept.value, current: id });
+      $('[data-de-doc]').each((_i, a) => $(a).attr('aria-current', a.dataset.deDoc === id ? 'page' : null));
+      $('#de-title').text(doc.title);
+      $('[data-de-layer]').attr('aria-pressed', 'true');
+      await $.shadcn.editorjs.setMarkdown(editor, doc.markdown);
+      if (doc.annotations) {
+        await annotate(doc.annotations, doc.markdown, doc.file);
+        doc.annotations = null;
+      } else {
+        $.shadcn.docComments.load(column, { version: 1, comments: doc.comments ?? [] });
+        layerBar();
+      }
+      restoreDrafts();
+      $('#de-page').get(0).scrollTop = 0;
+      // what it reads as now, rendered - later edits are measured against it
+      if (doc.clean === undefined) doc.clean = await $.shadcn.editorjs.markdown(editor);
+      refresh();
+    };
     const open = async (id) => {
       if (!docs[id] || id === current) return;
-      docs[current].markdown = await $.shadcn.editorjs.markdown(editor);
-      docs[current].comments = $.shadcn.docComments.data(column).comments;
-      current = id;
-      $('[data-de-doc]').each((_i, a) => $(a).attr('aria-current', a.dataset.deDoc === id ? 'page' : null));
-      $('#de-title').text(docs[id].title);
-      await $.shadcn.editorjs.setMarkdown(editor, docs[id].markdown);
-      $.shadcn.docComments.load(column, { version: 1, comments: docs[id].comments });
-      $('#de-page').get(0).scrollTop = 0;
-      words();
-      saved('saved');
+      await leave();
+      await show(id);
     };
-    $('[data-de-doc]').on('click', (e) => {
+    $('#de-doc-nav').on('click', (e) => {
+      const link = e.target.closest('[data-de-doc]');
+      if (!link) return;
       e.preventDefault();
-      open(e.currentTarget.dataset.deDoc);
+      open(link.dataset.deDoc);
     });
+    const addLink = (id) => {
+      const link = $(
+        `<a class="sidebar-link" href="#" data-de-doc="${id}"><i data-lucide="file-text"></i> <span></span><span class="badge" data-variant="secondary" data-de-count="${id}" hidden>0</span></a>`,
+      );
+      link.find('span').first().text(docs[id].title);
+      $('#de-doc-nav').append(link);
+      globalThis.lucide?.createIcons?.();
+    };
+    // a new document - from a file or empty - joins the list and is kept in this browser at once, so its
+    // comments, replies and drafts have a document to come back to
+    const create = async (doc) => {
+      const id = `doc-${kept.value.made + 1}`;
+      kept.set({ ...kept.value, made: kept.value.made + 1, order: [...kept.value.order, id] });
+      docs[id] = { comments: [], ...doc };
+      keep(id, { title: doc.title, file: doc.file, markdown: doc.markdown, comments: [] });
+      addLink(id);
+      await open(id);
+    };
+
+    // ---- files: open from disk (File > Open, or dropped on the editor), save and export to disk ----------
+    const openMarkdown = async (file) => {
+      // marked reads \n line ends; the source map and the quotes follow the same text
+      const markdown = (await file.text()).replace(/\r\n?/g, '\n');
+      const heading = markdown.match(/^#{1,6}[ \t]+(.*\S)/m)?.[1].replace(/\s*\{#[^}]*\}$/, '');
+      await create({ title: heading || file.name.replace(/\.[^.]+$/, ''), markdown, file: file.name });
+    };
+    // annotations land on the open document, as its Markdown reads now - rendered again from that Markdown, so
+    // the block ids follow it (a block added by hand carries a random id); they replace its comments and drafts
+    const openAnnotations = async (file) => {
+      const text = await file.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch {
+        df$.shadcn.toast.show({ title: 'Not a JSON file', description: file.name });
+        return;
+      }
+      const md = await $.shadcn.editorjs.markdown(editor);
+      if (await annotate(json, md, docs[current].file, () => $.shadcn.editorjs.setMarkdown(editor, md))) {
+        drafts.set({ ...drafts.value, [current]: {} });
+        keepComments();
+      }
+    };
+    const picked = (read) => async (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (file) await read(file);
+    };
+    $('#de-file-md').on('change', picked(openMarkdown));
+    $('#de-file-json').on('change', picked(openAnnotations));
+
+    // files dragged over the editor show the drop target; a drop opens each Markdown file as a document, then
+    // puts a JSON file's annotations on the open one - a Markdown file and its annotations dropped together
+    // open annotated. Captured on the app, so Editor.js never takes a file drop as pasted text
+    const app = $('#de');
+    const isJson = (f) => f.type === 'application/json' || /\.json$/i.test(f.name);
+    const dropLabel = (items) => {
+      // while dragging the browser shows only each file's type (empty where it does not know it)
+      const types = [...items].filter((i) => i.kind === 'file').map((i) => i.type);
+      const json = types.filter((t) => t === 'application/json').length;
+      if (json && json === types.length) return `Drop to put these comments on ${docs[current].title}`;
+      if (json) return 'Drop to open the document with its comments';
+      return 'Drop a Markdown file to open it - or its comments (JSON) to put them on this document';
+    };
+    const isMarkdown = (f) =>
+      !isJson(f) && (/\.(md|markdown|txt)$/i.test(f.name) || /^text\/(markdown|x-markdown|plain)$/.test(f.type));
+    const dragsFiles = (e) => [...(e.dataTransfer?.types ?? [])].includes('Files');
+    const showDrop = (e) => app.attr('data-drop-label', dropLabel(e.dataTransfer.items)).attr('data-drop-active', '');
+    const endDrag = () => app.attr('data-drop-active', null);
+    app.on(
+      'dragenter',
+      (e) => {
+        if (!dragsFiles(e)) return;
+        e.preventDefault();
+        showDrop(e);
+      },
+      true,
+    );
+    // dragover repeats while the files are over the app: it brings the target back where a browser reported
+    // no related target when the pointer crossed from one element to the next
+    app.on(
+      'dragover',
+      (e) => {
+        if (!dragsFiles(e)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'copy';
+        if (!app.get(0).hasAttribute('data-drop-active')) showDrop(e);
+      },
+      true,
+    );
+    app.on('dragleave', (e) => {
+      if (!app.get(0).contains(e.relatedTarget)) endDrag();
+    });
+    app.on(
+      'drop',
+      async (e) => {
+        if (!dragsFiles(e)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        endDrag();
+        const files = [...e.dataTransfer.files];
+        for (const file of files.filter(isMarkdown)) await openMarkdown(file);
+        const json = files.find(isJson);
+        if (json) await openAnnotations(json);
+        const skipped = files.filter((f) => !isJson(f) && !isMarkdown(f));
+        if (skipped.length)
+          df$.shadcn.toast.show({
+            title: 'Not opened',
+            description: `${skipped.map((f) => f.name).join(', ')} - not a Markdown or JSON file.`,
+          });
+      },
+      true,
+    );
+    const save = async () => {
+      const doc = docs[current];
+      const markdown = await $.shadcn.editorjs.markdown(editor);
+      const savedAt = new Date().toISOString();
+      refused = false;
+      keep(current, {
+        title: doc.title,
+        file: doc.file,
+        markdown,
+        comments: allComments(),
+        layers: doc.layers ?? {},
+        savedAt,
+      });
+      if (refused) {
+        df$.shadcn.toast.show({
+          title: 'Not saved',
+          description: 'The browser refused to store the document (is its storage full?).',
+        });
+        return;
+      }
+      Object.assign(doc, { markdown, clean: markdown, dirty: false, savedAt });
+      status();
+      df$.shadcn.toast.show({
+        title: `Saved ${doc.title}`,
+        description:
+          $.store.available?.() === false
+            ? 'For this visit only: this preview may not use storage. Open the editor full screen to keep it.'
+            : 'In this browser - it is still here after a reload.',
+      });
+    };
+    // a file to disk: the browser's Save dialog where it has one (File System Access - not in a sandboxed
+    // frame), else a download
+    const saveFile = async (name, text, type) => {
+      if (globalThis.showSaveFilePicker) {
+        try {
+          const handle = await globalThis.showSaveFilePicker({ suggestedName: name });
+          const out = await handle.createWritable();
+          await out.write(new Blob([text], { type }));
+          await out.close();
+          return;
+        } catch (e) {
+          if (e?.name === 'AbortError') return; // cancelled
+          // a sandboxed or cross-origin frame may not show the dialog: a download instead
+        }
+      }
+      const url = URL.createObjectURL(new Blob([text], { type }));
+      const a = $('<a hidden></a>').attr('href', url).attr('download', name);
+      $('body').append(a);
+      a.get(0).click();
+      a.get(0).remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+    const fileName = (ext) =>
+      (docs[current].file ?? docs[current].title).replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]+/g, '-') + ext;
+    const saveAs = async () => saveFile(fileName('.md'), await $.shadcn.editorjs.markdown(editor), 'text/markdown');
+    // the comments model with every comment of the document - replies and a hidden layer's included - and its layers
+    const exportAnnotations = () =>
+      saveFile(
+        fileName('.comments.json'),
+        JSON.stringify(
+          { version: 1, source: fileName('.md'), layers: docs[current].layers ?? {}, comments: allComments() },
+          null,
+          2,
+        ),
+        'application/json',
+      );
 
     // comment on the selection: the block the caret is in + the selected text
     let pending = null;
@@ -712,16 +1702,6 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
     };
     $('#de-comment').on('mousedown', (e) => e.preventDefault());
     $('#de-comment').on('click', commentOnSelection);
-    document.addEventListener('keydown', (e) => {
-      if (
-        (e.metaKey || e.ctrlKey) &&
-        e.key.toLowerCase() === 'k' &&
-        $('#de-editor').get(0).contains(document.activeElement)
-      ) {
-        e.preventDefault();
-        commentOnSelection();
-      }
-    });
     $('#de-new-comment-form').on('submit', (e) => {
       e.preventDefault();
       const body = $('#de-new-comment-body').val().trim();
@@ -739,16 +1719,95 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
       pending = null;
     });
 
-    // autosave badge + word count follow the editor; the comment count follows the column
-    $(editor).on('editorjs-change', () => {
-      saved('editing');
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(() => saved('saved'), 1200);
-      clearTimeout(wordTimer);
-      wordTimer = setTimeout(words, 300);
+    // ---- the menus: a menu takes the focus, so the editor's last selection is put back before a command runs
+    let lastRange = null;
+    document.addEventListener('selectionchange', () => {
+      const sel = globalThis.getSelection();
+      if (sel?.rangeCount && $(editor).get(0).contains(sel.anchorNode)) lastRange = sel.getRangeAt(0).cloneRange();
     });
-    $(editor).on('editorjs-ready', words);
-    $(column).on('doc-comments-change', counts);
+    const restoreSelection = () => {
+      if (!lastRange?.startContainer.isConnected) return;
+      const start = lastRange.startContainer;
+      (start.nodeType === 1 ? start : start.parentElement)
+        .closest('[contenteditable="true"]')
+        ?.focus({ preventScroll: true });
+      const sel = globalThis.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(lastRange);
+    };
+    const untitled = () => {
+      const n = Object.values(docs).filter((d) => d.title.startsWith('Untitled document')).length;
+      return n ? `Untitled document ${n + 1}` : 'Untitled document';
+    };
+    const actions = {
+      new: () => create({ title: untitled(), markdown: '' }),
+      // a hidden file input, clicked inside the menu's click: the browser opens its picker
+      'open-markdown': () => $('#de-file-md').get(0).click(),
+      'open-annotations': () => $('#de-file-json').get(0).click(),
+      save,
+      'save-as': saveAs,
+      'export-annotations': exportAnnotations,
+      share: () => $('#de-share').get(0).showModal(),
+      comment: () => {
+        restoreSelection();
+        commentOnSelection();
+      },
+      'prev-comment': () => $.shadcn.docComments.prev(column),
+      'next-comment': () => $.shadcn.docComments.next(column),
+    };
+    const view = (what, on) => {
+      if (what === 'sidebar') {
+        if (($('#de-sidebar').attr('data-state') !== 'collapsed') !== on)
+          $('[data-sidebar-trigger="de-sidebar"]').get(0).click();
+        return;
+      }
+      // a layer: its status-bar toggle does the work
+      const toggle = $(`[data-de-layer="${what}"]`).get(0);
+      if (toggle && (toggle.getAttribute('aria-pressed') === 'true') !== on) toggle.click();
+    };
+    $('#de-menu').on('dropdown:select', (e) => {
+      const item = e.detail.item;
+      if (item.dataset.deAction) actions[item.dataset.deAction]?.();
+      else if (item.dataset.deView) view(item.dataset.deView, e.detail.checked);
+      else if (item.dataset.deCommand) {
+        restoreSelection();
+        $.shadcn.editorjs.command(editor, item.dataset.deCommand);
+      }
+    });
+    // View shows what is on now: the document list, and the layers when the document has them
+    $('#de-m-view').on('beforetoggle', (e) => {
+      if (e.newState !== 'open') return;
+      $('[data-de-view="sidebar"]').attr('aria-checked', String($('#de-sidebar').attr('data-state') !== 'collapsed'));
+      const layers = !$('#de-layers').prop('hidden');
+      $('[data-de-view="findings"], [data-de-view="summary"]').each((_i, item) => {
+        $(item)
+          .attr('aria-disabled', layers ? null : 'true')
+          .attr('aria-checked', String($(`[data-de-layer="${item.dataset.deView}"]`).attr('aria-pressed') === 'true'));
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (!(e.metaKey || e.ctrlKey)) return;
+      const key = e.key.toLowerCase();
+      if (key === 's') {
+        e.preventDefault();
+        if (e.shiftKey) saveAs();
+        else save();
+      } else if (key === 'k' && $(editor).get(0).contains(document.activeElement)) {
+        e.preventDefault();
+        commentOnSelection();
+      }
+    });
+
+    // word count and the saved state follow the editor; the comment count follows the column, and an added
+    // comment or reply is kept at once
+    $(editor).on('editorjs-change', () => {
+      clearTimeout(wordTimer);
+      wordTimer = setTimeout(refresh, 300);
+    });
+    $(column).on('doc-comments-change', (e) => {
+      counts();
+      if (e.detail.id) keepComments();
+    });
 
     // share: copy the link
     $('#de-share-copy').on('click', async () => {
@@ -765,22 +1824,70 @@ Owner: the platform team. Questions go to the thread on the first paragraph.
       $('#de').attr('data-comments', on ? '' : null);
       $('#de-comments-toggle').attr('aria-pressed', String(on));
     });
-    if ($(editor).get(0).hasAttribute('data-ready')) words();
+
+    // ---- an earlier visit: its new documents come back into the list, kept values replace the built-in ones,
+    // and the document that was open opens again - once the editor is ready
+    for (const id of kept.value.order) {
+      const k = kept.value.docs[id];
+      // an id becomes markup (the list link): only the ids create() makes
+      if (/^doc-\d+$/.test(id) && !docs[id] && typeof k?.markdown === 'string') {
+        docs[id] = { title: k.title || id, markdown: k.markdown, file: k.file };
+        addLink(id);
+      }
+    }
+    for (const [id, k] of Object.entries(kept.value.docs)) {
+      const doc = docs[id];
+      if (!doc || !k) continue;
+      if (typeof k.markdown === 'string') doc.markdown = k.markdown;
+      if (Array.isArray(k.comments))
+        Object.assign(doc, { comments: k.comments, layers: k.layers ?? {}, annotations: null });
+      if (k.savedAt) doc.savedAt = k.savedAt;
+    }
+    let started = false;
+    const start = async () => {
+      if (started) return;
+      started = true;
+      const first = docs[kept.value.current] ? kept.value.current : 'launch';
+      const launch = docs.launch;
+      if (first === 'launch' && launch.markdown === null) {
+        // the authored launch plan stays; kept comments replace the authored ones
+        if (launch.comments) {
+          $.shadcn.docComments.load(column, { version: 1, comments: launch.comments });
+          layerBar();
+        }
+        restoreDrafts();
+        launch.clean = await $.shadcn.editorjs.markdown(editor);
+        refresh();
+        return;
+      }
+      // another document opens, or the launch plan as it was saved: the authored one is read first
+      if (launch.markdown === null) {
+        launch.markdown = await $.shadcn.editorjs.markdown(editor);
+        launch.comments ??= $.shadcn.docComments.data(column).comments;
+      }
+      await show(first);
+    };
+    $(editor).on('editorjs-ready', start);
+    if ($(editor).get(0).hasAttribute('data-ready')) start();
   });
 </script>
 ```
 
 <h2 id="how-it-works" class="h2-display">How it works</h2>
 
-<DocText>A page, not a component: it composes the library and keeps its own glue small - open a document, comment on a selection, a status bar, the narrow layout.</DocText>
+<DocText>A page, not a component: it composes the library and keeps its own glue small - the menu commands, open and save a document, comment on a selection, a status bar, the narrow layout.</DocText>
 
 <ul class="text-sm" style="display:grid;gap:0.5rem;max-width:46rem;padding-inline-start:1.25rem">
   <li><strong>Documents</strong> - Markdown. The open one is the <DocLink href="editorjs.html">Editor.js</DocLink> element's source; the others wait in a JSON script and are rendered with <code>setMarkdown</code> when their <DocLink href="sidebar.html">Sidebar</DocLink> link is clicked. Switching keeps the edits: the current document is read back as Markdown first. Block ids are deterministic (<code>b1</code>, <code>b2</code>, ...), so a comment can name the block its text lives in.</li>
   <li><strong>Formatting</strong> - the <DocLink href="toolbar.html">Toolbar</DocLink> is bound with <code>data-toolbar</code>; every button carries a <code>data-editor-command</code>, and the toggles follow the caret (bold, italic, the current block's type). A toolbar button never takes the selection away.</li>
   <li><strong>Comments</strong> - the <DocLink href="doc-comments.html">Document Comments</DocLink> column is a JSON model per document: author, colour, the anchored span (block + text), a Markdown body, quotes to other spans, replies. Select text and press <em>Comment</em> (or <kbd class="kbd">⌘</kbd> <kbd class="kbd">K</kbd>): a <DocLink href="dialog.html">Dialog</DocLink> shows the quote, takes the text and a colour from a <DocLink href="toggle-group.html">Toggle Group</DocLink>, and <code>docComments.add()</code> places the mark and the card. Marks are re-placed after every editor change.</li>
   <li><strong>Navigation</strong> - click a mark to find its card, the card's excerpt to find its mark, ↑ ↓ to walk the comments, a quote to flash another span. <em>Reply</em> opens the <DocLink href="textarea.html">Textarea</DocLink> composer under the card.</li>
-  <li><strong>Toasts</strong> - a <DocLink href="toast.html">Toast</DocLink> confirms a copied link and a new comment.</li>
-  <li><strong>Autosave and words</strong> - <code>editorjs-change</code> flips the badge to <em>Editing...</em> and back to <em>Saved</em> with the time; the word count comes from the Markdown read-back, debounced.</li>
+  <li><strong>Menus</strong> - a <DocLink href="menubar.html">Menubar</DocLink> of <DocLink href="dropdown.html">Dropdown Menus</DocLink>: File (New, Open ▸ Markdown / Comment annotations, Save, Save as, Export ▸ Comment annotations, Share), Edit (Comment, previous / next comment), Insert and Format (the toolbar's commands through <code>editorjs.command()</code>), View (the document list, the annotation layers). A menu takes the focus, so the glue remembers the editor's last selection and puts it back before a command runs.</li>
+  <li><strong>Open</strong> - File &gt; Open &gt; Markdown clicks a hidden file input inside the menu's click, so the browser opens its picker; the Markdown becomes a document in the list. File &gt; Open &gt; Comment annotations puts a file's annotations on the open document. Files dragged over the editor show a drop target whose label says what a drop does; a dropped Markdown file opens like File &gt; Open, a JSON file puts its annotations on the open document, and both dropped together open the document annotated. The glue listens in the capture phase on the app, so Editor.js never takes a dropped file as pasted text. Annotations are a Document Comments model, or the output of an editorial review pipeline: a summary of entries (<code>summary.eintraege</code>: id, kind, content, verbatim terms, evidence quotes, references to other entries) and the findings of its review (<code>custom</code>: quote, findings with rule, severity, confidence, action and comment, evidence). The pipeline quotes the Markdown source - <code>{`{ seite, zitat, vorkommen }`}</code>: the part of the document, the exact text, its occurrence there - so the glue rebuilds the parts (the Markdown split at headings, as many as the run's <code>steps</code>) and <code>editorjs.locate()</code> turns each quote into the block and the rendered text a comment anchors to: <code># Einschränkung</code> anchors <em>Einschränkung</em> in the heading block. Findings are coloured by severity; a summary entry links the entries it refers to (a link selects that comment); evidence quotes flash their span. The Findings / Summary toggles in the status bar hide a layer. A quote that is not in the document leaves its card without a mark, and the card says so; a toast counts what found its text and names the file the annotations were made for when it differs. <em>Importprüfung</em> is such a run, built in.</li>
+  <li><strong>Saving</strong> - two persisted stores (<code>df$.store.persisted</code>) keep the work in this browser. Save (<kbd class="kbd">⌘</kbd> <kbd class="kbd">S</kbd>) stores the open document: title, Markdown, comments. A document opened from a file or made new is stored at once, and comments and replies are stored the moment they are added - so a reply never waits for Save. Every open reply composer is a draft: the column reports its text on each keystroke (<code>doc-comments-draft</code>), the glue stores it per document, and <code>setDrafts()</code> opens the composers again after a reload. The status bar says <em>Unsaved changes</em> until the document is saved. In this preview the browser refuses storage, the stores keep everything for the visit and Save says so; the full-screen page keeps it across reloads.</li>
+  <li><strong>Save as and Export</strong> - Save as writes the Markdown (<kbd class="kbd">⇧</kbd> <kbd class="kbd">⌘</kbd> <kbd class="kbd">S</kbd>), Export the comments model with every comment, the replies included, and the annotation layers - File &gt; Open &gt; Comment annotations reads it back. Where the browser has a Save dialog (the File System Access API) it opens; elsewhere, and in this sandboxed preview, the file is a download.</li>
+  <li><strong>Toasts</strong> - a <DocLink href="toast.html">Toast</DocLink> confirms a save, a copied link and a new comment, and counts the annotations an opened file anchored.</li>
+  <li><strong>Words and the saved state</strong> - after <code>editorjs-change</code> the glue reads the Markdown back, debounced: it counts the words and compares the text with what was opened or last saved.</li>
   <li><strong>Narrow</strong> - the document list is open or closed (no icon rail) and sits in the flow, so the page narrows instead of being covered; below 56rem the comment column becomes an overlay toggled from the header.</li>
   <li><strong>Full screen</strong> - <DocLink href="app-document-editor.html">app-document-editor.html</DocLink> is generated from this page's example at build time and loads only this scaffold's bundle; the Editor.js builds come from jsDelivr, pinned.</li>
 </ul>

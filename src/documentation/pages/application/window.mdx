@@ -161,95 +161,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Driven from script" schema="none" hint="df$.shadcn.win.create() builds a window (title, icon, content, position, size, chrome) in the first desktop; cascade() and tile() arrange the open ones; close() takes an element, id or selector. The log reads window-focus, window-move and close."
-<div class="flex flex-col gap-3">
-  <div class="flex flex-wrap items-center gap-2">
-    <button class="btn" data-size="sm" id="w-new"><i data-lucide="plus"></i> New window</button>
-    <button class="btn" data-variant="outline" data-size="sm" id="w-cascade">Cascade</button>
-    <button class="btn" data-variant="outline" data-size="sm" id="w-tile">Tile</button>
-    <button class="btn" data-variant="outline" data-size="sm" id="w-close">Close active</button>
-    <output class="text-sm text-muted-foreground" id="w-log"></output>
-  </div>
-  <div class="window-desktop" id="w-desk" style="height: 22rem"></div>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const win = df$.shadcn.win;
-    const log = df$('#w-log');
-    const desk = df$('#w-desk').get(0);
-    const icons = ['file-text', 'image', 'music', 'calendar', 'mail'];
-    let n = 0;
-    const make = () => {
-      n += 1;
-      const w = win.create({
-        parent: desk,
-        title: `Untitled ${n}`,
-        icon: icons[n % icons.length],
-        content: `Window ${n} - created by df$.shadcn.win.create()`,
-        statusbar: `#${n}`,
-        width: 240,
-      });
-      df$(w).on('close', () => log.text(`closed ${df$(w).find('.window-title').text()}`));
-    };
-    df$(desk).on('window-focus', (e) => log.text(`front: ${e.detail.title}`));
-    df$(desk).on('window-move', (e) => log.text(`moved to ${e.detail.x}, ${e.detail.y}`));
-    df$('#w-new').on('click', make);
-    df$('#w-cascade').on('click', () => win.cascade(desk));
-    df$('#w-tile').on('click', () => win.tile(desk));
-    df$('#w-close').on('click', () => {
-      const a = win.active();
-      if (a) win.close(a);
-    });
-    make();
-    make();
-  });
-</script>
-```
-
-```html example label="Window states" schema="none" hint="The State API per window: default (open, normal size - also reopens a closed one), maximized, minimized (rolled up to the bar) and closed. The × and close() land in closed too - the state follows the native dialog."
-<div class="flex flex-col gap-3">
-  <div class="flex flex-wrap items-center gap-2">
-    <button class="btn" data-variant="outline" data-size="sm" data-to="default">default</button>
-    <button class="btn" data-variant="outline" data-size="sm" data-to="maximized">maximized</button>
-    <button class="btn" data-variant="outline" data-size="sm" data-to="minimized">minimized</button>
-    <button class="btn" data-variant="outline" data-size="sm" data-to="closed">closed</button>
-    <output class="text-sm text-muted-foreground" id="st-out">default</output>
-  </div>
-  <div class="window-desktop" style="height: 16rem">
-    <dialog
-      class="window"
-      id="st-win"
-      open
-      data-chrome="mac"
-      style="--window-x: 2rem; --window-y: 2rem; --window-w: 20rem"
-    >
-      <header class="window-titlebar">
-        <i data-lucide="settings" class="window-icon"></i>
-        <h2 class="window-title">Settings</h2>
-        <form method="dialog" class="window-controls">
-          <button type="button" class="window-minimize" aria-label="Minimize"></button>
-          <button type="button" class="window-maximize" aria-label="Maximize"></button>
-          <button class="window-close" aria-label="Close"></button>
-        </form>
-      </header>
-      <div class="window-body text-sm">el.api.setState(name) - or use the traffic lights.</div>
-    </dialog>
-  </div>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const w = df$('#st-win').get(0);
-    const show = () => df$('#st-out').text(w.api.getState().name);
-    df$('[data-to]').on('click', function () {
-      w.api.setState(this.dataset.to);
-      show();
-    });
-    df$(w).on('close', show);
-    df$(w).on('click', () => setTimeout(show));
-  });
-</script>
-```
-
 ```html example label="A desktop app: an editor with its toolbar" schema="none" height="40" hint="The editor window carries its app toolbar under the title bar (.window-toolbar): a ghost menubar - File, Edit, Window, Help - and tool buttons, all driving the windows through df$.shadcn.win (Window → Tile / Cascade / Maximize, Help → About opens a retro window). The editor opens on the left, the Preview on the right; the editor is a textarea over a Shiki-highlighted copy (loaded from esm.sh, like these docs), re-highlighted as you type; the status bar follows the caret and the Preview window renders the page live."
 <style>
   /* a textarea over a highlighted copy of its text - both in one grid cell,
@@ -503,6 +414,95 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     df$('#dk-editor .window-toolbar > .btn').on('click', function () {
       run(this.dataset.value);
     });
+  });
+</script>
+```
+
+```html example label="Driven from script" schema="none" hint="df$.shadcn.win.create() builds a window (title, icon, content, position, size, chrome) in the first desktop; cascade() and tile() arrange the open ones; close() takes an element, id or selector. The log reads window-focus, window-move and close."
+<div class="flex flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-size="sm" id="w-new"><i data-lucide="plus"></i> New window</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="w-cascade">Cascade</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="w-tile">Tile</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="w-close">Close active</button>
+    <output class="text-sm text-muted-foreground" id="w-log"></output>
+  </div>
+  <div class="window-desktop" id="w-desk" style="height: 22rem"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const win = df$.shadcn.win;
+    const log = df$('#w-log');
+    const desk = df$('#w-desk').get(0);
+    const icons = ['file-text', 'image', 'music', 'calendar', 'mail'];
+    let n = 0;
+    const make = () => {
+      n += 1;
+      const w = win.create({
+        parent: desk,
+        title: `Untitled ${n}`,
+        icon: icons[n % icons.length],
+        content: `Window ${n} - created by df$.shadcn.win.create()`,
+        statusbar: `#${n}`,
+        width: 240,
+      });
+      df$(w).on('close', () => log.text(`closed ${df$(w).find('.window-title').text()}`));
+    };
+    df$(desk).on('window-focus', (e) => log.text(`front: ${e.detail.title}`));
+    df$(desk).on('window-move', (e) => log.text(`moved to ${e.detail.x}, ${e.detail.y}`));
+    df$('#w-new').on('click', make);
+    df$('#w-cascade').on('click', () => win.cascade(desk));
+    df$('#w-tile').on('click', () => win.tile(desk));
+    df$('#w-close').on('click', () => {
+      const a = win.active();
+      if (a) win.close(a);
+    });
+    make();
+    make();
+  });
+</script>
+```
+
+```html example label="Window states" schema="none" hint="The State API per window: default (open, normal size - also reopens a closed one), maximized, minimized (rolled up to the bar) and closed. The × and close() land in closed too - the state follows the native dialog."
+<div class="flex flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" data-to="default">default</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-to="maximized">maximized</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-to="minimized">minimized</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-to="closed">closed</button>
+    <output class="text-sm text-muted-foreground" id="st-out">default</output>
+  </div>
+  <div class="window-desktop" style="height: 16rem">
+    <dialog
+      class="window"
+      id="st-win"
+      open
+      data-chrome="mac"
+      style="--window-x: 2rem; --window-y: 2rem; --window-w: 20rem"
+    >
+      <header class="window-titlebar">
+        <i data-lucide="settings" class="window-icon"></i>
+        <h2 class="window-title">Settings</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body text-sm">el.api.setState(name) - or use the traffic lights.</div>
+    </dialog>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$('#st-win').get(0);
+    const show = () => df$('#st-out').text(w.api.getState().name);
+    df$('[data-to]').on('click', function () {
+      w.api.setState(this.dataset.to);
+      show();
+    });
+    df$(w).on('close', show);
+    df$(w).on('click', () => setTimeout(show));
   });
 </script>
 ```

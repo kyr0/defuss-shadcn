@@ -41,6 +41,33 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
+```html example part label="Help Category"
+<article class="mk-help-category">
+  <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+  <div class="mk-help-category-body">
+    <h3 class="mk-help-category-title"><a href="#">Getting started</a></h3>
+    <p class="mk-help-category-desc">Set up your workspace and invite your team.</p>
+    <p class="mk-help-category-count">18 articles</p>
+    <ul class="mk-help-category-top"
+      ><li><a href="#">Create a workspace</a></li
+      ><li><a href="#">Invite teammates</a></li
+      ><li><a href="#">Import from Notion</a></li></ul
+    >
+  </div>
+</article>
+```
+
+```html example part label="Help Category (compact)"
+<article class="mk-help-category" data-variant="compact">
+  <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+  <div class="mk-help-category-body">
+    <h3 class="mk-help-category-title"><a href="#">Getting started</a></h3>
+    <p class="mk-help-category-desc">Set up your workspace and invite your team.</p>
+    <p class="mk-help-category-count">18 articles</p>
+  </div>
+</article>
+```
+
 ```html example label="Grid" hint="Default cards: an icon tile, the topic link covering the card, what it covers, the article count - and the most-read articles as links raised above the stretched one." previewStyle="align-items:stretch;"
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; width: 100%">
   <article class="mk-help-category">

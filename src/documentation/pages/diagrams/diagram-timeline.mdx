@@ -139,6 +139,55 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="The Q3 replan" component="diagram" hint="A moved event keeps its identity: data-change=moved plus its old position in data-before-style."
+<figure class="diagram" id="dg-time-delta" data-type="timeline" data-delta aria-label="Roadmap, replanned">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Roadmap</span>
+    <span class="diagram-title">The Q3 replan</span>
+    <span class="diagram-dek">Moves keep their identity: the before position is data-before-style.</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-tick" style="--x: 0">Q1</div>
+    <div class="diagram-tick" style="--x: 25">Q2</div>
+    <div class="diagram-tick" style="--x: 50">Q3</div>
+    <div class="diagram-tick" style="--x: 75">Q4</div>
+    <div class="diagram-tick" style="--x: 100">Q1</div>
+    <div class="diagram-node" data-node="api" style="--x: 12">
+      <div class="diagram-node-body">
+        <span class="diagram-node-eyebrow">Feb</span>
+        <span class="diagram-node-name">Public API</span>
+      </div>
+    </div>
+    <div
+      class="diagram-node"
+      data-node="mobile"
+      data-side="below"
+      data-change="moved"
+      data-change-note="May → Aug: waits for the new engine"
+      data-before-style="--x:38"
+      style="--x: 62"
+    >
+      <div class="diagram-node-body">
+        <span class="diagram-node-eyebrow">Aug</span>
+        <span class="diagram-node-name">Mobile app</span>
+      </div>
+    </div>
+    <div class="diagram-node" data-node="ai" data-tone="accent" data-change="added" style="--x: 80">
+      <div class="diagram-node-body">
+        <span class="diagram-node-eyebrow">Oct</span>
+        <span class="diagram-node-name">AI assist</span>
+      </div>
+    </div>
+    <div class="diagram-node" data-node="desktop" data-change="removed" style="--x: 55">
+      <div class="diagram-node-body">
+        <span class="diagram-node-eyebrow">Jul</span>
+        <span class="diagram-node-name">Desktop app</span>
+      </div>
+    </div>
+  </div>
+</figure>
+```
+
 ```html example label="Timeline, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-time-live" data-diagram-action="prev"
@@ -337,55 +386,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```
 
 <H2 id="delta">Delta</H2>
-
-```html example label="The Q3 replan" component="diagram" hint="A moved event keeps its identity: data-change=moved plus its old position in data-before-style."
-<figure class="diagram" id="dg-time-delta" data-type="timeline" data-delta aria-label="Roadmap, replanned">
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Roadmap</span>
-    <span class="diagram-title">The Q3 replan</span>
-    <span class="diagram-dek">Moves keep their identity: the before position is data-before-style.</span>
-  </figcaption>
-  <div class="diagram-canvas">
-    <div class="diagram-tick" style="--x: 0">Q1</div>
-    <div class="diagram-tick" style="--x: 25">Q2</div>
-    <div class="diagram-tick" style="--x: 50">Q3</div>
-    <div class="diagram-tick" style="--x: 75">Q4</div>
-    <div class="diagram-tick" style="--x: 100">Q1</div>
-    <div class="diagram-node" data-node="api" style="--x: 12">
-      <div class="diagram-node-body">
-        <span class="diagram-node-eyebrow">Feb</span>
-        <span class="diagram-node-name">Public API</span>
-      </div>
-    </div>
-    <div
-      class="diagram-node"
-      data-node="mobile"
-      data-side="below"
-      data-change="moved"
-      data-change-note="May → Aug: waits for the new engine"
-      data-before-style="--x:38"
-      style="--x: 62"
-    >
-      <div class="diagram-node-body">
-        <span class="diagram-node-eyebrow">Aug</span>
-        <span class="diagram-node-name">Mobile app</span>
-      </div>
-    </div>
-    <div class="diagram-node" data-node="ai" data-tone="accent" data-change="added" style="--x: 80">
-      <div class="diagram-node-body">
-        <span class="diagram-node-eyebrow">Oct</span>
-        <span class="diagram-node-name">AI assist</span>
-      </div>
-    </div>
-    <div class="diagram-node" data-node="desktop" data-change="removed" style="--x: 55">
-      <div class="diagram-node-body">
-        <span class="diagram-node-eyebrow">Jul</span>
-        <span class="diagram-node-name">Desktop app</span>
-      </div>
-    </div>
-  </div>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

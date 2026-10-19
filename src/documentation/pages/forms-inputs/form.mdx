@@ -226,6 +226,41 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </form>
 ```
 
+```html example label="Full composition" hint="Comprehensive form composing multiple field types." previewStyle="justify-content:start;padding:2rem;"
+<form class="form">
+  <div class="form-field">
+    <label class="label" for="name">Username</label>
+    <input class="input" type="text" id="name" required aria-describedby="name-desc" />
+    <p class="field-description" id="name-desc">This is your public display name.</p>
+  </div>
+  <div class="form-field">
+    <label class="label" for="email">Email</label>
+    <select class="select" id="email">
+      <option>m@example.com</option>
+    </select>
+  </div>
+  <fieldset class="form-fieldset">
+    <legend>Notify me about...</legend>
+    <div class="form-group">
+      <div class="form-field-inline">
+        <input class="radio" type="radio" name="notify" id="all" checked />
+        <label for="all">All new messages</label>
+      </div>
+    </div>
+  </fieldset>
+  <div class="form-field-row">
+    <div>
+      <label class="label" for="marketing">Marketing emails</label>
+      <p class="field-description" id="marketing-desc">Receive emails about new products.</p>
+    </div>
+    <input class="switch" type="checkbox" role="switch" id="marketing" aria-describedby="marketing-desc" />
+  </div>
+  <div class="form-actions">
+    <button class="btn" type="submit">Submit</button>
+  </div>
+</form>
+```
+
 ```html example label="Inline fields" hint="Checkbox and switch aligned with labels." previewStyle="display:flex;flex-direction:column;align-items:flex-start;gap:1.25rem;padding:2rem;"
 <div class="form-field-inline">
   <input class="checkbox" type="checkbox" id="terms" />
@@ -300,41 +335,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <input class="input" type="text" id="user" aria-invalid="true" aria-describedby="user-err" />
   <p class="field-error" id="user-err" role="alert"> Username must be at least 3 characters. </p>
 </div>
-```
-
-```html example label="Full composition" hint="Comprehensive form composing multiple field types." previewStyle="justify-content:start;padding:2rem;"
-<form class="form">
-  <div class="form-field">
-    <label class="label" for="name">Username</label>
-    <input class="input" type="text" id="name" required aria-describedby="name-desc" />
-    <p class="field-description" id="name-desc">This is your public display name.</p>
-  </div>
-  <div class="form-field">
-    <label class="label" for="email">Email</label>
-    <select class="select" id="email">
-      <option>m@example.com</option>
-    </select>
-  </div>
-  <fieldset class="form-fieldset">
-    <legend>Notify me about...</legend>
-    <div class="form-group">
-      <div class="form-field-inline">
-        <input class="radio" type="radio" name="notify" id="all" checked />
-        <label for="all">All new messages</label>
-      </div>
-    </div>
-  </fieldset>
-  <div class="form-field-row">
-    <div>
-      <label class="label" for="marketing">Marketing emails</label>
-      <p class="field-description" id="marketing-desc">Receive emails about new products.</p>
-    </div>
-    <input class="switch" type="checkbox" role="switch" id="marketing" aria-describedby="marketing-desc" />
-  </div>
-  <div class="form-actions">
-    <button class="btn" type="submit">Submit</button>
-  </div>
-</form>
 ```
 
 <SourceFiles component="form" section="css" />

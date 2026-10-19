@@ -92,13 +92,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </form>
 ```
 
-```html example label="Applied" hint=".mk-discount-form-applied: the code as a dashed green chip with the saving, announced via role=&quot;status&quot;, and a labelled remove button." previewStyle="align-items:stretch;"
-<div class="mk-discount-form-applied" role="status">
-  <i data-lucide="tag"></i><code>AUTUMN30</code><span>30% off yearly plans</span><strong>−€24.00</strong>
-  <button type="button" aria-label="Remove code AUTUMN30"><i data-lucide="x"></i></button>
-</div>
-```
-
 ```html example label="Collapsed" hint="data-variant='collapsed': the form behind a &quot;Have a discount code?&quot; <details> - out of the way until wanted." previewStyle="align-items:stretch;"
 <details class="mk-discount-form" data-variant="collapsed">
   <summary><i data-lucide="plus"></i> Have a discount code?</summary>
@@ -123,6 +116,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     >
   </form>
 </details>
+```
+
+```html example label="Applied" hint=".mk-discount-form-applied: the code as a dashed green chip with the saving, announced via role=&quot;status&quot;, and a labelled remove button." previewStyle="align-items:stretch;"
+<div class="mk-discount-form-applied" role="status">
+  <i data-lucide="tag"></i><code>AUTUMN30</code><span>30% off yearly plans</span><strong>−€24.00</strong>
+  <button type="button" aria-label="Remove code AUTUMN30"><i data-lucide="x"></i></button>
+</div>
 ```
 
 <SourceFiles component="discount-form" section="css" />

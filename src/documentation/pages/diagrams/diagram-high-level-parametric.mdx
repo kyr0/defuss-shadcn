@@ -261,6 +261,229 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="Two specs, one delta" component="diagram" hint="No data-change written by hand - df$.shadcn.diagram.diff() derives every mark and the ledger."
+<figure class="diagram" id="dg-param-delta" aria-label="Two specs diffed into a delta">
+  <script type="application/json" class="diagram-spec">
+    {
+      "before": {
+        "type": "high-level",
+        "eyebrow": "High-level · parametric",
+        "title": "Built from a spec",
+        "cols": 4,
+        "phases": ["Sources", "Ingest", "Lake", "Serve"],
+        "groups": [
+          {
+            "id": "k8s",
+            "label": "Kubernetes",
+            "col": 2,
+            "row": 2,
+            "span": 3,
+            "rspan": 2,
+            "tone": "solid"
+          }
+        ],
+        "nodes": [
+          {
+            "id": "pg",
+            "name": "PostgreSQL",
+            "meta": "OLTP",
+            "col": 1,
+            "row": 2,
+            "tone": "external"
+          },
+          {
+            "id": "sftp",
+            "name": "SFTP drop",
+            "meta": "CSV",
+            "col": 1,
+            "row": 3,
+            "tone": "external"
+          },
+          {
+            "id": "nifi",
+            "name": "NiFi",
+            "meta": "flows",
+            "col": 2,
+            "row": 2,
+            "rspan": 2
+          },
+          {
+            "id": "lake",
+            "name": "MinIO",
+            "meta": "Iceberg",
+            "col": 3,
+            "row": 2,
+            "rspan": 2,
+            "shape": "store",
+            "tone": "accent"
+          },
+          {
+            "id": "trino",
+            "name": "Trino",
+            "meta": "SQL",
+            "col": 4,
+            "row": 2
+          },
+          {
+            "id": "bi",
+            "name": "Superset",
+            "meta": "dashboards",
+            "col": 4,
+            "row": 3
+          },
+          {
+            "id": "kc",
+            "name": "Keycloak",
+            "eyebrow": "Identity",
+            "meta": "SSO for every UI",
+            "col": 1,
+            "row": 5,
+            "span": 4,
+            "shape": "bar",
+            "tone": "muted"
+          }
+        ],
+        "edges": [
+          {
+            "from": "pg",
+            "to": "nifi",
+            "label": "JDBC"
+          },
+          {
+            "from": "sftp",
+            "to": "nifi",
+            "label": "SFTP"
+          },
+          {
+            "from": "nifi",
+            "to": "lake",
+            "label": "write"
+          },
+          {
+            "from": "lake",
+            "to": "trino",
+            "label": "Iceberg",
+            "tone": "accent"
+          },
+          {
+            "from": "trino",
+            "to": "bi",
+            "label": "SQL"
+          }
+        ]
+      },
+      "after": {
+        "type": "high-level",
+        "eyebrow": "High-level · parametric",
+        "title": "Two specs, one delta",
+        "cols": 4,
+        "phases": ["Sources", "Ingest", "Lake", "Serve"],
+        "groups": [
+          {
+            "id": "k8s",
+            "label": "Kubernetes",
+            "col": 2,
+            "row": 2,
+            "span": 3,
+            "rspan": 2,
+            "tone": "solid"
+          }
+        ],
+        "nodes": [
+          {
+            "id": "pg",
+            "name": "PostgreSQL",
+            "meta": "OLTP",
+            "col": 1,
+            "row": 2,
+            "tone": "external"
+          },
+          {
+            "id": "nifi",
+            "name": "Airbyte",
+            "meta": "ELT · CDC",
+            "col": 2,
+            "row": 2,
+            "rspan": 2
+          },
+          {
+            "id": "lake",
+            "name": "MinIO",
+            "meta": "Iceberg",
+            "col": 3,
+            "row": 2,
+            "rspan": 2,
+            "shape": "store",
+            "tone": "accent"
+          },
+          {
+            "id": "trino",
+            "name": "Trino",
+            "meta": "SQL",
+            "col": 4,
+            "row": 3
+          },
+          {
+            "id": "bi",
+            "name": "Superset",
+            "meta": "dashboards",
+            "col": 4,
+            "row": 2
+          },
+          {
+            "id": "kc",
+            "name": "Keycloak",
+            "eyebrow": "Identity",
+            "meta": "SSO for every UI",
+            "col": 1,
+            "row": 5,
+            "span": 4,
+            "shape": "bar",
+            "tone": "muted"
+          },
+          {
+            "id": "kafka",
+            "name": "Kafka",
+            "meta": "events",
+            "col": 1,
+            "row": 4,
+            "tone": "external"
+          }
+        ],
+        "edges": [
+          {
+            "from": "pg",
+            "to": "nifi",
+            "label": "CDC"
+          },
+          {
+            "from": "kafka",
+            "to": "lake",
+            "label": "stream"
+          },
+          {
+            "from": "nifi",
+            "to": "lake",
+            "label": "write"
+          },
+          {
+            "from": "lake",
+            "to": "trino",
+            "label": "Iceberg",
+            "tone": "accent"
+          },
+          {
+            "from": "trino",
+            "to": "bi",
+            "label": "SQL"
+          }
+        ]
+      }
+    }
+  </script>
+</figure>
+```
+
 ```html example label="High-level Parametric, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-param-live" data-diagram-action="prev"
@@ -565,229 +788,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 <H2 id="delta">Delta from two specs</H2>
 
 <DocText><code>&#123; "before": ..., "after": ... &#125;</code> diffs the two specs: a node only in after is added, only in before removed, a node whose text differs changed (its old text kept), one whose cell differs moved; an edge with other ends rewired.</DocText>
-
-```html example label="Two specs, one delta" component="diagram" hint="No data-change written by hand - df$.shadcn.diagram.diff() derives every mark and the ledger."
-<figure class="diagram" id="dg-param-delta" aria-label="Two specs diffed into a delta">
-  <script type="application/json" class="diagram-spec">
-    {
-      "before": {
-        "type": "high-level",
-        "eyebrow": "High-level · parametric",
-        "title": "Built from a spec",
-        "cols": 4,
-        "phases": ["Sources", "Ingest", "Lake", "Serve"],
-        "groups": [
-          {
-            "id": "k8s",
-            "label": "Kubernetes",
-            "col": 2,
-            "row": 2,
-            "span": 3,
-            "rspan": 2,
-            "tone": "solid"
-          }
-        ],
-        "nodes": [
-          {
-            "id": "pg",
-            "name": "PostgreSQL",
-            "meta": "OLTP",
-            "col": 1,
-            "row": 2,
-            "tone": "external"
-          },
-          {
-            "id": "sftp",
-            "name": "SFTP drop",
-            "meta": "CSV",
-            "col": 1,
-            "row": 3,
-            "tone": "external"
-          },
-          {
-            "id": "nifi",
-            "name": "NiFi",
-            "meta": "flows",
-            "col": 2,
-            "row": 2,
-            "rspan": 2
-          },
-          {
-            "id": "lake",
-            "name": "MinIO",
-            "meta": "Iceberg",
-            "col": 3,
-            "row": 2,
-            "rspan": 2,
-            "shape": "store",
-            "tone": "accent"
-          },
-          {
-            "id": "trino",
-            "name": "Trino",
-            "meta": "SQL",
-            "col": 4,
-            "row": 2
-          },
-          {
-            "id": "bi",
-            "name": "Superset",
-            "meta": "dashboards",
-            "col": 4,
-            "row": 3
-          },
-          {
-            "id": "kc",
-            "name": "Keycloak",
-            "eyebrow": "Identity",
-            "meta": "SSO for every UI",
-            "col": 1,
-            "row": 5,
-            "span": 4,
-            "shape": "bar",
-            "tone": "muted"
-          }
-        ],
-        "edges": [
-          {
-            "from": "pg",
-            "to": "nifi",
-            "label": "JDBC"
-          },
-          {
-            "from": "sftp",
-            "to": "nifi",
-            "label": "SFTP"
-          },
-          {
-            "from": "nifi",
-            "to": "lake",
-            "label": "write"
-          },
-          {
-            "from": "lake",
-            "to": "trino",
-            "label": "Iceberg",
-            "tone": "accent"
-          },
-          {
-            "from": "trino",
-            "to": "bi",
-            "label": "SQL"
-          }
-        ]
-      },
-      "after": {
-        "type": "high-level",
-        "eyebrow": "High-level · parametric",
-        "title": "Two specs, one delta",
-        "cols": 4,
-        "phases": ["Sources", "Ingest", "Lake", "Serve"],
-        "groups": [
-          {
-            "id": "k8s",
-            "label": "Kubernetes",
-            "col": 2,
-            "row": 2,
-            "span": 3,
-            "rspan": 2,
-            "tone": "solid"
-          }
-        ],
-        "nodes": [
-          {
-            "id": "pg",
-            "name": "PostgreSQL",
-            "meta": "OLTP",
-            "col": 1,
-            "row": 2,
-            "tone": "external"
-          },
-          {
-            "id": "nifi",
-            "name": "Airbyte",
-            "meta": "ELT · CDC",
-            "col": 2,
-            "row": 2,
-            "rspan": 2
-          },
-          {
-            "id": "lake",
-            "name": "MinIO",
-            "meta": "Iceberg",
-            "col": 3,
-            "row": 2,
-            "rspan": 2,
-            "shape": "store",
-            "tone": "accent"
-          },
-          {
-            "id": "trino",
-            "name": "Trino",
-            "meta": "SQL",
-            "col": 4,
-            "row": 3
-          },
-          {
-            "id": "bi",
-            "name": "Superset",
-            "meta": "dashboards",
-            "col": 4,
-            "row": 2
-          },
-          {
-            "id": "kc",
-            "name": "Keycloak",
-            "eyebrow": "Identity",
-            "meta": "SSO for every UI",
-            "col": 1,
-            "row": 5,
-            "span": 4,
-            "shape": "bar",
-            "tone": "muted"
-          },
-          {
-            "id": "kafka",
-            "name": "Kafka",
-            "meta": "events",
-            "col": 1,
-            "row": 4,
-            "tone": "external"
-          }
-        ],
-        "edges": [
-          {
-            "from": "pg",
-            "to": "nifi",
-            "label": "CDC"
-          },
-          {
-            "from": "kafka",
-            "to": "lake",
-            "label": "stream"
-          },
-          {
-            "from": "nifi",
-            "to": "lake",
-            "label": "write"
-          },
-          {
-            "from": "lake",
-            "to": "trino",
-            "label": "Iceberg",
-            "tone": "accent"
-          },
-          {
-            "from": "trino",
-            "to": "bi",
-            "label": "SQL"
-          }
-        ]
-      }
-    }
-  </script>
-</figure>
-```
 
 <H2 id="parameters">Parameters</H2>
 

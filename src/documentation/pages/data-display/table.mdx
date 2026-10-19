@@ -43,6 +43,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <SkillText dense>• <code>&lt;caption&gt;</code> provides an accessible name for the table</SkillText>
   <p class="text-muted-foreground m-0">• Screen readers announce table structure (rows, columns, headers)</p>
   </SkillField>
+  <SkillField label="Print">
+<SkillText>A long table runs over pages: the header row repeats at the top of every page (the browser does that for <code>&lt;thead&gt;</code>), rows stay whole, and <code>&lt;tfoot&gt;</code> prints once, after the last row - a total on every page would be wrong. <code>data-keep-last</code> keeps the last three rows with the footer and with a block after the table that avoids a break before it; <code>data-repeat-footer</code> prints the footer on every page; <code>data-break-inside="allow"</code> lets a tall row split. The scroll wrapper lets go in print.</SkillText>
+  </SkillField>
 </SkillPanel>
 
 ```html example label="Basic Table" hint="Standard table with header and body rows. Uses .badge for status and .avatar for user display."
@@ -106,41 +109,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </tbody>
   </table>
 </div>
-```
-
-```html example label="With Footer" hint="Table with a summary footer row. The invoice numbers are row headers: th class=&quot;table-cell&quot; scope=&quot;row&quot; - start-aligned like a cell, announced as the header of their row."
-<table class="table">
-  <thead>
-    <tr class="table-row">
-      <th class="table-head">Invoice</th>
-      <th class="table-head">Status</th>
-      <th class="table-head" style="text-align: right">Amount</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="table-row">
-      <th class="table-cell" scope="row">INV001</th>
-      <td class="table-cell">Paid</td>
-      <td class="table-cell" style="text-align: right">$250.00</td>
-    </tr>
-    <tr class="table-row">
-      <th class="table-cell" scope="row">INV002</th>
-      <td class="table-cell">Pending</td>
-      <td class="table-cell" style="text-align: right">$150.00</td>
-    </tr>
-    <tr class="table-row">
-      <th class="table-cell" scope="row">INV003</th>
-      <td class="table-cell">Paid</td>
-      <td class="table-cell" style="text-align: right">$350.00</td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr class="table-row">
-      <td class="table-cell" colspan="2">Total</td>
-      <td class="table-cell" style="text-align: right">$750.00</td>
-    </tr>
-  </tfoot>
-</table>
 ```
 
 ```html example label="Empty state" hint="A table with no rows keeps its header and shows one .table-empty cell spanning every column (colspan) - an icon, a line of text, an optional action - instead of an empty box."
@@ -210,108 +178,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </tbody>
   </table>
 </div>
-```
-
-```html example label="Selectable rows" hint="A leading .table-select column of checkboxes; the one in the header selects all - it shows the dash when only some rows are chosen. Shift+click selects a range. Selected rows carry aria-selected and a tint; every change fires table-select."
-<div class="table-container" style="max-width: 44rem">
-  <table class="table" id="sel-table" aria-label="Invoices">
-    <thead
-      ><tr class="table-row"
-        ><th class="table-head table-select" scope="col"
-          ><input type="checkbox" class="checkbox" aria-label="Select all" /></th
-        ><th class="table-head" scope="col">Invoice</th><th class="table-head" scope="col">Customer</th
-        ><th class="table-head" scope="col" data-numeric>Amount</th></tr
-      ></thead
-    >
-    <tbody>
-      <tr class="table-row"
-        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-001" /></td
-        ><td class="table-cell"><span class="table-mono">INV-001</span></td
-        ><td class="table-cell">Acme Corp</td><td class="table-cell" data-numeric>€1,200.00</td></tr
-      >
-      <tr class="table-row"
-        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-002" /></td
-        ><td class="table-cell"><span class="table-mono">INV-002</span></td
-        ><td class="table-cell">Globex</td><td class="table-cell" data-numeric>€380.00</td></tr
-      >
-      <tr class="table-row"
-        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-003" /></td
-        ><td class="table-cell"><span class="table-mono">INV-003</span></td
-        ><td class="table-cell">Initech</td><td class="table-cell" data-numeric>€2,450.00</td></tr
-      >
-      <tr class="table-row"
-        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-004" /></td
-        ><td class="table-cell"><span class="table-mono">INV-004</span></td
-        ><td class="table-cell">Umbrella</td><td class="table-cell" data-numeric>€90.00</td></tr
-      >
-      <tr class="table-row"
-        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-005" /></td
-        ><td class="table-cell"><span class="table-mono">INV-005</span></td
-        ><td class="table-cell">Hooli</td><td class="table-cell" data-numeric>€760.00</td></tr
-      >
-    </tbody>
-  </table>
-</div>
-<p class="text-sm text-muted-foreground" style="margin: 0.75rem 0 0"><output id="sel-count">0</output> selected</p>
-<script>
-  document.getElementById('sel-table').addEventListener('table-select', (e) => {
-    document.getElementById('sel-count').value = e.detail.count;
-  });
-</script>
-```
-
-```html example label="Reorderable rows" hint="A .table-handle grip column: drag a row by its grip - a line shows where it lands. From the keyboard, Alt+ArrowUp / Alt+ArrowDown moves the focused row. Every move fires table-reorder."
-<div class="table-container" style="max-width: 36rem">
-  <table class="table" id="prio-table" aria-label="Priorities">
-    <thead
-      ><tr class="table-row"
-        ><th class="table-head table-handle" scope="col"><span class="sr-only">Order</span></th
-        ><th class="table-head" scope="col">Priority</th><th class="table-head" scope="col">Owner</th
-        ><th class="table-head" scope="col">Due</th></tr
-      ></thead
-    >
-    <tbody>
-      <tr class="table-row"
-        ><td class="table-cell table-handle"
-          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
-        ><td class="table-cell">Ship the release</td><td class="table-cell"><span class="table-muted">Olivia</span></td
-        ><td class="table-cell">Fri</td></tr
-      >
-      <tr class="table-row"
-        ><td class="table-cell table-handle"
-          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
-        ><td class="table-cell">Fix the login bug</td
-        ><td class="table-cell"><span class="table-muted">Jackson</span></td
-        ><td class="table-cell">Today</td></tr
-      >
-      <tr class="table-row"
-        ><td class="table-cell table-handle"
-          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
-        ><td class="table-cell">Write the changelog</td
-        ><td class="table-cell"><span class="table-muted">Sofia</span></td
-        ><td class="table-cell">Thu</td></tr
-      >
-      <tr class="table-row"
-        ><td class="table-cell table-handle"
-          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
-        ><td class="table-cell">Plan the next sprint</td
-        ><td class="table-cell"><span class="table-muted">William</span></td
-        ><td class="table-cell">Mon</td></tr
-      >
-    </tbody>
-  </table>
-</div>
-<p class="text-sm text-muted-foreground" style="margin: 0.75rem 0 0"
-  >Order:
-  <output id="prio-out">Ship the release, Fix the login bug, Write the changelog, Plan the next sprint</output></p
->
-<script>
-  document.getElementById('prio-table').addEventListener('table-reorder', (e) => {
-    document.getElementById('prio-out').value = [...e.currentTarget.tBodies[0].rows]
-      .map((r) => r.cells[1].textContent)
-      .join(', ');
-  });
-</script>
 ```
 
 ```html example label="Alignment" hint="data-align on a th / td - start, center, end (logical: they flip in RTL); data-numeric right-aligns tabular figures so digits line up; data-valign='top' pins a cell to the top of a tall row."
@@ -967,6 +833,262 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     </table>
   </div>
 </div>
+```
+
+```html example label="Printed: a long table over pages" mode="print" hint="The preview boots in the Print device: an A4 sheet with the print styles applied, but no pages - the table runs on. In a real print (or Save as PDF) it fills one page after another: the header row repeats at the top of every page, each row stays whole, the footer row prints once, after the last row, and data-keep-last keeps the last three rows with it so the total never stands alone on a page. data-repeat-footer would print the footer on every page instead; data-break-inside='allow' lets a tall row split." previewStyle="align-items:stretch;"
+<div class="table-container">
+  <table class="table" data-keep-last aria-label="Parts list">
+    <thead>
+      <tr class="table-row">
+        <th class="table-head" scope="col" data-numeric>Pos.</th>
+        <th class="table-head" scope="col">Part</th>
+        <th class="table-head" scope="col" data-numeric>Qty</th>
+        <th class="table-head" scope="col" data-numeric>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>1</td><td class="table-cell">Hex bolt M8x40</td
+        ><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>1.25</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>2</td><td class="table-cell">Washer 8.4</td
+        ><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>5.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>3</td><td class="table-cell">Nut M8</td
+        ><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>11.25</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>4</td><td class="table-cell">Threaded rod M10</td
+        ><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>20.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>5</td><td class="table-cell">Wall plug 10</td
+        ><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>31.25</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>6</td><td class="table-cell">Cable tie 200</td
+        ><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>7.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>7</td><td class="table-cell">Hinge 60</td
+        ><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>17.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>8</td><td class="table-cell">Bracket 90°</td
+        ><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>3.75</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>9</td><td class="table-cell">Hex bolt M8x40</td
+        ><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>10.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>10</td><td class="table-cell">Washer 8.4</td
+        ><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>18.75</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>11</td><td class="table-cell">Nut M8</td
+        ><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>5.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>12</td><td class="table-cell">Threaded rod M10</td
+        ><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>12.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>13</td><td class="table-cell">Wall plug 10</td
+        ><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>22.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>14</td><td class="table-cell">Cable tie 200</td
+        ><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>35.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>15</td><td class="table-cell">Hinge 60</td
+        ><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>6.25</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>16</td><td class="table-cell">Bracket 90°</td
+        ><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>2.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>17</td><td class="table-cell">Hex bolt M8x40</td
+        ><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>7.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>18</td><td class="table-cell">Washer 8.4</td
+        ><td class="table-cell" data-numeric>4</td><td class="table-cell" data-numeric>15.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>19</td><td class="table-cell">Nut M8</td
+        ><td class="table-cell" data-numeric>5</td><td class="table-cell" data-numeric>25.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>20</td><td class="table-cell">Threaded rod M10</td
+        ><td class="table-cell" data-numeric>6</td><td class="table-cell" data-numeric>37.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>21</td><td class="table-cell">Wall plug 10</td
+        ><td class="table-cell" data-numeric>7</td><td class="table-cell" data-numeric>8.75</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>22</td><td class="table-cell">Cable tie 200</td
+        ><td class="table-cell" data-numeric>1</td><td class="table-cell" data-numeric>2.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>23</td><td class="table-cell">Hinge 60</td
+        ><td class="table-cell" data-numeric>2</td><td class="table-cell" data-numeric>7.50</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell" data-numeric>24</td><td class="table-cell">Bracket 90°</td
+        ><td class="table-cell" data-numeric>3</td><td class="table-cell" data-numeric>15.00</td></tr
+      >
+    </tbody>
+    <tfoot>
+      <tr class="table-row">
+        <td class="table-cell" colspan="3">Total</td>
+        <td class="table-cell" data-numeric>328.75</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+```
+
+```html example label="With Footer" hint="Table with a summary footer row. The invoice numbers are row headers: th class=&quot;table-cell&quot; scope=&quot;row&quot; - start-aligned like a cell, announced as the header of their row."
+<table class="table">
+  <thead>
+    <tr class="table-row">
+      <th class="table-head">Invoice</th>
+      <th class="table-head">Status</th>
+      <th class="table-head" style="text-align: right">Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="table-row">
+      <th class="table-cell" scope="row">INV001</th>
+      <td class="table-cell">Paid</td>
+      <td class="table-cell" style="text-align: right">$250.00</td>
+    </tr>
+    <tr class="table-row">
+      <th class="table-cell" scope="row">INV002</th>
+      <td class="table-cell">Pending</td>
+      <td class="table-cell" style="text-align: right">$150.00</td>
+    </tr>
+    <tr class="table-row">
+      <th class="table-cell" scope="row">INV003</th>
+      <td class="table-cell">Paid</td>
+      <td class="table-cell" style="text-align: right">$350.00</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr class="table-row">
+      <td class="table-cell" colspan="2">Total</td>
+      <td class="table-cell" style="text-align: right">$750.00</td>
+    </tr>
+  </tfoot>
+</table>
+```
+
+```html example label="Selectable rows" hint="A leading .table-select column of checkboxes; the one in the header selects all - it shows the dash when only some rows are chosen. Shift+click selects a range. Selected rows carry aria-selected and a tint; every change fires table-select."
+<div class="table-container" style="max-width: 44rem">
+  <table class="table" id="sel-table" aria-label="Invoices">
+    <thead
+      ><tr class="table-row"
+        ><th class="table-head table-select" scope="col"
+          ><input type="checkbox" class="checkbox" aria-label="Select all" /></th
+        ><th class="table-head" scope="col">Invoice</th><th class="table-head" scope="col">Customer</th
+        ><th class="table-head" scope="col" data-numeric>Amount</th></tr
+      ></thead
+    >
+    <tbody>
+      <tr class="table-row"
+        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-001" /></td
+        ><td class="table-cell"><span class="table-mono">INV-001</span></td
+        ><td class="table-cell">Acme Corp</td><td class="table-cell" data-numeric>€1,200.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-002" /></td
+        ><td class="table-cell"><span class="table-mono">INV-002</span></td
+        ><td class="table-cell">Globex</td><td class="table-cell" data-numeric>€380.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-003" /></td
+        ><td class="table-cell"><span class="table-mono">INV-003</span></td
+        ><td class="table-cell">Initech</td><td class="table-cell" data-numeric>€2,450.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-004" /></td
+        ><td class="table-cell"><span class="table-mono">INV-004</span></td
+        ><td class="table-cell">Umbrella</td><td class="table-cell" data-numeric>€90.00</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell table-select"><input type="checkbox" class="checkbox" aria-label="Select INV-005" /></td
+        ><td class="table-cell"><span class="table-mono">INV-005</span></td
+        ><td class="table-cell">Hooli</td><td class="table-cell" data-numeric>€760.00</td></tr
+      >
+    </tbody>
+  </table>
+</div>
+<p class="text-sm text-muted-foreground" style="margin: 0.75rem 0 0"><output id="sel-count">0</output> selected</p>
+<script>
+  document.getElementById('sel-table').addEventListener('table-select', (e) => {
+    document.getElementById('sel-count').value = e.detail.count;
+  });
+</script>
+```
+
+```html example label="Reorderable rows" hint="A .table-handle grip column: drag a row by its grip - a line shows where it lands. From the keyboard, Alt+ArrowUp / Alt+ArrowDown moves the focused row. Every move fires table-reorder."
+<div class="table-container" style="max-width: 36rem">
+  <table class="table" id="prio-table" aria-label="Priorities">
+    <thead
+      ><tr class="table-row"
+        ><th class="table-head table-handle" scope="col"><span class="sr-only">Order</span></th
+        ><th class="table-head" scope="col">Priority</th><th class="table-head" scope="col">Owner</th
+        ><th class="table-head" scope="col">Due</th></tr
+      ></thead
+    >
+    <tbody>
+      <tr class="table-row"
+        ><td class="table-cell table-handle"
+          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
+        ><td class="table-cell">Ship the release</td><td class="table-cell"><span class="table-muted">Olivia</span></td
+        ><td class="table-cell">Fri</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell table-handle"
+          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
+        ><td class="table-cell">Fix the login bug</td
+        ><td class="table-cell"><span class="table-muted">Jackson</span></td
+        ><td class="table-cell">Today</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell table-handle"
+          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
+        ><td class="table-cell">Write the changelog</td
+        ><td class="table-cell"><span class="table-muted">Sofia</span></td
+        ><td class="table-cell">Thu</td></tr
+      >
+      <tr class="table-row"
+        ><td class="table-cell table-handle"
+          ><button type="button" aria-label="Move row (Alt+Arrow keys)"><i data-lucide="grip-vertical"></i></button></td
+        ><td class="table-cell">Plan the next sprint</td
+        ><td class="table-cell"><span class="table-muted">William</span></td
+        ><td class="table-cell">Mon</td></tr
+      >
+    </tbody>
+  </table>
+</div>
+<p class="text-sm text-muted-foreground" style="margin: 0.75rem 0 0"
+  >Order:
+  <output id="prio-out">Ship the release, Fix the login bug, Write the changelog, Plan the next sprint</output></p
+>
+<script>
+  document.getElementById('prio-table').addEventListener('table-reorder', (e) => {
+    document.getElementById('prio-out').value = [...e.currentTarget.tBodies[0].rows]
+      .map((r) => r.cells[1].textContent)
+      .join(', ');
+  });
+</script>
 ```
 
 ```html example label="Density" hint="Set data-density on the component root to scale its internal whitespace. A whitespace policy, not a zoom: only gaps and padding scale (ratio 0.75 / 1 / 1.25), typography and fixed dimensions stay identical. comfortable matches the unsized default."

@@ -1178,11 +1178,9 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
     margin: 0;
   }
   #sys-frage .sys-bench b {
-    display: block;
-    font-size: 64px;
+    font-size: 40px;
     font-weight: 900;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
+    letter-spacing: -0.02em;
   }
 
   /* reduced motion: every bespoke animation collapses (the df$.anim
@@ -1262,7 +1260,7 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       class="abs sys-num"
       data-df-entrance="blur"
       style="--df-motion-delay: 0.1s; left: 112px; top: 120px; font-size: 300px"
-      ><span data-count="" data-stat="stats.total">234</span></div
+      ><span data-count="" data-stat="stats.total">243</span></div
     >
     <div
       class="abs"
@@ -1288,23 +1286,23 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       ><b data-stat="stats.tokens">52</b><span>design tokens</span></div
     >
     <div class="abs sys-fact" data-df-entrance="up" style="--df-motion-delay: 1.35s; left: 120px; top: 680px"
-      ><b data-stat="stats.examples">1,617</b><span>live examples</span></div
+      ><b data-stat="stats.examples">2,404</b><span>live examples</span></div
     >
     <div class="sys-dots" id="sys-dots"></div>
     <div class="sys-collab" data-col="atm" style="left: 620px"
-      ><b data-stat="stats.byType.ATM">70</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div
+      ><b data-stat="stats.byType.ATM">72</b><span class="type-badge" data-type="ATM" title="Atoms">ATM</span></div
     >
     <div class="sys-collab" data-col="mol" style="left: 795px"
-      ><b data-stat="stats.byType.MOL">27</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div
+      ><b data-stat="stats.byType.MOL">32</b><span class="type-badge" data-type="MOL" title="Molecules">MOL</span></div
     >
     <div class="sys-collab" data-col="blk" style="left: 970px"
-      ><b data-stat="stats.byType.BLK">128</b><span class="type-badge" data-type="BLK" title="Blocks">BLK</span></div
+      ><b data-stat="stats.byType.BLK">129</b><span class="type-badge" data-type="BLK" title="Blocks">BLK</span></div
     >
     <div class="sys-collab" data-col="org" style="left: 1145px"
       ><b data-stat="stats.byType.ORG">6</b><span class="type-badge" data-type="ORG" title="Organisms">ORG</span></div
     >
     <div class="sys-collab" data-col="tpl" style="left: 1320px"
-      ><b data-stat="stats.templates">66</b><span class="type-badge" data-type="TPL" title="Templates">TPL</span></div
+      ><b data-stat="stats.templates">73</b><span class="type-badge" data-type="TPL" title="Templates">TPL</span></div
     >
     <div class="abs sys-axlab" style="left: 620px; top: 806px">Taxonomy</div>
     <p class="presentation-note"
@@ -1762,15 +1760,15 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
         <div class="sys-split-chart" role="img" aria-label="all.min.js: source, minified and gzip size">
           <div
             ><span>source</span><i style="--d: 0.7s"></i
-            ><b data-stat="stats.bundle.jsSize" data-stat-format="kib0">849</b></div
+            ><b data-stat="stats.bundle.jsSize" data-stat-format="kib0">912</b></div
           >
           <div
             ><span>minified</span><i style="--d: 0.8s"></i
-            ><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib0">489</b></div
+            ><b data-stat="stats.bundle.jsSizeMinified" data-stat-format="kib0">527</b></div
           >
           <div class="gz"
             ><span>gzip</span><i style="--d: 0.9s"></i
-            ><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">150</b></div
+            ><b data-stat="stats.bundle.jsSizeGzMinified" data-stat-format="kib0">163</b></div
           >
         </div>
       </div>
@@ -1791,15 +1789,15 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
         <div class="sys-split-chart" role="img" aria-label="all.min.css: source, minified and gzip size">
           <div
             ><span>source</span><i style="--d: 0.85s"></i
-            ><b data-stat="stats.bundle.cssSize" data-stat-format="kib0">1323</b></div
+            ><b data-stat="stats.bundle.cssSize" data-stat-format="kib0">1381</b></div
           >
           <div
             ><span>minified</span><i style="--d: 0.95s"></i
-            ><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib0">753</b></div
+            ><b data-stat="stats.bundle.cssSizeMinified" data-stat-format="kib0">781</b></div
           >
           <div class="gz"
             ><span>gzip</span><i style="--d: 1.05s"></i
-            ><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">130</b></div
+            ><b data-stat="stats.bundle.cssSizeGzMinified" data-stat-format="kib0">136</b></div
           >
         </div>
       </div>
@@ -1820,15 +1818,15 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
         <div class="sys-split-chart" role="img" aria-label="core.min.js: source, minified and gzip size">
           <div
             ><span>source</span><i style="--d: 1s"></i
-            ><b data-stat="stats.core.jsSize" data-stat-format="kib0">142</b></div
+            ><b data-stat="stats.core.jsSize" data-stat-format="kib0">163</b></div
           >
           <div
             ><span>minified</span><i style="--d: 1.1s"></i
-            ><b data-stat="stats.core.jsSizeMinified" data-stat-format="kib0">73</b></div
+            ><b data-stat="stats.core.jsSizeMinified" data-stat-format="kib0">86</b></div
           >
           <div class="gz"
             ><span>gzip</span><i style="--d: 1.2s"></i
-            ><b data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib0">25</b></div
+            ><b data-stat="stats.core.jsSizeGzMinified" data-stat-format="kib0">29</b></div
           >
         </div>
       </div>
@@ -1937,8 +1935,8 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
         ><b><span data-count="" data-count-delay="1000">0</span>%</b></div
       ></div
     >
-    <div class="sys-tlab" style="left: 720px"><b data-stat="stats.withoutJs">170</b>CSS-only</div>
-    <div class="sys-tlab" style="left: 1040px"><b data-stat="stats.withJs">64</b>with JavaScript</div>
+    <div class="sys-tlab" style="left: 720px"><b data-stat="stats.withoutJs">171</b>CSS-only</div>
+    <div class="sys-tlab" style="left: 1040px"><b data-stat="stats.withJs">72</b>with JavaScript</div>
     <p class="presentation-note"
       >The ratio: three of four components are plain HTML and CSS - JavaScript only where HTML and CSS end (keyboard
       patterns, focus, state).</p
@@ -1962,10 +1960,10 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
     <div class="abs sys-bars" style="left: 120px; top: 268px; width: 1360px; gap: 8px; --sys-bar-label: 520px">
       <div class="sys-bar ref" data-df-entrance="left" style="--df-motion-delay: 0.45s"
         ><span
-          >Everything<small><span data-stat="stats.total">234</span> components · all.min.css + all.min.js</small></span
+          >Everything<small><span data-stat="stats.total">243</span> components · all.min.css + all.min.js</small></span
         ><i style="--d: 0.5s"></i
         ><b
-          ><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">279.8</span><span>KiB</span></b
+          ><span data-stat="stats.bundle.totalSizeGzMinified" data-stat-format="kib">298.4</span><span>KiB</span></b
         ></div
       >
       <a
@@ -2028,7 +2026,7 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
           ><small><span data-stat="stats.apps.notes.components.length">24</span> components</small></span
         ><i style="--d: 1.06s"></i
         ><b
-          ><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">59.7</span><span>KiB</span></b
+          ><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">64.5</span><span>KiB</span></b
         ></a
       >
       <a
@@ -2111,7 +2109,7 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
         ><i class="sw-web"></i><span>Website Templates</span><b data-stat="stats.templateGroups.Website">12</b></div
       >
       <div data-df-entrance="left" style="--df-motion-delay: 1.7s"
-        ><i class="sw-tpl"></i><span>Template Components</span><b data-stat="stats.byType.TPL">3</b></div
+        ><i class="sw-tpl"></i><span>Template Components</span><b data-stat="stats.byType.TPL">4</b></div
       >
     </div>
     <svg
@@ -2124,7 +2122,7 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       <circle class="sys-ringl" cx="1150" cy="500" r="240"></circle>
       <circle class="sys-rim" cx="1150" cy="500" r="320"></circle>
       <circle class="sys-hub" cx="1150" cy="500" r="96"></circle>
-      <text class="sys-hub-num" x="1150" y="512" text-anchor="middle" data-stat="stats.templates">66</text>
+      <text class="sys-hub-num" x="1150" y="512" text-anchor="middle" data-stat="stats.templates">73</text>
       <text class="sys-hub-lab" x="1150" y="548" text-anchor="middle">templates</text>
     </svg>
     <p class="presentation-note"
@@ -2249,7 +2247,7 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       class="abs sys-proof"
       data-df-entrance="up"
       style="--df-motion-delay: 0.6s; left: 120px; top: 622px; width: 1360px"
-      >The proof: defuss-shadcn scaled from 20 to <span data-stat="stats.total">234</span> components with this method -
+      >The proof: defuss-shadcn scaled from 20 to <span data-stat="stats.total">243</span> components with this method -
       and still passes every gate.</p
     >
     <p
@@ -2258,7 +2256,12 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       style="--df-motion-delay: 0.9s; left: 120px; top: 668px; width: 1360px"
       >Designed by Aron Homberg (kyr0), general purpose: it adapts to any agentic engineering project. Skill:
       <a href="https://github.com/kyr0/defuss-vae" target="_blank" rel="noopener">github.com/kyr0/defuss-vae</a> · the
-      report: <a href="paper.html" target="_blank" rel="noopener">Verified Agentic Engineering in Practice</a></p
+      report: <a href="paper.html" target="_blank" rel="noopener">Verified Agentic Engineering in Practice</a> (<a
+        href="files/verified-agentic-engineering.pdf"
+        target="_blank"
+        rel="noopener"
+        >PDF</a
+      >)</p
     >
     <p class="presentation-note"
       >The VAE loop, as the technical report draws it (Figure 1): a session starts from the rules and the agent's own
@@ -2465,31 +2468,31 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       </g>
     </svg>
     <div class="sys-wnum" data-df-entrance="fade" style="--df-motion-delay: 2.6s"
-      ><span data-stat="verify.seconds" data-stat-format="s">10.2</span> s</div
+      ><span data-stat="verify.seconds" data-stat-format="s">8.2</span> s</div
     >
     <div class="sys-wlab" data-df-entrance="fade" style="--df-motion-delay: 2.7s">verify alone</div>
     <div class="sys-rows">
       <div class="sys-row hot" data-df-entrance="left" style="--df-motion-delay: 0.7s"
-        ><span>Verify gates</span><span></span><b data-stat="verify.gates">78</b></div
+        ><span>Verify gates</span><span></span><b data-stat="verify.gates">87</b></div
       >
       <div class="sys-row" data-df-entrance="left" style="--df-motion-delay: 0.82s"
-        ><span>E2E test files</span><span></span><b data-stat="verify.e2eFiles">242</b></div
+        ><span>E2E test files</span><span></span><b data-stat="verify.e2eFiles">265</b></div
       >
       <div class="sys-row" data-df-entrance="left" style="--df-motion-delay: 0.94s"
-        ><span>Unit tests</span><span></span><b data-stat="tests.tests">649</b></div
+        ><span>Unit tests</span><span></span><b data-stat="tests.tests">717</b></div
       >
       <div class="sys-row" data-df-entrance="left" style="--df-motion-delay: 1.06s"
-        ><span>Components covered</span><span></span><b data-stat="stats.total">234</b></div
+        ><span>Components covered</span><span></span><b data-stat="stats.total">243</b></div
       >
     </div>
     <p class="sys-rec" data-df-entrance="fade" style="--df-motion-delay: 1.4s"
-      ><code>bun scripts/verify.ts</code> - <span data-stat="verify.seconds" data-stat-format="s">10.2</span> s on a
+      ><code>bun scripts/verify.ts</code> - <span data-stat="verify.seconds" data-stat-format="s">8.2</span> s on a
       <span data-stat="verify.machine" data-stat-format="text">MacBook Air</span> ·
       <span data-stat="verify.chip" data-stat-format="text">Apple M4</span> (<span data-stat="verify.memoryGB">24</span>
       GB, <span data-stat="verify.os" data-stat-format="text">macOS 15.7.3</span>, Bun
       <span data-stat="verify.bun" data-stat-format="text">1.4.2</span>), run by
-      <span data-stat="verify.agent" data-stat-format="text">Claude Code · Opus 5.5 (high effort)</span> on
-      <span data-stat="verify.date" data-stat-format="text">2026-10-05</span>. Recorded by scripts/time-verify.ts - and
+      <span data-stat="verify.agent" data-stat-format="text">hand</span> on
+      <span data-stat="verify.date" data-stat-format="text">2026-10-14</span>. Recorded by scripts/time-verify.ts - and
       this slide is checked against the record.</p
     >
     <p class="presentation-note"
@@ -2594,8 +2597,8 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       >defuss-shadcn</h2
     >
     <p class="abs sys-skill-sub" data-df-entrance="up" style="--df-motion-delay: 0.4s"
-      >Your agent builds with the whole component system in mind - <span data-stat="stats.total">234</span> components,
-      learning from the best practices shown in <span data-stat="stats.examples">1,617</span> live examples: expert
+      >Your agent builds with the whole component system in mind - <span data-stat="stats.total">243</span> components,
+      learning from the best practices shown in <span data-stat="stats.examples">2,404</span> live examples: expert
       guidance built in, AI slop left out.</p
     >
     <div class="sys-skill-grid">
@@ -2910,9 +2913,8 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
     <p
       class="abs sys-bench"
       data-df-entrance="fade"
-      style="--df-motion-delay: 1.4s; left: 124px; top: 520px; width: 700px"
-      >Average NON-API-SLOP prototype <br />creation time: <b>15 mins</b> - benchmarked in: <br />Claude Code, Opus 5.5
-      (high)</p
+      style="--df-motion-delay: 1.4s; left: 124px; top: 604px; width: 760px"
+      >Average NON-API-SLOP prototype: <b>15 mins</b><br />benchmarked in Claude Code, Opus 5.5 (high)</p
     >
     <svg class="sys-fx" viewBox="0 0 1600 900" aria-hidden="true"><g class="sys-ring" id="sys-ring"></g></svg>
     <div class="sys-qm" aria-hidden="true">?</div>

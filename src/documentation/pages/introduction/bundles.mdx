@@ -9,7 +9,7 @@ import { DocPage, PageHeader, CodeWindow, DocText, DocLink, TableCard, SectionBu
 <DocPage meta={meta}>
 
 <PageHeader slug="bundles" title="Bundles & Downloads">
-  Three ways to load the system, from one file pair to one file per component: <code>all.*</code> carries every component, a <strong>section bundle</strong> carries one sidebar section - the forms, the overlays, the website blocks - and the per-component files carry exactly one. Each way loads from the jsDelivr CDN, installs with npm, or comes as a ZIP to copy into your project.
+  Three ways to load the system, from one file pair to one file per component: <code>all.\*</code> carries every component, a <strong>section bundle</strong> carries one sidebar section - the forms, the overlays, the website blocks - and the per-component files carry exactly one. Each way loads from the jsDelivr CDN, installs with npm, or comes as a ZIP to copy into your project.
 </PageHeader>
 
 <h2 id="three-sizes" class="h2-display">Three sizes</h2>
@@ -27,7 +27,7 @@ import { DocPage, PageHeader, CodeWindow, DocText, DocLink, TableCard, SectionBu
 
 <h2 id="section-bundles" class="h2-display">The section bundles</h2>
 
-<DocText>Every component sits in exactly one sidebar section, and every sidebar section that holds components ships as one bundle: <code>dist/sections/&#123;section&#125;.css</code>, plus <code>.js</code> when a member has behavior, plus the minified twins and source maps. The WYSIWYG Editors section is the extra bundle <code>components/wysiwyg.*</code> that every page of this documentation loads. A section bundle holds only its own components, so loading several sections never ships a component twice.</DocText>
+<DocText>Every component sits in exactly one sidebar section, and every sidebar section that holds components ships as one bundle: <code>dist/sections/&#123;section&#125;.css</code>, plus <code>.js</code> when a member has behavior, plus the minified twins and source maps. The Math section is an extra bundle, kept out of <code>all.\*</code>: <code>components/math.\*</code>. Three more extra bundles are a part of a section, and that section's bundle carries them too: <code>components/wysiwyg.\*</code> (the HTML Preview Editor, which every page of this documentation loads, and Editor.js) and <code>components/visual-editor.\*</code> in WYSIWYG Editors, <code>components/mermaid.\*</code> in Diagrams - a page loads either <code>all.\*</code> with the extra bundles it uses or core with section bundles, never both. The <code>all</code> ZIP brings the extra bundles beside <code>all.\*</code>. A section bundle holds only its own components, so loading several sections never ships a component twice.</DocText>
 
 <DocText><strong>Needs</strong> lists the other sections whose components the section's documented markup uses: a Website pricing block is built from Buttons and Badges, a Dialog from Buttons. The list is computed from every <code>html</code> block of the members' component skills, plus the markup their JavaScript writes. Primitives appears almost everywhere because it carries Typography, the page's base text size. Sizes are minified + gzip-compressed, CSS and JS together, without core.</DocText>
 
@@ -59,7 +59,7 @@ flowchart LR
 
 <CodeWindow title="defuss-shadcn-vX.Y.Z-overlays.zip" numbers={false} code={"defuss-shadcn-vX.Y.Z-overlays/\n├-- README.md               ← what is inside + the <link>/<script> tags in load order\n├-- LICENSE\n├-- NOTICE.txt              ← bundled third-party code (defuss-morph, defuss-query)\n├-- components/\n│   ├-- core.css            ← + core.min.css, core.min.css.map\n│   └-- core.js             ← + core.js.map, core.min.js, core.min.js.map\n└-- sections/\n    ├-- primitives.css / .js ← the sections Overlays needs, each with its twins\n    ├-- actions.css / .js\n    ├-- data-display.css / .js\n    └-- overlays.css / .js   ← the section itself"} />
 
-<DocText>Unzip the folder into your static files and copy the tags from its README. The <ZipLink name="all" /> ZIP holds <code>core.css</code> and <code>all.*</code> - <code>all.js</code> embeds the runtime, so it has no <code>core.js</code>. Releases up to v0.9.5 predate the split and attach no ZIPs; for the whole repository (sources, docs and all), use the source archive GitHub attaches to every release, or the <DocLink href="installation.html#toc-self-hosting">Self-hosting</DocLink> download.</DocText>
+<DocText>Unzip the folder into your static files and copy the tags from its README. The <ZipLink name="all" /> ZIP holds <code>core.css</code> and <code>all.\*</code> - <code>all.js</code> embeds the runtime, so it has no <code>core.js</code>. Releases up to v0.9.5 predate the split and attach no ZIPs; for the whole repository (sources, docs and all), use the source archive GitHub attaches to every release, or the <DocLink href="installation.html#toc-self-hosting">Self-hosting</DocLink> download.</DocText>
 
 <h2 id="how" class="h2-display">How the split is made</h2>
 

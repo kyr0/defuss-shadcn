@@ -105,6 +105,42 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="Rendering moves to the edge" component="diagram" hint="Renumbered layers keep their identity: the old index is data-before on the eyebrow."
+<figure class="diagram" id="dg-layers-delta" data-type="layers" data-delta aria-label="An edge layer is added">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Stack change</span>
+    <span class="diagram-title">Rendering moves to the edge</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-node" data-node="ux" data-change="changed">
+      <span class="diagram-node-eyebrow" data-before="L5 · Experience">L6 · Experience</span>
+      <span class="diagram-node-name">Web, iOS, Android</span>
+      <span class="diagram-node-meta" data-before="design system · SSR">thin clients</span>
+    </div>
+    <div class="diagram-node" data-node="edge" data-tone="accent" data-change="added">
+      <span class="diagram-node-eyebrow">L5 · Edge</span>
+      <span class="diagram-node-name">Edge workers</span>
+      <span class="diagram-node-meta">SSR · cache · A/B</span>
+    </div>
+    <div class="diagram-node" data-node="api">
+      <span class="diagram-node-eyebrow">L4 · API</span>
+      <span class="diagram-node-name">GraphQL gateway</span>
+      <span class="diagram-node-meta">schema = the contract</span>
+    </div>
+    <div class="diagram-node" data-node="bff" data-change="removed">
+      <span class="diagram-node-eyebrow">L3½ · BFF</span>
+      <span class="diagram-node-name">Backend for frontend</span>
+      <span class="diagram-node-meta">one per client</span>
+    </div>
+    <div class="diagram-node" data-node="svc">
+      <span class="diagram-node-eyebrow">L3 · Services</span>
+      <span class="diagram-node-name">Domain services</span>
+      <span class="diagram-node-meta">14 services · gRPC</span>
+    </div>
+  </div>
+</figure>
+```
+
 ```html example label="Layers, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-layers-live" data-diagram-action="prev"
@@ -257,42 +293,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```
 
 <H2 id="delta">Delta</H2>
-
-```html example label="Rendering moves to the edge" component="diagram" hint="Renumbered layers keep their identity: the old index is data-before on the eyebrow."
-<figure class="diagram" id="dg-layers-delta" data-type="layers" data-delta aria-label="An edge layer is added">
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Stack change</span>
-    <span class="diagram-title">Rendering moves to the edge</span>
-  </figcaption>
-  <div class="diagram-canvas">
-    <div class="diagram-node" data-node="ux" data-change="changed">
-      <span class="diagram-node-eyebrow" data-before="L5 · Experience">L6 · Experience</span>
-      <span class="diagram-node-name">Web, iOS, Android</span>
-      <span class="diagram-node-meta" data-before="design system · SSR">thin clients</span>
-    </div>
-    <div class="diagram-node" data-node="edge" data-tone="accent" data-change="added">
-      <span class="diagram-node-eyebrow">L5 · Edge</span>
-      <span class="diagram-node-name">Edge workers</span>
-      <span class="diagram-node-meta">SSR · cache · A/B</span>
-    </div>
-    <div class="diagram-node" data-node="api">
-      <span class="diagram-node-eyebrow">L4 · API</span>
-      <span class="diagram-node-name">GraphQL gateway</span>
-      <span class="diagram-node-meta">schema = the contract</span>
-    </div>
-    <div class="diagram-node" data-node="bff" data-change="removed">
-      <span class="diagram-node-eyebrow">L3½ · BFF</span>
-      <span class="diagram-node-name">Backend for frontend</span>
-      <span class="diagram-node-meta">one per client</span>
-    </div>
-    <div class="diagram-node" data-node="svc">
-      <span class="diagram-node-eyebrow">L3 · Services</span>
-      <span class="diagram-node-name">Domain services</span>
-      <span class="diagram-node-meta">14 services · gRPC</span>
-    </div>
-  </div>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

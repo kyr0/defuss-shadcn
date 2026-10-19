@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="doc-comments" title="Document Comments" component="doc-comments">
-  A column of comments beside a document, the way a Google Doc has one: every comment is a <DocLink href="card.html">Card</DocLink> tied to a span of the text, which the runtime wraps in a mark of the comment's colour. Click the mark and the column scrolls to the card; click the card's excerpt and the document scrolls to the mark; the <DocLink href="button-group.html">ButtonGroup</DocLink> at the top walks the comments up and down. A comment can quote another span - clicking the quote scrolls there and flashes it - and Reply opens a <DocLink href="textarea.html">Textarea</DocLink> composer whose answer nests under the comment. The whole thing is one JSON model. The <DocLink href="scaffold-document-editor.html">Document Editor</DocLink> scaffold puts it next to an <DocLink href="editorjs.html">Editor.js</DocLink> document.
+  A column of comments beside a document, the way a Google Doc has one: every comment is a <DocLink href="card.html">Card</DocLink> tied to a span of the text, which the runtime wraps in a mark of the comment's colour. Click the mark and the column scrolls to the card; click the card's excerpt and the document scrolls to the mark; the <DocLink href="button-group.html">ButtonGroup</DocLink> at the top walks the comments up and down. A comment can quote another span - clicking the quote scrolls there and flashes it - or link another comment, which the click makes current; Reply opens a <DocLink href="textarea.html">Textarea</DocLink> composer whose answer nests under the comment; an open composer keeps its text when the column re-renders and reports it, so a page can save unsent replies. The whole thing is one JSON model. The <DocLink href="scaffold-document-editor.html">Document Editor</DocLink> scaffold puts it next to an <DocLink href="editorjs.html">Editor.js</DocLink> document.
 </PageHeader>
 
 <SkillPanel component="doc-comments">
@@ -56,7 +56,19 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example label="Comments on a document" hint="A rendered document with ids on its blocks and the column beside it. Click a mark in the text, the excerpt on a card, the ↑ ↓ buttons, the quote in the second comment, and Reply." previewStyle="justify-content:flex-start;align-items:stretch;"
+```html example part label="Document Comments"
+<aside
+  class="doc-comments"
+  id="dc-comments"
+  data-for="dc-doc"
+  data-author="You"
+  aria-label="Comments"
+  style="border: 1px solid var(--border); border-radius: var(--radius-lg)"
+>
+</aside>
+```
+
+```html example label="Comments on a document" hint="A rendered document with ids on its blocks and the column beside it. Click a mark in the text, the excerpt on a card, the ↑ ↓ buttons, the quote in the first comment, the link to another comment in the last one, and Reply." previewStyle="justify-content:flex-start;align-items:stretch;"
 <div class="flex gap-4" style="block-size: 26rem; max-inline-size: 60rem">
   <article
     id="dc-doc"
@@ -135,7 +147,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
             "time": "2026-10-07T10:15:00Z",
             "color": "chart-1",
             "anchor": { "block": "dc-p4", "text": "severity, to priority or to the author" },
-            "body": "Pick one mapping per document and say which in the legend. See the [scaffold](https://shadcn.defuss.org/application/scaffold-document-editor.html)."
+            "body": "Pick one mapping per document and say which in the legend. See the [scaffold](https://shadcn.defuss.org/application/scaffold-document-editor.html).",
+            "quotes": [{ "comment": "c3", "note": "the flash colour stays out of the mapping" }]
           }
         ]
       }
@@ -144,7 +157,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Marks across inline elements, the API" hint="An anchor may cross bold or code inside a block - every text node of the match gets its own mark, all with the comment's id. Add a comment through the API, follow a quote, read the model back." previewStyle="justify-content:flex-start;align-items:stretch;"
+```html example label="Marks across inline elements, the API" hint="An anchor may cross bold or code inside a block - every text node of the match gets its own mark, all with the comment's id. Add a comment through the API, follow a quote, read the model back. Press Reply and type: every keystroke reports the draft (doc-comments-draft), and adding a comment - which re-renders the column - keeps the composer open with its text." previewStyle="justify-content:flex-start;align-items:stretch;"
 <div class="stack gap-3" style="max-inline-size: 60rem">
   <div class="flex gap-4" style="block-size: 18rem">
     <article
@@ -209,6 +222,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       info(`${e.detail.comments} comments${e.detail.id ? `, added ${e.detail.id}` : ''}`),
     );
     df$('#dc-api').on('doc-comments-select', (e) => info(`current: ${e.detail.id} (${e.detail.source})`));
+    df$('#dc-api').on('doc-comments-draft', (e) =>
+      info(`draft for ${e.detail.id}: ${e.detail.text === null ? 'closed' : `${e.detail.text.length} characters`}`),
+    );
     df$('#dc-api-add').on('click', () =>
       df$.shadcn.docComments.add('#dc-api', {
         author: 'Reviewer',

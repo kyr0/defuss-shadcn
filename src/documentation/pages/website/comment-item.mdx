@@ -52,6 +52,103 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
+```html example part label="Comment Item (compact)"
+<article class="mk-comment-item" id="c-5" data-variant="compact">
+  <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+      <a class="mk-comment-item-time" href="#c-5"><time datetime="2026-09-28">3 days ago</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>Great write-up - bookmarked.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (2)"
+        ><i data-lucide="thumbs-up"></i> 2</button
+      >
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+```
+
+```html example part label="Comment Item (deleted)"
+<article class="mk-comment-item" id="c-6" data-variant="deleted">
+  <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Deleted user</a>
+      <a class="mk-comment-item-time" href="#c-6"><time datetime="2026-09-28">3 days ago</time></a>
+    </header>
+    <div class="mk-comment-item-body"><p>This comment was removed by a moderator.</p></div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
+        ><i data-lucide="thumbs-up"></i> 0</button
+      >
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+```
+
+```html example part label="Comment Item (voted)"
+<article class="mk-comment-item" id="q-1" data-variant="voted">
+  <div class="mk-comment-item-votes">
+    <button class="btn" data-variant="ghost" data-size="icon-xs" type="button" aria-label="Upvote" aria-pressed="false"
+      ><i data-lucide="chevron-up"></i
+    ></button>
+    <output aria-label="Score">7</output>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-xs"
+      type="button"
+      aria-label="Downvote"
+      aria-pressed="false"
+      ><i data-lucide="chevron-down"></i
+    ></button>
+  </div>
+  <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+      <a class="mk-comment-item-time" href="#q-1"><time datetime="2026-09-30">yesterday</time></a>
+    </header>
+    <div class="mk-comment-item-body"
+      ><p>How do I force a full resync on one device? Mine shows an old version of a doc.</p></div
+    >
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
+        ><i data-lucide="thumbs-up"></i> 0</button
+      >
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+```
+
+```html example part label="Comment Item (accepted)"
+<article class="mk-comment-item" id="q-2" data-variant="accepted">
+  <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+  <div class="mk-comment-item-main">
+    <header class="mk-comment-item-head">
+      <a class="mk-comment-item-author" href="#">Sophie Tan</a
+      ><span class="badge" data-variant="default"><i data-lucide="check"></i> Accepted answer</span>
+      <a class="mk-comment-item-time" href="#q-2"><time datetime="2026-09-30T13:00">20 hours ago</time></a>
+    </header>
+    <div class="mk-comment-item-body">
+      <p>Settings → Storage → Rebuild local cache. Or from the console:</p>
+      <div class="mockup-code" data-chrome="none"><pre data-prefix="$"><code>acme sync --rebuild --device laptop</code></pre><pre data-prefix=">" data-tone="success"><code>Rebuilt 1,204 operations</code></pre></div>
+    </div>
+    <footer class="mk-comment-item-actions">
+      <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
+        ><i data-lucide="thumbs-up"></i> 0</button
+      >
+      <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+    </footer>
+  </div>
+</article>
+```
+
 ```html example label="Thread" hint="A comment with two replies on a thread line. The timestamp is a permalink to the comment's own id; the author's reply carries a Badge." previewStyle="align-items:stretch;"
 <div style="width: 100%; max-width: 42rem">
   <article class="mk-comment-item" id="c-1">
@@ -152,43 +249,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </div>
 ```
 
-```html example label="Compact and deleted" hint="data-variant='compact' tightens a thread (small avatar, 14px); data-variant='deleted' keeps the place of a removed comment." previewStyle="align-items:stretch;"
-<div style="width: 100%; max-width: 42rem">
-  <article class="mk-comment-item" id="c-5" data-variant="compact">
-    <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
-    <div class="mk-comment-item-main">
-      <header class="mk-comment-item-head">
-        <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
-        <a class="mk-comment-item-time" href="#c-5"><time datetime="2026-09-28">3 days ago</time></a>
-      </header>
-      <div class="mk-comment-item-body"><p>Great write-up - bookmarked.</p></div>
-      <footer class="mk-comment-item-actions">
-        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (2)"
-          ><i data-lucide="thumbs-up"></i> 2</button
-        >
-        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
-      </footer>
-    </div>
-  </article>
-  <article class="mk-comment-item" id="c-6" data-variant="deleted">
-    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
-    <div class="mk-comment-item-main">
-      <header class="mk-comment-item-head">
-        <a class="mk-comment-item-author" href="#">Deleted user</a>
-        <a class="mk-comment-item-time" href="#c-6"><time datetime="2026-09-28">3 days ago</time></a>
-      </header>
-      <div class="mk-comment-item-body"><p>This comment was removed by a moderator.</p></div>
-      <footer class="mk-comment-item-actions">
-        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
-          ><i data-lucide="thumbs-up"></i> 0</button
-        >
-        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
-      </footer>
-    </div>
-  </article>
-</div>
-```
-
 ```html example label="Reactions, menu and pinned" hint="A pinned comment (a Badge) with reaction chips - toggle buttons with aria-pressed, click one (the page script counts) - and a ⋯ Dropdown Menu at the end of the head." previewStyle="align-items:stretch;"
 <div style="width: 100%; max-width: 42rem">
   <article class="mk-comment-item" id="r-1">
@@ -246,70 +306,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     });
   });
 </script>
-```
-
-```html example label="Q&A: votes and the accepted answer" hint="data-variant='voted' puts a score column before the avatar; data-variant='accepted' marks the answer - with a Code Mockup in the comment text." previewStyle="align-items:stretch;"
-<div style="width: 100%; max-width: 44rem; display: grid; gap: 0.5rem">
-  <article class="mk-comment-item" id="q-1" data-variant="voted">
-    <div class="mk-comment-item-votes">
-      <button
-        class="btn"
-        data-variant="ghost"
-        data-size="icon-xs"
-        type="button"
-        aria-label="Upvote"
-        aria-pressed="false"
-        ><i data-lucide="chevron-up"></i
-      ></button>
-      <output aria-label="Score">7</output>
-      <button
-        class="btn"
-        data-variant="ghost"
-        data-size="icon-xs"
-        type="button"
-        aria-label="Downvote"
-        aria-pressed="false"
-        ><i data-lucide="chevron-down"></i
-      ></button>
-    </div>
-    <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
-    <div class="mk-comment-item-main">
-      <header class="mk-comment-item-head">
-        <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
-        <a class="mk-comment-item-time" href="#q-1"><time datetime="2026-09-30">yesterday</time></a>
-      </header>
-      <div class="mk-comment-item-body"
-        ><p>How do I force a full resync on one device? Mine shows an old version of a doc.</p></div
-      >
-      <footer class="mk-comment-item-actions">
-        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
-          ><i data-lucide="thumbs-up"></i> 0</button
-        >
-        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
-      </footer>
-    </div>
-  </article>
-  <article class="mk-comment-item" id="q-2" data-variant="accepted">
-    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
-    <div class="mk-comment-item-main">
-      <header class="mk-comment-item-head">
-        <a class="mk-comment-item-author" href="#">Sophie Tan</a
-        ><span class="badge" data-variant="default"><i data-lucide="check"></i> Accepted answer</span>
-        <a class="mk-comment-item-time" href="#q-2"><time datetime="2026-09-30T13:00">20 hours ago</time></a>
-      </header>
-      <div class="mk-comment-item-body">
-        <p>Settings → Storage → Rebuild local cache. Or from the console:</p>
-        <div class="mockup-code" data-chrome="none"><pre data-prefix="$"><code>acme sync --rebuild --device laptop</code></pre><pre data-prefix=">" data-tone="success"><code>Rebuilt 1,204 operations</code></pre></div>
-      </div>
-      <footer class="mk-comment-item-actions">
-        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
-          ><i data-lucide="thumbs-up"></i> 0</button
-        >
-        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
-      </footer>
-    </div>
-  </article>
-</div>
 ```
 
 ```html example label="Collapsed replies" hint="Replies inside a native <details class=&quot;mk-comment-item-thread&quot;> - &quot;Show 2 replies&quot; opens them, no script." previewStyle="align-items:stretch;"
@@ -385,6 +381,107 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
         </li>
       </ol>
     </details>
+  </article>
+</div>
+```
+
+```html example label="Compact and deleted" hint="data-variant='compact' tightens a thread (small avatar, 14px); data-variant='deleted' keeps the place of a removed comment." previewStyle="align-items:stretch;"
+<div style="width: 100%; max-width: 42rem">
+  <article class="mk-comment-item" id="c-5" data-variant="compact">
+    <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
+    <div class="mk-comment-item-main">
+      <header class="mk-comment-item-head">
+        <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+        <a class="mk-comment-item-time" href="#c-5"><time datetime="2026-09-28">3 days ago</time></a>
+      </header>
+      <div class="mk-comment-item-body"><p>Great write-up - bookmarked.</p></div>
+      <footer class="mk-comment-item-actions">
+        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (2)"
+          ><i data-lucide="thumbs-up"></i> 2</button
+        >
+        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+      </footer>
+    </div>
+  </article>
+  <article class="mk-comment-item" id="c-6" data-variant="deleted">
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+    <div class="mk-comment-item-main">
+      <header class="mk-comment-item-head">
+        <a class="mk-comment-item-author" href="#">Deleted user</a>
+        <a class="mk-comment-item-time" href="#c-6"><time datetime="2026-09-28">3 days ago</time></a>
+      </header>
+      <div class="mk-comment-item-body"><p>This comment was removed by a moderator.</p></div>
+      <footer class="mk-comment-item-actions">
+        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
+          ><i data-lucide="thumbs-up"></i> 0</button
+        >
+        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+      </footer>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Q&A: votes and the accepted answer" hint="data-variant='voted' puts a score column before the avatar; data-variant='accepted' marks the answer - with a Code Mockup in the comment text." previewStyle="align-items:stretch;"
+<div style="width: 100%; max-width: 44rem; display: grid; gap: 0.5rem">
+  <article class="mk-comment-item" id="q-1" data-variant="voted">
+    <div class="mk-comment-item-votes">
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-xs"
+        type="button"
+        aria-label="Upvote"
+        aria-pressed="false"
+        ><i data-lucide="chevron-up"></i
+      ></button>
+      <output aria-label="Score">7</output>
+      <button
+        class="btn"
+        data-variant="ghost"
+        data-size="icon-xs"
+        type="button"
+        aria-label="Downvote"
+        aria-pressed="false"
+        ><i data-lucide="chevron-down"></i
+      ></button>
+    </div>
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
+    <div class="mk-comment-item-main">
+      <header class="mk-comment-item-head">
+        <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+        <a class="mk-comment-item-time" href="#q-1"><time datetime="2026-09-30">yesterday</time></a>
+      </header>
+      <div class="mk-comment-item-body"
+        ><p>How do I force a full resync on one device? Mine shows an old version of a doc.</p></div
+      >
+      <footer class="mk-comment-item-actions">
+        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
+          ><i data-lucide="thumbs-up"></i> 0</button
+        >
+        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+      </footer>
+    </div>
+  </article>
+  <article class="mk-comment-item" id="q-2" data-variant="accepted">
+    <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+    <div class="mk-comment-item-main">
+      <header class="mk-comment-item-head">
+        <a class="mk-comment-item-author" href="#">Sophie Tan</a
+        ><span class="badge" data-variant="default"><i data-lucide="check"></i> Accepted answer</span>
+        <a class="mk-comment-item-time" href="#q-2"><time datetime="2026-09-30T13:00">20 hours ago</time></a>
+      </header>
+      <div class="mk-comment-item-body">
+        <p>Settings → Storage → Rebuild local cache. Or from the console:</p>
+        <div class="mockup-code" data-chrome="none"><pre data-prefix="$"><code>acme sync --rebuild --device laptop</code></pre><pre data-prefix=">" data-tone="success"><code>Rebuilt 1,204 operations</code></pre></div>
+      </div>
+      <footer class="mk-comment-item-actions">
+        <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (0)"
+          ><i data-lucide="thumbs-up"></i> 0</button
+        >
+        <button type="button" class="btn" data-variant="ghost" data-size="xs"><i data-lucide="reply"></i> Reply</button>
+      </footer>
+    </div>
   </article>
 </div>
 ```

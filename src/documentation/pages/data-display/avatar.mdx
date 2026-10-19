@@ -77,6 +77,80 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 </SkillPanel>
 
+```html example part label="avatar"
+<span class="avatar">
+  <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
+  <span class="avatar-fallback">CN</span>
+</span>
+```
+
+```html example part label="avatar (xs)"
+<span class="avatar" data-size="xs">
+  <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
+  <span class="avatar-fallback">CN</span>
+</span>
+```
+
+```html example part label="avatar (sm)"
+<span class="avatar" data-size="sm">
+  <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
+  <span class="avatar-fallback">CN</span>
+</span>
+```
+
+```html example part label="avatar (md)"
+<span class="avatar" data-size="md">
+  <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
+  <span class="avatar-fallback">CN</span>
+</span>
+```
+
+```html example part label="avatar (lg)"
+<span class="avatar" data-size="lg">
+  <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
+  <span class="avatar-fallback">CN</span>
+</span>
+```
+
+```html example part label="avatar (xl)"
+<span class="avatar" data-size="xl">
+  <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
+  <span class="avatar-fallback">CN</span>
+</span>
+```
+
+```html example label="Avatar Group" hint="Overlapping avatars with an optional count."
+<div class="avatar-group">
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
+    <span class="avatar-fallback">CN</span>
+  </span>
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@maxleiter" />
+    <span class="avatar-fallback">ML</span>
+  </span>
+  <span class="avatar">
+    <img class="avatar-image" src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
+    <span class="avatar-fallback">ER</span>
+  </span>
+  <span class="avatar-group-count">+3</span>
+</div>
+```
+
+```html example label="Group overlap and counter" hint="data-overlap=&quot;lg&quot; stacks the avatars tighter (&quot;sm&quot; looser); the .avatar-group-count closes the row with how many are left."
+<div class="avatar-group" data-overlap="lg">
+  <span class="avatar" data-size="lg"
+    ><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg" /><span class="avatar-fallback"
+      >AH</span
+    ></span
+  >
+  <span class="avatar" data-size="lg"><span class="avatar-fallback">JD</span></span>
+  <span class="avatar" data-size="lg"><span class="avatar-fallback" data-variant="primary">MR</span></span>
+  <span class="avatar" data-size="lg"><span class="avatar-fallback">AK</span></span>
+  <span class="avatar-group-count w-12 h-12">+99</span>
+</div>
+```
+
 ```html example label="Basic" hint="Avatar with image and fallback."
 <div style="display: flex; gap: 1rem; align-items: center">
   <span class="avatar">
@@ -304,38 +378,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <span class="avatar" data-size="lg"><span class="avatar-fallback" data-variant="primary">AI</span></span>
   <span class="avatar" data-size="md"><span class="avatar-fallback">SY</span></span>
   <span class="avatar" data-size="sm"><span class="avatar-fallback" data-variant="neutral">UI</span></span>
-</div>
-```
-
-```html example label="Avatar Group" hint="Overlapping avatars with an optional count."
-<div class="avatar-group">
-  <span class="avatar">
-    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@shadcn" />
-    <span class="avatar-fallback">CN</span>
-  </span>
-  <span class="avatar">
-    <img class="avatar-image" src="https://github.com/kyr0.png" alt="@maxleiter" />
-    <span class="avatar-fallback">ML</span>
-  </span>
-  <span class="avatar">
-    <img class="avatar-image" src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-    <span class="avatar-fallback">ER</span>
-  </span>
-  <span class="avatar-group-count">+3</span>
-</div>
-```
-
-```html example label="Group overlap and counter" hint="data-overlap=&quot;lg&quot; stacks the avatars tighter (&quot;sm&quot; looser); the .avatar-group-count closes the row with how many are left."
-<div class="avatar-group" data-overlap="lg">
-  <span class="avatar" data-size="lg"
-    ><img class="avatar-image" src="https://github.com/kyr0.png" alt="Aron Homberg" /><span class="avatar-fallback"
-      >AH</span
-    ></span
-  >
-  <span class="avatar" data-size="lg"><span class="avatar-fallback">JD</span></span>
-  <span class="avatar" data-size="lg"><span class="avatar-fallback" data-variant="primary">MR</span></span>
-  <span class="avatar" data-size="lg"><span class="avatar-fallback">AK</span></span>
-  <span class="avatar-group-count w-12 h-12">+99</span>
 </div>
 ```
 

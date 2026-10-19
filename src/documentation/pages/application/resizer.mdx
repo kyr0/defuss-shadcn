@@ -53,6 +53,34 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="Resizer (divider)"
+<div
+  class="resizer"
+  data-variant="divider"
+  data-handles="e"
+  data-axis="w"
+  data-keys="edge"
+  data-min="140"
+  data-max="360"
+>
+  <nav
+    style="
+      width: 12rem;
+      height: 100%;
+      padding: 0.75rem;
+      border-inline-end: 1px solid var(--border);
+      background: var(--muted);
+      box-sizing: border-box;
+    "
+  >
+    <p style="margin: 0 0 0.5rem; font-weight: 600">Inbox</p>
+    <p style="margin: 0; color: var(--muted-foreground); font-size: 0.875rem"
+      >Drag my right edge, or Tab to it and press ← / →. Double-click it to reset.</p
+    >
+  </nav>
+</div>
+```
+
 ```html example label="Pixel-perfect" hint="The default: one SE handle, sizes land as inline px on the wrapped element. Drag any handle, then open State to see data-width/data-height follow." component="resizer" height="14"
 <div class="resizer" data-handles="se" data-min="120">
   <div class="card" style="width: 20rem; height: 10rem; padding: 1rem">
@@ -103,45 +131,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Split-pane divider" hint="data-variant='divider': the e handle becomes a full-height strip on the list's edge - a thin line shows on hover, focus and drag, there is no outline while it resizes, and a double-click puts the column back to its authored width. With data-keys='edge' the arrow keys move the edge." component="resizer" height="16"
-<div
-  style="
-    display: flex;
-    height: 14rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-  "
->
-  <div
-    class="resizer"
-    data-variant="divider"
-    data-handles="e"
-    data-axis="w"
-    data-keys="edge"
-    data-min="140"
-    data-max="360"
-  >
-    <nav
-      style="
-        width: 12rem;
-        height: 100%;
-        padding: 0.75rem;
-        border-inline-end: 1px solid var(--border);
-        background: var(--muted);
-        box-sizing: border-box;
-      "
-    >
-      <p style="margin: 0 0 0.5rem; font-weight: 600">Inbox</p>
-      <p style="margin: 0; color: var(--muted-foreground); font-size: 0.875rem"
-        >Drag my right edge, or Tab to it and press ← / →. Double-click it to reset.</p
-      >
-    </nav>
-  </div>
-  <main style="flex: 1; padding: 0.75rem">Message</main>
-</div>
-```
-
 ```html example label="Class-based sizing" hint="data-resize-mode='classes' snaps to the sizing.css ladder: the element's class attribute IS the size (open State/Code while dragging to watch w-*/h-* swap)." component="resizer" height="16"
 <div class="resizer" data-handles="all" data-resize-mode="classes">
   <div class="card w-64 h-40" style="padding: 1rem">
@@ -175,10 +164,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   });
 </script>
 ```
-
-## Resizing a Sidebar
-
-The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> - first with pixel sizes (inline styles the runtime writes), then class-based, where the size lives in <code>w-\*</code>/<code>h-\*</code> utility classes only:
 
 ```html example component="resizer" label="Sidebar - pixels" hint="Every side + corner drags the panel; the size lands as inline px on the aside. data-state-name='default' declares the expanded state deliberately - that is the component's own opt-out from auto-collapse, so the rail shrinks continuously (labels clip first) instead of snapping to the icon dock. The width transition is suspended while dragging, so the box tracks the pointer exactly." height="24" mode="desktop" previewStyle="margin:1rem;"
 <div class="resizer" data-handles="all" data-min="220" data-max="560" data-min-h="160" data-max-h="480">
@@ -231,6 +216,49 @@ The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> - fi
   </aside>
 </div>
 ```
+
+```html example label="Split-pane divider" hint="data-variant='divider': the e handle becomes a full-height strip on the list's edge - a thin line shows on hover, focus and drag, there is no outline while it resizes, and a double-click puts the column back to its authored width. With data-keys='edge' the arrow keys move the edge." component="resizer" height="16"
+<div
+  style="
+    display: flex;
+    height: 14rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  "
+>
+  <div
+    class="resizer"
+    data-variant="divider"
+    data-handles="e"
+    data-axis="w"
+    data-keys="edge"
+    data-min="140"
+    data-max="360"
+  >
+    <nav
+      style="
+        width: 12rem;
+        height: 100%;
+        padding: 0.75rem;
+        border-inline-end: 1px solid var(--border);
+        background: var(--muted);
+        box-sizing: border-box;
+      "
+    >
+      <p style="margin: 0 0 0.5rem; font-weight: 600">Inbox</p>
+      <p style="margin: 0; color: var(--muted-foreground); font-size: 0.875rem"
+        >Drag my right edge, or Tab to it and press ← / →. Double-click it to reset.</p
+      >
+    </nav>
+  </div>
+  <main style="flex: 1; padding: 0.75rem">Message</main>
+</div>
+```
+
+## Resizing a Sidebar
+
+The same component on a real <DocLink href="sidebar.html">Sidebar</DocLink> - first with pixel sizes (inline styles the runtime writes), then class-based, where the size lives in <code>w-\*</code>/<code>h-\*</code> utility classes only:
 
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">The <code>default</code> state restores the size the markup was authored with (snapshotted at init); <code>setState('default', \{ width, height \})</code> applies an explicit px size instead, and <code>getState().config</code> always reports the live box plus the active mode. The wrapper mirrors the live size onto <code>data-width</code>/<code>data-height</code>, and external writes to those attributes are applied back - that is the loop the State tab uses.</p>

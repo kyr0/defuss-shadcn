@@ -43,6 +43,31 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="Search & Filter (sm)"
+<div class="search-box" data-size="sm">
+  <i data-lucide="search"></i>
+  <input type="search" value="small" aria-label="Small search" />
+  <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+</div>
+```
+
+```html example part label="Search & Filter (lg)"
+<div class="search-box" data-size="lg">
+  <i data-lucide="search"></i>
+  <input type="search" value="large" aria-label="Large search" />
+  <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+</div>
+```
+
+```html example part label="Search & Filter (muted)"
+<div class="search-box" data-variant="muted">
+  <i data-lucide="search"></i>
+  <input type="search" placeholder="Search messages" aria-label="Search messages" />
+  <span class="search-box-hint">in #general</span>
+  <button type="button" class="search-box-clear" aria-label="Clear search"></button>
+</div>
+```
+
 ```html example label="Search box" hint="Type and the × appears; click it or press Escape and the field empties, keeps the focus and fires input - the same event as typing. The browser's own clear button is replaced by one that looks the same everywhere."
 <search style="max-width: 22rem">
   <div class="search-box">

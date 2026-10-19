@@ -394,6 +394,59 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
+```html example label="A tab in its own color" hint="Any tab can carry its own text color - here the destructive color marks a danger zone. It holds in every state, selected or not." height="16"
+<div class="tabs">
+  <div class="tab-list" role="tablist" aria-label="Repository settings" data-variant="line">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="color-panel-0" id="color-tab-0"
+      >General</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="color-panel-1"
+      id="color-tab-1"
+      tabindex="-1"
+      >Collaborators</button
+    >
+    <button
+      class="tab-trigger"
+      role="tab"
+      aria-selected="false"
+      aria-controls="color-panel-2"
+      id="color-tab-2"
+      tabindex="-1"
+      style="color: var(--destructive)"
+      ><i data-lucide="triangle-alert"></i>Danger zone</button
+    >
+  </div>
+  <div class="tab-content" role="tabpanel" id="color-panel-0" aria-labelledby="color-tab-0" tabindex="0">
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">General</h3>
+        <p class="card-description">Name, description and topics.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="color-panel-1" aria-labelledby="color-tab-1" tabindex="0" hidden>
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Collaborators</h3>
+        <p class="card-description">Who can push, review and merge.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" role="tabpanel" id="color-panel-2" aria-labelledby="color-tab-2" tabindex="0" hidden>
+    <div class="card" style="max-width: 28rem">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem">Danger zone</h3>
+        <p class="card-description">Transfer, archive or delete this repository.</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
 ```html example label="Vertical, attached - left and right" hint="data-side=&quot;left&quot; or &quot;right&quot; stacks the tabs along that edge of the card, and their labels turn vertical with it - read bottom to top on the left, top to bottom on the right, like book spines (tabs.ts sets aria-orientation=&quot;vertical&quot;, so Up / Down move between tabs). data-align picks where they start: the left one from the top (start), the right one from the bottom (data-align=&quot;end&quot;)." height="20"
 <div class="grid grid-cols-auto gap-8" style="--layout-min: 18rem">
   <div class="tabs" data-side="left">
@@ -799,59 +852,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
           <h3 class="card-title" style="font-size: 1rem">Method and evaluation</h3>
           <p class="card-description">This panel is 12rem tall, so the vertical labels are shortened.</p>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-```
-
-```html example label="A tab in its own color" hint="Any tab can carry its own text color - here the destructive color marks a danger zone. It holds in every state, selected or not." height="16"
-<div class="tabs">
-  <div class="tab-list" role="tablist" aria-label="Repository settings" data-variant="line">
-    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="color-panel-0" id="color-tab-0"
-      >General</button
-    >
-    <button
-      class="tab-trigger"
-      role="tab"
-      aria-selected="false"
-      aria-controls="color-panel-1"
-      id="color-tab-1"
-      tabindex="-1"
-      >Collaborators</button
-    >
-    <button
-      class="tab-trigger"
-      role="tab"
-      aria-selected="false"
-      aria-controls="color-panel-2"
-      id="color-tab-2"
-      tabindex="-1"
-      style="color: var(--destructive)"
-      ><i data-lucide="triangle-alert"></i>Danger zone</button
-    >
-  </div>
-  <div class="tab-content" role="tabpanel" id="color-panel-0" aria-labelledby="color-tab-0" tabindex="0">
-    <div class="card" style="max-width: 28rem">
-      <div class="card-header">
-        <h3 class="card-title" style="font-size: 1rem">General</h3>
-        <p class="card-description">Name, description and topics.</p>
-      </div>
-    </div>
-  </div>
-  <div class="tab-content" role="tabpanel" id="color-panel-1" aria-labelledby="color-tab-1" tabindex="0" hidden>
-    <div class="card" style="max-width: 28rem">
-      <div class="card-header">
-        <h3 class="card-title" style="font-size: 1rem">Collaborators</h3>
-        <p class="card-description">Who can push, review and merge.</p>
-      </div>
-    </div>
-  </div>
-  <div class="tab-content" role="tabpanel" id="color-panel-2" aria-labelledby="color-tab-2" tabindex="0" hidden>
-    <div class="card" style="max-width: 28rem">
-      <div class="card-header">
-        <h3 class="card-title" style="font-size: 1rem">Danger zone</h3>
-        <p class="card-description">Transfer, archive or delete this repository.</p>
       </div>
     </div>
   </div>

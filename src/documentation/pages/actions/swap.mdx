@@ -42,6 +42,58 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="Swap"
+<label class="swap">
+  <input type="checkbox" aria-label="Toggle text" />
+  <span class="swap-on">ON</span>
+  <span class="swap-off">OFF</span>
+</label>
+```
+
+```html example part label="Swap (sm)"
+<label class="swap" data-size="sm">
+  <input type="checkbox" aria-label="Small swap" />
+  <span class="swap-on">ON</span>
+  <span class="swap-off">OFF</span>
+</label>
+```
+
+```html example part label="Swap (rotate)"
+<label class="swap" data-variant="rotate">
+  <input type="checkbox" aria-label="Dark mode" />
+  <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+  <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+</label>
+```
+
+```html example part label="Swap (rotate, sm)"
+<label class="swap" data-size="sm" data-variant="rotate">
+  <input type="checkbox" aria-label="Save post" />
+  <span class="swap-on"><i data-lucide="bookmark-check"></i></span>
+  <span class="swap-off"><i data-lucide="bookmark"></i></span>
+</label>
+```
+
+```html example part label="Swap (flip, lg)"
+<label class="swap" data-variant="flip" data-size="lg">
+  <input type="checkbox" aria-label="Mood" />
+  <span class="swap-on" aria-hidden="true">😇</span>
+  <span class="swap-off" aria-hidden="true">😈</span>
+</label>
+```
+
+```html example label="Third face (indeterminate)" schema="none" hint="A .swap-indeterminate face shows while the checkbox is indeterminate - an IDL property only, so one line of script sets it. The first click leaves the mixed state for on."
+<label class="swap" data-size="lg">
+  <input type="checkbox" id="swap-tri" aria-label="Selection" />
+  <span class="swap-on">All</span>
+  <span class="swap-indeterminate">Some</span>
+  <span class="swap-off">None</span>
+</label>
+<script>
+  document.getElementById('swap-tri').indeterminate = true;
+</script>
+```
+
 ```html example label="Default" schema="none" hint="The faces crossfade in place - click one: the hidden checkbox is the state. The box sizes to the widest face, so nothing shifts."
 <div class="flex items-center gap-6">
   <label class="swap">
@@ -125,18 +177,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="swap-off">OFF</span>
   </label>
 </div>
-```
-
-```html example label="Third face (indeterminate)" schema="none" hint="A .swap-indeterminate face shows while the checkbox is indeterminate - an IDL property only, so one line of script sets it. The first click leaves the mixed state for on."
-<label class="swap" data-size="lg">
-  <input type="checkbox" id="swap-tri" aria-label="Selection" />
-  <span class="swap-on">All</span>
-  <span class="swap-indeterminate">Some</span>
-  <span class="swap-off">None</span>
-</label>
-<script>
-  document.getElementById('swap-tri').indeterminate = true;
-</script>
 ```
 
 ```html example label="Active (forced)" schema="none" hint="data-active shows the on face without a checked checkbox - server-rendered state; remove it to hand control back to the checkbox."

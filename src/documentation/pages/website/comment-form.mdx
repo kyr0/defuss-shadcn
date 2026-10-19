@@ -190,31 +190,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </form>
 ```
 
-```html example label="Signed out" hint="No form for guests - an Alert with the actions in its place." previewStyle="align-items:stretch;"
-<div class="alert" role="note" style="max-width: 44rem">
-  <svg
-    class="alert-icon"
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-  </svg>
-  <div class="alert-content">
-    <h5 class="alert-title">Join the discussion</h5>
-    <p class="alert-description">Sign in to comment - it takes ten seconds with a passkey.</p>
-  </div>
-  <div class="alert-action"><a class="btn" data-size="sm" href="#">Sign in</a></div>
-</div>
-```
-
 ```html example label="Review with a rating" hint="A review form: the Rating component (native radios) above the growing textarea - required, so posting without stars is blocked by the browser." previewStyle="align-items:stretch;"
 <form class="mk-comment-form" aria-label="Write a review" style="max-width: 40rem">
   <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
@@ -249,6 +224,31 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     </div>
   </div>
 </form>
+```
+
+```html example label="Signed out" hint="No form for guests - an Alert with the actions in its place." previewStyle="align-items:stretch;"
+<div class="alert" role="note" style="max-width: 44rem">
+  <svg
+    class="alert-icon"
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+  </svg>
+  <div class="alert-content">
+    <h5 class="alert-title">Join the discussion</h5>
+    <p class="alert-description">Sign in to comment - it takes ten seconds with a passkey.</p>
+  </div>
+  <div class="alert-action"><a class="btn" data-size="sm" href="#">Sign in</a></div>
+</div>
 ```
 
 <SourceFiles component="comment-form" section="css" />

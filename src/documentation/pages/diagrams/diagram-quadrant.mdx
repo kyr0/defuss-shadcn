@@ -113,6 +113,54 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="After the annual review" component="diagram" hint="The bet moves: data-before-tone keeps the old accent where it was."
+<figure
+  class="diagram"
+  id="dg-quad-delta"
+  data-type="quadrant"
+  data-delta
+  aria-label="Scenario matrix after the annual review"
+>
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Annual review</span>
+    <span class="diagram-title">One scenario renamed, the bet moved</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-axis" data-axis="y"><span>Autonomous</span><b>AI agency</b><span>Assistive</span></div>
+    <div
+      class="diagram-node"
+      data-node="automated-campus"
+      data-tone="accent"
+      data-change="changed"
+      data-change-note="now the bet: return-to-office mandates held"
+      data-before-tone=""
+    >
+      <span class="diagram-node-eyebrow" data-before="Scenario A">Scenario A · our bet</span>
+      <span class="diagram-node-name">Automated campus</span>
+      <span class="diagram-node-meta">Agents run the work; offices become control rooms.</span>
+    </div>
+    <div class="diagram-node" data-node="agent-economy" data-change="changed" data-before-tone="accent">
+      <span class="diagram-node-eyebrow" data-before="Scenario B · our bet">Scenario B</span>
+      <span class="diagram-node-name">Agent economy</span>
+      <span class="diagram-node-meta">Agents act for distributed teams.</span>
+    </div>
+    <div class="diagram-node" data-node="digital-office">
+      <span class="diagram-node-eyebrow">Scenario C</span>
+      <span class="diagram-node-name">Digital office</span>
+      <span class="diagram-node-meta">Copilots everywhere, shape unchanged.</span>
+    </div>
+    <div class="diagram-node" data-node="craft-studios" data-change="changed">
+      <span class="diagram-node-eyebrow">Scenario D</span>
+      <span class="diagram-node-name" data-before="Distributed studios">Craft studios</span>
+      <span class="diagram-node-meta">Small remote teams, craft over scale.</span>
+    </div>
+    <div class="diagram-axis" data-axis="x"
+      ><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div
+    >
+  </div>
+</figure>
+```
+
 ```html example label="Quadrant, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-quad-live" data-diagram-action="prev"
@@ -285,54 +333,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```
 
 <H2 id="delta">Delta</H2>
-
-```html example label="After the annual review" component="diagram" hint="The bet moves: data-before-tone keeps the old accent where it was."
-<figure
-  class="diagram"
-  id="dg-quad-delta"
-  data-type="quadrant"
-  data-delta
-  aria-label="Scenario matrix after the annual review"
->
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Annual review</span>
-    <span class="diagram-title">One scenario renamed, the bet moved</span>
-  </figcaption>
-  <div class="diagram-canvas">
-    <div class="diagram-axis" data-axis="y"><span>Autonomous</span><b>AI agency</b><span>Assistive</span></div>
-    <div
-      class="diagram-node"
-      data-node="automated-campus"
-      data-tone="accent"
-      data-change="changed"
-      data-change-note="now the bet: return-to-office mandates held"
-      data-before-tone=""
-    >
-      <span class="diagram-node-eyebrow" data-before="Scenario A">Scenario A · our bet</span>
-      <span class="diagram-node-name">Automated campus</span>
-      <span class="diagram-node-meta">Agents run the work; offices become control rooms.</span>
-    </div>
-    <div class="diagram-node" data-node="agent-economy" data-change="changed" data-before-tone="accent">
-      <span class="diagram-node-eyebrow" data-before="Scenario B · our bet">Scenario B</span>
-      <span class="diagram-node-name">Agent economy</span>
-      <span class="diagram-node-meta">Agents act for distributed teams.</span>
-    </div>
-    <div class="diagram-node" data-node="digital-office">
-      <span class="diagram-node-eyebrow">Scenario C</span>
-      <span class="diagram-node-name">Digital office</span>
-      <span class="diagram-node-meta">Copilots everywhere, shape unchanged.</span>
-    </div>
-    <div class="diagram-node" data-node="craft-studios" data-change="changed">
-      <span class="diagram-node-eyebrow">Scenario D</span>
-      <span class="diagram-node-name" data-before="Distributed studios">Craft studios</span>
-      <span class="diagram-node-meta">Small remote teams, craft over scale.</span>
-    </div>
-    <div class="diagram-axis" data-axis="x"
-      ><span>Office-first</span><b>Where work happens</b><span>Remote-first</span></div
-    >
-  </div>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

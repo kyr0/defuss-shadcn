@@ -50,6 +50,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example label="Optional hint" hint="Hint text indicating the field is optional."
+<label class="label" for="bio"> Bio <span class="label-hint">(optional)</span> </label>
+```
+
 ```html example label="Default" hint="Basic label paired with an input. Click the label to focus the input - for='demo-email' and id='demo-email' must always match; changing one without the other breaks the link."
 <! for and id are one value in two places - keep them identical -->
 <label class="label" for="email">Email</label>
@@ -59,10 +63,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Required" hint="The red asterisk renders automatically from :has(+ input[required]) - no markup to add or forget."
 <label class="label" for="name">Name</label>
 <input class="input" type="text" id="name" required />
-```
-
-```html example label="Optional hint" hint="Hint text indicating the field is optional."
-<label class="label" for="bio"> Bio <span class="label-hint">(optional)</span> </label>
 ```
 
 ```html example label="Disabled" hint="Dimmed label for disabled fields. The label auto-detects the disabled input via :has() - no data-disabled attribute needed."

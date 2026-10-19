@@ -42,6 +42,17 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
+```html example part label="Filter Bar (sticky)"
+<div class="mk-filter-bar" data-variant="sticky">
+  <form action="#" method="get" aria-label="Filters" style="padding-inline: 0.75rem">
+    <label class="mk-filter-bar-chip"><input type="checkbox" name="open" checked />Open now</label>
+    <label class="mk-filter-bar-chip"><input type="checkbox" name="wifi" />Wi-Fi</label>
+    <label class="mk-filter-bar-chip"><input type="checkbox" name="quiet" />Quiet</label>
+    <output class="mk-filter-bar-count">12 cafés</output>
+  </form>
+</div>
+```
+
 ```html example label="Default" hint="A GET form on one row - native Selects as pills, checkbox chips (:has(:checked) fills them), &quot;More filters&quot; with a count, and the result count; the row scrolls sideways on small screens." previewStyle="align-items:stretch;"
 <div class="mk-filter-bar">
   <form action="#" method="get" aria-label="Filters">

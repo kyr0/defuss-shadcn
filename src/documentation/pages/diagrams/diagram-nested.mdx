@@ -117,6 +117,39 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="The mesh becomes a boundary" component="diagram" hint="An added level wraps an existing node - the node keeps its identity and reports what changed."
+<figure class="diagram" id="dg-nested-delta" data-type="nested" data-delta aria-label="A service mesh boundary appears">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Zero trust</span>
+    <span class="diagram-title">The mesh becomes its own boundary</span>
+  </figcaption>
+  <div class="diagram-canvas">
+    <div class="diagram-group" data-node="vpc">
+      <span class="diagram-group-label">VPC · private network</span>
+      <div class="diagram-node" data-node="lb">
+        <span class="diagram-node-name">Load balancer</span>
+        <span class="diagram-node-meta">internal</span>
+      </div>
+      <div class="diagram-group" data-node="mesh" data-tone="accent" data-change="added">
+        <span class="diagram-group-label">Service mesh · mTLS</span>
+        <div class="diagram-node" data-node="app" data-change="changed">
+          <span class="diagram-node-name">App servers</span>
+          <span class="diagram-node-meta" data-before="shared credentials">identity per pod</span>
+        </div>
+      </div>
+      <div class="diagram-node" data-node="bastion" data-change="removed">
+        <span class="diagram-node-name">Bastion host</span>
+        <span class="diagram-node-meta">SSH</span>
+      </div>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="lb" data-to="app">HTTP</li>
+    <li class="diagram-edge" data-from="bastion" data-to="app" data-line="dashed" data-change="removed">SSH</li>
+  </ol>
+</figure>
+```
+
 ```html example label="Nested, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-nested-live" data-diagram-action="prev"
@@ -295,39 +328,6 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 ```
 
 <H2 id="delta">Delta</H2>
-
-```html example label="The mesh becomes a boundary" component="diagram" hint="An added level wraps an existing node - the node keeps its identity and reports what changed."
-<figure class="diagram" id="dg-nested-delta" data-type="nested" data-delta aria-label="A service mesh boundary appears">
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Zero trust</span>
-    <span class="diagram-title">The mesh becomes its own boundary</span>
-  </figcaption>
-  <div class="diagram-canvas">
-    <div class="diagram-group" data-node="vpc">
-      <span class="diagram-group-label">VPC · private network</span>
-      <div class="diagram-node" data-node="lb">
-        <span class="diagram-node-name">Load balancer</span>
-        <span class="diagram-node-meta">internal</span>
-      </div>
-      <div class="diagram-group" data-node="mesh" data-tone="accent" data-change="added">
-        <span class="diagram-group-label">Service mesh · mTLS</span>
-        <div class="diagram-node" data-node="app" data-change="changed">
-          <span class="diagram-node-name">App servers</span>
-          <span class="diagram-node-meta" data-before="shared credentials">identity per pod</span>
-        </div>
-      </div>
-      <div class="diagram-node" data-node="bastion" data-change="removed">
-        <span class="diagram-node-name">Bastion host</span>
-        <span class="diagram-node-meta">SSH</span>
-      </div>
-    </div>
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="lb" data-to="app">HTTP</li>
-    <li class="diagram-edge" data-from="bastion" data-to="app" data-line="dashed" data-change="removed">SSH</li>
-  </ol>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

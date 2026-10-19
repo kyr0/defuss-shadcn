@@ -43,6 +43,43 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
+```html example part label="Resource Item"
+<article class="mk-resource-item">
+  <div class="mk-resource-item-body">
+    <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+    <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+    <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+    <p class="mk-resource-item-meta">12 min read</p>
+  </div>
+  <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+</article>
+```
+
+```html example part label="Resource Item (compact)"
+<article class="mk-resource-item" data-variant="compact">
+  <div class="mk-resource-item-body">
+    <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+    <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+    <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+    <p class="mk-resource-item-meta">12 min read</p>
+  </div>
+  <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+</article>
+```
+
+```html example label="Featured" hint="data-variant='featured': a picture beside the text - one highlighted resource." previewStyle="align-items:stretch;"
+<article class="mk-resource-item" data-variant="featured">
+  <img class="mk-resource-item-media" src="https://picsum.photos/seed/res-featured/1000/625" alt="" />
+  <div class="mk-resource-item-body">
+    <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+    <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+    <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+    <p class="mk-resource-item-meta">12 min read</p>
+  </div>
+  <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+</article>
+```
+
 ```html example label="Library" hint="Default cards: the type with an icon, the title link covering the card, a description, the format or length and an action cue that matches the type." previewStyle="align-items:stretch;"
 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; width: 100%">
   <article class="mk-resource-item">
@@ -114,19 +151,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     <span class="mk-resource-item-cta" aria-hidden="true">Download <i data-lucide="arrow-right"></i></span>
   </article>
 </div>
-```
-
-```html example label="Featured" hint="data-variant='featured': a picture beside the text - one highlighted resource." previewStyle="align-items:stretch;"
-<article class="mk-resource-item" data-variant="featured">
-  <img class="mk-resource-item-media" src="https://picsum.photos/seed/res-featured/1000/625" alt="" />
-  <div class="mk-resource-item-body">
-    <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
-    <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
-    <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
-    <p class="mk-resource-item-meta">12 min read</p>
-  </div>
-  <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
-</article>
 ```
 
 <SourceFiles component="resource-item" section="css" />

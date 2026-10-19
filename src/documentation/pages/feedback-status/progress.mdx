@@ -45,6 +45,30 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="progress"
+<progress class="progress" value="10" max="100">10%</progress>
+```
+
+```html example part label="progress (xs)"
+<progress class="progress flex-1" value="65" max="100" data-size="xs" style="max-width: 16rem"></progress>
+```
+
+```html example part label="progress (sm)"
+<progress class="progress flex-1" value="65" max="100" data-size="sm" style="max-width: 16rem"></progress>
+```
+
+```html example part label="progress (md)"
+<progress class="progress flex-1" value="65" max="100" data-size="md" style="max-width: 16rem"></progress>
+```
+
+```html example part label="progress (lg)"
+<progress class="progress" data-size="lg" data-striped="" value="55" max="100" aria-label="Striped"></progress>
+```
+
+```html example part label="progress (xl)"
+<progress class="progress flex-1" value="65" max="100" data-size="xl" style="max-width: 16rem"></progress>
+```
+
 ```html example label="Determinate" hint="A .progress-field pairs the bar with a label and an <output class='progress-value'> - the script writes the percent into it and keeps it in sync with every change."
 <div class="progress-field" style="max-width: 24rem">
   <div class="progress-header">
@@ -52,6 +76,23 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <output class="progress-value" for="dl"></output>
   </div>
   <progress class="progress" id="dl" value="66" max="100" aria-labelledby="dl-label">66%</progress>
+</div>
+```
+
+```html example label="Indeterminate" schema="none" hint="No value attribute: the animated sweep for an unknown amount - the readout shows '…' (or its data-indeterminate text)."
+<div class="progress-field" style="max-width: 24rem">
+  <div class="progress-header"
+    ><span class="progress-label">Connecting</span
+    ><output class="progress-value" for="ind" data-indeterminate="Waiting…"></output
+  ></div>
+  <progress class="progress" id="ind" max="100" aria-label="Connecting">Loading...</progress>
+</div>
+```
+
+```html example label="Right to left" schema="none" hint="The bar fills from the right in dir='rtl', and the two-color inside label clips from the right too."
+<div dir="rtl" lang="ar" class="progress-field" data-label="inside" style="max-width: 24rem">
+  <progress class="progress" id="rtl-p" data-size="lg" value="40" max="100" aria-label="تحميل"></progress>
+  <output class="progress-value" for="rtl-p"></output>
 </div>
 ```
 
@@ -254,16 +295,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Indeterminate" schema="none" hint="No value attribute: the animated sweep for an unknown amount - the readout shows '…' (or its data-indeterminate text)."
-<div class="progress-field" style="max-width: 24rem">
-  <div class="progress-header"
-    ><span class="progress-label">Connecting</span
-    ><output class="progress-value" for="ind" data-indeterminate="Waiting…"></output
-  ></div>
-  <progress class="progress" id="ind" max="100" aria-label="Connecting">Loading...</progress>
-</div>
-```
-
 ```html example label="In cards" schema="none" hint="Progress fields composed with .card for a dashboard - each readout bound to its bar." previewStyle="flex-direction:column;align-items:stretch;"
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; max-width: 42rem">
   <article class="card">
@@ -315,13 +346,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <div class="flex items-center gap-4 mb-3">
   <span class="demo-label demo-label-w5">Extra large</span>
   <progress class="progress flex-1" value="65" max="100" data-size="xl" style="max-width: 16rem"></progress>
-</div>
-```
-
-```html example label="Right to left" schema="none" hint="The bar fills from the right in dir='rtl', and the two-color inside label clips from the right too."
-<div dir="rtl" lang="ar" class="progress-field" data-label="inside" style="max-width: 24rem">
-  <progress class="progress" id="rtl-p" data-size="lg" value="40" max="100" aria-label="تحميل"></progress>
-  <output class="progress-value" for="rtl-p"></output>
 </div>
 ```
 

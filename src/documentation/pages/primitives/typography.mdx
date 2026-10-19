@@ -27,6 +27,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap" title="orphan prevention for body text"><code>text-wrap: pretty</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation" title="optical quote alignment for blockquotes"><code>hanging-punctuation</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values" title="border-inline-start, padding-inline-start for RTL support"><code>Logical properties</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/break-before" title="forced page, column, left and right page breaks in print"><code>break-before</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/break-inside" title="keep a block whole across a column or page break"><code>break-inside</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/orphans" title="lines kept together at the foot of a column or page"><code>orphans / widows</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast" title="enhanced contrast for high-contrast preference"><code>prefers-contrast</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="Windows High Contrast Mode with system colors"><code>forced-colors</code></ApiPill>
   </SkillRow>
@@ -65,10 +68,27 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <SkillText dense>• <code>text-wrap: pretty</code> is used on paragraphs and lead text for orphan prevention.</SkillText>
   <SkillText dense>• <code>hanging-punctuation</code> is used on blockquotes for optical quote alignment.</SkillText>
   <SkillText dense>• Blockquote uses logical properties (<code>border-inline-start</code>, <code>padding-inline-start</code>) for automatic RTL support.</SkillText>
+  <SkillText dense>• <code>.typeset-break</code> forces a page, column, left or right page break in print only - a zero-height box, never <code>display: none</code>, which would drop the break; <code>.typeset-keep</code> keeps a block in one column and on one page.</SkillText>
   <SkillText dense>• For lists, use the List component (<code>list.css</code>) - typography does not ship its own list styles.</SkillText>
   <p class="text-muted-foreground m-0">• For prose tables, use the Table component (<code>table.css</code>) - typography does not ship its own table styles.</p>
   </SkillField>
 </SkillPanel>
+
+```html example part label="h1"
+<h1 class="h1">Taxing Laughter</h1>
+```
+
+```html example part label="h2"
+<h2 class="h2">The People of the Kingdom</h2>
+```
+
+```html example part label="h3"
+<h3 class="h3">The Joke Tax</h3>
+```
+
+```html example part label="h4"
+<h4 class="h4">People stopped telling jokes</h4>
+```
 
 ```html example label="Headings" hint="Four heading levels - h1 is extrabold, h2 includes a bottom border, h3 and h4 are semibold." previewStyle="justify-content:flex-start;text-align:left;"
 <h1 class="h1">Taxing Laughter</h1>
@@ -505,6 +525,126 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     >
   </figure>
 </div>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Breaks and keeps (print)</p>
+<p class="text-sm text-muted-foreground mb-3">Where a printed page or column ends. A <code>.typeset-break</code> marker forces a break before the next block - in print only: a screen has no pages, so the markers are hidden there unless an ancestor carries <code>data-show-breaks</code>, as these examples do. Print the page or save it as PDF to see the breaks (the preview's Print device applies the print styles, but has no pages); page size and margins come from the page template (<DocLink href="paper.html">Modern Paper</DocLink>'s print profiles). A <code>data-rule</code> setting that holds a <code>.typeset-span</code> prints without its column rule: Chromium draws the rule straight through a spanning heading or figure that starts a page.</p>
+
+```html example label="Page, column, left and right page breaks" hint="data-break='column' starts the next column, the default (or 'page') a new page, 'left' / 'right' a left / right page for duplex printing. In print each marker is a zero-height box carrying break-before (display: none would drop the break); on screen data-show-breaks shows them as labelled dashed lines. Column breaks work in Chromium; Firefox and Safari let the text flow on." previewStyle="justify-content:flex-start;text-align:left;"
+<div data-show-breaks>
+  <section class="typeset" lang="en" data-columns="2" data-rule>
+    <h3 class="h4 typeset-span">Imposition</h3>
+    <p>The compositor fills the left column with the opening of the chapter and ends it where the argument turns.</p>
+    <div class="typeset-break" data-break="column" aria-hidden="true"></div>
+    <p>The right column opens with the turn, whatever room the left one left.</p>
+  </section>
+  <div class="typeset-break" aria-hidden="true"></div>
+  <section class="typeset" lang="en">
+    <h3 class="h4">A new page</h3>
+    <p>The next section starts a page of its own.</p>
+  </section>
+  <div class="typeset-break" data-break="right" aria-hidden="true"></div>
+  <section class="typeset" lang="en">
+    <h3 class="h4">A new chapter</h3>
+    <p>A chapter opens on a right-hand page; a blank page is added when the last one ended on the right.</p>
+  </section>
+</div>
+```
+
+```html example label="Keeps, splits, orphans and widows" hint=".typeset-keep keeps a paragraph and its figure in one column and on one page. .typeset keeps figures, tables, quotes and code whole; data-break-inside='allow' lets a long table split instead of leaving the rest of the page empty. data-orphans / data-widows set the lines a paragraph keeps at the foot and head of a column (default 2); headings keep with the text after them." previewStyle="justify-content:flex-start;text-align:left;"
+<section class="typeset" lang="en" data-columns="2" data-orphans="3" data-widows="3">
+  <h3 class="h4 typeset-span">Paper sizes</h3>
+  <div class="typeset-keep">
+    <p>A sheet folded once makes a folio, twice a quarto, three times an octavo - the table below lists the leaves.</p>
+    <figure>
+      <table class="table">
+        <tbody>
+          <tr><td>Folio</td><td>2 leaves</td></tr>
+          <tr><td>Quarto</td><td>4 leaves</td></tr>
+          <tr><td>Octavo</td><td>8 leaves</td></tr>
+        </tbody>
+      </table>
+    </figure>
+  </div>
+  <figure data-break-inside="allow">
+    <table class="table">
+      <tbody>
+        <tr><td>Duodecimo</td><td>12 leaves</td></tr>
+        <tr><td>Sextodecimo</td><td>16 leaves</td></tr>
+        <tr><td>Tricesimo-secundo</td><td>32 leaves</td></tr>
+      </tbody>
+    </table>
+  </figure>
+  <p
+    >Three lines of a paragraph stay at the foot of a column and three move to the head of the next, or the paragraph
+    moves whole.</p
+  >
+</section>
+```
+
+```html example label="A listing split over two columns" hint="data-break-inside='allow' lets the log run on into the next column instead of leaving the first half empty. Each piece keeps its frame - border, corners and padding close at the column foot and open again at the head (box-decoration-break: clone) - and the caption stays with the last piece. The same holds at a page break in print: switch the preview to Print, or print the page." previewStyle="justify-content:flex-start;text-align:left;"
+<section class="typeset" lang="en" data-columns="2" data-align="justify">
+  <h3 class="h4 typeset-span">The night shift</h3>
+  <p
+    >The overseer kept a log of every forme locked up and every sheet pulled. One night of it runs longer than a
+    column.</p
+  >
+  <figure data-break-inside="allow">
+    <div class="mockup-code" data-variant="muted" data-chrome="none" data-numbers data-wrap>
+      <pre><code>22:05 forme 1 locked, pages 1 and 4</code></pre>
+      <pre><code>22:19 proof pulled, two turned letters in line 12</code></pre>
+      <pre><code>22:31 corrections set, forme 1 to the press</code></pre>
+      <pre><code>22:40 forme 2 locked, pages 2 and 3</code></pre>
+      <pre><code>22:58 a widow on page 3: the paragraph run back one line</code></pre>
+      <pre><code>23:12 proof pulled, clean</code></pre>
+      <pre><code>23:20 forme 2 to the press</code></pre>
+      <pre><code>23:47 sheet 1 printed, 1,200 copies</code></pre>
+      <pre><code>00:10 sheet turned, the reverse inked</code></pre>
+      <pre><code>00:42 sheet 1 perfected</code></pre>
+      <pre><code>01:05 formes 3 and 4 locked</code></pre>
+      <pre><code>01:30 proofs pulled, one wrong fount in a heading</code></pre>
+      <pre><code>01:44 heading reset from the case of the right face</code></pre>
+      <pre><code>02:15 sheet 2 printed and perfected</code></pre>
+      <pre><code>02:40 formes distributed, type back in the cases</code></pre>
+    </div>
+    <figcaption class="typeset-caption">The log of one night, as the overseer wrote it.</figcaption>
+  </figure>
+  <p>By three in the morning both sheets were dry enough to fold, and the formes were back in the cases.</p>
+</section>
+```
+
+```html example label="Verbatim in a justified setting" hint="A justified setting stretches its lines and hyphenates its words - a verbatim record inside it does neither: a pre is set flush start and unhyphenated, so wrapped program output (data-wrap) keeps its single spaces and its identifiers whole." previewStyle="justify-content:flex-start;text-align:left;"
+<section class="typeset" lang="en" data-align="justify" style="--typeset-measure: 34rem">
+  <p>The proof-reader's script printed one line per correction; the long ones wrapped in the narrow column.</p>
+  <div class="mockup-code" data-variant="muted" data-chrome="none" data-wrap>
+    <pre><code>page 3, line 12: turned letter in "compositor" (u for n) - reset from the lower case, proof pulled again</code></pre>
+    <pre><code>page 4, heading: wrong fount (Caslon italic for roman) - reset from the case of the right face</code></pre>
+  </div>
+</section>
+```
+
+<p class="text-sm font-medium mb-2 mt-8">Page numbers (print)</p>
+<p class="text-sm text-muted-foreground mb-3">A page number sits in the page margin, which no element of the page reaches: it is an <code>@page</code> margin box. Name the page (<code>page: report</code>) so the rule applies only where that element prints - an unnamed <code>@page</code> rule would number every page the stylesheet prints. <code>:first</code> leaves the title page without a number. <DocLink href="paper.html">Modern Paper</DocLink>'s print profiles number their pages this way. Chromium prints margin boxes (checked in Chromium 153); the HTML Preview Editor's Print device shows the print styles on one sheet, without pages, so print the page or save it as PDF to see the numbers.</p>
+
+```css
+@page report {
+  size: A4;
+  margin: 20mm;
+
+  @bottom-center {
+    content: counter(page);
+    font: 500 8pt var(--font-sans);
+    color: var(--muted-foreground);
+  }
+}
+@page report:first {
+  @bottom-center {
+    content: none;
+  }
+}
+.report {
+  page: report;
+}
 ```
 
 <p class="text-sm font-medium mb-2 mt-8">Combined</p>

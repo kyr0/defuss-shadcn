@@ -43,33 +43,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
-```html example label="Results" hint="Path, the title link (it covers the row), a two-line snippet with the matches as <mark>, and the meta." previewStyle="align-items:stretch;"
-<div style="display: grid; max-width: 44rem; width: 100%">
-  <article class="mk-search-result">
-    <div class="mk-search-result-body">
-      <p class="mk-search-result-path">Docs <span aria-hidden="true">›</span> Guides</p>
-      <h3 class="mk-search-result-title"><a href="#">Offline sync</a></h3>
-      <p class="mk-search-result-snippet"
-        >Every change is written to your device first. When you are back online, Acme sends the changes -
-        <mark>sync</mark> never waits for the network, and conflicts resolve themselves.</p
-      >
-      <p class="mk-search-result-meta">Guide · updated 28 Sep 2026</p>
-    </div>
-  </article>
-  <article class="mk-search-result">
-    <div class="mk-search-result-body">
-      <p class="mk-search-result-path">Help <span aria-hidden="true">›</span> Sync &amp; offline</p>
-      <h3 class="mk-search-result-title"
-        ><a href="#"><mark>Sync</mark> is stuck on one device</a></h3
-      >
-      <p class="mk-search-result-snippet"
-        >If one device stops syncing, sign out and back in. Your unsynced changes are kept on the device until the
-        <mark>sync</mark> completes.</p
-      >
-      <p class="mk-search-result-meta">Help article · 3 min read</p>
-    </div>
-  </article>
-</div>
+```html example part label="Search Result"
+<article class="mk-search-result">
+  <div class="mk-search-result-body">
+    <p class="mk-search-result-path">Docs <span aria-hidden="true">›</span> Guides</p>
+    <h3 class="mk-search-result-title"><a href="#">Offline sync</a></h3>
+    <p class="mk-search-result-snippet"
+      >Every change is written to your device first. When you are back online, Acme sends the changes -
+      <mark>sync</mark> never waits for the network, and conflicts resolve themselves.</p
+    >
+    <p class="mk-search-result-meta">Guide · updated 28 Sep 2026</p>
+  </div>
+</article>
 ```
 
 ```html example label="With thumbnails" hint="data-variant='media': a 16:10 thumbnail beside the text - for posts and videos." previewStyle="align-items:stretch;"
@@ -101,6 +86,35 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
       >
       <p class="mk-search-result-snippet">Relaxed fit in washed <mark>linen</mark>. Sand, navy or off-white.</p>
       <p class="mk-search-result-meta">In stock · <strong>€64</strong></p>
+    </div>
+  </article>
+</div>
+```
+
+```html example label="Results" hint="Path, the title link (it covers the row), a two-line snippet with the matches as <mark>, and the meta." previewStyle="align-items:stretch;"
+<div style="display: grid; max-width: 44rem; width: 100%">
+  <article class="mk-search-result">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Docs <span aria-hidden="true">›</span> Guides</p>
+      <h3 class="mk-search-result-title"><a href="#">Offline sync</a></h3>
+      <p class="mk-search-result-snippet"
+        >Every change is written to your device first. When you are back online, Acme sends the changes -
+        <mark>sync</mark> never waits for the network, and conflicts resolve themselves.</p
+      >
+      <p class="mk-search-result-meta">Guide · updated 28 Sep 2026</p>
+    </div>
+  </article>
+  <article class="mk-search-result">
+    <div class="mk-search-result-body">
+      <p class="mk-search-result-path">Help <span aria-hidden="true">›</span> Sync &amp; offline</p>
+      <h3 class="mk-search-result-title"
+        ><a href="#"><mark>Sync</mark> is stuck on one device</a></h3
+      >
+      <p class="mk-search-result-snippet"
+        >If one device stops syncing, sign out and back in. Your unsynced changes are kept on the device until the
+        <mark>sync</mark> completes.</p
+      >
+      <p class="mk-search-result-meta">Help article · 3 min read</p>
     </div>
   </article>
 </div>

@@ -58,21 +58,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </figure>
 ```
 
-```html example label="Fill the container" hint="data-fit='container': the frame takes the height of the element it lives in - here a card body of 14rem. Give that element a height; the frame never shrinks below --iframe-min-height." previewStyle="justify-content:flex-start;"
-<div class="card" style="max-inline-size: 36rem">
-  <div class="card-header"><h3 class="card-title">Dashboard</h3></div>
-  <div class="card-content" style="block-size: 14rem">
-    <figure class="iframe" data-fit="container">
-      <iframe
-        class="iframe-frame"
-        title="A dashboard"
-        srcdoc="<body style='margin:0;padding:1rem;font:0.875rem system-ui;background:#f8fafc'><b>Uptime</b> 99.98 %<br><b>Requests</b> 1.2 M/day<br><b>Errors</b> 0.02 %</body>"
-      ></iframe>
-    </figure>
-  </div>
-</div>
-```
-
 ```html example label="Follow the content" hint="data-fit='content': the frame is as tall as the framed page; add lines inside and it grows - iframe-resize reports each height. A same-origin page is measured by the host. This one reports its own height with the size message, as a page from another origin must: the docs run every example in a sandbox, where each frame is an origin of its own." previewStyle="justify-content:flex-start;"
 <figure class="iframe" id="iframe-content" data-fit="content" style="max-inline-size: 36rem">
   <iframe
@@ -87,6 +72,21 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     df$('#iframe-content').on('iframe-resize', (e) => df$('#iframe-height').text(`${e.detail.height}px`));
   });
 </script>
+```
+
+```html example label="Fill the container" hint="data-fit='container': the frame takes the height of the element it lives in - here a card body of 14rem. Give that element a height; the frame never shrinks below --iframe-min-height." previewStyle="justify-content:flex-start;"
+<div class="card" style="max-inline-size: 36rem">
+  <div class="card-header"><h3 class="card-title">Dashboard</h3></div>
+  <div class="card-content" style="block-size: 14rem">
+    <figure class="iframe" data-fit="container">
+      <iframe
+        class="iframe-frame"
+        title="A dashboard"
+        srcdoc="<body style='margin:0;padding:1rem;font:0.875rem system-ui;background:#f8fafc'><b>Uptime</b> 99.98 %<br><b>Requests</b> 1.2 M/day<br><b>Errors</b> 0.02 %</body>"
+      ></iframe>
+    </figure>
+  </div>
+</div>
 ```
 
 ```html example label="The framed page controls the host" hint="The buttons live INSIDE the frame: each posts { type: 'defuss:iframe', kind: 'message', name: 'select' } to its parent, the host's .iframe fires iframe-message, and the host sets its own badge and statistic. The host's button posts back into the frame (df$.shadcn.iframe.post) - the framed page switches its own theme. Messages from any other window or origin are ignored." previewStyle="justify-content:flex-start;"

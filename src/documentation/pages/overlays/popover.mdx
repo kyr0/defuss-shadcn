@@ -49,6 +49,15 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-muted-foreground text-sm mb-4">Click the trigger to open a popover below (default side). Uses native Popover API - no JS for open/close.</p>
 
+```html example part label="Popover"
+<div class="popover" id="demo-pop-center" popover="">
+  <div class="popover-header">
+    <p class="popover-title">Center aligned</p>
+    <p class="popover-description">Default center alignment.</p>
+  </div>
+</div>
+```
+
 ```html example height="22"
 <button class="btn" data-variant="outline" popovertarget="demo-popover">Open Popover</button>
 <div class="popover" id="demo-popover" popover>

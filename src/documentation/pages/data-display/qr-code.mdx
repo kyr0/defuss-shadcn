@@ -34,6 +34,83 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
   </SkillField>
 </SkillPanel>
 
+```html example part label="QR Code (sm)"
+<figure class="qr-code" data-value="https://example.com" data-ecc="L" data-size="sm">
+  <div class="qr-code-symbol" role="img" aria-label="QR code with error correction L"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">L</figcaption>
+</figure>
+```
+
+```html example part label="QR Code (outline, lg)"
+<figure class="qr-code" data-value="https://example.com" data-size="lg" data-variant="outline">
+  <div class="qr-code-symbol" role="img" aria-label="Large QR code for example.com"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Large · outline</figcaption>
+</figure>
+```
+
+```html example part label="QR Code (outline, md)"
+<figure class="qr-code" data-value="https://example.com" data-size="md" data-variant="outline">
+  <div class="qr-code-symbol" role="img" aria-label="Medium QR code for example.com"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Medium · outline</figcaption>
+</figure>
+```
+
+```html example part label="QR Code (plain, sm)"
+<figure class="qr-code" data-value="https://example.com" data-size="sm" data-variant="plain">
+  <div class="qr-code-symbol" role="img" aria-label="Small QR code for example.com"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Small · plain</figcaption>
+</figure>
+```
+
+```html example label="Unicode" hint="UTF-8 with ECI 26 preserves umlauts, Cyrillic, Han characters, combining marks and emoji. No trimming or Unicode normalization is applied." height="20"
+<figure class="qr-code" data-value="Grüße, Мир, 漢字, é, 😀" data-ecc="Q" data-variant="outline">
+  <div class="qr-code-symbol" role="img" aria-label="QR code with multilingual example text"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Grüße, Мир, 漢字, é, 😀</figcaption>
+</figure>
+```
+
+```html example label="Fixed version and custom size" hint="data-version fixes the matrix; --qr-code-size sets its display size. Increase the square for dense payloads and test with the intended scanner." height="31"
+<figure
+  class="qr-code"
+  data-value="Longer payloads need a larger printed or displayed square. Version 10 keeps a fixed matrix size for this example."
+  data-version="10"
+  data-ecc="M"
+  data-variant="outline"
+  style="--qr-code-size: 360px"
+>
+  <div class="qr-code-symbol" role="img" aria-label="Version 10 QR code with sizing guidance"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Version 10 · 360px</figcaption>
+</figure>
+```
+
+```html example label="Empty input" hint="An empty value shows plain-text feedback. Enter a value in the State tab to render a QR." height="19"
+<figure class="qr-code" data-value="" data-variant="outline">
+  <div class="qr-code-symbol" role="img" aria-label="QR code awaiting data"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Empty input</figcaption>
+</figure>
+```
+
+```html example label="Capacity error" hint="This URL cannot fit version 1 at H. The error clears the symbol; change version to auto in the State tab to recover." height="19"
+<figure
+  class="qr-code"
+  data-value="https://example.com/this-payload-is-too-long-for-version-one-high-error-correction"
+  data-version="1"
+  data-ecc="H"
+  data-variant="outline"
+>
+  <div class="qr-code-symbol" role="img" aria-label="QR code with insufficient capacity"></div>
+  <output class="qr-code-status" hidden></output>
+  <figcaption class="qr-code-caption">Capacity exceeded</figcaption>
+</figure>
+```
+
 ```html example label="Project link" hint="A labelled QR with a visible caption. The link is an ordinary sibling so the destination is also available without a scanner." height="20"
 <div class="flex flex-col items-start gap-3">
   <figure
@@ -99,29 +176,6 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
 </div>
 ```
 
-```html example label="Unicode" hint="UTF-8 with ECI 26 preserves umlauts, Cyrillic, Han characters, combining marks and emoji. No trimming or Unicode normalization is applied." height="20"
-<figure class="qr-code" data-value="Grüße, Мир, 漢字, é, 😀" data-ecc="Q" data-variant="outline">
-  <div class="qr-code-symbol" role="img" aria-label="QR code with multilingual example text"></div>
-  <output class="qr-code-status" hidden></output>
-  <figcaption class="qr-code-caption">Grüße, Мир, 漢字, é, 😀</figcaption>
-</figure>
-```
-
-```html example label="Fixed version and custom size" hint="data-version fixes the matrix; --qr-code-size sets its display size. Increase the square for dense payloads and test with the intended scanner." height="31"
-<figure
-  class="qr-code"
-  data-value="Longer payloads need a larger printed or displayed square. Version 10 keeps a fixed matrix size for this example."
-  data-version="10"
-  data-ecc="M"
-  data-variant="outline"
-  style="--qr-code-size: 360px"
->
-  <div class="qr-code-symbol" role="img" aria-label="Version 10 QR code with sizing guidance"></div>
-  <output class="qr-code-status" hidden></output>
-  <figcaption class="qr-code-caption">Version 10 · 360px</figcaption>
-</figure>
-```
-
 <DocText>The opaque background includes a <DocLink href="https://www.qrcode.com/en/howto/code.html">four-module quiet zone</DocLink> on every side. Outer padding and a rounded frame do not replace it. Keep that whole square visible; SVG sharpness does not make every payload readable at every CSS size. Local <code>--qr-code-dark</code> and <code>--qr-code-light</code> overrides need sufficient contrast and scanning checks.</DocText>
 
 ```html example label="Dark surface" hint="The frame and caption follow dark-mode tokens while the QR stays black on white. A direct link remains available beside the figure." height="22"
@@ -136,28 +190,6 @@ import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPi
   </figure>
   <a href="https://example.com">Open example.com</a>
 </div>
-```
-
-```html example label="Empty input" hint="An empty value shows plain-text feedback. Enter a value in the State tab to render a QR." height="19"
-<figure class="qr-code" data-value="" data-variant="outline">
-  <div class="qr-code-symbol" role="img" aria-label="QR code awaiting data"></div>
-  <output class="qr-code-status" hidden></output>
-  <figcaption class="qr-code-caption">Empty input</figcaption>
-</figure>
-```
-
-```html example label="Capacity error" hint="This URL cannot fit version 1 at H. The error clears the symbol; change version to auto in the State tab to recover." height="19"
-<figure
-  class="qr-code"
-  data-value="https://example.com/this-payload-is-too-long-for-version-one-high-error-correction"
-  data-version="1"
-  data-ecc="H"
-  data-variant="outline"
->
-  <div class="qr-code-symbol" role="img" aria-label="QR code with insufficient capacity"></div>
-  <output class="qr-code-status" hidden></output>
-  <figcaption class="qr-code-caption">Capacity exceeded</figcaption>
-</figure>
 ```
 
 ```html example label="Live value, feedback and recovery" hint="Typing applies a partial state update. Empty and Error clear the symbol but retain its input; Render restores it. The controls are ordinary siblings of the QR atom." height="28"

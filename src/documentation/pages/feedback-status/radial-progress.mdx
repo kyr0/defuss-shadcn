@@ -42,6 +42,41 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="Radial Progress (sm)"
+<div
+  class="radial-progress"
+  data-size="sm"
+  role="progressbar"
+  aria-valuenow="40"
+  aria-valuemin="0"
+  aria-valuemax="100"
+></div>
+```
+
+```html example part label="Radial Progress (lg)"
+<div
+  class="radial-progress"
+  data-size="lg"
+  role="progressbar"
+  aria-label="Percent"
+  aria-valuenow="38"
+  aria-valuemin="0"
+  aria-valuemax="100"
+></div>
+```
+
+```html example part label="Radial Progress (secondary)"
+<div
+  class="radial-progress"
+  data-variant="secondary"
+  role="progressbar"
+  aria-label="Secondary"
+  aria-valuenow="60"
+  aria-valuemin="0"
+  aria-valuemax="100"
+></div>
+```
+
 ```html example label="Determinate" hint="aria-valuenow is the value; the script paints the arc (--value), writes the label and keeps both in step with every change."
 <div
   class="radial-progress"

@@ -193,6 +193,185 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>A click activates a box or an arrow: what it touches stays lit, everything else steps back. The buttons outside the figure drive the same activation - <code>data-diagram-for</code> + <code>data-diagram-action="next|prev|clear"</code> - and the <code>&lt;output data-diagram-for&gt;</code> names what is active. Keyboard: Tab to a box, Enter, arrows, Escape.</DocText>
 
+```html example label="Architecture, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
+<figure class="diagram" id="dg-arch-flow" data-type="architecture" aria-label="Checkout platform architecture">
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Architecture</span>
+    <span class="diagram-title">Checkout platform</span>
+    <span class="diagram-dek"
+      >Requests enter at the edge; the gateway is the one place auth, rate limits and routing live.</span
+    >
+  </figcaption>
+  <div class="diagram-canvas" style="--cols: 4">
+    <div class="diagram-group" data-node="vpc" style="--col: 2; --row: 1; --span: 3; --rspan: 3"
+      ><span class="diagram-group-label">VPC · eu-west-1</span></div
+    >
+    <div class="diagram-node" data-node="web" data-step-label="Clients" style="--col: 1; --row: 1">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Web app</span>
+      <span class="diagram-node-meta">Next.js · SSR</span>
+    </div>
+    <div class="diagram-node" data-node="mobile" style="--col: 1; --row: 3">
+      <span class="diagram-node-eyebrow">Client</span>
+      <span class="diagram-node-name">Mobile app</span>
+      <span class="diagram-node-meta">iOS · Android</span>
+    </div>
+    <div
+      class="diagram-node"
+      data-node="gw"
+      data-tone="accent"
+      data-step-label="The gateway"
+      style="--col: 2; --row: 1; --rspan: 3"
+    >
+      <span class="diagram-node-eyebrow">Edge</span>
+      <span class="diagram-node-name">API gateway</span>
+      <span class="diagram-node-meta">auth · rate limits</span>
+    </div>
+    <div class="diagram-node" data-node="orders" data-step-label="Services" style="--col: 3; --row: 1">
+      <span class="diagram-node-name">Orders</span>
+      <span class="diagram-node-meta">Go · 3 pods</span>
+    </div>
+    <div class="diagram-node" data-node="pay" style="--col: 3; --row: 3">
+      <span class="diagram-node-name">Payments</span>
+      <span class="diagram-node-meta">Kotlin · 2 pods</span>
+    </div>
+    <div class="diagram-node" data-node="db" data-shape="store" data-step-label="Data" style="--col: 4; --row: 1">
+      <span class="diagram-node-name">Postgres</span>
+      <span class="diagram-node-meta">primary + replica</span>
+    </div>
+    <div class="diagram-node" data-node="bus" data-step-label="Async" style="--col: 3; --row: 2">
+      <span class="diagram-node-name">Event bus</span>
+      <span class="diagram-node-meta">Kafka · 12 topics</span>
+    </div>
+    <div class="diagram-node" data-node="psp" data-tone="external" style="--col: 4; --row: 3">
+      <span class="diagram-node-name">Card processor</span>
+      <span class="diagram-node-meta">external · PCI</span>
+    </div>
+    <div class="diagram-node" data-node="mail" style="--col: 4; --row: 2">
+      <span class="diagram-node-name">Notifications</span>
+      <span class="diagram-node-meta">email · push</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="web" data-to="gw" data-flow="2600" data-flow-tokens="2" data-flow-delay="0"
+      >HTTPS</li
+    >
+    <li class="diagram-edge" data-from="mobile" data-to="gw" data-flow="2600" data-flow-tokens="2" data-flow-delay="700"
+      >HTTPS</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="gw"
+      data-to="orders"
+      data-tone="accent"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="1400"
+      >gRPC</li
+    >
+    <li class="diagram-edge" data-from="gw" data-to="pay" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100"
+      >gRPC</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="orders"
+      data-to="db"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="2800"
+      >SQL</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="pay"
+      data-to="psp"
+      data-tone="link"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="3500"
+      >TLS</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="orders"
+      data-to="bus"
+      data-line="dashed"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="4200"
+      >publish</li
+    >
+    <li
+      class="diagram-edge"
+      data-from="bus"
+      data-to="mail"
+      data-line="dashed"
+      data-flow="2600"
+      data-flow-tokens="2"
+      data-flow-delay="4900"
+      >consume</li
+    >
+  </ol>
+  <ul class="diagram-legend">
+    <li data-swatch="accent">Focal: the gateway</li>
+    <li data-swatch="external">External</li>
+    <li data-swatch="line">Sync call</li>
+    <li data-swatch="dashed">Async event</li>
+  </ul>
+</figure>
+```
+
+```html example label="Payments leaves the monolith" component="diagram" hint="Below 96rem of width the panels stack (top, center, bottom); data-delta=columns forces them side by side."
+<figure
+  class="diagram"
+  id="dg-arch-delta"
+  data-type="architecture"
+  data-delta
+  aria-label="Extracting the payments service"
+>
+  <figcaption class="diagram-caption">
+    <span class="diagram-eyebrow">Migration</span>
+    <span class="diagram-title">Payments leaves the monolith</span>
+    <span class="diagram-dek"
+      >One annotated source: the panels, the badges and the ledger are derived from data-change.</span
+    >
+  </figcaption>
+  <div class="diagram-canvas" style="--cols: 3">
+    <div class="diagram-node" data-node="gw" style="--col: 1; --row: 1">
+      <span class="diagram-node-eyebrow">Edge</span>
+      <span class="diagram-node-name">API gateway</span>
+    </div>
+    <div class="diagram-node" data-node="mono" data-change="changed" style="--col: 2; --row: 1">
+      <span class="diagram-node-name">Monolith</span>
+      <span class="diagram-node-meta" data-before="orders · payments · cron">orders</span>
+    </div>
+    <div class="diagram-node" data-node="pay" data-tone="accent" data-change="added" style="--col: 2; --row: 2">
+      <span class="diagram-node-name">Payments</span>
+      <span class="diagram-node-meta">new service</span>
+    </div>
+    <div class="diagram-node" data-node="db" data-shape="store" style="--col: 3; --row: 1">
+      <span class="diagram-node-name">Postgres</span>
+      <span class="diagram-node-meta">shared</span>
+    </div>
+    <div class="diagram-node" data-node="paydb" data-shape="store" data-change="added" style="--col: 3; --row: 2">
+      <span class="diagram-node-name">Payments DB</span>
+      <span class="diagram-node-meta">owned</span>
+    </div>
+    <div class="diagram-node" data-node="cron" data-change="removed" style="--col: 1; --row: 2">
+      <span class="diagram-node-name">Nightly cron</span>
+      <span class="diagram-node-meta">settlement batch</span>
+    </div>
+  </div>
+  <ol class="diagram-edges">
+    <li class="diagram-edge" data-from="gw" data-to="mono">REST</li>
+    <li class="diagram-edge" data-from="gw" data-to="pay" data-change="added">charge</li>
+    <li class="diagram-edge" data-from="mono" data-to="db">SQL</li>
+    <li class="diagram-edge" data-from="pay" data-to="paydb" data-change="added">SQL</li>
+    <li class="diagram-edge" data-from="cron" data-to="mono" data-change="removed">batch</li>
+  </ol>
+</figure>
+```
+
 ```html example label="Architecture, interactive" component="diagram" hint="data-interactive on the figure; nothing else to write - the controls and the output are declared in markup, no script."
 <div class="flex flex-wrap items-center gap-2 mb-3">
   <button class="btn" data-variant="outline" data-size="sm" data-diagram-for="dg-arch-live" data-diagram-action="prev"
@@ -438,188 +617,9 @@ import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } fr
 
 <DocText>Every edge flows at once: <code>data-flow</code> (ms a pass), <code>data-flow-tokens</code> (tokens on the wire) and <code>data-flow-delay</code> (when this wire starts) hand the stream from one connection to the next. Tokens never run under reduced motion.</DocText>
 
-```html example label="Architecture, flowing" component="diagram" hint="Each edge carries data-flow, two tokens and a start offset 700 ms after the previous edge."
-<figure class="diagram" id="dg-arch-flow" data-type="architecture" aria-label="Checkout platform architecture">
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Architecture</span>
-    <span class="diagram-title">Checkout platform</span>
-    <span class="diagram-dek"
-      >Requests enter at the edge; the gateway is the one place auth, rate limits and routing live.</span
-    >
-  </figcaption>
-  <div class="diagram-canvas" style="--cols: 4">
-    <div class="diagram-group" data-node="vpc" style="--col: 2; --row: 1; --span: 3; --rspan: 3"
-      ><span class="diagram-group-label">VPC · eu-west-1</span></div
-    >
-    <div class="diagram-node" data-node="web" data-step-label="Clients" style="--col: 1; --row: 1">
-      <span class="diagram-node-eyebrow">Client</span>
-      <span class="diagram-node-name">Web app</span>
-      <span class="diagram-node-meta">Next.js · SSR</span>
-    </div>
-    <div class="diagram-node" data-node="mobile" style="--col: 1; --row: 3">
-      <span class="diagram-node-eyebrow">Client</span>
-      <span class="diagram-node-name">Mobile app</span>
-      <span class="diagram-node-meta">iOS · Android</span>
-    </div>
-    <div
-      class="diagram-node"
-      data-node="gw"
-      data-tone="accent"
-      data-step-label="The gateway"
-      style="--col: 2; --row: 1; --rspan: 3"
-    >
-      <span class="diagram-node-eyebrow">Edge</span>
-      <span class="diagram-node-name">API gateway</span>
-      <span class="diagram-node-meta">auth · rate limits</span>
-    </div>
-    <div class="diagram-node" data-node="orders" data-step-label="Services" style="--col: 3; --row: 1">
-      <span class="diagram-node-name">Orders</span>
-      <span class="diagram-node-meta">Go · 3 pods</span>
-    </div>
-    <div class="diagram-node" data-node="pay" style="--col: 3; --row: 3">
-      <span class="diagram-node-name">Payments</span>
-      <span class="diagram-node-meta">Kotlin · 2 pods</span>
-    </div>
-    <div class="diagram-node" data-node="db" data-shape="store" data-step-label="Data" style="--col: 4; --row: 1">
-      <span class="diagram-node-name">Postgres</span>
-      <span class="diagram-node-meta">primary + replica</span>
-    </div>
-    <div class="diagram-node" data-node="bus" data-step-label="Async" style="--col: 3; --row: 2">
-      <span class="diagram-node-name">Event bus</span>
-      <span class="diagram-node-meta">Kafka · 12 topics</span>
-    </div>
-    <div class="diagram-node" data-node="psp" data-tone="external" style="--col: 4; --row: 3">
-      <span class="diagram-node-name">Card processor</span>
-      <span class="diagram-node-meta">external · PCI</span>
-    </div>
-    <div class="diagram-node" data-node="mail" style="--col: 4; --row: 2">
-      <span class="diagram-node-name">Notifications</span>
-      <span class="diagram-node-meta">email · push</span>
-    </div>
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="web" data-to="gw" data-flow="2600" data-flow-tokens="2" data-flow-delay="0"
-      >HTTPS</li
-    >
-    <li class="diagram-edge" data-from="mobile" data-to="gw" data-flow="2600" data-flow-tokens="2" data-flow-delay="700"
-      >HTTPS</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="gw"
-      data-to="orders"
-      data-tone="accent"
-      data-flow="2600"
-      data-flow-tokens="2"
-      data-flow-delay="1400"
-      >gRPC</li
-    >
-    <li class="diagram-edge" data-from="gw" data-to="pay" data-flow="2600" data-flow-tokens="2" data-flow-delay="2100"
-      >gRPC</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="orders"
-      data-to="db"
-      data-flow="2600"
-      data-flow-tokens="2"
-      data-flow-delay="2800"
-      >SQL</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="pay"
-      data-to="psp"
-      data-tone="link"
-      data-flow="2600"
-      data-flow-tokens="2"
-      data-flow-delay="3500"
-      >TLS</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="orders"
-      data-to="bus"
-      data-line="dashed"
-      data-flow="2600"
-      data-flow-tokens="2"
-      data-flow-delay="4200"
-      >publish</li
-    >
-    <li
-      class="diagram-edge"
-      data-from="bus"
-      data-to="mail"
-      data-line="dashed"
-      data-flow="2600"
-      data-flow-tokens="2"
-      data-flow-delay="4900"
-      >consume</li
-    >
-  </ol>
-  <ul class="diagram-legend">
-    <li data-swatch="accent">Focal: the gateway</li>
-    <li data-swatch="external">External</li>
-    <li data-swatch="line">Sync call</li>
-    <li data-swatch="dashed">Async event</li>
-  </ul>
-</figure>
-```
-
 <H2 id="delta">Delta</H2>
 
 <DocText>Before · changes · after from one source: <code>data-change</code> on what was added, removed or changed, <code>data-before</code> on text that changed. The middle panel marks every change and lists it in the ledger.</DocText>
-
-```html example label="Payments leaves the monolith" component="diagram" hint="Below 96rem of width the panels stack (top, center, bottom); data-delta=columns forces them side by side."
-<figure
-  class="diagram"
-  id="dg-arch-delta"
-  data-type="architecture"
-  data-delta
-  aria-label="Extracting the payments service"
->
-  <figcaption class="diagram-caption">
-    <span class="diagram-eyebrow">Migration</span>
-    <span class="diagram-title">Payments leaves the monolith</span>
-    <span class="diagram-dek"
-      >One annotated source: the panels, the badges and the ledger are derived from data-change.</span
-    >
-  </figcaption>
-  <div class="diagram-canvas" style="--cols: 3">
-    <div class="diagram-node" data-node="gw" style="--col: 1; --row: 1">
-      <span class="diagram-node-eyebrow">Edge</span>
-      <span class="diagram-node-name">API gateway</span>
-    </div>
-    <div class="diagram-node" data-node="mono" data-change="changed" style="--col: 2; --row: 1">
-      <span class="diagram-node-name">Monolith</span>
-      <span class="diagram-node-meta" data-before="orders · payments · cron">orders</span>
-    </div>
-    <div class="diagram-node" data-node="pay" data-tone="accent" data-change="added" style="--col: 2; --row: 2">
-      <span class="diagram-node-name">Payments</span>
-      <span class="diagram-node-meta">new service</span>
-    </div>
-    <div class="diagram-node" data-node="db" data-shape="store" style="--col: 3; --row: 1">
-      <span class="diagram-node-name">Postgres</span>
-      <span class="diagram-node-meta">shared</span>
-    </div>
-    <div class="diagram-node" data-node="paydb" data-shape="store" data-change="added" style="--col: 3; --row: 2">
-      <span class="diagram-node-name">Payments DB</span>
-      <span class="diagram-node-meta">owned</span>
-    </div>
-    <div class="diagram-node" data-node="cron" data-change="removed" style="--col: 1; --row: 2">
-      <span class="diagram-node-name">Nightly cron</span>
-      <span class="diagram-node-meta">settlement batch</span>
-    </div>
-  </div>
-  <ol class="diagram-edges">
-    <li class="diagram-edge" data-from="gw" data-to="mono">REST</li>
-    <li class="diagram-edge" data-from="gw" data-to="pay" data-change="added">charge</li>
-    <li class="diagram-edge" data-from="mono" data-to="db">SQL</li>
-    <li class="diagram-edge" data-from="pay" data-to="paydb" data-change="added">SQL</li>
-    <li class="diagram-edge" data-from="cron" data-to="mono" data-change="removed">batch</li>
-  </ol>
-</figure>
-```
 
 <p class="text-sm text-muted-foreground">Rendered by the <a class="link" href="diagram.html">diagram</a> component - plain HTML nodes, an edge list, wires drawn from the measured layout; colors from the theme tokens, so every theme and dark mode apply. Visual grammar adapted from <a class="link" href="https://github.com/cathrynlavery/diagram-design">diagram-design</a> by Cathryn Lavery (MIT).</p>
 

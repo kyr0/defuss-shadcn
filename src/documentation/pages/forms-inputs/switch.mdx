@@ -72,6 +72,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Checked by default"
+<div class="switch-item">
+  <input class="switch" type="checkbox" role="switch" id="sw-notify" checked />
+  <label for="sw-notify">Notifications</label>
+</div>
+```
+
 ```html example label="With Description" hint="Switch with label and description text using .switch-item-block."
 <div class="switch-item-block">
   <label for="share">Share across devices</label>
@@ -86,13 +93,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <input class="switch" data-size="md" type="checkbox" role="switch" />
 <input class="switch" data-size="lg" type="checkbox" role="switch" />
 <input class="switch" data-size="xl" type="checkbox" role="switch" />
-```
-
-```html example label="Checked by default"
-<div class="switch-item">
-  <input class="switch" type="checkbox" role="switch" id="sw-notify" checked />
-  <label for="sw-notify">Notifications</label>
-</div>
 ```
 
 ```html example label="Disabled" hint="Disabled stays legible: the track keeps its full shade (a softened primary when on), the knob turns muted, and .switch-item mutes the label and shows the not-allowed cursor over it via :has() - no opacity fade."

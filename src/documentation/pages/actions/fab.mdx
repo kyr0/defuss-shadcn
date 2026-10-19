@@ -46,6 +46,22 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="FAB (sm)"
+<div class="fab" data-position="bottom-start" data-size="sm">
+  <button class="btn fab-trigger" popovertarget="fab-7c" aria-label="Actions"
+    ><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span
+  ></button>
+  <div class="fab-menu" id="fab-7c" popover="">
+    <button popovertarget="fab-7c" popovertargetaction="hide" class="fab-action"
+      ><i data-lucide="sun"></i><span class="fab-label">Light</span></button
+    >
+    <button popovertarget="fab-7c" popovertargetaction="hide" class="fab-action"
+      ><i data-lucide="moon"></i><span class="fab-label">Dark</span></button
+    >
+  </div>
+</div>
+```
+
 ```html example label="Speed dial" hint="Click the + (or focus it and press Enter): the actions fan out above it, the + turns into a ×. Click the × again, pick an action (each has popovertargetaction='hide'), press Escape or click outside to close it. The FAB is fixed to the corner of the viewport - here, of the example frame." height="26" schema="none"
 <div class="fab">
   <button class="btn fab-trigger" popovertarget="fab-1" aria-label="Actions"
@@ -168,6 +184,46 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+```html example label="Text actions" hint="A .fab-text inside an action makes a pill with the words in it - clearer than icons for a few verbs." height="26" schema="none"
+<div class="fab">
+  <button class="btn fab-trigger" popovertarget="fab-8" aria-label="Actions"
+    ><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span
+  ></button>
+  <div class="fab-menu" id="fab-8" popover>
+    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"
+      ><i data-lucide="upload"></i><span class="fab-text">Upload file</span></button
+    >
+    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"
+      ><i data-lucide="folder-plus"></i><span class="fab-text">New folder</span></button
+    >
+    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"
+      ><i data-lucide="file-plus"></i><span class="fab-text">New document</span></button
+    >
+  </div>
+</div>
+```
+
+```html example label="Right to left" hint="Positions are logical: bottom-end is the bottom-left corner in dir='rtl', and the labels switch sides with it." height="26" schema="none"
+<div dir="rtl" lang="ar">
+  <div class="fab">
+    <button class="btn fab-trigger" popovertarget="fab-12" aria-label="Actions"
+      ><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span
+    ></button>
+    <div class="fab-menu" id="fab-12" popover>
+      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"
+        ><i data-lucide="camera"></i><span class="fab-label">الكاميرا</span></button
+      >
+      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"
+        ><i data-lucide="image"></i><span class="fab-label">الصور</span></button
+      >
+      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"
+        ><i data-lucide="mic"></i><span class="fab-label">ملاحظة صوتية</span></button
+      >
+    </div>
+  </div>
+</div>
+```
+
 ```html example label="Corners and directions" hint="data-position picks the corner (bottom-end, bottom-start, top-end, top-start, bottom-center), data-direction where the actions go (up, down, left, right); a flower opens toward the middle from any corner. Labels switch sides with the corner." height="30" schema="none"
 <div class="fab" data-position="top-start" data-direction="down" data-size="sm">
   <button class="btn fab-trigger" popovertarget="fab-7a" aria-label="Actions"
@@ -243,25 +299,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <p class="text-sm text-muted-foreground" style="text-align: center; margin-top: 5rem"
   >Five FABs, one per corner - open any.</p
 >
-```
-
-```html example label="Text actions" hint="A .fab-text inside an action makes a pill with the words in it - clearer than icons for a few verbs." height="26" schema="none"
-<div class="fab">
-  <button class="btn fab-trigger" popovertarget="fab-8" aria-label="Actions"
-    ><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span
-  ></button>
-  <div class="fab-menu" id="fab-8" popover>
-    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"
-      ><i data-lucide="upload"></i><span class="fab-text">Upload file</span></button
-    >
-    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"
-      ><i data-lucide="folder-plus"></i><span class="fab-text">New folder</span></button
-    >
-    <button popovertarget="fab-8" popovertargetaction="hide" class="fab-action"
-      ><i data-lucide="file-plus"></i><span class="fab-text">New document</span></button
-    >
-  </div>
-</div>
 ```
 
 ```html example label="Colors and sizes" hint="The trigger is a .btn: data-tone and data-variant work. data-size sm / md / lg scales the trigger and the actions. data-attach='container' pins a FAB inside a positioned box instead of the viewport." height="22" schema="none"
@@ -472,27 +509,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <a class="btn fab-trigger" href="#feed-top" aria-label="Back to top"
       ><span class="fab-icon" aria-hidden="true"><i data-lucide="arrow-up"></i></span
     ></a>
-  </div>
-</div>
-```
-
-```html example label="Right to left" hint="Positions are logical: bottom-end is the bottom-left corner in dir='rtl', and the labels switch sides with it." height="26" schema="none"
-<div dir="rtl" lang="ar">
-  <div class="fab">
-    <button class="btn fab-trigger" popovertarget="fab-12" aria-label="Actions"
-      ><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span
-    ></button>
-    <div class="fab-menu" id="fab-12" popover>
-      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"
-        ><i data-lucide="camera"></i><span class="fab-label">الكاميرا</span></button
-      >
-      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"
-        ><i data-lucide="image"></i><span class="fab-label">الصور</span></button
-      >
-      <button popovertarget="fab-12" popovertargetaction="hide" class="fab-action"
-        ><i data-lucide="mic"></i><span class="fab-label">ملاحظة صوتية</span></button
-      >
-    </div>
   </div>
 </div>
 ```

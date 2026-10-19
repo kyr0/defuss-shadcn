@@ -39,10 +39,35 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example part label="Marker (sm)"
+<div class="marker" data-size="sm"
+  ><span class="marker-icon" aria-hidden="true"><i data-lucide="clock"></i></span
+  ><span class="marker-content">Small - 2 minutes ago</span></div
+>
+```
+
+```html example part label="Marker (border)"
+<div class="marker" data-variant="border">
+  <span class="marker-icon" aria-hidden="true"><i data-lucide="git-branch"></i></span>
+  <span class="marker-content">Switched to <strong>release-candidate</strong></span>
+</div>
+```
+
+```html example part label="Marker (separator)"
+<div class="marker" data-variant="separator"><span class="marker-content">Conversation compacted</span></div>
+```
+
 ```html example label="Marker" schema="none" hint="An icon (decorative - aria-hidden) and the words; muted and sized to its content, so it sits between messages without competing with them."
 <div class="marker">
   <span class="marker-icon" aria-hidden="true"><i data-lucide="folder-search"></i></span>
   <span class="marker-content">Explored 4 files</span>
+</div>
+```
+
+```html example label="Stacked" schema="none" hint="data-orientation='vertical' puts the icon above the words, centered - an empty state or the start of a thread."
+<div class="marker" data-orientation="vertical" data-size="lg">
+  <span class="marker-icon" aria-hidden="true" style="font-size: 1.5rem"><i data-lucide="messages-square"></i></span>
+  <span class="marker-content">This is the start of your conversation with <strong>Support</strong></span>
 </div>
 ```
 
@@ -137,13 +162,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <span class="marker-icon" aria-hidden="true"><i data-lucide="terminal"></i></span>
     <span class="marker-content">Ran <code>bun test</code> - 128 passed</span>
   </div>
-</div>
-```
-
-```html example label="Stacked" schema="none" hint="data-orientation='vertical' puts the icon above the words, centered - an empty state or the start of a thread."
-<div class="marker" data-orientation="vertical" data-size="lg">
-  <span class="marker-icon" aria-hidden="true" style="font-size: 1.5rem"><i data-lucide="messages-square"></i></span>
-  <span class="marker-content">This is the start of your conversation with <strong>Support</strong></span>
 </div>
 ```
 

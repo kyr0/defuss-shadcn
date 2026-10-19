@@ -539,6 +539,205 @@ How long can a thread get?</textarea>
 </script>
 ```
 
+```html example label="Scroll status" schema="none" height="28" hint="Opened at the start (data-default-position='start'): the up button appears once there is something above, the down button while there is something below - each inert when there is nothing in its direction. The status line reads the state and data-scrollable."
+<section
+  class="session"
+  id="status-chat"
+  aria-label="Release notes"
+  data-default-position="start"
+  style="height: 18rem"
+>
+  <div class="session-viewport" aria-label="Notes">
+    <button
+      type="button"
+      class="session-scroll-button"
+      data-to="start"
+      aria-label="Scroll to the first message"
+    ></button>
+    <div class="session-content">
+      <div class="session-item" data-message-id="n1">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">00:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 1: search box</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n2">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">01:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 2: filter chips</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n3">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">02:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 3: typewriter</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n4">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">03:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 4: code diffs</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n5">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">04:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 5: windows</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n6">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">05:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 6: composer</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n7">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">06:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 7: session</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n8">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">07:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 8: drag and drop</div></div
+            ></div
+          ></div
+        >
+      </div>
+      <div class="session-item" data-message-id="n9">
+        <div class="message"
+          ><div class="message-avatar"
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
+                class="avatar-fallback"
+                >SD</span
+              ></span
+            ></div
+          ><div class="message-content"
+            ><div class="message-header"
+              ><span class="message-name">Sofia Davis</span><time class="message-time">08:00</time></div
+            ><div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">Release note 9: row limits</div></div
+            ></div
+          ></div
+        >
+      </div>
+    </div>
+    <button
+      type="button"
+      class="session-scroll-button"
+      data-to="end"
+      aria-label="Scroll to the latest message"
+    ></button>
+  </div>
+  <output class="session-status" id="status-line">default</output>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = df$('#status-chat').get(0);
+    const show = () =>
+      df$('#status-line').text(`${chat.api.getState().name} · more ${chat.dataset.scrollable || 'nowhere'}`);
+    df$(chat).find('.session-viewport').on('scroll', show);
+    setTimeout(show, 100);
+  });
+</script>
+```
+
 ```html example label="Load older messages" schema="none" height="30" hint="History arrives above: df$.shadcn.session.prepend() adds older rows and shifts the scroll by exactly their height, so the message you were reading does not move. The session owns this (overflow-anchor: none) - the browser's own anchoring would correct twice."
 <div class="flex flex-col gap-2">
   <div class="flex items-center gap-2">
@@ -886,205 +1085,6 @@ How long can a thread get?</textarea>
       e.preventDefault();
       df$.shadcn.session.scrollToMessage(chat, this.dataset.jump);
     });
-  });
-</script>
-```
-
-```html example label="Scroll status" schema="none" height="28" hint="Opened at the start (data-default-position='start'): the up button appears once there is something above, the down button while there is something below - each inert when there is nothing in its direction. The status line reads the state and data-scrollable."
-<section
-  class="session"
-  id="status-chat"
-  aria-label="Release notes"
-  data-default-position="start"
-  style="height: 18rem"
->
-  <div class="session-viewport" aria-label="Notes">
-    <button
-      type="button"
-      class="session-scroll-button"
-      data-to="start"
-      aria-label="Scroll to the first message"
-    ></button>
-    <div class="session-content">
-      <div class="session-item" data-message-id="n1">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">00:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 1: search box</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n2">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">01:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 2: filter chips</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n3">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">02:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 3: typewriter</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n4">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">03:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 4: code diffs</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n5">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">04:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 5: windows</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n6">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">05:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 6: composer</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n7">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">06:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 7: session</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n8">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">07:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 8: drag and drop</div></div
-            ></div
-          ></div
-        >
-      </div>
-      <div class="session-item" data-message-id="n9">
-        <div class="message"
-          ><div class="message-avatar"
-            ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://github.com/evilrabbit.png" alt="Sofia Davis" /><span
-                class="avatar-fallback"
-                >SD</span
-              ></span
-            ></div
-          ><div class="message-content"
-            ><div class="message-header"
-              ><span class="message-name">Sofia Davis</span><time class="message-time">08:00</time></div
-            ><div class="bubble" data-variant="secondary"
-              ><div class="bubble-content">Release note 9: row limits</div></div
-            ></div
-          ></div
-        >
-      </div>
-    </div>
-    <button
-      type="button"
-      class="session-scroll-button"
-      data-to="end"
-      aria-label="Scroll to the latest message"
-    ></button>
-  </div>
-  <output class="session-status" id="status-line">default</output>
-</section>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const chat = df$('#status-chat').get(0);
-    const show = () =>
-      df$('#status-line').text(`${chat.api.getState().name} · more ${chat.dataset.scrollable || 'nowhere'}`);
-    df$(chat).find('.session-viewport').on('scroll', show);
-    setTimeout(show, 100);
   });
 </script>
 ```

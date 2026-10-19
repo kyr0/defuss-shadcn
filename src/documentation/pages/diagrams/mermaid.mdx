@@ -80,6 +80,29 @@ sequenceDiagram
 </figure>
 ```
 
+```html example label="A malformed diagram" hint="Invalid syntax never destroys the source: it stays visible, and an output with role=&quot;alert&quot; says what went wrong."
+<figure class="mermaid-diagram" aria-label="Broken diagram">
+  <pre class="mermaid">
+flowchart LR
+  A --> B -->
+  </pre>
+</figure>
+```
+
+```html example label="Accessible diagrams" hint="aria-label names the SVG; Mermaid's accTitle / accDescr lines become its title and description; a figcaption is visible to everyone."
+<figure class="mermaid-diagram" aria-label="Checkout flow">
+  <pre class="mermaid">
+flowchart LR
+  accTitle: Checkout flow
+  accDescr: A cart leads to checkout; paid orders ship, failed payments return to checkout.
+  Cart --> Checkout --> Pay{Payment}
+  Pay -- paid --> Ship
+  Pay -- failed --> Checkout
+  </pre>
+  <figcaption>From cart to shipment</figcaption>
+</figure>
+```
+
 ```html example label="Class and state diagrams" hint="Any Mermaid diagram type works - the theme is the same everywhere."
 <div class="grid grid-cols-auto gap-6" style="--layout-min: 18rem">
   <figure class="mermaid-diagram" aria-label="Component classes">
@@ -258,29 +281,6 @@ flowchart TD
 </div>
 ```
 
-```html example label="A malformed diagram" hint="Invalid syntax never destroys the source: it stays visible, and an output with role=&quot;alert&quot; says what went wrong."
-<figure class="mermaid-diagram" aria-label="Broken diagram">
-  <pre class="mermaid">
-flowchart LR
-  A --> B -->
-  </pre>
-</figure>
-```
-
-```html example label="Accessible diagrams" hint="aria-label names the SVG; Mermaid's accTitle / accDescr lines become its title and description; a figcaption is visible to everyone."
-<figure class="mermaid-diagram" aria-label="Checkout flow">
-  <pre class="mermaid">
-flowchart LR
-  accTitle: Checkout flow
-  accDescr: A cart leads to checkout; paid orders ship, failed payments return to checkout.
-  Cart --> Checkout --> Pay{Payment}
-  Pay -- paid --> Ship
-  Pay -- failed --> Checkout
-  </pre>
-  <figcaption>From cart to shipment</figcaption>
-</figure>
-```
-
 ```html example label="Mermaid's own markup" hint="A bare pre class=&quot;mermaid&quot; - the convention from Mermaid's documentation - is wrapped in the figure automatically."
 <pre class="mermaid">
 pie title Where a build spends its time
@@ -289,6 +289,18 @@ pie title Where a build spends its time
   "Verify" : 11
   "Tests" : 29
 </pre>
+```
+
+<h2 id="loading" class="h2-display">Loading: the extra bundle</h2>
+
+<DocText>Mermaid is not part of <code>all.css</code> / <code>all.js</code>: a page with diagrams adds the extra bundle <code>components/mermaid.css</code> + <code>components/mermaid.js</code> after them (or after <code>core.\*</code>) - <b data-stat="stats.bundles.mermaid.totalSizeGzMinified" data-stat-format="kib">3.6</b> KiB minified + compressed, and the renderer itself still loads only with the first diagram. A page without diagrams pays nothing. The Diagrams <DocLink href="bundles.html">section bundle</DocLink> carries Mermaid as well.</DocText>
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.css" />
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/mermaid.js"></script>
 ```
 
 <h2 id="in-docs" class="h2-display">In the docs: a fence</h2>

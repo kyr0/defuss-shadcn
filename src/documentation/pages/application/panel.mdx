@@ -392,6 +392,32 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 </div>
 ```
 
+```html example label="Density" schema="none" height="20" hint="data-density on the panel: compact for tool windows that hold a lot (a 2rem title bar, a tighter body), comfortable (the unsized default, 2.5rem), spacious (3rem). The body's padding follows the card's density scale; the type and the tools keep their size."
+<div class="grid gap-4" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
+  <section class="card panel" data-density="compact" aria-labelledby="pd-c-title">
+    <header class="panel-header">
+      <i data-lucide="layers" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="pd-c-title">Compact</h3>
+    </header>
+    <div class="panel-body"><p class="text-sm m-0">A 2rem title bar.</p></div>
+  </section>
+  <section class="card panel" data-density="comfortable" aria-labelledby="pd-m-title">
+    <header class="panel-header">
+      <i data-lucide="layers" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="pd-m-title">Comfortable</h3>
+    </header>
+    <div class="panel-body"><p class="text-sm m-0">The default, 2.5rem.</p></div>
+  </section>
+  <section class="card panel" data-density="spacious" aria-labelledby="pd-s-title">
+    <header class="panel-header">
+      <i data-lucide="layers" class="panel-icon" aria-hidden="true"></i>
+      <h3 class="panel-title" id="pd-s-title">Spacious</h3>
+    </header>
+    <div class="panel-body"><p class="text-sm m-0">A 3rem title bar.</p></div>
+  </section>
+</div>
+```
+
 ```html example label="Closable" schema="none" height="26" hint="A .panel-close button in the tools closes the panel - in a border layout the region goes with it and the center takes the room. A [data-panel-open] button anywhere brings it back; focus follows (to the opener on close, to the first tool on open)."
 <div class="flex items-center gap-2 mb-3">
   <button type="button" class="btn" data-variant="outline" data-size="sm" data-panel-open="cl-insp"

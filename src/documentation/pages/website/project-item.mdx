@@ -43,6 +43,40 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
   </SkillField>
 </SkillPanel>
 
+```html example part label="Project Item"
+<article class="mk-project-item">
+  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-a/800/600" alt="" /></figure>
+  <div class="mk-project-item-body">
+    <h3 class="mk-project-item-title"><a href="#">Nordlicht Coffee</a></h3>
+    <p class="mk-project-item-meta"><span>Brand identity</span><span>2026</span></p>
+    <ul class="mk-project-item-tags"
+      ><li>Branding</li
+      ><li>Packaging</li></ul
+    >
+  </div>
+</article>
+```
+
+```html example part label="Project Item (overlay)"
+<article class="mk-project-item" data-variant="overlay">
+  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o0/640/800" alt="" /></figure>
+  <div class="mk-project-item-body">
+    <h3 class="mk-project-item-title"><a href="#">Kite Festival</a></h3>
+    <p class="mk-project-item-meta"><span>Campaign</span><span>2026</span></p>
+  </div>
+</article>
+```
+
+```html example label="Wide" hint="data-variant='wide': a 21:9 picture with the title and its meta on one line - one featured project." previewStyle="align-items:stretch;"
+<article class="mk-project-item" data-variant="wide">
+  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-wide/1600/700" alt="" /></figure>
+  <div class="mk-project-item-body">
+    <h3 class="mk-project-item-title"><a href="#">The Acme rebrand</a></h3>
+    <p class="mk-project-item-meta"><span>Identity, web, motion</span><span>2026</span></p>
+  </div>
+</article>
+```
+
 ```html example label="Grid" hint="Default: the picture (it zooms a little on hover), then the title link - covering the card - category, year and up to three tags." previewStyle="align-items:stretch;"
 <div
   style="display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 2rem 1.25rem; width: 100%"
@@ -115,16 +149,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     </div>
   </article>
 </div>
-```
-
-```html example label="Wide" hint="data-variant='wide': a 21:9 picture with the title and its meta on one line - one featured project." previewStyle="align-items:stretch;"
-<article class="mk-project-item" data-variant="wide">
-  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-wide/1600/700" alt="" /></figure>
-  <div class="mk-project-item-body">
-    <h3 class="mk-project-item-title"><a href="#">The Acme rebrand</a></h3>
-    <p class="mk-project-item-meta"><span>Identity, web, motion</span><span>2026</span></p>
-  </div>
-</article>
 ```
 
 <SourceFiles component="project-item" section="css" />

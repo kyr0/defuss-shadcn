@@ -16,6 +16,58 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Density changes whitespace, not display resolution. The presets are adjustable design choices: compact <code>0.75</code>, comfortable <code>1</code>, spacious <code>1.25</code>. They inherit into descendants; an inner density attribute starts a new density context. Every code block on this page shows exactly the classes that render the demo above it - only the demo's decorative colors are omitted.</DocText>
 
+```html example part label="data-density='compact'"
+<div data-density="compact" class="card stack p-4">
+  <div class="flex items-center gap-3">
+    <div>
+      <p class="text-sm m-0">Wi-Fi</p>
+      <p class="text-xs text-muted-foreground m-0">Connected to HomeNet</p>
+    </div>
+    <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+  </div>
+  <div class="flex items-center gap-3">
+    <div>
+      <p class="text-sm m-0">Bluetooth</p>
+      <p class="text-xs text-muted-foreground m-0">2 devices paired</p>
+    </div>
+    <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+  </div>
+  <div class="flex items-center gap-3">
+    <div>
+      <p class="text-sm m-0">Notifications</p>
+      <p class="text-xs text-muted-foreground m-0">Allowed for 12 apps</p>
+    </div>
+    <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+  </div>
+</div>
+```
+
+```html example part label="data-density='spacious'"
+<div data-density="spacious" class="card stack p-4">
+  <div class="flex items-center gap-3">
+    <div>
+      <p class="text-sm m-0">Wi-Fi</p>
+      <p class="text-xs text-muted-foreground m-0">Connected to HomeNet</p>
+    </div>
+    <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+  </div>
+  <div class="flex items-center gap-3">
+    <div>
+      <p class="text-sm m-0">Bluetooth</p>
+      <p class="text-xs text-muted-foreground m-0">2 devices paired</p>
+    </div>
+    <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+  </div>
+  <div class="flex items-center gap-3">
+    <div>
+      <p class="text-sm m-0">Notifications</p>
+      <p class="text-xs text-muted-foreground m-0">Allowed for 12 apps</p>
+    </div>
+    <button class="btn ms-auto" type="button" data-variant="outline" data-size="sm">Edit</button>
+  </div>
+</div>
+```
+
 ```html example schema="none"
 <div class="flex flex-wrap gap-4" data-demo="density">
   <div data-density="compact" class="stack demo-outline p-3" style="flex: 1; min-width: 10rem">
@@ -249,6 +301,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <tr><td><a class="link" href="steps.html">Steps</a></td><td>Step and content gaps (size ladder owns indicator size)</td></tr>
       <tr><td><a class="link" href="timeline.html">Timeline</a></td><td>Per-item rhythm (connector gap + trailing space)</td></tr>
       <tr><td><a class="link" href="tree-view.html">Tree View</a></td><td>Row padding-block (indent is structural, never scaled)</td></tr>
+      <tr><td><a class="link" href="panel.html">Panel</a></td><td>Title bar height and the body padding (the card's scale)</td></tr>
       <tr><td><a class="link" href="sidebar.html">Sidebar</a></td><td>Link rows and the content frame</td></tr>
       <tr><td><a class="link" href="command.html">Command</a></td><td>Palette rows, search wrapper, group headings</td></tr>
       <tr><td><a class="link" href="context-menu.html">Context Menu</a></td><td>Container padding and item rows</td></tr>

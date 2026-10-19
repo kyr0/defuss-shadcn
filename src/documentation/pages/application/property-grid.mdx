@@ -45,6 +45,18 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, D
   </SkillField>
 </SkillPanel>
 
+```html example part label="Property Grid (comfortable)"
+<div
+  class="property-grid"
+  id="pg-comfortable"
+  data-variant="comfortable"
+  data-sort="asc"
+  aria-label="Sorted, comfortable"
+  style="flex: 1 1 16rem"
+>
+</div>
+```
+
 ```html example label="A service's settings" height="30" hint="Click a value (or Tab to it and press Enter / F2): text, numbers, a switch for booleans, a select for the region (sourceConfig options), a color, a date, a textarea for multi-line text. Enter commits, Escape cancels, Tab commits and moves on. limits and tags fold."
 <div class="property-grid" id="pg-service" aria-label="Service settings" style="max-width: 28rem" data-state-demo>
   <script type="application/json" class="property-grid-source">
@@ -129,6 +141,37 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, D
 <H2 id="custom-editors">Custom editors</H2>
 
 <DocText><code>getEditorFn(key, value, ctx)</code> picks the editor per key: return an element (an input or a select - its value is read back, a range or number input as a number), an object <code>&#123; el, getValue(), validate?(), focus?(), immediate? &#125;</code> for anything composite, <code>null</code> for the built-in editor or <code>false</code> to make the key read-only. Every committed change fires <code>property-grid-beforechange</code> (cancelable) and <code>property-grid-change</code>.</DocText>
+
+```html example label="Rules and a cross-field check" height="30" hint="Try port 80 (below 1024), replicas 2.5 (not whole), an empty name, an e-mail without @, or a budget above the limit (validateFn reads ctx.source.limit). The message shows under the editor until the value is valid or you press Escape."
+<div class="property-grid" id="pg-valid" aria-label="Deployment" style="max-width: 30rem">
+  <script type="application/json" class="property-grid-source">
+    { "name": "billing", "port": 8443, "replicas": 3, "owner": "ops@acme.dev", "limit": 2000, "budget": 1500 }
+  </script>
+  <script type="application/json" class="property-grid-config">
+    {
+      "name": {
+        "required": true,
+        "minLength": 3,
+        "maxLength": 24,
+        "pattern": "[a-z][a-z0-9-]*",
+        "message": "3-24 lowercase letters, digits or -"
+      },
+      "port": { "min": 1024, "max": 65535, "integer": true },
+      "replicas": { "min": 1, "max": 12, "integer": true },
+      "owner": { "pattern": "[^@\\s]+@[^@\\s]+\\.[a-z]{2,}", "message": "An e-mail address" }
+    }
+  </script>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.propertyGrid.configure('#pg-valid', {
+      // a rule across keys: the budget never exceeds the limit
+      validateFn: (key, value, ctx) =>
+        key === 'budget' && value > ctx.source.limit ? 'Over the limit of ' + ctx.source.limit : '',
+    });
+  });
+</script>
+```
 
 ```html example label="A slider, a tag combobox, a guarded value" height="34" hint="opacity edits with a slider; tags with the Combobox tag input (type to filter, Enter or a comma adds, × removes, new tags allowed) - cloned from a template, read back as an array; budget refuses values over 5000 through property-grid-beforechange. Ctrl / Cmd + Enter or a click outside commits the tags; the log lists every change."
 <div class="property-grid" id="pg-editors" aria-label="Widget" style="max-width: 30rem"></div>
@@ -230,37 +273,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, D
 <H2 id="validation">Validation</H2>
 
 <DocText>A refused value keeps its editor open, marks it <code>aria-invalid</code> and says why under it (announced). Rules live in <code>sourceConfig</code> - <code>required</code>, <code>min</code> / <code>max</code>, <code>integer</code>, <code>minLength</code> / <code>maxLength</code>, <code>pattern</code>, <code>minItems</code> / <code>maxItems</code>, with an optional <code>message</code> - and <code>validateFn(key, value, ctx)</code> checks anything else, across keys too (<code>ctx.source</code>).</DocText>
-
-```html example label="Rules and a cross-field check" height="30" hint="Try port 80 (below 1024), replicas 2.5 (not whole), an empty name, an e-mail without @, or a budget above the limit (validateFn reads ctx.source.limit). The message shows under the editor until the value is valid or you press Escape."
-<div class="property-grid" id="pg-valid" aria-label="Deployment" style="max-width: 30rem">
-  <script type="application/json" class="property-grid-source">
-    { "name": "billing", "port": 8443, "replicas": 3, "owner": "ops@acme.dev", "limit": 2000, "budget": 1500 }
-  </script>
-  <script type="application/json" class="property-grid-config">
-    {
-      "name": {
-        "required": true,
-        "minLength": 3,
-        "maxLength": 24,
-        "pattern": "[a-z][a-z0-9-]*",
-        "message": "3-24 lowercase letters, digits or -"
-      },
-      "port": { "min": 1024, "max": 65535, "integer": true },
-      "replicas": { "min": 1, "max": 12, "integer": true },
-      "owner": { "pattern": "[^@\\s]+@[^@\\s]+\\.[a-z]{2,}", "message": "An e-mail address" }
-    }
-  </script>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    df$.shadcn.propertyGrid.configure('#pg-valid', {
-      // a rule across keys: the budget never exceeds the limit
-      validateFn: (key, value, ctx) =>
-        key === 'budget' && value > ctx.source.limit ? 'Over the limit of ' + ctx.source.limit : '',
-    });
-  });
-</script>
-```
 
 <H2 id="data">Data in, data out</H2>
 

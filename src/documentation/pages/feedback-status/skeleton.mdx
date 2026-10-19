@@ -37,6 +37,14 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example label="Text Lines" hint="Paragraph placeholder."
+<div style="display: flex; flex-direction: column; gap: 0.5rem; width: 20rem">
+  <div class="skeleton" style="height: 0.875rem; width: 100%" />
+  <div class="skeleton" style="height: 0.875rem; width: 100%" />
+  <div class="skeleton" style="height: 0.875rem; width: 80%" />
+</div>
+```
+
 ```html example label="Avatar + Text" hint="Common pattern for user profile loading states."
 <div style="display: flex; align-items: center; gap: 1rem">
   <div class="skeleton skeleton-round" style="width: 2.5rem; height: 2.5rem"></div>
@@ -50,14 +58,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```html example label="Card" hint="Skeleton inside a card container."
 <div class="skeleton skeleton-round" style="width: 2.5rem; height: 2.5rem"></div>
 <div class="skeleton" style="height: 0.875rem; width: 10rem"></div>
-```
-
-```html example label="Text Lines" hint="Paragraph placeholder."
-<div style="display: flex; flex-direction: column; gap: 0.5rem; width: 20rem">
-  <div class="skeleton" style="height: 0.875rem; width: 100%" />
-  <div class="skeleton" style="height: 0.875rem; width: 100%" />
-  <div class="skeleton" style="height: 0.875rem; width: 80%" />
-</div>
 ```
 
 <SourceFiles component="skeleton" section="css">

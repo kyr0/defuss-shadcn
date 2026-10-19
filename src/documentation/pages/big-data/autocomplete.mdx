@@ -44,6 +44,110 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
+```html example label="Local records" height="28" schema="none" hint="rows: the records are in the page - a dataview source filters (case-insensitive), sorts and pages them; no network. data-match='startsWith' and data-sort='name:asc' are the pre-configured query; data-debounce='0' searches on every key."
+<div
+  class="autocomplete"
+  id="ac-langs"
+  data-label-field="name"
+  data-match="startsWith"
+  data-sort="name:asc"
+  data-debounce="0"
+  data-page-size="12"
+  style="max-width: 22rem"
+>
+  <label class="label" for="ac-langs-input">Language</label>
+  <input class="input autocomplete-input" id="ac-langs-input" type="text" placeholder="Type a letter…" />
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const names = [
+      'Ada',
+      'Assembly',
+      'Bash',
+      'C',
+      'C#',
+      'C++',
+      'Clojure',
+      'COBOL',
+      'Crystal',
+      'Dart',
+      'Elixir',
+      'Elm',
+      'Erlang',
+      'F#',
+      'Fortran',
+      'Gleam',
+      'Go',
+      'Groovy',
+      'Haskell',
+      'Java',
+      'JavaScript',
+      'Julia',
+      'Kotlin',
+      'Lisp',
+      'Lua',
+      'MATLAB',
+      'Nim',
+      'OCaml',
+      'Odin',
+      'Pascal',
+      'Perl',
+      'PHP',
+      'Prolog',
+      'Python',
+      'R',
+      'Racket',
+      'Ruby',
+      'Rust',
+      'Scala',
+      'Scheme',
+      'Smalltalk',
+      'SQL',
+      'Swift',
+      'Tcl',
+      'TypeScript',
+      'V',
+      'Zig',
+    ];
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-langs'), {
+      rows: names.map((name, i) => ({ id: i + 1, name })),
+    });
+  });
+</script>
+```
+
+```html example label="A live API" height="28" schema="none" hint="url(request) builds the request for a public API (Open-Meteo's geocoding - no key) and client.parse reads its { results }; it returns one page, so hasMore is false. Real network: watch the requests in the devtools - typing on cancels the one in flight."
+<div
+  class="autocomplete"
+  id="ac-geo"
+  data-label-field="name"
+  data-debounce="300"
+  data-min-chars="2"
+  style="max-width: 26rem"
+>
+  <label class="label" for="ac-geo-input">City (live)</label>
+  <input class="input autocomplete-input" id="ac-geo-input" type="text" placeholder="Try 'Lisb'…" />
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.autocomplete.configure(document.getElementById('ac-geo'), {
+      url: (request) =>
+        'https://geocoding-api.open-meteo.com/v1/search?count=20&language=en&name=' + encodeURIComponent(request.query),
+      client: { parse: (json) => ({ rows: json.results ?? [], hasMore: false }) },
+      render: (option, city) => {
+        const label = document.createElement('span');
+        label.className = 'autocomplete-label';
+        label.textContent = city.name;
+        const meta = document.createElement('span');
+        meta.className = 'autocomplete-meta';
+        meta.textContent = [city.admin1, city.country_code].filter(Boolean).join(', ');
+        option.append(label, meta);
+      },
+    });
+  });
+</script>
+```
+
 ```html example label="A remote source - debounced, cancelled, paged" height="28" hint="load(request, { signal }) is a fake server here: 96,000 places, 350 ms per request, answering the dataview request with dataview itself. Type 'new ber' fast - one request after you pause (data-debounce='250'); keep typing while one is on its way and it is ABORTED (the log counts both). The sort is pre-configured (population, largest first) and scrolling the list asks for the next page."
 <div class="flex flex-col gap-2" style="max-width: 26rem">
   <div
@@ -167,78 +271,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
-```html example label="Local records" height="28" schema="none" hint="rows: the records are in the page - a dataview source filters (case-insensitive), sorts and pages them; no network. data-match='startsWith' and data-sort='name:asc' are the pre-configured query; data-debounce='0' searches on every key."
-<div
-  class="autocomplete"
-  id="ac-langs"
-  data-label-field="name"
-  data-match="startsWith"
-  data-sort="name:asc"
-  data-debounce="0"
-  data-page-size="12"
-  style="max-width: 22rem"
->
-  <label class="label" for="ac-langs-input">Language</label>
-  <input class="input autocomplete-input" id="ac-langs-input" type="text" placeholder="Type a letter…" />
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const names = [
-      'Ada',
-      'Assembly',
-      'Bash',
-      'C',
-      'C#',
-      'C++',
-      'Clojure',
-      'COBOL',
-      'Crystal',
-      'Dart',
-      'Elixir',
-      'Elm',
-      'Erlang',
-      'F#',
-      'Fortran',
-      'Gleam',
-      'Go',
-      'Groovy',
-      'Haskell',
-      'Java',
-      'JavaScript',
-      'Julia',
-      'Kotlin',
-      'Lisp',
-      'Lua',
-      'MATLAB',
-      'Nim',
-      'OCaml',
-      'Odin',
-      'Pascal',
-      'Perl',
-      'PHP',
-      'Prolog',
-      'Python',
-      'R',
-      'Racket',
-      'Ruby',
-      'Rust',
-      'Scala',
-      'Scheme',
-      'Smalltalk',
-      'SQL',
-      'Swift',
-      'Tcl',
-      'TypeScript',
-      'V',
-      'Zig',
-    ];
-    df$.shadcn.autocomplete.configure(document.getElementById('ac-langs'), {
-      rows: names.map((name, i) => ({ id: i + 1, name })),
-    });
-  });
-</script>
-```
-
 ```html example label="Your own network client" height="28" schema="none" hint="The default client GETs data-url with ?q=&page=&pageSize=&sort= - client.fetch swaps the transport (auth, retries, a mock: here a fake fetch that answers with a Response), client.headers adds headers, client.parse maps any JSON to { rows, total, hasMore }. The signal still reaches your fetch."
 <div class="flex flex-col gap-2" style="max-width: 26rem">
   <div
@@ -312,38 +344,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
         const meta = document.createElement('span');
         meta.className = 'autocomplete-meta';
         meta.textContent = user.team;
-        option.append(label, meta);
-      },
-    });
-  });
-</script>
-```
-
-```html example label="A live API" height="28" schema="none" hint="url(request) builds the request for a public API (Open-Meteo's geocoding - no key) and client.parse reads its { results }; it returns one page, so hasMore is false. Real network: watch the requests in the devtools - typing on cancels the one in flight."
-<div
-  class="autocomplete"
-  id="ac-geo"
-  data-label-field="name"
-  data-debounce="300"
-  data-min-chars="2"
-  style="max-width: 26rem"
->
-  <label class="label" for="ac-geo-input">City (live)</label>
-  <input class="input autocomplete-input" id="ac-geo-input" type="text" placeholder="Try 'Lisb'…" />
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    df$.shadcn.autocomplete.configure(document.getElementById('ac-geo'), {
-      url: (request) =>
-        'https://geocoding-api.open-meteo.com/v1/search?count=20&language=en&name=' + encodeURIComponent(request.query),
-      client: { parse: (json) => ({ rows: json.results ?? [], hasMore: false }) },
-      render: (option, city) => {
-        const label = document.createElement('span');
-        label.className = 'autocomplete-label';
-        label.textContent = city.name;
-        const meta = document.createElement('span');
-        meta.className = 'autocomplete-meta';
-        meta.textContent = [city.admin1, city.country_code].filter(Boolean).join(', ');
         option.append(label, meta);
       },
     });

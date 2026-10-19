@@ -1,13 +1,13 @@
 import type { Props } from 'defuss';
-import { ALL_PAGES } from '../nav';
+import { LISTED_PAGES } from '../nav';
 
 /** Prev/next pager, statically rendered at the end of <main> (replaces the
  * old runtime buildPrevNext injection - same markup, same order). */
 export function PrevNext({ active }: Props & { active: string }) {
-  const idx = ALL_PAGES.findIndex((p) => p.href === active);
+  const idx = LISTED_PAGES.findIndex((p) => p.href === active);
   if (idx === -1) return null;
-  const prev = idx > 0 ? ALL_PAGES[idx - 1] : null;
-  const next = idx < ALL_PAGES.length - 1 ? ALL_PAGES[idx + 1] : null;
+  const prev = idx > 0 ? LISTED_PAGES[idx - 1] : null;
+  const next = idx < LISTED_PAGES.length - 1 ? LISTED_PAGES[idx + 1] : null;
   if (!prev && !next) return null;
   return (
     <nav class="page-nav">

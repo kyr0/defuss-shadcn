@@ -88,37 +88,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
 </header>
 ```
 
-```html example label="Many topics: scroll or wrap" hint="On a phone the topics do not fit. Top: the row scrolls - its end fades out under a › hint that is driven by the scroll itself and disappears once you reach the end (no script). Bottom: data-wrap on the topics breaks them onto lines instead." previewStyle="align-items:stretch;"
-<div style="display: grid; gap: 2rem; width: 100%; max-width: 22rem">
-  <header class="mk-news-header" data-topics-demo>
-    <h1 class="mk-news-header-title">Scrolling</h1>
-    <nav class="mk-news-header-topics" aria-label="Topics">
-      <a href="#" aria-current="page">All</a>
-      <a href="#">Product</a>
-      <a href="#">Company</a>
-      <a href="#">Engineering</a>
-      <a href="#">Security</a>
-      <a href="#">Design</a>
-      <a href="#">Press</a>
-      <a href="#">Events</a>
-    </nav>
-  </header>
-  <header class="mk-news-header" data-topics-demo>
-    <h1 class="mk-news-header-title">Wrapped</h1>
-    <nav class="mk-news-header-topics" data-wrap aria-label="Topics">
-      <a href="#" aria-current="page">All</a>
-      <a href="#">Product</a>
-      <a href="#">Company</a>
-      <a href="#">Engineering</a>
-      <a href="#">Security</a>
-      <a href="#">Design</a>
-      <a href="#">Press</a>
-      <a href="#">Events</a>
-    </nav>
-  </header>
-</div>
-```
-
 ```html example label="Category page, live" hint="A Breadcrumb above the title, a live line with a pinging Indicator dot, the topic row below - a category page during breaking news." previewStyle="align-items:stretch;"
 <header class="mk-news-header">
   <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -170,6 +139,37 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, Skil
     <a class="btn" data-size="sm" href="#"><i data-lucide="bell"></i> Subscribe</a>
   </div>
 </header>
+```
+
+```html example label="Many topics: scroll or wrap" hint="On a phone the topics do not fit. Top: the row scrolls - its end fades out under a › hint that is driven by the scroll itself and disappears once you reach the end (no script). Bottom: data-wrap on the topics breaks them onto lines instead." previewStyle="align-items:stretch;"
+<div style="display: grid; gap: 2rem; width: 100%; max-width: 22rem">
+  <header class="mk-news-header" data-topics-demo>
+    <h1 class="mk-news-header-title">Scrolling</h1>
+    <nav class="mk-news-header-topics" aria-label="Topics">
+      <a href="#" aria-current="page">All</a>
+      <a href="#">Product</a>
+      <a href="#">Company</a>
+      <a href="#">Engineering</a>
+      <a href="#">Security</a>
+      <a href="#">Design</a>
+      <a href="#">Press</a>
+      <a href="#">Events</a>
+    </nav>
+  </header>
+  <header class="mk-news-header" data-topics-demo>
+    <h1 class="mk-news-header-title">Wrapped</h1>
+    <nav class="mk-news-header-topics" data-wrap aria-label="Topics">
+      <a href="#" aria-current="page">All</a>
+      <a href="#">Product</a>
+      <a href="#">Company</a>
+      <a href="#">Engineering</a>
+      <a href="#">Security</a>
+      <a href="#">Design</a>
+      <a href="#">Press</a>
+      <a href="#">Events</a>
+    </nav>
+  </header>
+</div>
 ```
 
 <SourceFiles component="news-header" section="css" />
