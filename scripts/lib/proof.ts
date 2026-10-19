@@ -19,8 +19,8 @@ export interface Proof {
 }
 
 /**
- * The proofs: every input is a file git does not ignore (tracked or untracked), plus the ignored files the command
- * reads, plus HEAD and `git status` (verify reads commit times, HEAD's package.json and the status), plus the tool
+ * The proofs: every input is a file git does not ignore (tracked or untracked) outside NOT_INPUTS, plus the ignored
+ * files the command reads, plus HEAD and `git status` (verify reads commit times, HEAD's package.json and the status), plus the tool
  * versions. A superset is sound - an unrelated edit only costs a real run.
  */
 export const PROOFS: Record<string, Proof> = {
@@ -30,21 +30,34 @@ export const PROOFS: Record<string, Proof> = {
   verify: { outputs: [], ignoredInputs: ['screenshots/manifest.json', 'screenshots/light/', 'screenshots/dark/'], proves: {} },
 };
 
-/** The files a proof hashes: the listed ones minus its outputs, sorted (a stable order is part of the fingerprint). */
+/**
+ * Tracked folders no proof's command reads: the vae gate's own state (memory, episodes, its policy file). The gate
+ * appends to .agents/EPISODES.md on every failing run, so while they counted as inputs, each failed gate run re-ran
+ * the unit suite, its coverage run and verify on the next one, although none of them had changed.
+ * VERIFIED: (grep of scripts/, tests/, vitest.config.ts, package.json, the Makefile, 2026-10-19) nothing reads .agents/
+ * but deploy.sh (no proof) - verify only lists it among the dirty files of its non-blocking cleanliness warning.
+ */
+export const NOT_INPUTS = ['.agents/'];
+
+/** A path inside one of the folders no command reads. */
+const unread = (path: string): boolean => NOT_INPUTS.some((dir) => path.startsWith(dir));
+
+/** The files a proof hashes: the listed ones minus its outputs and NOT_INPUTS, sorted (a stable order is part of the fingerprint). */
 export function proofFiles(listed: string[], proof: Proof): string[] {
   const out = new Set(proof.outputs);
-  return [...new Set(listed)].filter((p) => !out.has(p)).sort();
+  return [...new Set(listed)].filter((p) => !out.has(p) && !unread(p)).sort();
 }
 
 /**
- * `git status --porcelain` without the proof's outputs - a test run that rewrites its totals file must not see its own
- * write as a changed input. VERIFIED: (tests/e2e/site/proven.e2e.ts) with the status unfiltered, the pass of a run
- * whose totals changed was never recorded.
+ * `git status --porcelain` without the proof's outputs and NOT_INPUTS - a test run that rewrites its totals file must
+ * not see its own write as a changed input, nor a gate run its episode log. VERIFIED: (tests/e2e/site/proven.e2e.ts)
+ * with the status unfiltered, the pass of a run whose totals changed was never recorded.
  */
 export function statusWithoutOutputs(porcelain: string, proof: Proof): string {
+  const path = (line: string) => line.slice(3).split(' -> ').at(-1) ?? '';
   return porcelain
     .split('\n')
-    .filter((line) => line && !proof.outputs.some((o) => line.slice(3) === o || line.endsWith(` -> ${o}`)))
+    .filter((line) => line && !proof.outputs.some((o) => line.slice(3) === o || line.endsWith(` -> ${o}`)) && !unread(path(line)))
     .join('\n');
 }
 

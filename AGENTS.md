@@ -213,13 +213,16 @@ Run a single targeted check mid-package only when a fact decides the next edit
 Repeated runs on the same tree are replayed, not repeated: `bun run verify`,
 `bun run test:run` and `bun run test:coverage` go through `scripts/proven.ts`,
 which replays the recorded pass of the same command line when every input is byte for byte the same
-(every file git does not ignore, HEAD, `git status`, the tool versions - a
-superset, so an unrelated edit only costs a real run; a replay starts with
-`proven: <name> - these inputs passed at ...`; `FULL=1` runs for real). The
-vae gate runs lint, both suites and verify again after the pipeline, so run the
-pipeline's tests as `bun run test:coverage`: one full run proves the gate's
-test and coverage steps, and the gate replays them. The e2e runner and the
-screenshots skip unchanged inputs the same way.
+(every file git does not ignore except the gate's own `.agents/`, HEAD,
+`git status`, the tool versions - a superset, so an unrelated edit only costs a
+real run; a replay starts with `proven: <name> - these inputs passed at ...`;
+`FULL=1` runs for real). The vae gate runs lint, the suites and verify again
+after the pipeline; its unit step is the coverage run (`.agents/VERIFY.py`), so
+one full suite run proves both its test and coverage steps, and the pipeline's
+`bun run test:coverage` lets the gate replay them. `.agents/` is no input:
+the gate appends to `.agents/EPISODES.md` on every failure, which re-ran every
+suite after any failed gate run. The e2e runner and the screenshots skip
+unchanged inputs the same way.
 
 ### One owner per concern, explicit contracts (STRONGLY RECOMMENDED)
 
@@ -1613,9 +1616,14 @@ plus the bundling step - not the sources behind them, so a source edit that buil
 to the same bytes (a comment) runs nothing, and one tested before its rebuild runs
 again once the rebuild changes what the browser loads; the component a test is named
 after adds its source folder; `package.json` counts without its `scripts`; a docs
-image or video a fixture shows is that file; a test of the documentation site (a
-page, an app, the docs css/js) depends on all of `src/` and `scripts/`; anything
-unrecognised on everything).
+image or video a fixture shows is that file; every test depends on the repo modules
+it imports (Bun's import scanner, transitively) and the `/tests/e2e/…` files it
+loads by URL; a test of the documentation site (a page, an app, the docs css/js)
+that only drives the browser depends on the built site, `dist/` - the e2e server
+serves nothing else - so a source edit that builds the same site runs none of them;
+one that reads files or starts processes (itself or through an import outside
+`tests/e2e/lib/`) depends on all of `src/` and `scripts/`; anything unrecognised on
+everything).
 Their content is fingerprinted into `.cache/e2e-manifest.json` on a pass; a failed
 or new file always runs. `bun run e2e --all` (`make e2e-all`, `E2E_ALL=1` -
 `deploy.sh` sets it, so a release runs everything) ignores the fingerprints;

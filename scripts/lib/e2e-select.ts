@@ -17,8 +17,15 @@
  *   nothing, and one tested before its rebuild runs again once the rebuild
  *   changes what the browser loads. The component a test is named after adds
  *   its source folder too (a test may read its skill or schema);
- * - a test that loads the documentation site (or a full-screen app) depends
- *   on everything that renders the site: all of src/ and scripts/.
+ * - a test that loads the documentation site (or a full-screen app) and only
+ *   drives the browser depends on the BUILT site, dist/ (the e2e server
+ *   serves nothing else but tests/e2e/ - the files of it the test names), and
+ *   on the modules it imports: a source edit that builds to the same site
+ *   runs none of them. VERIFIED: (2026-10-19) an edit of scripts/lib/
+ *   stat-figures.ts, which renders nothing, selected all 24 docs-site files;
+ * - a docs-site test that reads files or starts processes itself (or through
+ *   a module it imports, the e2e harness aside) can depend on anything it
+ *   opens: everything that renders the site, all of src/ and scripts/.
  *
  * Pure: the caller reads the files and hashes the inputs (tests/e2e/run.ts).
  * A path ending in "/" is a directory prefix.
@@ -38,6 +45,28 @@ const BUNDLE_FILE = new RegExp(`dist/components/(all|core|${Object.keys(EXTRA_BU
 export const SITE_INPUTS = ['src/', 'scripts/', 'package.json', 'tsconfig.json'];
 /** every e2e file shares these */
 export const SHARED_INPUTS = ['tests/e2e/lib/', 'tests/e2e/server.ts', 'bun.lock'];
+/** what a browser-only docs-site test can load: the built site (tests/e2e/server.ts serves /dist/ and /tests/e2e/ only) */
+export const BUILT_SITE = ['dist/'];
+
+/**
+ * Code that reads files or starts processes: a node:fs / child_process import, Bun's file and process APIs, a
+ * dynamic import of a computed name, Playwright handed a local file (setInputFiles, a route fulfilled or a tag
+ * added from a `path`). Its inputs are invisible to this planner. The shared e2e harness (SHARED_INPUTS) is exempt:
+ * it reads what the server serves, node_modules (pinned by bun.lock) and what a test wrote.
+ */
+const TOUCHES =
+  /\bfrom\s+['"](?:node:)?(?:fs|fs\/promises|child_process)['"]|\brequire\(\s*['"](?:node:)?(?:fs|child_process)['"]|\bfrom\s+['"]bun['"]|\bBun\.(?:file|spawn|spawnSync|\$|Glob|write)\b|\bimport\(\s*(?!['"])|\bsetInputFiles\(|\b(?:fulfill|addScriptTag|addStyleTag)\(\s*\{[^}]*\bpath\s*:/;
+
+/** The files under tests/e2e/ a test names by URL (`/tests/e2e/big-data/data-grid.e2e-fixture.html`) - the folder
+ *  where the rest of the path is computed (`/tests/e2e/site/${fixture}` → tests/e2e/site/). */
+export function e2eTreeRefs(text: string): string[] {
+  const out = new Set<string>();
+  for (const m of text.matchAll(/\/tests\/e2e\/([^\s'"`)?#:]*)/g)) {
+    const at = m[1].indexOf('${');
+    out.add(at < 0 ? `tests/e2e/${m[1]}` : `tests/e2e/${m[1].slice(0, m[1].lastIndexOf('/', at) + 1)}`);
+  }
+  return [...out];
+}
 
 /**
  * The bytes of an input that can decide a test. package.json counts without its `scripts`: no e2e test runs a
@@ -66,6 +95,8 @@ export interface E2eSource {
   componentsOf: (markup: string) => string[];
   /** a component's repo-relative folder (src/components/<section>/<name>/), undefined when there is none */
   componentDir: (name: string) => string | undefined;
+  /** every repo module the test imports, transitively: path → text; null when they could not be read */
+  imports: Record<string, string> | null;
 }
 
 /** The fixture files a test text names (`x.e2e-fixture.html`). */
@@ -76,7 +107,8 @@ export const fixturesNamed = (text: string): string[] => [...new Set([...text.ma
  * is named after (tests/e2e/overlays/accordion.e2e.ts, like
  * src/components/overlays/accordion/), `site` for every other test
  * (documentation, scaffold-*, the bundles…). The one layout rule of the e2e
- * tree - verify's `e2e sections` gate, the runner and css-smoke ask here.
+ * tree - verify's `e2e sections` gate and the runner ask here (css-smoke takes
+ * the folder of the running test, which that gate keeps equal to this).
  */
 export const e2eFolder = (name: string, sectionOf: (n: string) => string | undefined): string => sectionOf(name) ?? 'site';
 
@@ -104,11 +136,18 @@ export function e2eInputs(src: E2eSource): string[] {
     out.add(`dist/documentation/${m[1]}`);
     known = true;
   }
-  // the documentation site or a full-screen app: everything that renders it
+  // the documentation site or a full-screen app: the built site when the test only drives the browser, everything
+  // that renders it when its own code reads files or starts processes (or its imports could not be read)
   if (/dist\/documentation\/|documentation\/[a-z0-9-]+\.html|dist\/apps\/|documentation\.e2e|openDocPage/.test(all.replace(ASSET, ''))) {
-    add(SITE_INPUTS);
+    const code = src.imports && [src.test, ...Object.entries(src.imports).filter(([p]) => !coveredBy(p, SHARED_INPUTS)).map(([, t]) => t)];
+    add(code && !code.some((t) => TOUCHES.test(t)) ? BUILT_SITE : SITE_INPUTS);
     known = true;
   }
+  // the repo modules the test runs - a test may compute what it expects from them (nav.ts, page-dirs.ts) - and the
+  // files under tests/e2e/ it loads by URL. VERIFIED: big-data-firefox loads three fixtures of tests/e2e/big-data/,
+  // which no input named - an edit of them ran nothing
+  if (src.imports) add(Object.keys(src.imports));
+  add(e2eTreeRefs(all));
   for (const m of all.matchAll(/dist\/components\/([a-z0-9-]+)\/\1(?:\.min)?\.(?:js|css)/g)) {
     built(m[1]);
     add(CORE_INPUTS);

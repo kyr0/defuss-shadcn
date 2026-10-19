@@ -10,7 +10,11 @@ CONFIG = {
     # verify` is the repo's static consistency gate (scripts/verify.ts), and AGENTS.md bans `oxlint --deny-warnings`
     # (lint stays non-blocking; only real errors fail). Overriding every verb here also keeps `make verify` untouched.
     "lint_command": "bun run lint",
-    "test_command": "bun run test:run",
+    # WHY coverage for the unit step too: the gate ran `test:run`, then `test:coverage` - the same suite twice (~150 s
+    # + 168 s) whenever an input changed. A coverage pass records the unit pass as well (scripts/lib/proof.ts
+    # `proves`), so the coverage step replays it. Each command reruns only when a file it reads changed (proven.ts;
+    # the gate's own .agents/ is no input) and e2e only the files whose inputs changed (scripts/lib/e2e-select.ts).
+    "test_command": "bun run test:coverage",
     "coverage_command": "bun run test:coverage",
     "integration_commands": ["bun run verify"],  # the repo's authoritative gate (AGENTS.md "The verifier is authoritative")
     # tests/e2e/run.ts drives the built dist/ in Playwright; its log is the evidence the gate looks for in output/.

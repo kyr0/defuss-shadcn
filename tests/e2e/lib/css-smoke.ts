@@ -1,13 +1,12 @@
 import assert from 'node:assert/strict';
 import { chromium, type Page } from 'playwright';
-import { join } from 'node:path';
+import { basename, dirname } from 'node:path';
 import { startServer } from '../server.ts';
-import { componentDirs } from '../../../src/documentation/lib/component-dirs.ts';
-import { e2eFolder } from '../../../scripts/lib/e2e-select.ts';
 
-/** the fixture of a component sits in its section folder: tests/e2e/<section>/<name>.e2e-fixture.html */
-const fixtureUrl = (component: string): string =>
-  `/tests/e2e/${e2eFolder(component, (n) => componentDirs(join(import.meta.dirname, '..', '..', '..', 'src', 'components')).find((c) => c.name === n)?.section)}/${component}.e2e-fixture.html`;
+/** the fixture of a component sits beside its test: tests/e2e/<section>/<name>.e2e-fixture.html, the folder of the
+ *  running e2e file (Bun.main) - verify's `e2e sections` gate keeps both in the component's section folder. Asking
+ *  the planner (e2eFolder) instead made all 175 CSS-only tests inputs of scripts/lib/e2e-select.ts */
+const fixtureUrl = (component: string): string => `/tests/e2e/${basename(dirname(Bun.main))}/${component}.e2e-fixture.html`;
 
 /**
  * Why: CSS-only components (no .js) have no behavior to drive - their shipped

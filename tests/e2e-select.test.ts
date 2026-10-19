@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUNDLE_INPUTS, CORE_INPUTS, SITE_INPUTS, coveredBy, e2eFolder, e2eInputs, fixturesNamed, inputContent } from '../scripts/lib/e2e-select.ts';
+import { BUILT_SITE, BUNDLE_INPUTS, CORE_INPUTS, SITE_INPUTS, coveredBy, e2eFolder, e2eInputs, e2eTreeRefs, fixturesNamed, inputContent } from '../scripts/lib/e2e-select.ts';
 
 /**
  * Why: `bun run e2e` runs a file again only when its inputs changed - the
@@ -23,6 +23,7 @@ const SECTION: Record<string, string> = {
 const base = {
   componentsOf: (m: string) => [...components].filter((c) => m.includes(`class="${c}`)),
   componentDir: (n: string) => (components.has(n) ? `src/components/${SECTION[n]}/${n}/` : undefined),
+  imports: {} as Record<string, string> | null,
 };
 
 describe('e2eInputs', () => {
@@ -81,8 +82,8 @@ describe('e2eInputs', () => {
     expect(inputs).toContain('dist/documentation/videos/demo.webm');
     expect(inputs).not.toContain('src/');
     expect(inputs).not.toContain('scripts/');
-    // a page is the site
-    expect(e2eInputs({ ...base, name: 'badge', test: '', fixtures: { 'badge.e2e-fixture.html': fixture + '<iframe src="/dist/documentation/data-display/badge.html"></iframe>' } })).toContain('src/');
+    // a page is the site - as built
+    expect(e2eInputs({ ...base, name: 'badge', test: '', fixtures: { 'badge.e2e-fixture.html': fixture + '<iframe src="/dist/documentation/data-display/badge.html"></iframe>' } })).toContain('dist/');
   });
 
   it('the theme: the built theme folder', () => {
@@ -91,9 +92,41 @@ describe('e2eInputs', () => {
     expect(inputs).not.toContain('src/theme/');
   });
 
-  it('a test of the documentation site depends on everything that renders it', () => {
-    const inputs = e2eInputs({ ...base, name: 'kbd-docs', test: "await page.goto(`${url}/dist/documentation/kbd.html`)", fixtures: {} });
-    for (const s of SITE_INPUTS) expect(inputs).toContain(s);
+  // the maintainer (2026-10-19): only what a change can affect is gated - a docs test that only drives the browser
+  // sees the site as built, so a source edit that builds the same site runs none of them
+  it('a browser-only test of the documentation site: the built site and the modules it imports, not the sources', () => {
+    const test = "import { pageRel } from '../../../src/documentation/lib/page-dirs.ts';\nawait page.goto(`${url}/dist/documentation/kbd.html`)";
+    const imports = { 'src/documentation/lib/page-dirs.ts': 'export const pageRel = (id) => id;', 'tests/e2e/server.ts': "import { serve } from 'bun';" };
+    const inputs = e2eInputs({ ...base, name: 'kbd-docs', test, fixtures: {}, imports });
+    for (const i of [...BUILT_SITE, 'src/documentation/lib/page-dirs.ts', 'tests/e2e/site/kbd-docs.e2e.ts']) expect(inputs).toContain(i);
+    for (const s of SITE_INPUTS) expect(inputs).not.toContain(s);
+  });
+
+  it('a docs test that reads files or starts processes - itself or through a module outside the harness: everything that renders the site', () => {
+    const page = "await page.goto(`${url}/dist/documentation/kbd.html`)";
+    const sources = (test: string, imports: Record<string, string> | null) => {
+      const inputs = e2eInputs({ ...base, name: 'kbd-docs', test, fixtures: {}, imports });
+      return SITE_INPUTS.every((s) => inputs.includes(s));
+    };
+    expect(sources(`import { readFileSync } from 'node:fs';\n${page}`, {})).toBe(true);
+    expect(sources(`const p = Bun.spawnSync(['bun', 'x']);\n${page}`, {})).toBe(true);
+    expect(sources(`const m = await import(name);\n${page}`, {})).toBe(true);
+    expect(sources(page, { 'scripts/lib/x.ts': "import { readdirSync } from 'fs';" })).toBe(true);
+    // Playwright reads a local file it is handed
+    expect(sources(`await page.setInputFiles('#f', 'tests/x.md');\n${page}`, {})).toBe(true);
+    expect(sources(`await page.route('**', (r) => r.fulfill({ status: 200, path: 'src/x.css' }));\n${page}`, {})).toBe(true);
+    expect(sources(`await page.route('**', (r) => r.fulfill({ status: 200, body: '' }));\n${page}`, {})).toBe(false);
+    // the harness reads only what the server serves and node_modules; a type position is no import
+    expect(sources(`let p: import('playwright').Page;\n${page}`, { 'tests/e2e/server.ts': 'Bun.file(path)' })).toBe(false);
+    // the imports could not be read: be safe
+    expect(sources(page, null)).toBe(true);
+  });
+
+  it('the files under tests/e2e/ a test loads by URL - a computed name: its folder', () => {
+    const test = "goto('/tests/e2e/big-data/data-grid.e2e-fixture.html?x=1'); goto(`/tests/e2e/site/${fixture}`); key('/tests/e2e/a/b.html:k')";
+    expect(e2eTreeRefs(test).sort()).toEqual(['tests/e2e/a/b.html', 'tests/e2e/big-data/data-grid.e2e-fixture.html', 'tests/e2e/site/']);
+    expect(e2eTreeRefs('goto(`/tests/e2e/${folder}/x.html`)')).toEqual(['tests/e2e/']);
+    expect(e2eInputs({ ...base, name: 'odd', test, fixtures: {} })).toContain('tests/e2e/big-data/data-grid.e2e-fixture.html');
   });
 
   it('nothing recognised: safe - everything', () => {

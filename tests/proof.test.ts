@@ -27,6 +27,14 @@ describe('proof decisions (scripts/lib/proof.ts)', () => {
     expect(statusWithoutOutputs(status, PROOFS.verify)).toBe(' M a.ts\n M src/documentation/data/unit-tests.json\n?? new.ts');
   });
 
+  it('the gate\'s own state (.agents/) is no input of any proof - a failing gate run appends to its episode log', () => {
+    const listed = ['.agents/EPISODES.md', '.agents/MEMORY.md', 'a.ts', 'src/.agents.ts'];
+    for (const proof of Object.values(PROOFS)) {
+      expect(proofFiles(listed, proof)).toEqual(['a.ts', 'src/.agents.ts']);
+      expect(statusWithoutOutputs(' M .agents/EPISODES.md\n M a.ts\n?? .agents/new.md\nR  x.ts -> .agents/x.ts\n', proof)).toBe(' M a.ts');
+    }
+  });
+
   it('mayReplay: only a recorded pass of the same command line on the same fingerprint, and never with FULL=1', () => {
     expect(mayReplay(record('f1'), 'f1', 'vitest run', false)).toBe(true);
     expect(mayReplay(record('f1'), 'f2', 'vitest run', false)).toBe(false);
