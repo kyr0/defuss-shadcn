@@ -1,6 +1,31 @@
 {
   "entries": [
     {
+      "version": "v0.9.10",
+      "date": "October 19, 2026",
+      "commits": [
+        "chore(agents): updated agent memory after self-reflection",
+        "test(math): the KaTeX font check waits for the first font request - a loaded full run checked before it",
+        "build(release): make build writes the stats figures and README's footprint sentence after stats - a version bump moves the shipped bytes",
+        "chore(agents): episodes and memory of the print, Documents, Math, Studio, individual-examples and Multimedia packages",
+        "build: regenerate dist/ and the generated skills",
+        "build: the new sections in the nav, the bundles, the release ZIPs and the skills; KaTeX, MathLive, Compute Engine and GrapesJS pinned; AGENTS.md and README updated",
+        "feat(docs): individual examples - each component of an example also stands alone as a part card ahead of the composites, enforced by verify",
+        "fix: Calendar weeks start on the locale's first day, Combobox hides emptied groups, Data Grid cells keep their keys, Sidebar and Tree View 'default' is expanded / closed, stylesheet URLs survive an SPA navigation",
+        "feat(application): Border Layout regions that fit their content (data-fit), Panel density, Document Comments that keep reply drafts and link comments",
+        "feat(wysiwyg): the Visual Editor (GrapesJS over the documented markup, sanitized, locked units) and the Studio (alpha); the HTML Preview Editor gets Open in Studio, a full-screen sandbox and page breaks in its Print device",
+        "feat(multimedia): a Multimedia section - Video and Audio with a State API, keyed subtitles and video captions behind a menu, a vertical volume, and a Media Timeline with loops, annotation rows, time scales and events",
+        "docs(papers): Paper Gallery papers on code listings, charts, before and after and contents; the report gets a new abstract opening, a numbered study timeline and a cutoff by date",
+        "feat(math): a Math section - Formula Rendering (KaTeX), Formula Editing (MathLive), Compute &amp; Explain (Compute Engine in a worker) - and two math papers",
+        "feat(documents): a Documents section - Letter (DIN 5008 forms A and B) and Invoice (exact totals rounded as in Germany, an EPC QR code) - and PDFs printed from the built pages",
+        "feat(print): page breaks and keeps in Typography, A4 / Letter print profiles for papers, tables that print across pages, charts and diagrams redrawn for print",
+        "build(verify): proven.ts replays a recorded pass on unchanged inputs, e2e and screenshots follow the built files, one parse per page in verify",
+        "docs: updated paper layout, added plan",
+        "docs: sync",
+        "docs: final editing of the paper; added build-docs target to Makefiel"
+      ]
+    },
+    {
       "version": "v0.9.9",
       "date": "October 10, 2026",
       "commits": [
