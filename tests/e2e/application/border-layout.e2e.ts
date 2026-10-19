@@ -156,6 +156,30 @@ try {
     assert.deepEqual(r, { fixed: 'dashed', dashed: 'dashed', dots: '""', double: 'double', noGrip: 'none', gap: '8px', card: '1px' });
   });
 
+  await check('data-fit: a fixed region takes its content\'s size between its bounds (half the layout by default) and scrolls past them', async () => {
+    const box = () =>
+      page.evaluate(() => {
+        const h = (id: string) => (document.getElementById(id) as HTMLElement).clientHeight;
+        const s = document.getElementById('fit-s')!;
+        return { layout: h('fit'), n: h('fit-n'), s: h('fit-s'), c: h('fit-c'), scrolls: s.scrollHeight > s.clientHeight };
+      });
+    const near = (a: number, b: number, what: string) => assert.ok(Math.abs(a - b) <= 2, `${what}: ${a} vs ${b}`);
+    let r = await box();
+    near(r.s, 40, 'two 20px rows: the south is as high as its content');
+    near(r.n, r.layout * 0.2, 'one line: the north keeps its minimum (20cqh)');
+    assert.equal(r.scrolls, false);
+    await page.evaluate(() => {
+      const s = document.getElementById('fit-s')!;
+      for (let i = 3; i <= 30; i++) s.insertAdjacentHTML('beforeend', `<li style="height:20px">${i}</li>`);
+      document.getElementById('fit-n-text')!.style.height = '400px';
+    });
+    r = await box();
+    near(r.s, r.layout * 0.5, 'thirty rows: the south stops at half the layout (the default maximum)');
+    near(r.n, r.layout * 0.4, 'a tall north stops at its maximum (40cqh)');
+    assert.equal(r.scrolls, true, 'its content scrolls');
+    assert.ok(r.c > 0, 'the center keeps the rest');
+  });
+
   await check('data-save: sizes and folded regions survive a reload', async () => {
     await page.focus('#sv-w > .resizer-handle');
     await page.keyboard.press('ArrowRight');

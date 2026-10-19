@@ -118,6 +118,20 @@ try {
     assert.equal(await page.evaluate(() => globalThis.df$.shadcn.docComments!.flash('#dc', { block: 'p5', text: 'nope' })), false);
   });
 
+  await check("a link shows the linked comment's anchored text and makes that comment current (source 'link'); a link to an unknown comment is not shown", async () => {
+    const links = await page.$$eval('#dc .doc-comments-card[data-id="c3"] > .doc-comments-link', (ls) =>
+      ls.map((l) => [l.querySelector('q')?.textContent, l.querySelector('.doc-comments-quote-note')?.textContent, getComputedStyle(l).borderTopStyle]),
+    );
+    assert.deepEqual(links, [['a comment column beside', 'the column thread', 'solid']]);
+    const source = page.evaluate(() => new Promise<string>((r) => document.getElementById('dc')!.addEventListener('doc-comments-select', (e) => r((e as CustomEvent).detail.source), { once: true })));
+    await page.click('#dc .doc-comments-card[data-id="c3"] > .doc-comments-link');
+    assert.equal(await source, 'link');
+    assert.equal(await page.$eval('#dc', (el) => el.getAttribute('data-current')), 'c1');
+    assert.equal(await page.$eval('#doc mark.doc-comments-mark[data-comment="c1"]', (m) => m.hasAttribute('data-current')), true);
+    assert.equal(await page.$$eval('#doc mark.doc-comments-flash', (ms) => ms.length), 0, 'a link flashes no text');
+    await page.evaluate(() => (document.getElementById('dc') as HTMLElement & { api: { setState(n: string): unknown } }).api.setState('default'));
+  });
+
   await check('Reply: the composer opens under the card, the answer nests under it with the column author and the parent colour; doc-comments-change fires', async () => {
     assert.equal(await page.$eval('#dc .doc-comments-card[data-id="c3"] > .doc-comments-reply', (f) => (f as HTMLElement).hidden), true);
     await page.click('#dc .doc-comments-card[data-id="c3"] [data-doc-comments-action="reply"]');
@@ -160,6 +174,50 @@ try {
     assert.equal(r.card, true);
     assert.equal(r.total, 8);
     assert.equal((await current()).card, r.id);
+  });
+
+  await check('drafts: open composers keep their text when the column re-renders (a reply sent elsewhere, refresh()); doc-comments-draft reports open, typing and close; Reply keeps an open composer; load() closes them, setDrafts() restores; Cancel closes', async () => {
+    await page.evaluate(() => {
+      (globalThis as any).__drafts = [];
+      document.getElementById('dc')!.addEventListener('doc-comments-draft', (e) => (globalThis as any).__drafts.push((e as CustomEvent).detail));
+    });
+    const reply = (id: string) => `#dc .doc-comments-card[data-id="${id}"] > .doc-comments-actions [data-doc-comments-action="reply"]`;
+    const form = (id: string) => `#dc .doc-comments-card[data-id="${id}"] > .doc-comments-reply`;
+    const composers = () => page.$$eval('#dc .doc-comments-reply:not([hidden])', (fs) => fs.map((f) => `${(f.closest('.doc-comments-card') as HTMLElement).dataset.id}:${f.querySelector('textarea')!.value}`));
+    const events = () => page.evaluate(() => (globalThis as any).__drafts.map((d: { id: string; text: string | null }) => `${d.id}:${d.text}`) as string[]);
+    await page.click(reply('c1'));
+    await page.fill(`${form('c1')} textarea`, 'first draft');
+    await page.click(reply('c4'));
+    await page.fill(`${form('c4')} textarea`, 'second draft');
+    await page.click(reply('c5'));
+    await page.fill(`${form('c5')} textarea`, 'sent');
+    await page.click(`${form('c5')} button[type="submit"]`);
+    assert.deepEqual(await composers(), ['c1:first draft', 'c4:second draft'], 'the reply re-rendered the column; the two drafts came back');
+    assert.deepEqual(await events(), ['c1:', 'c1:first draft', 'c4:', 'c4:second draft', 'c5:', 'c5:sent', 'c5:null']);
+    await page.evaluate(() => globalThis.df$.shadcn.docComments!.refresh('#dc'));
+    await page.click(reply('c1'));
+    assert.deepEqual(await composers(), ['c1:first draft', 'c4:second draft'], 'refresh() and a second Reply keep them');
+    assert.equal(await page.evaluate(() => document.activeElement?.closest('.doc-comments-card')?.getAttribute('data-id')), 'c1', 'Reply focuses the open composer');
+    assert.equal(await page.$eval(reply('c1'), (b) => b.getAttribute('aria-expanded')), 'true');
+    const r = await page.evaluate(() => {
+      const api = globalThis.df$.shadcn.docComments!;
+      const before = api.drafts('#dc');
+      api.load('#dc', api.data('#dc') as never);
+      const afterLoad = api.drafts('#dc');
+      const open = document.querySelectorAll('#dc .doc-comments-reply:not([hidden])').length;
+      api.setDrafts('#dc', { c4: 'restored', zzz: 'no such comment' });
+      return { before, afterLoad, open, after: api.drafts('#dc'), fired: (globalThis as any).__drafts.length };
+    });
+    assert.deepEqual(r.before, { c1: 'first draft', c4: 'second draft' });
+    assert.deepEqual(r.afterLoad, {});
+    assert.equal(r.open, 0, 'load() closes every composer');
+    assert.deepEqual(r.after, { c4: 'restored' }, 'a draft for an unknown comment is dropped');
+    assert.equal(r.fired, 7, 'load() and setDrafts() fire no draft event');
+    assert.deepEqual(await composers(), ['c4:restored']);
+    await page.click(`${form('c4')} [data-doc-comments-action="cancel"]`);
+    assert.deepEqual(await composers(), []);
+    assert.equal((await events()).at(-1), 'c4:null');
+    assert.equal(await page.$eval(reply('c4'), (b) => b.getAttribute('aria-expanded')), 'false');
   });
 
   await check('API: load() replaces the model - old marks gone, new ones placed; next()/prev() on an empty column return null', async () => {

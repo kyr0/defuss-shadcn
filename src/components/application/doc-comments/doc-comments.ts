@@ -3,14 +3,18 @@
 /* span of the document's text (block id + exact text) that the runtime    */
 /* wraps in a <mark>; the column scrolls on its own, a ButtonGroup walks   */
 /* the comments up and down, Reply opens a composer under a card and the   */
-/* answer becomes a child comment. A comment may quote another span of     */
-/* the document - clicking the quote scrolls there and flashes it. The     */
-/* model is one JSON document (version 1) authored in a <script> or loaded */
-/* through df$.shadcn.docComments.load(); every change replaces it and    */
-/* fires doc-comments-change. Bodies are Markdown (a small, escaped subset).*/
+/* answer becomes a child comment; an open composer and its text (a draft) */
+/* survive every re-render and are reported (doc-comments-draft), so a     */
+/* page can keep them. A comment may quote another span of the document -  */
+/* clicking the quote scrolls there and flashes it - or link another       */
+/* comment, which the click makes current. The model is one JSON document  */
+/* (version 1) authored in a <script> or loaded through                    */
+/* df$.shadcn.docComments.load(); every change replaces it and fires       */
+/* doc-comments-change. Bodies are Markdown (a small, escaped subset).     */
 /* VERIFIED: (doc-comments.e2e) marks wrap the anchored text across inline */
 /* elements, a mark click selects its card and a card its mark, prev/next, */
-/* reply nesting, the quote flash, the change event, the render contract.  */
+/* reply nesting, drafts kept over a re-render, the quote flash, the       */
+/* change event, the render contract.                                      */
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
@@ -48,6 +52,14 @@ export interface DocCommentsQuote extends DocCommentsSpan {
   note?: string;
 }
 
+/** A link inside a comment: another comment of the column, with a note - following it makes that comment current. */
+export interface DocCommentsLink {
+  /** the id of the comment it points to */
+  comment: string;
+  /** what the link says about that comment (Markdown) */
+  note?: string;
+}
+
 /** One comment of the model. */
 export interface DocComment {
   /** unique id (the mark's data-comment) */
@@ -62,8 +74,8 @@ export interface DocComment {
   anchor?: DocCommentsSpan;
   /** the comment text (Markdown: paragraphs, bold, italic, code, links) */
   body: string;
-  /** other spans the comment refers to */
-  quotes?: DocCommentsQuote[];
+  /** other spans the comment refers to, and links to other comments */
+  quotes?: (DocCommentsQuote | DocCommentsLink)[];
   /** the comment this one answers (a reply) */
   parent?: string;
 }
@@ -88,8 +100,8 @@ export interface DocCommentsChangeDetail {
 export interface DocCommentsSelectDetail {
   /** the comment that became current */
   id: string;
-  /** what selected it: its mark, its card, the prev / next buttons or the API */
-  source: 'mark' | 'card' | 'nav' | 'api';
+  /** what selected it: its mark, its card, the prev / next buttons, a link in another comment or the API */
+  source: 'mark' | 'card' | 'nav' | 'link' | 'api';
 }
 
 /** What doc-comments-flash carries. */
@@ -102,9 +114,18 @@ export interface DocCommentsFlashDetail {
   found: boolean;
 }
 
-/** per-element runtime: the model + the document root */
+/** What doc-comments-draft carries. */
+export interface DocCommentsDraftDetail {
+  /** the comment the composer answers */
+  id: string;
+  /** the composer's text now; null when the composer closed (cancelled or sent) */
+  text: string | null;
+}
+
+/** per-element runtime: the model + the open composers' text by the comment they answer */
 interface DocCommentsRuntime {
   data: DocCommentsData;
+  drafts: Record<string, string>;
 }
 
 const FLASH_MS = 1600;
@@ -115,6 +136,7 @@ const ICONS = {
     '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>',
   quote:
     '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>',
+  link: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>',
 };
 
 const esc = (s: string): string =>
@@ -292,7 +314,7 @@ function clearMarks(el: HTMLElement): void {
 }
 
 const runtimeOf = (el: HTMLElement): DocCommentsRuntime => {
-  if (!el._comments) el._comments = { data: { version: 1, comments: [] } } satisfies DocCommentsRuntime;
+  if (!el._comments) el._comments = { data: { version: 1, comments: [] }, drafts: {} } satisfies DocCommentsRuntime;
   return el._comments as DocCommentsRuntime;
 };
 
@@ -316,6 +338,25 @@ function ordered(el: HTMLElement): DocComment[] {
   return tops;
 }
 
+/** a quote flashes its span; a link names the comment it goes to by that comment's text (a link to a comment
+ * the model does not hold renders nothing) */
+const quoteMarkup = (data: DocCommentsData, q: DocCommentsQuote | DocCommentsLink, i: number): string => {
+  const note = q.note ? `<span class="doc-comments-quote-note">${renderMarkdown(q.note)}</span>` : '';
+  if (!('comment' in q))
+    return `<button class="doc-comments-quote" type="button" data-doc-comments-action="flash" data-quote="${i}" title="Scroll to the quoted text">${ICONS.quote}<q>${esc(q.text)}</q>${note}</button>`;
+  const target = data.comments.find((x) => x.id === q.comment);
+  if (!target) return '';
+  const anchor = anchorOf(data, target);
+  // without an anchor the label is the body's first line as text (its Markdown marks dropped)
+  const excerpt = target.body
+    .replace(/\*\*|[*`]/g, '')
+    .trim()
+    .split('\n')[0]!
+    .slice(0, 80);
+  const label = anchor ? `<q>${esc(anchor.text)}</q>` : `<span>${esc(excerpt)}</span>`;
+  return `<button class="doc-comments-quote doc-comments-link" type="button" data-doc-comments-action="link" data-quote="${i}" title="Go to the comment">${ICONS.link}${label}${note}</button>`;
+};
+
 const cardMarkup = (data: DocCommentsData, c: DocComment, depth: number): string => {
   const anchor = anchorOf(data, c);
   const replies = data.comments
@@ -329,7 +370,7 @@ const cardMarkup = (data: DocCommentsData, c: DocComment, depth: number): string
   </div>
   ${depth === 0 && anchor ? `<button class="doc-comments-anchor" type="button" data-doc-comments-action="go" title="Scroll to the text">${esc(anchor.text)}</button>` : ''}
   <div class="card-content doc-comments-body">${renderMarkdown(c.body)}</div>
-  ${(c.quotes ?? []).map((q, i) => `<button class="doc-comments-quote" type="button" data-doc-comments-action="flash" data-quote="${i}" title="Scroll to the quoted text">${ICONS.quote}<q>${esc(q.text)}</q>${q.note ? `<span class="doc-comments-quote-note">${renderMarkdown(q.note)}</span>` : ''}</button>`).join('')}
+  ${(c.quotes ?? []).map((q, i) => quoteMarkup(data, q, i)).join('')}
   <div class="card-footer doc-comments-actions">
     <button class="btn" data-variant="ghost" data-size="sm" type="button" data-doc-comments-action="reply" aria-expanded="false">${ICONS.reply} Reply</button>
   </div>
@@ -363,6 +404,31 @@ ${data.comments.length ? '' : '<p class="doc-comments-empty">No comments yet.</p
   if (keep) el.prepend(keep); // the authored source stays first (a node, not markup)
   const current = dfDollar(el).attr('data-current');
   if (current) markCurrent(el, current);
+  // the composers that were open come back with their text
+  dfDollar(el)
+    .find<HTMLElement>('.doc-comments-card')
+    .each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ''] ?? null));
+}
+
+/** open a card's Reply composer with a text, or close it (null) */
+function showComposer(card: HTMLElement, text: string | null): void {
+  const form = dfDollar(card).children<HTMLFormElement>('form.doc-comments-reply').get(0);
+  if (!form) return;
+  form.hidden = text === null;
+  dfDollar(form)
+    .find('textarea')
+    .val(text ?? '');
+  dfDollar(card)
+    .children('.doc-comments-actions')
+    .find('[data-doc-comments-action="reply"]')
+    .attr('aria-expanded', String(text !== null));
+}
+
+function emitDraft(el: HTMLElement, id: string, text: string | null): void {
+  // Fires when a Reply composer opens, its text changes or it closes (cancelled or sent) - the comment it answers and its text.
+  el.dispatchEvent(
+    new CustomEvent<DocCommentsDraftDetail>('doc-comments-draft', { bubbles: true, detail: { id, text } }),
+  );
 }
 
 /** the markup of a state: data-current on the column; the live cards and marks follow */
@@ -524,9 +590,22 @@ function load(el: HTMLElement, data: DocCommentsData): void {
         .map((c) => ({ ...c, author: c.author || 'Anonymous' }))
     : [];
   runtimeOf(el).data = { version: 1, comments };
+  // another model: its comments are other comments - no composer stays open
+  runtimeOf(el).drafts = {};
   placeMarks(el);
   renderColumn(el);
   emitChange(el);
+}
+
+/** open composers with their text (drafts for comments the model does not hold are dropped), close the rest */
+function setDrafts(el: HTMLElement, drafts: Record<string, string>): void {
+  const ids = new Set(runtimeOf(el).data.comments.map((c) => c.id));
+  runtimeOf(el).drafts = Object.fromEntries(
+    Object.entries(drafts ?? {}).filter(([id, text]) => ids.has(id) && typeof text === 'string'),
+  );
+  dfDollar(el)
+    .find<HTMLElement>('.doc-comments-card')
+    .each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ''] ?? null));
 }
 
 function sourceOf(el: HTMLElement): DocCommentsData | null {
@@ -546,24 +625,26 @@ function onAction(el: HTMLElement, button: HTMLElement): void {
   if (action === 'prev') step(el, -1, 'nav');
   else if (action === 'next') step(el, 1, 'nav');
   else if (action === 'go' && id) select(el, id, 'card');
-  else if (action === 'flash' && card) {
+  else if ((action === 'flash' || action === 'link') && card) {
     const c = runtimeOf(el).data.comments.find((x) => x.id === id);
     const q = c?.quotes?.[Number(button.dataset.quote)];
-    if (q) flash(el, q);
+    if (!q) return;
+    if ('comment' in q) select(el, q.comment, 'link');
+    else flash(el, q);
   } else if (action === 'reply' && card) {
-    const form = dfDollar(card).children<HTMLFormElement>('form.doc-comments-reply').get(0);
-    if (!form) return;
-    const open = form.hidden;
-    form.hidden = !open;
-    dfDollar(button).attr('aria-expanded', String(open));
-    if (open) dfDollar(form).find<HTMLTextAreaElement>('textarea').get(0)?.focus();
-  } else if (action === 'cancel' && card) {
-    const form = dfDollar(card).children<HTMLFormElement>('form.doc-comments-reply').get(0);
-    if (form) {
-      form.hidden = true;
-      form.reset();
+    // Reply opens the composer - an open one keeps its text and takes the focus; only Cancel closes it,
+    // so no click throws a typed answer away
+    const drafts = runtimeOf(el).drafts;
+    if (drafts[id] === undefined) {
+      drafts[id] = '';
+      showComposer(card, '');
+      emitDraft(el, id, '');
     }
-    dfDollar(card).find<HTMLElement>('[data-doc-comments-action="reply"]').first().attr('aria-expanded', 'false');
+    dfDollar(card).children('form.doc-comments-reply').find<HTMLTextAreaElement>('textarea').get(0)?.focus();
+  } else if (action === 'cancel' && card) {
+    delete runtimeOf(el).drafts[id];
+    showComposer(card, null);
+    emitDraft(el, id, null);
   }
 }
 
@@ -588,7 +669,18 @@ function init() {
         e.preventDefault();
         const card = form.closest<HTMLElement>('.doc-comments-card');
         const body = dfDollar(form).find<HTMLTextAreaElement>('textarea').get(0)?.value ?? '';
-        if (card && body.trim()) addComment(el, { parent: card.dataset.id, body });
+        if (!card?.dataset.id || !body.trim()) return;
+        // sent: the draft goes before the re-render, so its composer comes back closed
+        delete runtimeOf(el).drafts[card.dataset.id];
+        emitDraft(el, card.dataset.id, null);
+        addComment(el, { parent: card.dataset.id, body });
+      });
+      dfDollar(el).on('input', (e: Event) => {
+        const area = e.target as HTMLTextAreaElement;
+        const id = area.closest('form.doc-comments-reply')?.closest<HTMLElement>('.doc-comments-card')?.dataset.id;
+        if (!id) return;
+        runtimeOf(el).drafts[id] = area.value;
+        emitDraft(el, id, area.value);
       });
       const root = documentOf(el);
       if (root) {
@@ -687,6 +779,24 @@ df$.docComments = {
   flash: (target: string | HTMLElement, quote: DocCommentsSpan): boolean => {
     const el = resolve(target);
     return el ? flash(el, quote) : false;
+  },
+  /**
+   * The open Reply composers and their text - the drafts a page keeps (doc-comments-draft reports every change).
+   * @param target - the .doc-comments element or its selector
+   * @returns each open composer's text by the id of the comment it answers ('' = open and empty)
+   */
+  drafts: (target: string | HTMLElement): Record<string, string> => {
+    const el = resolve(target);
+    return el ? { ...runtimeOf(el).drafts } : {};
+  },
+  /**
+   * Open Reply composers with their text and close every other one - a page restoring the drafts it kept (after load(), which closes them all). Drafts for comments the model does not hold are dropped; no doc-comments-draft fires.
+   * @param target - the .doc-comments element or its selector
+   * @param drafts - the text by the id of the comment it answers ('' = an open, empty composer)
+   */
+  setDrafts: (target: string | HTMLElement, drafts: Record<string, string>): void => {
+    const el = resolve(target);
+    if (el) setDrafts(el, drafts);
   },
   /**
    * Place the marks again (after the document was re-rendered) and re-render the column.

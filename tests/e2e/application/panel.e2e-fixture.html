@@ -161,6 +161,56 @@
       </div>
     </div>
 
+    <!-- panels that are their regions (no resizer around them): a fixed north and the center -->
+    <div class="border-layout" id="bl-fixed" style="height:300px; width:600px;">
+<section class="card panel border-layout-north" id="pf-n" aria-labelledby="pf-n-t">
+  <header class="panel-header">
+    <h3 class="panel-title" id="pf-n-t">Fixed north</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Fixed north"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Fixed north"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>A panel that is its region</p></div>
+</section>
+<section class="card panel border-layout-center" id="pf-c" aria-labelledby="pf-c-t">
+  <header class="panel-header">
+    <h3 class="panel-title" id="pf-c-t">Fixed center</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Fixed center"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><p>The center region itself</p></div>
+</section>
+    </div>
+
+    <!-- density: the title bar and the body padding follow data-density -->
+    <div style="display:flex; gap:16px; width:600px;">
+<section class="card panel" id="pd-compact" data-density="compact" aria-labelledby="pd-compact-t">
+  <header class="panel-header"><h3 class="panel-title" id="pd-compact-t">Compact</h3></header>
+  <div class="panel-body"><p>Dense</p></div>
+</section>
+<section class="card panel" id="pd-spacious" data-density="spacious" aria-labelledby="pd-spacious-t">
+  <header class="panel-header"><h3 class="panel-title" id="pd-spacious-t">Spacious</h3></header>
+  <div class="panel-body"><p>Airy</p></div>
+</section>
+    </div>
+
+    <!-- a panel as a Border Layout data-fit region: as high as its content, its bar minimized, the layout maximized -->
+    <div class="border-layout" id="bl-fit" style="height:302px; width:600px;">
+      <main class="border-layout-center">Properties</main>
+<section class="card panel border-layout-south" id="pfit" data-fit aria-labelledby="pfit-t">
+  <header class="panel-header">
+    <h3 class="panel-title" id="pfit-t">State</h3>
+    <div class="panel-tools">
+      <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize State"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></span></label>
+      <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize State"><span class="swap-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg></span><span class="swap-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></label>
+    </div>
+  </header>
+  <div class="panel-body"><div id="pfit-content" style="height:40px">Two states</div></div>
+</section>
+    </div>
+
     <!-- closable: a close tool, an opener outside; and a closable region in a border layout -->
     <button type="button" class="btn" id="open-insp" data-panel-open="insp">Inspector</button>
     <button type="button" class="btn" id="toggle-insp" data-panel-toggle="insp">Toggle inspector</button>

@@ -44,6 +44,13 @@
     <div class="resizer border-layout-west"><div id="gap-pane" style="width:120px">gap</div></div>
     <div class="border-layout-center" id="gap-c">C</div>
   </div>
+  <!-- data-fit: fixed regions sized by their content - a south list (half the layout at most), a north with its own
+       bounds (a fifth at least, two fifths at most) -->
+  <div class="border-layout" id="fit" style="height:302px;">
+    <div class="border-layout-north" id="fit-n" data-fit style="--border-layout-fit-min: 20cqh; --border-layout-fit-max: 40cqh"><p id="fit-n-text" style="margin:0;line-height:20px">One line</p></div>
+    <div class="border-layout-center" id="fit-c">C</div>
+    <ul class="border-layout-south" id="fit-s" data-fit style="margin:0;padding:0;list-style:none"><li style="height:20px">1</li><li style="height:20px">2</li></ul>
+  </div>
   <div class="border-layout" id="saved" data-save="e2e" data-collapsible style="height:120px;">
     <div class="resizer border-layout-west" id="sv-w"><div id="sv-pane" style="width:150px">saved</div></div>
     <div class="border-layout-center">C</div>

@@ -226,6 +226,54 @@ try {
     assert.equal(await page.$eval('#r-w > .resizer-handle', (e) => getComputedStyle(e).visibility), 'visible');
   });
 
+  // a panel that is its region (no resizer around it) stayed in its grid cell when maximized - an absolutely
+  // positioned grid item takes its grid area as its containing block (the Studio's State panel, 2026-10-15)
+  await check('maximized as a region itself (a fixed north, the center): fills the layout, not its grid cell; the north minimizes to its bar', async () => {
+    for (const id of ['#pf-c', '#pf-n']) {
+      await set(id, 'maximized');
+      const layout = await rect('#bl-fixed');
+      const p = await rect(id);
+      assert.ok(
+        Math.abs(p.y - layout.y - 1) <= 1 && Math.abs(p.h - layout.h + 2) <= 1 && Math.abs(p.w - layout.w + 2) <= 1,
+        `${id} ${JSON.stringify(p)} in ${JSON.stringify(layout)}`,
+      );
+      await set(id, 'default');
+    }
+    const open = (await rect('#pf-n')).h;
+    await set('#pf-n', 'minimized');
+    assert.ok((await rect('#pf-n')).h < Math.min(open, 48), 'the north is its title bar');
+    await set('#pf-n', 'default');
+  });
+
+  await check('density: the title bar is 2rem compact, 2.5rem unsized, 3rem spacious; the body padding scales with the card', async () => {
+    const r = await page.evaluate(() =>
+      ['#pd-compact', '#solo', '#pd-spacious'].map((id) => {
+        const p = document.querySelector(id)!;
+        return [
+          Math.round(p.querySelector('.panel-header')!.getBoundingClientRect().height),
+          Math.round(parseFloat(getComputedStyle(p.querySelector('.panel-body')!).paddingTop)),
+        ];
+      }),
+    );
+    assert.deepEqual(r, [[32, 11], [40, 16], [48, 21]]);
+  });
+
+  await check('as a Border Layout data-fit region: as high as its content, scrolls past half the layout; minimized its bar, maximized the layout', async () => {
+    const body = () => page.$eval('#pfit .panel-body', (b) => ({ h: b.clientHeight, scrolls: b.scrollHeight > b.clientHeight }));
+    const layout = await page.$eval('#bl-fit', (l) => l.clientHeight);
+    const bar = (await rect('#pfit .panel-header')).h;
+    assert.ok(Math.abs((await rect('#pfit')).h - (bar + 40 + 32)) <= 2, `bar + content + padding: ${(await rect('#pfit')).h}`);
+    await page.$eval('#pfit-content', (c) => ((c as HTMLElement).style.height = '400px'));
+    assert.ok(Math.abs((await rect('#pfit')).h - layout / 2) <= 2, `half the layout: ${(await rect('#pfit')).h} of ${layout}`);
+    assert.equal((await body()).scrolls, true, 'the body scrolls');
+    await set('#pfit', 'minimized');
+    assert.ok(Math.abs((await rect('#pfit')).h - bar) <= 1, 'minimized: the title bar');
+    await set('#pfit', 'maximized');
+    assert.ok(Math.abs((await rect('#pfit')).h - layout) <= 1, 'maximized: the whole layout');
+    await set('#pfit', 'default');
+    await page.$eval('#pfit-content', (c) => ((c as HTMLElement).style.height = '40px'));
+  });
+
   await check('maximized in a [data-panel-host]: fills the host', async () => {
     await set('#hosted', 'maximized');
     const host = await rect('#host');

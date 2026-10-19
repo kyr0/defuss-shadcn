@@ -76,6 +76,27 @@ columns or the full five.
 
 Nest a border layout in a center (with `data-frame="none"`) for more.
 
+### Regions that fit their content
+
+```html
+<div class="border-layout" style="height: 24rem">
+  <section class="card panel border-layout-north" data-fit style="--border-layout-fit-min: 20cqh">…</section>
+  <main class="border-layout-center">…</main>
+  <section class="card panel border-layout-south" data-fit>…</section>
+</div>
+```
+
+- `data-fit` on a fixed side region (no `.resizer`): the region is as high
+  (north / south) or as wide (west / east) as its content - a tree that
+  grows, a list of states - between `--border-layout-fit-min` (default
+  `0px`) and `--border-layout-fit-max` (default half the layout: `50cqh`,
+  `50cqw`); past the maximum its content scrolls. CSS only.
+- The bounds are container units of the layout: a layout that holds a fit
+  region is a size container, so it takes its height from outside (a
+  height, a grid cell, a nested center) - never from its content.
+- A Panel as the region minimizes to its title bar and maximizes over the
+  layout as usual; the bounds stop applying while it does.
+
 ---
 
 ## Layout (on `.border-layout`)
