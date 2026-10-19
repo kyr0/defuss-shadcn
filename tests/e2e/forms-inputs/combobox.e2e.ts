@@ -457,7 +457,7 @@ try {
     await page.keyboard.type('scr');
     const st = await tagState('cb-tags');
     assert.equal(st.open, true);
-    assert.deepEqual(st.visible, ['TypeScript', 'JavaScript', 'Create "scr"']);
+    assert.deepEqual(st.visible, ['Create "scr"', 'TypeScript', 'JavaScript'], 'the Create row leads the list');
     assert.equal(st.highlighted, 'Create "scr"');
   });
 
@@ -488,8 +488,8 @@ try {
 
   await check('tag input: arrow keys pick another listed option instead of creating', async () => {
     await page.keyboard.type('a');
-    // highlighted = "Create a" (no exact match); ArrowUp walks back to a listed option
-    await page.keyboard.press('ArrowUp');
+    // highlighted = "Create a" (no exact match, first in the list); ArrowDown walks on to a listed option
+    await page.keyboard.press('ArrowDown');
     const hl = (await tagState('cb-tags')).highlighted;
     assert.notEqual(hl, 'Create "a"');
     await page.keyboard.press('Enter');
@@ -528,6 +528,22 @@ try {
     st = await tagState('cb-tags-fixed');
     assert.deepEqual(st.values, ['red']);
     assert.equal(st.input, 'purple', 'unknown text stays - nothing was created');
+  });
+
+  await check('tag input with groups: a group label whose options all filter away hides; the "Create" row belongs to no group', async () => {
+    const labels = () =>
+      page.$$eval('#cb-tags-grouped .combobox-group-label', (ls) => ls.filter((l) => !(l as HTMLElement).hidden).map((l) => l.textContent!.trim()));
+    await page.click('#cb-tags-grouped-input');
+    assert.deepEqual(await labels(), ['Card', 'Layout']);
+    await page.fill('#cb-tags-grouped-input', 'fle');
+    assert.deepEqual(await labels(), ['Layout'], 'only the group that still lists an option');
+    await page.fill('#cb-tags-grouped-input', 'zz-new');
+    assert.deepEqual(await labels(), [], 'no option left: no label, though "Create" shows');
+    await page.keyboard.press('Enter');
+    // a created option belongs to no group: it joins the ungrouped ones, before the first label (tags follow the list)
+    assert.deepEqual((await tagState('cb-tags-grouped')).tags, ['zz-new', 'card']);
+    assert.equal(await page.$eval('#cb-tags-grouped-list [data-created]', (o) => o.nextElementSibling?.className), 'combobox-group-label');
+    await page.keyboard.press('Escape');
   });
 
   await check("tag input: the State API opens and closes the list (setState('open' | 'default'))", async () => {

@@ -184,6 +184,19 @@ try {
     await page.waitForFunction(() => document.querySelector('#demo-sidebar')!.getBoundingClientRect().width >= 200);
   });
 
+  // a sidebar written collapsed starts in 'collapsed', and 'default' expands it - it once restored the authored
+  // data-state, so the State tab's "collapsed: false" (setState('default')) could not expand such a sidebar
+  await check("state API: a sidebar written collapsed is 'collapsed'; setState('default') expands it, render() agrees", async () => {
+    const r = await page.$eval('#sb-rail', (el) => {
+      const api = (el as HTMLElement).api!;
+      const before = api.getState().name;
+      api.setState('default');
+      return { before, after: (el as HTMLElement).dataset.state, state: api.getState().name, rendered: api.render!() };
+    });
+    assert.deepEqual([r.before, r.after, r.state], ['collapsed', 'expanded', 'default']);
+    assert.match(r.rendered, /data-state="expanded"/);
+  });
+
   await check('state API: getState reflects trigger clicks (no setState involved)', async () => {
     await page.click('[data-sidebar-trigger="demo-sidebar"]');
     const state = await page.$eval('#demo-sidebar', (el) => (el as HTMLElement).api!.getState());

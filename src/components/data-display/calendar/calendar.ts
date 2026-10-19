@@ -233,7 +233,31 @@ export const calendarApi = Object.assign(
 df$.calendarApi = calendarApi;
 df$.calendarStates = calendarStates;
 
-/** weekday / month names and the full date, in the text's locale (the calendar's nearest [lang], else 'en') - one set per locale */
+type WeekLocale = Intl.Locale & { getWeekInfo?: () => { firstDay: number }; weekInfo?: { firstDay: number } };
+/** the locale's first weekday as a Date.getDay() index (0 = Sunday): Intl.Locale week info - getWeekInfo(), the older
+ *  weekInfo getter - reports 1 (Monday) ... 7 (Sunday); a browser without either starts on Sunday, as before */
+function localeFirstDay(locale: string): number {
+  const loc = new Intl.Locale(locale) as WeekLocale;
+  const first = (loc.getWeekInfo?.() ?? loc.weekInfo)?.firstDay;
+  return first ? first % 7 : 0;
+}
+
+const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+/**
+ * The weekday a calendar's weeks start on (0 = Sunday ... 6 = Saturday): data-week-start (a weekday name) on the
+ * calendar or its nearest ancestor that has one - a .calendar-range sets it for all its months, as [lang] does - else
+ * the first day of the text's locale (Monday for de, fr, en-GB; Sunday for en). VERIFIED: (tmp/probe-weekinfo.ts,
+ * 2026-10-18) Chromium, WebKit and Firefox report it - en 7, de 1, ar-EG 6.
+ */
+function weekStart(el): number {
+  const named = WEEKDAYS.indexOf(
+    (el.closest('[data-week-start]')?.getAttribute('data-week-start') ?? '').trim().toLowerCase(),
+  );
+  return named >= 0 ? named : names(el).firstDay;
+}
+
+/** weekday / month names, the full date and the first weekday, in the text's locale (the calendar's nearest [lang],
+ *  else 'en') - one set per locale */
 const nameSets = new Map();
 function names(el) {
   const locale = textLocale(el);
@@ -246,6 +270,7 @@ function names(el) {
         new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2024, i, 1)),
       ),
       full: new Intl.DateTimeFormat(locale, { dateStyle: 'full' }),
+      firstDay: localeFirstDay(locale),
     });
   }
   return nameSets.get(locale);
@@ -583,7 +608,19 @@ function setView(el, view) {
   );
 }
 
-const renderGrid = (year, month, selectedDay, calId, minDate?, maxDate?, range?, days?, locale = names(null)) => {
+// start: the weekday the weeks start on (weekStart) - the header and the month's first cell shift by it
+const renderGrid = (
+  year,
+  month,
+  selectedDay,
+  calId,
+  minDate?,
+  maxDate?,
+  range?,
+  days?,
+  locale = names(null),
+  start = 0,
+) => {
   const full = locale.full;
   // range marks: endpoints + the span between them; while only the start is
   // chosen, the hovered/focused day previews the span (data-range-preview).
@@ -604,12 +641,12 @@ const renderGrid = (year, month, selectedDay, calId, minDate?, maxDate?, range?,
     return a;
   };
   const total = daysInMonth(year, month);
-  const startDay = firstDayOfMonth(year, month);
+  const startDay = (firstDayOfMonth(year, month) - start + 7) % 7;
   const prevTotal = daysInMonth(year, month - 1);
 
   let html = '<thead><tr>';
   for (let d = 0; d < 7; d++) {
-    html += `<th class="calendar-day-label" scope="col">${locale.days[d]}</th>`;
+    html += `<th class="calendar-day-label" scope="col">${locale.days[(d + start) % 7]}</th>`;
   }
   html += '</tr></thead><tbody>';
 
@@ -702,7 +739,18 @@ const renderCalendar = (el, year, month, selectedDay) => {
     Object.values(days).some((d: any) => d && d.note != null && d.note !== ''),
   );
   dfDollar(grid).morph(
-    renderGrid(year, month, selectedDay, el.dataset.calId || '', st.minDate, st.maxDate, range, days, names(el)),
+    renderGrid(
+      year,
+      month,
+      selectedDay,
+      el.dataset.calId || '',
+      st.minDate,
+      st.maxDate,
+      range,
+      days,
+      names(el),
+      weekStart(el),
+    ),
   );
 
   // refocus the cell's button (the td itself isn't focusable) - morph usually

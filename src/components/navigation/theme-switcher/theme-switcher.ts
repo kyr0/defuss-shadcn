@@ -17,6 +17,7 @@ import {
   defussGlobals,
   defussQuery,
   loadTheme,
+  sheetUrl,
   safeShowPopover,
   componentState,
   bindComponent,
@@ -63,9 +64,9 @@ const remembered = () => (chosen ??= persisted(STORAGE_KEY, 'default'));
 function themeHref(root: HTMLElement, id: string): string {
   if (root.dataset.themeBase) return `${root.dataset.themeBase}/${id}.css`;
   const tokens = dfDollar('#tokens-css').get(0) || dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
-  // link.href (the property) is absolute → URL resolution is exact, incl.
-  // the jsDelivr CDN URLs the docs mirror rewrites to
-  if (tokens) return new URL(`../${id}.css`, (tokens as HTMLLinkElement).href).href;
+  // the URL the token sheet was loaded from is absolute → URL resolution is exact, incl. the jsDelivr CDN URLs
+  // the docs mirror rewrites to - and stays right after an SPA router changed the address (link.href would not)
+  if (tokens) return new URL(`../${id}.css`, sheetUrl(tokens as HTMLLinkElement)).href;
   return `${id}.css`;
 }
 

@@ -55,25 +55,27 @@ export interface TreeViewStateConfigs {
 
 /**
  * The markup of a state, for render(): the attributes a state writes, applied
- * to a detached copy of the authored markup ('default' IS the authored
- * markup). The live element gets the same markup from triggerStateChange -
+ * to a detached copy of the authored markup. The live element gets the same
+ * markup from triggerStateChange -
  * the e2e render round trip proves they agree.
  */
 function applyMarkup(el, stateName) {
-  // 'expanded' is open; 'default' is the authored open flag - in place on the
-  // authored copy
-  if (stateName === 'expanded') dfDollar(el).attr('open', '');
+  // 'expanded' is open, 'default' closed - also for a branch written open,
+  // which starts in 'expanded' (read() names it by its open flag)
+  dfDollar(el).attr('open', stateName === 'expanded' ? '' : null);
 }
 
 /**
  * UI side of setState (per branch): 'expanded' opens the branch, 'default'
- * restores the authored open/closed snapshot taken at init. The <details>
- * toggle event keeps aria-expanded on the treeitem in sync automatically.
+ * closes it. VERIFIED: (tmp/probe-studio-dnd-state.ts) 'default' once restored
+ * the authored flag - a branch written open could not close: the State tab's
+ * "expanded: false" (setState('default')) left it open and the box flipped
+ * back. The <details> toggle event keeps aria-expanded on the treeitem in sync.
  */
 function triggerStateChange(details, stateName, _config) {
   switch (stateName) {
     case 'default':
-      details.open = details._defaultOpen ?? false;
+      details.open = false;
       break;
     case 'expanded':
       details.open = true;
@@ -389,9 +391,7 @@ function init() {
           const treeitem = details.closest('[role="treeitem"]');
           if (!treeitem) return;
 
-          // snapshot the authored state + bind the api per branch:
-          // `$('#my-branch').api.setState('expanded')`
-          details._defaultOpen = details.open;
+          // bind the api per branch: `$('#my-branch').api.setState('expanded')`
           // el.store + el.api (AGENTS.md "State through stores")
           bindComponent(details, treeViewApi);
 

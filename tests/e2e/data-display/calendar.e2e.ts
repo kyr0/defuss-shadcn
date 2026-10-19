@@ -518,6 +518,27 @@ try {
     assert.equal(await page.$eval('#cal-days', (c) => [c.querySelectorAll('[data-mark]').length, c.hasAttribute('data-notes')].join()), '0,false');
   });
 
+  // the maintainer (2026-10-18): the calendar started every week on Sunday and had no Monday option
+  await check('week start: data-week-start="monday" starts the header and the grid on Monday, lang="de" does by its locale, en stays on Sunday', async () => {
+    const labels = (sel: string) => page.$$eval(`${sel} .calendar-day-label`, (els) => els.map((e) => e.textContent!.trim()));
+    // the date in the first cell of the first row - 1 October 2026 is a Thursday
+    const firstCell = (sel: string) => page.$eval(`${sel} tbody tr:first-child td:first-child`, (td) => td.getAttribute('data-cal-date'));
+    assert.deepEqual(await labels('#cal-monday'), ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+    assert.equal(await firstCell('#cal-monday'), '2026-09-28');
+    assert.equal(await page.$eval('#cal-monday tbody tr:first-child', (tr) => tr.querySelectorAll('td[data-outside]').length), 3);
+    const deMonday = await page.evaluate(() => new Intl.DateTimeFormat('de', { weekday: 'short' }).format(new Date(2024, 0, 1)));
+    assert.equal((await labels('#cal-de'))[0], deMonday);
+    assert.equal(await firstCell('#cal-de'), '2026-09-28');
+    assert.equal((await labels('#cal-default'))[0], 'Sun');
+  });
+
+  await check('week start: a .calendar-range passes data-week-start to every month it shows', async () => {
+    await page.$eval('#cal-stay', (el) => el.setAttribute('data-week-start', 'monday'));
+    await page.click('#cal-stay-b [data-action="next-month"]');
+    const firsts = await page.$$eval('#cal-stay .calendar-day-label:first-child', (els) => els.map((e) => e.textContent!.trim()));
+    assert.deepEqual(firsts, ['Mon', 'Mon']);
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await assertRenderContract(page, '.calendar[id]', ['default']);
   });

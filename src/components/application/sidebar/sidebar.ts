@@ -23,7 +23,7 @@ const sidebarStates = ['default', 'collapsed'];
 // described, and every config field typed, described and named in the code.
 /** setState() configs per state - the sidebar's states take none. */
 export interface SidebarStateConfigs {
-  /** As authored (expanded unless the markup collapses it). */
+  /** Expanded - the full width (a sidebar written collapsed starts in 'collapsed'). */
   default: {};
   /** Icons only (data-state="collapsed"). */
   collapsed: {};
@@ -36,23 +36,23 @@ export interface SidebarStateConfigs {
  * the two agree.
  */
 function applyMarkup(el, stateName) {
-  // 'default' is the authored data-state (expanded when none was authored) -
-  // on the authored copy that value is still in place
-  dfDollar(el).attr(
-    'data-state',
-    stateName === 'collapsed' ? 'collapsed' : (el._authoredState ??= dfDollar(el).attr('data-state') || 'expanded'),
-  );
+  dfDollar(el).attr('data-state', stateName === 'collapsed' ? 'collapsed' : 'expanded');
 }
 
 /**
  * UI side of setState: 'collapsed' docks the rail to icon-width (CSS key is
- * the documented data-state attribute); 'default' restores the authored
- * state (expanded unless the markup says otherwise).
+ * the documented data-state attribute); 'default' expands it - also a sidebar
+ * written collapsed, which starts in 'collapsed' (read() names it).
+ * VERIFIED: (sidebar.e2e "a sidebar written collapsed", red on the old build)
+ * 'default' once restored the authored data-state, so the State tab's
+ * "collapsed: false" (setState('default')) left such a sidebar collapsed -
+ * the Tree View's defect in a sibling. The auto-collapse still returns to the
+ * authored state (_defaultState): that is about room, not a state asked for.
  */
 function triggerStateChange(sidebar, stateName, _config) {
   switch (stateName) {
     case 'default':
-      sidebar.dataset.state = sidebar._defaultState ?? 'expanded';
+      sidebar.dataset.state = 'expanded';
       break;
     case 'collapsed':
       sidebar.dataset.state = 'collapsed';

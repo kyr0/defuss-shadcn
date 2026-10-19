@@ -7,6 +7,7 @@
 // Loaded synchronously so a persisted theme applies before first paint
 // (bundled into js/head.js with prefs.ts - the remembered choices).
 import { prefs, saveCustomThemes } from './prefs.js';
+import { sheetUrl } from '../../shared/sheet-url.js';
 
 (function () {
   'use strict';
@@ -161,7 +162,7 @@ import { prefs, saveCustomThemes } from './prefs.js';
       return;
     }
     var tokens = document.getElementById('tokens-css');
-    var url = tokens ? new URL('../' + id + '.json', tokens.href).href : id + '.json';
+    var url = tokens ? new URL('../' + id + '.json', sheetUrl(tokens)).href : id + '.json';
     fetch(url)
       .then(function (res) {
         return res.ok ? res.json() : null;
@@ -196,7 +197,7 @@ import { prefs, saveCustomThemes } from './prefs.js';
   function themeHref(id) {
     var tokens = document.getElementById('tokens-css');
     if (!tokens) return id + '.css';
-    return new URL('../' + id + '.css', tokens.href).href;
+    return new URL('../' + id + '.css', sheetUrl(tokens)).href;
   }
 
   function applyTheme(themeId) {

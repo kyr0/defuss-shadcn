@@ -68,6 +68,15 @@
       <table class="calendar-grid" role="grid"></table>
       <script type="application/json" class="calendar-days">{ "2026-12-25": { "mark": "holiday", "label": "Christmas Day" }, "2026-12-18": { "mark": "booked", "disabled": true }, "2026-12-08": { "note": "€119" }, "2026-12-09": { "mark": "<bad>", "note": "<b>x</b>" } }</script>
     </div>
+    <!-- week start: named (data-week-start), and by the locale (lang="de" starts on Monday) -->
+    <div class="calendar" id="cal-monday" data-week-start="monday" data-current-date="2026-10" style="margin-top:1rem;">
+      <div class="calendar-header"><span class="calendar-heading"></span></div>
+      <table class="calendar-grid" role="grid"></table>
+    </div>
+    <div class="calendar" id="cal-de" lang="de" data-current-date="2026-10" style="margin-top:1rem;">
+      <div class="calendar-header"><span class="calendar-heading"></span></div>
+      <table class="calendar-grid" role="grid"></table>
+    </div>
     <script type="module" src="/dist/components/calendar/calendar.js"></script>
   </body>
 </html>

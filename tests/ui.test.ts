@@ -247,6 +247,48 @@ test('property-grid component: the CodeExample card opens an editor through the 
   await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').editing === 'replicas', 'the replicas editor to open (mirrored)');
 });
 
+/** the first card of a page, booted: its preview drives the component in the sandbox by schema state */
+async function bootedCard(page: string, component: string) {
+  const { doc } = await openDocPage(page);
+  const card = doc.querySelector(`.code-example[data-component="${component}"]`) as HTMLElement & {
+    preview?: { setState(state: string, value?: unknown): void };
+  };
+  await waitFor(() => card?.preview, `the first ${component} card to boot its sandbox`, 15_000);
+  const mirrored = () => JSON.parse(card.dataset.stateValues || '{}');
+  return { card, mirrored };
+}
+
+test('video component: the CodeExample card seeks, mutes and slows the sandbox player through the State API', async () => {
+  const { card, mirrored } = await bootedCard('video.html', 'video');
+  card.preview!.setState('time', 12);
+  await waitFor(() => mirrored().time === 12, 'the video to seek to 12 s (mirrored)');
+  card.preview!.setState('muted', true);
+  await waitFor(() => mirrored().muted === true, 'the video to mute (mirrored)');
+  card.preview!.setState('rate', 1.5);
+  await waitFor(() => mirrored().rate === 1.5, 'the video to play at 1.5x (mirrored)');
+  // its own text track: German picture descriptions, keyed - the captions state is the key shown
+  await waitFor(() => mirrored().captions === 'bild-de', 'the German descriptions to show (mirrored key)');
+  card.preview!.setState('captions', '');
+  await waitFor(() => mirrored().captions === '', 'the captions to turn off (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
+test('audio component: the CodeExample card sets the sandbox player volume and position through the State API', async () => {
+  const { card, mirrored } = await bootedCard('audio.html', 'audio');
+  card.preview!.setState('volume', 0.5);
+  await waitFor(() => mirrored().volume === 0.5, 'the audio volume to drop to 0.5 (mirrored)');
+  card.preview!.setState('time', 6);
+  await waitFor(() => mirrored().time === 6, 'the audio to seek to 6 s (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
+test('media-timeline component: the CodeExample card moves the playhead and zooms through the State API', async () => {
+  // the first card is a timeline without media: it keeps its own time
+  const { card, mirrored } = await bootedCard('media-timeline.html', 'media-timeline');
+  card.preview!.setState('time', 12);
+  await waitFor(() => mirrored().time === 12, 'the playhead to stand at 12 s (mirrored)');
+  card.preview!.setState('zoom', 60);
+  await waitFor(() => mirrored().zoom === 60, 'the timeline to zoom to 60 px/s (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
 test('code-example component: every docs card IS the shipped HTML Preview Editor; its page previews nested cards', async () => {
   // the page's first example nests a card in its preview: the State tab's
   // `code` control drives the nested card's own State API in the sandbox

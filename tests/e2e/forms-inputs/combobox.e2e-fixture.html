@@ -79,6 +79,12 @@
         <div class="combobox-field"><input class="combobox-field-input" id="cb-tags-fixed-input" type="text" role="combobox" autocomplete="off" aria-expanded="false" aria-controls="cb-tags-fixed-list" placeholder="Type a topic..." /></div>
         <div id="cb-tags-fixed-pop" class="combobox-content" popover="manual"><div id="cb-tags-fixed-list" role="listbox" class="combobox-listbox" aria-label="Topics"><div class="combobox-empty" hidden>No topics.</div><div role="option" id="cbf-red" class="combobox-item" data-value="red" aria-selected="false">Red</div><div role="option" id="cbf-green" class="combobox-item" data-value="green" aria-selected="false">Green</div><div role="option" id="cbf-blue" class="combobox-item" data-value="blue" aria-selected="false">Blue</div></div></div>
       </div>
+      <!-- tag input with groups: a label whose options all filter away hides -->
+      <div class="combobox" id="cb-tags-grouped" data-multiple data-tags data-creatable data-name="classes">
+        <label class="label" for="cb-tags-grouped-input">Classes</label>
+        <div class="combobox-field"><input class="combobox-field-input" id="cb-tags-grouped-input" type="text" role="combobox" autocomplete="off" aria-expanded="false" aria-controls="cb-tags-grouped-list" placeholder="Add a class..." /></div>
+        <div id="cb-tags-grouped-pop" class="combobox-content" popover="manual"><div id="cb-tags-grouped-list" role="listbox" class="combobox-listbox" aria-label="Classes"><div class="combobox-empty" hidden>No class.</div><div class="combobox-group-label">Card</div><div role="option" id="cbg-card" class="combobox-item" data-value="card" aria-selected="true">card</div><div role="option" id="cbg-title" class="combobox-item" data-value="card-title" aria-selected="false">card-title</div><div class="combobox-group-label">Layout</div><div role="option" id="cbg-flex" class="combobox-item" data-value="flex" aria-selected="false">flex</div><div role="option" id="cbg-grid" class="combobox-item" data-value="grid" aria-selected="false">grid</div></div></div>
+      </div>
     </form>
     <script type="module" src="/dist/components/core.js"></script>
     <script type="module" src="/dist/components/combobox/combobox.js"></script>

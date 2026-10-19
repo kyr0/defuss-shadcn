@@ -19,6 +19,7 @@ supportedStates: default
 - [`<table>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table) - tabular grid for the month
 - [`role="grid"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role) - ARIA grid pattern for 2D keyboard navigation
 - [`<button>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button) - navigation and day selection buttons
+- [`Intl.Locale` week info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/getWeekInfo) - the locale's first weekday, when `data-week-start` names none
 
 ## Structure
 
@@ -94,6 +95,18 @@ a date of birth: open the year, type it). Years run from `data-year-from` to
 
 ```html
 <div class="calendar" data-caption="dropdown" data-year-from="1920" data-max-date="2026-09-28">…</div>
+```
+
+## Week start
+
+`data-week-start` names the weekday the weeks start on (`monday` ... `sunday`): the header row and the
+month's first cell shift with it. Set it on the calendar, or once on a `.calendar-range` (or any ancestor) for
+every month inside. Without it the calendar follows its locale - the nearest `[lang]`, like the day and month
+names - through the `Intl.Locale` week info: `de`, `fr` and `en-GB` start on Monday, `en` / `en-US` on
+Sunday. A browser that reports no week info starts on Sunday.
+
+```html
+<div class="calendar" data-week-start="monday">…</div>
 ```
 
 ## Day data: marks, notes, blocked days

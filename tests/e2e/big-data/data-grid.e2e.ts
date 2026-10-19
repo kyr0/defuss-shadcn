@@ -329,6 +329,42 @@ try {
     await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
   });
 
+  await check('custom cells: a control in a cell keeps its keys - a field types spaces and moves its caret, Space ticks a checkbox; the grid\'s focus stays put', async () => {
+    await page.evaluate(() => {
+      const grid = document.querySelector('#dg-none') as HTMLElement;
+      (globalThis as any).df$.shadcn.dataGrid.setSource(grid, [{ id: 1, customer: 'Ada', amount: 1 }, { id: 2, customer: 'Grace', amount: 2 }], {
+        cells: {
+          customer: (el: HTMLElement, r: any) => {
+            const input = document.createElement('input');
+            input.className = 'input';
+            input.value = r.customer;
+            input.dataset.cellInput = String(r.id);
+            el.append(input);
+          },
+          amount: (el: HTMLElement, r: any) => {
+            const box = document.createElement('input');
+            box.type = 'checkbox';
+            box.dataset.cellBox = String(r.id);
+            el.append(box);
+          },
+        },
+      });
+    });
+    await page.click('#dg-none [data-cell-input="1"]');
+    await page.keyboard.press('End');
+    await page.keyboard.type(' Lovelace');
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.type('!');
+    await page.focus('#dg-none [data-cell-box="2"]');
+    await page.keyboard.press('Space');
+    const r = await page.evaluate(() => ({
+      text: (document.querySelector('#dg-none [data-cell-input="1"]') as HTMLInputElement).value,
+      ticked: (document.querySelector('#dg-none [data-cell-box="2"]') as HTMLInputElement).checked,
+      focus: (document.activeElement as HTMLElement).dataset.cellBox,
+    }));
+    assert.deepEqual(r, { text: 'Ada Lovelac!e', ticked: true, focus: '2' });
+  });
+
   await check('prefers-reduced-motion: the loading pulse stops', async () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const anim = await page.$eval('#dg-wait .data-grid-body', (b) => getComputedStyle(b).animationName);

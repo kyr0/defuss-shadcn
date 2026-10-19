@@ -500,6 +500,37 @@ import { prefs } from './prefs.js';
 
   var navigating = false;
 
+  /* A page whose own markup uses an extra bundle (Mermaid's in-page diagrams) loads it after all.* - tags marked
+     data-extra-bundle (lib/plugins.ts extraBundlesPlugin). The head stays across navigations, so the swapped-in
+     page would miss them: add each one this document lacks, with an absolute URL (the folder depth changes). A
+     loaded bundle stays for the next page; its component initializes the swapped-in markup through its
+     MutationObserver. */
+  function adoptExtraBundles(doc, base) {
+    var tags = function (d) {
+      return [].slice.call(d.head.children).concat([].slice.call(d.body.children)).filter(function (el) {
+        return el.hasAttribute('data-extra-bundle');
+      });
+    };
+    var have = tags(document).map(function (el) {
+      return el.tagName + ' ' + el.getAttribute('data-extra-bundle');
+    });
+    tags(doc).forEach(function (el) {
+      var name = el.getAttribute('data-extra-bundle');
+      if (have.indexOf(el.tagName + ' ' + name) >= 0) return;
+      var tag = document.createElement(el.tagName === 'LINK' ? 'link' : 'script');
+      tag.setAttribute('data-extra-bundle', name);
+      if (el.tagName === 'LINK') {
+        tag.rel = 'stylesheet';
+        tag.href = new URL(el.getAttribute('href'), base).href;
+        document.head.appendChild(tag);
+      } else {
+        tag.type = 'module';
+        tag.src = new URL(el.getAttribute('src'), base).href;
+        document.body.appendChild(tag);
+      }
+    });
+  }
+
   function navigateTo(href, pushState) {
     if (navigating) return;
     /* href: relative to the current page (an <a> in it) or an absolute path
@@ -526,6 +557,7 @@ import { prefs } from './prefs.js';
         }
 
         var swap = function () {
+          adoptExtraBundles(doc, target.href);
           /* Swap main content (incl. the static prev/next pager) */
           oldMain.innerHTML = newMain.innerHTML;
           /* per-page main geometry (DocPage mainStyle - the Getting Started

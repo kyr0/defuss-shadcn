@@ -687,6 +687,9 @@ function focusCell(grid, row, col) {
 
 function onKeydown(grid, e) {
   if (e.target.closest?.('.data-grid-filters, .data-grid-footer')) return;
+  // a control in a custom cell keeps its keys, as it keeps its clicks (onClick): a field types a space and moves its
+  // caret, a checkbox ticks on Space, a select opens on Enter - the grid would take them for row navigation
+  if (e.target.closest?.('.data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])')) return;
   const { row, col } = grid._focus;
   const page = Math.max(
     1,

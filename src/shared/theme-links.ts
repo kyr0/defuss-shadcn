@@ -12,6 +12,7 @@
  * ddf$.loadTheme.
  */
 import { defussQuery } from './query.js';
+import { sheetUrl } from './sheet-url.js';
 
 /** One defuss-JSX-as-JSON resource node (only <link> is loadable). */
 export interface ThemeLinkNode {
@@ -42,7 +43,7 @@ const inflight = new Map<string, Promise<ThemeLinksFile | null>>();
 function themeJsonHref(id: string): string {
   const $ = defussQuery();
   const tokens = $('#tokens-css').get(0) ?? $('link[href*="default-semantic-tokens.css"]').get(0);
-  if (tokens) return new URL(`../${id}.json`, (tokens as HTMLLinkElement).href).href;
+  if (tokens) return new URL(`../${id}.json`, sheetUrl(tokens as HTMLLinkElement)).href;
   return `${id}.json`;
 }
 

@@ -116,6 +116,34 @@ const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const idPart = (t: string) => t.replace(/[^\w-]/g, '_');
 let comboSeq = 0;
 
+/** After a filter: a group label whose options all vanished hides, and a separator next to a hidden row. */
+function hideEmptyGroups(listbox: HTMLElement) {
+  dfDollar(listbox)
+    .find('.combobox-group-label')
+    .each((_i, label: HTMLElement) => {
+      let next = label.nextElementSibling as HTMLElement | null;
+      let groupHasVisible = false;
+      while (
+        next &&
+        !next.classList.contains('combobox-group-label') &&
+        !next.classList.contains('combobox-separator')
+      ) {
+        // a tag input's "Create ..." row belongs to no group
+        if (next.getAttribute('role') === 'option' && !next.hidden && !next.classList.contains('combobox-create'))
+          groupHasVisible = true;
+        next = next.nextElementSibling as HTMLElement | null;
+      }
+      dfDollar(label).prop('hidden', !groupHasVisible);
+    });
+  dfDollar(listbox)
+    .find('.combobox-separator')
+    .each((_i, sep: HTMLElement) => {
+      const prev = sep.previousElementSibling as HTMLElement | null;
+      const next = sep.nextElementSibling as HTMLElement | null;
+      dfDollar(sep).prop('hidden', Boolean((prev && prev.hidden) || (next && next.hidden)));
+    });
+}
+
 /**
  * Tag input (data-tags on a data-multiple .combobox): the chosen options sit
  * as removable tags INSIDE a field-like box (.combobox-field) next to the
@@ -152,7 +180,9 @@ function initTags(wrapper: HTMLElement) {
   tags.className = 'combobox-tags';
   dfDollar(input).before(tags);
 
-  // the "Create …" row, shown while the text matches no option exactly
+  // the "Create …" row, shown while the text matches no option exactly - first in the list, right under the field:
+  // highlighted while it shows, at the end of a long list it scrolled the matches away (the Studio's class editor,
+  // 1,500 options)
   let createRow: HTMLElement | null = null;
   if (creatable) {
     createRow = document.createElement('div');
@@ -161,7 +191,7 @@ function initTags(wrapper: HTMLElement) {
     createRow.setAttribute('role', 'option');
     createRow.setAttribute('aria-selected', 'false');
     createRow.hidden = true;
-    dfDollar(listbox).append(createRow);
+    dfDollar(listbox).prepend(createRow);
   }
 
   let highlighted: HTMLElement | null = null;
@@ -174,8 +204,9 @@ function initTags(wrapper: HTMLElement) {
       dfDollar(input).attr('aria-activedescendant', el.id);
     } else dfDollar(input).attr('aria-activedescendant', null);
   };
+  // the rows the arrow keys walk, in the list's order (the Create row first)
   const visible = () =>
-    [...options(), ...(createRow ? [createRow] : [])].filter(
+    (dfDollar(listbox).find('[role="option"]').toArray() as HTMLElement[]).filter(
       (o) => !o.hidden && o.getAttribute('aria-disabled') !== 'true',
     );
   const isOpen = () => popover.matches(':popover-open');
@@ -216,6 +247,7 @@ function initTags(wrapper: HTMLElement) {
       dfDollar(createRow).prop('hidden', !showCreate);
       if (showCreate) dfDollar(createRow).text(`Create "${text}"`); // literal text (§5.2)
     }
+    hideEmptyGroups(listbox);
     if (empty) dfDollar(empty).prop('hidden', any || (!!createRow && !createRow.hidden));
     highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? (visible()[0] ?? null) : null));
   };
@@ -270,7 +302,9 @@ function initTags(wrapper: HTMLElement) {
         option.dataset.created = '';
         option.id = `${uid}-opt-${idPart(text)}-${options().length}`;
         dfDollar(option).text(text); // literal user text (§5.2)
-        if (createRow) dfDollar(createRow).before(option);
+        // it belongs to no group: with groups it joins the ungrouped options before the first label
+        const firstGroup = dfDollar(listbox).find('.combobox-group-label').get(0);
+        if (firstGroup) dfDollar(firstGroup).before(option);
         else dfDollar(listbox).append(option);
         row = option;
         created = text;
@@ -559,26 +593,7 @@ function init() {
           dfDollar(item).prop('hidden', !match);
           if (match) hasVisible = true;
         });
-        $listbox.find('.combobox-group-label').each(function (this: HTMLElement) {
-          const label = this;
-          let next = label.nextElementSibling as HTMLElement | null;
-          let groupHasVisible = false;
-          while (
-            next &&
-            !next.classList.contains('combobox-group-label') &&
-            !next.classList.contains('combobox-separator')
-          ) {
-            if (next.getAttribute('role') === 'option' && !next.hidden) groupHasVisible = true;
-            next = next.nextElementSibling as HTMLElement | null;
-          }
-          dfDollar(label).prop('hidden', !groupHasVisible);
-        });
-        $listbox.find('.combobox-separator').each(function (this: HTMLElement) {
-          const sep = this;
-          const prev = sep.previousElementSibling as HTMLElement | null;
-          const next = sep.nextElementSibling as HTMLElement | null;
-          dfDollar(sep).prop('hidden', Boolean((prev && prev.hidden) || (next && next.hidden)));
-        });
+        if (listbox) hideEmptyGroups(listbox);
         if ($empty.length) $empty.prop('hidden', hasVisible);
       };
       const clearHighlight = () => {

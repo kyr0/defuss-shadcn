@@ -162,9 +162,26 @@ try {
     assert.equal(state.name, 'expanded');
   });
 
-  await check("state API: setState('default') restores the authored (closed) state", async () => {
+  await check("state API: setState('default') closes the branch", async () => {
     await setState(page, 'tv-components', 'default');
-    assert.equal(await branchOpen(page, 'tv-components'), false, 'authored closed state restored');
+    assert.equal(await branchOpen(page, 'tv-components'), false, 'closed again');
+  });
+
+  // a branch written open starts in 'expanded', and 'default' closes it - it once restored the authored flag, so the
+  // State tab's "expanded: false" left the branch open and its box flipped back
+  await check("state API: a branch written open is 'expanded'; setState('default') closes it, render() agrees", async () => {
+    assert.equal((await page.$eval('#tv-src', (el) => (el as HTMLElement).api!.getState())).name, 'expanded');
+    await setState(page, 'tv-src', 'default');
+    await page.waitForFunction(() => document.querySelector('#tv-src')!.closest('[role="treeitem"]')!.getAttribute('aria-expanded') === 'false');
+    const r = await page.$eval('#tv-src', (el) => ({
+      open: (el as HTMLDetailsElement).open,
+      state: (el as HTMLElement).api!.getState().name,
+      rendered: (el as HTMLElement).api!.render!(),
+    }));
+    assert.deepEqual([r.open, r.state], [false, 'default']);
+    assert.ok(/^<details(?![^>]*\bopen\b)[^>]*>/.test(r.rendered), r.rendered.slice(0, 80));
+    await setState(page, 'tv-src', 'expanded'); // restore for later checks
+    assert.equal(await branchOpen(page, 'tv-src'), true);
   });
 
   await check("state API: getState reflects summary clicks (no setState involved)", async () => {
