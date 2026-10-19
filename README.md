@@ -13,6 +13,8 @@
 
 Themeable, stateful components, built on semantic HTML, modern CSS, and vanilla JavaScript. No framework. No build step for consumers - `dist/` is committed and ready to use as-is. A foundation for agentic-first frontend engineering.
 
+Built using [Verified Agentic Engineering (VAE)](https://vae.defuss.org).
+
 **243 components - 72 with JavaScript, 171 CSS-only - 464.6 KiB minified + compressed - 298.4 KiB as the all.css/all.js bundle**
 171 of 243 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
@@ -26,6 +28,7 @@ A framework component library ties every button to a framework version, a bundle
 
 defuss-shadcn ships the components as files. Tokens are CSS custom properties in the [tweakcn](https://tweakcn.com) shape, every component is one stylesheet plus, where the browser cannot do it alone, one ES module, and every component carries a skill that tells an agent how to write its markup. A page links two files, writes HTML, and is done - in a template engine, a static site, a CDN include or a file opened from disk.
 
+- 🪟 **Application Scaffolds** - demo apps built with defuss-shadcn: [Admin Dashboard](https://shadcn.defuss.org/application/app-admin-dashboard.html), [Messenger](https://shadcn.defuss.org/application/app-messenger.html), [Issue Tracker](https://shadcn.defuss.org/application/app-issue-tracker.html), [Notes & Docs](https://shadcn.defuss.org/application/app-notes.html), [Status Page](https://shadcn.defuss.org/application/app-status-page.html), [Desktop](https://shadcn.defuss.org/application/app-desktop.html) and [Document Editor](https://shadcn.defuss.org/application/app-document-editor.html). Each opens full screen and loads only its own bundle from `dist/apps/<app>/`: the core plus the components its markup uses
 - 🎨 **Themeable** - full shadcn semantic token model. 43 [tweakcn](https://tweakcn.com) presets ship as drop-in theme files - swap one and every component updates instantly; light and dark are two palettes of one identity (the same radius in both, gated)
 - 📘 **Component Skills** - every component includes a structured skill - markup, variants, sizes, density, named states, ARIA, and wiring conventions - grounded in web standards; every interactive component also ships a machine-readable `*.schema.json` contract (states, types, defaults, actions) that drives its docs controls and is verifier-enforced; three task skills - `shadcn-plan`, `shadcn-theme`, `shadcn-review` - plan UI from the existing components, write themes and review markup, each with a bundled checker where a program can decide
 - 🔁 **Observable state** - interactive components expose a State API (`el.api.setState('open')`, `el.api.getState()`), so agents and tests can drive every documented state by name without knowing the implementation

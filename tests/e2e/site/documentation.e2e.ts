@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { startServer } from '../server.ts';
 import { ALL_PAGES } from '../../../src/documentation/lib/nav.ts';
-import { pageRel } from '../../../src/documentation/lib/page-dirs.ts';
+import { pageRel, STANDALONE_APPS, standaloneAppId } from '../../../src/documentation/lib/page-dirs.ts';
 
 /**
  * Why: the documentation site IS the product's public face - if index.html
@@ -98,6 +98,30 @@ try {
   await check('CDN dogfooding note present (README ↔ index parity, runtime side)', async () => {
     const text = await page.evaluate(() => document.querySelector('main')?.textContent ?? '');
     assert.match(text, /jsDelivr CDN/, 'index.html lost the CDN dogfooding note');
+  });
+
+  // the maintainer (2026-10-19): the Application Scaffolds card leads the pillar cards (top-left) and opens
+  // every full-screen app in a new tab, every other card links its page, the card links are underlined at
+  // rest, "Download ZIP" has a dashed grey border, and the index says it was built with VAE (vae.defuss.org)
+  await check('index: the scaffolds card leads and opens every app in a new tab; every card links on; VAE named', async () => {
+    const facts = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll('main h3.card-title')].map((h) => h.closest('.card')!);
+      const zip = [...document.querySelectorAll('main a.btn')].find((a) => /Download ZIP/.test(a.textContent ?? ''));
+      return {
+        first: cards[0]?.querySelector('h3')?.textContent?.trim(),
+        apps: [...(cards[0]?.querySelectorAll('table a') ?? [])].map((a) => [a.getAttribute('href'), (a as HTMLAnchorElement).target]),
+        linkless: cards.filter((c) => !c.querySelector('.card-footer :is(a[href], button)')).map((c) => c.querySelector('h3')?.textContent?.trim()),
+        decoration: [...document.querySelectorAll('main .card-footer .btn')].map((a) => getComputedStyle(a).textDecorationLine),
+        zip: zip && getComputedStyle(zip).borderTopStyle,
+        vae: [...document.querySelectorAll('main a')].find((a) => a.textContent?.trim() === 'Built using Verified Agentic Engineering (VAE)')?.getAttribute('href'),
+      };
+    });
+    assert.equal(facts.first, 'Application Scaffolds', 'the Application Scaffolds card is not the first pillar card');
+    assert.deepEqual(facts.apps, STANDALONE_APPS.map((s) => [pageRel(standaloneAppId(s)), '_blank']), 'the scaffolds table does not open every full-screen app in a new tab');
+    assert.deepEqual(facts.linkless, [], 'a pillar card links nowhere');
+    assert.ok(facts.decoration.length >= 6 && facts.decoration.every((d) => d === 'underline'), `card links not underlined at rest: ${facts.decoration}`);
+    assert.equal(facts.zip, 'dashed', 'Download ZIP lost its dashed border');
+    assert.equal(facts.vae, 'https://vae.defuss.org', 'the index does not name VAE with a link to vae.defuss.org');
   });
 
   await check('SPA navigation: nav click swaps title, main and active link', async () => {
@@ -452,8 +476,11 @@ try {
       h1: document.querySelector('main h1')?.textContent?.trim() ?? '',
       h2s: [...document.querySelectorAll('main h2')].map((h) => h.textContent?.trim() ?? ''),
       prose: !!document.querySelector('.arch-prose'),
+      // the maintainer (2026-10-19): a button to the method's own site, with an arrow icon
+      vae: [...document.querySelectorAll('main a.btn[href="https://vae.defuss.org"]')].map((a) => [(a as HTMLAnchorElement).target, !!a.querySelector('svg')]),
     }));
     assert.match(state.h1, /Verified Agentic Engineering/, 'h1 missing');
+    assert.deepEqual(state.vae, [['_blank', true]], 'the vae.defuss.org button (new tab, arrow icon) is missing');
     assert.ok(state.prose, 'ARCH.md body not injected (.arch-prose missing)');
     // ARCH.md's five parts + the proof loop must all be present
     for (const want of ['AGENTS.MD', 'VERIFIER', 'PROOF LOOP', 'HUMAN EXPERT']) {
