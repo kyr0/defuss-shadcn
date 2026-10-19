@@ -1,0 +1,930 @@
+/* ── components/video/video.css ── */
+/* -- Video component ------------------------------------------ */
+/* A native <video> in a frame of its ratio, a captions overlay   */
+/* the runtime fills from the active cue, and a control bar of    */
+/* Buttons, Sliders and readouts (data-video-action / -output).   */
+/* data-variant="overlay" lays the bar over the picture; it hides */
+/* while the video plays and nothing points at it.                */
+@layer components {
+  .video {
+    --video-ratio: 16 / 9;
+
+    position: relative;
+    display: grid;
+    margin: 0;
+    inline-size: 100%;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+  }
+
+  .video-frame {
+    position: relative;
+    aspect-ratio: var(--video-ratio);
+    background-color: #000;
+
+    & > video {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: contain;
+    }
+  }
+
+  /* the active cue - empty when captions are off or nothing is said */
+  .video-captions {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0.75rem;
+    inline-size: fit-content;
+    max-inline-size: 90%;
+    margin-inline: auto;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-sm);
+    background-color: rgb(0 0 0 / 0.75);
+    color: #fff;
+    font-size: clamp(0.8125rem, 3.4cqi, 1.375rem);
+    line-height: 1.35;
+    text-align: center;
+    white-space: pre-line;
+    text-wrap: balance;
+    pointer-events: none;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .video-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    padding: 0.375rem 0.5rem;
+    border-block-start: 1px solid var(--border);
+
+    & > [data-video-action="seek"] {
+      flex: 1;
+      min-inline-size: 3rem;
+    }
+
+    & > [data-video-action="volume"] {
+      inline-size: 4.5rem;
+    }
+  }
+
+  /* a readout: m:ss in even digits, so the bar does not jitter */
+  .video-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* a toggle with two icons shows the first when off, the second when on (play / pause, sound / muted) */
+  [data-video-action][aria-pressed="false"] > :nth-child(2),
+  [data-video-action][aria-pressed="true"] > :nth-child(1):not(:only-child) {
+    display: none;
+  }
+
+  /* a control the page may not use (full screen in a frame without it) - over the Button's own display */
+  [data-video-action][hidden] {
+    display: none;
+  }
+
+  /* a rate select keeps its own width in the row (a Select is as wide as its box) */
+  select[data-video-action="rate"] {
+    flex: none;
+    inline-size: auto;
+  }
+
+  /* the sound button with a vertical volume in a panel above it (below with data-side="bottom"), shown while the
+     pointer or the focus is on either - the row keeps one button's width */
+  .video-volume {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .video-volume-panel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    margin-block-end: 0.375rem;
+    padding: 0.75rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    box-shadow: var(--shadow-md);
+    translate: -50% 0;
+    visibility: hidden;
+    opacity: 0;
+
+    /* the gap to the button belongs to the hover */
+    &::after {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 100%;
+      block-size: 0.5rem;
+      content: "";
+    }
+
+    /* a vertical range's block axis is horizontal: its length is its height */
+    & > .slider[data-orientation="vertical"] {
+      height: 5.5rem;
+    }
+
+    .video-volume:is(:hover, :focus-within) > & {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .video-volume[data-side="bottom"] > & {
+      inset-block: 100% auto;
+      margin-block: 0.375rem 0;
+
+      &::after {
+        inset-block: auto 100%;
+      }
+    }
+  }
+
+  /* the bar over the picture: a dark scrim, light controls */
+  .video[data-variant="overlay"] {
+    & > .video-controls {
+      --foreground: #fff;
+      --muted-foreground: rgb(255 255 255 / 0.8);
+      --accent: rgb(255 255 255 / 0.16);
+      --accent-foreground: #fff;
+      --primary: #fff;
+      --primary-foreground: #000;
+      --input: rgb(255 255 255 / 0.35);
+
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: 0;
+      padding-block-start: 1.5rem;
+      border-block-start: 0;
+      background-image: linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.72));
+      color: #fff;
+    }
+
+    & .video-volume-panel {
+      border-color: rgb(255 255 255 / 0.2);
+      background-color: rgb(0 0 0 / 0.78);
+    }
+
+    /* the captions sit above the bar while it shows */
+    &:is(:hover, :focus-within, :not([data-state-name="playing"])) .video-captions {
+      inset-block-end: 3.25rem;
+    }
+
+    &[data-state-name="playing"]:not(:hover, :focus-within) > .video-controls {
+      opacity: 0;
+    }
+  }
+
+  /* full screen: the picture takes what the bar leaves */
+  .video:fullscreen {
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+    background-color: #000;
+
+    & > .video-frame {
+      flex: 1;
+      aspect-ratio: auto;
+    }
+  }
+
+  /* a narrow player keeps play, the scrubber, the time and the sound */
+  @container (inline-size < 26rem) {
+    .video-controls > [data-video-action="volume"],
+    .video-controls > [data-video-output="duration"],
+    .video-controls > [data-video-action="skip"] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .video[data-variant="overlay"] {
+      & > .video-controls {
+        transition: opacity 0.2s ease;
+      }
+
+      & .video-captions {
+        transition: inset-block-end 0.2s ease;
+      }
+    }
+
+    .video-volume-panel {
+      transition:
+        opacity 0.15s ease,
+        visibility 0.15s allow-discrete;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .video-captions {
+      background-color: #000;
+    }
+
+    .video-time {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .video {
+      border-color: CanvasText;
+    }
+
+    .video-captions {
+      border: 1px solid CanvasText;
+      background-color: Canvas;
+      color: CanvasText;
+      forced-color-adjust: none;
+    }
+
+    .video[data-variant="overlay"] > .video-controls {
+      background: Canvas;
+      opacity: 1;
+    }
+
+    .video-volume-panel {
+      border-color: CanvasText;
+      background-color: Canvas;
+    }
+  }
+}
+
+/* ── components/audio/audio.css ── */
+/* -- Audio component ------------------------------------------ */
+/* A native <audio> (no controls of its own) behind one row: the  */
+/* play toggle, a title over the scrubber and its readouts, the   */
+/* sound controls - Buttons, Sliders and readouts                 */
+/* (data-audio-action / -output). An optional line under the      */
+/* scrubber shows the active caption cue, a transcript as it is   */
+/* spoken. data-variant="compact" drops the frame and the title.  */
+@layer components {
+  .audio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+
+    & > audio:not([controls]) {
+      display: none;
+    }
+
+    & > [data-audio-action="volume"] {
+      inline-size: 4.5rem;
+    }
+  }
+
+  .audio-body {
+    display: grid;
+    flex: 1;
+    gap: 0.125rem;
+    min-inline-size: 0;
+  }
+
+  .audio-title {
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .audio-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-inline-size: 0;
+
+    & > [data-audio-action="seek"] {
+      flex: 1;
+      min-inline-size: 3rem;
+    }
+  }
+
+  /* a readout: m:ss in even digits, so the row does not jitter */
+  .audio-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* the active cue - collapses when captions are off or nothing is said */
+  .audio-captions {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-style: italic;
+    text-wrap: pretty;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  /* a toggle with two icons shows the first when off, the second when on (play / pause, sound / muted) */
+  [data-audio-action][aria-pressed="false"] > :nth-child(2),
+  [data-audio-action][aria-pressed="true"] > :nth-child(1):not(:only-child) {
+    display: none;
+  }
+
+  /* a control the page may not use (full screen in a frame without it) - over the Button's own display */
+  [data-audio-action][hidden] {
+    display: none;
+  }
+
+  /* a rate select keeps its own width in the row (a Select is as wide as its box) */
+  select[data-audio-action="rate"] {
+    flex: none;
+    inline-size: auto;
+  }
+
+  /* the sound button with a vertical volume in a panel above it (below with data-side="bottom"), shown while the
+     pointer or the focus is on either - the row keeps one button's width */
+  .audio-volume {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .audio-volume-panel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    margin-block-end: 0.375rem;
+    padding: 0.75rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    box-shadow: var(--shadow-md);
+    translate: -50% 0;
+    visibility: hidden;
+    opacity: 0;
+
+    /* the gap to the button belongs to the hover */
+    &::after {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 100%;
+      block-size: 0.5rem;
+      content: "";
+    }
+
+    /* a vertical range's block axis is horizontal: its length is its height */
+    & > .slider[data-orientation="vertical"] {
+      height: 5.5rem;
+    }
+
+    .audio-volume:is(:hover, :focus-within) > & {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .audio-volume[data-side="bottom"] > & {
+      inset-block: 100% auto;
+      margin-block: 0.375rem 0;
+
+      &::after {
+        inset-block: auto 100%;
+      }
+    }
+  }
+
+  .audio[data-variant="compact"] {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+
+    & .audio-title {
+      display: none;
+    }
+  }
+
+  /* a narrow player keeps play, the scrubber, the time and the sound */
+  @container (inline-size < 22rem) {
+    .audio > [data-audio-action="volume"],
+    .audio > [data-audio-action="rate"],
+    .audio-progress > [data-audio-output="duration"] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .audio-volume-panel {
+      transition:
+        opacity 0.15s ease,
+        visibility 0.15s allow-discrete;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .audio-time,
+    .audio-captions {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .audio,
+    .audio-volume-panel {
+      border-color: CanvasText;
+    }
+
+    .audio-volume-panel {
+      background-color: Canvas;
+    }
+  }
+}
+
+/* ── components/media-timeline/media-timeline.css ── */
+/* -- Media Timeline component --------------------------------- */
+/* A ruler and rows of regions and markers over the length of a   */
+/* media, a playhead, a column of row labels. Everything sits in  */
+/* percent of the content box: 100% wide when it fits, the length */
+/* times data-zoom px when zoomed (then it scrolls). The ticks    */
+/* are gradients - no element per second. A loop region is drawn  */
+/* in the search-highlight yellow (literal: the theme has no      */
+/* highlight token). Tints mix in oklab: a white --card written   */
+/* oklch(1 0 0) carries hue 0, and an oklch mix walks the hue     */
+/* toward it (a yellow row came out pink).                        */
+@layer components {
+  .media-timeline {
+    --media-timeline-lane: 1.5rem;
+    --media-timeline-ruler: 1.5rem;
+    --media-timeline-labels: 6.5rem;
+    --media-timeline-row: var(--muted);
+    --media-timeline-loop: oklch(0.88 0.16 95);
+    --media-timeline-loop-edge: oklch(0.72 0.16 85);
+
+    display: grid;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+
+    & > script {
+      display: none;
+    }
+  }
+
+  .media-timeline-header {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    padding: 0.25rem 0.375rem 0.25rem 0.75rem;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .media-timeline-title {
+    margin-inline-end: auto;
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* a readout: m:ss in even digits */
+  .media-timeline-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* time runs left to right in any writing direction */
+  .media-timeline-body {
+    display: grid;
+    grid-template-columns: var(--media-timeline-labels) minmax(0, 1fr);
+    direction: ltr;
+    user-select: none;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .media-timeline-labels {
+    border-inline-end: 1px solid var(--border);
+  }
+
+  .media-timeline-label {
+    display: flex;
+    align-items: center;
+    block-size: calc(var(--lanes, 1) * var(--media-timeline-lane) + 0.5rem);
+    padding-inline: 0.75rem 0.5rem;
+    overflow: hidden;
+    border-block-end: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &[data-ruler] {
+      block-size: var(--media-timeline-ruler);
+      font-size: 0.6875rem;
+    }
+
+    /* an annotation row (for): indented under a guide, so it reads as part of the row below it */
+    &[data-for] {
+      padding-inline-start: 1.25rem;
+      background-image: linear-gradient(to right, var(--border) 1px, transparent 1px);
+      background-position: 0.75rem 0;
+      background-repeat: no-repeat;
+      font-size: 0.6875rem;
+    }
+
+    /* a content row: a film or a sound glyph before its label */
+    &:is([data-kind="video"], [data-kind="audio"])::before {
+      flex: none;
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+      margin-inline-end: 0.375rem;
+      background-color: currentColor;
+      content: "";
+      mask: var(--media-timeline-glyph) center / contain no-repeat;
+    }
+
+    &[data-kind="video"] {
+      --media-timeline-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='M7 3v18M3 7.5h4M3 12h18M3 16.5h4M17 3v18M17 7.5h4M17 16.5h4'/%3E%3C/svg%3E");
+    }
+
+    &[data-kind="audio"] {
+      --media-timeline-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3'/%3E%3C/svg%3E");
+    }
+
+    &:last-child {
+      border-block-end: 0;
+    }
+  }
+
+  .media-timeline-scroll {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    outline: none;
+    scrollbar-width: thin;
+    touch-action: pan-x pan-y;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--ring);
+    }
+  }
+
+  .media-timeline-content {
+    --media-timeline-major: 1;
+    --media-timeline-minor: 1;
+
+    position: relative;
+    min-inline-size: 100%;
+    cursor: pointer;
+    background-image: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--border) 70%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: calc(100% / var(--media-timeline-major)) 100%;
+  }
+
+  /* the ruler: one row per scale (one by default); a drag on it draws a loop */
+  .media-timeline-ruler {
+    cursor: ew-resize;
+  }
+
+  /* label ticks across a scale row, finer ticks along its foot */
+  .media-timeline-scale {
+    position: relative;
+    block-size: var(--media-timeline-ruler);
+    border-block-end: 1px solid var(--border);
+    background-color: var(--card);
+    background-image:
+      linear-gradient(to right, var(--muted-foreground) 1px, transparent 1px),
+      linear-gradient(to right, var(--border) 1px, transparent 1px);
+    background-position:
+      0 0,
+      0 100%;
+    background-repeat: repeat-x;
+    background-size:
+      calc(100% / var(--media-timeline-major)) 40%,
+      calc(100% / var(--media-timeline-minor)) 35%;
+  }
+
+  .media-timeline-tick {
+    position: absolute;
+    inset-block-start: 0;
+    padding-inline-start: 0.25rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    line-height: var(--media-timeline-ruler);
+    white-space: nowrap;
+  }
+
+  .media-timeline-track {
+    position: relative;
+    block-size: calc(var(--lanes, 1) * var(--media-timeline-lane) + 0.5rem);
+    border-block-end: 1px solid var(--border);
+
+    &:last-child {
+      border-block-end: 0;
+    }
+  }
+
+  /* a row's background (background in the data): a tint of it, label and row alike */
+  :is(.media-timeline-track, .media-timeline-label)[data-background] {
+    background-color: color-mix(in oklab, var(--media-timeline-row) 14%, var(--card));
+  }
+
+  /* an item's colour: a theme colour by name */
+  :is(.media-timeline-item, .media-timeline-marker, .media-timeline-card) {
+    --media-timeline-color: var(--chart-1);
+
+    &[data-color="chart-2"] {
+      --media-timeline-color: var(--chart-2);
+    }
+    &[data-color="chart-3"] {
+      --media-timeline-color: var(--chart-3);
+    }
+    &[data-color="chart-4"] {
+      --media-timeline-color: var(--chart-4);
+    }
+    &[data-color="chart-5"] {
+      --media-timeline-color: var(--chart-5);
+    }
+    &[data-color="primary"] {
+      --media-timeline-color: var(--primary);
+    }
+    &[data-color="secondary"] {
+      --media-timeline-color: var(--secondary-foreground);
+    }
+    &[data-color="accent"] {
+      --media-timeline-color: var(--accent-foreground);
+    }
+    &[data-color="muted"] {
+      --media-timeline-color: var(--muted-foreground);
+    }
+    &[data-color="destructive"] {
+      --media-timeline-color: var(--destructive);
+    }
+  }
+
+  .media-timeline-item {
+    position: absolute;
+    inset-block-start: calc(0.25rem + var(--lane, 0) * var(--media-timeline-lane));
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    block-size: calc(var(--media-timeline-lane) - 0.25rem);
+    min-inline-size: 2px;
+    padding-inline: 0.375rem;
+    overflow: hidden;
+    border-inline-start: 2px solid var(--media-timeline-color);
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in oklab, var(--media-timeline-color) 20%, var(--card));
+    font-size: 0.75rem;
+    white-space: nowrap;
+
+    & > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &[data-active] {
+      background-color: color-mix(in oklab, var(--media-timeline-color) 42%, var(--card));
+      box-shadow: inset 0 0 0 1px var(--media-timeline-color);
+    }
+  }
+
+  .media-timeline-marker {
+    position: absolute;
+    inset-block: 0;
+    border-inline-start: 2px solid var(--media-timeline-color);
+
+    & > span {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 0.25rem;
+      translate: 0 -50%;
+      color: var(--muted-foreground);
+      font-size: 0.6875rem;
+      white-space: nowrap;
+    }
+  }
+
+  /* the loop region: a yellow band over the ruler, a tint over the rows, its ends as edges */
+  .media-timeline-loop {
+    position: absolute;
+    inset-block: 0;
+    z-index: 1;
+    box-sizing: border-box;
+    border-inline: 2px solid var(--media-timeline-loop-edge);
+    background-color: color-mix(in oklab, var(--media-timeline-loop) 18%, transparent);
+    pointer-events: none;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &::before {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 0;
+      block-size: calc(var(--media-timeline-scales, 1) * (var(--media-timeline-ruler) + 1px));
+      background-color: color-mix(in oklab, var(--media-timeline-loop) 70%, transparent);
+      content: "";
+    }
+  }
+
+  .media-timeline-playhead {
+    position: absolute;
+    inset-block: 0;
+    z-index: 2;
+    inline-size: 2px;
+    margin-inline-start: -1px;
+    background-color: var(--primary);
+    pointer-events: none;
+
+    &::before {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 50%;
+      inline-size: 0.625rem;
+      block-size: 0.5rem;
+      translate: -50% 0;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background-color: var(--primary);
+      content: "";
+    }
+  }
+
+  /* an info outlet's card: a stripe of the item's colour */
+  .media-timeline-card {
+    border-inline-start: 3px solid var(--media-timeline-color);
+  }
+
+  .media-timeline-card-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+
+    & > :last-child {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .media-timeline-fields {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    font-size: 0.8125rem;
+
+    & > div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    & dt {
+      color: var(--muted-foreground);
+    }
+
+    & dd {
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+      text-align: end;
+    }
+  }
+
+  /* an events outlet: the moments in time order, the time a link that seeks there, the latest one passed marked */
+  .media-timeline-events {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .media-timeline-event {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-wrap: pretty;
+
+    &[aria-current] {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  .media-timeline-event-time {
+    flex: none;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: none;
+    color: var(--primary);
+    cursor: pointer;
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-decoration: var(--link-text-decoration, underline);
+    text-underline-offset: 2px;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .media-timeline-loop {
+      border-inline-width: 3px;
+    }
+
+    .media-timeline-item {
+      border: 1px solid var(--media-timeline-color);
+      border-inline-start-width: 3px;
+    }
+
+    .media-timeline-label,
+    .media-timeline-tick,
+    .media-timeline-marker > span {
+      color: var(--foreground);
+    }
+  }
+
+  @container (inline-size < 28rem) {
+    .media-timeline {
+      --media-timeline-labels: 4.5rem;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .media-timeline,
+    .media-timeline-item {
+      border-color: CanvasText;
+    }
+
+    .media-timeline-item[data-active] {
+      outline: 2px solid Highlight;
+    }
+
+    .media-timeline-playhead,
+    .media-timeline-playhead::before {
+      background-color: Highlight;
+      forced-color-adjust: none;
+    }
+
+    .media-timeline-loop {
+      border-color: Highlight;
+    }
+
+    .media-timeline-event[aria-current] {
+      outline: 2px solid Highlight;
+    }
+  }
+}

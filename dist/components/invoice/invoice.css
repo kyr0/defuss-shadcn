@@ -1,0 +1,146 @@
+@layer components {
+  /* -- Invoice: the body of an invoice, usually inside a Letter's .letter-body - the title, the invoice data
+     (.invoice-meta), the line items (a Table, .invoice-items) and the totals the runtime writes
+     (.invoice-totals: net sum, tax per rate, amount due), then payment terms as plain text. Numbers are
+     tabular and end-aligned; in print the items table runs over pages with its header repeated (Table's
+     print rules) and the totals stay with the last rows. */
+  /* a block, not a grid: Chromium sizes grid rows before it paginates, so the header row the items table
+     repeats on later pages pushed the table past the totals, which then overlapped its last rows */
+  .invoice {
+    display: block;
+    font-variant-numeric: tabular-nums;
+
+    & > * + * {
+      margin-block-start: 1rem;
+    }
+  }
+  /* zero specificity: the parts lose their own block margins (a dl's, a p's), the 1rem above wins */
+  :where(.invoice) > :where(*) {
+    margin-block: 0;
+  }
+  .invoice-title {
+    font-size: 1.25em;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .invoice-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.5rem 1.25rem;
+
+    & dt {
+      font-size: 0.8em;
+      color: var(--muted-foreground);
+    }
+    & dd {
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+  .invoice-items {
+    font-size: 0.9em;
+
+    /* compact rows: an A4 page holds about twice the lines of a default Table */
+    & :is(.table-head, .table-cell) {
+      padding: 0.4rem 0.6rem;
+    }
+
+    & :is(.table-head, .table-cell)[data-invoice="description"],
+    & .table-cell:not([data-invoice]) {
+      white-space: normal;
+    }
+    & [data-invoice] {
+      white-space: nowrap;
+    }
+  }
+  .invoice-totals {
+    inline-size: min(100%, 22rem);
+    margin-inline-start: auto;
+    border-collapse: collapse;
+    font-size: 0.9em;
+
+    & :is(th, td) {
+      padding: 0.3rem 0;
+      font-weight: 400;
+      text-align: start;
+    }
+    & td {
+      padding-inline-start: 1.5rem;
+      text-align: end;
+      white-space: nowrap;
+    }
+    & .invoice-tax :is(th, td) {
+      color: var(--muted-foreground);
+    }
+    & .invoice-total :is(th, td) {
+      padding-block-start: 0.5rem;
+      border-block-start: 2px solid var(--foreground);
+      font-weight: 650;
+      font-size: 1.1em;
+    }
+  }
+  /* a value that is no number (data-price="12,50"): the row is marked, the reason replaces the totals */
+  .invoice-items tr[data-invalid] > td {
+    background-color: color-mix(in oklch, var(--destructive) 12%, transparent);
+  }
+  .invoice-totals .invoice-error th {
+    color: var(--destructive);
+    font-weight: 600;
+  }
+  .invoice-note {
+    font-size: 0.9em;
+    color: var(--muted-foreground);
+  }
+  /* the payment code (a QR Code the runtime fills with an EPC transfer) beside the payment terms; the runtime
+     hides the code when there is no transfer to scan (not in euro, nothing due) */
+  .invoice-payment {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    break-inside: avoid;
+
+    & > .qr-code[hidden] {
+      display: none;
+    }
+    & > .invoice-note {
+      flex: 1 1 16rem;
+      margin: 0;
+    }
+  }
+
+  @media print {
+    /* the totals never start a page alone: with the items table's data-keep-last they take its last
+       three rows along (VERIFIED: tmp/print-table-probe2.ts - break-before: avoid on the block after the
+       table pulls rows over) */
+    .invoice-totals {
+      break-before: avoid;
+      break-inside: avoid;
+    }
+    .invoice-meta {
+      break-inside: avoid;
+    }
+    .invoice :is(.invoice-tax :is(th, td), .invoice-meta dt, .invoice-note) {
+      color: #444;
+    }
+    .invoice .invoice-total :is(th, td) {
+      border-block-start-color: #000;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .invoice-totals .invoice-total :is(th, td) {
+      border-block-start-color: CanvasText;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .invoice :is(.invoice-meta dt, .invoice-note, .invoice-totals .invoice-tax :is(th, td)) {
+      color: var(--foreground);
+    }
+  }
+}

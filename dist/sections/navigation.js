@@ -1147,7 +1147,7 @@ var __df$shared7 = __df$core7 && __df$core7.shadcn && __df$core7.shadcn.shared;
 if (!__df$shared7 || __df$shared7.abi !== "0.9.9") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals7, defussQuery: defussQuery7, loadTheme, safeShowPopover: safeShowPopover4, componentState: componentState7, bindComponent: bindComponent7, persisted } = __df$shared7;
+var { defussGlobals: defussGlobals7, defussQuery: defussQuery7, loadTheme, sheetUrl, safeShowPopover: safeShowPopover4, componentState: componentState7, bindComponent: bindComponent7, persisted } = __df$shared7;
 var df$7 = defussGlobals7();
 var dfDollar7 = defussQuery7();
 var themeSwitcherStates = ["default", "open"];
@@ -1161,7 +1161,7 @@ function themeHref(root, id) {
     return `${root.dataset.themeBase}/${id}.css`;
   const tokens = dfDollar7("#tokens-css").get(0) || dfDollar7('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens)
-    return new URL(`../${id}.css`, tokens.href).href;
+    return new URL(`../${id}.css`, sheetUrl(tokens)).href;
   return `${id}.css`;
 }
 function applyThemeId(root, id) {
@@ -1314,5 +1314,5 @@ document.addEventListener(THEME_EVENT, (e) => {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=1D1EFB6511649D6664756E2164756E21
+//# debugId=E3AA197979B6D93B64756E2164756E21
 //# sourceMappingURL=navigation.js.map

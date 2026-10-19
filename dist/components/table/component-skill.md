@@ -199,6 +199,22 @@ Set `data-density` on the `.table` root; head/cell/caption padding scales (typog
 | `comfortable` | Cell padding 0.75rem 1rem - identical to the unsized default |
 | `spacious` | Cell padding 1rem 1.25rem |
 
+## Print
+
+A long table runs over pages. The browser repeats `<thead>` at the top of every page (and of every
+column in a multi-column setting); the table's print rules add the rest.
+
+| Attribute | On | Effect in print |
+| --- | --- | --- |
+| (default) | `.table` | `<tfoot>` prints once, after the last row - a total on every page would be wrong; rows stay whole; the scroll wrapper lets go and keeps its frame on every page |
+| `data-repeat-footer` | `.table` | `<tfoot>` prints on every page (a running label) |
+| `data-break-inside="allow"` | `.table` | a row taller than the rest of its page may split |
+| `data-keep-last` | `.table` | the last three body rows stay with the footer and with a block after the table that sets `break-before: avoid` (an invoice's totals) |
+
+VERIFIED: (table.e2e, Chromium 153 PDF) 60 rows over A4 pages: the header row on every page, the footer once on
+the last, every row once and in order, the last three with the footer; `data-repeat-footer` puts the footer on
+every page.
+
 ## Accessibility
 
 - Use `<th>` with appropriate `scope` for column/row headers - a row header is `<th class="table-cell" scope="row">`: it keeps the cell padding and aligns to the start (the UA would center a `th`)

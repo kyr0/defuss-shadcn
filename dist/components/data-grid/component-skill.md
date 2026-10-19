@@ -272,6 +272,9 @@ grid, first column: → opens / ← closes or goes to the parent.
 ## Notes
 - **Row height is uniform and known** (`--data-grid-row-height`, px). A cell
   that renders taller is clipped.
+- **Controls in custom cells** (a field, a checkbox, a select, a button) keep
+  their clicks and their keys: the grid neither selects the row nor moves its
+  focus for them - a field types spaces and moves its caret, Space ticks a box.
 - **A filter is case-insensitive** - text matches anywhere, numbers take `>`
   `>=` `<` `<=` `=` `!=` (`> 100`), a select matches exactly. All filters combine.
 - **Multisort**: a click sorts by that column alone (asc → desc → off);

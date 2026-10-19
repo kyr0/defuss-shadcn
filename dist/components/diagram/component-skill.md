@@ -377,6 +377,12 @@ REACHED with a symbol, kanban states use dashes and bars.
 ---
 
 ## Notes
+- **Print**: paper does not scroll - a printed diagram redraws when
+  `matchMedia('print')` starts to match (a ResizeObserver delivers nothing in a
+  print layout), and the redraw fits a canvas wider than the figure as a
+  narrow screen does (zoomed, never below 0.7, the wires following). Its wire
+  labels carry size containment in print, so the screen drawing never widens
+  the printed page (Chromium would shrink the whole print to fit).
 - **Everything is the theme's**: paper `--card`, ink `--foreground`, lines
   mixed from them, accent / link / change colors from `--chart-1..5` and
   `--destructive`, corners from `--radius` (the wire elbows follow the

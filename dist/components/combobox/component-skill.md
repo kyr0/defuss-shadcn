@@ -146,9 +146,10 @@ the search input when the popover opens.
 ```
 
 - `data-tags` (with `data-multiple`): no trigger button - a `.combobox-field` box (looks like `.input`) holds the tags and the `.combobox-field-input` the user types into; the list is `popover="manual"` and anchored to the field.
-- **Typing** opens and filters the list. **Enter** (or a **comma**) picks the **exact** match (case-insensitive) - never a duplicate; with `data-creatable` and no exact match it **creates** a tag from the text (the highlighted `Create "…"` row). **Arrow keys** pick any other listed option instead. Without `data-creatable` the first match is highlighted and unknown text is never added.
-- Created tags become real options (`data-created`, `data-value` = the text), so they toggle like the rest. `combobox:change` reports them as `detail.created`.
+- **Typing** opens and filters the list. **Enter** (or a **comma**) picks the **exact** match (case-insensitive) - never a duplicate; with `data-creatable` and no exact match it **creates** a tag from the text (the highlighted `Create "…"` row, first in the list, right under the field). **Arrow keys** (down from it) pick any other listed option instead. Without `data-creatable` the first match is highlighted and unknown text is never added.
+- Created tags become real options (`data-created`, `data-value` = the text), so they toggle like the rest: at the end of the list, or - in a list with groups - before the first group label, with the options of no group. `combobox:change` reports them as `detail.created`.
 - **Backspace** in the empty input removes the last tag; a tag's × removes that one; **Escape** or leaving the widget closes the list. The placeholder shows only while there are no tags. `data-name` renders one hidden input per tag.
+- Groups work as in the list (`.combobox-group-label` before its options): typing hides a label whose options all filter away; the `Create "…"` row and created options belong to no group. Tags follow the options' order.
 
 ## Data Attributes
 

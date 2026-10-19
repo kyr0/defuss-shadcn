@@ -145,6 +145,11 @@ The registry global is `df$.shadcn.diffApi` / `df$.shadcn.diffStates`.
 
 ## Notes
 
+- **Print shows both sides.** Paper has no divider to drag: printed, both
+  items show in full, side by side - one above the other when vertical -
+  each with its label and the figure's `data-ratio`; the divider line and
+  the knob go. Wherever a reader left the divider, a print of the overlay
+  would show only part of each side.
 - Dragging anywhere on the figure moves the divider and focuses the range,
   so arrow keys continue from there.
 - Every change fires the range's native `input` event - listen on it.

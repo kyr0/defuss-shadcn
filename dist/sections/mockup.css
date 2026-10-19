@@ -395,6 +395,35 @@
   }
 }
 
+/* paper cannot scroll: printed, every line wraps as with data-wrap, and the
+   window prints its colors as designed - a print dialog drops background
+   graphics by default, which left the terminal's light text pale on white
+   paper. An animated diff prints its end state. */
+@media print {
+  @layer components {
+    .mockup-code {
+      overflow-x: visible;
+      grid-template-columns: minmax(0, 1fr);
+      print-color-adjust: exact;
+    }
+    .mockup-code > pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      padding-inline-start: calc(var(--_px) + 3.25ch);
+      text-indent: -3.25ch;
+    }
+    .mockup-code > pre:not([data-prefix]):not(:where([data-numbers] > pre)) {
+      padding-inline-start: var(--_px);
+      text-indent: 0;
+    }
+    .mockup-code > pre[data-cursor] > code::after,
+    .mockup-code[data-animate] > pre,
+    .mockup-code[data-animate] > pre > code {
+      animation: none;
+    }
+  }
+}
+
 @media (prefers-contrast: more) {
   @layer components {
     .mockup-code {

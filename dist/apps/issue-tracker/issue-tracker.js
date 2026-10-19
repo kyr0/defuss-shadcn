@@ -1706,6 +1706,590 @@ function debounce(fn, wait) {
   };
   return wrapped;
 }
+// src/shared/math.ts
+var MAX_BYTES = 2097152;
+var MAX_TEX = 65536;
+function mathClone(value, maxBytes = MAX_BYTES) {
+  let nodes = 0;
+  const path = new Set;
+  const visit = (v, depth) => {
+    if (++nodes > 20000 || depth > 96)
+      throw new Error("math data exceeds the node or depth limit");
+    if (v === null || typeof v === "string" || typeof v === "boolean")
+      return;
+    if (typeof v === "number") {
+      if (!Number.isFinite(v))
+        throw new Error("math data holds a non-finite number");
+      return;
+    }
+    if (typeof v !== "object" || path.has(v))
+      throw new Error("math data must be acyclic JSON");
+    const proto = Object.getPrototypeOf(v);
+    if (!Array.isArray(v) && proto !== Object.prototype && proto !== null)
+      throw new Error("math data must hold plain objects");
+    path.add(v);
+    for (const [k, x] of Object.entries(v)) {
+      if (k === "__proto__" || k === "prototype" || k === "constructor")
+        throw new Error(`math data key "${k}"`);
+      visit(x, depth + 1);
+    }
+    path.delete(v);
+  };
+  visit(value, 0);
+  if (new TextEncoder().encode(JSON.stringify(value)).length > maxBytes)
+    throw new Error("math data exceeds the size limit");
+  return structuredClone(value);
+}
+function mathText(value) {
+  if (typeof value !== "string" || new TextEncoder().encode(value).length > MAX_TEX)
+    throw new Error("TeX must be a string of at most 65,536 bytes");
+  return value;
+}
+// src/shared/query.ts
+var MORPH_METHODS = [
+  "morph",
+  "getRenderer",
+  "htmlStringToVNodes",
+  "renderMarkup",
+  "domNodeToVNode",
+  "registerDelegatedEvent",
+  "clearDelegatedEventsDeep",
+  "handleLifecycleEventsForOnMount"
+];
+var RUNTIME_INCOMPLETE = "defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone";
+function defussQuery() {
+  const candidate = Reflect.get(globalThis, "df$");
+  if (typeof candidate === "function") {
+    const prototype = Reflect.get(candidate, "fn");
+    if (typeof Reflect.get(candidate, "queryVersion") === "string" && typeof prototype === "object" && prototype !== null && typeof Reflect.get(prototype, "morph") === "function" && MORPH_METHODS.every((name) => typeof Reflect.get(candidate, name) === "function")) {
+      return candidate;
+    }
+  }
+  throw new Error(RUNTIME_INCOMPLETE);
+}
+
+// src/shared/media.ts
+var TEXT_KINDS = ["subtitles", "captions", "descriptions"];
+var num = (v, fallback) => {
+  const n = typeof v === "number" ? v : parseFloat(String(v));
+  return Number.isFinite(n) ? n : fallback;
+};
+var pad = (n) => String(n).padStart(2, "0");
+var esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+var put = (el, name, value) => {
+  if (el.getAttribute(name) !== value)
+    defussQuery()(el).attr(name, value);
+};
+function mediaTime(seconds, total = seconds) {
+  const s = Number.isFinite(seconds) && seconds > 0 ? Math.floor(seconds + 0.000001) : 0;
+  const h = Math.floor(s / 3600);
+  const m = Math.floor(s % 3600 / 60);
+  return h > 0 || Number.isFinite(total) && total >= 3600 ? `${h}:${pad(m)}:${pad(s % 60)}` : `${m}:${pad(s % 60)}`;
+}
+function mediaOf(root) {
+  if (!root)
+    return null;
+  if (root instanceof HTMLMediaElement)
+    return root;
+  return defussQuery()(root).find("video, audio").get(0) ?? null;
+}
+function controlsOf(root, prefix, inside = true) {
+  const $ = defussQuery();
+  const sel = `[data-${prefix}-action], [data-${prefix}-output]`;
+  const out = inside ? $(root).find(sel).toArray() : [];
+  if (root.id)
+    for (const bound of $(`[data-${prefix}-for="${CSS.escape(root.id)}"]`).toArray()) {
+      if (bound.matches(sel))
+        out.push(bound);
+      out.push(...$(bound).find(sel).toArray());
+    }
+  return out;
+}
+function playerOf(control, prefix) {
+  const near = control.closest(`[data-${prefix}-for], .${prefix}`);
+  if (!near)
+    return null;
+  const id = near.getAttribute(`data-${prefix}-for`);
+  if (id === null)
+    return near;
+  return defussQuery()(`#${CSS.escape(id)}`).get(0) ?? null;
+}
+function mediaRead(root) {
+  const m = mediaOf(root);
+  return {
+    playing: !!m && !m.paused && !m.ended,
+    config: {
+      time: m ? m.currentTime : 0,
+      duration: m && Number.isFinite(m.duration) ? m.duration : 0,
+      rate: m ? m.playbackRate : 1,
+      volume: m ? m.volume : 1,
+      muted: m ? m.muted : false,
+      captions: m ? shownKey(root, m) : ""
+    }
+  };
+}
+function shownKey(root, m) {
+  if (root._mediaCaptions === false || !root._mediaTrack)
+    return "";
+  return mediaTextList(m).find((e) => e.track === root._mediaTrack)?.key ?? "";
+}
+function mediaTextTracks(media, tracks, owner, replace = true) {
+  if (typeof VTTCue === "undefined")
+    return [];
+  const reg = media._mediaTexts ??= new Map;
+  const retired = media._mediaRetired ??= new WeakSet;
+  const wanted = (Array.isArray(tracks) ? tracks : []).filter((t) => t && t.id != null && Array.isArray(t.items));
+  const ids = new Set(wanted.map((t) => String(t.id)));
+  const empty = (k) => {
+    for (const cue of k.cues)
+      k.track.removeCue(cue);
+    k.cues = [];
+    if (k.track.mode !== "disabled")
+      k.track.mode = "disabled";
+  };
+  if (replace) {
+    for (const [key, k] of reg)
+      if (k.owner === owner && !k.retired && !ids.has(key)) {
+        empty(k);
+        k.retired = true;
+      }
+  }
+  const before = mediaTextList(media).some((e) => e.track.mode !== "disabled");
+  const fresh = [];
+  for (const t of wanted) {
+    const key = String(t.id);
+    const kind = TEXT_KINDS.includes(String(t.kind)) ? String(t.kind) : "subtitles";
+    let k = reg.get(key);
+    if (k && k.kind !== kind) {
+      empty(k);
+      retired.add(k.track);
+      reg.delete(key);
+      k = undefined;
+    }
+    if (k?.retired) {
+      k.retired = false;
+      fresh.push({ k, first: !!t.default });
+    }
+    if (k)
+      k.owner = owner;
+    else {
+      k = {
+        track: media.addTextTrack(kind, String(t.label ?? key), String(t.lang ?? "")),
+        owner,
+        kind,
+        label: "",
+        lang: "",
+        cues: []
+      };
+      k.track.mode = "disabled";
+      reg.set(key, k);
+      fresh.push({ k, first: !!t.default });
+    }
+    k.label = String(t.label ?? key);
+    k.lang = String(t.lang ?? "");
+    for (const cue of k.cues)
+      k.track.removeCue(cue);
+    k.cues = [];
+    for (const item of t.items) {
+      const start = num(item?.start, NaN);
+      const end = num(item?.end, NaN);
+      const text = String(item?.text ?? item?.label ?? "");
+      if (Number.isFinite(start) && Number.isFinite(end) && end > start && text) {
+        const cue = new VTTCue(start, end, text);
+        k.track.addCue(cue);
+        k.cues.push(cue);
+      }
+    }
+  }
+  if (!before && fresh.length)
+    (fresh.find((f) => f.first) ?? fresh[0]).k.track.mode = "showing";
+  return [...ids];
+}
+function mediaTextList(media) {
+  const reg = media._mediaTexts ?? new Map;
+  const retired = media._mediaRetired;
+  const keyOf = new Map;
+  for (const [key, k] of reg)
+    keyOf.set(k.track, key);
+  const seen = new Set(reg.keys());
+  const out = [];
+  Array.from(media.textTracks).forEach((t, i) => {
+    if (!TEXT_KINDS.includes(t.kind) || retired?.has(t))
+      return;
+    const keyed = keyOf.get(t);
+    if (keyed !== undefined) {
+      const k = reg.get(keyed);
+      if (!k.retired)
+        out.push({ key: keyed, kind: t.kind, label: k.label, lang: k.lang, track: t });
+      return;
+    }
+    const base = t.id || t.language || t.label || `track-${i + 1}`;
+    let key = base;
+    for (let n = 2;seen.has(key); n++)
+      key = `${base}-${n}`;
+    seen.add(key);
+    out.push({ key, kind: t.kind, label: t.label || key, lang: t.language, track: t });
+  });
+  return out;
+}
+function mediaMarkup(root, prefix, name, config, controls = defussQuery()(root).find(`[data-${prefix}-action]`).toArray()) {
+  const $ = defussQuery();
+  const pressed = (el, on) => put(el, "aria-pressed", on ? "true" : "false");
+  for (const el of controls) {
+    const action = el.getAttribute(`data-${prefix}-action`);
+    if (action === "toggle")
+      pressed(el, name === "playing");
+    else if (action === "mute" && config.muted !== undefined)
+      pressed(el, !!config.muted);
+    else if (action === "captions" && config.captions !== undefined)
+      pressed(el, config.captions !== "" && config.captions !== false);
+    else if (action === "volume" && config.volume !== undefined && el instanceof HTMLInputElement) {
+      put(el, "value", String(config.volume));
+      if (el.value !== String(config.volume))
+        el.value = String(config.volume);
+    } else if (action === "rate" && config.rate !== undefined) {
+      if (el instanceof HTMLSelectElement)
+        for (const option of Array.from(el.options)) {
+          const on = num(option.value, NaN) === config.rate;
+          put(option, "selected", on ? "" : null);
+          if (on && el.value !== option.value)
+            el.value = option.value;
+        }
+      else if (el.hasAttribute("data-value"))
+        pressed(el, num(el.getAttribute("data-value"), NaN) === config.rate);
+    }
+  }
+  const media = root instanceof HTMLMediaElement ? root : $(root).find("video, audio").get(0);
+  if (media && config.muted !== undefined)
+    put(media, "muted", config.muted ? "" : null);
+}
+function paintCaptions(root, prefix) {
+  const overlay = defussQuery()(root).find(`.${prefix}-captions`);
+  if (!overlay.length)
+    return;
+  const track = root._mediaTrack;
+  const t = mediaOf(root)?.currentTime ?? 0;
+  const text = root._mediaCaptions !== false && track?.cues ? Array.from(track.cues).filter((c) => c.startTime <= t && t < c.endTime).map((c) => (c.text ?? "").replace(/<[^>]+>/g, "")).join(`
+`) : "";
+  if (overlay.text() !== text)
+    overlay.text(text);
+}
+function takeCaptions(root, prefix) {
+  const m = mediaOf(root);
+  if (!m)
+    return;
+  const list = mediaTextList(m);
+  const asked = root._mediaWanted ? list.find((e) => e.key === root._mediaWanted) : undefined;
+  if (asked)
+    root._mediaWanted = undefined;
+  const showing = list.filter((e) => e.track.mode === "showing").pop();
+  const chosen = asked ?? showing ?? list.find((e) => e.track === root._mediaTrack) ?? list[0];
+  root._mediaTrack = chosen?.track;
+  for (const e of list) {
+    const mode = e === chosen && root._mediaCaptions !== false ? "hidden" : "disabled";
+    if (e.track.mode !== mode)
+      e.track.mode = mode;
+  }
+  const track = root._mediaTrack;
+  if (track && !(root._mediaCued ??= new WeakSet).has(track)) {
+    root._mediaCued.add(track);
+    track.addEventListener("cuechange", () => paintCaptions(root, prefix));
+  }
+  paintCaptions(root, prefix);
+  captionsMenus(root, prefix, list);
+}
+var menuLabels = (root) => ({
+  off: "Off",
+  subtitles: "Subtitles",
+  descriptions: "Video captions",
+  ...root._mediaLabels
+});
+var menuItem = (key, text, extra = "") => `<button class="dropdown-item dropdown-radio" role="menuitemradio" aria-checked="false" tabindex="-1" data-value="${esc(key)}">${esc(text)}${extra}</button>`;
+function captionsMenus(root, prefix, list) {
+  const $ = defussQuery();
+  const shown = root._mediaCaptions === false ? "" : list.find((e) => e.track === root._mediaTrack)?.key ?? "";
+  const labels = menuLabels(root);
+  const heard = list.filter((e) => e.kind !== "descriptions");
+  const seen = list.filter((e) => e.kind === "descriptions");
+  let items = menuItem("", labels.off);
+  for (const [name, entries] of [
+    [labels.subtitles, heard],
+    [labels.descriptions, seen]
+  ]) {
+    if (!entries.length)
+      continue;
+    items += '<div class="dropdown-separator" role="separator"></div>';
+    items += entries.length === 1 ? menuItem(entries[0].key, name, `<span class="dropdown-shortcut">${esc(entries[0].label)}</span>`) : `<div class="dropdown-sub"><button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1">${esc(name)}<span class="dropdown-shortcut" data-${prefix}-menu-current></span></button><div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="${esc(name)}" data-size="sm">${entries.map((e) => menuItem(e.key, e.label)).join("")}</div></div>`;
+  }
+  for (const control of controlsOf(root, prefix)) {
+    if (control.getAttribute(`data-${prefix}-action`) !== "captions")
+      continue;
+    let menu = control._mediaMenu;
+    if (list.length < 2) {
+      if (menu)
+        for (const name of ["popovertarget", "aria-haspopup", "aria-controls", "aria-expanded"])
+          put(control, name, null);
+      continue;
+    }
+    if (!menu) {
+      let id = `${control.id || root.id || prefix}-captions-menu`;
+      for (let n = 2;$(`#${CSS.escape(id)}`).length; n++)
+        id = `${control.id || root.id || prefix}-captions-menu-${n}`;
+      menu = $(`<div class="dropdown-content" role="menu" popover id="${esc(id)}" data-size="sm" data-align="end" aria-label="${esc(control.getAttribute("aria-label") ?? "Captions")}"></div>`).get(0);
+      control._mediaMenu = menu;
+      const choose = (item) => {
+        if (!item || !item.hasAttribute("data-value") || !root.api)
+          return;
+        const m = mediaOf(root);
+        root.api.setState(m && !m.paused && !m.ended ? "playing" : "default", {
+          captions: item.getAttribute("data-value") ?? ""
+        });
+        if (menu.matches(":popover-open"))
+          menu.hidePopover();
+      };
+      menu.addEventListener("click", (e) => choose(e.target.closest('[role="menuitemradio"]')));
+      menu.addEventListener("dropdown:select", (e) => choose(e.detail?.item));
+      put(control, "data-dropdown-trigger", id);
+      if (root.contains(control))
+        $(root).append(menu);
+      else
+        $(control).after(menu);
+    }
+    put(control, "popovertarget", menu.id);
+    if (control.hasAttribute("data-init")) {
+      put(control, "aria-haspopup", "menu");
+      put(control, "aria-controls", menu.id);
+    }
+    if (menu._mediaItems !== items) {
+      menu._mediaItems = items;
+      $(menu).html(items);
+    }
+    for (const item of $(menu).find('[role="menuitemradio"]').toArray())
+      put(item, "aria-checked", item.getAttribute("data-value") === shown ? "true" : "false");
+    for (const current of $(menu).find(`[data-${prefix}-menu-current]`).toArray()) {
+      const sub = current.closest(".dropdown-sub");
+      const on = sub ? $(sub).find('[role="menuitemradio"][aria-checked="true"]').get(0) : undefined;
+      const text = on ? $(on).text() : "";
+      if ($(current).text() !== text)
+        $(current).text(text);
+    }
+  }
+}
+function mediaPaint(root, prefix) {
+  const $ = defussQuery();
+  const { playing, config } = mediaRead(root);
+  const controls = controlsOf(root, prefix);
+  mediaMarkup(root, prefix, playing ? "playing" : "default", config, controls);
+  const total = mediaTime(config.duration);
+  for (const el of controls) {
+    const action = el.getAttribute(`data-${prefix}-action`);
+    const output = el.getAttribute(`data-${prefix}-output`);
+    if (action === "seek" && el instanceof HTMLInputElement) {
+      if (config.duration > 0)
+        put(el, "max", String(config.duration));
+      put(el, "aria-valuetext", `${mediaTime(config.time, config.duration)} of ${total}`);
+      if (!el._mediaDragging && Math.abs(num(el.value, 0) - config.time) > 0.05) {
+        const slider = el.api;
+        if (slider?.setState)
+          slider.setState("default", { value: config.time });
+        else
+          el.value = String(config.time);
+      }
+    } else if (action === "fullscreen") {
+      put(el, "aria-pressed", document.fullscreenElement === root ? "true" : "false");
+    }
+    if (output) {
+      const text = output === "duration" ? total : output === "remaining" ? `-${mediaTime(config.duration - config.time, config.duration)}` : mediaTime(config.time, config.duration);
+      if ($(el).text() !== text)
+        $(el).text(text);
+    }
+  }
+  paintCaptions(root, prefix);
+}
+function mediaApply(root, prefix, name, config, incoming) {
+  const m = mediaOf(root);
+  if ("captions" in incoming) {
+    const v = incoming.captions;
+    root._mediaCaptions = !(v === false || v === "" || v === null);
+    root._mediaWanted = typeof v === "string" && v !== "" ? v : undefined;
+    takeCaptions(root, prefix);
+  }
+  if (m) {
+    const rate = num(incoming.rate, 0);
+    if (rate > 0 && m.playbackRate !== rate)
+      m.playbackRate = rate;
+    if ("volume" in incoming) {
+      const v = Math.min(1, Math.max(0, num(incoming.volume, m.volume)));
+      if (m.volume !== v)
+        m.volume = v;
+    }
+    if ("muted" in incoming && m.muted !== !!incoming.muted)
+      m.muted = !!incoming.muted;
+    if ("time" in incoming) {
+      const end = Number.isFinite(m.duration) ? m.duration : Infinity;
+      const t = Math.min(end, Math.max(0, num(incoming.time, m.currentTime)));
+      if (Math.abs(m.currentTime - t) > 0.001)
+        m.currentTime = t;
+    }
+  }
+  mediaMarkup(root, prefix, name, config, controlsOf(root, prefix));
+  if (!m)
+    return;
+  if (name === "playing" && m.paused)
+    return m.play().then(() => {
+      return;
+    }, () => {
+      return;
+    });
+  if (name !== "playing" && !m.paused)
+    m.pause();
+  return;
+}
+function mediaTracks(root, prefix, tracks, replace = false) {
+  const m = mediaOf(root);
+  if (!m)
+    return [];
+  const keys = mediaTextTracks(m, tracks, root, replace);
+  takeCaptions(root, prefix);
+  return keys;
+}
+function drive(root, prefix, control, event) {
+  const api = root.api;
+  const m = mediaOf(root);
+  if (!api || !m)
+    return;
+  const now = m.paused || m.ended ? "default" : "playing";
+  const action = control.getAttribute(`data-${prefix}-action`);
+  const value = control.value;
+  if (event.type === "click") {
+    if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement)
+      return;
+    if (action === "toggle")
+      api.setState(now === "playing" ? "default" : "playing");
+    else if (action === "play")
+      api.setState("playing");
+    else if (action === "pause")
+      api.setState("default");
+    else if (action === "skip")
+      api.setState(now, { time: m.currentTime + num(control.getAttribute("data-value"), 0) });
+    else if (action === "mute")
+      api.setState(now, { muted: !m.muted });
+    else if (action === "captions") {
+      takeCaptions(root, prefix);
+      if (!control.hasAttribute("popovertarget"))
+        api.setState(now, { captions: root._mediaCaptions === false || !root._mediaTrack ? true : "" });
+    } else if (action === "rate" && control.hasAttribute("data-value"))
+      api.setState(now, { rate: num(control.getAttribute("data-value"), 1) });
+    else if (action === "fullscreen") {
+      if (document.fullscreenElement === root)
+        document.exitFullscreen?.().catch(() => {
+          return;
+        });
+      else
+        root.requestFullscreen?.().catch(() => {
+          return;
+        });
+    }
+    return;
+  }
+  if (action === "seek" && control instanceof HTMLInputElement)
+    api.setState(now, { time: num(value, 0) });
+  else if (action === "volume" && control instanceof HTMLInputElement) {
+    const v = num(value, 1);
+    api.setState(now, v > 0 && m.muted ? { volume: v, muted: false } : { volume: v });
+  } else if (action === "rate" && control instanceof HTMLSelectElement)
+    api.setState(now, { rate: num(value, 1) });
+}
+function delegate(prefix) {
+  const flag = `__${prefix}MediaInit`;
+  if (document[flag])
+    return;
+  document[flag] = true;
+  const handle = (event) => {
+    const control = event.target?.closest?.(`[data-${prefix}-action]`);
+    const root = control && playerOf(control, prefix);
+    if (control && root)
+      drive(root, prefix, control, event);
+  };
+  document.addEventListener("click", handle);
+  document.addEventListener("input", handle);
+  document.addEventListener("change", (event) => {
+    if (event.target instanceof HTMLInputElement)
+      event.target._mediaDragging = false;
+  });
+  document.addEventListener("pointerdown", (event) => {
+    const t = event.target?.closest?.(`input[data-${prefix}-action="seek"]`);
+    if (t)
+      t._mediaDragging = true;
+  });
+  document.addEventListener("pointerup", () => {
+    for (const t of defussQuery()(`input[data-${prefix}-action="seek"]`).toArray())
+      t._mediaDragging = false;
+  });
+}
+function bindMedia(root, prefix, report) {
+  const $ = defussQuery();
+  const m = mediaOf(root);
+  const own = $(root).find(`[data-${prefix}-action]`).toArray();
+  const captions = own.find((el) => el.getAttribute(`data-${prefix}-action`) === "captions");
+  root._mediaCaptions = captions ? captions.getAttribute("aria-pressed") !== "false" : true;
+  const source = $(root).find(`script.${prefix}-tracks`).get(0);
+  if (m && source) {
+    let data = null;
+    try {
+      data = JSON.parse($(source).text() || "null");
+    } catch {
+      data = null;
+    }
+    if (data && typeof data === "object") {
+      if (data.labels && typeof data.labels === "object")
+        root._mediaLabels = { ...data.labels };
+      mediaTextTracks(m, data.tracks ?? [], root);
+    }
+  }
+  for (const el of controlsOf(root, prefix))
+    if (el.getAttribute(`data-${prefix}-action`) === "fullscreen" && !document.fullscreenEnabled)
+      put(el, "hidden", "");
+  if (m) {
+    const volume = own.find((el) => el.getAttribute(`data-${prefix}-action`) === "volume");
+    if (volume)
+      m.volume = Math.min(1, Math.max(0, num(volume.getAttribute("value"), 1)));
+    const rate = own.find((el) => el instanceof HTMLSelectElement && el.getAttribute(`data-${prefix}-action`) === "rate");
+    if (rate && num(rate.value, 0) > 0)
+      m.playbackRate = num(rate.value, 1);
+    const changed = () => {
+      mediaPaint(root, prefix);
+      report();
+    };
+    for (const type of [
+      "play",
+      "pause",
+      "ended",
+      "timeupdate",
+      "seeking",
+      "seeked",
+      "volumechange",
+      "ratechange",
+      "loadedmetadata",
+      "durationchange",
+      "emptied"
+    ])
+      m.addEventListener(type, changed);
+    m.textTracks.addEventListener("addtrack", () => takeCaptions(root, prefix));
+    $(m).find("track").on("load", () => paintCaptions(root, prefix));
+    m.textTracks.addEventListener("change", () => takeCaptions(root, prefix));
+    takeCaptions(root, prefix);
+    if (m instanceof HTMLVideoElement)
+      m.addEventListener("click", () => {
+        if (m.controls || !root.api)
+          return;
+        root.api.setState(m.paused || m.ended ? "playing" : "default");
+      });
+  }
+  root.addEventListener("fullscreenchange", () => mediaPaint(root, prefix));
+  delegate(prefix);
+  mediaPaint(root, prefix);
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -1748,28 +2332,6 @@ function bindGlobalKeys(handler, options = {}) {
       document.removeEventListener("keydown", onKeydown);
     }
   };
-}
-// src/shared/query.ts
-var MORPH_METHODS = [
-  "morph",
-  "getRenderer",
-  "htmlStringToVNodes",
-  "renderMarkup",
-  "domNodeToVNode",
-  "registerDelegatedEvent",
-  "clearDelegatedEventsDeep",
-  "handleLifecycleEventsForOnMount"
-];
-var RUNTIME_INCOMPLETE = "defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone";
-function defussQuery() {
-  const candidate = Reflect.get(globalThis, "df$");
-  if (typeof candidate === "function") {
-    const prototype = Reflect.get(candidate, "fn");
-    if (typeof Reflect.get(candidate, "queryVersion") === "string" && typeof prototype === "object" && prototype !== null && typeof Reflect.get(prototype, "morph") === "function" && MORPH_METHODS.every((name) => typeof Reflect.get(candidate, name) === "function")) {
-      return candidate;
-    }
-  }
-  throw new Error(RUNTIME_INCOMPLETE);
 }
 // src/shared/motion.ts
 var ENTRANCES = [
@@ -3159,6 +3721,14 @@ function storageOf(area) {
     onUnavailable: () => inMemory.add(area)
   });
 }
+function storageAvailable(area = "local") {
+  try {
+    storageOf(area).getItem("defuss-store:probe");
+  } catch {
+    return false;
+  }
+  return !inMemory.has(area);
+}
 function sameShape(initial) {
   const check = (model, value) => {
     if (model === null)
@@ -3983,6 +4553,11 @@ function scrollIntoViewTop(index, scrollTop, viewport, rowHeight, total) {
     return top;
   return scrollTopFor(index - Math.max(0, Math.floor(viewport / rowHeight) - 1), viewport, rowHeight, total);
 }
+// src/shared/sheet-url.ts
+function sheetUrl(link) {
+  return link.sheet?.href ?? link.href;
+}
+
 // src/shared/theme-links.ts
 var LINK_ATTR = "data-df-theme-link";
 var inflight = new Map;
@@ -3990,7 +4565,7 @@ function themeJsonHref(id) {
   const $ = defussQuery();
   const tokens = $("#tokens-css").get(0) ?? $('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens)
-    return new URL(`../${id}.json`, tokens.href).href;
+    return new URL(`../${id}.json`, sheetUrl(tokens)).href;
   return `${id}.json`;
 }
 function parseThemeLinks(text) {
@@ -4120,6 +4695,18 @@ shadcn.shared = {
   bindGlobalKeys,
   isEditableTarget,
   loadTheme,
+  sheetUrl,
+  mathClone,
+  mathText,
+  bindMedia,
+  mediaApply,
+  mediaMarkup,
+  mediaOf,
+  mediaPaint,
+  mediaRead,
+  mediaTextTracks,
+  mediaTime,
+  mediaTracks,
   elementModel,
   renderModel,
   settleTemplates,
@@ -4142,7 +4729,7 @@ shadcn.shared = {
   scrollTopFor,
   scrollIntoViewTop
 };
-Reflect.set(df, "store", { create: createStore, computed, persisted });
+Reflect.set(df, "store", { create: createStore, computed, persisted, available: storageAvailable });
 Reflect.set(df, "dataview", {
   source: dataSource,
   parseFilter,
@@ -5006,6 +5593,8 @@ function focusCell(grid, row, col) {
 }
 function onKeydown2(grid, e) {
   if (e.target.closest?.(".data-grid-filters, .data-grid-footer"))
+    return;
+  if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
     return;
   const { row, col } = grid._focus;
   const page = Math.max(1, Math.floor((grid._parts.viewport.clientHeight - grid._parts.head.offsetHeight) / rowHeight(grid)) - 1);
@@ -6180,12 +6769,12 @@ var df$9 = defussGlobals();
 var dfDollar9 = defussQuery();
 var sidebarStates = ["default", "collapsed"];
 function applyMarkup9(el, stateName) {
-  dfDollar9(el).attr("data-state", stateName === "collapsed" ? "collapsed" : el._authoredState ??= dfDollar9(el).attr("data-state") || "expanded");
+  dfDollar9(el).attr("data-state", stateName === "collapsed" ? "collapsed" : "expanded");
 }
 function triggerStateChange9(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
-      sidebar.dataset.state = sidebar._defaultState ?? "expanded";
+      sidebar.dataset.state = "expanded";
       break;
     case "collapsed":
       sidebar.dataset.state = "collapsed";
@@ -6977,6 +7566,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=DF715E43C0C977EC64756E2164756E21
+//# debugId=4B6D6A071FFA6E4964756E2164756E21
 /* defuss-shadcn v0.9.9 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=issue-tracker.js.map

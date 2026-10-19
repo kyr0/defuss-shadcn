@@ -25,6 +25,9 @@ Pure CSS - no JavaScript or ARIA required.
 - [`text-wrap: pretty`](https://developer.mozilla.org/en-US/docs/Web/CSS/text-wrap) - orphan prevention for body text
 - [`hanging-punctuation`](https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation) - optical quote alignment for blockquotes
 - [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values) - `border-inline-start`, `padding-inline-start` for RTL support
+- [`break-before`](https://developer.mozilla.org/en-US/docs/Web/CSS/break-before) - forced page, column, left and right page breaks in print (`.typeset-break`)
+- [`break-inside`](https://developer.mozilla.org/en-US/docs/Web/CSS/break-inside) / [`break-after`](https://developer.mozilla.org/en-US/docs/Web/CSS/break-after) - keep a block whole (`.typeset-keep`, figures, tables) and a heading with the text after it
+- [`orphans`](https://developer.mozilla.org/en-US/docs/Web/CSS/orphans) / [`widows`](https://developer.mozilla.org/en-US/docs/Web/CSS/widows) - the lines a paragraph keeps together at a column or page break
 - [`prefers-contrast`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-contrast) - enhanced contrast for high-contrast preference
 - [`forced-colors`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors) - Windows High Contrast Mode with system colors
 
@@ -76,6 +79,10 @@ Pure CSS - no JavaScript or ARIA required.
 ```html
 <code class="inline-code">default-semantic-tokens.css</code>
 ```
+
+`.inline-code` adds the chip. A bare `<code>`, `<kbd>`, `<samp>` or `<pre>` takes
+the theme's monospace stack (`--font-mono`) from the base layer, at zero
+specificity - a component's own face wins.
 
 ### Link
 ```html
@@ -149,7 +156,7 @@ them as a page needs.
 | Attribute | Rule | Default knob |
 |---|---|---|
 | `data-columns="2"` / `"3"` | multi-column; no column narrower than `--typeset-column-width`, so a phone gets one column | `--typeset-column-width: 18rem`, `--typeset-column-gap: 2.5em` |
-| `data-rule` | a hairline (`--border`) between the columns | - |
+| `data-rule` | a hairline (`--border`) between the columns; in print only without a `.typeset-span` (Chromium draws the rule through a spanner that starts a page) | - |
 | `data-align="justify"` | Blocksatz: justified, hyphenated, last line flush start; headings stay flush start and unhyphenated | - |
 | `data-indent` | Einzug: no paragraph gap, first line indented; the paragraph after a heading starts flush | `--typeset-indent: 1em` |
 | `data-initial="drop"` / `"raised"` | Initiale: the first letter sunk into / rising above the first lines, its top level with the first line | `--typeset-initial-lines: 3`, `--typeset-initial-gap: 0.3em`, `--typeset-initial-font: var(--font-serif)`, `--typeset-initial-color: var(--primary)` |
@@ -157,6 +164,7 @@ them as a page needs.
 | `data-lead="caps"` | the opening line in letterspaced capitals (Versalien) | - |
 | `data-ligatures="classic"` | discretionary and historical ligatures, old-style figures - rendered when the font carries the features | - |
 | `data-leading="tight"` / `"loose"` | compact (1.45, tracking -0.01em) or airy (1.9, tracking +0.01em) lines - tracking moves with the leading so the column's grey stays even; the default is 1.65 | `--typeset-leading`, `--typeset-tracking` |
+| `data-orphans="3"` / `"4"`, `data-widows="3"` / `"4"` | the lines a paragraph keeps together at a column or page break: at the foot of the column (orphans), at the head of the next (widows); the default is 2 | - |
 
 Without columns the block keeps a reading measure (`--typeset-measure: 68ch`).
 `.typeset-span` makes a heading, a figure or a group span every column; the columns below it start level (the first block after it keeps no top margin).
@@ -215,6 +223,72 @@ per figure, `--typeset-group-gap: 1.25rem` between).
 </figure>
 ```
 
+#### Breaks and keeps (print)
+
+Where a printed page or column ends. A `.typeset-break` marker forces a break
+before the next block; `.typeset-keep` keeps a block whole.
+
+```html
+<section class="typeset" lang="en" data-columns="2" data-orphans="3" data-widows="3">
+  <p>The text of the left column ...</p>
+  <div class="typeset-break" data-break="column" aria-hidden="true"></div>
+  <p>... the right column starts here.</p>
+  <div class="typeset-keep">
+    <p>A paragraph that introduces the figure below it ...</p>
+    <figure>...</figure>
+  </div>
+  <figure data-break-inside="allow"><table class="table">...</table></figure>
+</section>
+<div class="typeset-break" aria-hidden="true"></div>
+<section>... starts a new page.</section>
+```
+
+| Markup | Effect in print |
+|---|---|
+| `<div class="typeset-break">` (or `data-break="page"`) | the next block starts a new page |
+| `data-break="column"` | the next block starts the next column - inside `data-columns` |
+| `data-break="left"` / `"right"` | the next block starts a left / right page (a blank page is added if needed) - duplex |
+| `.typeset-keep` | its content stays in one column and on one page (`break-inside: avoid`); inside `.typeset` the wrapper is invisible to the spacing - its paragraphs, figures and headings keep the setting's gaps and Einzug |
+| `data-break-inside="allow"` on a figure, table, quote, `<pre>` or group in `.typeset` | it may split - `.typeset` keeps those whole by default; a long table or listing kept whole leaves the rest of the page empty. Every piece keeps its frame (`box-decoration-break: clone`), a listing inside it (`<pre>`, a Code Mockup) does not scroll sideways (a scroll container never splits - wrap its lines), and a figure is a block whose caption stays with the last piece (a caption above: with the first) - on screen columns too |
+| `data-orphans` / `data-widows` on `.typeset` | lines kept together at a break (see Typesetting) |
+
+- **Print only.** The breaks apply in `@media print`: a screen has no pages, and
+  a column break in a balanced screen column would push the rest of the text
+  into the last column. On screen the markers are hidden; put
+  `data-show-breaks` on any ancestor to see each one as a labelled dashed line
+  while authoring.
+- **A box, not `display: none`.** In print a marker is a zero-height block
+  that carries `break-before`. An element with `display: none` generates no
+  box and its break is lost - do not hide markers that way.
+- **Use a `<div>`.** A page break is not a thematic break (`<hr>`), and a
+  `<div>` takes none of the gaps that `.typeset` and the paper give an `<hr>`.
+- Headings already keep with the text after them (`break-after: avoid`), and
+  figures, tables, quotes, code and figure groups stay whole by default.
+- **A caption never stands alone.** A figure stays whole, so its caption
+  goes with it; one that may split is a block in which the caption keeps to
+  the last piece. In a grid figure Chromium ignored that keep and a caption
+  stood alone at the head of the next column.
+- **Verbatim is never justified.** A `<pre>` in a `data-align="justify"`
+  setting is set flush start and unhyphenated: justified, wrapped program
+  output opened wide gaps and hyphenated its identifiers.
+- **Page numbers** belong to the page template: an `@page` margin box on a
+  named page (`@page report { @bottom-center { content: counter(page) } }`,
+  `.report { page: report }`), none on `:first`. An unnamed `@page` rule
+  would number every page the stylesheet prints. Chromium prints margin
+  boxes (checked in Chromium 153); MDN compat data (2026-10) lists them for
+  no other engine.
+- The HTML Preview Editor's Print device (`mode="print"`) shows the print
+  styles on one A4 sheet - without pages: breaks and page numbers show only
+  in a real print.
+- Support (MDN compat data, 2026-10): page breaks and `break-inside` work in
+  Chromium, Firefox and Safari; column breaks only in Chromium (Firefox and
+  Safari ignore them and the text flows on); `orphans` / `widows` in Chromium
+  and Safari. Forced breaks between the rows of a grid (the paper's article)
+  are honoured in Chromium.
+- "CSS 4" is not one release: these are the CSS Fragmentation and CSS Paged
+  Media modules. Page size and margins belong to the page template - see
+  Modern Paper's print profiles.
+
 ## Classes
 
 | Class | Element | Description |
@@ -237,6 +311,8 @@ per figure, `--typeset-group-gap: 1.25rem` between).
 | `.typeset-caption` | `<figcaption>`, `<caption>` | A caption; `data-align="justify\|center"` |
 | `.typeset-group` | `<figure>` | Two or three figures in one dense box |
 | `.typeset-subcaption` | `<figcaption>` in a group | A lettered sub-caption: (a), (b), (c) |
+| `.typeset-break` | `<div>` | A forced break in print: `data-break="page\|column\|left\|right"`; hidden on screen unless an ancestor has `data-show-breaks` |
+| `.typeset-keep` | `<div>` | Keeps its content in one column and on one page |
 
 ---
 

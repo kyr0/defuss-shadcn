@@ -172,6 +172,15 @@ function chartTheme(el) {
 var instances = new WeakMap;
 var observers = new WeakMap;
 var live = new Set;
+matchMedia("print").addEventListener("change", () => {
+  for (const el of live) {
+    const inst = instances.get(el);
+    if (!el.isConnected || !inst || inst.isDisposed?.())
+      continue;
+    inst.resize({ animation: { duration: 0 } });
+    inst.getZr?.().flush();
+  }
+});
 function withMotion(option) {
   return reducedMotion() ? { ...option, animation: false } : option;
 }
@@ -486,5 +495,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=D5507949CE37506164756E2164756E21
+//# debugId=810DFB1C1087F6F164756E2164756E21
 //# sourceMappingURL=charts.js.map

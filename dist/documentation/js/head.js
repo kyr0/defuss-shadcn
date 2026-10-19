@@ -3992,6 +3992,11 @@
     return !refused && prefsPersist();
   }
 
+  // src/shared/sheet-url.ts
+  function sheetUrl(link) {
+    return link.sheet?.href ?? link.href;
+  }
+
   // src/documentation/runtime/theme-switcher.ts
   (function() {
     var docs = {};
@@ -4123,7 +4128,7 @@
         return;
       }
       var tokens = document.getElementById("tokens-css");
-      var url = tokens ? new URL("../" + id + ".json", tokens.href).href : id + ".json";
+      var url = tokens ? new URL("../" + id + ".json", sheetUrl(tokens)).href : id + ".json";
       fetch(url).then(function(res) {
         return res.ok ? res.json() : null;
       }).then(function(file) {
@@ -4148,7 +4153,7 @@
       var tokens = document.getElementById("tokens-css");
       if (!tokens)
         return id + ".css";
-      return new URL("../" + id + ".css", tokens.href).href;
+      return new URL("../" + id + ".css", sheetUrl(tokens)).href;
     }
     function applyTheme(themeId) {
       var link = document.getElementById(THEME_LINK_ID);
@@ -4762,6 +4767,32 @@
       }
     });
     var navigating = false;
+    function adoptExtraBundles(doc, base) {
+      var tags = function(d) {
+        return [].slice.call(d.head.children).concat([].slice.call(d.body.children)).filter(function(el) {
+          return el.hasAttribute("data-extra-bundle");
+        });
+      };
+      var have = tags(document).map(function(el) {
+        return el.tagName + " " + el.getAttribute("data-extra-bundle");
+      });
+      tags(doc).forEach(function(el) {
+        var name = el.getAttribute("data-extra-bundle");
+        if (have.indexOf(el.tagName + " " + name) >= 0)
+          return;
+        var tag = document.createElement(el.tagName === "LINK" ? "link" : "script");
+        tag.setAttribute("data-extra-bundle", name);
+        if (el.tagName === "LINK") {
+          tag.rel = "stylesheet";
+          tag.href = new URL(el.getAttribute("href"), base).href;
+          document.head.appendChild(tag);
+        } else {
+          tag.type = "module";
+          tag.src = new URL(el.getAttribute("src"), base).href;
+          document.body.appendChild(tag);
+        }
+      });
+    }
     function navigateTo(href, pushState) {
       if (navigating)
         return;
@@ -4784,6 +4815,7 @@
           return;
         }
         var swap = function() {
+          adoptExtraBundles(doc, target.href);
           oldMain.innerHTML = newMain.innerHTML;
           var newMainStyle = newMain.getAttribute("style");
           if (newMainStyle)

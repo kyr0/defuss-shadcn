@@ -1,0 +1,128 @@
+/* ── components/visual-editor/visual-editor.css ── */
+@layer components {
+  /* the editor: a framed box whose canvas is GrapesJS's. GrapesJS reads its chrome colours from --gjs-* custom
+     properties, so the theme reaches the selection outline, the toolbar and the drop placeholder through them; its
+     own sheet is unlayered, so the few literal colours it sets are overridden with !important (as MathLive's). */
+  .visual-editor {
+    --gjs-canvas-top: 0px;
+    --gjs-left-width: 0px;
+    --gjs-main-font: var(--font-sans);
+    --gjs-font-size: 0.75rem;
+    --gjs-color-blue: var(--primary);
+    --gjs-color-highlight: var(--ring);
+    --gjs-placeholder-background-color: var(--primary);
+    --gjs-primary-color: var(--card);
+    --gjs-secondary-color: var(--card-foreground);
+    --gjs-tertiary-color: var(--primary);
+    --gjs-quaternary-color: var(--ring);
+    --gjs-main-color: var(--card);
+    --gjs-font-color: var(--card-foreground);
+    --gjs-font-color-active: var(--primary);
+    --gjs-animation-duration: 0.15s;
+
+    position: relative;
+    display: block;
+    block-size: var(--visual-editor-height, 32rem);
+    min-block-size: 12rem;
+    inline-size: 100%;
+    overflow: hidden;
+    background: var(--muted);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+
+    /* the canvas fills the box; before the engine is ready, the box shows a quiet placeholder */
+    & > .visual-editor-canvas {
+      position: absolute;
+      inset: 0;
+    }
+    &:not([data-ready]):not([data-error])::before {
+      content: "Loading the editor...";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+    &[data-error]::before {
+      content: "The editor could not load.";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--destructive);
+      font-size: 0.875rem;
+    }
+
+    /* readonly: the canvas is inert (set by the runtime); the selection chrome goes */
+    &[data-readonly] .gjs-toolbar,
+    &[data-readonly] .gjs-badge,
+    &[data-readonly] .gjs-highlighter,
+    &[data-readonly] .gjs-highlighter-sel {
+      display: none !important;
+    }
+
+    & .gjs-editor,
+    & .gjs-cv-canvas {
+      background: var(--muted) !important;
+    }
+    & .gjs-cv-canvas {
+      inline-size: 100% !important;
+    }
+    & .gjs-frame-wrapper {
+      background: var(--background);
+    }
+    & .gjs-toolbar {
+      color: var(--primary-foreground) !important;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    & .gjs-toolbar-item {
+      padding: 0.25rem 0.375rem;
+    }
+    & .gjs-badge {
+      color: var(--primary-foreground) !important;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+    }
+  }
+
+  /* blocks: any element with data-visual-editor-block and a <template> of markup - drag it into the canvas or click
+     it; the template stays hidden */
+  [data-visual-editor-block] {
+    cursor: grab;
+
+    & > template {
+      display: none;
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .visual-editor {
+      --gjs-animation-duration: 0s;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .visual-editor {
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .visual-editor {
+      border-color: CanvasText;
+
+      & .gjs-toolbar,
+      & .gjs-badge {
+        forced-color-adjust: none;
+        background: Highlight !important;
+        color: HighlightText !important;
+      }
+    }
+  }
+}

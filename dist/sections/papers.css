@@ -182,6 +182,20 @@
       background: var(--muted);
     }
   }
+  /* a figure or table that may split (data-break-inside="allow") is a
+     block: in a grid Chromium ignores the caption's keep, and a caption stood
+     alone at the head of the next column (Typography's caption rule) - the
+     grid's gap becomes a margin */
+  .paper :is(.paper-figure, .paper-table)[data-break-inside="allow"] {
+    display: block;
+
+    & > :not(:first-child) {
+      margin-block-start: 0.75rem;
+    }
+    & > figcaption:last-child {
+      break-before: avoid;
+    }
+  }
   .paper-teaser > figcaption,
   .paper-figure > figcaption,
   .paper-table-caption {
@@ -195,6 +209,27 @@
     & b {
       color: var(--foreground);
       font-weight: 600;
+    }
+  }
+
+  /* a numbered display equation: the formula (a Formula Rendering element) centered in the column, its number at
+     the end edge - a reference writes the number in the text, like a section's .paper-num */
+  .paper-equation {
+    display: grid;
+    grid-template-columns: minmax(2.5rem, 1fr) minmax(0, auto) minmax(2.5rem, 1fr);
+    align-items: center;
+    margin-block: 1.25rem;
+
+    & > :first-child {
+      grid-column: 2;
+      min-inline-size: 0;
+    }
+    & > .paper-equation-num {
+      grid-column: 3;
+      justify-self: end;
+      color: var(--muted-foreground);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
   }
 
@@ -337,11 +372,16 @@
   .paper-section > .paper-wide {
     margin-inline: calc((100% - min(var(--paper-wide), 100cqi - 2rem)) / 2);
   }
+  /* the number ends in a no-break space (`1&nbsp;`): Chromium titles a PDF bookmark with the laid-out text, and
+     a space after the number's flex item is dropped there ("1Contribution"). The word spacing takes the space's
+     width back (1ch - the number is monospace), so the flex gap alone still sets the distance; a number written
+     without it reads as before. */
   .paper-num {
     color: var(--muted-foreground);
     font-family: var(--font-mono);
     font-size: 0.75em;
     font-weight: 500;
+    word-spacing: -1ch;
   }
 
   /* -- findings: a row of numbered cards ------------------------------------- */
@@ -507,6 +547,21 @@
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     line-height: 1.65;
+  }
+  /* a record that may split wraps: it cannot scroll and split at once
+     (Typography's caption rule) */
+  .paper [data-break-inside="allow"] .paper-code {
+    overflow-x: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  /* paper has no horizontal scroll: in print a long line wraps */
+  @media print {
+    .paper-code {
+      overflow-x: visible;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
   }
   .paper-quote {
     margin: 0;
@@ -739,6 +794,170 @@
       font-family: var(--font-sans);
       font-size: 1.375rem;
       font-weight: 600;
+    }
+  }
+
+  /* -- print profiles: DIN A4 or US Letter ----------------------------------
+     data-print="a4|letter" names the page the paper prints on: the sheet and
+     its margins (@page), and a print scale (--paper-print-scale, 0.8): the
+     16px body prints at 9.6pt, and two columns of 18rem fit the 170mm text
+     width of A4 - at scale 1 the sections print in one column. Named pages
+     apply only where an element names them, so all.css never changes the
+     print dialog of a page without a profile. data-binding="inner" mirrors
+     the margins for a bound duplex print: the inner margin (left on a right
+     page, right on a left page) is 10mm (0.5in) wider than the outer one,
+     with the same text width. The page names carry the paper- prefix -
+     @page names are global, like keyframes. Every page but the title page
+     carries its number at the foot, centered in the bottom margin (a page
+     margin box: the paper itself cannot reach the margin).
+     VERIFIED: (paper.e2e "print") a printed PDF is A4 / Letter without a
+     format argument; the bound pages' text shifts by the margin difference;
+     (Chromium PDF probe 2026-10-12) the margin box prints a number on every
+     page of a named page but its first. */
+  @page paper-a4 {
+    size: A4;
+    margin: 20mm;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-a4:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-a4-inner {
+    size: A4;
+    margin: 20mm;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-a4-inner:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-a4-inner:right {
+    margin-left: 25mm;
+    margin-right: 15mm;
+  }
+  @page paper-a4-inner:left {
+    margin-left: 15mm;
+    margin-right: 25mm;
+  }
+  @page paper-letter {
+    size: letter;
+    margin: 1in;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-letter:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-letter-inner {
+    size: letter;
+    margin: 1in;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-letter-inner:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-letter-inner:right {
+    margin-left: 1.25in;
+    margin-right: 0.75in;
+  }
+  @page paper-letter-inner:left {
+    margin-left: 0.75in;
+    margin-right: 1.25in;
+  }
+  .paper[data-print="a4"] {
+    page: paper-a4;
+
+    &[data-binding="inner"] {
+      page: paper-a4-inner;
+    }
+  }
+  .paper[data-print="letter"] {
+    page: paper-letter;
+
+    &[data-binding="inner"] {
+      page: paper-letter-inner;
+    }
+  }
+  /* A printed page has one text width, so the grid's tracks (content, wide,
+     full) carry nothing there: in print the paper is a block and its parts
+     fill the text width, the grid gap turned into margins. A grid would also
+     lose text - VERIFIED: (Chromium PDF probe 2026-10-12) a two-column section
+     that is a grid item and runs over several pages set its last lines as a
+     one-line row of columns past the second, clipped at the page edge; as a
+     block every section flows. Its colors print as designed (exact): a print
+     dialog drops background graphics by default, and the text chosen for a
+     fill - a chat bubble, a code window, an epistemic tag, a filled button -
+     printed pale grey on white paper. */
+  /* The keeps: a heading stays with the block below it, the teaser with its
+     caption, the key numbers in one piece, the end ornament and the footer
+     with what precedes them. The page margin is the top space, and a tighter
+     gap lets the title block and its teaser share the first page. The table
+     of contents stays on screen: its links do nothing on paper, and Chromium
+     prints no page number a line could point to - VERIFIED: (Chromium 153 PDF
+     probe 2026-10-12) a target-counter() after a contents line printed nothing. */
+  @media print {
+    .paper[data-print] {
+      --paper-gap: 1.75rem;
+
+      zoom: var(--paper-print-scale, 0.8);
+      display: block;
+      padding-block-start: 0;
+      print-color-adjust: exact;
+
+      & > :not(.typeset-break) + :not(.typeset-break) {
+        margin-block-start: var(--paper-gap);
+      }
+      & .paper-section > .paper-wide {
+        margin-inline: 0;
+      }
+      /* a caption never breaks alone to the next column or page: a figure
+         prints whole (one that may split keeps its caption - below); BibTeX
+         keeps its top caption with its list itself */
+      & figure:not([data-break-inside="allow"], .bibtex) {
+        break-inside: avoid;
+      }
+      & > .paper-toc {
+        display: none;
+      }
+      & > :is(.paper-abstract, .paper-bibtex) > h2 {
+        break-after: avoid;
+      }
+      & :is(.paper-teaser, .paper-numbers, .paper-equation) {
+        break-inside: avoid;
+      }
+      & > :is(.separator, .paper-footer) {
+        break-before: avoid;
+      }
     }
   }
 
@@ -1092,6 +1311,32 @@
     }
     & .bibtex-copy-label {
       display: none;
+    }
+  }
+
+  /* paper has no horizontal scroll: in print a long field wraps instead of
+     running past the frame (a report's printed title lost its end). Paper has
+     no tabs to switch and nothing to copy: the bar goes, and the block prints
+     the one format it shows - data-format, else the first of data-formats -
+     its frame closed on every page a long list runs over. */
+  @media print {
+    .bibtex-code {
+      overflow-x: visible;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .bibtex > .bibtex-bar {
+      display: none;
+    }
+    /* the caption never stays alone at a page foot: a block, so its keep
+       holds (Chromium ignores it between grid rows) */
+    .bibtex:not([data-variant="inline"]) {
+      display: block;
+      box-decoration-break: clone;
+
+      & > figcaption {
+        break-after: avoid;
+      }
     }
   }
 

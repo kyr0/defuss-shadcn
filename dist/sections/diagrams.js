@@ -1992,6 +1992,10 @@ var diagramRedraw = (root) => {
   for (const canvas of canvasesOf(root))
     draw(root, canvas);
 };
+matchMedia("print").addEventListener("change", () => {
+  for (const root of dfDollar(".diagram[data-init]").toArray())
+    diagramRedraw(root);
+});
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
@@ -2293,5 +2297,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=F8778BA5D6DDD18764756E2164756E21
+//# debugId=280CDC07B99D0CB964756E2164756E21
 //# sourceMappingURL=diagrams.js.map

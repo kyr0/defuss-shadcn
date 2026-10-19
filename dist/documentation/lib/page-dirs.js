@@ -40,7 +40,7 @@ export const STANDALONE_APPS = [
     'scaffold-desktop',
     'scaffold-document-editor',
 ];
-export const STANDALONE_DOCS = ['paper'];
+export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio'];
 /** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) - its bundle is dist/apps/<name>/. */
 export const appName = (slug) => slug.replace(/^scaffold-/, '');
 /** The ids (file stems) of the generated standalone pages. */
@@ -117,7 +117,7 @@ export const assetHref = (from, path) => `${docsRoot(from)}${path}`;
 /**
  * Resolve a rendered page's links and asset references from its folder.
  * Authors, nav.ts and the docs components write page ids (`href="badge.html"`)
- * and root-relative assets (`css/layout.css`, `../components/all.css`); this
+ * and root-relative assets (`css/layout.css`, a download in `files/`, `../components/all.css`); this
  * turns them into the path from the page at `outputFile` (docs-root-relative):
  * `../data-display/badge.html`, `../css/layout.css`. Real tags only - an
  * escaped sample (`&lt;a href=`) and a fence's shown source keep their text.
@@ -128,20 +128,45 @@ export const assetHref = (from, path) => `${docsRoot(from)}${path}`;
  * and asset in every rendered page resolves from its folder.
  */
 const LINK_ATTR = /(<(?:a|iframe|link|script|img|source|video|audio|form|use)\b[^>]*?\s(?:href|src|action|poster)=")([^"]*)(")/g;
-const ASSET_ROOTS = /^(?:css|js|fonts|images|videos|templates)\//;
+const ASSET_ROOTS = /^(?:css|js|fonts|images|videos|templates|files)\//;
 export function resolvePageRefs(html, outputFile) {
     const id = outputFile.replace(/\\/g, '/').replace(/^.*\//, '').replace(/\.html$/, '');
     return html
         .replace(LINK_ATTR, (whole, open, value, close) => {
         if (/^(?:[a-z][a-z0-9+.-]*:|#|\/|\.\.?\/)/i.test(value))
             return whole;
-        const page = value.match(/^([a-z0-9-]+)\.html((?:[#?].*)?)$/);
-        if (page && isPage(page[1]))
-            return `${open}${pageHref(id, page[1], page[2])}${close}`;
+        const page = pageTarget(value);
+        if (page)
+            return `${open}${pageHref(id, page[0], page[1])}${close}`;
         if (ASSET_ROOTS.test(value))
             return `${open}${assetHref(id, value)}${close}`;
         return whole;
     })
         .replace(/(\s(?:href|src)=")(\.\.\/(?:components|theme|apps|schemas)\/)/g, (_m, open, path) => `${open}${assetHref(id, path)}`);
+}
+/** A link value that names a page by its id (`button.html#variants`): [id, its `#` / `?` part], else null. */
+function pageTarget(value) {
+    const page = value.match(/^([a-z0-9-]+)\.html((?:[#?].*)?)$/);
+    return page && isPage(page[1]) ? [page[1], page[2]] : null;
+}
+/**
+ * The page links of an example's source, as a map from what the author wrote
+ * to the page's path from the docs root: `{ "paper.html": "papers/paper.html" }`.
+ * An example card shows and runs its source as written, in a preview whose
+ * base is the docs root (runtime/code-example.ts) - there a page id names a
+ * file that does not exist. CodeExample hands this map to the card as
+ * `data-links`: the preview uses the paths, the source keeps the ids. Same
+ * tags and ids as resolvePageRefs.
+ * VERIFIED: (code-example-docs.e2e) the flagship deck card's report link and
+ * the Teaser card's embedded deck load their pages.
+ */
+export function pageLinks(html) {
+    const links = {};
+    for (const m of html.matchAll(LINK_ATTR)) {
+        const page = pageTarget(m[2]);
+        if (page)
+            links[m[2]] = pageRel(page[0]) + page[1];
+    }
+    return links;
 }
 //# sourceMappingURL=page-dirs.js.map

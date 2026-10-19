@@ -4,7 +4,7 @@ var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
 if (!__df$shared || __df$shared.abi !== "0.9.9") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+var { defussGlobals, defussQuery, componentState, bindComponent, sheetUrl } = __df$shared;
 var df$ = defussGlobals();
 var dfDollar = defussQuery();
 var codeExampleStates = ["default", "code", "state", "fullscreen"];
@@ -16,20 +16,25 @@ var REM_PX = 16;
 var IO_ROOT_MARGIN = "600px 0px";
 var IDLE_BOOT_MS = 1500;
 var VP_DEVICES = { phone: [390, 844], tablet: [834, 1112] };
-var VP_MODES = ["phone", "tablet", "desktop", "full"];
+var VP_MODES = ["phone", "tablet", "desktop", "print", "full"];
+var VP_PRINT_WIDTH = 794;
 var SANDBOXES = {
   default: { sandbox: "allow-scripts allow-forms", allow: "clipboard-write" },
   embed: {
     sandbox: "allow-scripts allow-forms allow-same-origin allow-presentation allow-popups",
     allow: "clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture"
   },
-  links: { sandbox: "allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox", allow: "clipboard-write" }
+  links: { sandbox: "allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox", allow: "clipboard-write" },
+  downloads: { sandbox: "allow-scripts allow-forms allow-downloads", allow: "clipboard-write" },
+  editor: { sandbox: "allow-scripts allow-forms allow-same-origin allow-downloads", allow: "clipboard-write" },
+  fullscreen: { sandbox: "allow-scripts allow-forms", allow: "clipboard-write; fullscreen *" }
 };
 var ICONS = {
   "rotate-cw": '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
   smartphone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
   tablet: '<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>',
   monitor: '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
+  printer: '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/>',
   "app-window": '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/>',
   "code-xml": '<path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>',
   "sliders-horizontal": '<path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/>',
@@ -66,23 +71,38 @@ function fetchText(url) {
   }
   return cache.get(url);
 }
-var BUNDLE_SCRIPT = /\/(all|core|wysiwyg)(?:\.min)?\.js(?:[?#]|$)/;
+var EXTRA_BUNDLES = {
+  wysiwyg: ["code-example", "editorjs"],
+  mermaid: ["mermaid"],
+  math: ["math-renderer", "math-editor", "math-compute"],
+  "visual-editor": ["visual-editor"]
+};
+var BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join("|")})(?:\\.min)?\\.js(?:[?#]|$)`);
+var neededBundles = (source) => Object.keys(EXTRA_BUNDLES).filter((b) => EXTRA_BUNDLES[b].some((m) => new RegExp(`\\b${m}\\b`).test(source || "")));
+var loadedScripts = new Map;
+dfDollar("script[src]").each((_i, s) => {
+  loadedScripts.set(s, s.src);
+});
 function discoverScripts(source) {
+  const needed = neededBundles(source);
   const out = [];
   dfDollar("script[src]").each((_i, s) => {
-    const m = BUNDLE_SCRIPT.exec(s.src);
-    if (!m || m[1] === "wysiwyg" && !/\b(?:code-example|editorjs)\b/.test(source))
+    const src = loadedScripts.get(s) ?? s.src;
+    const m = BUNDLE_SCRIPT.exec(src);
+    if (!m || m[1] in EXTRA_BUNDLES && !needed.includes(m[1]))
       return;
-    if (!out.includes(s.src))
-      out.push(s.src);
+    if (!out.includes(src))
+      out.push(src);
   });
-  return out.sort((a, b) => Number(/wysiwyg/.test(a)) - Number(/wysiwyg/.test(b)));
+  const rank = (src) => Number((BUNDLE_SCRIPT.exec(src)?.[1] ?? "") in EXTRA_BUNDLES);
+  return out.sort((a, b) => rank(a) - rank(b));
 }
 function discoverStyles() {
   const out = [];
   dfDollar('link[rel="stylesheet"]').each((_i, l) => {
-    if (l.href && !out.includes(l.href))
-      out.push(l.href);
+    const url = sheetUrl(l);
+    if (url && !out.includes(url))
+      out.push(url);
   });
   return out;
 }
@@ -136,6 +156,45 @@ function sandboxBridge(ch, schema) {
       location.hash = href.slice(1);
   });
   const post = (kind, extra) => parent.postMessage(Object.assign({ type: "ce", ch, kind }, extra || {}), "*");
+  let printing = false;
+  const swapMedia = (list) => {
+    const text = list.mediaText;
+    const next = text.replace(/\b(print|screen)\b/g, (m) => m === "print" ? "screen" : "print");
+    if (next !== text)
+      list.mediaText = next;
+  };
+  const swapRules = (rules) => {
+    for (const r of rules) {
+      if (r.media && typeof r.media.mediaText === "string")
+        swapMedia(r.media);
+      if (r.styleSheet)
+        swapRules(r.styleSheet.cssRules);
+      if (r.cssRules)
+        swapRules(r.cssRules);
+    }
+  };
+  function setPrint(on) {
+    if (on === printing)
+      return;
+    printing = on;
+    for (const sheet of document.styleSheets) {
+      try {
+        if (sheet.media.length)
+          swapMedia(sheet.media);
+        swapRules(sheet.cssRules);
+      } catch {}
+    }
+    if (on)
+      document.documentElement.setAttribute("data-ce-print", "");
+    else
+      document.documentElement.removeAttribute("data-ce-print");
+    all(document.body, "[data-ce-page-break]").forEach((n) => n.removeAttribute("data-ce-page-break"));
+    if (on) {
+      for (const n of all(document.body, "*"))
+        if (!n.closest("[data-ce-chrome]") && /^(page|left|right|recto|verso)$/.test(getComputedStyle(n).breakBefore))
+          n.setAttribute("data-ce-page-break", "");
+    }
+  }
   function resolve(target) {
     if (target && target.kind === "selector")
       return one(target.selector);
@@ -218,6 +277,8 @@ function sandboxBridge(ch, schema) {
     const live = all(document.body, "input, textarea").filter((n) => !n.closest(chrome));
     const clone = document.body.cloneNode(true);
     $(clone).find(chrome).remove();
+    for (const name of ["data-init", "data-api", "data-state-name", "data-ce-page-break"])
+      all(clone, `[${name}]`).forEach((n) => n.removeAttribute(name));
     const mirror = all(clone, "input, textarea");
     live.forEach((l, i) => {
       const c = mirror[i];
@@ -281,6 +342,19 @@ function sandboxBridge(ch, schema) {
       post("height", { height: contentHeight() });
     }, 0);
   }
+  const RO_LOOP_MS = 5000;
+  let loopSince = 0;
+  let loopLast = 0;
+  const resizeLoop = () => {
+    const now = Date.now();
+    if (now - loopLast > 1000)
+      loopSince = now;
+    loopLast = now;
+    if (now - loopSince >= RO_LOOP_MS) {
+      loopSince = now;
+      post("error", { message: `A ResizeObserver loop has not settled for ${RO_LOOP_MS / 1000} s` });
+    }
+  };
   addEventListener("error", (e) => {
     const t = e.target;
     if (t && t !== globalThis && t.tagName) {
@@ -289,6 +363,8 @@ function sandboxBridge(ch, schema) {
       post("error", { message: "Example script failed to load or compile" });
       return;
     }
+    if (!e.error && String(e.message).startsWith("ResizeObserver loop"))
+      return void resizeLoop();
     post("error", {
       message: String(e.message || "Unknown error"),
       stack: e.error && e.error.stack ? String(e.error.stack) : undefined
@@ -339,7 +415,10 @@ function sandboxBridge(ch, schema) {
         $(tag).text(d.css || "");
     } else if (d.kind === "measure")
       sync();
-    else if (d.kind === "pointer-release") {
+    else if (d.kind === "set-print") {
+      setPrint(!!d.value);
+      sync();
+    } else if (d.kind === "pointer-release") {
       let pr;
       try {
         pr = new PointerEvent("pointercancel", { bubbles: true, cancelable: true });
@@ -397,6 +476,20 @@ function sandboxBridge(ch, schema) {
 }
 var SCRIPT_OPEN = "<script data-ce-chrome>";
 var SCRIPT_CLOSE = "</script>";
+function readLinks(root) {
+  try {
+    const map = JSON.parse(dfDollar(root).attr("data-links") || "null");
+    return map && typeof map === "object" && !Array.isArray(map) ? new Map(Object.entries(map).map(([k, v]) => [k, String(v)])) : null;
+  } catch {
+    return null;
+  }
+}
+function relink(links, html, back = false) {
+  if (!links)
+    return html;
+  const map = back ? new Map([...links].map(([from, to]) => [to, from])) : links;
+  return html.replace(/<[a-z][^>]*>/gi, (tag) => tag.replace(/(\s(?:href|src|action|poster)=")([^"]*)"/gi, (whole, open, value) => map.has(value) ? `${open}${map.get(value)}"` : whole));
+}
 function buildSrcdoc(root, source) {
   const c = root._ce;
   return Promise.all([resolveStyles(source), resolveScripts(source), resolveTheme()]).then(([styles, scripts, theme]) => {
@@ -413,10 +506,10 @@ function buildSrcdoc(root, source) {
 <meta charset="UTF-8">
 ${base}${styles}
 ` + `<style id="ce-theme" data-ce-chrome>${theme.replace(/<\/style/gi, "<\\/style")}</style>
-` + `<style data-ce-chrome>body{display:flow-root;margin:2.5rem 1.5rem;background:var(--background);color:var(--foreground);${stage}}</style>
+` + `<style data-ce-chrome>body{display:flow-root;margin:2.5rem 1.5rem;background:var(--background);color:var(--foreground);${stage}}[data-ce-print]>body{margin:20mm}[data-ce-print] [data-ce-page-break]{display:block;visibility:visible;margin-block:1.5rem;border:0;border-block-start:1px dashed color-mix(in oklab,var(--muted-foreground) 55%,transparent)}</style>
 </head>
 <body>
-` + `${source}
+` + `${relink(c.links, source)}
 ${scripts}
 ${nestedScript}${tail}
 ` + `<script id="ce-bridge" data-ce-chrome>(${sandboxBridge.toString().replace(/<\/script/gi, "<\\/script")})(${JSON.stringify(c.ch)}, ${schema});${SCRIPT_CLOSE}
@@ -473,7 +566,7 @@ function shellMarkup(root) {
   const sb = SANDBOXES[dfDollar(root).attr("data-sandbox") ?? "default"] ?? SANDBOXES.default;
   const vp = (mode, glyph, label, title) => `<button type="button" class="code-example-vp" data-vp="${mode}" aria-pressed="${mode === "full"}" title="${title}">${buttonContent(glyph, label)}</button>`;
   const title = esc(dfDollar(root).attr("aria-label") || "Preview");
-  return `<div class="code-example-stage">` + `<div class="code-example-screen" data-mode="full">` + `<div class="resizer code-example-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">` + `<div class="code-example-device"><iframe class="code-example-frame" sandbox="${sb.sandbox}" allow="${sb.allow}" title="${title}"></iframe>` + `<span class="code-example-device-island" aria-hidden="true"></span><span class="code-example-device-home" aria-hidden="true"></span></div></div></div>` + `<output class="code-example-error" role="alert" hidden></output>` + `<button type="button" class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen">${icon("x")}</button>` + `</div>` + `<div class="code-example-toolbar">` + `<span class="code-example-viewport" role="group" aria-label="Preview device">` + `<button type="button" class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true">${buttonContent("rotate-cw", "Rotate")}</button>` + vp("phone", "smartphone", "Phone", "Phone 390×844") + vp("tablet", "tablet", "Tablet", "Tablet 834×1112") + vp("desktop", "monitor", "Desktop", "Desktop 1024") + vp("full", "app-window", "Full", "Full width") + `</span><span class="code-example-sep" aria-hidden="true"></span>` + `<span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)"><span class="code-example-vp-x" aria-hidden="true">×</span>` + `<input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled></span>` + `<span class="code-example-sep" aria-hidden="true"></span>` + `<span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)"><span class="code-example-vp-x" aria-hidden="true">%</span></span>` + `<span class="code-example-spacer"></span>` + `<button type="button" class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the source">${buttonContent("code-xml", "Code")}</button>` + (dfDollar(root).attr("data-schema") ? `<button type="button" class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state controls">${buttonContent("sliders-horizontal", "State")}</button>` : "") + `<button type="button" class="code-example-reset" title="Restore the original source and rerun">${buttonContent("rotate-ccw", "Reset")}</button>` + `<button type="button" class="code-example-full" title="Preview fullscreen (Esc to exit)">${buttonContent("maximize", "Fullscreen")}</button>` + `</div>` + `<div class="code-example-panel" data-panel="code" hidden>` + `<button type="button" class="code-example-copy" title="Copy the source">${buttonContent("copy", "Copy")}</button>` + `<div class="code-example-editor"><div class="code-example-paint" aria-hidden="true"></div></div></div>` + (dfDollar(root).attr("data-schema") ? `<div class="code-example-panel" data-panel="state" hidden></div>` : "");
+  return `<div class="code-example-stage">` + `<div class="code-example-screen" data-mode="full">` + `<div class="resizer code-example-resizer" data-handles="all" data-resize-mode="controlled" data-axis="both" data-min="240" data-max="1600" data-min-h="240" data-max-h="1400">` + `<div class="code-example-device"><iframe class="code-example-frame" sandbox="${sb.sandbox}" allow="${sb.allow}" title="${title}"></iframe>` + `<span class="code-example-device-island" aria-hidden="true"></span><span class="code-example-device-home" aria-hidden="true"></span></div></div></div>` + `<output class="code-example-error" role="alert" hidden></output>` + `<button type="button" class="code-example-full-exit" title="Exit fullscreen (Esc)" aria-label="Exit fullscreen">${icon("x")}</button>` + `</div>` + `<div class="code-example-toolbar">` + `<span class="code-example-viewport" role="group" aria-label="Preview device">` + `<button type="button" class="code-example-vp" data-vp="rotate" title="Swap orientation (phone/tablet)" aria-disabled="true">${buttonContent("rotate-cw", "Rotate")}</button>` + vp("phone", "smartphone", "Phone", "Phone 390×844") + vp("tablet", "tablet", "Tablet", "Tablet 834×1112") + vp("desktop", "monitor", "Desktop", "Desktop 1024") + vp("print", "printer", "Print", "Print: an A4 sheet in the print styles") + vp("full", "app-window", "Full", "Full width") + `</span><span class="code-example-sep" aria-hidden="true"></span>` + `<span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)"><span class="code-example-vp-x" aria-hidden="true">×</span>` + `<input class="code-example-vp-h" type="number" min="240" step="10" inputmode="numeric" placeholder="Full" aria-label="Custom preview height (px)" disabled></span>` + `<span class="code-example-sep" aria-hidden="true"></span>` + `<span class="code-example-size"><input class="code-example-vp-z" type="number" min="25" max="100" step="5" inputmode="numeric" placeholder="Auto" aria-label="Preview zoom (%)"><span class="code-example-vp-x" aria-hidden="true">%</span></span>` + `<span class="code-example-spacer"></span>` + `<button type="button" class="code-example-tab" data-tab="code" aria-pressed="false" title="Show or hide the source">${buttonContent("code-xml", "Code")}</button>` + (dfDollar(root).attr("data-schema") ? `<button type="button" class="code-example-tab" data-tab="state" aria-pressed="false" title="Show or hide the state controls">${buttonContent("sliders-horizontal", "State")}</button>` : "") + `<button type="button" class="code-example-reset" title="Restore the original source and rerun">${buttonContent("rotate-ccw", "Reset")}</button>` + `<button type="button" class="code-example-full" title="Preview fullscreen (Esc to exit)">${buttonContent("maximize", "Fullscreen")}</button>` + `</div>` + `<div class="code-example-panel" data-panel="code" hidden>` + `<button type="button" class="code-example-copy" title="Copy the source">${buttonContent("copy", "Copy")}</button>` + `<div class="code-example-editor"><div class="code-example-paint" aria-hidden="true"></div></div></div>` + (dfDollar(root).attr("data-schema") ? `<div class="code-example-panel" data-panel="state" hidden></div>` : "");
 }
 function ensureShell(root) {
   const $root = dfDollar(root);
@@ -767,6 +860,8 @@ function onMessage(root, d) {
   const c = root._ce;
   if (d.kind === "ready") {
     send(root, "read-state");
+    if (c.vpMode === "print")
+      send(root, "set-print", { value: true });
     c.ready = true;
     if (!root.preview)
       root.preview = previewHandle(root);
@@ -778,8 +873,9 @@ function onMessage(root, d) {
       applyControl(root, name, c.observed[name]);
   } else if (d.kind === "source") {
     if (d.source && !c.rerunTimer && document.activeElement !== c.src && c.src.value === c.lastRun) {
-      writeSource(root, d.source);
-      c.lastRun = d.source;
+      const source = relink(c.links, d.source, true);
+      writeSource(root, source);
+      c.lastRun = source;
     }
   } else if (d.kind === "error")
     showError(root, d.message || "Preview error", d.stack);
@@ -900,6 +996,8 @@ function scheduleFit(root) {
 }
 function vpSetMode(root, mode) {
   const c = root._ce;
+  if (mode === "print" !== (c.vpMode === "print"))
+    send(root, "set-print", { value: mode === "print" });
   c.vpMode = mode;
   c.fitFrozen = false;
   const dev = !!VP_DEVICES[mode];
@@ -914,7 +1012,7 @@ function vpSetMode(root, mode) {
     c.vpH.placeholder = "Height";
     c.vpH.value = String(VP_DEVICES[mode][1]);
   } else {
-    c.vpW.value = mode === "desktop" ? "1024" : "";
+    c.vpW.value = mode === "desktop" ? "1024" : mode === "print" ? String(VP_PRINT_WIDTH) : "";
     c.vpH.value = "";
     c.vpH.placeholder = "Full";
   }
@@ -1107,6 +1205,7 @@ df$.codeExample = {
       }
     });
   },
+  bundlesFor: (source) => neededBundles(source),
   source: (target) => resolveCard(target)?._ce?.src.value ?? "",
   setSource(target, source) {
     const root = resolveCard(target);
@@ -1230,6 +1329,7 @@ function initCard(root) {
     editor: part(root, ".code-example-editor"),
     paint: part(root, ".code-example-paint"),
     minHeight: Math.max(MIN_FRAME_HEIGHT, (Number(dfDollar(root).attr("data-height")) || 0) * REM_PX),
+    links: readLinks(root),
     rows: {},
     observed: {},
     lastRun: "",
@@ -1346,10 +1446,14 @@ async function loadVendor(toolNames) {
   ]);
   return { EditorJS, marked, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
 }
+var HEADING_ATTRS = /[ \t]*\{[#.][^{}]*\}[ \t]*$/;
 function markdownToBlocks(md, marked) {
+  return parseMarkdown(md, marked).blocks;
+}
+function parseMarkdown(md, marked) {
   const inline = (t) => marked.parseInline(t).replace(/<code>/g, '<code class="inline-code">').replace(/<(\/?)strong>/g, "<$1b>").replace(/<(\/?)em>/g, "<$1i>");
   const items = (list) => (list.items ?? []).map((it) => {
-    const own = (it.tokens ?? []).filter((t) => t.type !== "list");
+    const own = (it.tokens ?? []).filter((t) => t.type !== "list" && t.type !== "checkbox");
     const sub = (it.tokens ?? []).find((t) => t.type === "list");
     return {
       content: inline(own.map((t) => t.text ?? t.raw ?? "").join(" ").trim()),
@@ -1358,12 +1462,21 @@ function markdownToBlocks(md, marked) {
     };
   });
   const blocks = [];
+  const ranges = [];
+  let offset = 0;
   for (const t of marked.lexer(md)) {
+    const raw = t.raw ?? "";
+    const start = offset;
+    const count = blocks.length;
+    offset += raw.length;
     switch (t.type) {
       case "heading":
         blocks.push({
           type: "header",
-          data: { text: inline(t.text ?? ""), level: Math.min(6, Math.max(1, t.depth ?? 2)) }
+          data: {
+            text: inline((t.text ?? "").replace(HEADING_ATTRS, "")),
+            level: Math.min(6, Math.max(1, t.depth ?? 2))
+          }
         });
         break;
       case "paragraph":
@@ -1410,11 +1523,59 @@ function markdownToBlocks(md, marked) {
       default:
         break;
     }
+    const block = blocks[count];
+    if (block) {
+      const level = block.type === "header" ? block.data.level : undefined;
+      ranges.push({
+        block: "",
+        type: block.type,
+        ...level ? { level } : {},
+        start,
+        end: start + raw.trimEnd().length
+      });
+    }
   }
   blocks.forEach((b, i) => {
     b.id = `b${i + 1}`;
+    ranges[i].block = b.id;
   });
-  return blocks;
+  return { blocks, ranges };
+}
+function renderedText(slice, type, marked) {
+  if (type === "delimiter")
+    return "";
+  if (type === "code")
+    return slice.replace(/^[ \t]*(`{3,}|~{3,}).*\n?/, "").replace(/\n?[ \t]*(`{3,}|~{3,})[ \t]*$/, "");
+  let s = slice;
+  if (type === "header")
+    s = s.replace(/^[ \t]{0,3}#{1,6}(?:[ \t]+|$)/, "").replace(HEADING_ATTRS, "").replace(/[ \t]+#+[ \t]*$/, "");
+  else if (type === "list")
+    s = s.replace(/^[ \t]*(?:[*+-]|\d+[.)])[ \t]+(?:\[[ xX]\][ \t]+)?/gm, "");
+  else if (type === "quote")
+    s = s.replace(/^[ \t]*>[ \t]?/gm, "");
+  else if (type === "table")
+    s = s.replace(/^[\s|]+|[\s|]+$/g, "");
+  return new DOMParser().parseFromString(marked.parseInline(s), "text/html").body.textContent ?? "";
+}
+var lastRanges = null;
+function sourceRanges(md, marked) {
+  if (lastRanges?.md !== md)
+    lastRanges = { md, ranges: parseMarkdown(md, marked).ranges };
+  return lastRanges.ranges;
+}
+function locate(md, marked, start, end) {
+  const range = sourceRanges(md, marked).find((r) => start >= r.start && start < r.end);
+  if (!range)
+    return null;
+  const stop = Math.min(Math.max(end, start), range.end);
+  const text = renderedText(md.slice(start, stop), range.type, marked).trim();
+  if (!text)
+    return null;
+  const upTo = renderedText(md.slice(range.start, stop), range.type, marked);
+  let occurrence = -1;
+  for (let at = upTo.indexOf(text);at >= 0; at = upTo.indexOf(text, at + 1))
+    occurrence++;
+  return { block: range.block, text, occurrence: Math.max(0, occurrence) };
 }
 function inlineToMarkdown(html) {
   return html.replace(/<br\s*\/?>/gi, `  
@@ -1590,7 +1751,7 @@ function syncToolbar(el) {
   const node = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? anchor : anchor.parentElement);
   const holder = node && el.contains(node) ? node.closest(".ce-block") : null;
   const level = holder ? dfDollar2(holder).find(".ce-header").get(0)?.tagName.replace(/^H/i, "") ?? "" : "";
-  const listStyle = holder && dfDollar2(holder).find(".cdx-list").length ? dfDollar2(holder).find(".cdx-list--checklist").length ? "checklist" : dfDollar2(holder).find(".cdx-list--ordered").length ? "ordered" : "unordered" : "";
+  const listStyle = holder && dfDollar2(holder).find(".cdx-list").length ? dfDollar2(holder).find(".cdx-list-checklist").length ? "checklist" : dfDollar2(holder).find(".cdx-list-ordered").length ? "ordered" : "unordered" : "";
   dfDollar2(bar).find("[data-editor-command]").toArray().forEach((b) => {
     const name = b.dataset.editorCommand ?? "";
     const [kind, arg] = name.split(":");
@@ -1729,10 +1890,18 @@ df$2.editorjs = {
     const marked = resolve(target)?._marked;
     return marked ? markdownToBlocks(markdown, marked) : [];
   },
+  sourceMap: (target, markdown) => {
+    const marked = resolve(target)?._marked;
+    return marked ? structuredClone(sourceRanges(markdown, marked)) : [];
+  },
+  locate: (target, markdown, start, end) => {
+    const marked = resolve(target)?._marked;
+    return marked ? locate(markdown, marked, start, end) : null;
+  },
   toMarkdown: (blocks) => blocksToMarkdown(blocks)
 };
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=9A89C0930BC0AE0664756E2164756E21
+//# debugId=BE5813AA371775EA64756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map

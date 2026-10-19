@@ -66,6 +66,15 @@
     color: var(--muted-foreground);
   }
 
+  /* a print lays the page out at the paper's width: the drawing still has its
+     screen width until chart.js redraws it there, and must not widen the
+     printed page meanwhile - Chromium would shrink the whole print to fit */
+  @media print {
+    .chart {
+      overflow: clip;
+    }
+  }
+
   @media (prefers-contrast: more) {
     .chart-frame {
       border-width: 2px;

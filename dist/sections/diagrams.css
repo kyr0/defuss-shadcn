@@ -1889,6 +1889,23 @@
     background-image: none;
   }
 
+  /* -- print: paper does not scroll - a printed diagram takes the print width:
+     diagram.js redraws it in the print layout, and the redraw fits a canvas
+     wider than the figure the way a narrow screen does (zoom, never below
+     0.7). Its screen-sized labels must not widen the printed page meanwhile -
+     Chromium would shrink the whole print to fit. VERIFIED: (Chromium page.pdf
+     probe 2026-10-12) the wire label layer at its screen geometry widened the
+     print layout through the figure's clip; size containment on it stops
+     that, clip and paint containment do not. */
+  @media print {
+    .diagram {
+      overflow: clip;
+    }
+    .diagram-wire-labels {
+      contain: size;
+    }
+  }
+
   /* -- accessibility -------------------------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .diagram *,

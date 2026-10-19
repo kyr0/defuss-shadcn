@@ -126,9 +126,9 @@ Nested `<ul>` elements with `role="tree"` / `role="treeitem"` ARIA pattern for h
 ## States
 
 The api is bound **per branch** (`<details class="tree-branch">`). Declared
-states: `default` (the branch's authored open/closed state, restored via the
-init snapshot) · `expanded` (branch open; `aria-expanded` on the treeitem
-stays in sync through the native toggle event).
+states: `default` (branch closed) · `expanded` (branch open; `aria-expanded`
+on the treeitem stays in sync through the native toggle event). A branch
+written `open` starts in `expanded`, and `setState('default')` closes it.
 
 ```js
 document.querySelector('#my-branch').api.setState('expanded');

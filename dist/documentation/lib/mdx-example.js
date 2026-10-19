@@ -107,6 +107,36 @@ function codeExampleNode(node, pageComponent) {
         attributes.push(jsxAttr('sandbox', attrs.sandbox));
     return { type: 'mdxJsxFlowElement', name: 'CodeExample', attributes, children: [] };
 }
+/**
+ * True for the meta of a ```html example part fence - an individual example, rendered as a compact card
+ * (lib/components/part-card.tsx). The flags are the words outside the attribute values: a hint that says "is part of"
+ * is no part fence. VERIFIED: (tmp/gen-all.log, 2026-10-16) a bare word test took 5 fences for parts by their hints.
+ * The one reader of the flag - the remark plugin, the verifier (scripts/lib/example-parts.ts) and the Studio's library
+ * ask it.
+ */
+export function isPartMeta(meta) {
+    const flags = fenceFlags(meta);
+    return flags.includes('example') && flags.includes('part');
+}
+/** A fence meta's bare words - its language and flags (`html example part`), the attribute values left out. */
+export function fenceFlags(meta) {
+    return meta.replace(/([a-zA-Z-]+)="(.*?)"(?=\s+[a-zA-Z-]+="|\s*$)/g, ' ').trim().split(/\s+/);
+}
+const isPart = (node) => node.type === 'code' && isPartMeta(node.meta ?? '');
+/** A run of part fences → one <PartCards> grid of <PartCard>s - the same normalized source a full card would show. */
+function partCardsNode(run) {
+    return {
+        type: 'mdxJsxFlowElement',
+        name: 'PartCards',
+        attributes: [],
+        children: run.map((node) => ({
+            type: 'mdxJsxFlowElement',
+            name: 'PartCard',
+            attributes: [jsxAttr('source', normalizeFenceHtml(node.value)), jsxAttr('label', fenceAttrs(node.meta ?? '').label ?? 'Part')],
+            children: [],
+        })),
+    };
+}
 function statesTableNode(node) {
     return {
         type: 'mdxJsxFlowElement',
@@ -206,11 +236,20 @@ function transform(tree, pageComponent, libBase = '../lib/components/') {
     let mermaid = false;
     let diagram = false;
     let windows = false;
+    let parts = false;
     const visit = (node) => {
         if (!Array.isArray(node.children))
             return;
         for (let i = 0; i < node.children.length; i++) {
             const child = node.children[i];
+            if (isPart(child)) {
+                let end = i;
+                while (end + 1 < node.children.length && isPart(node.children[end + 1]))
+                    end++;
+                node.children.splice(i, end - i + 1, partCardsNode(node.children.slice(i, end + 1)));
+                parts = true;
+                continue;
+            }
             if (child.type === 'code') {
                 const meta = (child.meta ?? '').trim();
                 const lang = (child.lang ?? '').toLowerCase();
@@ -252,9 +291,11 @@ function transform(tree, pageComponent, libBase = '../lib/components/') {
         tree.children.unshift(importNode(['SpecDiagram'], `${libBase}spec-diagram`));
     if (windows)
         tree.children.unshift(fenceWindowImport(libBase));
-    return used || mermaid || diagram || windows;
+    if (parts)
+        tree.children.unshift(importNode(['PartCards', 'PartCard'], `${libBase}part-card`));
+    return used || mermaid || diagram || windows || parts;
 }
-/** remark plugin: ```… example / ```states / ```mermaid / ```diagram / plain fences → CodeExample / StatesTable / MermaidDiagram / SpecDiagram / CodeWindow. */
+/** remark plugin: ```… example / ```… example part (a run of them) / ```states / ```mermaid / ```diagram / plain fences → CodeExample / PartCards / StatesTable / MermaidDiagram / SpecDiagram / CodeWindow. */
 export function remarkDocExamples() {
     return (tree, file) => {
         // pages/<section>/{name}.mdx → the page's own component (plan §23)
@@ -262,7 +303,7 @@ export function remarkDocExamples() {
         // the injected imports reach lib/ from the page's folder: one level more below pages/
         const dir = String(file?.dirname ?? '').replace(/\\/g, '/');
         // VERIFIED: a page under pages/<section>/ imports the lib two levels up - the plain ../lib/ failed to load for every moved page
-        const libBase = dir && !/\/pages$/.test(dir) ? '../../lib/components/' : '../lib/components/';
+        const libBase = dir && !dir.endsWith('/pages') ? '../../lib/components/' : '../lib/components/';
         transform(tree, /^[a-z0-9-]+$/.test(pageComponent) ? pageComponent : '', libBase);
     };
 }

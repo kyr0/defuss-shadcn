@@ -8573,6 +8573,42 @@
       font-size: 0.8125rem;
     }
   }
+
+  /* -- Print: a long table runs over pages. VERIFIED: (tmp/print-table-probe.ts + -probe2.ts, Chromium 153, A4)
+     the header row repeats on every page and in every column by itself - inside this scroll wrapper too; the
+     footer row repeats as well, so a total printed on every page: tfoot prints once, at the end, unless the
+     table asks for a running footer (data-repeat-footer); a row taller than the rest of its page split over
+     two, so rows stay whole unless data-break-inside="allow" lets them split; data-keep-last keeps the last
+     three rows with the footer and with what follows the table (a totals block that sets break-before: avoid
+     pulls them along), so the end never lands alone on a page. */
+  @media print {
+    .table-container {
+      /* Chromium fragments a scroll box in print anyway; another engine may clip it */
+      overflow: visible;
+      /* each page's piece of the table keeps its frame */
+      box-decoration-break: clone;
+    }
+    .table-container:has(> .table[data-sticky-header]) {
+      overflow: visible;
+      max-height: none;
+    }
+    .table[data-sticky-header] thead .table-head {
+      position: static;
+    }
+    .table:not([data-repeat-footer]) > tfoot {
+      display: table-row-group;
+
+      & > tr:first-child {
+        break-before: avoid;
+      }
+    }
+    .table:not([data-break-inside="allow"]) tr {
+      break-inside: avoid;
+    }
+    .table[data-keep-last] > tbody:last-of-type > tr:nth-last-child(-n + 3) {
+      break-before: avoid;
+    }
+  }
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
@@ -9632,6 +9668,11 @@
     font-size: 0.875rem;
     line-height: 1.5;
   }
+  /* code reads in the theme's monospace stack, not the browser's default (a
+     Courier on macOS) - zero specificity, so a component's own face wins */
+  :where(code, kbd, samp, pre) {
+    font-family: var(--font-mono);
+  }
 }
 
 @layer components {
@@ -9852,6 +9893,7 @@
        data-ligatures="classic"  discretionary and historical ligatures,
                                  old-style figures - where the font has them
        data-leading="tight|loose"  compact or airy lines, the tracking matched
+       data-orphans / data-widows="3|4"  lines kept together at a break (2)
      .typeset-span spans every column (a heading, a figure). Figures, tables,
      quotes, groups and Separator breaks keep --typeset-gap from the text -
      the Separator component draws the break, this block only spaces it.
@@ -9879,7 +9921,11 @@
     orphans: 2;
     widows: 2;
 
-    & > p {
+    /* a .typeset-keep is a wrapper, not a block: what it holds is spaced as
+       if it sat in the setting itself (each rule names both paths - :is()
+       would raise the direct path's specificity to the wrapper path's) */
+    & > p,
+    & > .typeset-keep > p {
       margin-block: 0 1em;
     }
     /* every block keeps the same distance from the text around it */
@@ -9896,24 +9942,94 @@
         .diagram,
         .mockup-code,
         .table-container
+      ),
+    &
+      > .typeset-keep
+      > :is(
+        figure,
+        table,
+        blockquote,
+        pre,
+        hr,
+        .separator,
+        .typeset-group,
+        .chart,
+        .diagram,
+        .mockup-code,
+        .table-container
       ) {
       margin-block: var(--typeset-gap);
     }
     /* a figure spans the measure (the browser indents it 40px by default) */
-    & > :is(figure, blockquote) {
+    & > :is(figure, blockquote),
+    & > .typeset-keep > :is(figure, blockquote) {
       margin-inline: 0;
     }
-    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
+    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4),
+    & > .typeset-keep > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
       margin-block: var(--typeset-gap) 0.5em;
     }
-    & > :first-child {
+    & > :first-child,
+    & > .typeset-keep:first-child > :first-child {
       margin-block-start: 0;
     }
     & :is(figure, blockquote, table, pre, .typeset-group) {
       break-inside: avoid;
     }
+    /* a long table or listing may split: kept whole, it would leave the rest
+       of a page empty, and one taller than a page splits anyway. Every piece
+       keeps the frame (clone): sliced, the first piece lost its bottom border
+       and corners at the column foot, the next its top. A figure that may
+       split lets the listing inside it split too, and its caption stays with
+       the last piece.
+       VERIFIED: (Chromium PDF probe 2026-10-12) a framed listing split over
+       two columns and over two pages prints a closed, rounded frame on each. */
+    & [data-break-inside="allow"],
+    & [data-break-inside="allow"] :is(figure, blockquote, table, pre, .typeset-group, .mockup-code) {
+      break-inside: auto;
+      box-decoration-break: clone;
+    }
+    /* ... and a listing that may split does not scroll sideways: Chromium
+       never breaks a scroll container, so the listing moved whole and left its
+       caption behind - wrap its lines instead (pre-wrap, a Code Mockup's
+       data-wrap). VERIFIED: (Chromium probe 2026-10-12) overflow-x: auto kept
+       the paper's closing report whole at 900px, overflow-x: visible split it. */
+    & :is(pre, .mockup-code):is([data-break-inside="allow"], [data-break-inside="allow"] *) {
+      overflow-x: visible;
+    }
+    /* a caption never breaks alone to the next column or page - on screen,
+       where the columns balance, as in print. A figure that may split is a
+       block, its caption kept to the last piece (below) or the first (above).
+       VERIFIED: (Chromium, screen and PDF 2026-10-12) in a grid figure the
+       keep did nothing and the caption stood alone at the head of the next
+       column; in block flow the break moved up into the listing and two lines
+       went along with the caption. A figure group keeps its grid. */
+    & figure[data-break-inside="allow"]:not(.typeset-group) {
+      display: block;
+
+      & > figcaption:last-child {
+        break-before: avoid;
+      }
+      & > figcaption:first-child {
+        break-after: avoid;
+      }
+    }
     & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
       break-after: avoid;
+    }
+    /* the lines a paragraph keeps together at a column or page break: at the
+       foot of the column (orphans) and at the head of the next (widows) */
+    &[data-orphans="3"] {
+      orphans: 3;
+    }
+    &[data-orphans="4"] {
+      orphans: 4;
+    }
+    &[data-widows="3"] {
+      widows: 3;
+    }
+    &[data-widows="4"] {
+      widows: 4;
     }
     & .typeset-span {
       column-span: all;
@@ -9921,7 +10037,8 @@
     /* the columns below a spanning heading or figure start level: the first
        block keeps no top margin - across the column break it cannot collapse
        into the spanner's, so a subheading sat lower than the text beside it */
-    &[data-columns] > .typeset-span + :not(.typeset-span) {
+    &[data-columns] > .typeset-span + :not(.typeset-span),
+    &[data-columns] > .typeset-span + .typeset-keep > :first-child {
       margin-block-start: 0;
     }
 
@@ -9964,16 +10081,21 @@
       --typeset-tracking: 0.01em;
     }
 
-    &[data-indent] > p {
+    &[data-indent] > p,
+    &[data-indent] > .typeset-keep > p {
       margin-block: 0;
     }
-    &[data-indent] > p + p {
+    &[data-indent] > p + p,
+    &[data-indent] > .typeset-keep > p + p,
+    &[data-indent] > p + .typeset-keep > p:first-child,
+    &[data-indent] > p + .typeset-break + p {
       text-indent: var(--typeset-indent);
     }
     /* text-indent inherits into an inline-block, which then indents ITS first line: a badge,
        a key cap or an epistemic tag at the start of an indented paragraph grew a blank
        inside its left edge */
-    &[data-indent] > p :where(.badge, kbd, .paper-tag) {
+    &[data-indent] > p :where(.badge, kbd, .paper-tag),
+    &[data-indent] > .typeset-keep > p :where(.badge, kbd, .paper-tag) {
       text-indent: 0;
     }
 
@@ -10016,6 +10138,14 @@
      opened wide gaps between its words. Flush start and unhyphenated - zero
      specificity, so an alignment the heading sets itself still wins */
   :where(.typeset[data-align="justify"]) :where(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4) {
+    text-align: start;
+    text-align-last: auto;
+    hyphens: manual;
+  }
+  /* a verbatim record keeps its spacing: justified, a wrapped line of program
+     output opened wide gaps between its words, and hyphenation split its
+     identifiers (pa-per.mdx) - a pre is set flush start, unhyphenated */
+  :where(.typeset[data-align="justify"]) :where(pre) {
     text-align: start;
     text-align-last: auto;
     hyphens: manual;
@@ -10178,6 +10308,88 @@
     }
   }
 
+  /* -- Breaks and keeps (Umbruch): where a printed page or column ends -----
+     .typeset-break is an empty marker that forces a break before the next
+     block: data-break="page" (the default), "column" (inside data-columns),
+     "left" / "right" (the next page is a left / right page - duplex). It
+     breaks in print only: a screen has no pages, and a column break in a
+     balanced screen column would push the rest of the text into the last
+     column. In print it is a zero-height box carrying break-before -
+     display: none would remove the box and the break with it. On screen it
+     is hidden; [data-show-breaks] on an ancestor shows every marker as a
+     labelled dashed line, an authoring aid.
+     .typeset-keep keeps its content in one column and on one page (avoid
+     covers both - avoid-page would still let a column break split it).
+     VERIFIED: (typography.e2e "breaks and keeps", paper.e2e "print") the
+     computed breaks in print media; a printed PDF with a page and a column
+     break; a zero-height break in the paper's grid leaves no gap at the top
+     of the new page. */
+  .typeset-break {
+    display: none;
+  }
+  @media screen {
+    [data-show-breaks] .typeset-break {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+      margin-block: 1em;
+      color: var(--muted-foreground);
+      font: 500 0.6875rem/1 var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+
+      &::before {
+        content: "Page break";
+      }
+      &[data-break="column"]::before {
+        content: "Column break";
+      }
+      &[data-break="left"]::before {
+        content: "Page break - left page";
+      }
+      &[data-break="right"]::before {
+        content: "Page break - right page";
+      }
+      &::after {
+        content: "";
+        flex: 1;
+        border-block-start: 1px dashed currentColor;
+      }
+    }
+  }
+  @media print {
+    .typeset-break {
+      display: block;
+      block-size: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      visibility: hidden;
+      break-before: page;
+
+      &[data-break="column"] {
+        break-before: column;
+      }
+      &[data-break="left"] {
+        break-before: left;
+      }
+      &[data-break="right"] {
+        break-before: right;
+      }
+    }
+    /* a printed column rule runs straight through a spanning heading or
+       figure that starts a page - so a setting with spanners prints without it.
+       VERIFIED: (Chromium PDF probe 2026-10-12) a column-span: all block that a
+       natural page break puts at the top of a page is crossed by the rule; an
+       opaque background hides it only while background graphics print. */
+    .typeset[data-rule]:has(> .typeset-span) {
+      column-rule-style: none;
+    }
+  }
+  .typeset-keep {
+    break-inside: avoid;
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-contrast: more) {
@@ -10200,7 +10412,8 @@
       outline: 1px solid var(--border);
     }
 
-    .muted {
+    .muted,
+    [data-show-breaks] .typeset-break {
       color: var(--foreground);
     }
 

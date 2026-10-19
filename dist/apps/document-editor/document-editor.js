@@ -1706,6 +1706,590 @@ function debounce(fn, wait) {
   };
   return wrapped;
 }
+// src/shared/math.ts
+var MAX_BYTES = 2097152;
+var MAX_TEX = 65536;
+function mathClone(value, maxBytes = MAX_BYTES) {
+  let nodes = 0;
+  const path = new Set;
+  const visit = (v, depth) => {
+    if (++nodes > 20000 || depth > 96)
+      throw new Error("math data exceeds the node or depth limit");
+    if (v === null || typeof v === "string" || typeof v === "boolean")
+      return;
+    if (typeof v === "number") {
+      if (!Number.isFinite(v))
+        throw new Error("math data holds a non-finite number");
+      return;
+    }
+    if (typeof v !== "object" || path.has(v))
+      throw new Error("math data must be acyclic JSON");
+    const proto = Object.getPrototypeOf(v);
+    if (!Array.isArray(v) && proto !== Object.prototype && proto !== null)
+      throw new Error("math data must hold plain objects");
+    path.add(v);
+    for (const [k, x] of Object.entries(v)) {
+      if (k === "__proto__" || k === "prototype" || k === "constructor")
+        throw new Error(`math data key "${k}"`);
+      visit(x, depth + 1);
+    }
+    path.delete(v);
+  };
+  visit(value, 0);
+  if (new TextEncoder().encode(JSON.stringify(value)).length > maxBytes)
+    throw new Error("math data exceeds the size limit");
+  return structuredClone(value);
+}
+function mathText(value) {
+  if (typeof value !== "string" || new TextEncoder().encode(value).length > MAX_TEX)
+    throw new Error("TeX must be a string of at most 65,536 bytes");
+  return value;
+}
+// src/shared/query.ts
+var MORPH_METHODS = [
+  "morph",
+  "getRenderer",
+  "htmlStringToVNodes",
+  "renderMarkup",
+  "domNodeToVNode",
+  "registerDelegatedEvent",
+  "clearDelegatedEventsDeep",
+  "handleLifecycleEventsForOnMount"
+];
+var RUNTIME_INCOMPLETE = "defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone";
+function defussQuery() {
+  const candidate = Reflect.get(globalThis, "df$");
+  if (typeof candidate === "function") {
+    const prototype = Reflect.get(candidate, "fn");
+    if (typeof Reflect.get(candidate, "queryVersion") === "string" && typeof prototype === "object" && prototype !== null && typeof Reflect.get(prototype, "morph") === "function" && MORPH_METHODS.every((name) => typeof Reflect.get(candidate, name) === "function")) {
+      return candidate;
+    }
+  }
+  throw new Error(RUNTIME_INCOMPLETE);
+}
+
+// src/shared/media.ts
+var TEXT_KINDS = ["subtitles", "captions", "descriptions"];
+var num = (v, fallback) => {
+  const n = typeof v === "number" ? v : parseFloat(String(v));
+  return Number.isFinite(n) ? n : fallback;
+};
+var pad = (n) => String(n).padStart(2, "0");
+var esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+var put = (el, name, value) => {
+  if (el.getAttribute(name) !== value)
+    defussQuery()(el).attr(name, value);
+};
+function mediaTime(seconds, total = seconds) {
+  const s = Number.isFinite(seconds) && seconds > 0 ? Math.floor(seconds + 0.000001) : 0;
+  const h = Math.floor(s / 3600);
+  const m = Math.floor(s % 3600 / 60);
+  return h > 0 || Number.isFinite(total) && total >= 3600 ? `${h}:${pad(m)}:${pad(s % 60)}` : `${m}:${pad(s % 60)}`;
+}
+function mediaOf(root) {
+  if (!root)
+    return null;
+  if (root instanceof HTMLMediaElement)
+    return root;
+  return defussQuery()(root).find("video, audio").get(0) ?? null;
+}
+function controlsOf(root, prefix, inside = true) {
+  const $ = defussQuery();
+  const sel = `[data-${prefix}-action], [data-${prefix}-output]`;
+  const out = inside ? $(root).find(sel).toArray() : [];
+  if (root.id)
+    for (const bound of $(`[data-${prefix}-for="${CSS.escape(root.id)}"]`).toArray()) {
+      if (bound.matches(sel))
+        out.push(bound);
+      out.push(...$(bound).find(sel).toArray());
+    }
+  return out;
+}
+function playerOf(control, prefix) {
+  const near = control.closest(`[data-${prefix}-for], .${prefix}`);
+  if (!near)
+    return null;
+  const id = near.getAttribute(`data-${prefix}-for`);
+  if (id === null)
+    return near;
+  return defussQuery()(`#${CSS.escape(id)}`).get(0) ?? null;
+}
+function mediaRead(root) {
+  const m = mediaOf(root);
+  return {
+    playing: !!m && !m.paused && !m.ended,
+    config: {
+      time: m ? m.currentTime : 0,
+      duration: m && Number.isFinite(m.duration) ? m.duration : 0,
+      rate: m ? m.playbackRate : 1,
+      volume: m ? m.volume : 1,
+      muted: m ? m.muted : false,
+      captions: m ? shownKey(root, m) : ""
+    }
+  };
+}
+function shownKey(root, m) {
+  if (root._mediaCaptions === false || !root._mediaTrack)
+    return "";
+  return mediaTextList(m).find((e) => e.track === root._mediaTrack)?.key ?? "";
+}
+function mediaTextTracks(media, tracks, owner, replace = true) {
+  if (typeof VTTCue === "undefined")
+    return [];
+  const reg = media._mediaTexts ??= new Map;
+  const retired = media._mediaRetired ??= new WeakSet;
+  const wanted = (Array.isArray(tracks) ? tracks : []).filter((t) => t && t.id != null && Array.isArray(t.items));
+  const ids = new Set(wanted.map((t) => String(t.id)));
+  const empty = (k) => {
+    for (const cue of k.cues)
+      k.track.removeCue(cue);
+    k.cues = [];
+    if (k.track.mode !== "disabled")
+      k.track.mode = "disabled";
+  };
+  if (replace) {
+    for (const [key, k] of reg)
+      if (k.owner === owner && !k.retired && !ids.has(key)) {
+        empty(k);
+        k.retired = true;
+      }
+  }
+  const before = mediaTextList(media).some((e) => e.track.mode !== "disabled");
+  const fresh = [];
+  for (const t of wanted) {
+    const key = String(t.id);
+    const kind = TEXT_KINDS.includes(String(t.kind)) ? String(t.kind) : "subtitles";
+    let k = reg.get(key);
+    if (k && k.kind !== kind) {
+      empty(k);
+      retired.add(k.track);
+      reg.delete(key);
+      k = undefined;
+    }
+    if (k?.retired) {
+      k.retired = false;
+      fresh.push({ k, first: !!t.default });
+    }
+    if (k)
+      k.owner = owner;
+    else {
+      k = {
+        track: media.addTextTrack(kind, String(t.label ?? key), String(t.lang ?? "")),
+        owner,
+        kind,
+        label: "",
+        lang: "",
+        cues: []
+      };
+      k.track.mode = "disabled";
+      reg.set(key, k);
+      fresh.push({ k, first: !!t.default });
+    }
+    k.label = String(t.label ?? key);
+    k.lang = String(t.lang ?? "");
+    for (const cue of k.cues)
+      k.track.removeCue(cue);
+    k.cues = [];
+    for (const item of t.items) {
+      const start = num(item?.start, NaN);
+      const end = num(item?.end, NaN);
+      const text = String(item?.text ?? item?.label ?? "");
+      if (Number.isFinite(start) && Number.isFinite(end) && end > start && text) {
+        const cue = new VTTCue(start, end, text);
+        k.track.addCue(cue);
+        k.cues.push(cue);
+      }
+    }
+  }
+  if (!before && fresh.length)
+    (fresh.find((f) => f.first) ?? fresh[0]).k.track.mode = "showing";
+  return [...ids];
+}
+function mediaTextList(media) {
+  const reg = media._mediaTexts ?? new Map;
+  const retired = media._mediaRetired;
+  const keyOf = new Map;
+  for (const [key, k] of reg)
+    keyOf.set(k.track, key);
+  const seen = new Set(reg.keys());
+  const out = [];
+  Array.from(media.textTracks).forEach((t, i) => {
+    if (!TEXT_KINDS.includes(t.kind) || retired?.has(t))
+      return;
+    const keyed = keyOf.get(t);
+    if (keyed !== undefined) {
+      const k = reg.get(keyed);
+      if (!k.retired)
+        out.push({ key: keyed, kind: t.kind, label: k.label, lang: k.lang, track: t });
+      return;
+    }
+    const base = t.id || t.language || t.label || `track-${i + 1}`;
+    let key = base;
+    for (let n = 2;seen.has(key); n++)
+      key = `${base}-${n}`;
+    seen.add(key);
+    out.push({ key, kind: t.kind, label: t.label || key, lang: t.language, track: t });
+  });
+  return out;
+}
+function mediaMarkup(root, prefix, name, config, controls = defussQuery()(root).find(`[data-${prefix}-action]`).toArray()) {
+  const $ = defussQuery();
+  const pressed = (el, on) => put(el, "aria-pressed", on ? "true" : "false");
+  for (const el of controls) {
+    const action = el.getAttribute(`data-${prefix}-action`);
+    if (action === "toggle")
+      pressed(el, name === "playing");
+    else if (action === "mute" && config.muted !== undefined)
+      pressed(el, !!config.muted);
+    else if (action === "captions" && config.captions !== undefined)
+      pressed(el, config.captions !== "" && config.captions !== false);
+    else if (action === "volume" && config.volume !== undefined && el instanceof HTMLInputElement) {
+      put(el, "value", String(config.volume));
+      if (el.value !== String(config.volume))
+        el.value = String(config.volume);
+    } else if (action === "rate" && config.rate !== undefined) {
+      if (el instanceof HTMLSelectElement)
+        for (const option of Array.from(el.options)) {
+          const on = num(option.value, NaN) === config.rate;
+          put(option, "selected", on ? "" : null);
+          if (on && el.value !== option.value)
+            el.value = option.value;
+        }
+      else if (el.hasAttribute("data-value"))
+        pressed(el, num(el.getAttribute("data-value"), NaN) === config.rate);
+    }
+  }
+  const media = root instanceof HTMLMediaElement ? root : $(root).find("video, audio").get(0);
+  if (media && config.muted !== undefined)
+    put(media, "muted", config.muted ? "" : null);
+}
+function paintCaptions(root, prefix) {
+  const overlay = defussQuery()(root).find(`.${prefix}-captions`);
+  if (!overlay.length)
+    return;
+  const track = root._mediaTrack;
+  const t = mediaOf(root)?.currentTime ?? 0;
+  const text = root._mediaCaptions !== false && track?.cues ? Array.from(track.cues).filter((c) => c.startTime <= t && t < c.endTime).map((c) => (c.text ?? "").replace(/<[^>]+>/g, "")).join(`
+`) : "";
+  if (overlay.text() !== text)
+    overlay.text(text);
+}
+function takeCaptions(root, prefix) {
+  const m = mediaOf(root);
+  if (!m)
+    return;
+  const list = mediaTextList(m);
+  const asked = root._mediaWanted ? list.find((e) => e.key === root._mediaWanted) : undefined;
+  if (asked)
+    root._mediaWanted = undefined;
+  const showing = list.filter((e) => e.track.mode === "showing").pop();
+  const chosen = asked ?? showing ?? list.find((e) => e.track === root._mediaTrack) ?? list[0];
+  root._mediaTrack = chosen?.track;
+  for (const e of list) {
+    const mode = e === chosen && root._mediaCaptions !== false ? "hidden" : "disabled";
+    if (e.track.mode !== mode)
+      e.track.mode = mode;
+  }
+  const track = root._mediaTrack;
+  if (track && !(root._mediaCued ??= new WeakSet).has(track)) {
+    root._mediaCued.add(track);
+    track.addEventListener("cuechange", () => paintCaptions(root, prefix));
+  }
+  paintCaptions(root, prefix);
+  captionsMenus(root, prefix, list);
+}
+var menuLabels = (root) => ({
+  off: "Off",
+  subtitles: "Subtitles",
+  descriptions: "Video captions",
+  ...root._mediaLabels
+});
+var menuItem = (key, text, extra = "") => `<button class="dropdown-item dropdown-radio" role="menuitemradio" aria-checked="false" tabindex="-1" data-value="${esc(key)}">${esc(text)}${extra}</button>`;
+function captionsMenus(root, prefix, list) {
+  const $ = defussQuery();
+  const shown = root._mediaCaptions === false ? "" : list.find((e) => e.track === root._mediaTrack)?.key ?? "";
+  const labels = menuLabels(root);
+  const heard = list.filter((e) => e.kind !== "descriptions");
+  const seen = list.filter((e) => e.kind === "descriptions");
+  let items = menuItem("", labels.off);
+  for (const [name, entries] of [
+    [labels.subtitles, heard],
+    [labels.descriptions, seen]
+  ]) {
+    if (!entries.length)
+      continue;
+    items += '<div class="dropdown-separator" role="separator"></div>';
+    items += entries.length === 1 ? menuItem(entries[0].key, name, `<span class="dropdown-shortcut">${esc(entries[0].label)}</span>`) : `<div class="dropdown-sub"><button class="dropdown-item dropdown-sub-trigger" role="menuitem" tabindex="-1">${esc(name)}<span class="dropdown-shortcut" data-${prefix}-menu-current></span></button><div class="dropdown-content dropdown-sub-content" role="menu" popover aria-label="${esc(name)}" data-size="sm">${entries.map((e) => menuItem(e.key, e.label)).join("")}</div></div>`;
+  }
+  for (const control of controlsOf(root, prefix)) {
+    if (control.getAttribute(`data-${prefix}-action`) !== "captions")
+      continue;
+    let menu = control._mediaMenu;
+    if (list.length < 2) {
+      if (menu)
+        for (const name of ["popovertarget", "aria-haspopup", "aria-controls", "aria-expanded"])
+          put(control, name, null);
+      continue;
+    }
+    if (!menu) {
+      let id = `${control.id || root.id || prefix}-captions-menu`;
+      for (let n = 2;$(`#${CSS.escape(id)}`).length; n++)
+        id = `${control.id || root.id || prefix}-captions-menu-${n}`;
+      menu = $(`<div class="dropdown-content" role="menu" popover id="${esc(id)}" data-size="sm" data-align="end" aria-label="${esc(control.getAttribute("aria-label") ?? "Captions")}"></div>`).get(0);
+      control._mediaMenu = menu;
+      const choose = (item) => {
+        if (!item || !item.hasAttribute("data-value") || !root.api)
+          return;
+        const m = mediaOf(root);
+        root.api.setState(m && !m.paused && !m.ended ? "playing" : "default", {
+          captions: item.getAttribute("data-value") ?? ""
+        });
+        if (menu.matches(":popover-open"))
+          menu.hidePopover();
+      };
+      menu.addEventListener("click", (e) => choose(e.target.closest('[role="menuitemradio"]')));
+      menu.addEventListener("dropdown:select", (e) => choose(e.detail?.item));
+      put(control, "data-dropdown-trigger", id);
+      if (root.contains(control))
+        $(root).append(menu);
+      else
+        $(control).after(menu);
+    }
+    put(control, "popovertarget", menu.id);
+    if (control.hasAttribute("data-init")) {
+      put(control, "aria-haspopup", "menu");
+      put(control, "aria-controls", menu.id);
+    }
+    if (menu._mediaItems !== items) {
+      menu._mediaItems = items;
+      $(menu).html(items);
+    }
+    for (const item of $(menu).find('[role="menuitemradio"]').toArray())
+      put(item, "aria-checked", item.getAttribute("data-value") === shown ? "true" : "false");
+    for (const current of $(menu).find(`[data-${prefix}-menu-current]`).toArray()) {
+      const sub = current.closest(".dropdown-sub");
+      const on = sub ? $(sub).find('[role="menuitemradio"][aria-checked="true"]').get(0) : undefined;
+      const text = on ? $(on).text() : "";
+      if ($(current).text() !== text)
+        $(current).text(text);
+    }
+  }
+}
+function mediaPaint(root, prefix) {
+  const $ = defussQuery();
+  const { playing, config } = mediaRead(root);
+  const controls = controlsOf(root, prefix);
+  mediaMarkup(root, prefix, playing ? "playing" : "default", config, controls);
+  const total = mediaTime(config.duration);
+  for (const el of controls) {
+    const action = el.getAttribute(`data-${prefix}-action`);
+    const output = el.getAttribute(`data-${prefix}-output`);
+    if (action === "seek" && el instanceof HTMLInputElement) {
+      if (config.duration > 0)
+        put(el, "max", String(config.duration));
+      put(el, "aria-valuetext", `${mediaTime(config.time, config.duration)} of ${total}`);
+      if (!el._mediaDragging && Math.abs(num(el.value, 0) - config.time) > 0.05) {
+        const slider = el.api;
+        if (slider?.setState)
+          slider.setState("default", { value: config.time });
+        else
+          el.value = String(config.time);
+      }
+    } else if (action === "fullscreen") {
+      put(el, "aria-pressed", document.fullscreenElement === root ? "true" : "false");
+    }
+    if (output) {
+      const text = output === "duration" ? total : output === "remaining" ? `-${mediaTime(config.duration - config.time, config.duration)}` : mediaTime(config.time, config.duration);
+      if ($(el).text() !== text)
+        $(el).text(text);
+    }
+  }
+  paintCaptions(root, prefix);
+}
+function mediaApply(root, prefix, name, config, incoming) {
+  const m = mediaOf(root);
+  if ("captions" in incoming) {
+    const v = incoming.captions;
+    root._mediaCaptions = !(v === false || v === "" || v === null);
+    root._mediaWanted = typeof v === "string" && v !== "" ? v : undefined;
+    takeCaptions(root, prefix);
+  }
+  if (m) {
+    const rate = num(incoming.rate, 0);
+    if (rate > 0 && m.playbackRate !== rate)
+      m.playbackRate = rate;
+    if ("volume" in incoming) {
+      const v = Math.min(1, Math.max(0, num(incoming.volume, m.volume)));
+      if (m.volume !== v)
+        m.volume = v;
+    }
+    if ("muted" in incoming && m.muted !== !!incoming.muted)
+      m.muted = !!incoming.muted;
+    if ("time" in incoming) {
+      const end = Number.isFinite(m.duration) ? m.duration : Infinity;
+      const t = Math.min(end, Math.max(0, num(incoming.time, m.currentTime)));
+      if (Math.abs(m.currentTime - t) > 0.001)
+        m.currentTime = t;
+    }
+  }
+  mediaMarkup(root, prefix, name, config, controlsOf(root, prefix));
+  if (!m)
+    return;
+  if (name === "playing" && m.paused)
+    return m.play().then(() => {
+      return;
+    }, () => {
+      return;
+    });
+  if (name !== "playing" && !m.paused)
+    m.pause();
+  return;
+}
+function mediaTracks(root, prefix, tracks, replace = false) {
+  const m = mediaOf(root);
+  if (!m)
+    return [];
+  const keys = mediaTextTracks(m, tracks, root, replace);
+  takeCaptions(root, prefix);
+  return keys;
+}
+function drive(root, prefix, control, event) {
+  const api = root.api;
+  const m = mediaOf(root);
+  if (!api || !m)
+    return;
+  const now = m.paused || m.ended ? "default" : "playing";
+  const action = control.getAttribute(`data-${prefix}-action`);
+  const value = control.value;
+  if (event.type === "click") {
+    if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement)
+      return;
+    if (action === "toggle")
+      api.setState(now === "playing" ? "default" : "playing");
+    else if (action === "play")
+      api.setState("playing");
+    else if (action === "pause")
+      api.setState("default");
+    else if (action === "skip")
+      api.setState(now, { time: m.currentTime + num(control.getAttribute("data-value"), 0) });
+    else if (action === "mute")
+      api.setState(now, { muted: !m.muted });
+    else if (action === "captions") {
+      takeCaptions(root, prefix);
+      if (!control.hasAttribute("popovertarget"))
+        api.setState(now, { captions: root._mediaCaptions === false || !root._mediaTrack ? true : "" });
+    } else if (action === "rate" && control.hasAttribute("data-value"))
+      api.setState(now, { rate: num(control.getAttribute("data-value"), 1) });
+    else if (action === "fullscreen") {
+      if (document.fullscreenElement === root)
+        document.exitFullscreen?.().catch(() => {
+          return;
+        });
+      else
+        root.requestFullscreen?.().catch(() => {
+          return;
+        });
+    }
+    return;
+  }
+  if (action === "seek" && control instanceof HTMLInputElement)
+    api.setState(now, { time: num(value, 0) });
+  else if (action === "volume" && control instanceof HTMLInputElement) {
+    const v = num(value, 1);
+    api.setState(now, v > 0 && m.muted ? { volume: v, muted: false } : { volume: v });
+  } else if (action === "rate" && control instanceof HTMLSelectElement)
+    api.setState(now, { rate: num(value, 1) });
+}
+function delegate(prefix) {
+  const flag = `__${prefix}MediaInit`;
+  if (document[flag])
+    return;
+  document[flag] = true;
+  const handle = (event) => {
+    const control = event.target?.closest?.(`[data-${prefix}-action]`);
+    const root = control && playerOf(control, prefix);
+    if (control && root)
+      drive(root, prefix, control, event);
+  };
+  document.addEventListener("click", handle);
+  document.addEventListener("input", handle);
+  document.addEventListener("change", (event) => {
+    if (event.target instanceof HTMLInputElement)
+      event.target._mediaDragging = false;
+  });
+  document.addEventListener("pointerdown", (event) => {
+    const t = event.target?.closest?.(`input[data-${prefix}-action="seek"]`);
+    if (t)
+      t._mediaDragging = true;
+  });
+  document.addEventListener("pointerup", () => {
+    for (const t of defussQuery()(`input[data-${prefix}-action="seek"]`).toArray())
+      t._mediaDragging = false;
+  });
+}
+function bindMedia(root, prefix, report) {
+  const $ = defussQuery();
+  const m = mediaOf(root);
+  const own = $(root).find(`[data-${prefix}-action]`).toArray();
+  const captions = own.find((el) => el.getAttribute(`data-${prefix}-action`) === "captions");
+  root._mediaCaptions = captions ? captions.getAttribute("aria-pressed") !== "false" : true;
+  const source = $(root).find(`script.${prefix}-tracks`).get(0);
+  if (m && source) {
+    let data = null;
+    try {
+      data = JSON.parse($(source).text() || "null");
+    } catch {
+      data = null;
+    }
+    if (data && typeof data === "object") {
+      if (data.labels && typeof data.labels === "object")
+        root._mediaLabels = { ...data.labels };
+      mediaTextTracks(m, data.tracks ?? [], root);
+    }
+  }
+  for (const el of controlsOf(root, prefix))
+    if (el.getAttribute(`data-${prefix}-action`) === "fullscreen" && !document.fullscreenEnabled)
+      put(el, "hidden", "");
+  if (m) {
+    const volume = own.find((el) => el.getAttribute(`data-${prefix}-action`) === "volume");
+    if (volume)
+      m.volume = Math.min(1, Math.max(0, num(volume.getAttribute("value"), 1)));
+    const rate = own.find((el) => el instanceof HTMLSelectElement && el.getAttribute(`data-${prefix}-action`) === "rate");
+    if (rate && num(rate.value, 0) > 0)
+      m.playbackRate = num(rate.value, 1);
+    const changed = () => {
+      mediaPaint(root, prefix);
+      report();
+    };
+    for (const type of [
+      "play",
+      "pause",
+      "ended",
+      "timeupdate",
+      "seeking",
+      "seeked",
+      "volumechange",
+      "ratechange",
+      "loadedmetadata",
+      "durationchange",
+      "emptied"
+    ])
+      m.addEventListener(type, changed);
+    m.textTracks.addEventListener("addtrack", () => takeCaptions(root, prefix));
+    $(m).find("track").on("load", () => paintCaptions(root, prefix));
+    m.textTracks.addEventListener("change", () => takeCaptions(root, prefix));
+    takeCaptions(root, prefix);
+    if (m instanceof HTMLVideoElement)
+      m.addEventListener("click", () => {
+        if (m.controls || !root.api)
+          return;
+        root.api.setState(m.paused || m.ended ? "playing" : "default");
+      });
+  }
+  root.addEventListener("fullscreenchange", () => mediaPaint(root, prefix));
+  delegate(prefix);
+  mediaPaint(root, prefix);
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -1748,28 +2332,6 @@ function bindGlobalKeys(handler, options = {}) {
       document.removeEventListener("keydown", onKeydown);
     }
   };
-}
-// src/shared/query.ts
-var MORPH_METHODS = [
-  "morph",
-  "getRenderer",
-  "htmlStringToVNodes",
-  "renderMarkup",
-  "domNodeToVNode",
-  "registerDelegatedEvent",
-  "clearDelegatedEventsDeep",
-  "handleLifecycleEventsForOnMount"
-];
-var RUNTIME_INCOMPLETE = "defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone";
-function defussQuery() {
-  const candidate = Reflect.get(globalThis, "df$");
-  if (typeof candidate === "function") {
-    const prototype = Reflect.get(candidate, "fn");
-    if (typeof Reflect.get(candidate, "queryVersion") === "string" && typeof prototype === "object" && prototype !== null && typeof Reflect.get(prototype, "morph") === "function" && MORPH_METHODS.every((name) => typeof Reflect.get(candidate, name) === "function")) {
-      return candidate;
-    }
-  }
-  throw new Error(RUNTIME_INCOMPLETE);
 }
 // src/shared/motion.ts
 var ENTRANCES = [
@@ -3159,6 +3721,14 @@ function storageOf(area) {
     onUnavailable: () => inMemory.add(area)
   });
 }
+function storageAvailable(area = "local") {
+  try {
+    storageOf(area).getItem("defuss-store:probe");
+  } catch {
+    return false;
+  }
+  return !inMemory.has(area);
+}
 function sameShape(initial) {
   const check = (model, value) => {
     if (model === null)
@@ -3983,6 +4553,11 @@ function scrollIntoViewTop(index, scrollTop, viewport, rowHeight, total) {
     return top;
   return scrollTopFor(index - Math.max(0, Math.floor(viewport / rowHeight) - 1), viewport, rowHeight, total);
 }
+// src/shared/sheet-url.ts
+function sheetUrl(link) {
+  return link.sheet?.href ?? link.href;
+}
+
 // src/shared/theme-links.ts
 var LINK_ATTR = "data-df-theme-link";
 var inflight = new Map;
@@ -3990,7 +4565,7 @@ function themeJsonHref(id) {
   const $ = defussQuery();
   const tokens = $("#tokens-css").get(0) ?? $('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens)
-    return new URL(`../${id}.json`, tokens.href).href;
+    return new URL(`../${id}.json`, sheetUrl(tokens)).href;
   return `${id}.json`;
 }
 function parseThemeLinks(text) {
@@ -4120,6 +4695,18 @@ shadcn.shared = {
   bindGlobalKeys,
   isEditableTarget,
   loadTheme,
+  sheetUrl,
+  mathClone,
+  mathText,
+  bindMedia,
+  mediaApply,
+  mediaMarkup,
+  mediaOf,
+  mediaPaint,
+  mediaRead,
+  mediaTextTracks,
+  mediaTime,
+  mediaTracks,
   elementModel,
   renderModel,
   settleTemplates,
@@ -4142,7 +4729,7 @@ shadcn.shared = {
   scrollTopFor,
   scrollIntoViewTop
 };
-Reflect.set(df, "store", { create: createStore, computed, persisted });
+Reflect.set(df, "store", { create: createStore, computed, persisted, available: storageAvailable });
 Reflect.set(df, "dataview", {
   source: dataSource,
   parseFilter,
@@ -4326,11 +4913,12 @@ var ICONS = {
   up: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>',
   down: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
   reply: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>',
-  quote: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>'
+  quote: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>',
+  link: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>'
 };
-var esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+var esc2 = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
 function renderMarkdown(md) {
-  const inline = (t) => esc(t).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>').replace(/\n/g, "<br>");
+  const inline = (t) => esc2(t).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>').replace(/\n/g, "<br>");
   return md.trim().split(/\n\s*\n/).map((p) => `<p>${inline(p.trim())}</p>`).join("");
 }
 var initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
@@ -4466,7 +5054,7 @@ function clearMarks(el) {
 }
 var runtimeOf = (el) => {
   if (!el._comments)
-    el._comments = { data: { version: 1, comments: [] } };
+    el._comments = { data: { version: 1, comments: [] }, drafts: {} };
   return el._comments;
 };
 function ordered(el) {
@@ -4482,18 +5070,31 @@ function ordered(el) {
   });
   return tops;
 }
+var quoteMarkup = (data, q, i) => {
+  const note = q.note ? `<span class="doc-comments-quote-note">${renderMarkdown(q.note)}</span>` : "";
+  if (!("comment" in q))
+    return `<button class="doc-comments-quote" type="button" data-doc-comments-action="flash" data-quote="${i}" title="Scroll to the quoted text">${ICONS.quote}<q>${esc2(q.text)}</q>${note}</button>`;
+  const target = data.comments.find((x) => x.id === q.comment);
+  if (!target)
+    return "";
+  const anchor = anchorOf(data, target);
+  const excerpt = target.body.replace(/\*\*|[*`]/g, "").trim().split(`
+`)[0].slice(0, 80);
+  const label = anchor ? `<q>${esc2(anchor.text)}</q>` : `<span>${esc2(excerpt)}</span>`;
+  return `<button class="doc-comments-quote doc-comments-link" type="button" data-doc-comments-action="link" data-quote="${i}" title="Go to the comment">${ICONS.link}${label}${note}</button>`;
+};
 var cardMarkup = (data, c, depth) => {
   const anchor = anchorOf(data, c);
   const replies = data.comments.filter((r) => r.parent === c.id).sort((a, b) => String(a.time ?? "").localeCompare(String(b.time ?? "")));
-  const color = c.color ? ` data-color="${esc(c.color)}"` : "";
-  return `<li class="card doc-comments-card" data-id="${esc(c.id)}"${color} data-depth="${depth}">
+  const color = c.color ? ` data-color="${esc2(c.color)}"` : "";
+  return `<li class="card doc-comments-card" data-id="${esc2(c.id)}"${color} data-depth="${depth}">
   <div class="card-header doc-comments-card-header">
-    <span class="avatar" data-size="sm"><span class="avatar-fallback">${esc(initials(c.author))}</span></span>
-    <div class="doc-comments-meta"><strong class="doc-comments-author">${esc(c.author)}</strong>${c.time ? ` <time class="doc-comments-time" datetime="${esc(c.time)}">${esc(formatTime(c.time))}</time>` : ""}</div>
+    <span class="avatar" data-size="sm"><span class="avatar-fallback">${esc2(initials(c.author))}</span></span>
+    <div class="doc-comments-meta"><strong class="doc-comments-author">${esc2(c.author)}</strong>${c.time ? ` <time class="doc-comments-time" datetime="${esc2(c.time)}">${esc2(formatTime(c.time))}</time>` : ""}</div>
   </div>
-  ${depth === 0 && anchor ? `<button class="doc-comments-anchor" type="button" data-doc-comments-action="go" title="Scroll to the text">${esc(anchor.text)}</button>` : ""}
+  ${depth === 0 && anchor ? `<button class="doc-comments-anchor" type="button" data-doc-comments-action="go" title="Scroll to the text">${esc2(anchor.text)}</button>` : ""}
   <div class="card-content doc-comments-body">${renderMarkdown(c.body)}</div>
-  ${(c.quotes ?? []).map((q, i) => `<button class="doc-comments-quote" type="button" data-doc-comments-action="flash" data-quote="${i}" title="Scroll to the quoted text">${ICONS.quote}<q>${esc(q.text)}</q>${q.note ? `<span class="doc-comments-quote-note">${renderMarkdown(q.note)}</span>` : ""}</button>`).join("")}
+  ${(c.quotes ?? []).map((q, i) => quoteMarkup(data, q, i)).join("")}
   <div class="card-footer doc-comments-actions">
     <button class="btn" data-variant="ghost" data-size="sm" type="button" data-doc-comments-action="reply" aria-expanded="false">${ICONS.reply} Reply</button>
   </div>
@@ -4527,6 +5128,18 @@ ${data.comments.length ? "" : '<p class="doc-comments-empty">No comments yet.</p
   const current = dfDollar3(el).attr("data-current");
   if (current)
     markCurrent(el, current);
+  dfDollar3(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
+}
+function showComposer(card, text) {
+  const form = dfDollar3(card).children("form.doc-comments-reply").get(0);
+  if (!form)
+    return;
+  form.hidden = text === null;
+  dfDollar3(form).find("textarea").val(text ?? "");
+  dfDollar3(card).children(".doc-comments-actions").find('[data-doc-comments-action="reply"]').attr("aria-expanded", String(text !== null));
+}
+function emitDraft(el, id, text) {
+  el.dispatchEvent(new CustomEvent("doc-comments-draft", { bubbles: true, detail: { id, text } }));
 }
 function applyMarkup3(el, name, config) {
   dfDollar3(el).attr("data-current", name === "current" && config.id ? String(config.id) : null);
@@ -4641,9 +5254,15 @@ function load(el, data) {
   clearMarks(el);
   const comments = Array.isArray(data?.comments) ? data.comments.filter((c) => c && typeof c.id === "string" && typeof c.body === "string").map((c) => ({ ...c, author: c.author || "Anonymous" })) : [];
   runtimeOf(el).data = { version: 1, comments };
+  runtimeOf(el).drafts = {};
   placeMarks(el);
   renderColumn(el);
   emitChange(el);
+}
+function setDrafts(el, drafts) {
+  const ids = new Set(runtimeOf(el).data.comments.map((c) => c.id));
+  runtimeOf(el).drafts = Object.fromEntries(Object.entries(drafts ?? {}).filter(([id, text]) => ids.has(id) && typeof text === "string"));
+  dfDollar3(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
 }
 function sourceOf(el) {
   const text = dfDollar3(el).children("script.doc-comments-source").get(0)?.textContent ?? "";
@@ -4665,27 +5284,27 @@ function onAction(el, button) {
     step(el, 1, "nav");
   else if (action === "go" && id)
     select(el, id, "card");
-  else if (action === "flash" && card) {
+  else if ((action === "flash" || action === "link") && card) {
     const c = runtimeOf(el).data.comments.find((x) => x.id === id);
     const q = c?.quotes?.[Number(button.dataset.quote)];
-    if (q)
+    if (!q)
+      return;
+    if ("comment" in q)
+      select(el, q.comment, "link");
+    else
       flash(el, q);
   } else if (action === "reply" && card) {
-    const form = dfDollar3(card).children("form.doc-comments-reply").get(0);
-    if (!form)
-      return;
-    const open = form.hidden;
-    form.hidden = !open;
-    dfDollar3(button).attr("aria-expanded", String(open));
-    if (open)
-      dfDollar3(form).find("textarea").get(0)?.focus();
-  } else if (action === "cancel" && card) {
-    const form = dfDollar3(card).children("form.doc-comments-reply").get(0);
-    if (form) {
-      form.hidden = true;
-      form.reset();
+    const drafts = runtimeOf(el).drafts;
+    if (drafts[id] === undefined) {
+      drafts[id] = "";
+      showComposer(card, "");
+      emitDraft(el, id, "");
     }
-    dfDollar3(card).find('[data-doc-comments-action="reply"]').first().attr("aria-expanded", "false");
+    dfDollar3(card).children("form.doc-comments-reply").find("textarea").get(0)?.focus();
+  } else if (action === "cancel" && card) {
+    delete runtimeOf(el).drafts[id];
+    showComposer(card, null);
+    emitDraft(el, id, null);
   }
 }
 function init3() {
@@ -4708,8 +5327,19 @@ function init3() {
       e.preventDefault();
       const card = form.closest(".doc-comments-card");
       const body = dfDollar3(form).find("textarea").get(0)?.value ?? "";
-      if (card && body.trim())
-        addComment(el, { parent: card.dataset.id, body });
+      if (!card?.dataset.id || !body.trim())
+        return;
+      delete runtimeOf(el).drafts[card.dataset.id];
+      emitDraft(el, card.dataset.id, null);
+      addComment(el, { parent: card.dataset.id, body });
+    });
+    dfDollar3(el).on("input", (e) => {
+      const area = e.target;
+      const id = area.closest("form.doc-comments-reply")?.closest(".doc-comments-card")?.dataset.id;
+      if (!id)
+        return;
+      runtimeOf(el).drafts[id] = area.value;
+      emitDraft(el, id, area.value);
     });
     const root = documentOf2(el);
     if (root) {
@@ -4761,6 +5391,15 @@ df$3.docComments = {
     const el = resolve(target);
     return el ? flash(el, quote) : false;
   },
+  drafts: (target) => {
+    const el = resolve(target);
+    return el ? { ...runtimeOf(el).drafts } : {};
+  },
+  setDrafts: (target, drafts) => {
+    const el = resolve(target);
+    if (el)
+      setDrafts(el, drafts);
+  },
   refresh: (target) => {
     const el = resolve(target);
     if (el) {
@@ -4772,9 +5411,326 @@ df$3.docComments = {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/wysiwyg-editors/editorjs/editorjs.ts
+// src/components/navigation/dropdown/dropdown.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
+var dropdownStates = ["default", "open"];
+var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
+var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
+var itemsOf = (menu) => Array.from(dfDollar4(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+var subOf = (trigger) => dfDollar4(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
+var rootOf2 = (menu) => {
+  let m = menu;
+  while (m?.parentElement?.closest(".dropdown-content[popover]"))
+    m = m.parentElement.closest(".dropdown-content[popover]");
+  return m;
+};
+var HOVER_OPEN = 120;
+var HOVER_CLOSE = 220;
+function applyMarkup4(_el, _stateName) {}
+function triggerStateChange4(menu, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      try {
+        menu.hidePopover();
+      } catch {}
+      break;
+    case "open":
+      safeShowPopover(menu);
+      break;
+  }
+}
+var dropdownApi = componentState({
+  component: "dropdown",
+  states: dropdownStates,
+  apply: (menu, state) => triggerStateChange4(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup4(el, state.name)
+});
+df$4.dropdownApi = dropdownApi;
+df$4.dropdownStates = dropdownStates;
+var anchorSeq = 0;
+function highlight(menu, item, focus = true) {
+  itemsOf(menu).forEach((i) => {
+    if (i !== item)
+      i.removeAttribute("data-highlighted");
+  });
+  if (item) {
+    item.setAttribute("data-highlighted", "");
+    if (focus)
+      item.focus({ preventScroll: true });
+  }
+}
+function activate(menu, item) {
+  if (isDisabled(item))
+    return;
+  const role = item.getAttribute("role");
+  if (item.classList.contains("dropdown-sub-trigger")) {
+    openSub(item, true);
+    return;
+  }
+  if (role === "menuitemcheckbox") {
+    const checked = item.getAttribute("aria-checked") !== "true";
+    item.setAttribute("aria-checked", String(checked));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked }
+    }));
+    return;
+  }
+  if (role === "menuitemradio") {
+    const group = item.closest('[role="group"]') ?? menu;
+    dfDollar4(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
+      if (r.closest('[role="menu"]') === menu)
+        r.setAttribute("aria-checked", String(r === item));
+    });
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true }
+    }));
+    return;
+  }
+  item.dispatchEvent(new CustomEvent("dropdown:select", {
+    bubbles: true,
+    detail: { item, value: item.dataset.value ?? item.textContent.trim() }
+  }));
+  try {
+    rootOf2(menu).hidePopover();
+  } catch {}
+}
+function openSub(trigger, focusFirst) {
+  const sub = subOf(trigger);
+  if (!sub || isDisabled(trigger))
+    return;
+  clearTimeout(sub._closeTimer);
+  sub._focusFirst = focusFirst;
+  if (!sub.matches(":popover-open")) {
+    try {
+      sub.showPopover();
+    } catch {}
+  } else if (focusFirst)
+    highlight(sub, itemsOf(sub)[0]);
+}
+function closeSub(sub) {
+  if (sub?.matches(":popover-open")) {
+    try {
+      sub.hidePopover();
+    } catch {}
+  }
+}
+function wireMenu(menu) {
+  if (menu._wired)
+    return;
+  menu._wired = true;
+  const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
+  const openSubs = () => Array.from(dfDollar4(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
+  menu.addEventListener("mousemove", (e) => {
+    if (!own(e))
+      return;
+    const item = e.target.closest(ITEM);
+    if (!item || isDisabled(item))
+      return;
+    if (!(item.hasAttribute("data-highlighted") && item === document.activeElement))
+      highlight(menu, item);
+    if (menu._hoverItem === item)
+      return;
+    menu._hoverItem = item;
+    clearTimeout(menu._hoverTimer);
+    const sub = item.classList.contains("dropdown-sub-trigger") ? subOf(item) : null;
+    menu._hoverTimer = setTimeout(() => {
+      openSubs().forEach((s) => {
+        if (s !== sub)
+          closeSub(s);
+      });
+      if (sub)
+        openSub(item, false);
+    }, sub ? HOVER_OPEN : HOVER_CLOSE);
+  });
+  menu.addEventListener("mouseleave", (e) => {
+    clearTimeout(menu._hoverTimer);
+    menu._hoverItem = null;
+    const to = e.relatedTarget;
+    if (to instanceof Element && to.closest(".dropdown-sub-content") && menu.contains(to))
+      return;
+    itemsOf(menu).forEach((i) => {
+      if (!(i.classList.contains("dropdown-sub-trigger") && subOf(i)?.matches(":popover-open")))
+        i.removeAttribute("data-highlighted");
+    });
+  });
+  menu.addEventListener("mousedown", (e) => {
+    if (!own(e))
+      return;
+    const hit = e.target instanceof Element ? e.target.closest(`${ITEM}, input, textarea, select`) : null;
+    if (!hit || isDisabled(hit))
+      e.preventDefault();
+  });
+  menu.addEventListener("click", (e) => {
+    if (!own(e))
+      return;
+    const item = e.target.closest(ITEM);
+    if (!item)
+      return;
+    activate(menu, item);
+  });
+  menu.addEventListener("keydown", (e) => {
+    if (!own(e))
+      return;
+    const items = itemsOf(menu);
+    const current = items.indexOf(document.activeElement);
+    const isSub = menu.classList.contains("dropdown-sub-content");
+    const rtl = getComputedStyle(menu).direction === "rtl";
+    const inward = rtl ? "ArrowLeft" : "ArrowRight";
+    const outward = rtl ? "ArrowRight" : "ArrowLeft";
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        highlight(menu, items[(current + 1) % items.length]);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        highlight(menu, items[(current - 1 + items.length) % items.length]);
+        break;
+      case "Home":
+        e.preventDefault();
+        highlight(menu, items[0]);
+        break;
+      case "End":
+        e.preventDefault();
+        highlight(menu, items[items.length - 1]);
+        break;
+      case inward:
+        if (document.activeElement?.classList.contains("dropdown-sub-trigger")) {
+          e.preventDefault();
+          openSub(document.activeElement, true);
+        }
+        break;
+      case outward:
+        if (isSub) {
+          e.preventDefault();
+          closeSub(menu);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        e.stopPropagation();
+        if (isSub)
+          closeSub(menu);
+        else
+          menu.hidePopover();
+        break;
+      case "Tab":
+        try {
+          rootOf2(menu).hidePopover();
+        } catch {}
+        break;
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        if (document.activeElement?.matches(ITEM) && !isDisabled(document.activeElement))
+          document.activeElement.click();
+        break;
+      default:
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          const k = e.key.toLowerCase();
+          const rest = items.slice(current + 1).concat(items.slice(0, current + 1));
+          const match = rest.find((item) => item.textContent.trim().toLowerCase().startsWith(k));
+          if (match)
+            highlight(menu, match);
+        }
+    }
+  });
+}
+function wireSub(wrap) {
+  const trigger = dfDollar4(wrap).find(":scope > .dropdown-sub-trigger").get(0);
+  const sub = dfDollar4(wrap).find(":scope > .dropdown-sub-content").get(0);
+  if (!trigger || !sub || sub._subWired)
+    return;
+  sub._subWired = true;
+  sub.dataset.init = "";
+  if (!sub.hasAttribute("popover"))
+    sub.setAttribute("popover", "auto");
+  if (!sub.id)
+    sub.id = `dropdown-sub-${++anchorSeq}`;
+  const anchor = `--dropdown-sub-${anchorSeq}-${sub.id}`;
+  trigger.style.anchorName = anchor;
+  sub.style.positionAnchor = anchor;
+  trigger.setAttribute("aria-haspopup", "menu");
+  trigger.setAttribute("aria-expanded", "false");
+  trigger.setAttribute("aria-controls", sub.id);
+  wireMenu(sub);
+  sub.addEventListener("toggle", (e) => {
+    const open = e.newState === "open";
+    trigger.setAttribute("aria-expanded", String(open));
+    if (open) {
+      trigger.setAttribute("data-highlighted", "");
+      if (sub._focusFirst)
+        highlight(sub, itemsOf(sub)[0]);
+    } else {
+      itemsOf(sub).forEach((i) => {
+        i.removeAttribute("data-highlighted");
+      });
+      if (sub.contains(document.activeElement) || document.activeElement === document.body)
+        trigger.focus({ preventScroll: true });
+    }
+  });
+  sub.addEventListener("mouseenter", () => {
+    const parent = trigger.closest('[role="menu"]');
+    if (parent)
+      clearTimeout(parent._hoverTimer);
+    highlight(parent, trigger, false);
+  });
+}
+function init4() {
+  dfDollar4("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
+    trigger.dataset.init = "";
+    const menu = dfDollar4("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
+    if (!menu)
+      return;
+    const anchorId = `--dropdown-${menu.id}`;
+    trigger.style.anchorName = anchorId;
+    menu.style.positionAnchor = anchorId;
+    if (!trigger.hasAttribute("aria-haspopup"))
+      trigger.setAttribute("aria-haspopup", "menu");
+    if (!trigger.hasAttribute("aria-controls"))
+      trigger.setAttribute("aria-controls", menu.id);
+    if (!trigger.hasAttribute("popovertarget"))
+      trigger.setAttribute("popovertarget", menu.id);
+    menu._trigger = trigger;
+    menu.addEventListener("toggle", (e) => {
+      if (e.target !== menu)
+        return;
+      const open = e.newState === "open";
+      trigger.setAttribute("aria-expanded", String(open));
+      if (open) {
+        const first = itemsOf(menu)[0];
+        if (first && !menu._noFocus)
+          highlight(menu, first);
+        menu._noFocus = false;
+      } else {
+        itemsOf(menu).forEach((i) => {
+          i.removeAttribute("data-highlighted");
+        });
+        const active = document.activeElement;
+        const other = active instanceof Element && active !== trigger ? active.closest("[data-dropdown-trigger]") : null;
+        const otherOpen = other ? dfDollar4("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
+        if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
+          trigger.focus({ preventScroll: true });
+      }
+    });
+    wireMenu(menu);
+    dfDollar4(menu).find(".dropdown-sub").toArray().forEach(wireSub);
+  });
+  dfDollar4(".dropdown-sub").toArray().forEach(wireSub);
+  dfDollar4(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
+    menu.dataset.init = "";
+    bindComponent(menu, dropdownApi);
+  });
+}
+init4();
+new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+
+// src/components/wysiwyg-editors/editorjs/editorjs.ts
+var df$5 = defussGlobals();
+var dfDollar5 = defussQuery();
 var editorjsStates = ["default", "readonly"];
 var EDITORJS_URL = "https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.31.7/dist/editorjs.mjs";
 var EDITORJS_TOOLS = {
@@ -4805,10 +5761,14 @@ async function loadVendor(toolNames) {
   ]);
   return { EditorJS, marked, tools: Object.fromEntries(toolNames.map((n, i) => [n, tools[i]])) };
 }
+var HEADING_ATTRS = /[ \t]*\{[#.][^{}]*\}[ \t]*$/;
 function markdownToBlocks(md, marked) {
+  return parseMarkdown(md, marked).blocks;
+}
+function parseMarkdown(md, marked) {
   const inline = (t) => marked.parseInline(t).replace(/<code>/g, '<code class="inline-code">').replace(/<(\/?)strong>/g, "<$1b>").replace(/<(\/?)em>/g, "<$1i>");
   const items = (list) => (list.items ?? []).map((it) => {
-    const own = (it.tokens ?? []).filter((t) => t.type !== "list");
+    const own = (it.tokens ?? []).filter((t) => t.type !== "list" && t.type !== "checkbox");
     const sub = (it.tokens ?? []).find((t) => t.type === "list");
     return {
       content: inline(own.map((t) => t.text ?? t.raw ?? "").join(" ").trim()),
@@ -4817,12 +5777,21 @@ function markdownToBlocks(md, marked) {
     };
   });
   const blocks = [];
+  const ranges = [];
+  let offset = 0;
   for (const t of marked.lexer(md)) {
+    const raw = t.raw ?? "";
+    const start = offset;
+    const count = blocks.length;
+    offset += raw.length;
     switch (t.type) {
       case "heading":
         blocks.push({
           type: "header",
-          data: { text: inline(t.text ?? ""), level: Math.min(6, Math.max(1, t.depth ?? 2)) }
+          data: {
+            text: inline((t.text ?? "").replace(HEADING_ATTRS, "")),
+            level: Math.min(6, Math.max(1, t.depth ?? 2))
+          }
         });
         break;
       case "paragraph":
@@ -4869,11 +5838,59 @@ function markdownToBlocks(md, marked) {
       default:
         break;
     }
+    const block = blocks[count];
+    if (block) {
+      const level = block.type === "header" ? block.data.level : undefined;
+      ranges.push({
+        block: "",
+        type: block.type,
+        ...level ? { level } : {},
+        start,
+        end: start + raw.trimEnd().length
+      });
+    }
   }
   blocks.forEach((b, i) => {
     b.id = `b${i + 1}`;
+    ranges[i].block = b.id;
   });
-  return blocks;
+  return { blocks, ranges };
+}
+function renderedText(slice, type, marked) {
+  if (type === "delimiter")
+    return "";
+  if (type === "code")
+    return slice.replace(/^[ \t]*(`{3,}|~{3,}).*\n?/, "").replace(/\n?[ \t]*(`{3,}|~{3,})[ \t]*$/, "");
+  let s = slice;
+  if (type === "header")
+    s = s.replace(/^[ \t]{0,3}#{1,6}(?:[ \t]+|$)/, "").replace(HEADING_ATTRS, "").replace(/[ \t]+#+[ \t]*$/, "");
+  else if (type === "list")
+    s = s.replace(/^[ \t]*(?:[*+-]|\d+[.)])[ \t]+(?:\[[ xX]\][ \t]+)?/gm, "");
+  else if (type === "quote")
+    s = s.replace(/^[ \t]*>[ \t]?/gm, "");
+  else if (type === "table")
+    s = s.replace(/^[\s|]+|[\s|]+$/g, "");
+  return new DOMParser().parseFromString(marked.parseInline(s), "text/html").body.textContent ?? "";
+}
+var lastRanges = null;
+function sourceRanges(md, marked) {
+  if (lastRanges?.md !== md)
+    lastRanges = { md, ranges: parseMarkdown(md, marked).ranges };
+  return lastRanges.ranges;
+}
+function locate(md, marked, start, end) {
+  const range = sourceRanges(md, marked).find((r) => start >= r.start && start < r.end);
+  if (!range)
+    return null;
+  const stop = Math.min(Math.max(end, start), range.end);
+  const text = renderedText(md.slice(start, stop), range.type, marked).trim();
+  if (!text)
+    return null;
+  const upTo = renderedText(md.slice(range.start, stop), range.type, marked);
+  let occurrence = -1;
+  for (let at = upTo.indexOf(text);at >= 0; at = upTo.indexOf(text, at + 1))
+    occurrence++;
+  return { block: range.block, text, occurrence: Math.max(0, occurrence) };
 }
 function inlineToMarkdown(html) {
   return html.replace(/<br\s*\/?>/gi, `  
@@ -4923,11 +5940,11 @@ function blocksToMarkdown(blocks) {
 `) + `
 `;
 }
-function applyMarkup4(el, stateName) {
-  dfDollar4(el).attr("data-readonly", stateName === "readonly" ? "" : null);
+function applyMarkup5(el, stateName) {
+  dfDollar5(el).attr("data-readonly", stateName === "readonly" ? "" : null);
 }
-function triggerStateChange4(el, stateName) {
-  applyMarkup4(el, stateName);
+function triggerStateChange5(el, stateName) {
+  applyMarkup5(el, stateName);
   const editor = el._editorjs;
   if (editor)
     editor.isReady.then(() => editor.readOnly.toggle(stateName === "readonly")).catch(() => {
@@ -4937,15 +5954,15 @@ function triggerStateChange4(el, stateName) {
 var editorjsApi = componentState({
   component: "editorjs",
   states: editorjsStates,
-  apply: (el, state) => triggerStateChange4(el, state.name),
+  apply: (el, state) => triggerStateChange5(el, state.name),
   read: (el, state) => ({ name: el.hasAttribute("data-readonly") ? "readonly" : "default", config: state.config }),
-  markup: (el, state) => applyMarkup4(el, state.name)
+  markup: (el, state) => applyMarkup5(el, state.name)
 });
-df$4.editorjsApi = editorjsApi;
-df$4.editorjsStates = editorjsStates;
+df$5.editorjsApi = editorjsApi;
+df$5.editorjsStates = editorjsStates;
 var DEFAULT_TOOLS = Object.keys(EDITORJS_TOOLS);
 function sourceOf2(el) {
-  const script = dfDollar4(el).children("script.editorjs-source").get(0);
+  const script = dfDollar5(el).children("script.editorjs-source").get(0);
   const text = script?.textContent ?? "";
   if (!script || !text.trim())
     return { markdown: "" };
@@ -5048,9 +6065,9 @@ function syncToolbar(el) {
   const anchor = globalThis.getSelection()?.anchorNode;
   const node = anchor && (anchor.nodeType === Node.ELEMENT_NODE ? anchor : anchor.parentElement);
   const holder = node && el.contains(node) ? node.closest(".ce-block") : null;
-  const level = holder ? dfDollar4(holder).find(".ce-header").get(0)?.tagName.replace(/^H/i, "") ?? "" : "";
-  const listStyle = holder && dfDollar4(holder).find(".cdx-list").length ? dfDollar4(holder).find(".cdx-list--checklist").length ? "checklist" : dfDollar4(holder).find(".cdx-list--ordered").length ? "ordered" : "unordered" : "";
-  dfDollar4(bar).find("[data-editor-command]").toArray().forEach((b) => {
+  const level = holder ? dfDollar5(holder).find(".ce-header").get(0)?.tagName.replace(/^H/i, "") ?? "" : "";
+  const listStyle = holder && dfDollar5(holder).find(".cdx-list").length ? dfDollar5(holder).find(".cdx-list-checklist").length ? "checklist" : dfDollar5(holder).find(".cdx-list-ordered").length ? "ordered" : "unordered" : "";
+  dfDollar5(bar).find("[data-editor-command]").toArray().forEach((b) => {
     const name = b.dataset.editorCommand ?? "";
     const [kind, arg] = name.split(":");
     let on = null;
@@ -5069,11 +6086,11 @@ function syncToolbar(el) {
     else if (kind === "quote" || kind === "code")
       on = current?.name === kind;
     if (on !== null && b.hasAttribute("aria-pressed"))
-      dfDollar4(b).attr("aria-pressed", String(on));
+      dfDollar5(b).attr("aria-pressed", String(on));
   });
 }
 async function mount(el) {
-  const toolNames = (dfDollar4(el).attr("data-tools") ?? "").split(/\s+/).filter((n) => EDITORJS_TOOLS[n]);
+  const toolNames = (dfDollar5(el).attr("data-tools") ?? "").split(/\s+/).filter((n) => EDITORJS_TOOLS[n]);
   const tools = toolNames.length ? toolNames : DEFAULT_TOOLS;
   const { EditorJS, tools: loaded, marked } = await loadVendor(tools);
   if (!el.isConnected)
@@ -5081,11 +6098,11 @@ async function mount(el) {
   el._marked = marked;
   const source = sourceOf2(el);
   const data = source.data ?? { blocks: markdownToBlocks(source.markdown ?? "", marked) };
-  let holder = dfDollar4(el).children(".editorjs-holder").get(0);
+  let holder = dfDollar5(el).children(".editorjs-holder").get(0);
   if (!holder) {
     holder = document.createElement("div");
     holder.className = "editorjs-holder";
-    dfDollar4(el).append(holder);
+    dfDollar5(el).append(holder);
   }
   const config = {};
   for (const name of tools) {
@@ -5098,7 +6115,7 @@ async function mount(el) {
     data,
     tools: config,
     readOnly: el.hasAttribute("data-readonly"),
-    placeholder: dfDollar4(el).attr("data-placeholder") ?? "Write...",
+    placeholder: dfDollar5(el).attr("data-placeholder") ?? "Write...",
     minHeight: 0,
     onChange: async () => {
       el.dispatchEvent(new CustomEvent("editorjs-change", {
@@ -5111,22 +6128,22 @@ async function mount(el) {
   await editor.isReady;
   if (!el.isConnected)
     return;
-  dfDollar4(el).attr("data-ready", "");
+  dfDollar5(el).attr("data-ready", "");
   el.dispatchEvent(new CustomEvent("editorjs-ready", { bubbles: true, detail: { blocks: data.blocks.length } }));
 }
-function init4() {
-  dfDollar4(".editorjs:not([data-init])").toArray().forEach((el) => {
+function init5() {
+  dfDollar5(".editorjs:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     bindComponent(el, editorjsApi);
-    const barId = dfDollar4(el).attr("data-toolbar");
-    const bar = barId ? dfDollar4("#" + CSS.escape(barId)).get(0) : undefined;
+    const barId = dfDollar5(el).attr("data-toolbar");
+    const bar = barId ? dfDollar5("#" + CSS.escape(barId)).get(0) : undefined;
     if (bar) {
       el._toolbar = bar;
-      dfDollar4(bar).on("mousedown", (e) => {
+      dfDollar5(bar).on("mousedown", (e) => {
         if (e.target.closest("[data-editor-command]"))
           e.preventDefault();
       });
-      dfDollar4(bar).on("click", (e) => {
+      dfDollar5(bar).on("click", (e) => {
         const button = e.target.closest("[data-editor-command]");
         if (!button)
           return;
@@ -5134,20 +6151,20 @@ function init4() {
       });
     }
     mount(el).catch(() => {
-      dfDollar4(el).attr("data-error", "");
+      dfDollar5(el).attr("data-error", "");
     });
   });
 }
 if (!document.__editorjsInit) {
   document.__editorjsInit = true;
   document.addEventListener("selectionchange", () => {
-    for (const el of dfDollar4(".editorjs[data-ready]").toArray())
+    for (const el of dfDollar5(".editorjs[data-ready]").toArray())
       syncToolbar(el);
   });
 }
-var resolve2 = (target) => typeof target === "string" ? dfDollar4(target).get(0) : target;
+var resolve2 = (target) => typeof target === "string" ? dfDollar5(target).get(0) : target;
 var editorOf = (target) => resolve2(target)?._editorjs;
-df$4.editorjs = {
+df$5.editorjs = {
   load: (url) => loadModule(url || EDITORJS_URL),
   url: EDITORJS_URL,
   markdown: async (target) => {
@@ -5188,22 +6205,202 @@ df$4.editorjs = {
     const marked = resolve2(target)?._marked;
     return marked ? markdownToBlocks(markdown, marked) : [];
   },
+  sourceMap: (target, markdown) => {
+    const marked = resolve2(target)?._marked;
+    return marked ? structuredClone(sourceRanges(markdown, marked)) : [];
+  },
+  locate: (target, markdown, start, end) => {
+    const marked = resolve2(target)?._marked;
+    return marked ? locate(markdown, marked, start, end) : null;
+  },
   toMarkdown: (blocks) => blocksToMarkdown(blocks)
 };
-init4();
-new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+init5();
+new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+
+// src/components/navigation/menubar/menubar.ts
+var df$6 = defussGlobals();
+var dfDollar6 = defussQuery();
+var menubarStates = ["default", "open"];
+var triggersOf = (bar) => Array.from(dfDollar6(bar).find(".menubar-trigger").toArray()).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
+var menuOf = (trigger) => dfDollar6("#" + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute("popovertarget") || "")).get(0);
+var openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(":popover-open")) ?? null;
+function setRoving(bar, active) {
+  triggersOf(bar).forEach((t) => t.setAttribute("tabindex", t === active ? "0" : "-1"));
+}
+function openMenu(bar, trigger, quiet = false) {
+  const menu = menuOf(trigger);
+  if (!menu)
+    return;
+  setRoving(bar, trigger);
+  if (menu.matches(":popover-open")) {
+    if (!quiet)
+      focusItem(menu);
+    return;
+  }
+  menu._noFocus = quiet;
+  if (quiet)
+    trigger.focus({ preventScroll: true });
+  safeShowPopover(menu);
+}
+function focusItem(menu, last = false) {
+  const own = Array.from(dfDollar6(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute("aria-disabled") !== "true");
+  own.forEach((x) => x.removeAttribute("data-highlighted"));
+  const item = last ? own.at(-1) : own[0];
+  item?.setAttribute("data-highlighted", "");
+  item?.focus({ preventScroll: true });
+}
+function applyMarkup6(_el, _stateName) {}
+function triggerStateChange6(bar, stateName, config) {
+  switch (stateName) {
+    case "default": {
+      const open = openMenuOf(bar);
+      if (open) {
+        try {
+          open.hidePopover();
+        } catch {}
+      }
+      break;
+    }
+    case "open": {
+      const ts = triggersOf(bar);
+      const t = typeof config.menu === "number" ? ts[config.menu] : config.menu ? ts.find((x) => x.dataset.dropdownTrigger === config.menu) : ts[0];
+      if (t)
+        openMenu(bar, t);
+      break;
+    }
+  }
+}
+var menubarApi = componentState({
+  component: "menubar",
+  states: menubarStates,
+  apply: (bar, state) => {
+    bar.dataset.stateName = state.name;
+    triggerStateChange6(bar, state.name, state.config);
+  },
+  read: (bar, state) => {
+    const open = openMenuOf(bar);
+    return { name: open ? "open" : "default", config: { ...state.config, menu: open?.id ?? null } };
+  },
+  markup: (el, state) => applyMarkup6(el, state.name)
+});
+df$6.menubarApi = menubarApi;
+df$6.menubarStates = menubarStates;
+function init6() {
+  dfDollar6(".menubar:not([data-init])").toArray().forEach((bar) => {
+    bar.dataset.init = "";
+    if (!bar.hasAttribute("role"))
+      bar.setAttribute("role", "menubar");
+    bindComponent(bar, menubarApi);
+    const triggers = triggersOf(bar);
+    triggers.forEach((t) => {
+      if (!t.hasAttribute("role"))
+        t.setAttribute("role", "menuitem");
+    });
+    setRoving(bar, triggers[0]);
+    triggers.forEach((t) => {
+      menuOf(t)?.addEventListener("toggle", () => {
+        bar.dataset.stateName = openMenuOf(bar) ? "open" : "default";
+      });
+    });
+    bar.addEventListener("pointerover", (e) => {
+      const t = e.target instanceof Element ? e.target.closest(".menubar-trigger") : null;
+      if (!t || t.closest(".menubar") !== bar || !triggersOf(bar).includes(t))
+        return;
+      const open = openMenuOf(bar);
+      if (open && menuOf(t) !== open)
+        openMenu(bar, t, true);
+    });
+    bar.addEventListener("keydown", (e) => {
+      const ts = triggersOf(bar);
+      const rtl = getComputedStyle(bar).direction === "rtl";
+      const next = rtl ? "ArrowLeft" : "ArrowRight";
+      const prev = rtl ? "ArrowRight" : "ArrowLeft";
+      const onTrigger = e.target instanceof Element && e.target.classList.contains("menubar-trigger");
+      const openMenuEl = openMenuOf(bar);
+      const i = onTrigger ? ts.indexOf(e.target) : ts.findIndex((t) => menuOf(t) === openMenuEl);
+      if (i < 0)
+        return;
+      const step = (d) => ts[(i + d + ts.length) % ts.length];
+      if (onTrigger) {
+        const moveTo = (t) => {
+          if (openMenuEl)
+            openMenu(bar, t);
+          else {
+            setRoving(bar, t);
+            t.focus();
+          }
+        };
+        switch (e.key) {
+          case next:
+            e.preventDefault();
+            moveTo(step(1));
+            break;
+          case prev:
+            e.preventDefault();
+            moveTo(step(-1));
+            break;
+          case "Home":
+            e.preventDefault();
+            setRoving(bar, ts[0]);
+            ts[0].focus();
+            break;
+          case "End":
+            e.preventDefault();
+            setRoving(bar, ts[ts.length - 1]);
+            ts[ts.length - 1].focus();
+            break;
+          case "ArrowDown":
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            openMenu(bar, ts[i]);
+            break;
+          case "ArrowUp": {
+            e.preventDefault();
+            const menu = menuOf(ts[i]);
+            if (menu && !menu.matches(":popover-open")) {
+              menu.addEventListener("toggle", (ev) => {
+                if (ev.newState === "open")
+                  focusItem(menu, true);
+              }, { once: true });
+              openMenu(bar, ts[i]);
+            } else {
+              openMenu(bar, ts[i]);
+              if (menu)
+                focusItem(menu, true);
+            }
+            break;
+          }
+        }
+        return;
+      }
+      if (e.defaultPrevented)
+        return;
+      if (e.key === next) {
+        e.preventDefault();
+        openMenu(bar, step(1));
+      } else if (e.key === prev) {
+        e.preventDefault();
+        openMenu(bar, step(-1));
+      }
+    });
+  });
+}
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
 // src/components/application/sidebar/sidebar.ts
-var df$5 = defussGlobals();
-var dfDollar5 = defussQuery();
+var df$7 = defussGlobals();
+var dfDollar7 = defussQuery();
 var sidebarStates = ["default", "collapsed"];
-function applyMarkup5(el, stateName) {
-  dfDollar5(el).attr("data-state", stateName === "collapsed" ? "collapsed" : el._authoredState ??= dfDollar5(el).attr("data-state") || "expanded");
+function applyMarkup7(el, stateName) {
+  dfDollar7(el).attr("data-state", stateName === "collapsed" ? "collapsed" : "expanded");
 }
-function triggerStateChange5(sidebar, stateName, _config) {
+function triggerStateChange7(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
-      sidebar.dataset.state = sidebar._defaultState ?? "expanded";
+      sidebar.dataset.state = "expanded";
       break;
     case "collapsed":
       sidebar.dataset.state = "collapsed";
@@ -5215,7 +6412,7 @@ var sidebarApi = componentState({
   states: sidebarStates,
   apply: (sidebar, state) => {
     sidebar._pinned = true;
-    triggerStateChange5(sidebar, state.name, state.config);
+    triggerStateChange7(sidebar, state.name, state.config);
   },
   read: (sidebar, state) => {
     return {
@@ -5223,18 +6420,18 @@ var sidebarApi = componentState({
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup5(el, state.name)
+  markup: (el, state) => applyMarkup7(el, state.name)
 });
-df$5.sidebarApi = sidebarApi;
-df$5.sidebarStates = sidebarStates;
-function init5() {
-  dfDollar5(".app-sidebar:not([data-init])").toArray().forEach((sidebar) => {
+df$7.sidebarApi = sidebarApi;
+df$7.sidebarStates = sidebarStates;
+function init7() {
+  dfDollar7(".app-sidebar:not([data-init])").toArray().forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
     sidebar._pinned = !!sidebar.dataset.stateName;
     bindComponent(sidebar, sidebarApi);
     const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : ".sidebar-trigger";
-    dfDollar5(triggerId).toArray().forEach((trigger) => {
+    dfDollar7(triggerId).toArray().forEach((trigger) => {
       trigger.addEventListener("click", () => {
         const state = sidebar.dataset.state === "collapsed" ? "expanded" : "collapsed";
         sidebar.dataset.state = state;
@@ -5244,15 +6441,15 @@ function init5() {
     document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
     autoCollapseSidebar(sidebar);
   });
-  dfDollar5("[data-sidebar-mobile]:not([data-init])").toArray().forEach((trigger) => {
+  dfDollar7("[data-sidebar-mobile]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const dialog = dfDollar5("#" + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
+    const dialog = dfDollar7("#" + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
     if (!dialog)
       return;
     trigger.addEventListener("click", () => {
       dialog.showModal();
     });
-    dfDollar5(dialog).find(".sidebar-mobile-close").toArray().forEach((btn) => {
+    dfDollar7(dialog).find(".sidebar-mobile-close").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         dialog.close();
       });
@@ -5288,14 +6485,14 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     });
   });
 }
-init5();
-new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
     if (!(e.metaKey || e.ctrlKey) || e.key !== "b")
       return;
-    const sidebar = dfDollar5(".app-sidebar").get(0);
+    const sidebar = dfDollar7(".app-sidebar").get(0);
     if (!sidebar)
       return;
     e.preventDefault();
@@ -5306,45 +6503,45 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/feedback-status/toast/toast.ts
-var df$6 = defussGlobals();
-var dfDollar6 = defussQuery();
+var df$8 = defussGlobals();
+var dfDollar8 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup6(_el, _stateName) {}
-function triggerStateChange6(container, stateName, _config) {
+function applyMarkup8(_el, _stateName) {}
+function triggerStateChange8(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar6(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar8(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange6(container, state.name, state.config);
+    triggerStateChange8(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar6(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar8(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup6(el, state.name)
+  markup: (el, state) => applyMarkup8(el, state.name)
 });
-df$6.toastApi = toastApi;
-df$6.toastStates = toastStates;
+df$8.toastApi = toastApi;
+df$8.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar6("#toast-container").get(0);
+var toastContainer = dfDollar8("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar6(document.body).append(toastContainer);
+  dfDollar8(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar6(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar8(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -5375,7 +6572,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar6(el).remove();
+      dfDollar8(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -5389,7 +6586,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar6(el).remove();
+    dfDollar8(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -5420,29 +6617,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar6(contentEl).append(dfDollar6(icons[variant]));
+    dfDollar8(contentEl).append(dfDollar8(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar6(p).text(title);
-    dfDollar6(textDiv).append(p);
+    dfDollar8(p).text(title);
+    dfDollar8(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar6(p).text(description);
-    dfDollar6(textDiv).append(p);
+    dfDollar8(p).text(description);
+    dfDollar8(textDiv).append(p);
   }
-  dfDollar6(contentEl).append(textDiv);
+  dfDollar8(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar6(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar6(contentEl).append(closeBtn);
+  dfDollar8(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar8(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -5452,9 +6649,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar6(el).append(host);
+    dfDollar8(el).append(host);
   }
-  dfDollar6(host).append(contentEl);
+  dfDollar8(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -5463,15 +6660,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar6(actionBtn).text(action.label);
-    dfDollar6(actionsDiv).append(actionBtn);
-    dfDollar6(host).append(actionsDiv);
+    dfDollar8(actionBtn).text(action.label);
+    dfDollar8(actionsDiv).append(actionBtn);
+    dfDollar8(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar6(toastContainer).append(el);
+  dfDollar8(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -5482,13 +6679,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar6(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar8(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init6() {
-  dfDollar6("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init8() {
+  dfDollar8("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -5537,8 +6734,8 @@ function init6() {
     });
   });
 }
-init6();
-new MutationObserver(init6).observe(document.body, { childList: true, subtree: true });
+init8();
+new MutationObserver(init8).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -5558,59 +6755,59 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar6(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar8(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$6.toast = toastActions;
+df$8.toast = toastActions;
 
 // src/components/actions/toggle/toggle.ts
-var df$7 = defussGlobals();
-var dfDollar7 = defussQuery();
+var df$9 = defussGlobals();
+var dfDollar9 = defussQuery();
 var toggleStates = ["default", "pressed"];
-function applyMarkup7(toggle, stateName, defaultPressed) {
-  dfDollar7(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
+function applyMarkup9(toggle, stateName, defaultPressed) {
+  dfDollar9(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
 }
-function triggerStateChange7(toggle, stateName, _config) {
-  applyMarkup7(toggle, stateName, toggle._defaultPressed ?? "false");
+function triggerStateChange9(toggle, stateName, _config) {
+  applyMarkup9(toggle, stateName, toggle._defaultPressed ?? "false");
 }
 var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
-  apply: (toggle, state) => triggerStateChange7(toggle, state.name, state.config),
+  apply: (toggle, state) => triggerStateChange9(toggle, state.name, state.config),
   read: (toggle, state) => ({
-    name: dfDollar7(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    name: dfDollar9(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
     config: state.config
   }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
-    applyMarkup7(toggle, state.name, authored ? authored[1] : "false");
+    applyMarkup9(toggle, state.name, authored ? authored[1] : "false");
   }
 });
-df$7.toggleApi = toggleApi;
-df$7.toggleStates = toggleStates;
-function init7() {
-  dfDollar7(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
-    dfDollar7(toggle).data("init", "");
-    toggle._defaultPressed = dfDollar7(toggle).attr("aria-pressed") || "false";
+df$9.toggleApi = toggleApi;
+df$9.toggleStates = toggleStates;
+function init9() {
+  dfDollar9(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
+    dfDollar9(toggle).data("init", "");
+    toggle._defaultPressed = dfDollar9(toggle).attr("aria-pressed") || "false";
     bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === "true" ? "pressed" : "default", config: {} });
-    dfDollar7(toggle).on("click", () => {
-      dfDollar7(toggle).attr("aria-pressed", String(dfDollar7(toggle).attr("aria-pressed") !== "true"));
+    dfDollar9(toggle).on("click", () => {
+      dfDollar9(toggle).attr("aria-pressed", String(dfDollar9(toggle).attr("aria-pressed") !== "true"));
     });
   });
 }
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
 // src/components/actions/toggle-group/toggle-group.ts
-var df$8 = defussGlobals();
-var dfDollar8 = defussQuery();
+var df$10 = defussGlobals();
+var dfDollar10 = defussQuery();
 var toggleGroupStates = ["default", "disabled"];
-function applyMarkup8(el, stateName) {
-  dfDollar8(el).attr("data-disabled", stateName === "disabled" ? "" : null);
+function applyMarkup10(el, stateName) {
+  dfDollar10(el).attr("data-disabled", stateName === "disabled" ? "" : null);
 }
-function triggerStateChange8(group, stateName, _config) {
+function triggerStateChange10(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -5623,23 +6820,23 @@ function triggerStateChange8(group, stateName, _config) {
 var toggleGroupApi = componentState({
   component: "toggle-group",
   states: toggleGroupStates,
-  apply: (group, state) => triggerStateChange8(group, state.name, state.config),
+  apply: (group, state) => triggerStateChange10(group, state.name, state.config),
   read: (group, state) => {
     return {
       name: group.hasAttribute("data-disabled") ? "disabled" : "default",
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup8(el, state.name)
+  markup: (el, state) => applyMarkup10(el, state.name)
 });
-df$8.toggleGroupApi = toggleGroupApi;
-df$8.toggleGroupStates = toggleGroupStates;
-function init8() {
-  dfDollar8(".toggle-group:not([data-init])").toArray().forEach((group) => {
+df$10.toggleGroupApi = toggleGroupApi;
+df$10.toggleGroupStates = toggleGroupStates;
+function init10() {
+  dfDollar10(".toggle-group:not([data-init])").toArray().forEach((group) => {
     group.dataset.init = "";
     bindComponent(group, toggleGroupApi);
     const type = group.getAttribute("data-type") || "single";
-    const getToggles = () => Array.from(dfDollar8(group).find(".toggle:not(:disabled)").toArray());
+    const getToggles = () => Array.from(dfDollar10(group).find(".toggle:not(:disabled)").toArray());
     const initTabindex = () => {
       const toggles = getToggles();
       if (toggles.length === 0)
@@ -5699,15 +6896,15 @@ function init8() {
     });
   });
 }
-init8();
-new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+init10();
+new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
 // src/components/actions/toolbar/toolbar.ts
-var df$9 = defussGlobals();
-var dfDollar9 = defussQuery();
+var df$11 = defussGlobals();
+var dfDollar11 = defussQuery();
 var toolbarStates = ["default"];
-function applyMarkup9(_el, _stateName) {}
-function triggerStateChange9(toolbar, items, stateName, config) {
+function applyMarkup11(_el, _stateName) {}
+function triggerStateChange11(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -5720,7 +6917,7 @@ var toolbarApi = componentState({
   states: toolbarStates,
   apply: (toolbar, state) => {
     const items = toolbarItems(toolbar);
-    triggerStateChange9(toolbar, items, state.name, state.config);
+    triggerStateChange11(toolbar, items, state.name, state.config);
   },
   read: (toolbar, state) => {
     const items = toolbarItems(toolbar);
@@ -5730,13 +6927,13 @@ var toolbarApi = componentState({
       config: { ...state.config, rovingIndex: idx }
     };
   },
-  markup: (el, state) => applyMarkup9(el, state.name)
+  markup: (el, state) => applyMarkup11(el, state.name)
 });
-df$9.toolbarApi = toolbarApi;
-df$9.toolbarStates = toolbarStates;
-var toolbarItems = (toolbar) => Array.from(dfDollar9(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray());
-function init9() {
-  dfDollar9('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
+df$11.toolbarApi = toolbarApi;
+df$11.toolbarStates = toolbarStates;
+var toolbarItems = (toolbar) => Array.from(dfDollar11(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray());
+function init11() {
+  dfDollar11('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
     toolbar.dataset.init = "";
     bindComponent(toolbar, toolbarApi);
     const items = toolbarItems(toolbar);
@@ -5774,9 +6971,9 @@ function init9() {
     });
   });
 }
-init9();
-new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+init11();
+new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
-//# debugId=AA1D9EC4B43AECA264756E2164756E21
+//# debugId=5E2657D7EB15670E64756E2164756E21
 /* defuss-shadcn v0.9.9 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=document-editor.js.map

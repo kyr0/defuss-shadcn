@@ -106,6 +106,40 @@
     border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color);
   }
 
+  /* -- Fit: a fixed side region sized by its content -------------------
+     data-fit on a fixed region (no resizer): its size is its content's -
+     a tree that grows, a list of states - between --border-layout-fit-min
+     and --border-layout-fit-max (half the layout by default); past the
+     maximum its content scrolls. The side rows and columns are `auto`
+     tracks, which take an item's clamped size: CSS only. The bounds are
+     container units of the layout, so a layout holding a fit region is a
+     size container - it takes its height from outside (a height, a
+     grid cell), never from its content. A panel in it that is minimized
+     or maximized leaves the bounds. */
+  .border-layout:has(> [data-fit]) {
+    container-type: size;
+  }
+  .border-layout
+    > :is(.border-layout-north, .border-layout-south)[data-fit]:not(
+      [data-minimized],
+      [data-maximized],
+      [data-panel-minimized]
+    ) {
+    min-block-size: var(--border-layout-fit-min, 0px);
+    max-block-size: var(--border-layout-fit-max, 50cqh);
+    overflow: auto;
+  }
+  .border-layout
+    > :is(.border-layout-west, .border-layout-east)[data-fit]:not(
+      [data-minimized],
+      [data-maximized],
+      [data-panel-minimized]
+    ) {
+    min-inline-size: var(--border-layout-fit-min, 0px);
+    max-inline-size: var(--border-layout-fit-max, 50cqw);
+    overflow: auto;
+  }
+
   /* padding for panes that hold text (optional) */
   .border-layout-pane {
     padding: 0.75rem;

@@ -184,6 +184,14 @@
           border-color: var(--doc-comments-color);
           background: color-mix(in oklab, var(--doc-comments-flash) 25%, var(--muted));
         }
+        /* a link to another comment: a solid edge on the card surface - it goes to a card, it flashes no text */
+        &.doc-comments-link {
+          border-style: solid;
+          background: var(--card);
+          &:hover {
+            background: var(--muted);
+          }
+        }
       }
 
       & .doc-comments-actions {

@@ -6,16 +6,20 @@
 // only tells it what the docs' previews are built from:
 //
 // - styles: the docs sheets the page loaded (tokens, utility modules, docs
-//   theme + utilities, all.css → its .min twin, wysiwyg.css when a source nests
-//   a card), fetched ONCE and inlined - a srcdoc with N <link>s meant N
-//   render-blocking requests per preview. @font-face is stripped: an opaque-
-//   origin sandbox fetches fonts in CORS mode and static hosts send no ACAO
-//   header (a console error storm; font-display: swap renders the fallback).
-// - scripts: all.min.js (+ wysiwyg.min.js for nested cards) as text - the
+//   theme + utilities, all.css → its .min twin), fetched ONCE and inlined - a
+//   srcdoc with N <link>s meant N render-blocking requests per preview - plus
+//   the .min.css of each extra bundle the source uses (wysiwyg for a nested
+//   card, mermaid, math: the component's bundlesFor), from beside all.css.
+//   @font-face is stripped: an opaque-origin sandbox fetches fonts in CORS
+//   mode and static hosts send no ACAO header (a console error storm;
+//   font-display: swap renders the fallback).
+// - scripts: all.min.js + those extra bundles' .min.js as text - the
 //   component inlines them as classic scripts in their own function scope.
 // - tail: lucide (icon examples) and the theme-switcher demo's base URL.
 // - theme: the current tweakcn sheet; a theme switch pushes it into every
 //   running preview (refreshTheme), no rebuild.
+// - part cards (```html example part - an individual example): no preview,
+//   the part rendered into a shadow root with the same docs sheets.
 //
 // ?raw: under the Vite dev/preview server (bun run dev, Vitest) a plain
 // .js/.css fetch gets Vite's module transform; ?raw returns the bytes (wrapped
@@ -30,7 +34,10 @@
     var STYLE_FRAGMENTS = [
         'default-semantic-tokens.css',
         'sizing.css',
-        'layout.css',
+        // the shipped layout module - a bare 'layout.css' also matched the docs chrome (css/layout.css),
+        // whose unlayered code / pre rules outranked the components' own (a chat bubble's code chip
+        // showed its white text on the chrome's light chip, invisible)
+        'utils/layout.css',
         // .sr-only lives here - visually-hidden demo text would render otherwise
         'accessibility.css',
         'shapes.css',
@@ -38,7 +45,6 @@
         'docs-utilities.css',
         'components/all.css',
     ];
-    var NESTED_SHEET = 'components/wysiwyg.css';
     var FONT_FACE = /@font-face\s*\{[^}]*\}\s*/g;
     // the theme-switcher fence's placeholder, swapped for the ABSOLUTE theme
     // folder in the preview (about:srcdoc cannot resolve relative URLs)
@@ -86,6 +92,12 @@
     var $ = function (sel) {
         return globalThis.df$(sel);
     };
+    /** the URL a sheet was loaded from - the SPA router keeps the <head>, so a relative href read again after a
+     *  navigation to another folder depth names a missing file (src/shared/sheet-url.ts says why; a classic
+     *  script cannot import it) */
+    function sheetUrl(link) {
+        return (link.sheet && link.sheet.href) || link.href;
+    }
     /** absolute URLs of the page's sheets matching the fragments, in host order */
     function sheetUrls(fragments) {
         var out = [];
@@ -93,15 +105,27 @@
             var href = l.getAttribute('href') || '';
             for (var i = 0; i < fragments.length; i++)
                 if (href.indexOf(fragments[i]) >= 0) {
-                    out.push(l.href);
+                    out.push(sheetUrl(l));
                     break;
                 }
         });
         return out;
     }
-    var nests = function (source) {
-        return /\b(?:code-example|editorjs)\b/.test(source || '');
-    };
+    /** the extra bundles (components kept out of all.*) the source needs - the component owns the list (bundlesFor) */
+    function extraBundles(source) {
+        var api = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.codeExample;
+        return api && api.bundlesFor ? api.bundlesFor(source || '') : [];
+    }
+    /** an extra bundle's file beside all.css - a page loads mermaid.* / math.* only where its own markup uses them,
+     *  so the bundle's URL comes from the all bundle's, not from the page's links */
+    function extraBundleUrls(source, ext) {
+        var all = sheetUrls(['components/all.css'])[0];
+        if (!all)
+            return [];
+        return extraBundles(source).map(function (name) {
+            return all.replace(/\/all(?:\.min)?\.css(\?.*)?$/, '/' + name + '.' + ext);
+        });
+    }
     var stylesPromise = null;
     /** the docs sheets, inlined once per page (bundles as their .min twins) */
     function docsStyles(source) {
@@ -117,10 +141,8 @@
                 stylesPromise = null;
             });
         }
-        var nested = nests(source)
-            ? Promise.all(sheetUrls([NESTED_SHEET]).map(function (url) { return fetchMin(url, 'css'); }))
-            : Promise.resolve([]);
-        return Promise.all([stylesPromise, nested]).then(function (parts) {
+        var extra = Promise.all(extraBundleUrls(source, 'css').map(function (url) { return fetchMin(url, 'css'); }));
+        return Promise.all([stylesPromise, extra]).then(function (parts) {
             return [{ css: [parts[0]].concat(parts[1]).join('\n') }];
         });
     }
@@ -128,11 +150,7 @@
     function docsScripts(source) {
         var urls = sheetUrls(['components/all.css']).map(function (u) {
             return u.replace(/\.css(\?.*)?$/, '.js');
-        });
-        if (nests(source))
-            urls = urls.concat(sheetUrls([NESTED_SHEET]).map(function (u) {
-                return u.replace(/\.css(\?.*)?$/, '.js');
-            }));
+        }).concat(extraBundleUrls(source, 'js'));
         return Promise.all(urls.map(function (u) { return fetchMin(u, 'js'); })).then(function (texts) {
             return texts.map(function (js) { return { js: js }; });
         });
@@ -143,7 +161,7 @@
         if (!tokens)
             return '';
         try {
-            return new URL('..', tokens.href).href.replace(/\/$/, '');
+            return new URL('..', sheetUrl(tokens)).href.replace(/\/$/, '');
         }
         catch {
             return '';
@@ -164,7 +182,7 @@
             return Promise.resolve(theme.textContent || '');
         if (!theme || !theme.getAttribute('href'))
             return Promise.resolve('');
-        return fetchRaw(theme.href)
+        return fetchRaw(sheetUrl(theme))
             .then(function (t) {
             return t.replace(FONT_FACE, '');
         })
@@ -172,17 +190,121 @@
             return '';
         });
     }
+    // -- part cards (lib/components/part-card.tsx): an individual example, rendered without an HTML Preview Editor -
+    // into a shadow root on the card's view, so nothing of the part (its <style>, its ids, a heading) reaches the page.
+    // The docs sheets the previews get, fetched once as one constructed sheet that every card adopts (one parse); the
+    // theme's tokens are custom properties on the document root and inherit into the shadow tree. No script runs:
+    // lucide only, for the icons (VERIFIED: tmp/probe-lucide-root.ts - createIcons({ root }) reaches into a shadow root).
+    // VERIFIED: (tmp/probe-part-cards.ts) 1.5 MB of docs CSS parses into the one sheet in 11 ms; 272 cards take 67 ms
+    var partSheets = {};
+    // a part that IS a popover, a tooltip, a dialog is hidden until something opens it - in a part card (nothing runs,
+    // no trigger) it shows in place, inside the card: no offset, no slide-out transform (a sheet's translateX(100%)), at
+    // most the card's width (that replaces its own cap: a dialog's width is viewport-relative, 100vw - 2rem). An overlay
+    // INSIDE a part (a combobox's list, a dropdown's menu) stays closed as in the live examples - its trigger opens it
+    // natively (popovertarget / commandfor). VERIFIED: (tmp/probe-inplace.ts, 2026-10-16) without the reset the popover,
+    // command and context-menu parts sat outside their cards; with the first rule (every overlay, max-width 100%) a
+    // Dialog part was 1,248 px wide in a 368 px card and a Sheet sat past the card's right edge
+    var partInPlace = null;
+    function inPlaceSheet() {
+        if (!partInPlace) {
+            partInPlace = new CSSStyleSheet();
+            partInPlace.replaceSync('.part-card-root { max-inline-size: 100%; } ' +
+                '.part-card-root > :is([popover], dialog) { display: block; position: static; inset: auto; margin: 0; translate: none; transform: none; opacity: 1; visibility: visible; max-inline-size: 100%; }');
+        }
+        return partInPlace;
+    }
+    /** the docs sheets (+ the extra bundles the source needs) as one shared constructed sheet */
+    function partSheet(source) {
+        var key = extraBundles(source).join(',');
+        if (!partSheets[key])
+            partSheets[key] = docsStyles(source).then(function (styles) {
+                var sheet = new CSSStyleSheet();
+                sheet.replaceSync(styles[0].css);
+                return sheet;
+            });
+        return partSheets[key];
+    }
+    /** a part card's source: the lines of its code window (the one copy of it in the page) */
+    function partSource(card) {
+        return $(card)
+            .find('.part-card-code .mockup-code > pre > code')
+            .toArray()
+            .map(function (c) {
+            return c.textContent;
+        })
+            .join('\n');
+    }
+    function initPartCards() {
+        $('.part-card:not([data-init])').each(function (_i, card) {
+            card.setAttribute('data-init', '');
+            var view = $(card).find('.part-card-view').get(0);
+            if (!view || view.shadowRoot)
+                return;
+            var source = partSource(card);
+            var shadow = view.attachShadow({ mode: 'open' });
+            var root = document.createElement('div');
+            root.className = 'part-card-root';
+            // unstyled until its sheet is adopted - no flash of the bare markup
+            root.style.visibility = 'hidden';
+            shadow.append(root);
+            globalThis.df$(root).html(source);
+            if (globalThis.lucide)
+                globalThis.lucide.createIcons({ root: root });
+            partSheet(source).then(function (sheet) {
+                shadow.adoptedStyleSheets = [sheet, inPlaceSheet()];
+                root.style.visibility = '';
+            }, function () {
+                root.style.visibility = '';
+            });
+        });
+    }
     document.addEventListener('DOMContentLoaded', function () {
+        var docs = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.docs;
+        // on the first load and after every SPA navigation (the router swaps <main>)
+        if (docs && docs.onPageReady)
+            docs.onPageReady(initPartCards);
+        else
+            initPartCards();
         var api = globalThis.df$ && globalThis.df$.shadcn && globalThis.df$.shadcn.codeExample;
         if (!api)
             return; // wysiwyg.js missing - the cards stay static
         // VERIFIED: base = the docs root - pages sit in section folders (page-dirs.ts), an example's
-        // `images/x.png` must still resolve from the root where public/ lands
+        // `images/x.png` must still resolve from the root where public/ lands; a page id (`paper.html`) does
+        // not, so every card that names one carries data-links (lib/components/code-example.tsx, page-dirs.ts pageLinks)
         var docsRoot = new URL(document.documentElement.getAttribute('data-docs-root') || '', location.href).href;
         api.configure({ styles: docsStyles, scripts: docsScripts, tail: docsTail, theme: docsTheme, base: docsRoot });
         // theme-switcher dispatches this on every applyTheme
         document.addEventListener('defuss-theme-change', function () {
             api.refreshTheme();
+        });
+        // "Open in Studio" (the link the card shell renders): the card's current source travels in the address fragment -
+        // deflate-raw, base64url - so it never reaches a server and needs no storage; the Studio reads it and clears it.
+        // The tab opens on the click (a popup the click allows), the address follows once the source is compressed.
+        document.addEventListener('click', function (e) {
+            var target = e.target;
+            var link = target && target.closest ? target.closest('a[data-open-studio]') : null;
+            if (!link)
+                return;
+            // a full card's current source, or a part card's
+            var card = link.closest('.code-example, .part-card');
+            if (!card)
+                return;
+            e.preventDefault();
+            var tab = globalThis.open('', '_blank');
+            var source = card.classList.contains('part-card') ? partSource(card) : api.source(card);
+            var bytes = new Response(new Blob([source]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer();
+            bytes.then(function (buffer) {
+                var text = '';
+                new Uint8Array(buffer).forEach(function (b) {
+                    text += String.fromCharCode(b);
+                });
+                var url = new URL(link.href, location.href);
+                url.hash = 'source=' + btoa(text).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+                if (tab)
+                    tab.location.href = url.href;
+                else
+                    location.href = url.href;
+            });
         });
     });
 })();

@@ -947,6 +947,40 @@
     border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color);
   }
 
+  /* -- Fit: a fixed side region sized by its content -------------------
+     data-fit on a fixed region (no resizer): its size is its content's -
+     a tree that grows, a list of states - between --border-layout-fit-min
+     and --border-layout-fit-max (half the layout by default); past the
+     maximum its content scrolls. The side rows and columns are `auto`
+     tracks, which take an item's clamped size: CSS only. The bounds are
+     container units of the layout, so a layout holding a fit region is a
+     size container - it takes its height from outside (a height, a
+     grid cell), never from its content. A panel in it that is minimized
+     or maximized leaves the bounds. */
+  .border-layout:has(> [data-fit]) {
+    container-type: size;
+  }
+  .border-layout
+    > :is(.border-layout-north, .border-layout-south)[data-fit]:not(
+      [data-minimized],
+      [data-maximized],
+      [data-panel-minimized]
+    ) {
+    min-block-size: var(--border-layout-fit-min, 0px);
+    max-block-size: var(--border-layout-fit-max, 50cqh);
+    overflow: auto;
+  }
+  .border-layout
+    > :is(.border-layout-west, .border-layout-east)[data-fit]:not(
+      [data-minimized],
+      [data-maximized],
+      [data-panel-minimized]
+    ) {
+    min-inline-size: var(--border-layout-fit-min, 0px);
+    max-inline-size: var(--border-layout-fit-max, 50cqw);
+    overflow: auto;
+  }
+
   /* padding for panes that hold text (optional) */
   .border-layout-pane {
     padding: 0.75rem;
@@ -1265,6 +1299,21 @@
       color: var(--muted-foreground);
     }
 
+    /* -- Density: data-density on the .panel ---------------------------------
+       The card's scale moves the body's padding (compact 2/3, spacious 4/3);
+       the title bar follows: compact 2rem (the 1.75rem tools fill it),
+       comfortable the unsized 2.5rem, spacious 3rem. */
+    &:where([data-density="compact"]) {
+      --_bar: 2rem;
+
+      & > .panel-header {
+        padding-block: 0.125rem;
+      }
+    }
+    &:where([data-density="spacious"]) {
+      --_bar: 3rem;
+    }
+
     /* -- Minimized: the title bar only ------------------------------------- */
     &[data-minimized] {
       & > :not(.panel-header) {
@@ -1355,6 +1404,12 @@
      the layout stays the containing block */
   .border-layout[data-panel-maximized] > :has(.panel[data-maximized]) {
     z-index: 20;
+  }
+  /* a panel that is its region (no resizer around it) leaves its grid area:
+     an absolutely positioned grid item takes its grid area as its containing
+     block - placed auto, it takes the layout's padding box */
+  .border-layout[data-panel-maximized] > .panel[data-maximized] {
+    grid-area: auto;
   }
 
   /* -- In a border layout: the region frames the panel ---------------------- */
@@ -2375,6 +2430,14 @@
         &:hover {
           border-color: var(--doc-comments-color);
           background: color-mix(in oklab, var(--doc-comments-flash) 25%, var(--muted));
+        }
+        /* a link to another comment: a solid edge on the card surface - it goes to a card, it flashes no text */
+        &.doc-comments-link {
+          border-style: solid;
+          background: var(--card);
+          &:hover {
+            background: var(--muted);
+          }
         }
       }
 

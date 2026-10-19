@@ -120,6 +120,11 @@ The divider rests (`inert`) while its panel is minimized; the region gets
 dragged size back. Inside a layout the panel drops its own border and
 radius - the dividers frame it (`data-divider="gap"` cards it again).
 
+A panel can also be the region itself - `<section class="card panel
+border-layout-north">` with no resizer around it, or `border-layout-center`:
+it minimizes and maximizes the same way, and maximized it leaves its grid
+cell to fill the whole layout.
+
 ---
 
 ## Variants
@@ -141,6 +146,12 @@ radius - the dividers frame it (`data-divider="gap"` cards it again).
 
 The panel takes its size from the author (`width` / `height`) or from the
 region's resizer; the title bar is 2.5rem, the tools 1.75rem with 1rem icons.
+As a fixed Border Layout region with `data-fit` it is as high (or wide) as
+its content, within the layout's fit bounds, and its body scrolls past them.
+
+`data-density` on the `.panel` scales the title bar with the card's body
+padding: `compact` 2rem (a tighter body), `comfortable` the unsized 2.5rem,
+`spacious` 3rem. The type and the tools keep their size.
 
 ---
 

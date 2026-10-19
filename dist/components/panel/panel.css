@@ -104,6 +104,21 @@
       color: var(--muted-foreground);
     }
 
+    /* -- Density: data-density on the .panel ---------------------------------
+       The card's scale moves the body's padding (compact 2/3, spacious 4/3);
+       the title bar follows: compact 2rem (the 1.75rem tools fill it),
+       comfortable the unsized 2.5rem, spacious 3rem. */
+    &:where([data-density="compact"]) {
+      --_bar: 2rem;
+
+      & > .panel-header {
+        padding-block: 0.125rem;
+      }
+    }
+    &:where([data-density="spacious"]) {
+      --_bar: 3rem;
+    }
+
     /* -- Minimized: the title bar only ------------------------------------- */
     &[data-minimized] {
       & > :not(.panel-header) {
@@ -194,6 +209,12 @@
      the layout stays the containing block */
   .border-layout[data-panel-maximized] > :has(.panel[data-maximized]) {
     z-index: 20;
+  }
+  /* a panel that is its region (no resizer around it) leaves its grid area:
+     an absolutely positioned grid item takes its grid area as its containing
+     block - placed auto, it takes the layout's padding box */
+  .border-layout[data-panel-maximized] > .panel[data-maximized] {
+    grid-area: auto;
   }
 
   /* -- In a border layout: the region frames the panel ---------------------- */

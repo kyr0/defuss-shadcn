@@ -117,6 +117,13 @@ numbers, a cursor, git-style diffs, wrapping, surface variants and sizes. CSS on
 
 ## Notes
 
+- **Print wraps and keeps the colors.** Paper cannot scroll: printed, every
+  line wraps as with `data-wrap`, and the window prints its colors as
+  designed (`print-color-adjust: exact`) - a print dialog drops background
+  graphics by default, which left the terminal's light text pale on white
+  paper. An animated diff prints its end state. On a page that follows the
+  theme, prefer `data-variant="muted"` (or `outline`): the default window is
+  a dark terminal in both themes.
 - Copying the window (or a selection) yields the commands without prompts;
   the docs site's copy buttons copy `innerText` and get exactly that.
 - Put one command per `pre`; a multi-line command continues on lines with

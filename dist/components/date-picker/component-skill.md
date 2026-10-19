@@ -6,6 +6,7 @@ why: Text field plus calendar in a popover, wired declaratively with command/com
 when: A form field where users type or pick a date - for a start-end date RANGE use the calendar's range mode (one span, one answer) instead of two separate fields.
 where: dist/components/date-picker/date-picker.css
 supportedStates: default
+roots: ".date-input"
 ---
 
 # Pattern: Date Picker

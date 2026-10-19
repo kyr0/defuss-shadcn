@@ -2,7 +2,7 @@
 
 # Component catalog
 
-234 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+243 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.9/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -67,6 +67,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | --- | --- | --- | --- | --- |
 | [HTML Preview Editor](../../defuss-shadcn/references/components/code-example.md) `code-example` | MOL | default, code, state, fullscreen | yes | Live, editable HTML examples - a design-system docs site, a playground, a template editor with a preview. Showing code without running it is a code block or mockup-code; a plain text field is textarea. |
 | [Editor.js](../../defuss-shadcn/references/components/editorjs.md) `editorjs` | MOL | default, readonly | yes | Long-form documents people edit as blocks - notes, briefs, articles - that are stored as Markdown or as Editor.js JSON; for an editable live example of HTML use the HTML Preview Editor, for a single field a Textarea. |
+| [Visual Editor](../../defuss-shadcn/references/components/visual-editor.md) `visual-editor` | ATM | default, readonly | yes | Pages people compose visually from the system's components - a landing page, a form, an app screen - and keep as markup; the whole workflow (pages, block library, inspector, preview, export) is the Studio. For an editable live example of HTML use the HTML Preview Editor, for documents edited as blocks Editor.js. |
 
 ## Questionnaire
 
@@ -87,7 +88,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Card](../../defuss-shadcn/references/components/card.md) `card` | MOL | default | - | Grouping related content and actions on a page - dashboards, lists, modal bodies. |
 | [Teaser](../../defuss-shadcn/references/components/teaser.md) `teaser` | MOL | default, played | yes | Content that is heavy or should start on purpose - a slide deck, a video, an embedded app, a demo - shown as an inviting card first. For media that is always loaded use the Video Player block or Iframe; for a call to action that navigates use CTA. |
 | [Image](../../defuss-shadcn/references/components/image.md) `image` | ATM | default, error | yes | Remote images whose loading or failure must be visually controlled. |
-| [Iframe](../../defuss-shadcn/references/components/iframe.md) `iframe` | ATM | default, loaded | yes | Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame. |
+| [Iframe](../../defuss-shadcn/references/components/iframe.md) `iframe` | ATM | default, loaded | yes | Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video component (or the Video Player block); your own markup belongs in the page, not in a frame. |
 | [Statistic](../../defuss-shadcn/references/components/statistic.md) `statistic` | ATM | default | - | Dashboards showing one value and its trend. |
 | [QR Code](../../defuss-shadcn/references/components/qr-code.md) `qr-code` | ATM | default, empty, error | yes | Share a URL or exact text with a scanning device. Keep an explicit link or text alternative beside the figure when the destination is actionable. |
 | [Table](../../defuss-shadcn/references/components/table.md) `table` | ATM | default, sorted, selected | yes | Tabular data in rows and columns - from a plain list to a data grid with sort, select, reorder and actions; never div grids. |
@@ -98,6 +99,14 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Carousel](../../defuss-shadcn/references/components/carousel.md) `carousel` | ATM | default | yes | Presenting a finite set of large items (hero slides, galleries) one or a few at a time. |
 | [Scroll Area](../../defuss-shadcn/references/components/scroll-area.md) `scroll-area` | ATM | default | - | Fixed-height regions that scroll: menu bodies, sidebars, code panes. |
 | [Sortable](../../defuss-shadcn/references/components/sortable.md) `sortable` | ATM | default | yes | Lists whose order the user controls - todo lists, table row ordering. |
+
+## Multimedia
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Video](../../defuss-shadcn/references/components/video.md) `video` | MOL | default, playing | yes | A video the page controls - a lesson, a product film, a clip with a Media Timeline or a transcript beside it. A styled frame around the browser's own controls with nothing to drive it is the Website Video Player block; an animation is a Motion or an Animation Canvas. |
+| [Audio](../../defuss-shadcn/references/components/audio.md) `audio` | MOL | default, playing | yes | Sound the page controls - a podcast episode, an interview, a field recording, a voice note with a Media Timeline. A styled episode card around the browser's own controls is the Website Audio Player block; a list of tracks uses Playlist Item. |
+| [Media Timeline](../../defuss-shadcn/references/components/media-timeline.md) `media-timeline` | MOL | default, playing | yes | Navigating and explaining a recording - chapters, speakers, detected sounds or scenes, annotations, captions - with an info panel that follows the playhead. A record of events with dates (a changelog, a project history) is the Data Display Timeline. |
 
 ## Big Data
 
@@ -120,6 +129,14 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | --- | --- | --- | --- | --- |
 | [Diagram](../../defuss-shadcn/references/components/diagram.md) `diagram` | ATM | default, playing, paused, active | yes | Architecture, flows, state machines, ER and schema, sequences, org charts, swimlanes, layers, containment, loops, data platforms, matrices, fishbones, Wardley maps, journeys, kanban, story maps, quadrants, policy traces. Data charts (values on axes) are chart; text-defined diagrams you already have in Mermaid syntax are mermaid. |
 | [Mermaid](../../defuss-shadcn/references/components/mermaid.md) `mermaid` | ATM | default, rendered, error | yes | Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts). |
+
+## Math
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Formula Rendering](../../defuss-shadcn/references/components/math-renderer.md) `math-renderer` | ATM | default, rendered, highlighted, error | yes | Display and inline mathematics in papers, docs and teaching pages - for an editable formula use math-editor, to compute with one use math-compute. |
+| [Formula Editing](../../defuss-shadcn/references/components/math-editor.md) `math-editor` | MOL | default, readonly, disabled, invalid, keyboard-open | yes | Formula input in forms, papers and teaching tools - to show a formula use math-renderer, to compute with it use math-compute. |
+| [Compute & Explain](../../defuss-shadcn/references/components/math-compute.md) `math-compute` | MOL | default, computing, result, explaining, unsupported, error | yes | Showing how a result comes about in papers and teaching pages, or checking an identity - to only show a formula use math-renderer, to edit one use math-editor. |
 
 ## Feedback & Status
 
@@ -201,6 +218,13 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Modern Paper](../../defuss-shadcn/references/components/paper.md) `paper` | TPL | default | - | The web page of a paper, a technical report or a project write-up - title, authors, resources, abstract, sections, figures, results and the citation. A product landing page is the Landing Page template; long documentation is Docs Content. |
 | [BibTeX](../../defuss-shadcn/references/components/bibtex.md) `bibtex` | ATM | default, copied | yes | Wherever a reader should cite something - a paper page, a dataset, a release, a references section (several entries become a list). A terminal transcript is mockup-code; source code is a code block. |
 
+## Documents
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Letter](../../defuss-shadcn/references/components/letter.md) `letter` | TPL | default | - | Business letters, notices, cover letters and anything that goes into a window envelope - and the frame of an invoice (an Invoice is a letter whose body is .invoice). A research document is a Paper; a message in an app is a Card or a Toast. |
+| [Invoice](../../defuss-shadcn/references/components/invoice.md) `invoice` | BLK | default | yes | The body of an invoice, a quote, a credit note or an order confirmation - inside a Letter for a DIN 5008 sheet and a window envelope. A table of figures without totals is a Table; a price list on a website is a Pricing block. |
+
 ## Website
 
 | Component | Type | States | JS | When |
@@ -271,8 +295,8 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Gallery Item](../../defuss-shadcn/references/components/gallery-item.md) `gallery-item` | BLK | default | - | Photo grids, portfolios, product shots. A whole collection with shared controls is media-gallery; a plain responsive picture is the image component. |
 | [Media Gallery](../../defuss-shadcn/references/components/media-gallery.md) `media-gallery` | BLK | default | - | Albums, project galleries, event photos. One picture with a large view is gallery-item; a single hero picture is the image component. |
 | [Text Media](../../defuss-shadcn/references/components/text-media.md) `text-media` | BLK | default | - | Explaining one idea with a visual. Product features in a row use feature-details; a whole scenario uses use-case. |
-| [Video Player](../../defuss-shadcn/references/components/video-player.md) `video-player` | BLK | default | - | Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media. |
-| [Audio Player](../../defuss-shadcn/references/components/audio-player.md) `audio-player` | BLK | default | - | Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player. |
+| [Video Player](../../defuss-shadcn/references/components/video-player.md) `video-player` | BLK | default | - | Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media. A player the page drives (a State API, controls elsewhere on the page, captions from data, a Media Timeline) is the Multimedia Video component. |
+| [Audio Player](../../defuss-shadcn/references/components/audio-player.md) `audio-player` | BLK | default | - | Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player. A player the page drives (a State API, controls elsewhere on the page, a Media Timeline) is the Multimedia Audio component. |
 | [Playlist Item](../../defuss-shadcn/references/components/playlist-item.md) `playlist-item` | BLK | default | - | Track lists, episode lists, lesson lists. The player itself is audio-player or video-player. |
 | [Before After](../../defuss-shadcn/references/components/before-after.md) `before-after` | BLK | default | - | Edits, renovations, redesigns, restorations. Two unrelated pictures belong in a gallery. |
 | [Social Post](../../defuss-shadcn/references/components/social-post.md) `social-post` | BLK | default | - | Social proof, "what people say" walls, press kits. Curated customer quotes are testimonials; a feed of your own updates is news-item. |

@@ -1,0 +1,195 @@
+/* -- Audio component ------------------------------------------ */
+/* A native <audio> (no controls of its own) behind one row: the  */
+/* play toggle, a title over the scrubber and its readouts, the   */
+/* sound controls - Buttons, Sliders and readouts                 */
+/* (data-audio-action / -output). An optional line under the      */
+/* scrubber shows the active caption cue, a transcript as it is   */
+/* spoken. data-variant="compact" drops the frame and the title.  */
+@layer components {
+  .audio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+
+    & > audio:not([controls]) {
+      display: none;
+    }
+
+    & > [data-audio-action="volume"] {
+      inline-size: 4.5rem;
+    }
+  }
+
+  .audio-body {
+    display: grid;
+    flex: 1;
+    gap: 0.125rem;
+    min-inline-size: 0;
+  }
+
+  .audio-title {
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .audio-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-inline-size: 0;
+
+    & > [data-audio-action="seek"] {
+      flex: 1;
+      min-inline-size: 3rem;
+    }
+  }
+
+  /* a readout: m:ss in even digits, so the row does not jitter */
+  .audio-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* the active cue - collapses when captions are off or nothing is said */
+  .audio-captions {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-style: italic;
+    text-wrap: pretty;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  /* a toggle with two icons shows the first when off, the second when on (play / pause, sound / muted) */
+  [data-audio-action][aria-pressed="false"] > :nth-child(2),
+  [data-audio-action][aria-pressed="true"] > :nth-child(1):not(:only-child) {
+    display: none;
+  }
+
+  /* a control the page may not use (full screen in a frame without it) - over the Button's own display */
+  [data-audio-action][hidden] {
+    display: none;
+  }
+
+  /* a rate select keeps its own width in the row (a Select is as wide as its box) */
+  select[data-audio-action="rate"] {
+    flex: none;
+    inline-size: auto;
+  }
+
+  /* the sound button with a vertical volume in a panel above it (below with data-side="bottom"), shown while the
+     pointer or the focus is on either - the row keeps one button's width */
+  .audio-volume {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .audio-volume-panel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    margin-block-end: 0.375rem;
+    padding: 0.75rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    box-shadow: var(--shadow-md);
+    translate: -50% 0;
+    visibility: hidden;
+    opacity: 0;
+
+    /* the gap to the button belongs to the hover */
+    &::after {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 100%;
+      block-size: 0.5rem;
+      content: "";
+    }
+
+    /* a vertical range's block axis is horizontal: its length is its height */
+    & > .slider[data-orientation="vertical"] {
+      height: 5.5rem;
+    }
+
+    .audio-volume:is(:hover, :focus-within) > & {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .audio-volume[data-side="bottom"] > & {
+      inset-block: 100% auto;
+      margin-block: 0.375rem 0;
+
+      &::after {
+        inset-block: auto 100%;
+      }
+    }
+  }
+
+  .audio[data-variant="compact"] {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+
+    & .audio-title {
+      display: none;
+    }
+  }
+
+  /* a narrow player keeps play, the scrubber, the time and the sound */
+  @container (inline-size < 22rem) {
+    .audio > [data-audio-action="volume"],
+    .audio > [data-audio-action="rate"],
+    .audio-progress > [data-audio-output="duration"] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .audio-volume-panel {
+      transition:
+        opacity 0.15s ease,
+        visibility 0.15s allow-discrete;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .audio-time,
+    .audio-captions {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .audio,
+    .audio-volume-panel {
+      border-color: CanvasText;
+    }
+
+    .audio-volume-panel {
+      background-color: Canvas;
+    }
+  }
+}

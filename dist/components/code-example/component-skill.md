@@ -25,7 +25,9 @@ The **extra bundle**: the component is NOT part of `all.css` / `all.js` - the
 page adds `wysiwyg.css` and `wysiwyg.js` after them (or after `core.css` /
 `core.js` + its components). The preview runs the same design system: by
 default it loads the page's own stylesheets and inlines the page's `all.js`
-(or `core.js`), so components work inside it.
+(or `core.js`), so components work inside it - plus each extra bundle the page
+loaded whose components the source names (`wysiwyg.js`, `mermaid.js`,
+`math.js`: `df$.shadcn.codeExample.bundlesFor(source)`).
 
 ---
 
@@ -86,6 +88,7 @@ The runtime builds the rest. A page that renders the card on the server
       <button type="button" class="code-example-vp" data-vp="phone" aria-pressed="false">…</button>
       <button type="button" class="code-example-vp" data-vp="tablet" aria-pressed="false">…</button>
       <button type="button" class="code-example-vp" data-vp="desktop" aria-pressed="false">…</button>
+      <button type="button" class="code-example-vp" data-vp="print" aria-pressed="false">…</button>
       <button type="button" class="code-example-vp" data-vp="full" aria-pressed="true">…</button>
     </span>
     <span class="code-example-sep" aria-hidden="true"></span>
@@ -126,12 +129,15 @@ The source is the textarea's text: escape only `</textarea>` (as
 | Attribute (on `.code-example`) | Behavior |
 |-----------|----------|
 | `data-schema='{…}'` | A component schema (`dist/schemas/*.schema.json`): adds the State tab, whose controls drive the previewed component and read its state back |
-| `data-vp-mode="phone\|tablet\|desktop\|full"` | The device the preview boots in (`full` = the card's width) |
+| `data-vp-mode="phone\|tablet\|desktop\|print\|full"` | The device the preview boots in (`full` = the card's width; `print` = an A4 sheet, 794px, 20mm margins, whose preview applies its print styles: `print` and `screen` trade places in every media query of every sheet the preview can read; a sheet has no pages, so every forced page break (`break-before: page`, `left`, `right`) shows as a dashed line with room around it) |
 | `data-height="N"` | Minimum preview height in rem - for overlays (dialogs, menus) that do not grow the page |
 | `data-preview-style="…"` | Declarations for the preview's `<body>` (the stage): `display:flex;gap:1rem;justify-content:center` |
 | `data-language="html\|css\|js\|…"` | The source's language for the colours (default `html`) - any Shiki language |
 | `data-sandbox="embed"` | Widens the frame for a third-party player (same origin, autoplay, fullscreen) - the one opt-out of the opaque origin |
 | `data-sandbox="links"` | Lets links in the preview open a new tab |
+| `data-sandbox="downloads"` | Lets the preview save a file (a download) - the frame stays opaque |
+| `data-sandbox="fullscreen"` | Lets the preview go full screen (a Video's full screen control) - the frame stays opaque |
+| `data-links='{"paper.html":"papers/paper.html"}'` | Link targets the preview uses in place of the ones the source names (`href`, `src`, `action`, `poster`); the source keeps what was written, also when the preview writes a change back into it. The docs map their page ids to paths from the docs root, the base of their previews |
 | `aria-label` | The preview frame's title |
 
 ---
@@ -211,12 +217,13 @@ card.preview.setState('open');                              // a state of the PR
 
 | Member | Description |
 |---|---|
-| <code>configure(options: CodeExampleConfig = {}): void</code> | Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>options</code></td><td><code>CodeExampleConfig</code> = <code>{}</code></td><td>the keys to change; the cards on the page repaint their source</td></tr></table> |
+| <code>configure(options: CodeExampleConfig = {}): void</code> | Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle, plus each extra bundle the page loaded that the source uses - bundlesFor), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>options</code></td><td><code>CodeExampleConfig</code> = <code>{}</code></td><td>the keys to change; the cards on the page repaint their source</td></tr></table> |
+| <code>bundlesFor(source: string): string[]</code> | The extra bundles (components kept out of all.*) a preview of this source needs - the default scripts add each one the page loaded; a configured `scripts` function can add them itself. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>source</code></td><td><code>string</code></td><td>an example's HTML source</td></tr></table> <b>Returns</b> <code>string[]</code> - the bundle names (`wysiwyg`, `mermaid`, `math`) whose components the source names, in that order |
 | <code>source(target: string \| HTMLElement): string</code> | The card's current source. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr></table> <b>Returns</b> <code>string</code> - the editor's text ('' when the target is not a card) |
 | <code>setSource(target: string \| HTMLElement, source: string): void</code> | Replace the source and rerun the preview (the state stays; data-edited follows). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr><tr><td><code>source</code></td><td><code>string</code></td><td>the new source</td></tr></table> |
 | <code>reset(target: string \| HTMLElement): void</code> | Back to the authored source, rerun. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr></table> |
 | <code>run(target: string \| HTMLElement): void</code> | Rebuild the preview from the current source now. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr></table> |
-| <code>viewport(target: string \| HTMLElement, mode: 'phone' \| 'tablet' \| 'desktop' \| 'full'): void</code> | Switch the preview device: 'phone' \| 'tablet' \| 'desktop' \| 'full'. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr><tr><td><code>mode</code></td><td><code>'phone' \| 'tablet' \| 'desktop' \| 'full'</code></td><td>the device width the preview takes</td></tr></table> |
+| <code>viewport(target: string \| HTMLElement, mode: 'phone' \| 'tablet' \| 'desktop' \| 'print' \| 'full'): void</code> | Switch the preview device: 'phone' \| 'tablet' \| 'desktop' \| 'print' \| 'full' - 'print' is an A4 sheet whose preview applies the print styles. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr><tr><td><code>mode</code></td><td><code>'phone' \| 'tablet' \| 'desktop' \| 'print' \| 'full'</code></td><td>the device width the preview takes ('print': 210mm, its media rules for print applied)</td></tr></table> |
 | <code>setPreviewState(target: string \| HTMLElement, name: string, value: string \| number \| boolean): void</code> | Drive a state of the previewed component (a state of its schema) - the State tab's controls do the same. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr><tr><td><code>name</code></td><td><code>string</code></td><td>the state's name in the component's schema</td></tr><tr><td><code>value</code></td><td><code>string \| number \| boolean</code></td><td>its new value (the schema's type for it)</td></tr></table> |
 | <code>previewState(target: string \| HTMLElement): Record&lt;string, string \| number \| boolean&gt;</code> | The previewed component's observed state values (as the State tab shows them). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .code-example card or its selector</td></tr></table> <b>Returns</b> <code>Record&lt;string, string \| number \| boolean&gt;</code> - a copy of the values the preview reported, by state name |
 | <code>refreshTheme(): void</code> | Re-read the configured theme and hand it to every preview (no rebuild - the previews keep their state). |
@@ -236,7 +243,7 @@ card.preview.setState('open');                              // a state of the PR
 | Type | Description |
 |---|---|
 | `CodeExampleChangeDetail` | What code-example-change carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>source</code></td><td><code>string</code></td><td>the source now</td></tr><tr><td><code>origin</code></td><td><code>'input' \| 'api'</code></td><td>'input': typed in the editor; 'api': setSource(), reset() or setState()</td></tr></table> |
-| `CodeExampleConfig` | What configure() takes - every key optional, kept for every preview built afterwards. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>styles?</code></td><td><code>CodeExampleStyle[] \| ((source: string) =&gt; CodeExampleStyle[] \| Promise&lt;CodeExampleStyle[]&gt;) \| null</code></td><td>the previews' stylesheets, or a function of the source returning them (default: the page's own stylesheets)</td></tr><tr><td><code>scripts?</code></td><td><code>CodeExampleScript[] \| ((source: string) =&gt; CodeExampleScript[] \| Promise&lt;CodeExampleScript[]&gt;) \| null</code></td><td>the previews' scripts, or a function of the source returning them (default: the page's all / core bundle, inlined)</td></tr><tr><td><code>tail?</code></td><td><code>string \| ((source: string) =&gt; string)</code></td><td>markup after the runtime (an icon library), or a function of the source returning it</td></tr><tr><td><code>theme?</code></td><td><code>string \| (() =&gt; string \| Promise&lt;string&gt;) \| null</code></td><td>theme CSS layered last in every preview, or a function returning it - refreshTheme() re-reads it</td></tr><tr><td><code>highlight?</code></td><td><code>((code: string, language: string) =&gt; string \| null \| Promise&lt;string \| null&gt;) \| null</code></td><td>your own highlighter: code and a language → the HTML of coloured spans (null: show it plain)</td></tr><tr><td><code>base?</code></td><td><code>string \| null</code></td><td>the URL the previews resolve relative references against (`images/x.png` in an example): a `&lt;base href&gt;` first in the preview's head. Default: none - an about:srcdoc document resolves against the host page, which is wrong once that page sits in a folder</td></tr><tr><td><code>shiki?</code></td><td><code>string</code></td><td>the ESM URL Shiki is imported from (the default highlighter)</td></tr><tr><td><code>themes?</code></td><td><code>{ light: string; dark: string }</code></td><td>the Shiki themes for light and dark</td></tr></table> |
+| `CodeExampleConfig` | What configure() takes - every key optional, kept for every preview built afterwards. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>styles?</code></td><td><code>CodeExampleStyle[] \| ((source: string) =&gt; CodeExampleStyle[] \| Promise&lt;CodeExampleStyle[]&gt;) \| null</code></td><td>the previews' stylesheets, or a function of the source returning them (default: the page's own stylesheets)</td></tr><tr><td><code>scripts?</code></td><td><code>CodeExampleScript[] \| ((source: string) =&gt; CodeExampleScript[] \| Promise&lt;CodeExampleScript[]&gt;) \| null</code></td><td>the previews' scripts, or a function of the source returning them (default: the page's all / core bundle and each extra bundle it loaded that the source uses - bundlesFor - inlined)</td></tr><tr><td><code>tail?</code></td><td><code>string \| ((source: string) =&gt; string)</code></td><td>markup after the runtime (an icon library), or a function of the source returning it</td></tr><tr><td><code>theme?</code></td><td><code>string \| (() =&gt; string \| Promise&lt;string&gt;) \| null</code></td><td>theme CSS layered last in every preview, or a function returning it - refreshTheme() re-reads it</td></tr><tr><td><code>highlight?</code></td><td><code>((code: string, language: string) =&gt; string \| null \| Promise&lt;string \| null&gt;) \| null</code></td><td>your own highlighter: code and a language → the HTML of coloured spans (null: show it plain)</td></tr><tr><td><code>base?</code></td><td><code>string \| null</code></td><td>the URL the previews resolve relative references against (`images/x.png` in an example): a `&lt;base href&gt;` first in the preview's head. Default: none - an about:srcdoc document resolves against the host page, which is wrong once that page sits in a folder</td></tr><tr><td><code>shiki?</code></td><td><code>string</code></td><td>the ESM URL Shiki is imported from (the default highlighter)</td></tr><tr><td><code>themes?</code></td><td><code>{ light: string; dark: string }</code></td><td>the Shiki themes for light and dark</td></tr></table> |
 | `CodeExampleErrorDetail` | What code-example-error carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>message</code></td><td><code>string</code></td><td>the error message shown under the preview</td></tr><tr><td><code>stack?</code></td><td><code>string</code></td><td>the stack, when the preview's script threw</td></tr></table> |
 | `CodeExampleReadyDetail` | What code-example-ready carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>source</code></td><td><code>string</code></td><td>the source the preview ran</td></tr></table> |
 | `CodeExampleScript` | A script for the previews: a URL (fetched once), or JS text. = <code>string \| { js: string }</code> |
@@ -264,7 +271,7 @@ card.preview.setState('open');                              // a state of the PR
   preview, `tail` adds markup after the runtime (an icon library), `theme` is
   layered last and `refreshTheme()` pushes a new one into every running preview.
   Scripts run as classic scripts in their own function scope, so a bundle must
-  be import-free (`all.js`, `core.js`, `wysiwyg.js` are).
+  be import-free (`all.js`, `core.js` and the extra bundles are).
 - **Highlighting** is Shiki (`https://esm.sh/shiki@3.0.0`, loaded on the first
   paint; `github-light` / `github-dark`, following `.dark`). `configure({ highlight })`
   plugs in any other highlighter: `(code, language) → HTML of coloured spans`.
@@ -277,5 +284,14 @@ card.preview.setState('open');                              // a state of the PR
   never leaves it (a fragment jumps in place).
 - The `resizer` component (in `all.js`) supplies the handles; without it the
   width / height fields still size the preview.
+- A page may add its own tools to `.code-example-toolbar`: a `<button>` or a
+  link (`<a class="code-example-tab" href>` - these docs' "Studio") looks like
+  every other tool, never like a page link.
+- **Errors**: whatever the source's scripts throw shows under the preview
+  (`code-example-error`). The browser's "ResizeObserver loop completed with
+  undelivered notifications" is a notice, not a throw - a callback changed
+  the layout and the rest arrives on the next frame - so a single one is not
+  shown; a loop that still runs after 5 s is ("A ResizeObserver loop has not
+  settled for 5 s").
 - This site's live examples are this component: every ` ```html example ` fence
   renders a card, the State tab generated from the component's schema.

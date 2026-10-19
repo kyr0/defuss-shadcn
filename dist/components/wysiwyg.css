@@ -167,7 +167,8 @@
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     background: var(--muted);
 
-    & button {
+    /* a tool is a button - or a link (an "Open in ..." a page adds): it looks the same, never like a page link */
+    & :is(button, a[href]) {
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
@@ -179,6 +180,8 @@
       color: var(--muted-foreground);
       font: inherit;
       font-size: 0.75rem;
+      line-height: inherit;
+      text-decoration: none;
       cursor: pointer;
 
       &:hover {
@@ -537,7 +540,7 @@
     :is(.code-example-stage, .code-example-toolbar, .code-example-panel, .code-example-copy) {
       border-color: var(--foreground);
     }
-    .code-example-toolbar button,
+    .code-example-toolbar :is(button, a[href]),
     .code-example-vp-x {
       color: var(--foreground);
     }

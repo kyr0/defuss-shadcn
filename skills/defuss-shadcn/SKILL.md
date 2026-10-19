@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.9 - Agent Skill
 
-234 components (170 CSS-only, 64 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+243 components (171 CSS-only, 72 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -21,7 +21,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
    2. `components/all.css` - every component's styles,
    3. `components/all.js` as an ES module - the `df$` runtime + every component's behavior.
    (`all.css` holds component styles only: without `core.css` there are no tokens and no utilities.)
-   The HTML Preview Editor (`code-example`) alone needs a fourth pair after them: `components/wysiwyg.css` + `components/wysiwyg.js` - the extra bundle it ships in.
+   Four extra bundles are NOT in `all.*` - add a pair after them only where the page uses their components: `components/wysiwyg.css` + `.js` (the HTML Preview Editor `code-example`, `editorjs`), `components/mermaid.css` + `.js` (`mermaid`), `components/math.css` + `.js` (`math-renderer`, `math-editor`, `math-compute`), `components/visual-editor.css` + `.js` (`visual-editor`).
 3. **For each component you use:** open its skill (index in §4), copy the **Structure** markup verbatim, then pick variants/sizes via `data-variant` / `data-size`. Never invent class names.
 4. **Need a state** (open dialog, expanded tree, selected tab)? Author it in markup, or call `el.api.setState('<state>')` - never toggle classes.
 5. **Serve over HTTP** (`npx serve .` or the project's dev server). ES modules do not run from `file://`.
@@ -113,7 +113,7 @@ Copy this skeleton and put component markup inside `<body>`. Replace `@latest` w
 
 ## 3. Documentation map - guides and live examples
 
-Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` fences whose body is the exact, working example markup). Open only what the task needs. Component pages are linked from the component index (§4) instead.
+Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` fences whose body is the exact, working example markup). Open only what the task needs. Component pages are linked from the component index (§4) instead. Every page leads with its individual examples - each component its examples are made of, alone, in each variant, size and state they use (` ```html example part ` fences) - and then its composite examples: take the smallest piece you need from the top of a page, a whole composition from below.
 
 ### Introduction
 
@@ -223,6 +223,10 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Quadrant](../../src/documentation/pages/diagrams/diagram-quadrant.mdx) - Consultant-style 2×2 scenario matrices with the diagram component - two driver ranges, four named scenarios, the bet in the accent; step by step and as a delta.
 - [Policy Trace](../../src/documentation/pages/diagrams/diagram-policy-trace.mdx) - Animated policy evaluation traces with the diagram component - ordered rules, two requests side by side, pass / fail / skipped / not reached, the first divergence; played rule by rule and as a policy delta.
 
+### Math
+
+- [Math Overview](../../src/documentation/pages/math/math.mdx) - Mathematics in defuss-shadcn: render a formula with KaTeX, edit it with MathLive, compute and explain it with the Cortex Compute Engine - three components, each loading its engine only when a page uses it.
+
 ### Application
 
 - [Scaffolds](../../src/documentation/pages/application/application-scaffolds.mdx) - Complete, clickable application UIs built only from the shipped components - start a product from a working shell instead of a blank page.
@@ -273,17 +277,22 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 
 ### Papers
 
-- [Paper Gallery](../../src/documentation/pages/papers/paper-gallery.mdx) - Ten short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, a database schema, images and video, big data and a replayed chat.
+- [Paper Gallery](../../src/documentation/pages/papers/paper-gallery.mdx) - Fifteen short papers built from defuss-shadcn components - a theme chooser, a light and dark swap, house styles, a classic two-column page, an embedded model card, code listings, charts, before-and-after figures, a table of contents, a database schema, images and video, big data, a replayed chat, numbered equations and interactive math.
   - [Theme Chooser](../../src/documentation/pages/papers/paper-themes.mdx) - A short paper with a Theme Switcher of four themes: the whole page - title, abstract, table, statistics - rethemes from its tokens.
   - [Light and Dark](../../src/documentation/pages/papers/paper-dark-mode.mdx) - A short paper with only a Swap in its title block: the sun and the moon toggle the dark palette of the same theme.
   - [House Styles](../../src/documentation/pages/papers/paper-styles.mdx) - One short paper in three house styles - modern, classic and minimal - switched in place by a Toggle Group.
   - [Two Columns](../../src/documentation/pages/papers/paper-two-column.mdx) - A classic two-column journal page: justified and hyphenated columns, a drop initial, a small-caps opening line and an indent instead of paragraph gaps - one column on a phone.
   - [Redeschrift 1.0](../../src/documentation/pages/papers/paper-redeschrift.mdx) - A short paper on Redeschrift 1.0, a German speech recognition model that runs on the CPU: an embedded model card (Iframe) controls the paper around it - choose a variant inside the frame and the paper's table and statistics follow.
   - [Code Listings](../../src/documentation/pages/papers/paper-code.mdx) - A short paper whose evidence is code: terminal sessions and a diff in Code Mockup windows, telling how one missing line made every OKLCH contrast too dark.
+  - [Charts and Figures](../../src/documentation/pages/papers/paper-charts.mdx) - A short paper whose evidence is measured: a line chart across both columns, a bar chart in one, each a numbered figure - and the same figures printed on A4.
+  - [Before and After](../../src/documentation/pages/papers/paper-diff.mdx) - A short paper that compares: a source tree before and after a move, a code window before and after a fix - two Diff figures that print both sides in full.
+  - [Table of Contents](../../src/documentation/pages/papers/paper-toc.mdx) - A short paper led by a two-level table of contents: numbered sections and subsections, every line a link into the page - kept on screen, left out of the print.
   - [Database Schema](../../src/documentation/pages/papers/paper-schema.mdx) - A short paper with an ER diagram at its centre: the contract of one defuss-shadcn component - its states, skill, schema, page, fixture and screenshots - drawn by the Illustrative Diagram component.
   - [Images and Video](../../src/documentation/pages/papers/paper-media.mdx) - A short paper with figures: Image figures with a lightbox, a hover gallery and a captioned video - all native elements, all inside the paper's grid.
   - [Big Data](../../src/documentation/pages/papers/paper-big-data.mdx) - A short paper that carries its data: a Data Grid of 100,000 synthetic evaluation utterances to sort and filter, and a Data Tree of their corpus hierarchy - windowed, inside the paper.
   - [Chat Replay](../../src/documentation/pages/papers/paper-chat.mdx) - A short paper whose evidence is a conversation: a Session replays it turn by turn, the questions anchoring near the top and the replies streaming in word by word.
+  - [Formulas](../../src/documentation/pages/papers/paper-math.mdx) - A short paper set in mathematics: why the sample variance divides by n - 1, in numbered display equations, inline formulas, an aligned derivation and a table - and how it prints.
+  - [Interactive Math](../../src/documentation/pages/papers/paper-math-interactive.mdx) - A short paper whose mathematics the reader works with: a formula linked to its symbol table, a model the reader edits while the equation follows, and a derivative the Compute Engine explains step by step.
 
 ### Website
 
@@ -536,6 +545,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Long-form documents people edit as blocks - notes, briefs, articles - that are stored as Markdown or as Editor.js JSON; for an editable live example of HTML use the HTML Preview Editor, for a single field a Textarea.
 - **States:** `default`, `readonly` · **Skill:** [references/components/editorjs.md](references/components/editorjs.md) · **Examples:** [src/documentation/pages/wysiwyg-editors/editorjs.mdx](../../src/documentation/pages/wysiwyg-editors/editorjs.mdx)
 
+#### Visual Editor · ATM · JS
+
+- **Why:** GrapesJS, the drag-and-drop HTML editor, loaded on demand from a pinned build, edits the markup the component skills document - blocks drop in, elements select, move and change - and the same markup comes out, inline styles where they were written.
+- **When:** Pages people compose visually from the system's components - a landing page, a form, an app screen - and keep as markup; the whole workflow (pages, block library, inspector, preview, export) is the Studio. For an editable live example of HTML use the HTML Preview Editor, for documents edited as blocks Editor.js.
+- **States:** `default`, `readonly` · **Skill:** [references/components/visual-editor.md](references/components/visual-editor.md) · **Examples:** [src/documentation/pages/wysiwyg-editors/visual-editor.mdx](../../src/documentation/pages/wysiwyg-editors/visual-editor.mdx)
+
 ### Questionnaire
 
 #### Questionnaire · MOL · JS
@@ -603,7 +618,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 #### Iframe · ATM · JS
 
 - **Why:** The native iframe embeds a whole page in isolation; this adds what it lacks - a size that fits its container (ratio, the container's height, or the framed page's content height) and a checked postMessage bridge in both directions.
-- **When:** Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame.
+- **When:** Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video component (or the Video Player block); your own markup belongs in the page, not in a frame.
 - **States:** `default`, `loaded` · **Skill:** [references/components/iframe.md](references/components/iframe.md) · **Examples:** [src/documentation/pages/data-display/iframe.mdx](../../src/documentation/pages/data-display/iframe.mdx)
 
 #### Statistic · ATM · CSS
@@ -666,6 +681,26 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Lists whose order the user controls - todo lists, table row ordering.
 - **States:** `default` · **Skill:** [references/components/sortable.md](references/components/sortable.md) · **Examples:** [src/documentation/pages/data-display/sortable.mdx](../../src/documentation/pages/data-display/sortable.mdx)
 
+### Multimedia
+
+#### Video · MOL · JS
+
+- **Why:** The native `<video>` decodes, buffers, seeks and keeps the time; the component adds a State API (playing, time, rate, volume, muted, captions), controls anywhere on the page and a captions overlay that also works in full screen.
+- **When:** A video the page controls - a lesson, a product film, a clip with a Media Timeline or a transcript beside it. A styled frame around the browser's own controls with nothing to drive it is the Website Video Player block; an animation is a Motion or an Animation Canvas.
+- **States:** `default`, `playing` · **Skill:** [references/components/video.md](references/components/video.md) · **Examples:** [src/documentation/pages/multimedia/video.mdx](../../src/documentation/pages/multimedia/video.mdx)
+
+#### Audio · MOL · JS
+
+- **Why:** The native `<audio>` decodes, buffers, seeks and keeps the time; the component adds a State API (playing, time, rate, volume, muted, captions), one row of controls, controls anywhere on the page and a transcript line from the active caption cue.
+- **When:** Sound the page controls - a podcast episode, an interview, a field recording, a voice note with a Media Timeline. A styled episode card around the browser's own controls is the Website Audio Player block; a list of tracks uses Playlist Item.
+- **States:** `default`, `playing` · **Skill:** [references/components/audio.md](references/components/audio.md) · **Examples:** [src/documentation/pages/multimedia/audio.mdx](../../src/documentation/pages/multimedia/audio.mdx)
+
+#### Media Timeline · MOL · JS
+
+- **Why:** A video or audio has one time; the timeline lays the metadata of that time out under it (regions, markers, spans) from one JSON and keeps both in step - the media moves the playhead, the playhead moves the media - with captions as the media's own text track.
+- **When:** Navigating and explaining a recording - chapters, speakers, detected sounds or scenes, annotations, captions - with an info panel that follows the playhead. A record of events with dates (a changelog, a project history) is the Data Display Timeline.
+- **States:** `default`, `playing` · **Skill:** [references/components/media-timeline.md](references/components/media-timeline.md) · **Examples:** [src/documentation/pages/multimedia/media-timeline.mdx](../../src/documentation/pages/multimedia/media-timeline.mdx)
+
 ### Big Data
 
 #### Virtual List · ATM · JS
@@ -713,6 +748,26 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Mermaid's own `<pre class="mermaid">` text becomes a token-themed SVG - the official renderer, lazy-loaded, locked to strict security; readable source without JavaScript.
 - **When:** Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts).
 - **States:** `default`, `rendered`, `error` · **Skill:** [references/components/mermaid.md](references/components/mermaid.md) · **Examples:** [src/documentation/pages/diagrams/mermaid.mdx](../../src/documentation/pages/diagrams/mermaid.mdx)
+
+### Math
+
+#### Formula Rendering · ATM · JS
+
+- **Why:** The official KaTeX renderer, loaded on the first formula - visual HTML plus MathML for assistive technology from a TeX source that stays readable without JavaScript; a notation tree makes single terms selectable.
+- **When:** Display and inline mathematics in papers, docs and teaching pages - for an editable formula use math-editor, to compute with one use math-compute.
+- **States:** `default`, `rendered`, `highlighted`, `error` · **Skill:** [references/components/math-renderer.md](references/components/math-renderer.md) · **Examples:** [src/documentation/pages/math/math-renderer.mdx](../../src/documentation/pages/math/math-renderer.mdx)
+
+#### Formula Editing · MOL · JS
+
+- **Why:** The official MathLive editor, loaded on the first editor, over a native textarea that stays the form control - submission, reset, required and disabled are the browser's; without JavaScript the textarea edits the TeX.
+- **When:** Formula input in forms, papers and teaching tools - to show a formula use math-renderer, to compute with it use math-compute.
+- **States:** `default`, `readonly`, `disabled`, `invalid`, `keyboard-open` · **Skill:** [references/components/math-editor.md](references/components/math-editor.md) · **Examples:** [src/documentation/pages/math/math-editor.mdx](../../src/documentation/pages/math/math-editor.mdx)
+
+#### Compute & Explain · MOL · JS
+
+- **Why:** The official Cortex Compute Engine in a dedicated Worker the component starts from its own source - simplify, solve, differentiate, compare, evaluate - with the engine's own steps, every condition the input needs, and a deadline that terminates the worker.
+- **When:** Showing how a result comes about in papers and teaching pages, or checking an identity - to only show a formula use math-renderer, to edit one use math-editor.
+- **States:** `default`, `computing`, `result`, `explaining`, `unsupported`, `error` · **Skill:** [references/components/math-compute.md](references/components/math-compute.md) · **Examples:** [src/documentation/pages/math/math-compute.mdx](../../src/documentation/pages/math/math-compute.mdx)
 
 ### Feedback & Status
 
@@ -969,6 +1024,20 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** The authored BibTeX stays the one source - parsed once, shown as BibTeX (normalized, aligned, highlighted) or as an APA, MLA, Chicago, Harvard or IEEE reference, copied with the Clipboard API exactly as shown; without JS the source is still readable.
 - **When:** Wherever a reader should cite something - a paper page, a dataset, a release, a references section (several entries become a list). A terminal transcript is mockup-code; source code is a code block.
 - **States:** `default`, `copied` · **Skill:** [references/components/bibtex.md](references/components/bibtex.md) · **Examples:** [src/documentation/pages/papers/bibtex.mdx](../../src/documentation/pages/papers/bibtex.mdx)
+
+### Documents
+
+#### Letter · TPL · CSS
+
+- **Why:** One `<article>` printed by the browser itself - @page profiles, a first page measured from the top edge (no top margin), the page counter in a margin box - so a business letter lays out by DIN 5008 (form A or B, window envelope, fold marks) or as a US letter without a word processor or a PDF library.
+- **When:** Business letters, notices, cover letters and anything that goes into a window envelope - and the frame of an invoice (an Invoice is a letter whose body is .invoice). A research document is a Paper; a message in an app is a Card or a Toast.
+- **States:** `default` · **Skill:** [references/components/letter.md](references/components/letter.md) · **Examples:** [src/documentation/pages/documents/letter.mdx](../../src/documentation/pages/documents/letter.mdx)
+
+#### Invoice · BLK · JS
+
+- **Why:** The line items stay a semantic Table whose rows carry their values; the runtime numbers, formats (Intl.NumberFormat in the invoice's locale and currency) and adds them up exactly - each line to the cent, the tax once per rate, half away from zero - so the printed totals always match the rows.
+- **When:** The body of an invoice, a quote, a credit note or an order confirmation - inside a Letter for a DIN 5008 sheet and a window envelope. A table of figures without totals is a Table; a price list on a website is a Pricing block.
+- **States:** `default` · **Skill:** [references/components/invoice.md](references/components/invoice.md) · **Examples:** [src/documentation/pages/documents/invoice.mdx](../../src/documentation/pages/documents/invoice.mdx)
 
 ### Website
 
@@ -1371,13 +1440,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 #### Video Player · BLK · CSS
 
 - **Why:** The browser's own `<video controls>` plays, seeks, goes fullscreen and shows captions from a `<track>` - accessible and keyboard-ready, no player library.
-- **When:** Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media.
+- **When:** Product films, talks, tutorials. A poster with a play button that swaps in the video is product-showcase; a video beside copy is text-media. A player the page drives (a State API, controls elsewhere on the page, captions from data, a Media Timeline) is the Multimedia Video component.
 - **States:** `default` · **Skill:** [references/components/video-player.md](references/components/video-player.md) · **Examples:** [src/documentation/pages/website/video-player.mdx](../../src/documentation/pages/website/video-player.mdx)
 
 #### Audio Player · BLK · CSS
 
 - **Why:** The browser's `<audio controls>` plays, seeks and handles media keys; the block styles the frame around it - no player library.
-- **When:** Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player.
+- **When:** Podcasts, interviews, music, voice notes. A list of tracks uses playlist-item; video uses video-player. A player the page drives (a State API, controls elsewhere on the page, a Media Timeline) is the Multimedia Audio component.
 - **States:** `default` · **Skill:** [references/components/audio-player.md](references/components/audio-player.md) · **Examples:** [src/documentation/pages/website/audio-player.mdx](../../src/documentation/pages/website/audio-player.mdx)
 
 #### Playlist Item · BLK · CSS

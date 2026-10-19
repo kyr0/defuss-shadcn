@@ -1105,6 +1105,8 @@ function focusCell(grid, row, col) {
 function onKeydown2(grid, e) {
   if (e.target.closest?.(".data-grid-filters, .data-grid-footer"))
     return;
+  if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
+    return;
   const { row, col } = grid._focus;
   const page = Math.max(1, Math.floor((grid._parts.viewport.clientHeight - grid._parts.head.offsetHeight) / rowHeight(grid)) - 1);
   const last = grid._shown.length - 1;
@@ -1866,5 +1868,5 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-//# debugId=8C99B2A8F70C704964756E2164756E21
+//# debugId=C2AB47B8201857DE64756E2164756E21
 //# sourceMappingURL=big-data.js.map

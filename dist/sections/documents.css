@@ -1,0 +1,537 @@
+/* ── components/letter/letter.css ── */
+@layer components {
+  /* -- Letter: a business letter on an A4 sheet in the DIN 5008 geometry (form B, the default, or form A),
+     or a US business letter (data-form="us", US Letter, block format). On screen the letter is a sheet at
+     paper scale - 210mm wide, at least A4 tall (aspect-ratio grows with the content); below 175mm of text
+     width (the sheet minus its 25mm / 10mm margins) the parts stack in reading order. In print the page
+     itself is the sheet: page 1 has no top margin, so the letterhead, the address field and the
+     information block sit at their measured distances from the top edge; later pages carry "page n of m".
+
+     Measurements (form B; form A is 18mm higher): letterhead 45mm (A 27mm); address field from 45mm (A 27mm),
+     85mm from 20mm on the left - its text on the 25mm line - with a 17.7mm return / notice zone (A 12.7mm)
+     above a 27.3mm address zone; information block from 125mm, 50mm down (A 32mm), 75mm wide; fold marks
+     at 105mm and 210mm (A 87mm, 192mm), the hole mark at 148.5mm. VERIFIED: (gesetze-bayern.de BayAGO
+     Anlage 2) letterhead 45mm / 27mm and form A 18mm higher than form B; the other figures come from
+     secondary DIN 5008 summaries and agree with that shift - HYPOTHESIS until checked against DIN 5008:2020.
+     VERIFIED: (tmp/letter-geometry-probe.ts, Chromium 153 PDF) with these page margins the address text
+     prints at 25.0mm / 50.2mm and the information block at 125.0mm / 50.5mm: nothing is wider than the page
+     area (the block ends at 200mm, the right page margin is 10mm - the text keeps 20mm by its own margin),
+     so Chromium does not shrink the page to fit. */
+  .letter {
+    --_letter-head: 98.46mm;
+    --_letter-letterhead: 45mm;
+    --_letter-address: 45mm;
+    --_letter-notice: 17.7mm;
+    --_letter-info: 50mm;
+    --_letter-fold-1: 105mm;
+    --_letter-fold-2: 210mm;
+
+    container: letter / inline-size;
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: 210mm;
+    aspect-ratio: 210 / 297;
+    margin-inline: auto;
+    /* the page margins: 25mm on the left, 10mm on the right (the information block reaches 200mm) -
+       proportionally less on a narrower sheet, never under 1rem */
+    padding-block: 0 20mm;
+    padding-inline: clamp(1rem, 11.9%, 25mm) clamp(1rem, 4.76%, 10mm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-md);
+    font-family: var(--font-sans);
+    font-size: 11pt;
+    line-height: 1.4;
+    text-align: start;
+
+    & address {
+      font-style: normal;
+    }
+  }
+  /* zero specificity: the parts' own spacing - and a component's inside the body (an invoice) - wins */
+  :where(.letter) :where(p, address, dl, dd, h1, ul, ol) {
+    margin: 0;
+  }
+  /* a US business letter: US Letter (8.5 x 11in), 1in margins, block format - the date before the inside
+     address, everything in reading order */
+  .letter[data-form="us"] {
+    max-inline-size: 8.5in;
+    aspect-ratio: 8.5 / 11;
+    padding-block: 0 1in;
+    padding-inline: clamp(1rem, 11.76%, 1in);
+
+    & .letter-head {
+      padding-block-start: clamp(1.5rem, 11.76%, 1in);
+    }
+    & .letter-info {
+      order: 1;
+    }
+    & .letter-address {
+      order: 2;
+    }
+  }
+  .letter[data-form="a"] {
+    --_letter-head: 80.46mm;
+    --_letter-letterhead: 27mm;
+    --_letter-address: 27mm;
+    --_letter-notice: 12.7mm;
+    --_letter-info: 32mm;
+    --_letter-fold-1: 87mm;
+    --_letter-fold-2: 192mm;
+  }
+
+  /* -- the parts, in reading order (a narrow sheet, and the US letter) -- */
+  .letter-head {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: 1.5rem 1.75rem;
+  }
+  .letter-brand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    font-size: 9pt;
+    line-height: 1.35;
+    color: var(--muted-foreground);
+
+    & :is(strong, .letter-name) {
+      display: block;
+      font-size: 14pt;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      color: var(--foreground);
+    }
+  }
+  .letter-address {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+  }
+  .letter-return {
+    font-size: 7pt;
+    line-height: 1.2;
+    color: var(--muted-foreground);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 2px;
+  }
+  .letter-recipient {
+    line-height: 1.3;
+  }
+  .letter-info {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.1rem 1rem;
+    align-content: start;
+    font-size: 9pt;
+    line-height: 1.35;
+
+    & > div {
+      display: contents;
+    }
+    & dt {
+      color: var(--muted-foreground);
+    }
+    & dd {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  .letter-subject {
+    margin-block-end: 1.2em;
+    font-size: inherit;
+    font-weight: 650;
+    line-height: inherit;
+  }
+  /* a block, not a grid: Chromium sizes grid rows before it paginates - a table in the body that repeats its
+     header on later pages (an invoice) would overlap what follows it */
+  .letter-body {
+    & > * + * {
+      margin-block-start: 0.85em;
+    }
+    & > p {
+      text-wrap: pretty;
+    }
+  }
+  .letter-signature {
+    margin-block-start: 0.4em;
+    /* room for the handwritten signature above the typed name */
+    & > :last-child {
+      display: block;
+      margin-block-start: 2.6em;
+    }
+  }
+  .letter-enclosures {
+    margin-block-start: 1.6em;
+    font-size: 10pt;
+
+    & > :first-child {
+      font-weight: 600;
+    }
+  }
+  .letter-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.5rem;
+    margin-block-start: 2.5rem;
+    padding-block-start: 0.6rem;
+    border-block-start: 1px solid var(--border);
+    font-size: 7.5pt;
+    line-height: 1.35;
+    color: var(--muted-foreground);
+  }
+
+  /* -- the DIN 5008 sheet: from 175mm of text width (a full sheet on screen, every printed A4 page) the
+     head becomes the measured top of page 1 - letterhead, address field and information block placed in
+     mm from the sheet's top edge and the 25mm line; the subject starts below them. -- */
+  @container letter (min-width: 174mm) {
+    .letter:not([data-form="us"]) {
+      & .letter-head {
+        position: relative;
+        display: block;
+        block-size: var(--_letter-head);
+        padding: 0;
+
+        /* the fold and hole marks at the sheet's left edge (21mm left of the 25mm line); print draws
+           them in the page margin instead (@page letter:first) */
+        &::before {
+          content: "";
+          position: absolute;
+          inset-block-start: 0;
+          inset-inline-start: -21mm;
+          inline-size: 7mm;
+          block-size: calc(var(--_letter-fold-2) + 1px);
+          background:
+            linear-gradient(var(--muted-foreground), var(--muted-foreground)) 0 var(--_letter-fold-1) / 5mm 1px
+              no-repeat,
+            linear-gradient(var(--muted-foreground), var(--muted-foreground)) 0 148.5mm / 7mm 1px no-repeat,
+            linear-gradient(var(--muted-foreground), var(--muted-foreground)) 0 var(--_letter-fold-2) / 5mm 1px
+              no-repeat;
+          pointer-events: none;
+        }
+      }
+      &[data-marks="none"] .letter-head::before {
+        content: none;
+      }
+      & .letter-brand {
+        position: absolute;
+        inset-block-start: calc(var(--_letter-letterhead) * 0.28);
+        inset-inline: 0;
+      }
+      & .letter-address {
+        position: absolute;
+        inset-block-start: var(--_letter-address);
+        inset-inline-start: 0;
+        inline-size: 80mm;
+        block-size: calc(var(--_letter-notice) + 27.3mm);
+        grid-template-rows: var(--_letter-notice) 27.3mm;
+        gap: 0;
+      }
+      & .letter-return {
+        align-self: end;
+        padding-block-end: 1.5mm;
+      }
+      & .letter-info {
+        position: absolute;
+        inset-block-start: var(--_letter-info);
+        inset-inline-start: 100mm;
+        inline-size: 75mm;
+      }
+      /* the text column keeps 20mm to the right edge (the sheet's own margin is 10mm) */
+      & > :not(.letter-head) {
+        margin-inline-end: 10mm;
+      }
+    }
+  }
+
+  /* -- print: the page is the sheet. Page 1 has no top margin (the head is measured from the top edge);
+     later pages keep 25mm for "page n of m" (in the language of the letter), and the fold and hole marks
+     are drawn in page 1's left margin, where nothing in the page itself may go (Chromium clips the page
+     area). VERIFIED: (tmp/letter-geometry-probe.ts, Chromium 153) the lang-named labels print from page 2
+     only, an SVG in the left margin box draws the marks at 104.4 / 148.1 / 209.5mm of the PDF, and a
+     custom property set on :root reaches a margin box (the page context inherits from the root element -
+     so a document with letters sets the labels and the marks there). Print only: a :has() on the root is
+     re-checked on DOM changes anywhere in the page, and on screen nothing reads these. */
+  @media print {
+    :root {
+      --_letter-page: "Page";
+      --_letter-of: "of";
+      --_letter-marks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='25mm' height='297mm' viewBox='0 0 25 297'%3E%3Cg stroke='%23000' stroke-width='0.25'%3E%3Cline x1='4' x2='9' y1='105' y2='105'/%3E%3Cline x1='4' x2='11' y1='148.5' y2='148.5'/%3E%3Cline x1='4' x2='9' y1='210' y2='210'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    :root:has(.letter:lang(de)) {
+      --_letter-page: "Seite";
+      --_letter-of: "von";
+    }
+    :root:has(.letter[data-form="a"]) {
+      --_letter-marks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='25mm' height='297mm' viewBox='0 0 25 297'%3E%3Cg stroke='%23000' stroke-width='0.25'%3E%3Cline x1='4' x2='9' y1='87' y2='87'/%3E%3Cline x1='4' x2='11' y1='148.5' y2='148.5'/%3E%3Cline x1='4' x2='9' y1='192' y2='192'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    :root:has(.letter[data-marks="none"]) {
+      --_letter-marks: none;
+    }
+  }
+
+  @page letter {
+    size: A4;
+    margin: 25mm 10mm 20mm 25mm;
+
+    @top-right {
+      content: var(--_letter-page) " " counter(page) " " var(--_letter-of) " " counter(pages);
+      padding-inline-end: 10mm;
+      color: #000;
+      font: 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page letter:first {
+    margin-top: 0;
+
+    @top-right {
+      content: none;
+    }
+    @left-top {
+      content: var(--_letter-marks);
+      vertical-align: top;
+    }
+  }
+  @page letter-us {
+    size: letter;
+    margin: 1in;
+
+    @top-right {
+      content: var(--_letter-page) " " counter(page) " " var(--_letter-of) " " counter(pages);
+      color: #000;
+      font: 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page letter-us:first {
+    @top-right {
+      content: none;
+    }
+  }
+
+  @media print {
+    /* a document that holds a letter prints on white - a dark page background would print around it.
+       !important: a page's own unlayered background (the full-screen page sets one) outranks any layered rule */
+    :root:has(.letter),
+    :root:has(.letter) > body {
+      background: #fff !important;
+    }
+    /* black on white, whatever the screen theme: a letter is paper (accents keep their tokens) */
+    .letter {
+      page: letter;
+      inline-size: auto;
+      max-inline-size: none;
+      aspect-ratio: auto;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background-color: #fff;
+      color: #000;
+      color-scheme: light;
+      print-color-adjust: exact;
+    }
+    .letter[data-form="us"] {
+      page: letter-us;
+      /* the page's 1in margins replace the screen sheet's padding */
+      padding: 0;
+
+      & .letter-head {
+        padding-block-start: 0;
+      }
+    }
+    .letter .letter-head::before {
+      content: none;
+    }
+    .letter :is(.letter-head, .letter-subject) {
+      break-after: avoid;
+    }
+    .letter :is(.letter-signature, .letter-enclosures, .letter-footer) {
+      break-inside: avoid;
+    }
+    /* the closing stays with the last lines of the text */
+    .letter-signature {
+      break-before: avoid;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .letter {
+      border-color: CanvasText;
+      box-shadow: none;
+    }
+    .letter .letter-head::before {
+      forced-color-adjust: none;
+      background:
+        linear-gradient(CanvasText, CanvasText) 0 var(--_letter-fold-1) / 5mm 1px no-repeat,
+        linear-gradient(CanvasText, CanvasText) 0 148.5mm / 7mm 1px no-repeat,
+        linear-gradient(CanvasText, CanvasText) 0 var(--_letter-fold-2) / 5mm 1px no-repeat;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .letter {
+      border-color: var(--foreground);
+    }
+    .letter :is(.letter-return, .letter-brand, .letter-info dt, .letter-footer) {
+      color: var(--foreground);
+    }
+  }
+}
+
+/* ── components/invoice/invoice.css ── */
+@layer components {
+  /* -- Invoice: the body of an invoice, usually inside a Letter's .letter-body - the title, the invoice data
+     (.invoice-meta), the line items (a Table, .invoice-items) and the totals the runtime writes
+     (.invoice-totals: net sum, tax per rate, amount due), then payment terms as plain text. Numbers are
+     tabular and end-aligned; in print the items table runs over pages with its header repeated (Table's
+     print rules) and the totals stay with the last rows. */
+  /* a block, not a grid: Chromium sizes grid rows before it paginates, so the header row the items table
+     repeats on later pages pushed the table past the totals, which then overlapped its last rows */
+  .invoice {
+    display: block;
+    font-variant-numeric: tabular-nums;
+
+    & > * + * {
+      margin-block-start: 1rem;
+    }
+  }
+  /* zero specificity: the parts lose their own block margins (a dl's, a p's), the 1rem above wins */
+  :where(.invoice) > :where(*) {
+    margin-block: 0;
+  }
+  .invoice-title {
+    font-size: 1.25em;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .invoice-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.5rem 1.25rem;
+
+    & dt {
+      font-size: 0.8em;
+      color: var(--muted-foreground);
+    }
+    & dd {
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+  .invoice-items {
+    font-size: 0.9em;
+
+    /* compact rows: an A4 page holds about twice the lines of a default Table */
+    & :is(.table-head, .table-cell) {
+      padding: 0.4rem 0.6rem;
+    }
+
+    & :is(.table-head, .table-cell)[data-invoice="description"],
+    & .table-cell:not([data-invoice]) {
+      white-space: normal;
+    }
+    & [data-invoice] {
+      white-space: nowrap;
+    }
+  }
+  .invoice-totals {
+    inline-size: min(100%, 22rem);
+    margin-inline-start: auto;
+    border-collapse: collapse;
+    font-size: 0.9em;
+
+    & :is(th, td) {
+      padding: 0.3rem 0;
+      font-weight: 400;
+      text-align: start;
+    }
+    & td {
+      padding-inline-start: 1.5rem;
+      text-align: end;
+      white-space: nowrap;
+    }
+    & .invoice-tax :is(th, td) {
+      color: var(--muted-foreground);
+    }
+    & .invoice-total :is(th, td) {
+      padding-block-start: 0.5rem;
+      border-block-start: 2px solid var(--foreground);
+      font-weight: 650;
+      font-size: 1.1em;
+    }
+  }
+  /* a value that is no number (data-price="12,50"): the row is marked, the reason replaces the totals */
+  .invoice-items tr[data-invalid] > td {
+    background-color: color-mix(in oklch, var(--destructive) 12%, transparent);
+  }
+  .invoice-totals .invoice-error th {
+    color: var(--destructive);
+    font-weight: 600;
+  }
+  .invoice-note {
+    font-size: 0.9em;
+    color: var(--muted-foreground);
+  }
+  /* the payment code (a QR Code the runtime fills with an EPC transfer) beside the payment terms; the runtime
+     hides the code when there is no transfer to scan (not in euro, nothing due) */
+  .invoice-payment {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    break-inside: avoid;
+
+    & > .qr-code[hidden] {
+      display: none;
+    }
+    & > .invoice-note {
+      flex: 1 1 16rem;
+      margin: 0;
+    }
+  }
+
+  @media print {
+    /* the totals never start a page alone: with the items table's data-keep-last they take its last
+       three rows along (VERIFIED: tmp/print-table-probe2.ts - break-before: avoid on the block after the
+       table pulls rows over) */
+    .invoice-totals {
+      break-before: avoid;
+      break-inside: avoid;
+    }
+    .invoice-meta {
+      break-inside: avoid;
+    }
+    .invoice :is(.invoice-tax :is(th, td), .invoice-meta dt, .invoice-note) {
+      color: #444;
+    }
+    .invoice .invoice-total :is(th, td) {
+      border-block-start-color: #000;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .invoice-totals .invoice-total :is(th, td) {
+      border-block-start-color: CanvasText;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .invoice :is(.invoice-meta dt, .invoice-note, .invoice-totals .invoice-tax :is(th, td)) {
+      color: var(--foreground);
+    }
+  }
+}

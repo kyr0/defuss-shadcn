@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "name": "visual-editor",
+  "states": {
+    "readonly": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "attribute",
+        "name": "data-readonly"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-readonly"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "device": {
+      "type": "enum",
+      "values": ["desktop", "tablet", "phone"],
+      "default": "desktop",
+      "target": {
+        "kind": "root"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "device": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-device"
+      },
+      "editor": {
+        "component": "select"
+      }
+    }
+  },
+  "actions": {}
+}

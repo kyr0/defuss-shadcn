@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "name": "audio",
+  "states": {
+    "playing": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".audio"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "playing",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "time": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".audio"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "time": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "time"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "step": 0.5
+        }
+      }
+    },
+    "rate": {
+      "type": "number",
+      "default": 1,
+      "target": {
+        "kind": "selector",
+        "selector": ".audio"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "rate": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "rate"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0.25,
+          "max": 4,
+          "step": 0.25
+        }
+      }
+    },
+    "volume": {
+      "type": "number",
+      "default": 1,
+      "target": {
+        "kind": "selector",
+        "selector": ".audio"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "volume": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "volume"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 1,
+          "step": 0.05
+        }
+      }
+    },
+    "muted": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".audio"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "muted": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "muted"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "captions": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".audio"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "captions": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "captions"
+      },
+      "editor": {
+        "component": "text"
+      }
+    }
+  },
+  "actions": {}
+}

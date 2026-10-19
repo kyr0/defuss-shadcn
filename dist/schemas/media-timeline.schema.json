@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "name": "media-timeline",
+  "states": {
+    "playing": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".media-timeline"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "playing",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "time": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".media-timeline"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "time": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "time"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "step": 0.5
+        }
+      }
+    },
+    "zoom": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".media-timeline"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "zoom": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "zoom"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 400,
+          "step": 10
+        }
+      }
+    }
+  },
+  "actions": {}
+}

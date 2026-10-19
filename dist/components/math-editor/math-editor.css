@@ -1,0 +1,177 @@
+/*
+ * Formula Editing (math-editor): a MathLive <math-field> over a native
+ * textarea. The field is themed through MathLive's documented custom
+ * properties and ::part() hooks; its virtual keyboard through the keyboard's
+ * documented --keyboard-* / --keycap-* properties. One private hook is pinned
+ * to mathlive@0.111.0: .MLK__keycap's radius (MathLive hard-codes it).
+ */
+@layer components {
+  .math-editor {
+    display: grid;
+    gap: 0.375rem;
+    min-inline-size: 0;
+
+    /* the textarea: the editor without JavaScript (or when MathLive cannot load) */
+    & > .math-editor-source {
+      inline-size: 100%;
+      min-block-size: 2.5rem;
+      field-sizing: content;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--input);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--foreground);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      resize: vertical;
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+    /* MathLive took over: the textarea steps aside but stays the form control */
+    &[data-ready] > .math-editor-source {
+      display: none;
+    }
+
+    /* the field: an input of the system, math inside */
+    & > .math-editor-field {
+      display: block;
+      inline-size: 100%;
+      min-block-size: 2.75rem;
+      box-sizing: border-box;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid var(--input);
+      border-radius: var(--radius-md);
+      background: var(--background);
+      color: var(--foreground);
+      font-size: 1.25rem;
+      --caret-color: var(--foreground);
+      --primary-color: var(--primary);
+      --selection-background-color: color-mix(in oklch, var(--ring) 28%, transparent);
+      --selection-color: var(--foreground);
+      --contains-highlight-background-color: var(--muted);
+      --placeholder-color: var(--muted-foreground);
+      --smart-fence-color: var(--muted-foreground);
+      --latex-color: var(--muted-foreground);
+      --text-font-family: var(--font-sans);
+      --ui-font-family: var(--font-sans);
+      transition:
+        border-color 120ms ease,
+        box-shadow 120ms ease;
+      &:focus-within {
+        border-color: var(--ring);
+        box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent);
+        outline: none;
+      }
+      /* the keyboard and the menu are the component's (toolbar, states), not MathLive's toggles */
+      &::part(virtual-keyboard-toggle),
+      &::part(menu-toggle) {
+        display: none;
+      }
+    }
+
+    /* the toolbar: data-math-command buttons */
+    & > .math-editor-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    & > .math-editor-message {
+      color: var(--destructive);
+      font-size: 0.8125rem;
+      line-height: 1.4;
+    }
+
+    /* states */
+    &[data-state="invalid"] > .math-editor-field,
+    &[data-state="invalid"] > .math-editor-source {
+      border-color: var(--destructive);
+      &:focus-within,
+      &:focus-visible {
+        box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 25%, transparent);
+      }
+    }
+    &[data-state="readonly"] > .math-editor-field {
+      background: var(--muted);
+    }
+    &[data-state="disabled"] > .math-editor-field,
+    &[data-state="disabled"] > .math-editor-source {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* the virtual keyboard, leased into the editor (MathLive's documented properties) */
+    & > .math-editor-keyboard {
+      position: relative;
+      /* in a container MathLive takes its backdrop padding out of the measured height - the bottom row was clipped */
+      --keyboard-padding-top: 0px;
+      --keyboard-padding-bottom: 0px;
+      --keyboard-background: var(--muted);
+      --keyboard-border: var(--border);
+      --keyboard-accent-color: var(--primary);
+      --keyboard-horizontal-rule: var(--border);
+      --keyboard-toolbar-text: var(--muted-foreground);
+      --keyboard-toolbar-text-active: var(--foreground);
+      --keyboard-toolbar-background-hover: var(--accent);
+      --keyboard-toolbar-background-selected: var(--background);
+      --keycap-background: var(--background);
+      --keycap-background-hover: var(--accent);
+      --keycap-background-active: var(--primary);
+      --keycap-background-pressed: var(--primary);
+      --keycap-border: var(--border);
+      --keycap-border-bottom: var(--border);
+      --keycap-text: var(--foreground);
+      --keycap-text-active: var(--primary-foreground);
+      --keycap-text-pressed: var(--primary-foreground);
+      --keycap-secondary-background: var(--secondary);
+      --keycap-secondary-background-hover: var(--accent);
+      --keycap-secondary-text: var(--secondary-foreground);
+      --keycap-secondary-border: var(--border);
+      --keycap-secondary-border-bottom: var(--border);
+      --keycap-primary-background: var(--primary);
+      --keycap-primary-background-hover: color-mix(in oklch, var(--primary) 88%, var(--background));
+      --keycap-primary-text: var(--primary-foreground);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      &:empty {
+        display: none;
+      }
+      /* private, pinned to mathlive@0.111.0 (tests/e2e/math/math-editor.e2e.ts reads it). MathLive injects its
+         sheet unlayered, which beats any normal declaration in a layer - only !important wins from here */
+      & .MLK__keycap {
+        border-radius: var(--radius-sm) !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      & > .math-editor-field {
+        transition: none;
+      }
+    }
+    @media (prefers-contrast: more) {
+      & > .math-editor-field,
+      & > .math-editor-source {
+        border-color: var(--foreground);
+      }
+    }
+    @media (forced-colors: active) {
+      & > .math-editor-field {
+        border-color: CanvasText;
+        &:focus-within {
+          outline: 2px solid Highlight;
+        }
+      }
+      &[data-state="invalid"] > .math-editor-field {
+        border-color: Mark;
+      }
+    }
+    @media print {
+      & > .math-editor-tools,
+      & > .math-editor-keyboard {
+        display: none;
+      }
+    }
+  }
+}

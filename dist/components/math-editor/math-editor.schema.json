@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "name": "math-editor",
+  "states": {
+    "readonly": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".math-editor"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "readonly"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".math-editor"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "disabled"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "invalid": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".math-editor"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "invalid"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "keyboard-open": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".math-editor"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "keyboard-open"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

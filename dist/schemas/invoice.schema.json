@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "invoice",
+  "states": {
+    "locale": {
+      "type": "enum",
+      "values": [
+        "de-DE",
+        "de-CH",
+        "en-US",
+        "en-GB"
+      ],
+      "default": "de-DE",
+      "target": {
+        "kind": "selector",
+        "selector": ".invoice"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "locale": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-locale"
+      },
+      "editor": {
+        "component": "select"
+      }
+    },
+    "currency": {
+      "type": "enum",
+      "values": [
+        "EUR",
+        "USD",
+        "CHF",
+        "GBP",
+        "JPY"
+      ],
+      "default": "EUR",
+      "target": {
+        "kind": "selector",
+        "selector": ".invoice"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "currency": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-currency"
+      },
+      "editor": {
+        "component": "select"
+      }
+    }
+  },
+  "actions": {}
+}

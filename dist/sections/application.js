@@ -9,12 +9,12 @@ var df$ = defussGlobals();
 var dfDollar = defussQuery();
 var sidebarStates = ["default", "collapsed"];
 function applyMarkup(el, stateName) {
-  dfDollar(el).attr("data-state", stateName === "collapsed" ? "collapsed" : el._authoredState ??= dfDollar(el).attr("data-state") || "expanded");
+  dfDollar(el).attr("data-state", stateName === "collapsed" ? "collapsed" : "expanded");
 }
 function triggerStateChange(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
-      sidebar.dataset.state = sidebar._defaultState ?? "expanded";
+      sidebar.dataset.state = "expanded";
       break;
     case "collapsed":
       sidebar.dataset.state = "collapsed";
@@ -1971,7 +1971,8 @@ var ICONS = {
   up: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>',
   down: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
   reply: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>',
-  quote: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>'
+  quote: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/></svg>',
+  link: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>'
 };
 var esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
 function renderMarkdown(md) {
@@ -2111,7 +2112,7 @@ function clearMarks(el) {
 }
 var runtimeOf = (el) => {
   if (!el._comments)
-    el._comments = { data: { version: 1, comments: [] } };
+    el._comments = { data: { version: 1, comments: [] }, drafts: {} };
   return el._comments;
 };
 function ordered(el) {
@@ -2127,6 +2128,19 @@ function ordered(el) {
   });
   return tops;
 }
+var quoteMarkup = (data, q, i) => {
+  const note = q.note ? `<span class="doc-comments-quote-note">${renderMarkdown(q.note)}</span>` : "";
+  if (!("comment" in q))
+    return `<button class="doc-comments-quote" type="button" data-doc-comments-action="flash" data-quote="${i}" title="Scroll to the quoted text">${ICONS.quote}<q>${esc(q.text)}</q>${note}</button>`;
+  const target = data.comments.find((x) => x.id === q.comment);
+  if (!target)
+    return "";
+  const anchor = anchorOf(data, target);
+  const excerpt = target.body.replace(/\*\*|[*`]/g, "").trim().split(`
+`)[0].slice(0, 80);
+  const label = anchor ? `<q>${esc(anchor.text)}</q>` : `<span>${esc(excerpt)}</span>`;
+  return `<button class="doc-comments-quote doc-comments-link" type="button" data-doc-comments-action="link" data-quote="${i}" title="Go to the comment">${ICONS.link}${label}${note}</button>`;
+};
 var cardMarkup = (data, c, depth) => {
   const anchor = anchorOf(data, c);
   const replies = data.comments.filter((r) => r.parent === c.id).sort((a, b) => String(a.time ?? "").localeCompare(String(b.time ?? "")));
@@ -2138,7 +2152,7 @@ var cardMarkup = (data, c, depth) => {
   </div>
   ${depth === 0 && anchor ? `<button class="doc-comments-anchor" type="button" data-doc-comments-action="go" title="Scroll to the text">${esc(anchor.text)}</button>` : ""}
   <div class="card-content doc-comments-body">${renderMarkdown(c.body)}</div>
-  ${(c.quotes ?? []).map((q, i) => `<button class="doc-comments-quote" type="button" data-doc-comments-action="flash" data-quote="${i}" title="Scroll to the quoted text">${ICONS.quote}<q>${esc(q.text)}</q>${q.note ? `<span class="doc-comments-quote-note">${renderMarkdown(q.note)}</span>` : ""}</button>`).join("")}
+  ${(c.quotes ?? []).map((q, i) => quoteMarkup(data, q, i)).join("")}
   <div class="card-footer doc-comments-actions">
     <button class="btn" data-variant="ghost" data-size="sm" type="button" data-doc-comments-action="reply" aria-expanded="false">${ICONS.reply} Reply</button>
   </div>
@@ -2172,6 +2186,18 @@ ${data.comments.length ? "" : '<p class="doc-comments-empty">No comments yet.</p
   const current = dfDollar7(el).attr("data-current");
   if (current)
     markCurrent(el, current);
+  dfDollar7(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
+}
+function showComposer(card, text) {
+  const form = dfDollar7(card).children("form.doc-comments-reply").get(0);
+  if (!form)
+    return;
+  form.hidden = text === null;
+  dfDollar7(form).find("textarea").val(text ?? "");
+  dfDollar7(card).children(".doc-comments-actions").find('[data-doc-comments-action="reply"]').attr("aria-expanded", String(text !== null));
+}
+function emitDraft(el, id, text) {
+  el.dispatchEvent(new CustomEvent("doc-comments-draft", { bubbles: true, detail: { id, text } }));
 }
 function applyMarkup7(el, name, config) {
   dfDollar7(el).attr("data-current", name === "current" && config.id ? String(config.id) : null);
@@ -2286,9 +2312,15 @@ function load(el, data) {
   clearMarks(el);
   const comments = Array.isArray(data?.comments) ? data.comments.filter((c) => c && typeof c.id === "string" && typeof c.body === "string").map((c) => ({ ...c, author: c.author || "Anonymous" })) : [];
   runtimeOf(el).data = { version: 1, comments };
+  runtimeOf(el).drafts = {};
   placeMarks(el);
   renderColumn(el);
   emitChange(el);
+}
+function setDrafts(el, drafts) {
+  const ids = new Set(runtimeOf(el).data.comments.map((c) => c.id));
+  runtimeOf(el).drafts = Object.fromEntries(Object.entries(drafts ?? {}).filter(([id, text]) => ids.has(id) && typeof text === "string"));
+  dfDollar7(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
 }
 function sourceOf(el) {
   const text = dfDollar7(el).children("script.doc-comments-source").get(0)?.textContent ?? "";
@@ -2310,27 +2342,27 @@ function onAction(el, button) {
     step(el, 1, "nav");
   else if (action === "go" && id)
     select(el, id, "card");
-  else if (action === "flash" && card) {
+  else if ((action === "flash" || action === "link") && card) {
     const c = runtimeOf(el).data.comments.find((x) => x.id === id);
     const q = c?.quotes?.[Number(button.dataset.quote)];
-    if (q)
+    if (!q)
+      return;
+    if ("comment" in q)
+      select(el, q.comment, "link");
+    else
       flash(el, q);
   } else if (action === "reply" && card) {
-    const form = dfDollar7(card).children("form.doc-comments-reply").get(0);
-    if (!form)
-      return;
-    const open = form.hidden;
-    form.hidden = !open;
-    dfDollar7(button).attr("aria-expanded", String(open));
-    if (open)
-      dfDollar7(form).find("textarea").get(0)?.focus();
-  } else if (action === "cancel" && card) {
-    const form = dfDollar7(card).children("form.doc-comments-reply").get(0);
-    if (form) {
-      form.hidden = true;
-      form.reset();
+    const drafts = runtimeOf(el).drafts;
+    if (drafts[id] === undefined) {
+      drafts[id] = "";
+      showComposer(card, "");
+      emitDraft(el, id, "");
     }
-    dfDollar7(card).find('[data-doc-comments-action="reply"]').first().attr("aria-expanded", "false");
+    dfDollar7(card).children("form.doc-comments-reply").find("textarea").get(0)?.focus();
+  } else if (action === "cancel" && card) {
+    delete runtimeOf(el).drafts[id];
+    showComposer(card, null);
+    emitDraft(el, id, null);
   }
 }
 function init7() {
@@ -2353,8 +2385,19 @@ function init7() {
       e.preventDefault();
       const card = form.closest(".doc-comments-card");
       const body = dfDollar7(form).find("textarea").get(0)?.value ?? "";
-      if (card && body.trim())
-        addComment(el, { parent: card.dataset.id, body });
+      if (!card?.dataset.id || !body.trim())
+        return;
+      delete runtimeOf(el).drafts[card.dataset.id];
+      emitDraft(el, card.dataset.id, null);
+      addComment(el, { parent: card.dataset.id, body });
+    });
+    dfDollar7(el).on("input", (e) => {
+      const area = e.target;
+      const id = area.closest("form.doc-comments-reply")?.closest(".doc-comments-card")?.dataset.id;
+      if (!id)
+        return;
+      runtimeOf(el).drafts[id] = area.value;
+      emitDraft(el, id, area.value);
     });
     const root = documentOf(el);
     if (root) {
@@ -2406,6 +2449,15 @@ df$7.docComments = {
     const el = resolve5(target);
     return el ? flash(el, quote) : false;
   },
+  drafts: (target) => {
+    const el = resolve5(target);
+    return el ? { ...runtimeOf(el).drafts } : {};
+  },
+  setDrafts: (target, drafts) => {
+    const el = resolve5(target);
+    if (el)
+      setDrafts(el, drafts);
+  },
   refresh: (target) => {
     const el = resolve5(target);
     if (el) {
@@ -2417,5 +2469,5 @@ df$7.docComments = {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=1E22FD924FE64D7E64756E2164756E21
+//# debugId=4B3AAE3D1B11C6E664756E2164756E21
 //# sourceMappingURL=application.js.map

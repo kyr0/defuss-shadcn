@@ -24,7 +24,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.9') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, loadTheme, safeShowPopover, componentState, bindComponent, persisted, } = __df$shared;
+const { defussGlobals, defussQuery, loadTheme, sheetUrl, safeShowPopover, componentState, bindComponent, persisted, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 // VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
@@ -53,10 +53,10 @@ function themeHref(root, id) {
     if (root.dataset.themeBase)
         return `${root.dataset.themeBase}/${id}.css`;
     const tokens = dfDollar('#tokens-css').get(0) || dfDollar('link[href*="default-semantic-tokens.css"]').get(0);
-    // link.href (the property) is absolute → URL resolution is exact, incl.
-    // the jsDelivr CDN URLs the docs mirror rewrites to
+    // the URL the token sheet was loaded from is absolute → URL resolution is exact, incl. the jsDelivr CDN URLs
+    // the docs mirror rewrites to - and stays right after an SPA router changed the address (link.href would not)
     if (tokens)
-        return new URL(`../${id}.css`, tokens.href).href;
+        return new URL(`../${id}.css`, sheetUrl(tokens)).href;
     return `${id}.css`;
 }
 /** Apply a theme id by (re)loading its stylesheet. 'default' unloads it. */

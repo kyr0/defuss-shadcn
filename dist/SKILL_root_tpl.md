@@ -21,7 +21,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
    2. `components/all.css` - every component's styles,
    3. `components/all.js` as an ES module - the `df$` runtime + every component's behavior.
    (`all.css` holds component styles only: without `core.css` there are no tokens and no utilities.)
-   The HTML Preview Editor (`code-example`) alone needs a fourth pair after them: `components/wysiwyg.css` + `components/wysiwyg.js` - the extra bundle it ships in.
+   Four extra bundles are NOT in `all.*` - add a pair after them only where the page uses their components: `components/wysiwyg.css` + `.js` (the HTML Preview Editor `code-example`, `editorjs`), `components/mermaid.css` + `.js` (`mermaid`), `components/math.css` + `.js` (`math-renderer`, `math-editor`, `math-compute`), `components/visual-editor.css` + `.js` (`visual-editor`).
 3. **For each component you use:** open its skill (index in §4), copy the **Structure** markup verbatim, then pick variants/sizes via `data-variant` / `data-size`. Never invent class names.
 4. **Need a state** (open dialog, expanded tree, selected tab)? Author it in markup, or call `el.api.setState('<state>')` - never toggle classes.
 5. **Serve over HTTP** (`npx serve .` or the project's dev server). ES modules do not run from `file://`.
@@ -113,7 +113,7 @@ Copy this skeleton and put component markup inside `<body>`. Replace `@latest` w
 
 ## 3. Documentation map - guides and live examples
 
-Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` fences whose body is the exact, working example markup). Open only what the task needs. Component pages are linked from the component index (§4) instead.
+Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` fences whose body is the exact, working example markup). Open only what the task needs. Component pages are linked from the component index (§4) instead. Every page leads with its individual examples - each component its examples are made of, alone, in each variant, size and state they use (` ```html example part ` fences) - and then its composite examples: take the smallest piece you need from the top of a page, a whole composition from below.
 
 <!-- DOCS -->
 

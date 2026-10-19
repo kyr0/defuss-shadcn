@@ -854,17 +854,20 @@
   }
 
   /* -- Aspect ratios (or set aspect-ratio / a height yourself) -------- */
+  .diff[data-ratio] {
+    aspect-ratio: var(--_ratio);
+  }
   .diff[data-ratio="16/9"] {
-    aspect-ratio: 16 / 9;
+    --_ratio: 16 / 9;
   }
   .diff[data-ratio="4/3"] {
-    aspect-ratio: 4 / 3;
+    --_ratio: 4 / 3;
   }
   .diff[data-ratio="1/1"] {
-    aspect-ratio: 1;
+    --_ratio: 1;
   }
   .diff[data-ratio="3/4"] {
-    aspect-ratio: 3 / 4;
+    --_ratio: 3 / 4;
   }
 
   /* -- Knob variants ---------------------------------------------------- */
@@ -944,6 +947,43 @@
   .diff[data-orientation="vertical"][data-variant="line"]::after {
     height: 3px;
     width: auto;
+  }
+
+  /* -- Print: paper has no divider to drag ------------------------------------
+     Both sides print in full, side by side - one above the other when the
+     figure is vertical - each with its label and the figure's ratio; the
+     divider line and the knob go. The split a reader dragged to on screen
+     would print only part of each side. */
+  @media print {
+    .diff {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      overflow: visible;
+      background-color: transparent;
+
+      &::after {
+        display: none;
+      }
+      &[data-ratio] {
+        aspect-ratio: auto;
+      }
+      &[data-orientation="vertical"] {
+        grid-template-columns: 1fr;
+      }
+    }
+    .diff > :is(.diff-item-1, .diff-item-2) {
+      grid-area: auto;
+      aspect-ratio: var(--_ratio, auto);
+      border-radius: var(--radius-lg);
+      background-color: var(--muted);
+    }
+    /* as specific as the RTL clip (0,4,0), later in the sheet */
+    .diff:is(*, :dir(rtl):not([data-orientation="vertical"])) > .diff-item-1 {
+      clip-path: none;
+    }
+    .diff > .diff-range {
+      display: none;
+    }
   }
 
   /* -- Accessibility ------------------------------------------------------ */
@@ -2900,6 +2940,42 @@
     .table-cell {
       padding: 0.5rem 0.75rem;
       font-size: 0.8125rem;
+    }
+  }
+
+  /* -- Print: a long table runs over pages. VERIFIED: (tmp/print-table-probe.ts + -probe2.ts, Chromium 153, A4)
+     the header row repeats on every page and in every column by itself - inside this scroll wrapper too; the
+     footer row repeats as well, so a total printed on every page: tfoot prints once, at the end, unless the
+     table asks for a running footer (data-repeat-footer); a row taller than the rest of its page split over
+     two, so rows stay whole unless data-break-inside="allow" lets them split; data-keep-last keeps the last
+     three rows with the footer and with what follows the table (a totals block that sets break-before: avoid
+     pulls them along), so the end never lands alone on a page. */
+  @media print {
+    .table-container {
+      /* Chromium fragments a scroll box in print anyway; another engine may clip it */
+      overflow: visible;
+      /* each page's piece of the table keeps its frame */
+      box-decoration-break: clone;
+    }
+    .table-container:has(> .table[data-sticky-header]) {
+      overflow: visible;
+      max-height: none;
+    }
+    .table[data-sticky-header] thead .table-head {
+      position: static;
+    }
+    .table:not([data-repeat-footer]) > tfoot {
+      display: table-row-group;
+
+      & > tr:first-child {
+        break-before: avoid;
+      }
+    }
+    .table:not([data-break-inside="allow"]) tr {
+      break-inside: avoid;
+    }
+    .table[data-keep-last] > tbody:last-of-type > tr:nth-last-child(-n + 3) {
+      break-before: avoid;
     }
   }
 }

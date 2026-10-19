@@ -2447,6 +2447,16 @@ const diagramRedraw = (root) => {
     for (const canvas of canvasesOf(root))
         draw(root, canvas);
 };
+// A print lays the page out again at the paper's width, and a ResizeObserver
+// delivers nothing inside a print layout: the wires kept their screen geometry
+// beside the reflowed nodes. The print media query's change fires inside the
+// print layout - redraw there, and again when the print ends. VERIFIED:
+// (Chromium page.pdf probe 2026-10-12) beforeprint fires with the screen
+// layout, this change with the print layout.
+matchMedia('print').addEventListener('change', () => {
+    for (const root of dfDollar('.diagram[data-init]').toArray())
+        diagramRedraw(root);
+});
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 //# sourceMappingURL=diagram.js.map

@@ -3,7 +3,7 @@ name: Iframe
 type: ATM
 section: data-display
 why: The native iframe embeds a whole page in isolation; this adds what it lacks - a size that fits its container (ratio, the container's height, or the framed page's content height) and a checked postMessage bridge in both directions.
-when: Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video Player block; your own markup belongs in the page, not in a frame.
+when: Embedding another page - a demo, a dashboard, a model card, a document - that should size itself to where it sits, or talk to the host page. A video uses the Video component (or the Video Player block); your own markup belongs in the page, not in a frame.
 where: dist/components/iframe/iframe.css + dist/components/iframe/iframe.js
 supportedStates: default, loaded
 ---

@@ -192,6 +192,12 @@ cite.addEventListener('bibtex-copy', (e) => console.log(e.detail.text));
 ---
 
 ## Notes
+- **Print shows one format**: paper has no tabs to switch and nothing to
+  copy - printed, the bar goes and the block shows the format it is set to
+  (`data-format`, else the first of `data-formats`): set `data-format` to the
+  one you want on paper. Its caption stays with the view below it, and a long
+  list keeps its frame closed on every page. A long BibTeX field scrolls
+  sideways on screen and wraps in print.
 - **Copy = what is shown, as plain text**: the BibTeX tab copies the
   normalized BibTeX, a style tab the reference text (italics drop, `[1]`
   numbers stay).

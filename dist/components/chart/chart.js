@@ -251,6 +251,26 @@ const instances = new WeakMap();
 const observers = new WeakMap();
 /** The mounted elements, iterable for re-theming (pruned when disconnected). */
 const live = new Set();
+// A print lays the page out again at the paper's width, and a ResizeObserver
+// delivers nothing inside a print layout: the svg kept its screen width and
+// Chromium laid the whole print out that wide, then shrank it to fit. The
+// print media query's change fires inside the print layout - resize there,
+// and back when the print ends. VERIFIED: (Chromium page.pdf probe
+// 2026-10-12) beforeprint fires with the screen layout, this change with the
+// print layout, and a resize in it sizes the svg for the print width. It must
+// paint before the print does: ECharts repaints on the next animation frame,
+// so the print kept the screen-wide paths clipped in the narrower svg - no
+// animation, and a flush paints at once (VERIFIED: same probe, the rightmost
+// path ended at x 1002 in an 804px svg without the flush, at 782 with it).
+matchMedia('print').addEventListener('change', () => {
+    for (const el of live) {
+        const inst = instances.get(el);
+        if (!el.isConnected || !inst || inst.isDisposed?.())
+            continue;
+        inst.resize({ animation: { duration: 0 } });
+        inst.getZr?.().flush();
+    }
+});
 /** Reduced motion is re-evaluated per apply: animation off wins over the option. */
 function withMotion(option) {
     return reducedMotion() ? { ...option, animation: false } : option;

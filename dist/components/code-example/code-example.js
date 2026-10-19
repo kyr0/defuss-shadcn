@@ -32,7 +32,7 @@ if (!__df$shared || __df$shared.abi !== '0.9.9') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, sheetUrl } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const codeExampleStates = ['default', 'code', 'state', 'fullscreen'];
@@ -45,8 +45,10 @@ const REM_PX = 16; // data-height is authored in rem
 const IO_ROOT_MARGIN = '600px 0px'; // previews boot near the viewport…
 const IDLE_BOOT_MS = 1500; // …and the rest once the page is idle
 const VP_DEVICES = { phone: [390, 844], tablet: [834, 1112] };
-const VP_MODES = ['phone', 'tablet', 'desktop', 'full'];
-/** the frame's sandbox per data-sandbox: opaque origin; embed (a third-party player) and links (new-tab links) widen one card */
+const VP_MODES = ['phone', 'tablet', 'desktop', 'print', 'full'];
+/** the Print device: an A4 sheet (210mm) with its 20mm margins, in CSS px */
+const VP_PRINT_WIDTH = 794;
+/** the frame's sandbox per data-sandbox: opaque origin; embed (a third-party player), links (new-tab links), downloads (a file the example saves), editor (the Visual Editor: GrapesJS writes into its own canvas iframe, so the frame is same-origin, and may save the Studio's exports) and fullscreen (a full screen control: the frame's permissions policy delegates it - WebKit takes only `fullscreen *`) widen one card */
 const SANDBOXES = {
     default: { sandbox: 'allow-scripts allow-forms', allow: 'clipboard-write' },
     embed: {
@@ -54,6 +56,9 @@ const SANDBOXES = {
         allow: 'clipboard-write; autoplay; encrypted-media; fullscreen; picture-in-picture',
     },
     links: { sandbox: 'allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox', allow: 'clipboard-write' },
+    downloads: { sandbox: 'allow-scripts allow-forms allow-downloads', allow: 'clipboard-write' },
+    editor: { sandbox: 'allow-scripts allow-forms allow-same-origin allow-downloads', allow: 'clipboard-write' },
+    fullscreen: { sandbox: 'allow-scripts allow-forms', allow: 'clipboard-write; fullscreen *' },
 };
 // lucide icons (ISC) - inline, so the card needs no icon library
 const ICONS = {
@@ -61,6 +66,7 @@ const ICONS = {
     smartphone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
     tablet: '<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/>',
     monitor: '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
+    printer: '<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/>',
     'app-window': '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/>',
     'code-xml': '<path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>',
     'sliders-horizontal': '<path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/>',
@@ -78,8 +84,8 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 // -- configuration --------------------------------------------------------------------------------
 /**
  * What every preview is built from. `null` = discovered from the host page:
- * its stylesheets as <link>s, its all / core (+ wysiwyg when the source uses
- * this component) bundle fetched and inlined.
+ * its stylesheets as <link>s, its all / core bundle (+ each extra bundle the
+ * source uses: wysiwyg for this component, mermaid, math) fetched and inlined.
  */
 const config = {
     styles: null,
@@ -105,24 +111,50 @@ function fetchText(url) {
     }
     return cache.get(url);
 }
-const BUNDLE_SCRIPT = /\/(all|core|wysiwyg)(?:\.min)?\.js(?:[?#]|$)/;
-/** the host's runtime bundles: all/core first, wysiwyg only when the source nests a wysiwyg component (this one, Editor.js) */
+/**
+ * The extra bundles - components kept out of all.* (dist/components/{bundle}.css + .js) - and their members. A
+ * preview needs a bundle when its source names one of the members. VERIFIED: (code-example.e2e "bundlesFor")
+ * equal to the build's list, src/documentation/lib/extra-bundles.ts.
+ */
+const EXTRA_BUNDLES = {
+    wysiwyg: ['code-example', 'editorjs'],
+    mermaid: ['mermaid'],
+    math: ['math-renderer', 'math-editor', 'math-compute'],
+    'visual-editor': ['visual-editor'],
+};
+const BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join('|')})(?:\\.min)?\\.js(?:[?#]|$)`);
+/** the extra bundles a preview source needs, in EXTRA_BUNDLES order */
+const neededBundles = (source) => Object.keys(EXTRA_BUNDLES).filter((b) => EXTRA_BUNDLES[b].some((m) => new RegExp(`\\b${m}\\b`).test(source || '')));
+// the scripts' URLs as this module runs: an SPA router that later changes the address keeps them, and a relative
+// src read then names the new page's folder (a script keeps no loaded URL - a sheet does: sheetUrl)
+const loadedScripts = new Map();
+dfDollar('script[src]').each((_i, s) => {
+    loadedScripts.set(s, s.src);
+});
+/** the host's runtime bundles: all/core first, then each extra bundle the host loaded that the source needs (wysiwyg
+ *  for a nested card or Editor.js, mermaid, math) */
 function discoverScripts(source) {
+    const needed = neededBundles(source);
     const out = [];
     dfDollar('script[src]').each((_i, s) => {
-        const m = BUNDLE_SCRIPT.exec(s.src);
-        if (!m || (m[1] === 'wysiwyg' && !/\b(?:code-example|editorjs)\b/.test(source)))
+        const src = loadedScripts.get(s) ?? s.src;
+        const m = BUNDLE_SCRIPT.exec(src);
+        if (!m || (m[1] in EXTRA_BUNDLES && !needed.includes(m[1])))
             return;
-        if (!out.includes(s.src))
-            out.push(s.src);
+        if (!out.includes(src))
+            out.push(src);
     });
-    return out.sort((a, b) => Number(/wysiwyg/.test(a)) - Number(/wysiwyg/.test(b)));
+    const rank = (src) => Number((BUNDLE_SCRIPT.exec(src)?.[1] ?? '') in EXTRA_BUNDLES);
+    return out.sort((a, b) => rank(a) - rank(b));
 }
 function discoverStyles() {
     const out = [];
+    // the URL each sheet was loaded from: an SPA router that changed the address leaves a relative href naming
+    // the new page's folder
     dfDollar('link[rel="stylesheet"]').each((_i, l) => {
-        if (l.href && !out.includes(l.href))
-            out.push(l.href);
+        const url = sheetUrl(l);
+        if (url && !out.includes(url))
+            out.push(url);
     });
     return out;
 }
@@ -194,6 +226,53 @@ function sandboxBridge(ch, schema) {
             location.hash = href.slice(1);
     });
     const post = (kind, extra) => parent.postMessage(Object.assign({ type: 'ce', ch, kind }, extra || {}), '*');
+    // the Print device: the preview is a screen, so print and screen trade places in every media
+    // query of every sheet it can read (a rule for print applies, a rule for screen does not) - the
+    // swap is its own inverse. Pages, @page margins and a sheet loaded later stay out of it. A sheet
+    // has no pages, so every forced page break is marked (data-ce-page-break) and drawn as a dashed
+    // line with room around it: a block that starts a page has no top gap of its own in print (the
+    // page margin is its space), and on the sheet it sat flush on the block before it.
+    let printing = false;
+    const swapMedia = (list) => {
+        const text = list.mediaText;
+        const next = text.replace(/\b(print|screen)\b/g, (m) => (m === 'print' ? 'screen' : 'print'));
+        if (next !== text)
+            list.mediaText = next;
+    };
+    const swapRules = (rules) => {
+        for (const r of rules) {
+            if (r.media && typeof r.media.mediaText === 'string')
+                swapMedia(r.media);
+            if (r.styleSheet)
+                swapRules(r.styleSheet.cssRules);
+            if (r.cssRules)
+                swapRules(r.cssRules);
+        }
+    };
+    function setPrint(on) {
+        if (on === printing)
+            return;
+        printing = on;
+        for (const sheet of document.styleSheets) {
+            try {
+                if (sheet.media.length)
+                    swapMedia(sheet.media);
+                swapRules(sheet.cssRules);
+            }
+            catch {
+                // a sheet from another origin cannot be read - it keeps its media
+            }
+        }
+        if (on)
+            document.documentElement.setAttribute('data-ce-print', '');
+        else
+            document.documentElement.removeAttribute('data-ce-print');
+        all(document.body, '[data-ce-page-break]').forEach((n) => n.removeAttribute('data-ce-page-break'));
+        if (on)
+            for (const n of all(document.body, '*'))
+                if (!n.closest('[data-ce-chrome]') && /^(page|left|right|recto|verso)$/.test(getComputedStyle(n).breakBefore))
+                    n.setAttribute('data-ce-page-break', '');
+    }
     /** the schema target: a selector, the [data-example-root], else the first element of the source */
     function resolve(target) {
         if (target && target.kind === 'selector')
@@ -278,6 +357,11 @@ function sandboxBridge(ch, schema) {
         const live = all(document.body, 'input, textarea').filter((n) => !n.closest(chrome));
         const clone = document.body.cloneNode(true);
         $(clone).find(chrome).remove();
+        // the runtime's own attributes stay out of the source (src/shared/render.ts RUNTIME_ATTRS - this bridge runs
+        // stringified in the sandbox and cannot import it): a source carrying data-init never starts its component
+        // again. VERIFIED: (tmp/probe-rerun-polluted.ts) a Dialog set open, its source run again, had no State API
+        for (const name of ['data-init', 'data-api', 'data-state-name', 'data-ce-page-break'])
+            all(clone, `[${name}]`).forEach((n) => n.removeAttribute(name));
         const mirror = all(clone, 'input, textarea');
         live.forEach((l, i) => {
             const c = mirror[i];
@@ -347,6 +431,23 @@ function sandboxBridge(ch, schema) {
             post('height', { height: contentHeight() });
         }, 0);
     }
+    // "ResizeObserver loop completed with undelivered notifications" is a notice, not a throw: a callback changed the
+    // layout, and the browser delivers the rest on the next frame. One that resizes its box once (a chart taking its
+    // width) raises it a single time - VERIFIED: tmp/probe-ce-roloop.ts showed it as the example's error for good. Only a
+    // loop that still runs after RO_LOOP_MS (a notice in its last second) is reported.
+    const RO_LOOP_MS = 5000;
+    let loopSince = 0;
+    let loopLast = 0;
+    const resizeLoop = () => {
+        const now = Date.now();
+        if (now - loopLast > 1000)
+            loopSince = now;
+        loopLast = now;
+        if (now - loopSince >= RO_LOOP_MS) {
+            loopSince = now;
+            post('error', { message: `A ResizeObserver loop has not settled for ${RO_LOOP_MS / 1000} s` });
+        }
+    };
     // the source's own scripts report errors; chrome (bundles, bridge) and stylesheets do not
     addEventListener('error', (e) => {
         const t = e.target;
@@ -356,6 +457,8 @@ function sandboxBridge(ch, schema) {
             post('error', { message: 'Example script failed to load or compile' });
             return;
         }
+        if (!e.error && String(e.message).startsWith('ResizeObserver loop'))
+            return void resizeLoop();
         post('error', {
             message: String(e.message || 'Unknown error'),
             stack: e.error && e.error.stack ? String(e.error.stack) : undefined,
@@ -412,6 +515,10 @@ function sandboxBridge(ch, schema) {
         }
         else if (d.kind === 'measure')
             sync();
+        else if (d.kind === 'set-print') {
+            setPrint(!!d.value);
+            sync();
+        }
         else if (d.kind === 'pointer-release') {
             // a drag released over the host page never saw its pointerup here
             let pr;
@@ -476,7 +583,28 @@ function sandboxBridge(ch, schema) {
 // -- the preview document ------------------------------------------------------------------------
 const SCRIPT_OPEN = '<script data-ce-chrome>';
 const SCRIPT_CLOSE = '</script>';
-/** the srcdoc of a card's preview: styles, theme, the source verbatim, the runtime, the bridge */
+/** data-links: a JSON object from a link target the source names to the one its preview uses (the
+ *  docs map page ids to their paths from the docs root); null without one - a malformed map maps nothing */
+function readLinks(root) {
+    try {
+        const map = JSON.parse(dfDollar(root).attr('data-links') || 'null');
+        return map && typeof map === 'object' && !Array.isArray(map)
+            ? new Map(Object.entries(map).map(([k, v]) => [k, String(v)]))
+            : null;
+    }
+    catch {
+        return null;
+    }
+}
+/** the card's link map applied to the href / src / action / poster of every tag in some markup; `back` maps
+ *  the preview's serialized markup to the source's own targets again, so the source keeps what was written */
+function relink(links, html, back = false) {
+    if (!links)
+        return html;
+    const map = back ? new Map([...links].map(([from, to]) => [to, from])) : links;
+    return html.replace(/<[a-z][^>]*>/gi, (tag) => tag.replace(/(\s(?:href|src|action|poster)=")([^"]*)"/gi, (whole, open, value) => map.has(value) ? `${open}${map.get(value)}"` : whole));
+}
+/** the srcdoc of a card's preview: styles, theme, the source (its links mapped), the runtime, the bridge */
 function buildSrcdoc(root, source) {
     const c = root._ce;
     return Promise.all([resolveStyles(source), resolveScripts(source), resolveTheme()]).then(([styles, scripts, theme]) => {
@@ -492,8 +620,8 @@ function buildSrcdoc(root, source) {
         const base = config.base ? `<base href="${String(config.base).replace(/"/g, '&quot;')}">\n` : '';
         return nested.then((nestedScript) => `<!DOCTYPE html>\n<html lang="en"${dark ? ' class="dark" style="color-scheme:dark"' : ''}>\n<head>\n<meta charset="UTF-8">\n${base}${styles}\n` +
             `<style id="ce-theme" data-ce-chrome>${theme.replace(/<\/style/gi, '<\\/style')}</style>\n` +
-            `<style data-ce-chrome>body{display:flow-root;margin:2.5rem 1.5rem;background:var(--background);color:var(--foreground);${stage}}</style>\n</head>\n<body>\n` +
-            `${source}\n${scripts}\n${nestedScript}${tail}\n` +
+            `<style data-ce-chrome>body{display:flow-root;margin:2.5rem 1.5rem;background:var(--background);color:var(--foreground);${stage}}[data-ce-print]>body{margin:20mm}[data-ce-print] [data-ce-page-break]{display:block;visibility:visible;margin-block:1.5rem;border:0;border-block-start:1px dashed color-mix(in oklab,var(--muted-foreground) 55%,transparent)}</style>\n</head>\n<body>\n` +
+            `${relink(c.links, source)}\n${scripts}\n${nestedScript}${tail}\n` +
             `<script id="ce-bridge" data-ce-chrome>(${sandboxBridge.toString().replace(/<\/script/gi, '<\\/script')})(${JSON.stringify(c.ch)}, ${schema});${SCRIPT_CLOSE}\n</body>\n</html>`);
     });
 }
@@ -566,6 +694,7 @@ function shellMarkup(root) {
         vp('phone', 'smartphone', 'Phone', 'Phone 390×844') +
         vp('tablet', 'tablet', 'Tablet', 'Tablet 834×1112') +
         vp('desktop', 'monitor', 'Desktop', 'Desktop 1024') +
+        vp('print', 'printer', 'Print', 'Print: an A4 sheet in the print styles') +
         vp('full', 'app-window', 'Full', 'Full width') +
         `</span><span class="code-example-sep" aria-hidden="true"></span>` +
         `<span class="code-example-size"><input class="code-example-vp-w" type="number" min="240" step="10" inputmode="numeric" placeholder="Width" aria-label="Custom preview width (px)"><span class="code-example-vp-x" aria-hidden="true">×</span>` +
@@ -924,8 +1053,11 @@ function previewHandle(root) {
 function onMessage(root, d) {
     const c = root._ce;
     if (d.kind === 'ready') {
-        // a fresh preview of the (possibly edited) source: observe it, replay nothing
+        // a fresh preview of the (possibly edited) source: observe it, replay nothing - but a preview rebuilt
+        // in the Print device loads on screen media, so its swap is sent again
         send(root, 'read-state');
+        if (c.vpMode === 'print')
+            send(root, 'set-print', { value: true });
         c.ready = true;
         if (!root.preview)
             root.preview = previewHandle(root);
@@ -942,8 +1074,9 @@ function onMessage(root, d) {
         // the preview serialized a change into source - written only while the editor
         // still holds exactly what the preview runs (never over an un-run edit)
         if (d.source && !c.rerunTimer && document.activeElement !== c.src && c.src.value === c.lastRun) {
-            writeSource(root, d.source);
-            c.lastRun = d.source;
+            const source = relink(c.links, d.source, true);
+            writeSource(root, source);
+            c.lastRun = source;
         }
     }
     else if (d.kind === 'error')
@@ -1081,6 +1214,9 @@ function scheduleFit(root) {
 }
 function vpSetMode(root, mode) {
     const c = root._ce;
+    // only entering or leaving Print swaps the media: the swap is its own inverse, so a second one would undo it
+    if ((mode === 'print') !== (c.vpMode === 'print'))
+        send(root, 'set-print', { value: mode === 'print' });
     c.vpMode = mode;
     c.fitFrozen = false;
     const dev = !!VP_DEVICES[mode];
@@ -1096,7 +1232,7 @@ function vpSetMode(root, mode) {
         c.vpH.value = String(VP_DEVICES[mode][1]);
     }
     else {
-        c.vpW.value = mode === 'desktop' ? '1024' : '';
+        c.vpW.value = mode === 'desktop' ? '1024' : mode === 'print' ? String(VP_PRINT_WIDTH) : '';
         c.vpH.value = '';
         c.vpH.placeholder = 'Full';
     }
@@ -1304,7 +1440,7 @@ function leaveOverlays() {
             exitFullscreen(root);
 }
 df$.codeExample = {
-    /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it.
+    /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle, plus each extra bundle the page loaded that the source uses - bundlesFor), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it.
      * @param options - the keys to change; the cards on the page repaint their source
      */
     configure(options = {}) {
@@ -1318,6 +1454,13 @@ df$.codeExample = {
             }
         });
     },
+    /**
+     * The extra bundles (components kept out of all.*) a preview of this source needs - the default scripts add each
+     * one the page loaded; a configured `scripts` function can add them itself.
+     * @param source - an example's HTML source
+     * @returns the bundle names (`wysiwyg`, `mermaid`, `math`) whose components the source names, in that order
+     */
+    bundlesFor: (source) => neededBundles(source),
     /**
      * The card's current source.
      * @param target - the .code-example card or its selector
@@ -1353,9 +1496,9 @@ df$.codeExample = {
             run(root, root._ce.src.value);
     },
     /**
-     * Switch the preview device: 'phone' | 'tablet' | 'desktop' | 'full'.
+     * Switch the preview device: 'phone' | 'tablet' | 'desktop' | 'print' | 'full' - 'print' is an A4 sheet whose preview applies the print styles.
      * @param target - the .code-example card or its selector
-     * @param mode - the device width the preview takes
+     * @param mode - the device width the preview takes ('print': 210mm, its media rules for print applied)
      */
     viewport(target, mode) {
         const root = resolveCard(target);
@@ -1492,6 +1635,7 @@ function initCard(root) {
         editor: part(root, '.code-example-editor'),
         paint: part(root, '.code-example-paint'),
         minHeight: Math.max(MIN_FRAME_HEIGHT, (Number(dfDollar(root).attr('data-height')) || 0) * REM_PX),
+        links: readLinks(root),
         rows: {},
         observed: {},
         lastRun: '',

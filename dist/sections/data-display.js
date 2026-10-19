@@ -2086,13 +2086,12 @@ var df$9 = defussGlobals9();
 var dfDollar9 = defussQuery9();
 var treeViewStates = ["default", "expanded"];
 function applyMarkup8(el, stateName) {
-  if (stateName === "expanded")
-    dfDollar9(el).attr("open", "");
+  dfDollar9(el).attr("open", stateName === "expanded" ? "" : null);
 }
 function triggerStateChange9(details, stateName, _config) {
   switch (stateName) {
     case "default":
-      details.open = details._defaultOpen ?? false;
+      details.open = false;
       break;
     case "expanded":
       details.open = true;
@@ -2334,7 +2333,6 @@ function init9() {
       const treeitem = details.closest('[role="treeitem"]');
       if (!treeitem)
         return;
-      details._defaultOpen = details.open;
       bindComponent9(details, treeViewApi);
       details.addEventListener("toggle", () => {
         treeitem.setAttribute("aria-expanded", String(details.open));
@@ -2511,6 +2509,16 @@ var calendarApi = Object.assign(componentState10({
 });
 df$10.calendarApi = calendarApi;
 df$10.calendarStates = calendarStates;
+function localeFirstDay(locale) {
+  const loc = new Intl.Locale(locale);
+  const first = (loc.getWeekInfo?.() ?? loc.weekInfo)?.firstDay;
+  return first ? first % 7 : 0;
+}
+var WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+function weekStart(el) {
+  const named = WEEKDAYS.indexOf((el.closest("[data-week-start]")?.getAttribute("data-week-start") ?? "").trim().toLowerCase());
+  return named >= 0 ? named : names(el).firstDay;
+}
 var nameSets = new Map;
 function names(el) {
   const locale = textLocale2(el);
@@ -2518,7 +2526,8 @@ function names(el) {
     nameSets.set(locale, {
       days: Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(locale, { weekday: "short" }).format(new Date(2024, 0, i))),
       months: Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(2024, i, 1))),
-      full: new Intl.DateTimeFormat(locale, { dateStyle: "full" })
+      full: new Intl.DateTimeFormat(locale, { dateStyle: "full" }),
+      firstDay: localeFirstDay(locale)
     });
   }
   return nameSets.get(locale);
@@ -2774,7 +2783,7 @@ function setView(el, view) {
     detail: { view, year: st.year, month: st.month }
   }));
 }
-var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null)) => {
+var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null), start = 0) => {
   const full = locale.full;
   const rangeAttrs = (iso) => {
     if (!range || !range.start)
@@ -2795,11 +2804,11 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
     return a;
   };
   const total = daysInMonth(year, month);
-  const startDay = firstDayOfMonth(year, month);
+  const startDay = (firstDayOfMonth(year, month) - start + 7) % 7;
   const prevTotal = daysInMonth(year, month - 1);
   let html = "<thead><tr>";
   for (let d = 0;d < 7; d++) {
-    html += `<th class="calendar-day-label" scope="col">${locale.days[d]}</th>`;
+    html += `<th class="calendar-day-label" scope="col">${locale.days[(d + start) % 7]}</th>`;
   }
   html += "</tr></thead><tbody>";
   let dayNum = 1;
@@ -2869,7 +2878,7 @@ var renderCalendar = (el, year, month, selectedDay) => {
   const range = r ? { start: r.start, end: r.end, preview: !r.end && r.start && r.hover && r.hover >= r.start ? r.hover : null } : null;
   const days = daysOf(el);
   el.toggleAttribute("data-notes", Object.values(days).some((d) => d && d.note != null && d.note !== ""));
-  dfDollar10(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days, names(el)));
+  dfDollar10(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days, names(el), weekStart(el)));
   if (focusKey)
     dfDollar10(grid).find(`[data-cal-date="${focusKey}"] button`).get(0)?.focus();
   const selDate = dfDollar10(el).find(".calendar-day[data-selected]").get(0)?.getAttribute("data-cal-date");
@@ -3684,5 +3693,5 @@ function init12() {
 init12();
 new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
-//# debugId=B2E66451C02EFBB964756E2164756E21
+//# debugId=7153997733C25D1B64756E2164756E21
 //# sourceMappingURL=data-display.js.map

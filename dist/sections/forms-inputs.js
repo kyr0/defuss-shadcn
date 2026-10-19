@@ -965,6 +965,23 @@ df$6.comboboxStates = comboboxStates;
 var esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 var idPart = (t) => t.replace(/[^\w-]/g, "_");
 var comboSeq = 0;
+function hideEmptyGroups(listbox) {
+  dfDollar6(listbox).find(".combobox-group-label").each((_i, label) => {
+    let next = label.nextElementSibling;
+    let groupHasVisible = false;
+    while (next && !next.classList.contains("combobox-group-label") && !next.classList.contains("combobox-separator")) {
+      if (next.getAttribute("role") === "option" && !next.hidden && !next.classList.contains("combobox-create"))
+        groupHasVisible = true;
+      next = next.nextElementSibling;
+    }
+    dfDollar6(label).prop("hidden", !groupHasVisible);
+  });
+  dfDollar6(listbox).find(".combobox-separator").each((_i, sep) => {
+    const prev = sep.previousElementSibling;
+    const next = sep.nextElementSibling;
+    dfDollar6(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
+  });
+}
 function initTags(wrapper) {
   const field = dfDollar6(wrapper).find(".combobox-field").get(0);
   const input = dfDollar6(wrapper).find(".combobox-field-input").get(0);
@@ -993,7 +1010,7 @@ function initTags(wrapper) {
     createRow.setAttribute("role", "option");
     createRow.setAttribute("aria-selected", "false");
     createRow.hidden = true;
-    dfDollar6(listbox).append(createRow);
+    dfDollar6(listbox).prepend(createRow);
   }
   let highlighted = null;
   const highlight = (el) => {
@@ -1007,7 +1024,7 @@ function initTags(wrapper) {
     } else
       dfDollar6(input).attr("aria-activedescendant", null);
   };
-  const visible = () => [...options(), ...createRow ? [createRow] : []].filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
+  const visible = () => dfDollar6(listbox).find('[role="option"]').toArray().filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
   const isOpen = () => popover.matches(":popover-open");
   const open = () => {
     if (!isOpen())
@@ -1045,6 +1062,7 @@ function initTags(wrapper) {
       if (showCreate)
         dfDollar6(createRow).text(`Create "${text}"`);
     }
+    hideEmptyGroups(listbox);
     if (empty)
       dfDollar6(empty).prop("hidden", any || !!createRow && !createRow.hidden);
     highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? visible()[0] ?? null : null));
@@ -1081,8 +1099,9 @@ function initTags(wrapper) {
         option.dataset.created = "";
         option.id = `${uid}-opt-${idPart(text)}-${options().length}`;
         dfDollar6(option).text(text);
-        if (createRow)
-          dfDollar6(createRow).before(option);
+        const firstGroup = dfDollar6(listbox).find(".combobox-group-label").get(0);
+        if (firstGroup)
+          dfDollar6(firstGroup).before(option);
         else
           dfDollar6(listbox).append(option);
         row = option;
@@ -1300,23 +1319,8 @@ function init6() {
         if (match)
           hasVisible = true;
       });
-      $listbox.find(".combobox-group-label").each(function() {
-        const label = this;
-        let next = label.nextElementSibling;
-        let groupHasVisible = false;
-        while (next && !next.classList.contains("combobox-group-label") && !next.classList.contains("combobox-separator")) {
-          if (next.getAttribute("role") === "option" && !next.hidden)
-            groupHasVisible = true;
-          next = next.nextElementSibling;
-        }
-        dfDollar6(label).prop("hidden", !groupHasVisible);
-      });
-      $listbox.find(".combobox-separator").each(function() {
-        const sep = this;
-        const prev = sep.previousElementSibling;
-        const next = sep.nextElementSibling;
-        dfDollar6(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
-      });
+      if (listbox)
+        hideEmptyGroups(listbox);
       if ($empty.length)
         $empty.prop("hidden", hasVisible);
     };
@@ -1523,5 +1527,5 @@ function init7() {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=B61BC4C68726BDC564756E2164756E21
+//# debugId=F235957621DFA85264756E2164756E21
 //# sourceMappingURL=forms-inputs.js.map

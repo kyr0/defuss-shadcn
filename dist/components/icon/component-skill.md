@@ -6,6 +6,7 @@ why: Consistent 24px stroke wrappers around lucide icons, sized via data-size.
 when: Any icon anywhere in the system - keeps size and stroke uniform across components.
 where: dist/components/icon/icon.css
 supportedStates: default
+roots: "[data-lucide]"
 ---
 
 # Pattern: Icon

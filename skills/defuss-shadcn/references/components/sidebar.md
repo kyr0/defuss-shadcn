@@ -167,7 +167,8 @@ Set `data-density` on the `.app-sidebar` root; link rows and the content frame s
 
 The api is bound **per `.app-sidebar`**. Declared states: `default`
 (expanded - the authored width) · `collapsed` (icon rail, via the
-documented `data-state="collapsed"` attribute).
+documented `data-state="collapsed"` attribute). A sidebar written collapsed
+starts in `collapsed`, and `setState('default')` expands it.
 
 ```js
 document.querySelector('#my-sidebar').api.setState('collapsed');
@@ -187,7 +188,7 @@ The registry global is `df$.shadcn.sidebarApi` / `df$.shadcn.sidebarStates`.
 
 | State | Description |
 |---|---|
-| `default` | As authored (expanded unless the markup collapses it). No config. |
+| `default` | Expanded - the full width (a sidebar written collapsed starts in 'collapsed'). No config. |
 | `collapsed` | Icons only (data-state="collapsed"). No config. |
 
 ### Every element

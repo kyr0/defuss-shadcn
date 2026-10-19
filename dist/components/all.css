@@ -2798,6 +2798,203 @@
   }
 }
 
+/* ── components/audio/audio.css ── */
+/* -- Audio component ------------------------------------------ */
+/* A native <audio> (no controls of its own) behind one row: the  */
+/* play toggle, a title over the scrubber and its readouts, the   */
+/* sound controls - Buttons, Sliders and readouts                 */
+/* (data-audio-action / -output). An optional line under the      */
+/* scrubber shows the active caption cue, a transcript as it is   */
+/* spoken. data-variant="compact" drops the frame and the title.  */
+@layer components {
+  .audio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+
+    & > audio:not([controls]) {
+      display: none;
+    }
+
+    & > [data-audio-action="volume"] {
+      inline-size: 4.5rem;
+    }
+  }
+
+  .audio-body {
+    display: grid;
+    flex: 1;
+    gap: 0.125rem;
+    min-inline-size: 0;
+  }
+
+  .audio-title {
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .audio-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-inline-size: 0;
+
+    & > [data-audio-action="seek"] {
+      flex: 1;
+      min-inline-size: 3rem;
+    }
+  }
+
+  /* a readout: m:ss in even digits, so the row does not jitter */
+  .audio-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* the active cue - collapses when captions are off or nothing is said */
+  .audio-captions {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-style: italic;
+    text-wrap: pretty;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  /* a toggle with two icons shows the first when off, the second when on (play / pause, sound / muted) */
+  [data-audio-action][aria-pressed="false"] > :nth-child(2),
+  [data-audio-action][aria-pressed="true"] > :nth-child(1):not(:only-child) {
+    display: none;
+  }
+
+  /* a control the page may not use (full screen in a frame without it) - over the Button's own display */
+  [data-audio-action][hidden] {
+    display: none;
+  }
+
+  /* a rate select keeps its own width in the row (a Select is as wide as its box) */
+  select[data-audio-action="rate"] {
+    flex: none;
+    inline-size: auto;
+  }
+
+  /* the sound button with a vertical volume in a panel above it (below with data-side="bottom"), shown while the
+     pointer or the focus is on either - the row keeps one button's width */
+  .audio-volume {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .audio-volume-panel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    margin-block-end: 0.375rem;
+    padding: 0.75rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    box-shadow: var(--shadow-md);
+    translate: -50% 0;
+    visibility: hidden;
+    opacity: 0;
+
+    /* the gap to the button belongs to the hover */
+    &::after {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 100%;
+      block-size: 0.5rem;
+      content: "";
+    }
+
+    /* a vertical range's block axis is horizontal: its length is its height */
+    & > .slider[data-orientation="vertical"] {
+      height: 5.5rem;
+    }
+
+    .audio-volume:is(:hover, :focus-within) > & {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .audio-volume[data-side="bottom"] > & {
+      inset-block: 100% auto;
+      margin-block: 0.375rem 0;
+
+      &::after {
+        inset-block: auto 100%;
+      }
+    }
+  }
+
+  .audio[data-variant="compact"] {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+
+    & .audio-title {
+      display: none;
+    }
+  }
+
+  /* a narrow player keeps play, the scrubber, the time and the sound */
+  @container (inline-size < 22rem) {
+    .audio > [data-audio-action="volume"],
+    .audio > [data-audio-action="rate"],
+    .audio-progress > [data-audio-output="duration"] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .audio-volume-panel {
+      transition:
+        opacity 0.15s ease,
+        visibility 0.15s allow-discrete;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .audio-time,
+    .audio-captions {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .audio,
+    .audio-volume-panel {
+      border-color: CanvasText;
+    }
+
+    .audio-volume-panel {
+      background-color: Canvas;
+    }
+  }
+}
+
 /* ── components/audio-player/audio-player.css ── */
 /* -- Audio Player (website · Media) ---------------------------------------
    Plays one audio recording with playback controls and metadata - cover art, title, show and episode, the native player and a download link. */
@@ -4378,6 +4575,32 @@
     }
   }
 
+  /* paper has no horizontal scroll: in print a long field wraps instead of
+     running past the frame (a report's printed title lost its end). Paper has
+     no tabs to switch and nothing to copy: the bar goes, and the block prints
+     the one format it shows - data-format, else the first of data-formats -
+     its frame closed on every page a long list runs over. */
+  @media print {
+    .bibtex-code {
+      overflow-x: visible;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .bibtex > .bibtex-bar {
+      display: none;
+    }
+    /* the caption never stays alone at a page foot: a block, so its keep
+       holds (Chromium ignores it between grid rows) */
+    .bibtex:not([data-variant="inline"]) {
+      display: block;
+      box-decoration-break: clone;
+
+      & > figcaption {
+        break-after: avoid;
+      }
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .bibtex-tab,
     .bibtex-copy,
@@ -5727,6 +5950,40 @@
   }
   .border-layout > .border-layout-east:not(.resizer) {
     border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color);
+  }
+
+  /* -- Fit: a fixed side region sized by its content -------------------
+     data-fit on a fixed region (no resizer): its size is its content's -
+     a tree that grows, a list of states - between --border-layout-fit-min
+     and --border-layout-fit-max (half the layout by default); past the
+     maximum its content scrolls. The side rows and columns are `auto`
+     tracks, which take an item's clamped size: CSS only. The bounds are
+     container units of the layout, so a layout holding a fit region is a
+     size container - it takes its height from outside (a height, a
+     grid cell), never from its content. A panel in it that is minimized
+     or maximized leaves the bounds. */
+  .border-layout:has(> [data-fit]) {
+    container-type: size;
+  }
+  .border-layout
+    > :is(.border-layout-north, .border-layout-south)[data-fit]:not(
+      [data-minimized],
+      [data-maximized],
+      [data-panel-minimized]
+    ) {
+    min-block-size: var(--border-layout-fit-min, 0px);
+    max-block-size: var(--border-layout-fit-max, 50cqh);
+    overflow: auto;
+  }
+  .border-layout
+    > :is(.border-layout-west, .border-layout-east)[data-fit]:not(
+      [data-minimized],
+      [data-maximized],
+      [data-panel-minimized]
+    ) {
+    min-inline-size: var(--border-layout-fit-min, 0px);
+    max-inline-size: var(--border-layout-fit-max, 50cqw);
+    overflow: auto;
   }
 
   /* padding for panes that hold text (optional) */
@@ -9264,6 +9521,15 @@
     font-size: 0.75rem;
     line-height: 1.4;
     color: var(--muted-foreground);
+  }
+
+  /* a print lays the page out at the paper's width: the drawing still has its
+     screen width until chart.js redraws it there, and must not widen the
+     printed page meanwhile - Chromium would shrink the whole print to fit */
+  @media print {
+    .chart {
+      overflow: clip;
+    }
   }
 
   @media (prefers-contrast: more) {
@@ -15815,6 +16081,23 @@
     background-image: none;
   }
 
+  /* -- print: paper does not scroll - a printed diagram takes the print width:
+     diagram.js redraws it in the print layout, and the redraw fits a canvas
+     wider than the figure the way a narrow screen does (zoom, never below
+     0.7). Its screen-sized labels must not widen the printed page meanwhile -
+     Chromium would shrink the whole print to fit. VERIFIED: (Chromium page.pdf
+     probe 2026-10-12) the wire label layer at its screen geometry widened the
+     print layout through the figure's clip; size containment on it stops
+     that, clip and paint containment do not. */
+  @media print {
+    .diagram {
+      overflow: clip;
+    }
+    .diagram-wire-labels {
+      contain: size;
+    }
+  }
+
   /* -- accessibility -------------------------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .diagram *,
@@ -16176,17 +16459,20 @@
   }
 
   /* -- Aspect ratios (or set aspect-ratio / a height yourself) -------- */
+  .diff[data-ratio] {
+    aspect-ratio: var(--_ratio);
+  }
   .diff[data-ratio="16/9"] {
-    aspect-ratio: 16 / 9;
+    --_ratio: 16 / 9;
   }
   .diff[data-ratio="4/3"] {
-    aspect-ratio: 4 / 3;
+    --_ratio: 4 / 3;
   }
   .diff[data-ratio="1/1"] {
-    aspect-ratio: 1;
+    --_ratio: 1;
   }
   .diff[data-ratio="3/4"] {
-    aspect-ratio: 3 / 4;
+    --_ratio: 3 / 4;
   }
 
   /* -- Knob variants ---------------------------------------------------- */
@@ -16266,6 +16552,43 @@
   .diff[data-orientation="vertical"][data-variant="line"]::after {
     height: 3px;
     width: auto;
+  }
+
+  /* -- Print: paper has no divider to drag ------------------------------------
+     Both sides print in full, side by side - one above the other when the
+     figure is vertical - each with its label and the figure's ratio; the
+     divider line and the knob go. The split a reader dragged to on screen
+     would print only part of each side. */
+  @media print {
+    .diff {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      overflow: visible;
+      background-color: transparent;
+
+      &::after {
+        display: none;
+      }
+      &[data-ratio] {
+        aspect-ratio: auto;
+      }
+      &[data-orientation="vertical"] {
+        grid-template-columns: 1fr;
+      }
+    }
+    .diff > :is(.diff-item-1, .diff-item-2) {
+      grid-area: auto;
+      aspect-ratio: var(--_ratio, auto);
+      border-radius: var(--radius-lg);
+      background-color: var(--muted);
+    }
+    /* as specific as the RTL clip (0,4,0), later in the sheet */
+    .diff:is(*, :dir(rtl):not([data-orientation="vertical"])) > .diff-item-1 {
+      clip-path: none;
+    }
+    .diff > .diff-range {
+      display: none;
+    }
   }
 
   /* -- Accessibility ------------------------------------------------------ */
@@ -16625,6 +16948,14 @@
         &:hover {
           border-color: var(--doc-comments-color);
           background: color-mix(in oklab, var(--doc-comments-flash) 25%, var(--muted));
+        }
+        /* a link to another comment: a solid edge on the card surface - it goes to a card, it flashes no text */
+        &.doc-comments-link {
+          border-style: solid;
+          background: var(--card);
+          &:hover {
+            background: var(--muted);
+          }
         }
       }
 
@@ -23983,6 +24314,154 @@
   }
 }
 
+/* ── components/invoice/invoice.css ── */
+@layer components {
+  /* -- Invoice: the body of an invoice, usually inside a Letter's .letter-body - the title, the invoice data
+     (.invoice-meta), the line items (a Table, .invoice-items) and the totals the runtime writes
+     (.invoice-totals: net sum, tax per rate, amount due), then payment terms as plain text. Numbers are
+     tabular and end-aligned; in print the items table runs over pages with its header repeated (Table's
+     print rules) and the totals stay with the last rows. */
+  /* a block, not a grid: Chromium sizes grid rows before it paginates, so the header row the items table
+     repeats on later pages pushed the table past the totals, which then overlapped its last rows */
+  .invoice {
+    display: block;
+    font-variant-numeric: tabular-nums;
+
+    & > * + * {
+      margin-block-start: 1rem;
+    }
+  }
+  /* zero specificity: the parts lose their own block margins (a dl's, a p's), the 1rem above wins */
+  :where(.invoice) > :where(*) {
+    margin-block: 0;
+  }
+  .invoice-title {
+    font-size: 1.25em;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .invoice-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.5rem 1.25rem;
+
+    & dt {
+      font-size: 0.8em;
+      color: var(--muted-foreground);
+    }
+    & dd {
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+  .invoice-items {
+    font-size: 0.9em;
+
+    /* compact rows: an A4 page holds about twice the lines of a default Table */
+    & :is(.table-head, .table-cell) {
+      padding: 0.4rem 0.6rem;
+    }
+
+    & :is(.table-head, .table-cell)[data-invoice="description"],
+    & .table-cell:not([data-invoice]) {
+      white-space: normal;
+    }
+    & [data-invoice] {
+      white-space: nowrap;
+    }
+  }
+  .invoice-totals {
+    inline-size: min(100%, 22rem);
+    margin-inline-start: auto;
+    border-collapse: collapse;
+    font-size: 0.9em;
+
+    & :is(th, td) {
+      padding: 0.3rem 0;
+      font-weight: 400;
+      text-align: start;
+    }
+    & td {
+      padding-inline-start: 1.5rem;
+      text-align: end;
+      white-space: nowrap;
+    }
+    & .invoice-tax :is(th, td) {
+      color: var(--muted-foreground);
+    }
+    & .invoice-total :is(th, td) {
+      padding-block-start: 0.5rem;
+      border-block-start: 2px solid var(--foreground);
+      font-weight: 650;
+      font-size: 1.1em;
+    }
+  }
+  /* a value that is no number (data-price="12,50"): the row is marked, the reason replaces the totals */
+  .invoice-items tr[data-invalid] > td {
+    background-color: color-mix(in oklch, var(--destructive) 12%, transparent);
+  }
+  .invoice-totals .invoice-error th {
+    color: var(--destructive);
+    font-weight: 600;
+  }
+  .invoice-note {
+    font-size: 0.9em;
+    color: var(--muted-foreground);
+  }
+  /* the payment code (a QR Code the runtime fills with an EPC transfer) beside the payment terms; the runtime
+     hides the code when there is no transfer to scan (not in euro, nothing due) */
+  .invoice-payment {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    break-inside: avoid;
+
+    & > .qr-code[hidden] {
+      display: none;
+    }
+    & > .invoice-note {
+      flex: 1 1 16rem;
+      margin: 0;
+    }
+  }
+
+  @media print {
+    /* the totals never start a page alone: with the items table's data-keep-last they take its last
+       three rows along (VERIFIED: tmp/print-table-probe2.ts - break-before: avoid on the block after the
+       table pulls rows over) */
+    .invoice-totals {
+      break-before: avoid;
+      break-inside: avoid;
+    }
+    .invoice-meta {
+      break-inside: avoid;
+    }
+    .invoice :is(.invoice-tax :is(th, td), .invoice-meta dt, .invoice-note) {
+      color: #444;
+    }
+    .invoice .invoice-total :is(th, td) {
+      border-block-start-color: #000;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .invoice-totals .invoice-total :is(th, td) {
+      border-block-start-color: CanvasText;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .invoice :is(.invoice-meta dt, .invoice-note, .invoice-totals .invoice-tax :is(th, td)) {
+      color: var(--foreground);
+    }
+  }
+}
+
 /* ── components/job-details/job-details.css ── */
 /* -- Job Details (website · Company) --------------------------------------
    Describes one position's responsibilities, requirements, and benefits - with a summary that stays in view and the apply action. */
@@ -24560,6 +25039,396 @@
     .label:has(+ [data-disabled]) {
       opacity: 1;
       color: GrayText;
+    }
+  }
+}
+
+/* ── components/letter/letter.css ── */
+@layer components {
+  /* -- Letter: a business letter on an A4 sheet in the DIN 5008 geometry (form B, the default, or form A),
+     or a US business letter (data-form="us", US Letter, block format). On screen the letter is a sheet at
+     paper scale - 210mm wide, at least A4 tall (aspect-ratio grows with the content); below 175mm of text
+     width (the sheet minus its 25mm / 10mm margins) the parts stack in reading order. In print the page
+     itself is the sheet: page 1 has no top margin, so the letterhead, the address field and the
+     information block sit at their measured distances from the top edge; later pages carry "page n of m".
+
+     Measurements (form B; form A is 18mm higher): letterhead 45mm (A 27mm); address field from 45mm (A 27mm),
+     85mm from 20mm on the left - its text on the 25mm line - with a 17.7mm return / notice zone (A 12.7mm)
+     above a 27.3mm address zone; information block from 125mm, 50mm down (A 32mm), 75mm wide; fold marks
+     at 105mm and 210mm (A 87mm, 192mm), the hole mark at 148.5mm. VERIFIED: (gesetze-bayern.de BayAGO
+     Anlage 2) letterhead 45mm / 27mm and form A 18mm higher than form B; the other figures come from
+     secondary DIN 5008 summaries and agree with that shift - HYPOTHESIS until checked against DIN 5008:2020.
+     VERIFIED: (tmp/letter-geometry-probe.ts, Chromium 153 PDF) with these page margins the address text
+     prints at 25.0mm / 50.2mm and the information block at 125.0mm / 50.5mm: nothing is wider than the page
+     area (the block ends at 200mm, the right page margin is 10mm - the text keeps 20mm by its own margin),
+     so Chromium does not shrink the page to fit. */
+  .letter {
+    --_letter-head: 98.46mm;
+    --_letter-letterhead: 45mm;
+    --_letter-address: 45mm;
+    --_letter-notice: 17.7mm;
+    --_letter-info: 50mm;
+    --_letter-fold-1: 105mm;
+    --_letter-fold-2: 210mm;
+
+    container: letter / inline-size;
+    box-sizing: border-box;
+    inline-size: 100%;
+    max-inline-size: 210mm;
+    aspect-ratio: 210 / 297;
+    margin-inline: auto;
+    /* the page margins: 25mm on the left, 10mm on the right (the information block reaches 200mm) -
+       proportionally less on a narrower sheet, never under 1rem */
+    padding-block: 0 20mm;
+    padding-inline: clamp(1rem, 11.9%, 25mm) clamp(1rem, 4.76%, 10mm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-md);
+    font-family: var(--font-sans);
+    font-size: 11pt;
+    line-height: 1.4;
+    text-align: start;
+
+    & address {
+      font-style: normal;
+    }
+  }
+  /* zero specificity: the parts' own spacing - and a component's inside the body (an invoice) - wins */
+  :where(.letter) :where(p, address, dl, dd, h1, ul, ol) {
+    margin: 0;
+  }
+  /* a US business letter: US Letter (8.5 x 11in), 1in margins, block format - the date before the inside
+     address, everything in reading order */
+  .letter[data-form="us"] {
+    max-inline-size: 8.5in;
+    aspect-ratio: 8.5 / 11;
+    padding-block: 0 1in;
+    padding-inline: clamp(1rem, 11.76%, 1in);
+
+    & .letter-head {
+      padding-block-start: clamp(1.5rem, 11.76%, 1in);
+    }
+    & .letter-info {
+      order: 1;
+    }
+    & .letter-address {
+      order: 2;
+    }
+  }
+  .letter[data-form="a"] {
+    --_letter-head: 80.46mm;
+    --_letter-letterhead: 27mm;
+    --_letter-address: 27mm;
+    --_letter-notice: 12.7mm;
+    --_letter-info: 32mm;
+    --_letter-fold-1: 87mm;
+    --_letter-fold-2: 192mm;
+  }
+
+  /* -- the parts, in reading order (a narrow sheet, and the US letter) -- */
+  .letter-head {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: 1.5rem 1.75rem;
+  }
+  .letter-brand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    font-size: 9pt;
+    line-height: 1.35;
+    color: var(--muted-foreground);
+
+    & :is(strong, .letter-name) {
+      display: block;
+      font-size: 14pt;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      color: var(--foreground);
+    }
+  }
+  .letter-address {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+  }
+  .letter-return {
+    font-size: 7pt;
+    line-height: 1.2;
+    color: var(--muted-foreground);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 2px;
+  }
+  .letter-recipient {
+    line-height: 1.3;
+  }
+  .letter-info {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.1rem 1rem;
+    align-content: start;
+    font-size: 9pt;
+    line-height: 1.35;
+
+    & > div {
+      display: contents;
+    }
+    & dt {
+      color: var(--muted-foreground);
+    }
+    & dd {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  .letter-subject {
+    margin-block-end: 1.2em;
+    font-size: inherit;
+    font-weight: 650;
+    line-height: inherit;
+  }
+  /* a block, not a grid: Chromium sizes grid rows before it paginates - a table in the body that repeats its
+     header on later pages (an invoice) would overlap what follows it */
+  .letter-body {
+    & > * + * {
+      margin-block-start: 0.85em;
+    }
+    & > p {
+      text-wrap: pretty;
+    }
+  }
+  .letter-signature {
+    margin-block-start: 0.4em;
+    /* room for the handwritten signature above the typed name */
+    & > :last-child {
+      display: block;
+      margin-block-start: 2.6em;
+    }
+  }
+  .letter-enclosures {
+    margin-block-start: 1.6em;
+    font-size: 10pt;
+
+    & > :first-child {
+      font-weight: 600;
+    }
+  }
+  .letter-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.5rem;
+    margin-block-start: 2.5rem;
+    padding-block-start: 0.6rem;
+    border-block-start: 1px solid var(--border);
+    font-size: 7.5pt;
+    line-height: 1.35;
+    color: var(--muted-foreground);
+  }
+
+  /* -- the DIN 5008 sheet: from 175mm of text width (a full sheet on screen, every printed A4 page) the
+     head becomes the measured top of page 1 - letterhead, address field and information block placed in
+     mm from the sheet's top edge and the 25mm line; the subject starts below them. -- */
+  @container letter (min-width: 174mm) {
+    .letter:not([data-form="us"]) {
+      & .letter-head {
+        position: relative;
+        display: block;
+        block-size: var(--_letter-head);
+        padding: 0;
+
+        /* the fold and hole marks at the sheet's left edge (21mm left of the 25mm line); print draws
+           them in the page margin instead (@page letter:first) */
+        &::before {
+          content: "";
+          position: absolute;
+          inset-block-start: 0;
+          inset-inline-start: -21mm;
+          inline-size: 7mm;
+          block-size: calc(var(--_letter-fold-2) + 1px);
+          background:
+            linear-gradient(var(--muted-foreground), var(--muted-foreground)) 0 var(--_letter-fold-1) / 5mm 1px
+              no-repeat,
+            linear-gradient(var(--muted-foreground), var(--muted-foreground)) 0 148.5mm / 7mm 1px no-repeat,
+            linear-gradient(var(--muted-foreground), var(--muted-foreground)) 0 var(--_letter-fold-2) / 5mm 1px
+              no-repeat;
+          pointer-events: none;
+        }
+      }
+      &[data-marks="none"] .letter-head::before {
+        content: none;
+      }
+      & .letter-brand {
+        position: absolute;
+        inset-block-start: calc(var(--_letter-letterhead) * 0.28);
+        inset-inline: 0;
+      }
+      & .letter-address {
+        position: absolute;
+        inset-block-start: var(--_letter-address);
+        inset-inline-start: 0;
+        inline-size: 80mm;
+        block-size: calc(var(--_letter-notice) + 27.3mm);
+        grid-template-rows: var(--_letter-notice) 27.3mm;
+        gap: 0;
+      }
+      & .letter-return {
+        align-self: end;
+        padding-block-end: 1.5mm;
+      }
+      & .letter-info {
+        position: absolute;
+        inset-block-start: var(--_letter-info);
+        inset-inline-start: 100mm;
+        inline-size: 75mm;
+      }
+      /* the text column keeps 20mm to the right edge (the sheet's own margin is 10mm) */
+      & > :not(.letter-head) {
+        margin-inline-end: 10mm;
+      }
+    }
+  }
+
+  /* -- print: the page is the sheet. Page 1 has no top margin (the head is measured from the top edge);
+     later pages keep 25mm for "page n of m" (in the language of the letter), and the fold and hole marks
+     are drawn in page 1's left margin, where nothing in the page itself may go (Chromium clips the page
+     area). VERIFIED: (tmp/letter-geometry-probe.ts, Chromium 153) the lang-named labels print from page 2
+     only, an SVG in the left margin box draws the marks at 104.4 / 148.1 / 209.5mm of the PDF, and a
+     custom property set on :root reaches a margin box (the page context inherits from the root element -
+     so a document with letters sets the labels and the marks there). Print only: a :has() on the root is
+     re-checked on DOM changes anywhere in the page, and on screen nothing reads these. */
+  @media print {
+    :root {
+      --_letter-page: "Page";
+      --_letter-of: "of";
+      --_letter-marks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='25mm' height='297mm' viewBox='0 0 25 297'%3E%3Cg stroke='%23000' stroke-width='0.25'%3E%3Cline x1='4' x2='9' y1='105' y2='105'/%3E%3Cline x1='4' x2='11' y1='148.5' y2='148.5'/%3E%3Cline x1='4' x2='9' y1='210' y2='210'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    :root:has(.letter:lang(de)) {
+      --_letter-page: "Seite";
+      --_letter-of: "von";
+    }
+    :root:has(.letter[data-form="a"]) {
+      --_letter-marks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='25mm' height='297mm' viewBox='0 0 25 297'%3E%3Cg stroke='%23000' stroke-width='0.25'%3E%3Cline x1='4' x2='9' y1='87' y2='87'/%3E%3Cline x1='4' x2='11' y1='148.5' y2='148.5'/%3E%3Cline x1='4' x2='9' y1='192' y2='192'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    :root:has(.letter[data-marks="none"]) {
+      --_letter-marks: none;
+    }
+  }
+
+  @page letter {
+    size: A4;
+    margin: 25mm 10mm 20mm 25mm;
+
+    @top-right {
+      content: var(--_letter-page) " " counter(page) " " var(--_letter-of) " " counter(pages);
+      padding-inline-end: 10mm;
+      color: #000;
+      font: 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page letter:first {
+    margin-top: 0;
+
+    @top-right {
+      content: none;
+    }
+    @left-top {
+      content: var(--_letter-marks);
+      vertical-align: top;
+    }
+  }
+  @page letter-us {
+    size: letter;
+    margin: 1in;
+
+    @top-right {
+      content: var(--_letter-page) " " counter(page) " " var(--_letter-of) " " counter(pages);
+      color: #000;
+      font: 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page letter-us:first {
+    @top-right {
+      content: none;
+    }
+  }
+
+  @media print {
+    /* a document that holds a letter prints on white - a dark page background would print around it.
+       !important: a page's own unlayered background (the full-screen page sets one) outranks any layered rule */
+    :root:has(.letter),
+    :root:has(.letter) > body {
+      background: #fff !important;
+    }
+    /* black on white, whatever the screen theme: a letter is paper (accents keep their tokens) */
+    .letter {
+      page: letter;
+      inline-size: auto;
+      max-inline-size: none;
+      aspect-ratio: auto;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background-color: #fff;
+      color: #000;
+      color-scheme: light;
+      print-color-adjust: exact;
+    }
+    .letter[data-form="us"] {
+      page: letter-us;
+      /* the page's 1in margins replace the screen sheet's padding */
+      padding: 0;
+
+      & .letter-head {
+        padding-block-start: 0;
+      }
+    }
+    .letter .letter-head::before {
+      content: none;
+    }
+    .letter :is(.letter-head, .letter-subject) {
+      break-after: avoid;
+    }
+    .letter :is(.letter-signature, .letter-enclosures, .letter-footer) {
+      break-inside: avoid;
+    }
+    /* the closing stays with the last lines of the text */
+    .letter-signature {
+      break-before: avoid;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .letter {
+      border-color: CanvasText;
+      box-shadow: none;
+    }
+    .letter .letter-head::before {
+      forced-color-adjust: none;
+      background:
+        linear-gradient(CanvasText, CanvasText) 0 var(--_letter-fold-1) / 5mm 1px no-repeat,
+        linear-gradient(CanvasText, CanvasText) 0 148.5mm / 7mm 1px no-repeat,
+        linear-gradient(CanvasText, CanvasText) 0 var(--_letter-fold-2) / 5mm 1px no-repeat;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .letter {
+      border-color: var(--foreground);
+    }
+    .letter :is(.letter-return, .letter-brand, .letter-info dt, .letter-footer) {
+      color: var(--foreground);
     }
   }
 }
@@ -25847,6 +26716,471 @@
   }
 }
 
+/* ── components/media-timeline/media-timeline.css ── */
+/* -- Media Timeline component --------------------------------- */
+/* A ruler and rows of regions and markers over the length of a   */
+/* media, a playhead, a column of row labels. Everything sits in  */
+/* percent of the content box: 100% wide when it fits, the length */
+/* times data-zoom px when zoomed (then it scrolls). The ticks    */
+/* are gradients - no element per second. A loop region is drawn  */
+/* in the search-highlight yellow (literal: the theme has no      */
+/* highlight token). Tints mix in oklab: a white --card written   */
+/* oklch(1 0 0) carries hue 0, and an oklch mix walks the hue     */
+/* toward it (a yellow row came out pink).                        */
+@layer components {
+  .media-timeline {
+    --media-timeline-lane: 1.5rem;
+    --media-timeline-ruler: 1.5rem;
+    --media-timeline-labels: 6.5rem;
+    --media-timeline-row: var(--muted);
+    --media-timeline-loop: oklch(0.88 0.16 95);
+    --media-timeline-loop-edge: oklch(0.72 0.16 85);
+
+    display: grid;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+
+    & > script {
+      display: none;
+    }
+  }
+
+  .media-timeline-header {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    padding: 0.25rem 0.375rem 0.25rem 0.75rem;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .media-timeline-title {
+    margin-inline-end: auto;
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* a readout: m:ss in even digits */
+  .media-timeline-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* time runs left to right in any writing direction */
+  .media-timeline-body {
+    display: grid;
+    grid-template-columns: var(--media-timeline-labels) minmax(0, 1fr);
+    direction: ltr;
+    user-select: none;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .media-timeline-labels {
+    border-inline-end: 1px solid var(--border);
+  }
+
+  .media-timeline-label {
+    display: flex;
+    align-items: center;
+    block-size: calc(var(--lanes, 1) * var(--media-timeline-lane) + 0.5rem);
+    padding-inline: 0.75rem 0.5rem;
+    overflow: hidden;
+    border-block-end: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &[data-ruler] {
+      block-size: var(--media-timeline-ruler);
+      font-size: 0.6875rem;
+    }
+
+    /* an annotation row (for): indented under a guide, so it reads as part of the row below it */
+    &[data-for] {
+      padding-inline-start: 1.25rem;
+      background-image: linear-gradient(to right, var(--border) 1px, transparent 1px);
+      background-position: 0.75rem 0;
+      background-repeat: no-repeat;
+      font-size: 0.6875rem;
+    }
+
+    /* a content row: a film or a sound glyph before its label */
+    &:is([data-kind="video"], [data-kind="audio"])::before {
+      flex: none;
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+      margin-inline-end: 0.375rem;
+      background-color: currentColor;
+      content: "";
+      mask: var(--media-timeline-glyph) center / contain no-repeat;
+    }
+
+    &[data-kind="video"] {
+      --media-timeline-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='M7 3v18M3 7.5h4M3 12h18M3 16.5h4M17 3v18M17 7.5h4M17 16.5h4'/%3E%3C/svg%3E");
+    }
+
+    &[data-kind="audio"] {
+      --media-timeline-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 10v3M6 6v11M10 3v18M14 8v7M18 5v13M22 10v3'/%3E%3C/svg%3E");
+    }
+
+    &:last-child {
+      border-block-end: 0;
+    }
+  }
+
+  .media-timeline-scroll {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    outline: none;
+    scrollbar-width: thin;
+    touch-action: pan-x pan-y;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--ring);
+    }
+  }
+
+  .media-timeline-content {
+    --media-timeline-major: 1;
+    --media-timeline-minor: 1;
+
+    position: relative;
+    min-inline-size: 100%;
+    cursor: pointer;
+    background-image: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--border) 70%, transparent) 1px,
+      transparent 1px
+    );
+    background-size: calc(100% / var(--media-timeline-major)) 100%;
+  }
+
+  /* the ruler: one row per scale (one by default); a drag on it draws a loop */
+  .media-timeline-ruler {
+    cursor: ew-resize;
+  }
+
+  /* label ticks across a scale row, finer ticks along its foot */
+  .media-timeline-scale {
+    position: relative;
+    block-size: var(--media-timeline-ruler);
+    border-block-end: 1px solid var(--border);
+    background-color: var(--card);
+    background-image:
+      linear-gradient(to right, var(--muted-foreground) 1px, transparent 1px),
+      linear-gradient(to right, var(--border) 1px, transparent 1px);
+    background-position:
+      0 0,
+      0 100%;
+    background-repeat: repeat-x;
+    background-size:
+      calc(100% / var(--media-timeline-major)) 40%,
+      calc(100% / var(--media-timeline-minor)) 35%;
+  }
+
+  .media-timeline-tick {
+    position: absolute;
+    inset-block-start: 0;
+    padding-inline-start: 0.25rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    line-height: var(--media-timeline-ruler);
+    white-space: nowrap;
+  }
+
+  .media-timeline-track {
+    position: relative;
+    block-size: calc(var(--lanes, 1) * var(--media-timeline-lane) + 0.5rem);
+    border-block-end: 1px solid var(--border);
+
+    &:last-child {
+      border-block-end: 0;
+    }
+  }
+
+  /* a row's background (background in the data): a tint of it, label and row alike */
+  :is(.media-timeline-track, .media-timeline-label)[data-background] {
+    background-color: color-mix(in oklab, var(--media-timeline-row) 14%, var(--card));
+  }
+
+  /* an item's colour: a theme colour by name */
+  :is(.media-timeline-item, .media-timeline-marker, .media-timeline-card) {
+    --media-timeline-color: var(--chart-1);
+
+    &[data-color="chart-2"] {
+      --media-timeline-color: var(--chart-2);
+    }
+    &[data-color="chart-3"] {
+      --media-timeline-color: var(--chart-3);
+    }
+    &[data-color="chart-4"] {
+      --media-timeline-color: var(--chart-4);
+    }
+    &[data-color="chart-5"] {
+      --media-timeline-color: var(--chart-5);
+    }
+    &[data-color="primary"] {
+      --media-timeline-color: var(--primary);
+    }
+    &[data-color="secondary"] {
+      --media-timeline-color: var(--secondary-foreground);
+    }
+    &[data-color="accent"] {
+      --media-timeline-color: var(--accent-foreground);
+    }
+    &[data-color="muted"] {
+      --media-timeline-color: var(--muted-foreground);
+    }
+    &[data-color="destructive"] {
+      --media-timeline-color: var(--destructive);
+    }
+  }
+
+  .media-timeline-item {
+    position: absolute;
+    inset-block-start: calc(0.25rem + var(--lane, 0) * var(--media-timeline-lane));
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    block-size: calc(var(--media-timeline-lane) - 0.25rem);
+    min-inline-size: 2px;
+    padding-inline: 0.375rem;
+    overflow: hidden;
+    border-inline-start: 2px solid var(--media-timeline-color);
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in oklab, var(--media-timeline-color) 20%, var(--card));
+    font-size: 0.75rem;
+    white-space: nowrap;
+
+    & > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &[data-active] {
+      background-color: color-mix(in oklab, var(--media-timeline-color) 42%, var(--card));
+      box-shadow: inset 0 0 0 1px var(--media-timeline-color);
+    }
+  }
+
+  .media-timeline-marker {
+    position: absolute;
+    inset-block: 0;
+    border-inline-start: 2px solid var(--media-timeline-color);
+
+    & > span {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 0.25rem;
+      translate: 0 -50%;
+      color: var(--muted-foreground);
+      font-size: 0.6875rem;
+      white-space: nowrap;
+    }
+  }
+
+  /* the loop region: a yellow band over the ruler, a tint over the rows, its ends as edges */
+  .media-timeline-loop {
+    position: absolute;
+    inset-block: 0;
+    z-index: 1;
+    box-sizing: border-box;
+    border-inline: 2px solid var(--media-timeline-loop-edge);
+    background-color: color-mix(in oklab, var(--media-timeline-loop) 18%, transparent);
+    pointer-events: none;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &::before {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 0;
+      block-size: calc(var(--media-timeline-scales, 1) * (var(--media-timeline-ruler) + 1px));
+      background-color: color-mix(in oklab, var(--media-timeline-loop) 70%, transparent);
+      content: "";
+    }
+  }
+
+  .media-timeline-playhead {
+    position: absolute;
+    inset-block: 0;
+    z-index: 2;
+    inline-size: 2px;
+    margin-inline-start: -1px;
+    background-color: var(--primary);
+    pointer-events: none;
+
+    &::before {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 50%;
+      inline-size: 0.625rem;
+      block-size: 0.5rem;
+      translate: -50% 0;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background-color: var(--primary);
+      content: "";
+    }
+  }
+
+  /* an info outlet's card: a stripe of the item's colour */
+  .media-timeline-card {
+    border-inline-start: 3px solid var(--media-timeline-color);
+  }
+
+  .media-timeline-card-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+
+    & > :last-child {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .media-timeline-fields {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    font-size: 0.8125rem;
+
+    & > div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    & dt {
+      color: var(--muted-foreground);
+    }
+
+    & dd {
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+      text-align: end;
+    }
+  }
+
+  /* an events outlet: the moments in time order, the time a link that seeks there, the latest one passed marked */
+  .media-timeline-events {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .media-timeline-event {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-wrap: pretty;
+
+    &[aria-current] {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  .media-timeline-event-time {
+    flex: none;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: none;
+    color: var(--primary);
+    cursor: pointer;
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-decoration: var(--link-text-decoration, underline);
+    text-underline-offset: 2px;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .media-timeline-loop {
+      border-inline-width: 3px;
+    }
+
+    .media-timeline-item {
+      border: 1px solid var(--media-timeline-color);
+      border-inline-start-width: 3px;
+    }
+
+    .media-timeline-label,
+    .media-timeline-tick,
+    .media-timeline-marker > span {
+      color: var(--foreground);
+    }
+  }
+
+  @container (inline-size < 28rem) {
+    .media-timeline {
+      --media-timeline-labels: 4.5rem;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .media-timeline,
+    .media-timeline-item {
+      border-color: CanvasText;
+    }
+
+    .media-timeline-item[data-active] {
+      outline: 2px solid Highlight;
+    }
+
+    .media-timeline-playhead,
+    .media-timeline-playhead::before {
+      background-color: Highlight;
+      forced-color-adjust: none;
+    }
+
+    .media-timeline-loop {
+      border-color: Highlight;
+    }
+
+    .media-timeline-event[aria-current] {
+      outline: 2px solid Highlight;
+    }
+  }
+}
+
 /* ── components/menubar/menubar.css ── */
 /* -- Menubar component ----------------------------------------------- */
 /* A horizontal bar of menu triggers - File, Edit, View - each opening a
@@ -25962,150 +27296,6 @@
       forced-color-adjust: none;
       background: Highlight;
       color: HighlightText;
-    }
-  }
-}
-
-/* ── components/mermaid/mermaid.css ── */
-/* -- Mermaid component ---------------------------------------------- */
-
-@layer components {
-  @keyframes mermaid-wait {
-    from {
-      background-position: 150% 0;
-    }
-    to {
-      background-position: -50% 0;
-    }
-  }
-  @keyframes mermaid-reveal {
-    to {
-      color: var(--muted-foreground);
-      user-select: auto;
-    }
-  }
-
-  /* figure.mermaid-diagram > pre.mermaid (the source) [+ .mermaid-output,
-     the rendered SVG, + output.mermaid-error]. Without JavaScript - or
-     before the renderer arrives - the source reads as a code block; once
-     rendered, the SVG replaces it visually (the source stays in the DOM:
-     every re-render starts from it). Everything inside the SVG is themed
-     through Mermaid's themeVariables (mermaid.ts), not from here. */
-  .mermaid-diagram {
-    margin: 0;
-    display: grid;
-    align-content: start;
-    gap: 0.75rem;
-    min-width: 0;
-    max-width: 100%;
-
-    & > pre.mermaid {
-      margin: 0;
-      padding: 1rem;
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      background-color: var(--muted);
-      color: var(--muted-foreground);
-      font-family: var(--font-mono);
-      font-size: 0.8125rem;
-      line-height: 1.6;
-      white-space: pre;
-      tab-size: 2;
-    }
-
-    /* rendered: the SVG takes the stage, the source stays for re-renders */
-    &[data-state="rendered"] > pre.mermaid {
-      display: none;
-    }
-
-    /* no flash of the source: before the first render (not initialized yet,
-       or pending) the source box is a quiet placeholder - same box, text
-       hidden, a soft shimmer. Without scripting nothing hides; an error
-       shows the source; and if no renderer ever arrives the text appears
-       after 4s anyway. */
-    @media (scripting: enabled) {
-      &:is(:not([data-init]), [data-state="pending"]) > pre.mermaid {
-        color: transparent;
-        user-select: none;
-        background-image: linear-gradient(
-          90deg,
-          transparent,
-          color-mix(in oklch, var(--foreground) 6%, transparent),
-          transparent
-        );
-        background-size: 200% 100%;
-        animation:
-          mermaid-wait 1.4s linear infinite,
-          mermaid-reveal 0s 4s forwards;
-      }
-    }
-
-    & > figcaption {
-      font-size: 0.8125rem;
-      color: var(--muted-foreground);
-      text-align: center;
-      text-wrap: balance;
-    }
-  }
-
-  /* the SVG scales down to the column, never up past its natural size;
-     very wide diagrams scroll inside the figure instead of the page */
-  .mermaid-output {
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    display: flex;
-    justify-content: center;
-
-    & svg {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
-  }
-
-  /* a malformed diagram: the source stays, the message is token-styled */
-  .mermaid-error {
-    display: block;
-    padding: 0.625rem 0.875rem;
-    border: 1px solid color-mix(in oklch, var(--destructive) 45%, transparent);
-    border-radius: var(--radius-md);
-    background-color: color-mix(in oklch, var(--destructive) 8%, var(--background));
-    color: var(--destructive);
-    /* the parse error keeps its lines and a caret under the position - a
-       monospace face without ligatures keeps the caret aligned */
-    font-family: var(--font-mono);
-    font-variant-ligatures: none;
-    font-size: 0.75rem;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-
-  /* -- Accessibility / print ------------------------------------------ */
-  @media (forced-colors: active) {
-    .mermaid-output svg {
-      forced-color-adjust: auto;
-    }
-    .mermaid-error {
-      border-color: CanvasText;
-      color: CanvasText;
-    }
-  }
-
-  @media print {
-    .mermaid-output {
-      overflow: visible;
-    }
-    .mermaid-diagram {
-      break-inside: avoid;
-    }
-  }
-
-  /* no shimmer for reduced motion - the 4s fallback reveal stays */
-  @media (prefers-reduced-motion: reduce) {
-    .mermaid-diagram > pre.mermaid {
-      animation-name: none, mermaid-reveal;
     }
   }
 }
@@ -26788,6 +27978,35 @@
       animation: none;
     }
     /* the diff shows its end state at once */
+    .mockup-code[data-animate] > pre,
+    .mockup-code[data-animate] > pre > code {
+      animation: none;
+    }
+  }
+}
+
+/* paper cannot scroll: printed, every line wraps as with data-wrap, and the
+   window prints its colors as designed - a print dialog drops background
+   graphics by default, which left the terminal's light text pale on white
+   paper. An animated diff prints its end state. */
+@media print {
+  @layer components {
+    .mockup-code {
+      overflow-x: visible;
+      grid-template-columns: minmax(0, 1fr);
+      print-color-adjust: exact;
+    }
+    .mockup-code > pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      padding-inline-start: calc(var(--_px) + 3.25ch);
+      text-indent: -3.25ch;
+    }
+    .mockup-code > pre:not([data-prefix]):not(:where([data-numbers] > pre)) {
+      padding-inline-start: var(--_px);
+      text-indent: 0;
+    }
+    .mockup-code > pre[data-cursor] > code::after,
     .mockup-code[data-animate] > pre,
     .mockup-code[data-animate] > pre > code {
       animation: none;
@@ -30835,6 +32054,21 @@
       color: var(--muted-foreground);
     }
 
+    /* -- Density: data-density on the .panel ---------------------------------
+       The card's scale moves the body's padding (compact 2/3, spacious 4/3);
+       the title bar follows: compact 2rem (the 1.75rem tools fill it),
+       comfortable the unsized 2.5rem, spacious 3rem. */
+    &:where([data-density="compact"]) {
+      --_bar: 2rem;
+
+      & > .panel-header {
+        padding-block: 0.125rem;
+      }
+    }
+    &:where([data-density="spacious"]) {
+      --_bar: 3rem;
+    }
+
     /* -- Minimized: the title bar only ------------------------------------- */
     &[data-minimized] {
       & > :not(.panel-header) {
@@ -30925,6 +32159,12 @@
      the layout stays the containing block */
   .border-layout[data-panel-maximized] > :has(.panel[data-maximized]) {
     z-index: 20;
+  }
+  /* a panel that is its region (no resizer around it) leaves its grid area:
+     an absolutely positioned grid item takes its grid area as its containing
+     block - placed auto, it takes the layout's padding box */
+  .border-layout[data-panel-maximized] > .panel[data-maximized] {
+    grid-area: auto;
   }
 
   /* -- In a border layout: the region frames the panel ---------------------- */
@@ -31157,6 +32397,20 @@
       background: var(--muted);
     }
   }
+  /* a figure or table that may split (data-break-inside="allow") is a
+     block: in a grid Chromium ignores the caption's keep, and a caption stood
+     alone at the head of the next column (Typography's caption rule) - the
+     grid's gap becomes a margin */
+  .paper :is(.paper-figure, .paper-table)[data-break-inside="allow"] {
+    display: block;
+
+    & > :not(:first-child) {
+      margin-block-start: 0.75rem;
+    }
+    & > figcaption:last-child {
+      break-before: avoid;
+    }
+  }
   .paper-teaser > figcaption,
   .paper-figure > figcaption,
   .paper-table-caption {
@@ -31170,6 +32424,27 @@
     & b {
       color: var(--foreground);
       font-weight: 600;
+    }
+  }
+
+  /* a numbered display equation: the formula (a Formula Rendering element) centered in the column, its number at
+     the end edge - a reference writes the number in the text, like a section's .paper-num */
+  .paper-equation {
+    display: grid;
+    grid-template-columns: minmax(2.5rem, 1fr) minmax(0, auto) minmax(2.5rem, 1fr);
+    align-items: center;
+    margin-block: 1.25rem;
+
+    & > :first-child {
+      grid-column: 2;
+      min-inline-size: 0;
+    }
+    & > .paper-equation-num {
+      grid-column: 3;
+      justify-self: end;
+      color: var(--muted-foreground);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
   }
 
@@ -31312,11 +32587,16 @@
   .paper-section > .paper-wide {
     margin-inline: calc((100% - min(var(--paper-wide), 100cqi - 2rem)) / 2);
   }
+  /* the number ends in a no-break space (`1&nbsp;`): Chromium titles a PDF bookmark with the laid-out text, and
+     a space after the number's flex item is dropped there ("1Contribution"). The word spacing takes the space's
+     width back (1ch - the number is monospace), so the flex gap alone still sets the distance; a number written
+     without it reads as before. */
   .paper-num {
     color: var(--muted-foreground);
     font-family: var(--font-mono);
     font-size: 0.75em;
     font-weight: 500;
+    word-spacing: -1ch;
   }
 
   /* -- findings: a row of numbered cards ------------------------------------- */
@@ -31482,6 +32762,21 @@
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     line-height: 1.65;
+  }
+  /* a record that may split wraps: it cannot scroll and split at once
+     (Typography's caption rule) */
+  .paper [data-break-inside="allow"] .paper-code {
+    overflow-x: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  /* paper has no horizontal scroll: in print a long line wraps */
+  @media print {
+    .paper-code {
+      overflow-x: visible;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
   }
   .paper-quote {
     margin: 0;
@@ -31714,6 +33009,170 @@
       font-family: var(--font-sans);
       font-size: 1.375rem;
       font-weight: 600;
+    }
+  }
+
+  /* -- print profiles: DIN A4 or US Letter ----------------------------------
+     data-print="a4|letter" names the page the paper prints on: the sheet and
+     its margins (@page), and a print scale (--paper-print-scale, 0.8): the
+     16px body prints at 9.6pt, and two columns of 18rem fit the 170mm text
+     width of A4 - at scale 1 the sections print in one column. Named pages
+     apply only where an element names them, so all.css never changes the
+     print dialog of a page without a profile. data-binding="inner" mirrors
+     the margins for a bound duplex print: the inner margin (left on a right
+     page, right on a left page) is 10mm (0.5in) wider than the outer one,
+     with the same text width. The page names carry the paper- prefix -
+     @page names are global, like keyframes. Every page but the title page
+     carries its number at the foot, centered in the bottom margin (a page
+     margin box: the paper itself cannot reach the margin).
+     VERIFIED: (paper.e2e "print") a printed PDF is A4 / Letter without a
+     format argument; the bound pages' text shifts by the margin difference;
+     (Chromium PDF probe 2026-10-12) the margin box prints a number on every
+     page of a named page but its first. */
+  @page paper-a4 {
+    size: A4;
+    margin: 20mm;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-a4:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-a4-inner {
+    size: A4;
+    margin: 20mm;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-a4-inner:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-a4-inner:right {
+    margin-left: 25mm;
+    margin-right: 15mm;
+  }
+  @page paper-a4-inner:left {
+    margin-left: 15mm;
+    margin-right: 25mm;
+  }
+  @page paper-letter {
+    size: letter;
+    margin: 1in;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-letter:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-letter-inner {
+    size: letter;
+    margin: 1in;
+
+    @bottom-center {
+      content: counter(page);
+      color: var(--muted-foreground);
+      font: 500 8pt var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+  @page paper-letter-inner:first {
+    @bottom-center {
+      content: none;
+    }
+  }
+  @page paper-letter-inner:right {
+    margin-left: 1.25in;
+    margin-right: 0.75in;
+  }
+  @page paper-letter-inner:left {
+    margin-left: 0.75in;
+    margin-right: 1.25in;
+  }
+  .paper[data-print="a4"] {
+    page: paper-a4;
+
+    &[data-binding="inner"] {
+      page: paper-a4-inner;
+    }
+  }
+  .paper[data-print="letter"] {
+    page: paper-letter;
+
+    &[data-binding="inner"] {
+      page: paper-letter-inner;
+    }
+  }
+  /* A printed page has one text width, so the grid's tracks (content, wide,
+     full) carry nothing there: in print the paper is a block and its parts
+     fill the text width, the grid gap turned into margins. A grid would also
+     lose text - VERIFIED: (Chromium PDF probe 2026-10-12) a two-column section
+     that is a grid item and runs over several pages set its last lines as a
+     one-line row of columns past the second, clipped at the page edge; as a
+     block every section flows. Its colors print as designed (exact): a print
+     dialog drops background graphics by default, and the text chosen for a
+     fill - a chat bubble, a code window, an epistemic tag, a filled button -
+     printed pale grey on white paper. */
+  /* The keeps: a heading stays with the block below it, the teaser with its
+     caption, the key numbers in one piece, the end ornament and the footer
+     with what precedes them. The page margin is the top space, and a tighter
+     gap lets the title block and its teaser share the first page. The table
+     of contents stays on screen: its links do nothing on paper, and Chromium
+     prints no page number a line could point to - VERIFIED: (Chromium 153 PDF
+     probe 2026-10-12) a target-counter() after a contents line printed nothing. */
+  @media print {
+    .paper[data-print] {
+      --paper-gap: 1.75rem;
+
+      zoom: var(--paper-print-scale, 0.8);
+      display: block;
+      padding-block-start: 0;
+      print-color-adjust: exact;
+
+      & > :not(.typeset-break) + :not(.typeset-break) {
+        margin-block-start: var(--paper-gap);
+      }
+      & .paper-section > .paper-wide {
+        margin-inline: 0;
+      }
+      /* a caption never breaks alone to the next column or page: a figure
+         prints whole (one that may split keeps its caption - below); BibTeX
+         keeps its top caption with its list itself */
+      & figure:not([data-break-inside="allow"], .bibtex) {
+        break-inside: avoid;
+      }
+      & > .paper-toc {
+        display: none;
+      }
+      & > :is(.paper-abstract, .paper-bibtex) > h2 {
+        break-after: avoid;
+      }
+      & :is(.paper-teaser, .paper-numbers, .paper-equation) {
+        break-inside: avoid;
+      }
+      & > :is(.separator, .paper-footer) {
+        break-before: avoid;
+      }
     }
   }
 
@@ -46070,6 +47529,42 @@
       font-size: 0.8125rem;
     }
   }
+
+  /* -- Print: a long table runs over pages. VERIFIED: (tmp/print-table-probe.ts + -probe2.ts, Chromium 153, A4)
+     the header row repeats on every page and in every column by itself - inside this scroll wrapper too; the
+     footer row repeats as well, so a total printed on every page: tfoot prints once, at the end, unless the
+     table asks for a running footer (data-repeat-footer); a row taller than the rest of its page split over
+     two, so rows stay whole unless data-break-inside="allow" lets them split; data-keep-last keeps the last
+     three rows with the footer and with what follows the table (a totals block that sets break-before: avoid
+     pulls them along), so the end never lands alone on a page. */
+  @media print {
+    .table-container {
+      /* Chromium fragments a scroll box in print anyway; another engine may clip it */
+      overflow: visible;
+      /* each page's piece of the table keeps its frame */
+      box-decoration-break: clone;
+    }
+    .table-container:has(> .table[data-sticky-header]) {
+      overflow: visible;
+      max-height: none;
+    }
+    .table[data-sticky-header] thead .table-head {
+      position: static;
+    }
+    .table:not([data-repeat-footer]) > tfoot {
+      display: table-row-group;
+
+      & > tr:first-child {
+        break-before: avoid;
+      }
+    }
+    .table:not([data-break-inside="allow"]) tr {
+      break-inside: avoid;
+    }
+    .table[data-keep-last] > tbody:last-of-type > tr:nth-last-child(-n + 3) {
+      break-before: avoid;
+    }
+  }
 }
 
 /* Accessibility: suppress motion for users who request it (REQUIRED for all
@@ -50967,6 +52462,11 @@
     font-size: 0.875rem;
     line-height: 1.5;
   }
+  /* code reads in the theme's monospace stack, not the browser's default (a
+     Courier on macOS) - zero specificity, so a component's own face wins */
+  :where(code, kbd, samp, pre) {
+    font-family: var(--font-mono);
+  }
 }
 
 @layer components {
@@ -51187,6 +52687,7 @@
        data-ligatures="classic"  discretionary and historical ligatures,
                                  old-style figures - where the font has them
        data-leading="tight|loose"  compact or airy lines, the tracking matched
+       data-orphans / data-widows="3|4"  lines kept together at a break (2)
      .typeset-span spans every column (a heading, a figure). Figures, tables,
      quotes, groups and Separator breaks keep --typeset-gap from the text -
      the Separator component draws the break, this block only spaces it.
@@ -51214,7 +52715,11 @@
     orphans: 2;
     widows: 2;
 
-    & > p {
+    /* a .typeset-keep is a wrapper, not a block: what it holds is spaced as
+       if it sat in the setting itself (each rule names both paths - :is()
+       would raise the direct path's specificity to the wrapper path's) */
+    & > p,
+    & > .typeset-keep > p {
       margin-block: 0 1em;
     }
     /* every block keeps the same distance from the text around it */
@@ -51231,24 +52736,94 @@
         .diagram,
         .mockup-code,
         .table-container
+      ),
+    &
+      > .typeset-keep
+      > :is(
+        figure,
+        table,
+        blockquote,
+        pre,
+        hr,
+        .separator,
+        .typeset-group,
+        .chart,
+        .diagram,
+        .mockup-code,
+        .table-container
       ) {
       margin-block: var(--typeset-gap);
     }
     /* a figure spans the measure (the browser indents it 40px by default) */
-    & > :is(figure, blockquote) {
+    & > :is(figure, blockquote),
+    & > .typeset-keep > :is(figure, blockquote) {
       margin-inline: 0;
     }
-    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
+    & > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4),
+    & > .typeset-keep > :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
       margin-block: var(--typeset-gap) 0.5em;
     }
-    & > :first-child {
+    & > :first-child,
+    & > .typeset-keep:first-child > :first-child {
       margin-block-start: 0;
     }
     & :is(figure, blockquote, table, pre, .typeset-group) {
       break-inside: avoid;
     }
+    /* a long table or listing may split: kept whole, it would leave the rest
+       of a page empty, and one taller than a page splits anyway. Every piece
+       keeps the frame (clone): sliced, the first piece lost its bottom border
+       and corners at the column foot, the next its top. A figure that may
+       split lets the listing inside it split too, and its caption stays with
+       the last piece.
+       VERIFIED: (Chromium PDF probe 2026-10-12) a framed listing split over
+       two columns and over two pages prints a closed, rounded frame on each. */
+    & [data-break-inside="allow"],
+    & [data-break-inside="allow"] :is(figure, blockquote, table, pre, .typeset-group, .mockup-code) {
+      break-inside: auto;
+      box-decoration-break: clone;
+    }
+    /* ... and a listing that may split does not scroll sideways: Chromium
+       never breaks a scroll container, so the listing moved whole and left its
+       caption behind - wrap its lines instead (pre-wrap, a Code Mockup's
+       data-wrap). VERIFIED: (Chromium probe 2026-10-12) overflow-x: auto kept
+       the paper's closing report whole at 900px, overflow-x: visible split it. */
+    & :is(pre, .mockup-code):is([data-break-inside="allow"], [data-break-inside="allow"] *) {
+      overflow-x: visible;
+    }
+    /* a caption never breaks alone to the next column or page - on screen,
+       where the columns balance, as in print. A figure that may split is a
+       block, its caption kept to the last piece (below) or the first (above).
+       VERIFIED: (Chromium, screen and PDF 2026-10-12) in a grid figure the
+       keep did nothing and the caption stood alone at the head of the next
+       column; in block flow the break moved up into the listing and two lines
+       went along with the caption. A figure group keeps its grid. */
+    & figure[data-break-inside="allow"]:not(.typeset-group) {
+      display: block;
+
+      & > figcaption:last-child {
+        break-before: avoid;
+      }
+      & > figcaption:first-child {
+        break-after: avoid;
+      }
+    }
     & :is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) {
       break-after: avoid;
+    }
+    /* the lines a paragraph keeps together at a column or page break: at the
+       foot of the column (orphans) and at the head of the next (widows) */
+    &[data-orphans="3"] {
+      orphans: 3;
+    }
+    &[data-orphans="4"] {
+      orphans: 4;
+    }
+    &[data-widows="3"] {
+      widows: 3;
+    }
+    &[data-widows="4"] {
+      widows: 4;
     }
     & .typeset-span {
       column-span: all;
@@ -51256,7 +52831,8 @@
     /* the columns below a spanning heading or figure start level: the first
        block keeps no top margin - across the column break it cannot collapse
        into the spanner's, so a subheading sat lower than the text beside it */
-    &[data-columns] > .typeset-span + :not(.typeset-span) {
+    &[data-columns] > .typeset-span + :not(.typeset-span),
+    &[data-columns] > .typeset-span + .typeset-keep > :first-child {
       margin-block-start: 0;
     }
 
@@ -51299,16 +52875,21 @@
       --typeset-tracking: 0.01em;
     }
 
-    &[data-indent] > p {
+    &[data-indent] > p,
+    &[data-indent] > .typeset-keep > p {
       margin-block: 0;
     }
-    &[data-indent] > p + p {
+    &[data-indent] > p + p,
+    &[data-indent] > .typeset-keep > p + p,
+    &[data-indent] > p + .typeset-keep > p:first-child,
+    &[data-indent] > p + .typeset-break + p {
       text-indent: var(--typeset-indent);
     }
     /* text-indent inherits into an inline-block, which then indents ITS first line: a badge,
        a key cap or an epistemic tag at the start of an indented paragraph grew a blank
        inside its left edge */
-    &[data-indent] > p :where(.badge, kbd, .paper-tag) {
+    &[data-indent] > p :where(.badge, kbd, .paper-tag),
+    &[data-indent] > .typeset-keep > p :where(.badge, kbd, .paper-tag) {
       text-indent: 0;
     }
 
@@ -51351,6 +52932,14 @@
      opened wide gaps between its words. Flush start and unhyphenated - zero
      specificity, so an alignment the heading sets itself still wins */
   :where(.typeset[data-align="justify"]) :where(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4) {
+    text-align: start;
+    text-align-last: auto;
+    hyphens: manual;
+  }
+  /* a verbatim record keeps its spacing: justified, a wrapped line of program
+     output opened wide gaps between its words, and hyphenation split its
+     identifiers (pa-per.mdx) - a pre is set flush start, unhyphenated */
+  :where(.typeset[data-align="justify"]) :where(pre) {
     text-align: start;
     text-align-last: auto;
     hyphens: manual;
@@ -51513,6 +53102,88 @@
     }
   }
 
+  /* -- Breaks and keeps (Umbruch): where a printed page or column ends -----
+     .typeset-break is an empty marker that forces a break before the next
+     block: data-break="page" (the default), "column" (inside data-columns),
+     "left" / "right" (the next page is a left / right page - duplex). It
+     breaks in print only: a screen has no pages, and a column break in a
+     balanced screen column would push the rest of the text into the last
+     column. In print it is a zero-height box carrying break-before -
+     display: none would remove the box and the break with it. On screen it
+     is hidden; [data-show-breaks] on an ancestor shows every marker as a
+     labelled dashed line, an authoring aid.
+     .typeset-keep keeps its content in one column and on one page (avoid
+     covers both - avoid-page would still let a column break split it).
+     VERIFIED: (typography.e2e "breaks and keeps", paper.e2e "print") the
+     computed breaks in print media; a printed PDF with a page and a column
+     break; a zero-height break in the paper's grid leaves no gap at the top
+     of the new page. */
+  .typeset-break {
+    display: none;
+  }
+  @media screen {
+    [data-show-breaks] .typeset-break {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+      margin-block: 1em;
+      color: var(--muted-foreground);
+      font: 500 0.6875rem/1 var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+
+      &::before {
+        content: "Page break";
+      }
+      &[data-break="column"]::before {
+        content: "Column break";
+      }
+      &[data-break="left"]::before {
+        content: "Page break - left page";
+      }
+      &[data-break="right"]::before {
+        content: "Page break - right page";
+      }
+      &::after {
+        content: "";
+        flex: 1;
+        border-block-start: 1px dashed currentColor;
+      }
+    }
+  }
+  @media print {
+    .typeset-break {
+      display: block;
+      block-size: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      visibility: hidden;
+      break-before: page;
+
+      &[data-break="column"] {
+        break-before: column;
+      }
+      &[data-break="left"] {
+        break-before: left;
+      }
+      &[data-break="right"] {
+        break-before: right;
+      }
+    }
+    /* a printed column rule runs straight through a spanning heading or
+       figure that starts a page - so a setting with spanners prints without it.
+       VERIFIED: (Chromium PDF probe 2026-10-12) a column-span: all block that a
+       natural page break puts at the top of a page is crossed by the rule; an
+       opaque background hides it only while background graphics print. */
+    .typeset[data-rule]:has(> .typeset-span) {
+      column-rule-style: none;
+    }
+  }
+  .typeset-keep {
+    break-inside: avoid;
+  }
+
   /* -- Accessibility ------------------------------------------ */
 
   @media (prefers-contrast: more) {
@@ -51535,7 +53206,8 @@
       outline: 1px solid var(--border);
     }
 
-    .muted {
+    .muted,
+    [data-show-breaks] .typeset-break {
       color: var(--foreground);
     }
 
@@ -51706,6 +53378,275 @@
     }
     .mk-use-case-outcomes svg {
       color: CanvasText;
+    }
+  }
+}
+
+/* ── components/video/video.css ── */
+/* -- Video component ------------------------------------------ */
+/* A native <video> in a frame of its ratio, a captions overlay   */
+/* the runtime fills from the active cue, and a control bar of    */
+/* Buttons, Sliders and readouts (data-video-action / -output).   */
+/* data-variant="overlay" lays the bar over the picture; it hides */
+/* while the video plays and nothing points at it.                */
+@layer components {
+  .video {
+    --video-ratio: 16 / 9;
+
+    position: relative;
+    display: grid;
+    margin: 0;
+    inline-size: 100%;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+  }
+
+  .video-frame {
+    position: relative;
+    aspect-ratio: var(--video-ratio);
+    background-color: #000;
+
+    & > video {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: contain;
+    }
+  }
+
+  /* the active cue - empty when captions are off or nothing is said */
+  .video-captions {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0.75rem;
+    inline-size: fit-content;
+    max-inline-size: 90%;
+    margin-inline: auto;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-sm);
+    background-color: rgb(0 0 0 / 0.75);
+    color: #fff;
+    font-size: clamp(0.8125rem, 3.4cqi, 1.375rem);
+    line-height: 1.35;
+    text-align: center;
+    white-space: pre-line;
+    text-wrap: balance;
+    pointer-events: none;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .video-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    padding: 0.375rem 0.5rem;
+    border-block-start: 1px solid var(--border);
+
+    & > [data-video-action="seek"] {
+      flex: 1;
+      min-inline-size: 3rem;
+    }
+
+    & > [data-video-action="volume"] {
+      inline-size: 4.5rem;
+    }
+  }
+
+  /* a readout: m:ss in even digits, so the bar does not jitter */
+  .video-time {
+    min-inline-size: 2.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  /* a toggle with two icons shows the first when off, the second when on (play / pause, sound / muted) */
+  [data-video-action][aria-pressed="false"] > :nth-child(2),
+  [data-video-action][aria-pressed="true"] > :nth-child(1):not(:only-child) {
+    display: none;
+  }
+
+  /* a control the page may not use (full screen in a frame without it) - over the Button's own display */
+  [data-video-action][hidden] {
+    display: none;
+  }
+
+  /* a rate select keeps its own width in the row (a Select is as wide as its box) */
+  select[data-video-action="rate"] {
+    flex: none;
+    inline-size: auto;
+  }
+
+  /* the sound button with a vertical volume in a panel above it (below with data-side="bottom"), shown while the
+     pointer or the focus is on either - the row keeps one button's width */
+  .video-volume {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .video-volume-panel {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    margin-block-end: 0.375rem;
+    padding: 0.75rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--popover);
+    box-shadow: var(--shadow-md);
+    translate: -50% 0;
+    visibility: hidden;
+    opacity: 0;
+
+    /* the gap to the button belongs to the hover */
+    &::after {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-start: 100%;
+      block-size: 0.5rem;
+      content: "";
+    }
+
+    /* a vertical range's block axis is horizontal: its length is its height */
+    & > .slider[data-orientation="vertical"] {
+      height: 5.5rem;
+    }
+
+    .video-volume:is(:hover, :focus-within) > & {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .video-volume[data-side="bottom"] > & {
+      inset-block: 100% auto;
+      margin-block: 0.375rem 0;
+
+      &::after {
+        inset-block: auto 100%;
+      }
+    }
+  }
+
+  /* the bar over the picture: a dark scrim, light controls */
+  .video[data-variant="overlay"] {
+    & > .video-controls {
+      --foreground: #fff;
+      --muted-foreground: rgb(255 255 255 / 0.8);
+      --accent: rgb(255 255 255 / 0.16);
+      --accent-foreground: #fff;
+      --primary: #fff;
+      --primary-foreground: #000;
+      --input: rgb(255 255 255 / 0.35);
+
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: 0;
+      padding-block-start: 1.5rem;
+      border-block-start: 0;
+      background-image: linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.72));
+      color: #fff;
+    }
+
+    & .video-volume-panel {
+      border-color: rgb(255 255 255 / 0.2);
+      background-color: rgb(0 0 0 / 0.78);
+    }
+
+    /* the captions sit above the bar while it shows */
+    &:is(:hover, :focus-within, :not([data-state-name="playing"])) .video-captions {
+      inset-block-end: 3.25rem;
+    }
+
+    &[data-state-name="playing"]:not(:hover, :focus-within) > .video-controls {
+      opacity: 0;
+    }
+  }
+
+  /* full screen: the picture takes what the bar leaves */
+  .video:fullscreen {
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+    background-color: #000;
+
+    & > .video-frame {
+      flex: 1;
+      aspect-ratio: auto;
+    }
+  }
+
+  /* a narrow player keeps play, the scrubber, the time and the sound */
+  @container (inline-size < 26rem) {
+    .video-controls > [data-video-action="volume"],
+    .video-controls > [data-video-output="duration"],
+    .video-controls > [data-video-action="skip"] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .video[data-variant="overlay"] {
+      & > .video-controls {
+        transition: opacity 0.2s ease;
+      }
+
+      & .video-captions {
+        transition: inset-block-end 0.2s ease;
+      }
+    }
+
+    .video-volume-panel {
+      transition:
+        opacity 0.15s ease,
+        visibility 0.15s allow-discrete;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .video-captions {
+      background-color: #000;
+    }
+
+    .video-time {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .video {
+      border-color: CanvasText;
+    }
+
+    .video-captions {
+      border: 1px solid CanvasText;
+      background-color: Canvas;
+      color: CanvasText;
+      forced-color-adjust: none;
+    }
+
+    .video[data-variant="overlay"] > .video-controls {
+      background: Canvas;
+      opacity: 1;
+    }
+
+    .video-volume-panel {
+      border-color: CanvasText;
+      background-color: Canvas;
     }
   }
 }
