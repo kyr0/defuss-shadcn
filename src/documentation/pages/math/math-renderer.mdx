@@ -1,0 +1,273 @@
+---
+title: "Formula Rendering"
+description: "Formula Rendering component - TeX typeset by the official KaTeX renderer, loaded on the first formula: visual HTML plus MathML, a source that stays readable, selectable terms from a notation tree, strict handling of untrusted TeX."
+slug: "math-renderer"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="math-renderer" title="Formula Rendering" component="math-renderer">
+  Mathematics as TeX. Write the formula into a <code>&lt;code class="math-renderer-source"&gt;</code> inside a <code>.math-renderer</code>; the official KaTeX renderer typesets it into visual HTML plus MathML for screen readers. The component ships no KaTeX code - the first formula on a page loads the pinned build once, a page without one never does. Without JavaScript the TeX reads as code. A notation tree makes single terms selectable, and a table or a legend can link to them.
+</PageHeader>
+
+<SkillPanel component="math-renderer">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure&gt;</code> (display) or <code>&lt;span&gt;</code> (inline) holding the TeX in a <code>&lt;code&gt;</code> - progressive enhancement from readable source to typeset math with a MathML twin.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/MathML" title="the formula as math for assistive technology"><code>MathML</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" title="KaTeX loads only when a formula exists"><code>import()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="the selection's description and the error"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" title="the selected term"><code>aria-pressed</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.math-renderer</code>
+    <code>.math-renderer-source</code>
+    <code>.math-renderer-notation</code>
+    <code>.math-renderer-output</code>
+    <code>.math-renderer-terms</code>
+    <code>.math-renderer-error</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="katex@0.19.0" description="Official renderer (KaTeX/KaTeX, MIT) - dist/katex.mjs + katex.min.css via jsDelivr, pinned; fonts load beside the stylesheet" />
+    <Variant name='meta name="math-renderer-module"' description="Self-host: point the loader at your copy of the same build (and math-renderer-css at its stylesheet)" />
+    <Variant name="trust: false" description="Untrusted TeX - no links, images or HTML commands; only the component's own term markers pass" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• KaTeX's MathML is what screen readers speak; the visual HTML is <code>aria-hidden</code></SkillText>
+  <SkillText dense>• Term buttons are one tab stop (arrows move, Escape clears) and report <code>aria-pressed</code></SkillText>
+  <SkillText dense>• The selection is outlined and underlined - not color alone; errors are an <code>&lt;output role="alert"&gt;</code></SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example part label="Formula Rendering"
+<figure class="math-renderer" aria-label="The area of a circle">
+  <code class="math-renderer-source">A = \pi r^2 = \int_0^r 2 \pi t \, dt</code>
+</figure>
+```
+
+```html example part label="Formula Rendering (inline)"
+<span class="math-renderer" data-variant="inline"><code class="math-renderer-source">a</code></span>
+```
+
+```html example label="A display formula" hint="The TeX stays in the code element, hidden once KaTeX typeset it. data-variant='card' puts the formula on a panel; without it, it is plain display math, centered in its column."
+<figure class="math-renderer" data-variant="card" aria-label="The quadratic formula">
+  <code class="math-renderer-source">x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code>
+  <figcaption>The quadratic formula</figcaption>
+</figure>
+```
+
+## Display and inline
+
+<DocText>A display formula is a <code>&lt;figure&gt;</code>: centered, and it scrolls sideways instead of overflowing a narrow column. An inline formula is a <code>&lt;span data-variant="inline"&gt;</code> in the sentence, on its baseline.</DocText>
+
+```html example label="Inline in a sentence, then on its own line" schema="none" previewStyle="align-items:stretch;"
+<p style="max-width: 36rem; line-height: 1.7">
+  A right triangle with legs
+  <span class="math-renderer" data-variant="inline"><code class="math-renderer-source">a</code></span>
+  and
+  <span class="math-renderer" data-variant="inline"><code class="math-renderer-source">b</code></span>
+  has the hypotenuse
+  <span class="math-renderer" data-variant="inline"
+    ><code class="math-renderer-source">c = \sqrt{a^2 + b^2}</code></span
+  >
+  - and the area of a circle of radius
+  <span class="math-renderer" data-variant="inline"><code class="math-renderer-source">r</code></span>
+  is
+</p>
+<figure class="math-renderer" aria-label="The area of a circle">
+  <code class="math-renderer-source">A = \pi r^2 = \int_0^r 2 \pi t \, dt</code>
+</figure>
+```
+
+## Derivations, matrices and cases
+
+<DocText>Everything KaTeX supports: aligned derivations, matrices, piecewise definitions, sums and integrals.</DocText>
+
+```html example label="Aligned, matrix, cases" schema="none" previewStyle="align-items:stretch;"
+<div style="display: grid; gap: 1rem">
+  <figure class="math-renderer" aria-label="Expanding a square">
+    <code class="math-renderer-source"
+      >\begin{aligned} (a+b)^2 &amp;= (a+b)(a+b) \\ &amp;= a^2 + ab + ba + b^2 \\ &amp;= a^2 + 2ab + b^2
+      \end{aligned}</code
+    >
+  </figure>
+  <figure class="math-renderer" aria-label="A rotation matrix">
+    <code class="math-renderer-source"
+      >R(\theta) = \begin{pmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{pmatrix}</code
+    >
+  </figure>
+  <figure class="math-renderer" aria-label="The absolute value">
+    <code class="math-renderer-source"
+      >|x| = \begin{cases} x &amp; \text{if } x \ge 0 \\ -x &amp; \text{if } x &lt; 0 \end{cases}</code
+    >
+  </figure>
+</div>
+```
+
+## Selectable terms
+
+<DocText>A <code>script.math-renderer-notation</code> (JSON) describes the formula as a tree; every node with an <code>id</code> is one selectable occurrence. Click a term - in the formula, on its button or in the table - and all three show it. Terms with a <code>description</code> get a button (one tab stop: arrows move, Enter selects, Escape clears) and the description is announced. A table row, a legend entry or any element with <code>data-math-for</code> and <code>data-math-term</code> is linked to the term. Raw TeX is selectable only as a whole: the component never guesses a term from text.</DocText>
+
+```html example label="A formula and its symbol table, linked" schema="none" previewStyle="align-items:stretch;"
+<figure class="math-renderer" id="variance" aria-label="The sample variance">
+  <code class="math-renderer-source">s^2 = \frac{\sum (x_i - m)^2}{n - 1}</code>
+  <script type="application/json" class="math-renderer-notation">
+    {
+      "kind": "sequence",
+      "children": [
+        {
+          "kind": "power",
+          "id": "s2",
+          "description": "s² - the sample variance",
+          "base": { "kind": "symbol", "value": "s" },
+          "exponent": { "kind": "number", "value": "2" }
+        },
+        { "kind": "operator", "value": "=" },
+        {
+          "kind": "fraction",
+          "numerator": {
+            "kind": "sequence",
+            "children": [
+              { "kind": "symbol", "value": "sum" },
+              {
+                "kind": "power",
+                "id": "dev",
+                "description": "the squared deviations from the mean",
+                "base": {
+                  "kind": "group",
+                  "delimiter": "parentheses",
+                  "child": {
+                    "kind": "sequence",
+                    "children": [
+                      {
+                        "kind": "subscript",
+                        "id": "xi",
+                        "description": "xᵢ - one observation",
+                        "base": { "kind": "symbol", "value": "x" },
+                        "subscript": { "kind": "symbol", "value": "i" }
+                      },
+                      { "kind": "operator", "value": "-" },
+                      { "kind": "symbol", "value": "m", "id": "m", "description": "m - the mean" }
+                    ]
+                  }
+                },
+                "exponent": { "kind": "number", "value": "2" }
+              }
+            ]
+          },
+          "denominator": {
+            "kind": "sequence",
+            "id": "dof",
+            "description": "n - 1 - the degrees of freedom",
+            "children": [
+              { "kind": "symbol", "value": "n" },
+              { "kind": "operator", "value": "-" },
+              { "kind": "number", "value": "1" }
+            ]
+          }
+        }
+      ]
+    }
+  </script>
+  <figcaption>The sample variance - select a term</figcaption>
+</figure>
+<table class="table" style="max-width: 32rem; margin-inline: auto">
+  <thead
+    ><tr><th scope="col">Symbol</th><th scope="col">Meaning</th></tr></thead
+  >
+  <tbody>
+    <tr data-math-for="variance" data-math-term="s2"><td>s²</td><td>the sample variance</td></tr>
+    <tr data-math-for="variance" data-math-term="xi"><td>xᵢ</td><td>one of the n observations</td></tr>
+    <tr data-math-for="variance" data-math-term="m"><td>m</td><td>their mean</td></tr>
+    <tr data-math-for="variance" data-math-term="dof"><td>n - 1</td><td>the degrees of freedom</td></tr>
+  </tbody>
+</table>
+```
+
+<DocText>The <code>math-select</code> event (bubbles) carries the selected ids, what they stand for (<code>semanticIds</code>) and their descriptions - a chart, a diagram or a paragraph can follow it. <code>df$.shadcn.mathRenderer.select(el, ids)</code> selects from code.</DocText>
+
+## Copy as TeX or MathML
+
+<DocText><code>df$.shadcn.mathRenderer.export(el, 'latex' | 'mathml')</code> returns the clean TeX - without the term markers - or the MathML KaTeX writes for it.</DocText>
+
+```html example label="Export a formula" schema="none" previewStyle="align-items:stretch;"
+<figure class="math-renderer" id="euler" aria-label="Euler's identity">
+  <code class="math-renderer-source">e^{i\pi} + 1 = 0</code>
+</figure>
+<div class="flex gap-2 justify-center mb-3">
+  <button class="btn" type="button" data-variant="outline" data-size="sm" data-export="latex">TeX</button>
+  <button class="btn" type="button" data-variant="outline" data-size="sm" data-export="mathml">MathML</button>
+</div>
+<pre id="euler-out" style="white-space: pre-wrap; font-size: 0.75rem; max-height: 12rem; overflow: auto"></pre>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('[data-export]').on('click', async (e) => {
+      const text = await df$.shadcn.mathRenderer.export('#euler', e.currentTarget.dataset.export);
+      df$('#euler-out').text(text);
+    });
+  });
+</script>
+```
+
+## When the TeX is wrong
+
+<DocText>A formula KaTeX cannot parse keeps its source visible and adds an alert with KaTeX's message. Untrusted commands - <code>\href</code>, <code>\url</code>, <code>\includegraphics</code>, the <code>\html...</code> family - render as unsupported, never as a link or markup.</DocText>
+
+```html example label="A parse error and an untrusted command" schema="none" previewStyle="align-items:stretch;"
+<figure class="math-renderer" aria-label="A formula with a missing brace">
+  <code class="math-renderer-source">\frac{1}{1 + e^{-x}</code>
+</figure>
+<figure class="math-renderer" aria-label="A formula with a link">
+  <code class="math-renderer-source">\href{https://example.com}{x} + 1</code>
+</figure>
+```
+
+## Loading
+
+<DocText>The first formula on a page imports <code>https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.mjs</code> and links its stylesheet - pinned, never <code>@latest</code>. To self-host the same build, copy KaTeX's <code>dist/</code> folder (its fonts sit beside the stylesheet) and point the component at it:</DocText>
+
+```html
+<meta name="math-renderer-module" content="/vendor/katex/katex.mjs" />
+<meta name="math-renderer-css" content="/vendor/katex/katex.min.css" />
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each formula:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the TeX as text (not typeset yet, or reset)</li>
+    <li><code>rendered</code> - typeset by KaTeX; the source stays in the DOM, hidden</li>
+    <li><code>highlighted</code> - typeset, with the terms in <code>config.selected</code> marked</li>
+    <li><code>error</code> - the TeX plus the error message (<code>config.message</code>)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/math-renderer-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/math-renderer.schema.json"><code>math-renderer.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `rendered` | `boolean` | `true`, `false` | `true` | Typeset by KaTeX (unchecking returns to the TeX via `setState('default')`). |
+| `highlighted` | `boolean` | `true`, `false` | `false` | Typeset, with the selected terms marked (`config.selected`). |
+| `error` | `boolean` | `true`, `false` | `false` | The TeX plus an `output role="alert"` message. |
+```
+
+</StatesSection>
+
+<ApiSection component="math-renderer" />
+
+<SourceFiles component="math-renderer" />
+
+</DocPage>

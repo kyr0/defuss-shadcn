@@ -1,0 +1,208 @@
+/*
+ * Formula Rendering (math-renderer): a formula typeset by KaTeX. The TeX source
+ * stays in the DOM - readable code until the typeset output arrives, hidden
+ * after. KaTeX's own stylesheet (loaded with it) sets the math fonts and
+ * metrics; this sheet places the formula, its states and its term selection.
+ */
+@layer components {
+  .math-renderer {
+    display: block;
+    margin: 0;
+    min-inline-size: 0;
+    color: inherit;
+
+    /* the source: readable TeX before (and without) KaTeX */
+    & > .math-renderer-source {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: var(--muted-foreground);
+    }
+    &[data-state="pending"] > .math-renderer-source {
+      opacity: 0.6;
+    }
+
+    /* KaTeX's output: a display formula scrolls sideways instead of overflowing its column */
+    & > .math-renderer-output {
+      display: block;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      padding-block: 0.125rem;
+    }
+    & .katex-display {
+      margin: 0.25em 0;
+    }
+
+    & > figcaption {
+      margin-block-start: 0.5rem;
+      color: var(--muted-foreground);
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      text-align: center;
+    }
+
+    /* selectable terms: a hover outline, the selection outlined and underlined (not color alone) */
+    & [data-df-math-id] {
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background-color 120ms ease;
+    }
+    & [data-df-math-id]:hover {
+      outline: 1px dashed var(--ring);
+      outline-offset: 1px;
+    }
+    & [data-df-math-id][data-selected] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+
+    /* the term buttons: one tab stop, the pressed term marked */
+    & > .math-renderer-terms {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.375rem;
+      margin-block-start: 0.75rem;
+    }
+    & .math-renderer-term {
+      appearance: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--background);
+      color: var(--foreground);
+      padding: 0.25rem 0.625rem;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      line-height: 1.25rem;
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &[aria-pressed="true"] {
+        border-color: var(--ring);
+        background: var(--accent);
+        color: var(--accent-foreground);
+        text-decoration: underline;
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+    & > .math-renderer-description {
+      display: block;
+      margin-block-start: 0.5rem;
+      font-family: var(--font-serif);
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      text-align: center;
+      &:empty {
+        display: none;
+      }
+    }
+
+    & > .math-renderer-error {
+      display: block;
+      margin-block-start: 0.5rem;
+      color: var(--destructive);
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    /* card: the formula on a panel (demos, teaching) */
+    &[data-variant="card"] {
+      padding: 1rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      color: var(--card-foreground);
+      box-shadow: var(--shadow-xs);
+    }
+
+    /* inline: a formula inside a sentence, on its baseline */
+    &[data-variant="inline"] {
+      display: inline;
+      & > .math-renderer-source {
+        display: inline;
+        font-size: 0.9em;
+      }
+      & > .math-renderer-output {
+        display: inline;
+        overflow: visible;
+        padding: 0;
+      }
+      & > .math-renderer-error {
+        display: inline;
+        margin-inline-start: 0.375rem;
+      }
+    }
+
+    /* typeset: the source steps aside - after the variants, so it wins over their display */
+    &:is([data-state="rendered"], [data-state="highlighted"]) > .math-renderer-source {
+      display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      & [data-df-math-id] {
+        transition: none;
+      }
+    }
+    @media (prefers-contrast: more) {
+      & > .math-renderer-source {
+        color: var(--foreground);
+      }
+      & .math-renderer-term {
+        border-color: var(--foreground);
+      }
+    }
+    @media (forced-colors: active) {
+      & [data-df-math-id][data-selected] {
+        outline-color: Highlight;
+        background: Highlight;
+        color: HighlightText;
+      }
+      & .math-renderer-term[aria-pressed="true"] {
+        border-color: Highlight;
+      }
+    }
+    @media print {
+      & > .math-renderer-terms,
+      & > .math-renderer-description {
+        display: none;
+      }
+      & > .math-renderer-output {
+        overflow: visible;
+      }
+      & [data-df-math-id][data-selected] {
+        background: none;
+        outline: none;
+        text-decoration: none;
+      }
+    }
+  }
+
+  /* outside elements linked to a formula's terms (data-math-for + data-math-term): the linked term is marked */
+  [data-math-for][data-math-term] {
+    cursor: pointer;
+    &[data-selected] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      box-shadow: inset 3px 0 0 var(--ring);
+    }
+    @media (forced-colors: active) {
+      &[data-selected] {
+        outline: 2px solid Highlight;
+      }
+    }
+  }
+}

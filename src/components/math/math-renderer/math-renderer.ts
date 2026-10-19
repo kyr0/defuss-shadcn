@@ -1,0 +1,726 @@
+// -- Formula Rendering (math-renderer) ---------------------------------------
+// A thin adapter around the OFFICIAL KaTeX renderer (KaTeX/KaTeX, MIT) - zero
+// KaTeX bytes ship here. The markup holds the formula's TeX in a <code>; KaTeX
+// typesets it into visual HTML plus MathML for assistive technology, and the
+// source stays in the DOM (hidden once typeset), so without JavaScript - or
+// when KaTeX cannot load - the TeX reads as code.
+//
+// - Lazy: a page without a formula never requests KaTeX. The first formula
+//   imports the pinned ESM build and its stylesheet ONCE (KATEX_URL, or
+//   <meta name="math-renderer-module"> / <meta name="math-renderer-css"> /
+//   df$.shadcn.mathRenderer.load(url, css) to self-host).
+// - Strict: raw TeX is untrusted - KaTeX's `trust` is off, macros are a fresh
+//   object per render (a \gdef cannot leak into the next formula), expansion
+//   and sizes are bounded, and an error is a message, never a broken layout.
+// - Terms: a notation tree (script.math-renderer-notation, JSON) names the
+//   occurrences a reader can select. The adapter serializes it to TeX and
+//   wraps each named term in \htmlData{df-math-id=...} - the ONE command the
+//   trust check accepts, only with an id the tree declares. Operators keep
+//   their TeX spacing (\mathbin / \mathrel around the wrapper). Raw TeX is
+//   selectable only as a whole: the adapter never guesses a term from text.
+// - Selection never re-typesets: it marks the typeset terms, the term
+//   buttons and any outside element linked by data-math-for + data-math-term.
+//
+// State lives ON the element (data-state + the store); the bound `api` is the
+// only state mutator (AGENTS.md "State API").
+
+import {
+  defussGlobals,
+  defussQuery,
+  componentState,
+  bindComponent,
+  mathClone,
+  mathText,
+} from '../../../shared/state-api.js';
+import type { MathNotation, MathSource } from '../../../shared/math.js';
+import type { KatexOptions, TrustContext } from 'katex';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds against its code.
+
+// 'default' = the TeX as text, 'rendered' = typeset, 'highlighted' = typeset
+// with selected terms marked, 'error' = the TeX plus the error message
+const mathRendererStates = ['default', 'rendered', 'highlighted', 'error'];
+
+/** A formula's state: every field optional in setState() (merged into the current one); getState() reports all. */
+export interface MathRendererConfig {
+  /** what renders: `{ format: 'latex', text }`, or `{ format: 'notation', tree }` for selectable terms (default: the authored source) */
+  source?: MathSource;
+  /** the selected terms' ids (ids of the notation tree; raw TeX has none) */
+  selected?: string[];
+  /** the error message shown in 'error' (getState() reports the live one) */
+  message?: string;
+}
+
+/** setState() configs per state. */
+export interface MathRendererStateConfigs {
+  /** The TeX as text, not typeset (before KaTeX arrives, or reset). */
+  default: MathRendererConfig;
+  /** Typeset by KaTeX - visual HTML plus MathML for assistive technology; the source stays in the DOM, hidden. */
+  rendered: MathRendererConfig;
+  /** Typeset, with the selected terms marked (`config.selected`). */
+  highlighted: MathRendererConfig;
+  /** The TeX plus an error message (an output with role="alert") - invalid TeX, or KaTeX could not load. */
+  error: MathRendererConfig;
+}
+
+/** The `math-select` event's detail: the terms now selected. */
+export interface MathSelectDetail {
+  /** the selected occurrence ids */
+  ids: string[];
+  /** what they stand for - the notation's semanticId of each selected term that names one */
+  semanticIds: string[];
+  /** the selected terms' descriptions */
+  descriptions: string[];
+}
+
+/** One named term of a serialized notation tree. */
+export interface MathTerm {
+  /** the occurrence id */
+  id: string;
+  /** what it stands for (shared by every occurrence of one symbol), or null */
+  semanticId: string | null;
+  /** its description - the term button's label (default: the id) */
+  description: string;
+}
+
+/** A notation tree serialized to TeX. */
+export interface MathSerialized {
+  /** clean TeX - what a reader copies */
+  latex: string;
+  /** TeX with the terms wrapped in \htmlData markers - what KaTeX typesets */
+  marked: string;
+  /** the named terms, in source order */
+  terms: MathTerm[];
+}
+
+/** The pinned official KaTeX build the component loads (never @latest). */
+export const KATEX_URL = 'https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.mjs';
+/** The stylesheet of that build; its fonts resolve relative to it. */
+export const KATEX_CSS_URL = 'https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css';
+
+/** The part of the official KaTeX module this component uses. */
+interface KatexLike {
+  /** typeset `tex` into `el` (replacing its content) */
+  render(tex: string, el: HTMLElement, options: KatexOptions): void;
+}
+
+// -- loading ----------------------------------------------------------------
+
+let katexPromise: Promise<KatexLike> | null = null;
+let katexLoaded = '';
+const sheets = new Map<string, Promise<void>>();
+const LOAD_MS = 15_000;
+
+const metaContent = (name: string): string =>
+  ((dfDollar(`meta[name="${name}"]`).get(0) ?? null) as HTMLMetaElement | null)?.content ?? '';
+
+/** the KaTeX stylesheet, linked once per URL; resolves when it applied */
+function sheet(url: string): Promise<void> {
+  const known = sheets.get(url);
+  if (known) return known;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = url;
+  link.dataset.mathRenderer = '';
+  const pending = new Promise<void>((resolve, reject) => {
+    link.onload = () => resolve();
+    link.onerror = () => reject(new Error(`the KaTeX stylesheet could not be loaded from ${url}`));
+  });
+  pending.catch(() => {
+    if (sheets.get(url) === pending) sheets.delete(url);
+    link.remove();
+  });
+  sheets.set(url, pending);
+  dfDollar(document.head).append(link);
+  return pending;
+}
+
+/**
+ * Import the official KaTeX ESM and link its stylesheet - once per URL. Without arguments:
+ * <meta name="math-renderer-module"> / <meta name="math-renderer-css">, else the pinned jsDelivr build.
+ * A failed load can be retried (the next call loads again).
+ * @param url - a module URL to import instead (the same build, self-hosted)
+ * @param css - the stylesheet of that build (its fonts resolve relative to it)
+ * @returns KaTeX, once the module and its stylesheet have loaded
+ */
+function load(url?: string, css?: string): Promise<KatexLike> {
+  const katexUrl = url || metaContent('math-renderer-module') || KATEX_URL;
+  const cssUrl = css || metaContent('math-renderer-css') || KATEX_CSS_URL;
+  if (!katexPromise || katexUrl !== katexLoaded) {
+    katexLoaded = katexUrl;
+    // the ONE vendor import (verify: VENDOR_IMPORTS) - the official renderer, never our code
+    // a microtask later: a failing import is a rejection the state lands on ('error'), never an exception out of
+    // setState (Vitest's browser mode rewrites a dynamic import into a call that throws synchronously in a fixture frame)
+    const pending = Promise.resolve()
+      .then(() => import(/* @vite-ignore */ katexUrl))
+      .then((m) => (m.default ?? m) as KatexLike);
+    pending.catch(() => {
+      if (katexPromise === pending) katexPromise = null;
+    });
+    katexPromise = pending;
+  }
+  const both = Promise.all([katexPromise, sheet(cssUrl)]).then(([katex]) => katex);
+  let timer = 0;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`KaTeX did not load within ${LOAD_MS / 1000} s`)),
+      LOAD_MS,
+    ) as unknown as number;
+  });
+  return Promise.race([both, deadline]).finally(() => clearTimeout(timer));
+}
+
+// -- notation → TeX -----------------------------------------------------------
+
+/** the named symbols a notation may use besides single letters: Greek letters, infinity, sum and product */
+const NAMED = new Set([
+  'alpha',
+  'beta',
+  'gamma',
+  'delta',
+  'epsilon',
+  'theta',
+  'lambda',
+  'mu',
+  'pi',
+  'rho',
+  'sigma',
+  'tau',
+  'phi',
+  'omega',
+  'infty',
+  'sum',
+  'prod',
+]);
+const OPERATORS: Record<string, [string, 'bin' | 'rel']> = {
+  '+': ['+', 'bin'],
+  '-': ['-', 'bin'],
+  pm: ['\\pm', 'bin'],
+  times: ['\\times', 'bin'],
+  '=': ['=', 'rel'],
+  '<': ['<', 'rel'],
+  '>': ['>', 'rel'],
+  le: ['\\le', 'rel'],
+  ge: ['\\ge', 'rel'],
+};
+const DELIMITERS = { parentheses: ['(', ')'], brackets: ['[', ']'], absolute: ['|', '|'] } as const;
+const ID = /^[A-Za-z][A-Za-z0-9_-]{0,63}$/;
+
+/**
+ * Serialize a notation tree to TeX: clean (what a reader copies) and marked (each term with an id wrapped
+ * for selection). Only the tree's own grammar is accepted - single letters or Greek names as symbols,
+ * decimal numbers, escaped text, the listed operators - so no TeX command can be injected through it.
+ * @param tree - the notation (kinds symbol, number, text, operator, sequence, fraction, power, subscript, root, group)
+ * @returns the clean TeX, the marked TeX and the named terms
+ */
+function serialize(tree: MathNotation): MathSerialized {
+  const ids = new Set<string>();
+  const terms: MathTerm[] = [];
+  let nodes = 0;
+  const escape = (v: string): string =>
+    v.replace(
+      /[\\{}$&#_%^~]/g,
+      (c) => ({ '\\': '\\textbackslash{}', '^': '\\textasciicircum{}', '~': '\\textasciitilde{}' })[c] ?? `\\${c}`,
+    );
+  const walk = (n: MathNotation, depth: number): [string, string] => {
+    if (!n || typeof n !== 'object' || ++nodes > 2048 || depth > 64)
+      throw new Error('the notation is too large or too deep');
+    if (n.id !== undefined) {
+      if (typeof n.id !== 'string' || !ID.test(n.id) || ids.has(n.id))
+        throw new Error(`notation id ${JSON.stringify(n.id)}: ids are unique letters, digits, - and _`);
+      ids.add(n.id);
+      if (n.description !== undefined && (typeof n.description !== 'string' || n.description.length > 512))
+        throw new Error(`notation id ${n.id}: the description must be text`);
+      if (n.semanticId !== undefined && (typeof n.semanticId !== 'string' || !ID.test(n.semanticId)))
+        throw new Error(`notation id ${n.id}: semanticId must be an id`);
+      terms.push({ id: n.id, semanticId: n.semanticId ?? null, description: n.description ?? n.id });
+    }
+    let pair: [string, string];
+    let atom: 'bin' | 'rel' | null = null;
+    switch (n.kind) {
+      case 'symbol': {
+        if (typeof n.value !== 'string' || !(/^[A-Za-z]$/.test(n.value) || NAMED.has(n.value)))
+          throw new Error(`symbol ${JSON.stringify(n.value)}: a single Latin letter, a Greek name, infty, sum or prod`);
+        const s = n.value.length === 1 ? n.value : `\\${n.value}`;
+        pair = [s, s];
+        break;
+      }
+      case 'number':
+        if (typeof n.value !== 'string' || !/^-?\d+(\.\d+)?$/.test(n.value))
+          throw new Error(`number ${JSON.stringify(n.value)}`);
+        pair = [n.value, n.value];
+        break;
+      case 'text': {
+        const s = `\\text{${escape(mathText(n.value))}}`;
+        pair = [s, s];
+        break;
+      }
+      case 'operator': {
+        const op = Object.hasOwn(OPERATORS, n.value) ? OPERATORS[n.value] : null;
+        if (!op) throw new Error(`operator ${JSON.stringify(n.value)}`);
+        pair = [op[0], op[0]];
+        atom = op[1];
+        break;
+      }
+      case 'sequence': {
+        if (!Array.isArray(n.children) || !n.children.length) throw new Error('a sequence needs children');
+        const xs = n.children.map((c) => walk(c, depth + 1));
+        pair = [xs.map((x) => x[0]).join(' '), xs.map((x) => x[1]).join(' ')];
+        break;
+      }
+      case 'fraction': {
+        const a = walk(n.numerator, depth + 1);
+        const b = walk(n.denominator, depth + 1);
+        pair = [`\\frac{${a[0]}}{${b[0]}}`, `\\frac{${a[1]}}{${b[1]}}`];
+        break;
+      }
+      case 'power':
+      case 'subscript': {
+        const a = walk(n.base, depth + 1);
+        const b = walk(n.kind === 'power' ? n.exponent : n.subscript, depth + 1);
+        const mark = n.kind === 'power' ? '^' : '_';
+        pair = [`{${a[0]}}${mark}{${b[0]}}`, `{${a[1]}}${mark}{${b[1]}}`];
+        break;
+      }
+      case 'root': {
+        const a = walk(n.radicand, depth + 1);
+        pair = [`\\sqrt{${a[0]}}`, `\\sqrt{${a[1]}}`];
+        break;
+      }
+      case 'group': {
+        const d = Object.hasOwn(DELIMITERS, n.delimiter) ? DELIMITERS[n.delimiter] : null;
+        if (!d) throw new Error(`delimiter ${JSON.stringify(n.delimiter)}`);
+        const a = walk(n.child, depth + 1);
+        pair = [`\\left${d[0]}${a[0]}\\right${d[1]}`, `\\left${d[0]}${a[1]}\\right${d[1]}`];
+        break;
+      }
+      default:
+        throw new Error(`notation kind ${JSON.stringify((n as { kind?: unknown }).kind)}`);
+    }
+    if (n.id === undefined) return pair;
+    // \htmlData makes its content one ordinary atom - \mathbin / \mathrel give an operator its spacing back
+    const wrapped = `\\htmlData{df-math-id=${n.id}}{${pair[1]}}`;
+    return [pair[0], atom === 'bin' ? `\\mathbin{${wrapped}}` : atom === 'rel' ? `\\mathrel{${wrapped}}` : wrapped];
+  };
+  const [latex, marked] = walk(mathClone(tree, 262_144), 0);
+  return { latex: mathText(latex), marked, terms };
+}
+
+/** the TeX a source renders, its marked twin and its terms */
+const serialized = (source: MathSource): MathSerialized =>
+  source.format === 'notation'
+    ? serialize(source.tree)
+    : { latex: mathText(source.text), marked: source.text, terms: [] };
+
+// -- the authored source + config --------------------------------------------
+
+const codeOf = (el: HTMLElement): HTMLElement | null =>
+  (dfDollar(el).children('code.math-renderer-source').get(0) ?? null) as HTMLElement | null;
+const scriptOf = (el: HTMLElement): HTMLScriptElement | null =>
+  (dfDollar(el).children('script.math-renderer-notation').get(0) ?? null) as HTMLScriptElement | null;
+
+/** the source the markup holds: the notation script, else the code's TeX */
+function authoredSource(el: HTMLElement): MathSource {
+  const script = scriptOf(el);
+  if (script) return { format: 'notation', tree: JSON.parse(script.textContent || 'null') as MathNotation };
+  return { format: 'latex', text: codeOf(el)?.textContent ?? '' };
+}
+
+/** a validated copy of a config; throws on a malformed source or an unknown term */
+function checked(config: MathRendererConfig): Required<MathRendererConfig> {
+  const c = mathClone(config);
+  const source = c.source;
+  if (!source || (source.format !== 'latex' && source.format !== 'notation'))
+    throw new Error('source must be { format: "latex", text } or { format: "notation", tree }');
+  const known = new Set(serialized(source).terms.map((t) => t.id));
+  const selected = c.selected ?? [];
+  if (!Array.isArray(selected) || selected.some((id) => typeof id !== 'string' || !known.has(id)))
+    throw new Error(`selected: unknown term(s) ${JSON.stringify(selected)}`);
+  return {
+    source,
+    selected: [...new Set(selected)],
+    message: typeof c.message === 'string' ? c.message.slice(0, 2048) : '',
+  };
+}
+
+// -- markup -------------------------------------------------------------------
+
+const DEFAULT_ERROR = 'This formula could not be rendered.';
+const isInline = (el: HTMLElement): boolean => el.dataset.variant === 'inline';
+
+/**
+ * The markup of a state, on the live element and on render()'s detached copy: data-state, the source in
+ * the <code> (and the notation script), and in 'error' the alert. The typeset output and the term buttons
+ * are KaTeX's / the runtime's (data-ce-chrome) and carry no state of their own.
+ */
+function applyMarkup(el: HTMLElement, name: string, config: MathRendererConfig): void {
+  dfDollar(el).attr('data-state', name === 'default' ? null : name);
+  const source = config.source;
+  if (source) {
+    const script = scriptOf(el);
+    if (source.format === 'notation') {
+      let same = false;
+      try {
+        same = !!script && JSON.stringify(JSON.parse(script.textContent || 'null')) === JSON.stringify(source.tree);
+      } catch {
+        same = false;
+      }
+      if (!same) {
+        const code = codeOf(el);
+        if (code) dfDollar(code).text(serialized(source).latex);
+        let node = script;
+        if (!node) {
+          node = document.createElement('script');
+          node.type = 'application/json';
+          node.className = 'math-renderer-notation';
+          dfDollar(el).append(node);
+        }
+        dfDollar(node).text(JSON.stringify(source.tree));
+      }
+    } else {
+      if (script) dfDollar(script).remove();
+      const code = codeOf(el);
+      if (code && code.textContent !== source.text) dfDollar(code).text(source.text);
+    }
+  }
+  dfDollar(el).children('.math-renderer-error').remove();
+  if (name === 'error') {
+    const out = dfDollar('<output class="math-renderer-error" role="alert" data-ce-chrome></output>').text(
+      config.message || DEFAULT_ERROR,
+    );
+    const code = codeOf(el);
+    if (code) dfDollar(code).after(out);
+    else dfDollar(el).append(out);
+  }
+}
+
+/** the runtime-made host of KaTeX's output (CodeExample chrome, never source) */
+function outputOf(el: HTMLElement): HTMLElement {
+  let out = (dfDollar(el).children('.math-renderer-output').get(0) ?? null) as HTMLElement | null;
+  if (!out) {
+    out = document.createElement('span');
+    out.className = 'math-renderer-output';
+    out.setAttribute('data-ce-chrome', '');
+    const code = codeOf(el);
+    if (code) dfDollar(code).after(out);
+    else dfDollar(el).prepend(out);
+  }
+  return out;
+}
+
+/** drop what typesetting made: the output, the term buttons, the description */
+function clearOutput(el: HTMLElement): void {
+  dfDollar(el).children('.math-renderer-output, .math-renderer-terms, .math-renderer-description').remove();
+  el._formulaKey = '';
+}
+
+/** KaTeX options: bounded, untrusted TeX - only the adapter's own term markers pass the trust check */
+function katexOptions(el: HTMLElement, terms: MathTerm[], marked: boolean): KatexOptions {
+  const ids = new Set(terms.map((t) => t.id));
+  return {
+    displayMode: !isInline(el),
+    output: 'htmlAndMathml',
+    throwOnError: true,
+    strict: 'ignore',
+    maxExpand: 256,
+    maxSize: 20,
+    macros: {},
+    trust: marked
+      ? (context: TrustContext) =>
+          context.command === '\\htmlData' &&
+          Object.keys(context.attributes ?? {}).join() === 'data-df-math-id' &&
+          ids.has(String(context.attributes['data-df-math-id']))
+      : false,
+  };
+}
+
+/** typeset the source (skipped when this exact source is already typeset) and the term buttons */
+function typeset(el: HTMLElement, katex: KatexLike, source: MathSource): void {
+  const key = JSON.stringify([source, isInline(el)]);
+  if (el._formulaKey === key && dfDollar(el).children('.math-renderer-output').get(0)) return;
+  const s = serialized(source);
+  const out = outputOf(el);
+  katex.render(
+    source.format === 'notation' ? s.marked : s.latex,
+    out,
+    katexOptions(el, s.terms, source.format === 'notation'),
+  );
+  dfDollar(el).children('.math-renderer-terms, .math-renderer-description').remove();
+  const named = s.terms.filter((t) => t.description !== t.id);
+  if (named.length && !isInline(el)) {
+    const group = dfDollar('<div class="math-renderer-terms" role="group" data-ce-chrome></div>').attr(
+      'aria-label',
+      `Terms of ${el.getAttribute('aria-label') || 'the formula'}`,
+    );
+    named.forEach((t, i) =>
+      group.append(
+        dfDollar('<button type="button" class="math-renderer-term" aria-pressed="false"></button>')
+          .attr('data-math-term', t.id)
+          .attr('tabindex', i === 0 ? '0' : '-1')
+          .text(t.description),
+      ),
+    );
+    dfDollar(out).after(group);
+    group.after(dfDollar('<output class="math-renderer-description" data-ce-chrome></output>'));
+  }
+  el._formulaKey = key;
+}
+
+/** mark the selected terms: in the typeset output, on the term buttons and on linked outside elements */
+function paint(el: HTMLElement, selected: string[]): void {
+  const on = new Set(selected);
+  dfDollar(el)
+    .find('.math-renderer-output [data-df-math-id]')
+    .each((_, n) => {
+      dfDollar(n).attr('data-selected', on.has((n as HTMLElement).dataset.dfMathId ?? '') ? '' : null);
+    });
+  dfDollar(el)
+    .find('.math-renderer-terms [data-math-term]')
+    .each((_, n) => {
+      dfDollar(n).attr('aria-pressed', String(on.has((n as HTMLElement).dataset.mathTerm ?? '')));
+    });
+  if (el.id)
+    dfDollar(`[data-math-for="${CSS.escape(el.id)}"][data-math-term]`).each((_, n) => {
+      const hit = on.has((n as HTMLElement).dataset.mathTerm ?? '');
+      dfDollar(n).attr('data-selected', hit ? '' : null);
+      if (n instanceof HTMLButtonElement) dfDollar(n).attr('aria-pressed', String(hit));
+    });
+  const source = el._formulaConfig?.source;
+  const terms = source ? serialized(source).terms.filter((t) => on.has(t.id)) : [];
+  dfDollar(el)
+    .children('.math-renderer-description')
+    .text(terms.map((t) => t.description).join('; '));
+}
+
+// -- states -------------------------------------------------------------------
+
+/** the error state with a message - where a failed typeset or load lands */
+function fail(el: HTMLElement, config: Required<MathRendererConfig>, message: string): void {
+  clearOutput(el);
+  el._formulaConfig = { ...config, message };
+  applyMarkup(el, 'error', el._formulaConfig);
+  dfDollar(el).attr('aria-busy', null);
+  el.dataset.stateName = 'error';
+}
+
+function selectionEvent(el: HTMLElement, config: Required<MathRendererConfig>): void {
+  const terms = serialized(config.source).terms.filter((t) => config.selected.includes(t.id));
+  // the selection changed - linked tables, descriptions and figures follow it
+  el.dispatchEvent(
+    new CustomEvent<MathSelectDetail>('math-select', {
+      bubbles: true,
+      detail: {
+        ids: terms.map((t) => t.id),
+        semanticIds: terms.flatMap((t) => (t.semanticId ? [t.semanticId] : [])),
+        descriptions: terms.map((t) => t.description),
+      },
+    }),
+  );
+}
+
+/** UI side of setState - the only function that switches a formula's state */
+function triggerStateChange(el: HTMLElement, name: string, input: MathRendererConfig): Promise<void> | void {
+  const previous = el._formulaConfig;
+  const config = checked({ source: previous?.source ?? authoredSource(el), ...input });
+  const gen = (el._applyGen ?? 0) + 1;
+  el._applyGen = gen;
+  el._formulaConfig = config;
+  const changed = JSON.stringify(previous?.selected ?? []) !== JSON.stringify(config.selected);
+  if (name === 'default' || name === 'error') {
+    clearOutput(el);
+    applyMarkup(el, name, config);
+    dfDollar(el).attr('aria-busy', null);
+    if (changed) selectionEvent(el, config);
+    return;
+  }
+  const finish = (katex: KatexLike): void => {
+    if (el._applyGen !== gen) return;
+    try {
+      typeset(el, katex, config.source);
+    } catch (err) {
+      fail(el, config, err instanceof Error ? err.message : String(err));
+      return;
+    }
+    el._formulaConfig = { ...config, message: '' };
+    applyMarkup(el, name, el._formulaConfig);
+    dfDollar(el).attr('aria-busy', null);
+    paint(el, config.selected);
+    if (changed) selectionEvent(el, config);
+  };
+  if (katexReady) return finish(katexReady);
+  // until KaTeX arrives the TeX stays visible (data-state="pending"), the formula busy
+  dfDollar(el).attr('data-state', 'pending').attr('aria-busy', 'true');
+  return load().then(
+    (katex) => {
+      katexReady = katex;
+      finish(katex);
+    },
+    (err) => {
+      if (el._applyGen === gen)
+        fail(
+          el,
+          config,
+          `KaTeX could not be loaded - the TeX source is shown instead. ${err instanceof Error ? err.message : ''}`.trim(),
+        );
+    },
+  );
+}
+let katexReady: KatexLike | null = null;
+
+/** Registry-level API; pass the element explicitly. Unknown names throw. */
+export const mathRendererApi = componentState({
+  component: 'math-renderer',
+  states: mathRendererStates,
+  mergeConfig: true,
+  apply: (el, state) => triggerStateChange(el as HTMLElement, state.name, state.config as MathRendererConfig),
+  // reflect reality: the source, the selection and a failure's message as shown
+  read: (el, state) => ({
+    name: (el as HTMLElement).dataset.stateName || state.name,
+    config: mathClone({ ...state.config, ...(el as HTMLElement)._formulaConfig }) as Record<string, unknown>,
+  }),
+  markup: (el, state) => applyMarkup(el as HTMLElement, state.name, state.config as MathRendererConfig),
+});
+
+// -- public API ---------------------------------------------------------------
+
+const formula = (el: HTMLElement | string): HTMLElement => {
+  const node = (typeof el === 'string' ? dfDollar(el).get(0) : el) as HTMLElement | undefined;
+  if (!node?.matches?.('.math-renderer') || !node.api) throw new Error('not an initialized .math-renderer');
+  return node;
+};
+
+/**
+ * Render another source in a formula (the selection is cleared).
+ * @param el - the .math-renderer element, or a selector for it
+ * @param source - TeX (`{ format: 'latex', text }`) or a notation tree (`{ format: 'notation', tree }`)
+ * @returns resolves when the formula is typeset (or shows the error)
+ */
+function setSource(el: HTMLElement | string, source: MathSource): Promise<void> {
+  const node = formula(el);
+  return Promise.resolve(mathRendererApi.setState(node, 'rendered', { source, selected: [] }) as Promise<void> | void);
+}
+
+/**
+ * Select terms of a notation formula - marked in the typeset output, on the term buttons and on linked
+ * outside elements; an empty list clears the selection. A `math-select` event reports the change.
+ * @param el - the .math-renderer element, or a selector for it
+ * @param ids - occurrence ids of the formula's notation tree
+ */
+function select(el: HTMLElement | string, ids: string[]): void {
+  const node = formula(el);
+  void mathRendererApi.setState(node, ids.length ? 'highlighted' : 'rendered', { selected: ids });
+}
+
+/**
+ * A formula as text a reader can copy: its clean TeX (no term markers), or its MathML.
+ * @param el - the .math-renderer element, or a selector for it
+ * @param format - 'latex' (default) or 'mathml'
+ * @returns the TeX, or the MathML markup KaTeX writes for it
+ */
+async function exportFormula(el: HTMLElement | string, format: 'latex' | 'mathml' = 'latex'): Promise<string> {
+  const node = formula(el);
+  const source = node._formulaConfig?.source ?? authoredSource(node);
+  const { latex } = serialized(source);
+  if (format === 'latex') return latex;
+  const katex = await load();
+  const host = document.createElement('span');
+  katex.render(latex, host, { ...katexOptions(node, [], false), output: 'mathml' });
+  const math = dfDollar(host).find('math').get(0);
+  return math ? new XMLSerializer().serializeToString(math) : '';
+}
+
+df$.mathRendererApi = mathRendererApi;
+df$.mathRendererStates = mathRendererStates;
+// public imperative API (AGENTS.md "No window globals": df$.shadcn.mathRenderer)
+df$.mathRenderer = { load, serialize, setSource, select, export: exportFormula, url: KATEX_URL };
+
+// -- interaction ----------------------------------------------------------------
+
+/** the formula a click or key event belongs to, and the term it names */
+function termTarget(target: EventTarget | null): { el: HTMLElement; id: string } | null {
+  if (!(target instanceof Element)) return null;
+  const linked = dfDollar(target).closest('[data-math-for][data-math-term]').get(0) as HTMLElement | undefined;
+  if (linked) {
+    const el = dfDollar(`#${CSS.escape(linked.dataset.mathFor ?? '')}`).get(0) as HTMLElement | undefined;
+    return el?.matches('.math-renderer') && el.api ? { el, id: linked.dataset.mathTerm ?? '' } : null;
+  }
+  const el = dfDollar(target).closest('.math-renderer').get(0) as HTMLElement | undefined;
+  if (!el?.api) return null;
+  const button = dfDollar(target).closest('.math-renderer-term').get(0) as HTMLElement | undefined;
+  if (button) return { el, id: button.dataset.mathTerm ?? '' };
+  const term = dfDollar(target).closest('.math-renderer-output [data-df-math-id]').get(0) as HTMLElement | undefined;
+  return term ? { el, id: term.dataset.dfMathId ?? '' } : null;
+}
+
+function bindInteraction(): void {
+  if (document.__mathRendererInit) return;
+  document.__mathRendererInit = true;
+  // a click selects a term - a second click on the selected term clears it
+  dfDollar(document).on('click', (e: Event) => {
+    const hit = termTarget(e.target);
+    if (!hit || !hit.id) return;
+    const current = hit.el._formulaConfig?.selected ?? [];
+    select(hit.el, current.length === 1 && current[0] === hit.id ? [] : [hit.id]);
+  });
+  // the term buttons: one tab stop, arrows move, Escape clears
+  dfDollar(document).on('keydown', (e: Event) => {
+    const ev = e as KeyboardEvent;
+    const button =
+      ev.target instanceof Element
+        ? (dfDollar(ev.target).closest('.math-renderer-term').get(0) as HTMLElement | undefined)
+        : undefined;
+    if (!button) return;
+    const el = dfDollar(button).closest('.math-renderer').get(0) as HTMLElement;
+    if (ev.key === 'Escape') {
+      select(el, []);
+      return;
+    }
+    const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+    if (!keys.includes(ev.key)) return;
+    ev.preventDefault();
+    const buttons = dfDollar(el).find('.math-renderer-term').toArray() as HTMLElement[];
+    const i = buttons.indexOf(button);
+    const next =
+      ev.key === 'Home'
+        ? 0
+        : ev.key === 'End'
+          ? buttons.length - 1
+          : (i + (ev.key === 'ArrowRight' || ev.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length;
+    buttons.forEach((b, j) => dfDollar(b).attr('tabindex', j === next ? '0' : '-1'));
+    buttons[next]?.focus();
+  });
+}
+
+// -- init --------------------------------------------------------------------
+
+function init(): void {
+  (dfDollar('.math-renderer:not([data-init])').toArray() as HTMLElement[]).forEach((el) => {
+    el.dataset.init = '';
+    if (!codeOf(el)) return;
+    bindInteraction();
+    let config: Required<MathRendererConfig>;
+    try {
+      config = checked({ source: authoredSource(el), selected: [] });
+    } catch (err) {
+      // a malformed notation script or an oversized source: the TeX in the <code> still reads, the alert says why -
+      // written directly (a state change would validate the same source again and throw)
+      const message = err instanceof Error ? err.message : String(err);
+      el._formulaConfig = { source: { format: 'latex', text: codeOf(el)?.textContent ?? '' }, selected: [], message };
+      bindComponent(el, mathRendererApi, { name: 'error', config: el._formulaConfig });
+      applyMarkup(el, 'error', { message });
+      el.dataset.stateName = 'error';
+      return;
+    }
+    el._formulaConfig = config;
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(el, mathRendererApi, { name: 'default', config });
+    void mathRendererApi.setState(el, 'rendered', config);
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

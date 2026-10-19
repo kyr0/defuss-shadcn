@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "name": "math-renderer",
+  "states": {
+    "rendered": {
+      "type": "boolean",
+      "default": true,
+      "target": {
+        "kind": "selector",
+        "selector": ".math-renderer"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "rendered"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "highlighted": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".math-renderer"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "highlighted"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "error": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".math-renderer"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "error"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

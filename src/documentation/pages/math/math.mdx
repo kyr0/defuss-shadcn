@@ -1,0 +1,108 @@
+---
+title: "Math"
+description: "Mathematics in defuss-shadcn: render a formula with KaTeX, edit it with MathLive, compute and explain it with the Cortex Compute Engine - three components, each loading its engine only when a page uses it."
+slug: "math"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="math" title="Math" introStyle="max-width:42rem;">
+  Three components for mathematics, each a thin adapter over an official engine: <DocLink href="math-renderer.html">Formula Rendering</DocLink> typesets TeX with KaTeX, <DocLink href="math-editor.html">Formula Editing</DocLink> edits it with MathLive, <DocLink href="math-compute.html">Compute &amp; Explain</DocLink> computes with the Cortex Compute Engine and shows its work. Each loads its engine on first use - a page without math loads none of them - and they work alone or together.
+</PageHeader>
+
+```html example label="One formula: edited, rendered, computed" schema="none" hint="Edit the expression: the formula below follows as you type, and the compute panel takes it as its input. Press Compute to simplify it - with the condition the cancellation needs." previewStyle="align-items:stretch;"
+<div style="display: grid; gap: 1rem">
+  <div class="math-editor" id="ov-editor" data-math-preview="ov-formula">
+    <label class="label" for="ov-source">Expression</label>
+    <textarea class="math-editor-source" id="ov-source">\frac{x^2-1}{x-1}</textarea>
+    <div class="math-editor-tools" role="group" aria-label="Formula tools">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="fraction"
+        >Fraction</button
+      >
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="power">Power</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="root">Root</button>
+    </div>
+  </div>
+  <figure class="math-renderer" id="ov-formula" data-variant="card" aria-label="The expression, typeset">
+    <code class="math-renderer-source">\frac{x^2-1}{x-1}</code>
+    <figcaption>Rendered as you type</figcaption>
+  </figure>
+  <section class="math-compute" id="ov-compute" aria-label="Simplify the expression">
+    <label class="label" for="ov-compute-source">Input</label>
+    <textarea class="math-compute-source" id="ov-compute-source">\frac{x^2-1}{x-1}</textarea>
+    <div class="math-compute-tools">
+      <select class="select" data-math-operation aria-label="Operation">
+        <option value="simplify" selected>Simplify</option>
+        <option value="differentiate">Differentiate</option>
+        <option value="solve">Solve for x</option>
+      </select>
+      <button class="btn" type="button" data-math-run>Compute</button>
+    </div>
+  </section>
+</div>
+<script>
+  // the editor reports every edit; the compute panel takes it as its input
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#ov-editor').on('math-input', (e) => {
+      df$('#ov-compute').get(0).api.setState('default', { latex: e.detail.latex, mathJson: null });
+    });
+  });
+</script>
+```
+
+## What each one costs
+
+<DocText>The components ship only their adapters - every engine comes from its pinned official build when the first element that needs it appears. A page with formulas loads KaTeX and nothing else; an editor adds MathLive; a compute panel starts a worker that imports the Compute Engine on its first computation.</DocText>
+
+<div class="overflow-x-auto mb-6">
+<table class="table">
+  <thead><tr><th scope="col">Component</th><th scope="col">Engine (pinned, jsDelivr)</th><th scope="col">Loads</th><th scope="col">Without JavaScript</th></tr></thead>
+  <tbody>
+    <tr><td><DocLink href="math-renderer.html">Formula Rendering</DocLink></td><td>KaTeX 0.19.0</td><td>on the first formula: module + stylesheet + fonts</td><td>the TeX as code</td></tr>
+    <tr><td><DocLink href="math-editor.html">Formula Editing</DocLink></td><td>MathLive 0.111.0</td><td>on the first editor: module + fonts</td><td>a textarea with the TeX</td></tr>
+    <tr><td><DocLink href="math-compute.html">Compute &amp; Explain</DocLink></td><td>Compute Engine 0.149.0</td><td>on the first computation, inside a worker</td><td>the form, no result</td></tr>
+  </tbody>
+</table>
+</div>
+
+<DocText>The adapters themselves are not part of <code>all.css</code> / <code>all.js</code> either: the Math section is the extra bundle <code>components/math.css</code> + <code>components/math.js</code>, <b data-stat="stats.bundles.math.totalSizeGzMinified" data-stat-format="kib">15.7</b> KiB minified + compressed. A page with math adds it after <code>all.\*</code> (or after <code>core.\*</code>); a page without math pays nothing.</DocText>
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/core.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.css" />
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/all.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/math.js"></script>
+```
+
+## Formats
+
+<div class="overflow-x-auto mb-6">
+<table class="table">
+  <thead><tr><th scope="col">Format</th><th scope="col">Rendering</th><th scope="col">Editing</th><th scope="col">Computing</th></tr></thead>
+  <tbody>
+    <tr><td>TeX</td><td>yes - KaTeX's supported TeX</td><td>yes - MathLive's notation</td><td>yes - parsed by the engine</td></tr>
+    <tr><td>Notation tree (JSON)</td><td>yes - selectable terms</td><td>no</td><td>no</td></tr>
+    <tr><td>MathJSON</td><td>no</td><td>no</td><td>yes - <code>mathJson</code> instead of TeX</td></tr>
+    <tr><td>MathML</td><td>written for assistive technology; <code>export(el, 'mathml')</code></td><td>no</td><td>no</td></tr>
+  </tbody>
+</table>
+</div>
+
+<DocText>There is no lossless round trip between TeX, MathJSON and MathML, and the components do not pretend one: MathLive writes its own normalized TeX, the engine its own canonical form, and the record keeps the input as written beside both.</DocText>
+
+## In the theme
+
+<DocText>Formulas take the text color; a selected term takes <code>--accent</code> and an outline in <code>--ring</code>. The editor is a field of the system (<code>--input</code>, <code>--radius-md</code>, the focus ring), and its virtual keyboard is themed through MathLive's own custom properties - keys, surfaces and radius follow the theme. Explanations are set in <code>--font-serif</code>, controls in <code>--font-sans</code>, sources and records in <code>--font-mono</code>. KaTeX and MathLive keep their math fonts.</DocText>
+
+## What a result means
+
+<DocText>The Compute Engine's steps are its own report, shown as it gives them - never presented as a proof. A result carries the conditions its input needs, read from the input as written: (x² - 1)/(x - 1) is x + 1 only where x ≠ 1, x/x is 1 only where x ≠ 0, even when the engine's canonical form already dropped the division. A step that may add solutions says so, and every candidate is checked in the original equation. A comparison the engine cannot decide stays unknown. Conditions are complete only for real arithmetic, integer powers and square roots; anything else is marked partial.</DocText>
+
+## In papers
+
+<DocText>The <DocLink href="paper-gallery.html">Paper Gallery</DocLink> has two papers built on these components: <DocLink href="paper-math.html">Formulas</DocLink> - numbered display equations, inline math and a print layout - and <DocLink href="paper-math-interactive.html">Interactive Math</DocLink> - a formula linked to its symbol table, an equation the reader edits, and a derivation the engine explains.</DocText>
+
+</DocPage>

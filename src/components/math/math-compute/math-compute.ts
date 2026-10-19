@@ -1,0 +1,1064 @@
+// -- Compute & Explain (math-compute) -----------------------------------------
+// Symbolic computation with the OFFICIAL Cortex Compute Engine (cortex-js/
+// compute-engine, MIT) - zero engine bytes ship here. The markup is a native
+// form: a <textarea> with the TeX, an operation <select>, Compute / Cancel
+// buttons. The result is the engine's own record - input, canonical form,
+// result, the steps it reports, every condition the input needs - shown with
+// Formula Rendering elements and kept as plain JSON in the state.
+//
+// - Off the main thread: every computation runs in a dedicated Worker the
+//   component starts from its own source (a Blob URL), so it also runs inside
+//   a sandboxed, opaque-origin frame and needs no file of its own. The worker
+//   imports the pinned engine ONCE (COMPUTE_ENGINE_URL, or <meta name=
+//   "math-compute-engine"> / df$.shadcn.mathCompute.engine(url) to
+//   self-host); a fresh engine per job keeps assumptions from leaking. A
+//   deadline or Cancel TERMINATES the worker - a symbolic computation cannot
+//   be interrupted any other way.
+// - Honest results: conditions are read from the input as written, before
+//   canonicalization can erase them (x/x is 1 only where x ≠ 0); the engine's
+//   steps are reported as it reports them, never as a proof; a comparison the
+//   engine cannot decide stays 'unknown'; a solver's candidates are checked
+//   against the original equation; a domain beyond the documented real
+//   grammar is marked partial.
+// - Explicit: a result is computed on Compute (or run()), never on load or on
+//   reading a state; an edit clears a result it no longer belongs to; a
+//   recorded result (script.math-compute-config) shows without running.
+//
+// State lives ON the element (data-state + the store); the bound `api` is the
+// only state mutator (AGENTS.md "State API").
+
+import {
+  defussGlobals,
+  defussQuery,
+  componentState,
+  bindComponent,
+  mathClone,
+  mathText,
+} from '../../../shared/state-api.js';
+import type { MathContext, MathJson, MathOperation, MathResult, MathStep } from '../../../shared/math.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type
+// this file's API docs state - arguments, return values, event details - holds against its code.
+
+// 'default' = ready to compute, 'computing' = a job runs (cancellable), 'result' = the
+// engine's result, 'explaining' = one of its steps, 'unsupported' / 'error' = a message
+const mathComputeStates = ['default', 'computing', 'result', 'explaining', 'unsupported', 'error'];
+
+/** A compute panel's state: every field optional in setState() (merged into the current one); getState() reports all. */
+export interface MathComputeConfig {
+  /** the input as TeX (default: the textarea's text) */
+  latex?: string;
+  /** the input as MathJSON instead of TeX (null: use the TeX) */
+  mathJson?: MathJson | null;
+  /** the operation (default: the operation select's value, else 'simplify') */
+  operation?: MathOperation;
+  /** compare: the other side, as TeX */
+  right?: string;
+  /** compare: how - 'identity' (equal for every value), 'value' (equal values) or 'structural' (the same expression) */
+  comparison?: 'identity' | 'value' | 'structural';
+  /** solve / differentiate: the variable (default 'x') */
+  variable?: string;
+  /** differentiate: the order, 1 to 4 */
+  order?: number;
+  /** the assumptions: domain, declared variables, assumed predicates (MathJSON), precision */
+  context?: MathContext;
+  /** the last result - the engine's whole record (a recorded one shows without running) */
+  result?: MathResult | null;
+  /** explaining: the step shown, from 0 */
+  step?: number;
+  /** error / unsupported: the message */
+  message?: string;
+}
+
+/** setState() configs per state. */
+export interface MathComputeStateConfigs {
+  /** Ready to compute; no result shown. An edit of the input returns here. */
+  default: MathComputeConfig;
+  /** A job runs in the worker (Cancel stops it); lands in 'result', 'unsupported' or 'error'. */
+  computing: MathComputeConfig;
+  /** The engine's result with its conditions, candidates and steps (`config.result`; without one: 'default'). */
+  result: MathComputeConfig;
+  /** One step of the engine's explanation, before and after (`config.step`; without steps: 'result'). */
+  explaining: MathComputeConfig;
+  /** The operation is outside what the adapter supports for this input (the message says why). */
+  unsupported: MathComputeConfig;
+  /** The input could not be computed: invalid TeX, a contradiction, the deadline, the engine not loading. */
+  error: MathComputeConfig;
+}
+
+/** The `math-result` event's detail: how a computation ended. */
+export interface MathResultDetail {
+  /** 'ok', 'unsupported', 'error' or 'cancelled' */
+  status: 'ok' | 'unsupported' | 'error' | 'cancelled';
+  /** the engine's record (status 'ok'), else null */
+  result: MathResult | null;
+  /** why it did not complete (empty for 'ok') */
+  message: string;
+}
+
+/** The pinned official Compute Engine build the worker imports (never @latest); its chunks load beside it. */
+export const COMPUTE_ENGINE_URL =
+  'https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.149.0/dist/esm-min/compute-engine.js';
+
+const OPERATIONS: MathOperation[] = [
+  'inspect',
+  'canonicalize',
+  'simplify',
+  'evaluate',
+  'approximate',
+  'compare',
+  'solve',
+  'differentiate',
+];
+const DEFAULT_CONTEXT: MathContext = { domain: 'real', variables: {}, assumptions: [], precision: 34 };
+const LOAD_MS = 30_000;
+
+// -- the worker: a self-contained function, started from its own source ---------------
+
+/** What a job hands the worker. */
+interface MathJob {
+  latex: string;
+  mathJson: MathJson | null;
+  operation: MathOperation;
+  right: string;
+  comparison: 'identity' | 'value' | 'structural';
+  variable: string;
+  order: number;
+  context: MathContext;
+}
+
+/** The worker side: one message listener; imports the engine once, a fresh engine per job. */
+function computeWorker(scope: {
+  addEventListener: (type: 'message', fn: (e: MessageEvent) => void) => void;
+  postMessage: (m: unknown) => void;
+}): void {
+  let engine: Promise<{ ComputeEngine: new (o?: { precision?: number }) => any; version?: string }> | null = null;
+  let engineLoaded = '';
+  const json = (v: unknown) => JSON.parse(JSON.stringify(v));
+  const expr = (e: any) => ({ latex: String(e.latex), json: json(e.json) });
+  const bytes = (s: string) => new TextEncoder().encode(s).length;
+  const SAFE = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
+  const PREDICATES = ['Equal', 'NotEqual', 'Greater', 'GreaterEqual', 'Less', 'LessEqual', 'Element'];
+
+  // The conditions the input needs, read from the input AS WRITTEN - canonicalization folds x/x to 1 and
+  // would lose x ≠ 0. Complete only for real arithmetic: + - × ÷, integer powers, square roots, comparisons.
+  const ledger = (raw: any, real: boolean) => {
+    const predicates: any[] = [];
+    let complete = real;
+    let nodes = 0;
+    const add = (p: any) => {
+      if (!predicates.some((x) => JSON.stringify(x) === JSON.stringify(p))) predicates.push(p);
+    };
+    const ARITY: Record<string, number> = {
+      Divide: 2,
+      Rational: 2,
+      Subtract: 2,
+      Negate: 1,
+      Square: 1,
+      Sqrt: 1,
+      Abs: 1,
+      Power: 2,
+      Equal: 2,
+      NotEqual: 2,
+      Less: 2,
+      LessEqual: 2,
+      Greater: 2,
+      GreaterEqual: 2,
+      Delimiter: 1,
+    };
+    const walk = (v: any, depth: number): void => {
+      if (++nodes > 10_000 || depth > 96) throw new Error('The expression exceeds the structural limits.');
+      if (typeof v === 'number') return;
+      if (typeof v === 'string') {
+        if (
+          !SAFE.test(v) ||
+          ['NaN', 'Undefined', 'ComplexInfinity', 'Infinity', 'NegativeInfinity', 'ImaginaryUnit'].includes(v)
+        )
+          complete = false;
+        return;
+      }
+      if (!Array.isArray(v) || typeof v[0] !== 'string') {
+        complete = false;
+        return;
+      }
+      const [op, ...args] = v;
+      const variadic = op === 'Add' || op === 'Multiply' || op === 'InvisibleOperator';
+      if (!(variadic ? args.length > 0 : ARITY[op] === args.length)) complete = false;
+      if ((op === 'Divide' || op === 'Rational') && args.length === 2) add(['NotEqual', args[1], 0]);
+      if (op === 'Sqrt' && real && args.length === 1) add(['GreaterEqual', args[0], 0]);
+      if (op === 'Power' && args.length === 2) {
+        if (typeof args[1] === 'number' && Number.isInteger(args[1])) {
+          if (args[1] <= 0) add(['NotEqual', args[0], 0]);
+        } else complete = false;
+      }
+      args.forEach((a: any) => walk(a, depth + 1));
+    };
+    walk(raw, 0);
+    // a number needs no condition: 1/2 does not require 2 ≠ 0
+    return { predicates: predicates.filter((p) => typeof p[1] !== 'number'), complete };
+  };
+
+  // three-valued truth of a predicate at a value - the engine's answer, undefined when it cannot tell
+  const truth = (ce: any, p: any, variable: string, value: any): boolean | undefined => {
+    const r = ce
+      .box(p, { form: 'raw' })
+      .subs({ [variable]: value })
+      .evaluate().json;
+    return r === 'True' ? true : r === 'False' ? false : undefined;
+  };
+
+  const RELATIONS: Record<string, MathStep['relation']> = {
+    'solve.square-both-sides': 'implies',
+    'solve.quadratic-formula': 'candidate',
+    'solve.validate-roots': 'check',
+  };
+
+  const calculate = (job: MathJob, Engine: new (o?: { precision?: number }) => any, version: string) => {
+    const c = job.context;
+    if (bytes(job.latex) > 65_536 || bytes(job.right) > 65_536) throw new Error('The input exceeds 65,536 bytes.');
+    const ce = new Engine({ precision: c.precision });
+    for (const [name, type] of Object.entries(c.variables)) ce.declare(name, type);
+    const fromJson = job.mathJson !== null && job.mathJson !== undefined;
+    const parseRaw = () => (fromJson ? ce.box(job.mathJson, { form: 'raw' }) : ce.parse(job.latex, { form: 'raw' }));
+    let raw = parseRaw();
+    if (!raw.isValid) throw new Error('The expression is invalid or incomplete.');
+    for (const name of raw.unknowns) if (!(name in c.variables) && SAFE.test(name)) ce.declare(name, c.domain);
+    for (const a of c.assumptions) {
+      if (!Array.isArray(a) || !PREDICATES.includes(String(a[0])))
+        throw new Error('An assumption must be a comparison or a membership predicate.');
+      const status = ce.assume(ce.box(a, { form: 'raw' }));
+      if (status === 'contradiction') throw new Error('The assumptions contradict each other.');
+      if (status !== 'ok' && status !== 'tautology')
+        throw new Error(`Unsupported: the engine cannot assume ${JSON.stringify(a)} (${status}).`);
+    }
+    raw = parseRaw();
+    const rawJson = json(raw.json);
+    const real = c.domain === 'real' && !Object.values(c.variables).includes('complex');
+    const L = ledger(rawJson, real);
+    const conditions = [
+      ...L.predicates.map((p, i) => ({
+        id: `input-${i}`,
+        latex: ce.box(p, { form: 'raw' }).latex,
+        json: p,
+        origin: 'input' as const,
+      })),
+      ...c.assumptions.map((p, i) => ({
+        id: `assumption-${i}`,
+        latex: ce.box(p, { form: 'raw' }).latex,
+        json: json(p),
+        origin: 'assumption' as const,
+      })),
+    ];
+    const input = fromJson ? ce.box(job.mathJson) : ce.parse(job.latex);
+    if (!input.isValid) throw new Error('The expression is invalid or incomplete.');
+    const notices: string[] = [];
+    const out: MathResult = {
+      schemaVersion: 1,
+      engine: version,
+      operation: job.operation,
+      input: { latex: fromJson ? String(raw.latex) : job.latex, json: rawJson },
+      canonical: expr(input),
+      result: expr(input),
+      comparison: null,
+      conditions,
+      coverage: L.complete ? 'complete' : 'partial',
+      steps: [],
+      candidates: [],
+      notices,
+    };
+    if (JSON.stringify(rawJson) !== JSON.stringify(out.canonical.json))
+      notices.push('The engine put the input into its canonical form before any step - that rewrite is not traced.');
+    if (!L.complete)
+      notices.push(
+        'The conditions are complete only for real arithmetic, integer powers and square roots - this input may need more.',
+      );
+    const native =
+      job.operation === 'simplify'
+        ? 'simplify'
+        : job.operation === 'solve'
+          ? 'solve'
+          : job.operation === 'differentiate'
+            ? 'D'
+            : null;
+    const trace = native ? input.explain(native, { variable: job.variable, order: job.order }) : null;
+    switch (job.operation) {
+      case 'inspect':
+        out.result = expr(raw);
+        break;
+      case 'canonicalize':
+        break;
+      case 'simplify':
+        out.result = expr(trace ? trace.result : input.simplify());
+        break;
+      case 'evaluate':
+        out.result = expr(input.evaluate());
+        break;
+      case 'approximate':
+        out.result = expr(input.N());
+        notices.push(`A numerical approximation to ${c.precision} significant digits - not an exact value.`);
+        break;
+      case 'differentiate':
+        out.result = expr(trace.result);
+        break;
+      case 'compare': {
+        const right = ce.parse(job.right);
+        const rightRaw = ce.parse(job.right, { form: 'raw' });
+        if (!right.isValid) throw new Error('The other side is invalid or incomplete.');
+        const R = ledger(json(rightRaw.json), real);
+        for (const p of R.predicates)
+          if (!conditions.some((x) => JSON.stringify(x.json) === JSON.stringify(p)))
+            conditions.push({
+              id: `input-${conditions.length}`,
+              latex: ce.box(p, { form: 'raw' }).latex,
+              json: p,
+              origin: 'input',
+            });
+        if (!R.complete) out.coverage = 'partial';
+        const answer =
+          job.comparison === 'structural'
+            ? raw.isSame(rightRaw)
+            : job.comparison === 'identity'
+              ? input.isIdenticallyEqual(right)
+              : input.isEqual(right);
+        out.comparison = answer === true ? 'true' : answer === false ? 'false' : 'unknown';
+        out.result = expr(right);
+        if (out.comparison === 'unknown')
+          notices.push('The engine could not decide this comparison - unknown is its answer, not false.');
+        break;
+      }
+      case 'solve': {
+        const roots = input.solve(job.variable);
+        if (!Array.isArray(roots))
+          throw new Error(
+            'Unsupported: the engine returned no solution list for this equation (one equation, one variable).',
+          );
+        const all = [...roots];
+        // the explanation names candidates solve() already dropped (an extraneous root) - check them too
+        const collect = (v: any): void => {
+          if (!Array.isArray(v)) return;
+          if (v[0] === 'Equal' && v[1] === job.variable && v.length === 3) {
+            const root = ce.box(v[2]);
+            if (!all.some((r) => r.isSame(root))) all.push(root);
+          } else if (v[0] === 'List' || v[0] === 'Or' || v[0] === 'And') v.slice(1).forEach(collect);
+        };
+        for (const step of trace?.steps ?? [])
+          if (/^solve\.(quadratic-formula|validate-roots|roots)$/.test(step.id)) collect(json(step.value.json));
+        const equation = Array.isArray(rawJson) && rawJson[0] === 'Equal' ? rawJson : ['Equal', rawJson, 0];
+        let approximate = false;
+        for (const root of all.slice(0, 64)) {
+          // a floating-point root never satisfies the equation exactly - it stays undecided, not rejected
+          if (root.isExact === false) {
+            approximate = true;
+            out.candidates.push({ value: expr(root), status: 'unknown' });
+            continue;
+          }
+          const checks = [
+            ...conditions.map((x) => truth(ce, x.json, job.variable, root)),
+            truth(ce, equation, job.variable, root),
+          ];
+          const status = checks.includes(false) ? 'rejected' : checks.every((x) => x === true) ? 'accepted' : 'unknown';
+          out.candidates.push({ value: expr(root), status });
+        }
+        out.result = expr(
+          ce.box(['List', ...out.candidates.filter((x) => x.status === 'accepted').map((x) => x.value.json)]),
+        );
+        if (approximate) notices.push('A numerical root cannot be checked exactly - it is listed as undecided.');
+        notices.push(
+          'Each candidate was substituted into the original equation; the engine does not certify that no solution is missing.',
+        );
+        break;
+      }
+    }
+    if (trace) {
+      let before = expr(trace.initial);
+      for (const step of trace.steps.slice(0, 128)) {
+        const after = expr(step.value);
+        out.steps.push({
+          before,
+          after,
+          rule: String(step.id),
+          description: String(step.description),
+          relation: RELATIONS[step.id] ?? 'transform',
+        });
+        before = after;
+      }
+      if (trace.steps.length > 128) notices.push('The explanation was cut after 128 steps.');
+      if (!trace.steps.length)
+        notices.push('The engine reported no steps - the canonical form already was the result.');
+    } else if (job.operation !== 'inspect' && job.operation !== 'canonicalize')
+      notices.push('The engine explains simplify, solve and differentiate - this operation has no steps.');
+    notices.push("The steps are the engine's own report, not a proof.");
+    if (bytes(JSON.stringify(out)) > 2_097_152) throw new Error('The result exceeds 2 MiB.');
+    return out;
+  };
+
+  scope.addEventListener('message', async (event: MessageEvent) => {
+    const { id, url, job } = event.data as { id: number; url: string; job: MathJob };
+    try {
+      if (!engine || url !== engineLoaded) {
+        engineLoaded = url;
+        const engineUrl = url;
+        // the ONE vendor import (verify: VENDOR_IMPORTS) - the official engine, never our code
+        engine = import(/* @vite-ignore */ engineUrl);
+        engine.catch(() => {
+          engine = null;
+        });
+      }
+      const m = await engine;
+      scope.postMessage({ id, phase: 'loaded' });
+      scope.postMessage({ id, status: 'ok', result: calculate(job, m.ComputeEngine, String(m.version ?? 'unknown')) });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      scope.postMessage({
+        id,
+        status: message.startsWith('Unsupported:') ? 'unsupported' : 'error',
+        message: message.replace(/^Unsupported:\s*/, ''),
+      });
+    }
+  });
+}
+
+let workerUrl = '';
+/** a classic worker from the function's own source - also inside an opaque-origin sandbox */
+function startWorker(): Worker {
+  workerUrl ||= URL.createObjectURL(new Blob([`(${computeWorker.toString()})(self);`], { type: 'text/javascript' }));
+  return new Worker(workerUrl, { name: 'defuss-math-compute' });
+}
+
+let engineOverride = '';
+/**
+ * The Compute Engine module the worker imports - set it to self-host the same build (its chunks beside it).
+ * Without a call: <meta name="math-compute-engine">, else the pinned jsDelivr build.
+ * @param url - the module URL to use from now on (resolved against the page)
+ * @returns the absolute module URL in use
+ */
+function engine(url?: string): string {
+  if (url) engineOverride = new URL(url, document.baseURI).href;
+  const meta = ((dfDollar('meta[name="math-compute-engine"]').get(0) ?? null) as HTMLMetaElement | null)?.content;
+  return engineOverride || (meta ? new URL(meta, document.baseURI).href : COMPUTE_ENGINE_URL);
+}
+
+// -- config -----------------------------------------------------------------------
+
+const sourceOf = (el: HTMLElement): HTMLTextAreaElement | null =>
+  (dfDollar(el).find('textarea.math-compute-source').get(0) ?? null) as HTMLTextAreaElement | null;
+const operationOf = (el: HTMLElement): HTMLSelectElement | null =>
+  (dfDollar(el).find('select[data-math-operation]').get(0) ?? null) as HTMLSelectElement | null;
+const rightOf = (el: HTMLElement): HTMLInputElement | HTMLTextAreaElement | null =>
+  (dfDollar(el).find('[data-math-right]').get(0) ?? null) as HTMLInputElement | HTMLTextAreaElement | null;
+
+/** a validated copy of a config; throws on anything malformed (a rejected config changes nothing) */
+function checked(config: MathComputeConfig): Required<MathComputeConfig> {
+  const c = mathClone(config);
+  const context = mathClone(c.context ?? DEFAULT_CONTEXT);
+  if (
+    !['real', 'complex'].includes(context.domain) ||
+    !Number.isInteger(context.precision) ||
+    context.precision < 15 ||
+    context.precision > 100 ||
+    !context.variables ||
+    typeof context.variables !== 'object' ||
+    Array.isArray(context.variables) ||
+    !Array.isArray(context.assumptions) ||
+    context.assumptions.length > 64 ||
+    Object.entries(context.variables).some(
+      ([n, t]) => !/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(n) || !['real', 'complex', 'integer'].includes(t),
+    )
+  )
+    throw new Error(
+      'context: { domain: "real" | "complex", variables: { name: "real" | "complex" | "integer" }, assumptions: MathJSON[], precision: 15..100 }',
+    );
+  const operation = c.operation ?? 'simplify';
+  if (!OPERATIONS.includes(operation)) throw new Error(`operation "${operation}" (${OPERATIONS.join(', ')})`);
+  const comparison = c.comparison ?? 'identity';
+  if (!['identity', 'value', 'structural'].includes(comparison))
+    throw new Error(`comparison "${comparison}" (identity, value, structural)`);
+  const variable = c.variable ?? 'x';
+  if (!/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(variable)) throw new Error(`variable "${variable}"`);
+  const order = c.order ?? 1;
+  if (!Number.isInteger(order) || order < 1 || order > 4) throw new Error('order: 1 to 4');
+  const result = c.result ?? null;
+  if (
+    result !== null &&
+    (result.schemaVersion !== 1 ||
+      !Array.isArray(result.steps) ||
+      !Array.isArray(result.conditions) ||
+      !Array.isArray(result.candidates) ||
+      !Array.isArray(result.notices) ||
+      typeof result.result?.latex !== 'string')
+  )
+    throw new Error('result: a math-compute record (schemaVersion 1)');
+  const step = c.step ?? -1;
+  if (!Number.isInteger(step) || step < -1) throw new Error('step: an index from 0 (-1 for none)');
+  return {
+    latex: mathText(c.latex ?? ''),
+    mathJson: c.mathJson ?? null,
+    operation,
+    right: mathText(c.right ?? ''),
+    comparison,
+    variable,
+    order,
+    context,
+    result,
+    step,
+    message: typeof c.message === 'string' ? c.message.slice(0, 2048) : '',
+  };
+}
+
+/** the fields a result was computed from - a change makes it stale */
+const inputsOf = (c: Required<MathComputeConfig>): string =>
+  JSON.stringify([c.latex, c.mathJson, c.operation, c.right, c.comparison, c.variable, c.order, c.context]);
+
+// -- markup -------------------------------------------------------------------------
+
+const STATUS: Record<string, string> = {
+  computing: 'Computing ...',
+  error: 'This could not be computed.',
+  unsupported: 'This is outside what the engine supports here.',
+};
+
+/**
+ * The markup of a state, on the live element and on render()'s detached copy: data-state, aria-busy while
+ * computing, which buttons work, and the status line - an empty live region whose text the runtime writes
+ * (announce()) as a job runs and ends. The result view is the runtime's too (data-ce-chrome).
+ */
+function applyMarkup(el: HTMLElement, name: string): void {
+  dfDollar(el)
+    .attr('data-state', name === 'default' ? null : name)
+    .attr('aria-busy', name === 'computing' ? 'true' : null);
+  dfDollar(el)
+    .find('[data-math-run]')
+    .attr('disabled', name === 'computing' ? '' : null);
+  dfDollar(el)
+    .find('[data-math-cancel]')
+    .attr('disabled', name === 'computing' ? null : '');
+  if (!dfDollar(el).children('.math-compute-status').get(0))
+    dfDollar(el).append(dfDollar('<output class="math-compute-status" role="status" data-ce-chrome></output>'));
+}
+
+/** the status line says what the panel does: computing, or why it could not compute */
+function announce(el: HTMLElement, name: string, config: MathComputeConfig): void {
+  const text =
+    name === 'computing'
+      ? STATUS.computing
+      : name === 'error' || name === 'unsupported'
+        ? config.message || STATUS[name]
+        : '';
+  dfDollar(el).children('.math-compute-status').text(text);
+}
+
+// -- the result view (runtime chrome) ----------------------------------------------------
+
+/** a Formula Rendering element for a TeX string (typeset by math-renderer when it is on the page) */
+function formulaNode(latex: string, label: string, inline = false) {
+  const node = dfDollar(
+    inline ? '<span class="math-renderer" data-variant="inline"></span>' : '<figure class="math-renderer"></figure>',
+  ).attr('aria-label', label);
+  node.append(dfDollar('<code class="math-renderer-source"></code>').text(latex));
+  if (!inline) node.append(dfDollar('<figcaption></figcaption>').text(label));
+  return node;
+}
+
+const RELATION_TEXT: Record<MathStep['relation'], string> = {
+  transform: 'rewritten by the engine',
+  implies: 'implies - may add solutions, every candidate is checked',
+  candidate: 'candidates',
+  check: 'checked in the original equation',
+};
+const CANDIDATE: Record<string, [string, string]> = {
+  accepted: ['accepted', 'default'],
+  rejected: ['rejected', 'destructive'],
+  unknown: ['undecided', 'outline'],
+};
+
+/** paint the result (or its step) into the view; clears it in every other state */
+function paint(el: HTMLElement, name: string, c: Required<MathComputeConfig>): void {
+  let view = (dfDollar(el).children('.math-compute-view').get(0) ?? null) as HTMLElement | null;
+  const r = c.result;
+  if (!r || (name !== 'result' && name !== 'explaining')) {
+    if (view) dfDollar(view).remove();
+    el._computeView = '';
+    return;
+  }
+  const key = JSON.stringify([r, name, c.step]);
+  if (view && el._computeView === key) return;
+  if (!view) {
+    view = dfDollar('<div class="math-compute-view" data-ce-chrome></div>').get(0) as HTMLElement;
+    const status = dfDollar(el).children('.math-compute-status').get(0);
+    if (status) dfDollar(status).before(view);
+    else dfDollar(el).append(view);
+  }
+  dfDollar(view).empty();
+  const step = name === 'explaining' ? r.steps[c.step] : null;
+  const pair = dfDollar('<div class="math-compute-pair"></div>');
+  if (step) {
+    pair
+      .append(formulaNode(step.before.latex, `Before step ${c.step + 1}`))
+      .append(formulaNode(step.after.latex, `After step ${c.step + 1}`));
+  } else {
+    pair.append(formulaNode(r.input.latex, 'Input'));
+    const label =
+      r.operation === 'solve' ? 'Solutions' : r.operation === 'compare' ? 'Compared with' : `Result (${r.operation})`;
+    pair.append(formulaNode(r.result.latex, label));
+  }
+  dfDollar(view).append(pair);
+  if (step) {
+    const what = dfDollar('<p class="math-compute-explanation"></p>');
+    what.append(dfDollar('<b></b>').text(`Step ${c.step + 1} of ${r.steps.length}: `));
+    what.append(dfDollar('<span></span>').text(step.description));
+    what.append(
+      dfDollar('<span class="math-compute-rule"></span>').text(
+        ` ${step.rule} - ${RELATION_TEXT[step.relation] ?? step.relation}`,
+      ),
+    );
+    dfDollar(view).append(what);
+  } else if (r.comparison) {
+    const verdict = r.comparison === 'true' ? 'equal' : r.comparison === 'false' ? 'not equal' : 'unknown';
+    const p = dfDollar('<p class="math-compute-verdict"></p>').text('The engine says: ');
+    p.append(
+      dfDollar('<span class="badge"></span>')
+        .attr(
+          'data-variant',
+          r.comparison === 'true' ? 'default' : r.comparison === 'false' ? 'destructive' : 'outline',
+        )
+        .text(verdict),
+    );
+    dfDollar(view).append(p);
+  }
+  // the conditions the result holds under
+  const conditions = dfDollar('<section class="math-compute-conditions"></section>');
+  conditions.append(dfDollar('<h4></h4>').text('Holds where'));
+  if (r.conditions.length) {
+    const list = dfDollar('<ul></ul>');
+    for (const k of r.conditions) {
+      const li = dfDollar('<li></li>').append(
+        formulaNode(k.latex, k.origin === 'assumption' ? 'Assumed' : 'Required by the input', true),
+      );
+      li.append(
+        dfDollar('<span class="math-compute-origin"></span>').text(
+          k.origin === 'assumption' ? ' assumed' : ' required by the input',
+        ),
+      );
+      list.append(li);
+    }
+    conditions.append(list);
+  } else conditions.append(dfDollar('<p></p>').text('No condition - the input is defined everywhere.'));
+  conditions.append(
+    dfDollar('<p class="math-compute-coverage"></p>').text(
+      r.coverage === 'complete'
+        ? 'Conditions: complete for real arithmetic.'
+        : 'Conditions: partial - this input may need more.',
+    ),
+  );
+  dfDollar(view).append(conditions);
+  if (r.candidates.length) {
+    const list = dfDollar('<ul class="math-compute-candidates"></ul>');
+    for (const k of r.candidates) {
+      const [text, variant] = CANDIDATE[k.status] ?? CANDIDATE.unknown;
+      const li = dfDollar('<li></li>').append(
+        formulaNode(`${c.variable} = ${k.value.latex}`, `Candidate ${k.value.latex}`, true),
+      );
+      li.append(dfDollar('<span class="badge"></span>').attr('data-variant', variant).text(text));
+      list.append(li);
+    }
+    dfDollar(view).append(
+      dfDollar('<section class="math-compute-candidates-box"></section>')
+        .append(dfDollar('<h4></h4>').text('Candidates'))
+        .append(list),
+    );
+  }
+  if (r.steps.length) {
+    const nav = dfDollar('<nav class="math-compute-steps"></nav>').attr('aria-label', 'Steps');
+    const list = dfDollar('<ol></ol>');
+    r.steps.forEach((s, i) => {
+      const button = dfDollar('<button type="button" class="math-compute-step"></button>')
+        .attr('data-math-step', String(i))
+        .text(s.description);
+      if (step && i === c.step) button.attr('aria-current', 'step');
+      list.append(dfDollar('<li></li>').append(button));
+    });
+    nav.append(list);
+    const tools = dfDollar('<div class="math-compute-step-tools"></div>');
+    // from the result, Next opens the first step; from the first step, Previous returns to the result
+    tools.append(
+      dfDollar(
+        '<button type="button" class="btn" data-variant="outline" data-size="sm" data-math-step-prev>Previous</button>',
+      ).attr('disabled', step ? null : ''),
+    );
+    tools.append(
+      dfDollar(
+        '<button type="button" class="btn" data-variant="outline" data-size="sm" data-math-step-next>Next</button>',
+      ).attr('disabled', step && c.step >= r.steps.length - 1 ? '' : null),
+    );
+    if (step)
+      tools.append(
+        dfDollar(
+          '<button type="button" class="btn" data-variant="ghost" data-size="sm" data-math-step-result>Result</button>',
+        ),
+      );
+    nav.append(tools);
+    dfDollar(view).append(nav);
+  }
+  if (r.notices.length) {
+    const list = dfDollar('<ul class="math-compute-notices"></ul>');
+    for (const n of r.notices) list.append(dfDollar('<li></li>').text(n));
+    dfDollar(view).append(list);
+  }
+  if (el._computeRecorded === JSON.stringify(r))
+    dfDollar(view).append(
+      dfDollar('<p class="math-compute-recorded"></p>').text(
+        `Recorded with Compute Engine ${r.engine} - not computed on this page. Compute runs it again.`,
+      ),
+    );
+  const record = dfDollar('<details class="math-compute-record"></details>');
+  record.append(dfDollar('<summary></summary>').text('The record (JSON)'));
+  record.append(dfDollar('<pre></pre>').text(JSON.stringify(r, null, 2)));
+  dfDollar(view).append(record);
+  el._computeView = key;
+}
+
+// -- jobs ------------------------------------------------------------------------------
+
+/** the panels that hold a worker - init() lets the worker of a panel taken out of the page go */
+const workers = new Set<HTMLElement>();
+
+/** stop a running job: the worker is terminated (the next job starts a new one) */
+function stop(el: HTMLElement): void {
+  el._computeCancel?.();
+}
+
+/** run the current input in the worker; resolves when the panel landed in 'result', 'unsupported' or 'error' */
+function start(el: HTMLElement, c: Required<MathComputeConfig>): Promise<void> {
+  stop(el);
+  const timeout = Math.min(60_000, Math.max(100, Number(el.dataset.timeout) || 5000));
+  const id = (el._computeJob ?? 0) + 1;
+  el._computeJob = id;
+  let worker: Worker;
+  try {
+    worker = el._computeWorker ?? startWorker();
+  } catch (err) {
+    return Promise.resolve(
+      land(
+        el,
+        'error',
+        { message: `The compute worker could not start: ${err instanceof Error ? err.message : String(err)}` },
+        'error',
+      ),
+    );
+  }
+  el._computeWorker = worker;
+  workers.add(el);
+  return new Promise<void>((resolve) => {
+    let timer = 0;
+    const finish = (name: string, patch: MathComputeConfig, status: MathResultDetail['status']): void => {
+      clearTimeout(timer);
+      worker.removeEventListener('message', onMessage);
+      worker.removeEventListener('error', onError);
+      el._computeCancel = undefined;
+      if (el._computeJob === id) land(el, name, patch, status);
+      resolve();
+    };
+    const kill = (): void => {
+      worker.terminate();
+      if (el._computeWorker === worker) el._computeWorker = undefined;
+    };
+    const onMessage = (e: MessageEvent): void => {
+      const d = e.data as { id: number; phase?: string; status?: string; result?: MathResult; message?: string };
+      if (d.id !== id) return;
+      if (d.phase === 'loaded') {
+        // the deadline counts the computation, not the first download of the engine
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          kill();
+          finish(
+            'error',
+            { message: `The computation took longer than ${timeout / 1000} s and was stopped.` },
+            'error',
+          );
+        }, timeout) as unknown as number;
+        return;
+      }
+      if (d.status === 'ok' && d.result) finish('result', { result: mathClone(d.result), step: -1, message: '' }, 'ok');
+      else
+        finish(
+          d.status === 'unsupported' ? 'unsupported' : 'error',
+          { message: d.message || '' },
+          d.status === 'unsupported' ? 'unsupported' : 'error',
+        );
+    };
+    const onError = (e: ErrorEvent): void => {
+      e.preventDefault();
+      kill();
+      finish('error', { message: e.message || 'The compute worker failed.' }, 'error');
+    };
+    el._computeCancel = () => {
+      kill();
+      finish('default', { message: '' }, 'cancelled');
+    };
+    timer = setTimeout(() => {
+      kill();
+      finish('error', { message: `The Compute Engine did not load within ${LOAD_MS / 1000} s.` }, 'error');
+    }, LOAD_MS) as unknown as number;
+    worker.addEventListener('message', onMessage);
+    worker.addEventListener('error', onError);
+    const job: MathJob = {
+      latex: c.latex,
+      mathJson: c.mathJson,
+      operation: c.operation,
+      right: c.right,
+      comparison: c.comparison,
+      variable: c.variable,
+      order: c.order,
+      context: c.context,
+    };
+    worker.postMessage({ id, url: engine(), job });
+  });
+}
+
+/** where a job ends: the state it lands in, and the event that reports it */
+function land(el: HTMLElement, name: string, patch: MathComputeConfig, status: MathResultDetail['status']): void {
+  void mathComputeApi.setState(el, name, patch as Record<string, unknown>);
+  const result = status === 'ok' ? (el._computeConfig?.result ?? null) : null;
+  // a computation ended - a figure, a table or a paper section follows its result
+  el.dispatchEvent(
+    new CustomEvent<MathResultDetail>('math-result', {
+      bubbles: true,
+      detail: { status, result: result ? mathClone(result) : null, message: patch.message ?? '' },
+    }),
+  );
+}
+
+// -- states ----------------------------------------------------------------------------
+
+/** UI side of setState - the only function that switches a panel's state */
+function triggerStateChange(
+  el: HTMLElement,
+  name: string,
+  input: MathComputeConfig,
+  incoming: MathComputeConfig,
+): Promise<void> | void {
+  const previous = el._computeConfig;
+  let c = checked(input);
+  // an input that changed makes a result stale - unless this very call hands one (a recorded result)
+  if (previous && inputsOf(previous) !== inputsOf(c) && !Object.hasOwn(incoming, 'result'))
+    c = { ...c, result: null, step: -1 };
+  if (name !== 'computing') stop(el);
+  let landed = name;
+  if ((name === 'result' || name === 'explaining') && !c.result) landed = 'default';
+  else if (name === 'explaining' && c.result && !c.result.steps.length) landed = 'result';
+  if (landed === 'explaining' && c.result) c = { ...c, step: Math.min(Math.max(c.step, 0), c.result.steps.length - 1) };
+  if (landed === 'result') c = { ...c, step: -1 };
+  if (landed !== name) el.dataset.stateName = landed;
+  el._computeConfig = c;
+  // the form controls show the input (a value set through the API reaches them)
+  const source = sourceOf(el);
+  if (source && c.mathJson === null && source.value !== c.latex) source.value = c.latex;
+  const operation = operationOf(el);
+  if (operation && operation.value !== c.operation) operation.value = c.operation;
+  const right = rightOf(el);
+  if (right && right.value !== c.right) right.value = c.right;
+  applyMarkup(el, landed);
+  announce(el, landed, c);
+  paint(el, landed, c);
+  if (landed === 'computing') return start(el, c);
+}
+
+/** Registry-level API; pass the element explicitly. Unknown names throw. */
+export const mathComputeApi = componentState({
+  component: 'math-compute',
+  states: mathComputeStates,
+  mergeConfig: true,
+  apply: (el, state, _previous, incoming) =>
+    triggerStateChange(el as HTMLElement, state.name, state.config as MathComputeConfig, incoming as MathComputeConfig),
+  // reflect reality: the input as typed, the result shown
+  read: (el, state) => ({
+    name: (el as HTMLElement).dataset.stateName || state.name,
+    config: mathClone({ ...state.config, ...(el as HTMLElement)._computeConfig }) as Record<string, unknown>,
+  }),
+  markup: (el, state) => {
+    const node = el as HTMLElement;
+    const config = state.config as MathComputeConfig;
+    applyMarkup(node, state.name);
+    // form controls hold their value as markup: the textarea's text, the option's selected
+    const source = sourceOf(node);
+    if (
+      source &&
+      typeof config.latex === 'string' &&
+      (config.mathJson ?? null) === null &&
+      source.textContent !== config.latex
+    )
+      dfDollar(source).text(config.latex);
+    const operation = operationOf(node);
+    if (operation && config.operation && operation.value !== config.operation)
+      dfDollar(operation)
+        .find('option')
+        .each((_, o) => {
+          dfDollar(o).attr('selected', (o as HTMLOptionElement).value === config.operation ? '' : null);
+        });
+  },
+});
+
+// -- public API ----------------------------------------------------------------------
+
+const panel = (el: HTMLElement | string): HTMLElement => {
+  const node = (typeof el === 'string' ? dfDollar(el).get(0) : el) as HTMLElement | undefined;
+  if (!node?.matches?.('.math-compute') || !node.api) throw new Error('not an initialized .math-compute');
+  return node;
+};
+
+/**
+ * Compute: the input (with `patch` applied first) runs in the worker.
+ * @param el - the .math-compute element, or a selector for it
+ * @param patch - changes to the config first (latex, mathJson, operation, right, comparison, variable, order, context)
+ * @returns resolves when the panel landed in 'result', 'unsupported' or 'error' (or a later run or Cancel took over)
+ */
+function run(el: HTMLElement | string, patch: MathComputeConfig = {}): Promise<void> {
+  const node = panel(el);
+  return Promise.resolve(
+    mathComputeApi.setState(node, 'computing', patch as Record<string, unknown>) as Promise<void> | void,
+  );
+}
+
+/**
+ * Stop a running computation - the worker is terminated, the panel returns to 'default'.
+ * @param el - the .math-compute element, or a selector for it
+ */
+function cancel(el: HTMLElement | string): void {
+  stop(panel(el));
+}
+
+/**
+ * Show one step of the engine's explanation (-1: the result). It never computes again.
+ * @param el - the .math-compute element, or a selector for it
+ * @param step - the step's index, from 0; -1 for the result
+ */
+function go(el: HTMLElement | string, step: number): void {
+  const node = panel(el);
+  void mathComputeApi.setState(node, step < 0 ? 'result' : 'explaining', { step: Math.max(-1, Math.trunc(step)) });
+}
+
+/**
+ * The next step of the explanation (from the result: the first).
+ * @param el - the .math-compute element, or a selector for it
+ */
+function next(el: HTMLElement | string): void {
+  const node = panel(el);
+  const c = node._computeConfig;
+  if (c?.result?.steps.length)
+    go(node, Math.min((node.dataset.stateName === 'explaining' ? c.step : -1) + 1, c.result.steps.length - 1));
+}
+
+/**
+ * The previous step of the explanation (from the first: the result).
+ * @param el - the .math-compute element, or a selector for it
+ */
+function prev(el: HTMLElement | string): void {
+  const node = panel(el);
+  const c = node._computeConfig;
+  if (c && node.dataset.stateName === 'explaining') go(node, c.step - 1);
+}
+
+/**
+ * The last result as JSON - the engine's whole record, to save or to record into a page.
+ * @param el - the .math-compute element, or a selector for it
+ * @returns the record as JSON, or null before a result
+ */
+function exportResult(el: HTMLElement | string): string | null {
+  const r = panel(el)._computeConfig?.result;
+  return r ? JSON.stringify(r) : null;
+}
+
+df$.mathComputeApi = mathComputeApi;
+df$.mathComputeStates = mathComputeStates;
+// public imperative API (AGENTS.md "No window globals": df$.shadcn.mathCompute)
+df$.mathCompute = { run, cancel, go, next, prev, export: exportResult, engine, url: COMPUTE_ENGINE_URL };
+
+// -- document-level behavior ----------------------------------------------------------
+
+function bindDocument(): void {
+  if (document.__mathComputeInit) return;
+  document.__mathComputeInit = true;
+  dfDollar(document).on('click', (e: Event) => {
+    const button =
+      e.target instanceof Element
+        ? (dfDollar(e.target).closest('button').get(0) as HTMLButtonElement | undefined)
+        : undefined;
+    const el = button ? (dfDollar(button).closest('.math-compute').get(0) as HTMLElement | undefined) : undefined;
+    if (!button || !el?.api || button.disabled) return;
+    if (button.hasAttribute('data-math-run')) void run(el);
+    else if (button.hasAttribute('data-math-cancel')) cancel(el);
+    else if (button.hasAttribute('data-math-step')) go(el, Number(button.dataset.mathStep));
+    else if (button.hasAttribute('data-math-step-next')) next(el);
+    else if (button.hasAttribute('data-math-step-prev')) prev(el);
+    else if (button.hasAttribute('data-math-step-result')) go(el, -1);
+  });
+  // an edit of the input: the result it no longer belongs to goes
+  dfDollar(document).on('input', (e: Event) => {
+    const t = e.target instanceof Element ? e.target : null;
+    const el = t ? (dfDollar(t).closest('.math-compute').get(0) as HTMLElement | undefined) : undefined;
+    if (!t || !el?.api) return;
+    if (t.matches('textarea.math-compute-source'))
+      void mathComputeApi.setState(el, 'default', {
+        latex: (t as HTMLTextAreaElement).value,
+        mathJson: null,
+        message: '',
+      });
+    else if (t.matches('select[data-math-operation]'))
+      void mathComputeApi.setState(el, 'default', {
+        operation: (t as HTMLSelectElement).value as MathOperation,
+        message: '',
+      });
+    else if (t.matches('[data-math-right]'))
+      void mathComputeApi.setState(el, 'default', { right: (t as HTMLInputElement).value, message: '' });
+  });
+}
+
+// -- init -------------------------------------------------------------------------------
+
+function init(): void {
+  (dfDollar('.math-compute:not([data-init])').toArray() as HTMLElement[]).forEach((el) => {
+    el.dataset.init = '';
+    bindDocument();
+    let authored: MathComputeConfig = {};
+    let problem = '';
+    const script = dfDollar(el).children('script.math-compute-config').get(0);
+    try {
+      if (script) authored = JSON.parse(script.textContent || '{}') as MathComputeConfig;
+    } catch (err) {
+      problem = `script.math-compute-config: ${err instanceof Error ? err.message : String(err)}`;
+    }
+    const base: MathComputeConfig = {
+      latex: sourceOf(el)?.value ?? '',
+      operation: (operationOf(el)?.value as MathOperation) || 'simplify',
+      right: rightOf(el)?.value ?? '',
+    };
+    let config: Required<MathComputeConfig>;
+    try {
+      config = checked({ ...base, ...authored });
+    } catch (err) {
+      problem ||= err instanceof Error ? err.message : String(err);
+      config = checked(base);
+    }
+    // a recorded result shows as recorded - it was not computed on this page
+    if (config.result) el._computeRecorded = JSON.stringify(config.result);
+    el._computeConfig = config;
+    const name = problem ? 'error' : config.result ? (config.step >= 0 ? 'explaining' : 'result') : 'default';
+    // el.store + el.api (AGENTS.md "State through stores")
+    bindComponent(el, mathComputeApi, { name, config: { ...config, message: problem } });
+    void mathComputeApi.setState(el, name, { ...config, message: problem });
+  });
+  // a panel taken out of the page lets its worker go
+  for (const el of workers)
+    if (!el.isConnected) {
+      stop(el);
+      el._computeWorker?.terminate();
+      el._computeWorker = undefined;
+      workers.delete(el);
+    }
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

@@ -1,0 +1,308 @@
+---
+title: "Compute & Explain"
+description: "Compute & Explain component - simplify, solve, differentiate, compare and evaluate with the official Cortex Compute Engine in a worker; the engine's own steps, every condition the input needs, candidate checks and an honest unknown."
+slug: "math-compute"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="math-compute" title="Compute & Explain" component="math-compute">
+  Symbolic computation that shows its work and its limits. Type an expression, pick an operation, press Compute: the official Cortex Compute Engine runs in a worker and the panel shows the engine's record - the result, the steps the engine reports, every condition the input needs, a solver's candidates checked in the original equation. A comparison the engine cannot decide stays unknown. Nothing is computed until you ask.
+</PageHeader>
+
+<SkillPanel component="math-compute">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;section&gt;</code> with a native form - a <code>&lt;textarea&gt;</code>, an operation <code>&lt;select&gt;</code>, Compute and Cancel - and a Worker the component starts from its own source.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API" title="the engine off the main thread; terminate() stops it"><code>Worker</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static" title="the worker from the component's own source"><code>Blob URL</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="computing, errors, unsupported input"><code>&lt;output role="status"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" title="the whole record as JSON"><code>&lt;details&gt;</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.math-compute</code>
+    <code>.math-compute-source</code>
+    <code>.math-compute-tools</code>
+    <code>.math-compute-config</code>
+    <code>.math-compute-view</code>
+    <code>.math-compute-status</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="@cortex-js/compute-engine@0.149.0" description="Official engine (cortex-js/compute-engine, MIT) - dist/esm-min/compute-engine.js via jsDelivr, pinned; imported by the worker" />
+    <Variant name='meta name="math-compute-engine"' description="Self-host: point the worker at your copy of the whole esm-min/ folder" />
+    <Variant name="a fresh engine per job" description="Assumptions and declarations never leak from one computation into the next" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• The status line (<code>role="status"</code>) announces computing, errors and unsupported input; the panel is <code>aria-busy</code> while computing</SkillText>
+  <SkillText dense>• Results are Formula Rendering elements - MathML for screen readers</SkillText>
+  <SkillText dense>• The step list marks the step shown with <code>aria-current="step"</code></SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Simplify, and what it holds under" hint="Press Compute. (x² - 1)/(x - 1) simplifies to x + 1 - but only where x ≠ 1: the condition is read from the input as written, before the engine's canonical form could drop it. Open the step the engine reports, or try another operation."
+<section class="math-compute" aria-label="Simplify a rational expression">
+  <label class="label" for="cancel-source">Expression</label>
+  <textarea class="math-compute-source" id="cancel-source">\frac{x^2-1}{x-1}</textarea>
+  <div class="math-compute-tools">
+    <select class="select" data-math-operation aria-label="Operation">
+      <option value="simplify" selected>Simplify</option>
+      <option value="evaluate">Evaluate</option>
+      <option value="approximate">Approximate</option>
+      <option value="solve">Solve for x</option>
+      <option value="differentiate">Differentiate</option>
+      <option value="canonicalize">Canonical form</option>
+      <option value="inspect">Inspect</option>
+    </select>
+    <button class="btn" type="button" data-math-run>Compute</button>
+    <button class="btn" type="button" data-variant="outline" data-math-cancel>Cancel</button>
+  </div>
+</section>
+```
+
+## Squaring an equation
+
+<DocText>Squaring both sides of √(x + 1) = x - 1 is not an equivalence: it can add solutions. The engine's steps say so (that step is marked as an implication), its quadratic formula names the candidates 0 and 3, and the component substitutes each into the original equation: 0 is rejected, 3 accepted. Step through the explanation with Next and Previous - nothing is computed again.</DocText>
+
+```html example label="An extraneous root" schema="none" previewStyle="align-items:stretch;"
+<section class="math-compute" aria-label="Solve a radical equation">
+  <label class="label" for="radical-source">Equation</label>
+  <textarea class="math-compute-source" id="radical-source">\sqrt{x+1}=x-1</textarea>
+  <div class="math-compute-tools">
+    <button class="btn" type="button" data-math-run>Solve for x</button>
+  </div>
+  <script type="application/json" class="math-compute-config">
+    { "operation": "solve", "variable": "x" }
+  </script>
+</section>
+```
+
+## Assumptions
+
+<DocText>The <code>context</code> declares variables and assumes predicates (MathJSON comparisons or memberships) for one computation - every job starts a fresh engine, so nothing leaks into the next. Assumed with x &gt; 0, √(x²) is x; without it, |x|. Contradictory assumptions are an error, not a result.</DocText>
+
+```html example label="√(x²) where x > 0" schema="none" previewStyle="align-items:stretch;"
+<section class="math-compute" aria-label="Simplify under an assumption">
+  <label class="label" for="assume-source">Expression</label>
+  <textarea class="math-compute-source" id="assume-source">\sqrt{x^2}</textarea>
+  <div class="math-compute-tools"
+    ><button class="btn" type="button" data-math-run>Simplify, assuming x &gt; 0</button></div
+  >
+  <script type="application/json" class="math-compute-config">
+    {
+      "operation": "simplify",
+      "context": {
+        "domain": "real",
+        "variables": { "x": "real" },
+        "assumptions": [["Greater", "x", 0]],
+        "precision": 34
+      }
+    }
+  </script>
+</section>
+```
+
+## A recorded result
+
+<DocText>A page can carry a result instead of computing it: <code>df$.shadcn.mathCompute.export(el)</code> returns the record as JSON, and a <code>result</code> in <code>script.math-compute-config</code> shows it on load - labeled as recorded, with the engine version - without loading the engine. This one is the derivative of x³ sin x, its three steps as the engine reported them. Compute runs it again.</DocText>
+
+```html example label="Differentiated once, shown without the engine" schema="none" previewStyle="align-items:stretch;"
+<section class="math-compute" aria-label="A recorded derivative">
+  <label class="label" for="recorded-source">Expression</label>
+  <textarea class="math-compute-source" id="recorded-source">x^3\sin(x)</textarea>
+  <div class="math-compute-tools"><button class="btn" type="button" data-math-run>Differentiate again</button></div>
+  <script type="application/json" class="math-compute-config">
+    {
+      "operation": "differentiate",
+      "result": {
+        "schemaVersion": 1,
+        "engine": "0.149.0",
+        "operation": "differentiate",
+        "input": { "latex": "x^3\\sin(x)", "json": ["InvisibleOperator", ["Power", "x", 3], ["Sin", "x"]] },
+        "canonical": { "latex": "\\sin(x)x^3", "json": ["Multiply", ["Sin", "x"], ["Power", "x", 3]] },
+        "result": {
+          "latex": "\\cos(x)x^3+3\\sin(x)x^2",
+          "json": [
+            "Add",
+            ["Multiply", ["Cos", "x"], ["Power", "x", 3]],
+            ["Multiply", 3, ["Sin", "x"], ["Power", "x", 2]]
+          ]
+        },
+        "comparison": null,
+        "conditions": [],
+        "coverage": "partial",
+        "steps": [
+          {
+            "before": {
+              "latex": "\\frac{\\mathrm{d}(\\sin(x)x^3)}{\\mathrm{d}x}",
+              "json": ["D", ["Multiply", ["Sin", "x"], ["Power", "x", 3]], "x"]
+            },
+            "after": {
+              "latex": "\\frac{\\mathrm{d}\\sin(x)}{\\mathrm{d}x}x^3+\\sin(x)\\frac{\\mathrm{d}x^3}{\\mathrm{d}x}",
+              "json": [
+                "Add",
+                ["Multiply", ["D", ["Sin", "x"], "x"], ["Power", "x", 3]],
+                ["Multiply", ["Sin", "x"], ["D", ["Power", "x", 3], "x"]]
+              ]
+            },
+            "rule": "derivative.product-rule",
+            "description": "Apply the product rule: (u·v)′ = u′·v + u·v′",
+            "relation": "transform"
+          },
+          {
+            "before": {
+              "latex": "\\frac{\\mathrm{d}\\sin(x)}{\\mathrm{d}x}x^3+\\sin(x)\\frac{\\mathrm{d}x^3}{\\mathrm{d}x}",
+              "json": [
+                "Add",
+                ["Multiply", ["D", ["Sin", "x"], "x"], ["Power", "x", 3]],
+                ["Multiply", ["Sin", "x"], ["D", ["Power", "x", 3], "x"]]
+              ]
+            },
+            "after": {
+              "latex": "\\cos(x)x^3+\\sin(x)\\frac{\\mathrm{d}x^3}{\\mathrm{d}x}",
+              "json": [
+                "Add",
+                ["Multiply", ["Cos", "x"], ["Power", "x", 3]],
+                ["Multiply", ["Sin", "x"], ["D", ["Power", "x", 3], "x"]]
+              ]
+            },
+            "rule": "derivative.known-derivative",
+            "description": "Differentiate using a known derivative",
+            "relation": "transform"
+          },
+          {
+            "before": {
+              "latex": "\\cos(x)x^3+\\sin(x)\\frac{\\mathrm{d}x^3}{\\mathrm{d}x}",
+              "json": [
+                "Add",
+                ["Multiply", ["Cos", "x"], ["Power", "x", 3]],
+                ["Multiply", ["Sin", "x"], ["D", ["Power", "x", 3], "x"]]
+              ]
+            },
+            "after": {
+              "latex": "\\cos(x)x^3+3\\sin(x)x^2",
+              "json": [
+                "Add",
+                ["Multiply", ["Cos", "x"], ["Power", "x", 3]],
+                ["Multiply", 3, ["Sin", "x"], ["Power", "x", 2]]
+              ]
+            },
+            "rule": "derivative.power-rule",
+            "description": "Apply the power rule: (uⁿ)′ = n·uⁿ⁻¹·u′",
+            "relation": "transform"
+          }
+        ],
+        "candidates": [],
+        "notices": [
+          "The engine put the input into its canonical form before any step - that rewrite is not traced.",
+          "The conditions are complete only for real arithmetic, integer powers and square roots - this input may need more.",
+          "The steps are the engine's own report, not a proof."
+        ]
+      }
+    }
+  </script>
+</section>
+```
+
+## Deadline and Cancel
+
+<DocText>A symbolic computation cannot be interrupted from outside - so the worker is terminated: when <code>data-timeout</code> (ms, default 5000) passes, or on Cancel. The next computation starts a new worker. 200000! takes far longer than half a second:</DocText>
+
+```html example label="Stopped after half a second" schema="none" previewStyle="align-items:stretch;"
+<section class="math-compute" aria-label="A computation past its deadline" data-timeout="500">
+  <label class="label" for="slow-source">Expression</label>
+  <textarea class="math-compute-source" id="slow-source">200000!</textarea>
+  <div class="math-compute-tools">
+    <button class="btn" type="button" data-math-run>Evaluate</button>
+    <button class="btn" type="button" data-variant="outline" data-math-cancel>Cancel</button>
+  </div>
+  <script type="application/json" class="math-compute-config">
+    { "operation": "evaluate" }
+  </script>
+</section>
+```
+
+## Comparing - and an honest unknown
+
+<DocText><code>compare</code> takes the other side from an <code>&lt;input data-math-right&gt;</code> and a <code>comparison</code>: <code>identity</code> (equal for every value - the engine proves it), <code>value</code> (equal values) or <code>structural</code> (the same expression). When the engine cannot decide, the answer is unknown - never turned into false.</DocText>
+
+```html example label="Proven, and undecided" schema="none" previewStyle="align-items:stretch;"
+<div style="display: grid; gap: 1rem">
+  <section class="math-compute" aria-label="Compare as an identity">
+    <label class="label" for="id-left">Left</label>
+    <textarea class="math-compute-source" id="id-left">(x+1)^2</textarea>
+    <label class="label" for="id-right">Right</label>
+    <input class="input" id="id-right" data-math-right value="x^2+2x+1" />
+    <div class="math-compute-tools"
+      ><button class="btn" type="button" data-math-run>Compare as an identity</button></div
+    >
+    <script type="application/json" class="math-compute-config">
+      { "operation": "compare", "comparison": "identity" }
+    </script>
+  </section>
+  <section class="math-compute" aria-label="Compare by value">
+    <label class="label" for="value-left">Left</label>
+    <textarea class="math-compute-source" id="value-left">\sin(x)^2+\cos(x)^2</textarea>
+    <label class="label" for="value-right">Right</label>
+    <input class="input" id="value-right" data-math-right value="1" />
+    <div class="math-compute-tools"><button class="btn" type="button" data-math-run>Compare by value</button></div>
+    <script type="application/json" class="math-compute-config">
+      { "operation": "compare", "comparison": "value" }
+    </script>
+  </section>
+</div>
+```
+
+## Loading and security
+
+<DocText>The worker imports <code>https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine@0.149.0/dist/esm-min/compute-engine.js</code> on the first computation - pinned, never <code>@latest</code>. The worker starts from a Blob URL, so a Content Security Policy must allow <code>worker-src blob:</code> and the engine's origin in <code>script-src</code>. To self-host, copy the whole <code>dist/esm-min/</code> folder (the entry loads its chunks beside it):</DocText>
+
+```html
+<meta name="math-compute-engine" content="/vendor/compute-engine/esm-min/compute-engine.js" />
+```
+
+<DocText>Inputs are bounded (64 KiB of TeX, results up to 2 MiB), assumptions must be comparisons or memberships, and no compiled code, custom rule or network request runs on the input - it never leaves the page.</DocText>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each panel:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - ready to compute, no result shown</li>
+    <li><code>computing</code> - a job runs in the worker; it lands in <code>result</code>, <code>unsupported</code> or <code>error</code></li>
+    <li><code>result</code> - the engine's record: result, conditions, candidates, steps</li>
+    <li><code>explaining</code> - one step, before and after (<code>config.step</code>)</li>
+    <li><code>unsupported</code> - outside what the adapter supports for this input</li>
+    <li><code>error</code> - not computable: invalid TeX, contradictory assumptions, the deadline, the engine not loading</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/math-compute-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/math-compute.schema.json"><code>math-compute.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `computing` | `boolean` | `true`, `false` | `false` | A job runs in the worker (Cancel stops it); it lands in result, unsupported or error. |
+| `result` | `boolean` | `true`, `false` | `false` | The engine's record: result, conditions, candidates and steps. |
+| `explaining` | `boolean` | `true`, `false` | `false` | One step of the engine's explanation, before and after (`config.step`). |
+| `unsupported` | `boolean` | `true`, `false` | `false` | Outside what the adapter supports for this input (the status says why). |
+| `error` | `boolean` | `true`, `false` | `false` | Not computable: invalid TeX, contradictory assumptions, the deadline, the engine not loading. |
+```
+
+</StatesSection>
+
+<ApiSection component="math-compute" />
+
+<SourceFiles component="math-compute" />
+
+</DocPage>

@@ -1,0 +1,179 @@
+---
+title: "Formula Editing"
+description: "Formula Editing component - the official MathLive editor over a native textarea that stays the form control: submission, reset, required and disabled are the browser's; toolbar commands, a themed virtual keyboard and a live preview."
+slug: "math-editor"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="math-editor" title="Formula Editing" component="math-editor">
+  Formula input as you would write it on paper. A <code>&lt;textarea class="math-editor-source"&gt;</code> holds the TeX; the official MathLive editor takes over and edits the formula in place - fractions, powers, roots, a virtual keyboard. The textarea stays the form control, so submission, reset, <code>required</code> and <code>disabled</code> work as for any field. Without JavaScript, or until MathLive arrives, the textarea edits the TeX.
+</PageHeader>
+
+<SkillPanel component="math-editor">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;textarea&gt;</code> in a <code>.math-editor</code> with its <code>&lt;label&gt;</code> - the value, the form participation and the validity are native; MathLive's <code>&lt;math-field&gt;</code> is the input surface.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, setCustomValidity, the invalid event"><code>Constraint validation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements" title="MathLive's math-field"><code>Custom elements</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::part" title="theming the field's shadow parts"><code>::part()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" title="MathLive loads only when an editor exists"><code>import()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.math-editor</code>
+    <code>.math-editor-source</code>
+    <code>.math-editor-tools</code>
+    <code>.math-editor-field</code>
+    <code>.math-editor-keyboard</code>
+    <code>.math-editor-message</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="mathlive@0.111.0" description="Official editor (arnog/mathlive, MIT) - mathlive.min.mjs via jsDelivr, pinned; fonts from fonts/ beside it" />
+    <Variant name='meta name="math-editor-module"' description="Self-host: point the loader at your copy of the same build" />
+    <Variant name="no sounds, no Compute Engine" description="MathLive's keypress sounds and its built-in computation link are off" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• The <code>&lt;label for&gt;</code> names the field; MathLive speaks the formula</SkillText>
+  <SkillText dense>• A failed submission sets <code>aria-invalid</code>, announces the message and focuses the field - in the first empty placeholder</SkillText>
+  <SkillText dense>• The toolbar's commands return focus to the field</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example part label="Formula Editing"
+<div class="math-editor">
+  <label class="label" for="given-source">Given</label>
+  <textarea class="math-editor-source" id="given-source" readonly>a^2 + b^2 = c^2</textarea>
+</div>
+```
+
+```html example label="A formula field in a form" hint="Type into the field, or use the toolbar: Fraction wraps what is before the caret. Submit with an empty placeholder left and the editor says what is missing. Reset restores the formula - the textarea is the form control."
+<form style="display: grid; gap: 0.75rem; max-width: 30rem; margin-inline: auto">
+  <div class="math-editor" data-math-preview="area-preview">
+    <label class="label" for="area-source">Area of a circle</label>
+    <textarea class="math-editor-source" id="area-source" name="area" required>A = \pi r^2</textarea>
+    <div class="math-editor-tools" role="group" aria-label="Formula tools">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="fraction"
+        >Fraction</button
+      >
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="power">Power</button>
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="root">Root</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="sm" data-math-command="undo">Undo</button>
+      <button type="button" class="btn" data-variant="ghost" data-size="sm" data-math-command="keyboard"
+        >Keyboard</button
+      >
+    </div>
+  </div>
+  <figure class="math-renderer" id="area-preview" data-variant="card" aria-label="Preview">
+    <code class="math-renderer-source">A = \pi r^2</code>
+    <figcaption>Preview</figcaption>
+  </figure>
+  <div class="flex gap-2">
+    <button class="btn" type="submit">Save</button>
+    <button class="btn" type="reset" data-variant="outline">Reset</button>
+  </div>
+</form>
+```
+
+## Readonly and disabled
+
+<DocText>The authored textarea names the starting state: <code>readonly</code> shows a formula that can be selected and copied, not edited (and is not validated); <code>disabled</code> is neither editable nor submitted. The toolbar follows.</DocText>
+
+```html example label="Given and locked" schema="none" previewStyle="align-items:stretch;"
+<div style="display: grid; gap: 1rem; max-width: 30rem; margin-inline: auto">
+  <div class="math-editor">
+    <label class="label" for="given-source">Given</label>
+    <textarea class="math-editor-source" id="given-source" readonly>a^2 + b^2 = c^2</textarea>
+  </div>
+  <div class="math-editor">
+    <label class="label" for="locked-source">Locked</label>
+    <textarea class="math-editor-source" id="locked-source" disabled>E = mc^2</textarea>
+    <div class="math-editor-tools" role="group" aria-label="Formula tools">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="fraction"
+        >Fraction</button
+      >
+    </div>
+  </div>
+</div>
+```
+
+## The virtual keyboard
+
+<DocText>MathLive has one virtual keyboard per window. The <code>keyboard</code> command (or the <code>keyboard-open</code> state) opens it in the editor's own container, below the field, in the theme's colors and radius; when the second editor opens it, the first one closes its own.</DocText>
+
+```html example label="Two editors, one keyboard" schema="none" previewStyle="align-items:stretch;"
+<div style="display: grid; gap: 1rem; max-width: 34rem; margin-inline: auto">
+  <div class="math-editor">
+    <label class="label" for="kb-one-source">Left side</label>
+    <textarea class="math-editor-source" id="kb-one-source">\sin^2 x + \cos^2 x</textarea>
+    <div class="math-editor-tools" role="group" aria-label="Left side tools">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="keyboard"
+        >Keyboard</button
+      >
+    </div>
+  </div>
+  <div class="math-editor">
+    <label class="label" for="kb-two-source">Right side</label>
+    <textarea class="math-editor-source" id="kb-two-source">1</textarea>
+    <div class="math-editor-tools" role="group" aria-label="Right side tools">
+      <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="keyboard"
+        >Keyboard</button
+      >
+    </div>
+  </div>
+</div>
+```
+
+## Following the formula
+
+<DocText><code>data-math-preview="&lt;id&gt;"</code> keeps a <DocLink href="math-renderer.html">Formula Rendering</DocLink> element in step with the editor (empty placeholders left out), as in the first example. Every edit also dispatches <code>math-input</code> (bubbles) with the TeX and whether it is complete; <code>df$.shadcn.mathEditor.setValue(el, latex)</code> sets the formula from code - an unchanged value keeps the caret and the undo history.</DocText>
+
+## Loading
+
+<DocText>The first editor on a page imports <code>https://cdn.jsdelivr.net/npm/mathlive@0.111.0/mathlive.min.mjs</code> - pinned, never <code>@latest</code>; its fonts load from the <code>fonts/</code> folder beside it. To self-host, copy <code>mathlive.min.mjs</code> and <code>fonts/</code> and point the component at the module:</DocText>
+
+```html
+<meta name="math-editor-module" content="/vendor/mathlive/mathlive.min.mjs" />
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each editor:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - editable (the field once MathLive loaded, else the textarea)</li>
+    <li><code>readonly</code> - selectable and copyable, not editable</li>
+    <li><code>disabled</code> - not editable, not focusable, not submitted</li>
+    <li><code>invalid</code> - failed validation: <code>aria-invalid</code> and the message (<code>config.message</code>)</li>
+    <li><code>keyboard-open</code> - editable, with the virtual keyboard open below the field</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/math-editor-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/math-editor.schema.json"><code>math-editor.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `readonly` | `boolean` | `true`, `false` | `false` | Selectable and copyable, not editable (the textarea's readonly). |
+| `disabled` | `boolean` | `true`, `false` | `false` | Not editable, not focusable, not submitted (the textarea's disabled). |
+| `invalid` | `boolean` | `true`, `false` | `false` | Failed validation: `aria-invalid` and an `output role="alert"` message. |
+| `keyboard-open` | `boolean` | `true`, `false` | `false` | Editable, with the virtual keyboard open in the editor's container. |
+```
+
+</StatesSection>
+
+<ApiSection component="math-editor" />
+
+<SourceFiles component="math-editor" />
+
+</DocPage>

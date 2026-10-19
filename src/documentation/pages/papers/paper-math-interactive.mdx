@@ -1,0 +1,175 @@
+---
+title: "Interactive Math - Paper Gallery"
+description: "A short paper whose mathematics the reader works with: a formula linked to its symbol table, a model the reader edits while the equation follows, and a derivative the Compute Engine explains step by step."
+slug: "paper-math-interactive"
+---
+
+import { DocPage, PageHeader, DocLink, SourceFiles } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="paper-math-interactive" title="Interactive Math" component="paper">
+  A paper whose formulas answer back. The model is a <DocLink href="math-renderer.html">Formula Rendering</DocLink> element with selectable terms, linked to its symbol table; the reader changes the model in a <DocLink href="math-editor.html">Formula Editing</DocLink> field and the numbered equation follows; and a <DocLink href="math-compute.html">Compute &amp; Explain</DocLink> panel differentiates it, with the steps the engine reports and the condition the division needs.
+</PageHeader>
+
+```html example label="Reading a growth curve" schema="none" hint="Select a symbol - in the formula, on its button or in the table. Edit the model in section 2 and equation (2) follows. In section 3, press Differentiate: the Compute Engine runs in a worker and reports six rules; step through them." previewStyle="align-items:stretch;padding:0;"
+<article class="paper" data-print="a4" aria-labelledby="pmi-title">
+  <header class="paper-hero">
+    <p class="paper-venue"
+      ><span class="badge" data-variant="secondary">Interactive note</span
+      ><span>defuss-shadcn · <time datetime="2026-10-13">13 October 2026</time></span></p
+    >
+    <h1 class="paper-title" id="pmi-title"
+      >Reading a Growth Curve<span class="paper-title-sub"
+        >The logistic model - a formula to point at, change and differentiate</span
+      ></h1
+    >
+    <ul class="paper-authors"
+      ><li>Claude</li
+      ><li>Aron Homberg</li></ul
+    >
+  </header>
+
+  <section class="paper-abstract" aria-labelledby="pmi-abstract">
+    <h2 id="pmi-abstract">Abstract</h2>
+    <p
+      >A population that grows in proportion to its size, but slows as it nears what its environment can carry, follows
+      the logistic curve. We read the model term by term, let the reader replace it, and have a computer algebra system
+      derive its rate of change - showing every rule it applied and the condition its result needs.</p
+    >
+  </section>
+
+  <section class="paper-section" aria-labelledby="pmi-s1">
+    <h2 id="pmi-s1"><span class="paper-num">1&nbsp;</span>The model</h2>
+    <p>Select a symbol in the equation, on its button or in the table - all three follow.</p>
+    <div class="paper-equation">
+      <figure class="math-renderer" id="pmi-model" aria-label="Equation 1: the logistic model">
+        <code class="math-renderer-source">P(t) = \frac{K}{1 + A e^{-rt}}</code>
+        <script type="application/json" class="math-renderer-notation">
+          {
+            "kind": "sequence",
+            "children": [
+              {
+                "kind": "sequence",
+                "id": "P",
+                "description": "P(t) - the population at time t",
+                "children": [
+                  { "kind": "symbol", "value": "P" },
+                  { "kind": "group", "delimiter": "parentheses", "child": { "kind": "symbol", "value": "t" } }
+                ]
+              },
+              { "kind": "operator", "value": "=" },
+              {
+                "kind": "fraction",
+                "numerator": { "kind": "symbol", "value": "K", "id": "K", "description": "K - the carrying capacity" },
+                "denominator": {
+                  "kind": "sequence",
+                  "children": [
+                    { "kind": "number", "value": "1" },
+                    { "kind": "operator", "value": "+" },
+                    { "kind": "symbol", "value": "A", "id": "A", "description": "A - how far below K it starts" },
+                    {
+                      "kind": "power",
+                      "base": { "kind": "symbol", "value": "e" },
+                      "exponent": {
+                        "kind": "sequence",
+                        "children": [
+                          { "kind": "operator", "value": "-" },
+                          { "kind": "symbol", "value": "r", "id": "r", "description": "r - the growth rate" },
+                          { "kind": "symbol", "value": "t", "id": "t", "description": "t - time" }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        </script>
+      </figure>
+      <span class="paper-equation-num">(1)</span>
+    </div>
+    <figure class="paper-table">
+      <table class="table">
+        <thead
+          ><tr><th scope="col">Symbol</th><th scope="col">Meaning</th><th scope="col">Unit</th></tr></thead
+        >
+        <tbody>
+          <tr data-math-for="pmi-model" data-math-term="P"
+            ><td>P(t)</td><td>the population at time t</td><td>individuals</td></tr
+          >
+          <tr data-math-for="pmi-model" data-math-term="K"
+            ><td>K</td><td>the carrying capacity - the level P approaches</td><td>individuals</td></tr
+          >
+          <tr data-math-for="pmi-model" data-math-term="A"
+            ><td>A</td><td>(K - P(0)) / P(0): how far below K it starts</td><td>-</td></tr
+          >
+          <tr data-math-for="pmi-model" data-math-term="r"
+            ><td>r</td><td>the growth rate while P is small</td><td>1 / time</td></tr
+          >
+          <tr data-math-for="pmi-model" data-math-term="t"><td>t</td><td>time</td><td>time</td></tr>
+        </tbody>
+      </table>
+      <figcaption class="paper-table-caption"><b>Table 1.</b> The symbols of equation (1), linked to it.</figcaption>
+    </figure>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pmi-s2">
+    <h2 id="pmi-s2"><span class="paper-num">2&nbsp;</span>Your model</h2>
+    <p
+      >Change the model - try the Gompertz curve,
+      <span class="math-renderer" data-variant="inline"
+        ><code class="math-renderer-source">P(t) = K e^{-A e^{-rt}}</code></span
+      >, which grows fastest earlier. Equation (2) follows as you type.</p
+    >
+    <div class="math-editor" data-math-preview="pmi-yours">
+      <label class="label" for="pmi-yours-source">Model</label>
+      <textarea class="math-editor-source" id="pmi-yours-source">P(t) = \frac{K}{1 + A e^{-rt}}</textarea>
+      <div class="math-editor-tools" role="group" aria-label="Formula tools">
+        <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="fraction"
+          >Fraction</button
+        >
+        <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="power">Power</button>
+        <button type="button" class="btn" data-variant="ghost" data-size="sm" data-math-command="undo">Undo</button>
+      </div>
+    </div>
+    <div class="paper-equation">
+      <figure class="math-renderer" id="pmi-yours" aria-label="Equation 2: your model">
+        <code class="math-renderer-source">P(t) = \frac{K}{1 + A e^{-rt}}</code>
+      </figure>
+      <span class="paper-equation-num">(2)</span>
+    </div>
+  </section>
+
+  <section class="paper-section" aria-labelledby="pmi-s3">
+    <h2 id="pmi-s3"><span class="paper-num">3&nbsp;</span>The rate of change</h2>
+    <p
+      >How fast does the population grow? Differentiate (1) with respect to t. The Compute Engine applies the quotient,
+      sum, product and exponential rules; the result holds wherever the denominator is not zero - a condition read from
+      the input, which for A &gt; 0 always holds.</p
+    >
+    <section class="math-compute" aria-label="Differentiate the logistic model with respect to t">
+      <label class="label" for="pmi-rate-source">P(t)</label>
+      <textarea class="math-compute-source" id="pmi-rate-source">\frac{K}{1+Ae^{-rt}}</textarea>
+      <div class="math-compute-tools">
+        <button class="btn" type="button" data-math-run>Differentiate with respect to t</button>
+      </div>
+      <script type="application/json" class="math-compute-config">
+        {
+          "operation": "differentiate",
+          "variable": "t",
+          "context": {
+            "domain": "real",
+            "variables": { "K": "real", "A": "real", "r": "real", "t": "real" },
+            "assumptions": [],
+            "precision": 34
+          }
+        }
+      </script>
+    </section>
+  </section>
+</article>
+```
+
+<SourceFiles component="paper" />
+</DocPage>

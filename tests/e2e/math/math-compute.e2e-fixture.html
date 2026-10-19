@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>math-compute e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/badge/badge.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/math-renderer/math-renderer.css" />
+    <link rel="stylesheet" href="/dist/components/math-compute/math-compute.css" />
+  </head>
+  <body style="padding: 2rem; max-width: 52rem; display: grid; gap: 1.5rem">
+    <!-- mirrors the doc page: simplify with an operation select, solve with an extraneous root, compare
+         (identity and value), a recorded result, assumptions, and a deadline -->
+    <section class="math-compute" id="mc-cancel" aria-label="Simplify a rational expression">
+      <label class="label" for="mc-cancel-source">Expression</label>
+      <textarea class="math-compute-source" id="mc-cancel-source">\frac{x^2-1}{x-1}</textarea>
+      <div class="math-compute-tools">
+        <select class="select" data-math-operation aria-label="Operation">
+          <option value="simplify" selected>Simplify</option>
+          <option value="evaluate">Evaluate</option>
+          <option value="approximate">Approximate</option>
+          <option value="solve">Solve for x</option>
+          <option value="differentiate">Differentiate</option>
+          <option value="canonicalize">Canonical form</option>
+          <option value="inspect">Inspect</option>
+        </select>
+        <button class="btn" type="button" data-math-run>Compute</button>
+        <button class="btn" type="button" data-variant="outline" data-math-cancel>Cancel</button>
+      </div>
+    </section>
+    <section class="math-compute" id="mc-solve" aria-label="Solve a radical equation">
+      <label class="label" for="mc-solve-source">Equation</label>
+      <textarea class="math-compute-source" id="mc-solve-source">\sqrt{x+1}=x-1</textarea>
+      <div class="math-compute-tools">
+        <button class="btn" type="button" data-math-run>Solve</button>
+        <button class="btn" type="button" data-variant="outline" data-math-cancel>Cancel</button>
+      </div>
+      <script type="application/json" class="math-compute-config">{ "operation": "solve", "variable": "x" }</script>
+    </section>
+    <section class="math-compute" id="mc-compare" aria-label="Compare two expressions">
+      <label class="label" for="mc-compare-source">Left</label>
+      <textarea class="math-compute-source" id="mc-compare-source">(x+1)^2</textarea>
+      <label class="label" for="mc-compare-right">Right</label>
+      <input class="input" id="mc-compare-right" data-math-right value="x^2+2x+1" />
+      <div class="math-compute-tools">
+        <button class="btn" type="button" data-math-run>Compare</button>
+      </div>
+      <script type="application/json" class="math-compute-config">{ "operation": "compare", "comparison": "identity" }</script>
+    </section>
+    <section class="math-compute" id="mc-recorded" aria-label="A recorded result">
+      <label class="label" for="mc-recorded-source">Expression</label>
+      <textarea class="math-compute-source" id="mc-recorded-source">\frac{x}{x}</textarea>
+      <div class="math-compute-tools">
+        <button class="btn" type="button" data-math-run>Compute again</button>
+      </div>
+      <script type="application/json" class="math-compute-config">
+        {
+          "operation": "simplify",
+          "result": {
+            "schemaVersion": 1,
+            "engine": "0.149.0",
+            "operation": "simplify",
+            "input": { "latex": "\\frac{x}{x}", "json": ["Divide", "x", "x"] },
+            "canonical": { "latex": "1", "json": 1 },
+            "result": { "latex": "1", "json": 1 },
+            "comparison": null,
+            "conditions": [{ "id": "input-0", "latex": "x\\ne0", "json": ["NotEqual", "x", 0], "origin": "input" }],
+            "coverage": "complete",
+            "steps": [],
+            "candidates": [],
+            "notices": ["The engine put the input into its canonical form before any step - that rewrite is not traced."]
+          }
+        }
+      </script>
+    </section>
+    <section class="math-compute" id="mc-assume" aria-label="Simplify under an assumption">
+      <label class="label" for="mc-assume-source">Expression</label>
+      <textarea class="math-compute-source" id="mc-assume-source">\sqrt{x^2}</textarea>
+      <div class="math-compute-tools">
+        <button class="btn" type="button" data-math-run>Simplify</button>
+      </div>
+      <script type="application/json" class="math-compute-config">{ "operation": "simplify", "context": { "domain": "real", "variables": { "x": "real" }, "assumptions": [["Greater", "x", 0]], "precision": 34 } }</script>
+    </section>
+    <section class="math-compute" id="mc-slow" aria-label="A computation past its deadline" data-timeout="400">
+      <label class="label" for="mc-slow-source">Expression</label>
+      <textarea class="math-compute-source" id="mc-slow-source">200000!</textarea>
+      <div class="math-compute-tools">
+        <button class="btn" type="button" data-math-run>Evaluate</button>
+        <button class="btn" type="button" data-variant="outline" data-math-cancel>Cancel</button>
+      </div>
+      <script type="application/json" class="math-compute-config">{ "operation": "evaluate" }</script>
+    </section>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/math-renderer/math-renderer.js"></script>
+    <script type="module" src="/dist/components/math-compute/math-compute.js"></script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>math-editor e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/math-editor/math-editor.css" />
+    <link rel="stylesheet" href="/dist/components/math-renderer/math-renderer.css" />
+  </head>
+  <body style="padding: 2rem; max-width: 40rem; display: grid; gap: 1.5rem">
+    <!-- mirrors the doc page: a form with a required editor, its toolbar and a live preview; a second
+         editor (keyboard handoff); a readonly and a disabled one -->
+    <form id="me-form">
+      <div class="math-editor" id="me-area" data-math-preview="me-preview">
+        <label class="label" for="me-area-source">Area of a circle</label>
+        <textarea class="math-editor-source" id="me-area-source" name="area" required>A = \pi r^2</textarea>
+        <div class="math-editor-tools" role="group" aria-label="Formula tools">
+          <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="fraction">Fraction</button>
+          <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="power">Power</button>
+          <button type="button" class="btn" data-variant="outline" data-size="sm" data-math-command="root">Root</button>
+          <button type="button" class="btn" data-variant="ghost" data-size="sm" data-math-command="undo">Undo</button>
+          <button type="button" class="btn" data-variant="ghost" data-size="sm" data-math-command="keyboard">Keyboard</button>
+        </div>
+      </div>
+      <figure class="math-renderer" id="me-preview" aria-label="Preview">
+        <code class="math-renderer-source">A = \pi r^2</code>
+      </figure>
+      <div class="math-editor" id="me-disabled">
+        <label class="label" for="me-disabled-source">Locked</label>
+        <textarea class="math-editor-source" id="me-disabled-source" name="locked" disabled>E = mc^2</textarea>
+      </div>
+      <button class="btn" type="submit" id="me-submit">Save</button>
+      <button class="btn" type="reset" data-variant="outline" id="me-reset">Reset</button>
+    </form>
+    <div class="math-editor" id="me-second">
+      <label class="label" for="me-second-source">Second formula</label>
+      <textarea class="math-editor-source" id="me-second-source">\sin^2 x + \cos^2 x = 1</textarea>
+    </div>
+    <div class="math-editor" id="me-readonly">
+      <label class="label" for="me-readonly-source">Given</label>
+      <textarea class="math-editor-source" id="me-readonly-source" readonly>a^2 + b^2 = c^2</textarea>
+    </div>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/math-renderer/math-renderer.js"></script>
+    <script type="module" src="/dist/components/math-editor/math-editor.js"></script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>math-renderer e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/math-renderer/math-renderer.css" />
+  </head>
+  <body style="padding: 2rem; max-width: 48rem">
+    <!-- mirrors the doc page: a display formula, a card, an inline formula, a notation tree with term
+         buttons and a linked table, an aligned derivation, a matrix, cases, and malformed TeX -->
+    <figure class="math-renderer" id="mr-quadratic" aria-label="The quadratic formula">
+      <code class="math-renderer-source">x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code>
+      <figcaption>The quadratic formula</figcaption>
+    </figure>
+    <figure class="math-renderer" data-variant="card" id="mr-card" aria-label="Euler's identity">
+      <code class="math-renderer-source">e^{i\pi} + 1 = 0</code>
+    </figure>
+    <p id="mr-sentence">
+      In every right triangle
+      <span class="math-renderer" data-variant="inline" id="mr-inline" aria-label="Pythagorean theorem"><code class="math-renderer-source">a^2 + b^2 = c^2</code></span>
+      holds.
+    </p>
+    <figure class="math-renderer" id="mr-terms" aria-label="Sample variance">
+      <code class="math-renderer-source">s^2 = \frac{\sum (x_i - m)^2}{n - 1}</code>
+      <script type="application/json" class="math-renderer-notation">
+        {
+          "kind": "sequence",
+          "children": [
+            { "kind": "power", "id": "variance", "description": "the sample variance s squared", "semanticId": "variance", "base": { "kind": "symbol", "value": "s" }, "exponent": { "kind": "number", "value": "2" } },
+            { "kind": "operator", "value": "=", "id": "equals" },
+            {
+              "kind": "fraction",
+              "id": "ratio",
+              "numerator": { "kind": "sequence", "children": [ { "kind": "symbol", "value": "sum" }, { "kind": "power", "id": "squares", "description": "the squared deviations from the mean", "base": { "kind": "group", "delimiter": "parentheses", "child": { "kind": "sequence", "children": [ { "kind": "subscript", "base": { "kind": "symbol", "value": "x" }, "subscript": { "kind": "symbol", "value": "i" } }, { "kind": "operator", "value": "-" }, { "kind": "symbol", "value": "m", "id": "mean", "semanticId": "mean", "description": "the mean m" } ] } }, "exponent": { "kind": "number", "value": "2" } } ] },
+              "denominator": { "kind": "sequence", "id": "dof", "description": "the degrees of freedom n minus 1", "children": [ { "kind": "symbol", "value": "n" }, { "kind": "operator", "value": "-" }, { "kind": "number", "value": "1" } ] }
+            }
+          ]
+        }
+      </script>
+      <figcaption>Sample variance</figcaption>
+    </figure>
+    <table id="mr-legend">
+      <tbody>
+        <tr data-math-for="mr-terms" data-math-term="variance" id="mr-row-variance"><td>s²</td><td>sample variance</td></tr>
+        <tr data-math-for="mr-terms" data-math-term="mean" id="mr-row-mean"><td>m</td><td>mean</td></tr>
+        <tr data-math-for="mr-terms" data-math-term="dof" id="mr-row-dof"><td>n - 1</td><td>degrees of freedom</td></tr>
+      </tbody>
+    </table>
+    <figure class="math-renderer" id="mr-aligned" aria-label="A derivation">
+      <code class="math-renderer-source">\begin{aligned} (a+b)^2 &amp;= (a+b)(a+b) \\ &amp;= a^2 + 2ab + b^2 \end{aligned}</code>
+    </figure>
+    <figure class="math-renderer" id="mr-matrix" aria-label="A rotation matrix">
+      <code class="math-renderer-source">R(\theta) = \begin{pmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{pmatrix}</code>
+    </figure>
+    <figure class="math-renderer" id="mr-cases" aria-label="The absolute value">
+      <code class="math-renderer-source">|x| = \begin{cases} x &amp; x \ge 0 \\ -x &amp; x &lt; 0 \end{cases}</code>
+    </figure>
+    <figure class="math-renderer" id="mr-bad" aria-label="Malformed TeX">
+      <code class="math-renderer-source">\frac{1}{</code>
+    </figure>
+    <figure class="math-renderer" id="mr-href" aria-label="An untrusted link">
+      <code class="math-renderer-source">\href{https://example.com}{x}</code>
+    </figure>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/math-renderer/math-renderer.js"></script>
+  </body>
+</html>
