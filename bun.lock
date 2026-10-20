@@ -27,6 +27,8 @@
         "@vitest/browser-playwright": "^5.0.0",
         "@vitest/coverage-v8": "^5.0.0",
         "defuss": "^3.4.9",
+        "defuss-dom-router": "0.1.1",
+        "defuss-i18n": "0.2.0",
         "defuss-rpc": "^1.6.2",
         "defuss-ssg": "^0.7.5",
         "grapesjs": "0.23.6",
@@ -772,9 +774,13 @@
 
     "defuss-dataview": ["defuss-dataview@0.4.0", "", {}, "sha512-CA1Y0vHSWocGOcM6jmX3UKij6LoSMWzJ7y7LZYQUrX0sTWWO8a4QARo7XK2+TKGyh7RC5p9XyCvKJD2dcTQK0w=="],
 
+    "defuss-dom-router": ["defuss-dom-router@0.1.1", "", {}, "sha512-tpCqkNYX55TiGnEU2Kni9x6jZV4fksVRhZ5zDRH8CVHLMobknw7PNDKNUkMJ3g+98r7LmnZVxZqtO7dYcLRZ9A=="],
+
     "defuss-dson": ["defuss-dson@1.1.2", "", {}, "sha512-oO22rsRUZaA48yv17ffu2yV+a9wcZc73vVk4DZB+VTseKMvsLIFUjcotO9EE7+R41n7p8Aand1z6RbgHGlil3A=="],
 
     "defuss-express": ["defuss-express@0.3.5", "", { "dependencies": { "defuss-open-telemetry": "^0.1.0", "ultimate-express": "^2.0.17" } }, "sha512-juonuu2/TpSmDmSXQbeYMYMG2u5a+yTLtY1GzR3kBDzcLPkvS7ZkG3Jk+rfmRIJycQNsZ/1p0tdSALGlfFRpDw=="],
+
+    "defuss-i18n": ["defuss-i18n@0.2.0", "", { "peerDependencies": { "defuss-morph": "^0.1.1", "defuss-query": "^0.1.0" } }, "sha512-ppZRhF5g2E0umpoD3Fl+ZSrhv6U1hWK06muiUsFaoMqeTxn7AjhkmfKm3UQG9uq3nxNeRXHS41+p6F8fLuTKjA=="],
 
     "defuss-morph": ["defuss-morph@0.2.0", "", {}, "sha512-QMzZL3zMB100dTycyE7NJ1ey7KE8iap7CpfXrZ+tXu+tzoWugVJdMPr7v7pm+ce8iPjLLaYgTqAUG9p35U9cKQ=="],
 

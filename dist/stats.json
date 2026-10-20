@@ -17,7 +17,7 @@
     "Website": 12
   },
   "tokens": 52,
-  "examples": 2404,
+  "examples": 2406,
   "unitTestFiles": 43,
   "withJs": 72,
   "withoutJs": 171,
@@ -4047,6 +4047,7 @@
         "message",
         "popover",
         "resizer",
+        "select",
         "session",
         "switch",
         "textarea",
@@ -4055,12 +4056,12 @@
       ],
       "jsSize": 218129,
       "jsSizeMinified": 117793,
-      "cssSize": 269001,
-      "cssSizeMinified": 177033,
-      "totalSizeGz": 96033,
-      "totalSizeGzMinified": 61869,
+      "cssSize": 273939,
+      "cssSizeMinified": 179177,
+      "totalSizeGz": 96927,
+      "totalSizeGzMinified": 62120,
       "jsSizeGzMinified": 38508,
-      "cssSizeGzMinified": 23361
+      "cssSizeGzMinified": 23612
     },
     "issue-tracker": {
       "page": "scaffold-issue-tracker",
@@ -4235,6 +4236,7 @@
         "input",
         "kbd",
         "menubar",
+        "select",
         "separator",
         "sidebar",
         "textarea",
@@ -4246,12 +4248,12 @@
       ],
       "jsSize": 249852,
       "jsSizeMinified": 137201,
-      "cssSize": 294447,
-      "cssSizeMinified": 188833,
-      "totalSizeGz": 107891,
-      "totalSizeGzMinified": 69660,
+      "cssSize": 299385,
+      "cssSizeMinified": 190977,
+      "totalSizeGz": 108806,
+      "totalSizeGzMinified": 69933,
       "jsSizeGzMinified": 44297,
-      "cssSizeGzMinified": 25363
+      "cssSizeGzMinified": 25636
     }
   }
 }

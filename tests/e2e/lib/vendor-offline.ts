@@ -7,7 +7,8 @@ import type { Page } from 'playwright';
  * marked from jsDelivr at pinned versions; the Math components import KaTeX
  * (module, stylesheet, fonts), MathLive (module, fonts) and the Compute Engine
  * (module + its chunks, inside a worker) and the Visual Editor GrapesJS (its UMD build + stylesheet) the same
- * way. The e2e files serve those builds
+ * way, and the scaffolds and Website templates import defuss-i18n and defuss-dom-router (their routing and
+ * translation, the Translation and Client-side Routing guides). The e2e files serve those builds
  * OFFLINE from the devDependencies (node_modules/<package>/<path>) - the
  * exact files the pinned URLs name - so a test never waits on the network
  * and a URL whose version is not the installed one answers 404 (the pin and
@@ -21,7 +22,7 @@ export async function offlineJsdelivr(page: Page): Promise<string[]> {
   const requests: string[] = [];
   // only the packages this repo pins as devDependencies - other jsDelivr files (echarts) stay the page's own business.
   // On the context: the Compute Engine is imported inside a worker, which page routes do not see
-  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@)/.test(u.href), async (route) => {
+  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@)/.test(u.href), async (route) => {
     const url = route.request().url();
     requests.push(url);
     // @scope/name@version/path → node_modules/@scope/name/path

@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
+import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
  * Why: the messenger scaffold is a clickdummy - its promise is that the
@@ -25,6 +27,7 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 try {
   const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+  await offlineJsdelivr(page);
   await page.goto(`${server.url}${PAGE}`);
   await page.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.session, undefined, { timeout: 10_000 });
   const shownThreads = () => page.evaluate(() => [...document.querySelectorAll('.wa-thread')].filter((t) => getComputedStyle(t).display !== 'none').map((t) => t.id));
@@ -64,7 +67,7 @@ try {
     await page.click('.wa-chat[data-chat="marco"]');
     await page.waitForTimeout(150);
     assert.deepEqual(await shownThreads(), ['c-marco']);
-    assert.equal(new URL(page.url()).hash, '#c-marco');
+    assert.equal(new URL(page.url()).hash, '#/chats/marco');
     assert.equal(await page.$$eval('.wa-chat[data-chat="marco"] .wa-unread', (b) => b.length), 0);
     assert.equal(await shown('.wa-side'), true, 'the list stays beside the conversation');
   });
@@ -166,7 +169,7 @@ try {
 
   await check('phone width: the list OR the chat, a back link, the rail as a bottom tab bar', async () => {
     await page.setViewportSize({ width: 420, height: 860 });
-    await page.goto(`${server.url}${PAGE}#chats`);
+    await page.goto(`${server.url}${PAGE}#/`);
     await page.waitForTimeout(300);
     assert.deepEqual([await shown('.wa-side'), await shown('.wa-main')], [true, false]);
     assert.equal(await shown('.wa-split > .resizer-handle'), false, 'no divider on a phone');
@@ -180,6 +183,34 @@ try {
     await page.waitForTimeout(150);
     assert.deepEqual([await shown('.wa-side'), await shown('.wa-main')], [true, false]);
   });
+  await check('routing: a chat is #/chats/:id - a deep link opens it, an unknown one shows the list, Back returns; translation: German, every target in both languages', async () => {
+    const hash = '#/chats/priya';
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}${hash}`);
+    await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '[data-wa]', { timeout: 15_000 });
+    const threads = () => p.evaluate(() => [...document.querySelectorAll('.wa-thread')].filter((t) => getComputedStyle(t).display !== 'none').map((t) => t.id));
+    assert.deepEqual(await threads(), ['c-priya']);
+    assert.equal(await p.getAttribute('.wa-chat[data-chat="priya"]', 'aria-current'), 'true');
+    await p.click('.wa-chat[data-chat="hannah"]');
+    await p.waitForFunction(() => location.hash === '#/chats/hannah');
+    assert.deepEqual(await threads(), ['c-hannah']);
+    await p.goBack();
+    await p.waitForFunction(() => !document.getElementById('c-priya')!.hidden);
+    await p.goto(`${server.url}${PAGE}#/chats/nobody`);
+    await p.waitForFunction(() => !document.getElementById('c-anna')!.hidden);
+    assert.equal(await p.$eval('[data-wa]', (a) => a.hasAttribute('data-chat-open')), false, 'no chat is open: a phone shows the list');
+    assert.deepEqual(await translationGaps(p, '[data-wa]'), [], 'every target and attribute in English and German');
+    assert.equal(await renderedLanguage(p, '[data-wa]'), 'en');
+    await chooseLanguage(p, 'de');
+    assert.equal(await renderedLanguage(p, '[data-wa]'), 'de');
+    assert.equal(await p.textContent('[data-i18n-target="calls-title"]'), 'Anrufe');
+    assert.equal(await p.getAttribute('#c-anna .wa-back', 'aria-label'), 'Zurück zu den Chats');
+    assert.equal(await p.getAttribute('#c-anna .wa-composer .textarea', 'placeholder'), 'Nachricht schreiben');
+    assert.equal(await p.getAttribute('#c-anna', 'aria-label'), 'Chat mit Anna Silva');
+    await p.close();
+  });
+
 } finally {
   await browser.close();
   server.stop();

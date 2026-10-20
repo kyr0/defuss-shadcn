@@ -17,7 +17,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <a class="btn" data-variant="outline" href="#how-it-works">How it works</a>
 </div>
 
-```html example label="Admin dashboard" schema="none" height="50" mode="desktop" hint="The whole application in one source. Views are URL fragments (#orders, #customers, #settings) shown with :target - the browser history works; ⌘K opens the Command palette; New order opens a Sheet; checking orders reveals the bulk bar (:has); the 7d / 30d / 12m switch morphs the Chart; the moon toggles dark mode." previewStyle="align-items:stretch;padding:0;"
+```html example label="Admin dashboard" schema="none" height="50" mode="desktop" hint="The whole application in one source. Views are routes (#/orders, #/customers, #/settings) of defuss-dom-router - the browser history works; the language switch translates the chrome with defuss-i18n; ⌘K opens the Command palette; New order opens a Sheet; checking orders reveals the bulk bar (:has); the 7d / 30d / 12m switch morphs the Chart; the moon toggles dark mode." previewStyle="align-items:stretch;padding:0;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <style>
   /* the scaffold's own glue - layout only; every control is a shipped component */
@@ -268,6 +268,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
 
+  .dash-locale {
+    flex: none;
+    width: auto;
+  }
   .dash-scroll {
     flex: 1;
     min-height: 0;
@@ -284,8 +288,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     padding: 1.5rem;
     scroll-margin-top: 0;
   }
-  .dash-view:target,
-  .dash-views:not(:has(.dash-view:target)) > .dash-view[data-default] {
+  .dash-view:not([hidden]) {
     display: grid;
     animation: dash-in 260ms ease both;
   }
@@ -844,15 +847,21 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .dash-view:target,
-    .dash-views:not(:has(.dash-view:target)) > .dash-view[data-default],
+    .dash-view:not([hidden]),
     .dash-bulk {
       animation: none;
     }
   }
 </style>
-<div class="dash" data-dash>
-  <aside class="app-sidebar" id="dash-sidebar" data-state="expanded" aria-label="Main navigation">
+<div class="dash" data-dash data-i18n-component>
+  <aside
+    class="app-sidebar"
+    id="dash-sidebar"
+    data-state="expanded"
+    aria-label="Main navigation"
+    data-i18n-aria-label-en="Main navigation"
+    data-i18n-aria-label-de="Hauptnavigation"
+  >
     <div class="sidebar-header">
       <button
         class="dash-workspace"
@@ -902,47 +911,77 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <span class="dropdown-shortcut">⌘2</span></button
         >
         <div class="dropdown-separator" role="separator"></div>
-        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="plus"></i> Add workspace</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"
+          ><i data-lucide="plus"></i> <span data-i18n-target="ws-add">Add workspace</span></button
+        >
       </div>
     </div>
     <div class="sidebar-content">
       <details class="sidebar-group" open>
-        <summary><span>Platform</span><i data-lucide="chevron-right"></i></summary>
-        <nav class="sidebar-nav" aria-label="Platform">
-          <a class="sidebar-link" href="#overview" aria-current="page"
-            ><i data-lucide="layout-dashboard"></i><span>Overview</span></a
+        <summary><span data-i18n-target="nav-platform-d">Platform</span><i data-lucide="chevron-right"></i></summary>
+        <nav
+          class="sidebar-nav"
+          aria-label="Platform"
+          data-i18n-aria-label-en="Platform"
+          data-i18n-aria-label-de="Plattform"
+        >
+          <a class="sidebar-link" href="#/" data-router-link aria-current="page"
+            ><i data-lucide="layout-dashboard"></i><span data-i18n-target="nav-overview-d">Overview</span></a
           >
-          <a class="sidebar-link" href="#orders"
-            ><i data-lucide="shopping-bag"></i><span>Orders</span><span class="sidebar-badge">12</span></a
+          <a class="sidebar-link" href="#/orders" data-router-link
+            ><i data-lucide="shopping-bag"></i><span data-i18n-target="nav-orders-d">Orders</span
+            ><span class="sidebar-badge">12</span></a
           >
-          <a class="sidebar-link" href="#customers"><i data-lucide="users"></i><span>Customers</span></a>
+          <a class="sidebar-link" href="#/customers" data-router-link
+            ><i data-lucide="users"></i><span data-i18n-target="nav-customers-d">Customers</span></a
+          >
           <details class="sidebar-submenu">
             <summary
-              ><i data-lucide="chart-column"></i><span>Analytics</span><i data-lucide="chevron-right"></i
+              ><i data-lucide="chart-column"></i><span data-i18n-target="nav-analytics-d">Analytics</span
+              ><i data-lucide="chevron-right"></i
             ></summary>
-            <nav class="sidebar-nav" aria-label="Analytics">
-              <a class="sidebar-link" href="#overview" data-alias="d"><span>Traffic</span></a>
-              <a class="sidebar-link" href="#overview" data-alias="d"><span>Conversion</span></a>
+            <nav
+              class="sidebar-nav"
+              aria-label="Analytics"
+              data-i18n-aria-label-en="Analytics"
+              data-i18n-aria-label-de="Analysen"
+            >
+              <a class="sidebar-link" href="#/" data-router-link data-alias="d"
+                ><span data-i18n-target="nav-traffic-d">Traffic</span></a
+              >
+              <a class="sidebar-link" href="#/" data-router-link data-alias="d"
+                ><span data-i18n-target="nav-conversion-d">Conversion</span></a
+              >
             </nav>
           </details>
         </nav>
       </details>
       <details class="sidebar-group" open>
-        <summary><span>Workspace</span><i data-lucide="chevron-right"></i></summary>
-        <nav class="sidebar-nav" aria-label="Workspace">
-          <a class="sidebar-link" href="#settings"><i data-lucide="settings"></i><span>Settings</span></a>
-          <a class="sidebar-link" href="#settings" data-alias="d"
-            ><i data-lucide="credit-card"></i><span>Billing</span></a
+        <summary><span data-i18n-target="nav-workspace-d">Workspace</span><i data-lucide="chevron-right"></i></summary>
+        <nav
+          class="sidebar-nav"
+          aria-label="Workspace"
+          data-i18n-aria-label-en="Workspace"
+          data-i18n-aria-label-de="Arbeitsbereich"
+        >
+          <a class="sidebar-link" href="#/settings" data-router-link
+            ><i data-lucide="settings"></i><span data-i18n-target="nav-settings-d">Settings</span></a
+          >
+          <a class="sidebar-link" href="#/settings" data-router-link data-alias="d"
+            ><i data-lucide="credit-card"></i><span data-i18n-target="nav-billing-d">Billing</span></a
           >
         </nav>
       </details>
     </div>
     <div class="sidebar-footer">
       <div class="dash-usage">
-        <div><strong>Storage</strong><span>7.2 of 10 GB</span></div>
+        <div
+          ><strong data-i18n-target="usage-title">Storage</strong
+          ><span data-i18n-target="usage-of">7.2 of 10 GB</span></div
+        >
         <progress class="progress" value="72" max="100" aria-label="Storage used: 72%">72%</progress>
-        <a class="btn" data-variant="outline" data-size="sm" href="#settings"
-          ><i data-lucide="sparkles"></i> Upgrade plan</a
+        <a class="btn" data-variant="outline" data-size="sm" href="#/settings" data-router-link
+          ><i data-lucide="sparkles"></i> <span data-i18n-target="upgrade">Upgrade plan</span></a
         >
       </div>
       <button
@@ -958,47 +997,91 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <i data-lucide="chevrons-up-down"></i>
       </button>
       <div id="dash-user-menu" role="menu" popover class="dropdown-content" aria-label="Account">
-        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="user"></i> Profile</button>
-        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="credit-card"></i> Billing</button>
-        <button role="menuitem" class="dropdown-item" tabindex="-1" data-go="settings"
-          ><i data-lucide="settings"></i> Settings <span class="dropdown-shortcut">⌘,</span></button
+        <button role="menuitem" class="dropdown-item" tabindex="-1"
+          ><i data-lucide="user"></i> <span data-i18n-target="um-profile">Profile</span></button
+        >
+        <button role="menuitem" class="dropdown-item" tabindex="-1"
+          ><i data-lucide="credit-card"></i> <span data-i18n-target="um-billing">Billing</span></button
+        >
+        <button role="menuitem" class="dropdown-item" tabindex="-1" data-go="/settings"
+          ><i data-lucide="settings"></i> <span data-i18n-target="um-settings">Settings</span>
+          <span class="dropdown-shortcut">⌘,</span></button
         >
         <div class="dropdown-separator" role="separator"></div>
-        <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="log-out"></i> Log out</button>
+        <button role="menuitem" class="dropdown-item" tabindex="-1"
+          ><i data-lucide="log-out"></i> <span data-i18n-target="um-logout">Log out</span></button
+        >
       </div>
     </div>
   </aside>
 
-  <dialog class="sidebar-mobile" id="dash-mobile-nav" aria-label="Navigation">
-    <button class="sidebar-mobile-close" aria-label="Close navigation"><i data-lucide="x"></i></button>
+  <dialog
+    class="sidebar-mobile"
+    id="dash-mobile-nav"
+    aria-label="Navigation"
+    data-i18n-aria-label-en="Navigation"
+    data-i18n-aria-label-de="Navigation"
+  >
+    <button
+      class="sidebar-mobile-close"
+      aria-label="Close navigation"
+      data-i18n-aria-label-en="Close navigation"
+      data-i18n-aria-label-de="Navigation schließen"
+      ><i data-lucide="x"></i
+    ></button>
     <div class="sidebar-content">
       <details class="sidebar-group" open>
-        <summary><span>Platform</span><i data-lucide="chevron-right"></i></summary>
-        <nav class="sidebar-nav" aria-label="Platform">
-          <a class="sidebar-link" href="#overview" aria-current="page"
-            ><i data-lucide="layout-dashboard"></i><span>Overview</span></a
+        <summary><span data-i18n-target="nav-platform-m">Platform</span><i data-lucide="chevron-right"></i></summary>
+        <nav
+          class="sidebar-nav"
+          aria-label="Platform"
+          data-i18n-aria-label-en="Platform"
+          data-i18n-aria-label-de="Plattform"
+        >
+          <a class="sidebar-link" href="#/" data-router-link aria-current="page"
+            ><i data-lucide="layout-dashboard"></i><span data-i18n-target="nav-overview-m">Overview</span></a
           >
-          <a class="sidebar-link" href="#orders"
-            ><i data-lucide="shopping-bag"></i><span>Orders</span><span class="sidebar-badge">12</span></a
+          <a class="sidebar-link" href="#/orders" data-router-link
+            ><i data-lucide="shopping-bag"></i><span data-i18n-target="nav-orders-m">Orders</span
+            ><span class="sidebar-badge">12</span></a
           >
-          <a class="sidebar-link" href="#customers"><i data-lucide="users"></i><span>Customers</span></a>
+          <a class="sidebar-link" href="#/customers" data-router-link
+            ><i data-lucide="users"></i><span data-i18n-target="nav-customers-m">Customers</span></a
+          >
           <details class="sidebar-submenu">
             <summary
-              ><i data-lucide="chart-column"></i><span>Analytics</span><i data-lucide="chevron-right"></i
+              ><i data-lucide="chart-column"></i><span data-i18n-target="nav-analytics-m">Analytics</span
+              ><i data-lucide="chevron-right"></i
             ></summary>
-            <nav class="sidebar-nav" aria-label="Analytics">
-              <a class="sidebar-link" href="#overview" data-alias="m"><span>Traffic</span></a>
-              <a class="sidebar-link" href="#overview" data-alias="m"><span>Conversion</span></a>
+            <nav
+              class="sidebar-nav"
+              aria-label="Analytics"
+              data-i18n-aria-label-en="Analytics"
+              data-i18n-aria-label-de="Analysen"
+            >
+              <a class="sidebar-link" href="#/" data-router-link data-alias="m"
+                ><span data-i18n-target="nav-traffic-m">Traffic</span></a
+              >
+              <a class="sidebar-link" href="#/" data-router-link data-alias="m"
+                ><span data-i18n-target="nav-conversion-m">Conversion</span></a
+              >
             </nav>
           </details>
         </nav>
       </details>
       <details class="sidebar-group" open>
-        <summary><span>Workspace</span><i data-lucide="chevron-right"></i></summary>
-        <nav class="sidebar-nav" aria-label="Workspace">
-          <a class="sidebar-link" href="#settings"><i data-lucide="settings"></i><span>Settings</span></a>
-          <a class="sidebar-link" href="#settings" data-alias="m"
-            ><i data-lucide="credit-card"></i><span>Billing</span></a
+        <summary><span data-i18n-target="nav-workspace-m">Workspace</span><i data-lucide="chevron-right"></i></summary>
+        <nav
+          class="sidebar-nav"
+          aria-label="Workspace"
+          data-i18n-aria-label-en="Workspace"
+          data-i18n-aria-label-de="Arbeitsbereich"
+        >
+          <a class="sidebar-link" href="#/settings" data-router-link
+            ><i data-lucide="settings"></i><span data-i18n-target="nav-settings-m">Settings</span></a
+          >
+          <a class="sidebar-link" href="#/settings" data-router-link data-alias="m"
+            ><i data-lucide="credit-card"></i><span data-i18n-target="nav-billing-m">Billing</span></a
           >
         </nav>
       </details>
@@ -1007,18 +1090,30 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
   <div class="dash-main">
     <header class="dash-topbar">
-      <button class="sidebar-trigger" data-sidebar-trigger="dash-sidebar" aria-label="Toggle sidebar"
+      <button
+        class="sidebar-trigger"
+        data-sidebar-trigger="dash-sidebar"
+        aria-label="Toggle sidebar"
+        data-i18n-aria-label-en="Toggle sidebar"
+        data-i18n-aria-label-de="Seitenleiste umschalten"
         ><i data-lucide="panel-left"></i
       ></button>
       <button
         class="sidebar-trigger dash-mobile-trigger"
         data-sidebar-mobile="dash-mobile-nav"
         aria-label="Open navigation"
+        data-i18n-aria-label-en="Open navigation"
+        data-i18n-aria-label-de="Navigation öffnen"
         ><i data-lucide="menu"></i
       ></button>
-      <nav class="breadcrumb" aria-label="Breadcrumb">
+      <nav
+        class="breadcrumb"
+        aria-label="Breadcrumb"
+        data-i18n-aria-label-en="Breadcrumb"
+        data-i18n-aria-label-de="Pfad"
+      >
         <ol class="breadcrumb-list">
-          <li class="breadcrumb-item"><a class="breadcrumb-link" href="#overview">Acme</a></li>
+          <li class="breadcrumb-item"><a class="breadcrumb-link" href="#/" data-router-link>Acme</a></li>
           <li class="breadcrumb-separator" aria-hidden="true">/</li>
           <li class="breadcrumb-item"
             ><span class="breadcrumb-page" aria-current="page" data-dash-crumb>Overview</span></li
@@ -1026,7 +1121,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </ol>
       </nav>
       <button class="dash-search" type="button" data-command-trigger="dash-cmd"
-        ><i data-lucide="search"></i><span>Search or jump to…</span><kbd class="kbd">⌘K</kbd></button
+        ><i data-lucide="search"></i><span data-i18n-target="search">Search or jump to…</span
+        ><kbd class="kbd">⌘K</kbd></button
       >
       <button
         class="btn dash-bell"
@@ -1035,18 +1131,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         type="button"
         popovertarget="dash-notes"
         aria-label="Notifications, 3 unread"
+        data-i18n-aria-label-en="Notifications, 3 unread"
+        data-i18n-aria-label-de="Benachrichtigungen, 3 ungelesen"
         ><i data-lucide="bell"></i><span class="dash-bell-dot" aria-hidden="true"></span
       ></button>
       <div class="popover dash-notes" id="dash-notes" popover>
         <div class="popover-header dash-notes-head"
-          ><p class="popover-title">Notifications</p
+          ><p class="popover-title" data-i18n-target="notes-title">Notifications</p
           ><button
             class="btn"
             data-variant="ghost"
             data-size="xs"
             type="button"
             data-toast="All notifications marked as read"
-            >Mark all read</button
+            ><span data-i18n-target="notes-read">Mark all read</span></button
           ></div
         >
         <ul class="dash-notes-list">
@@ -1054,7 +1152,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><span class="avatar" data-size="sm"
               ><img class="avatar-image" src="https://i.pravatar.cc/96?img=68" alt="" /></span
             ><p
-              ><strong>Marco Rossi</strong> placed order <a href="#orders">#A-20480</a
+              ><strong>Marco Rossi</strong> placed order <a href="#/orders" data-router-link>#A-20480</a
               ><time datetime="2026-10-02T11:05">2h ago</time></p
             ></li
           >
@@ -1077,6 +1175,17 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >
         </ul>
       </div>
+      <select
+        class="select dash-locale"
+        data-size="sm"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+      >
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
       <button
         class="btn"
         data-variant="ghost"
@@ -1084,6 +1193,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         type="button"
         data-dash-theme
         aria-label="Toggle dark mode"
+        data-i18n-aria-label-en="Toggle dark mode"
+        data-i18n-aria-label-de="Dunkelmodus umschalten"
         ><i data-lucide="moon"></i
       ></button>
     </header>
@@ -1091,14 +1202,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <main class="dash-scroll">
       <div class="dash-views">
         <!-- Overview -->
-        <section class="dash-view" id="overview" data-default aria-labelledby="dash-h-overview">
+        <section class="dash-view" id="overview" aria-labelledby="dash-h-overview">
           <div class="dash-head">
             <div
-              ><h1 id="dash-h-overview">Good afternoon, Anna</h1
-              ><p>Here's what happened in your store this month.</p></div
+              ><h1 id="dash-h-overview" data-i18n-target="ov-title">Good afternoon, Anna</h1
+              ><p data-i18n-target="ov-lead">Here's what happened in your store this month.</p></div
             >
             <div class="dash-actions">
-              <div class="toggle-group" role="group" aria-label="Period" data-type="single" data-dash-period>
+              <div
+                class="toggle-group"
+                role="group"
+                aria-label="Period"
+                data-i18n-aria-label-en="Period"
+                data-i18n-aria-label-de="Zeitraum"
+                data-type="single"
+                data-dash-period
+              >
                 <button class="toggle" aria-pressed="false" value="7d">7d</button>
                 <button class="toggle" aria-pressed="true" value="30d">30d</button>
                 <button class="toggle" aria-pressed="false" value="12m">12m</button>
@@ -1109,17 +1228,17 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 type="button"
                 data-toast="Report exported"
                 data-toast-desc="acme-september.csv is in your downloads"
-                ><i data-lucide="download"></i> Export</button
+                ><i data-lucide="download"></i> <span data-i18n-target="ov-export">Export</span></button
               >
               <button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"
-                ><i data-lucide="plus"></i> New order</button
+                ><i data-lucide="plus"></i> <span data-i18n-target="ov-new">New order</span></button
               >
             </div>
           </div>
 
           <div class="dash-kpis">
             <article class="dash-card dash-kpi"
-              ><div class="dash-kpi-top"><p>Revenue</p><i data-lucide="euro"></i></div
+              ><div class="dash-kpi-top"><p data-i18n-target="kpi-revenue">Revenue</p><i data-lucide="euro"></i></div
               ><p class="dash-kpi-value">€48,290</p
               ><p class="dash-kpi-trend"
                 ><span class="statistic-trend" data-trend="up"
@@ -1165,7 +1284,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 /></svg
             ></article>
             <article class="dash-card dash-kpi"
-              ><div class="dash-kpi-top"><p>Orders</p><i data-lucide="shopping-bag"></i></div
+              ><div class="dash-kpi-top"
+                ><p data-i18n-target="kpi-orders">Orders</p><i data-lucide="shopping-bag"></i></div
               ><p class="dash-kpi-value">1,284</p
               ><p class="dash-kpi-trend"
                 ><span class="statistic-trend" data-trend="up"
@@ -1211,7 +1331,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 /></svg
             ></article>
             <article class="dash-card dash-kpi"
-              ><div class="dash-kpi-top"><p>New customers</p><i data-lucide="user-plus"></i></div
+              ><div class="dash-kpi-top"
+                ><p data-i18n-target="kpi-new">New customers</p><i data-lucide="user-plus"></i></div
               ><p class="dash-kpi-value">312</p
               ><p class="dash-kpi-trend"
                 ><span class="statistic-trend" data-trend="up"
@@ -1257,7 +1378,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 /></svg
             ></article>
             <article class="dash-card dash-kpi"
-              ><div class="dash-kpi-top"><p>Conversion</p><i data-lucide="activity"></i></div
+              ><div class="dash-kpi-top"
+                ><p data-i18n-target="kpi-conversion">Conversion</p><i data-lucide="activity"></i></div
               ><p class="dash-kpi-value">3.2%</p
               ><p class="dash-kpi-trend"
                 ><span class="statistic-trend" data-trend="down"
@@ -1307,7 +1429,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="dash-split">
             <article class="dash-card">
               <div class="dash-card-head"
-                ><div><h2>Revenue</h2><p>This period vs. the one before</p></div
+                ><div
+                  ><h2 data-i18n-target="rev-h">Revenue</h2
+                  ><p data-i18n-target="rev-p">This period vs. the one before</p></div
                 ><span class="badge" data-variant="secondary">+12.4%</span></div
               >
               <div
@@ -1320,7 +1444,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             </article>
             <article class="dash-card">
               <div class="dash-card-head"
-                ><div><h2>Sales by channel</h2><p>Share of revenue</p></div></div
+                ><div
+                  ><h2 data-i18n-target="channel-h">Sales by channel</h2
+                  ><p data-i18n-target="channel-p">Share of revenue</p></div
+                ></div
               >
               <div
                 class="chart dash-chart"
@@ -1334,9 +1461,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="dash-split">
             <article class="dash-card">
               <div class="dash-card-head"
-                ><div><h2>Recent orders</h2><p>The last five orders across all channels</p></div
-                ><a class="btn" data-variant="outline" data-size="sm" href="#orders"
-                  >View all <i data-lucide="arrow-right"></i></a
+                ><div
+                  ><h2 data-i18n-target="recent-h">Recent orders</h2
+                  ><p data-i18n-target="recent-p">The last five orders across all channels</p></div
+                ><a class="btn" data-variant="outline" data-size="sm" href="#/orders" data-router-link
+                  ><span data-i18n-target="recent-all">View all</span> <i data-lucide="arrow-right"></i></a
               ></div>
               <div class="table-container">
                 <table class="table">
@@ -1589,7 +1718,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <div class="dash-stack">
               <article class="dash-card">
                 <div class="dash-card-head"
-                  ><div><h2>Top products</h2><p>By revenue this month</p></div></div
+                  ><div
+                    ><h2 data-i18n-target="top-h">Top products</h2
+                    ><p data-i18n-target="top-p">By revenue this month</p></div
+                  ></div
                 >
                 <ul class="dash-bars">
                   <li
@@ -1617,7 +1749,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               </article>
               <article class="dash-card">
                 <div class="dash-card-head"
-                  ><div><h2>Activity</h2></div></div
+                  ><div><h2 data-i18n-target="activity-h">Activity</h2></div></div
                 >
                 <ol class="dash-feed">
                   <li
@@ -1639,9 +1771,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </section>
 
         <!-- Orders -->
-        <section class="dash-view dash-orders" id="orders" aria-labelledby="dash-h-orders">
+        <section class="dash-view dash-orders" id="orders" hidden aria-labelledby="dash-h-orders">
           <div class="dash-head">
-            <div><h1 id="dash-h-orders">Orders</h1><p>1,284 orders this month · 12 need attention</p></div>
+            <div
+              ><h1 id="dash-h-orders" data-i18n-target="or-title">Orders</h1
+              ><p data-i18n-target="or-lead"
+                ><span data-i18n-value="monthOrders">1,284</span> orders this month ·
+                <span data-i18n-value="attention">12</span> need attention</p
+              ></div
+            >
             <div class="dash-actions">
               <button
                 class="btn"
@@ -1651,7 +1789,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 aria-expanded="false"
                 aria-controls="dash-export"
                 data-dropdown-trigger="dash-export"
-                ><i data-lucide="download"></i> Export <i data-lucide="chevron-down"></i
+                ><i data-lucide="download"></i> <span data-i18n-target="or-export">Export</span>
+                <i data-lucide="chevron-down"></i
               ></button>
               <div id="dash-export" role="menu" popover class="dropdown-content" aria-label="Export">
                 <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as CSV">CSV</button>
@@ -1661,14 +1800,21 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Exported as PDF">PDF</button>
               </div>
               <button class="btn" type="button" data-sheet-trigger="dash-new-order" aria-haspopup="dialog"
-                ><i data-lucide="plus"></i> New order</button
+                ><i data-lucide="plus"></i> <span data-i18n-target="or-new">New order</span></button
               >
             </div>
           </div>
           <div class="tabs">
-            <div class="tab-list" role="tablist" aria-label="Order status">
+            <div
+              class="tab-list"
+              role="tablist"
+              aria-label="Order status"
+              data-i18n-aria-label-en="Order status"
+              data-i18n-aria-label-de="Bestellstatus"
+            >
               <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="dash-t-all" id="dash-tab-all"
-                >All <span class="badge" data-variant="secondary" data-size="sm">1,284</span></button
+                ><span data-i18n-target="tab-all">All</span>
+                <span class="badge" data-variant="secondary" data-size="sm">1,284</span></button
               >
               <button
                 class="tab-trigger"
@@ -1677,7 +1823,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 aria-controls="dash-t-pending"
                 id="dash-tab-pending"
                 tabindex="-1"
-                >Pending <span class="badge" data-variant="secondary" data-size="sm">12</span></button
+                ><span data-i18n-target="tab-pending">Pending</span>
+                <span class="badge" data-variant="secondary" data-size="sm">12</span></button
               >
               <button
                 class="tab-trigger"
@@ -1686,7 +1833,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 aria-controls="dash-t-shipped"
                 id="dash-tab-shipped"
                 tabindex="-1"
-                >Shipped</button
+                ><span data-i18n-target="tab-shipped">Shipped</span></button
               >
             </div>
             <div class="tab-content" role="tabpanel" id="dash-t-all" aria-labelledby="dash-tab-all" tabindex="0">
@@ -1758,11 +1905,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   </div>
                 </div>
                 <div class="dash-bulk" role="status" hidden
-                  ><i data-lucide="check-check"></i><span class="dash-bulk-count">Orders selected</span
+                  ><i data-lucide="check-check"></i
+                  ><span class="dash-bulk-count" data-i18n-target="bulk-count" data-i18n-count="selected"
+                    ><span data-i18n-value="selectedLabel">0</span> orders selected</span
                   ><button class="btn" data-variant="outline" data-size="sm" type="button" data-dash-bulk="all"
-                    >Select all</button
+                    ><span data-i18n-target="bulk-all">Select all</span></button
                   ><button class="btn" data-variant="outline" data-size="sm" type="button" data-dash-bulk="ship"
-                    ><i data-lucide="truck"></i> Mark shipped</button
+                    ><i data-lucide="truck"></i> <span data-i18n-target="bulk-ship">Mark shipped</span></button
                   ><button
                     class="btn"
                     data-variant="ghost"
@@ -1770,6 +1919,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     type="button"
                     data-dash-bulk="clear"
                     aria-label="Clear the selection"
+                    data-i18n-aria-label-en="Clear the selection"
+                    data-i18n-aria-label-de="Auswahl aufheben"
                     ><i data-lucide="x"></i></button
                 ></div>
               </article>
@@ -1807,12 +1958,18 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </section>
 
         <!-- Customers -->
-        <section class="dash-view" id="customers" aria-labelledby="dash-h-customers">
+        <section class="dash-view" id="customers" hidden aria-labelledby="dash-h-customers">
           <div class="dash-head">
-            <div><h1 id="dash-h-customers">Customers</h1><p>9,842 customers · 312 new this month</p></div>
+            <div
+              ><h1 id="dash-h-customers" data-i18n-target="cu-title">Customers</h1
+              ><p data-i18n-target="cu-lead"
+                ><span data-i18n-value="customers">9,842</span> customers ·
+                <span data-i18n-value="newCustomers">312</span> new this month</p
+              ></div
+            >
             <div class="dash-actions"
               ><button class="btn" type="button" data-dialog-trigger="dash-invite" aria-haspopup="dialog"
-                ><i data-lucide="user-plus"></i> Invite customer</button
+                ><i data-lucide="user-plus"></i> <span data-i18n-target="cu-invite">Invite customer</span></button
               ></div
             >
           </div>
@@ -1831,7 +1988,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><div><dt>Orders</dt><dd>18</dd></div></dl
               >
               <div class="dash-person-actions"
-                ><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a
+                ><a class="btn" data-variant="outline" data-size="sm" href="#/orders" data-router-link>Orders</a
                 ><button
                   class="btn"
                   data-variant="ghost"
@@ -1855,7 +2012,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><div><dt>Orders</dt><dd>11</dd></div></dl
               >
               <div class="dash-person-actions"
-                ><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a
+                ><a class="btn" data-variant="outline" data-size="sm" href="#/orders" data-router-link>Orders</a
                 ><button
                   class="btn"
                   data-variant="ghost"
@@ -1880,7 +2037,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><div><dt>Orders</dt><dd>27</dd></div></dl
               >
               <div class="dash-person-actions"
-                ><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a
+                ><a class="btn" data-variant="outline" data-size="sm" href="#/orders" data-router-link>Orders</a
                 ><button
                   class="btn"
                   data-variant="ghost"
@@ -1905,7 +2062,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><div><dt>Orders</dt><dd>4</dd></div></dl
               >
               <div class="dash-person-actions"
-                ><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a
+                ><a class="btn" data-variant="outline" data-size="sm" href="#/orders" data-router-link>Orders</a
                 ><button
                   class="btn"
                   data-variant="ghost"
@@ -1929,7 +2086,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><div><dt>Orders</dt><dd>15</dd></div></dl
               >
               <div class="dash-person-actions"
-                ><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a
+                ><a class="btn" data-variant="outline" data-size="sm" href="#/orders" data-router-link>Orders</a
                 ><button
                   class="btn"
                   data-variant="ghost"
@@ -1954,7 +2111,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><div><dt>Orders</dt><dd>9</dd></div></dl
               >
               <div class="dash-person-actions"
-                ><a class="btn" data-variant="outline" data-size="sm" href="#orders">Orders</a
+                ><a class="btn" data-variant="outline" data-size="sm" href="#/orders" data-router-link>Orders</a
                 ><button
                   class="btn"
                   data-variant="ghost"
@@ -1969,10 +2126,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </section>
 
         <!-- Settings -->
-        <section class="dash-view" id="settings" aria-labelledby="dash-h-settings">
+        <section class="dash-view" id="settings" hidden aria-labelledby="dash-h-settings">
           <div class="dash-head"
             ><div
-              ><h1 id="dash-h-settings">Settings</h1><p>Manage the workspace, notifications and API access.</p></div
+              ><h1 id="dash-h-settings" data-i18n-target="se-title">Settings</h1
+              ><p data-i18n-target="se-lead">Manage the workspace, notifications and API access.</p></div
             ></div
           >
           <form class="dash-card dash-form" action="#" method="post" data-dash-save>
@@ -2053,7 +2211,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   </div>
 
   <!-- overlays: command palette, new-order sheet, invite dialog, delete confirmation -->
-  <dialog id="dash-cmd" class="command" role="dialog" aria-modal="true" aria-label="Command menu">
+  <dialog
+    id="dash-cmd"
+    class="command"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Command menu"
+    data-i18n-aria-label-en="Command menu"
+    data-i18n-aria-label-de="Befehlsmenü"
+  >
     <div class="command-content">
       <div class="command-input-wrapper"
         ><i data-lucide="search"></i
@@ -2061,32 +2227,44 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           class="command-input"
           type="text"
           placeholder="Type a command or search…"
+          data-i18n-placeholder-en="Type a command or search…"
+          data-i18n-placeholder-de="Befehl eingeben oder suchen…"
           autocomplete="off"
           spellcheck="false"
       /></div>
       <div class="command-list">
         <div class="command-group">
-          <p class="command-group-heading">Go to</p>
-          <button class="command-item" data-go="overview"><i data-lucide="layout-dashboard"></i> Overview</button>
-          <button class="command-item" data-go="orders"><i data-lucide="shopping-bag"></i> Orders</button>
-          <button class="command-item" data-go="customers"><i data-lucide="users"></i> Customers</button>
-          <button class="command-item" data-go="settings"
-            ><i data-lucide="settings"></i> Settings <span class="command-shortcut">⌘,</span></button
+          <p class="command-group-heading" data-i18n-target="cmd-goto">Go to</p>
+          <button class="command-item" data-go="/"
+            ><i data-lucide="layout-dashboard"></i> <span data-i18n-target="cmd-overview">Overview</span></button
+          >
+          <button class="command-item" data-go="/orders"
+            ><i data-lucide="shopping-bag"></i> <span data-i18n-target="cmd-orders">Orders</span></button
+          >
+          <button class="command-item" data-go="/customers"
+            ><i data-lucide="users"></i> <span data-i18n-target="cmd-customers">Customers</span></button
+          >
+          <button class="command-item" data-go="/settings"
+            ><i data-lucide="settings"></i> <span data-i18n-target="cmd-settings">Settings</span>
+            <span class="command-shortcut">⌘,</span></button
           >
         </div>
         <div class="command-separator"></div>
         <div class="command-group">
-          <p class="command-group-heading">Actions</p>
+          <p class="command-group-heading" data-i18n-target="cmd-actions">Actions</p>
           <button class="command-item" data-open-sheet="dash-new-order"
-            ><i data-lucide="plus"></i> New order <span class="command-shortcut">N</span></button
+            ><i data-lucide="plus"></i> <span data-i18n-target="cmd-new">New order</span>
+            <span class="command-shortcut">N</span></button
           >
           <button class="command-item" data-open-dialog="dash-invite"
-            ><i data-lucide="user-plus"></i> Invite customer</button
+            ><i data-lucide="user-plus"></i> <span data-i18n-target="cmd-invite">Invite customer</span></button
           >
-          <button class="command-item" data-dash-theme><i data-lucide="moon"></i> Toggle dark mode</button>
+          <button class="command-item" data-dash-theme
+            ><i data-lucide="moon"></i> <span data-i18n-target="cmd-dark">Toggle dark mode</span></button
+          >
         </div>
       </div>
-      <div class="command-empty" hidden>No results found.</div>
+      <div class="command-empty" hidden data-i18n-target="cmd-empty">No results found.</div>
     </div>
   </dialog>
 
@@ -2212,29 +2390,187 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       >
     </div>
   </dialog>
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="nav-platform-d" data-i18n-locale="en">Platform</template>
+  <template data-i18n-for="nav-platform-d" data-i18n-locale="de">Plattform</template>
+  <template data-i18n-for="nav-overview-d" data-i18n-locale="en">Overview</template>
+  <template data-i18n-for="nav-overview-d" data-i18n-locale="de">Übersicht</template>
+  <template data-i18n-for="nav-orders-d" data-i18n-locale="en">Orders</template>
+  <template data-i18n-for="nav-orders-d" data-i18n-locale="de">Bestellungen</template>
+  <template data-i18n-for="nav-customers-d" data-i18n-locale="en">Customers</template>
+  <template data-i18n-for="nav-customers-d" data-i18n-locale="de">Kunden</template>
+  <template data-i18n-for="nav-analytics-d" data-i18n-locale="en">Analytics</template>
+  <template data-i18n-for="nav-analytics-d" data-i18n-locale="de">Analysen</template>
+  <template data-i18n-for="nav-traffic-d" data-i18n-locale="en">Traffic</template>
+  <template data-i18n-for="nav-traffic-d" data-i18n-locale="de">Besucher</template>
+  <template data-i18n-for="nav-conversion-d" data-i18n-locale="en">Conversion</template>
+  <template data-i18n-for="nav-conversion-d" data-i18n-locale="de">Konversion</template>
+  <template data-i18n-for="nav-workspace-d" data-i18n-locale="en">Workspace</template>
+  <template data-i18n-for="nav-workspace-d" data-i18n-locale="de">Arbeitsbereich</template>
+  <template data-i18n-for="nav-settings-d" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="nav-settings-d" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="nav-billing-d" data-i18n-locale="en">Billing</template>
+  <template data-i18n-for="nav-billing-d" data-i18n-locale="de">Abrechnung</template>
+  <template data-i18n-for="ws-add" data-i18n-locale="en">Add workspace</template>
+  <template data-i18n-for="ws-add" data-i18n-locale="de">Arbeitsbereich hinzufügen</template>
+  <template data-i18n-for="usage-of" data-i18n-locale="en">7.2 of 10 GB</template>
+  <template data-i18n-for="usage-of" data-i18n-locale="de">7,2 von 10 GB</template>
+  <template data-i18n-for="usage-title" data-i18n-locale="en">Storage</template>
+  <template data-i18n-for="usage-title" data-i18n-locale="de">Speicher</template>
+  <template data-i18n-for="upgrade" data-i18n-locale="en">Upgrade plan</template>
+  <template data-i18n-for="upgrade" data-i18n-locale="de">Tarif upgraden</template>
+  <template data-i18n-for="um-profile" data-i18n-locale="en">Profile</template>
+  <template data-i18n-for="um-profile" data-i18n-locale="de">Profil</template>
+  <template data-i18n-for="um-billing" data-i18n-locale="en">Billing</template>
+  <template data-i18n-for="um-billing" data-i18n-locale="de">Abrechnung</template>
+  <template data-i18n-for="um-settings" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="um-settings" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="um-logout" data-i18n-locale="en">Log out</template>
+  <template data-i18n-for="um-logout" data-i18n-locale="de">Abmelden</template>
+  <template data-i18n-for="nav-platform-m" data-i18n-locale="en">Platform</template>
+  <template data-i18n-for="nav-platform-m" data-i18n-locale="de">Plattform</template>
+  <template data-i18n-for="nav-overview-m" data-i18n-locale="en">Overview</template>
+  <template data-i18n-for="nav-overview-m" data-i18n-locale="de">Übersicht</template>
+  <template data-i18n-for="nav-orders-m" data-i18n-locale="en">Orders</template>
+  <template data-i18n-for="nav-orders-m" data-i18n-locale="de">Bestellungen</template>
+  <template data-i18n-for="nav-customers-m" data-i18n-locale="en">Customers</template>
+  <template data-i18n-for="nav-customers-m" data-i18n-locale="de">Kunden</template>
+  <template data-i18n-for="nav-analytics-m" data-i18n-locale="en">Analytics</template>
+  <template data-i18n-for="nav-analytics-m" data-i18n-locale="de">Analysen</template>
+  <template data-i18n-for="nav-traffic-m" data-i18n-locale="en">Traffic</template>
+  <template data-i18n-for="nav-traffic-m" data-i18n-locale="de">Besucher</template>
+  <template data-i18n-for="nav-conversion-m" data-i18n-locale="en">Conversion</template>
+  <template data-i18n-for="nav-conversion-m" data-i18n-locale="de">Konversion</template>
+  <template data-i18n-for="nav-workspace-m" data-i18n-locale="en">Workspace</template>
+  <template data-i18n-for="nav-workspace-m" data-i18n-locale="de">Arbeitsbereich</template>
+  <template data-i18n-for="nav-settings-m" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="nav-settings-m" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="nav-billing-m" data-i18n-locale="en">Billing</template>
+  <template data-i18n-for="nav-billing-m" data-i18n-locale="de">Abrechnung</template>
+  <template data-i18n-for="search" data-i18n-locale="en">Search or jump to…</template>
+  <template data-i18n-for="search" data-i18n-locale="de">Suchen oder springen…</template>
+  <template data-i18n-for="notes-title" data-i18n-locale="en">Notifications</template>
+  <template data-i18n-for="notes-title" data-i18n-locale="de">Benachrichtigungen</template>
+  <template data-i18n-for="notes-read" data-i18n-locale="en">Mark all read</template>
+  <template data-i18n-for="notes-read" data-i18n-locale="de">Alle als gelesen markieren</template>
+  <template data-i18n-for="ov-title" data-i18n-locale="en">Good afternoon, Anna</template>
+  <template data-i18n-for="ov-title" data-i18n-locale="de">Guten Tag, Anna</template>
+  <template data-i18n-for="ov-lead" data-i18n-locale="en">Here's what happened in your store this month.</template>
+  <template data-i18n-for="ov-lead" data-i18n-locale="de">Das ist diesen Monat in deinem Shop passiert.</template>
+  <template data-i18n-for="ov-export" data-i18n-locale="en">Export</template>
+  <template data-i18n-for="ov-export" data-i18n-locale="de">Exportieren</template>
+  <template data-i18n-for="ov-new" data-i18n-locale="en">New order</template>
+  <template data-i18n-for="ov-new" data-i18n-locale="de">Neue Bestellung</template>
+  <template data-i18n-for="or-new" data-i18n-locale="en">New order</template>
+  <template data-i18n-for="or-new" data-i18n-locale="de">Neue Bestellung</template>
+  <template data-i18n-for="kpi-revenue" data-i18n-locale="en">Revenue</template>
+  <template data-i18n-for="kpi-revenue" data-i18n-locale="de">Umsatz</template>
+  <template data-i18n-for="kpi-orders" data-i18n-locale="en">Orders</template>
+  <template data-i18n-for="kpi-orders" data-i18n-locale="de">Bestellungen</template>
+  <template data-i18n-for="kpi-new" data-i18n-locale="en">New customers</template>
+  <template data-i18n-for="kpi-new" data-i18n-locale="de">Neue Kunden</template>
+  <template data-i18n-for="kpi-conversion" data-i18n-locale="en">Conversion</template>
+  <template data-i18n-for="kpi-conversion" data-i18n-locale="de">Konversion</template>
+  <template data-i18n-for="rev-h" data-i18n-locale="en">Revenue</template>
+  <template data-i18n-for="rev-h" data-i18n-locale="de">Umsatz</template>
+  <template data-i18n-for="rev-p" data-i18n-locale="en">This period vs. the one before</template>
+  <template data-i18n-for="rev-p" data-i18n-locale="de">Dieser Zeitraum im Vergleich zum vorigen</template>
+  <template data-i18n-for="channel-h" data-i18n-locale="en">Sales by channel</template>
+  <template data-i18n-for="channel-h" data-i18n-locale="de">Umsatz nach Kanal</template>
+  <template data-i18n-for="channel-p" data-i18n-locale="en">Share of revenue</template>
+  <template data-i18n-for="channel-p" data-i18n-locale="de">Anteil am Umsatz</template>
+  <template data-i18n-for="recent-h" data-i18n-locale="en">Recent orders</template>
+  <template data-i18n-for="recent-h" data-i18n-locale="de">Neueste Bestellungen</template>
+  <template data-i18n-for="recent-p" data-i18n-locale="en">The last five orders across all channels</template>
+  <template data-i18n-for="recent-p" data-i18n-locale="de">Die letzten fünf Bestellungen aus allen Kanälen</template>
+  <template data-i18n-for="top-h" data-i18n-locale="en">Top products</template>
+  <template data-i18n-for="top-h" data-i18n-locale="de">Top-Produkte</template>
+  <template data-i18n-for="top-p" data-i18n-locale="en">By revenue this month</template>
+  <template data-i18n-for="top-p" data-i18n-locale="de">Nach Umsatz in diesem Monat</template>
+  <template data-i18n-for="activity-h" data-i18n-locale="en">Activity</template>
+  <template data-i18n-for="activity-h" data-i18n-locale="de">Aktivität</template>
+  <template data-i18n-for="recent-all" data-i18n-locale="en">View all</template>
+  <template data-i18n-for="recent-all" data-i18n-locale="de">Alle anzeigen</template>
+  <template data-i18n-for="or-title" data-i18n-locale="en">Orders</template>
+  <template data-i18n-for="or-title" data-i18n-locale="de">Bestellungen</template>
+  <template data-i18n-for="or-lead" data-i18n-locale="en"
+    ><span data-i18n-value="monthOrders"></span> orders this month · <span data-i18n-value="attention"></span> need
+    attention</template
+  >
+  <template data-i18n-for="or-lead" data-i18n-locale="de"
+    ><span data-i18n-value="monthOrders"></span> Bestellungen diesen Monat ·
+    <span data-i18n-value="attention"></span> brauchen Aufmerksamkeit</template
+  >
+  <template data-i18n-for="or-export" data-i18n-locale="en">Export</template>
+  <template data-i18n-for="or-export" data-i18n-locale="de">Exportieren</template>
+  <template data-i18n-for="tab-all" data-i18n-locale="en">All</template>
+  <template data-i18n-for="tab-all" data-i18n-locale="de">Alle</template>
+  <template data-i18n-for="tab-pending" data-i18n-locale="en">Pending</template>
+  <template data-i18n-for="tab-pending" data-i18n-locale="de">Offen</template>
+  <template data-i18n-for="tab-shipped" data-i18n-locale="en">Shipped</template>
+  <template data-i18n-for="tab-shipped" data-i18n-locale="de">Versandt</template>
+  <template data-i18n-for="bulk-count" data-i18n-locale="en" data-i18n-plural="one"
+    ><span data-i18n-value="selectedLabel"></span> order selected</template
+  >
+  <template data-i18n-for="bulk-count" data-i18n-locale="de" data-i18n-plural="one"
+    ><span data-i18n-value="selectedLabel"></span> Bestellung ausgewählt</template
+  >
+  <template data-i18n-for="bulk-count" data-i18n-locale="en" data-i18n-plural="other"
+    ><span data-i18n-value="selectedLabel"></span> orders selected</template
+  >
+  <template data-i18n-for="bulk-count" data-i18n-locale="de" data-i18n-plural="other"
+    ><span data-i18n-value="selectedLabel"></span> Bestellungen ausgewählt</template
+  >
+  <template data-i18n-for="bulk-all" data-i18n-locale="en">Select all</template>
+  <template data-i18n-for="bulk-all" data-i18n-locale="de">Alle auswählen</template>
+  <template data-i18n-for="bulk-ship" data-i18n-locale="en">Mark shipped</template>
+  <template data-i18n-for="bulk-ship" data-i18n-locale="de">Als versandt markieren</template>
+  <template data-i18n-for="cu-title" data-i18n-locale="en">Customers</template>
+  <template data-i18n-for="cu-title" data-i18n-locale="de">Kunden</template>
+  <template data-i18n-for="cu-lead" data-i18n-locale="en"
+    ><span data-i18n-value="customers"></span> customers · <span data-i18n-value="newCustomers"></span> new this
+    month</template
+  >
+  <template data-i18n-for="cu-lead" data-i18n-locale="de"
+    ><span data-i18n-value="customers"></span> Kunden · <span data-i18n-value="newCustomers"></span> neu in diesem
+    Monat</template
+  >
+  <template data-i18n-for="cu-invite" data-i18n-locale="en">Invite customer</template>
+  <template data-i18n-for="cu-invite" data-i18n-locale="de">Kunden einladen</template>
+  <template data-i18n-for="cmd-invite" data-i18n-locale="en">Invite customer</template>
+  <template data-i18n-for="cmd-invite" data-i18n-locale="de">Kunden einladen</template>
+  <template data-i18n-for="se-title" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="se-title" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="se-lead" data-i18n-locale="en">Manage the workspace, notifications and API access.</template>
+  <template data-i18n-for="se-lead" data-i18n-locale="de"
+    >Verwalte den Arbeitsbereich, die Benachrichtigungen und den API-Zugang.</template
+  >
+  <template data-i18n-for="cmd-goto" data-i18n-locale="en">Go to</template>
+  <template data-i18n-for="cmd-goto" data-i18n-locale="de">Gehe zu</template>
+  <template data-i18n-for="cmd-overview" data-i18n-locale="en">Overview</template>
+  <template data-i18n-for="cmd-overview" data-i18n-locale="de">Übersicht</template>
+  <template data-i18n-for="cmd-orders" data-i18n-locale="en">Orders</template>
+  <template data-i18n-for="cmd-orders" data-i18n-locale="de">Bestellungen</template>
+  <template data-i18n-for="cmd-customers" data-i18n-locale="en">Customers</template>
+  <template data-i18n-for="cmd-customers" data-i18n-locale="de">Kunden</template>
+  <template data-i18n-for="cmd-settings" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="cmd-settings" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="cmd-actions" data-i18n-locale="en">Actions</template>
+  <template data-i18n-for="cmd-actions" data-i18n-locale="de">Aktionen</template>
+  <template data-i18n-for="cmd-new" data-i18n-locale="en">New order</template>
+  <template data-i18n-for="cmd-new" data-i18n-locale="de">Neue Bestellung</template>
+  <template data-i18n-for="cmd-dark" data-i18n-locale="en">Toggle dark mode</template>
+  <template data-i18n-for="cmd-dark" data-i18n-locale="de">Dunkelmodus umschalten</template>
+  <template data-i18n-for="cmd-empty" data-i18n-locale="en">No results found.</template>
+  <template data-i18n-for="cmd-empty" data-i18n-locale="de">Keine Ergebnisse.</template>
 </div>
 <script>
   // the clickdummy's only wiring: which view is current, a few actions, toasts
   (() => {
+    // the views, the language and the address are the router module's (below)
     const app = document.querySelector('[data-dash]');
-    const TITLES = { overview: 'Overview', orders: 'Orders', customers: 'Customers', settings: 'Settings' };
-    const current = () => (location.hash.slice(1) in TITLES ? location.hash.slice(1) : 'overview');
-    const sync = () => {
-      const id = current();
-      app.querySelectorAll('.sidebar-link[href^="#"]').forEach((a) => {
-        if (a.getAttribute('href') === '#' + id && !a.dataset.alias) a.setAttribute('aria-current', 'page');
-        else a.removeAttribute('aria-current');
-      });
-      app.querySelector('[data-dash-crumb]').textContent = TITLES[id];
-      const mobile = document.getElementById('dash-mobile-nav');
-      if (mobile && mobile.open) mobile.close();
-    };
-    addEventListener('hashchange', sync);
-    sync();
     const toast = (title, description) => df$.shadcn.toast.success(description ? { title, description } : { title });
     app.addEventListener('click', (e) => {
-      const go = e.target.closest('[data-go]');
-      if (go) location.hash = go.dataset.go;
       const t = e.target.closest('[data-toast]');
       if (t) toast(t.dataset.toast, t.dataset.toastDesc);
       if (e.target.closest('[data-dash-theme]')) document.documentElement.classList.toggle('dark');
@@ -2326,10 +2662,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       const bulk = app.querySelector('.dash-bulk');
       grid.store.subscribe(
         ({ config }) => {
-          const n = config.selected.length;
-          bulk.hidden = n === 0;
-          app.querySelector('.dash-bulk-count').textContent =
-            n.toLocaleString('en') + (n === 1 ? ' order' : ' orders') + ' selected';
+          // the count's words are a translated plural (the router module refreshes it)
+          bulk.hidden = config.selected.length === 0;
         },
         { immediate: true },
       );
@@ -2397,6 +2731,89 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     });
   })();
 </script>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const app = df$('[data-dash]').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the app)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    const grid = df$('#dash-orders-grid').get(0);
+    const numbers = { monthOrders: 1284, attention: 12, customers: 9842, newCustomers: 312 };
+    const texts = createDomI18n(df$).bind(app, locale, {
+      // read on every render: the selection count picks the plural, every number is formatted for the language
+      getState: () => grid.store?.value.config.selected.length ?? 0,
+      values: (selected) => ({
+        selected,
+        selectedLabel: locale.formatNumber(selected),
+        ...Object.fromEntries(Object.entries(numbers).map(([k, v]) => [k, locale.formatNumber(v)])),
+      }),
+    });
+    let counted = 0;
+    grid.store?.subscribe(({ config }) => {
+      if (config.selected.length === counted) return;
+      counted = config.selected.length;
+      texts.refresh();
+    });
+    const language = df$('[data-app-locale]');
+    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- routing: one route per view, in the fragment - GitHub Pages has no fallback for deep paths
+    const routes = [
+      { id: 'overview', path: '/' },
+      { id: 'orders', path: '/orders' },
+      { id: 'customers', path: '/customers' },
+      { id: 'settings', path: '/settings' },
+      { id: 'missing', path: '*' },
+    ];
+    // the breadcrumb names the view as its (translated) sidebar link does
+    const crumb = () =>
+      df$('[data-dash-crumb]').text(df$('#dash-sidebar .sidebar-link[aria-current] > [data-i18n-target]').text());
+    const show = (to) => {
+      const id = to.routeId === 'missing' ? 'overview' : to.routeId;
+      // the views share one scroll box: a view that was hidden starts at its top
+      if (df$('#' + id).get(0).hidden) df$('.dash-scroll').get(0).scrollTop = 0;
+      df$('.dash-view').each((_i, view) => {
+        view.hidden = view.id !== id;
+      });
+      df$('.dash .sidebar-link').each((_i, link) => {
+        if (link.getAttribute('href') === '#' + (id === 'overview' ? '/' : '/' + id) && !link.dataset.alias)
+          link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      crumb();
+      df$('#dash-mobile-nav').get(0)?.close();
+    };
+    app.addEventListener('defuss-i18n:change', crumb);
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(app);
+    const started = (await router.start()).status !== 'rejected';
+    if (!started) {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+    // the command palette and the account menu jump to views too
+    app.addEventListener('click', (event) => {
+      const path = event.target.closest('[data-go]')?.dataset.go;
+      if (!path) return;
+      if (started) router.navigate('#' + path);
+      else location.hash = path;
+    });
+  });
+</script>
 ```
 
 <h2 id="how-it-works" class="h2-display">How it works</h2>
@@ -2405,7 +2822,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <ul class="text-sm" style="display:grid;gap:0.5rem;max-width:46rem;padding-inline-start:1.25rem">
   <li><strong>Shell</strong> - <DocLink href="sidebar.html">Sidebar</DocLink> (collapsible with the trigger or <kbd class="kbd">⌘B</kbd>, a mobile drawer below 44rem of width), a top bar with <DocLink href="breadcrumb.html">Breadcrumb</DocLink>, a <DocLink href="popover.html">Popover</DocLink> of notifications and the theme toggle.</li>
-  <li><strong>Navigation</strong> - every view is a section with an id; links point at <code>#orders</code> and CSS shows <code>.dash-view:target</code> (the first view when nothing is targeted). Back and forward buttons work, views are linkable. Six lines of script move <code>aria-current</code> and the breadcrumb.</li>
+  <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: one route per view (<code>#/orders</code>), <code>data-router-link</code> anchors, and a commit that un-hides the view the route names, moves <code>aria-current</code> and the breadcrumb. Back and forward work, views are linkable. Inside the docs preview (an <code>about:srcdoc</code> frame the router cannot own) the same routes match the frame's hash; the full-screen page routes for real. See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
+  <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: the language switch in the top bar re-renders every translated target from the templates at the end of the app (English, German); the order and customer counts are formatted for the language and the bulk bar's count is a plural. Toasts and the rows the script writes stay English. See <DocLink href="translation.html">Translation</DocLink>.</li>
   <li><strong>Command palette</strong> - the <DocLink href="command.html">Command</DocLink> component: <kbd class="kbd">⌘K</kbd>, type to filter, <kbd class="kbd">↵</kbd> to run; items jump to views or open the Sheet and the Dialog.</li>
   <li><strong>Overview</strong> - KPI cards with the <DocLink href="statistic.html">Statistic</DocLink> trend chips and SVG sparklines, two <DocLink href="chart.html">Charts</DocLink> (the <DocLink href="toggle-group.html">Toggle Group</DocLink> swaps the series and the chart morphs), a <DocLink href="table.html">Table</DocLink> with <DocLink href="dropdown.html">Dropdown</DocLink> row actions and <DocLink href="progress.html">Progress</DocLink> bars.</li>
   <li><strong>Orders</strong> - <DocLink href="tabs.html">Tabs</DocLink>, a search field, a select, checkboxes - the bulk-action bar appears through <code>:has(:checked)</code>, no script - and <DocLink href="pagination.html">Pagination</DocLink>. <em>New order</em> opens a <DocLink href="sheet.html">Sheet</DocLink> with a <DocLink href="number-input.html">Number Input</DocLink>; submitting shows a <DocLink href="toast.html">Toast</DocLink>.</li>

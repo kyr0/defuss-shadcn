@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
+import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
  * Why: the issue-tracker scaffold is a clickdummy - its promise is that the
@@ -27,6 +29,7 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await offlineJsdelivr(page);
   await page.goto(`${server.url}${PAGE}`);
   await page.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.toast, undefined, { timeout: 10_000 });
   const shown = (sel: string) => page.$eval(sel, (e) => e.checkVisibility());
@@ -40,7 +43,7 @@ try {
     assert.deepEqual(await views(), ['issues']);
     assert.deepEqual(await page.$$eval('.pm-group', (g) => g.map((x) => (x as HTMLElement).dataset.status)), ['review', 'progress', 'todo', 'backlog', 'done']);
     assert.deepEqual([await count('progress'), await count('todo')], ['3', '4']);
-    assert.equal(await page.getAttribute('#pm-sidebar .sidebar-link[href="#issues"]:not([data-alias])', 'aria-current'), 'page');
+    assert.equal(await page.getAttribute('#pm-sidebar .sidebar-link[href="#/"]:not([data-alias])', 'aria-current'), 'page');
   });
 
   await check('status and priority icons are drawn from the attributes (inherited custom properties)', async () => {
@@ -105,14 +108,14 @@ try {
     const key = Object.keys(await page.evaluate(() => ({ ...sessionStorage }))).find((k) => k.endsWith(':data-grid:pm-grid'));
     assert.ok(key, 'the view is kept for the session');
     await page.click('#pm-grid .data-grid-rows > .data-grid-row:nth-child(1) .data-grid-cell:nth-child(2)');
-    assert.match(new URL(page.url()).hash, /^#ENG-/);
+    assert.match(new URL(page.url()).hash, /^#\/issues\/ENG-/);
     await page.goBack();
     await page.selectOption('#pm-grid .data-grid-filter[data-field="status"]', '');
     await page.click('.pm-layout .toggle[value="list"]');
   });
 
   await check('an issue page edits priority and assignee; the row and the activity follow', async () => {
-    await page.click('.pm-list .pm-row-link[href="#ENG-136"]');
+    await page.click('.pm-list .pm-row-link[href="#/issues/ENG-136"]');
     await page.waitForTimeout(150);
     assert.deepEqual(await views(), ['ENG-136']);
     await page.selectOption('#ENG-136 select[data-field="priority"]', 'urgent');
@@ -134,13 +137,13 @@ try {
     await page.keyboard.press('Escape');
     await page.waitForTimeout(100);
     assert.deepEqual(await views(), ['issues']);
-    await page.goto(`${server.url}${PAGE}#ENG-142`);
+    await page.goto(`${server.url}${PAGE}#/issues/ENG-142`);
     await page.check('#ENG-142 .pm-sub input >> nth=1');
     assert.equal(await page.textContent('#ENG-142 [data-pm-sub-count]'), '2/3');
   });
 
   await check('C opens the create dialog; the new issue lands in the list, the board and its own page', async () => {
-    await page.goto(`${server.url}${PAGE}#issues`);
+    await page.goto(`${server.url}${PAGE}#/`);
     await page.waitForTimeout(150);
     await page.keyboard.press('c');
     assert.equal(await page.$eval('#pm-create', (d) => (d as HTMLDialogElement).open), true);
@@ -155,7 +158,7 @@ try {
     assert.equal(await page.textContent('.pm-list [data-issue="ENG-143"] .pm-title'), 'Changelog in dark mode');
     assert.equal(await page.textContent('.pm-list [data-issue="ENG-143"] .pm-label'), 'Design');
     assert.ok((await page.textContent('.toast-container .toast'))!.includes('ENG-143 created'));
-    await page.click('.pm-list .pm-row-link[href="#ENG-143"]');
+    await page.click('.pm-list .pm-row-link[href="#/issues/ENG-143"]');
     await page.waitForTimeout(150);
     assert.deepEqual(await views(), ['ENG-143']);
     assert.equal(await page.textContent('#ENG-143 .pm-issue-title'), 'Changelog in dark mode');
@@ -163,14 +166,14 @@ try {
   });
 
   await check('My issues lists your issues, including the new one', async () => {
-    await page.click('#pm-sidebar .sidebar-link[href="#my-issues"]');
+    await page.click('#pm-sidebar .sidebar-link[href="#/my-issues"]');
     await page.waitForTimeout(150);
     const ids = await page.$$eval('[data-pm-mine] [data-issue]', (r) => r.map((x) => (x as HTMLElement).dataset.issue));
     assert.ok(ids.includes('ENG-143') && ids.includes('ENG-142') && !ids.includes('ENG-136'), ids.join());
   });
 
   await check('J / K move through the issues', async () => {
-    await page.click('#pm-sidebar .sidebar-link[href="#issues"]:not([data-alias])');
+    await page.click('#pm-sidebar .sidebar-link[href="#/"]:not([data-alias])');
     await page.waitForTimeout(150);
     await page.keyboard.press('j');
     await page.keyboard.press('j');
@@ -191,14 +194,14 @@ try {
   await check('⌘K opens the palette; an item jumps to the cycle', async () => {
     await page.keyboard.press('Meta+k');
     assert.equal(await page.$eval('#pm-cmd', (d) => (d as HTMLDialogElement).open), true);
-    await page.click('#pm-cmd .command-item[data-go="cycles"]');
+    await page.click('#pm-cmd .command-item[data-go="/cycles"]');
     await page.waitForTimeout(150);
     assert.deepEqual(await views(), ['cycles']);
     assert.equal(await page.textContent('[data-pm-stat="scope"]'), '16');
   });
 
   await check('the inbox: Mark all read clears the badge', async () => {
-    await page.click('#pm-sidebar .sidebar-link[href="#inbox"]');
+    await page.click('#pm-sidebar .sidebar-link[href="#/inbox"]');
     assert.equal(await page.textContent('#pm-sidebar [data-pm-unread]'), '4');
     await page.click('[data-pm-read-all]');
     assert.equal(await page.$$eval('.pm-note[data-unread]', (n) => n.length), 0);
@@ -207,7 +210,7 @@ try {
 
   await check('narrow: the sidebar becomes a drawer, the issue page stacks its properties first', async () => {
     await page.setViewportSize({ width: 420, height: 860 });
-    await page.goto(`${server.url}${PAGE}#ENG-141`);
+    await page.goto(`${server.url}${PAGE}#/issues/ENG-141`);
     await page.waitForTimeout(200);
     assert.deepEqual([await shown('#pm-sidebar'), await shown('#ENG-141 .pm-mobile-trigger')], [false, true]);
     const order = await page.evaluate(() => {
@@ -218,6 +221,31 @@ try {
     await page.click('#ENG-141 .pm-mobile-trigger');
     assert.equal(await page.$eval('#pm-mobile-nav', (d) => (d as HTMLDialogElement).open), true);
   });
+  await check('routing: an issue is #/issues/:id - a deep link opens it, Back returns, an unknown one shows the list; translation: German, every target in both languages', async () => {
+    const hash = '#/issues/ENG-140';
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}${hash}`);
+    await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '[data-pm]', { timeout: 15_000 });
+    const visible = (sel: string) => p.$eval(sel, (e) => e.checkVisibility());
+    assert.equal(await visible('#ENG-140'), true);
+    await p.click('#pm-sidebar .sidebar-link[href="#/cycles"]:not([data-alias])');
+    await p.waitForFunction(() => location.hash === '#/cycles' && !document.getElementById('cycles')!.hidden);
+    assert.equal(await p.getAttribute('#pm-sidebar .sidebar-link[href="#/cycles"]:not([data-alias])', 'aria-current'), 'page');
+    await p.goBack();
+    await p.waitForFunction(() => !document.getElementById('ENG-140')!.hidden);
+    await p.goto(`${server.url}${PAGE}#/issues/ENG-999`);
+    await p.waitForFunction(() => !document.getElementById('issues')!.hidden);
+    assert.deepEqual(await translationGaps(p, '[data-pm]'), [], 'every target and attribute in English and German');
+    assert.equal(await renderedLanguage(p, '[data-pm]'), 'en');
+    await chooseLanguage(p, 'de');
+    assert.equal(await renderedLanguage(p, '[data-pm]'), 'de');
+    assert.equal(await p.textContent('#pm-sidebar [data-i18n-target="nav-inbox-d"]'), 'Posteingang');
+    assert.equal(await p.textContent('#pm-create-title'), 'Neues Issue');
+    assert.equal(await p.getAttribute('#issues [data-pm-filter]', 'placeholder'), 'Nach Titel oder ID filtern…');
+    await p.close();
+  });
+
 } finally {
   await browser.close();
   server.stop();

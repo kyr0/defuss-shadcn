@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
 import { offlineJsdelivr, waitEditorsSettled } from '../lib/vendor-offline.ts';
+import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
  * Why: the document editor scaffold is a clickdummy - its promise is that
@@ -512,6 +513,30 @@ try {
     await full.keyboard.press('ControlOrMeta+s');
     await full.waitForFunction(() => [...document.querySelectorAll('.toast')].some((t) => /Not saved\s*The browser refused to store the document/.test(t.textContent ?? '')), undefined, { timeout: 3000 });
     await full.close();
+  });
+
+  await check('routing: a document is #/docs/:id - a deep link opens it once the editor is ready, a list link writes the address, Back returns; translation: German, every target in both languages', async () => {
+    const hash = '#/docs/brief';
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}${hash}`);
+    await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '#de', { timeout: 15_000 });
+    await waitEditorsSettled(p);
+    const open = () => p.$eval('[data-de-doc][aria-current="page"]', (a) => (a as HTMLElement).dataset.deDoc);
+    await p.waitForFunction(() => document.querySelector('#de-title')!.textContent === 'Design brief', undefined, { timeout: 5000 });
+    assert.equal(await open(), 'brief');
+    // the document list starts folded away (a collapsed sidebar): the link's own click, as the router takes it
+    await p.evaluate(() => (document.querySelector('[data-de-doc="notes"]') as HTMLElement).click());
+    await p.waitForFunction(() => location.hash === '#/docs/notes' && document.querySelector('#de-title')!.textContent === 'Meeting notes', undefined, { timeout: 5000 });
+    await p.goBack();
+    await p.waitForFunction(() => document.querySelector('#de-title')!.textContent === 'Design brief', undefined, { timeout: 5000 });
+    assert.deepEqual(await translationGaps(p, '#de'), [], 'every target and attribute in English and German');
+    assert.equal(await renderedLanguage(p, '#de'), 'en');
+    await chooseLanguage(p, 'de');
+    assert.equal(await renderedLanguage(p, '#de'), 'de');
+    assert.equal(await p.textContent('[data-dropdown-trigger="de-m-file"]'), 'Datei');
+    assert.equal(await p.getAttribute('#de-bar [data-editor-command="bold"]', 'aria-label'), 'Fett');
+    await p.close();
   });
 
   await check('no page errors', async () => {

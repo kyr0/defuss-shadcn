@@ -17,7 +17,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <a class="btn" data-variant="outline" href="#how-it-works">How it works</a>
 </div>
 
-```html example label="Notes and docs" schema="none" height="50" mode="desktop" hint="The whole workspace in one source. Pages are URL fragments (#p-roadmap…) shown with :target; the database views and the toggles are CSS state; blocks are contenteditable elements with a data-type, so turning a line into a heading or a to-do is one attribute and a prefix element." previewStyle="align-items:stretch;padding:0;"
+```html example label="Notes and docs" schema="none" height="50" mode="desktop" hint="The whole workspace in one source. Pages are routes (#/pages/roadmap…) of defuss-dom-router; the language switch in the sidebar translates the shell with defuss-i18n; the database views and the toggles are CSS state; blocks are contenteditable elements with a data-type, so turning a line into a heading or a to-do is one attribute and a prefix element." previewStyle="align-items:stretch;padding:0;"
 <style>
   /* Folio: the scaffold's own glue - layout and the editor look. Every control
      is a shipped component (Sidebar, Tree View, Toolbar, Context Menu, Command,
@@ -73,6 +73,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       height: 0.875rem;
       color: var(--muted-foreground);
     }
+  }
+  .nt-locale {
+    margin-block-end: 0.375rem;
+  }
+  .nt-sidebar[data-state='collapsed'] .nt-locale {
+    display: none;
   }
   .nt-ws-name {
     overflow: hidden;
@@ -139,7 +145,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
 
-  /* pages: one :target section each */
+  /* pages: the route's page is shown, the others are hidden */
   .nt-main {
     flex: 1;
     min-width: 0;
@@ -153,8 +159,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     height: 100%;
     min-height: 0;
   }
-  .nt-page:target,
-  .nt-pages:not(:has(.nt-page:target)) > .nt-page[data-default] {
+  .nt-page:not([hidden]) {
     display: flex;
     animation: nt-in 180ms ease both;
   }
@@ -1298,8 +1303,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .nt-page:target,
-    .nt-pages:not(:has(.nt-page:target)) > .nt-page[data-default] {
+    .nt-page:not([hidden]) {
       animation: none;
     }
     .nt-arrow::before,
@@ -1320,8 +1324,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
 </style>
-<div class="nt" data-nt>
-  <aside class="app-sidebar nt-sidebar" id="nt-sidebar" data-state="expanded" aria-label="Workspace">
+<div class="nt" data-nt data-i18n-component>
+  <aside
+    class="app-sidebar nt-sidebar"
+    id="nt-sidebar"
+    data-state="expanded"
+    aria-label="Workspace"
+    data-i18n-aria-label-en="Workspace"
+    data-i18n-aria-label-de="Arbeitsbereich"
+  >
     <div class="sidebar-header nt-sb-head">
       <button
         class="nt-ws"
@@ -1347,15 +1358,23 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <path d="M9 10h6M9 14h6" /></svg></span
         ><span class="nt-ws-name">Aron's Folio</span><i data-lucide="chevrons-up-down"></i>
       </button>
-      <div id="nt-ws-menu" role="menu" popover class="dropdown-content" aria-label="Workspace">
+      <div
+        id="nt-ws-menu"
+        role="menu"
+        popover
+        class="dropdown-content"
+        aria-label="Workspace"
+        data-i18n-aria-label-en="Workspace"
+        data-i18n-aria-label-de="Arbeitsbereich"
+      >
         <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Settings are part of the full product"
-          ><i data-lucide="settings"></i> Settings</button
+          ><i data-lucide="settings"></i> <span data-i18n-target="ws-settings">Settings</span></button
         >
         <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Invite link copied"
-          ><i data-lucide="user-plus"></i> Invite members</button
+          ><i data-lucide="user-plus"></i> <span data-i18n-target="ws-invite">Invite members</span></button
         >
         <button role="menuitem" class="dropdown-item" tabindex="-1" data-nt-theme
-          ><i data-lucide="moon"></i> Toggle theme</button
+          ><i data-lucide="moon"></i> <span data-i18n-target="ws-theme">Toggle theme</span></button
         >
         <div class="dropdown-separator" role="separator"></div>
         <button
@@ -1364,33 +1383,54 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           tabindex="-1"
           data-toast="Logged out"
           data-toast-desc="This is a clickdummy - you are still here."
-          ><i data-lucide="log-out"></i> Log out</button
+          ><i data-lucide="log-out"></i> <span data-i18n-target="ws-logout">Log out</span></button
         >
       </div>
-      <button class="sidebar-trigger" type="button" data-sidebar-trigger="nt-sidebar" aria-label="Collapse sidebar"
+      <button
+        class="sidebar-trigger"
+        type="button"
+        data-sidebar-trigger="nt-sidebar"
+        aria-label="Collapse sidebar"
+        data-i18n-aria-label-en="Collapse sidebar"
+        data-i18n-aria-label-de="Seitenleiste einklappen"
         ><i data-lucide="chevrons-left"></i
       ></button>
     </div>
     <div class="sidebar-content">
-      <nav class="sidebar-nav" aria-label="Quick actions">
+      <nav
+        class="sidebar-nav"
+        aria-label="Quick actions"
+        data-i18n-aria-label-en="Quick actions"
+        data-i18n-aria-label-de="Schnellaktionen"
+      >
         <button class="sidebar-link" type="button" data-command-trigger="nt-cmd"
-          ><i data-lucide="search"></i><span>Search</span><kbd class="kbd nt-kbd">⌘K</kbd></button
+          ><i data-lucide="search"></i><span data-i18n-target="nav-search-d">Search</span
+          ><kbd class="kbd nt-kbd">⌘K</kbd></button
         >
         <button class="sidebar-link" type="button" data-nt-new
-          ><i data-lucide="square-pen"></i><span>New page</span></button
+          ><i data-lucide="square-pen"></i><span data-i18n-target="nav-new-d">New page</span></button
         >
       </nav>
       <details class="sidebar-group" open>
-        <summary><span>Favorites</span><i data-lucide="chevron-right"></i></summary>
-        <ul class="tree nt-tree" role="tree" aria-label="Favorites" data-selectable data-nt-favs data-prefix="d">
+        <summary><span data-i18n-target="nav-favorites-d">Favorites</span><i data-lucide="chevron-right"></i></summary>
+        <ul
+          class="tree nt-tree"
+          role="tree"
+          aria-label="Favorites"
+          data-i18n-aria-label-en="Favorites"
+          data-i18n-aria-label-de="Favoriten"
+          data-selectable
+          data-nt-favs
+          data-prefix="d"
+        >
           <li class="tree-item" role="treeitem" data-page="getting-started" aria-selected="false"
-            ><a class="tree-leaf" href="#p-getting-started"
+            ><a class="tree-leaf" href="#/pages/getting-started" data-router-link
               ><span class="nt-tree-icon" data-icon-of="getting-started">👋</span
               ><span data-title-of="getting-started">Getting started</span></a
             ></li
           >
           <li class="tree-item" role="treeitem" data-page="roadmap" aria-selected="false"
-            ><a class="tree-leaf" href="#p-roadmap"
+            ><a class="tree-leaf" href="#/pages/roadmap" data-router-link
               ><span class="nt-tree-icon" data-icon-of="roadmap">🗺️</span
               ><span data-title-of="roadmap">Product Roadmap</span></a
             ></li
@@ -1398,10 +1438,18 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </ul>
       </details>
       <details class="sidebar-group" open>
-        <summary><span>Private</span><i data-lucide="chevron-right"></i></summary>
-        <ul class="tree nt-tree" role="tree" aria-label="Private pages" data-selectable data-nt-private>
+        <summary><span data-i18n-target="nav-private-d">Private</span><i data-lucide="chevron-right"></i></summary>
+        <ul
+          class="tree nt-tree"
+          role="tree"
+          aria-label="Private pages"
+          data-i18n-aria-label-en="Private pages"
+          data-i18n-aria-label-de="Private Seiten"
+          data-selectable
+          data-nt-private
+        >
           <li class="tree-item" role="treeitem" data-page="getting-started" aria-selected="false"
-            ><a class="tree-leaf" href="#p-getting-started"
+            ><a class="tree-leaf" href="#/pages/getting-started" data-router-link
               ><span class="nt-tree-icon" data-icon-of="getting-started">👋</span
               ><span data-title-of="getting-started">Getting started</span></a
             ></li
@@ -1414,12 +1462,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               >
               <ul class="tree-group" role="group"
                 ><li class="tree-item" role="treeitem" data-page="onboarding" aria-selected="false"
-                  ><a class="tree-leaf" href="#p-onboarding"
+                  ><a class="tree-leaf" href="#/pages/onboarding" data-router-link
                     ><span class="nt-tree-icon" data-icon-of="onboarding">🚀</span
                     ><span data-title-of="onboarding">Onboarding</span></a
                   ></li
                 ><li class="tree-item" role="treeitem" data-page="code-review" aria-selected="false"
-                  ><a class="tree-leaf" href="#p-code-review"
+                  ><a class="tree-leaf" href="#/pages/code-review" data-router-link
                     ><span class="nt-tree-icon" data-icon-of="code-review">🔍</span
                     ><span data-title-of="code-review">Code review guidelines</span></a
                   ></li
@@ -1428,68 +1476,113 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             </details>
           </li>
           <li class="tree-item" role="treeitem" data-page="roadmap" aria-selected="false"
-            ><a class="tree-leaf" href="#p-roadmap"
+            ><a class="tree-leaf" href="#/pages/roadmap" data-router-link
               ><span class="nt-tree-icon" data-icon-of="roadmap">🗺️</span
               ><span data-title-of="roadmap">Product Roadmap</span></a
             ></li
           >
           <li class="tree-item" role="treeitem" data-page="meetings" aria-selected="false"
-            ><a class="tree-leaf" href="#p-meetings"
+            ><a class="tree-leaf" href="#/pages/meetings" data-router-link
               ><span class="nt-tree-icon" data-icon-of="meetings">📝</span
               ><span data-title-of="meetings">Meeting notes</span></a
             ></li
           >
           <li class="tree-item" role="treeitem" data-page="journal" aria-selected="false"
-            ><a class="tree-leaf" href="#p-journal"
+            ><a class="tree-leaf" href="#/pages/journal" data-router-link
               ><span class="nt-tree-icon" data-icon-of="journal">✏️</span
               ><span data-title-of="journal">Journal</span></a
             ></li
           >
         </ul>
         <button class="sidebar-link nt-add-page" type="button" data-nt-new
-          ><i data-lucide="plus"></i><span>Add a page</span></button
+          ><i data-lucide="plus"></i><span data-i18n-target="nav-add-d">Add a page</span></button
         >
       </details>
     </div>
     <div class="sidebar-footer">
+      <select
+        class="select nt-locale"
+        data-size="sm"
+        id="nt-lang"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+      >
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
       <button class="sidebar-link" type="button" popovertarget="nt-trash"
-        ><i data-lucide="trash-2"></i><span>Trash</span></button
+        ><i data-lucide="trash-2"></i><span data-i18n-target="nav-trash">Trash</span></button
       >
       <button
         class="sidebar-link"
         type="button"
         data-toast="Help center"
         data-toast-desc="⌘K search · / blocks · ⌘B bold · ⌘I italic · drag ⋮⋮ to move"
-        ><i data-lucide="circle-question-mark"></i><span>Help</span></button
+        ><i data-lucide="circle-question-mark"></i><span data-i18n-target="nav-help">Help</span></button
       >
     </div>
   </aside>
-  <button class="sidebar-trigger nt-expand" type="button" data-sidebar-trigger="nt-sidebar" aria-label="Expand sidebar"
+  <button
+    class="sidebar-trigger nt-expand"
+    type="button"
+    data-sidebar-trigger="nt-sidebar"
+    aria-label="Expand sidebar"
+    data-i18n-aria-label-en="Expand sidebar"
+    data-i18n-aria-label-de="Seitenleiste ausklappen"
     ><i data-lucide="chevrons-right"></i
   ></button>
 
-  <dialog class="sidebar-mobile" id="nt-mobile-nav" aria-label="Navigation">
-    <button class="sidebar-mobile-close" aria-label="Close navigation"><i data-lucide="x"></i></button>
+  <dialog
+    class="sidebar-mobile"
+    id="nt-mobile-nav"
+    aria-label="Navigation"
+    data-i18n-aria-label-en="Navigation"
+    data-i18n-aria-label-de="Navigation"
+  >
+    <button
+      class="sidebar-mobile-close"
+      aria-label="Close navigation"
+      data-i18n-aria-label-en="Close navigation"
+      data-i18n-aria-label-de="Navigation schließen"
+      ><i data-lucide="x"></i
+    ></button>
     <div class="sidebar-content">
-      <nav class="sidebar-nav" aria-label="Quick actions">
+      <nav
+        class="sidebar-nav"
+        aria-label="Quick actions"
+        data-i18n-aria-label-en="Quick actions"
+        data-i18n-aria-label-de="Schnellaktionen"
+      >
         <button class="sidebar-link" type="button" data-command-trigger="nt-cmd"
-          ><i data-lucide="search"></i><span>Search</span><kbd class="kbd nt-kbd">⌘K</kbd></button
+          ><i data-lucide="search"></i><span data-i18n-target="nav-search-m">Search</span
+          ><kbd class="kbd nt-kbd">⌘K</kbd></button
         >
         <button class="sidebar-link" type="button" data-nt-new
-          ><i data-lucide="square-pen"></i><span>New page</span></button
+          ><i data-lucide="square-pen"></i><span data-i18n-target="nav-new-m">New page</span></button
         >
       </nav>
       <details class="sidebar-group" open>
-        <summary><span>Favorites</span><i data-lucide="chevron-right"></i></summary>
-        <ul class="tree nt-tree" role="tree" aria-label="Favorites" data-selectable data-nt-favs data-prefix="m">
+        <summary><span data-i18n-target="nav-favorites-m">Favorites</span><i data-lucide="chevron-right"></i></summary>
+        <ul
+          class="tree nt-tree"
+          role="tree"
+          aria-label="Favorites"
+          data-i18n-aria-label-en="Favorites"
+          data-i18n-aria-label-de="Favoriten"
+          data-selectable
+          data-nt-favs
+          data-prefix="m"
+        >
           <li class="tree-item" role="treeitem" data-page="getting-started" aria-selected="false"
-            ><a class="tree-leaf" href="#p-getting-started"
+            ><a class="tree-leaf" href="#/pages/getting-started" data-router-link
               ><span class="nt-tree-icon" data-icon-of="getting-started">👋</span
               ><span data-title-of="getting-started">Getting started</span></a
             ></li
           >
           <li class="tree-item" role="treeitem" data-page="roadmap" aria-selected="false"
-            ><a class="tree-leaf" href="#p-roadmap"
+            ><a class="tree-leaf" href="#/pages/roadmap" data-router-link
               ><span class="nt-tree-icon" data-icon-of="roadmap">🗺️</span
               ><span data-title-of="roadmap">Product Roadmap</span></a
             ></li
@@ -1497,10 +1590,18 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </ul>
       </details>
       <details class="sidebar-group" open>
-        <summary><span>Private</span><i data-lucide="chevron-right"></i></summary>
-        <ul class="tree nt-tree" role="tree" aria-label="Private pages" data-selectable data-nt-private>
+        <summary><span data-i18n-target="nav-private-m">Private</span><i data-lucide="chevron-right"></i></summary>
+        <ul
+          class="tree nt-tree"
+          role="tree"
+          aria-label="Private pages"
+          data-i18n-aria-label-en="Private pages"
+          data-i18n-aria-label-de="Private Seiten"
+          data-selectable
+          data-nt-private
+        >
           <li class="tree-item" role="treeitem" data-page="getting-started" aria-selected="false"
-            ><a class="tree-leaf" href="#p-getting-started"
+            ><a class="tree-leaf" href="#/pages/getting-started" data-router-link
               ><span class="nt-tree-icon" data-icon-of="getting-started">👋</span
               ><span data-title-of="getting-started">Getting started</span></a
             ></li
@@ -1513,12 +1614,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               >
               <ul class="tree-group" role="group"
                 ><li class="tree-item" role="treeitem" data-page="onboarding" aria-selected="false"
-                  ><a class="tree-leaf" href="#p-onboarding"
+                  ><a class="tree-leaf" href="#/pages/onboarding" data-router-link
                     ><span class="nt-tree-icon" data-icon-of="onboarding">🚀</span
                     ><span data-title-of="onboarding">Onboarding</span></a
                   ></li
                 ><li class="tree-item" role="treeitem" data-page="code-review" aria-selected="false"
-                  ><a class="tree-leaf" href="#p-code-review"
+                  ><a class="tree-leaf" href="#/pages/code-review" data-router-link
                     ><span class="nt-tree-icon" data-icon-of="code-review">🔍</span
                     ><span data-title-of="code-review">Code review guidelines</span></a
                   ></li
@@ -1527,28 +1628,42 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             </details>
           </li>
           <li class="tree-item" role="treeitem" data-page="roadmap" aria-selected="false"
-            ><a class="tree-leaf" href="#p-roadmap"
+            ><a class="tree-leaf" href="#/pages/roadmap" data-router-link
               ><span class="nt-tree-icon" data-icon-of="roadmap">🗺️</span
               ><span data-title-of="roadmap">Product Roadmap</span></a
             ></li
           >
           <li class="tree-item" role="treeitem" data-page="meetings" aria-selected="false"
-            ><a class="tree-leaf" href="#p-meetings"
+            ><a class="tree-leaf" href="#/pages/meetings" data-router-link
               ><span class="nt-tree-icon" data-icon-of="meetings">📝</span
               ><span data-title-of="meetings">Meeting notes</span></a
             ></li
           >
           <li class="tree-item" role="treeitem" data-page="journal" aria-selected="false"
-            ><a class="tree-leaf" href="#p-journal"
+            ><a class="tree-leaf" href="#/pages/journal" data-router-link
               ><span class="nt-tree-icon" data-icon-of="journal">✏️</span
               ><span data-title-of="journal">Journal</span></a
             ></li
           >
         </ul>
         <button class="sidebar-link nt-add-page" type="button" data-nt-new
-          ><i data-lucide="plus"></i><span>Add a page</span></button
+          ><i data-lucide="plus"></i><span data-i18n-target="nav-add-m">Add a page</span></button
         >
       </details>
+    </div>
+    <div class="sidebar-footer">
+      <select
+        class="select nt-locale"
+        data-size="sm"
+        id="nt-lang-m"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+      >
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
     </div>
   </dialog>
 
@@ -1567,9 +1682,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             type="button"
             data-sidebar-mobile="nt-mobile-nav"
             aria-label="Open navigation"
+            data-i18n-aria-label-en="Open navigation"
+            data-i18n-aria-label-de="Navigation öffnen"
             ><i data-lucide="menu"></i
           ></button>
-          <nav class="breadcrumb" aria-label="Breadcrumb"
+          <nav
+            class="breadcrumb"
+            aria-label="Breadcrumb"
+            data-i18n-aria-label-en="Breadcrumb"
+            data-i18n-aria-label-de="Pfad"
             ><ol class="breadcrumb-list">
               <li class="breadcrumb-item"
                 ><span class="breadcrumb-page" aria-current="page"
@@ -1590,6 +1711,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             aria-pressed="true"
             data-nt-fav
             aria-label="Favorite"
+            data-i18n-aria-label-en="Favorite"
+            data-i18n-aria-label-de="Favorit"
             ><i data-lucide="star"></i
           ></button>
           <button
@@ -1859,7 +1982,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     ><div class="nt-text" contenteditable="true" data-placeholder="Type '/' for commands"
                       >Toggles keep details out of the way until you need them. Press <kbd class="kbd">⌘K</kbd> to jump
                       between pages, or open
-                      <a class="nt-pagelink" href="#p-roadmap" contenteditable="false"
+                      <a class="nt-pagelink" href="#/pages/roadmap" data-router-link contenteditable="false"
                         ><span data-icon-of="roadmap">🗺️</span><span data-title-of="roadmap">Product Roadmap</span></a
                       >
                       for a database with table, board and gallery views.</div
@@ -1956,16 +2079,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </div>
       </article>
-      <article class="nt-page" id="p-wiki" data-page="wiki" aria-labelledby="t-wiki">
+      <article class="nt-page" id="p-wiki" hidden data-page="wiki" aria-labelledby="t-wiki">
         <header class="nt-top">
           <button
             class="sidebar-trigger nt-mobile-trigger"
             type="button"
             data-sidebar-mobile="nt-mobile-nav"
             aria-label="Open navigation"
+            data-i18n-aria-label-en="Open navigation"
+            data-i18n-aria-label-de="Navigation öffnen"
             ><i data-lucide="menu"></i
           ></button>
-          <nav class="breadcrumb" aria-label="Breadcrumb"
+          <nav
+            class="breadcrumb"
+            aria-label="Breadcrumb"
+            data-i18n-aria-label-en="Breadcrumb"
+            data-i18n-aria-label-de="Pfad"
             ><ol class="breadcrumb-list">
               <li class="breadcrumb-item"
                 ><span class="breadcrumb-page" aria-current="page"
@@ -1985,6 +2114,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             aria-pressed="false"
             data-nt-fav
             aria-label="Favorite"
+            data-i18n-aria-label-en="Favorite"
+            data-i18n-aria-label-de="Favorit"
             ><i data-lucide="star"></i
           ></button>
           <button
@@ -2127,7 +2258,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     aria-label="Drag to move, click for options"
                   ></button></div
                 ><div class="nt-text" contenteditable="true" data-placeholder="List"
-                  ><a class="nt-pagelink" href="#p-onboarding" contenteditable="false"
+                  ><a class="nt-pagelink" href="#/pages/onboarding" data-router-link contenteditable="false"
                     ><span data-icon-of="onboarding">🚀</span><span data-title-of="onboarding">Onboarding</span></a
                   >
                   - your first week, accounts and the local setup</div
@@ -2144,7 +2275,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     aria-label="Drag to move, click for options"
                   ></button></div
                 ><div class="nt-text" contenteditable="true" data-placeholder="List"
-                  ><a class="nt-pagelink" href="#p-code-review" contenteditable="false"
+                  ><a class="nt-pagelink" href="#/pages/code-review" data-router-link contenteditable="false"
                     ><span data-icon-of="code-review">🔍</span
                     ><span data-title-of="code-review">Code review guidelines</span></a
                   >
@@ -2225,19 +2356,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </div>
       </article>
-      <article class="nt-page" id="p-onboarding" data-page="onboarding" aria-labelledby="t-onboarding">
+      <article class="nt-page" id="p-onboarding" hidden data-page="onboarding" aria-labelledby="t-onboarding">
         <header class="nt-top">
           <button
             class="sidebar-trigger nt-mobile-trigger"
             type="button"
             data-sidebar-mobile="nt-mobile-nav"
             aria-label="Open navigation"
+            data-i18n-aria-label-en="Open navigation"
+            data-i18n-aria-label-de="Navigation öffnen"
             ><i data-lucide="menu"></i
           ></button>
-          <nav class="breadcrumb" aria-label="Breadcrumb"
+          <nav
+            class="breadcrumb"
+            aria-label="Breadcrumb"
+            data-i18n-aria-label-en="Breadcrumb"
+            data-i18n-aria-label-de="Pfad"
             ><ol class="breadcrumb-list">
               <li class="breadcrumb-item"
-                ><a class="breadcrumb-link" href="#p-wiki"
+                ><a class="breadcrumb-link" href="#/pages/wiki" data-router-link
                   ><span data-icon-of="wiki">📚</span> <span data-title-of="wiki">Engineering Wiki</span></a
                 ></li
               ><li class="breadcrumb-separator" aria-hidden="true">/</li
@@ -2259,6 +2396,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             aria-pressed="false"
             data-nt-fav
             aria-label="Favorite"
+            data-i18n-aria-label-en="Favorite"
+            data-i18n-aria-label-de="Favorit"
             ><i data-lucide="star"></i
           ></button>
           <button
@@ -2482,19 +2621,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </div>
       </article>
-      <article class="nt-page" id="p-code-review" data-page="code-review" aria-labelledby="t-code-review">
+      <article class="nt-page" id="p-code-review" hidden data-page="code-review" aria-labelledby="t-code-review">
         <header class="nt-top">
           <button
             class="sidebar-trigger nt-mobile-trigger"
             type="button"
             data-sidebar-mobile="nt-mobile-nav"
             aria-label="Open navigation"
+            data-i18n-aria-label-en="Open navigation"
+            data-i18n-aria-label-de="Navigation öffnen"
             ><i data-lucide="menu"></i
           ></button>
-          <nav class="breadcrumb" aria-label="Breadcrumb"
+          <nav
+            class="breadcrumb"
+            aria-label="Breadcrumb"
+            data-i18n-aria-label-en="Breadcrumb"
+            data-i18n-aria-label-de="Pfad"
             ><ol class="breadcrumb-list">
               <li class="breadcrumb-item"
-                ><a class="breadcrumb-link" href="#p-wiki"
+                ><a class="breadcrumb-link" href="#/pages/wiki" data-router-link
                   ><span data-icon-of="wiki">📚</span> <span data-title-of="wiki">Engineering Wiki</span></a
                 ></li
               ><li class="breadcrumb-separator" aria-hidden="true">/</li
@@ -2517,6 +2662,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             aria-pressed="false"
             data-nt-fav
             aria-label="Favorite"
+            data-i18n-aria-label-en="Favorite"
+            data-i18n-aria-label-de="Favorit"
             ><i data-lucide="star"></i
           ></button>
           <button
@@ -2733,16 +2880,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </div>
       </article>
-      <article class="nt-page" id="p-roadmap" data-page="roadmap" data-full aria-labelledby="t-roadmap">
+      <article class="nt-page" id="p-roadmap" hidden data-page="roadmap" data-full aria-labelledby="t-roadmap">
         <header class="nt-top">
           <button
             class="sidebar-trigger nt-mobile-trigger"
             type="button"
             data-sidebar-mobile="nt-mobile-nav"
             aria-label="Open navigation"
+            data-i18n-aria-label-en="Open navigation"
+            data-i18n-aria-label-de="Navigation öffnen"
             ><i data-lucide="menu"></i
           ></button>
-          <nav class="breadcrumb" aria-label="Breadcrumb"
+          <nav
+            class="breadcrumb"
+            aria-label="Breadcrumb"
+            data-i18n-aria-label-en="Breadcrumb"
+            data-i18n-aria-label-de="Pfad"
             ><ol class="breadcrumb-list">
               <li class="breadcrumb-item"
                 ><span class="breadcrumb-page" aria-current="page"
@@ -2762,6 +2915,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             aria-pressed="true"
             data-nt-fav
             aria-label="Favorite"
+            data-i18n-aria-label-en="Favorite"
+            data-i18n-aria-label-de="Favorit"
             ><i data-lucide="star"></i
           ></button>
           <button
@@ -3425,16 +3580,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </div>
       </article>
-      <article class="nt-page" id="p-meetings" data-page="meetings" aria-labelledby="t-meetings">
+      <article class="nt-page" id="p-meetings" hidden data-page="meetings" aria-labelledby="t-meetings">
         <header class="nt-top">
           <button
             class="sidebar-trigger nt-mobile-trigger"
             type="button"
             data-sidebar-mobile="nt-mobile-nav"
             aria-label="Open navigation"
+            data-i18n-aria-label-en="Open navigation"
+            data-i18n-aria-label-de="Navigation öffnen"
             ><i data-lucide="menu"></i
           ></button>
-          <nav class="breadcrumb" aria-label="Breadcrumb"
+          <nav
+            class="breadcrumb"
+            aria-label="Breadcrumb"
+            data-i18n-aria-label-en="Breadcrumb"
+            data-i18n-aria-label-de="Pfad"
             ><ol class="breadcrumb-list">
               <li class="breadcrumb-item"
                 ><span class="breadcrumb-page" aria-current="page"
@@ -3454,6 +3615,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             aria-pressed="false"
             data-nt-fav
             aria-label="Favorite"
+            data-i18n-aria-label-en="Favorite"
+            data-i18n-aria-label-de="Favorit"
             ><i data-lucide="star"></i
           ></button>
           <button
@@ -3685,16 +3848,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </div>
       </article>
-      <article class="nt-page" id="p-journal" data-page="journal" aria-labelledby="t-journal">
+      <article class="nt-page" id="p-journal" hidden data-page="journal" aria-labelledby="t-journal">
         <header class="nt-top">
           <button
             class="sidebar-trigger nt-mobile-trigger"
             type="button"
             data-sidebar-mobile="nt-mobile-nav"
             aria-label="Open navigation"
+            data-i18n-aria-label-en="Open navigation"
+            data-i18n-aria-label-de="Navigation öffnen"
             ><i data-lucide="menu"></i
           ></button>
-          <nav class="breadcrumb" aria-label="Breadcrumb"
+          <nav
+            class="breadcrumb"
+            aria-label="Breadcrumb"
+            data-i18n-aria-label-en="Breadcrumb"
+            data-i18n-aria-label-de="Pfad"
             ><ol class="breadcrumb-list">
               <li class="breadcrumb-item"
                 ><span class="breadcrumb-page" aria-current="page"
@@ -3714,6 +3883,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             aria-pressed="false"
             data-nt-fav
             aria-label="Favorite"
+            data-i18n-aria-label-en="Favorite"
+            data-i18n-aria-label-de="Favorit"
             ><i data-lucide="star"></i
           ></button>
           <button
@@ -4064,13 +4235,21 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     >
   </div>
   <div class="popover nt-trash" id="nt-trash" popover>
-    <p class="nt-menu-heading">Trash</p>
+    <p class="nt-menu-heading" data-i18n-target="trash-title">Trash</p>
     <ul data-nt-trash-list></ul>
-    <p class="nt-trash-empty">No pages in Trash</p>
+    <p class="nt-trash-empty" data-i18n-target="trash-empty">No pages in Trash</p>
   </div>
 
   <!-- ⌘K -->
-  <dialog id="nt-cmd" class="command" role="dialog" aria-modal="true" aria-label="Search">
+  <dialog
+    id="nt-cmd"
+    class="command"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search"
+    data-i18n-aria-label-en="Search"
+    data-i18n-aria-label-de="Suchen"
+  >
     <div class="command-content">
       <div class="command-input-wrapper"
         ><i data-lucide="search"></i
@@ -4078,44 +4257,50 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           class="command-input"
           type="text"
           placeholder="Search or jump to a page…"
+          data-i18n-placeholder-en="Search or jump to a page…"
+          data-i18n-placeholder-de="Suchen oder zu einer Seite springen…"
           autocomplete="off"
           spellcheck="false"
       /></div>
       <div class="command-list">
         <div class="command-group" data-nt-cmd-pages>
-          <p class="command-group-heading">Pages</p>
-          <button class="command-item" data-go="p-getting-started" data-page="getting-started"
+          <p class="command-group-heading" data-i18n-target="cmd-pages">Pages</p>
+          <button class="command-item" data-go="/pages/getting-started" data-page="getting-started"
             ><span data-icon-of="getting-started">👋</span>
             <span data-title-of="getting-started">Getting started</span></button
           >
-          <button class="command-item" data-go="p-wiki" data-page="wiki"
+          <button class="command-item" data-go="/pages/wiki" data-page="wiki"
             ><span data-icon-of="wiki">📚</span> <span data-title-of="wiki">Engineering Wiki</span></button
           >
-          <button class="command-item" data-go="p-onboarding" data-page="onboarding"
+          <button class="command-item" data-go="/pages/onboarding" data-page="onboarding"
             ><span data-icon-of="onboarding">🚀</span> <span data-title-of="onboarding">Onboarding</span></button
           >
-          <button class="command-item" data-go="p-code-review" data-page="code-review"
+          <button class="command-item" data-go="/pages/code-review" data-page="code-review"
             ><span data-icon-of="code-review">🔍</span>
             <span data-title-of="code-review">Code review guidelines</span></button
           >
-          <button class="command-item" data-go="p-roadmap" data-page="roadmap"
+          <button class="command-item" data-go="/pages/roadmap" data-page="roadmap"
             ><span data-icon-of="roadmap">🗺️</span> <span data-title-of="roadmap">Product Roadmap</span></button
           >
-          <button class="command-item" data-go="p-meetings" data-page="meetings"
+          <button class="command-item" data-go="/pages/meetings" data-page="meetings"
             ><span data-icon-of="meetings">📝</span> <span data-title-of="meetings">Meeting notes</span></button
           >
-          <button class="command-item" data-go="p-journal" data-page="journal"
+          <button class="command-item" data-go="/pages/journal" data-page="journal"
             ><span data-icon-of="journal">✏️</span> <span data-title-of="journal">Journal</span></button
           >
         </div>
         <div class="command-separator"></div>
         <div class="command-group">
-          <p class="command-group-heading">Actions</p>
-          <button class="command-item" data-nt-new><i data-lucide="square-pen"></i> New page</button>
-          <button class="command-item" data-nt-theme><i data-lucide="moon"></i> Toggle dark mode</button>
+          <p class="command-group-heading" data-i18n-target="cmd-actions">Actions</p>
+          <button class="command-item" data-nt-new
+            ><i data-lucide="square-pen"></i> <span data-i18n-target="cmd-new">New page</span></button
+          >
+          <button class="command-item" data-nt-theme
+            ><i data-lucide="moon"></i> <span data-i18n-target="cmd-dark">Toggle dark mode</span></button
+          >
         </div>
       </div>
-      <div class="command-empty" hidden>No results found.</div>
+      <div class="command-empty" hidden data-i18n-target="cmd-empty">No results found.</div>
     </div>
   </dialog>
 
@@ -4176,16 +4361,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
   <!-- what the script stamps out -->
   <template id="nt-tpl-page"
-    ><article class="nt-page" id="p-__PAGE__" data-page="__PAGE__" aria-labelledby="t-__PAGE__">
+    ><article class="nt-page" id="p-__PAGE__" hidden data-page="__PAGE__" aria-labelledby="t-__PAGE__">
       <header class="nt-top">
         <button
           class="sidebar-trigger nt-mobile-trigger"
           type="button"
           data-sidebar-mobile="nt-mobile-nav"
           aria-label="Open navigation"
+          data-i18n-aria-label-en="Open navigation"
+          data-i18n-aria-label-de="Navigation öffnen"
           ><i data-lucide="menu"></i
         ></button>
-        <nav class="breadcrumb" aria-label="Breadcrumb"
+        <nav
+          class="breadcrumb"
+          aria-label="Breadcrumb"
+          data-i18n-aria-label-en="Breadcrumb"
+          data-i18n-aria-label-de="Pfad"
           ><ol class="breadcrumb-list">
             <li class="breadcrumb-item"
               ><span class="breadcrumb-page" aria-current="page"
@@ -4205,6 +4396,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           aria-pressed="false"
           data-nt-fav
           aria-label="Favorite"
+          data-i18n-aria-label-en="Favorite"
+          data-i18n-aria-label-de="Favorit"
           ><i data-lucide="star"></i
         ></button>
         <button
@@ -4310,11 +4503,58 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   ></template>
   <template id="nt-tpl-leaf"
     ><li class="tree-item" role="treeitem" data-page="__PAGE__" aria-selected="false"
-      ><a class="tree-leaf" href="#p-__PAGE__"
+      ><a class="tree-leaf" href="#/pages/__PAGE__" data-router-link
         ><span class="nt-tree-icon" data-icon-of="__PAGE__">📄</span><span data-title-of="__PAGE__">Untitled</span></a
       ></li
     ></template
   >
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="nav-search-d" data-i18n-locale="en">Search</template>
+  <template data-i18n-for="nav-search-d" data-i18n-locale="de">Suchen</template>
+  <template data-i18n-for="nav-new-d" data-i18n-locale="en">New page</template>
+  <template data-i18n-for="nav-new-d" data-i18n-locale="de">Neue Seite</template>
+  <template data-i18n-for="nav-favorites-d" data-i18n-locale="en">Favorites</template>
+  <template data-i18n-for="nav-favorites-d" data-i18n-locale="de">Favoriten</template>
+  <template data-i18n-for="nav-private-d" data-i18n-locale="en">Private</template>
+  <template data-i18n-for="nav-private-d" data-i18n-locale="de">Privat</template>
+  <template data-i18n-for="nav-add-d" data-i18n-locale="en">Add a page</template>
+  <template data-i18n-for="nav-add-d" data-i18n-locale="de">Seite hinzufügen</template>
+  <template data-i18n-for="ws-settings" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="ws-settings" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="ws-invite" data-i18n-locale="en">Invite members</template>
+  <template data-i18n-for="ws-invite" data-i18n-locale="de">Mitglieder einladen</template>
+  <template data-i18n-for="ws-theme" data-i18n-locale="en">Toggle theme</template>
+  <template data-i18n-for="ws-theme" data-i18n-locale="de">Design umschalten</template>
+  <template data-i18n-for="ws-logout" data-i18n-locale="en">Log out</template>
+  <template data-i18n-for="ws-logout" data-i18n-locale="de">Abmelden</template>
+  <template data-i18n-for="nav-trash" data-i18n-locale="en">Trash</template>
+  <template data-i18n-for="nav-trash" data-i18n-locale="de">Papierkorb</template>
+  <template data-i18n-for="nav-help" data-i18n-locale="en">Help</template>
+  <template data-i18n-for="nav-help" data-i18n-locale="de">Hilfe</template>
+  <template data-i18n-for="nav-search-m" data-i18n-locale="en">Search</template>
+  <template data-i18n-for="nav-search-m" data-i18n-locale="de">Suchen</template>
+  <template data-i18n-for="nav-new-m" data-i18n-locale="en">New page</template>
+  <template data-i18n-for="nav-new-m" data-i18n-locale="de">Neue Seite</template>
+  <template data-i18n-for="nav-favorites-m" data-i18n-locale="en">Favorites</template>
+  <template data-i18n-for="nav-favorites-m" data-i18n-locale="de">Favoriten</template>
+  <template data-i18n-for="nav-private-m" data-i18n-locale="en">Private</template>
+  <template data-i18n-for="nav-private-m" data-i18n-locale="de">Privat</template>
+  <template data-i18n-for="nav-add-m" data-i18n-locale="en">Add a page</template>
+  <template data-i18n-for="nav-add-m" data-i18n-locale="de">Seite hinzufügen</template>
+  <template data-i18n-for="cmd-pages" data-i18n-locale="en">Pages</template>
+  <template data-i18n-for="cmd-pages" data-i18n-locale="de">Seiten</template>
+  <template data-i18n-for="cmd-actions" data-i18n-locale="en">Actions</template>
+  <template data-i18n-for="cmd-actions" data-i18n-locale="de">Aktionen</template>
+  <template data-i18n-for="cmd-new" data-i18n-locale="en">New page</template>
+  <template data-i18n-for="cmd-new" data-i18n-locale="de">Neue Seite</template>
+  <template data-i18n-for="cmd-dark" data-i18n-locale="en">Toggle dark mode</template>
+  <template data-i18n-for="cmd-dark" data-i18n-locale="de">Dunkelmodus umschalten</template>
+  <template data-i18n-for="cmd-empty" data-i18n-locale="en">No results found.</template>
+  <template data-i18n-for="cmd-empty" data-i18n-locale="de">Keine Ergebnisse.</template>
+  <template data-i18n-for="trash-title" data-i18n-locale="en">Trash</template>
+  <template data-i18n-for="trash-title" data-i18n-locale="de">Papierkorb</template>
+  <template data-i18n-for="trash-empty" data-i18n-locale="en">No pages in Trash</template>
+  <template data-i18n-for="trash-empty" data-i18n-locale="de">Keine Seiten im Papierkorb</template>
 </div>
 <script>
   // Folio's wiring: the block editor (Enter, Backspace, arrows, markdown
@@ -4362,7 +4602,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       'nt-cover-city',
     ];
     const toast = (title, description) => df$.shadcn.toast.show(description ? { title, description } : { title });
-    const page = () => app.querySelector('.nt-page:target') || app.querySelector('.nt-page[data-default]');
+    // the page the router module shows; a script navigates by changing the hash, which the router follows
+    const page = () => app.querySelector('.nt-page:not([hidden])');
     const textOf = (b) => b.querySelector(':scope > .nt-text, :scope > figure > .nt-text');
     const blockOf = (el) => el.closest('.nt-block');
     const edited = (p) => {
@@ -4389,11 +4630,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       if (m && m.open) m.close();
       hideFormat();
     };
-    addEventListener('hashchange', sync);
-    // a branch row (a page with sub-pages) navigates too
+    app.addEventListener('nt-route', sync);
+    // a branch row (a page with sub-pages) navigates too - a leaf is a router link, the router takes its click
     app.addEventListener('tree-select', (e) => {
       const slug = e.detail.item.dataset.page;
-      if (slug && location.hash !== '#p-' + slug) location.hash = 'p-' + slug;
+      if (e.detail.item.querySelector(':scope > a[data-router-link]')) return;
+      if (slug && location.hash !== '#/pages/' + slug) location.hash = '/pages/' + slug;
     });
 
     // -- blocks -----------------------------------------------------------------------------
@@ -4918,7 +5160,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         .querySelector('[data-nt-cmd-pages]')
         .insertAdjacentHTML(
           'beforeend',
-          '<button class="command-item" data-go="p-' +
+          '<button class="command-item" data-go="/pages/' +
             slug +
             '" data-page="' +
             slug +
@@ -4929,7 +5171,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             '">Untitled</span></button>',
         );
       lucide();
-      location.hash = 'p-' + slug;
+      location.hash = '/pages/' + slug;
       requestAnimationFrame(() => app.querySelector('#t-' + slug).focus());
     };
     const STARTERS = {
@@ -4998,7 +5240,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         (p.querySelector('[data-nt-title]').textContent || 'Untitled');
       app.querySelector('[data-nt-trash-list]').append(li);
       const home = [...app.querySelectorAll('.nt-page:not([data-trashed])')][0];
-      location.hash = home ? home.id : '';
+      location.hash = home ? '/pages/' + home.dataset.page : '/';
       toast('Moved to Trash', 'Restore it from Trash in the sidebar.');
     };
     const restore = (slug) => {
@@ -5233,6 +5475,61 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     sync();
   })();
 </script>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const app = df$('[data-nt]').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the app)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    createDomI18n(df$).bind(app, locale);
+    // two switches (the sidebar and the mobile drawer) show one language
+    const languages = df$('[data-app-locale]');
+    const pick = () =>
+      languages.each((_i, select) => {
+        select.value = locale.locale;
+      });
+    pick();
+    locale.subscribe(pick);
+    languages.on('change', (event) => locale.setLocale(event.currentTarget.value));
+
+    // -- routing: the first page, and one route per page (#/pages/roadmap) - new pages too
+    const routes = [
+      { id: 'home', path: '/' },
+      { id: 'page', path: '/pages/:slug' },
+      { id: 'missing', path: '*' },
+    ];
+    const show = (to) => {
+      // a page the workspace does not have shows the first one
+      const page = to.routeId === 'page' ? document.getElementById('p-' + to.params.slug) : null;
+      const open = page?.matches('.nt-page') ? page : df$('.nt-page[data-default]').get(0);
+      df$('.nt-page').each((_i, article) => {
+        article.hidden = article !== open;
+      });
+      // the wiring above selects the page in the tree
+      app.dispatchEvent(new CustomEvent('nt-route'));
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(app);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+  });
+</script>
 ```
 
 <h2 id="how-it-works" class="h2-display">How it works</h2>
@@ -5241,7 +5538,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <ul class="text-sm" style="display:grid;gap:0.5rem;max-width:46rem;padding-inline-start:1.25rem">
   <li><strong>Shell</strong> - the <DocLink href="sidebar.html">Sidebar</DocLink> holds two <DocLink href="tree-view.html">Tree Views</DocLink> (Favorites, Private pages; a page with sub-pages is a branch), search and new-page actions and the Trash <DocLink href="popover.html">Popover</DocLink>; the top bar has a <DocLink href="breadcrumb.html">Breadcrumb</DocLink>, Share (a Popover with a <DocLink href="switch.html">Switch</DocLink>), favorite and a <DocLink href="dropdown.html">Dropdown</DocLink> of page options - font, small text and full width as radio and checkbox items, copy link, move to trash.</li>
-  <li><strong>Pages</strong> - every page is an <code>&lt;article&gt;</code> with an id, shown with <code>:target</code>. Its title, icon (an emoji Popover) and name stay in step across the tree, the breadcrumb and the <DocLink href="command.html">Command</DocLink> palette (<kbd class="kbd">⌘K</kbd>). New pages are stamped from a <code>&lt;template&gt;</code> and offer starter templates.</li>
+  <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: every page is <code>#/pages/:slug</code> (a new page too - the route reads the slug when it is opened), <code>#/</code> the first one. The commit shows the page's <code>&lt;article&gt;</code> and the wiring selects it in the tree; a script navigates by changing the hash (a new page, a branch row, the trash), which the router follows. Inside the docs preview the same routes match the frame's hash. See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
+  <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: the language switch at the foot of the sidebar translates the shell - the sidebar, the workspace menu, the palette, the trash and every label - between English and German. The pages are your content and stay as written. See <DocLink href="translation.html">Translation</DocLink>.</li>
+  <li><strong>Pages</strong> - every page is an <code>&lt;article&gt;</code> with an id. Its title, icon (an emoji Popover) and name stay in step across the tree, the breadcrumb and the <DocLink href="command.html">Command</DocLink> palette (<kbd class="kbd">⌘K</kbd>). New pages are stamped from a <code>&lt;template&gt;</code> and offer starter templates.</li>
   <li><strong>Blocks</strong> - each block is a <code>contenteditable</code> element with a <code>data-type</code>: Enter splits, Backspace at the start merges or turns the block back into text, arrows move between blocks, markdown shortcuts convert. Numbered lists count with CSS counters, to-dos strike through with <code>:has(:checked)</code>.</li>
   <li><strong>Slash and block menus</strong> - the <DocLink href="context-menu.html">Context Menu</DocLink>, opened at the caret through its State API: type to filter, arrows and Enter to pick. The ⋮⋮ handle opens Turn into / Duplicate / Delete, and drags the block with native drag and drop.</li>
   <li><strong>Format bar</strong> - the <DocLink href="toolbar.html">Toolbar</DocLink> in a manual popover above the selection: bold, italic, underline and strikethrough through the browser's editing commands, inline code and highlight by wrapping the range.</li>

@@ -17,7 +17,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <a class="btn" data-variant="outline" href="#how-it-works">How it works</a>
 </div>
 
-```html example label="Status page" schema="none" height="50" mode="desktop" hint="The whole page and its console in one source. Views and incident reports are URL fragments (#history, #manage, #incident-i-api) shown with :target; a component's level is one data-level attribute that sets inherited colours and glyphs, and the banner and group rows take the worst level below them." previewStyle="align-items:stretch;padding:0;"
+```html example label="Status page" schema="none" height="50" mode="desktop" hint="The whole page and its console in one source. Views and incident reports are routes (#/history, #/manage, #/incidents/i-api) of defuss-dom-router; the language switch translates the page's frame with defuss-i18n; a component's level is one data-level attribute that sets inherited colours and glyphs, and the banner and group rows take the worst level below them." previewStyle="align-items:stretch;padding:0;"
 <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
 <style>
   /* Beacon: the scaffold's own glue - the status-page look. Every control
@@ -148,11 +148,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     overscroll-behavior: contain;
     scroll-padding-top: 1rem;
   }
+  .sp-locale {
+    flex: none;
+    width: auto;
+  }
   .sp-view {
     display: none;
   }
-  .sp-view:target,
-  .sp-views:not(:has(.sp-view:target)) > .sp-view[data-default] {
+  .sp-view:not([hidden]) {
     display: block;
     animation: sp-in 200ms ease both;
   }
@@ -918,8 +921,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .sp-view:target,
-    .sp-views:not(:has(.sp-view:target)) > .sp-view[data-default] {
+    .sp-view:not([hidden]) {
       animation: none;
     }
     .sp-banner,
@@ -936,9 +938,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
 </style>
-<div class="sp" data-sp>
+<div class="sp" data-sp data-i18n-component>
   <header class="sp-top">
-    <a class="sp-brand" href="#status"
+    <a class="sp-brand" href="#/" data-router-link
       ><svg
         viewBox="0 0 24 24"
         width="18"
@@ -951,15 +953,26 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         aria-hidden="true"
       >
         <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" /></svg
-      ><span>Acme Cloud</span><span class="sp-brand-sub">status</span></a
+      ><span>Acme Cloud</span><span class="sp-brand-sub" data-i18n-target="brand-sub">status</span></a
     >
     <span class="sp-spacer"></span>
-    <a class="btn" data-variant="ghost" data-size="sm" href="#history"
-      ><i data-lucide="history"></i><span>History</span></a
+    <a class="btn" data-variant="ghost" data-size="sm" href="#/history" data-router-link
+      ><i data-lucide="history"></i><span data-i18n-target="top-history">History</span></a
     >
-    <a class="btn" data-variant="ghost" data-size="sm" href="#manage"
-      ><i data-lucide="settings-2"></i><span>Manage</span></a
+    <a class="btn" data-variant="ghost" data-size="sm" href="#/manage" data-router-link
+      ><i data-lucide="settings-2"></i><span data-i18n-target="top-manage">Manage</span></a
     >
+    <select
+      class="select sp-locale"
+      data-size="sm"
+      data-app-locale
+      aria-label="Language"
+      data-i18n-aria-label-en="Language"
+      data-i18n-aria-label-de="Sprache"
+    >
+      <option value="en" lang="en">English</option>
+      <option value="de" lang="de">Deutsch</option>
+    </select>
     <button
       class="btn"
       data-variant="ghost"
@@ -967,17 +980,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       type="button"
       data-sp-theme
       aria-label="Toggle dark mode"
+      data-i18n-aria-label-en="Toggle dark mode"
+      data-i18n-aria-label-de="Dunkelmodus umschalten"
       ><i data-lucide="moon"></i
     ></button>
     <button class="btn" data-size="sm" type="button" data-dialog-trigger="sp-subscribe" aria-haspopup="dialog"
-      ><i data-lucide="bell"></i><span>Subscribe to updates</span></button
+      ><i data-lucide="bell"></i><span data-i18n-target="top-subscribe">Subscribe to updates</span></button
     >
   </header>
 
   <main class="sp-scroll">
     <div class="sp-views">
       <!-- the public status page -->
-      <section class="sp-view" id="status" data-default aria-label="Current status">
+      <section
+        class="sp-view"
+        id="status"
+        aria-label="Current status"
+        data-i18n-aria-label-en="Current status"
+        data-i18n-aria-label-de="Aktueller Status"
+      >
         <div class="sp-wrap">
           <div class="sp-banner" data-level="degraded" role="status" aria-live="polite"
             ><span class="sp-icon" aria-hidden="true"></span><strong data-sp-banner>Degraded Performance</strong
@@ -985,11 +1006,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >
 
           <section class="sp-section" aria-labelledby="sp-h-active" data-sp-active-section>
-            <h2 id="sp-h-active" class="sp-h">Active incidents</h2>
+            <h2 id="sp-h-active" class="sp-h" data-i18n-target="sp-h-active">Active incidents</h2>
             <div class="sp-actives" data-sp-actives>
               <article class="sp-active" data-incident="i-api" data-impact="minor" data-comps="rest">
                 <header
-                  ><a href="#incident-i-api" data-f="title">Elevated error rates on the REST API</a
+                  ><a href="#/incidents/i-api" data-router-link data-f="title">Elevated error rates on the REST API</a
                   ><button
                     class="btn"
                     data-variant="ghost"
@@ -997,7 +1018,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     type="button"
                     data-toast="Subscribed to this incident"
                     data-toast-desc="We'll email you every update until it is resolved."
-                    ><i data-lucide="bell"></i><span>Subscribe</span></button
+                    ><i data-lucide="bell"></i><span data-i18n-target="active-subscribe">Subscribe</span></button
                   ></header
                 >
                 <ol class="sp-updates">
@@ -1033,10 +1054,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </section>
 
           <section class="sp-section" aria-labelledby="sp-h-maint">
-            <h2 id="sp-h-maint" class="sp-h">Scheduled maintenance</h2>
+            <h2 id="sp-h-maint" class="sp-h" data-i18n-target="sp-h-maint">Scheduled maintenance</h2>
             <article class="sp-maint" data-impact="maintenance">
               <div class="sp-maint-main">
-                <a href="#incident-m-upgrade">Managed database upgrade to Postgres 17</a>
+                <a href="#/incidents/m-upgrade" data-router-link>Managed database upgrade to Postgres 17</a>
                 <p
                   >We will upgrade every managed database cluster to Postgres 17. Expect up to 30 seconds of read-only
                   time per cluster during the window.</p
@@ -1044,7 +1065,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 <small><i data-lucide="calendar-clock"></i> Oct 8, 02:00 - 04:00 UTC · Affects Managed databases</small>
               </div>
               <div class="sp-maint-count">
-                <span class="sp-maint-label">Begins in</span>
+                <span class="sp-maint-label" data-i18n-target="maint-begins">Begins in</span>
                 <div class="countdown-group" data-duration="443580" aria-label="Maintenance begins in about 5 days">
                   <div class="countdown-unit" data-variant="muted"
                     ><span class="countdown" data-size="lg"><span data-unit="days" style="--value: 5">5</span></span
@@ -1067,11 +1088,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
           <section class="sp-section" aria-labelledby="sp-h-comps">
             <div class="sp-section-head"
-              ><h2 id="sp-h-comps" class="sp-h">Components</h2
+              ><h2 id="sp-h-comps" class="sp-h" data-i18n-target="sp-h-comps">Components</h2
               ><span class="sp-legend" aria-hidden="true"
-                ><span><i data-l="operational"></i>Operational</span><span><i data-l="degraded"></i>Degraded</span
-                ><span><i data-l="partial"></i>Partial</span><span><i data-l="major"></i>Major</span
-                ><span><i data-l="maintenance"></i>Maintenance</span></span
+                ><span><i data-l="operational"></i><span data-i18n-target="legend-operational">Operational</span></span
+                ><span><i data-l="degraded"></i><span data-i18n-target="legend-degraded">Degraded</span></span
+                ><span><i data-l="partial"></i><span data-i18n-target="legend-partial">Partial</span></span
+                ><span><i data-l="major"></i><span data-i18n-target="legend-major">Major</span></span
+                ><span
+                  ><i data-l="maintenance"></i><span data-i18n-target="legend-maintenance">Maintenance</span></span
+                ></span
               ></div
             >
             <ul class="sp-comps">
@@ -1468,20 +1493,30 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <div class="sp-card">
               <div class="sp-section-head"
                 ><div
-                  ><h2 id="sp-h-metrics" class="sp-h">REST API response time</h2
-                  ><p class="sp-muted"><span data-sp-avg>176</span> ms average</p></div
+                  ><h2 id="sp-h-metrics" class="sp-h" data-i18n-target="sp-h-metrics">REST API response time</h2
+                  ><p class="sp-muted"
+                    ><span data-sp-avg>176</span> <span data-i18n-target="avg">ms average</span></p
+                  ></div
                 >
                 <div
                   class="toggle-group"
                   role="group"
                   aria-label="Period"
+                  data-i18n-aria-label-en="Period"
+                  data-i18n-aria-label-de="Zeitraum"
                   data-type="single"
                   data-variant="outline"
                   data-sp-period
                 >
-                  <button class="toggle" type="button" aria-pressed="true" value="day">Day</button>
-                  <button class="toggle" type="button" aria-pressed="false" value="week">Week</button>
-                  <button class="toggle" type="button" aria-pressed="false" value="month">Month</button>
+                  <button class="toggle" type="button" aria-pressed="true" value="day"
+                    ><span data-i18n-target="period-day">Day</span></button
+                  >
+                  <button class="toggle" type="button" aria-pressed="false" value="week"
+                    ><span data-i18n-target="period-week">Week</span></button
+                  >
+                  <button class="toggle" type="button" aria-pressed="false" value="month"
+                    ><span data-i18n-target="period-month">Month</span></button
+                  >
                 </div>
               </div>
               <div
@@ -1495,7 +1530,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </section>
 
           <section class="sp-section" aria-labelledby="sp-h-past">
-            <h2 id="sp-h-past" class="sp-h">Past incidents</h2>
+            <h2 id="sp-h-past" class="sp-h" data-i18n-target="sp-h-past">Past incidents</h2>
             <div class="sp-days">
               <div class="sp-day" data-sp-today
                 ><h3>Oct 2, 2026</h3><ul class="sp-pasts"></ul><p class="sp-none">No incidents reported today.</p></div
@@ -1507,7 +1542,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><h3>Sep 30, 2026</h3
                 ><ul class="sp-pasts"
                   ><li class="sp-past" data-incident="i-webhooks" data-impact="minor" data-comps="webhooks"
-                    ><a class="sp-past-title" href="#incident-i-webhooks" data-f="title">Delayed webhook deliveries</a
+                    ><a class="sp-past-title" href="#/incidents/i-webhooks" data-router-link data-f="title"
+                      >Delayed webhook deliveries</a
                     ><p
                       ><strong data-f="status">Resolved</strong> -
                       <span data-f="msg"
@@ -1521,7 +1557,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><h3>Sep 29, 2026</h3
                 ><ul class="sp-pasts"
                   ><li class="sp-past" data-incident="i-login" data-impact="critical" data-comps="dashboard"
-                    ><a class="sp-past-title" href="#incident-i-login" data-f="title">Dashboard login failures</a
+                    ><a class="sp-past-title" href="#/incidents/i-login" data-router-link data-f="title"
+                      >Dashboard login failures</a
                     ><p
                       ><strong data-f="status">Resolved</strong> -
                       <span data-f="msg"
@@ -1538,7 +1575,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><h3>Sep 27, 2026</h3
                 ><ul class="sp-pasts"
                   ><li class="sp-past" data-incident="i-search" data-impact="minor" data-comps="search"
-                    ><a class="sp-past-title" href="#incident-i-search" data-f="title">Search indexing lag</a
+                    ><a class="sp-past-title" href="#/incidents/i-search" data-router-link data-f="title"
+                      >Search indexing lag</a
                     ><p
                       ><strong data-f="status">Resolved</strong> -
                       <span data-f="msg"
@@ -1552,7 +1590,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><h3>Sep 26, 2026</h3
                 ><ul class="sp-pasts"
                   ><li class="sp-past" data-incident="m-db" data-impact="maintenance" data-comps="database"
-                    ><a class="sp-past-title" href="#incident-m-db" data-f="title">Managed database storage migration</a
+                    ><a class="sp-past-title" href="#/incidents/m-db" data-router-link data-f="title"
+                      >Managed database storage migration</a
                     ><p
                       ><strong data-f="status">Completed</strong> -
                       <span data-f="msg">The scheduled maintenance has been completed.</span></p
@@ -1561,22 +1600,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><p class="sp-none">No incidents reported.</p></div
               >
             </div>
-            <a class="sp-more" href="#history"><i data-lucide="history"></i> Incident history</a>
+            <a class="sp-more" href="#/history" data-router-link><i data-lucide="history"></i> Incident history</a>
           </section>
           <p class="sp-powered"><i data-lucide="radio-tower"></i> Powered by Beacon</p>
         </div>
       </section>
 
       <!-- incident history -->
-      <section class="sp-view" id="history" aria-labelledby="sp-h-history">
+      <section class="sp-view" id="history" hidden aria-labelledby="sp-h-history">
         <div class="sp-wrap">
-          <a class="sp-back" href="#status"><i data-lucide="arrow-left"></i> Current status</a>
+          <a class="sp-back" href="#/" data-router-link
+            ><i data-lucide="arrow-left"></i> <span data-i18n-target="history-back">Current status</span></a
+          >
           <div class="sp-section-head"
-            ><h1 id="sp-h-history">Incident history</h1>
+            ><h1 id="sp-h-history" data-i18n-target="history-title">Incident history</h1>
             <label class="sp-filter"
-              ><span class="sr-only">Filter by component</span
+              ><span class="sr-only" data-i18n-target="history-filter">Filter by component</span
               ><select class="select" data-sp-filter
-                ><option value="">All components</option
+                ><option value="" data-i18n-target="history-all">All components</option
                 ><option value="rest">REST API</option
                 ><option value="graphql">GraphQL API</option
                 ><option value="webhooks">Webhooks</option
@@ -1597,7 +1638,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><h2>September 2026</h2
             ><ul class="sp-pasts"
               ><li class="sp-past" data-incident="i-webhooks" data-impact="minor" data-comps="webhooks"
-                ><a class="sp-past-title" href="#incident-i-webhooks" data-f="title">Delayed webhook deliveries</a
+                ><a class="sp-past-title" href="#/incidents/i-webhooks" data-router-link data-f="title"
+                  >Delayed webhook deliveries</a
                 ><p
                   ><strong data-f="status">Resolved</strong> -
                   <span data-f="msg"
@@ -1605,7 +1647,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   ></p
                 ><small data-f="range">Sep 30, 15:02 - 16:20 UTC</small></li
               ><li class="sp-past" data-incident="i-login" data-impact="critical" data-comps="dashboard"
-                ><a class="sp-past-title" href="#incident-i-login" data-f="title">Dashboard login failures</a
+                ><a class="sp-past-title" href="#/incidents/i-login" data-router-link data-f="title"
+                  >Dashboard login failures</a
                 ><p
                   ><strong data-f="status">Resolved</strong> -
                   <span data-f="msg"
@@ -1613,7 +1656,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   ></p
                 ><small data-f="range">Sep 29, 08:13 - 08:55 UTC</small></li
               ><li class="sp-past" data-incident="i-search" data-impact="minor" data-comps="search"
-                ><a class="sp-past-title" href="#incident-i-search" data-f="title">Search indexing lag</a
+                ><a class="sp-past-title" href="#/incidents/i-search" data-router-link data-f="title"
+                  >Search indexing lag</a
                 ><p
                   ><strong data-f="status">Resolved</strong> -
                   <span data-f="msg"
@@ -1621,7 +1665,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   ></p
                 ><small data-f="range">Sep 27, 11:40 - 13:05 UTC</small></li
               ><li class="sp-past" data-incident="m-db" data-impact="maintenance" data-comps="database"
-                ><a class="sp-past-title" href="#incident-m-db" data-f="title">Managed database storage migration</a
+                ><a class="sp-past-title" href="#/incidents/m-db" data-router-link data-f="title"
+                  >Managed database storage migration</a
                 ><p
                   ><strong data-f="status">Completed</strong> -
                   <span data-f="msg">The scheduled maintenance has been completed.</span></p
@@ -1633,14 +1678,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><h2>August 2026</h2
             ><ul class="sp-pasts"
               ><li class="sp-past" data-incident="i-storage" data-impact="major" data-comps="storage"
-                ><a class="sp-past-title" href="#incident-i-storage" data-f="title"
+                ><a class="sp-past-title" href="#/incidents/i-storage" data-router-link data-f="title"
                   >Partial outage of object storage in us-east</a
                 ><p
                   ><strong data-f="status">Resolved</strong> -
                   <span data-f="msg">Uploads and downloads in us-east are fully restored.</span></p
                 ><small data-f="range">Aug 18, 19:22 - 20:10 UTC</small></li
               ><li class="sp-past" data-incident="i-graphql" data-impact="minor" data-comps="graphql"
-                ><a class="sp-past-title" href="#incident-i-graphql" data-f="title">Slow GraphQL queries</a
+                ><a class="sp-past-title" href="#/incidents/i-graphql" data-router-link data-f="title"
+                  >Slow GraphQL queries</a
                 ><p
                   ><strong data-f="status">Resolved</strong> -
                   <span data-f="msg">Query latency is back to normal after a cache warm-up.</span></p
@@ -1652,7 +1698,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><h2>July 2026</h2
             ><ul class="sp-pasts"
               ><li class="sp-past" data-incident="i-slack" data-impact="minor" data-comps="slack"
-                ><a class="sp-past-title" href="#incident-i-slack" data-f="title">Delayed Slack notifications</a
+                ><a class="sp-past-title" href="#/incidents/i-slack" data-router-link data-f="title"
+                  >Delayed Slack notifications</a
                 ><p
                   ><strong data-f="status">Resolved</strong> -
                   <span data-f="msg">Slack notifications are delivered on time again.</span></p
@@ -1664,21 +1711,28 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </section>
 
       <!-- the operator console -->
-      <section class="sp-view" id="manage" aria-labelledby="sp-h-manage">
+      <section class="sp-view" id="manage" hidden aria-labelledby="sp-h-manage">
         <div class="sp-wrap sp-wrap-wide">
           <div class="sp-section-head sp-manage-head"
             ><div
-              ><p class="sp-kicker"><i data-lucide="lock"></i> Signed in as Aron Homberg</p
-              ><h1 id="sp-h-manage">Manage status page</h1
+              ><p class="sp-kicker"
+                ><i data-lucide="lock"></i> <span data-i18n-target="manage-signed">Signed in as Aron Homberg</span></p
+              ><h1 id="sp-h-manage" data-i18n-target="manage-title">Manage status page</h1
               ><p class="sp-muted">status.acme.example · <span data-sp-subs>1,551</span> subscribers</p></div
-            ><a class="btn" data-variant="outline" data-size="sm" href="#status"
-              ><i data-lucide="external-link"></i> View status page</a
+            ><a class="btn" data-variant="outline" data-size="sm" href="#/" data-router-link
+              ><i data-lucide="external-link"></i> <span data-i18n-target="manage-view">View status page</span></a
             ></div
           >
           <div class="tabs sp-tabs">
-            <div class="tab-list" role="tablist" aria-label="Manage">
+            <div
+              class="tab-list"
+              role="tablist"
+              aria-label="Manage"
+              data-i18n-aria-label-en="Manage"
+              data-i18n-aria-label-de="Verwalten"
+            >
               <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="sp-p-inc" id="sp-t-inc"
-                >Incidents
+                ><span data-i18n-target="tab-incidents">Incidents</span>
                 <span class="badge" data-variant="secondary" data-size="sm" data-sp-open-count>1</span></button
               >
               <button
@@ -1688,7 +1742,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 aria-controls="sp-p-comp"
                 id="sp-t-comp"
                 tabindex="-1"
-                >Components</button
+                ><span data-i18n-target="tab-components">Components</span></button
               >
               <button
                 class="tab-trigger"
@@ -1697,7 +1751,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 aria-controls="sp-p-subs"
                 id="sp-t-subs"
                 tabindex="-1"
-                >Subscribers</button
+                ><span data-i18n-target="tab-subscribers">Subscribers</span></button
               >
             </div>
             <div class="tab-content" role="tabpanel" id="sp-p-inc" aria-labelledby="sp-t-inc" tabindex="0">
@@ -1711,7 +1765,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 <li class="sp-admin-row" data-incident="i-api" data-impact="minor"
                   ><span class="sp-dot"></span
                   ><span class="sp-admin-main"
-                    ><a href="#incident-i-api" data-f="title">Elevated error rates on the REST API</a
+                    ><a href="#/incidents/i-api" data-router-link data-f="title">Elevated error rates on the REST API</a
                     ><small>Updated <span data-f="at">Oct 2, 10:42 UTC</span></small></span
                   ><span class="badge" data-variant="outline" data-f="status">Monitoring</span
                   ><button class="btn" data-variant="outline" data-size="sm" type="button" data-sp-update="i-api"
@@ -1729,7 +1783,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 <li class="sp-admin-row" data-impact="maintenance"
                   ><span class="sp-dot"></span
                   ><span class="sp-admin-main"
-                    ><a href="#incident-m-upgrade">Managed database upgrade to Postgres 17</a
+                    ><a href="#/incidents/m-upgrade" data-router-link>Managed database upgrade to Postgres 17</a
                     ><small>Oct 8, 02:00 - 04:00 UTC</small></span
                   ><span class="badge" data-variant="outline">Scheduled</span
                   ><button
@@ -1944,12 +1998,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-i-api"
+        hidden
         data-incident="i-api"
         data-impact="minor"
         aria-labelledby="h-i-api"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#status"><i data-lucide="arrow-left"></i> Current status</a>
+          <a class="sp-back" href="#/" data-router-link><i data-lucide="arrow-left"></i> Current status</a>
           <p class="sp-kicker">Incident report · Oct 2, 2026</p>
           <h1 id="h-i-api" data-f="title">Elevated error rates on the REST API</h1>
           <p class="sp-affects">Affected: <span data-f="comps">REST API</span></p>
@@ -1997,12 +2052,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-m-upgrade"
+        hidden
         data-incident="m-upgrade"
         data-impact="maintenance"
         aria-labelledby="h-m-upgrade"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#status"><i data-lucide="arrow-left"></i> Current status</a>
+          <a class="sp-back" href="#/" data-router-link><i data-lucide="arrow-left"></i> Current status</a>
           <p class="sp-kicker">Scheduled maintenance · Oct 8, 2026</p>
           <h1 id="h-m-upgrade" data-f="title">Managed database upgrade to Postgres 17</h1>
           <p class="sp-affects">Affected: <span data-f="comps">Managed databases</span></p>
@@ -2034,12 +2090,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-i-webhooks"
+        hidden
         data-incident="i-webhooks"
         data-impact="minor"
         aria-labelledby="h-i-webhooks"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#history"><i data-lucide="arrow-left"></i> Incident history</a>
+          <a class="sp-back" href="#/history" data-router-link><i data-lucide="arrow-left"></i> Incident history</a>
           <p class="sp-kicker">Incident report · Sep 30, 2026</p>
           <h1 id="h-i-webhooks" data-f="title">Delayed webhook deliveries</h1>
           <p class="sp-affects">Affected: <span data-f="comps">Webhooks</span></p>
@@ -2083,12 +2140,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-i-login"
+        hidden
         data-incident="i-login"
         data-impact="critical"
         aria-labelledby="h-i-login"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#history"><i data-lucide="arrow-left"></i> Incident history</a>
+          <a class="sp-back" href="#/history" data-router-link><i data-lucide="arrow-left"></i> Incident history</a>
           <p class="sp-kicker">Incident report · Sep 29, 2026</p>
           <h1 id="h-i-login" data-f="title">Dashboard login failures</h1>
           <p class="sp-affects">Affected: <span data-f="comps">Dashboard</span></p>
@@ -2132,12 +2190,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-i-search"
+        hidden
         data-incident="i-search"
         data-impact="minor"
         aria-labelledby="h-i-search"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#history"><i data-lucide="arrow-left"></i> Incident history</a>
+          <a class="sp-back" href="#/history" data-router-link><i data-lucide="arrow-left"></i> Incident history</a>
           <p class="sp-kicker">Incident report · Sep 27, 2026</p>
           <h1 id="h-i-search" data-f="title">Search indexing lag</h1>
           <p class="sp-affects">Affected: <span data-f="comps">Search</span></p>
@@ -2174,12 +2233,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-m-db"
+        hidden
         data-incident="m-db"
         data-impact="maintenance"
         aria-labelledby="h-m-db"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#history"><i data-lucide="arrow-left"></i> Incident history</a>
+          <a class="sp-back" href="#/history" data-router-link><i data-lucide="arrow-left"></i> Incident history</a>
           <p class="sp-kicker">Incident report · Sep 26, 2026</p>
           <h1 id="h-m-db" data-f="title">Managed database storage migration</h1>
           <p class="sp-affects">Affected: <span data-f="comps">Managed databases</span></p>
@@ -2217,12 +2277,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-i-storage"
+        hidden
         data-incident="i-storage"
         data-impact="major"
         aria-labelledby="h-i-storage"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#history"><i data-lucide="arrow-left"></i> Incident history</a>
+          <a class="sp-back" href="#/history" data-router-link><i data-lucide="arrow-left"></i> Incident history</a>
           <p class="sp-kicker">Incident report · Aug 18, 2026</p>
           <h1 id="h-i-storage" data-f="title">Partial outage of object storage in us-east</h1>
           <p class="sp-affects">Affected: <span data-f="comps">Object storage</span></p>
@@ -2262,12 +2323,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-i-graphql"
+        hidden
         data-incident="i-graphql"
         data-impact="minor"
         aria-labelledby="h-i-graphql"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#history"><i data-lucide="arrow-left"></i> Incident history</a>
+          <a class="sp-back" href="#/history" data-router-link><i data-lucide="arrow-left"></i> Incident history</a>
           <p class="sp-kicker">Incident report · Aug 3, 2026</p>
           <h1 id="h-i-graphql" data-f="title">Slow GraphQL queries</h1>
           <p class="sp-affects">Affected: <span data-f="comps">GraphQL API</span></p>
@@ -2300,12 +2362,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <section
         class="sp-view sp-incident"
         id="incident-i-slack"
+        hidden
         data-incident="i-slack"
         data-impact="minor"
         aria-labelledby="h-i-slack"
       >
         <div class="sp-wrap">
-          <a class="sp-back" href="#history"><i data-lucide="arrow-left"></i> Incident history</a>
+          <a class="sp-back" href="#/history" data-router-link><i data-lucide="arrow-left"></i> Incident history</a>
           <p class="sp-kicker">Incident report · Jul 22, 2026</p>
           <h1 id="h-i-slack" data-f="title">Delayed Slack notifications</h1>
           <p class="sp-affects">Affected: <span data-f="comps">Slack</span></p>
@@ -2685,7 +2748,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template id="sp-tpl-active"
     ><article class="sp-active" data-incident="__ID__" data-impact="none" data-comps="">
       <header
-        ><a href="#incident-__ID__" data-f="title"></a
+        ><a href="#/incidents/__ID__" data-router-link data-f="title"></a
         ><button
           class="btn"
           data-variant="ghost"
@@ -2703,12 +2766,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     ><section
       class="sp-view sp-incident"
       id="incident-__ID__"
+      hidden
       data-incident="__ID__"
       data-impact="none"
       aria-labelledby="h-__ID__"
     >
       <div class="sp-wrap">
-        <a class="sp-back" href="#status"><i data-lucide="arrow-left"></i> Current status</a>
+        <a class="sp-back" href="#/" data-router-link><i data-lucide="arrow-left"></i> Current status</a>
         <p class="sp-kicker">Incident report · Oct 2, 2026</p>
         <h1 id="h-__ID__" data-f="title"></h1>
         <p class="sp-affects">Affected: <span data-f="comps"></span></p>
@@ -2732,7 +2796,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     ><li class="sp-admin-row" data-incident="__ID__" data-impact="none"
       ><span class="sp-dot"></span
       ><span class="sp-admin-main"
-        ><a href="#incident-__ID__" data-f="title"></a><small>Updated <span data-f="at"></span></small></span
+        ><a href="#/incidents/__ID__" data-router-link data-f="title"></a
+        ><small>Updated <span data-f="at"></span></small></span
       ><span class="badge" data-variant="outline" data-f="status"></span
       ><button class="btn" data-variant="outline" data-size="sm" type="button" data-sp-update="__ID__"
         >Post update</button
@@ -2741,6 +2806,67 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       ></li
     ></template
   >
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="brand-sub" data-i18n-locale="en">status</template>
+  <template data-i18n-for="brand-sub" data-i18n-locale="de">Status</template>
+  <template data-i18n-for="top-history" data-i18n-locale="en">History</template>
+  <template data-i18n-for="top-history" data-i18n-locale="de">Verlauf</template>
+  <template data-i18n-for="top-manage" data-i18n-locale="en">Manage</template>
+  <template data-i18n-for="top-manage" data-i18n-locale="de">Verwalten</template>
+  <template data-i18n-for="top-subscribe" data-i18n-locale="en">Subscribe to updates</template>
+  <template data-i18n-for="top-subscribe" data-i18n-locale="de">Updates abonnieren</template>
+  <template data-i18n-for="sp-h-active" data-i18n-locale="en">Active incidents</template>
+  <template data-i18n-for="sp-h-active" data-i18n-locale="de">Aktive Störungen</template>
+  <template data-i18n-for="sp-h-maint" data-i18n-locale="en">Scheduled maintenance</template>
+  <template data-i18n-for="sp-h-maint" data-i18n-locale="de">Geplante Wartung</template>
+  <template data-i18n-for="sp-h-comps" data-i18n-locale="en">Components</template>
+  <template data-i18n-for="sp-h-comps" data-i18n-locale="de">Komponenten</template>
+  <template data-i18n-for="sp-h-metrics" data-i18n-locale="en">REST API response time</template>
+  <template data-i18n-for="sp-h-metrics" data-i18n-locale="de">Antwortzeit der REST-API</template>
+  <template data-i18n-for="sp-h-past" data-i18n-locale="en">Past incidents</template>
+  <template data-i18n-for="sp-h-past" data-i18n-locale="de">Frühere Störungen</template>
+  <template data-i18n-for="active-subscribe" data-i18n-locale="en">Subscribe</template>
+  <template data-i18n-for="active-subscribe" data-i18n-locale="de">Abonnieren</template>
+  <template data-i18n-for="maint-begins" data-i18n-locale="en">Begins in</template>
+  <template data-i18n-for="maint-begins" data-i18n-locale="de">Beginnt in</template>
+  <template data-i18n-for="legend-operational" data-i18n-locale="en">Operational</template>
+  <template data-i18n-for="legend-operational" data-i18n-locale="de">In Betrieb</template>
+  <template data-i18n-for="legend-degraded" data-i18n-locale="en">Degraded</template>
+  <template data-i18n-for="legend-degraded" data-i18n-locale="de">Beeinträchtigt</template>
+  <template data-i18n-for="legend-partial" data-i18n-locale="en">Partial</template>
+  <template data-i18n-for="legend-partial" data-i18n-locale="de">Teilausfall</template>
+  <template data-i18n-for="legend-major" data-i18n-locale="en">Major</template>
+  <template data-i18n-for="legend-major" data-i18n-locale="de">Ausfall</template>
+  <template data-i18n-for="legend-maintenance" data-i18n-locale="en">Maintenance</template>
+  <template data-i18n-for="legend-maintenance" data-i18n-locale="de">Wartung</template>
+  <template data-i18n-for="period-day" data-i18n-locale="en">Day</template>
+  <template data-i18n-for="period-day" data-i18n-locale="de">Tag</template>
+  <template data-i18n-for="period-week" data-i18n-locale="en">Week</template>
+  <template data-i18n-for="period-week" data-i18n-locale="de">Woche</template>
+  <template data-i18n-for="period-month" data-i18n-locale="en">Month</template>
+  <template data-i18n-for="period-month" data-i18n-locale="de">Monat</template>
+  <template data-i18n-for="avg" data-i18n-locale="en">ms average</template>
+  <template data-i18n-for="avg" data-i18n-locale="de">ms im Mittel</template>
+  <template data-i18n-for="history-back" data-i18n-locale="en">Current status</template>
+  <template data-i18n-for="history-back" data-i18n-locale="de">Aktueller Status</template>
+  <template data-i18n-for="history-title" data-i18n-locale="en">Incident history</template>
+  <template data-i18n-for="history-title" data-i18n-locale="de">Störungsverlauf</template>
+  <template data-i18n-for="history-filter" data-i18n-locale="en">Filter by component</template>
+  <template data-i18n-for="history-filter" data-i18n-locale="de">Nach Komponente filtern</template>
+  <template data-i18n-for="history-all" data-i18n-locale="en">All components</template>
+  <template data-i18n-for="history-all" data-i18n-locale="de">Alle Komponenten</template>
+  <template data-i18n-for="manage-signed" data-i18n-locale="en">Signed in as Aron Homberg</template>
+  <template data-i18n-for="manage-signed" data-i18n-locale="de">Angemeldet als Aron Homberg</template>
+  <template data-i18n-for="manage-title" data-i18n-locale="en">Manage status page</template>
+  <template data-i18n-for="manage-title" data-i18n-locale="de">Statusseite verwalten</template>
+  <template data-i18n-for="manage-view" data-i18n-locale="en">View status page</template>
+  <template data-i18n-for="manage-view" data-i18n-locale="de">Statusseite ansehen</template>
+  <template data-i18n-for="tab-incidents" data-i18n-locale="en">Incidents</template>
+  <template data-i18n-for="tab-incidents" data-i18n-locale="de">Störungen</template>
+  <template data-i18n-for="tab-components" data-i18n-locale="en">Components</template>
+  <template data-i18n-for="tab-components" data-i18n-locale="de">Komponenten</template>
+  <template data-i18n-for="tab-subscribers" data-i18n-locale="en">Subscribers</template>
+  <template data-i18n-for="tab-subscribers" data-i18n-locale="de">Abonnenten</template>
 </div>
 <script>
   // Beacon's wiring: the views, the uptime-bar details, the response-time
@@ -2889,8 +3015,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         timeZone: 'UTC',
       }) + ' UTC';
 
-    // a new view starts at the top
-    addEventListener('hashchange', () => {
+    // a new view starts at the top (the router module announces every view it shows)
+    app.addEventListener('sp-route', () => {
       app.querySelector('.sp-scroll').scrollTop = 0;
       tipHide();
     });
@@ -3023,7 +3149,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       app.querySelector('.sp-admin-row[data-incident="' + id + '"]')?.remove();
       const back = app.querySelector('#incident-' + id + ' .sp-back');
       if (back) {
-        back.setAttribute('href', '#history');
+        back.setAttribute('href', '#/history');
         back.lastChild.textContent = ' Incident history';
       }
       const li = document.createElement('li');
@@ -3032,7 +3158,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       li.dataset.impact = impact;
       li.dataset.comps = comps.join(' ');
       li.innerHTML =
-        '<a class="sp-past-title" href="#incident-' +
+        '<a class="sp-past-title" data-router-link href="#/incidents/' +
         id +
         '" data-f="title"></a><p><strong>Resolved</strong> - <span></span></p><small></small>';
       li.querySelector('a').textContent = title;
@@ -3155,6 +3281,57 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     recompute();
   })();
 </script>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const app = df$('[data-sp]').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the app)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    createDomI18n(df$).bind(app, locale);
+    const language = df$('[data-app-locale]');
+    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- routing: the status, the history, the console and one route per incident (#/incidents/i-api)
+    const routes = [
+      { id: 'status', path: '/' },
+      { id: 'history', path: '/history' },
+      { id: 'manage', path: '/manage' },
+      { id: 'incident', path: '/incidents/:id' },
+      { id: 'missing', path: '*' },
+    ];
+    const show = (to) => {
+      // an incident the page does not know shows the status
+      const report = to.routeId === 'incident' ? document.getElementById('incident-' + to.params.id) : null;
+      const id = to.routeId === 'history' || to.routeId === 'manage' ? to.routeId : 'status';
+      const view = report?.matches('.sp-incident') ? report : df$('#' + id).get(0);
+      df$('.sp-view').each((_i, section) => {
+        section.hidden = section !== view;
+      });
+      // the wiring above scrolls to the top and closes the uptime card
+      app.dispatchEvent(new CustomEvent('sp-route'));
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(app);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+  });
+</script>
 ```
 
 <h2 id="how-it-works" class="h2-display">How it works</h2>
@@ -3162,7 +3339,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <DocText>A page, not a component: it composes the library and keeps its own glue small.</DocText>
 
 <ul class="text-sm" style="display:grid;gap:0.5rem;max-width:46rem;padding-inline-start:1.25rem">
-  <li><strong>Views</strong> - the status page, the incident history, the console and every incident report are sections with an id, shown with <code>:target</code>; links, back and forward work.</li>
+  <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: the status (<code>#/</code>), the history, the console and <code>#/incidents/:id</code> for every report - a resolved incident's link, written by the script, is a router link too. The commit shows the route's section and the wiring scrolls to the top. Back and forward work, reports are linkable. Inside the docs preview the same routes match the frame's hash. See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
+  <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: the language switch in the header translates the page's frame - the header, the section heads, the legend, the views' titles and the console's tabs - between English and German. Incidents, component levels and toasts stay English. See <DocLink href="translation.html">Translation</DocLink>.</li>
   <li><strong>Levels</strong> - <code>data-level</code> on a component (operational, under maintenance, degraded, partial, major) sets an inherited colour and glyph; groups and the banner take the worst level of their children. Impacts colour incident titles the same way.</li>
   <li><strong>Uptime bars</strong> - 90 days per component (30 on narrow screens), drawn from the incident history at build time; a hover card names the day and its incidents. Groups are <code>&lt;details&gt;</code> that show their own bars while closed.</li>
   <li><strong>Incidents</strong> - the active incident shows its timeline; the upcoming maintenance counts down with the <DocLink href="countdown.html">Countdown</DocLink>; the response time is a <DocLink href="chart.html">Chart</DocLink> whose <DocLink href="toggle-group.html">Toggle Group</DocLink> swaps the period.</li>

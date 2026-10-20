@@ -216,8 +216,12 @@ const resolveProblems: string[] = [];
 /** each page's element ids (same-page and cross-page anchors) and its local link targets (href / src) */
 const pageIds = new Map<string, Set<string>>();
 const pageUrls = new Map<string, string[]>();
+/** the pages that route with defuss-dom-router in hash mode: a `#/…` fragment there is a route, not an anchor
+ *  (the Client-side Routing guide; the scaffolds' links are `#/orders`) */
+const routedPages = new Set<string>();
 for (const [page, html] of docHtml) {
   const { document } = parseHTML(html);
+  if (html.includes('defuss-dom-router@')) routedPages.add(page);
   pageIds.set(
     page,
     new Set(
@@ -1406,6 +1410,8 @@ if (existsSync(DIST)) {
       if (/^(https?:|mailto:|data:|javascript:)/i.test(url)) continue;
       // demo placeholders: no target at all, or the conventional "..." stub
       if (url === '' || url === '#' || url === '...') continue;
+      // a hash route on a page whose router owns the fragment; on any other page it is a dead anchor
+      if (url.startsWith('#/') && routedPages.has(f)) continue;
       if (url.startsWith('#')) {
         if (!pageIds.get(f)?.has(url.slice(1))) linkProblems.push(`${f}: dead anchor #${url.slice(1)}`);
         continue;

@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
+import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
  * Why: the status-page scaffold is a clickdummy - its promise is that the
@@ -28,6 +30,7 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await offlineJsdelivr(page);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto(`${server.url}${PAGE}`);
@@ -90,7 +93,7 @@ try {
   });
 
   await check('history filters by component', async () => {
-    await page.click('.sp-top a[href="#history"]');
+    await page.click('.sp-top a[href="#/history"]');
     await page.selectOption('[data-sp-filter]', 'search');
     const vis = await page.$$eval('#history .sp-past', (l) => l.filter((x) => x.checkVisibility()).map((x) => (x as HTMLElement).dataset.incident));
     assert.deepEqual(vis, ['i-search']);
@@ -111,7 +114,7 @@ try {
   });
 
   await check('console: a component level changes the public page; the day keeps its worst', async () => {
-    await page.click('.sp-top a[href="#manage"]');
+    await page.click('.sp-top a[href="#/manage"]');
     await page.click('#sp-t-comp');
     await page.selectOption('select[data-sp-level="dashboard"]', 'major');
     assert.equal(await level('dashboard'), 'major');
@@ -181,6 +184,27 @@ try {
   await check('no script errors along the way', async () => {
     assert.deepEqual(errors, []);
   });
+  await check('routing: a report is #/incidents/:id - a deep link opens it, Back returns; translation: German, every target in both languages', async () => {
+    const hash = '#/incidents/i-login';
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}${hash}`);
+    await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '[data-sp]', { timeout: 15_000 });
+    const visible = (sel: string) => p.$eval(sel, (e) => e.checkVisibility());
+    assert.equal(await visible('#incident-i-login'), true);
+    await p.click('.sp-top a[href="#/history"]');
+    await p.waitForFunction(() => location.hash === '#/history' && !document.getElementById('history')!.hidden);
+    await p.goBack();
+    await p.waitForFunction(() => !document.getElementById('incident-i-login')!.hidden);
+    assert.deepEqual(await translationGaps(p, '[data-sp]'), [], 'every target and attribute in English and German');
+    assert.equal(await renderedLanguage(p, '[data-sp]'), 'en');
+    await chooseLanguage(p, 'de');
+    assert.equal(await renderedLanguage(p, '[data-sp]'), 'de');
+    assert.equal(await p.textContent('#sp-h-comps'), 'Komponenten');
+    assert.equal(await p.textContent('#sp-h-history'), 'Störungsverlauf');
+    await p.close();
+  });
+
 } finally {
   await browser.close();
   server.stop();

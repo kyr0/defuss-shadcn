@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
+import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
  * Why: the notes scaffold is a clickdummy - its promise is that the clicks
@@ -28,6 +30,7 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await offlineJsdelivr(page);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto(`${server.url}${PAGE}`);
@@ -59,14 +62,14 @@ try {
     await page.waitForTimeout(150);
     assert.deepEqual(await current(), ['wiki']);
     assert.equal(await shown('#nt-sidebar [data-nt-private] .tree-item[data-page="onboarding"]'), true);
-    await page.click('#p-wiki .nt-pagelink[href="#p-onboarding"]');
+    await page.click('#p-wiki .nt-pagelink[href="#/pages/onboarding"]');
     await page.waitForTimeout(150);
     assert.deepEqual(await current(), ['onboarding']);
     assert.equal((await page.textContent('#p-onboarding .breadcrumb'))!.replace(/\s+/g, ' ').trim(), '📚 Engineering Wiki/🚀 Onboarding');
   });
 
   await check('Enter continues a list; Enter on an empty item leaves it', async () => {
-    await page.goto(`${server.url}${PAGE}#p-getting-started`);
+    await page.goto(`${server.url}${PAGE}#/pages/getting-started`);
     await page.click(`${GS} .nt-blocks > .nt-block[data-type="bullet"]:last-child > .nt-text`);
     await page.keyboard.press('End');
     await page.keyboard.press('Enter');
@@ -161,7 +164,7 @@ try {
 
   await check('drag a block by its handle below another', async () => {
     const before = await blocks('onboarding');
-    await page.goto(`${server.url}${PAGE}#p-onboarding`);
+    await page.goto(`${server.url}${PAGE}#/pages/onboarding`);
     await page.waitForTimeout(150);
     const first = '#p-onboarding .nt-blocks > .nt-block:nth-child(1)';
     await page.hover(first);
@@ -172,7 +175,7 @@ try {
   });
 
   await check('the title and the icon follow the page into the tree, the breadcrumb and ⌘K', async () => {
-    await page.goto(`${server.url}${PAGE}#p-journal`);
+    await page.goto(`${server.url}${PAGE}#/pages/journal`);
     await page.waitForTimeout(150);
     await page.click('#t-journal');
     await page.keyboard.press('End');
@@ -204,7 +207,7 @@ try {
     assert.notDeepEqual(await current(), ['journal']);
     assert.equal(await page.$eval('#nt-sidebar [data-nt-private] [data-page="journal"]', (x) => (x as HTMLElement).hidden), true);
     assert.equal(await page.$$eval('[data-nt-trash-list] li', (x) => x.length), 1);
-    await page.goto(`${server.url}${PAGE}#p-journal`);
+    await page.goto(`${server.url}${PAGE}#/pages/journal`);
     assert.equal(await shown('#p-journal .nt-trashed'), true);
     await page.click('#p-journal .nt-trashed [data-nt-restore]');
     assert.equal(await shown('#p-journal .nt-trashed'), false);
@@ -225,7 +228,7 @@ try {
   });
 
   await check('the roadmap: a status select moves the board card and the gallery pill', async () => {
-    await page.goto(`${server.url}${PAGE}#p-roadmap`);
+    await page.goto(`${server.url}${PAGE}#/pages/roadmap`);
     await page.waitForTimeout(150);
     assert.equal(await page.$$eval('#p-roadmap tbody tr', (r) => r.length), 7);
     await page.selectOption('#p-roadmap tr[data-item="r3"] select[data-field="status"]', 'done');
@@ -280,7 +283,7 @@ try {
   await check('⌘K jumps to a page; Share invites with a toast', async () => {
     await page.keyboard.press('Meta+k');
     assert.equal(await page.$eval('#nt-cmd', (d) => (d as HTMLDialogElement).open), true);
-    await page.click('#nt-cmd .command-item[data-go="p-meetings"]');
+    await page.click('#nt-cmd .command-item[data-go="/pages/meetings"]');
     await page.waitForTimeout(150);
     assert.deepEqual(await current(), ['meetings']);
     await page.click('#p-meetings [popovertarget="nt-share"]');
@@ -300,6 +303,28 @@ try {
   await check('no script errors along the way', async () => {
     assert.deepEqual(errors, []);
   });
+  await check('routing: a page is #/pages/:slug - a deep link opens it, the tree follows, Back returns; translation: German, every target in both languages', async () => {
+    const hash = '#/pages/roadmap';
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}${hash}`);
+    await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '[data-nt]', { timeout: 15_000 });
+    const visible = (sel: string) => p.$eval(sel, (e) => e.checkVisibility());
+    assert.equal(await visible('#p-roadmap'), true);
+    assert.equal(await p.getAttribute('#nt-sidebar .tree-item[data-page="roadmap"]', 'aria-selected'), 'true');
+    await p.click('#nt-sidebar .tree-leaf[href="#/pages/journal"]');
+    await p.waitForFunction(() => location.hash === '#/pages/journal' && !document.getElementById('p-journal')!.hidden);
+    await p.goBack();
+    await p.waitForFunction(() => location.hash === '#/pages/roadmap' && !document.getElementById('p-roadmap')!.hidden);
+    assert.deepEqual(await translationGaps(p, '[data-nt]'), [], 'every target and attribute in English and German');
+    assert.equal(await renderedLanguage(p, '[data-nt]'), 'en');
+    await chooseLanguage(p, 'de');
+    assert.equal(await renderedLanguage(p, '[data-nt]'), 'de');
+    assert.equal(await p.textContent('#nt-sidebar [data-i18n-target="nav-favorites-d"]'), 'Favoriten');
+    assert.equal(await p.textContent('[data-i18n-target="cmd-pages"]'), 'Seiten');
+    await p.close();
+  });
+
 } finally {
   await browser.close();
   server.stop();

@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
+import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
  * Why: the admin-dashboard scaffold is a clickdummy - its promise is that the
@@ -25,6 +27,7 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 try {
   const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+  await offlineJsdelivr(page);
   await page.goto(`${server.url}${PAGE}`);
   await page.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.toast, undefined, { timeout: 10_000 });
   const visibleViews = () => page.evaluate(() => [...document.querySelectorAll('.dash-view')].filter((v) => getComputedStyle(v).display !== 'none').map((v) => v.id));
@@ -32,16 +35,16 @@ try {
 
   await check('opens on the overview: one view shown, Overview current', async () => {
     assert.deepEqual(await visibleViews(), ['overview']);
-    assert.equal(await current(), '#overview');
+    assert.equal(await current(), '#/');
   });
 
   await check('the sidebar switches views through the URL; the breadcrumb follows', async () => {
-    await page.click('#dash-sidebar .sidebar-link[href="#orders"]');
+    await page.click('#dash-sidebar .sidebar-link[href="#/orders"]');
     await page.waitForTimeout(150);
     assert.deepEqual(await visibleViews(), ['orders']);
-    assert.equal(await current(), '#orders');
+    assert.equal(await current(), '#/orders');
     assert.equal(await page.textContent('[data-dash-crumb]'), 'Orders');
-    assert.equal(new URL(page.url()).hash, '#orders');
+    assert.equal(new URL(page.url()).hash, '#/orders');
   });
 
   await check('back goes to the previous view', async () => {
@@ -57,7 +60,7 @@ try {
   }));
 
   await check('the orders are a data grid: 1,284 orders, newest first, a page of 12', async () => {
-    await page.click('#dash-sidebar .sidebar-link[href="#orders"]');
+    await page.click('#dash-sidebar .sidebar-link[href="#/orders"]');
     await page.waitForFunction(() => (document.querySelector('#dash-orders-grid') as any)?.store?.value.name === 'default');
     const g = await grid();
     assert.deepEqual(g.config.sorters, [{ field: 'date', direction: 'desc' }]);
@@ -83,7 +86,7 @@ try {
   });
 
   await check('selecting orders reveals the bulk bar with the count; Select all; Mark shipped edits the rows', async () => {
-    await page.click('#dash-sidebar .sidebar-link[href="#orders"]');
+    await page.click('#dash-sidebar .sidebar-link[href="#/orders"]');
     assert.equal(await page.$eval('.dash-bulk', (e) => getComputedStyle(e).display), 'none');
     await page.click('#dash-orders-grid .data-grid-rows > .data-grid-row:nth-child(2) .data-grid-cell:nth-child(3)');
     await page.click('#dash-orders-grid .data-grid-rows > .data-grid-row:nth-child(4) .data-grid-cell:nth-child(3)', { modifiers: ['ControlOrMeta'] });
@@ -105,14 +108,14 @@ try {
   await check('⌘K opens the command palette; an item jumps to its view', async () => {
     await page.keyboard.press('Meta+k');
     assert.equal(await page.evaluate(() => (document.getElementById('dash-cmd') as HTMLDialogElement).open), true);
-    await page.click('#dash-cmd .command-item[data-go="customers"]');
+    await page.click('#dash-cmd .command-item[data-go="/customers"]');
     await page.waitForTimeout(150);
     assert.equal(await page.evaluate(() => (document.getElementById('dash-cmd') as HTMLDialogElement).open), false);
     assert.deepEqual(await visibleViews(), ['customers']);
   });
 
   await check('New order opens the sheet; creating it closes the sheet and shows a toast', async () => {
-    await page.click('#dash-sidebar .sidebar-link[href="#overview"]');
+    await page.click('#dash-sidebar .sidebar-link[href="#/"]');
     await page.click('#overview [data-sheet-trigger="dash-new-order"]');
     await page.waitForTimeout(300);
     assert.equal(await page.evaluate(() => (document.getElementById('dash-new-order') as HTMLDialogElement).open), true);
@@ -146,6 +149,47 @@ try {
     assert.equal(r.rail, 'none');
     assert.ok(r.menu.endsWith('flex'), r.menu);
   });
+  await check('routing: a deep link opens its view and Back returns; translation: German formats the counts and picks the plural, every target in both languages', async () => {
+    const hash = '#/customers';
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}${hash}`);
+    await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '[data-dash]', { timeout: 15_000 });
+    const views = () => p.evaluate(() => [...document.querySelectorAll('.dash-view')].filter((v) => getComputedStyle(v).display !== 'none').map((v) => v.id));
+    assert.deepEqual(await views(), ['customers']);
+    assert.equal(await p.textContent('[data-dash-crumb]'), 'Customers');
+    // the views share one scroll box - VERIFIED: a view opened through the router kept the last one's offset
+    // (77 px after 600), where :target had scrolled it to its top
+    await p.$eval('.dash-scroll', (s) => (s.scrollTop = 600));
+    await p.click('#dash-sidebar .sidebar-link[href="#/settings"]');
+    await p.waitForFunction(() => location.hash === '#/settings' && !document.getElementById('settings')!.hidden);
+    assert.equal(await p.$eval('.dash-scroll', (s) => s.scrollTop), 0, 'a new view starts at its top');
+    await p.goBack();
+    await p.waitForFunction(() => !document.getElementById('customers')!.hidden);
+    assert.deepEqual(await views(), ['customers']);
+    assert.deepEqual(await translationGaps(p, '[data-dash]'), [], 'every target and attribute in English and German');
+    assert.equal(await renderedLanguage(p, '[data-dash]'), 'en');
+    await chooseLanguage(p, 'de');
+    assert.equal(await renderedLanguage(p, '[data-dash]'), 'de');
+    assert.equal(await p.textContent('[data-dash-crumb]'), 'Kunden', 'the breadcrumb follows the translated link');
+    assert.equal((await p.textContent('#customers .dash-head p'))!.replace(/\s+/g, ' ').trim(), '9.842 Kunden · 312 neu in diesem Monat');
+    await p.click('#dash-sidebar .sidebar-link[href="#/orders"]');
+    await p.waitForFunction(() => (document.querySelector('#dash-orders-grid') as any)?.store?.value.name === 'default');
+    await p.$eval('#dash-orders-grid', (g) => (globalThis as any).df$.shadcn.dataGrid.selectAll(g));
+    await p.waitForFunction(() => document.querySelector('.dash-bulk-count')!.textContent === '1.284 Bestellungen ausgewählt');
+    await p.$eval('#dash-orders-grid', (g) => (globalThis as any).df$.shadcn.dataGrid.clearSelection(g));
+    await p.click('#dash-orders-grid .data-grid-rows > .data-grid-row:nth-child(2) .data-grid-cell:nth-child(3)');
+    await p.waitForFunction(() => document.querySelector('.dash-bulk-count')!.textContent === '1 Bestellung ausgewählt');
+    await p.close();
+    // a German browser starts in German (resolveLocale over navigator.languages)
+    const de = await browser.newPage({ locale: 'de-DE' });
+    await offlineJsdelivr(de);
+    await de.goto(`${server.url}${PAGE}`);
+    await de.waitForFunction(() => document.querySelector('[data-dash]')?.getAttribute('lang') === 'de', undefined, { timeout: 15_000 });
+    assert.equal(await de.$eval('[data-app-locale]', (s) => (s as HTMLSelectElement).value), 'de');
+    await de.close();
+  });
+
 } finally {
   await browser.close();
   server.stop();

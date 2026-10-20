@@ -1,0 +1,180 @@
+---
+title: "Client-side Routing"
+description: "Route defuss-shadcn apps with defuss-dom-router: URLs become route requests, guards run before history, every navigation resolves to one result, and your commit shows the view - the pattern of every Application Scaffold."
+slug: "routing"
+---
+
+import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="routing" title="Client-side Routing" introStyle="max-width:40rem;">
+  <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> turns URLs into route requests and orders navigations against the browser's History API - it never touches the page. You say what a route shows: <code>prepare()</code> builds the next view without changing the live page, <code>commit()</code> puts it on screen. One file of about 9 kB compressed, no dependencies; every <DocLink href="application-scaffolds.html">Application Scaffold</DocLink> routes with it.
+</PageHeader>
+
+<div class="flex gap-3 mb-8 flex-wrap items-center">
+  <a href="https://dom-router.defuss.org" target="_blank" rel="noopener" class="btn" data-variant="outline">defuss-dom-router at dom-router.defuss.org<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-start:0.375rem"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+  <DocLink href="translation.html">Translation</DocLink>
+</div>
+
+<H2>Load it</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> <code>dist/index.js</code> imports nothing and starts nothing when imported - no listener until <code>start()</code>. Load it as a module from jsDelivr, or install it for a bundler. It brings no renderer: the views are your markup, the DOM work goes through the components' <code>df$</code>. </p>
+
+<CodeWindow lang="markup" title="plain HTML" mb="1rem" code={"<script type=\"module\">\n  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';\n</script>"} />
+
+<CodeWindow lang="javascript" title="npm + bundler" mb="2.5rem" code={"// bun add defuss-dom-router\nimport { createRouter } from 'defuss-dom-router';"} />
+
+<H2>Views are sections, a route un-hides one</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> The scaffolds keep every view in the markup - a <code>&lt;section&gt;</code> each, all but the first <code>hidden</code> - so the page reads before any script runs and a view's components keep their state when it hides. Links are real anchors with <code>data-router-link</code> and a route in the fragment (<code>href="#/messages/2"</code>); <code>attachLinks()</code> handles their clicks and leaves modified clicks, downloads and other targets to the browser. The commit un-hides the view the route names and marks the current link. A <code>:param</code> names a record, a lone <code>*</code> catches everything else: </p>
+
+```html example schema="none" label="A mailbox with routes" hint="Routes: #/ (inbox), #/archive, #/messages/:id and * (not found - try message 9 under Archive). The line under the folders shows what the route matched. In this preview the router cannot own the address (see Inside a docs preview below) - the same routes match the frame's hash." height="20"
+<div class="flex flex-wrap gap-6" id="mail" style="min-height: 13rem">
+  <nav class="flex flex-col gap-1" aria-label="Folders" style="min-width: 9rem">
+    <a class="btn" data-variant="ghost" href="#/" data-router-link aria-current="page">Inbox</a>
+    <a class="btn" data-variant="ghost" href="#/archive" data-router-link>Archive</a>
+    <p class="text-xs text-muted-foreground mt-2"><output id="mail-route">inbox · /</output></p>
+  </nav>
+  <section class="flex flex-col gap-2" data-view="inbox" style="flex: 1 1 16rem">
+    <h3 class="text-sm font-medium m-0">Inbox</h3>
+    <a href="#/messages/1" data-router-link>Lunch on Friday?</a>
+    <a href="#/messages/2" data-router-link>The Q4 plan, second draft</a>
+  </section>
+  <section class="flex flex-col gap-2" data-view="archive" style="flex: 1 1 16rem" hidden>
+    <h3 class="text-sm font-medium m-0">Archive</h3>
+    <a href="#/messages/3" data-router-link>Welcome to the team</a>
+    <a href="#/messages/9" data-router-link>A message that is gone</a>
+  </section>
+  <section class="flex flex-col gap-2" data-view="message" style="flex: 1 1 16rem" hidden>
+    <a href="#/" data-router-link>← Inbox</a>
+    <h3 class="text-sm font-medium m-0" id="mail-subject"></h3>
+    <p class="text-sm text-muted-foreground m-0" id="mail-body"></p>
+  </section>
+  <section class="flex flex-col gap-2" data-view="missing" style="flex: 1 1 16rem" hidden>
+    <h3 class="text-sm font-medium m-0">Not found</h3>
+    <p class="text-sm text-muted-foreground m-0"
+      >No such message - <a href="#/" data-router-link>back to the inbox</a>.</p
+    >
+  </section>
+</div>
+<script type="module">
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+
+  const MESSAGES = {
+    1: ['Lunch on Friday?', 'The new place on the corner - 12:30?'],
+    2: ['The Q4 plan, second draft', 'Comments are in the doc; the launch date moved to the 28th.'],
+    3: ['Welcome to the team', 'Your laptop is on its way. Coffee is on the third floor.'],
+  };
+  const routes = [
+    { id: 'inbox', path: '/' },
+    { id: 'archive', path: '/archive' },
+    { id: 'message', path: '/messages/:id' },
+    { id: 'missing', path: '*' },
+  ];
+  const show = (to) => {
+    const message = to.routeId === 'message' ? MESSAGES[to.params.id] : undefined;
+    const view = to.routeId === 'message' && !message ? 'missing' : to.routeId;
+    df$('#mail [data-view]').each((_i, section) => {
+      section.hidden = section.dataset.view !== view;
+    });
+    df$('#mail nav a').each((_i, link) => {
+      if (link.getAttribute('href') === (view === 'archive' ? '#/archive' : '#/'))
+        link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
+    if (message) {
+      df$('#mail-subject').text(message[0]);
+      df$('#mail-body').text(message[1]);
+    }
+    df$('#mail-route').text(`${to.routeId} · ${to.path}${to.params.id ? ` · id=${to.params.id}` : ''}`);
+  };
+  const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+  router.attachLinks(df$('#mail').get(0));
+  if ((await router.start()).status === 'rejected') {
+    // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+    const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+    const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+    addEventListener('hashchange', follow);
+    follow();
+  }
+</script>
+```
+
+<TableCard title="what the mailbox uses" mb="2.5rem" code={[0]} rows={[
+  ['Call / markup', 'What it does'],
+  ["createRouter({ mode: 'hash', routes, prepare })", 'Validates and copies the configuration; routes match in order, the first one wins'],
+  ["{ id: 'message', path: '/messages/:id' }", 'A named route with a parameter: to.params.id, decoded once (an encoded / stays data)'],
+  ["{ id: 'missing', path: '*' }", 'Everything else - last, since the first match wins'],
+  ['prepare({ to, signal }) → { commit }', 'Build the next view off the page (fetch with signal - a newer navigation aborts it), show it in commit'],
+  ['router.attachLinks(root)', 'One delegated click listener for a[data-router-link] under root'],
+  ['await router.start()', 'Takes the window and runs the first navigation - the address the page was opened with'],
+]} />
+
+<H2>Hash or history</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> <strong>Hash mode</strong> keeps the route after the <code>#</code>: the server always serves the same file, so any static host works - this site is served by GitHub Pages, which has no fallback for deep paths, so every scaffold uses it. <strong>History mode</strong> (the default) gives clean paths like <code>/messages/2</code>; your server then answers every app path with the app's HTML, and <code>basePath</code> names the folder the app lives in. <code>router.href({"{ id, params, query }"})</code> builds a link that is right in both modes. </p>
+
+<CodeWindow lang="javascript" title="history mode under a folder" mb="2.5rem" code={"const router = createRouter({\n  basePath: '/app',\n  routes: [{ id: 'message', path: '/messages/:id' }, { id: 'missing', path: '*' }],\n  prepare: ({ to }) => ({ commit: () => show(to) }),\n  afterCommit: ({ to }) => {\n    document.title = df$('#mail-subject').text();\n    df$('main h1').get(0)?.focus(); // title, focus and ARIA belong after the commit\n  },\n});\nrouter.href({ id: 'message', params: { id: '2' } }); // '/app/messages/2'"} />
+
+<H2>Results, not exceptions</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> <code>navigate()</code> never rejects - it resolves to exactly one result, so a script knows whether the screen changed: </p>
+
+<TableCard title="navigation results" mb="2.5rem" code={[0]} rows={[
+  ['status', 'Meaning'],
+  ['committed', 'History was written (or adopted) and the view committed'],
+  ['unchanged', 'Same address and state as the current entry - nothing ran'],
+  ['blocked', 'A guard or beforeLeave returned exactly false; history is untouched or was walked back'],
+  ['superseded', 'A newer navigation took over before this one committed; its prepared view was disposed, never shown'],
+  ['rejected', 'Invalid input, or a router not started or destroyed'],
+  ['error', 'A guard, prepare(), the history write or commit() failed'],
+]} />
+
+<H2>Guards and leaving</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Guards run <em>before</em> <code>pushState</code>, so a veto leaves history as it was; a vetoed Back is walked forward again. A view's <code>beforeLeave</code> asks when its route changes - an <DocLink href="alert-dialog.html">Alert Dialog</DocLink> makes the question; only an exact <code>false</code> blocks. </p>
+
+<CodeWindow lang="javascript" title="ask before leaving an unsaved draft" mb="2.5rem" code={"const ask = () => new Promise((resolve) => {\n  const dialog = df$('#leave-draft').get(0); // <dialog class=\"alert-dialog\"> with Stay / Leave buttons\n  dialog.addEventListener('close', () => resolve(dialog.returnValue === 'leave'), { once: true });\n  dialog.showModal();\n});\nconst router = createRouter({\n  mode: 'hash',\n  routes,\n  prepare: ({ to }) => ({\n    commit: () => show(to),\n    beforeLeave: () => (draft.value.trim() ? ask() : true),\n  }),\n});\nrouter.beforeEach(({ to }) => to.routeId !== 'admin' || signedIn); // false blocks"} />
+
+<H2>Navigating from a script</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> A script that holds the router calls <code>await router.navigate('#/messages/2')</code>. Code that does not - the scaffolds' older wiring, a data grid's row handler - changes the fragment: <code>location.hash = '/issues/ENG-142'</code>. The router follows <code>hashchange</code> like a link, and so does the docs preview's fallback. Never call <code>history.pushState</code> yourself while a router owns the window: entries it did not write carry none of its metadata, and a blocked Back cannot be walked back across them. </p>
+
+<H2>With the components</H2>
+
+<ul class="text-sm text-muted-foreground mb-5 ps-5" style="display:grid;gap:0.375rem">
+  <li><strong>Sidebar, Breadcrumb, Command.</strong> A <DocLink href="sidebar.html">Sidebar</DocLink> link is the router link itself; the commit moves its <code>aria-current</code>. A <DocLink href="command.html">Command</DocLink> item is a button - give it the route (<code>data-go="/orders"</code>) and navigate on its click.</li>
+  <li><strong>Hidden views keep their components.</strong> A data grid, a chart or an editor in a hidden section keeps its state and its listeners; only the commit decides what shows. The Messenger's thread is a <DocLink href="session.html">Session</DocLink> that keeps its scroll position.</li>
+  <li><strong>An announcement for the rest of the page.</strong> When older wiring needs to know the view changed, the commit dispatches an event on the app (the Issue Tracker's <code>pm-route</code>), and that wiring listens instead of reading <code>location</code>.</li>
+  <li><strong><code>df$().each()</code> stops on <code>false</code>.</strong> Hiding views in an arrow function that returns the assignment - <code>(_i, v) =&gt; (v.hidden = v.id !== id)</code> - ends the loop at the view being shown; give the callback a block body.</li>
+</ul>
+
+<H2>Routing and translation</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> They do not depend on each other: a language switch does not navigate, a navigation does not re-render the texts. Because views are hidden rather than rendered, every translated region stays bound when it hides (<DocLink href="translation.html">Translation</DocLink>). Text a commit derives from translated markup - the Admin Dashboard's breadcrumb copies the current sidebar label - is read again on <code>defuss-i18n:change</code>. </p>
+
+<H2>Inside a docs preview</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> The router routes HTTP(S) addresses of its own window. Every example on this site runs in a sandboxed <code>about:srcdoc</code> frame, which has no such address: <code>start()</code> resolves <code>rejected</code> with <code>invalid-url</code>. The frame's links still change its fragment, and the router's pure <code>resolve()</code> works without a window when a second router is given a <code>baseUrl</code> - so the examples match the same routes there. Open a scaffold full screen to see the router own a real address, with Back, Forward and deep links. </p>
+
+<CodeWindow lang="javascript" title="the preview fallback of every example" mb="2.5rem" code={"if ((await router.start()).status === 'rejected') {\n  const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });\n  const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));\n  addEventListener('hashchange', follow);\n  follow();\n}"} />
+
+<H2>Where it is used</H2>
+
+<TableCard title="the scaffolds' routes" mb="2.5rem"><table class="table" data-variant="simple">
+  <thead>
+    <tr><th>Scaffold</th><th>Routes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><DocLink href="scaffold-admin-dashboard.html">Admin Dashboard</DocLink></td><td><code>#/</code>, <code>#/orders</code>, <code>#/customers</code>, <code>#/settings</code></td></tr>
+    <tr><td><DocLink href="scaffold-messenger.html">Messenger</DocLink></td><td><code>#/</code> (the list), <code>#/chats/:id</code></td></tr>
+    <tr><td><DocLink href="scaffold-issue-tracker.html">Issue Tracker</DocLink></td><td><code>#/</code>, <code>#/my-issues</code>, <code>#/inbox</code>, <code>#/cycles</code>, <code>#/projects</code>, <code>#/issues/:id</code></td></tr>
+    <tr><td><DocLink href="scaffold-notes.html">Notes &amp; Docs</DocLink></td><td><code>#/</code>, <code>#/pages/:slug</code> - new pages too</td></tr>
+    <tr><td><DocLink href="scaffold-status-page.html">Status Page</DocLink></td><td><code>#/</code>, <code>#/history</code>, <code>#/manage</code>, <code>#/incidents/:id</code></td></tr>
+    <tr><td><DocLink href="scaffold-desktop.html">Desktop</DocLink></td><td><code>#/apps/:app</code>, <code>#/files/:name</code>, <code>#/browse/:site</code> - what a launcher opens</td></tr>
+    <tr><td><DocLink href="scaffold-document-editor.html">Document Editor</DocLink></td><td><code>#/docs/:id</code></td></tr>
+  </tbody>
+</table></TableCard>
+
+</DocPage>

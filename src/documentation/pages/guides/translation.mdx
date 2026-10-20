@@ -1,0 +1,199 @@
+---
+title: "Translation"
+description: "Translate defuss-shadcn markup with defuss-i18n: the HTML is the catalog - one template per region and language, attribute variants, Intl numbers, dates and plurals, morphed through the components' own df$. Used by every Application Scaffold."
+slug: "translation"
+---
+
+import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="translation" title="Translation" introStyle="max-width:40rem;">
+  <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a> translates the markup you already have. Each region of a component keeps one <code>&lt;template&gt;</code> per language next to it; switching the language morphs the region into that template through the same <code>df$</code> the components run on, so focus, typed input and open dialogs survive. Numbers, dates and plurals come from the browser's <code>Intl</code>. No string tables, no build step - and every <DocLink href="application-scaffolds.html">Application Scaffold</DocLink> uses it.
+</PageHeader>
+
+<div class="flex gap-3 mb-8 flex-wrap items-center">
+  <a href="https://i18n.defuss.org" target="_blank" rel="noopener" class="btn" data-variant="outline">defuss-i18n at i18n.defuss.org<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-start:0.375rem"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+  <DocLink href="routing.html">Client-side Routing</DocLink>
+</div>
+
+<H2>Load it</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> The library ships a browser build that imports nothing. Use <code>dist/core.js</code> next to defuss-shadcn: it takes the <code>df$</code> you hand it (<code>createDomI18n(df$)</code>) and leaves the global alone - <code>dist/all.min.js</code> would install itself as <code>df$.i18n</code>, and in this system only <code>core.js</code> extends <code>df$</code>. With a bundler, install the package and import the same names. </p>
+
+<CodeWindow lang="markup" title="plain HTML - after defuss-shadcn's core.js or all.js" mb="1rem" code={"<script type=\"module\">\n  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';\n\n  const locale = createI18n({ locale: 'en', fallback: ['en'] });\n  const { bind, mount } = createDomI18n(df$); // the components' own runtime does the DOM work\n  mount(document, locale);                     // every [data-i18n-component] on the page\n  locale.setLocale('de');                      // synchronous: German when this returns\n</script>"} />
+
+<CodeWindow lang="javascript" title="npm + bundler" mb="2.5rem" code={"// bun add defuss-i18n\nimport { createDomI18n, createI18n } from 'defuss-i18n/core';\n\nconst locale = createI18n({ locale: 'en' });\nconst { bind } = createDomI18n(df$);"} />
+
+<H2>The markup is the catalog</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> A component root carries <code>data-i18n-component</code>. Inside it, <code>data-i18n-target="name"</code> marks a region and <code>&lt;template data-i18n-for="name" data-i18n-locale="de"&gt;</code> holds that region in one language - beside the region, never inside it. The live markup is the default language, so the page reads right before any script runs. Attributes outside a region get variants: <code>data-i18n-aria-label-de</code>, <code>data-i18n-placeholder-de</code>, <code>data-i18n-title-de</code> (16 attributes in all). The example card below switches between English, German and Arabic - Arabic also turns the card right to left, which the components follow through their logical properties. </p>
+
+```html example schema="none" label="A workshop card in three languages" hint="One component root, three regions, one attribute variant. The date, the price and the seat count are values formatted for the language; the count picks the plural - Arabic has six forms. Reserve counts down." height="22"
+<div class="card" id="ws-card" data-i18n-component style="max-width: 26rem">
+  <div class="card-header">
+    <h3 class="card-title" data-i18n-target="title">Workshop: native web components</h3>
+    <p class="card-description" data-i18n-target="when">
+      <span data-i18n-value="date">November 12, 2026</span> · <span data-i18n-value="price">€49.00</span>
+    </p>
+  </div>
+  <div class="card-content flex flex-col gap-3">
+    <p class="text-sm m-0" data-i18n-target="seats" data-i18n-count="seats">
+      <span data-i18n-value="seatsLabel">3</span> seats left
+    </p>
+    <input
+      class="input"
+      type="email"
+      placeholder="you@example.com"
+      aria-label="Your email"
+      data-i18n-aria-label-en="Your email"
+      data-i18n-aria-label-de="Deine E-Mail-Adresse"
+      data-i18n-aria-label-ar="بريدك الإلكتروني"
+    />
+  </div>
+  <div class="card-footer flex items-center gap-2">
+    <button class="btn" type="button" id="ws-reserve" data-i18n-target="reserve">Reserve a seat</button>
+    <select
+      class="select"
+      data-size="sm"
+      id="ws-lang"
+      aria-label="Language"
+      data-i18n-aria-label-en="Language"
+      data-i18n-aria-label-de="Sprache"
+      data-i18n-aria-label-ar="اللغة"
+      style="width: auto; margin-inline-start: auto"
+    >
+      <option value="en" lang="en">English</option>
+      <option value="de" lang="de">Deutsch</option>
+      <option value="ar" lang="ar">العربية</option>
+    </select>
+  </div>
+  <template data-i18n-for="title" data-i18n-locale="en">Workshop: native web components</template>
+  <template data-i18n-for="title" data-i18n-locale="de">Workshop: native Web Components</template>
+  <template data-i18n-for="title" data-i18n-locale="ar">ورشة عمل: مكونات الويب الأصلية</template>
+  <template data-i18n-for="when" data-i18n-locale="en"
+    ><span data-i18n-value="date"></span> · <span data-i18n-value="price"></span
+  ></template>
+  <template data-i18n-for="when" data-i18n-locale="de"
+    ><span data-i18n-value="date"></span> · <span data-i18n-value="price"></span
+  ></template>
+  <template data-i18n-for="when" data-i18n-locale="ar"
+    ><span data-i18n-value="date"></span> · <span data-i18n-value="price"></span
+  ></template>
+  <template data-i18n-for="seats" data-i18n-locale="en" data-i18n-plural="one"
+    ><span data-i18n-value="seatsLabel"></span> seat left</template
+  >
+  <template data-i18n-for="seats" data-i18n-locale="en" data-i18n-plural="other"
+    ><span data-i18n-value="seatsLabel"></span> seats left</template
+  >
+  <template data-i18n-for="seats" data-i18n-locale="de" data-i18n-plural="one"
+    >Noch <span data-i18n-value="seatsLabel"></span> Platz frei</template
+  >
+  <template data-i18n-for="seats" data-i18n-locale="de" data-i18n-plural="other"
+    >Noch <span data-i18n-value="seatsLabel"></span> Plätze frei</template
+  >
+  <template data-i18n-for="seats" data-i18n-locale="ar" data-i18n-plural="zero">لم يبقَ أي مقعد</template>
+  <template data-i18n-for="seats" data-i18n-locale="ar" data-i18n-plural="one">بقي مقعد واحد</template>
+  <template data-i18n-for="seats" data-i18n-locale="ar" data-i18n-plural="two">بقي مقعدان</template>
+  <template data-i18n-for="seats" data-i18n-locale="ar" data-i18n-plural="few"
+    >بقيت <span data-i18n-value="seatsLabel"></span> مقاعد</template
+  >
+  <template data-i18n-for="seats" data-i18n-locale="ar" data-i18n-plural="many"
+    >بقي <span data-i18n-value="seatsLabel"></span> مقعدًا</template
+  >
+  <template data-i18n-for="seats" data-i18n-locale="ar" data-i18n-plural="other"
+    >بقي <span data-i18n-value="seatsLabel"></span> مقعد</template
+  >
+  <template data-i18n-for="reserve" data-i18n-locale="en">Reserve a seat</template>
+  <template data-i18n-for="reserve" data-i18n-locale="de">Platz reservieren</template>
+  <template data-i18n-for="reserve" data-i18n-locale="ar">احجز مقعدًا</template>
+</div>
+<script type="module">
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  const locale = createI18n({ locale: 'en', fallback: ['en'] });
+  let seats = 3;
+  // read on every render: the count picks the plural, every value is formatted for the language
+  const card = createDomI18n(df$).bind(df$('#ws-card').get(0), locale, {
+    getState: () => seats,
+    values: (n) => ({
+      seats: n,
+      seatsLabel: locale.formatNumber(n),
+      date: locale.formatDate(Date.UTC(2026, 10, 12), { dateStyle: 'long', timeZone: 'UTC' }),
+      price: locale.formatNumber(49, { style: 'currency', currency: 'EUR' }),
+    }),
+  });
+  df$('#ws-lang').on('change', (event) => locale.setLocale(event.currentTarget.value));
+  df$('#ws-reserve').on('click', () => {
+    seats = Math.max(0, seats - 1);
+    card.refresh();
+  });
+</script>
+```
+
+<TableCard title="what the card uses" mb="2.5rem" code={[0]} rows={[
+  ['Markup / call', 'What it does'],
+  ['data-i18n-component', 'The root: everything inside belongs to this component (a nested root starts another one). bind() writes lang and dir on it'],
+  ['data-i18n-target="title"', 'A region: on a switch its content becomes the matching template. Keep regions to text and simple inline markup'],
+  ['<template data-i18n-for data-i18n-locale>', 'One language of a region. Inert: the browser renders nothing of it and runs nothing in it'],
+  ['data-i18n-aria-label-de="Sprache"', 'An attribute variant: the attribute takes the value of the current language'],
+  ['data-i18n-value="date"', 'A slot for a value, inserted as plain text - never parsed as HTML'],
+  ['data-i18n-count="seats" + data-i18n-plural', 'The value seats (a number) picks the template for Intl.PluralRules\' category; other is required per language'],
+  ['bind(root, locale, { getState, values })', 'Binds one root; values() runs on every render with the state getState() reads'],
+  ['binding.refresh()', 'Renders again after the state changed - same language'],
+  ['locale.setLocale(tag)', 'Switches every bound root, synchronously'],
+]} />
+
+<H2>Numbers, dates and plurals</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> The controller formats in its current language: <code>formatNumber</code> and <code>formatDate</code> are <code>Intl.NumberFormat</code> and <code>Intl.DateTimeFormat</code>, <code>plural(n)</code> is <code>Intl.PluralRules</code>. Pass them as values and the region shows them; a count stays a number (it chooses the plural) and its formatted twin is a second value. The Admin Dashboard does exactly this for its order and customer counts - 9,842 in English, 9.842 in German - and for the bulk bar, whose "1 order selected" / "1,284 orders selected" is a plural over the data grid's selection. </p>
+
+<CodeWindow lang="javascript" title="state, values and refresh" mb="2.5rem" code={"let selected = 0;\nconst texts = bind(app, locale, {\n  getState: () => selected,\n  values: (n) => ({ selected: n, selectedLabel: locale.formatNumber(n) }),\n});\ngrid.store.subscribe(({ config }) => {\n  selected = config.selected.length;\n  texts.refresh(); // the plural and the number follow\n});"} />
+
+<H2>Translating shipped components</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> A component's script owns its markup's state - a tab's <code>aria-selected</code>, a link's <code>aria-current</code>, a dialog's <code>open</code>. A region is replaced by its template on every switch, so it must not hold that state. The scaffolds follow four rules: </p>
+
+<ul class="text-sm text-muted-foreground mb-5 ps-5" style="display:grid;gap:0.375rem">
+  <li><strong>Regions are the text, not the component.</strong> Wrap a sidebar link's label, a tab's label or a dialog title in a target - <code>&lt;a class="sidebar-link"&gt;&lt;i data-lucide="users"&gt;&lt;/i&gt;&lt;span data-i18n-target="nav-customers"&gt;Customers&lt;/span&gt;&lt;/a&gt;</code> - never the link, the tab list or the dialog.</li>
+  <li><strong>Labels the user never sees are attribute variants.</strong> <code>aria-label</code>, <code>placeholder</code>, <code>title</code> and <code>alt</code> get <code>data-i18n-{"{attribute}"}-{"{language}"}</code>; they need no unique name, so a label repeated in every chat of the Messenger is one pattern.</li>
+  <li><strong>A stamped <code>&lt;template&gt;</code> gets no target.</strong> A row or page the script clones would copy the target's name, and names are unique per component; attribute variants are fine there - they are re-read on each render.</li>
+  <li><strong>Text a script writes is the script's.</strong> defuss-i18n translates markup, not strings in code: a toast or a generated row stays in the language the script wrote it in. When a script needs a translated string, keep it in the markup as a hidden target and read its text at the moment the script needs it.</li>
+</ul>
+
+<p class="text-sm text-muted-foreground mb-5"> Catalogs grow with the app, so each scaffold keeps its templates in one block at the end of its root - one line per region and language, like a translation file. The library's validator finds what a catalog misses; the e2e tests run it over every scaffold: </p>
+
+<CodeWindow lang="javascript" title="development check" mb="2.5rem" code={"import { validateI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';\n\nfor (const issue of validateI18n(app, { locales: ['en', 'de'] }))\n  console.warn(issue.code, issue.message, issue.element); // e.g. MISSING_LOCALE: Target nav-orders lacks de"} />
+
+<H2>Choosing the language</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Start in the visitor's language: <code>resolveLocale</code> matches <code>navigator.languages</code> against the languages you ship, walking parent tags (<code>de-CH</code> finds <code>de</code>) without guessing siblings. A Select (or a Settings row, as in the Messenger and the Desktop) switches; <code>subscribe</code> keeps every switch in step and is the place to keep the choice - a <code>df$.store.persisted</code> store - or to set <code>&lt;html lang dir&gt;</code> when the app is the whole page. </p>
+
+<CodeWindow lang="javascript" title="the visitor's language, a switch, a remembered choice" mb="2.5rem" code={"import { createI18n, resolveLocale } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';\n\nconst kept = df$.store.persisted('app:language', '');\nconst preferred = navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean);\nconst locale = createI18n({ locale: kept.value || preferred || 'en' });\n\nconst select = df$('[data-app-locale]');\nselect.val(locale.locale).on('change', () => locale.setLocale(select.val()));\nlocale.subscribe(({ locale: tag, direction }) => {\n  kept.set(tag);\n  select.val(tag);\n  document.documentElement.lang = tag;\n  document.documentElement.dir = direction;\n});"} />
+
+<H2>Loading languages on demand</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Ship the default language in the page and fetch the others when they are picked. <code>loadLocale(tag, loader, commit)</code> lets only the newest request commit: the loader fetches and parses without touching the page, the synchronous <code>commit</code> appends the templates and calls <code>rescan()</code>, then the language is published. Append parsed nodes, not markup strings - a template written through <code>df$().html()</code> loses its content. </p>
+
+<CodeWindow lang="javascript" title="one fragment of templates per language" mb="2.5rem" code={"const loaded = new Set(['en']);\nasync function switchTo(tag) {\n  if (loaded.has(tag)) return locale.setLocale(tag);\n  const result = await locale.loadLocale(\n    tag,\n    async (canonical, signal) => {\n      const html = await (await fetch(`/i18n/${canonical}/app.html`, { signal })).text();\n      return new DOMParser().parseFromString(`<body>${html}`, 'text/html').body.children;\n    },\n    (templates) => {\n      app.append(...templates); // beside the regions\n      texts.rescan();           // adopt them before the language is published\n      loaded.add(tag);\n    },\n  );\n  return result.status; // 'superseded' when another language was picked meanwhile\n}"} />
+
+<H2>Where it is used</H2>
+
+<p class="text-sm text-muted-foreground mb-5"> Every Application Scaffold binds its root once and switches between English and German; the routes of each are in <DocLink href="routing.html">Client-side Routing</DocLink>. </p>
+
+<TableCard title="the scaffolds' translations" mb="2.5rem"><table class="table" data-variant="simple">
+  <thead>
+    <tr><th>Scaffold</th><th>The switch</th><th>What it translates</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><DocLink href="scaffold-admin-dashboard.html">Admin Dashboard</DocLink></td><td>Top bar</td><td>Navigation, views, palette; counts formatted, the selection a plural</td></tr>
+    <tr><td><DocLink href="scaffold-messenger.html">Messenger</DocLink></td><td>Settings › App language</td><td>Rail, list, panels, info column, every contact label</td></tr>
+    <tr><td><DocLink href="scaffold-issue-tracker.html">Issue Tracker</DocLink></td><td>Sidebar foot</td><td>Navigation, view heads, palette, create dialog</td></tr>
+    <tr><td><DocLink href="scaffold-notes.html">Notes &amp; Docs</DocLink></td><td>Sidebar foot</td><td>Sidebar, workspace menu, palette, trash</td></tr>
+    <tr><td><DocLink href="scaffold-status-page.html">Status Page</DocLink></td><td>Header</td><td>Header, section heads, legend, history, console tabs</td></tr>
+    <tr><td><DocLink href="scaffold-desktop.html">Desktop</DocLink></td><td>Settings › Language</td><td>Start menu, quick settings, context menus, Settings, window controls</td></tr>
+    <tr><td><DocLink href="scaffold-document-editor.html">Document Editor</DocLink></td><td>Beside Share</td><td>Document list, menus, toolbar, dialogs</td></tr>
+  </tbody>
+</table></TableCard>
+
+</DocPage>

@@ -17,7 +17,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <a class="btn" data-variant="outline" href="#how-it-works">How it works</a>
 </div>
 
-```html example label="Desktop" schema="none" sandbox="embed" height="50" mode="desktop" hint="The whole desktop in one source. Windows are the Window component - non-modal dialogs that move, raise, maximize and minimize; settings are a handful of data attributes on the desktop that every control (context menu, quick settings, Settings) writes through one function." previewStyle="align-items:stretch;padding:0;"
+```html example label="Desktop" schema="none" sandbox="embed" height="50" mode="desktop" hint="The whole desktop in one source. What a launcher opens is a route (#/apps/calc, #/files/Notes.txt) of defuss-dom-router, so Back brings back the window before; Settings › Language translates the desktop with defuss-i18n. Windows are the Window component - non-modal dialogs that move, raise, maximize and minimize; settings are a handful of data attributes on the desktop that every control (context menu, quick settings, Settings) writes through one function." previewStyle="align-items:stretch;padding:0;"
 <style>
   /* the desktop: the scaffold's own glue - shell, wallpaper, taskbar and the
      apps' layouts. Windows, menus, flyout contents and dialogs are the shipped
@@ -1065,6 +1065,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     flex-wrap: wrap;
     gap: 1.25rem;
   }
+  .os-locale {
+    width: auto;
+  }
   .os-set-row {
     display: flex;
     align-items: center;
@@ -1355,6 +1358,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <div
   class="os"
   data-os
+  data-i18n-component
   data-wallpaper="bloom"
   data-icons="medium"
   data-taskbar="center"
@@ -1365,7 +1369,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <div class="os-wall-layer" aria-hidden="true"></div>
 
   <div class="window-desktop os-desktop">
-    <div class="os-surface" data-context-menu="os-ctx" aria-label="Desktop">
+    <div
+      class="os-surface"
+      data-context-menu="os-ctx"
+      aria-label="Desktop"
+      data-i18n-aria-label-en="Desktop"
+      data-i18n-aria-label-de="Desktop"
+    >
       <div class="os-icons" role="listbox" aria-label="Desktop icons" data-icon-list>
         <button
           class="os-icon"
@@ -1464,9 +1474,26 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         ><span class="window-icon os-wicon" style="--t: oklch(0.62 0.16 230)"><i data-lucide="globe"></i></span
         ><h2 class="window-title"><span data-br-title>New tab</span> - Browser</h2
         ><form method="dialog" class="window-controls"
-          ><button type="button" class="window-minimize" aria-label="Minimize"></button
-          ><button type="button" class="window-maximize" aria-label="Maximize"></button
-          ><button class="window-close" aria-label="Close"></button></form
+          ><button
+            type="button"
+            class="window-minimize"
+            aria-label="Minimize"
+            data-i18n-aria-label-en="Minimize"
+            data-i18n-aria-label-de="Minimieren"
+          ></button
+          ><button
+            type="button"
+            class="window-maximize"
+            aria-label="Maximize"
+            data-i18n-aria-label-en="Maximize"
+            data-i18n-aria-label-de="Maximieren"
+          ></button
+          ><button
+            class="window-close"
+            aria-label="Close"
+            data-i18n-aria-label-en="Close"
+            data-i18n-aria-label-de="Schließen"
+          ></button></form
       ></header>
       <div class="window-toolbar os-br-bar">
         <button
@@ -1547,9 +1574,26 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ><span class="os-dirty" aria-label="Unsaved changes">●</span><span data-ed-name>Welcome.txt</span> -
           Editor</h2
         ><form method="dialog" class="window-controls"
-          ><button type="button" class="window-minimize" aria-label="Minimize"></button
-          ><button type="button" class="window-maximize" aria-label="Maximize"></button
-          ><button class="window-close" aria-label="Close"></button></form
+          ><button
+            type="button"
+            class="window-minimize"
+            aria-label="Minimize"
+            data-i18n-aria-label-en="Minimize"
+            data-i18n-aria-label-de="Minimieren"
+          ></button
+          ><button
+            type="button"
+            class="window-maximize"
+            aria-label="Maximize"
+            data-i18n-aria-label-en="Maximize"
+            data-i18n-aria-label-de="Maximieren"
+          ></button
+          ><button
+            class="window-close"
+            aria-label="Close"
+            data-i18n-aria-label-en="Close"
+            data-i18n-aria-label-de="Schließen"
+          ></button></form
       ></header>
       <div class="window-toolbar">
         <div class="menubar" data-variant="ghost" role="menubar" aria-label="Editor">
@@ -1635,9 +1679,26 @@ Things to try:
         ><span class="window-icon os-wicon" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
         ><h2 class="window-title">Calculator</h2
         ><form method="dialog" class="window-controls"
-          ><button type="button" class="window-minimize" aria-label="Minimize"></button
-          ><button type="button" class="window-maximize" aria-label="Maximize"></button
-          ><button class="window-close" aria-label="Close"></button></form
+          ><button
+            type="button"
+            class="window-minimize"
+            aria-label="Minimize"
+            data-i18n-aria-label-en="Minimize"
+            data-i18n-aria-label-de="Minimieren"
+          ></button
+          ><button
+            type="button"
+            class="window-maximize"
+            aria-label="Maximize"
+            data-i18n-aria-label-en="Maximize"
+            data-i18n-aria-label-de="Maximieren"
+          ></button
+          ><button
+            class="window-close"
+            aria-label="Close"
+            data-i18n-aria-label-en="Close"
+            data-i18n-aria-label-de="Schließen"
+          ></button></form
       ></header>
       <div class="window-body os-calc-body" data-flush>
         <div class="os-calc-display"
@@ -1689,22 +1750,48 @@ Things to try:
     >
       <header class="window-titlebar"
         ><span class="window-icon os-wicon" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
-        ><h2 class="window-title">Settings</h2
+        ><h2 class="window-title" data-i18n-target="set-title">Settings</h2
         ><form method="dialog" class="window-controls"
-          ><button type="button" class="window-minimize" aria-label="Minimize"></button
-          ><button type="button" class="window-maximize" aria-label="Maximize"></button
-          ><button class="window-close" aria-label="Close"></button></form
+          ><button
+            type="button"
+            class="window-minimize"
+            aria-label="Minimize"
+            data-i18n-aria-label-en="Minimize"
+            data-i18n-aria-label-de="Minimieren"
+          ></button
+          ><button
+            type="button"
+            class="window-maximize"
+            aria-label="Maximize"
+            data-i18n-aria-label-en="Maximize"
+            data-i18n-aria-label-de="Maximieren"
+          ></button
+          ><button
+            class="window-close"
+            aria-label="Close"
+            data-i18n-aria-label-en="Close"
+            data-i18n-aria-label-de="Schließen"
+          ></button></form
       ></header>
       <div class="window-body os-set-body" data-flush>
         <div class="tabs os-set-tabs">
-          <div class="tab-list" role="tablist" aria-orientation="vertical" aria-label="Settings">
+          <div
+            class="tab-list"
+            role="tablist"
+            aria-orientation="vertical"
+            aria-label="Settings"
+            data-i18n-aria-label-en="Settings"
+            data-i18n-aria-label-de="Einstellungen"
+          >
             <div class="os-set-me"
               ><span class="avatar" data-size="lg"
                 ><img class="avatar-image" src="https://github.com/kyr0.png" alt="" /></span
-              ><span><strong>Aron Homberg</strong><small>Local account</small></span></div
+              ><span
+                ><strong>Aron Homberg</strong><small data-i18n-target="set-account">Local account</small></span
+              ></div
             >
             <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="os-sp-pers" id="os-st-pers"
-              ><i data-lucide="brush"></i> Personalization</button
+              ><i data-lucide="brush"></i> <span data-i18n-target="set-tab-pers">Personalization</span></button
             >
             <button
               class="tab-trigger"
@@ -1713,7 +1800,7 @@ Things to try:
               aria-controls="os-sp-disp"
               id="os-st-disp"
               tabindex="-1"
-              ><i data-lucide="monitor"></i> Display</button
+              ><i data-lucide="monitor"></i> <span data-i18n-target="set-tab-disp">Display</span></button
             >
             <button
               class="tab-trigger"
@@ -1722,7 +1809,7 @@ Things to try:
               aria-controls="os-sp-task"
               id="os-st-task"
               tabindex="-1"
-              ><i data-lucide="panel-bottom"></i> Taskbar</button
+              ><i data-lucide="panel-bottom"></i> <span data-i18n-target="set-tab-task">Taskbar</span></button
             >
             <button
               class="tab-trigger"
@@ -1731,7 +1818,7 @@ Things to try:
               aria-controls="os-sp-about"
               id="os-st-about"
               tabindex="-1"
-              ><i data-lucide="info"></i> About</button
+              ><i data-lucide="info"></i> <span data-i18n-target="set-tab-about">About</span></button
             >
           </div>
           <div
@@ -1741,7 +1828,7 @@ Things to try:
             aria-labelledby="os-st-pers"
             tabindex="0"
           >
-            <h3>Personalization</h3>
+            <h3 data-i18n-target="set-h-pers">Personalization</h3>
             <fieldset class="os-set-group"
               ><legend>Background</legend
               ><div class="os-walls"
@@ -1780,7 +1867,7 @@ Things to try:
                     value="light"
                     data-set="mode"
                     checked
-                  /><label for="os-s-mode-light">Light</label></div
+                  /><label for="os-s-mode-light" data-i18n-target="set-light">Light</label></div
                 ><div class="radio-item"
                   ><input
                     class="radio"
@@ -1789,7 +1876,7 @@ Things to try:
                     id="os-s-mode-dark"
                     value="dark"
                     data-set="mode"
-                  /><label for="os-s-mode-dark">Dark</label></div
+                  /><label for="os-s-mode-dark" data-i18n-target="set-dark">Dark</label></div
                 ></div
               ></fieldset
             >
@@ -1820,9 +1907,20 @@ Things to try:
               ></fieldset
             >
             <label class="os-set-row" for="os-s-glass"
-              ><span><strong>Transparency effects</strong><small>Blur and tint the taskbar and menus</small></span
+              ><span
+                ><strong data-i18n-target="set-glass">Transparency effects</strong
+                ><small data-i18n-target="set-glass-d">Blur and tint the taskbar and menus</small></span
               ><input class="switch" type="checkbox" role="switch" id="os-s-glass" data-set="glass" checked
             /></label>
+            <label class="os-set-row" for="os-s-lang"
+              ><span
+                ><strong data-i18n-target="set-lang">Language</strong
+                ><small data-i18n-target="set-lang-d">Menus, apps and labels of the desktop</small></span
+              ><select class="select os-locale" data-size="sm" id="os-s-lang" data-app-locale>
+                <option value="en" lang="en">English</option>
+                <option value="de" lang="de">Deutsch</option>
+              </select></label
+            >
           </div>
           <div
             class="tab-content os-set-panel"
@@ -1832,9 +1930,11 @@ Things to try:
             tabindex="0"
             hidden
           >
-            <h3>Display</h3>
+            <h3 data-i18n-target="set-h-disp">Display</h3>
             <div class="os-set-row"
-              ><span><strong>Brightness</strong><small>Change the brightness of the built-in display</small></span
+              ><span
+                ><strong data-i18n-target="set-bright">Brightness</strong
+                ><small data-i18n-target="set-bright-d">Change the brightness of the built-in display</small></span
               ><input
                 class="slider"
                 type="range"
@@ -1843,21 +1943,32 @@ Things to try:
                 value="100"
                 data-set="brightness"
                 aria-label="Brightness"
+                data-i18n-aria-label-en="Brightness"
+                data-i18n-aria-label-de="Helligkeit"
             /></div>
             <label class="os-set-row" for="os-s-night"
-              ><span><strong>Night light</strong><small>Warmer colours to help you sleep</small></span
+              ><span
+                ><strong data-i18n-target="set-night">Night light</strong
+                ><small data-i18n-target="set-night-d">Warmer colours to help you sleep</small></span
               ><input class="switch" type="checkbox" role="switch" id="os-s-night" data-set="night"
             /></label>
             <div class="os-set-row"
-              ><span><strong>Desktop icons</strong><small>Size of the icons on the desktop</small></span
-              ><select class="select" data-set="icons" aria-label="Desktop icon size"
+              ><span
+                ><strong data-i18n-target="set-icons">Desktop icons</strong
+                ><small data-i18n-target="set-icons-d">Size of the icons on the desktop</small></span
+              ><select
+                class="select"
+                data-set="icons"
+                aria-label="Desktop icon size"
+                data-i18n-aria-label-en="Desktop icon size"
+                data-i18n-aria-label-de="Größe der Desktopsymbole"
                 ><option value="large">Large</option
                 ><option value="medium" selected>Medium</option
                 ><option value="small">Small</option></select
               ></div
             >
             <label class="os-set-row" for="os-s-showicons"
-              ><span><strong>Show desktop icons</strong></span
+              ><span><strong data-i18n-target="set-showicons">Show desktop icons</strong></span
               ><input class="switch" type="checkbox" role="switch" id="os-s-showicons" data-set="showicons" checked
             /></label>
           </div>
@@ -1869,7 +1980,7 @@ Things to try:
             tabindex="0"
             hidden
           >
-            <h3>Taskbar</h3>
+            <h3 data-i18n-target="set-h-task">Taskbar</h3>
             <fieldset class="os-set-group radio-group"
               ><legend>Alignment</legend
               ><div class="os-inline"
@@ -1882,7 +1993,7 @@ Things to try:
                     value="center"
                     data-set="taskbar"
                     checked
-                  /><label for="os-s-taskbar-center">Center</label></div
+                  /><label for="os-s-taskbar-center" data-i18n-target="set-center">Center</label></div
                 ><div class="radio-item"
                   ><input
                     class="radio"
@@ -1891,12 +2002,12 @@ Things to try:
                     id="os-s-taskbar-left"
                     value="left"
                     data-set="taskbar"
-                  /><label for="os-s-taskbar-left">Left</label></div
+                  /><label for="os-s-taskbar-left" data-i18n-target="set-left">Left</label></div
                 ></div
               ></fieldset
             >
             <label class="os-set-row" for="os-s-seconds"
-              ><span><strong>Show seconds in the clock</strong></span
+              ><span><strong data-i18n-target="set-seconds">Show seconds in the clock</strong></span
               ><input class="switch" type="checkbox" role="switch" id="os-s-seconds" data-set="seconds"
             /></label>
           </div>
@@ -1908,7 +2019,7 @@ Things to try:
             tabindex="0"
             hidden
           >
-            <h3>About</h3>
+            <h3 data-i18n-target="set-h-about">About</h3>
             <dl class="os-about">
               <div><dt>Device name</dt><dd>ALEX-DESKTOP</dd></div>
               <div><dt>Processor</dt><dd>12 cores @ 3.2 GHz</dd></div>
@@ -1939,9 +2050,26 @@ Things to try:
         ><span class="window-icon os-wicon" style="--t: oklch(0.6 0.04 230)"><i data-lucide="trash-2"></i></span
         ><h2 class="window-title">Recycle Bin</h2
         ><form method="dialog" class="window-controls"
-          ><button type="button" class="window-minimize" aria-label="Minimize"></button
-          ><button type="button" class="window-maximize" aria-label="Maximize"></button
-          ><button class="window-close" aria-label="Close"></button></form
+          ><button
+            type="button"
+            class="window-minimize"
+            aria-label="Minimize"
+            data-i18n-aria-label-en="Minimize"
+            data-i18n-aria-label-de="Minimieren"
+          ></button
+          ><button
+            type="button"
+            class="window-maximize"
+            aria-label="Maximize"
+            data-i18n-aria-label-en="Maximize"
+            data-i18n-aria-label-de="Maximieren"
+          ></button
+          ><button
+            class="window-close"
+            aria-label="Close"
+            data-i18n-aria-label-en="Close"
+            data-i18n-aria-label-de="Schließen"
+          ></button></form
       ></header>
       <div class="window-toolbar"
         ><button class="btn" data-variant="ghost" data-size="sm" type="button" data-bin-empty
@@ -1981,7 +2109,14 @@ Things to try:
       <button class="os-tb-btn os-tb-app" type="button" data-app-btn="calc" aria-label="Calculator" title="Calculator"
         ><span class="os-tile" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
       ></button>
-      <button class="os-tb-btn os-tb-app" type="button" data-app-btn="settings" aria-label="Settings" title="Settings"
+      <button
+        class="os-tb-btn os-tb-app"
+        type="button"
+        data-app-btn="settings"
+        aria-label="Settings"
+        data-i18n-aria-label-en="Settings"
+        data-i18n-aria-label-de="Einstellungen"
+        title="Settings"
         ><span class="os-tile" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
       ></button>
       <button
@@ -2021,18 +2156,21 @@ Things to try:
   <!-- the start menu -->
   <div class="os-flyout os-start" id="os-start" popover>
     <label class="os-start-search"
-      ><i data-lucide="search"></i><span class="sr-only">Search apps, settings and documents</span
+      ><i data-lucide="search"></i
+      ><span class="sr-only" data-i18n-target="start-search">Search apps, settings and documents</span
       ><input
         class="input"
         type="search"
         placeholder="Search for apps, settings and documents"
+        data-i18n-placeholder-en="Search for apps, settings and documents"
+        data-i18n-placeholder-de="Nach Apps, Einstellungen und Dokumenten suchen"
         data-os-q
         autocomplete="off"
         autofocus
     /></label>
     <div class="os-start-home">
       <div class="os-start-head"
-        ><h2>Pinned</h2
+        ><h2 data-i18n-target="start-pinned">Pinned</h2
         ><button
           class="btn"
           data-variant="secondary"
@@ -2040,7 +2178,7 @@ Things to try:
           type="button"
           data-toast="All apps"
           data-toast-desc="Every app is pinned already."
-          >All apps <i data-lucide="chevron-right"></i></button
+          ><span data-i18n-target="start-all">All apps</span> <i data-lucide="chevron-right"></i></button
       ></div>
       <div class="os-pinned">
         <button class="os-app" type="button" data-launch="browser"
@@ -2053,15 +2191,15 @@ Things to try:
         >
         <button class="os-app" type="button" data-launch="calc"
           ><span class="os-tile" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
-          ><span>Calculator</span></button
+          ><span data-i18n-target="app-calc">Calculator</span></button
         >
         <button class="os-app" type="button" data-launch="settings"
           ><span class="os-tile" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
-          ><span>Settings</span></button
+          ><span data-i18n-target="app-settings">Settings</span></button
         >
         <button class="os-app" type="button" data-launch="bin"
           ><span class="os-tile" style="--t: oklch(0.6 0.04 230)"><i data-lucide="trash-2"></i></span
-          ><span>Recycle Bin</span></button
+          ><span data-i18n-target="app-bin">Recycle Bin</span></button
         >
         <button
           class="os-app"
@@ -2069,7 +2207,7 @@ Things to try:
           data-toast="Photos isn't part of this demo"
           data-toast-desc="Try the Browser, Editor, Calculator or Settings."
           ><span class="os-tile" style="--t: oklch(0.65 0.17 300)"><i data-lucide="image"></i></span
-          ><span>Photos</span></button
+          ><span data-i18n-target="app-photos">Photos</span></button
         >
         <button
           class="os-app"
@@ -2085,7 +2223,7 @@ Things to try:
           data-toast="Calendar isn't part of this demo"
           data-toast-desc="Try the Browser, Editor, Calculator or Settings."
           ><span class="os-tile" style="--t: oklch(0.6 0.15 245)"><i data-lucide="calendar"></i></span
-          ><span>Calendar</span></button
+          ><span data-i18n-target="app-calendar">Calendar</span></button
         >
         <button
           class="os-app"
@@ -2093,7 +2231,7 @@ Things to try:
           data-toast="Music isn't part of this demo"
           data-toast-desc="Try the Browser, Editor, Calculator or Settings."
           ><span class="os-tile" style="--t: oklch(0.65 0.2 15)"><i data-lucide="music"></i></span
-          ><span>Music</span></button
+          ><span data-i18n-target="app-music">Music</span></button
         >
         <button
           class="os-app"
@@ -2109,7 +2247,7 @@ Things to try:
           data-toast="Maps isn't part of this demo"
           data-toast-desc="Try the Browser, Editor, Calculator or Settings."
           ><span class="os-tile" style="--t: oklch(0.65 0.15 150)"><i data-lucide="map"></i></span
-          ><span>Maps</span></button
+          ><span data-i18n-target="app-maps">Maps</span></button
         >
         <button
           class="os-app"
@@ -2117,7 +2255,7 @@ Things to try:
           data-toast="Weather isn't part of this demo"
           data-toast-desc="Try the Browser, Editor, Calculator or Settings."
           ><span class="os-tile" style="--t: oklch(0.75 0.14 80)"><i data-lucide="cloud-sun"></i></span
-          ><span>Weather</span></button
+          ><span data-i18n-target="app-weather">Weather</span></button
         >
         <button
           class="os-app"
@@ -2125,10 +2263,10 @@ Things to try:
           data-toast="Camera isn't part of this demo"
           data-toast-desc="Try the Browser, Editor, Calculator or Settings."
           ><span class="os-tile" style="--t: oklch(0.5 0.02 260)"><i data-lucide="camera"></i></span
-          ><span>Camera</span></button
+          ><span data-i18n-target="app-camera">Camera</span></button
         >
       </div>
-      <div class="os-start-head"><h2>Recommended</h2></div>
+      <div class="os-start-head"><h2 data-i18n-target="start-recommended">Recommended</h2></div>
       <div class="os-recent">
         <button class="os-recent-item" type="button" data-launch="file:Welcome.txt"
           ><span class="os-tile os-file" style="--t: oklch(0.62 0.15 260)"><i data-lucide="file-text"></i></span
@@ -2149,7 +2287,7 @@ Things to try:
       </div>
     </div>
     <div class="os-start-results" data-os-results hidden>
-      <div class="os-start-head"><h2>Best matches</h2></div>
+      <div class="os-start-head"><h2 data-i18n-target="start-best">Best matches</h2></div>
       <div class="os-result-list" data-os-result-list></div>
     </div>
     <footer class="os-start-foot">
@@ -2167,20 +2305,30 @@ Things to try:
         aria-controls="os-power"
         data-dropdown-trigger="os-power"
         aria-label="Power"
+        data-i18n-aria-label-en="Power"
+        data-i18n-aria-label-de="Ein/Aus"
         ><i data-lucide="power"></i
       ></button>
-      <div id="os-power" role="menu" popover class="dropdown-content" aria-label="Power">
+      <div
+        id="os-power"
+        role="menu"
+        popover
+        class="dropdown-content"
+        aria-label="Power"
+        data-i18n-aria-label-en="Power"
+        data-i18n-aria-label-de="Ein/Aus"
+      >
         <button class="dropdown-item" role="menuitem" tabindex="-1" data-power="lock"
-          ><i data-lucide="lock"></i> Lock</button
+          ><i data-lucide="lock"></i> <span data-i18n-target="power-lock">Lock</span></button
         >
         <button class="dropdown-item" role="menuitem" tabindex="-1" data-power="sleep"
-          ><i data-lucide="moon"></i> Sleep</button
+          ><i data-lucide="moon"></i> <span data-i18n-target="power-sleep">Sleep</span></button
         >
         <button class="dropdown-item" role="menuitem" tabindex="-1" data-power="restart"
-          ><i data-lucide="rotate-cw"></i> Restart</button
+          ><i data-lucide="rotate-cw"></i> <span data-i18n-target="power-restart">Restart</span></button
         >
         <button class="dropdown-item" role="menuitem" tabindex="-1" data-power="shutdown"
-          ><i data-lucide="power"></i> Shut down</button
+          ><i data-lucide="power"></i> <span data-i18n-target="power-shutdown">Shut down</span></button
         >
       </div>
     </footer>
@@ -2196,24 +2344,24 @@ Things to try:
         ><i data-lucide="bluetooth"></i><span>Bluetooth</span></button
       >
       <button class="toggle os-qs" type="button" aria-pressed="false" data-qs="airplane"
-        ><i data-lucide="plane"></i><span>Airplane mode</span></button
+        ><i data-lucide="plane"></i><span data-i18n-target="qs-airplane">Airplane mode</span></button
       >
       <button class="toggle os-qs" type="button" aria-pressed="false" data-qs="saver"
-        ><i data-lucide="battery-low"></i><span>Battery saver</span></button
+        ><i data-lucide="battery-low"></i><span data-i18n-target="qs-saver">Battery saver</span></button
       >
       <button class="toggle os-qs" type="button" aria-pressed="false" data-set="night"
-        ><i data-lucide="sun-moon"></i><span>Night light</span></button
+        ><i data-lucide="sun-moon"></i><span data-i18n-target="qs-night">Night light</span></button
       >
       <button class="toggle os-qs" type="button" aria-pressed="false" data-set="mode"
-        ><i data-lucide="moon"></i><span>Dark mode</span></button
+        ><i data-lucide="moon"></i><span data-i18n-target="qs-dark">Dark mode</span></button
       >
     </div>
     <label class="os-qs-slider"
-      ><i data-lucide="sun"></i><span class="sr-only">Brightness</span
+      ><i data-lucide="sun"></i><span class="sr-only" data-i18n-target="qs-brightness">Brightness</span
       ><input class="slider" type="range" min="40" max="100" value="100" data-set="brightness"
     /></label>
     <label class="os-qs-slider"
-      ><i data-lucide="volume-2"></i><span class="sr-only">Volume</span
+      ><i data-lucide="volume-2"></i><span class="sr-only" data-i18n-target="qs-volume">Volume</span
       ><input class="slider" type="range" min="0" max="100" value="60" data-os-volume
     /></label>
     <footer class="os-qs-foot"
@@ -2225,6 +2373,8 @@ Things to try:
         type="button"
         data-launch="settings"
         aria-label="All settings"
+        data-i18n-aria-label-en="All settings"
+        data-i18n-aria-label-de="Alle Einstellungen"
         ><i data-lucide="settings"></i></button
     ></footer>
   </div>
@@ -2233,13 +2383,23 @@ Things to try:
   <div class="os-flyout os-cal" id="os-cal" popover>
     <p class="os-cal-time" data-os-bigtime>00:00:00</p>
     <p class="os-cal-date" data-os-longdate></p>
-    <div class="calendar" aria-label="Calendar">
+    <div class="calendar" aria-label="Calendar" data-i18n-aria-label-en="Calendar" data-i18n-aria-label-de="Kalender">
       <div class="calendar-header">
-        <button class="calendar-nav" data-action="prev-month" aria-label="Previous month"
+        <button
+          class="calendar-nav"
+          data-action="prev-month"
+          aria-label="Previous month"
+          data-i18n-aria-label-en="Previous month"
+          data-i18n-aria-label-de="Vorheriger Monat"
           ><i data-lucide="chevron-left"></i
         ></button>
         <button type="button" class="calendar-heading" aria-live="polite"></button>
-        <button class="calendar-nav" data-action="next-month" aria-label="Next month"
+        <button
+          class="calendar-nav"
+          data-action="next-month"
+          aria-label="Next month"
+          data-i18n-aria-label-en="Next month"
+          data-i18n-aria-label-de="Nächster Monat"
           ><i data-lucide="chevron-right"></i
         ></button>
       </div>
@@ -2248,48 +2408,64 @@ Things to try:
   </div>
 
   <!-- right-click: the desktop and its icons -->
-  <div class="context-menu os-ctx" id="os-ctx" popover aria-label="Desktop">
-    <p class="os-menu-heading">View</p>
+  <div
+    class="context-menu os-ctx"
+    id="os-ctx"
+    popover
+    aria-label="Desktop"
+    data-i18n-aria-label-en="Desktop"
+    data-i18n-aria-label-de="Desktop"
+  >
+    <p class="os-menu-heading" data-i18n-target="ctx-view">View</p>
     <button class="context-menu-item" role="menuitemradio" aria-checked="false" data-set="icons" data-value="large"
-      ><i data-lucide="layout-grid"></i> Large icons</button
+      ><i data-lucide="layout-grid"></i> <span data-i18n-target="ctx-large">Large icons</span></button
     >
     <button class="context-menu-item" role="menuitemradio" aria-checked="true" data-set="icons" data-value="medium"
-      ><i data-lucide="grid-3x3"></i> Medium icons</button
+      ><i data-lucide="grid-3x3"></i> <span data-i18n-target="ctx-medium">Medium icons</span></button
     >
     <button class="context-menu-item" role="menuitemradio" aria-checked="false" data-set="icons" data-value="small"
-      ><i data-lucide="list"></i> Small icons</button
+      ><i data-lucide="list"></i> <span data-i18n-target="ctx-small">Small icons</span></button
     >
     <button class="context-menu-item" role="menuitemcheckbox" aria-checked="false" data-set="right"
-      ><i data-lucide="panel-right"></i> Icons on the right</button
+      ><i data-lucide="panel-right"></i> <span data-i18n-target="ctx-right">Icons on the right</span></button
     >
     <button class="context-menu-item" role="menuitemcheckbox" aria-checked="true" data-set="showicons"
-      ><i data-lucide="eye"></i> Show desktop icons</button
+      ><i data-lucide="eye"></i> <span data-i18n-target="ctx-show">Show desktop icons</span></button
     >
     <div class="context-menu-separator" role="separator"></div>
     <button class="context-menu-item" role="menuitem" data-os="sort"
-      ><i data-lucide="arrow-down-a-z"></i> Sort by name</button
+      ><i data-lucide="arrow-down-a-z"></i> <span data-i18n-target="ctx-sort">Sort by name</span></button
     >
-    <button class="context-menu-item" role="menuitem" data-os="refresh"><i data-lucide="rotate-cw"></i> Refresh</button>
+    <button class="context-menu-item" role="menuitem" data-os="refresh"
+      ><i data-lucide="rotate-cw"></i> <span data-i18n-target="ctx-refresh">Refresh</span></button
+    >
     <button class="context-menu-item" role="menuitem" data-os="newfile"
-      ><i data-lucide="file-plus"></i> New text document</button
+      ><i data-lucide="file-plus"></i> <span data-i18n-target="ctx-newfile">New text document</span></button
     >
     <div class="context-menu-separator" role="separator"></div>
     <button class="context-menu-item" role="menuitem" data-os="nextwall"
-      ><i data-lucide="image"></i> Next desktop background</button
+      ><i data-lucide="image"></i> <span data-i18n-target="ctx-nextwall">Next desktop background</span></button
     >
     <button class="context-menu-item" role="menuitemcheckbox" aria-checked="false" data-set="mode"
-      ><i data-lucide="moon"></i> Dark theme</button
+      ><i data-lucide="moon"></i> <span data-i18n-target="ctx-dark">Dark theme</span></button
     >
     <button class="context-menu-item" role="menuitem" data-launch="settings"
-      ><i data-lucide="brush"></i> Personalize</button
+      ><i data-lucide="brush"></i> <span data-i18n-target="ctx-personalize">Personalize</span></button
     >
   </div>
-  <div class="context-menu os-ctx" id="os-icon-ctx" popover aria-label="Icon">
+  <div
+    class="context-menu os-ctx"
+    id="os-icon-ctx"
+    popover
+    aria-label="Icon"
+    data-i18n-aria-label-en="Icon"
+    data-i18n-aria-label-de="Symbol"
+  >
     <button class="context-menu-item" role="menuitem" data-icon-act="open"
-      ><i data-lucide="square-arrow-out-up-right"></i> Open</button
+      ><i data-lucide="square-arrow-out-up-right"></i> <span data-i18n-target="ctx-open">Open</span></button
     >
     <button class="context-menu-item" role="menuitem" data-icon-act="delete"
-      ><i data-lucide="trash-2"></i> Delete</button
+      ><i data-lucide="trash-2"></i> <span data-i18n-target="ctx-delete">Delete</span></button
     >
   </div>
 
@@ -2372,9 +2548,26 @@ Things to try:
         ><h2 class="window-title"
           ><span class="os-dirty" aria-label="Unsaved changes">●</span><span data-ed-name>Untitled</span> - Editor</h2
         ><form method="dialog" class="window-controls"
-          ><button type="button" class="window-minimize" aria-label="Minimize"></button
-          ><button type="button" class="window-maximize" aria-label="Maximize"></button
-          ><button class="window-close" aria-label="Close"></button></form
+          ><button
+            type="button"
+            class="window-minimize"
+            aria-label="Minimize"
+            data-i18n-aria-label-en="Minimize"
+            data-i18n-aria-label-de="Minimieren"
+          ></button
+          ><button
+            type="button"
+            class="window-maximize"
+            aria-label="Maximize"
+            data-i18n-aria-label-en="Maximize"
+            data-i18n-aria-label-de="Maximieren"
+          ></button
+          ><button
+            class="window-close"
+            aria-label="Close"
+            data-i18n-aria-label-en="Close"
+            data-i18n-aria-label-de="Schließen"
+          ></button></form
       ></header>
       <div class="window-toolbar">
         <div class="menubar" data-variant="ghost" role="menubar" aria-label="Editor">
@@ -2948,6 +3141,137 @@ Things to try:
       ></div
     ></template
   >
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="start-search" data-i18n-locale="en">Search apps, settings and documents</template>
+  <template data-i18n-for="start-search" data-i18n-locale="de">Apps, Einstellungen und Dokumente durchsuchen</template>
+  <template data-i18n-for="start-pinned" data-i18n-locale="en">Pinned</template>
+  <template data-i18n-for="start-pinned" data-i18n-locale="de">Angeheftet</template>
+  <template data-i18n-for="start-all" data-i18n-locale="en">All apps</template>
+  <template data-i18n-for="start-all" data-i18n-locale="de">Alle Apps</template>
+  <template data-i18n-for="app-calc" data-i18n-locale="en">Calculator</template>
+  <template data-i18n-for="app-calc" data-i18n-locale="de">Rechner</template>
+  <template data-i18n-for="app-settings" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="app-settings" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="app-bin" data-i18n-locale="en">Recycle Bin</template>
+  <template data-i18n-for="app-bin" data-i18n-locale="de">Papierkorb</template>
+  <template data-i18n-for="app-photos" data-i18n-locale="en">Photos</template>
+  <template data-i18n-for="app-photos" data-i18n-locale="de">Fotos</template>
+  <template data-i18n-for="app-calendar" data-i18n-locale="en">Calendar</template>
+  <template data-i18n-for="app-calendar" data-i18n-locale="de">Kalender</template>
+  <template data-i18n-for="app-music" data-i18n-locale="en">Music</template>
+  <template data-i18n-for="app-music" data-i18n-locale="de">Musik</template>
+  <template data-i18n-for="app-maps" data-i18n-locale="en">Maps</template>
+  <template data-i18n-for="app-maps" data-i18n-locale="de">Karten</template>
+  <template data-i18n-for="app-weather" data-i18n-locale="en">Weather</template>
+  <template data-i18n-for="app-weather" data-i18n-locale="de">Wetter</template>
+  <template data-i18n-for="app-camera" data-i18n-locale="en">Camera</template>
+  <template data-i18n-for="app-camera" data-i18n-locale="de">Kamera</template>
+  <template data-i18n-for="start-recommended" data-i18n-locale="en">Recommended</template>
+  <template data-i18n-for="start-recommended" data-i18n-locale="de">Empfohlen</template>
+  <template data-i18n-for="start-best" data-i18n-locale="en">Best matches</template>
+  <template data-i18n-for="start-best" data-i18n-locale="de">Beste Treffer</template>
+  <template data-i18n-for="power-lock" data-i18n-locale="en">Lock</template>
+  <template data-i18n-for="power-lock" data-i18n-locale="de">Sperren</template>
+  <template data-i18n-for="power-sleep" data-i18n-locale="en">Sleep</template>
+  <template data-i18n-for="power-sleep" data-i18n-locale="de">Energie sparen</template>
+  <template data-i18n-for="power-restart" data-i18n-locale="en">Restart</template>
+  <template data-i18n-for="power-restart" data-i18n-locale="de">Neu starten</template>
+  <template data-i18n-for="power-shutdown" data-i18n-locale="en">Shut down</template>
+  <template data-i18n-for="power-shutdown" data-i18n-locale="de">Herunterfahren</template>
+  <template data-i18n-for="qs-airplane" data-i18n-locale="en">Airplane mode</template>
+  <template data-i18n-for="qs-airplane" data-i18n-locale="de">Flugmodus</template>
+  <template data-i18n-for="qs-saver" data-i18n-locale="en">Battery saver</template>
+  <template data-i18n-for="qs-saver" data-i18n-locale="de">Energiesparmodus</template>
+  <template data-i18n-for="qs-night" data-i18n-locale="en">Night light</template>
+  <template data-i18n-for="qs-night" data-i18n-locale="de">Nachtmodus</template>
+  <template data-i18n-for="qs-dark" data-i18n-locale="en">Dark mode</template>
+  <template data-i18n-for="qs-dark" data-i18n-locale="de">Dunkelmodus</template>
+  <template data-i18n-for="qs-brightness" data-i18n-locale="en">Brightness</template>
+  <template data-i18n-for="qs-brightness" data-i18n-locale="de">Helligkeit</template>
+  <template data-i18n-for="qs-volume" data-i18n-locale="en">Volume</template>
+  <template data-i18n-for="qs-volume" data-i18n-locale="de">Lautstärke</template>
+  <template data-i18n-for="ctx-view" data-i18n-locale="en">View</template>
+  <template data-i18n-for="ctx-view" data-i18n-locale="de">Ansicht</template>
+  <template data-i18n-for="ctx-large" data-i18n-locale="en">Large icons</template>
+  <template data-i18n-for="ctx-large" data-i18n-locale="de">Große Symbole</template>
+  <template data-i18n-for="ctx-medium" data-i18n-locale="en">Medium icons</template>
+  <template data-i18n-for="ctx-medium" data-i18n-locale="de">Mittelgroße Symbole</template>
+  <template data-i18n-for="ctx-small" data-i18n-locale="en">Small icons</template>
+  <template data-i18n-for="ctx-small" data-i18n-locale="de">Kleine Symbole</template>
+  <template data-i18n-for="ctx-right" data-i18n-locale="en">Icons on the right</template>
+  <template data-i18n-for="ctx-right" data-i18n-locale="de">Symbole rechts</template>
+  <template data-i18n-for="ctx-show" data-i18n-locale="en">Show desktop icons</template>
+  <template data-i18n-for="ctx-show" data-i18n-locale="de">Desktopsymbole anzeigen</template>
+  <template data-i18n-for="ctx-sort" data-i18n-locale="en">Sort by name</template>
+  <template data-i18n-for="ctx-sort" data-i18n-locale="de">Nach Name sortieren</template>
+  <template data-i18n-for="ctx-refresh" data-i18n-locale="en">Refresh</template>
+  <template data-i18n-for="ctx-refresh" data-i18n-locale="de">Aktualisieren</template>
+  <template data-i18n-for="ctx-newfile" data-i18n-locale="en">New text document</template>
+  <template data-i18n-for="ctx-newfile" data-i18n-locale="de">Neues Textdokument</template>
+  <template data-i18n-for="ctx-nextwall" data-i18n-locale="en">Next desktop background</template>
+  <template data-i18n-for="ctx-nextwall" data-i18n-locale="de">Nächster Desktophintergrund</template>
+  <template data-i18n-for="ctx-dark" data-i18n-locale="en">Dark theme</template>
+  <template data-i18n-for="ctx-dark" data-i18n-locale="de">Dunkles Design</template>
+  <template data-i18n-for="ctx-personalize" data-i18n-locale="en">Personalize</template>
+  <template data-i18n-for="ctx-personalize" data-i18n-locale="de">Anpassen</template>
+  <template data-i18n-for="ctx-open" data-i18n-locale="en">Open</template>
+  <template data-i18n-for="ctx-open" data-i18n-locale="de">Öffnen</template>
+  <template data-i18n-for="ctx-delete" data-i18n-locale="en">Delete</template>
+  <template data-i18n-for="ctx-delete" data-i18n-locale="de">Löschen</template>
+  <template data-i18n-for="set-title" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="set-title" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="set-account" data-i18n-locale="en">Local account</template>
+  <template data-i18n-for="set-account" data-i18n-locale="de">Lokales Konto</template>
+  <template data-i18n-for="set-tab-pers" data-i18n-locale="en">Personalization</template>
+  <template data-i18n-for="set-tab-pers" data-i18n-locale="de">Personalisierung</template>
+  <template data-i18n-for="set-h-pers" data-i18n-locale="en">Personalization</template>
+  <template data-i18n-for="set-h-pers" data-i18n-locale="de">Personalisierung</template>
+  <template data-i18n-for="set-tab-disp" data-i18n-locale="en">Display</template>
+  <template data-i18n-for="set-tab-disp" data-i18n-locale="de">Bildschirm</template>
+  <template data-i18n-for="set-h-disp" data-i18n-locale="en">Display</template>
+  <template data-i18n-for="set-h-disp" data-i18n-locale="de">Bildschirm</template>
+  <template data-i18n-for="set-tab-task" data-i18n-locale="en">Taskbar</template>
+  <template data-i18n-for="set-tab-task" data-i18n-locale="de">Taskleiste</template>
+  <template data-i18n-for="set-h-task" data-i18n-locale="en">Taskbar</template>
+  <template data-i18n-for="set-h-task" data-i18n-locale="de">Taskleiste</template>
+  <template data-i18n-for="set-tab-about" data-i18n-locale="en">About</template>
+  <template data-i18n-for="set-tab-about" data-i18n-locale="de">Info</template>
+  <template data-i18n-for="set-h-about" data-i18n-locale="en">About</template>
+  <template data-i18n-for="set-h-about" data-i18n-locale="de">Info</template>
+  <template data-i18n-for="set-light" data-i18n-locale="en">Light</template>
+  <template data-i18n-for="set-light" data-i18n-locale="de">Hell</template>
+  <template data-i18n-for="set-dark" data-i18n-locale="en">Dark</template>
+  <template data-i18n-for="set-dark" data-i18n-locale="de">Dunkel</template>
+  <template data-i18n-for="set-glass" data-i18n-locale="en">Transparency effects</template>
+  <template data-i18n-for="set-glass" data-i18n-locale="de">Transparenzeffekte</template>
+  <template data-i18n-for="set-glass-d" data-i18n-locale="en">Blur and tint the taskbar and menus</template>
+  <template data-i18n-for="set-glass-d" data-i18n-locale="de">Taskleiste und Menüs unscharf und getönt</template>
+  <template data-i18n-for="set-bright" data-i18n-locale="en">Brightness</template>
+  <template data-i18n-for="set-bright" data-i18n-locale="de">Helligkeit</template>
+  <template data-i18n-for="set-bright-d" data-i18n-locale="en">Change the brightness of the built-in display</template>
+  <template data-i18n-for="set-bright-d" data-i18n-locale="de"
+    >Die Helligkeit des integrierten Bildschirms ändern</template
+  >
+  <template data-i18n-for="set-night" data-i18n-locale="en">Night light</template>
+  <template data-i18n-for="set-night" data-i18n-locale="de">Nachtmodus</template>
+  <template data-i18n-for="set-night-d" data-i18n-locale="en">Warmer colours to help you sleep</template>
+  <template data-i18n-for="set-night-d" data-i18n-locale="de">Wärmere Farben für besseren Schlaf</template>
+  <template data-i18n-for="set-icons" data-i18n-locale="en">Desktop icons</template>
+  <template data-i18n-for="set-icons" data-i18n-locale="de">Desktopsymbole</template>
+  <template data-i18n-for="set-icons-d" data-i18n-locale="en">Size of the icons on the desktop</template>
+  <template data-i18n-for="set-icons-d" data-i18n-locale="de">Größe der Symbole auf dem Desktop</template>
+  <template data-i18n-for="set-showicons" data-i18n-locale="en">Show desktop icons</template>
+  <template data-i18n-for="set-showicons" data-i18n-locale="de">Desktopsymbole anzeigen</template>
+  <template data-i18n-for="set-seconds" data-i18n-locale="en">Show seconds in the clock</template>
+  <template data-i18n-for="set-seconds" data-i18n-locale="de">Sekunden in der Uhr anzeigen</template>
+  <template data-i18n-for="set-center" data-i18n-locale="en">Center</template>
+  <template data-i18n-for="set-center" data-i18n-locale="de">Zentriert</template>
+  <template data-i18n-for="set-left" data-i18n-locale="en">Left</template>
+  <template data-i18n-for="set-left" data-i18n-locale="de">Links</template>
+  <template data-i18n-for="set-lang" data-i18n-locale="en">Language</template>
+  <template data-i18n-for="set-lang" data-i18n-locale="de">Sprache</template>
+  <template data-i18n-for="set-lang-d" data-i18n-locale="en">Menus, apps and labels of the desktop</template>
+  <template data-i18n-for="set-lang-d" data-i18n-locale="de">Menüs, Apps und Beschriftungen des Desktops</template>
 </div>
 <script>
   // the desktop's wiring: settings (one function, every control in step), the
@@ -3091,6 +3415,20 @@ Things to try:
       },
       true,
     );
+    // what a launcher opens is a route (#/apps/calc, #/files/Notes.txt, #/browse/acme.example): the address
+    // changes, the router module announces it (os-route) and launch() opens it - Back brings back the one before
+    const routeOf = (what) => {
+      const [kind, arg] = what.split(/:(.*)/);
+      if (kind === 'file') return '/files/' + encodeURIComponent(arg);
+      if (kind === 'browser' && arg) return '/browse/' + encodeURIComponent(arg);
+      return '/apps/' + kind;
+    };
+    const open = (what) => {
+      // the same address again (a window closed since) changes nothing - open it here
+      if (location.hash === '#' + routeOf(what)) launch(what);
+      else location.hash = routeOf(what);
+    };
+    app.addEventListener('os-route', (e) => launch(e.detail.what));
     const launch = (what) => {
       const [kind, arg] = what.split(/:(.*)/);
       closeFlyouts();
@@ -3277,12 +3615,12 @@ Things to try:
     });
     icons.addEventListener('dblclick', (e) => {
       const i = e.target.closest('.os-icon');
-      if (i) launch(i.dataset.open);
+      if (i) open(i.dataset.open);
     });
     icons.addEventListener('keydown', (e) => {
       const i = e.target.closest('.os-icon');
       if (!i) return;
-      if (e.key === 'Enter') launch(i.dataset.open);
+      if (e.key === 'Enter') open(i.dataset.open);
       if (e.key === 'Delete') del(i);
       if (e.key.startsWith('Arrow')) {
         const all = [...icons.querySelectorAll('.os-icon')];
@@ -3354,7 +3692,7 @@ Things to try:
       const a = e.target.closest('[data-icon-act]');
       if (!a || !ctxIcon) return;
       e.currentTarget.hidePopover();
-      if (a.dataset.iconAct === 'open') launch(ctxIcon.dataset.open);
+      if (a.dataset.iconAct === 'open') open(ctxIcon.dataset.open);
       if (a.dataset.iconAct === 'delete') del(ctxIcon);
     });
     app.querySelector('#os-ctx').addEventListener('click', (e) => {
@@ -3905,7 +4243,7 @@ Things to try:
     // -- launchers and toasts ------------------------------------------------------------
     app.addEventListener('click', (e) => {
       const l = e.target.closest('[data-launch]');
-      if (l) launch(l.dataset.launch);
+      if (l) open(l.dataset.launch);
       const t = e.target.closest('[data-toast]');
       if (t) toast(t.dataset.toast, t.dataset.toastDesc);
     });
@@ -3917,6 +4255,52 @@ Things to try:
     if (globalThis.df$ && df$.shadcn && df$.shadcn.win) syncBar();
     else addEventListener('DOMContentLoaded', syncBar);
   })();
+</script>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const app = df$('[data-os]').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the desktop)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    createDomI18n(df$).bind(app, locale);
+    const language = df$('[data-app-locale]');
+    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- routing: the address names what was opened last - an app, a file or a site
+    const routes = [
+      { id: 'desktop', path: '/' },
+      { id: 'app', path: '/apps/:app' },
+      { id: 'file', path: '/files/:name' },
+      { id: 'site', path: '/browse/:site' },
+      { id: 'missing', path: '*' },
+    ];
+    const WHAT = { app: (p) => p.app, file: (p) => 'file:' + p.name, site: (p) => 'browser:' + p.site };
+    // the desktop itself (#/) opens nothing and closes nothing
+    const show = (to) => {
+      const what = WHAT[to.routeId]?.(to.params);
+      if (what) app.dispatchEvent(new CustomEvent('os-route', { detail: { what } }));
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(app);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+  });
 </script>
 ```
 
@@ -3932,6 +4316,8 @@ Things to try:
   <li><strong>Editor</strong> - a <DocLink href="menubar.html">Menubar</DocLink> with save, save as (a <DocLink href="dialog.html">Dialog</DocLink>), zoom, word wrap and status bar; closing with unsaved changes asks through an <DocLink href="alert-dialog.html">Alert Dialog</DocLink>.</li>
   <li><strong>Calculator</strong> - clicks and the keyboard, unary keys, a running expression line.</li>
   <li><strong>Browser</strong> - a real <code>&lt;iframe&gt;</code>: type an address or search Wikipedia, go back and forward through what you asked for, open the page in a new tab. Sites that refuse to be framed (an <code>X-Frame-Options</code> or CSP <code>frame-ancestors</code> header - Google, Bing, MDN...) get an honest page with a new-tab link instead of a blank frame; three demo sites are the <DocLink href="website-landing-page.html">Website blocks</DocLink> in a same-origin <code>srcdoc</code>. This example is the docs' one <code>sandbox="embed"</code> fence besides the cookie consent, so the framed pages work here too.</li>
+  <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: whatever a launcher opens - the start menu, the desktop icons, the context menu - is a route (<code>#/apps/:app</code>, <code>#/files/:name</code>, <code>#/browse/:site</code>), so a deep link opens that window on load and Back brings the window before to the front; <code>#/</code> is the bare desktop. Inside the docs preview the same routes match the frame's hash. See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
+  <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: Settings › Personalization › Language translates the start menu, quick settings, the context menus, the Settings app and the window controls between English and German. The apps' own content and toasts stay English. See <DocLink href="translation.html">Translation</DocLink>.</li>
   <li><strong>Full screen</strong> - <DocLink href="app-desktop.html">app-desktop.html</DocLink> is generated from this page's example at build time.</li>
 </ul>
 

@@ -71,6 +71,8 @@ export const NAV: NavSection[] = [
     { label: 'Data Attribute API', href: 'data-attribute-api.html' },
     { label: 'State API', href: 'state-api.html' },
     { label: 'DOM Querying & Morphing', href: 'dom-querying.html' },
+    { label: 'Client-side Routing', href: 'routing.html', isNew: true },
+    { label: 'Translation', href: 'translation.html', isNew: true },
     { label: 'Global Key Commands', href: 'global-keys.html', isNew: true },
     { label: 'Cascade Layers', href: 'cascade-layers.html' },
     { label: 'JavaScript Modules', href: 'es-modules.html' },

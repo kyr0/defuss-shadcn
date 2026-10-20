@@ -69,6 +69,8 @@
     "@vitest/browser-playwright": "^5.0.0",
     "@vitest/coverage-v8": "^5.0.0",
     "defuss": "^3.4.9",
+    "defuss-dom-router": "0.1.1",
+    "defuss-i18n": "0.2.0",
     "defuss-rpc": "^1.6.2",
     "defuss-ssg": "^0.7.5",
     "grapesjs": "0.23.6",

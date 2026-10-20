@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
+import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
  * Why: the desktop scaffold is a clickdummy - its promise is that the clicks
@@ -28,6 +30,7 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await offlineJsdelivr(page);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto(`${server.url}${PAGE}`);
@@ -284,6 +287,28 @@ try {
   await check('no script errors along the way', async () => {
     assert.deepEqual(errors, []);
   });
+  await check('routing: what a launcher opens is a route - a deep link opens it, the start menu writes #/apps/:app; translation: Settings › Language, every target in both languages', async () => {
+    const hash = '#/apps/calc';
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}${hash}`);
+    await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '[data-os]', { timeout: 15_000 });
+    await p.waitForTimeout(300);
+    const open = (id: string) => p.$eval(id, (w) => (w as HTMLDialogElement).open);
+    assert.equal(await open('#os-calc'), true);
+    await p.click('.os-start-btn');
+    await p.click('#os-start .os-app[data-launch="settings"]');
+    await p.waitForFunction(() => location.hash === '#/apps/settings' && (document.getElementById('os-settings') as HTMLDialogElement).open);
+    assert.deepEqual(await translationGaps(p, '[data-os]'), [], 'every target and attribute in English and German');
+    assert.equal(await renderedLanguage(p, '[data-os]'), 'en');
+    await chooseLanguage(p, 'de');
+    assert.equal(await renderedLanguage(p, '[data-os]'), 'de');
+    assert.equal(await p.textContent('#os-settings .window-title'), 'Einstellungen');
+    assert.equal(await p.textContent('[data-i18n-target="start-pinned"]'), 'Angeheftet');
+    assert.equal(await p.getAttribute('#os-calc .window-close', 'aria-label'), 'Schließen');
+    await p.close();
+  });
+
 } finally {
   await browser.close();
   server.stop();

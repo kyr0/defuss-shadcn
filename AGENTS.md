@@ -1178,6 +1178,32 @@ adopts them on navigation, and an example loads its bundles inside its sandbox (
 the component's `bundlesFor(source)`). Adding a new component needs **no per-page import changes** -
 rebuilding regenerates the bundle.
 
+### Routing and translation in the demos
+
+Every Application Scaffold routes with [defuss-dom-router](https://dom-router.defuss.org) and switches between
+English and German with [defuss-i18n](https://i18n.defuss.org) - the Client-side Routing and Translation guides
+(`pages/guides/routing.mdx`, `translation.mdx`) document the pattern; keep a new demo on it:
+
+- **One `<script type="module">` per demo** imports the pinned builds (`defuss-dom-router@0.1.1/dist/index.js`,
+  `defuss-i18n@0.2.0/dist/core.js` - both devDependencies, served offline to the e2e by
+  `tests/e2e/lib/vendor-offline.ts`; move pin and devDependency together) and works from `DOMContentLoaded`: a
+  full-screen page loads its bundle AFTER the example, so `df$` is not there earlier. i18n through
+  `createDomI18n(df$)` - never `all.min.js`, which installs `df$.i18n` (only core extends `df$`).
+- **Routing**: hash mode (GitHub Pages has no deep-path fallback); views are sections, all but the first
+  `hidden`, the commit un-hides the route's one - no `:target` CSS; links are `<a data-router-link href="#/x">`;
+  older wiring navigates with `location.hash = '/x'` (the router follows `hashchange`) and hears views through an
+  app event (`pm-route`). A docs card is an `about:srcdoc` frame the router cannot own: `start()` resolves
+  `rejected` and the demo follows the hash through a second router's pure `resolve()` (`baseUrl`) - VERIFIED,
+  tmp/probe-i18n-router.ts. verify's `doc link integrity` treats `#/...` as a route only on pages that import the
+  router.
+- **Translation**: the app root is the `data-i18n-component`; targets are text leaves (never a component root or
+  an element its script writes state on), attributes use `data-i18n-{attr}-{lang}`, the templates sit in ONE
+  catalog block at the end of the root, a stamped `<template>` holds no target (its copy would duplicate the
+  name), script-written text (toasts) stays as written. Every demo's e2e runs `translationGaps()`
+  (`tests/e2e/lib/translation.ts` - the library's `validateI18n` over English and German) and expects none.
+- `df$().each()` stops when the callback returns `false` - an arrow returning `view.hidden = ...` ends the loop at
+  the shown view; give it a block body (VERIFIED: defuss-query's each).
+
 ---
 
 ## Adding a new component
@@ -1766,7 +1792,7 @@ index, and TOC pick the page up automatically.
 
 The sidebar is ordered by dependency (primitives first):
 1. Introduction (Getting Started, Installation → {Bundles & Downloads}, Vibe Coding / Agentic Engineering, Anatomy of a Component, Component Skills, Verified Agentic Engineering (VAE), Changelog) - Anatomy of a Component (`anatomy.mdx`) shows how one component's parts meet: the tokens it reads, its markup, its stylesheet, its script and the skill + schema that describe it - the only section open on first load (`ALWAYS_OPEN_SECTION` in `lib/nav.ts`)
-2. Guides (Theming, Dark Mode, Data Attribute API, State API, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris, Parallax}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
+2. Guides (Theming, Dark Mode, Data Attribute API, State API, DOM Querying & Morphing, Client-side Routing, Translation, Global Key Commands, Cascade Layers, JavaScript Modules, Native Web APIs, Animations → {Motion, Animation Canvas, Fade, Slide Up, Slide Down, Slide Left, Slide Right, Zoom, Zoom Out, Pop, Spin, Flip, Skew, Blur, Wipe, Wipe Up, Iris, Parallax}, Sizing → {Width & Height, Spacing, Density}, Layout → {Container, Flex, Grid}, Shapes, Accessibility) - Sizing/Layout/Animations are parent pages with nested submenu children (`NavItem.children`)
 3. Primitives (Typography, Text Rotate, Typewriter, Separator, Icon, Kbd, Heading Anchor)
 4. Actions (Button, FAB, Play Button, Toggle, Swap, Toggle Group, Button Group, Toolbar)
 5. Forms & Inputs (Label, Input, OTP Input, Textarea, Checkbox, Radio Group, Switch, Slider, Rating, Select, Number Input, File Input, Color Picker, Date Picker, Combobox, Search & Filter, Form)
