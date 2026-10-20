@@ -29,43 +29,125 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
 
 <p class="text-sm text-muted-foreground mb-5"> The scaffolds keep every view in the markup - a <code>&lt;section&gt;</code> each, all but the first <code>hidden</code> - so the page reads before any script runs and a view's components keep their state when it hides. Links are real anchors with <code>data-router-link</code> and a route in the fragment (<code>href="#/messages/2"</code>); <code>attachLinks()</code> handles their clicks and leaves modified clicks, downloads and other targets to the browser. The commit un-hides the view the route names and marks the current link. A <code>:param</code> names a record, a lone <code>*</code> catches everything else: </p>
 
-```html example schema="none" label="A mailbox with routes" hint="Routes: #/ (inbox), #/archive, #/messages/:id and * (not found - try message 9 under Archive). The line under the folders shows what the route matched. In this preview the router cannot own the address (see Inside a docs preview below) - the same routes match the frame's hash." height="20"
-<div class="flex flex-wrap gap-6" id="mail" style="min-height: 13rem">
-  <nav class="flex flex-col gap-1" aria-label="Folders" style="min-width: 9rem">
-    <a class="btn" data-variant="ghost" href="#/" data-router-link aria-current="page">Inbox</a>
-    <a class="btn" data-variant="ghost" href="#/archive" data-router-link>Archive</a>
-    <p class="text-xs text-muted-foreground mt-2"><output id="mail-route">inbox · /</output></p>
-  </nav>
-  <section class="flex flex-col gap-2" data-view="inbox" style="flex: 1 1 16rem">
-    <h3 class="text-sm font-medium m-0">Inbox</h3>
-    <a href="#/messages/1" data-router-link>Lunch on Friday?</a>
-    <a href="#/messages/2" data-router-link>The Q4 plan, second draft</a>
-  </section>
-  <section class="flex flex-col gap-2" data-view="archive" style="flex: 1 1 16rem" hidden>
-    <h3 class="text-sm font-medium m-0">Archive</h3>
-    <a href="#/messages/3" data-router-link>Welcome to the team</a>
-    <a href="#/messages/9" data-router-link>A message that is gone</a>
-  </section>
-  <section class="flex flex-col gap-2" data-view="message" style="flex: 1 1 16rem" hidden>
-    <a href="#/" data-router-link>← Inbox</a>
-    <h3 class="text-sm font-medium m-0" id="mail-subject"></h3>
-    <p class="text-sm text-muted-foreground m-0" id="mail-body"></p>
-  </section>
-  <section class="flex flex-col gap-2" data-view="missing" style="flex: 1 1 16rem" hidden>
-    <h3 class="text-sm font-medium m-0">Not found</h3>
-    <p class="text-sm text-muted-foreground m-0"
-      >No such message - <a href="#/" data-router-link>back to the inbox</a>.</p
-    >
-  </section>
+```html example schema="none" label="A mailbox with routes" hint="Routes: #/ (inbox), #/archive, #/messages/:id and * (not found - try message 9 under Archive). The line under the title shows what the route matched. In this preview the router cannot own the address (see Inside a docs preview below) - the same routes match the frame's hash." height="20"
+<div class="card" id="mail" style="max-width: 42rem">
+  <div class="card-header">
+    <h3 class="card-title">Mail</h3>
+    <p class="card-description">Route: <output id="mail-route">inbox · /</output></p>
+  </div>
+  <div class="card-content" style="min-height: 15rem">
+    <nav class="nav-menu mb-4" aria-label="Folders">
+      <ul class="nav-menu-list">
+        <li class="nav-menu-item">
+          <a class="nav-menu-link" href="#/" data-router-link aria-current="page">Inbox</a>
+        </li>
+        <li class="nav-menu-item">
+          <a class="nav-menu-link" href="#/archive" data-router-link>Archive</a>
+        </li>
+      </ul>
+    </nav>
+    <section data-view="inbox">
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr class="table-row">
+              <th class="table-head">From</th>
+              <th class="table-head">Subject</th>
+              <th class="table-head" style="text-align: right">Received</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="table-row">
+              <td class="table-cell">Maya Chen</td>
+              <td class="table-cell"><a class="link" href="#/messages/1" data-router-link>Lunch on Friday?</a></td>
+              <td class="table-cell" style="text-align: right">Thu 10:24</td>
+            </tr>
+            <tr class="table-row">
+              <td class="table-cell">Jonas Weber</td>
+              <td class="table-cell"
+                ><a class="link" href="#/messages/2" data-router-link>The Q4 plan, second draft</a></td
+              >
+              <td class="table-cell" style="text-align: right">Wed 16:02</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section data-view="archive" hidden>
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr class="table-row">
+              <th class="table-head">From</th>
+              <th class="table-head">Subject</th>
+              <th class="table-head" style="text-align: right">Received</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="table-row">
+              <td class="table-cell">People Team</td>
+              <td class="table-cell"><a class="link" href="#/messages/3" data-router-link>Welcome to the team</a></td>
+              <td class="table-cell" style="text-align: right">Mar 3</td>
+            </tr>
+            <tr class="table-row">
+              <td class="table-cell">Old Newsletter</td>
+              <td class="table-cell"
+                ><a class="link" href="#/messages/9" data-router-link>A message that is gone</a></td
+              >
+              <td class="table-cell" style="text-align: right">Feb 12</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section data-view="message" hidden>
+      <a class="btn mb-3" data-variant="ghost" data-size="sm" href="#/" data-router-link id="mail-back"
+        ><i data-lucide="arrow-left"></i>Back</a
+      >
+      <h4 class="h4 m-0" id="mail-subject"></h4>
+      <p class="muted mt-1 mb-4" id="mail-from"></p>
+      <p class="p m-0" id="mail-body"></p>
+    </section>
+    <section data-view="missing" hidden>
+      <div class="alert" role="alert">
+        <i class="alert-icon" data-lucide="mail-x"></i>
+        <div class="alert-content">
+          <h5 class="alert-title">Not found</h5>
+          <p class="alert-description">
+            No such message - <a class="link" href="#/" data-router-link>back to the inbox</a>.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>
 <script type="module">
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
 
   const MESSAGES = {
-    1: ['Lunch on Friday?', 'The new place on the corner - 12:30?'],
-    2: ['The Q4 plan, second draft', 'Comments are in the doc; the launch date moved to the 28th.'],
-    3: ['Welcome to the team', 'Your laptop is on its way. Coffee is on the third floor.'],
+    1: {
+      folder: 'inbox',
+      from: 'Maya Chen',
+      received: 'Thu 10:24',
+      subject: 'Lunch on Friday?',
+      body: 'The new place on the corner - 12:30?',
+    },
+    2: {
+      folder: 'inbox',
+      from: 'Jonas Weber',
+      received: 'Wed 16:02',
+      subject: 'The Q4 plan, second draft',
+      body: 'Comments are in the doc; the launch date moved to the 28th.',
+    },
+    3: {
+      folder: 'archive',
+      from: 'People Team',
+      received: 'Mar 3',
+      subject: 'Welcome to the team',
+      body: 'Your laptop is on its way. Coffee is on the third floor.',
+    },
   };
+  const FOLDERS = { inbox: '#/', archive: '#/archive' };
   const routes = [
     { id: 'inbox', path: '/' },
     { id: 'archive', path: '/archive' },
@@ -75,17 +157,20 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
   const show = (to) => {
     const message = to.routeId === 'message' ? MESSAGES[to.params.id] : undefined;
     const view = to.routeId === 'message' && !message ? 'missing' : to.routeId;
+    // a message keeps its folder current; a missing one belongs to no folder
+    const folder = message ? message.folder : view;
     df$('#mail [data-view]').each((_i, section) => {
       section.hidden = section.dataset.view !== view;
     });
     df$('#mail nav a').each((_i, link) => {
-      if (link.getAttribute('href') === (view === 'archive' ? '#/archive' : '#/'))
-        link.setAttribute('aria-current', 'page');
+      if (link.getAttribute('href') === FOLDERS[folder]) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
     });
     if (message) {
-      df$('#mail-subject').text(message[0]);
-      df$('#mail-body').text(message[1]);
+      df$('#mail-back').attr('href', FOLDERS[message.folder]);
+      df$('#mail-subject').text(message.subject);
+      df$('#mail-from').text(`${message.from} · ${message.received}`);
+      df$('#mail-body').text(message.body);
     }
     df$('#mail-route').text(`${to.routeId} · ${to.path}${to.params.id ? ` · id=${to.params.id}` : ''}`);
   };
