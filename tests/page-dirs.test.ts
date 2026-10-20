@@ -107,6 +107,10 @@ describe('paths and links', () => {
     );
     // the root page: ids gain their folder, assets stay
     expect(resolvePageRefs('<a href="button.html">b</a><link href="css/x.css">', 'index.html')).toBe('<a href="actions/button.html">b</a><link href="css/x.css">');
+    // a video's media and its captions - VERIFIED: a full-screen page asked videos/demo.en.vtt of its own folder (404)
+    expect(resolvePageRefs('<video poster="images/p.png"><source src="videos/v.webm" /><track src="videos/v.en.vtt" /></video>', 'website/full-website-media.html')).toBe(
+      '<video poster="../images/p.png"><source src="../videos/v.webm" /><track src="../videos/v.en.vtt" /></video>',
+    );
   });
 
   it('pageLinks: an example\'s page ids map to their paths from the docs root; other links and escaped samples stay out', () => {

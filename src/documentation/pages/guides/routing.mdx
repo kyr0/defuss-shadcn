@@ -1,6 +1,6 @@
 ---
 title: "Client-side Routing"
-description: "Route defuss-shadcn apps with defuss-dom-router: URLs become route requests, guards run before history, every navigation resolves to one result, and your commit shows the view - the pattern of every Application Scaffold."
+description: "Route defuss-shadcn apps and sites with defuss-dom-router: URLs become route requests, guards run before history, every navigation resolves to one result, and your commit shows the view - the pattern of every Application Scaffold and Website template."
 slug: "routing"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
 <DocPage meta={meta}>
 
 <PageHeader slug="routing" title="Client-side Routing" introStyle="max-width:40rem;">
-  <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> turns URLs into route requests and orders navigations against the browser's History API - it never touches the page. You say what a route shows: <code>prepare()</code> builds the next view without changing the live page, <code>commit()</code> puts it on screen. One file of about 9 kB compressed, no dependencies; every <DocLink href="application-scaffolds.html">Application Scaffold</DocLink> routes with it.
+  <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> turns URLs into route requests and orders navigations against the browser's History API - it never touches the page. You say what a route shows: <code>prepare()</code> builds the next view without changing the live page, <code>commit()</code> puts it on screen. One file of about 9 kB compressed, no dependencies; every <DocLink href="application-scaffolds.html">Application Scaffold</DocLink> and every Website template (<DocLink href="website-shop.html">Shop</DocLink>, <DocLink href="website-search-navigation.html">Search &amp; Navigation</DocLink> ...) routes with it.
 </PageHeader>
 
 <div class="flex gap-3 mb-8 flex-wrap items-center">
@@ -147,6 +147,8 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
   <li><strong>Sidebar, Breadcrumb, Command.</strong> A <DocLink href="sidebar.html">Sidebar</DocLink> link is the router link itself; the commit moves its <code>aria-current</code>. A <DocLink href="command.html">Command</DocLink> item is a button - give it the route (<code>data-go="/orders"</code>) and navigate on its click.</li>
   <li><strong>Hidden views keep their components.</strong> A data grid, a chart or an editor in a hidden section keeps its state and its listeners; only the commit decides what shows. The Messenger's thread is a <DocLink href="session.html">Session</DocLink> that keeps its scroll position.</li>
   <li><strong>An announcement for the rest of the page.</strong> When older wiring needs to know the view changed, the commit dispatches an event on the app (the Issue Tracker's <code>pm-route</code>), and that wiring listens instead of reading <code>location</code>.</li>
+  <li><strong>A component that owns its links is driven, not bypassed.</strong> <DocLink href="pagination.html">Pagination</DocLink> claims the clicks on its previous / next links. The Search &amp; Navigation template makes it data-driven, sets its page from the route through its State API (<code>pager.api.setState('default', {"{ activePage }"})</code>) and puts the page its store lands on into the address (<code>pager.store.subscribe</code>) - the component's contract, not a second click handler.</li>
+  <li><strong>A page that scrolls itself.</strong> After a navigation the router scrolls to the top (and restores the position on Back); the Landing Page scrolls to the section a route names, so it sets <code>scroll: 'manual'</code> - the router's scroll would stop the glide. Its deep link jumps with <code>behavior: 'instant'</code>: <code>'auto'</code> takes the page's <code>scroll-behavior: smooth</code>.</li>
   <li><strong><code>df$().each()</code> stops on <code>false</code>.</strong> Hiding views in an arrow function that returns the assignment - <code>(_i, v) =&gt; (v.hidden = v.id !== id)</code> - ends the loop at the view being shown; give the callback a block body.</li>
 </ul>
 
@@ -156,7 +158,7 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
 
 <H2>Inside a docs preview</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> The router routes HTTP(S) addresses of its own window. Every example on this site runs in a sandboxed <code>about:srcdoc</code> frame, which has no such address: <code>start()</code> resolves <code>rejected</code> with <code>invalid-url</code>. The frame's links still change its fragment, and the router's pure <code>resolve()</code> works without a window when a second router is given a <code>baseUrl</code> - so the examples match the same routes there. Open a scaffold full screen to see the router own a real address, with Back, Forward and deep links. </p>
+<p class="text-sm text-muted-foreground mb-5"> The router routes HTTP(S) addresses of its own window. Every example on this site runs in a sandboxed <code>about:srcdoc</code> frame, which has no such address: <code>start()</code> resolves <code>rejected</code> with <code>invalid-url</code>. The frame's links still change its fragment, and the router's pure <code>resolve()</code> works without a window when a second router is given a <code>baseUrl</code> - so the examples match the same routes there. Open a scaffold or a Website template full screen (each has one) to see the router own a real address, with Back, Forward and deep links. </p>
 
 <CodeWindow lang="javascript" title="the preview fallback of every example" mb="2.5rem" code={"if ((await router.start()).status === 'rejected') {\n  const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });\n  const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));\n  addEventListener('hashchange', follow);\n  follow();\n}"} />
 
@@ -174,6 +176,26 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
     <tr><td><DocLink href="scaffold-status-page.html">Status Page</DocLink></td><td><code>#/</code>, <code>#/history</code>, <code>#/manage</code>, <code>#/incidents/:id</code></td></tr>
     <tr><td><DocLink href="scaffold-desktop.html">Desktop</DocLink></td><td><code>#/apps/:app</code>, <code>#/files/:name</code>, <code>#/browse/:site</code> - what a launcher opens</td></tr>
     <tr><td><DocLink href="scaffold-document-editor.html">Document Editor</DocLink></td><td><code>#/docs/:id</code></td></tr>
+  </tbody>
+</table></TableCard>
+
+<TableCard title="the Website templates' routes" mb="2.5rem"><table class="table" data-variant="simple">
+  <thead>
+    <tr><th>Template</th><th>Routes</th><th>What a route does</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><DocLink href="website-landing-page.html">Landing Page</DocLink></td><td><code>#/features</code>, <code>#/pricing</code>, <code>#/faq</code></td><td>Scrolls to the section</td></tr>
+    <tr><td><DocLink href="website-news.html">News</DocLink></td><td><code>#/section/:topic</code></td><td>Shows the section's stories</td></tr>
+    <tr><td><DocLink href="website-blog.html">Blog</DocLink></td><td><code>#/category/:category</code>, <code>#/archive/:year/:month</code></td><td>Filters the posts</td></tr>
+    <tr><td><DocLink href="website-article.html">Article</DocLink></td><td><code>#/articles/:slug</code></td><td><code>prepare()</code> builds the article from a data block</td></tr>
+    <tr><td><DocLink href="website-comments.html">Comments</DocLink></td><td><code>#/comments/:id</code>, <code>?sort=</code></td><td>Highlights the comment, orders the thread</td></tr>
+    <tr><td><DocLink href="website-company.html">Company</DocLink></td><td><code>#/team</code>, <code>#/jobs/:department</code>, <code>#/press</code></td><td>The site's pages, a department filter</td></tr>
+    <tr><td><DocLink href="website-events-promotions.html">Events &amp; Promotions</DocLink></td><td><code>#/track/:track</code>, <code>#/sessions/:id</code></td><td>Filters the schedule, opens a session</td></tr>
+    <tr><td><DocLink href="website-media.html">Media</DocLink></td><td><code>#/photos/:n</code></td><td>Opens the slideshow on the photo</td></tr>
+    <tr><td><DocLink href="website-shop.html">Shop</DocLink></td><td><code>#/cart</code>, <code>#/checkout</code>, <code>#/order/:id</code></td><td>One step of the purchase</td></tr>
+    <tr><td><DocLink href="website-account-states.html">Account &amp; States</DocLink></td><td><code>#/profile</code>, <code>#/settings</code>, <code>#/onboarding</code>, <code>#/states</code></td><td>One part of the account</td></tr>
+    <tr><td><DocLink href="website-docs-help.html">Docs &amp; Help</DocLink></td><td><code>#/docs/:page</code></td><td>Link, breadcrumb, title and pager follow</td></tr>
+    <tr><td><DocLink href="website-search-navigation.html">Search &amp; Navigation</DocLink></td><td><code>#/?q=&amp;category=&amp;sort=&amp;page=&amp;tag=</code></td><td>The search is the query string</td></tr>
   </tbody>
 </table></TableCard>
 

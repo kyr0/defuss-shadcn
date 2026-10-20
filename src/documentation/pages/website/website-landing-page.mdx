@@ -14,11 +14,16 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Landing Page blocks composed into one page - the source is the page.</DocText>
+<DocText>The Landing Page blocks composed into one page - the source is the page. The header's sections are routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/pricing</code>) that scroll to them - a deep link opens the page there, Back to top is <code>#/</code>; the language switch in the header translates the page with <DocLink href="translation.html">defuss-i18n</DocLink>.</DocText>
 
-```html example label="A landing page" schema="none" hint="Every landing block in page order with room to breathe. Scroll it: the hero is a Parallax scene (a faint grid far back, two soft color blobs in the middle, the copy in front), every section after it rises into view (.parallax-reveal - the product frame zooms in), after the benefits a sticky fly-through pins the stage while Plan. Prioritize. Ship. pass by, the header sticks. shapes.css dresses the media: a window frame, leaf corners, a taped polaroid, speech-bubble quotes, the gold aura, squircles and blob icons. Scroll down and the back-to-top FAB appears; on a first visit the Cookie Consent waits as a banner along the bottom (not a modal - the page stays usable); afterwards the cookie button (bottom left) and the footer's Cookie Settings bring it back. The header links jump to the sections." previewStyle="align-items:stretch;"
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-website-landing-page.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="A landing page" schema="none" hint="The header's sections are routes (#/pricing) that scroll there; the switch translates the page. Every landing block in page order with room to breathe. Scroll it: the hero is a Parallax scene (a faint grid far back, two soft color blobs in the middle, the copy in front), every section after it rises into view (.parallax-reveal - the product frame zooms in), after the benefits a sticky fly-through pins the stage while Plan. Prioritize. Ship. pass by, the header sticks. shapes.css dresses the media: a window frame, leaf corners, a taped polaroid, speech-bubble quotes, the gold aura, squircles and blob icons. Scroll down and the back-to-top FAB appears; on a first visit the Cookie Consent waits as a banner along the bottom (not a modal - the page stays usable); afterwards the cookie button (bottom left) and the footer's Cookie Settings bring it back. The header links jump to the sections." previewStyle="align-items:stretch;"
 <div
   id="top"
+  data-i18n-component
   style="display: flex; flex-direction: column; gap: clamp(8rem, 15vw, 12rem); width: 100%; padding-block-end: 4rem"
 >
   <div>
@@ -39,11 +44,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg
           ><span class="mk-header-name">Acme Inc.</span></a
         >
-        <nav class="mk-header-nav" aria-label="Main">
+        <nav class="mk-header-nav" aria-label="Main" data-i18n-aria-label-en="Main" data-i18n-aria-label-de="Hauptmenü">
           <ul class="nav-menu-list">
             <li class="nav-menu-item">
               <button class="nav-menu-trigger" popovertarget="mk-sh-products"
-                >Products
+                ><span data-i18n-target="lp-1-1">Products</span>
                 <svg
                   aria-hidden="true"
                   width="14"
@@ -57,21 +62,39 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               ></button>
               <div class="nav-menu-content" id="mk-sh-products" popover>
                 <a class="nav-menu-content-link" href="#"
-                  ><strong>Analytics</strong><p>View your dashboard and metrics</p></a
+                  ><strong>Analytics</strong><p data-i18n-target="lp-2-1">View your dashboard and metrics</p></a
                 >
                 <a class="nav-menu-content-link" href="#"
-                  ><strong>Automation</strong><p>Build workflows and integrations</p></a
+                  ><strong>Automation</strong><p data-i18n-target="lp-3-1">Build workflows and integrations</p></a
                 >
               </div>
             </li>
-            <li class="nav-menu-item"><a class="nav-menu-link" href="#lp-features">Features</a></li>
-            <li class="nav-menu-item"><a class="nav-menu-link" href="#lp-pricing">Pricing</a></li>
-            <li class="nav-menu-item"><a class="nav-menu-link" href="#lp-faq">FAQ</a></li>
+            <li class="nav-menu-item"
+              ><a class="nav-menu-link" href="#/features" data-router-link data-i18n-target="lp-4-1">Features</a></li
+            >
+            <li class="nav-menu-item"
+              ><a class="nav-menu-link" href="#/pricing" data-router-link data-i18n-target="lp-5-1">Pricing</a></li
+            >
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#/faq" data-router-link>FAQ</a></li>
           </ul>
         </nav>
         <div class="mk-header-actions">
-          <button type="button" class="btn mk-header-wide" data-variant="ghost" data-size="sm">Login</button>
-          <button type="button" class="btn" data-size="sm">Get started</button>
+          <select
+            class="select"
+            data-size="sm"
+            data-app-locale
+            aria-label="Language"
+            data-i18n-aria-label-en="Language"
+            data-i18n-aria-label-de="Sprache"
+            style="width: auto"
+          >
+            <option value="en" lang="en">English</option>
+            <option value="de" lang="de">Deutsch</option>
+          </select>
+          <button type="button" class="btn mk-header-wide" data-variant="ghost" data-size="sm" data-i18n-target="lp-6-1"
+            >Login</button
+          >
+          <button type="button" class="btn" data-size="sm" data-i18n-target="lp-7-1">Get started</button>
           <button
             type="button"
             class="btn mk-header-menu"
@@ -80,6 +103,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             data-sheet-trigger="mk-sh-menu"
             aria-haspopup="dialog"
             aria-label="Open menu"
+            data-i18n-aria-label-en="Open menu"
+            data-i18n-aria-label-de="Menü öffnen"
             ><svg
               viewBox="0 0 24 24"
               width="20"
@@ -111,7 +136,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <h2 class="sheet-title" id="mk-sh-menu-title">Acme Inc.</h2>
           </div>
           <div class="sheet-body">
-            <p class="mk-header-sheet-label">Products</p>
+            <p class="mk-header-sheet-label" data-i18n-target="lp-1-2">Products</p>
             <ul class="mk-header-sheet-nav">
               <li
                 ><a href="#" data-sheet-close>Analytics <small>Dashboards</small></a></li
@@ -120,14 +145,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ><a href="#" data-sheet-close>Automation <small>Workflows</small></a></li
               >
             </ul>
-            <p class="mk-header-sheet-label">Company</p>
+            <p class="mk-header-sheet-label" data-i18n-target="lp-8-1">Company</p>
             <ul class="mk-header-sheet-nav">
-              <li><a href="#" data-sheet-close>Pricing</a></li>
+              <li><a href="#" data-sheet-close data-i18n-target="lp-5-2">Pricing</a></li>
             </ul>
           </div>
           <div class="sheet-footer mk-header-sheet-actions">
-            <button type="button" class="btn" data-variant="outline">Login</button>
-            <button type="button" class="btn">Get started</button>
+            <button type="button" class="btn" data-variant="outline" data-i18n-target="lp-6-2">Login</button>
+            <button type="button" class="btn" data-i18n-target="lp-7-2">Get started</button>
           </div>
         </div>
       </dialog>
@@ -181,13 +206,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <div class="parallax-content">
         <section class="mk-hero" style="width: 100%">
           <div class="mk-hero-copy">
-            <span class="mk-hero-badge">New features released</span>
-            <h1 class="mk-hero-title">Make Better Decisions, With Ease</h1>
-            <p class="mk-hero-desc"
+            <span class="mk-hero-badge" data-i18n-target="lp-9-1">New features released</span>
+            <h1 class="mk-hero-title" data-i18n-target="lp-10-1">Make Better Decisions, With Ease</h1>
+            <p class="mk-hero-desc" data-i18n-target="lp-11-1"
               >Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching
               contexts.</p
             >
-            <div class="mk-hero-actions"><button type="button" class="btn">Get Started</button></div>
+            <div class="mk-hero-actions"
+              ><button type="button" class="btn" data-i18n-target="lp-12-1">Get Started</button></div
+            >
           </div>
         </section>
       </div>
@@ -253,21 +280,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ></a
         >
       </div>
-      <p class="mk-logos-caption">Trusted by leading companies</p>
+      <p class="mk-logos-caption" data-i18n-target="lp-13-1">Trusted by leading companies</p>
     </section>
   </div>
   <div id="lp-features" class="parallax-reveal">
     <section class="mk-features" style="width: 100%">
       <div class="mk-features-head">
-        <span class="mk-features-eyebrow">Benefits</span>
-        <h2 class="mk-features-title">AI That Works Your Way</h2>
-        <p class="mk-features-desc">Acme eliminates the work and gives you a clear picture of what matters.</p>
+        <span class="mk-features-eyebrow" data-i18n-target="lp-14-1">Benefits</span>
+        <h2 class="mk-features-title" data-i18n-target="lp-15-1">AI That Works Your Way</h2>
+        <p class="mk-features-desc" data-i18n-target="lp-16-1"
+          >Acme eliminates the work and gives you a clear picture of what matters.</p
+        >
       </div>
       <div class="mk-features-grid">
         <article class="mk-feature">
           <div class="mk-feature-copy">
-            <h3 class="mk-feature-title">Intelligent Prioritization</h3>
-            <p class="mk-feature-desc">Know exactly what to work on next with AI that understands your goals.</p>
+            <h3 class="mk-feature-title" data-i18n-target="lp-17-1">Intelligent Prioritization</h3>
+            <p class="mk-feature-desc" data-i18n-target="lp-18-1"
+              >Know exactly what to work on next with AI that understands your goals.</p
+            >
           </div>
           <figure class="mk-feature-media corner-leaf" style="--shape-round: 3rem"
             ><img alt="Intelligent Prioritization" src="images/mk-square.png"
@@ -276,8 +307,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <div class="mk-feature-sep" aria-hidden="true"></div>
         <article class="mk-feature">
           <div class="mk-feature-copy">
-            <h3 class="mk-feature-title">Effortless Integration</h3>
-            <p class="mk-feature-desc">Connects with the tools your team already uses - no steep learning curve.</p>
+            <h3 class="mk-feature-title" data-i18n-target="lp-19-1">Effortless Integration</h3>
+            <p class="mk-feature-desc" data-i18n-target="lp-20-1"
+              >Connects with the tools your team already uses - no steep learning curve.</p
+            >
           </div>
           <figure class="mk-feature-media corner-leaf-reverse" style="--shape-round: 3rem"
             ><img alt="Effortless Integration" src="images/mk-wide3.png"
@@ -301,9 +334,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               <path
                 d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"
               ></path></svg
-            >Smarter Analytics</h3
+            ><span data-i18n-target="lp-21-1">Smarter Analytics</span></h3
           >
-          <p class="mk-feature-card-desc">Turn data into clarity with AI-powered insights.</p>
+          <p class="mk-feature-card-desc" data-i18n-target="lp-22-1"
+            >Turn data into clarity with AI-powered insights.</p
+          >
         </div>
         <div class="mk-feature-card">
           <h3 class="mk-feature-card-title"
@@ -321,9 +356,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               <rect width="8" height="8" x="3" y="3" rx="2"></rect>
               <path d="M7 11v4a2 2 0 0 0 2 2h4"></path>
               <rect width="8" height="8" x="13" y="13" rx="2"></rect></svg
-            >Seamless Workflow</h3
+            ><span data-i18n-target="lp-23-1">Seamless Workflow</span></h3
           >
-          <p class="mk-feature-card-desc">Stay in the zone without context switching.</p>
+          <p class="mk-feature-card-desc" data-i18n-target="lp-24-1">Stay in the zone without context switching.</p>
         </div>
         <div class="mk-feature-card">
           <h3 class="mk-feature-card-title"
@@ -342,9 +377,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               <circle cx="9" cy="7" r="4"></circle>
               <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg
-            >Team Alignment</h3
+            ><span data-i18n-target="lp-25-1">Team Alignment</span></h3
           >
-          <p class="mk-feature-card-desc">A single source of truth for projects and decisions.</p>
+          <p class="mk-feature-card-desc" data-i18n-target="lp-26-1"
+            >A single source of truth for projects and decisions.</p
+          >
         </div>
         <div class="mk-feature-card">
           <h3 class="mk-feature-card-title"
@@ -362,9 +399,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               <ellipse cx="12" cy="5" rx="9" ry="3" />
               <path d="M3 5V19A9 3 0 0 0 21 19V5"></path>
               <path d="M3 12A9 3 0 0 0 21 12"></path></svg
-            >Clear Decision Support</h3
+            ><span data-i18n-target="lp-27-1">Clear Decision Support</span></h3
           >
-          <p class="mk-feature-card-desc">AI-driven insights when projects stall.</p>
+          <p class="mk-feature-card-desc" data-i18n-target="lp-28-1">AI-driven insights when projects stall.</p>
         </div>
       </div>
     </section>
@@ -546,6 +583,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               background-clip: text;
               color: transparent;
             "
+            data-i18n-target="lp-29-1"
             >Plan.</p
           ></div
         >
@@ -561,6 +599,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               background-clip: text;
               color: transparent;
             "
+            data-i18n-target="lp-30-1"
             >Prioritize.</p
           ></div
         >
@@ -576,6 +615,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               background-clip: text;
               color: transparent;
             "
+            data-i18n-target="lp-31-1"
             >Ship.</p
           ></div
         >
@@ -607,7 +647,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <div class="mk-stats-layout">
         <div class="mk-stats-copy">
           <div class="mk-stats-head">
-            <h2 class="mk-stats-title">Trusted by Teams Everywhere</h2>
+            <h2 class="mk-stats-title" data-i18n-target="lp-32-1">Trusted by Teams Everywhere</h2>
             <p class="mk-stats-desc"
               >Acme is helping thousands of creators and companies move faster, work smarter, and deliver with
               confidence.</p
@@ -633,7 +673,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   >+18%</span
                 ></span
               >
-              <span class="mk-stat-label">Projects completed</span>
+              <span class="mk-stat-label" data-i18n-target="lp-33-1">Projects completed</span>
               <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our clients</a>
             </div>
             <div class="mk-stat">
@@ -655,7 +695,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   >+12%</span
                 ></span
               >
-              <span class="mk-stat-label">Delivery across teams</span>
+              <span class="mk-stat-label" data-i18n-target="lp-34-1">Delivery across teams</span>
               <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Learn more</a>
             </div>
             <div class="mk-stat">
@@ -677,7 +717,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   >+4%</span
                 ></span
               >
-              <span class="mk-stat-label">User satisfaction</span>
+              <span class="mk-stat-label" data-i18n-target="lp-35-1">User satisfaction</span>
               <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">See feedback</a>
             </div>
             <div class="mk-stat">
@@ -699,7 +739,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   >+2</span
                 ></span
               >
-              <span class="mk-stat-label">With active customers</span>
+              <span class="mk-stat-label" data-i18n-target="lp-36-1">With active customers</span>
               <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our users</a>
             </div>
           </div>
@@ -731,7 +771,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <path
               d="M15 3a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2 1 1 0 0 0-1 1v1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h1a1 1 0 0 0 1 1 1 1 0 0 1 1 1 1 1 0 0 0 1 1 1 1 0 0 1 1 1h3a2 2 0 0 0 2-2V7.5A4.5 4.5 0 0 0 19.5 3Z"
             ></path></svg
-          ><span>Loved by talented teams...</span></div
+          ><span data-i18n-target="lp-37-1">Loved by talented teams...</span></div
         >
         <div class="mk-testimonial-layout">
           <blockquote class="mk-testimonial-quote"
@@ -890,7 +930,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </div>
     </section>
   </div>
-  <section id="lp-pricing" class="parallax parallax-reveal" aria-label="Pricing" style="padding-block: 3rem">
+  <section
+    id="lp-pricing"
+    class="parallax parallax-reveal"
+    aria-label="Pricing"
+    data-i18n-aria-label-en="Pricing"
+    data-i18n-aria-label-de="Preise"
+    style="padding-block: 3rem"
+  >
     <div class="parallax-layer" data-depth="far" aria-hidden="true">
       <div
         class="pattern-grid"
@@ -906,15 +953,29 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <div class="parallax-content">
       <section class="mk-pricing" style="width: 100%">
         <div class="mk-pricing-head">
-          <span class="mk-pricing-eyebrow">Pricing</span>
-          <h2 class="mk-pricing-title">Simple Pricing, Smarter Work</h2>
-          <p class="mk-pricing-desc">Acme has a plan designed to help you move faster.</p>
-          <div class="mk-pricing-billing" role="radiogroup" aria-label="Billing period">
+          <span class="mk-pricing-eyebrow" data-i18n-target="lp-5-3">Pricing</span>
+          <h2 class="mk-pricing-title" data-i18n-target="lp-38-1">Simple Pricing, Smarter Work</h2>
+          <p class="mk-pricing-desc" data-i18n-target="lp-39-1">Acme has a plan designed to help you move faster.</p>
+          <div
+            class="mk-pricing-billing"
+            role="radiogroup"
+            aria-label="Billing period"
+            data-i18n-aria-label-en="Billing period"
+            data-i18n-aria-label-de="Abrechnungszeitraum"
+          >
             <label
-              ><input class="mk-bill-yearly" type="radio" name="mk-billing" checked />Billed yearly
-              <span class="badge" data-variant="secondary" data-size="xs">Save 20%</span></label
+              ><input class="mk-bill-yearly" type="radio" name="mk-billing" checked /><span data-i18n-target="lp-40-1"
+                >Billed yearly</span
+              >
+              <span class="badge" data-variant="secondary" data-size="xs" data-i18n-target="lp-41-1"
+                >Save 20%</span
+              ></label
             >
-            <label><input class="mk-bill-monthly" type="radio" name="mk-billing" />Billed monthly</label>
+            <label
+              ><input class="mk-bill-monthly" type="radio" name="mk-billing" /><span data-i18n-target="lp-42-1"
+                >Billed monthly</span
+              ></label
+            >
           </div>
         </div>
         <div class="mk-plans">
@@ -937,24 +998,28 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ></header>
             <div class="mk-plan-body">
               <h3 class="mk-plan-title">Starter</h3>
-              <p class="mk-plan-desc">For individuals who want AI assistance in their daily workflow.</p>
+              <p class="mk-plan-desc" data-i18n-target="lp-43-1"
+                >For individuals who want AI assistance in their daily workflow.</p
+              >
             </div>
             <div class="mk-plan-price mk-price-yearly">
               <span class="mk-plan-amount">$10</span>
               <div class="mk-plan-unit"
-                ><span class="mk-plan-unit-label">Per month</span
-                ><span class="mk-plan-unit-note">Billed yearly</span></div
+                ><span class="mk-plan-unit-label" data-i18n-target="lp-44-1">Per month</span
+                ><span class="mk-plan-unit-note" data-i18n-target="lp-40-2">Billed yearly</span></div
               >
             </div>
             <div class="mk-plan-price mk-price-monthly">
               <span class="mk-plan-amount">$12</span>
               <div class="mk-plan-unit"
-                ><span class="mk-plan-unit-label">Per month</span
-                ><span class="mk-plan-unit-note">Plus local taxes</span></div
+                ><span class="mk-plan-unit-label" data-i18n-target="lp-44-2">Per month</span
+                ><span class="mk-plan-unit-note" data-i18n-target="lp-45-1">Plus local taxes</span></div
               >
             </div>
             <div class="mk-plan-cta"
-              ><button type="button" class="btn" data-variant="outline" data-size="lg">Get started</button></div
+              ><button type="button" class="btn" data-variant="outline" data-size="lg" data-i18n-target="lp-7-3"
+                >Get started</button
+              ></div
             >
             <ul class="mk-plan-features">
               <li class="mk-plan-feature"
@@ -970,7 +1035,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>Unlimited projects</span></li
+                ><span data-i18n-target="lp-46-1">Unlimited projects</span></li
               >
               <li class="mk-plan-feature"
                 ><svg
@@ -985,7 +1050,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>AI-powered insights</span></li
+                ><span data-i18n-target="lp-47-1">AI-powered insights</span></li
               >
               <li class="mk-plan-feature"
                 ><svg
@@ -1000,7 +1065,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>Seamless integrations</span></li
+                ><span data-i18n-target="lp-48-1">Seamless integrations</span></li
               >
               <li class="mk-plan-feature"
                 ><svg
@@ -1015,7 +1080,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>Community support</span></li
+                ><span data-i18n-target="lp-49-1">Community support</span></li
               >
             </ul>
           </article>
@@ -1050,28 +1115,32 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     <path
                       d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
                     ></path></svg
-                  >Most popular</span
+                  ><span data-i18n-target="lp-50-1">Most popular</span></span
                 ></header
               >
               <div class="mk-plan-body">
                 <h3 class="mk-plan-title">Pro</h3>
-                <p class="mk-plan-desc">For fast-moving teams that want to collaborate in real time.</p>
+                <p class="mk-plan-desc" data-i18n-target="lp-51-1"
+                  >For fast-moving teams that want to collaborate in real time.</p
+                >
               </div>
               <div class="mk-plan-price mk-price-yearly">
                 <span class="mk-plan-amount">$24</span>
                 <div class="mk-plan-unit"
-                  ><span class="mk-plan-unit-label">Per month</span
-                  ><span class="mk-plan-unit-note">Billed yearly</span></div
+                  ><span class="mk-plan-unit-label" data-i18n-target="lp-44-3">Per month</span
+                  ><span class="mk-plan-unit-note" data-i18n-target="lp-40-3">Billed yearly</span></div
                 >
               </div>
               <div class="mk-plan-price mk-price-monthly">
                 <span class="mk-plan-amount">$29</span>
                 <div class="mk-plan-unit"
-                  ><span class="mk-plan-unit-label">Per month</span
-                  ><span class="mk-plan-unit-note">Plus local taxes</span></div
+                  ><span class="mk-plan-unit-label" data-i18n-target="lp-44-4">Per month</span
+                  ><span class="mk-plan-unit-note" data-i18n-target="lp-45-2">Plus local taxes</span></div
                 >
               </div>
-              <div class="mk-plan-cta"><button type="button" class="btn" data-size="lg">Get started</button></div>
+              <div class="mk-plan-cta"
+                ><button type="button" class="btn" data-size="lg" data-i18n-target="lp-7-4">Get started</button></div
+              >
               <ul class="mk-plan-features">
                 <li class="mk-plan-feature"
                   ><svg
@@ -1086,7 +1155,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     aria-hidden="true"
                   >
                     <path d="M20 6 9 17l-5-5"></path></svg
-                  ><span>Everything in Starter</span></li
+                  ><span data-i18n-target="lp-52-1">Everything in Starter</span></li
                 >
                 <li class="mk-plan-feature"
                   ><svg
@@ -1101,7 +1170,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     aria-hidden="true"
                   >
                     <path d="M20 6 9 17l-5-5"></path></svg
-                  ><span>Real-time collaboration</span></li
+                  ><span data-i18n-target="lp-53-1">Real-time collaboration</span></li
                 >
                 <li class="mk-plan-feature"
                   ><svg
@@ -1116,7 +1185,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     aria-hidden="true"
                   >
                     <path d="M20 6 9 17l-5-5"></path></svg
-                  ><span>Advanced reporting</span></li
+                  ><span data-i18n-target="lp-54-1">Advanced reporting</span></li
                 >
                 <li class="mk-plan-feature"
                   ><svg
@@ -1131,7 +1200,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                     aria-hidden="true"
                   >
                     <path d="M20 6 9 17l-5-5"></path></svg
-                  ><span>Priority support</span></li
+                  ><span data-i18n-target="lp-55-1">Priority support</span></li
                 >
               </ul>
             </article>
@@ -1164,24 +1233,28 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ></header>
             <div class="mk-plan-body">
               <h3 class="mk-plan-title">Enterprise</h3>
-              <p class="mk-plan-desc">For organizations that need security, control, and support at scale.</p>
+              <p class="mk-plan-desc" data-i18n-target="lp-56-1"
+                >For organizations that need security, control, and support at scale.</p
+              >
             </div>
             <div class="mk-plan-price mk-price-yearly">
               <span class="mk-plan-amount">$48</span>
               <div class="mk-plan-unit"
-                ><span class="mk-plan-unit-label">Per month</span
-                ><span class="mk-plan-unit-note">Billed yearly</span></div
+                ><span class="mk-plan-unit-label" data-i18n-target="lp-44-5">Per month</span
+                ><span class="mk-plan-unit-note" data-i18n-target="lp-40-4">Billed yearly</span></div
               >
             </div>
             <div class="mk-plan-price mk-price-monthly">
               <span class="mk-plan-amount">$59</span>
               <div class="mk-plan-unit"
-                ><span class="mk-plan-unit-label">Per month</span
-                ><span class="mk-plan-unit-note">Plus local taxes</span></div
+                ><span class="mk-plan-unit-label" data-i18n-target="lp-44-6">Per month</span
+                ><span class="mk-plan-unit-note" data-i18n-target="lp-45-3">Plus local taxes</span></div
               >
             </div>
             <div class="mk-plan-cta"
-              ><button type="button" class="btn" data-variant="outline" data-size="lg">Get started</button></div
+              ><button type="button" class="btn" data-variant="outline" data-size="lg" data-i18n-target="lp-7-5"
+                >Get started</button
+              ></div
             >
             <ul class="mk-plan-features">
               <li class="mk-plan-feature"
@@ -1197,7 +1270,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>Everything in Pro</span></li
+                ><span data-i18n-target="lp-57-1">Everything in Pro</span></li
               >
               <li class="mk-plan-feature"
                 ><svg
@@ -1212,7 +1285,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>SSO & audit logs</span></li
+                ><span data-i18n-target="lp-58-1">SSO & audit logs</span></li
               >
               <li class="mk-plan-feature"
                 ><svg
@@ -1227,7 +1300,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>Dedicated success manager</span></li
+                ><span data-i18n-target="lp-59-1">Dedicated success manager</span></li
               >
               <li class="mk-plan-feature"
                 ><svg
@@ -1242,7 +1315,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   aria-hidden="true"
                 >
                   <path d="M20 6 9 17l-5-5"></path></svg
-                ><span>Custom integrations</span></li
+                ><span data-i18n-target="lp-60-1">Custom integrations</span></li
               >
             </ul>
           </article>
@@ -1255,8 +1328,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <div class="mk-blog-head">
         <div class="mk-blog-head-copy">
           <span class="mk-blog-eyebrow">Blog</span>
-          <h2 class="mk-blog-title">Acme Insights</h2>
-          <p class="mk-blog-desc">Insights, tips, and stories to help you work smarter and finish faster.</p>
+          <h2 class="mk-blog-title" data-i18n-target="lp-61-1">Acme Insights</h2>
+          <p class="mk-blog-desc" data-i18n-target="lp-62-1"
+            >Insights, tips, and stories to help you work smarter and finish faster.</p
+          >
         </div>
         <a href="#" class="btn mk-blog-see-all" data-variant="secondary">See all</a>
       </div>
@@ -1384,8 +1459,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <div id="lp-faq" class="parallax-reveal">
     <section class="mk-faq" style="width: 100%">
       <div class="mk-faq-head">
-        <span class="mk-faq-eyebrow">Support</span>
-        <h2 class="mk-faq-title">Frequently Asked Questions</h2>
+        <span class="mk-faq-eyebrow" data-i18n-target="lp-63-1">Support</span>
+        <h2 class="mk-faq-title" data-i18n-target="lp-64-1">Frequently Asked Questions</h2>
       </div>
       <div class="mk-faq-grid">
         <article class="mk-faq-item">
@@ -1413,7 +1488,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><h3 class="mk-faq-question">What is Acme AI?</h3
             ><p class="mk-faq-answer"
               >A personal AI workspace that helps teams cut context switching and finish faster.</p
-            ><a class="mk-faq-link" href="#faq-how-acme-ai-works"
+            ><a class="mk-faq-link" href="#/features" data-router-link
               >How Acme AI works<svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -1448,7 +1523,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">Who is Acme AI for?</h3
             ><p class="mk-faq-answer">Creators, teams, and businesses of all sizes.</p
-            ><a class="mk-faq-link" href="#faq-who-uses-acme"
+            ><a class="mk-faq-link" href="#"
               >Who uses Acme<svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -1483,7 +1558,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">How much does it cost?</h3
             ><p class="mk-faq-answer">Flexible plans starting at 199 USD - see the pricing section.</p
-            ><a class="mk-faq-link" href="#faq-compare-the-plans"
+            ><a class="mk-faq-link" href="#/pricing" data-router-link
               >Compare the plans<svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -1518,7 +1593,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">Do I need technical skills?</h3
             ><p class="mk-faq-answer">No. It works out of the box with minimal setup.</p
-            ><a class="mk-faq-link" href="#faq-the-setup-guide"
+            ><a class="mk-faq-link" href="#"
               >The setup guide<svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -1557,7 +1632,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">Can I try it before I buy?</h3
             ><p class="mk-faq-answer">Yes - we offer a demo so you can see how it fits your workflow.</p
-            ><a class="mk-faq-link" href="#faq-book-a-demo"
+            ><a class="mk-faq-link" href="#"
               >Book a demo<svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -1592,7 +1667,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">How does Acme handle my data?</h3
             ><p class="mk-faq-answer">All data is encrypted and never shared with third parties.</p
-            ><a class="mk-faq-link" href="#faq-security-privacy"
+            ><a class="mk-faq-link" href="#"
               >Security & privacy<svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -1619,8 +1694,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         ><span class="avatar"><span class="avatar-fallback">HL</span></span></div
       >
       <div class="mk-contact-copy">
-        <h2 class="mk-contact-title">Want to know more?</h2>
-        <p class="mk-contact-desc">Our team is here to help you get the answers you need.</p>
+        <h2 class="mk-contact-title" data-i18n-target="lp-65-1">Want to know more?</h2>
+        <p class="mk-contact-desc" data-i18n-target="lp-66-1">Our team is here to help you get the answers you need.</p>
       </div>
       <button type="button" class="btn mk-contact-cta">Get in touch</button>
     </section>
@@ -1629,12 +1704,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <section class="mk-newsletter" style="width: 100%">
       <div class="mk-newsletter-layout">
         <div class="mk-newsletter-copy">
-          <h2 class="mk-newsletter-title">Stay in the loop</h2>
-          <p class="mk-newsletter-desc">Get insights, product updates, and productivity tips straight to your inbox.</p>
+          <h2 class="mk-newsletter-title" data-i18n-target="lp-67-1">Stay in the loop</h2>
+          <p class="mk-newsletter-desc" data-i18n-target="lp-68-1"
+            >Get insights, product updates, and productivity tips straight to your inbox.</p
+          >
         </div>
         <div class="mk-newsletter-form-col">
           <form class="mk-newsletter-form" action="#" method="post">
-            <label class="sr-only" for="mk-nl-email">Email address</label>
+            <label class="sr-only" for="mk-nl-email" data-i18n-target="lp-69-1">Email address</label>
             <input
               class="input"
               id="mk-nl-email"
@@ -1646,7 +1723,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               autocomplete="email"
               enterkeyhint="send"
             />
-            <button class="btn" type="submit" aria-label="Subscribe to newsletter"
+            <button
+              class="btn"
+              type="submit"
+              aria-label="Subscribe to newsletter"
+              data-i18n-aria-label-en="Subscribe to newsletter"
+              data-i18n-aria-label-de="Newsletter abonnieren"
               ><svg
                 viewBox="0 0 24 24"
                 width="24"
@@ -1660,10 +1742,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               >
                 <rect width="20" height="16" x="2" y="4" rx="2"></rect>
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg
-              >Subscribe</button
+              ><span data-i18n-target="lp-70-1">Subscribe</span></button
             >
           </form>
-          <span class="mk-newsletter-note" id="mk-nl-note">We respect your privacy - unsubscribe any time.</span>
+          <span class="mk-newsletter-note" id="mk-nl-note" data-i18n-target="lp-71-1"
+            >We respect your privacy - unsubscribe any time.</span
+          >
           <span class="mk-newsletter-error" aria-hidden="true"
             ><svg
               viewBox="0 0 24 24"
@@ -1679,7 +1763,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" x2="12" y1="8" y2="12"></line>
               <line x1="12" x2="12.01" y1="16" y2="16"></line></svg
-            >Please enter a valid email address.</span
+            ><span data-i18n-target="lp-72-1">Please enter a valid email address.</span></span
           >
         </div>
       </div>
@@ -1689,10 +1773,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <div class="mk-footer-inner">
       <nav class="mk-footer-nav" aria-label="Footer">
         <div class="mk-footer-col">
-          <h3 class="mk-footer-heading">Product</h3>
+          <h3 class="mk-footer-heading" data-i18n-target="lp-73-1">Product</h3>
           <ul class="mk-footer-list">
-            <li><a href="#">Features</a></li>
-            <li><a href="#">Pricing</a></li>
+            <li><a href="#" data-i18n-target="lp-4-2">Features</a></li>
+            <li><a href="#" data-i18n-target="lp-5-4">Pricing</a></li>
             <li
               ><a href="#">Integrations <span class="badge" data-variant="outline">New</span></a></li
             >
@@ -1700,36 +1784,41 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </ul>
         </div>
         <div class="mk-footer-col">
-          <h3 class="mk-footer-heading">Company</h3>
+          <h3 class="mk-footer-heading" data-i18n-target="lp-8-2">Company</h3>
           <ul class="mk-footer-list">
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Careers</a></li>
+            <li><a href="#" data-i18n-target="lp-74-1">About Us</a></li>
+            <li><a href="#" data-i18n-target="lp-75-1">Careers</a></li>
             <li><a href="#">Blog</a></li>
-            <li><a href="#">Press</a></li>
+            <li><a href="#" data-i18n-target="lp-76-1">Press</a></li>
           </ul>
         </div>
         <div class="mk-footer-col">
-          <h3 class="mk-footer-heading">Resources</h3>
+          <h3 class="mk-footer-heading" data-i18n-target="lp-77-1">Resources</h3>
           <ul class="mk-footer-list">
-            <li><a href="#">Help Center</a></li>
+            <li><a href="#" data-i18n-target="lp-78-1">Help Center</a></li>
             <li><a href="#">FAQs</a></li>
-            <li><a href="#">Guides</a></li>
+            <li><a href="#" data-i18n-target="lp-79-1">Guides</a></li>
             <li><a href="#">Community</a></li>
           </ul>
         </div>
         <div class="mk-footer-col">
-          <h3 class="mk-footer-heading">Legal</h3>
+          <h3 class="mk-footer-heading" data-i18n-target="lp-80-1">Legal</h3>
           <ul class="mk-footer-list">
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Security</a></li>
-            <li><a href="#" data-cookie-consent-open="lp-consent">Cookie Settings</a></li>
+            <li><a href="#" data-i18n-target="lp-81-1">Privacy Policy</a></li>
+            <li><a href="#" data-i18n-target="lp-82-1">Terms of Service</a></li>
+            <li><a href="#" data-i18n-target="lp-83-1">Security</a></li>
+            <li><a href="#" data-cookie-consent-open="lp-consent" data-i18n-target="lp-84-1">Cookie Settings</a></li>
           </ul>
         </div>
       </nav>
       <hr class="separator mk-footer-rule" />
       <div class="mk-footer-bottom">
-        <a href="#" class="mk-footer-brand" aria-label="Go to home page"
+        <a
+          href="#"
+          class="mk-footer-brand"
+          aria-label="Go to home page"
+          data-i18n-aria-label-en="Go to home page"
+          data-i18n-aria-label-de="Zur Startseite"
           ><svg
             viewBox="0 0 24 24"
             width="24"
@@ -1779,14 +1868,285 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ></path></svg
             ></a>
           </div>
-          <p class="mk-footer-copy">© Copyright Acme Inc. 2026. All rights reserved.</p>
+          <p class="mk-footer-copy" data-i18n-target="lp-85-1">© Copyright Acme Inc. 2026. All rights reserved.</p>
         </div>
       </div>
     </div>
   </footer>
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="lp-1-1" data-i18n-locale="en">Products</template>
+  <template data-i18n-for="lp-1-1" data-i18n-locale="de">Produkte</template>
+  <template data-i18n-for="lp-1-2" data-i18n-locale="en">Products</template>
+  <template data-i18n-for="lp-1-2" data-i18n-locale="de">Produkte</template>
+  <template data-i18n-for="lp-2-1" data-i18n-locale="en">View your dashboard and metrics</template>
+  <template data-i18n-for="lp-2-1" data-i18n-locale="de">Dein Dashboard und deine Kennzahlen</template>
+  <template data-i18n-for="lp-3-1" data-i18n-locale="en">Build workflows and integrations</template>
+  <template data-i18n-for="lp-3-1" data-i18n-locale="de">Workflows und Integrationen bauen</template>
+  <template data-i18n-for="lp-4-1" data-i18n-locale="en">Features</template>
+  <template data-i18n-for="lp-4-1" data-i18n-locale="de">Funktionen</template>
+  <template data-i18n-for="lp-4-2" data-i18n-locale="en">Features</template>
+  <template data-i18n-for="lp-4-2" data-i18n-locale="de">Funktionen</template>
+  <template data-i18n-for="lp-5-1" data-i18n-locale="en">Pricing</template>
+  <template data-i18n-for="lp-5-1" data-i18n-locale="de">Preise</template>
+  <template data-i18n-for="lp-5-2" data-i18n-locale="en">Pricing</template>
+  <template data-i18n-for="lp-5-2" data-i18n-locale="de">Preise</template>
+  <template data-i18n-for="lp-5-3" data-i18n-locale="en">Pricing</template>
+  <template data-i18n-for="lp-5-3" data-i18n-locale="de">Preise</template>
+  <template data-i18n-for="lp-5-4" data-i18n-locale="en">Pricing</template>
+  <template data-i18n-for="lp-5-4" data-i18n-locale="de">Preise</template>
+  <template data-i18n-for="lp-6-1" data-i18n-locale="en">Login</template>
+  <template data-i18n-for="lp-6-1" data-i18n-locale="de">Anmelden</template>
+  <template data-i18n-for="lp-6-2" data-i18n-locale="en">Login</template>
+  <template data-i18n-for="lp-6-2" data-i18n-locale="de">Anmelden</template>
+  <template data-i18n-for="lp-7-1" data-i18n-locale="en">Get started</template>
+  <template data-i18n-for="lp-7-1" data-i18n-locale="de">Loslegen</template>
+  <template data-i18n-for="lp-7-2" data-i18n-locale="en">Get started</template>
+  <template data-i18n-for="lp-7-2" data-i18n-locale="de">Loslegen</template>
+  <template data-i18n-for="lp-7-3" data-i18n-locale="en">Get started</template>
+  <template data-i18n-for="lp-7-3" data-i18n-locale="de">Loslegen</template>
+  <template data-i18n-for="lp-7-4" data-i18n-locale="en">Get started</template>
+  <template data-i18n-for="lp-7-4" data-i18n-locale="de">Loslegen</template>
+  <template data-i18n-for="lp-7-5" data-i18n-locale="en">Get started</template>
+  <template data-i18n-for="lp-7-5" data-i18n-locale="de">Loslegen</template>
+  <template data-i18n-for="lp-8-1" data-i18n-locale="en">Company</template>
+  <template data-i18n-for="lp-8-1" data-i18n-locale="de">Unternehmen</template>
+  <template data-i18n-for="lp-8-2" data-i18n-locale="en">Company</template>
+  <template data-i18n-for="lp-8-2" data-i18n-locale="de">Unternehmen</template>
+  <template data-i18n-for="lp-9-1" data-i18n-locale="en">New features released</template>
+  <template data-i18n-for="lp-9-1" data-i18n-locale="de">Neue Funktionen veröffentlicht</template>
+  <template data-i18n-for="lp-10-1" data-i18n-locale="en">Make Better Decisions, With Ease</template>
+  <template data-i18n-for="lp-10-1" data-i18n-locale="de">Bessere Entscheidungen, ganz leicht</template>
+  <template data-i18n-for="lp-11-1" data-i18n-locale="en"
+    >Acme's personal AI helps you cut through the noise, speed up delivery, and stay focused without switching
+    contexts.</template
+  >
+  <template data-i18n-for="lp-11-1" data-i18n-locale="de"
+    >Die persönliche KI von Acme hilft dir, den Lärm auszublenden, schneller zu liefern und fokussiert zu bleiben, ohne
+    ständig den Kontext zu wechseln.</template
+  >
+  <template data-i18n-for="lp-12-1" data-i18n-locale="en">Get Started</template>
+  <template data-i18n-for="lp-12-1" data-i18n-locale="de">Jetzt starten</template>
+  <template data-i18n-for="lp-13-1" data-i18n-locale="en">Trusted by leading companies</template>
+  <template data-i18n-for="lp-13-1" data-i18n-locale="de">Führende Unternehmen vertrauen uns</template>
+  <template data-i18n-for="lp-14-1" data-i18n-locale="en">Benefits</template>
+  <template data-i18n-for="lp-14-1" data-i18n-locale="de">Vorteile</template>
+  <template data-i18n-for="lp-15-1" data-i18n-locale="en">AI That Works Your Way</template>
+  <template data-i18n-for="lp-15-1" data-i18n-locale="de">KI, die so arbeitet wie du</template>
+  <template data-i18n-for="lp-16-1" data-i18n-locale="en"
+    >Acme eliminates the work and gives you a clear picture of what matters.</template
+  >
+  <template data-i18n-for="lp-16-1" data-i18n-locale="de">Acme nimmt dir Arbeit ab und zeigt klar, was zählt.</template>
+  <template data-i18n-for="lp-17-1" data-i18n-locale="en">Intelligent Prioritization</template>
+  <template data-i18n-for="lp-17-1" data-i18n-locale="de">Intelligente Priorisierung</template>
+  <template data-i18n-for="lp-18-1" data-i18n-locale="en"
+    >Know exactly what to work on next with AI that understands your goals.</template
+  >
+  <template data-i18n-for="lp-18-1" data-i18n-locale="de"
+    >Wisse genau, woran du als Nächstes arbeitest - mit KI, die deine Ziele versteht.</template
+  >
+  <template data-i18n-for="lp-19-1" data-i18n-locale="en">Effortless Integration</template>
+  <template data-i18n-for="lp-19-1" data-i18n-locale="de">Mühelose Integration</template>
+  <template data-i18n-for="lp-20-1" data-i18n-locale="en"
+    >Connects with the tools your team already uses - no steep learning curve.</template
+  >
+  <template data-i18n-for="lp-20-1" data-i18n-locale="de"
+    >Verbindet sich mit den Werkzeugen deines Teams - ohne steile Lernkurve.</template
+  >
+  <template data-i18n-for="lp-21-1" data-i18n-locale="en">Smarter Analytics</template>
+  <template data-i18n-for="lp-21-1" data-i18n-locale="de">Klügere Analysen</template>
+  <template data-i18n-for="lp-22-1" data-i18n-locale="en">Turn data into clarity with AI-powered insights.</template>
+  <template data-i18n-for="lp-22-1" data-i18n-locale="de"
+    >Aus Daten wird Klarheit - mit KI-gestützten Einblicken.</template
+  >
+  <template data-i18n-for="lp-23-1" data-i18n-locale="en">Seamless Workflow</template>
+  <template data-i18n-for="lp-23-1" data-i18n-locale="de">Nahtloser Workflow</template>
+  <template data-i18n-for="lp-24-1" data-i18n-locale="en">Stay in the zone without context switching.</template>
+  <template data-i18n-for="lp-24-1" data-i18n-locale="de">Bleib im Flow, ohne den Kontext zu wechseln.</template>
+  <template data-i18n-for="lp-25-1" data-i18n-locale="en">Team Alignment</template>
+  <template data-i18n-for="lp-25-1" data-i18n-locale="de">Team im Gleichschritt</template>
+  <template data-i18n-for="lp-26-1" data-i18n-locale="en"
+    >A single source of truth for projects and decisions.</template
+  >
+  <template data-i18n-for="lp-26-1" data-i18n-locale="de"
+    >Eine einzige Quelle der Wahrheit für Projekte und Entscheidungen.</template
+  >
+  <template data-i18n-for="lp-27-1" data-i18n-locale="en">Clear Decision Support</template>
+  <template data-i18n-for="lp-27-1" data-i18n-locale="de">Klare Entscheidungshilfe</template>
+  <template data-i18n-for="lp-28-1" data-i18n-locale="en">AI-driven insights when projects stall.</template>
+  <template data-i18n-for="lp-28-1" data-i18n-locale="de">KI-Einblicke, wenn Projekte stocken.</template>
+  <template data-i18n-for="lp-29-1" data-i18n-locale="en">Plan.</template>
+  <template data-i18n-for="lp-29-1" data-i18n-locale="de">Planen.</template>
+  <template data-i18n-for="lp-30-1" data-i18n-locale="en">Prioritize.</template>
+  <template data-i18n-for="lp-30-1" data-i18n-locale="de">Priorisieren.</template>
+  <template data-i18n-for="lp-31-1" data-i18n-locale="en">Ship.</template>
+  <template data-i18n-for="lp-31-1" data-i18n-locale="de">Liefern.</template>
+  <template data-i18n-for="lp-32-1" data-i18n-locale="en">Trusted by Teams Everywhere</template>
+  <template data-i18n-for="lp-32-1" data-i18n-locale="de">Teams überall vertrauen uns</template>
+  <template data-i18n-for="lp-33-1" data-i18n-locale="en">Projects completed</template>
+  <template data-i18n-for="lp-33-1" data-i18n-locale="de">Abgeschlossene Projekte</template>
+  <template data-i18n-for="lp-34-1" data-i18n-locale="en">Delivery across teams</template>
+  <template data-i18n-for="lp-34-1" data-i18n-locale="de">Lieferung über Teams hinweg</template>
+  <template data-i18n-for="lp-35-1" data-i18n-locale="en">User satisfaction</template>
+  <template data-i18n-for="lp-35-1" data-i18n-locale="de">Zufriedenheit</template>
+  <template data-i18n-for="lp-36-1" data-i18n-locale="en">With active customers</template>
+  <template data-i18n-for="lp-36-1" data-i18n-locale="de">Mit aktiven Kunden</template>
+  <template data-i18n-for="lp-37-1" data-i18n-locale="en">Loved by talented teams...</template>
+  <template data-i18n-for="lp-37-1" data-i18n-locale="de">Geliebt von talentierten Teams...</template>
+  <template data-i18n-for="lp-38-1" data-i18n-locale="en">Simple Pricing, Smarter Work</template>
+  <template data-i18n-for="lp-38-1" data-i18n-locale="de">Einfache Preise, klügere Arbeit</template>
+  <template data-i18n-for="lp-39-1" data-i18n-locale="en">Acme has a plan designed to help you move faster.</template>
+  <template data-i18n-for="lp-39-1" data-i18n-locale="de"
+    >Acme hat einen Tarif, mit dem du schneller vorankommst.</template
+  >
+  <template data-i18n-for="lp-40-1" data-i18n-locale="en">Billed yearly</template>
+  <template data-i18n-for="lp-40-1" data-i18n-locale="de">Jährliche Abrechnung</template>
+  <template data-i18n-for="lp-40-2" data-i18n-locale="en">Billed yearly</template>
+  <template data-i18n-for="lp-40-2" data-i18n-locale="de">Jährliche Abrechnung</template>
+  <template data-i18n-for="lp-40-3" data-i18n-locale="en">Billed yearly</template>
+  <template data-i18n-for="lp-40-3" data-i18n-locale="de">Jährliche Abrechnung</template>
+  <template data-i18n-for="lp-40-4" data-i18n-locale="en">Billed yearly</template>
+  <template data-i18n-for="lp-40-4" data-i18n-locale="de">Jährliche Abrechnung</template>
+  <template data-i18n-for="lp-41-1" data-i18n-locale="en">Save 20%</template>
+  <template data-i18n-for="lp-41-1" data-i18n-locale="de">20 % sparen</template>
+  <template data-i18n-for="lp-42-1" data-i18n-locale="en">Billed monthly</template>
+  <template data-i18n-for="lp-42-1" data-i18n-locale="de">Monatliche Abrechnung</template>
+  <template data-i18n-for="lp-43-1" data-i18n-locale="en"
+    >For individuals who want AI assistance in their daily workflow.</template
+  >
+  <template data-i18n-for="lp-43-1" data-i18n-locale="de"
+    >Für Einzelne, die KI-Unterstützung im Arbeitsalltag wollen.</template
+  >
+  <template data-i18n-for="lp-44-1" data-i18n-locale="en">Per month</template>
+  <template data-i18n-for="lp-44-1" data-i18n-locale="de">Pro Monat</template>
+  <template data-i18n-for="lp-44-2" data-i18n-locale="en">Per month</template>
+  <template data-i18n-for="lp-44-2" data-i18n-locale="de">Pro Monat</template>
+  <template data-i18n-for="lp-44-3" data-i18n-locale="en">Per month</template>
+  <template data-i18n-for="lp-44-3" data-i18n-locale="de">Pro Monat</template>
+  <template data-i18n-for="lp-44-4" data-i18n-locale="en">Per month</template>
+  <template data-i18n-for="lp-44-4" data-i18n-locale="de">Pro Monat</template>
+  <template data-i18n-for="lp-44-5" data-i18n-locale="en">Per month</template>
+  <template data-i18n-for="lp-44-5" data-i18n-locale="de">Pro Monat</template>
+  <template data-i18n-for="lp-44-6" data-i18n-locale="en">Per month</template>
+  <template data-i18n-for="lp-44-6" data-i18n-locale="de">Pro Monat</template>
+  <template data-i18n-for="lp-45-1" data-i18n-locale="en">Plus local taxes</template>
+  <template data-i18n-for="lp-45-1" data-i18n-locale="de">Zzgl. Steuern vor Ort</template>
+  <template data-i18n-for="lp-45-2" data-i18n-locale="en">Plus local taxes</template>
+  <template data-i18n-for="lp-45-2" data-i18n-locale="de">Zzgl. Steuern vor Ort</template>
+  <template data-i18n-for="lp-45-3" data-i18n-locale="en">Plus local taxes</template>
+  <template data-i18n-for="lp-45-3" data-i18n-locale="de">Zzgl. Steuern vor Ort</template>
+  <template data-i18n-for="lp-46-1" data-i18n-locale="en">Unlimited projects</template>
+  <template data-i18n-for="lp-46-1" data-i18n-locale="de">Unbegrenzte Projekte</template>
+  <template data-i18n-for="lp-47-1" data-i18n-locale="en">AI-powered insights</template>
+  <template data-i18n-for="lp-47-1" data-i18n-locale="de">KI-gestützte Einblicke</template>
+  <template data-i18n-for="lp-48-1" data-i18n-locale="en">Seamless integrations</template>
+  <template data-i18n-for="lp-48-1" data-i18n-locale="de">Nahtlose Integrationen</template>
+  <template data-i18n-for="lp-49-1" data-i18n-locale="en">Community support</template>
+  <template data-i18n-for="lp-49-1" data-i18n-locale="de">Community-Support</template>
+  <template data-i18n-for="lp-50-1" data-i18n-locale="en">Most popular</template>
+  <template data-i18n-for="lp-50-1" data-i18n-locale="de">Am beliebtesten</template>
+  <template data-i18n-for="lp-51-1" data-i18n-locale="en"
+    >For fast-moving teams that want to collaborate in real time.</template
+  >
+  <template data-i18n-for="lp-51-1" data-i18n-locale="de"
+    >Für schnelle Teams, die in Echtzeit zusammenarbeiten wollen.</template
+  >
+  <template data-i18n-for="lp-52-1" data-i18n-locale="en">Everything in Starter</template>
+  <template data-i18n-for="lp-52-1" data-i18n-locale="de">Alles aus Starter</template>
+  <template data-i18n-for="lp-53-1" data-i18n-locale="en">Real-time collaboration</template>
+  <template data-i18n-for="lp-53-1" data-i18n-locale="de">Zusammenarbeit in Echtzeit</template>
+  <template data-i18n-for="lp-54-1" data-i18n-locale="en">Advanced reporting</template>
+  <template data-i18n-for="lp-54-1" data-i18n-locale="de">Erweiterte Berichte</template>
+  <template data-i18n-for="lp-55-1" data-i18n-locale="en">Priority support</template>
+  <template data-i18n-for="lp-55-1" data-i18n-locale="de">Bevorzugter Support</template>
+  <template data-i18n-for="lp-56-1" data-i18n-locale="en"
+    >For organizations that need security, control, and support at scale.</template
+  >
+  <template data-i18n-for="lp-56-1" data-i18n-locale="de"
+    >Für Organisationen, die Sicherheit, Kontrolle und Support im großen Maßstab brauchen.</template
+  >
+  <template data-i18n-for="lp-57-1" data-i18n-locale="en">Everything in Pro</template>
+  <template data-i18n-for="lp-57-1" data-i18n-locale="de">Alles aus Pro</template>
+  <template data-i18n-for="lp-58-1" data-i18n-locale="en">SSO & audit logs</template>
+  <template data-i18n-for="lp-58-1" data-i18n-locale="de">SSO und Audit-Logs</template>
+  <template data-i18n-for="lp-59-1" data-i18n-locale="en">Dedicated success manager</template>
+  <template data-i18n-for="lp-59-1" data-i18n-locale="de">Persönlicher Success Manager</template>
+  <template data-i18n-for="lp-60-1" data-i18n-locale="en">Custom integrations</template>
+  <template data-i18n-for="lp-60-1" data-i18n-locale="de">Eigene Integrationen</template>
+  <template data-i18n-for="lp-61-1" data-i18n-locale="en">Acme Insights</template>
+  <template data-i18n-for="lp-61-1" data-i18n-locale="de">Acme Einblicke</template>
+  <template data-i18n-for="lp-62-1" data-i18n-locale="en"
+    >Insights, tips, and stories to help you work smarter and finish faster.</template
+  >
+  <template data-i18n-for="lp-62-1" data-i18n-locale="de"
+    >Einblicke, Tipps und Geschichten, mit denen du klüger arbeitest und schneller fertig wirst.</template
+  >
+  <template data-i18n-for="lp-63-1" data-i18n-locale="en">Support</template>
+  <template data-i18n-for="lp-63-1" data-i18n-locale="de">Hilfe</template>
+  <template data-i18n-for="lp-64-1" data-i18n-locale="en">Frequently Asked Questions</template>
+  <template data-i18n-for="lp-64-1" data-i18n-locale="de">Häufige Fragen</template>
+  <template data-i18n-for="lp-65-1" data-i18n-locale="en">Want to know more?</template>
+  <template data-i18n-for="lp-65-1" data-i18n-locale="de">Mehr erfahren?</template>
+  <template data-i18n-for="lp-66-1" data-i18n-locale="en"
+    >Our team is here to help you get the answers you need.</template
+  >
+  <template data-i18n-for="lp-66-1" data-i18n-locale="de"
+    >Unser Team hilft dir, die Antworten zu finden, die du brauchst.</template
+  >
+  <template data-i18n-for="lp-67-1" data-i18n-locale="en">Stay in the loop</template>
+  <template data-i18n-for="lp-67-1" data-i18n-locale="de">Bleib auf dem Laufenden</template>
+  <template data-i18n-for="lp-68-1" data-i18n-locale="en"
+    >Get insights, product updates, and productivity tips straight to your inbox.</template
+  >
+  <template data-i18n-for="lp-68-1" data-i18n-locale="de"
+    >Einblicke, Produkt-Updates und Tipps für produktives Arbeiten direkt in dein Postfach.</template
+  >
+  <template data-i18n-for="lp-69-1" data-i18n-locale="en">Email address</template>
+  <template data-i18n-for="lp-69-1" data-i18n-locale="de">E-Mail-Adresse</template>
+  <template data-i18n-for="lp-70-1" data-i18n-locale="en">Subscribe</template>
+  <template data-i18n-for="lp-70-1" data-i18n-locale="de">Abonnieren</template>
+  <template data-i18n-for="lp-71-1" data-i18n-locale="en">We respect your privacy - unsubscribe any time.</template>
+  <template data-i18n-for="lp-71-1" data-i18n-locale="de"
+    >Wir respektieren deine Privatsphäre - jederzeit abbestellbar.</template
+  >
+  <template data-i18n-for="lp-72-1" data-i18n-locale="en">Please enter a valid email address.</template>
+  <template data-i18n-for="lp-72-1" data-i18n-locale="de">Bitte gib eine gültige E-Mail-Adresse ein.</template>
+  <template data-i18n-for="lp-73-1" data-i18n-locale="en">Product</template>
+  <template data-i18n-for="lp-73-1" data-i18n-locale="de">Produkt</template>
+  <template data-i18n-for="lp-74-1" data-i18n-locale="en">About Us</template>
+  <template data-i18n-for="lp-74-1" data-i18n-locale="de">Über uns</template>
+  <template data-i18n-for="lp-75-1" data-i18n-locale="en">Careers</template>
+  <template data-i18n-for="lp-75-1" data-i18n-locale="de">Karriere</template>
+  <template data-i18n-for="lp-76-1" data-i18n-locale="en">Press</template>
+  <template data-i18n-for="lp-76-1" data-i18n-locale="de">Presse</template>
+  <template data-i18n-for="lp-77-1" data-i18n-locale="en">Resources</template>
+  <template data-i18n-for="lp-77-1" data-i18n-locale="de">Ressourcen</template>
+  <template data-i18n-for="lp-78-1" data-i18n-locale="en">Help Center</template>
+  <template data-i18n-for="lp-78-1" data-i18n-locale="de">Hilfe-Center</template>
+  <template data-i18n-for="lp-79-1" data-i18n-locale="en">Guides</template>
+  <template data-i18n-for="lp-79-1" data-i18n-locale="de">Anleitungen</template>
+  <template data-i18n-for="lp-80-1" data-i18n-locale="en">Legal</template>
+  <template data-i18n-for="lp-80-1" data-i18n-locale="de">Rechtliches</template>
+  <template data-i18n-for="lp-81-1" data-i18n-locale="en">Privacy Policy</template>
+  <template data-i18n-for="lp-81-1" data-i18n-locale="de">Datenschutz</template>
+  <template data-i18n-for="lp-82-1" data-i18n-locale="en">Terms of Service</template>
+  <template data-i18n-for="lp-82-1" data-i18n-locale="de">Nutzungsbedingungen</template>
+  <template data-i18n-for="lp-83-1" data-i18n-locale="en">Security</template>
+  <template data-i18n-for="lp-83-1" data-i18n-locale="de">Sicherheit</template>
+  <template data-i18n-for="lp-84-1" data-i18n-locale="en">Cookie Settings</template>
+  <template data-i18n-for="lp-84-1" data-i18n-locale="de">Cookie-Einstellungen</template>
+  <template data-i18n-for="lp-85-1" data-i18n-locale="en">© Copyright Acme Inc. 2026. All rights reserved.</template>
+  <template data-i18n-for="lp-85-1" data-i18n-locale="de"
+    >© Copyright Acme Inc. 2026. Alle Rechte vorbehalten.</template
+  >
 </div>
 <div class="fab" data-scroll-top>
-  <a class="btn fab-trigger" href="#top" aria-label="Back to top"
+  <a
+    class="btn fab-trigger"
+    href="#/"
+    data-router-link
+    aria-label="Back to top"
+    data-i18n-aria-label-en="Back to top"
+    data-i18n-aria-label-de="Nach oben"
     ><span class="fab-icon" aria-hidden="true"><i data-lucide="arrow-up"></i></span
   ></a>
 </div>
@@ -1816,6 +2176,73 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   </script>
 </div>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const site = df$('#top').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the page)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    createDomI18n(df$).bind(site, locale);
+    const language = df$('[data-app-locale]');
+    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- routing
+    const routes = [
+      { id: 'top', path: '/' },
+      { id: 'section', path: '/:section' },
+    ];
+    const SECTIONS = ['features', 'pricing', 'faq'];
+    const motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    let first = true;
+    // a section route scrolls to its section and marks its header link; #/ is the top
+    const show = (to) => {
+      const section = to.routeId === 'section' && SECTIONS.includes(to.params.section) ? to.params.section : null;
+      df$('.mk-header-nav [data-router-link]').each((_i, link) => {
+        if (link.getAttribute('href') === '#/' + section) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      });
+      // the page opens where its address says - at once ('auto' would take the page's smooth scroll-behavior) and
+      // once its images have laid it out (a scroll before the load lands short); a click glides there
+      const behavior = first ? 'instant' : motion;
+      const go = () => {
+        if (section)
+          df$('#lp-' + section)
+            .get(0)
+            .scrollIntoView({ behavior, block: 'start' });
+        else if (!first) scrollTo({ top: 0, behavior });
+      };
+      if (first && section && document.readyState !== 'complete') addEventListener('load', go, { once: true });
+      else go();
+      first = false;
+    };
+    // the page scrolls itself (to a section) - the router's own scroll to the top would stop that glide
+    const router = createRouter({
+      mode: 'hash',
+      scroll: 'manual',
+      routes,
+      prepare: ({ to }) => ({ commit: () => show(to) }),
+    });
+    router.attachLinks(document);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+  });
+</script>
 ```
 
 <h2 id="blocks" class="h2-display">The blocks</h2>

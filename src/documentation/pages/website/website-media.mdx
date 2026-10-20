@@ -4,7 +4,7 @@ description: "Website blocks - Media: Blocks for pictures, video, audio and soci
 slug: "website-media"
 ---
 
-import { DocPage, PageHeader, DocText } from "../../lib/components/index";
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -14,25 +14,45 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Media blocks composed into one page - the source is the page.</DocText>
+<DocText>The Media blocks composed into one page - the source is the page. Every photo and the Slideshow button are routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/photos/3</code>) that open the slideshow on that photo - a photo is linkable, Esc returns to <code>#/</code>; the language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink>.</DocText>
 
-```html example label="A media page" schema="none" hint="Text Media, a Media Gallery, a Video Player with transcript, a podcast Audio Player over its Playlist, a Before After slider and Social Posts - only Media blocks." previewStyle="align-items:stretch;"
-<div style="display: flex; flex-direction: column; gap: 4rem; width: 100%">
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-website-media.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="A media page" schema="none" hint="A photo is a route that opens the slideshow (#/photos/3); the switch translates the frame. Text Media, a Media Gallery, a Video Player with transcript, a podcast Audio Player over its Playlist, a Before After slider and Social Posts - only Media blocks." previewStyle="align-items:stretch;"
+<div id="site-media" data-i18n-component style="display: flex; flex-direction: column; gap: 4rem; width: 100%">
+  <div class="flex justify-end" style="margin-block-end: -2.5rem">
+    <select
+      class="select"
+      data-size="sm"
+      data-app-locale
+      aria-label="Language"
+      data-i18n-aria-label-en="Language"
+      data-i18n-aria-label-de="Sprache"
+      style="width: auto"
+    >
+      <option value="en" lang="en">English</option>
+      <option value="de" lang="de">Deutsch</option>
+    </select>
+  </div>
   <section class="mk-text-media" aria-labelledby="tm-1">
     <div class="mk-text-media-layout">
       <div class="mk-text-media-copy">
-        <span class="mk-text-media-eyebrow">Offline first</span>
-        <h2 class="mk-text-media-title" id="tm-1">Your work travels with you</h2>
+        <span class="mk-text-media-eyebrow" data-i18n-target="eyebrow">Offline first</span>
+        <h2 class="mk-text-media-title" id="tm-1" data-i18n-target="tm-title">Your work travels with you</h2>
         <p class="mk-text-media-text"
           >Every change is saved on your device first and synced when you are back online - on a plane, in a tunnel, at
           the cabin.</p
         >
         <ul class="mk-text-media-list"
-          ><li><i data-lucide="check"></i>Edits never wait for the network</li
-          ><li><i data-lucide="check"></i>Conflicts resolve themselves</li
-          ><li><i data-lucide="check"></i>Works on every device</li></ul
+          ><li><i data-lucide="check"></i><span data-i18n-target="tm-wait">Edits never wait for the network</span></li
+          ><li><i data-lucide="check"></i><span data-i18n-target="tm-conflicts">Conflicts resolve themselves</span></li
+          ><li><i data-lucide="check"></i><span data-i18n-target="tm-devices">Works on every device</span></li></ul
         >
-        <a class="mk-text-media-link" href="#">How sync works <i data-lucide="arrow-right"></i></a>
+        <a class="mk-text-media-link" href="#"
+          ><span data-i18n-target="tm-link">How sync works</span> <i data-lucide="arrow-right"></i
+        ></a>
       </div>
       <figure class="mk-text-media-media"
         ><img src="https://picsum.photos/seed/tm-cabin/1000/750" alt="A laptop on a table in a mountain cabin"
@@ -41,63 +61,83 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
   </section>
   <section class="mk-media-gallery" aria-labelledby="mg-title">
     <header class="mk-media-gallery-head">
-      <h2 id="mg-title">Lisbon, autumn 2026</h2>
-      <span>8 photos</span>
+      <h2 id="mg-title" data-i18n-target="mg-title">Lisbon, autumn 2026</h2>
+      <span data-i18n-target="mg-count">8 photos</span>
       <div class="mk-media-gallery-tools">
-        <div class="mk-media-gallery-views" role="radiogroup" aria-label="Layout">
+        <div
+          class="mk-media-gallery-views"
+          role="radiogroup"
+          aria-label="Layout"
+          data-i18n-aria-label-en="Layout"
+          data-i18n-aria-label-de="Ansicht"
+        >
           <label
             ><input type="radio" name="mg-view" value="grid" checked /><i data-lucide="layout-grid"></i
-            ><span class="sr-only">Grid</span></label
+            ><span class="sr-only" data-i18n-target="view-grid">Grid</span></label
           >
           <label
             ><input type="radio" name="mg-view" value="masonry" /><i data-lucide="layout-dashboard"></i
-            ><span class="sr-only">Masonry</span></label
+            ><span class="sr-only" data-i18n-target="view-masonry">Masonry</span></label
           >
           <label
             ><input type="radio" name="mg-view" value="strip" /><i data-lucide="gallery-horizontal"></i
-            ><span class="sr-only">Filmstrip</span></label
+            ><span class="sr-only" data-i18n-target="view-strip">Filmstrip</span></label
           >
         </div>
-        <button
-          class="btn"
-          data-variant="outline"
-          data-size="sm"
-          type="button"
-          commandfor="mg-viewer"
-          command="show-modal"
-          ><i data-lucide="play"></i> Slideshow</button
+        <a class="btn" data-variant="outline" data-size="sm" href="#/photos/1" data-router-link
+          ><i data-lucide="play"></i> <span data-i18n-target="slideshow">Slideshow</span></a
         >
       </div>
     </header>
     <ul class="mk-media-gallery-grid">
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-1/800/600" alt="Harbour at dawn" /></figure
+        ><a href="#/photos/1" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-1/800/600" alt="Harbour at dawn" /></figure></a
       ></li>
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-2/600/800" alt="Stairs in Alfama" /></figure
+        ><a href="#/photos/2" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-2/600/800" alt="Stairs in Alfama" /></figure></a
       ></li>
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-3/800/500" alt="River light" /></figure
+        ><a href="#/photos/3" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-3/800/500" alt="River light" /></figure></a
       ></li>
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-4/600/600" alt="Tiles" /></figure
+        ><a href="#/photos/4" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-4/600/600" alt="Tiles" /></figure></a
       ></li>
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-5/800/600" alt="Market morning" /></figure
+        ><a href="#/photos/5" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-5/800/600" alt="Market morning" /></figure></a
       ></li>
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-6/600/900" alt="Old tram" /></figure
+        ><a href="#/photos/6" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-6/600/900" alt="Old tram" /></figure></a
       ></li>
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-7/800/600" alt="Coastline" /></figure
+        ><a href="#/photos/7" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-7/800/600" alt="Coastline" /></figure></a
       ></li>
       <li
-        ><figure><img src="https://picsum.photos/seed/mg-8/700/500" alt="Rooftops" /></figure
+        ><a href="#/photos/8" data-router-link style="display: block"
+          ><figure><img src="https://picsum.photos/seed/mg-8/700/500" alt="Rooftops" /></figure></a
       ></li>
     </ul>
-    <dialog class="mk-media-gallery-viewer" id="mg-viewer" aria-label="Slideshow: Lisbon, autumn 2026">
+    <dialog
+      class="mk-media-gallery-viewer"
+      id="mg-viewer"
+      aria-label="Slideshow: Lisbon, autumn 2026"
+      data-i18n-aria-label-en="Slideshow: Lisbon, autumn 2026"
+      data-i18n-aria-label-de="Diashow: Lissabon, Herbst 2026"
+    >
       <div class="mk-media-gallery-viewer-inner">
-        <ul class="mk-media-gallery-track" tabindex="0" aria-label="Photos - scroll sideways">
+        <ul
+          class="mk-media-gallery-track"
+          tabindex="0"
+          aria-label="Photos - scroll sideways"
+          data-i18n-aria-label-en="Photos - scroll sideways"
+          data-i18n-aria-label-de="Fotos - seitwärts scrollen"
+        >
           <li
             ><img src="https://picsum.photos/seed/mg-1/1600/1200" alt="Harbour at dawn" /><p
               >1 / 8 · Harbour at dawn</p
@@ -119,9 +159,14 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           <li><img src="https://picsum.photos/seed/mg-7/1600/1200" alt="Coastline" /><p>7 / 8 · Coastline</p></li>
           <li><img src="https://picsum.photos/seed/mg-8/1400/1000" alt="Rooftops" /><p>8 / 8 · Rooftops</p></li>
         </ul>
-        <p class="mk-media-gallery-hint">Swipe, scroll or use ← → · Esc closes</p>
+        <p class="mk-media-gallery-hint" data-i18n-target="mg-hint">Swipe, scroll or use ← → · Esc closes</p>
         <form method="dialog"
-          ><button class="mk-media-gallery-close" aria-label="Close slideshow"><i data-lucide="x"></i></button
+          ><button
+            class="mk-media-gallery-close"
+            aria-label="Close slideshow"
+            data-i18n-aria-label-en="Close slideshow"
+            data-i18n-aria-label-de="Diashow schließen"
+            ><i data-lucide="x"></i></button
         ></form>
       </div>
     </dialog>
@@ -137,13 +182,13 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
         </video>
       </div>
       <section class="mk-video-player-transcript" aria-labelledby="vp-tr" tabindex="0">
-        <h3 id="vp-tr">Transcript</h3>
+        <h3 id="vp-tr" data-i18n-target="transcript">Transcript</h3>
         <p><time datetime="PT0S">0:00</time>Plan the week on one calm board.</p>
         <p><time datetime="PT2S">0:02</time>Drafts, docs and tasks stay linked.</p>
         <p><time datetime="PT4S">0:04</time>Ship it - and everyone sees what changed.</p>
       </section>
     </div>
-    <figcaption class="mk-video-player-caption"><h3>Acme in 60 seconds</h3></figcaption>
+    <figcaption class="mk-video-player-caption"><h3 data-i18n-target="vp-caption">Acme in 60 seconds</h3></figcaption>
   </figure>
   <div
     style="
@@ -160,7 +205,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
         alt="Cover of The Calm Letter podcast"
       />
       <div class="mk-audio-player-body">
-        <span class="mk-audio-player-show">The Calm Letter · Episode 41</span>
+        <span class="mk-audio-player-show" data-i18n-target="ap-show">The Calm Letter · Episode 41</span>
         <h3 class="mk-audio-player-title" id="ap-3">Writing decisions down</h3>
         <span class="mk-audio-player-meta"
           >With Hannah Lee · 14 sec · <time datetime="2026-09-23">23 Sep 2026</time></span
@@ -172,7 +217,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           >
         </div>
         <details class="mk-audio-player-notes">
-          <summary>Show notes</summary>
+          <summary data-i18n-target="ap-notes">Show notes</summary>
           <p>Hannah explains how her team replaced status meetings with written decisions - and what they kept.</p>
           <ul
             ><li>0:00 Intro</li
@@ -182,7 +227,14 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
         </details>
       </div>
     </article>
-    <ol class="mk-playlist" role="radiogroup" aria-label="The Calm Letter - episodes" style="max-width: 40rem">
+    <ol
+      class="mk-playlist"
+      role="radiogroup"
+      aria-label="The Calm Letter - episodes"
+      data-i18n-aria-label-en="The Calm Letter - episodes"
+      data-i18n-aria-label-de="The Calm Letter - Folgen"
+      style="max-width: 40rem"
+    >
       <li class="mk-playlist-item" data-variant="episode">
         <label>
           <input type="radio" name="episode" value="42" checked />
@@ -328,7 +380,95 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
       </footer>
     </article>
   </div>
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="eyebrow" data-i18n-locale="en">Offline first</template>
+  <template data-i18n-for="eyebrow" data-i18n-locale="de">Zuerst offline</template>
+  <template data-i18n-for="tm-title" data-i18n-locale="en">Your work travels with you</template>
+  <template data-i18n-for="tm-title" data-i18n-locale="de">Deine Arbeit reist mit</template>
+  <template data-i18n-for="tm-wait" data-i18n-locale="en">Edits never wait for the network</template>
+  <template data-i18n-for="tm-wait" data-i18n-locale="de">Änderungen warten nie auf das Netz</template>
+  <template data-i18n-for="tm-conflicts" data-i18n-locale="en">Conflicts resolve themselves</template>
+  <template data-i18n-for="tm-conflicts" data-i18n-locale="de">Konflikte lösen sich von selbst</template>
+  <template data-i18n-for="tm-devices" data-i18n-locale="en">Works on every device</template>
+  <template data-i18n-for="tm-devices" data-i18n-locale="de">Funktioniert auf jedem Gerät</template>
+  <template data-i18n-for="tm-link" data-i18n-locale="en">How sync works</template>
+  <template data-i18n-for="tm-link" data-i18n-locale="de">So funktioniert Sync</template>
+  <template data-i18n-for="mg-count" data-i18n-locale="en">8 photos</template>
+  <template data-i18n-for="mg-count" data-i18n-locale="de">8 Fotos</template>
+  <template data-i18n-for="mg-title" data-i18n-locale="en">Lisbon, autumn 2026</template>
+  <template data-i18n-for="mg-title" data-i18n-locale="de">Lissabon, Herbst 2026</template>
+  <template data-i18n-for="view-grid" data-i18n-locale="en">Grid</template>
+  <template data-i18n-for="view-grid" data-i18n-locale="de">Raster</template>
+  <template data-i18n-for="view-masonry" data-i18n-locale="en">Masonry</template>
+  <template data-i18n-for="view-masonry" data-i18n-locale="de">Mauerwerk</template>
+  <template data-i18n-for="view-strip" data-i18n-locale="en">Filmstrip</template>
+  <template data-i18n-for="view-strip" data-i18n-locale="de">Filmstreifen</template>
+  <template data-i18n-for="slideshow" data-i18n-locale="en">Slideshow</template>
+  <template data-i18n-for="slideshow" data-i18n-locale="de">Diashow</template>
+  <template data-i18n-for="mg-hint" data-i18n-locale="en">Swipe, scroll or use ← → · Esc closes</template>
+  <template data-i18n-for="mg-hint" data-i18n-locale="de">Wischen, scrollen oder ← → · Esc schließt</template>
+  <template data-i18n-for="transcript" data-i18n-locale="en">Transcript</template>
+  <template data-i18n-for="transcript" data-i18n-locale="de">Transkript</template>
+  <template data-i18n-for="vp-caption" data-i18n-locale="en">Acme in 60 seconds</template>
+  <template data-i18n-for="vp-caption" data-i18n-locale="de">Acme in 60 Sekunden</template>
+  <template data-i18n-for="ap-show" data-i18n-locale="en">The Calm Letter · Episode 41</template>
+  <template data-i18n-for="ap-show" data-i18n-locale="de">The Calm Letter · Folge 41</template>
+  <template data-i18n-for="ap-notes" data-i18n-locale="en">Show notes</template>
+  <template data-i18n-for="ap-notes" data-i18n-locale="de">Shownotes</template>
 </div>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const site = df$('#site-media').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the page)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    createDomI18n(df$).bind(site, locale);
+    const language = df$('[data-app-locale]');
+    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- routing
+    const routes = [
+      { id: 'page', path: '/' },
+      { id: 'photo', path: '/photos/:n' },
+      { id: 'missing', path: '*' },
+    ];
+    const viewer = df$('#mg-viewer').get(0);
+    const slides = df$('#mg-viewer .mk-media-gallery-track > li');
+    // a photo route opens the slideshow on that photo; any other route closes it
+    const show = (to) => {
+      const slide = to.routeId === 'photo' ? slides.get(Number(to.params.n) - 1) : undefined;
+      if (!slide) return viewer.open && viewer.close();
+      if (!viewer.open) viewer.showModal();
+      slide.scrollIntoView({ block: 'nearest', inline: 'start' });
+    };
+    // closing the slideshow (Esc, ×) leaves the photo's address
+    viewer.addEventListener('close', () => {
+      if (!location.hash.startsWith('#/photos/')) return;
+      if (router.getSnapshot().current) router.navigate('#/');
+      else location.hash = '/';
+    });
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(site);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+  });
+</script>
 ```
 
 <h2 id="blocks" class="h2-display">The blocks</h2>

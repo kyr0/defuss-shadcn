@@ -40,7 +40,23 @@ export const STANDALONE_APPS = [
     'scaffold-desktop',
     'scaffold-document-editor',
 ];
-export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio'];
+/** the Website templates: a site needs an address to route - their full-screen page is where the router owns one
+ *  (a docs card is an about:srcdoc frame - the Client-side Routing guide) */
+export const WEBSITE_TEMPLATES = [
+    'website-landing-page',
+    'website-news',
+    'website-blog',
+    'website-article',
+    'website-comments',
+    'website-company',
+    'website-events-promotions',
+    'website-media',
+    'website-shop',
+    'website-account-states',
+    'website-docs-help',
+    'website-search-navigation',
+];
+export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio', ...WEBSITE_TEMPLATES];
 /** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) - its bundle is dist/apps/<name>/. */
 export const appName = (slug) => slug.replace(/^scaffold-/, '');
 /** The ids (file stems) of the generated standalone pages. */
@@ -127,7 +143,8 @@ export const assetHref = (from, path) => `${docsRoot(from)}${path}`;
  * VERIFIED: (verify `page links resolve` + `cross-page imports`) every link
  * and asset in every rendered page resolves from its folder.
  */
-const LINK_ATTR = /(<(?:a|iframe|link|script|img|source|video|audio|form|use)\b[^>]*?\s(?:href|src|action|poster)=")([^"]*)(")/g;
+// a video's captions (<track src>) too - VERIFIED: full-website-media.html asked videos/demo.en.vtt of its own folder (404)
+const LINK_ATTR = /(<(?:a|iframe|link|script|img|source|track|video|audio|form|use)\b[^>]*?\s(?:href|src|action|poster)=")([^"]*)(")/g;
 const ASSET_ROOTS = /^(?:css|js|fonts|images|videos|templates|files)\//;
 export function resolvePageRefs(html, outputFile) {
     const id = outputFile.replace(/\\/g, '/').replace(/^.*\//, '').replace(/\.html$/, '');

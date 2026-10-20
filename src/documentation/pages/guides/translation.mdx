@@ -1,6 +1,6 @@
 ---
 title: "Translation"
-description: "Translate defuss-shadcn markup with defuss-i18n: the HTML is the catalog - one template per region and language, attribute variants, Intl numbers, dates and plurals, morphed through the components' own df$. Used by every Application Scaffold."
+description: "Translate defuss-shadcn markup with defuss-i18n: the HTML is the catalog - one template per region and language, attribute variants, Intl numbers, dates and plurals, morphed through the components' own df$. Used by every Application Scaffold and Website template."
 slug: "translation"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
 <DocPage meta={meta}>
 
 <PageHeader slug="translation" title="Translation" introStyle="max-width:40rem;">
-  <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a> translates the markup you already have. Each region of a component keeps one <code>&lt;template&gt;</code> per language next to it; switching the language morphs the region into that template through the same <code>df$</code> the components run on, so focus, typed input and open dialogs survive. Numbers, dates and plurals come from the browser's <code>Intl</code>. No string tables, no build step - and every <DocLink href="application-scaffolds.html">Application Scaffold</DocLink> uses it.
+  <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a> translates the markup you already have. Each region of a component keeps one <code>&lt;template&gt;</code> per language next to it; switching the language morphs the region into that template through the same <code>df$</code> the components run on, so focus, typed input and open dialogs survive. Numbers, dates and plurals come from the browser's <code>Intl</code>. No string tables, no build step - every <DocLink href="application-scaffolds.html">Application Scaffold</DocLink> and every Website template uses it.
 </PageHeader>
 
 <div class="flex gap-3 mb-8 flex-wrap items-center">
@@ -179,7 +179,7 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
 
 <H2>Where it is used</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> Every Application Scaffold binds its root once and switches between English and German; the routes of each are in <DocLink href="routing.html">Client-side Routing</DocLink>. </p>
+<p class="text-sm text-muted-foreground mb-5"> Every Application Scaffold and every Website template binds its root once and switches between English and German; the routes of each are in <DocLink href="routing.html">Client-side Routing</DocLink>. The templates show the values: the <DocLink href="website-shop.html">Shop</DocLink> formats every price as a currency (€88.90, 88,90 €), the <DocLink href="website-comments.html">Comments</DocLink> say how long ago with <code>Intl.RelativeTimeFormat</code> (2 hours ago, vor 2 Stunden), the <DocLink href="website-news.html">News</DocLink> date its masthead with <code>formatDate</code>, the <DocLink href="website-search-navigation.html">Search</DocLink> counts its results. </p>
 
 <TableCard title="the scaffolds' translations" mb="2.5rem"><table class="table" data-variant="simple">
   <thead>

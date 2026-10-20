@@ -4,7 +4,7 @@ description: "Website blocks - Events & Promotions: Blocks for campaigns, events
 slug: "website-events-promotions"
 ---
 
-import { DocPage, PageHeader, DocText } from "../../lib/components/index";
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -14,17 +14,40 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Events & Promotions blocks composed into one page - the source is the page.</DocText>
+<DocText>The Events & Promotions blocks composed into one page - the source is the page. A track filters the schedule and a speaker's talk opens its session - routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/track/design</code>, <code>#/sessions/ss-2</code>); the language switch translates the page with <DocLink href="translation.html">defuss-i18n</DocLink>.</DocText>
 
-```html example label="An event page" schema="none" hint="An announcement, the Event Header, the Summit Night scene - seven parallax planes, scroll slowly -, a Countdown bar, the Event Description, the agenda (Session Items), the speakers, the venue (Location Map + Opening Hours) and a final CTA - only Events & Promotions blocks." previewStyle="align-items:stretch;"
-<div style="display: flex; flex-direction: column; gap: 3.5rem; width: 100%">
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-website-events-promotions.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="An event page" schema="none" hint="A track filters the schedule (#/track/engineering), a talk opens its session (#/sessions/ss-2); the switch translates the page. An announcement, the Event Header, the Summit Night scene - seven parallax planes, scroll slowly -, a Countdown bar, the Event Description, the agenda (Session Items), the speakers, the venue (Location Map + Opening Hours) and a final CTA - only Events & Promotions blocks." previewStyle="align-items:stretch;"
+<div id="site-events" data-i18n-component style="display: flex; flex-direction: column; gap: 3.5rem; width: 100%">
+  <div class="flex justify-end" style="margin-block-end: -2rem">
+    <select
+      class="select"
+      data-size="sm"
+      data-app-locale
+      aria-label="Language"
+      data-i18n-aria-label-en="Language"
+      data-i18n-aria-label-de="Sprache"
+      style="width: auto"
+    >
+      <option value="en" lang="en">English</option>
+      <option value="de" lang="de">Deutsch</option>
+    </select>
+  </div>
   <dialog class="mk-announcement" data-variant="primary" open aria-labelledby="ann-2">
     <div class="mk-announcement-inner">
       <i data-lucide="calendar"></i>
-      <p id="ann-2">Acme Summit · 12–13 November, Lisbon. Early-bird ends Friday.</p>
-      <a href="#">Get tickets <i data-lucide="arrow-right"></i></a>
+      <p id="ann-2" data-i18n-target="ev-1-1">Acme Summit · 12–13 November, Lisbon. Early-bird ends Friday.</p>
+      <a href="#"><span data-i18n-target="ev-2-1">Get tickets</span> <i data-lucide="arrow-right"></i></a>
       <form method="dialog"
-        ><button class="mk-announcement-close" aria-label="Dismiss summit announcement"><i data-lucide="x"></i></button
+        ><button
+          class="mk-announcement-close"
+          aria-label="Dismiss summit announcement"
+          data-i18n-aria-label-en="Dismiss summit announcement"
+          data-i18n-aria-label-de="Summit-Hinweis schließen"
+          ><i data-lucide="x"></i></button
       ></form>
     </div>
   </dialog>
@@ -36,7 +59,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           ><span class="badge" data-variant="outline">3rd edition</span></div
         >
         <h1 class="mk-event-header-title">Acme Summit 2026</h1>
-        <p class="mk-event-header-tagline"
+        <p class="mk-event-header-tagline" data-i18n-target="ev-3-1"
           >Two days of talks and workshops on building calm software - for product people, designers and engineers.</p
         >
         <ul class="mk-event-header-meta">
@@ -45,12 +68,12 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
             ><span><time datetime="2026-11-12">12</time>–<time datetime="2026-11-13">13 November 2026</time></span></li
           >
           <li><i data-lucide="map-pin"></i><address>Lisbon Congress Centre, Portugal</address></li>
-          <li><i data-lucide="ticket"></i>From €290</li>
+          <li><i data-lucide="ticket"></i><span data-i18n-target="ev-4-1">From €290</span></li>
         </ul>
         <div class="mk-event-header-actions">
           <a class="btn" data-size="lg" href="#">Register now</a>
           <a class="btn" data-variant="outline" data-size="lg" href="#" download="acme-summit-2026.ics"
-            ><i data-lucide="calendar-plus"></i> Add to calendar</a
+            ><i data-lucide="calendar-plus"></i> <span data-i18n-target="ev-5-1">Add to calendar</span></a
           >
         </div>
         <div class="mk-event-header-speakers"
@@ -59,13 +82,19 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
             ><span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span
             ><span class="avatar" data-size="sm"
               ><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span></div
-          >40+ speakers from 12 countries</div
+          ><span data-i18n-target="ev-6-1">40+ speakers from 12 countries</span></div
         >
       </div>
     </div>
   </header>
   <!-- the evening party: seven planes at their own speeds (the Parallax page's scene) -->
-  <section class="parallax" style="height: 34rem; background: #0b1026" aria-label="Summit Night - the evening party">
+  <section
+    class="parallax"
+    style="height: 34rem; background: #0b1026"
+    aria-label="Summit Night - the evening party"
+    data-i18n-aria-label-en="Summit Night - the evening party"
+    data-i18n-aria-label-de="Summit Night - die Abendparty"
+  >
     <div
       class="parallax-layer"
       style="--parallax-speed: 60%; z-index: -7; background: linear-gradient(#0b1026, #2a1b4f 60%, #5b2a63)"
@@ -228,6 +257,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
             opacity: 0.85;
             text-shadow: 0 2px 16px rgb(0 0 0 / 0.5);
           "
+          data-i18n-target="ev-7-1"
           >Music, food and the people you met all day - under the stars, above the harbour.</p
         >
       </div>
@@ -235,16 +265,16 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
   </section>
   <section class="mk-event-countdown" data-variant="inline" aria-labelledby="ec-3">
     <div class="mk-event-countdown-inner">
-      <h2 class="mk-event-countdown-title" id="ec-3">Early-bird ends in</h2>
+      <h2 class="mk-event-countdown-title" id="ec-3" data-i18n-target="ev-8-1">Early-bird ends in</h2>
       <div class="countdown-group mk-event-countdown-timer" data-until="2026-10-31T23:59:59Z">
         <div class="countdown-unit" data-variant="muted"
           ><span class="countdown" data-size="xl"><span data-unit="days" style="--value: 41">41</span></span
-          ><span class="countdown-label">days</span></div
+          ><span class="countdown-label" data-i18n-target="ev-9-1">days</span></div
         >
         <div class="countdown-unit" data-variant="muted"
           ><span class="countdown" data-size="xl" data-digits="2"
             ><span data-unit="hours" style="--value: 9">09</span></span
-          ><span class="countdown-label">hours</span></div
+          ><span class="countdown-label" data-i18n-target="ev-10-1">hours</span></div
         >
         <div class="countdown-unit" data-variant="muted"
           ><span class="countdown" data-size="xl" data-digits="2"
@@ -254,17 +284,22 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
         <div class="countdown-unit" data-variant="muted"
           ><span class="countdown" data-size="xl" data-digits="2"
             ><span data-unit="seconds" style="--value: 0">00</span></span
-          ><span class="countdown-label">sec</span></div
+          ><span class="countdown-label" data-i18n-target="ev-11-1">sec</span></div
         >
       </div>
       <a class="btn" data-size="sm" href="#">Save 30%</a>
     </div>
   </section>
-  <section class="mk-event-description" aria-label="About the event">
+  <section
+    class="mk-event-description"
+    aria-label="About the event"
+    data-i18n-aria-label-en="About the event"
+    data-i18n-aria-label-de="Über die Veranstaltung"
+  >
     <div class="mk-event-description-layout">
       <div class="mk-event-description-body">
         <section aria-labelledby="ed-about"
-          ><h2 id="ed-about">About</h2
+          ><h2 id="ed-about" data-i18n-target="ev-12-1">About</h2
           ><p
             >Acme Summit brings together the people who build the tools teams use every day. Two days, one track, no
             sponsor pitches - just honest talks on making software calmer, and workshops where you leave with something
@@ -272,43 +307,62 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           ></section
         >
         <section aria-labelledby="ed-who"
-          ><h2 id="ed-who">Who it is for</h2>
+          ><h2 id="ed-who" data-i18n-target="ev-13-1">Who it is for</h2>
           <ul class="mk-event-description-audience"
-            ><li><i data-lucide="lightbulb"></i>Product managers</li
-            ><li><i data-lucide="pen-tool"></i>Designers</li
-            ><li><i data-lucide="code"></i>Engineers</li
-            ><li><i data-lucide="users"></i>Team leads</li></ul
+            ><li><i data-lucide="lightbulb"></i><span data-i18n-target="ev-14-1">Product managers</span></li
+            ><li><i data-lucide="pen-tool"></i><span data-i18n-target="ev-15-1">Designers</span></li
+            ><li><i data-lucide="code"></i><span data-i18n-target="ev-16-1">Engineers</span></li
+            ><li><i data-lucide="users"></i><span data-i18n-target="ev-17-1">Team leads</span></li></ul
           >
         </section>
         <section aria-labelledby="ed-take"
-          ><h2 id="ed-take">What you will take away</h2>
+          ><h2 id="ed-take" data-i18n-target="ev-18-1">What you will take away</h2>
           <ul class="mk-event-description-takeaways"
-            ><li><i data-lucide="check"></i>A playbook for async planning</li
-            ><li><i data-lucide="check"></i>Patterns for quiet, accessible UI</li
-            ><li><i data-lucide="check"></i>How offline-first sync really works</li
-            ><li><i data-lucide="check"></i>Fifty new colleagues to ask</li></ul
+            ><li><i data-lucide="check"></i><span data-i18n-target="ev-19-1">A playbook for async planning</span></li
+            ><li
+              ><i data-lucide="check"></i><span data-i18n-target="ev-20-1">Patterns for quiet, accessible UI</span></li
+            ><li
+              ><i data-lucide="check"></i
+              ><span data-i18n-target="ev-21-1">How offline-first sync really works</span></li
+            ><li><i data-lucide="check"></i><span data-i18n-target="ev-22-1">Fifty new colleagues to ask</span></li></ul
           >
         </section>
       </div>
       <aside class="mk-event-description-facts" aria-label="Event facts">
         <dl>
-          <div><dt>Date</dt><dd>12–13 Nov 2026</dd></div>
-          <div><dt>Format</dt><dd>In person + stream</dd></div>
-          <div><dt>Language</dt><dd>English</dd></div>
-          <div><dt>Price</dt><dd>From €290</dd></div>
-          <div><dt>Recordings</dt><dd>For all attendees</dd></div>
+          <div><dt data-i18n-target="ev-23-1">Date</dt><dd>12–13 Nov 2026</dd></div>
+          <div><dt>Format</dt><dd data-i18n-target="ev-27-1">In person + stream</dd></div>
+          <div><dt data-i18n-target="ev-24-1">Language</dt><dd data-i18n-target="ev-28-1">English</dd></div>
+          <div><dt data-i18n-target="ev-25-1">Price</dt><dd data-i18n-target="ev-4-2">From €290</dd></div>
+          <div><dt data-i18n-target="ev-26-1">Recordings</dt><dd data-i18n-target="ev-29-1">For all attendees</dd></div>
         </dl>
         <div class="mk-event-description-capacity"
           ><label for="ed-seats"><strong>320 of 400</strong> seats taken</label
           ><meter id="ed-seats" min="0" max="400" low="300" high="380" optimum="0" value="320">320 of 400</meter></div
         >
-        <a class="btn" href="#">Register</a>
+        <a class="btn" href="#" data-i18n-target="ev-30-1">Register</a>
       </aside>
     </div>
   </section>
   <div style="display: grid; gap: 0.75rem; width: 100%">
+    <nav
+      class="flex flex-wrap gap-1"
+      aria-label="Tracks"
+      data-i18n-aria-label-en="Tracks"
+      data-i18n-aria-label-de="Themen"
+    >
+      <a class="btn" data-variant="outline" data-size="sm" href="#/" data-router-link aria-current="page"
+        ><span data-i18n-target="track-all">All sessions</span></a
+      >
+      <a class="btn" data-variant="outline" data-size="sm" href="#/track/keynote" data-router-link>Keynote</a>
+      <a class="btn" data-variant="outline" data-size="sm" href="#/track/engineering" data-router-link
+        ><span data-i18n-target="track-eng">Engineering</span></a
+      >
+      <a class="btn" data-variant="outline" data-size="sm" href="#/track/design" data-router-link>Design</a>
+    </nav>
     <article
       class="mk-session-item"
+      data-track="keynote"
       data-variant="keynote"
       aria-labelledby="ss-1"
       style="--mk-session-color: oklch(0.6 0.2 300)"
@@ -325,24 +379,32 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
             >Priya Natarajan</li
           ></ul
         >
-        <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Main hall</span>
+        <span class="mk-session-item-room"
+          ><i data-lucide="map-pin"></i><span data-i18n-target="ev-34-1">Main hall</span></span
+        >
       </div>
       <label class="mk-session-item-save"
         ><input type="checkbox" name="schedule" value="ss-1" checked /><span class="mk-session-item-save-off"
-          ><i data-lucide="plus"></i> Add</span
-        ><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span
+          ><i data-lucide="plus"></i> <span data-i18n-target="ev-32-1">Add</span></span
+        ><span class="mk-session-item-save-on"
+          ><i data-lucide="check"></i> <span data-i18n-target="ev-33-1">Added</span></span
         ><span class="sr-only"> The quiet product: building for attention, not engagement to my schedule</span></label
       >
     </article>
-    <article class="mk-session-item" data-variant="break" aria-labelledby="ss-b">
+    <article class="mk-session-item" data-track="break" data-variant="break" aria-labelledby="ss-b">
       <div class="mk-session-item-time"
         ><time datetime="2026-11-12T10:15">10:15</time><span>10:45</span><small>30 min</small></div
       >
       <div class="mk-session-item-body">
-        <h3 class="mk-session-item-title" id="ss-b">Coffee break ☕</h3>
+        <h3 class="mk-session-item-title" id="ss-b" data-i18n-target="ev-31-1">Coffee break ☕</h3>
       </div>
     </article>
-    <article class="mk-session-item" aria-labelledby="ss-2" style="--mk-session-color: oklch(0.62 0.17 240)">
+    <article
+      class="mk-session-item"
+      data-track="engineering"
+      aria-labelledby="ss-2"
+      style="--mk-session-color: oklch(0.62 0.17 240)"
+    >
       <div class="mk-session-item-time"
         ><time datetime="2026-11-12T10:45">10:45</time><span>11:30</span><small>45 min</small></div
       >
@@ -356,16 +418,24 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
             >Sophie Tan</li
           ></ul
         >
-        <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Room A</span>
+        <span class="mk-session-item-room"
+          ><i data-lucide="map-pin"></i><span data-i18n-target="ev-35-1">Room A</span></span
+        >
       </div>
       <label class="mk-session-item-save"
         ><input type="checkbox" name="schedule" value="ss-2" /><span class="mk-session-item-save-off"
-          ><i data-lucide="plus"></i> Add</span
-        ><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span
+          ><i data-lucide="plus"></i> <span data-i18n-target="ev-32-2">Add</span></span
+        ><span class="mk-session-item-save-on"
+          ><i data-lucide="check"></i> <span data-i18n-target="ev-33-2">Added</span></span
         ><span class="sr-only"> Sync that never fails to my schedule</span></label
       >
     </article>
-    <article class="mk-session-item" aria-labelledby="ss-3" style="--mk-session-color: oklch(0.65 0.17 30)">
+    <article
+      class="mk-session-item"
+      data-track="design"
+      aria-labelledby="ss-3"
+      style="--mk-session-color: oklch(0.65 0.17 30)"
+    >
       <div class="mk-session-item-time"
         ><time datetime="2026-11-12T10:45">10:45</time><span>11:30</span><small>45 min</small></div
       >
@@ -382,12 +452,15 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
             >Aron Homberg</li
           ></ul
         >
-        <span class="mk-session-item-room"><i data-lucide="map-pin"></i>Room B</span>
+        <span class="mk-session-item-room"
+          ><i data-lucide="map-pin"></i><span data-i18n-target="ev-36-1">Room B</span></span
+        >
       </div>
       <label class="mk-session-item-save"
         ><input type="checkbox" name="schedule" value="ss-3" /><span class="mk-session-item-save-off"
-          ><i data-lucide="plus"></i> Add</span
-        ><span class="mk-session-item-save-on"><i data-lucide="check"></i> Added</span
+          ><i data-lucide="plus"></i> <span data-i18n-target="ev-32-3">Add</span></span
+        ><span class="mk-session-item-save-on"
+          ><i data-lucide="check"></i> <span data-i18n-target="ev-33-3">Added</span></span
         ><span class="sr-only"> Every badge must earn its place to my schedule</span></label
       >
     </article>
@@ -400,7 +473,9 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
       <div class="mk-speaker-item-body">
         <h3 class="mk-speaker-item-name" id="sp-1">Sophie Tan</h3>
         <p class="mk-speaker-item-role">Head of Engineering, Acme</p>
-        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Sync that never fails</a>
+        <a class="mk-speaker-item-talk" href="#/sessions/ss-2" data-router-link
+          ><i data-lucide="mic"></i>Sync that never fails</a
+        >
       </div>
     </article>
     <article class="mk-speaker-item" aria-labelledby="sp-2">
@@ -408,7 +483,9 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
       <div class="mk-speaker-item-body">
         <h3 class="mk-speaker-item-name" id="sp-2">Hannah Lee</h3>
         <p class="mk-speaker-item-role">Design Lead, Northwind</p>
-        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Every badge must earn its place</a>
+        <a class="mk-speaker-item-talk" href="#/sessions/ss-3" data-router-link
+          ><i data-lucide="mic"></i>Every badge must earn its place</a
+        >
       </div>
     </article>
     <article class="mk-speaker-item" aria-labelledby="sp-3">
@@ -437,7 +514,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
     "
   >
     <section class="mk-location-map" aria-labelledby="lm-title">
-      <h2 id="lm-title" class="sr-only">Our cafés in Lisbon</h2>
+      <h2 id="lm-title" class="sr-only" data-i18n-target="ev-37-1">Our cafés in Lisbon</h2>
       <div class="mk-location-map-layout">
         <div class="mk-location-map-canvas">
           <svg
@@ -478,7 +555,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           ></button>
           <div class="mk-location-map-popup" id="lm-1" popover style="position-anchor: --lm-1">
             <strong>Café Baixa</strong><address>Rua da Prata 120</address
-            ><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+            ><a href="#"><span data-i18n-target="ev-38-1">Directions</span> <i data-lucide="arrow-up-right"></i></a>
           </div>
           <button
             class="mk-location-map-pin"
@@ -490,7 +567,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           ></button>
           <div class="mk-location-map-popup" id="lm-2" popover style="position-anchor: --lm-2">
             <strong>Café Príncipe Real</strong><address>Praça do Príncipe Real 5</address
-            ><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+            ><a href="#"><span data-i18n-target="ev-38-2">Directions</span> <i data-lucide="arrow-up-right"></i></a>
           </div>
           <button
             class="mk-location-map-pin"
@@ -502,7 +579,7 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           ></button>
           <div class="mk-location-map-popup" id="lm-3" popover style="position-anchor: --lm-3">
             <strong>Café Alfama</strong><address>Rua de São Miguel 18</address
-            ><a href="#">Directions <i data-lucide="arrow-up-right"></i></a>
+            ><a href="#"><span data-i18n-target="ev-38-3">Directions</span> <i data-lucide="arrow-up-right"></i></a>
           </div>
         </div>
         <ol class="mk-location-map-list">
@@ -513,32 +590,34 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
       </div>
     </section>
     <section class="mk-opening-hours" aria-labelledby="oh-title">
-      <h3 class="mk-opening-hours-title" id="oh-title">Opening hours</h3>
-      <p class="mk-opening-hours-status">Open now <span>· until 20:00</span></p>
+      <h3 class="mk-opening-hours-title" id="oh-title" data-i18n-target="ev-39-1">Opening hours</h3>
+      <p class="mk-opening-hours-status"><span data-i18n-target="ev-40-1">Open now</span> <span>· until 20:00</span></p>
       <dl class="mk-opening-hours-days">
-        <div><dt>Monday</dt><dd>09:00 – 18:00</dd></div>
-        <div><dt>Tuesday</dt><dd>09:00 – 18:00</dd></div>
-        <div><dt>Wednesday</dt><dd>09:00 – 18:00</dd></div>
-        <div aria-current="date"><dt>Thursday</dt><dd>09:00 – 20:00</dd></div>
-        <div><dt>Friday</dt><dd>09:00 – 18:00</dd></div>
-        <div><dt>Saturday</dt><dd>10:00 – 14:00</dd></div>
-        <div data-closed><dt>Sunday</dt><dd>Closed</dd></div>
+        <div><dt data-i18n-target="ev-41-1">Monday</dt><dd>09:00 – 18:00</dd></div>
+        <div><dt data-i18n-target="ev-42-1">Tuesday</dt><dd>09:00 – 18:00</dd></div>
+        <div><dt data-i18n-target="ev-43-1">Wednesday</dt><dd>09:00 – 18:00</dd></div>
+        <div aria-current="date"><dt data-i18n-target="ev-44-1">Thursday</dt><dd>09:00 – 20:00</dd></div>
+        <div><dt data-i18n-target="ev-45-1">Friday</dt><dd>09:00 – 18:00</dd></div>
+        <div><dt data-i18n-target="ev-46-1">Saturday</dt><dd>10:00 – 14:00</dd></div>
+        <div data-closed><dt data-i18n-target="ev-47-1">Sunday</dt><dd data-i18n-target="ev-48-1">Closed</dd></div>
       </dl>
       <ul class="mk-opening-hours-exceptions" aria-label="Exceptions">
         <li><time datetime="2026-12-24">24 Dec</time><span>09:00 – 13:00</span></li>
-        <li><time datetime="2026-12-25">25–26 Dec</time><span>Closed</span></li>
-        <li><time datetime="2027-01-01">1 Jan</time><span>Closed</span></li>
+        <li><time datetime="2026-12-25">25–26 Dec</time><span data-i18n-target="ev-48-2">Closed</span></li>
+        <li><time datetime="2027-01-01">1 Jan</time><span data-i18n-target="ev-48-3">Closed</span></li>
       </ul>
     </section>
   </div>
   <section class="mk-cta" data-variant="dark" aria-labelledby="cta-3">
     <div class="mk-cta-inner">
       <div class="mk-cta-copy">
-        <h2 class="mk-cta-title" id="cta-3">Get early access to Spaces</h2>
-        <p class="mk-cta-desc">Shared spaces for every project. Invites go out this month.</p>
+        <h2 class="mk-cta-title" id="cta-3" data-i18n-target="ev-49-1">Get early access to Spaces</h2>
+        <p class="mk-cta-desc" data-i18n-target="ev-50-1"
+          >Shared spaces for every project. Invites go out this month.</p
+        >
       </div>
       <form class="mk-cta-form" action="#" method="post">
-        <label class="sr-only" for="cta-email">Email address</label>
+        <label class="sr-only" for="cta-email" data-i18n-target="ev-51-1">Email address</label>
         <input
           class="input"
           id="cta-email"
@@ -548,12 +627,216 @@ import { DocPage, PageHeader, DocText } from "../../lib/components/index";
           required
           autocomplete="email"
         />
-        <button class="btn" data-variant="secondary" type="submit">Request invite</button>
+        <button class="btn" data-variant="secondary" type="submit" data-i18n-target="ev-52-1">Request invite</button>
       </form>
-      <p class="mk-cta-note">2,400 people joined this week.</p>
+      <p class="mk-cta-note" data-i18n-target="ev-53-1">2,400 people joined this week.</p>
     </div>
   </section>
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="track-all" data-i18n-locale="en">All sessions</template>
+  <template data-i18n-for="track-all" data-i18n-locale="de">Alle Sessions</template>
+  <template data-i18n-for="track-eng" data-i18n-locale="en">Engineering</template>
+  <template data-i18n-for="track-eng" data-i18n-locale="de">Technik</template>
+  <template data-i18n-for="ev-1-1" data-i18n-locale="en"
+    >Acme Summit · 12–13 November, Lisbon. Early-bird ends Friday.</template
+  >
+  <template data-i18n-for="ev-1-1" data-i18n-locale="de"
+    >Acme Summit · 12.–13. November, Lissabon. Frühbucher bis Freitag.</template
+  >
+  <template data-i18n-for="ev-2-1" data-i18n-locale="en">Get tickets</template>
+  <template data-i18n-for="ev-2-1" data-i18n-locale="de">Tickets sichern</template>
+  <template data-i18n-for="ev-3-1" data-i18n-locale="en"
+    >Two days of talks and workshops on building calm software - for product people, designers and engineers.</template
+  >
+  <template data-i18n-for="ev-3-1" data-i18n-locale="de"
+    >Zwei Tage mit Vorträgen und Workshops über ruhige Software - für Produktleute, Designer und
+    Entwicklerinnen.</template
+  >
+  <template data-i18n-for="ev-4-1" data-i18n-locale="en">From €290</template>
+  <template data-i18n-for="ev-4-1" data-i18n-locale="de">Ab 290 €</template>
+  <template data-i18n-for="ev-4-2" data-i18n-locale="en">From €290</template>
+  <template data-i18n-for="ev-4-2" data-i18n-locale="de">Ab 290 €</template>
+  <template data-i18n-for="ev-5-1" data-i18n-locale="en">Add to calendar</template>
+  <template data-i18n-for="ev-5-1" data-i18n-locale="de">Zum Kalender hinzufügen</template>
+  <template data-i18n-for="ev-6-1" data-i18n-locale="en">40+ speakers from 12 countries</template>
+  <template data-i18n-for="ev-6-1" data-i18n-locale="de">40+ Sprecher aus 12 Ländern</template>
+  <template data-i18n-for="ev-7-1" data-i18n-locale="en"
+    >Music, food and the people you met all day - under the stars, above the harbour.</template
+  >
+  <template data-i18n-for="ev-7-1" data-i18n-locale="de"
+    >Musik, Essen und die Menschen, die du den Tag über getroffen hast - unter den Sternen, über dem Hafen.</template
+  >
+  <template data-i18n-for="ev-8-1" data-i18n-locale="en">Early-bird ends in</template>
+  <template data-i18n-for="ev-8-1" data-i18n-locale="de">Frühbucherpreis endet in</template>
+  <template data-i18n-for="ev-9-1" data-i18n-locale="en">days</template>
+  <template data-i18n-for="ev-9-1" data-i18n-locale="de">Tage</template>
+  <template data-i18n-for="ev-10-1" data-i18n-locale="en">hours</template>
+  <template data-i18n-for="ev-10-1" data-i18n-locale="de">Std.</template>
+  <template data-i18n-for="ev-11-1" data-i18n-locale="en">sec</template>
+  <template data-i18n-for="ev-11-1" data-i18n-locale="de">Sek.</template>
+  <template data-i18n-for="ev-12-1" data-i18n-locale="en">About</template>
+  <template data-i18n-for="ev-12-1" data-i18n-locale="de">Worum es geht</template>
+  <template data-i18n-for="ev-13-1" data-i18n-locale="en">Who it is for</template>
+  <template data-i18n-for="ev-13-1" data-i18n-locale="de">Für wen</template>
+  <template data-i18n-for="ev-14-1" data-i18n-locale="en">Product managers</template>
+  <template data-i18n-for="ev-14-1" data-i18n-locale="de">Produktmanager</template>
+  <template data-i18n-for="ev-15-1" data-i18n-locale="en">Designers</template>
+  <template data-i18n-for="ev-15-1" data-i18n-locale="de">Designerinnen</template>
+  <template data-i18n-for="ev-16-1" data-i18n-locale="en">Engineers</template>
+  <template data-i18n-for="ev-16-1" data-i18n-locale="de">Entwickler</template>
+  <template data-i18n-for="ev-17-1" data-i18n-locale="en">Team leads</template>
+  <template data-i18n-for="ev-17-1" data-i18n-locale="de">Teamleitungen</template>
+  <template data-i18n-for="ev-18-1" data-i18n-locale="en">What you will take away</template>
+  <template data-i18n-for="ev-18-1" data-i18n-locale="de">Was du mitnimmst</template>
+  <template data-i18n-for="ev-19-1" data-i18n-locale="en">A playbook for async planning</template>
+  <template data-i18n-for="ev-19-1" data-i18n-locale="de">Ein Playbook für asynchrone Planung</template>
+  <template data-i18n-for="ev-20-1" data-i18n-locale="en">Patterns for quiet, accessible UI</template>
+  <template data-i18n-for="ev-20-1" data-i18n-locale="de">Muster für ruhige, barrierefreie Oberflächen</template>
+  <template data-i18n-for="ev-21-1" data-i18n-locale="en">How offline-first sync really works</template>
+  <template data-i18n-for="ev-21-1" data-i18n-locale="de">Wie Offline-first-Sync wirklich funktioniert</template>
+  <template data-i18n-for="ev-22-1" data-i18n-locale="en">Fifty new colleagues to ask</template>
+  <template data-i18n-for="ev-22-1" data-i18n-locale="de">Fünfzig neue Kolleginnen zum Fragen</template>
+  <template data-i18n-for="ev-23-1" data-i18n-locale="en">Date</template>
+  <template data-i18n-for="ev-23-1" data-i18n-locale="de">Datum</template>
+  <template data-i18n-for="ev-24-1" data-i18n-locale="en">Language</template>
+  <template data-i18n-for="ev-24-1" data-i18n-locale="de">Sprache</template>
+  <template data-i18n-for="ev-25-1" data-i18n-locale="en">Price</template>
+  <template data-i18n-for="ev-25-1" data-i18n-locale="de">Preis</template>
+  <template data-i18n-for="ev-26-1" data-i18n-locale="en">Recordings</template>
+  <template data-i18n-for="ev-26-1" data-i18n-locale="de">Aufzeichnungen</template>
+  <template data-i18n-for="ev-27-1" data-i18n-locale="en">In person + stream</template>
+  <template data-i18n-for="ev-27-1" data-i18n-locale="de">Vor Ort + Stream</template>
+  <template data-i18n-for="ev-28-1" data-i18n-locale="en">English</template>
+  <template data-i18n-for="ev-28-1" data-i18n-locale="de">Englisch</template>
+  <template data-i18n-for="ev-29-1" data-i18n-locale="en">For all attendees</template>
+  <template data-i18n-for="ev-29-1" data-i18n-locale="de">Für alle Teilnehmenden</template>
+  <template data-i18n-for="ev-30-1" data-i18n-locale="en">Register</template>
+  <template data-i18n-for="ev-30-1" data-i18n-locale="de">Anmelden</template>
+  <template data-i18n-for="ev-31-1" data-i18n-locale="en">Coffee break ☕</template>
+  <template data-i18n-for="ev-31-1" data-i18n-locale="de">Kaffeepause ☕</template>
+  <template data-i18n-for="ev-32-1" data-i18n-locale="en">Add</template>
+  <template data-i18n-for="ev-32-1" data-i18n-locale="de">Merken</template>
+  <template data-i18n-for="ev-32-2" data-i18n-locale="en">Add</template>
+  <template data-i18n-for="ev-32-2" data-i18n-locale="de">Merken</template>
+  <template data-i18n-for="ev-32-3" data-i18n-locale="en">Add</template>
+  <template data-i18n-for="ev-32-3" data-i18n-locale="de">Merken</template>
+  <template data-i18n-for="ev-33-1" data-i18n-locale="en">Added</template>
+  <template data-i18n-for="ev-33-1" data-i18n-locale="de">Gemerkt</template>
+  <template data-i18n-for="ev-33-2" data-i18n-locale="en">Added</template>
+  <template data-i18n-for="ev-33-2" data-i18n-locale="de">Gemerkt</template>
+  <template data-i18n-for="ev-33-3" data-i18n-locale="en">Added</template>
+  <template data-i18n-for="ev-33-3" data-i18n-locale="de">Gemerkt</template>
+  <template data-i18n-for="ev-34-1" data-i18n-locale="en">Main hall</template>
+  <template data-i18n-for="ev-34-1" data-i18n-locale="de">Großer Saal</template>
+  <template data-i18n-for="ev-35-1" data-i18n-locale="en">Room A</template>
+  <template data-i18n-for="ev-35-1" data-i18n-locale="de">Raum A</template>
+  <template data-i18n-for="ev-36-1" data-i18n-locale="en">Room B</template>
+  <template data-i18n-for="ev-36-1" data-i18n-locale="de">Raum B</template>
+  <template data-i18n-for="ev-37-1" data-i18n-locale="en">Our cafés in Lisbon</template>
+  <template data-i18n-for="ev-37-1" data-i18n-locale="de">Unsere Cafés in Lissabon</template>
+  <template data-i18n-for="ev-38-1" data-i18n-locale="en">Directions</template>
+  <template data-i18n-for="ev-38-1" data-i18n-locale="de">Route</template>
+  <template data-i18n-for="ev-38-2" data-i18n-locale="en">Directions</template>
+  <template data-i18n-for="ev-38-2" data-i18n-locale="de">Route</template>
+  <template data-i18n-for="ev-38-3" data-i18n-locale="en">Directions</template>
+  <template data-i18n-for="ev-38-3" data-i18n-locale="de">Route</template>
+  <template data-i18n-for="ev-39-1" data-i18n-locale="en">Opening hours</template>
+  <template data-i18n-for="ev-39-1" data-i18n-locale="de">Öffnungszeiten</template>
+  <template data-i18n-for="ev-40-1" data-i18n-locale="en">Open now</template>
+  <template data-i18n-for="ev-40-1" data-i18n-locale="de">Jetzt geöffnet</template>
+  <template data-i18n-for="ev-41-1" data-i18n-locale="en">Monday</template>
+  <template data-i18n-for="ev-41-1" data-i18n-locale="de">Montag</template>
+  <template data-i18n-for="ev-42-1" data-i18n-locale="en">Tuesday</template>
+  <template data-i18n-for="ev-42-1" data-i18n-locale="de">Dienstag</template>
+  <template data-i18n-for="ev-43-1" data-i18n-locale="en">Wednesday</template>
+  <template data-i18n-for="ev-43-1" data-i18n-locale="de">Mittwoch</template>
+  <template data-i18n-for="ev-44-1" data-i18n-locale="en">Thursday</template>
+  <template data-i18n-for="ev-44-1" data-i18n-locale="de">Donnerstag</template>
+  <template data-i18n-for="ev-45-1" data-i18n-locale="en">Friday</template>
+  <template data-i18n-for="ev-45-1" data-i18n-locale="de">Freitag</template>
+  <template data-i18n-for="ev-46-1" data-i18n-locale="en">Saturday</template>
+  <template data-i18n-for="ev-46-1" data-i18n-locale="de">Samstag</template>
+  <template data-i18n-for="ev-47-1" data-i18n-locale="en">Sunday</template>
+  <template data-i18n-for="ev-47-1" data-i18n-locale="de">Sonntag</template>
+  <template data-i18n-for="ev-48-1" data-i18n-locale="en">Closed</template>
+  <template data-i18n-for="ev-48-1" data-i18n-locale="de">Geschlossen</template>
+  <template data-i18n-for="ev-48-2" data-i18n-locale="en">Closed</template>
+  <template data-i18n-for="ev-48-2" data-i18n-locale="de">Geschlossen</template>
+  <template data-i18n-for="ev-48-3" data-i18n-locale="en">Closed</template>
+  <template data-i18n-for="ev-48-3" data-i18n-locale="de">Geschlossen</template>
+  <template data-i18n-for="ev-49-1" data-i18n-locale="en">Get early access to Spaces</template>
+  <template data-i18n-for="ev-49-1" data-i18n-locale="de">Früher Zugang zu Spaces</template>
+  <template data-i18n-for="ev-50-1" data-i18n-locale="en"
+    >Shared spaces for every project. Invites go out this month.</template
+  >
+  <template data-i18n-for="ev-50-1" data-i18n-locale="de"
+    >Gemeinsame Räume für jedes Projekt. Die Einladungen gehen diesen Monat raus.</template
+  >
+  <template data-i18n-for="ev-51-1" data-i18n-locale="en">Email address</template>
+  <template data-i18n-for="ev-51-1" data-i18n-locale="de">E-Mail-Adresse</template>
+  <template data-i18n-for="ev-52-1" data-i18n-locale="en">Request invite</template>
+  <template data-i18n-for="ev-52-1" data-i18n-locale="de">Einladung anfordern</template>
+  <template data-i18n-for="ev-53-1" data-i18n-locale="en">2,400 people joined this week.</template>
+  <template data-i18n-for="ev-53-1" data-i18n-locale="de">2.400 Menschen sind diese Woche dazugekommen.</template>
 </div>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const site = df$('#site-events').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the page)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    createDomI18n(df$).bind(site, locale);
+    const language = df$('[data-app-locale]');
+    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- routing
+    const routes = [
+      { id: 'all', path: '/' },
+      { id: 'track', path: '/track/:track' },
+      { id: 'session', path: '/sessions/:id' },
+      { id: 'missing', path: '*' },
+    ];
+    // a track shows its sessions, a session route only that session; the track nav marks the track
+    const show = (to) => {
+      const track = to.routeId === 'track' ? to.params.track : null;
+      const session = to.routeId === 'session' ? to.params.id : null;
+      df$('#site-events [data-track]').each((_i, item) => {
+        const id = item.getAttribute('aria-labelledby');
+        item.hidden = (!!track && item.dataset.track !== track) || (!!session && id !== session);
+      });
+      df$('#site-events nav [data-router-link]').each((_i, link) => {
+        if (link.getAttribute('href') === '#' + (track ? to.path : '/') && !session)
+          link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      if (session)
+        df$('#' + session)
+          .get(0)
+          ?.closest('article')
+          .scrollIntoView({ block: 'nearest' });
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(site);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+  });
+</script>
 ```
 
 <h2 id="blocks" class="h2-display">The blocks</h2>

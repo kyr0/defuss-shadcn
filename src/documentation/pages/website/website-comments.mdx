@@ -14,29 +14,54 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Comments blocks composed into one page - the source is the page.</DocText>
+<DocText>The Comments blocks composed into one page - the source is the page. A comment's time is its permalink, a route of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/comments/d-3</code>) that highlights it, and the sort order is a query parameter (<code>#/?sort=oldest</code>); the language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink> - the times come from <code>Intl.RelativeTimeFormat</code>, the comments stay as written.</DocText>
 
-```html example label="A discussion" schema="none" hint="Comment Header, Comment Form and a thread of Comment Items with nested replies and a reply form - the Comments blocks composed. Click a timestamp: :target highlights that comment." previewStyle="align-items:stretch;"
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-website-comments.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="A discussion" schema="none" hint="A time is a permalink route (#/comments/d-2), the sort a query (#/?sort=oldest); the switch translates the frame. Comment Header, Comment Form and a thread of Comment Items with nested replies and a reply form - the Comments blocks composed. Click a timestamp: :target highlights that comment." previewStyle="align-items:stretch;"
 <section
+  id="site-comments"
+  data-i18n-component
   aria-labelledby="discussion-title"
   style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%; max-width: 44rem"
 >
+  <div class="flex justify-end">
+    <select
+      class="select"
+      data-size="sm"
+      data-app-locale
+      aria-label="Language"
+      data-i18n-aria-label-en="Language"
+      data-i18n-aria-label-de="Sprache"
+      style="width: auto"
+    >
+      <option value="en" lang="en">English</option>
+      <option value="de" lang="de">Deutsch</option>
+    </select>
+  </div>
   <header class="mk-comment-header">
     <h2 class="mk-comment-header-title" id="discussion-title"
-      >Comments <span class="badge" data-variant="secondary">3</span></h2
+      ><span data-i18n-target="title">Comments</span> <span class="badge" data-variant="secondary">3</span></h2
     >
     <div class="mk-comment-header-actions">
       <label class="mk-comment-header-sort"
-        >Sort by
-        <select class="select" data-size="sm" name="sort">
-          <option>Top</option>
-          <option>Newest</option>
-          <option>Oldest</option>
+        ><span data-i18n-target="sort">Sort by</span>
+        <select class="select" data-size="sm" name="sort" data-comments-sort>
+          <option value="top" data-i18n-target="sort-top">Top</option>
+          <option value="newest" data-i18n-target="sort-newest">Newest</option>
+          <option value="oldest" data-i18n-target="sort-oldest">Oldest</option>
         </select>
       </label>
     </div>
   </header>
-  <form class="mk-comment-form" aria-label="Add a comment">
+  <form
+    class="mk-comment-form"
+    aria-label="Add a comment"
+    data-i18n-aria-label-en="Add a comment"
+    data-i18n-aria-label-de="Einen Kommentar schreiben"
+  >
     <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
     <div class="mk-comment-form-main">
       <textarea
@@ -45,22 +70,26 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         rows="2"
         required
         minlength="2"
-        placeholder="Join the discussion…"
-        aria-label="Comment"
+        placeholder="Join the discussion…" data-i18n-placeholder-en="Join the discussion…" data-i18n-placeholder-de="Diskutiere mit…"
+        aria-label="Comment" data-i18n-aria-label-en="Comment" data-i18n-aria-label-de="Kommentar"
       ></textarea>
       <div class="mk-comment-form-footer">
-        <p class="mk-comment-form-hint">Markdown works. Be kind.</p>
-        <button type="submit" class="btn">Post comment</button>
+        <p class="mk-comment-form-hint" data-i18n-target="hint">Markdown works. Be kind.</p>
+        <button type="submit" class="btn" data-i18n-target="post">Post comment</button>
       </div>
     </div>
   </form>
-  <div>
-    <article class="mk-comment-item" id="d-1">
+  <div data-comments-thread>
+    <article class="mk-comment-item" id="d-1" data-likes="24">
       <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
       <div class="mk-comment-item-main">
         <header class="mk-comment-item-head">
           <a class="mk-comment-item-author" href="#">Hannah Lee</a>
-          <a class="mk-comment-item-time" href="#d-1"><time datetime="2026-10-01T08:12">2 hours ago</time></a>
+          <a class="mk-comment-item-time" href="#/comments/d-1" data-router-link
+            ><time datetime="2026-10-01T08:12" data-i18n-target="time-d-1"
+              ><span data-i18n-value="ago1">2 hours ago</span></time
+            ></a
+          >
         </header>
         <div class="mk-comment-item-body"
           ><p
@@ -69,11 +98,18 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ></div
         >
         <footer class="mk-comment-item-actions">
-          <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (24)"
+          <button
+            type="button"
+            class="btn"
+            data-variant="ghost"
+            data-size="xs"
+            aria-label="Like (24)"
+            data-i18n-aria-label-en="Like (24)"
+            data-i18n-aria-label-de="Gefällt mir (24)"
             ><i data-lucide="thumbs-up"></i> 24</button
           >
           <button type="button" class="btn" data-variant="ghost" data-size="xs"
-            ><i data-lucide="reply"></i> Reply</button
+            ><i data-lucide="reply"></i> <span data-i18n-target="reply-1">Reply</span></button
           >
         </footer>
       </div>
@@ -84,8 +120,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <div class="mk-comment-item-main">
               <header class="mk-comment-item-head">
                 <a class="mk-comment-item-author" href="#">Sophie Tan</a
-                ><span class="badge" data-variant="outline">Author</span>
-                <a class="mk-comment-item-time" href="#d-2"><time datetime="2026-10-01T09:03">1 hour ago</time></a>
+                ><span class="badge" data-variant="outline" data-i18n-target="author">Author</span>
+                <a class="mk-comment-item-time" href="#/comments/d-2" data-router-link
+                  ><time datetime="2026-10-01T09:03" data-i18n-target="time-d-2"
+                    ><span data-i18n-value="ago2">1 hour ago</span></time
+                  ></a
+                >
               </header>
               <div class="mk-comment-item-body"
                 ><p
@@ -94,11 +134,18 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                 ></div
               >
               <footer class="mk-comment-item-actions">
-                <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (11)"
+                <button
+                  type="button"
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="xs"
+                  aria-label="Like (11)"
+                  data-i18n-aria-label-en="Like (11)"
+                  data-i18n-aria-label-de="Gefällt mir (11)"
                   ><i data-lucide="thumbs-up"></i> 11</button
                 >
                 <button type="button" class="btn" data-variant="ghost" data-size="xs"
-                  ><i data-lucide="reply"></i> Reply</button
+                  ><i data-lucide="reply"></i> <span data-i18n-target="reply-2">Reply</span></button
                 >
               </footer>
             </div>
@@ -110,15 +157,26 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <div class="mk-comment-item-main">
               <header class="mk-comment-item-head">
                 <a class="mk-comment-item-author" href="#">Aron Homberg</a>
-                <a class="mk-comment-item-time" href="#d-3"><time datetime="2026-10-01T09:30">40 minutes ago</time></a>
+                <a class="mk-comment-item-time" href="#/comments/d-3" data-router-link
+                  ><time datetime="2026-10-01T09:30" data-i18n-target="time-d-3"
+                    ><span data-i18n-value="ago3">40 minutes ago</span></time
+                  ></a
+                >
               </header>
               <div class="mk-comment-item-body"><p>Seconded - and how it plays with the 30-day branch rule.</p></div>
               <footer class="mk-comment-item-actions">
-                <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (3)"
+                <button
+                  type="button"
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="xs"
+                  aria-label="Like (3)"
+                  data-i18n-aria-label-en="Like (3)"
+                  data-i18n-aria-label-de="Gefällt mir (3)"
                   ><i data-lucide="thumbs-up"></i> 3</button
                 >
                 <button type="button" class="btn" data-variant="ghost" data-size="xs"
-                  ><i data-lucide="reply"></i> Reply</button
+                  ><i data-lucide="reply"></i> <span data-i18n-target="reply-3">Reply</span></button
                 >
               </footer>
             </div>
@@ -126,20 +184,31 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </li>
       </ol>
     </article>
-    <article class="mk-comment-item" id="d-4">
+    <article class="mk-comment-item" id="d-4" data-likes="5">
       <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
       <div class="mk-comment-item-main">
         <header class="mk-comment-item-head">
           <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
-          <a class="mk-comment-item-time" href="#d-4"><time datetime="2026-10-01T07:02">3 hours ago</time></a>
+          <a class="mk-comment-item-time" href="#/comments/d-4" data-router-link
+            ><time datetime="2026-10-01T07:02" data-i18n-target="time-d-4"
+              ><span data-i18n-value="ago4">3 hours ago</span></time
+            ></a
+          >
         </header>
         <div class="mk-comment-item-body"><p>Is the 30-day branch rule configurable per workspace?</p></div>
         <footer class="mk-comment-item-actions">
-          <button type="button" class="btn" data-variant="ghost" data-size="xs" aria-label="Like (5)"
+          <button
+            type="button"
+            class="btn"
+            data-variant="ghost"
+            data-size="xs"
+            aria-label="Like (5)"
+            data-i18n-aria-label-en="Like (5)"
+            data-i18n-aria-label-de="Gefällt mir (5)"
             ><i data-lucide="thumbs-up"></i> 5</button
           >
           <button type="button" class="btn" data-variant="ghost" data-size="xs"
-            ><i data-lucide="reply"></i> Reply</button
+            ><i data-lucide="reply"></i> <span data-i18n-target="reply-4">Reply</span></button
           >
         </footer>
       </div>
@@ -148,6 +217,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       class="mk-comment-form"
       data-variant="reply"
       aria-label="Reply to Priya Natarajan"
+      data-i18n-aria-label-en="Reply to Priya Natarajan"
+      data-i18n-aria-label-de="Priya Natarajan antworten"
       style="padding-inline-start: 3.25rem"
     >
       <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
@@ -157,17 +228,129 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           name="reply"
           rows="1"
           required
-          placeholder="Reply to Priya…"
-          aria-label="Reply to Priya Natarajan"
+          placeholder="Reply to Priya…" data-i18n-placeholder-en="Reply to Priya…" data-i18n-placeholder-de="Priya antworten…"
+          aria-label="Reply to Priya Natarajan" data-i18n-aria-label-en="Reply to Priya Natarajan" data-i18n-aria-label-de="Priya Natarajan antworten"
         ></textarea>
         <div class="mk-comment-form-footer">
-          <button type="reset" class="btn" data-variant="ghost" data-size="sm">Cancel</button>
-          <button type="submit" class="btn" data-size="sm">Reply</button>
+          <button type="reset" class="btn" data-variant="ghost" data-size="sm" data-i18n-target="cancel">Cancel</button>
+          <button type="submit" class="btn" data-size="sm" data-i18n-target="reply-submit">Reply</button>
         </div>
       </div>
     </form>
   </div>
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="title" data-i18n-locale="en">Comments</template>
+  <template data-i18n-for="title" data-i18n-locale="de">Kommentare</template>
+  <template data-i18n-for="sort" data-i18n-locale="en">Sort by</template>
+  <template data-i18n-for="sort" data-i18n-locale="de">Sortieren nach</template>
+  <template data-i18n-for="sort-top" data-i18n-locale="en">Top</template>
+  <template data-i18n-for="sort-top" data-i18n-locale="de">Beliebteste</template>
+  <template data-i18n-for="sort-newest" data-i18n-locale="en">Newest</template>
+  <template data-i18n-for="sort-newest" data-i18n-locale="de">Neueste</template>
+  <template data-i18n-for="sort-oldest" data-i18n-locale="en">Oldest</template>
+  <template data-i18n-for="sort-oldest" data-i18n-locale="de">Älteste</template>
+  <template data-i18n-for="hint" data-i18n-locale="en">Markdown works. Be kind.</template>
+  <template data-i18n-for="hint" data-i18n-locale="de">Markdown funktioniert. Sei freundlich.</template>
+  <template data-i18n-for="post" data-i18n-locale="en">Post comment</template>
+  <template data-i18n-for="post" data-i18n-locale="de">Kommentar senden</template>
+  <template data-i18n-for="author" data-i18n-locale="en">Author</template>
+  <template data-i18n-for="author" data-i18n-locale="de">Autorin</template>
+  <template data-i18n-for="reply-1" data-i18n-locale="en">Reply</template>
+  <template data-i18n-for="reply-1" data-i18n-locale="de">Antworten</template>
+  <template data-i18n-for="reply-2" data-i18n-locale="en">Reply</template>
+  <template data-i18n-for="reply-2" data-i18n-locale="de">Antworten</template>
+  <template data-i18n-for="reply-3" data-i18n-locale="en">Reply</template>
+  <template data-i18n-for="reply-3" data-i18n-locale="de">Antworten</template>
+  <template data-i18n-for="reply-4" data-i18n-locale="en">Reply</template>
+  <template data-i18n-for="reply-4" data-i18n-locale="de">Antworten</template>
+  <template data-i18n-for="time-d-1" data-i18n-locale="en"><span data-i18n-value="ago1"></span></template>
+  <template data-i18n-for="time-d-1" data-i18n-locale="de"><span data-i18n-value="ago1"></span></template>
+  <template data-i18n-for="time-d-2" data-i18n-locale="en"><span data-i18n-value="ago2"></span></template>
+  <template data-i18n-for="time-d-2" data-i18n-locale="de"><span data-i18n-value="ago2"></span></template>
+  <template data-i18n-for="time-d-3" data-i18n-locale="en"><span data-i18n-value="ago3"></span></template>
+  <template data-i18n-for="time-d-3" data-i18n-locale="de"><span data-i18n-value="ago3"></span></template>
+  <template data-i18n-for="time-d-4" data-i18n-locale="en"><span data-i18n-value="ago4"></span></template>
+  <template data-i18n-for="time-d-4" data-i18n-locale="de"><span data-i18n-value="ago4"></span></template>
+  <template data-i18n-for="cancel" data-i18n-locale="en">Cancel</template>
+  <template data-i18n-for="cancel" data-i18n-locale="de">Abbrechen</template>
+  <template data-i18n-for="reply-submit" data-i18n-locale="en">Reply</template>
+  <template data-i18n-for="reply-submit" data-i18n-locale="de">Antworten</template>
 </section>
+<script type="module">
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+  import {
+    createDomI18n,
+    createI18n,
+    resolveLocale,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', async () => {
+    const site = df$('#site-comments').get(0);
+
+    // -- translation: the markup is the catalog (the templates at the end of the page)
+    const locale = createI18n({
+      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+    });
+    createDomI18n(df$).bind(site, locale, {
+      values: () => ({
+        // how long ago, from the page's "now" - Intl.RelativeTimeFormat in the language
+        ...Object.fromEntries(
+          [
+            ['ago1', -2, 'hour'],
+            ['ago2', -1, 'hour'],
+            ['ago3', -40, 'minute'],
+            ['ago4', -3, 'hour'],
+          ].map(([key, n, unit]) => [
+            key,
+            new Intl.RelativeTimeFormat(locale.locale, { numeric: 'auto' }).format(n, unit),
+          ]),
+        ),
+      }),
+    });
+    const language = df$('[data-app-locale]');
+    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- routing
+    const routes = [
+      { id: 'thread', path: '/' },
+      { id: 'comment', path: '/comments/:id' },
+      { id: 'missing', path: '*' },
+    ];
+    // ?sort= orders the thread (top: likes, newest / oldest: time); a permalink highlights its comment
+    const show = (to) => {
+      const sort = new URLSearchParams(to.search).get('sort') ?? 'top';
+      df$('[data-comments-sort]').val(sort);
+      const thread = df$('[data-comments-thread]');
+      const items = [...thread.children('.mk-comment-item')];
+      const at = (c) => Date.parse(c.querySelector('time').getAttribute('datetime'));
+      items.sort((a, b) =>
+        sort === 'top' ? b.dataset.likes - a.dataset.likes : sort === 'newest' ? at(b) - at(a) : at(a) - at(b),
+      );
+      // moved to the front in reverse, so they read in order; the reply form stays last
+      for (const item of items.reverse()) thread.prepend(item);
+      df$('#site-comments .mk-comment-item').each((_i, c) => {
+        c.toggleAttribute('data-highlighted', to.routeId === 'comment' && c.id === to.params.id);
+      });
+    };
+    // the sort select navigates: the order is part of the address
+    df$('[data-comments-sort]').on('change', (event) => {
+      const href = '#/?sort=' + event.currentTarget.value;
+      if (router.getSnapshot().current) router.navigate(href);
+      else location.hash = href.slice(1);
+    });
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(site);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+  });
+</script>
 ```
 
 <h2 id="blocks" class="h2-display">The blocks</h2>
