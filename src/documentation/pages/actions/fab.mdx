@@ -46,22 +46,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example part label="FAB (sm)"
-<div class="fab" data-position="bottom-start" data-size="sm">
-  <button class="btn fab-trigger" popovertarget="fab-7c" aria-label="Actions"
-    ><span class="fab-icon" aria-hidden="true"><i data-lucide="plus"></i></span
-  ></button>
-  <div class="fab-menu" id="fab-7c" popover="">
-    <button popovertarget="fab-7c" popovertargetaction="hide" class="fab-action"
-      ><i data-lucide="sun"></i><span class="fab-label">Light</span></button
-    >
-    <button popovertarget="fab-7c" popovertargetaction="hide" class="fab-action"
-      ><i data-lucide="moon"></i><span class="fab-label">Dark</span></button
-    >
-  </div>
-</div>
-```
-
 ```html example label="Speed dial" hint="Click the + (or focus it and press Enter): the actions fan out above it, the + turns into a ×. Click the × again, pick an action (each has popovertargetaction='hide'), press Escape or click outside to close it. The FAB is fixed to the corner of the viewport - here, of the example frame." height="26" schema="none"
 <div class="fab">
   <button class="btn fab-trigger" popovertarget="fab-1" aria-label="Actions"

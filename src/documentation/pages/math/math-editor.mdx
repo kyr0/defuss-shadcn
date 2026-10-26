@@ -52,13 +52,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
   </SkillField>
 </SkillPanel>
 
-```html example part label="Formula Editing"
-<div class="math-editor">
-  <label class="label" for="given-source">Given</label>
-  <textarea class="math-editor-source" id="given-source" readonly>a^2 + b^2 = c^2</textarea>
-</div>
-```
-
 ```html example label="A formula field in a form" hint="Type into the field, or use the toolbar: Fraction wraps what is before the caret. Submit with an empty placeholder left and the editor says what is missing. Reset restores the formula - the textarea is the form control."
 <form style="display: grid; gap: 0.75rem; max-width: 30rem; margin-inline: auto">
   <div class="math-editor" data-math-preview="area-preview">

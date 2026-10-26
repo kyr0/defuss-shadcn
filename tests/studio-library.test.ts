@@ -106,9 +106,9 @@ describe('studioLibrary', () => {
 });
 
 describe('studioLibrary - individual examples', () => {
-  it('each entry says whether it is individual (the classification handed in, with the page and its component); the page lists their indexes', () => {
+  it('a page lists the parts handed in first, then its examples - each saying whether it is individual (the classification handed in, with the page and its component); the page lists their indexes', () => {
     const mdx =
-      '```html example part label="Outline"\n<button class="btn" data-variant="outline">A</button>\n```\n' +
+      fence('<button class="btn" data-variant="outline">A</button>', ' label="Outline"') +
       fence('<div class="flex"><button class="btn">A</button><button class="btn">B</button></div>', ' label="Row"');
     const seen: string[] = [];
     const { library, examples } = studioLibrary({
@@ -116,11 +116,12 @@ describe('studioLibrary - individual examples', () => {
       page: () => mdx,
       components: [{ name: 'button', title: 'Button', type: 'ATM', classes: ['btn'], js: false, schema: null }],
       isIndividual: (f, p) => (seen.push(`${p.slug}/${p.own}/${f.label}`), f.label === 'Outline'),
+      parts: (slug) => (slug === 'button' ? [{ label: 'Button (sm)', html: '<button class="btn" data-size="sm">Go</button>\n', individual: true }] : []),
       version: '1.0.0',
     });
     expect(seen).toEqual(['button/button/Outline', 'button/button/Row']);
-    expect([library.sections[0].pages[0].examples, library.sections[0].pages[0].individual]).toEqual([['Outline', 'Row'], [0]]);
-    expect(examples.button.map((e) => e.individual)).toEqual([true, false]);
+    expect([library.sections[0].pages[0].examples, library.sections[0].pages[0].individual]).toEqual([['Button (sm)', 'Outline', 'Row'], [0, 1]]);
+    expect(examples.button.map((e) => e.individual)).toEqual([true, true, false]);
   });
 });
 

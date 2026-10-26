@@ -16,62 +16,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <DocText>Start with <code>flex</code> or <code>inline-flex</code> - they only select the formatting context; direction, wrapping, alignment and spacing are added explicitly. <code>stack</code> is the convenience column with a default four-unit, density-aware gap. The classic toolbar: title on the start side, actions on the end side.</DocText>
 
-```html example part label="justify-start"
-<div class="flex justify-start gap-2 demo-outline" style="padding: 0.375rem">
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-</div>
-```
-
-```html example part label="justify-center"
-<div class="flex justify-center gap-2 demo-outline" style="padding: 0.375rem">
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-</div>
-```
-
-```html example part label="justify-between"
-<div class="flex justify-between gap-2 demo-outline" style="padding: 0.375rem">
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-</div>
-```
-
-```html example part label="justify-evenly"
-<div class="flex justify-evenly gap-2 demo-outline" style="padding: 0.375rem">
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-  <div class="demo-tile size-6"></div>
-</div>
-```
-
-```html example part label="items-start"
-<div class="flex items-start gap-2 demo-outline" style="padding: 0.375rem">
-  <div class="demo-tile w-8 h-6"></div>
-  <div class="demo-tile w-8 h-12"></div>
-  <div class="demo-tile w-8 h-8"></div>
-</div>
-```
-
-```html example part label="items-center"
-<div class="flex items-center gap-2 demo-outline" style="padding: 0.375rem">
-  <div class="demo-tile w-8 h-6"></div>
-  <div class="demo-tile w-8 h-12"></div>
-  <div class="demo-tile w-8 h-8"></div>
-</div>
-```
-
-```html example part label="items-end + self-start on the tall box"
-<div class="flex items-end gap-2 demo-outline" style="padding: 0.375rem">
-  <div class="demo-tile w-8 h-6"></div>
-  <div class="demo-tile w-8 h-12 self-start" data-variant="accent"></div>
-  <div class="demo-tile w-8 h-8"></div>
-</div>
-```
-
 ```html example schema="none"
 <div class="stack gap-6" data-demo="flex">
   <div class="flex flex-wrap items-center justify-between gap-3">

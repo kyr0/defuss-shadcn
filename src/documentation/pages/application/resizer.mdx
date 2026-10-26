@@ -53,34 +53,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example part label="Resizer (divider)"
-<div
-  class="resizer"
-  data-variant="divider"
-  data-handles="e"
-  data-axis="w"
-  data-keys="edge"
-  data-min="140"
-  data-max="360"
->
-  <nav
-    style="
-      width: 12rem;
-      height: 100%;
-      padding: 0.75rem;
-      border-inline-end: 1px solid var(--border);
-      background: var(--muted);
-      box-sizing: border-box;
-    "
-  >
-    <p style="margin: 0 0 0.5rem; font-weight: 600">Inbox</p>
-    <p style="margin: 0; color: var(--muted-foreground); font-size: 0.875rem"
-      >Drag my right edge, or Tab to it and press ← / →. Double-click it to reset.</p
-    >
-  </nav>
-</div>
-```
-
 ```html example label="Pixel-perfect" hint="The default: one SE handle, sizes land as inline px on the wrapped element. Drag any handle, then open State to see data-width/data-height follow." component="resizer" height="14"
 <div class="resizer" data-handles="se" data-min="120">
   <div class="card" style="width: 20rem; height: 10rem; padding: 1rem">

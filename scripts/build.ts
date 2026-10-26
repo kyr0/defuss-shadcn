@@ -7,7 +7,7 @@ import { AGENT_SKILLS, agentSkillDir, buildAgentSkills } from './lib/agent-skill
 import { parseThemes } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { schemaManifestText } from './lib/schema.ts';
-import { componentDirs } from '../src/documentation/lib/component-dirs.ts';
+import { componentDirs, isPartsFile } from '../src/documentation/lib/component-dirs.ts';
 import { flattenComponentLinks, flattenSkillIndex } from '../src/documentation/lib/component-links.ts';
 
 /**
@@ -134,6 +134,8 @@ cpSync(SRC, DIST, {
     if (rel === 'documentation' || rel.startsWith('documentation/')) return false;
     // the task skills' templates: scripts/lib/agent-skills.ts renders them into skills/, never dist/
     if (rel === 'skills' || rel.startsWith('skills/')) return false;
+    // a component's parts file is a docs input (the Studio's library), never shipped
+    if (isPartsFile(rel)) return false;
     return !s.endsWith('.ts');
   },
 });

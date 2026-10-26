@@ -15,6 +15,7 @@
     "dist",
     "!dist/documentation",
     "src/documentation/pages",
+    "src/components/**/*.parts.md",
     "skills",
     "README.md",
     "LICENSE"

@@ -4,7 +4,7 @@ import { extname, join } from 'node:path';
 import { chromium, webkit, type BrowserContext, type Page } from 'playwright';
 import { startServer } from '../server.ts';
 import { offlineJsdelivr } from '../lib/vendor-offline.ts';
-import { pageFile as pageSourceFile } from '../../../src/documentation/lib/page-dirs-files.ts';
+import { componentDirs, partsFileName } from '../../../src/documentation/lib/component-dirs.ts';
 import { isPartMeta } from '../../../src/documentation/lib/mdx-example.ts';
 
 /**
@@ -239,8 +239,8 @@ try {
     assert.equal(r.examples, EXAMPLES);
     assert.equal(r.individualRows, INDIVIDUAL, 'every individual example is marked in the tree');
     assert.deepEqual(r.sections, library.sections.map((s) => s.heading));
-    // a component page's entries are its examples in page order - the individual ones (each component alone, the
-    // page's part cards) first, marked; sub-pages nest under their page
+    // a component page's entries: its parts (each kind of the component alone, from its parts file), then its examples
+    // in page order - the individual ones first, marked; sub-pages nest under their page
     const typography = PAGES.find((p) => p.slug === 'typography')!;
     assert.deepEqual(r.typography, typography.examples);
     assert.deepEqual(typography.examples.slice(0, 4), ['h1', 'h2', 'h3', 'h4']);
@@ -248,12 +248,18 @@ try {
     for (const p of PAGES) {
       const first = p.examples.findIndex((_l, i) => !p.individual.includes(i));
       assert.ok(first < 0 || p.individual.every((i) => i < first), `${p.slug}: an individual example after a composite`);
-      // every part fence is an individual example (verify's `part cards show one component`) - a guide's too: the
-      // library once marked none of the Shapes page's 254
-      const mdx = readFileSync(pageSourceFile(join(ROOT, 'src', 'documentation', 'pages'), p.slug), 'utf8');
-      const parts = [...mdx.matchAll(/^`{3,}(html example[^\n]*)$/gm)].filter((m) => isPartMeta(m[1])).length;
-      assert.ok(p.individual.length >= parts, `${p.slug}: ${parts} part fences, ${p.individual.length} individual entries`);
     }
+    // every part of a component's parts file leads its page, marked individual (verify's `parts show their component`)
+    let partPages = 0;
+    for (const c of componentDirs(join(ROOT, 'src', 'components'))) {
+      const file = join(c.dir, partsFileName(c.name));
+      const p = PAGES.find((x) => x.slug === c.name);
+      if (!existsSync(file) || !p) continue;
+      partPages++;
+      const parts = [...readFileSync(file, 'utf8').matchAll(/^`{3,}(html example[^\n]*)$/gm)].filter((m) => isPartMeta(m[1])).length;
+      assert.ok(parts > 0 && [...Array(parts).keys()].every((i) => p.individual.includes(i)), `${p.slug}: ${parts} parts, individual ${p.individual.slice(0, 5)}`);
+    }
+    assert.ok(partPages > 90, `${partPages} pages lead with their parts`);
     // every section row: the chevron and its sidebar icon
     assert.ok(library.sections.every((x) => x.icon.length > 0), 'every section carries an icon');
     assert.deepEqual(r.icons, library.sections.map(() => 2));
@@ -382,7 +388,7 @@ try {
     assert.ok(Math.abs(hero.scale - hero.view / 1024) < 0.01, JSON.stringify(hero));
   });
 
-  await check('individual examples: Typography\'s h1 - a part fence of its page - shows as itself and a click puts exactly its markup into the page', async () => {
+  await check('individual examples: Typography\'s h1 - a part of its parts file - shows as itself and a click puts exactly its markup into the page', async () => {
     const h1 = example('typography', 'h1');
     assert.equal(h1.html, '<h1 class="h1">Taxing Laughter</h1>\n');
     await page.fill('#studio-search', 'typography h1');

@@ -45,4 +45,12 @@ export function componentDir(componentsRoot, name) {
         throw new Error(`no component "${name}" under ${componentsRoot}/<section>/`);
     return hit.dir;
 }
+/**
+ * A component's parts file - its individual examples, one instance of each kind (`button.parts.md` beside the
+ * sources; scripts/lib/example-parts.ts reads them). Source only: the docs build lists them in the Studio's library,
+ * the pages show none of them, and build.ts never copies one into dist/ (verify's `dist 1:1` skips them the same way).
+ */
+export const partsFileName = (name) => `${name}.parts.md`;
+/** Whether a path names a parts file. */
+export const isPartsFile = (path) => path.endsWith('.parts.md');
 //# sourceMappingURL=component-dirs.js.map

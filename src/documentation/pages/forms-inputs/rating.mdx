@@ -40,46 +40,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example part label="Rating (sm)"
-<fieldset class="rating" data-size="sm" aria-label="sm rating">
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-sm" value="1" aria-label="1 star"
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-sm" value="2" aria-label="2 stars"
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-sm" value="3" aria-label="3 stars" checked
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-sm" value="4" aria-label="4 stars"
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-sm" value="5" aria-label="5 stars"
-  /></label>
-</fieldset>
-```
-
-```html example part label="Rating (lg)"
-<fieldset class="rating" data-size="lg" aria-label="lg rating">
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-lg" value="1" aria-label="1 star"
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-lg" value="2" aria-label="2 stars"
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-lg" value="3" aria-label="3 stars" checked
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-lg" value="4" aria-label="4 stars"
-  /></label>
-  <label class="rating-item"
-    ><input class="rating-input" type="radio" name="size-lg" value="5" aria-label="5 stars"
-  /></label>
-</fieldset>
-```
-
 ```html example label="Rating" schema="none" hint="A native radio group: one transparent radio per star, so a click, the arrow keys and form submission are the browser's. :has() fills every star up to the checked one - and up to the hovered one while you point. No JavaScript."
 <fieldset class="rating" aria-label="Rate this product">
   <label class="rating-item"

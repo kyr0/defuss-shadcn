@@ -45,68 +45,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example part label="bubble"
-<div class="bubble"><div class="bubble-content">Oh, no worries!</div></div>
-```
-
-```html example part label="bubble (secondary, sm)"
-<div class="bubble" data-variant="secondary" data-size="sm"
-  ><div class="bubble-content">Small - dense threads and sidebars</div></div
->
-```
-
-```html example part label="bubble (secondary, lg)"
-<div class="bubble" data-variant="secondary" data-size="lg"
-  ><div class="bubble-content">Large - a focused conversation</div></div
->
-```
-
-```html example part label="bubble (muted)"
-<div class="bubble" data-variant="muted"><div class="bubble-content">Muted - supporting, lower emphasis</div></div>
-```
-
-```html example part label="bubble (tinted)"
-<div class="bubble" data-variant="tinted" data-align="end"
-  ><div class="bubble-content">Tinted - a subtle primary bubble</div></div
->
-```
-
-```html example part label="bubble (outline)"
-<div class="bubble" data-variant="outline"
-  ><div class="bubble-content">Outline - options, cards, rich content</div></div
->
-```
-
-```html example part label="bubble (destructive)"
-<div class="bubble" data-variant="destructive" data-align="end"
-  ><div class="bubble-content">Not delivered - tap to retry</div></div
->
-```
-
-```html example part label="bubble (ghost)"
-<div class="bubble" data-variant="ghost"
-  ><div class="bubble-content"
-    ><p
-      ><strong>Ghost</strong> - an assistant reply without a frame. It runs the full width, like the markdown answer of
-      a chat model, with <code>inline code</code> and lists:</p
-    ><ul
-      ><li>no background</li
-      ><li>no side padding</li></ul
-    ></div
-  ></div
->
-```
-
-```html example part label="bubble-group"
-<div class="bubble-group" data-tail="">
-  <div class="bubble" data-variant="secondary"
-    ><div class="bubble-content">Hi, I can't log in since this morning.</div></div
-  >
-  <div class="bubble" data-variant="secondary"><div class="bubble-content">It says my password is wrong.</div></div>
-  <div class="bubble" data-variant="secondary"><div class="bubble-content">But I didn't change it 🤔</div></div>
-</div>
-```
-
 ```html example label="Collapsible content" schema="none" hint="A long message folds: the preview stays, the rest sits in a <details class='bubble-more'> - its summary toggles Show more / Show less and the height animates (::details-content). Keyboard-operable, no script."
 <div class="flex flex-col gap-3" style="max-width: 28rem">
   <div class="bubble" data-variant="secondary">

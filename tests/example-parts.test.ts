@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { parseHTML } from 'linkedom';
-import { activeParts, classifyFence, componentRoots, compositeParts, exampleParts, galleryItems, type PartComponent } from '../scripts/lib/example-parts.ts';
+import { classifyFence, componentRoots, exampleParts, homePages, pagePartFences, strayParts, type PartComponent } from '../scripts/lib/example-parts.ts';
 import { isPartMeta } from '../src/documentation/lib/mdx-example.ts';
 
 /**
- * Why: the individual-examples contract (scripts/lib/example-parts.ts) decides what verify's `individual examples`
- * gate asks of every docs page - which fence is an individual example, which kinds a composite holds, what a page
- * owes, which part fences are no individual example or would run something. Pinned on small components and pages; the
- * gate runs it over the real docs.
+ * Why: the individual-examples contract (scripts/lib/example-parts.ts) decides what verify's `individual examples`,
+ * `parts show their component` and `no part cards on pages` gates ask - which fence is an individual example, which
+ * kinds a fence holds, what a page or a component's parts file owes, which parts are no instance of their component,
+ * and which page still carries a part fence. Pinned on small components, pages and parts files; the gates run it over
+ * the real docs.
  */
 
 const fence = (body: string, label: string) => `\`\`\`html example label="${label}"\n${body}\n\`\`\`\n`;
+const part = (body: string, label: string) => `\`\`\`html example part label="${label}"\n${body}\n\`\`\`\n`;
 const components: PartComponent[] = [
   { name: 'button', classes: ['btn'], structure: '<button class="btn">Go</button>' },
   { name: 'card', classes: ['card', 'card-title'], structure: '<div class="card"><h3 class="card-title">T</h3></div>' },
@@ -59,7 +60,7 @@ describe('classifyFence', () => {
 
 describe('exampleParts', () => {
   const { roots } = componentRoots(components);
-  it('a page owes the kinds of its component that composites anywhere hold with no individual example, its individual examples after a composite, and duplicates', () => {
+  it('a kind any fence holds is owed by its component\'s parts file unless a part or an individual example on a page shows it; a page owes its late examples, both their duplicates', () => {
     const debt = exampleParts(
       [
         {
@@ -68,23 +69,37 @@ describe('exampleParts', () => {
           mdx:
             fence('<button class="btn">Default</button>', 'Default') +
             fence('<div class="flex"><button class="btn">A</button><button class="btn" data-variant="ghost">B</button></div>', 'Row') +
-            fence('<button class="btn" data-variant="outline">Outline</button>', 'Outline') +
-            fence('<button class="btn">Default</button>', 'Again'),
+            fence('<button class="btn" data-variant="outline">Outline</button>', 'Outline'),
         },
-        { slug: 'card', own: 'card', mdx: fence('<div class="card"><button class="btn" data-size="sm">Go</button></div>', 'Card') },
-        { slug: 'card-gallery', own: 'card', mdx: fence('<div class="flex"><div class="card" data-variant="muted">A</div><div class="card">B</div></div>', 'Two') },
+        { slug: 'card', own: 'card', mdx: fence('<div class="flex"><div class="card" data-variant="muted">A</div><div class="card">B</div></div>', 'Two') },
+      ],
+      [
+        { component: 'button', md: part('<button class="btn" data-size="sm">Go</button>', 'Button (sm)') + part('<button class="btn">Default</button>', 'Again') },
+        // a part's own instances are kinds too: the card holds a button with no example of its own
+        { component: 'card', md: part('<div class="card"><button class="btn" data-variant="link">Go</button></div>', 'Card') },
       ],
       roots,
     );
     expect(Object.fromEntries(debt)).toEqual({
-      button: { late: ['Outline', 'Again'], duplicates: ['Again'], missing: ['button:.btn|ghost||', 'button:.btn||sm|'] },
-      card: { late: [], duplicates: [], missing: ['card:.card|muted||'] },
+      'button.parts.md': { late: [], duplicates: [], missing: ['button:.btn|ghost||', 'button:.btn|link||'] },
+      button: { late: ['Outline'], duplicates: ['Default'], missing: [] },
+      'card.parts.md': { late: [], duplicates: [], missing: ['card:.card|muted||'] },
     });
   });
-  it('a kind whose component has no page is owed by "(no page)"; a page that owes nothing is left out', () => {
-    const debt = exampleParts([{ slug: 'button', own: 'button', mdx: fence('<div class="flex"><i data-lucide="a"></i><i data-lucide="b"></i></div>', 'Icons') }], roots);
-    expect([...debt.keys()]).toEqual(['(no page)']);
-    expect(debt.get('(no page)')!.missing).toEqual(['icon:[data-lucide]|||']);
+  it('a guide (no component) owes nothing of its own - its components\' kinds go to their parts files; a source that owes nothing is left out', () => {
+    const guide = { slug: 'shapes', own: null, mdx: fence('<div class="grid"><div class="shape-demo rounded-lg"></div><i data-lucide="a"></i></div>', 'Gallery') };
+    const debt = exampleParts([guide], [{ component: 'button', md: part('<button class="btn">Go</button>', 'Button') }], roots);
+    expect([...debt.keys()]).toEqual(['icon.parts.md']);
+    expect(debt.get('icon.parts.md')!.missing).toEqual(['icon:[data-lucide]|||']);
+  });
+  it('an individual example on a sub-page about the component counts as one, and it repeats a part of the same markup', () => {
+    const sub = { slug: 'checkbox-states', own: 'checkbox', mdx: fence('<input type="checkbox" class="checkbox" checked>', 'Checked') };
+    const composite = { slug: 'form', own: null, mdx: fence('<form><input type="checkbox" class="checkbox" checked><button class="btn">Go</button></form>', 'Form') };
+    const parts = [
+      { component: 'button', md: part('<button class="btn">Go</button>', 'Button') },
+      { component: 'checkbox', md: part('<input type="checkbox" class="checkbox" checked>', 'Checkbox (checked)') },
+    ];
+    expect(Object.fromEntries(exampleParts([sub, composite], parts, roots))).toEqual({ 'checkbox-states': { late: [], duplicates: ['Checked'], missing: [] } });
   });
 });
 
@@ -96,50 +111,32 @@ describe('isPartMeta', () => {
   });
 });
 
-describe('compositeParts', () => {
-  it('a part fence (```html example part) must be one instance of the page\'s component - a part card shows nothing else', () => {
+describe('strayParts', () => {
+  it('every fence of a parts file must be one instance of its component - a composite or another component\'s instance is a stray', () => {
     const { roots } = componentRoots(components);
-    const mdx =
-      '```html example part label="Outline"\n<button class="btn" data-variant="outline">Go</button>\n```\n' +
-      '```html example part label="Row"\n<button class="btn">A</button><button class="btn">B</button>\n```\n' +
-      '```html example label="Not a part"\n<button class="btn">A</button><button class="btn">B</button>\n```\n';
-    expect(compositeParts([{ slug: 'button', own: 'button', mdx }], roots)).toEqual(['button line 4 "Row"']);
+    const md =
+      part('<button class="btn" data-variant="outline">Go</button>', 'Outline') +
+      part('<button class="btn">A</button><button class="btn">B</button>', 'Row') +
+      part('<div class="card">C</div>', 'Card');
+    expect(strayParts([{ component: 'button', md }], roots)).toEqual(['button.parts.md line 4 "Row"', 'button.parts.md line 7 "Card"']);
   });
 });
 
-describe('activeParts', () => {
-  it('a part fence with a <script> or an inline handler runs on the docs page - a part card has no sandbox; a full example may', () => {
-    const mdx =
-      '```html example part label="Plain"\n<button class="btn">Go</button>\n```\n' +
-      '```html example part label="Handler"\n<button class="btn" onclick="alert(1)">Go</button>\n```\n' +
-      '```html example part label="Script"\n<button class="btn">Go</button><script>go()</script>\n```\n' +
-      '```html example part label="Words"\n<button class="btn" data-hint="onclick=x">online</button>\n```\n' +
-      '```html example label="Full"\n<button class="btn" onclick="go()">Go</button>\n```\n';
-    expect(activeParts([{ slug: 'button', own: 'button', mdx }])).toEqual(['button line 4 "Handler"', 'button line 7 "Script"']);
+describe('pagePartFences', () => {
+  it('a part fence on any docs page is reported - a full example and a hint about parts are not', () => {
+    const mdx = fence('<button class="btn">Go</button>', 'Full') + part('<button class="btn">Go</button>', 'Part') + '```html example label="Addons" hint="part of the field"\n<p>x</p>\n```\n';
+    expect(pagePartFences([{ slug: 'button', mdx }, { slug: 'shapes', mdx: fence('<p>x</p>', 'Gallery') }])).toEqual(['button line 4 "Part"']);
   });
 });
 
-describe('guides (a page about no component, not a template)', () => {
-  const { roots } = componentRoots(components);
-  const shapes = new Set(['rounded-lg', 'corner-leaf', 'shape-star', 'aura', 'aura-dual']);
-  const gallery =
-    '<div class="grid"><div class="stack"><div class="shape-demo rounded-lg"></div><p class="demo-label">rounded-lg</p></div>' +
-    '<div class="stack" dir="rtl"><div class="shape-demo rounded-lg"></div><p class="demo-label">RTL twin</p></div>' +
-    '<img class="shape-star" src="a.png" alt=""><div class="aura aura-dual">Glow</div><div class="demo-tile w-24">tile</div></div>';
-  it('galleryItems: a captioned item by its caption, an uncaptioned one by its shapes classes; the same content twice and demo tiles are no items', () => {
-    const { document } = parseHTML(`<!doctype html><html><body>${gallery}</body></html>`);
-    expect(galleryItems(document.body, roots, shapes).map((i) => i.name)).toEqual(['rounded-lg', 'shape-star', 'aura aura-dual']);
-  });
-  it('a guide owes each item a part fence labelled by its name, before its first example; a template page owes nothing', () => {
-    const composite = fence(gallery, 'Gallery');
-    const parts =
-      '```html example part label="rounded-lg"\n<div class="shape-demo rounded-lg"></div>\n```\n' +
-      '```html example part label="shape-star"\n<img class="shape-star" src="a.png" alt="">\n```\n';
-    expect(exampleParts([{ slug: 'shapes', own: null, mdx: parts + composite }], roots, shapes).get('shapes')).toEqual({
-      late: [],
-      duplicates: [],
-      missing: ['caption:shapes:aura aura-dual'],
-    });
-    expect(exampleParts([{ slug: 'paper-figures', own: null, type: 'TPL', mdx: composite }], roots, shapes).size).toBe(0);
+describe('homePages', () => {
+  it('a component\'s parts are listed on the page named after it, else on the first page about it; a guide is no home', () => {
+    const home = homePages([
+      { slug: 'comparison', own: 'chart', mdx: '' },
+      { slug: 'chart', own: 'chart', mdx: '' },
+      { slug: 'tree-grid', own: 'data-grid', mdx: '' },
+      { slug: 'shapes', own: null, mdx: '' },
+    ]);
+    expect(Object.fromEntries(home)).toEqual({ chart: 'chart', 'data-grid': 'tree-grid' });
   });
 });

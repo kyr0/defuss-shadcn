@@ -1,22 +1,22 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { NAV } from '../../src/documentation/lib/nav.ts';
-import { pageFile } from '../../src/documentation/lib/page-dirs-files.ts';
-import { componentFile } from '../../src/documentation/lib/component-dirs.ts';
+import { pageDirs, pageFile } from '../../src/documentation/lib/page-dirs-files.ts';
+import { componentDirs, componentFile, isPartsFile, partsFileName } from '../../src/documentation/lib/component-dirs.ts';
 import { componentSources } from './apps-files.ts';
 import { sections } from './sections-files.ts';
 import { parseSkillFrontmatter } from './skill.ts';
-import { ownedClasses, utilityClasses } from './studio-library.ts';
+import { ownedClasses } from './studio-library.ts';
 import {
-  activeParts,
   componentRoots,
-  compositeParts,
   exampleParts,
-  type GuideClasses,
-  type PageDebt,
+  pagePartFences,
+  strayParts,
+  type ExampleDebt,
   type PartComponent,
   type PartPage,
   type PartRoot,
+  type PartsFile,
 } from './example-parts.ts';
 
 /** The first ```html block of a skill's ## Structure section ('' when it has none). */
@@ -25,17 +25,24 @@ export const structureBlock = (md: string): string =>
 
 /**
  * The fs half of scripts/lib/example-parts.ts: the components (their owned classes, their skill's Structure block and
- * declared `roots:`), and the pages of the sidebar sections that hold components, each with the component it is about
- * (its own, else its parent page's - as the Studio's library reads them). verify's `individual examples` gate and the
- * baseline writer read the same. VERIFIED: (verify, 2026-10-16) the gate's debt equals the baseline written from this
- * input - 159 pages; every one of the 240 components resolves a root.
+ * declared `roots:`), their parts files (`<name>.parts.md` beside the sources), the pages of the sidebar sections that
+ * hold components, each with the component it is about (its own, else its parent page's - as the Studio's library
+ * reads them), and every page's MDX for the part-card check. verify's `individual examples` gate, the generator and the
+ * Studio's library read the same. VERIFIED: (tmp/probe-parts-contract.ts, 2026-10-20) over the migrated sources - 104
+ * parts files, 396 pages of the component sections, 404 pages in all - no debt, no stray part, no part fence on a page,
+ * and every component resolves a root.
  */
 export function examplePartsInput(root: string = join(import.meta.dirname, '..', '..')): {
   components: PartComponent[];
   pages: PartPage[];
-  shapes: GuideClasses;
+  parts: PartsFile[];
+  /** every docs page - the sections without components too */
+  allPages: { slug: string; mdx: string }[];
+  /** `*.parts.md` files in a component folder that are not named after it (no reader takes them) */
+  misnamed: string[];
 } {
   const comps = join(root, 'src', 'components');
+  const pagesDir = join(root, 'src', 'documentation', 'pages');
   const types = new Map<string, string>();
   const sources = componentSources();
   const owned = ownedClasses(sources);
@@ -52,6 +59,14 @@ export function examplePartsInput(root: string = join(import.meta.dirname, '..',
       ...(declared ? { roots: declared.replace(/^"|"$/g, '').split(',').map((x) => x.trim()).filter(Boolean) } : {}),
     };
   });
+  const parts: PartsFile[] = [];
+  const misnamed: string[] = [];
+  for (const c of componentDirs(comps)) {
+    for (const f of readdirSync(c.dir).filter(isPartsFile))
+      if (f !== partsFileName(c.name)) misnamed.push(`src/components/${c.section}/${c.name}/${f}`);
+    const file = join(c.dir, partsFileName(c.name));
+    if (existsSync(file)) parts.push({ component: c.name, md: readFileSync(file, 'utf8') });
+  }
   const names = new Set(components.map((c) => c.name));
   const headings = new Set(sections().map((s) => s.heading));
   const pages: PartPage[] = [];
@@ -61,24 +76,30 @@ export function examplePartsInput(root: string = join(import.meta.dirname, '..',
       const slug = i.href.replace(/\.html$/, '');
       const own = names.has(slug) ? slug : parent;
       const type = types.get(slug) || i.type || inherited;
-      const file = pageFile(join(root, 'src', 'documentation', 'pages'), slug);
+      const file = pageFile(pagesDir, slug);
       if (existsSync(file)) pages.push({ slug, own, type, mdx: readFileSync(file, 'utf8') });
       walk(i.children ?? [], own, type);
     });
   NAV.filter((s) => headings.has(s.heading)).forEach((s) => walk(s.items as readonly Item[], null, ''));
-  const shapes = new Set(utilityClasses(readFileSync(join(root, 'src', 'theme', 'utils', 'shapes.css'), 'utf8')));
-  return { components, pages, shapes };
+  const allPages = pageDirs(pagesDir).map((p) => ({ slug: p.slug, mdx: readFileSync(pageFile(pagesDir, p.slug), 'utf8') }));
+  return { components, pages, parts, allPages, misnamed };
 }
 
-/** The roots, the components without one, every page's debt, the part fences that are composites and those that run something - as of the sources now. */
+/** The roots, the components without one, the debt, the parts that are no instance of their component, the part fences on pages - as of the sources now. */
 export function examplePartsNow(root?: string): {
   roots: PartRoot[];
   rootless: string[];
-  debt: Map<string, PageDebt>;
-  composites: string[];
-  active: string[];
+  debt: Map<string, ExampleDebt>;
+  strays: string[];
+  onPages: string[];
 } {
-  const { components, pages, shapes } = examplePartsInput(root);
+  const { components, pages, parts, allPages, misnamed } = examplePartsInput(root);
   const { roots, rootless } = componentRoots(components);
-  return { roots, rootless, debt: exampleParts(pages, roots, shapes), composites: compositeParts(pages, roots, shapes), active: activeParts(pages) };
+  return {
+    roots,
+    rootless,
+    debt: exampleParts(pages, parts, roots),
+    strays: [...misnamed.map((f) => `${f} is not named after its folder - no reader takes it`), ...strayParts(parts, roots)],
+    onPages: pagePartFences(allPages),
+  };
 }

@@ -23,9 +23,8 @@ function firstCard(doc: Document): HTMLElement {
   return cards.find((c) => c.querySelector(':scope > p')?.textContent?.replace('§', '').trim() === 'Default') ?? cards[0];
 }
 /**
- * Open the Default card's State tab, with the card in view as for a reader who opens it (the Input page leads with
- * its part cards, which put the Default card below the 900px test viewport). Scrolling did not cure the typing test's
- * timeouts - its unfocused write did (see that test).
+ * Open the Default card's State tab, with the card in view as for a reader who opens it (it may sit below the 900px
+ * test viewport). Scrolling did not cure the typing test's timeouts - its unfocused write did (see that test).
  */
 async function openStateTab(doc: Document): Promise<void> {
   await waitFor(() => doc.querySelector('.code-example[data-init]'), 'cards built');

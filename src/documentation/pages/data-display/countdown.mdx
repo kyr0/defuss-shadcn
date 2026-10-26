@@ -43,18 +43,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 </SkillPanel>
 
-```html example part label="Countdown"
-<span class="countdown"><span data-unit="hours" style="--value: 26">26</span></span>
-```
-
-```html example part label="Countdown (lg)"
-<span class="countdown" data-size="lg"><span data-unit="days" style="--value: 5">5</span></span>
-```
-
-```html example part label="Countdown (xl)"
-<span class="countdown" data-size="xl"><span style="--value: 7">7</span></span>
-```
-
 ```html example label="A value" schema="none" hint="The CSS-only pattern: one span with --value and the same number as text. Change both (here once a second through api.setState('default', { value })) and the digits roll." height="14"
 <span class="countdown" id="cd-one" data-size="2xl">
   <span style="--value: 59" aria-live="polite">59</span>

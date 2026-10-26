@@ -7,13 +7,13 @@ import { componentFile } from '../../src/documentation/lib/component-dirs.ts';
 import { componentSources } from './apps-files.ts';
 import { sections } from './sections-files.ts';
 import { parseSkillFrontmatter } from './skill.ts';
-import { ownedClasses, studioLibrary, utilityClasses, type StudioComponent } from './studio-library.ts';
+import { ownedClasses, pageExamples, studioLibrary, utilityClasses, type StudioComponent, type StudioExample } from './studio-library.ts';
 import { examplePartsInput } from './example-parts-files.ts';
-import { classifyFence, componentRoots, guideOf } from './example-parts.ts';
+import { classifyFence, componentRoots, homePages } from './example-parts.ts';
 
 /**
- * The fs half of the Studio's library (scripts/lib/studio-library.ts is the pure one): reads the sidebar, the pages
- * and the components, and returns the files the docs serve - `studio/library.json` and one
+ * The fs half of the Studio's library (scripts/lib/studio-library.ts is the pure one): reads the sidebar, the pages,
+ * the components and their parts files, and returns the files the docs serve - `studio/library.json` and one
  * `studio/examples/<slug>.json` per page with examples, by path from the docs root. scripts/build-docs.ts writes
  * them, verify's `studio library fresh` compares them - one owner, two readers. Each section carries its sidebar icon
  * (lib/nav-icons.ts), and the library the utility modules' classes (src/theme/utils/) for the class editor.
@@ -47,9 +47,17 @@ export function studioLibraryFiles(root: string = join(import.meta.dirname, '..'
     group: m[0].toUpperCase() + m.slice(1),
     classes: utilityClasses(readFileSync(join(root, 'src', 'theme', 'utils', `${m}.css`), 'utf8')),
   }));
-  const parts = examplePartsInput(root);
-  const { roots } = componentRoots(parts.components);
-  const partPages = new Map(parts.pages.map((p) => [p.slug, p]));
+  const input = examplePartsInput(root);
+  const { roots } = componentRoots(input.components);
+  // each component's parts lead its home page's entries - every one an individual example (verify's `parts show
+  // their component`)
+  const home = homePages(input.pages);
+  const titles = new Map(components.map((c) => [c.name, c.title]));
+  const partsBySlug = new Map<string, StudioExample[]>();
+  for (const f of input.parts) {
+    const slug = home.get(f.component);
+    if (slug) partsBySlug.set(slug, pageExamples(f.md, titles.get(f.component) ?? f.component, () => true));
+  }
   const { library, examples } = studioLibrary({
     sections: NAV.filter((s) => headings.has(s.heading)).map((s) => ({ ...s, icon: NAV_ICONS[s.icon] ?? '' })),
     page: (slug) => {
@@ -58,13 +66,9 @@ export function studioLibraryFiles(root: string = join(import.meta.dirname, '..'
     },
     components,
     utilities,
-    // which entries are individual examples - the contract's own classification (scripts/lib/example-parts.ts), with
-    // the contract's page: a guide's part fences are individual by its gallery classes. VERIFIED: (2026-10-16) without
-    // the page and its guide classes the library marked none of the Shapes page's 254 part fences
-    isIndividual: (fence, p) => {
-      const page = partPages.get(p.slug);
-      return classifyFence(fence, p.own, roots, p.slug, page ? guideOf(page, parts.shapes) : null).individual;
-    },
+    // which entries are individual examples - the contract's own classification (scripts/lib/example-parts.ts)
+    isIndividual: (fence, p) => classifyFence(fence, p.own, roots).individual,
+    parts: (slug) => partsBySlug.get(slug) ?? [],
     version: pkg.version,
   });
   const files = new Map<string, string>([['studio/library.json', `${JSON.stringify(library)}\n`]]);

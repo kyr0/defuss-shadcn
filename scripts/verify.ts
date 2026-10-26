@@ -19,7 +19,6 @@ import { TYPE_BASELINE } from './lib/type-baseline.ts';
 import { sections, type Section } from './lib/sections-files.ts';
 import { studioLibraryFiles } from './lib/studio-library-files.ts';
 import { examplePartsNow } from './lib/example-parts-files.ts';
-import { isPartMeta } from '../src/documentation/lib/mdx-example.ts';
 import { provenanceNotice, provenancePointer } from './lib/provenance.ts';
 import { collectProvenance } from './lib/provenance-files.ts';
 import { STATS_FILE, statsClaimProblems, type StatsDoc } from './lib/stats.ts';
@@ -49,7 +48,7 @@ import { AGENT_SKILLS, agentSkillDir, buildAgentSkills } from './lib/agent-skill
 import { THEME_TOKENS, themeableTokens } from './lib/theme-tokens.ts';
 import { archBodyHtml } from '../src/documentation/lib/arch-md.ts';
 import { typeBadgeHtml, type ComponentType } from './lib/taxonomy.ts';
-import { componentDirs as componentDirsOf, componentFile } from '../src/documentation/lib/component-dirs.ts';
+import { componentDirs as componentDirsOf, componentFile, isPartsFile } from '../src/documentation/lib/component-dirs.ts';
 import { docsRoot, isPage, pageRel, pageSection, pageSourceRel } from '../src/documentation/lib/page-dirs.ts';
 import { pageDirs, pageFile } from '../src/documentation/lib/page-dirs-files.ts';
 import { e2eFolder } from './lib/e2e-select.ts';
@@ -448,6 +447,8 @@ if (!existsSync(DIST)) {
     if (isDocsSsgAuthoringSrc(rel)) continue;
     // the task skills' templates render into skills/ (agent skills gate), never into dist/
     if (rel === 'skills' || rel.startsWith(`skills${sep}`)) continue;
+    // a component's parts file feeds the Studio's library, build.ts ships none
+    if (isPartsFile(rel)) continue;
     if (rel.endsWith('.ts')) {
       const js = join(DIST, toDist(rel).replace(/\.ts$/, '.js'));
       if (!existsSync(js)) distProblems.push(`dist/${toDist(rel).replace(/\.ts$/, '.js')} missing - rebuild`);
@@ -853,23 +854,24 @@ check(
     for (const f of readdirSync(dir)) if (!fresh.has(`studio/examples/${f}`)) libraryProblems.push(`dist/documentation/studio/examples/${f} is no page's`);
   check('studio library fresh', libraryProblems, 'run `bun run build:docs` - scripts/build-docs.ts writes the Studio library from the docs examples and the components (scripts/lib/studio-library-files.ts)');
 }
-// 10f4. individual examples: every component a composite example is made of is also an example of its own - one
-// instance of it, on its component's page, ahead of that page's composite examples, once (scripts/lib/example-parts.ts:
-// the one reader of the contract; the Studio reads the same). Every component names its root (derived from its skill's
-// Structure, else `roots:` in its front matter). A guide (no component, no template) owes each gallery item - a shape,
-// a captioned demo - an example of its own. VERIFIED: (2026-10-16) the docs owe nothing after the migration (713 part
-// fences, 196 moves), so any debt fails; the gate costs 5-7.5 s (one linkedom parse per fence)
+// 10f4. individual examples: every component a docs example is made of is also an example of its own - one instance
+// of each kind, in its component's parts file (src/components/<section>/<name>/<name>.parts.md, ```html example part
+// fences) or as an individual example on a page about it, ahead of that page's composite examples, once
+// (scripts/lib/example-parts.ts: the one reader of the contract; the Studio reads the same). Every component names its
+// root (derived from its skill's Structure, else `roots:` in its front matter). The docs pages show no part cards: the
+// maintainer dropped them (2026-10-20, "a bad idea") - 425 parts moved into 104 parts files, the guides' 288 went.
+// VERIFIED: (2026-10-16) the docs owe nothing, so any debt fails; the gate costs 5-7.5 s (one linkedom parse per fence)
 {
-  const { rootless, debt, composites, active } = examplePartsNow(ROOT);
+  const { rootless, debt, strays, onPages } = examplePartsNow(ROOT);
   check(
-    'part cards show one component',
-    composites,
-    'a ```html example part fence renders as a compact card with no preview: keep one instance of the page\'s component in it, or drop `part` so it renders as a full example',
+    'no part cards on pages',
+    onPages,
+    "a docs page shows full examples only: move the ```html example part fence into its component's parts file (src/components/<section>/<name>/<name>.parts.md - the Studio lists it there), or drop `part` so it renders as a full example",
   );
   check(
-    'part cards run nothing',
-    active,
-    'a part card mounts its markup into the docs page itself, unsandboxed: drop the <script> and the on* handler from the part fence (a demo that needs them is a full example - drop `part`)',
+    'parts show their component',
+    strays,
+    "a parts file holds individual examples of its own component only - one instance (through layout wrappers) per fence: move another component's instance into that component's parts file, put a composite on a page; name the file <folder>.parts.md",
   );
   check(
     'component roots',
@@ -878,12 +880,12 @@ check(
   );
   check(
     'individual examples',
-    [...debt].flatMap(([slug, d]) => [
-      ...d.missing.map((k) => `${slug}: no individual example of ${k}`),
-      ...d.late.map((l) => `${slug}: "${l}" is an individual example after a composite one`),
-      ...d.duplicates.map((l) => `${slug}: "${l}" repeats an individual example`),
+    [...debt].flatMap(([key, d]) => [
+      ...d.missing.map((k) => `${key}: no individual example of ${k}`),
+      ...d.late.map((l) => `${key}: "${l}" is an individual example after a composite one`),
+      ...d.duplicates.map((l) => `${key}: "${l}" repeats an individual example`),
     ]),
-    '`bun run individual-examples <page>` shows what it would write (--write writes it, then `bun scripts/format-pages.ts --write`): a part fence (```html example part) of one instance of the kind before the page\'s first example, an individual example moved ahead of the composites, a duplicate to remove',
+    "`bun run individual-examples [<component> ...| --all]` shows what it would write (--write writes it, then `bun scripts/format-pages.ts --write`): a part fence of one instance of each missing kind in the component's parts file, an individual example moved ahead of a page's composites; remove a duplicate",
   );
 }
 check(
@@ -2299,9 +2301,8 @@ check(
         for (const ph of examplePlaceholders(ex.body))
           problems.push(`pages/${file}:${ex.line} placeholder element in an executable example - it renders nothing: ${ph}`);
         // schema="none": guide-page utility demos (layout/sizing/sizing-scale…)
-        // demonstrate the optional modules, not a component - no contract to bind;
-        // a part fence renders as a part card - no State tab, no schema to bind either
-        if (ex.schema === 'none' || isPartMeta(ex.meta)) continue;
+        // demonstrate the optional modules, not a component - no contract to bind
+        if (ex.schema === 'none') continue;
         const comp = ex.component ?? page;
         if (!existsSync(componentFile(COMPS, comp)))
           problems.push(`pages/${file}:${ex.line} example schema component "${comp}" is not a shipped component (pages/${page}.mdx → add component="…"/schema="none" or ship the component)`);

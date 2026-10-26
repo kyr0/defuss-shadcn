@@ -139,13 +139,12 @@ describe('formatFences', () => {
     expect(fenceLengthFor('plain', 5)).toBe(5);
   });
 
-  it('exampleFence: the fence flagged standalone, else the first that is no part fence - a page leads with its parts', () => {
-    const part = '```html example part label="Badge"\n<span class="badge">P</span>\n```\n';
+  it('exampleFence: the fence flagged standalone, else the first - a page may lead with a moved individual example', () => {
     const moved = '```html example label="Exact amounts"\n<p>moved</p>\n```\n';
     const whole = '```html example standalone label="Invoice"\n<p>whole</p>\n```\n';
-    expect(exampleFence(part + moved + whole)).toBe('<p>whole</p>\n');
-    expect(exampleFence(part + moved)).toBe('<p>moved</p>\n');
-    expect(exampleFence(part)).toBe(null);
+    expect(exampleFence(moved + whole)).toBe('<p>whole</p>\n');
+    expect(exampleFence(moved)).toBe('<p>moved</p>\n');
+    expect(exampleFence('no fence here\n')).toBe(null);
   });
 
   it('keeps data scripts, pre and textarea byte for byte - Prettier would re-indent a Markdown document and prints a stray ">" before a <pre>', async () => {

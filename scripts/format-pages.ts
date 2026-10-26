@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { pageDirs } from '../src/documentation/lib/page-dirs-files.ts';
+import { componentDirs, partsFileName } from '../src/documentation/lib/component-dirs.ts';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -7,7 +8,7 @@ import * as prettier from 'prettier';
 import { formatFences } from './lib/format-pages.ts';
 
 /**
- * Why: format the ```html example fences of every doc page with Prettier's
+ * Why: format the ```html example fences of every doc page and every component's parts file with Prettier's
  * HTML printer (scripts/lib/format-pages.ts says why only the fences), at
  * the same width as oxfmt formats the components. `--write` rewrites the
  * pages, `--check` fails on any page `--write` would change - `bun run lint`
@@ -25,6 +26,7 @@ import { formatFences } from './lib/format-pages.ts';
 
 const ROOT = join(import.meta.dirname, '..');
 const PAGES = join(ROOT, 'src', 'documentation', 'pages');
+const COMPS = join(ROOT, 'src', 'components');
 
 /** Prettier's HTML printer at the components' width.
  *  - htmlWhitespaceSensitivity 'strict': Prettier never adds or removes whitespace between elements.
@@ -60,10 +62,16 @@ const stale: string[] = [];
 /** fences Prettier's HTML parser refuses - markup a browser repairs silently (an unclosed element, a stray closing tag) */
 const broken: string[] = [];
 let fences = 0;
-// every page, in its section folder (page-dirs-files.ts) - `f` is the path from pages/
-const pages = pageDirs(PAGES).map((p) => (p.folder ? `${p.folder}/${p.slug}.mdx` : `${p.slug}.mdx`)).sort();
+// every page, in its section folder (page-dirs-files.ts), and every component's parts file (the individual examples
+// the pages do not show, component-dirs.ts) - `f` is the path from the repo root
+const pages = [
+  ...pageDirs(PAGES).map((p) => `src/documentation/pages/${p.folder ? `${p.folder}/` : ''}${p.slug}.mdx`),
+  ...componentDirs(COMPS)
+    .filter((c) => existsSync(join(c.dir, partsFileName(c.name))))
+    .map((c) => `src/components/${c.section}/${c.name}/${partsFileName(c.name)}`),
+].sort();
 for (const f of pages) {
-  const file = join(PAGES, f);
+  const file = join(ROOT, f);
   const text = readFileSync(file, 'utf8');
   const textHash = sha(text);
   if (known[textHash] !== undefined) {
@@ -76,7 +84,7 @@ for (const f of pages) {
       return await prettier.format(html, HTML_OPTIONS);
     } catch (e) {
       const first = html.split('\n').find((l) => l.trim()) ?? '';
-      throw new Error(`pages/${f}, the fence starting "${first.trim().slice(0, 70)}": ${(e as Error).message.split('\n')[0]}`);
+      throw new Error(`${f}, the fence starting "${first.trim().slice(0, 70)}": ${(e as Error).message.split('\n')[0]}`);
     }
   };
   let result;
@@ -90,7 +98,7 @@ for (const f of pages) {
       const again = await formatFences(result.text, fmt);
       if (again.text === result.text) break;
       result = { ...again, fences: result.fences };
-      if (pass === 8) broken.push(`pages/${f}: the html fences do not settle after 8 passes - format the fence by hand`);
+      if (pass === 8) broken.push(`${f}: the html fences do not settle after 8 passes - format the fence by hand`);
     }
   } catch (e) {
     broken.push((e as Error).message);
@@ -108,8 +116,8 @@ writeFileSync(CACHE, `${JSON.stringify({ formatter, formatted })}\n`);
 for (const b of broken) console.log(`format-pages: ${b}`);
 if (broken.length) console.log(`format-pages: ${broken.length} page(s) with markup Prettier cannot parse\n  fix: repair the named fence (the browser repairs it silently; the shown source is wrong)`);
 if (check && stale.length) {
-  for (const f of stale) console.log(`format-pages: pages/${f} has an unformatted html fence`);
-  console.log(`format-pages: ${stale.length} of ${pages.length} page(s) unformatted\n  fix: bun run format`);
+  for (const f of stale) console.log(`format-pages: ${f} has an unformatted html fence`);
+  console.log(`format-pages: ${stale.length} of ${pages.length} file(s) unformatted\n  fix: bun run format`);
 }
 if (broken.length || (check && stale.length)) process.exit(1);
-console.log(`format-pages: ${fences} html fences in ${pages.length} pages, ${stale.length} page(s) ${write ? 'rewritten' : 'unformatted'}`);
+console.log(`format-pages: ${fences} html fences in ${pages.length} pages and parts files, ${stale.length} file(s) ${write ? 'rewritten' : 'unformatted'}`);

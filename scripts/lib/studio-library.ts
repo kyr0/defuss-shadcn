@@ -8,11 +8,11 @@ import { exampleFences, type ExampleFence } from './schema.ts';
  * (The first Studio listed the component skills' blocks, 463 of them: a skill block names the component, an example
  * names a use of it - the maintainer asked for the uses, 2026-10-15.)
  *
- * A page lists its individual examples first - every component its composite examples are made of, alone, written on
- * the page as ```html example part fences (AGENTS.md "Individual examples") - then its composites, in page order, so
- * the tree and the docs page read alike. Which entry is individual is scripts/lib/example-parts.ts' classification,
- * handed in by the caller (one reader of the contract). The Studio cut these parts out of the examples at build time
- * until every page carried them (plans/2026-10-15_22-31_individual-examples.md, M4 removed the cutting).
+ * A component's page lists its parts first - each kind of the component alone, from its parts file
+ * (src/components/<section>/<name>/<name>.parts.md, AGENTS.md "Individual examples"; the docs page shows none of them)
+ * - then the page's examples in page order, its individual ones ahead of its composites. Which entry is individual is
+ * scripts/lib/example-parts.ts' classification, handed in by the caller (one reader of the contract). The parts were
+ * part cards on the docs pages from 2026-10-16 until the maintainer dropped those (2026-10-20).
  *
  * Two artifacts, because the markup is large - VERIFIED: (tmp/probe-example-size.ts, 2026-10-15) 1,661 examples
  * are 5 MB raw, 588 KiB compressed, the tree alone 167 KiB / 29 KiB: the tree (labels only) loads with the Studio, a
@@ -126,6 +126,8 @@ export function studioLibrary(input: {
   utilities?: readonly StudioUtilities[];
   /** which fences are individual examples (scripts/lib/example-parts.ts); none when left out */
   isIndividual?: IndividualTest;
+  /** the parts a page lists ahead of its examples - its component's parts file, on the component's home page */
+  parts?: (slug: string) => StudioExample[];
   version: string;
 }): { library: StudioLibrary; examples: Record<string, StudioExample[]> } {
   const examples: Record<string, StudioExample[]> = {};
@@ -135,7 +137,10 @@ export function studioLibrary(input: {
     const type = byName.get(slug)?.type || item.type || inherited;
     const own = byName.has(slug) ? slug : component;
     const mdx = input.page(slug);
-    const list = mdx ? pageExamples(mdx, item.label, (f) => input.isIndividual?.(f, { slug, own }) ?? false) : [];
+    const list = [
+      ...(input.parts?.(slug) ?? []),
+      ...(mdx ? pageExamples(mdx, item.label, (f) => input.isIndividual?.(f, { slug, own }) ?? false) : []),
+    ];
     const pages = (item.children ?? []).map((c) => toPage(c, type, own)).filter((p): p is StudioPage => !!p);
     if (!list.length && !pages.length) return null;
     if (list.length) examples[slug] = list;

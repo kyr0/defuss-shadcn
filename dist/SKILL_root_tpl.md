@@ -113,7 +113,7 @@ Copy this skeleton and put component markup inside `<body>`. Replace `@latest` w
 
 ## 3. Documentation map - guides and live examples
 
-Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` fences whose body is the exact, working example markup). Open only what the task needs. Component pages are linked from the component index (§4) instead. Every page leads with its individual examples - each component its examples are made of, alone, in each variant, size and state they use (` ```html example part ` fences) - and then its composite examples: take the smallest piece you need from the top of a page, a whole composition from below.
+Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` fences whose body is the exact, working example markup). Open only what the task needs. Component pages are linked from the component index (§4) instead. A page shows whole examples; the smallest pieces - each component alone, in each variant, size and state the examples use - are in the component's parts file beside its sources (`src/components/<section>/<name>/<name>.parts.md`, ` ```html example part ` fences): take a single component from there, a whole composition from a page.
 
 <!-- DOCS -->
 

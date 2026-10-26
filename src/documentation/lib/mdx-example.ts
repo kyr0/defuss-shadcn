@@ -121,11 +121,12 @@ function codeExampleNode(node: CodeNode, pageComponent: string): unknown {
 }
 
 /**
- * True for the meta of a ```html example part fence - an individual example, rendered as a compact card
- * (lib/components/part-card.tsx). The flags are the words outside the attribute values: a hint that says "is part of"
- * is no part fence. VERIFIED: (tmp/gen-all.log, 2026-10-16) a bare word test took 5 fences for parts by their hints.
- * The one reader of the flag - the remark plugin, the verifier (scripts/lib/example-parts.ts) and the Studio's library
- * ask it.
+ * True for the meta of a ```html example part fence - an individual example of a component, written in its parts
+ * file (src/components/<section>/<name>/<name>.parts.md), never on a docs page (verify's `no part cards on pages`;
+ * the part cards those fences rendered were dropped, 2026-10-20). The flags are the words outside the attribute
+ * values: a hint that says "is part of" is no part fence. VERIFIED: (tmp/gen-all.log, 2026-10-16) a bare word test
+ * took 5 fences for parts by their hints. The one reader of the flag - the verifier (scripts/lib/example-parts.ts)
+ * and the e2e ask it.
  */
 export function isPartMeta(meta: string): boolean {
   const flags = fenceFlags(meta);
@@ -134,22 +135,6 @@ export function isPartMeta(meta: string): boolean {
 /** A fence meta's bare words - its language and flags (`html example part`), the attribute values left out. */
 export function fenceFlags(meta: string): string[] {
   return meta.replace(/([a-zA-Z-]+)="(.*?)"(?=\s+[a-zA-Z-]+="|\s*$)/g, ' ').trim().split(/\s+/);
-}
-const isPart = (node: CodeNode): boolean => node.type === 'code' && isPartMeta(node.meta ?? '');
-
-/** A run of part fences → one <PartCards> grid of <PartCard>s - the same normalized source a full card would show. */
-function partCardsNode(run: CodeNode[]): unknown {
-  return {
-    type: 'mdxJsxFlowElement',
-    name: 'PartCards',
-    attributes: [],
-    children: run.map((node) => ({
-      type: 'mdxJsxFlowElement',
-      name: 'PartCard',
-      attributes: [jsxAttr('source', normalizeFenceHtml(node.value)), jsxAttr('label', fenceAttrs(node.meta ?? '').label ?? 'Part')],
-      children: [],
-    })),
-  };
 }
 
 function statesTableNode(node: CodeNode): unknown {
@@ -251,18 +236,10 @@ function transform(tree: MdastParent, pageComponent: string, libBase = '../lib/c
   let mermaid = false;
   let diagram = false;
   let windows = false;
-  let parts = false;
   const visit = (node: MdastParent) => {
     if (!Array.isArray(node.children)) return;
     for (let i = 0; i < node.children.length; i++) {
       const child = node.children[i] as CodeNode & MdastParent;
-      if (isPart(child)) {
-        let end = i;
-        while (end + 1 < node.children.length && isPart(node.children[end + 1] as CodeNode)) end++;
-        node.children.splice(i, end - i + 1, partCardsNode(node.children.slice(i, end + 1) as CodeNode[]));
-        parts = true;
-        continue;
-      }
       if (child.type === 'code') {
         const meta = (child.meta ?? '').trim();
         const lang = (child.lang ?? '').toLowerCase();
@@ -299,11 +276,10 @@ function transform(tree: MdastParent, pageComponent: string, libBase = '../lib/c
   if (mermaid) tree.children.unshift(importNode(['MermaidDiagram'], `${libBase}mermaid-diagram`));
   if (diagram) tree.children.unshift(importNode(['SpecDiagram'], `${libBase}spec-diagram`));
   if (windows) tree.children.unshift(fenceWindowImport(libBase));
-  if (parts) tree.children.unshift(importNode(['PartCards', 'PartCard'], `${libBase}part-card`));
-  return used || mermaid || diagram || windows || parts;
+  return used || mermaid || diagram || windows;
 }
 
-/** remark plugin: ```… example / ```… example part (a run of them) / ```states / ```mermaid / ```diagram / plain fences → CodeExample / PartCards / StatesTable / MermaidDiagram / SpecDiagram / CodeWindow. */
+/** remark plugin: ```… example / ```states / ```mermaid / ```diagram / plain fences → CodeExample / StatesTable / MermaidDiagram / SpecDiagram / CodeWindow. */
 export function remarkDocExamples() {
   return (tree: MdastParent, file: { basename?: string; dirname?: string }) => {
     // pages/<section>/{name}.mdx → the page's own component (plan §23)

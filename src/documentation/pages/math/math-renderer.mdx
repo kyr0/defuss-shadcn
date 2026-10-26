@@ -52,16 +52,6 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
   </SkillField>
 </SkillPanel>
 
-```html example part label="Formula Rendering"
-<figure class="math-renderer" aria-label="The area of a circle">
-  <code class="math-renderer-source">A = \pi r^2 = \int_0^r 2 \pi t \, dt</code>
-</figure>
-```
-
-```html example part label="Formula Rendering (inline)"
-<span class="math-renderer" data-variant="inline"><code class="math-renderer-source">a</code></span>
-```
-
 ```html example label="A display formula" hint="The TeX stays in the code element, hidden once KaTeX typeset it. data-variant='card' puts the formula on a panel; without it, it is plain display math, centered in its column."
 <figure class="math-renderer" data-variant="card" aria-label="The quadratic formula">
   <code class="math-renderer-source">x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code>
