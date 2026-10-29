@@ -2,7 +2,7 @@
 
 # Component catalog
 
-243 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+249 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.10/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -107,6 +107,12 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Video](../../defuss-shadcn/references/components/video.md) `video` | MOL | default, playing | yes | A video the page controls - a lesson, a product film, a clip with a Media Timeline or a transcript beside it. A styled frame around the browser's own controls with nothing to drive it is the Website Video Player block; an animation is a Motion or an Animation Canvas. |
 | [Audio](../../defuss-shadcn/references/components/audio.md) `audio` | MOL | default, playing | yes | Sound the page controls - a podcast episode, an interview, a field recording, a voice note with a Media Timeline. A styled episode card around the browser's own controls is the Website Audio Player block; a list of tracks uses Playlist Item. |
 | [Media Timeline](../../defuss-shadcn/references/components/media-timeline.md) `media-timeline` | MOL | default, playing | yes | Navigating and explaining a recording - chapters, speakers, detected sounds or scenes, annotations, captions - with an info panel that follows the playhead. A record of events with dates (a changelog, a project history) is the Data Display Timeline. |
+| [Fretboard](../../defuss-shadcn/references/components/fretboard.md) `fretboard` | MOL | default, playing, paused | yes | Ukulele tabs, chord sheets and play-along lyrics, in one key and time signature or several. A media recording's timeline (scenes, speakers, captions) is the Media Timeline; a score with notation (staves, note heads) is out of scope. |
+| [Fretboard Neck](../../defuss-shadcn/references/components/fretboard-neck.md) `fretboard-neck` | ATM | default | yes | The whole neck of a fretted instrument with fingers on it - where a chord lies, the notes sounding and the next ones, a scale; one chord's diagram is the Chord Chart, a play-along tab the Fretboard (which drives a bound neck). |
+| [Chord Chart](../../defuss-shadcn/references/components/chord-chart.md) `chord-chart` | ATM | default, active | yes | A chord diagram of a fretted instrument - a song sheet's chord legend, a lesson, a chord library; the whole neck with the notes sounding is the Fretboard Neck, a play-along tab the Fretboard. |
+| [Knob](../../defuss-shadcn/references/components/knob.md) `knob` | MOL | default, adjusting, disabled | yes | The parameters of an audio plugin, a synthesizer or a mixer - frequency, gain, time, depth, pan - where many controls share little room and a value moves on a curve. A plain value on a line is the Slider; a number typed in is the Number Input. |
+| [Envelope](../../defuss-shadcn/references/components/envelope.md) `envelope` | ATM | default, playing, editing, disabled | yes | Synth envelopes, compressors, filters and EQs - with knobs bound to the parameters; a single value on a dial is a knob, a value over time on a track is the media timeline. |
+| [Tacho](../../defuss-shadcn/references/components/tacho.md) `tacho` | ATM | default, idle | yes | A value around a middle or along a scale read at a glance - a tuner's cents, a pan position, a rev counter, a VU meter; a value someone sets is a knob, a progress a progress bar. |
 
 ## Big Data
 

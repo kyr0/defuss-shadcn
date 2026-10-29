@@ -1,0 +1,338 @@
+/* -- Fretboard Neck ---------------------------------------------
+   The neck of a fretted instrument: the runtime draws .fretboard-neck-board from the markup - the strings and their
+   names, the nut on the fretting hand's side (a capo's bold bar on its fret wire, the nut a thin line behind it), the
+   fret wires as a gradient, the inlays and fret numbers, a barre's dashed line and the dots of the fingers. Across
+   (the 1st string on top, as a tab draws it) or upright (data-orientation="vertical", as a chord chart draws it);
+   data-hand="right" mirrors either. The root scrolls when the neck is wider than its column. */
+
+@layer components {
+  .fretboard-neck {
+    display: block;
+    max-inline-size: 100%;
+    overflow-x: auto;
+    color: var(--foreground);
+    scrollbar-width: thin;
+  }
+
+  .fretboard-neck-board {
+    --fretboard-neck-nut: 1.75rem;
+    --fretboard-neck-gap: 1.375rem;
+    --fretboard-neck-fret-size: 2rem;
+    --fretboard-neck-strings: 4;
+    --fretboard-neck-frets: 12;
+    /* centring an element on its point: half its width toward the start of the line */
+    --fretboard-neck-tx: -50%;
+
+    position: relative;
+    min-inline-size: calc(var(--fretboard-neck-nut) + var(--fretboard-neck-frets) * 2.25rem);
+    block-size: calc(var(--fretboard-neck-strings) * var(--fretboard-neck-gap));
+    margin-block: 0.25rem 1.25rem;
+    margin-inline: 1.25rem 0.25rem;
+    direction: ltr;
+  }
+
+  .fretboard-neck[data-hand="right"] .fretboard-neck-board {
+    --fretboard-neck-tx: 50%;
+
+    direction: rtl;
+  }
+
+  .fretboard-neck-string {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc((var(--fretboard-neck-s, 1) - 0.5) * var(--fretboard-neck-gap));
+    block-size: 1.5px;
+    background-color: var(--fretboard-neck-color, var(--muted-foreground));
+    translate: 0 -50%;
+  }
+
+  .fretboard-neck-string-name {
+    position: absolute;
+    inset-inline: -1.25rem auto;
+    inset-block-start: calc((var(--fretboard-neck-s, 1) - 0.5) * var(--fretboard-neck-gap));
+    color: var(--fretboard-neck-color, var(--muted-foreground));
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    translate: 0 -50%;
+  }
+
+  /* the fret wires, after the nut */
+  .fretboard-neck-wires {
+    position: absolute;
+    inset-block: calc(var(--fretboard-neck-gap) / 2 - 1px);
+    inset-inline: var(--fretboard-neck-nut) 0;
+    border-inline-start: 4px solid var(--foreground);
+    border-radius: 1px;
+    background-image: linear-gradient(to left, var(--border) 2px, transparent 2px);
+    background-size: calc(100% / var(--fretboard-neck-frets)) 100%;
+  }
+
+  /* a capo: the bold bar moves to its fret wire, the nut stays a thin line behind it */
+  .fretboard-neck[data-capo] .fretboard-neck-wires {
+    border-inline-start-width: 2px;
+  }
+
+  .fretboard-neck-capo {
+    position: absolute;
+    inset-block: calc(var(--fretboard-neck-gap) / 2 - 4px);
+    inset-inline-start: calc(
+      var(--fretboard-neck-nut) + (100% - var(--fretboard-neck-nut)) * var(--fretboard-neck-f, 1) /
+        var(--fretboard-neck-frets)
+    );
+    inline-size: 5px;
+    border-radius: 2px;
+    background-color: var(--foreground);
+    translate: var(--fretboard-neck-tx) 0;
+  }
+
+  /* a barre of the shape: one finger across its strings, a dashed line through them */
+  .fretboard-neck-barre {
+    position: absolute;
+    inset-block-start: calc((var(--fretboard-neck-s1, 1) - 0.5) * var(--fretboard-neck-gap) - 0.5rem);
+    inset-inline-start: calc(
+      var(--fretboard-neck-nut) + (100% - var(--fretboard-neck-nut)) * (var(--fretboard-neck-f, 1) - 0.5) /
+        var(--fretboard-neck-frets)
+    );
+    inline-size: 0;
+    block-size: calc((var(--fretboard-neck-s2, 1) - var(--fretboard-neck-s1, 1)) * var(--fretboard-neck-gap) + 1rem);
+    border-inline-start: 3px dashed var(--muted-foreground);
+    translate: var(--fretboard-neck-tx) 0;
+  }
+
+  .fretboard-neck-inlay,
+  .fretboard-neck-fret-number,
+  .fretboard-neck-dot {
+    position: absolute;
+    inset-inline-start: calc(
+      var(--fretboard-neck-nut) + (100% - var(--fretboard-neck-nut)) * (var(--fretboard-neck-f, 1) - 0.5) /
+        var(--fretboard-neck-frets)
+    );
+    translate: var(--fretboard-neck-tx) -50%;
+  }
+
+  .fretboard-neck-inlay {
+    inset-block-start: 50%;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--muted);
+    box-shadow: inset 0 0 0 1px var(--border);
+
+    &[data-double] {
+      box-shadow:
+        inset 0 0 0 1px var(--border),
+        0 calc(var(--fretboard-neck-gap) * -1) 0 var(--muted),
+        0 var(--fretboard-neck-gap) 0 var(--muted);
+    }
+  }
+
+  .fretboard-neck-fret-number {
+    inset-block-start: calc(100% + 0.625rem);
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+  }
+
+  .fretboard-neck-dot {
+    inset-block-start: calc((var(--fretboard-neck-s, 1) - 0.5) * var(--fretboard-neck-gap));
+    display: grid;
+    place-items: center;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+
+    &[data-nut] {
+      inset-inline-start: calc(var(--fretboard-neck-nut) / 2);
+    }
+
+    /* the shape */
+    &[data-role="chord"] {
+      background-color: color-mix(in oklab, var(--fretboard-neck-color, var(--muted-foreground)) 30%, var(--card));
+    }
+
+    &[data-role="muted"] {
+      color: var(--muted-foreground);
+    }
+
+    /* what comes next */
+    &[data-role="next"] {
+      border: 2px dashed var(--fretboard-neck-color, var(--primary));
+      background-color: var(--card);
+    }
+
+    /* what sounds now */
+    &[data-role="active"] {
+      background-color: var(--fretboard-neck-color, var(--primary));
+      color: var(--primary-foreground);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--fretboard-neck-color, var(--primary)) 25%, transparent);
+    }
+  }
+
+  /* upright: the nut on top, the strings from the highest-numbered on the left (from the right for the right hand) */
+  .fretboard-neck[data-orientation="vertical"] {
+    & .fretboard-neck-board {
+      min-inline-size: 0;
+      inline-size: calc(var(--fretboard-neck-strings) * var(--fretboard-neck-gap));
+      block-size: calc(var(--fretboard-neck-nut) + var(--fretboard-neck-frets) * var(--fretboard-neck-fret-size));
+      margin-block: 1.25rem 0.5rem;
+      margin-inline-start: 1.75rem;
+    }
+
+    & .fretboard-neck-string,
+    & .fretboard-neck-string-name,
+    & .fretboard-neck-dot {
+      inset-inline-start: calc(
+        (var(--fretboard-neck-strings) - var(--fretboard-neck-s, 1) + 0.5) * var(--fretboard-neck-gap)
+      );
+    }
+
+    & .fretboard-neck-string {
+      inset-block: calc(var(--fretboard-neck-nut) - 2px) 0;
+      inline-size: 1.5px;
+      block-size: auto;
+      translate: var(--fretboard-neck-tx) 0;
+    }
+
+    & .fretboard-neck-string-name {
+      inset-block-start: -0.75rem;
+      inset-inline-end: auto;
+      translate: var(--fretboard-neck-tx) -50%;
+    }
+
+    & .fretboard-neck-wires {
+      inset-block: var(--fretboard-neck-nut) 0;
+      inset-inline: calc(var(--fretboard-neck-gap) / 2 - 1px);
+      border-inline-start: 0;
+      border-block-start: 4px solid var(--foreground);
+      background-image: linear-gradient(to top, var(--border) 2px, transparent 2px);
+      background-size: 100% calc(100% / var(--fretboard-neck-frets));
+    }
+
+    & .fretboard-neck-inlay,
+    & .fretboard-neck-fret-number,
+    & .fretboard-neck-dot {
+      inset-block-start: calc(
+        var(--fretboard-neck-nut) + (100% - var(--fretboard-neck-nut)) * (var(--fretboard-neck-f, 1) - 0.5) /
+          var(--fretboard-neck-frets)
+      );
+    }
+
+    & .fretboard-neck-inlay {
+      inset-inline-start: 50%;
+
+      &[data-double] {
+        box-shadow:
+          inset 0 0 0 1px var(--border),
+          calc(var(--fretboard-neck-gap) * -1) 0 0 var(--muted),
+          var(--fretboard-neck-gap) 0 0 var(--muted);
+      }
+    }
+
+    & .fretboard-neck-fret-number {
+      inset-inline-start: -1rem;
+    }
+
+    & .fretboard-neck-dot[data-nut] {
+      inset-block-start: calc(var(--fretboard-neck-nut) / 2);
+    }
+
+    &[data-capo] .fretboard-neck-wires {
+      border-block-start-width: 2px;
+    }
+
+    & .fretboard-neck-capo {
+      inset-block: calc(
+          var(--fretboard-neck-nut) + (100% - var(--fretboard-neck-nut)) * var(--fretboard-neck-f, 1) /
+            var(--fretboard-neck-frets)
+        )
+        auto;
+      inset-inline: calc(var(--fretboard-neck-gap) / 2 - 4px);
+      inline-size: auto;
+      block-size: 5px;
+      translate: 0 -50%;
+    }
+
+    & .fretboard-neck-barre {
+      inset-block-start: calc(
+        var(--fretboard-neck-nut) + (100% - var(--fretboard-neck-nut)) * (var(--fretboard-neck-f, 1) - 0.5) /
+          var(--fretboard-neck-frets)
+      );
+      inset-inline-start: calc(
+        (var(--fretboard-neck-strings) - var(--fretboard-neck-s2, 1) + 0.5) * var(--fretboard-neck-gap) - 0.5rem
+      );
+      inline-size: calc((var(--fretboard-neck-s2, 1) - var(--fretboard-neck-s1, 1)) * var(--fretboard-neck-gap) + 1rem);
+      block-size: 0;
+      border-inline-start: 0;
+      border-block-start: 3px dashed var(--muted-foreground);
+      translate: 0 -50%;
+    }
+  }
+
+  /* string colours (data-colors="strings"): string n takes chart colour n - its line, its name, its dots - and from
+     the 6th on they start over; text in the string's colour mixed toward the text colour, legible in either mode */
+  .fretboard-neck[data-colors="strings"] {
+    & :is([data-string="1"], [data-string="6"], [data-string="11"]) {
+      --fretboard-neck-color: var(--chart-1);
+    }
+    & :is([data-string="2"], [data-string="7"], [data-string="12"]) {
+      --fretboard-neck-color: var(--chart-2);
+    }
+    & :is([data-string="3"], [data-string="8"]) {
+      --fretboard-neck-color: var(--chart-3);
+    }
+    & :is([data-string="4"], [data-string="9"]) {
+      --fretboard-neck-color: var(--chart-4);
+    }
+    & :is([data-string="5"], [data-string="10"]) {
+      --fretboard-neck-color: var(--chart-5);
+    }
+
+    & .fretboard-neck-string {
+      block-size: 2.5px;
+    }
+
+    &[data-orientation="vertical"] .fretboard-neck-string {
+      inline-size: 2.5px;
+      block-size: auto;
+    }
+
+    & :is(.fretboard-neck-string-name, .fretboard-neck-dot[data-role="muted"]) {
+      color: color-mix(in oklab, var(--fretboard-neck-color, var(--foreground)) 55%, var(--foreground));
+      font-weight: 700;
+    }
+
+    & .fretboard-neck-dot[data-role="active"] {
+      background-color: color-mix(in oklab, var(--fretboard-neck-color, var(--primary)) 40%, var(--card));
+      box-shadow:
+        0 0 0 3px var(--fretboard-neck-color, var(--primary)),
+        0 0 0 6px color-mix(in oklab, var(--fretboard-neck-color, var(--primary)) 25%, transparent);
+      color: color-mix(in oklab, var(--fretboard-neck-color, var(--foreground)) 55%, var(--foreground));
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .fretboard-neck-dot[data-role="chord"] {
+      background-color: var(--muted-foreground);
+      color: var(--card);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .fretboard-neck-dot[data-role="active"] {
+      background-color: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+
+    .fretboard-neck-string,
+    .fretboard-neck-capo {
+      background-color: CanvasText;
+      forced-color-adjust: none;
+    }
+  }
+}

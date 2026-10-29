@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "name": "fretboard-neck",
+  "states": {
+    "shape": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard-neck"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "shape": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "shape"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "notes": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard-neck"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "notes": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "notes"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "next": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard-neck"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "next": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "next"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "barre": {
+      "type": "number",
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard-neck"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "barre": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "barre"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 24,
+          "step": 1
+        }
+      }
+    },
+    "capo": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard-neck"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "capo": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "capo"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 12,
+          "step": 1
+        }
+      }
+    }
+  },
+  "actions": {}
+}

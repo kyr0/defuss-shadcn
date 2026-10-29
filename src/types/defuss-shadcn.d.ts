@@ -221,6 +221,119 @@ interface DefussShadcnRegistry {
     loop(target: string | HTMLElement, start?: number | null, end?: number): { start: number; end: number } | null;
     active(target: string | HTMLElement, time?: number): unknown[];
   };
+  /** Fretboard (src/components/multimedia/fretboard/fretboard.ts) - members match df$.fretboard there. */
+  fretboard?: {
+    load(target: string | HTMLElement, data: unknown): void;
+    data(target: string | HTMLElement): unknown;
+    scores(target: string | HTMLElement): { id: string; label: string; key: string; signature: string; bpm: number }[];
+    select(target: string | HTMLElement, choice: { score?: string; key?: string; signature?: string }): string;
+    play(target: string | HTMLElement): void;
+    pause(target: string | HTMLElement): void;
+    stop(target: string | HTMLElement): void;
+    seek(target: string | HTMLElement, measure: number, beat?: number): void;
+    loop(target: string | HTMLElement, start?: number | null, end?: number): { start: number; end: number } | null;
+    zoom(target: string | HTMLElement, scale: number): number;
+    active(target: string | HTMLElement, position?: number): unknown[];
+  };
+  /** Knob (src/components/multimedia/knob/knob.ts) - members match df$.knob there. */
+  knob?: {
+    value(target: string | HTMLElement, value?: number): number;
+    position(target: string | HTMLElement): number;
+    reset(target: string | HTMLElement): number;
+    rings(
+      target: string | HTMLElement,
+      list?: { id: string; label?: string; amount: number; color?: string; bipolar?: boolean }[],
+    ): { id: string; label?: string; amount: number; color?: string; bipolar?: boolean }[];
+    modulate(target: string | HTMLElement, values: Record<string, number | null> | null): number;
+    scale(
+      name: string,
+      scale: {
+        value: (position: number, range: { min: number; max: number; exponent: number }) => number;
+        position: (value: number, range: { min: number; max: number; exponent: number }) => number;
+      },
+    ): void;
+    format(
+      name: string,
+      format: (
+        value: number,
+        context: { unit: string; decimals: number | null; locale: string; min: number; max: number; step: number | null },
+      ) => string,
+    ): void;
+  };
+  /** Envelope (src/components/multimedia/envelope/envelope.ts) - members match df$.envelope there. */
+  envelope?: {
+    params(target: string | HTMLElement, params?: object): object | null;
+    noteOn(target: string | HTMLElement): void;
+    noteOff(target: string | HTMLElement): void;
+    trigger(target: string | HTMLElement, gate?: number): void;
+    stop(target: string | HTMLElement): void;
+    valueAt(target: string | HTMLElement, time: number, gate?: number): { value: number; phase: string };
+    schedule(
+      target: string | HTMLElement,
+      param: AudioParam,
+      options?: { start?: number; gate?: number; min?: number; max?: number; scale?: 'linear' | 'exponential' },
+    ): number;
+    input(target: string | HTMLElement, level: number | null, time?: number): number;
+    transfer(target: string | HTMLElement, level: number): number;
+    modulate(
+      target: string | HTMLElement,
+      values: Record<string, { frequency?: number; gain?: number; Q?: number } | null> | null,
+    ): void;
+    response(target: string | HTMLElement, frequencies: number[]): number[];
+    connect(
+      target: string | HTMLElement,
+      context: BaseAudioContext,
+    ): { input: AudioNode; output: AudioNode; compressor: DynamicsCompressorNode | null; disconnect: () => void } | null;
+  };
+  /** Tacho (src/components/multimedia/tacho/tacho.ts) - members match df$.tacho there. */
+  tacho?: {
+    value(target: string | HTMLElement, value?: number): number;
+    tune(
+      target: string | HTMLElement,
+      frequency: number | null,
+      options?: { a4?: number; strings?: string[]; notation?: 'sharp' | 'flat' },
+    ): { note: string; octave: number; cents: number; target: number } | null;
+    listen(
+      target: string | HTMLElement,
+      source: AudioNode | null,
+      options?: { a4?: number; strings?: string[]; notation?: 'sharp' | 'flat' },
+    ): AnalyserNode | null;
+    pitch(
+      frequency: number,
+      options?: { a4?: number; strings?: string[]; notation?: 'sharp' | 'flat' },
+    ): { note: string; octave: number; cents: number; target: number };
+    detect(samples: Float32Array, sampleRate: number): { frequency: number; clarity: number } | null;
+    settled(target: string | HTMLElement): Promise<void>;
+    format(
+      name: string,
+      format: (
+        value: number,
+        context: { unit: string; decimals: number | null; locale: string; min: number; max: number; tick: boolean },
+      ) => string,
+    ): void;
+  };
+  /** Chord Chart (src/components/multimedia/chord-chart/chord-chart.ts) - members match df$.chordChart there. */
+  chordChart?: {
+    chord(
+      target: string | HTMLElement,
+      chord?: { name?: string; shape?: string; barre?: number | null; capo?: number },
+    ): { name: string; shape: string; barre: number | null; capo: number } | null;
+    parse(shape: string): (number | 'x')[] | null;
+  };
+  /** Fretboard Neck (src/components/multimedia/fretboard-neck/fretboard-neck.ts) - members match df$.fretboardNeck there. */
+  fretboardNeck?: {
+    play(
+      target: string | HTMLElement,
+      notes: string | { string: number; fret: number }[],
+      config?: {
+        shape?: string;
+        barre?: number | null;
+        notes?: string | { string: number; fret: number }[];
+        next?: string | { string: number; fret: number }[];
+        capo?: number;
+      },
+    ): { string: number; fret: number }[];
+  };
   iframe?: {
     post(target: string | HTMLElement, name: string, detail?: unknown): boolean;
     send(name: string, detail?: unknown): boolean;

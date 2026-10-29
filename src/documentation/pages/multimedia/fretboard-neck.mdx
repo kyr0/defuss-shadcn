@@ -1,0 +1,201 @@
+---
+title: "Fretboard Neck"
+description: "Fretboard Neck component - the neck of a fretted instrument from its markup: any tuning, a capo, inlays and fret numbers, and the fingers on it - a chord's shape, the notes sounding, the notes next; across or upright, for either hand, in string colours. A Fretboard drives a bound neck as it plays."
+slug: "fretboard-neck"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="fretboard-neck" title="Fretboard Neck" component="fretboard-neck">
+  The neck of a fretted instrument, written as one element with data attributes: the tuning names the strings, a capo clamps a fret, and the fingers go on it - a chord's shape drawn faint (its barre a dashed line, × on a muted string), the notes sounding filled with their fret, the notes coming next outlined. Nothing is drawn on an open string. The runtime draws the strings, the nut (or the capo's bold bar with the nut thin behind it), the fret wires, the inlays and the fret numbers. Across with the 1st string on top, as a tab draws it, or upright as a chord chart draws it; the right hand mirrors either, and string colours give every string a chart colour. Its State API sets the fingers - a <DocLink href="fretboard.html">Fretboard</DocLink> bound to it sets them as its playhead moves; one chord's diagram is the <DocLink href="chord-chart.html">Chord Chart</DocLink>.
+</PageHeader>
+
+<SkillPanel component="fretboard-neck">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;div class="fretboard-neck"&gt;</code> with the instrument and the fingers as data attributes. The runtime draws <code>.fretboard-neck-board</code> inside it (<code>aria-hidden</code>) and a hidden description of what it shows; the root becomes a <code>role="img"</code> described by it.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/img_role" title="the neck read as one picture"><code>role="img"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby" title="what the neck shows, in words"><code>aria-describedby</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="a data attribute written draws the neck again"><code>MutationObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values" title="the right hand mirrors the neck">Logical properties</ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="the faint shape, the halo of a note sounding"><code>color-mix()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.fretboard-neck</code>
+    <code>.fretboard-neck-board</code>
+    <code>.fretboard-neck-string</code>
+    <code>.fretboard-neck-dot</code>
+    <code>.fretboard-neck-capo</code>
+    <code>.fretboard-neck-barre</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-tuning</code> - the strings from the highest-numbered to the 1st (<code>"G C E A"</code>); <code>data-strings</code> - without a tuning; <code>data-frets</code> - the frets shown</SkillText>
+  <SkillText dense>• <code>data-shape</code> + <code>data-barre</code> - a chord's shape, faint; <code>data-notes</code> - sounding (<code>"3/2 2/3"</code>: string/fret); <code>data-next</code> - coming next; <code>data-capo</code> - the capo's fret</SkillText>
+  <SkillText dense>• <code>data-orientation="vertical"</code> - upright; <code>data-hand="right"</code> - mirrored; <code>data-colors="strings"</code> - a chart colour per string</SkillText>
+  <SkillText dense>• <code>data-fretboard-for="id"</code> - bound to a Fretboard, which sets the neck as it plays</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Fretboard Neck" hint="A ukulele's neck in G C E A with the C shape on it: its one finger, on the 1st string at the 3rd fret, is sounding - filled, with its fret. The open strings show nothing. Open the State tab to put another shape, notes sounding, notes next, a barre or a capo on the neck."
+<div
+  class="fretboard-neck"
+  id="fn-c"
+  data-tuning="G C E A"
+  data-shape="0003"
+  data-notes="1/3"
+  aria-label="C on a ukulele"
+  data-state-demo
+></div>
+```
+
+```html example label="Notes next" hint="The G shape (0232) faint, the note sounding filled - the 3rd string at the 2nd fret - and the one coming next outlined, the 2nd string at the 3rd fret: what a picking pattern plays now and then."
+<div
+  class="fretboard-neck"
+  data-tuning="G C E A"
+  data-shape="0232"
+  data-notes="3/2"
+  data-next="2/3"
+  aria-label="G, picked"
+></div>
+```
+
+```html example label="Upright" hint="data-orientation=&quot;vertical&quot;: the neck stood up as a chord chart draws it - the nut on top, the strings from the 4th (G) on the left. F (2010) with its 2nd string sounding."
+<div
+  class="fretboard-neck"
+  data-orientation="vertical"
+  data-tuning="G C E A"
+  data-shape="2010"
+  data-notes="2/1"
+  aria-label="F, upright"
+></div>
+```
+
+```html example label="Right hand" hint="data-hand=&quot;right&quot; mirrors the neck for a left-handed player: across, the nut on the right."
+<div
+  class="fretboard-neck"
+  data-hand="right"
+  data-tuning="G C E A"
+  data-shape="2000"
+  data-notes="4/2"
+  aria-label="Am for the right hand"
+></div>
+```
+
+```html example label="String colours" hint="data-colors=&quot;strings&quot;: each string and its dots in a chart colour, the 1st in --chart-1."
+<div
+  class="fretboard-neck"
+  data-colors="strings"
+  data-tuning="G C E A"
+  data-shape="0232"
+  data-notes="3/2 2/3 1/2"
+  aria-label="G in string colours"
+></div>
+```
+
+```html example label="Guitar with a capo" hint="Six strings (E A D G B e) and a capo on the 3rd fret: its bold bar on the 3rd fret wire, the nut a thin line behind it. The F shape counts from the capo, as tabs for a capo are written - its barre (data-barre=&quot;1&quot;) lies at the capo's 1st fret, the 6th string sounding there."
+<div
+  class="fretboard-neck"
+  data-tuning="E A D G B e"
+  data-capo="3"
+  data-shape="133211"
+  data-barre="1"
+  data-notes="6/1"
+  aria-label="F with a capo on the 3rd fret"
+></div>
+```
+
+```html example label="Muted strings" hint="A guitar's C (x32010): × at the nut on the muted 6th string, the strummed chord sounding - every fretted string filled with its fret, the open ones nothing."
+<div
+  class="fretboard-neck"
+  data-tuning="E A D G B e"
+  data-shape="x32010"
+  data-notes="5/3 4/2 2/1"
+  aria-label="C on a guitar"
+></div>
+```
+
+```html example label="A scale" hint="data-frets=&quot;12&quot; shows twelve frets, every inlay up to the double dot at the 12th. The C major scale in the first position as notes sounding, no shape - its open C, E and A strings show nothing."
+<div
+  class="fretboard-neck"
+  data-tuning="G C E A"
+  data-frets="12"
+  data-notes="3/2 2/1 2/3 1/2 1/3"
+  aria-label="C major scale"
+></div>
+```
+
+```html example label="Play it through the API" hint="df$.shadcn.fretboardNeck.play() puts the notes sounding on the neck, with a shape and the notes next: Strum plays each chord's fretted strings; Pick walks through them one string at a time, the next string outlined."
+<div class="grid gap-3">
+  <div class="fretboard-neck" id="fn-play" data-tuning="G C E A" aria-label="Chords played"></div>
+  <div class="flex flex-wrap items-center gap-2">
+    <select class="select" data-size="sm" id="fn-play-chord" aria-label="Chord">
+      <option value="0003">C</option>
+      <option value="2000">Am</option>
+      <option value="2010">F</option>
+      <option value="0232">G</option>
+    </select>
+    <button class="btn" data-variant="outline" data-size="sm" id="fn-play-strum">Strum</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="fn-play-pick">Pick</button>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const notesOf = (shape) => [...shape].map((f, i) => ({ string: 4 - i, fret: Number(f) })).filter((n) => n.fret > 0);
+    let step = 0;
+    df$('#fn-play-strum').on('click', () => {
+      const shape = df$('#fn-play-chord').val();
+      df$.shadcn.fretboardNeck.play('#fn-play', notesOf(shape), { shape, next: '' });
+    });
+    df$('#fn-play-pick').on('click', () => {
+      const shape = df$('#fn-play-chord').val();
+      const strings = [...shape].map((f, i) => ({ string: 4 - i, fret: Number(f) }));
+      const now = strings[step % 4];
+      const next = strings[(step + 1) % 4];
+      step++;
+      df$.shadcn.fretboardNeck.play('#fn-play', [now], { shape, next: [next] });
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.fretboard-neck</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the neck with the fingers its config puts on it</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">The state takes <code>\{ shape, barre, notes, next, capo \}</code>, merged into the current config - <code>notes</code> and <code>next</code> as <code>"string/fret"</code> text or a list of <code>\{ string, fret \}</code>. <code>getState()</code> reports what the neck shows, also what a bound <DocLink href="fretboard.html">Fretboard</DocLink> or the markup set.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> captures <code>screenshots/\{mode\}/fretboard-neck.png</code>.</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `shape` | `string` | | | A chord's shape, drawn faint; observed from `getState().config.shape`. |
+| `notes` | `string` | | | The notes sounding, "string/fret" pairs; observed from `getState().config.notes`. |
+| `next` | `string` | | | The notes coming next, outlined; observed from `getState().config.next`. |
+| `barre` | `number` | | | The fret the shape's barre lies on (empty: none); observed from `getState().config.barre`. |
+| `capo` | `number` | | `0` | The capo's fret (0: none); observed from `getState().config.capo`. |
+```
+
+</StatesSection>
+
+<ApiSection component="fretboard-neck" />
+
+<SourceFiles component="fretboard-neck" section="css">
+  <SourceNote for="css">The scroll box, the board (strings and their names, the nut, the fret wires as a gradient, a capo's bar with the nut thin behind it), the inlays and fret numbers, the barre, the dots by role, the upright and mirrored neck, the string colours and the accessibility media queries.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="fretboard-neck" section="js">
+  <SourceNote for="js">The shape's and the notes' parsers, the barre a shape can hold, the board drawn from the markup with each position's strongest role, the description, the State API and df$.shadcn.fretboardNeck.</SourceNote>
+</SourceFiles>
+
+</DocPage>

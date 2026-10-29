@@ -289,6 +289,68 @@ test('media-timeline component: the CodeExample card moves the playhead and zoom
   await waitFor(() => mirrored().zoom === 60, 'the timeline to zoom to 60 px/s (mirrored)');
 }, 30_000 * __TIMEOUT_SCALE__);
 
+test('fretboard component: the CodeExample card moves the playhead and plays through the State API', async () => {
+  // the first card is Twinkle, Twinkle in C: it keeps its own clock at 90 BPM
+  const { card, mirrored } = await bootedCard('fretboard.html', 'fretboard');
+  card.preview!.setState('position', 8);
+  await waitFor(() => mirrored().position === 8, 'the playhead to stand at beat 8 (mirrored)');
+  await waitFor(() => mirrored().key === 'C' && mirrored().signature === '4/4', 'the score shown (mirrored key and time signature)');
+  card.preview!.setState('playing', true);
+  await waitFor(() => mirrored().playing === true && mirrored().position > 8, 'the tab to play on from beat 8 (mirrored)');
+  card.preview!.setState('paused', true);
+  await waitFor(() => mirrored().paused === true, 'the tab to pause (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
+test('knob component: the CodeExample card turns the knob and shows it being adjusted through the State API', async () => {
+  // the first card is a cutoff from 20 Hz to 20 kHz on an exponential scale, at 1 kHz
+  const { card, mirrored } = await bootedCard('knob.html', 'knob');
+  await waitFor(() => mirrored().value === 1000, 'the knob at its authored 1 kHz (mirrored)');
+  card.preview!.setState('value', 440);
+  await waitFor(() => mirrored().value === 440, 'the knob to turn to 440 Hz (mirrored)');
+  card.preview!.setState('adjusting', true);
+  await waitFor(() => mirrored().adjusting === true, 'the knob to show its precision radius (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
+test('envelope component: the CodeExample card plays the amp envelope and disables it through the State API', async () => {
+  // the first card is an amp envelope with its knobs and gate
+  const { card, mirrored } = await bootedCard('envelope.html', 'envelope');
+  await waitFor(() => mirrored().playing === false, 'the envelope at rest (mirrored)');
+  card.preview!.setState('playing', true);
+  await waitFor(() => mirrored().playing === true, 'the envelope to play (mirrored)');
+  card.preview!.setState('disabled', true);
+  await waitFor(() => mirrored().disabled === true, 'the envelope to be disabled (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
+test('tacho component: the CodeExample card swings the tuner\'s needle and lets it go idle through the State API', async () => {
+  // the first card is a guitar tuner: cents from -50 to 50
+  const { card, mirrored } = await bootedCard('tacho.html', 'tacho');
+  await waitFor(() => typeof mirrored().value === 'number', 'the tuner showing a value (mirrored)');
+  card.preview!.setState('value', -20);
+  await waitFor(() => mirrored().value === -20, 'the needle on -20 cents (mirrored)');
+  card.preview!.setState('idle', true);
+  await waitFor(() => mirrored().idle === true, 'the tuner to go idle (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
+test('chord-chart component: the CodeExample card shows another chord and marks it sounding through the State API', async () => {
+  // the first card is C on a ukulele
+  const { card, mirrored } = await bootedCard('chord-chart.html', 'chord-chart');
+  await waitFor(() => mirrored().shape === '0003', 'the chart showing C (mirrored)');
+  card.preview!.setState('shape', '0232');
+  await waitFor(() => mirrored().shape === '0232', 'the chart to show the G shape (mirrored)');
+  card.preview!.setState('active', true);
+  await waitFor(() => mirrored().active === true, 'the chart to be marked sounding (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
+test('fretboard-neck component: the CodeExample card puts other notes on the neck through the State API', async () => {
+  // the first card is a ukulele's neck with C sounding
+  const { card, mirrored } = await bootedCard('fretboard-neck.html', 'fretboard-neck');
+  await waitFor(() => mirrored().notes === '1/3', 'the neck sounding the 1st string at the 3rd fret (mirrored)');
+  card.preview!.setState('notes', '3/2 2/3');
+  await waitFor(() => mirrored().notes === '3/2 2/3', 'the neck to sound two notes (mirrored)');
+  card.preview!.setState('capo', 2);
+  await waitFor(() => mirrored().capo === 2, 'the capo on the 2nd fret (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
 test('code-example component: every docs card IS the shipped HTML Preview Editor; its page previews nested cards', async () => {
   // the page's first example nests a card in its preview: the State tab's
   // `code` control drives the nested card's own State API in the sandbox

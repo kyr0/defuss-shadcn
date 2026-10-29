@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>chord-chart e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/switch/switch.css" />
+    <link rel="stylesheet" href="/dist/components/label/label.css" />
+    <link rel="stylesheet" href="/dist/components/chord-chart/chord-chart.css" />
+  </head>
+  <!-- mirrors the doc page: a ukulele's C across, G7 upright, Am for the right hand, G in string colours, a guitar's C
+       with a muted string, F with a barre, D higher up the neck, G with a capo, F active, the chord library (a select
+       and a switch around a chart); plus a barre the shape cannot hold and a morph target -->
+  <body style="padding: 2rem; display: flex; flex-wrap: wrap; gap: 2rem; align-items: start; width: 900px; margin: 0">
+    <figure class="chord-chart" id="cc-c" data-shape="0003">
+      <figcaption>C</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-g7" data-shape="0212" data-orientation="vertical">
+      <figcaption>G7</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-am" data-shape="2000" data-hand="right">
+      <figcaption>Am</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-g" data-shape="0232" data-colors="strings">
+      <figcaption>G</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-guitar" data-shape="x32010" data-orientation="vertical">
+      <figcaption>C</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-f" data-shape="133211" data-barre="1" data-orientation="vertical">
+      <figcaption>F</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-d" data-shape="x 5 7 7 7 5" data-barre="5" data-orientation="vertical">
+      <figcaption>D</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-capo" data-shape="320003" data-capo="2" data-orientation="vertical">
+      <figcaption>G</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-active" data-shape="2010" data-active>
+      <figcaption>F</figcaption>
+    </figure>
+    <figure class="chord-chart" id="cc-no-barre" data-shape="0003" data-barre="3">
+      <figcaption>C</figcaption>
+    </figure>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem">
+      <figure class="chord-chart" id="cc-library" data-shape="0003" data-orientation="vertical">
+        <figcaption>C</figcaption>
+      </figure>
+      <div style="display: grid; gap: 0.75rem; justify-items: start">
+        <select class="select" id="cc-library-chord" aria-label="Chord">
+          <option value="C|0003">C</option>
+          <option value="Am|2000">Am</option>
+          <option value="Bb|3211">Bb</option>
+        </select>
+        <div style="display: flex; align-items: center; gap: 0.5rem">
+          <input class="switch" type="checkbox" role="switch" id="cc-library-active" />
+          <label class="label" for="cc-library-active">Sounding</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="cc-morph"><figure class="chord-chart" id="cc-morphed" data-shape="2010"><figcaption>F</figcaption></figure></div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/chord-chart/chord-chart.js"></script>
+    <script type="module">
+      document.querySelector('#cc-library-chord').addEventListener('change', (e) => {
+        const [name, shape] = e.target.value.split('|');
+        globalThis.df$.shadcn.chordChart.chord('#cc-library', { name, shape, barre: name === 'Bb' ? 1 : null });
+      });
+      document.querySelector('#cc-library-active').addEventListener('change', (e) => {
+        document.querySelector('#cc-library').api.setState(e.target.checked ? 'active' : 'default');
+      });
+    </script>
+  </body>
+</html>

@@ -6492,6 +6492,6 @@ function init8() {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-//# debugId=C0B101E0C131D9FB64756E2164756E21
+//# debugId=EFCDCF1CD0C6F6F764756E2164756E21
 /* defuss-shadcn v0.9.10 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=status-page.js.map

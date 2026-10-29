@@ -1,0 +1,219 @@
+/* -- Tacho ------------------------------------------------------
+   A needle on a scale over a native <meter>: the runtime draws the dial (.tacho-dial, an SVG with the pivot at its
+   origin - the arc, the zones of the meter's low / high / optimum, the ticks and their labels, the needle) before the
+   meter, which then stays for assistive technology only. The big label above, the readout and the caption below.
+   The zone colours have no token (tweakcn has no success or warning colour): literal green and amber, the theme's
+   destructive for the worst. */
+
+@layer components {
+  .tacho {
+    --tacho-size: 16rem;
+    --tacho-color: var(--foreground);
+    --tacho-optimum: oklch(0.7 0.17 150);
+    --tacho-suboptimum: oklch(0.78 0.15 75);
+    --tacho-worst: var(--destructive);
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.125rem;
+    inline-size: var(--tacho-size);
+    max-inline-size: 100%;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    text-align: center;
+
+    &[data-size="sm"] {
+      --tacho-size: 10rem;
+    }
+    &[data-size="lg"] {
+      --tacho-size: 22rem;
+    }
+
+    &[data-color="chart-1"] {
+      --tacho-color: var(--chart-1);
+    }
+    &[data-color="chart-2"] {
+      --tacho-color: var(--chart-2);
+    }
+    &[data-color="chart-3"] {
+      --tacho-color: var(--chart-3);
+    }
+    &[data-color="chart-4"] {
+      --tacho-color: var(--chart-4);
+    }
+    &[data-color="chart-5"] {
+      --tacho-color: var(--chart-5);
+    }
+    &[data-color="primary"] {
+      --tacho-color: var(--primary);
+    }
+
+    /* the needle and the label take the colour of the zone the value is in */
+    &[data-zone="optimum"] {
+      --tacho-needle: var(--tacho-optimum);
+    }
+    &[data-zone="suboptimum"] {
+      --tacho-needle: var(--tacho-suboptimum);
+    }
+    &[data-zone="even-less-good"] {
+      --tacho-needle: var(--tacho-worst);
+    }
+  }
+
+  .tacho-label {
+    min-block-size: 1lh;
+    color: var(--tacho-needle, var(--foreground));
+    font-size: calc(var(--tacho-size) * 0.2);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.2s ease-out;
+  }
+
+  .tacho-dial {
+    inline-size: 100%;
+    block-size: auto;
+    overflow: visible;
+
+    & .tacho-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 1.5;
+    }
+    & .tacho-zone {
+      fill: none;
+      stroke-width: 5;
+      opacity: 0.35;
+
+      &[data-zone="optimum"] {
+        stroke: var(--tacho-optimum);
+        opacity: 0.9;
+      }
+      &[data-zone="suboptimum"] {
+        stroke: var(--tacho-suboptimum);
+      }
+      &[data-zone="even-less-good"] {
+        stroke: var(--tacho-worst);
+        opacity: 0.6;
+      }
+    }
+    & .tacho-tick {
+      fill: none;
+      stroke: var(--muted-foreground);
+      stroke-width: 1;
+      stroke-linecap: round;
+
+      &[data-major] {
+        stroke: var(--foreground);
+        stroke-width: 1.75;
+      }
+    }
+    & .tacho-tick-label {
+      fill: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      dominant-baseline: central;
+      text-anchor: middle;
+    }
+    & .tacho-needle-blade {
+      fill: var(--tacho-needle, var(--tacho-color));
+      transition: fill 0.2s ease-out;
+    }
+    & .tacho-pivot {
+      fill: var(--tacho-color);
+    }
+    & .tacho-pivot-cap {
+      fill: var(--background);
+    }
+  }
+
+  .tacho-value {
+    font-family: var(--font-mono);
+    font-size: calc(var(--tacho-size) * 0.075);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tacho-caption {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* no signal: the readouts dim, the needle greys */
+  .tacho[data-idle] {
+    --tacho-needle: var(--muted-foreground);
+
+    & .tacho-label,
+    & .tacho-value,
+    & .tacho-caption {
+      opacity: 0.35;
+    }
+  }
+
+  /* with scripting the dial shows the value; the meter stays for assistive technology */
+  @media (scripting: enabled) {
+    .tacho[data-init] .tacho-meter {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tacho-label,
+    .tacho-dial .tacho-needle-blade {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .tacho-dial {
+      & .tacho-tick,
+      & .tacho-tick-label {
+        stroke-width: 1.5;
+      }
+      & .tacho-tick-label {
+        fill: var(--foreground);
+      }
+      & .tacho-zone {
+        opacity: 1;
+      }
+    }
+    .tacho-caption {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .tacho-dial {
+      & .tacho-track,
+      & .tacho-tick,
+      & .tacho-tick[data-major] {
+        stroke: CanvasText;
+      }
+      & .tacho-tick-label {
+        fill: CanvasText;
+      }
+      & .tacho-zone[data-zone="optimum"] {
+        stroke: Highlight;
+      }
+      & .tacho-zone:not([data-zone="optimum"]) {
+        stroke: GrayText;
+      }
+      & .tacho-needle-blade,
+      & .tacho-pivot {
+        fill: CanvasText;
+      }
+      & .tacho-pivot-cap {
+        fill: Canvas;
+      }
+    }
+    .tacho-label {
+      color: CanvasText;
+    }
+  }
+}

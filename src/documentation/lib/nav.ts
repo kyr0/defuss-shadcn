@@ -204,12 +204,18 @@ export const NAV: NavSection[] = [
     { label: 'Scroll Area', href: 'scroll-area.html' },
     { label: 'Sortable', href: 'sortable.html' },
   ]},
-  // players with a State API and a timeline that drives them - the Website Video / Audio Player blocks are their
-  // CSS-only cousins
+  // players with a State API, a timeline that drives them and a tablature with its own clock - the Website Video /
+  // Audio Player blocks are their CSS-only cousins
   { heading: 'Multimedia', icon: 'clapperboard', items: [
     { label: 'Video', href: 'video.html', isNew: true },
     { label: 'Audio', href: 'audio.html', isNew: true },
     { label: 'Media Timeline', href: 'media-timeline.html', isNew: true },
+    { label: 'Fretboard', href: 'fretboard.html', isNew: true },
+    { label: 'Fretboard Neck', href: 'fretboard-neck.html', isNew: true },
+    { label: 'Chord Chart', href: 'chord-chart.html', isNew: true },
+    { label: 'Knobs', href: 'knob.html', isNew: true },
+    { label: 'Envelopes', href: 'envelope.html', isNew: true },
+    { label: 'Tacho', href: 'tacho.html', isNew: true },
   ]},
   // records by the hundred thousand: windowed DOM, every query local over all
   // rows (defuss-dataview) - Tree Grid is the Data Grid with parents

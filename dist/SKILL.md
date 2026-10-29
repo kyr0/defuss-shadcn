@@ -520,6 +520,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/checkbox.png
 **Skill:** [components/checkbox/component-skill.md](components/checkbox/component-skill.md)
 
+## Chord Chart
+
+**Type:** ATM
+**Why:** A <figure> with its <figcaption> is the chord's name and picture; the runtime draws the grid from data-shape - dots, the × of a muted string, a barre, a capo - so a chart is written as one attribute and changed through its State API.
+**When:** A chord diagram of a fretted instrument - a song sheet's chord legend, a lesson, a chord library; the whole neck with the notes sounding is the Fretboard Neck, a play-along tab the Fretboard.
+**Files:** dist/components/chord-chart/chord-chart.css + dist/components/chord-chart/chord-chart.js
+**Supported states:** default, active
+**Screenshots:** screenshots/{light,dark}/chord-chart.png, screenshots/{light,dark}/chord-chart-active.png
+**Skill:** [components/chord-chart/component-skill.md](components/chord-chart/component-skill.md)
+
 ## Code Example
 
 **Type:** BLK
@@ -870,6 +880,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/empty-state.png
 **Skill:** [components/empty-state/component-skill.md](components/empty-state/component-skill.md)
 
+## Envelope
+
+**Type:** ATM
+**Why:** One JSON object of parameters drawn as the curve of an audio plugin and edited by its handles - an ADSR, a compressor's transfer curve, a filter's or an EQ's response (Web Audio's own, from BiquadFilterNode.getFrequencyResponse) - and the same parameters drive Web Audio.
+**When:** Synth envelopes, compressors, filters and EQs - with knobs bound to the parameters; a single value on a dial is a knob, a value over time on a track is the media timeline.
+**Files:** dist/components/envelope/envelope.css + dist/components/envelope/envelope.js
+**Supported states:** default, playing, editing, disabled
+**Screenshots:** screenshots/{light,dark}/envelope.png, screenshots/{light,dark}/envelope-playing.png, screenshots/{light,dark}/envelope-editing.png, screenshots/{light,dark}/envelope-disabled.png
+**Skill:** [components/envelope/component-skill.md](components/envelope/component-skill.md)
+
 ## Error State
 
 **Type:** BLK
@@ -1009,6 +1029,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/form-progress.png
 **Skill:** [components/form-progress/component-skill.md](components/form-progress/component-skill.md)
+
+## Fretboard
+
+**Type:** MOL
+**Why:** A song's tablature from one JSON - chords, the tab staff and lyrics lanes per measure - in lines that break at the width, with its own clock at the score's tempo, so a musician plays along while the playhead lights up what to play and sing and the sheet scrolls along.
+**When:** Ukulele tabs, chord sheets and play-along lyrics, in one key and time signature or several. A media recording's timeline (scenes, speakers, captions) is the Media Timeline; a score with notation (staves, note heads) is out of scope.
+**Files:** dist/components/fretboard/fretboard.css + dist/components/fretboard/fretboard.js
+**Supported states:** default, playing, paused
+**Screenshots:** screenshots/{light,dark}/fretboard.png, screenshots/{light,dark}/fretboard-playing.png, screenshots/{light,dark}/fretboard-paused.png
+**Skill:** [components/fretboard/component-skill.md](components/fretboard/component-skill.md)
+
+## Fretboard Neck
+
+**Type:** ATM
+**Why:** The neck is its markup - a tuning, a capo, a shape and the notes as data attributes - and the runtime draws the strings, frets, inlays and fingers from it, so a page or a Fretboard sets what is played through one State API.
+**When:** The whole neck of a fretted instrument with fingers on it - where a chord lies, the notes sounding and the next ones, a scale; one chord's diagram is the Chord Chart, a play-along tab the Fretboard (which drives a bound neck).
+**Files:** dist/components/fretboard-neck/fretboard-neck.css + dist/components/fretboard-neck/fretboard-neck.js
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/fretboard-neck.png
+**Skill:** [components/fretboard-neck/component-skill.md](components/fretboard-neck/component-skill.md)
 
 ## Gallery Item
 
@@ -1169,6 +1209,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/kbd.png
 **Skill:** [components/kbd/component-skill.md](components/kbd/component-skill.md)
+
+## Knob
+
+**Type:** MOL
+**Why:** A native range input under a drawn dial - the form value, the keys and the accessible slider stay the browser's, while the knob turns on any scale, shows the sources that modulate it as rings, lets a drag far from it turn it finer, and takes a typed value in a Number Input.
+**When:** The parameters of an audio plugin, a synthesizer or a mixer - frequency, gain, time, depth, pan - where many controls share little room and a value moves on a curve. A plain value on a line is the Slider; a number typed in is the Number Input.
+**Files:** dist/components/knob/knob.css + dist/components/knob/knob.js
+**Supported states:** default, adjusting, disabled
+**Screenshots:** screenshots/{light,dark}/knob.png, screenshots/{light,dark}/knob-adjusting.png, screenshots/{light,dark}/knob-disabled.png
+**Skill:** [components/knob/component-skill.md](components/knob/component-skill.md)
 
 ## Label
 
@@ -2219,6 +2269,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, active, disabled
 **Screenshots:** screenshots/{light,dark}/tabs.png, screenshots/{light,dark}/tabs-active.png, screenshots/{light,dark}/tabs-disabled.png
 **Skill:** [components/tabs/component-skill.md](components/tabs/component-skill.md)
+
+## Tacho
+
+**Type:** ATM
+**Why:** A native <meter> is the value - its range, its low / high / optimum regions, the accessible meter and the plain bar without scripting; the runtime draws a dial with a needle that moves like a real one.
+**When:** A value around a middle or along a scale read at a glance - a tuner's cents, a pan position, a rev counter, a VU meter; a value someone sets is a knob, a progress a progress bar.
+**Files:** dist/components/tacho/tacho.css + dist/components/tacho/tacho.js
+**Supported states:** default, idle
+**Screenshots:** screenshots/{light,dark}/tacho.png, screenshots/{light,dark}/tacho-idle.png
+**Skill:** [components/tacho/component-skill.md](components/tacho/component-skill.md)
 
 ## Tag Cloud
 

@@ -1,0 +1,408 @@
+/* -- Envelope ---------------------------------------------------
+   The curves of an audio plugin - an ADSR envelope, a compressor's transfer curve, a filter's or an EQ's response -
+   drawn by the runtime into .envelope-graph: an SVG stretched over the plot (strokes kept at their width), the ticks,
+   the handles and the live point as HTML laid over it at fractions of the plot (--envelope-x / --envelope-y, y up),
+   a compressor's gain reduction meter beside it, an ADSR's phase strip below it. */
+
+@layer components {
+  .envelope {
+    --envelope-height: 9rem;
+    --envelope-color: var(--primary);
+    --envelope-fill: color-mix(in oklch, var(--envelope-color) 16%, transparent);
+    --envelope-grid-color: color-mix(in oklch, var(--border) 70%, transparent);
+    --envelope-handle-size: 0.75rem;
+    display: grid;
+    gap: 0.5rem;
+    min-inline-size: 0;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+
+    &[data-size="sm"] {
+      --envelope-height: 6rem;
+      --envelope-handle-size: 0.625rem;
+    }
+    &[data-size="lg"] {
+      --envelope-height: 14rem;
+      --envelope-handle-size: 0.875rem;
+    }
+
+    &[data-color="chart-1"] {
+      --envelope-color: var(--chart-1);
+    }
+    &[data-color="chart-2"] {
+      --envelope-color: var(--chart-2);
+    }
+    &[data-color="chart-3"] {
+      --envelope-color: var(--chart-3);
+    }
+    &[data-color="chart-4"] {
+      --envelope-color: var(--chart-4);
+    }
+    &[data-color="chart-5"] {
+      --envelope-color: var(--chart-5);
+    }
+    &[data-color="destructive"] {
+      --envelope-color: var(--destructive);
+    }
+
+    &[aria-disabled="true"] {
+      opacity: 0.55;
+
+      & .envelope-handle {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .envelope-graph {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 0.5rem;
+    min-inline-size: 0;
+  }
+
+  .envelope-plot {
+    position: relative;
+    box-sizing: border-box;
+    block-size: var(--envelope-height);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--muted) 45%, var(--card));
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .envelope[data-kind="dynamics"] .envelope-graph {
+    grid-template-columns: minmax(0, max-content) auto;
+    justify-content: start;
+  }
+
+  .envelope[data-kind="dynamics"] .envelope-plot {
+    block-size: auto;
+    inline-size: calc(var(--envelope-height) * 1.75);
+    max-inline-size: 100%;
+    aspect-ratio: 1;
+  }
+
+  .envelope-svg {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+
+    & path {
+      fill: none;
+      vector-effect: non-scaling-stroke;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+    & .envelope-grid {
+      stroke: var(--envelope-grid-color);
+      stroke-width: 1;
+    }
+    & .envelope-grid-major {
+      stroke: var(--border);
+      stroke-width: 1;
+    }
+    & .envelope-ref {
+      stroke: color-mix(in oklch, var(--muted-foreground) 45%, transparent);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+    & .envelope-fill {
+      fill: var(--envelope-fill);
+    }
+    & .envelope-band-curve {
+      stroke: var(--envelope-band-color, var(--envelope-color));
+      stroke-width: 1;
+      opacity: 0.7;
+
+      &[data-off] {
+        stroke-dasharray: 2 4;
+        opacity: 0.4;
+      }
+    }
+    & .envelope-ghost {
+      stroke: color-mix(in oklch, var(--envelope-color) 55%, transparent);
+      stroke-width: 1.5;
+      stroke-dasharray: 3 3;
+    }
+    & .envelope-curve {
+      stroke: var(--envelope-color);
+      stroke-width: 2;
+    }
+    & .envelope-stage {
+      stroke: transparent;
+      stroke-width: 4;
+
+      &[data-active] {
+        stroke: var(--envelope-color);
+        filter: drop-shadow(0 0 3px var(--envelope-color));
+      }
+    }
+  }
+
+  .envelope-ticks {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .envelope-tick {
+    position: absolute;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1;
+    white-space: nowrap;
+
+    &[data-axis="x"] {
+      inset-block-end: 3px;
+      left: calc(var(--envelope-x, 0) * 100%);
+      translate: -50% 0;
+    }
+    &[data-axis="y"] {
+      top: calc((1 - var(--envelope-y, 0)) * 100%);
+      left: 4px;
+      translate: 0 -50%;
+    }
+  }
+
+  .envelope-handles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .envelope-handle {
+    position: absolute;
+    top: calc((1 - var(--envelope-y, 0)) * 100%);
+    left: calc(var(--envelope-x, 0) * 100%);
+    box-sizing: border-box;
+    inline-size: var(--envelope-handle-size);
+    block-size: var(--envelope-handle-size);
+    border: 2px solid var(--envelope-handle-color, var(--envelope-color));
+    border-radius: 50%;
+    background: var(--background);
+    cursor: grab;
+    pointer-events: auto;
+    touch-action: none;
+    translate: -50% -50%;
+    transition: scale 0.1s ease-out;
+
+    /* a larger target than the dot */
+    &::before {
+      position: absolute;
+      inset: -0.5rem;
+      border-radius: 50%;
+      content: "";
+    }
+
+    &[data-bend] {
+      --envelope-handle-size: 0.5rem;
+      border-width: 1.5px;
+      background: var(--envelope-handle-color, var(--envelope-color));
+      cursor: ns-resize;
+    }
+    &[data-off] {
+      opacity: 0.45;
+    }
+    &:hover,
+    &[data-active] {
+      scale: 1.2;
+    }
+    &[data-active] {
+      cursor: grabbing;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* the value while the handle is held, hovered or focused by the keyboard */
+    &:hover::after,
+    &:focus-visible::after,
+    &[data-active]::after {
+      position: absolute;
+      inset-block-end: calc(100% + 0.5rem);
+      left: 50%;
+      z-index: 1;
+      padding: 0.125rem 0.375rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--popover);
+      box-shadow: var(--shadow-sm);
+      color: var(--popover-foreground);
+      content: attr(aria-valuetext);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      line-height: 1.4;
+      pointer-events: none;
+      translate: -50% 0;
+      white-space: nowrap;
+    }
+  }
+
+  .envelope-dot {
+    position: absolute;
+    top: calc((1 - var(--envelope-y, 0)) * 100%);
+    left: calc(var(--envelope-x, 0) * 100%);
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    border-radius: 50%;
+    background: var(--envelope-color);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--envelope-color) 30%, transparent);
+    pointer-events: none;
+    translate: -50% -50%;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .envelope-playhead {
+    position: absolute;
+    inset-block: 0;
+    left: calc(var(--envelope-x, 0) * 100%);
+    border-inline-start: 1px solid color-mix(in oklch, var(--envelope-color) 55%, transparent);
+    pointer-events: none;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .envelope[data-kind="dynamics"] .envelope-playhead {
+    display: none;
+  }
+
+  /* a compressor's gain reduction: a bar from the top, 24 dB at full length */
+  .envelope-meter {
+    display: none;
+    position: relative;
+    inline-size: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+
+    &::before {
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      block-size: calc(var(--envelope-reduction, 0) * 100%);
+      background: var(--envelope-color);
+      content: "";
+    }
+  }
+
+  .envelope[data-kind="dynamics"] .envelope-meter {
+    display: block;
+  }
+
+  /* an ADSR's phases: one chip per stage, as wide as the stage, lit while it plays */
+  .envelope-phases {
+    position: relative;
+    grid-column: 1;
+    block-size: 1.125rem;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .envelope-phase {
+    position: absolute;
+    inset-block: 0;
+    left: calc(var(--envelope-from, 0) * 100%);
+    display: grid;
+    box-sizing: border-box;
+    inline-size: calc((var(--envelope-to, 0) - var(--envelope-from, 0)) * 100%);
+    min-inline-size: 0;
+    overflow: hidden;
+    place-items: center;
+    border-inline-start: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    line-height: 1;
+
+    &[data-active] {
+      border-radius: var(--radius-sm);
+      background: color-mix(in oklch, var(--envelope-color) 22%, transparent);
+      color: var(--foreground);
+      font-weight: 600;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .envelope-handle {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .envelope {
+      --envelope-grid-color: var(--border);
+      --envelope-fill: color-mix(in oklch, var(--envelope-color) 28%, transparent);
+    }
+    .envelope-svg .envelope-curve {
+      stroke-width: 3;
+    }
+    .envelope-tick,
+    .envelope-phase {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .envelope-plot,
+    .envelope-meter {
+      border-color: CanvasText;
+      background: Canvas;
+    }
+    .envelope-svg {
+      & .envelope-curve,
+      & .envelope-stage[data-active],
+      & .envelope-band-curve,
+      & .envelope-ghost {
+        stroke: CanvasText;
+      }
+      & .envelope-grid,
+      & .envelope-grid-major,
+      & .envelope-ref {
+        stroke: GrayText;
+      }
+      & .envelope-fill {
+        fill: none;
+      }
+    }
+    .envelope-handle {
+      border-color: ButtonText;
+      background: ButtonFace;
+      forced-color-adjust: none;
+
+      &[data-bend] {
+        background: ButtonText;
+      }
+      &:focus-visible {
+        outline-color: Highlight;
+      }
+    }
+    .envelope-dot,
+    .envelope-meter::before {
+      background: Highlight;
+      forced-color-adjust: none;
+    }
+    .envelope-phase[data-active] {
+      background: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+  }
+}

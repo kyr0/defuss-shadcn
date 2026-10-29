@@ -153,7 +153,8 @@ column) size it.
 | Element | Attribute | Notes |
 |---|---|---|
 | timeline | `role="group"` + `aria-label` | Names the timeline |
-| playhead | `role="slider"`, `aria-valuenow` / `-max` / `-text` | Written by the runtime ("0:12 of 0:24"); Arrow keys move 1 s (Shift: 5 s), Page Up / Down 10 s, Home / End the ends, `[` / `]` the loop's ends, Escape clears the loop |
+| playhead | `role="slider"`, `aria-valuenow` / `-max` / `-text` | Written by the runtime ("0:12 of 0:24"); Arrow keys move 1 s (Shift: 5 s), Page Up / Down 10 s, Home / End the ends, `[` / `]` the loop's ends, Escape clears the loop, Space plays and pauses |
+| page | Space | With nothing focused, Space plays and pauses the timeline playing, else the one used last (else the only one) - a button, a field or a media element keeps its own Space; while another player plays (a Fretboard), its Space |
 | events outlet | `aria-current="true"` | On the latest event the playhead passed |
 | rows, ruler | `aria-hidden="true"` | The pictures of the data; the info outlet and the readouts carry the words |
 | zoom buttons | `aria-label` | Icon buttons name their action |

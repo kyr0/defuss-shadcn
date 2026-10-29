@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "name": "fretboard",
+  "states": {
+    "playing": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "playing",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "paused": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "paused",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "position": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "position": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "position"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "step": 1
+        }
+      }
+    },
+    "key": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "key": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "key"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "signature": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "signature": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "signature"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "zoom": {
+      "type": "number",
+      "default": 1,
+      "target": {
+        "kind": "selector",
+        "selector": ".fretboard"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "zoom": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "zoom"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0.5,
+          "max": 3,
+          "step": 0.25
+        }
+      }
+    }
+  },
+  "actions": {}
+}

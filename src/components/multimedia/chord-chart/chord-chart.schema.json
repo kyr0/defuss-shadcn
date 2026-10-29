@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "name": "chord-chart",
+  "states": {
+    "active": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".chord-chart"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "active",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "name": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".chord-chart"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "name": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "name"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "shape": {
+      "type": "string",
+      "target": {
+        "kind": "selector",
+        "selector": ".chord-chart"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "shape": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "shape"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "barre": {
+      "type": "number",
+      "target": {
+        "kind": "selector",
+        "selector": ".chord-chart"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "barre": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "barre"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 24,
+          "step": 1
+        }
+      }
+    },
+    "capo": {
+      "type": "number",
+      "default": 0,
+      "target": {
+        "kind": "selector",
+        "selector": ".chord-chart"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "capo": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "capo"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 0,
+          "max": 12,
+          "step": 1
+        }
+      }
+    }
+  },
+  "actions": {}
+}

@@ -1,0 +1,381 @@
+/* -- Knob component ---------------------------------------------- */
+/* A rotary control over a native range input: the dial (drawn by the */
+/* runtime) turns 270 degrees from 7:30 to 4:30. Every arc is a       */
+/* conic-gradient masked down to a ring - the value ring innermost,   */
+/* a ring per modulation source around it - and the positions come in */
+/* as custom properties (0 to 1) the runtime writes on the dial.      */
+
+@layer components {
+  .knob {
+    --knob-size: 3rem;
+    --knob-thickness: 0.25rem;
+    --knob-ring-thickness: 0.1875rem;
+    --knob-ring-gap: 0.125rem;
+    --knob-color: var(--primary);
+    --knob-track-color: var(--muted);
+    /* the room between the value ring and the face - the marks of the steps sit in it */
+    --knob-face-gap: calc(var(--knob-size) * 0.07);
+
+    position: relative;
+    display: inline-grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.25rem;
+    inline-size: max-content;
+    color: var(--foreground);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    text-align: center;
+    -webkit-user-select: none;
+    user-select: none;
+
+    &[data-size="sm"] {
+      --knob-size: 2.25rem;
+      --knob-thickness: 0.1875rem;
+      --knob-ring-thickness: 0.125rem;
+      --knob-ring-gap: 0.09375rem;
+
+      font-size: 0.6875rem;
+    }
+
+    &[data-size="lg"] {
+      --knob-size: 4.5rem;
+      --knob-thickness: 0.3125rem;
+      --knob-ring-thickness: 0.25rem;
+      --knob-ring-gap: 0.125rem;
+
+      font-size: 0.8125rem;
+    }
+
+    &[data-color="chart-1"] {
+      --knob-color: var(--chart-1);
+    }
+
+    &[data-color="chart-2"] {
+      --knob-color: var(--chart-2);
+    }
+
+    &[data-color="chart-3"] {
+      --knob-color: var(--chart-3);
+    }
+
+    &[data-color="chart-4"] {
+      --knob-color: var(--chart-4);
+    }
+
+    &[data-color="chart-5"] {
+      --knob-color: var(--chart-5);
+    }
+
+    &[data-color="destructive"] {
+      --knob-color: var(--destructive);
+    }
+
+    /* the one being turned: above its neighbours, so its precision circles are not cut */
+    &[data-state-name="adjusting"] {
+      z-index: 2;
+    }
+
+    &:has(.knob-input:disabled) {
+      opacity: 0.5;
+
+      .knob-dial {
+        cursor: not-allowed;
+      }
+    }
+
+    &[data-ticks] {
+      --knob-face-gap: calc(var(--knob-size) * 0.15);
+    }
+  }
+
+  /* the input is the form control, the keyboard target and the slider assistive technology reads - drawn over by
+     the dial once the runtime runs; without scripting it is the plain range */
+  @media (scripting: enabled) {
+    .knob-input {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      white-space: nowrap;
+      clip-path: inset(50%);
+    }
+  }
+
+  .knob-label {
+    color: var(--muted-foreground);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  /* the value never sizes the knob: contained, a longer text ("-60.0 dB" after "0.0 dB") spills out on both sides
+     and the dial stays where it is; a double click types the value in */
+  .knob-value {
+    display: flex;
+    justify-content: center;
+    justify-self: stretch;
+    contain: inline-size;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    cursor: text;
+  }
+
+  .knob:not(:has(.knob-input:disabled)) .knob-value:hover {
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+  }
+
+  /* the editor: a Number Input (xs) laid over the readout - the knob keeps its size while it is open */
+  .knob-editor {
+    position: absolute;
+    left: 50%;
+    z-index: 3;
+    inline-size: 6.5rem;
+    translate: -50% -50%;
+  }
+
+  /* the dial: the knob's face, the value ring and the rings of the sources around it; geometry is physical - a knob
+     turns clockwise in any writing direction */
+  .knob-dial {
+    --knob-step: calc(var(--knob-ring-thickness) + var(--knob-ring-gap));
+    /* the ring slots: its rings, or as many as --knob-reserve keeps free - knobs in a row line up */
+    --knob-slots: max(var(--knob-rings, 0), var(--knob-reserve, 0));
+    --knob-dial-size: calc(var(--knob-size) + var(--knob-slots) * 2 * var(--knob-step));
+    --knob-radius: var(--knob-dial-size);
+
+    position: relative;
+    display: block;
+    inline-size: var(--knob-dial-size);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    direction: ltr;
+    cursor: ew-resize;
+    touch-action: none;
+
+    /* the precision of a drag: the radius (dashed) within which it turns at full speed, and the circle through the
+       pointer - the farther out, the finer */
+    &::before,
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      content: "";
+      opacity: 0;
+      pointer-events: none;
+      translate: -50% -50%;
+      transition: opacity 120ms ease;
+    }
+
+    &::before {
+      inline-size: calc(var(--knob-reach, 0px) * 2);
+      border: 1px solid color-mix(in oklab, var(--knob-color) 45%, transparent);
+    }
+
+    &::after {
+      inline-size: calc(var(--knob-radius) * 2);
+      border: 1px dashed color-mix(in oklab, var(--knob-color) 70%, transparent);
+    }
+  }
+
+  .knob[data-state-name="adjusting"] .knob-dial {
+    &::before,
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  .knob:has(.knob-input:focus-visible) .knob-dial {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* the value ring: the track, the arc from the origin to the value, and - while sources move it - a mark at the
+     effective value */
+  .knob-track,
+  .knob-ring {
+    position: absolute;
+    border-radius: 50%;
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--knob-w) - 0.5px),
+      #000 calc(100% - var(--knob-w))
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - var(--knob-w) - 0.5px),
+      #000 calc(100% - var(--knob-w))
+    );
+  }
+
+  .knob-track {
+    --knob-w: var(--knob-thickness);
+
+    inset: calc(var(--knob-slots) * var(--knob-step));
+    background:
+      conic-gradient(
+        from -135deg,
+        transparent 0 calc(min(var(--knob-p, 0), var(--knob-o, 0)) * 270deg),
+        var(--knob-color) 0 calc(max(var(--knob-p, 0), var(--knob-o, 0)) * 270deg),
+        transparent 0
+      ),
+      conic-gradient(from -135deg, var(--knob-track-color) 0 270deg, transparent 0);
+
+    &::after {
+      position: absolute;
+      inset: 0;
+      display: none;
+      border-radius: 50%;
+      background: conic-gradient(
+        from -135deg,
+        transparent 0 calc(var(--knob-e, 0) * 270deg - 3deg),
+        var(--foreground) 0 calc(var(--knob-e, 0) * 270deg + 3deg),
+        transparent 0
+      );
+      content: "";
+    }
+  }
+
+  .knob-dial[data-modulated] .knob-track::after {
+    display: block;
+  }
+
+  /* a source's ring: its range around the value, and - while it runs - the arc to where it moves the value now */
+  .knob-ring {
+    /* the runtime writes each ring's own colour */
+    --knob-ring-color: var(--chart-1);
+    --knob-w: var(--knob-ring-thickness);
+
+    inset: calc((var(--knob-slots) - var(--knob-ring, 1)) * var(--knob-step));
+    background:
+      conic-gradient(
+        from -135deg,
+        transparent 0 calc(var(--knob-from, 0) * 270deg),
+        color-mix(in oklab, var(--knob-ring-color) 80%, transparent) 0 calc(var(--knob-to, 0) * 270deg),
+        transparent 0
+      ),
+      conic-gradient(from -135deg, color-mix(in oklab, var(--muted) 70%, transparent) 0 270deg, transparent 0);
+
+    &[data-live] {
+      background:
+        conic-gradient(
+          from -135deg,
+          transparent 0 calc(var(--knob-at-lo, 0) * 270deg),
+          var(--knob-ring-color) 0 calc(var(--knob-at-hi, 0) * 270deg),
+          transparent 0
+        ),
+        conic-gradient(
+          from -135deg,
+          transparent 0 calc(var(--knob-from, 0) * 270deg),
+          color-mix(in oklab, var(--knob-ring-color) 35%, transparent) 0 calc(var(--knob-to, 0) * 270deg),
+          transparent 0
+        ),
+        conic-gradient(from -135deg, color-mix(in oklab, var(--muted) 70%, transparent) 0 270deg, transparent 0);
+    }
+  }
+
+  /* the knob's face and its pointer, turned to the value */
+  .knob-face {
+    position: absolute;
+    inset: calc(var(--knob-slots) * var(--knob-step) + var(--knob-thickness) + var(--knob-face-gap));
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: linear-gradient(to bottom, color-mix(in oklab, var(--secondary) 80%, var(--card)), var(--card));
+    box-shadow: var(--shadow-sm);
+  }
+
+  .knob-pointer {
+    position: absolute;
+    inset: 0;
+    rotate: calc(var(--knob-p, 0) * 270deg - 135deg);
+
+    &::before {
+      position: absolute;
+      top: 10%;
+      left: calc(50% - 1px);
+      inline-size: 2px;
+      block-size: 32%;
+      border-radius: 1px;
+      background-color: var(--foreground);
+      content: "";
+    }
+  }
+
+  /* the marks of the steps (data-ticks), between the value ring and the face */
+  .knob-tick {
+    position: absolute;
+    inset: calc(var(--knob-slots) * var(--knob-step));
+    pointer-events: none;
+    rotate: calc(var(--knob-t, 0) * 270deg - 135deg);
+
+    &::before {
+      position: absolute;
+      top: calc(var(--knob-thickness) + 1px);
+      left: calc(50% - 0.5px);
+      inline-size: 1px;
+      block-size: calc(var(--knob-face-gap) - 2px);
+      background-color: var(--muted-foreground);
+      content: "";
+    }
+  }
+
+  /* flat: no face - the rings and the pointer only */
+  .knob[data-variant="flat"] .knob-face {
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+  }
+
+  .knob-rings-text {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knob-dial::before,
+    .knob-dial::after {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .knob {
+      --knob-track-color: var(--muted-foreground);
+    }
+
+    .knob-face {
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .knob-dial {
+      --knob-color: Highlight;
+      --knob-track-color: GrayText;
+
+      forced-color-adjust: none;
+    }
+
+    .knob-face {
+      border-color: CanvasText;
+      background: Canvas;
+    }
+
+    .knob-pointer::before {
+      background: CanvasText;
+    }
+
+    .knob-tick::before {
+      background: GrayText;
+    }
+  }
+}

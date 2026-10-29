@@ -1,8 +1,8 @@
 {
-  "total": 243,
+  "total": 249,
   "byType": {
-    "ATM": 72,
-    "MOL": 32,
+    "ATM": 76,
+    "MOL": 34,
     "ORG": 6,
     "BLK": 129,
     "TPL": 4
@@ -17,23 +17,23 @@
     "Website": 12
   },
   "tokens": 52,
-  "examples": 1693,
+  "examples": 1742,
   "unitTestFiles": 43,
-  "withJs": 72,
+  "withJs": 78,
   "withoutJs": 171,
-  "totalSize": 2945967,
-  "totalSizeMinified": 1415060,
-  "totalSizeGz": 866120,
-  "totalSizeGzMinified": 475706,
+  "totalSize": 3240121,
+  "totalSizeMinified": 1555487,
+  "totalSizeGz": 948862,
+  "totalSizeGzMinified": 522778,
   "bundle": {
-    "jsSize": 933433,
-    "jsSizeMinified": 539234,
-    "cssSize": 1414142,
-    "cssSizeMinified": 799362,
-    "totalSizeGz": 494039,
-    "totalSizeGzMinified": 305583,
-    "jsSizeGzMinified": 166462,
-    "cssSizeGzMinified": 139121
+    "jsSize": 1098837,
+    "jsSizeMinified": 638688,
+    "cssSize": 1475667,
+    "cssSizeMinified": 839516,
+    "totalSizeGz": 550780,
+    "totalSizeGzMinified": 346219,
+    "jsSizeGzMinified": 199724,
+    "cssSizeGzMinified": 146495
   },
   "core": {
     "jsSize": 167096,
@@ -305,7 +305,13 @@
       "members": [
         "video",
         "audio",
-        "media-timeline"
+        "media-timeline",
+        "fretboard",
+        "fretboard-neck",
+        "chord-chart",
+        "knob",
+        "envelope",
+        "tacho"
       ],
       "needs": [
         "Primitives",
@@ -318,14 +324,14 @@
         "sections/multimedia.css",
         "sections/multimedia.js"
       ],
-      "jsSize": 38370,
-      "jsSizeMinified": 23026,
-      "cssSize": 24381,
-      "cssSizeMinified": 14914,
-      "totalSizeGz": 15220,
-      "totalSizeGzMinified": 11271,
-      "jsSizeGzMinified": 7917,
-      "cssSizeGzMinified": 3354
+      "jsSize": 205895,
+      "jsSizeMinified": 123827,
+      "cssSize": 85906,
+      "cssSizeMinified": 55068,
+      "totalSizeGz": 68505,
+      "totalSizeGzMinified": 48558,
+      "jsSizeGzMinified": 38924,
+      "cssSizeGzMinified": 9634
     },
     "big-data": {
       "heading": "Big Data",
@@ -824,7 +830,7 @@
     "count": 22,
     "minGzMinified": 2014,
     "maxGzMinified": 60512,
-    "meanGzMinified": 15445
+    "meanGzMinified": 17140
   },
   "components": {
     "about-intro": {
@@ -1386,6 +1392,19 @@
       "totalSize": 4661,
       "totalSizeMinified": 2010
     },
+    "chord-chart": {
+      "name": "chord-chart",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 11224,
+      "jsSizeMinified": 4458,
+      "cssSize": 9139,
+      "cssSizeMinified": 6053,
+      "totalSizeGz": 6030,
+      "totalSizeGzMinified": 3202,
+      "totalSize": 20363,
+      "totalSizeMinified": 10511
+    },
     "code-block": {
       "name": "code-block",
       "type": "BLK",
@@ -1841,6 +1860,19 @@
       "totalSize": 2599,
       "totalSizeMinified": 1571
     },
+    "envelope": {
+      "name": "envelope",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 74773,
+      "jsSizeMinified": 33241,
+      "cssSize": 10119,
+      "cssSizeMinified": 6888,
+      "totalSizeGz": 22210,
+      "totalSizeGzMinified": 13709,
+      "totalSize": 84892,
+      "totalSizeMinified": 40129
+    },
     "error-state": {
       "name": "error-state",
       "type": "BLK",
@@ -2022,6 +2054,32 @@
       "totalSizeGzMinified": 735,
       "totalSize": 3361,
       "totalSizeMinified": 2121
+    },
+    "fretboard": {
+      "name": "fretboard",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 64678,
+      "jsSizeMinified": 27932,
+      "cssSize": 14772,
+      "cssSizeMinified": 9708,
+      "totalSizeGz": 21958,
+      "totalSizeGzMinified": 12191,
+      "totalSize": 79450,
+      "totalSizeMinified": 37640
+    },
+    "fretboard-neck": {
+      "name": "fretboard-neck",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 14375,
+      "jsSizeMinified": 6440,
+      "cssSize": 11425,
+      "cssSizeMinified": 8150,
+      "totalSizeGz": 7156,
+      "totalSizeGzMinified": 4096,
+      "totalSize": 25800,
+      "totalSizeMinified": 14590
     },
     "gallery-item": {
       "name": "gallery-item",
@@ -2231,6 +2289,19 @@
       "totalSize": 3901,
       "totalSizeMinified": 2018
     },
+    "knob": {
+      "name": "knob",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 34253,
+      "jsSizeMinified": 14423,
+      "cssSize": 10442,
+      "cssSizeMinified": 6312,
+      "totalSizeGz": 13133,
+      "totalSizeGzMinified": 7146,
+      "totalSize": 44695,
+      "totalSizeMinified": 20735
+    },
     "label": {
       "name": "label",
       "type": "ATM",
@@ -2404,14 +2475,14 @@
       "name": "media-timeline",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 45126,
-      "jsSizeMinified": 19232,
+      "jsSize": 47555,
+      "jsSizeMinified": 20442,
       "cssSize": 12675,
       "cssSizeMinified": 8671,
-      "totalSizeGz": 16467,
-      "totalSizeGzMinified": 9285,
-      "totalSize": 57801,
-      "totalSizeMinified": 27903
+      "totalSizeGz": 17168,
+      "totalSizeGzMinified": 9685,
+      "totalSize": 60230,
+      "totalSizeMinified": 29113
     },
     "menubar": {
       "name": "menubar",
@@ -3596,6 +3667,19 @@
       "totalSize": 34323,
       "totalSizeMinified": 14631
     },
+    "tacho": {
+      "name": "tacho",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 31227,
+      "jsSizeMinified": 12455,
+      "cssSize": 5298,
+      "cssSizeMinified": 3157,
+      "totalSizeGz": 11554,
+      "totalSizeGzMinified": 6328,
+      "totalSize": 36525,
+      "totalSizeMinified": 15612
+    },
     "tag-cloud": {
       "name": "tag-cloud",
       "type": "BLK",
@@ -4058,7 +4142,7 @@
       "jsSizeMinified": 117793,
       "cssSize": 273939,
       "cssSizeMinified": 179177,
-      "totalSizeGz": 96927,
+      "totalSizeGz": 96928,
       "totalSizeGzMinified": 62120,
       "jsSizeGzMinified": 38508,
       "cssSizeGzMinified": 23612
@@ -4167,7 +4251,7 @@
       "jsSizeMinified": 122696,
       "cssSize": 281121,
       "cssSizeMinified": 180682,
-      "totalSizeGz": 100675,
+      "totalSizeGz": 100676,
       "totalSizeGzMinified": 64037,
       "jsSizeGzMinified": 40415,
       "cssSizeGzMinified": 23622
@@ -4250,7 +4334,7 @@
       "jsSizeMinified": 137201,
       "cssSize": 299385,
       "cssSizeMinified": 190977,
-      "totalSizeGz": 108806,
+      "totalSizeGz": 108805,
       "totalSizeGzMinified": 69933,
       "jsSizeGzMinified": 44297,
       "cssSizeGzMinified": 25636

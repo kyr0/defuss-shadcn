@@ -1,0 +1,167 @@
+---
+title: "Chord Chart"
+description: "Chord Chart component - one chord diagram of a fretted instrument from its markup: a figure with the chord's name and a data-shape, drawn across as the player sees the fretboard or upright like a classic chart, for either hand, with muted strings, a barre, a capo and string colours; the active state marks the chord sounding."
+slug: "chord-chart"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="chord-chart" title="Chord Chart" component="chord-chart">
+  One chord diagram of a fretted instrument, written as a figure with the chord's name and one attribute: <code>data-shape="0003"</code>, a fret per string. The runtime draws the grid from it - a dot where a finger goes, nothing on an open string, × on a muted one, a barre's dashed line, a capo's bold bar with the strings going on behind it, the first fret's number when the shape sits higher up the neck. Across as the player sees the fretboard (the default), or upright like a classic chord chart, for the left hand or mirrored for the right, in one colour or a chart colour per string. Its State API sets the chord and marks it <code>active</code> - the <DocLink href="fretboard.html">Fretboard</DocLink> writes a chart per chord into its chords outlet and marks the one sounding; the whole neck is the <DocLink href="fretboard-neck.html">Fretboard Neck</DocLink>.
+</PageHeader>
+
+<SkillPanel component="chord-chart">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;figure class="chord-chart"&gt;</code> with a <code>&lt;figcaption&gt;</code> - the chord's name - and its shape in <code>data-shape</code>. The runtime draws the grid after the caption as a <code>role="img"</code> whose <code>aria-label</code> reads the chord ("C: 0 0 0 3").</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" title="the chart and its name"><code>&lt;figure&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/img_role" title="the grid read as one picture"><code>role="img"</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="markup written into the chart is drawn again"><code>MutationObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values" title="the right hand mirrors the grid">Logical properties</ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="the active tint, the × in its string colour"><code>color-mix()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.chord-chart</code>
+    <code>.chord-chart-grid</code>
+    <code>.chord-chart-dot</code>
+    <code>.chord-chart-mark</code>
+    <code>.chord-chart-barre</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-shape</code> - a fret per string from the string the tuning names first to the 1st (<code>"0003"</code>, <code>"x32010"</code>, <code>"x 5 7 7 7 5"</code> once a fret has two digits); <code>x</code> mutes a string</SkillText>
+  <SkillText dense>• <code>data-barre</code> - the fret one finger presses across; <code>data-capo</code> - the capo's fret; <code>data-active</code> - the chord sounding</SkillText>
+  <SkillText dense>• <code>data-orientation="vertical"</code> - upright, the nut on top; <code>data-hand="right"</code> - mirrored; <code>data-colors="strings"</code> - a chart colour per string</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Chord Chart" hint="C on a ukulele: one finger on the 1st string at the 3rd fret, the other three strings open - nothing is drawn on them. Across, as you see the fretboard looking down at the instrument: the nut on the left (the fretting hand's side), the 1st string on top. Open the State tab to write another name, shape, barre or capo, or to mark it active."
+<figure class="chord-chart" id="cc-c" data-shape="0003" data-state-demo>
+  <figcaption>C</figcaption>
+</figure>
+```
+
+```html example label="Upright" hint="data-orientation=&quot;vertical&quot;: the classic chord chart - the nut on top, the strings from the 4th (G) on the left to the 1st on the right. G7 on a ukulele."
+<figure class="chord-chart" data-shape="0212" data-orientation="vertical">
+  <figcaption>G7</figcaption>
+</figure>
+```
+
+```html example label="Right hand" hint="data-hand=&quot;right&quot; mirrors the grid for a left-handed player: across, the nut on the right."
+<figure class="chord-chart" data-shape="2000" data-hand="right">
+  <figcaption>Am</figcaption>
+</figure>
+```
+
+```html example label="String colours" hint="data-colors=&quot;strings&quot;: string n takes chart colour n, so a dot reads as its string at a glance."
+<figure class="chord-chart" data-shape="0232" data-colors="strings">
+  <figcaption>G</figcaption>
+</figure>
+```
+
+```html example label="Six strings, a muted one" hint="A guitar's C: six frets in the shape, x on the 6th string - an × before the nut."
+<figure class="chord-chart" data-shape="x32010" data-orientation="vertical">
+  <figcaption>C</figcaption>
+</figure>
+```
+
+```html example label="Barre" hint="F on a guitar with data-barre=&quot;1&quot;: one finger lies across all six strings at the 1st fret - a dashed line, and no dots of their own on the barred strings. A barre is never guessed from the frets."
+<figure class="chord-chart" data-shape="133211" data-barre="1" data-orientation="vertical">
+  <figcaption>F</figcaption>
+</figure>
+```
+
+```html example label="Higher up the neck" hint="D as an A-shape barre at the 5th fret: a shape above the 4th fret is drawn from its lowest fret, its number named beside the grid (5fr). Frets past 9 make the shape a spaced list."
+<figure class="chord-chart" data-shape="x 5 7 7 7 5" data-barre="5" data-orientation="vertical">
+  <figcaption>D</figcaption>
+</figure>
+```
+
+```html example label="Capo" hint="data-capo=&quot;2&quot;: the shape counts from the capo, as tabs for a capo are written - the G shape sounds as A. The capo is the bold bar, the strings go on behind it."
+<figure class="chord-chart" data-shape="320003" data-capo="2" data-orientation="vertical">
+  <figcaption>G</figcaption>
+</figure>
+```
+
+```html example label="Active" hint="The active state (data-active): the chord sounding - its frame, name and dots in the primary colour."
+<figure class="chord-chart" data-shape="2010" data-active>
+  <figcaption>F</figcaption>
+</figure>
+```
+
+```html example label="A chord library" hint="df$.shadcn.chordChart.chord() shows another chord in the chart: pick one from the select. The chart keeps its state - mark it active with the switch, and the next chord stays active."
+<div class="flex flex-wrap items-center gap-6">
+  <figure class="chord-chart" id="cc-library" data-shape="0003" data-orientation="vertical">
+    <figcaption>C</figcaption>
+  </figure>
+  <div class="grid gap-3 justify-items-start">
+    <select class="select" id="cc-library-chord" aria-label="Chord">
+      <option value="C|0003">C</option>
+      <option value="Am|2000">Am</option>
+      <option value="F|2010">F</option>
+      <option value="G|0232">G</option>
+      <option value="G7|0212">G7</option>
+      <option value="D|2220">D</option>
+      <option value="Bb|3211">Bb</option>
+    </select>
+    <div class="flex items-center gap-2">
+      <input class="switch" type="checkbox" role="switch" id="cc-library-active" />
+      <label class="label" for="cc-library-active">Sounding</label>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#cc-library-chord').on('change', (e) => {
+      const [name, shape] = e.target.value.split('|');
+      df$.shadcn.chordChart.chord('#cc-library', { name, shape, barre: name === 'Bb' ? 1 : null });
+    });
+    df$('#cc-library-active').on('change', (e) => {
+      const chart = df$('#cc-library').get(0);
+      chart.api.setState(e.target.checked ? 'active' : 'default');
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.chord-chart</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the chart at rest</li>
+    <li><code>active</code> - the chord sounding (<code>data-active</code>): its frame, name and dots in the primary colour</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes <code>\{ name, shape, barre, capo \}</code>, merged into the current config: the caption, <code>data-shape</code>, <code>data-barre</code> and <code>data-capo</code>. <code>getState()</code> reports what the chart shows, also what was written into its markup - the <DocLink href="fretboard.html">Fretboard</DocLink> marks the chart of the chord sounding through <code>data-active</code>.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/chord-chart-\{state\}.png</code>.</p>
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `active` | `boolean` | `true`, `false` | `false` | The chord sounding (`setState('active')`): frame, name and dots in the primary colour. |
+| `name` | `string` | | | The chord's name, the caption; observed from `getState().config.name`. |
+| `shape` | `string` | | | A fret per string, `x` muted; observed from `getState().config.shape`. |
+| `barre` | `number` | | | The fret a barre lies on (empty: none); observed from `getState().config.barre`. |
+| `capo` | `number` | | `0` | The capo's fret (0: none); observed from `getState().config.capo`. |
+```
+
+</StatesSection>
+
+<ApiSection component="chord-chart" />
+
+<SourceFiles component="chord-chart" section="css">
+  <SourceNote for="css">The figure and its caption, the active frame, the grid (strings and fret wires as two gradients, the nut, a capo's bar with the strings behind it, the first fret's number), the dots, the × and the barre, the upright and mirrored grid, the string colours and the accessibility media queries.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="chord-chart" section="js">
+  <SourceNote for="js">The shape's parser, the barre a shape can hold, the grid drawn from the markup, the State API and df$.shadcn.chordChart.</SourceNote>
+</SourceFiles>
+
+</DocPage>

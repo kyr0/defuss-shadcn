@@ -1,0 +1,491 @@
+/* -- Fretboard component ---------------------------------------- */
+/* A tablature in lines of measures: a column of string names and */
+/* lane labels, then per measure its number (the loop rail), the  */
+/* chord names, the tab staff (string lines as gradients, fret    */
+/* numbers cut into them) and the lyrics. Items sit at --fretboard-at: 0 on */
+/* the first beat, 1 at the bar line. The playhead lives in the   */
+/* measure being played. A neck view and a chord chart are        */
+/* outlets of the same tab. The loop is the Media Timeline's      */
+/* search-highlight yellow (literal: the theme has no highlight   */
+/* token); tints mix in oklab (an oklch mix with a hue-0 white    */
+/* --card walks toward pink).                                     */
+@layer components {
+  .fretboard {
+    --fretboard-beat: 2.5rem;
+    --fretboard-string-gap: 1.125rem;
+    --fretboard-clef: 2.25rem;
+    --fretboard-pad: 0.75rem;
+    --fretboard-rail: 1rem;
+    --fretboard-lane: 1.625rem;
+    --fretboard-line: color-mix(in oklab, var(--foreground) 45%, transparent);
+    --fretboard-loop: oklch(0.88 0.16 95);
+    --fretboard-loop-edge: oklch(0.72 0.16 85);
+
+    display: grid;
+    min-inline-size: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    container-type: inline-size;
+    /* clip, not hidden: the header sticks to the page while a long sheet scrolls by */
+    overflow: clip;
+
+    & > script {
+      display: none;
+    }
+  }
+
+  .fretboard-header {
+    position: sticky;
+    inset-block-start: var(--fretboard-sticky, 0);
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.375rem;
+    min-inline-size: 0;
+    padding: 0.375rem 0.5rem 0.375rem 0.75rem;
+    border-block-end: 1px solid var(--border);
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+    background-color: var(--card);
+  }
+
+  .fretboard-title {
+    flex: 1 1 8rem;
+    min-inline-size: 0;
+    overflow: hidden;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* a readout: measure, beat, time - in even digits */
+  .fretboard-readout {
+    min-inline-size: 1.5rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* a toggle with two icons shows the first when off, the second when on (play / pause) */
+  [data-fretboard-action][aria-pressed="false"] > :nth-child(2),
+  [data-fretboard-action][aria-pressed="true"] > :nth-child(1):not(:only-child) {
+    display: none;
+  }
+
+  [data-fretboard-action="loop"][aria-pressed="true"] {
+    background-color: color-mix(in oklab, var(--fretboard-loop) 55%, transparent);
+    color: var(--foreground);
+  }
+
+  /* a key, tempo or score select keeps its own width in the header row */
+  .fretboard-header .select {
+    inline-size: auto;
+  }
+
+  /* the sheet: lines of measures - its own scroll box when --fretboard-height bounds it; --fretboard-zoom (data-zoom,
+     written by the runtime) scales every length of the lines */
+  .fretboard-sheet {
+    --fretboard-zoom: 1;
+
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    max-block-size: var(--fretboard-height, none);
+    padding: 0.75rem;
+    overflow: auto;
+    overscroll-behavior: contain;
+    outline: none;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--ring);
+    }
+  }
+
+  /* time runs left to right in any writing direction */
+  .fretboard-line {
+    display: flex;
+    direction: ltr;
+    scroll-margin-block: 0.75rem var(--fretboard-scroll-margin, 1rem);
+  }
+
+  .fretboard-clef {
+    flex: none;
+    inline-size: calc(var(--fretboard-clef) * var(--fretboard-zoom));
+    color: var(--muted-foreground);
+  }
+
+  .fretboard-measure {
+    position: relative;
+    min-inline-size: 0;
+    cursor: pointer;
+    user-select: none;
+
+    &[data-loop] {
+      background-color: color-mix(in oklab, var(--fretboard-loop) 14%, transparent);
+    }
+  }
+
+  /* the measure's number: a rail across its top - a click loops the measure */
+  .fretboard-number {
+    display: block;
+    block-size: calc(var(--fretboard-rail) * var(--fretboard-zoom));
+    padding-inline-start: calc(0.25rem * var(--fretboard-zoom));
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: calc(0.625rem * var(--fretboard-zoom));
+    font-variant-numeric: tabular-nums;
+    line-height: calc(var(--fretboard-rail) * var(--fretboard-zoom));
+
+    .fretboard-measure & {
+      cursor: cell;
+
+      &:hover {
+        background-color: var(--muted);
+      }
+    }
+
+    .fretboard-measure[data-loop] & {
+      background-color: var(--fretboard-loop);
+      color: oklch(0.25 0.03 85);
+    }
+  }
+
+  /* the lanes lie over the playhead: it passes behind the numbers and words */
+  .fretboard-lane {
+    position: relative;
+    z-index: 1;
+    block-size: calc(var(--fretboard-lane) * var(--fretboard-zoom));
+
+    /* the staff: a line per string, a bar line at the measure's start */
+    &[data-kind="tab"] {
+      --fretboard-strings: 4;
+
+      block-size: calc(var(--fretboard-strings) * (var(--fretboard-string-gap) * var(--fretboard-zoom)));
+      margin-block: calc(0.125rem * var(--fretboard-zoom));
+
+      &[data-strums] {
+        block-size: calc(
+          var(--fretboard-strings) * (var(--fretboard-string-gap) * var(--fretboard-zoom)) +
+            (1rem * var(--fretboard-zoom))
+        );
+      }
+    }
+
+    &[data-kind="lyrics"] {
+      block-size: calc((var(--fretboard-lane) * var(--fretboard-zoom)) - (0.125rem * var(--fretboard-zoom)));
+    }
+  }
+
+  /* a string of the staff: a line across the measure */
+  .fretboard-string {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc((var(--fretboard-s, 1) - 0.5) * (var(--fretboard-string-gap) * var(--fretboard-zoom)));
+    block-size: 1px;
+    background-color: var(--fretboard-color, var(--fretboard-line));
+    translate: 0 -50%;
+  }
+
+  .fretboard-measure .fretboard-lane[data-kind="tab"] {
+    &::before,
+    &::after {
+      position: absolute;
+      inset-block-start: calc((var(--fretboard-string-gap) * var(--fretboard-zoom)) / 2);
+      block-size: calc((var(--fretboard-strings) - 1) * (var(--fretboard-string-gap) * var(--fretboard-zoom)));
+      content: "";
+    }
+
+    &::before {
+      inset-inline-start: 0;
+      border-inline-start: 1px solid var(--foreground);
+    }
+  }
+
+  /* the bar line that closes a line, double at the end of the score */
+  .fretboard-measure:last-child .fretboard-lane[data-kind="tab"]::after {
+    inset-inline-end: 0;
+    border-inline-end: 1px solid var(--foreground);
+  }
+
+  .fretboard-measure[data-last] .fretboard-lane[data-kind="tab"]::after {
+    inline-size: 4px;
+    border-inline: 1px solid var(--foreground);
+    border-inline-end-width: 3px;
+  }
+
+  .fretboard-string-name {
+    position: absolute;
+    inset-block-start: calc((var(--fretboard-s, 1) - 0.5) * (var(--fretboard-string-gap) * var(--fretboard-zoom)));
+    inset-inline-end: calc(0.5rem * var(--fretboard-zoom));
+    font-family: var(--font-mono);
+    font-size: calc(0.6875rem * var(--fretboard-zoom));
+    line-height: 1;
+    translate: 0 -50%;
+  }
+
+  .fretboard-lane-label {
+    display: block;
+    overflow: hidden;
+    font-size: calc(0.625rem * var(--fretboard-zoom));
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: calc(var(--fretboard-lane) * var(--fretboard-zoom));
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* an item at its beat */
+  :is(.fretboard-chord, .fretboard-syllable, .fretboard-hit) {
+    position: absolute;
+    inset-inline-start: calc(
+      (var(--fretboard-pad) * var(--fretboard-zoom)) + (100% - 2 * (var(--fretboard-pad) * var(--fretboard-zoom))) *
+        var(--fretboard-at, 0)
+    );
+    transition:
+      background-color 120ms ease,
+      color 120ms ease,
+      scale 120ms ease;
+  }
+
+  .fretboard-chord,
+  .fretboard-syllable {
+    inset-block-start: 50%;
+    margin-inline-start: -0.25rem;
+    padding: calc(0.0625rem * var(--fretboard-zoom)) calc(0.25rem * var(--fretboard-zoom));
+    border-radius: var(--radius-sm);
+    line-height: 1.25;
+    translate: 0 -50%;
+    white-space: nowrap;
+  }
+
+  .fretboard-chord {
+    color: var(--primary);
+    font-size: calc(0.875rem * var(--fretboard-zoom));
+    font-weight: 700;
+
+    &[data-active] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+  }
+
+  .fretboard-syllable {
+    font-size: calc(0.875rem * var(--fretboard-zoom));
+
+    &[data-active] {
+      background-color: color-mix(in oklab, var(--primary) 18%, transparent);
+      color: var(--foreground);
+      box-shadow: inset 0 -2px 0 var(--primary);
+    }
+  }
+
+  /* a beat of the staff: its fret numbers on their strings, a strum's arrow below */
+  .fretboard-hit {
+    inset-block: 0;
+    inline-size: calc(1rem * var(--fretboard-zoom));
+  }
+
+  .fretboard-fret {
+    position: absolute;
+    inset-block-start: calc((var(--fretboard-s, 1) - 0.5) * (var(--fretboard-string-gap) * var(--fretboard-zoom)));
+    inset-inline-start: 0;
+    min-inline-size: 1ch;
+    padding-inline: calc(0.125rem * var(--fretboard-zoom));
+    margin-inline-start: -0.125rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--card);
+    font-family: var(--font-mono);
+    font-size: calc(0.75rem * var(--fretboard-zoom));
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    text-align: center;
+    translate: 0 -50%;
+    transition:
+      background-color 120ms ease,
+      color 120ms ease,
+      scale 120ms ease;
+
+    .fretboard-hit[data-active] & {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      scale: 1.15;
+    }
+  }
+
+  .fretboard-measure[data-loop] .fretboard-fret {
+    background-color: color-mix(in oklab, var(--fretboard-loop) 14%, var(--card));
+  }
+
+  .fretboard-strum {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    inline-size: calc(0.75rem * var(--fretboard-zoom));
+    block-size: calc(0.875rem * var(--fretboard-zoom));
+    background-color: var(--muted-foreground);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 1v12M2 9l4 4 4-4'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+
+    &[data-dir="up"] {
+      rotate: 180deg;
+    }
+
+    .fretboard-hit[data-active] & {
+      background-color: var(--primary);
+    }
+  }
+
+  /* the playhead: a line through the measure being played, below its number */
+  .fretboard-cursor {
+    position: absolute;
+    z-index: 0;
+    inset-block: calc(var(--fretboard-rail) * var(--fretboard-zoom)) 0;
+    inset-inline: calc(var(--fretboard-pad) * var(--fretboard-zoom));
+    pointer-events: none;
+  }
+
+  .fretboard-playhead {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: 2px;
+    margin-inline-start: -1px;
+    border-radius: 1px;
+    background-color: var(--primary);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+  }
+
+  .fretboard[data-state-name="paused"] .fretboard-playhead {
+    animation: fretboard-blink 1.2s steps(2, jump-none) infinite;
+  }
+
+  @keyframes fretboard-blink {
+    to {
+      opacity: 0.35;
+    }
+  }
+
+  /* the chord chart outlet: a row of Chord Charts, the one sounding active */
+  [data-fretboard-outlet="chords"] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* string colours (data-colors="strings"): string n takes chart colour n - its line, its name, its fret numbers - and
+     from the 6th on they start over (a bound neck and the chord charts take the attribute too) */
+  .fretboard[data-colors="strings"] {
+    & :is([data-string="1"], [data-string="6"], [data-string="11"]) {
+      --fretboard-color: var(--chart-1);
+    }
+
+    & :is([data-string="2"], [data-string="7"], [data-string="12"]) {
+      --fretboard-color: var(--chart-2);
+    }
+
+    & :is([data-string="3"], [data-string="8"]) {
+      --fretboard-color: var(--chart-3);
+    }
+
+    & :is([data-string="4"], [data-string="9"]) {
+      --fretboard-color: var(--chart-4);
+    }
+
+    & :is([data-string="5"], [data-string="10"]) {
+      --fretboard-color: var(--chart-5);
+    }
+
+    & .fretboard-lane .fretboard-string {
+      block-size: 2px;
+    }
+
+    /* text takes the string's colour mixed toward the text colour - legible on the card in either mode, whatever
+       the theme's chart colours are (the default ones run from light to dark blue) */
+    & [data-string] {
+      --fretboard-ink: color-mix(in oklab, var(--fretboard-color) 55%, var(--foreground));
+    }
+
+    & :is(.fretboard-fret, .fretboard-string-name) {
+      color: var(--fretboard-ink);
+      font-weight: 700;
+    }
+
+    /* what sounds now: tinted in the string's colour and ringed by it */
+    & .fretboard-hit[data-active] .fretboard-fret {
+      background-color: color-mix(in oklab, var(--fretboard-color) 35%, var(--card));
+      box-shadow: 0 0 0 2px var(--fretboard-color);
+      color: var(--fretboard-ink);
+    }
+  }
+
+  /* a narrow tab: narrower beats and label column - the lines hold fewer measures */
+  @container (max-width: 32rem) {
+    .fretboard-sheet {
+      --fretboard-beat: 2rem;
+      --fretboard-clef: 1.75rem;
+
+      padding: 0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :is(.fretboard-chord, .fretboard-syllable, .fretboard-hit, .fretboard-fret) {
+      transition: none;
+    }
+
+    .fretboard-hit[data-active] .fretboard-fret {
+      scale: none;
+    }
+
+    .fretboard[data-state-name="paused"] .fretboard-playhead {
+      animation: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .fretboard {
+      --fretboard-line: var(--foreground);
+    }
+
+    .fretboard-syllable[data-active] {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .fretboard {
+      --fretboard-line: CanvasText;
+    }
+
+    .fretboard-playhead,
+    .fretboard-strum {
+      background-color: Highlight;
+      forced-color-adjust: none;
+    }
+
+    :is(.fretboard-chord, .fretboard-syllable)[data-active],
+    .fretboard-hit[data-active] .fretboard-fret {
+      background-color: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+
+    .fretboard-measure[data-loop] .fretboard-number {
+      background-color: Mark;
+      color: MarkText;
+      forced-color-adjust: none;
+    }
+  }
+}

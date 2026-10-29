@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "name": "tacho",
+  "states": {
+    "value": {
+      "type": "number",
+      "target": {
+        "kind": "selector",
+        "selector": ".tacho"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "value": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "value"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "idle": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".tacho"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "idle",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}
