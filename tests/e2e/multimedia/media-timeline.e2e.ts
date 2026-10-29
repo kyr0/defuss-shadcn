@@ -135,6 +135,29 @@ try {
     assert.equal((await tl(page, 'mt-alone')).time, 24);
   });
 
+  await check('Space plays and pauses: in the timeline, on an idle page the one used last; a button keeps its Space', async () => {
+    await set(page, 'mt-alone', 'default', { time: 2 });
+    await page.focus('#mt-alone .media-timeline-scroll');
+    await page.keyboard.press(' ');
+    assert.equal((await tl(page, 'mt-alone')).name, 'playing');
+    await page.keyboard.press(' ');
+    assert.equal((await tl(page, 'mt-alone')).name, 'default', 'paused where it was');
+    const y = await page.evaluate(() => scrollY);
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    await page.keyboard.press(' ');
+    assert.equal((await tl(page, 'mt-alone')).name, 'playing', 'nothing focused: the timeline used last');
+    await page.keyboard.press(' ');
+    assert.equal((await tl(page, 'mt-alone')).name, 'default');
+    assert.equal(await page.evaluate(() => scrollY), y, 'the page did not scroll');
+    // a button keeps its own Space: Zoom in zooms, no timeline plays
+    await page.focus('#mt-zoom-in');
+    await page.keyboard.press(' ');
+    assert.ok((await tl(page, 'mt-zoom')).zoom > 60, 'the button zoomed');
+    assert.deepEqual([(await tl(page, 'mt-zoom')).name, (await tl(page, 'mt-alone')).name], ['default', 'default']);
+    await set(page, 'mt-zoom', 'default', { zoom: 60, time: 0 });
+    await set(page, 'mt-alone', 'default', { time: 0 });
+  });
+
   await check('the media moves the playhead: a seek of the video sets the time, the playhead, the readouts and the active items', async () => {
     assert.equal(await page.$eval('#mt-video-length', (e) => e.textContent), '0:24', 'the length comes from the video');
     await page.$eval('#mt-player', (el: any) => el.api.setState('default', { time: 14 }));

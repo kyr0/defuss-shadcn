@@ -15,6 +15,7 @@ import {
   defussQuery,
   componentState,
   bindComponent,
+  bindGlobalKeys,
   mediaOf,
   mediaTextTracks,
   mediaTime,
@@ -1008,6 +1009,37 @@ function zoomFor(el: HTMLElement, action: string): number | null {
 
 const now = (el: HTMLElement): string => (playingOf(runtimeOf(el)) ? 'playing' : 'default');
 
+/** the controls a Space keeps working for themselves (the timeline's own slider excepted) */
+const SPACE_CONTROLS =
+  'button, a[href], input, select, textarea, summary, video, audio, [contenteditable="true"], [role="button"], [role="slider"], [role="menuitem"], [role="tab"], [role="option"], [role="checkbox"], [role="switch"]';
+
+/** Space plays and pauses: the timeline the key comes from (its slider, or an element bound to it) - unless a control
+ *  there takes the key itself -, or, with nothing focused, the timeline playing, else the one used last, else the only
+ *  one; while another player plays (a Fretboard, a Video of its own), an idle page's Space is that player's */
+function onSpace(e: KeyboardEvent): void | true {
+  if (e.key !== ' ' || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+  const target = e.target instanceof Element ? e.target : null;
+  const timelines = dfDollar('.media-timeline[data-init]').toArray() as HTMLElement[];
+  const inside = target?.closest<HTMLElement>('.media-timeline');
+  const bound = target?.closest<HTMLElement>('[data-media-timeline-for]');
+  const idle = !target || target === document.body || target === document.documentElement;
+  if (!inside && !bound && !idle) return;
+  const control = idle ? null : target?.closest(SPACE_CONTROLS);
+  if (control && !control.matches('.media-timeline-scroll')) return;
+  const playing = timelines.find((t) => t._timeline && playingOf(runtimeOf(t)));
+  if (idle && !playing && dfDollar('[data-state-name="playing"]:not(.media-timeline)').length) return;
+  const el =
+    (inside?._timeline ? inside : null) ??
+    (bound ? timelines.find((t) => t.id === bound.getAttribute('data-media-timeline-for')) : null) ??
+    playing ??
+    [...timelines].filter((t) => t._timelineUsed).sort((a, b) => b._timelineUsed - a._timelineUsed)[0] ??
+    (timelines.length === 1 ? timelines[0] : null);
+  if (!el?._timeline || !(runtimeOf(el).duration > 0)) return;
+  e.preventDefault();
+  el.api?.setState(now(el) === 'playing' ? 'default' : 'playing');
+  return true;
+}
+
 function init() {
   dfDollar('.media-timeline:not([data-init])')
     .toArray()
@@ -1096,6 +1128,12 @@ function init() {
         e.preventDefault();
         el.api?.setState(now(el), { time: next });
       });
+      // the timeline used last is the one Space plays on a page with nothing focused
+      const used = () => {
+        el._timelineUsed = performance.now();
+      };
+      dfDollar(el).on('pointerdown', used);
+      dfDollar(el).on('focusin', used);
       dfDollar(el).on('click', (e: Event) => {
         const control = (e.target as Element).closest<HTMLElement>('[data-media-timeline-action]');
         if (!control || control.closest('.media-timeline') !== el) return;
@@ -1121,6 +1159,7 @@ function init() {
 }
 
 function onAction(el: HTMLElement, control: HTMLElement): void {
+  el._timelineUsed = performance.now();
   const action = control.getAttribute('data-media-timeline-action') ?? '';
   const zoom = zoomFor(el, action);
   if (zoom !== null) el.api?.setState(now(el), { zoom });
@@ -1133,6 +1172,7 @@ function onAction(el: HTMLElement, control: HTMLElement): void {
 // controls bound from outside (data-media-timeline-for): one document listener
 if (!document.__mediaTimelineInit) {
   document.__mediaTimelineInit = true;
+  bindGlobalKeys(onSpace);
   document.addEventListener('click', (e) => {
     const control = (e.target as Element | null)?.closest?.<HTMLElement>('[data-media-timeline-action]');
     const bound = control?.closest<HTMLElement>('[data-media-timeline-for]');
