@@ -318,116 +318,620 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Strumming chords" hint="Amazing Grace in three-four time (time: [3, 4]): a strum is a tab item with strum down or up and no chord - it plays every string of the chord sounding there, drawn as a column with its arrow. The words are their own items here, each at its measure and beat - the first measure is a pickup. The chord chart below is an outlet bound to the tab (data-fretboard-for): a diagram per chord, the one sounding marked - drawn across as the player sees the fretboard, the nut on the left and the 1st string on top."
-<div class="grid gap-3">
-  <div class="fretboard" id="fb-grace" role="group" aria-label="Amazing Grace">
-    <div class="fretboard-header">
-      <span class="fretboard-title">Amazing Grace</span>
-      <button
-        class="btn"
-        data-variant="ghost"
-        data-size="icon-sm"
-        data-fretboard-action="toggle"
-        aria-pressed="false"
-        aria-label="Play"
-        ><i data-lucide="play"></i><i data-lucide="pause"></i
-      ></button>
-      <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
-        ><i data-lucide="square"></i
-      ></button>
-      <span class="fretboard-readout"
-        ><output data-fretboard-output="measure">1</output> / <output data-fretboard-output="measures">8</output></span
-      >
-    </div>
-    <script type="application/json" class="fretboard-source">
-      {
-        "version": 1,
-        "title": "Amazing Grace",
-        "chords": { "C": "0003", "F": "2010", "G": "0232" },
-        "scores": [
-          {
-            "id": "c-80",
-            "key": "C",
-            "bpm": 80,
-            "time": [3, 4],
-            "tracks": [
-              {
-                "id": "chords",
-                "kind": "chords",
-                "items": [
-                  { "measure": 2, "name": "C" },
-                  { "measure": 4, "name": "F" },
-                  { "measure": 5, "name": "C" },
-                  { "measure": 8, "name": "G" }
-                ]
-              },
-              {
-                "id": "strums",
-                "kind": "tab",
-                "items": [
-                  { "measure": 2, "beat": 1, "strum": "down" },
-                  { "measure": 2, "beat": 2, "strum": "down" },
-                  { "measure": 2, "beat": 2.5, "strum": "up" },
-                  { "measure": 2, "beat": 3, "strum": "down" },
-                  { "measure": 3, "beat": 1, "strum": "down" },
-                  { "measure": 3, "beat": 2, "strum": "down" },
-                  { "measure": 3, "beat": 2.5, "strum": "up" },
-                  { "measure": 3, "beat": 3, "strum": "down" },
-                  { "measure": 4, "beat": 1, "strum": "down" },
-                  { "measure": 4, "beat": 2, "strum": "down" },
-                  { "measure": 4, "beat": 2.5, "strum": "up" },
-                  { "measure": 4, "beat": 3, "strum": "down" },
-                  { "measure": 5, "beat": 1, "strum": "down" },
-                  { "measure": 5, "beat": 2, "strum": "down" },
-                  { "measure": 5, "beat": 2.5, "strum": "up" },
-                  { "measure": 5, "beat": 3, "strum": "down" },
-                  { "measure": 6, "beat": 1, "strum": "down" },
-                  { "measure": 6, "beat": 2, "strum": "down" },
-                  { "measure": 6, "beat": 2.5, "strum": "up" },
-                  { "measure": 6, "beat": 3, "strum": "down" },
-                  { "measure": 7, "beat": 1, "strum": "down" },
-                  { "measure": 7, "beat": 2, "strum": "down" },
-                  { "measure": 7, "beat": 2.5, "strum": "up" },
-                  { "measure": 7, "beat": 3, "strum": "down" },
-                  { "measure": 8, "beat": 1, "strum": "down" },
-                  { "measure": 8, "beat": 2, "strum": "down" },
-                  { "measure": 8, "beat": 2.5, "strum": "up" },
-                  { "measure": 8, "beat": 3, "strum": "down" }
-                ]
-              },
-              {
-                "id": "verse",
-                "kind": "lyrics",
-                "label": "EN",
-                "lang": "en",
-                "items": [
-                  { "measure": 1, "beat": 3, "text": "A-" },
-                  { "measure": 2, "text": "ma-" },
-                  { "measure": 2, "beat": 3, "text": "zing" },
-                  { "measure": 3, "text": "grace," },
-                  { "measure": 3, "beat": 3, "text": "how" },
-                  { "measure": 4, "text": "sweet" },
-                  { "measure": 4, "beat": 3, "text": "the" },
-                  { "measure": 5, "text": "sound" },
-                  { "measure": 5, "beat": 3, "text": "that" },
-                  { "measure": 6, "text": "saved" },
-                  { "measure": 6, "beat": 3, "text": "a" },
-                  { "measure": 7, "text": "wretch" },
-                  { "measure": 7, "beat": 3, "text": "like" },
-                  { "measure": 8, "text": "me." }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    </script>
+```html example label="Strumming chords" hint="Amazing Grace in three-four time (time: [3, 4]): a strum is a tab item with strum down or up and no chord - it plays every string of the chord sounding there, drawn as a column with its arrow. The words are their own items here, each at its measure and beat - the first measure is a pickup."
+<div class="fretboard" id="fb-grace" role="group" aria-label="Amazing Grace">
+  <div class="fretboard-header">
+    <span class="fretboard-title">Amazing Grace</span>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-fretboard-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+      ><i data-lucide="play"></i><i data-lucide="pause"></i
+    ></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
+      ><i data-lucide="square"></i
+    ></button>
+    <span class="fretboard-readout"
+      ><output data-fretboard-output="measure">1</output> / <output data-fretboard-output="measures">8</output></span
+    >
   </div>
-  <div data-fretboard-for="fb-grace" data-fretboard-outlet="chords"></div>
+  <script type="application/json" class="fretboard-source">
+    {
+      "version": 1,
+      "title": "Amazing Grace",
+      "chords": { "C": "0003", "F": "2010", "G": "0232" },
+      "scores": [
+        {
+          "id": "c-80",
+          "key": "C",
+          "bpm": 80,
+          "time": [3, 4],
+          "tracks": [
+            {
+              "id": "chords",
+              "kind": "chords",
+              "items": [
+                { "measure": 2, "name": "C" },
+                { "measure": 4, "name": "F" },
+                { "measure": 5, "name": "C" },
+                { "measure": 8, "name": "G" }
+              ]
+            },
+            {
+              "id": "strums",
+              "kind": "tab",
+              "items": [
+                { "measure": 2, "beat": 1, "strum": "down" },
+                { "measure": 2, "beat": 2, "strum": "down" },
+                { "measure": 2, "beat": 2.5, "strum": "up" },
+                { "measure": 2, "beat": 3, "strum": "down" },
+                { "measure": 3, "beat": 1, "strum": "down" },
+                { "measure": 3, "beat": 2, "strum": "down" },
+                { "measure": 3, "beat": 2.5, "strum": "up" },
+                { "measure": 3, "beat": 3, "strum": "down" },
+                { "measure": 4, "beat": 1, "strum": "down" },
+                { "measure": 4, "beat": 2, "strum": "down" },
+                { "measure": 4, "beat": 2.5, "strum": "up" },
+                { "measure": 4, "beat": 3, "strum": "down" },
+                { "measure": 5, "beat": 1, "strum": "down" },
+                { "measure": 5, "beat": 2, "strum": "down" },
+                { "measure": 5, "beat": 2.5, "strum": "up" },
+                { "measure": 5, "beat": 3, "strum": "down" },
+                { "measure": 6, "beat": 1, "strum": "down" },
+                { "measure": 6, "beat": 2, "strum": "down" },
+                { "measure": 6, "beat": 2.5, "strum": "up" },
+                { "measure": 6, "beat": 3, "strum": "down" },
+                { "measure": 7, "beat": 1, "strum": "down" },
+                { "measure": 7, "beat": 2, "strum": "down" },
+                { "measure": 7, "beat": 2.5, "strum": "up" },
+                { "measure": 7, "beat": 3, "strum": "down" },
+                { "measure": 8, "beat": 1, "strum": "down" },
+                { "measure": 8, "beat": 2, "strum": "down" },
+                { "measure": 8, "beat": 2.5, "strum": "up" },
+                { "measure": 8, "beat": 3, "strum": "down" }
+              ]
+            },
+            {
+              "id": "verse",
+              "kind": "lyrics",
+              "label": "EN",
+              "lang": "en",
+              "items": [
+                { "measure": 1, "beat": 3, "text": "A-" },
+                { "measure": 2, "text": "ma-" },
+                { "measure": 2, "beat": 3, "text": "zing" },
+                { "measure": 3, "text": "grace," },
+                { "measure": 3, "beat": 3, "text": "how" },
+                { "measure": 4, "text": "sweet" },
+                { "measure": 4, "beat": 3, "text": "the" },
+                { "measure": 5, "text": "sound" },
+                { "measure": 5, "beat": 3, "text": "that" },
+                { "measure": 6, "text": "saved" },
+                { "measure": 6, "beat": 3, "text": "a" },
+                { "measure": 7, "text": "wretch" },
+                { "measure": 7, "beat": 3, "text": "like" },
+                { "measure": 8, "text": "me." }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  </script>
 </div>
 ```
 
-```html example label="Hands and string colours" hint="A picking pattern over C, Am, F and G7 - eighth notes on the strings 4 3 2 1 2 3 2 1; a tab item with a string and no fret picks that string of the chord sounding there. data-colors='strings' gives every string a chart colour - its line, its fret numbers, its string on the necks and its dots in the chord charts. The necks show the chord's shape faintly, the note picked now filled and the next one dashed. A neck and a chord chart each way: upright (data-orientation='vertical', the nut on top, strings 4th to 1st from the left, as classic chord charts are drawn) and across (as the player sees the fretboard: the nut on the left, the 1st string on top, as the tab draws it). The select sets data-hand on the tab: the right hand mirrors the necks and the chord charts for a left-handed player."
+```html example label="String colours" hint="A picking pattern over C, Am, F and G7 - eighth notes on the strings 4 3 2 1 2 3 2 1; a tab item with a string and no fret picks that string of the chord sounding there. data-colors='strings' gives every string a chart colour - its line and its fret numbers, and the strings and dots of a neck or chord chart bound to the tab (Neck and chord charts, below)."
+<div class="fretboard" id="fb-colors" role="group" aria-label="Picking C, Am, F, G7" data-colors="strings">
+  <div class="fretboard-header">
+    <span class="fretboard-title">Picking C - Am - F - G7</span>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-fretboard-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+      ><i data-lucide="play"></i><i data-lucide="pause"></i
+    ></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
+      ><i data-lucide="square"></i
+    ></button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-fretboard-action="loop"
+      aria-pressed="false"
+      aria-label="Loop"
+      ><i data-lucide="repeat"></i
+    ></button>
+    <output class="fretboard-readout" data-fretboard-output="chord"></output>
+  </div>
+  <script type="application/json" class="fretboard-source">
+    {
+      "version": 1,
+      "title": "Picking C, Am, F, G7",
+      "chords": { "C": "0003", "Am": "2000", "F": "2010", "G7": "0212" },
+      "scores": [
+        {
+          "id": "pattern",
+          "key": "C",
+          "bpm": 80,
+          "tracks": [
+            {
+              "id": "chords",
+              "kind": "chords",
+              "items": [
+                { "measure": 1, "name": "C" },
+                { "measure": 2, "name": "Am" },
+                { "measure": 3, "name": "F" },
+                { "measure": 4, "name": "G7" }
+              ]
+            },
+            {
+              "id": "picking",
+              "kind": "tab",
+              "items": [
+                { "measure": 1, "beat": 1, "string": 4 },
+                { "measure": 1, "beat": 1.5, "string": 3 },
+                { "measure": 1, "beat": 2, "string": 2 },
+                { "measure": 1, "beat": 2.5, "string": 1 },
+                { "measure": 1, "beat": 3, "string": 2 },
+                { "measure": 1, "beat": 3.5, "string": 3 },
+                { "measure": 1, "beat": 4, "string": 2 },
+                { "measure": 1, "beat": 4.5, "string": 1 },
+                { "measure": 2, "beat": 1, "string": 4 },
+                { "measure": 2, "beat": 1.5, "string": 3 },
+                { "measure": 2, "beat": 2, "string": 2 },
+                { "measure": 2, "beat": 2.5, "string": 1 },
+                { "measure": 2, "beat": 3, "string": 2 },
+                { "measure": 2, "beat": 3.5, "string": 3 },
+                { "measure": 2, "beat": 4, "string": 2 },
+                { "measure": 2, "beat": 4.5, "string": 1 },
+                { "measure": 3, "beat": 1, "string": 4 },
+                { "measure": 3, "beat": 1.5, "string": 3 },
+                { "measure": 3, "beat": 2, "string": 2 },
+                { "measure": 3, "beat": 2.5, "string": 1 },
+                { "measure": 3, "beat": 3, "string": 2 },
+                { "measure": 3, "beat": 3.5, "string": 3 },
+                { "measure": 3, "beat": 4, "string": 2 },
+                { "measure": 3, "beat": 4.5, "string": 1 },
+                { "measure": 4, "beat": 1, "string": 4 },
+                { "measure": 4, "beat": 1.5, "string": 3 },
+                { "measure": 4, "beat": 2, "string": 2 },
+                { "measure": 4, "beat": 2.5, "string": 1 },
+                { "measure": 4, "beat": 3, "string": 2 },
+                { "measure": 4, "beat": 3.5, "string": 3 },
+                { "measure": 4, "beat": 4, "string": 2 },
+                { "measure": 4, "beat": 4.5, "string": 1 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Key and time signature" hint="One song, four scores: Ode to Joy in C in four-four, in C as a waltz in three-four (time: [3, 4] - every two quarter notes become a half and a quarter), in G in four-four and in D: the C score again with a capo on the 2nd fret (capo: 2) - its frets and chord shapes count from the capo, so it is written as in C, and the score's label names the capo. In G, the D is a barre ({ frets: '2220', barre: 2 }): one finger across three strings, drawn by a bound neck or chord chart. The key and time signature selects are filled from the scores (the time signatures of the key shown); a choice shows that score exactly as it is written - nothing is transposed or rearranged. The waltz and the G score name the C score in from and replace its chords and melody, so the words are written once. The playhead keeps its place in the song, at the start of a measure, and playing goes on."
+<div class="fretboard" id="fb-ode" role="group" aria-label="Ode to Joy">
+  <div class="fretboard-header">
+    <span class="fretboard-title">Ode to Joy</span>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-fretboard-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+      ><i data-lucide="play"></i><i data-lucide="pause"></i
+    ></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
+      ><i data-lucide="square"></i
+    ></button>
+    <span class="fretboard-readout"
+      ><output data-fretboard-output="measure">1</output> / <output data-fretboard-output="measures">8</output></span
+    >
+    <select class="select" data-size="sm" data-fretboard-control="key" aria-label="Key"></select>
+    <select class="select" data-size="sm" data-fretboard-control="signature" aria-label="Time signature"></select>
+    <output class="fretboard-readout" data-fretboard-output="score">C · 4/4</output>
+  </div>
+  <script type="application/json" class="fretboard-source">
+    {
+      "version": 1,
+      "title": "Ode to Joy",
+      "chords": { "C": "0003", "G": "0232", "D": { "frets": "2220", "barre": 2 } },
+      "scores": [
+        {
+          "id": "c-44",
+          "key": "C",
+          "bpm": 100,
+          "tracks": [
+            {
+              "id": "chords",
+              "kind": "chords",
+              "items": [
+                { "measure": 1, "name": "C" },
+                { "measure": 2, "name": "G" },
+                { "measure": 3, "name": "C" },
+                { "measure": 4, "name": "G" },
+                { "measure": 5, "name": "C" },
+                { "measure": 6, "name": "G" },
+                { "measure": 7, "name": "C" },
+                { "measure": 8, "name": "G" },
+                { "measure": 8, "beat": 3, "name": "C" }
+              ]
+            },
+            {
+              "id": "melody",
+              "kind": "tab",
+              "items": [
+                { "measure": 1, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 1, "beat": 2, "string": 2, "fret": 0 },
+                { "measure": 1, "beat": 3, "string": 2, "fret": 1 },
+                { "measure": 1, "beat": 4, "string": 2, "fret": 3 },
+                { "measure": 2, "beat": 1, "string": 2, "fret": 3 },
+                { "measure": 2, "beat": 2, "string": 2, "fret": 1 },
+                { "measure": 2, "beat": 3, "string": 2, "fret": 0 },
+                { "measure": 2, "beat": 4, "string": 3, "fret": 2 },
+                { "measure": 3, "beat": 1, "string": 3, "fret": 0 },
+                { "measure": 3, "beat": 2, "string": 3, "fret": 0 },
+                { "measure": 3, "beat": 3, "string": 3, "fret": 2 },
+                { "measure": 3, "beat": 4, "string": 2, "fret": 0 },
+                { "measure": 4, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 4, "beat": 2.5, "string": 3, "fret": 2 },
+                { "measure": 4, "beat": 3, "string": 3, "fret": 2 },
+                { "measure": 5, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 5, "beat": 2, "string": 2, "fret": 0 },
+                { "measure": 5, "beat": 3, "string": 2, "fret": 1 },
+                { "measure": 5, "beat": 4, "string": 2, "fret": 3 },
+                { "measure": 6, "beat": 1, "string": 2, "fret": 3 },
+                { "measure": 6, "beat": 2, "string": 2, "fret": 1 },
+                { "measure": 6, "beat": 3, "string": 2, "fret": 0 },
+                { "measure": 6, "beat": 4, "string": 3, "fret": 2 },
+                { "measure": 7, "beat": 1, "string": 3, "fret": 0 },
+                { "measure": 7, "beat": 2, "string": 3, "fret": 0 },
+                { "measure": 7, "beat": 3, "string": 3, "fret": 2 },
+                { "measure": 7, "beat": 4, "string": 2, "fret": 0 },
+                { "measure": 8, "beat": 1, "string": 3, "fret": 2 },
+                { "measure": 8, "beat": 2.5, "string": 3, "fret": 0 },
+                { "measure": 8, "beat": 3, "string": 3, "fret": 0 }
+              ]
+            },
+            {
+              "id": "de",
+              "kind": "lyrics",
+              "label": "DE",
+              "lang": "de",
+              "follow": "melody",
+              "text": "Freu-de, schö-ner Göt-ter-fun-ken, Toch-ter aus E-ly-si-um, wir be-tre-ten feu-er-trun-ken, Himm-li-sche, dein Hei-lig-tum!"
+            }
+          ]
+        },
+        {
+          "id": "c-34",
+          "key": "C",
+          "bpm": 132,
+          "time": [3, 4],
+          "from": "c-44",
+          "tracks": [
+            {
+              "id": "chords",
+              "kind": "chords",
+              "items": [
+                { "measure": 1, "name": "C" },
+                { "measure": 3, "name": "G" },
+                { "measure": 5, "name": "C" },
+                { "measure": 7, "name": "G" },
+                { "measure": 9, "name": "C" },
+                { "measure": 11, "name": "G" },
+                { "measure": 13, "name": "C" },
+                { "measure": 15, "name": "G" },
+                { "measure": 16, "name": "C" }
+              ]
+            },
+            {
+              "id": "melody",
+              "kind": "tab",
+              "items": [
+                { "measure": 1, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 1, "beat": 3, "string": 2, "fret": 0 },
+                { "measure": 2, "beat": 1, "string": 2, "fret": 1 },
+                { "measure": 2, "beat": 3, "string": 2, "fret": 3 },
+                { "measure": 3, "beat": 1, "string": 2, "fret": 3 },
+                { "measure": 3, "beat": 3, "string": 2, "fret": 1 },
+                { "measure": 4, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 4, "beat": 3, "string": 3, "fret": 2 },
+                { "measure": 5, "beat": 1, "string": 3, "fret": 0 },
+                { "measure": 5, "beat": 3, "string": 3, "fret": 0 },
+                { "measure": 6, "beat": 1, "string": 3, "fret": 2 },
+                { "measure": 6, "beat": 3, "string": 2, "fret": 0 },
+                { "measure": 7, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 7, "beat": 3, "string": 3, "fret": 2 },
+                { "measure": 8, "beat": 1, "string": 3, "fret": 2 },
+                { "measure": 9, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 9, "beat": 3, "string": 2, "fret": 0 },
+                { "measure": 10, "beat": 1, "string": 2, "fret": 1 },
+                { "measure": 10, "beat": 3, "string": 2, "fret": 3 },
+                { "measure": 11, "beat": 1, "string": 2, "fret": 3 },
+                { "measure": 11, "beat": 3, "string": 2, "fret": 1 },
+                { "measure": 12, "beat": 1, "string": 2, "fret": 0 },
+                { "measure": 12, "beat": 3, "string": 3, "fret": 2 },
+                { "measure": 13, "beat": 1, "string": 3, "fret": 0 },
+                { "measure": 13, "beat": 3, "string": 3, "fret": 0 },
+                { "measure": 14, "beat": 1, "string": 3, "fret": 2 },
+                { "measure": 14, "beat": 3, "string": 2, "fret": 0 },
+                { "measure": 15, "beat": 1, "string": 3, "fret": 2 },
+                { "measure": 15, "beat": 3, "string": 3, "fret": 0 },
+                { "measure": 16, "beat": 1, "string": 3, "fret": 0 }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "d-44",
+          "key": "D",
+          "capo": 2,
+          "from": "c-44"
+        },
+        {
+          "id": "g-44",
+          "key": "G",
+          "bpm": 100,
+          "from": "c-44",
+          "tracks": [
+            {
+              "id": "chords",
+              "kind": "chords",
+              "items": [
+                { "measure": 1, "name": "G" },
+                { "measure": 2, "name": "D" },
+                { "measure": 3, "name": "G" },
+                { "measure": 4, "name": "D" },
+                { "measure": 5, "name": "G" },
+                { "measure": 6, "name": "D" },
+                { "measure": 7, "name": "G" },
+                { "measure": 8, "name": "D" },
+                { "measure": 8, "beat": 3, "name": "G" }
+              ]
+            },
+            {
+              "id": "melody",
+              "kind": "tab",
+              "items": [
+                { "measure": 1, "beat": 1, "string": 1, "fret": 2 },
+                { "measure": 1, "beat": 2, "string": 1, "fret": 2 },
+                { "measure": 1, "beat": 3, "string": 1, "fret": 3 },
+                { "measure": 1, "beat": 4, "string": 1, "fret": 5 },
+                { "measure": 2, "beat": 1, "string": 1, "fret": 5 },
+                { "measure": 2, "beat": 2, "string": 1, "fret": 3 },
+                { "measure": 2, "beat": 3, "string": 1, "fret": 2 },
+                { "measure": 2, "beat": 4, "string": 1, "fret": 0 },
+                { "measure": 3, "beat": 1, "string": 2, "fret": 3 },
+                { "measure": 3, "beat": 2, "string": 2, "fret": 3 },
+                { "measure": 3, "beat": 3, "string": 1, "fret": 0 },
+                { "measure": 3, "beat": 4, "string": 1, "fret": 2 },
+                { "measure": 4, "beat": 1, "string": 1, "fret": 2 },
+                { "measure": 4, "beat": 2.5, "string": 1, "fret": 0 },
+                { "measure": 4, "beat": 3, "string": 1, "fret": 0 },
+                { "measure": 5, "beat": 1, "string": 1, "fret": 2 },
+                { "measure": 5, "beat": 2, "string": 1, "fret": 2 },
+                { "measure": 5, "beat": 3, "string": 1, "fret": 3 },
+                { "measure": 5, "beat": 4, "string": 1, "fret": 5 },
+                { "measure": 6, "beat": 1, "string": 1, "fret": 5 },
+                { "measure": 6, "beat": 2, "string": 1, "fret": 3 },
+                { "measure": 6, "beat": 3, "string": 1, "fret": 2 },
+                { "measure": 6, "beat": 4, "string": 1, "fret": 0 },
+                { "measure": 7, "beat": 1, "string": 2, "fret": 3 },
+                { "measure": 7, "beat": 2, "string": 2, "fret": 3 },
+                { "measure": 7, "beat": 3, "string": 1, "fret": 0 },
+                { "measure": 7, "beat": 4, "string": 1, "fret": 2 },
+                { "measure": 8, "beat": 1, "string": 1, "fret": 0 },
+                { "measure": 8, "beat": 2.5, "string": 2, "fret": 3 },
+                { "measure": 8, "beat": 3, "string": 2, "fret": 3 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Guitar" hint="Six strings: the tuning names them from the 6th to the 1st (E A D G B e) and the staff follows. The House of the Rising Sun in six-eight (time: [6, 8], a beat is an eighth): an arpeggio per chord, the bass string then 3 2 1 2 3, written as strings without frets that pick the chord sounding there. F is a barre ({ frets: '133211', barre: 1 }): the index finger across all six strings at the 1st fret - a bound neck and chord charts draw it (Guitar with a neck and chord charts, below)."
+<div class="fretboard" id="fb-guitar" role="group" aria-label="The House of the Rising Sun">
+  <div class="fretboard-header">
+    <span class="fretboard-title">The House of the Rising Sun</span>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-fretboard-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+      ><i data-lucide="play"></i><i data-lucide="pause"></i
+    ></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
+      ><i data-lucide="square"></i
+    ></button>
+    <output class="fretboard-readout" data-fretboard-output="chord"></output>
+  </div>
+  <script type="application/json" class="fretboard-source">
+    {
+      "version": 1,
+      "title": "The House of the Rising Sun",
+      "tuning": ["E", "A", "D", "G", "B", "e"],
+      "chords": {
+        "Am": "x02210",
+        "C": "x32010",
+        "D": "xx0232",
+        "F": { "frets": "133211", "barre": 1 },
+        "E": "022100"
+      },
+      "scores": [
+        {
+          "id": "am-68",
+          "key": "Am",
+          "bpm": 160,
+          "time": [6, 8],
+          "tracks": [
+            {
+              "id": "chords",
+              "kind": "chords",
+              "items": [
+                { "measure": 1, "name": "Am" },
+                { "measure": 2, "name": "C" },
+                { "measure": 3, "name": "D" },
+                { "measure": 4, "name": "F" },
+                { "measure": 5, "name": "Am" },
+                { "measure": 6, "name": "C" },
+                { "measure": 7, "name": "E" },
+                { "measure": 8, "name": "E" }
+              ]
+            },
+            {
+              "id": "arpeggio",
+              "kind": "tab",
+              "items": [
+                { "measure": 1, "beat": 1, "string": 5 },
+                { "measure": 1, "beat": 2, "string": 3 },
+                { "measure": 1, "beat": 3, "string": 2 },
+                { "measure": 1, "beat": 4, "string": 1 },
+                { "measure": 1, "beat": 5, "string": 2 },
+                { "measure": 1, "beat": 6, "string": 3 },
+                { "measure": 2, "beat": 1, "string": 5 },
+                { "measure": 2, "beat": 2, "string": 3 },
+                { "measure": 2, "beat": 3, "string": 2 },
+                { "measure": 2, "beat": 4, "string": 1 },
+                { "measure": 2, "beat": 5, "string": 2 },
+                { "measure": 2, "beat": 6, "string": 3 },
+                { "measure": 3, "beat": 1, "string": 4 },
+                { "measure": 3, "beat": 2, "string": 3 },
+                { "measure": 3, "beat": 3, "string": 2 },
+                { "measure": 3, "beat": 4, "string": 1 },
+                { "measure": 3, "beat": 5, "string": 2 },
+                { "measure": 3, "beat": 6, "string": 3 },
+                { "measure": 4, "beat": 1, "string": 6 },
+                { "measure": 4, "beat": 2, "string": 3 },
+                { "measure": 4, "beat": 3, "string": 2 },
+                { "measure": 4, "beat": 4, "string": 1 },
+                { "measure": 4, "beat": 5, "string": 2 },
+                { "measure": 4, "beat": 6, "string": 3 },
+                { "measure": 5, "beat": 1, "string": 5 },
+                { "measure": 5, "beat": 2, "string": 3 },
+                { "measure": 5, "beat": 3, "string": 2 },
+                { "measure": 5, "beat": 4, "string": 1 },
+                { "measure": 5, "beat": 5, "string": 2 },
+                { "measure": 5, "beat": 6, "string": 3 },
+                { "measure": 6, "beat": 1, "string": 5 },
+                { "measure": 6, "beat": 2, "string": 3 },
+                { "measure": 6, "beat": 3, "string": 2 },
+                { "measure": 6, "beat": 4, "string": 1 },
+                { "measure": 6, "beat": 5, "string": 2 },
+                { "measure": 6, "beat": 6, "string": 3 },
+                { "measure": 7, "beat": 1, "string": 6 },
+                { "measure": 7, "beat": 2, "string": 3 },
+                { "measure": 7, "beat": 3, "string": 2 },
+                { "measure": 7, "beat": 4, "string": 1 },
+                { "measure": 7, "beat": 5, "string": 2 },
+                { "measure": 7, "beat": 6, "string": 3 },
+                { "measure": 8, "beat": 1, "string": 6 },
+                { "measure": 8, "beat": 2, "string": 3 },
+                { "measure": 8, "beat": 3, "string": 2 },
+                { "measure": 8, "beat": 4, "string": 1 },
+                { "measure": 8, "beat": 5, "string": 2 },
+                { "measure": 8, "beat": 6, "string": 3 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Low G ukulele" hint="Another tuning: a low G ukulele has its 4th string an octave lower (tuning: ['G3', 'C4', 'E4', 'A4'] - the names are labels, written as the player wants them on the staff). When the Saints Go Marching In in G starts on that string: G3 open, A3 at the 2nd fret, B3 at the 4th - notes a re-entrant ukulele does not have. The chord shapes are the usual ones; D7 is a barre at the 2nd fret with the 3rd fret on the 1st string ({ frets: '2223', barre: 2 })."
+<div class="fretboard" id="fb-low-g" role="group" aria-label="When the Saints Go Marching In">
+  <div class="fretboard-header">
+    <span class="fretboard-title">When the Saints Go Marching In - low G</span>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="icon-sm"
+      data-fretboard-action="toggle"
+      aria-pressed="false"
+      aria-label="Play"
+      ><i data-lucide="play"></i><i data-lucide="pause"></i
+    ></button>
+    <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
+      ><i data-lucide="square"></i
+    ></button>
+  </div>
+  <script type="application/json" class="fretboard-source">
+    {
+      "version": 1,
+      "title": "When the Saints Go Marching In",
+      "tuning": ["G3", "C4", "E4", "A4"],
+      "chords": { "G": "0232", "D7": { "frets": "2223", "barre": 2 } },
+      "scores": [
+        {
+          "id": "g-low",
+          "key": "G",
+          "bpm": 120,
+          "tracks": [
+            {
+              "id": "chords",
+              "kind": "chords",
+              "items": [
+                { "measure": 1, "beat": 2, "name": "G" },
+                { "measure": 8, "name": "D7" }
+              ]
+            },
+            {
+              "id": "melody",
+              "kind": "tab",
+              "items": [
+                { "measure": 1, "beat": 2, "string": 4, "fret": 0 },
+                { "measure": 1, "beat": 3, "string": 4, "fret": 4 },
+                { "measure": 1, "beat": 4, "string": 3, "fret": 0 },
+                { "measure": 2, "beat": 1, "string": 3, "fret": 2, "beats": 4 },
+                { "measure": 3, "beat": 2, "string": 4, "fret": 0 },
+                { "measure": 3, "beat": 3, "string": 4, "fret": 4 },
+                { "measure": 3, "beat": 4, "string": 3, "fret": 0 },
+                { "measure": 4, "beat": 1, "string": 3, "fret": 2, "beats": 4 },
+                { "measure": 5, "beat": 2, "string": 4, "fret": 0 },
+                { "measure": 5, "beat": 3, "string": 4, "fret": 4 },
+                { "measure": 5, "beat": 4, "string": 3, "fret": 0 },
+                { "measure": 6, "beat": 1, "string": 3, "fret": 2, "beats": 2 },
+                { "measure": 6, "beat": 3, "string": 4, "fret": 4, "beats": 2 },
+                { "measure": 7, "beat": 1, "string": 4, "fret": 0, "beats": 2 },
+                { "measure": 7, "beat": 3, "string": 4, "fret": 4, "beats": 2 },
+                { "measure": 8, "beat": 1, "string": 4, "fret": 2, "beats": 4 }
+              ]
+            },
+            {
+              "id": "words",
+              "kind": "lyrics",
+              "label": "EN",
+              "follow": "melody",
+              "text": "Oh when the saints go march-ing in Oh when the saints go march-ing in"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Neck and chord charts" hint="A tab drives what binds to it with data-fretboard-for: a Fretboard Neck and the chords outlet, which the tab fills with a Chord Chart per chord - components of their own, shown alone on their pages with their own State tab. The necks show the chord's shape faintly, the note picked now filled and the next one dashed; the chord charts mark the chord sounding. Each way: upright (data-orientation='vertical', the nut on top, strings 4th to 1st from the left, as classic chord charts are drawn) and across (as the player sees the fretboard: the nut on the left, the 1st string on top, as the tab draws it). The select sets data-hand on the tab: the right hand mirrors the necks and the chord charts for a left-handed player; data-colors='strings' colours their strings too."
 <div class="grid gap-3">
   <div class="fretboard" id="fb-picking" role="group" aria-label="Picking C, Am, F, G7" data-colors="strings">
     <div class="fretboard-header">
@@ -542,239 +1046,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
-```html example label="Key and time signature" hint="One song, four scores: Ode to Joy in C in four-four, in C as a waltz in three-four (time: [3, 4] - every two quarter notes become a half and a quarter), in G in four-four and in D: the C score again with a capo on the 2nd fret (capo: 2) - its frets and chord shapes count from the capo, so it is written as in C. The neck moves its bold bar to the 2nd fret wire and keeps the frets behind it, the chord charts draw the capo with the strings going on behind it. In G, the D is a barre ({ frets: '2220', barre: 2 }): one finger across three strings, a dashed line. The key and time signature selects are filled from the scores (the time signatures of the key shown); a choice shows that score exactly as it is written - nothing is transposed or rearranged. The waltz and the G score name the C score in from and replace its chords and melody, so the words are written once. The playhead keeps its place in the song, at the start of a measure, and playing goes on."
+```html example label="Guitar with a neck and chord charts" hint="The House of the Rising Sun with a Fretboard Neck and a Chord Chart per chord bound to the tab: six strings everywhere, F's barre a dashed line across all six strings at the 1st fret (the barred strings carry no dots of their own), C's muted 6th string an ×, an open string nothing. The neck shows the chord's shape faintly, the notes picked filled with their fret, the next ones dashed."
 <div class="grid gap-3">
-  <div class="fretboard" id="fb-ode" role="group" aria-label="Ode to Joy">
-    <div class="fretboard-header">
-      <span class="fretboard-title">Ode to Joy</span>
-      <button
-        class="btn"
-        data-variant="ghost"
-        data-size="icon-sm"
-        data-fretboard-action="toggle"
-        aria-pressed="false"
-        aria-label="Play"
-        ><i data-lucide="play"></i><i data-lucide="pause"></i
-      ></button>
-      <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
-        ><i data-lucide="square"></i
-      ></button>
-      <span class="fretboard-readout"
-        ><output data-fretboard-output="measure">1</output> / <output data-fretboard-output="measures">8</output></span
-      >
-      <select class="select" data-size="sm" data-fretboard-control="key" aria-label="Key"></select>
-      <select class="select" data-size="sm" data-fretboard-control="signature" aria-label="Time signature"></select>
-      <output class="fretboard-readout" data-fretboard-output="score">C · 4/4</output>
-    </div>
-    <script type="application/json" class="fretboard-source">
-      {
-        "version": 1,
-        "title": "Ode to Joy",
-        "chords": { "C": "0003", "G": "0232", "D": { "frets": "2220", "barre": 2 } },
-        "scores": [
-          {
-            "id": "c-44",
-            "key": "C",
-            "bpm": 100,
-            "tracks": [
-              {
-                "id": "chords",
-                "kind": "chords",
-                "items": [
-                  { "measure": 1, "name": "C" },
-                  { "measure": 2, "name": "G" },
-                  { "measure": 3, "name": "C" },
-                  { "measure": 4, "name": "G" },
-                  { "measure": 5, "name": "C" },
-                  { "measure": 6, "name": "G" },
-                  { "measure": 7, "name": "C" },
-                  { "measure": 8, "name": "G" },
-                  { "measure": 8, "beat": 3, "name": "C" }
-                ]
-              },
-              {
-                "id": "melody",
-                "kind": "tab",
-                "items": [
-                  { "measure": 1, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 1, "beat": 2, "string": 2, "fret": 0 },
-                  { "measure": 1, "beat": 3, "string": 2, "fret": 1 },
-                  { "measure": 1, "beat": 4, "string": 2, "fret": 3 },
-                  { "measure": 2, "beat": 1, "string": 2, "fret": 3 },
-                  { "measure": 2, "beat": 2, "string": 2, "fret": 1 },
-                  { "measure": 2, "beat": 3, "string": 2, "fret": 0 },
-                  { "measure": 2, "beat": 4, "string": 3, "fret": 2 },
-                  { "measure": 3, "beat": 1, "string": 3, "fret": 0 },
-                  { "measure": 3, "beat": 2, "string": 3, "fret": 0 },
-                  { "measure": 3, "beat": 3, "string": 3, "fret": 2 },
-                  { "measure": 3, "beat": 4, "string": 2, "fret": 0 },
-                  { "measure": 4, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 4, "beat": 2.5, "string": 3, "fret": 2 },
-                  { "measure": 4, "beat": 3, "string": 3, "fret": 2 },
-                  { "measure": 5, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 5, "beat": 2, "string": 2, "fret": 0 },
-                  { "measure": 5, "beat": 3, "string": 2, "fret": 1 },
-                  { "measure": 5, "beat": 4, "string": 2, "fret": 3 },
-                  { "measure": 6, "beat": 1, "string": 2, "fret": 3 },
-                  { "measure": 6, "beat": 2, "string": 2, "fret": 1 },
-                  { "measure": 6, "beat": 3, "string": 2, "fret": 0 },
-                  { "measure": 6, "beat": 4, "string": 3, "fret": 2 },
-                  { "measure": 7, "beat": 1, "string": 3, "fret": 0 },
-                  { "measure": 7, "beat": 2, "string": 3, "fret": 0 },
-                  { "measure": 7, "beat": 3, "string": 3, "fret": 2 },
-                  { "measure": 7, "beat": 4, "string": 2, "fret": 0 },
-                  { "measure": 8, "beat": 1, "string": 3, "fret": 2 },
-                  { "measure": 8, "beat": 2.5, "string": 3, "fret": 0 },
-                  { "measure": 8, "beat": 3, "string": 3, "fret": 0 }
-                ]
-              },
-              {
-                "id": "de",
-                "kind": "lyrics",
-                "label": "DE",
-                "lang": "de",
-                "follow": "melody",
-                "text": "Freu-de, schö-ner Göt-ter-fun-ken, Toch-ter aus E-ly-si-um, wir be-tre-ten feu-er-trun-ken, Himm-li-sche, dein Hei-lig-tum!"
-              }
-            ]
-          },
-          {
-            "id": "c-34",
-            "key": "C",
-            "bpm": 132,
-            "time": [3, 4],
-            "from": "c-44",
-            "tracks": [
-              {
-                "id": "chords",
-                "kind": "chords",
-                "items": [
-                  { "measure": 1, "name": "C" },
-                  { "measure": 3, "name": "G" },
-                  { "measure": 5, "name": "C" },
-                  { "measure": 7, "name": "G" },
-                  { "measure": 9, "name": "C" },
-                  { "measure": 11, "name": "G" },
-                  { "measure": 13, "name": "C" },
-                  { "measure": 15, "name": "G" },
-                  { "measure": 16, "name": "C" }
-                ]
-              },
-              {
-                "id": "melody",
-                "kind": "tab",
-                "items": [
-                  { "measure": 1, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 1, "beat": 3, "string": 2, "fret": 0 },
-                  { "measure": 2, "beat": 1, "string": 2, "fret": 1 },
-                  { "measure": 2, "beat": 3, "string": 2, "fret": 3 },
-                  { "measure": 3, "beat": 1, "string": 2, "fret": 3 },
-                  { "measure": 3, "beat": 3, "string": 2, "fret": 1 },
-                  { "measure": 4, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 4, "beat": 3, "string": 3, "fret": 2 },
-                  { "measure": 5, "beat": 1, "string": 3, "fret": 0 },
-                  { "measure": 5, "beat": 3, "string": 3, "fret": 0 },
-                  { "measure": 6, "beat": 1, "string": 3, "fret": 2 },
-                  { "measure": 6, "beat": 3, "string": 2, "fret": 0 },
-                  { "measure": 7, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 7, "beat": 3, "string": 3, "fret": 2 },
-                  { "measure": 8, "beat": 1, "string": 3, "fret": 2 },
-                  { "measure": 9, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 9, "beat": 3, "string": 2, "fret": 0 },
-                  { "measure": 10, "beat": 1, "string": 2, "fret": 1 },
-                  { "measure": 10, "beat": 3, "string": 2, "fret": 3 },
-                  { "measure": 11, "beat": 1, "string": 2, "fret": 3 },
-                  { "measure": 11, "beat": 3, "string": 2, "fret": 1 },
-                  { "measure": 12, "beat": 1, "string": 2, "fret": 0 },
-                  { "measure": 12, "beat": 3, "string": 3, "fret": 2 },
-                  { "measure": 13, "beat": 1, "string": 3, "fret": 0 },
-                  { "measure": 13, "beat": 3, "string": 3, "fret": 0 },
-                  { "measure": 14, "beat": 1, "string": 3, "fret": 2 },
-                  { "measure": 14, "beat": 3, "string": 2, "fret": 0 },
-                  { "measure": 15, "beat": 1, "string": 3, "fret": 2 },
-                  { "measure": 15, "beat": 3, "string": 3, "fret": 0 },
-                  { "measure": 16, "beat": 1, "string": 3, "fret": 0 }
-                ]
-              }
-            ]
-          },
-          {
-            "id": "d-44",
-            "key": "D",
-            "capo": 2,
-            "from": "c-44"
-          },
-          {
-            "id": "g-44",
-            "key": "G",
-            "bpm": 100,
-            "from": "c-44",
-            "tracks": [
-              {
-                "id": "chords",
-                "kind": "chords",
-                "items": [
-                  { "measure": 1, "name": "G" },
-                  { "measure": 2, "name": "D" },
-                  { "measure": 3, "name": "G" },
-                  { "measure": 4, "name": "D" },
-                  { "measure": 5, "name": "G" },
-                  { "measure": 6, "name": "D" },
-                  { "measure": 7, "name": "G" },
-                  { "measure": 8, "name": "D" },
-                  { "measure": 8, "beat": 3, "name": "G" }
-                ]
-              },
-              {
-                "id": "melody",
-                "kind": "tab",
-                "items": [
-                  { "measure": 1, "beat": 1, "string": 1, "fret": 2 },
-                  { "measure": 1, "beat": 2, "string": 1, "fret": 2 },
-                  { "measure": 1, "beat": 3, "string": 1, "fret": 3 },
-                  { "measure": 1, "beat": 4, "string": 1, "fret": 5 },
-                  { "measure": 2, "beat": 1, "string": 1, "fret": 5 },
-                  { "measure": 2, "beat": 2, "string": 1, "fret": 3 },
-                  { "measure": 2, "beat": 3, "string": 1, "fret": 2 },
-                  { "measure": 2, "beat": 4, "string": 1, "fret": 0 },
-                  { "measure": 3, "beat": 1, "string": 2, "fret": 3 },
-                  { "measure": 3, "beat": 2, "string": 2, "fret": 3 },
-                  { "measure": 3, "beat": 3, "string": 1, "fret": 0 },
-                  { "measure": 3, "beat": 4, "string": 1, "fret": 2 },
-                  { "measure": 4, "beat": 1, "string": 1, "fret": 2 },
-                  { "measure": 4, "beat": 2.5, "string": 1, "fret": 0 },
-                  { "measure": 4, "beat": 3, "string": 1, "fret": 0 },
-                  { "measure": 5, "beat": 1, "string": 1, "fret": 2 },
-                  { "measure": 5, "beat": 2, "string": 1, "fret": 2 },
-                  { "measure": 5, "beat": 3, "string": 1, "fret": 3 },
-                  { "measure": 5, "beat": 4, "string": 1, "fret": 5 },
-                  { "measure": 6, "beat": 1, "string": 1, "fret": 5 },
-                  { "measure": 6, "beat": 2, "string": 1, "fret": 3 },
-                  { "measure": 6, "beat": 3, "string": 1, "fret": 2 },
-                  { "measure": 6, "beat": 4, "string": 1, "fret": 0 },
-                  { "measure": 7, "beat": 1, "string": 2, "fret": 3 },
-                  { "measure": 7, "beat": 2, "string": 2, "fret": 3 },
-                  { "measure": 7, "beat": 3, "string": 1, "fret": 0 },
-                  { "measure": 7, "beat": 4, "string": 1, "fret": 2 },
-                  { "measure": 8, "beat": 1, "string": 1, "fret": 0 },
-                  { "measure": 8, "beat": 2.5, "string": 2, "fret": 3 },
-                  { "measure": 8, "beat": 3, "string": 2, "fret": 3 }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    </script>
-  </div>
-  <div class="fretboard-neck" data-fretboard-for="fb-ode"></div>
-  <div data-fretboard-for="fb-ode" data-fretboard-outlet="chords"></div>
-</div>
-```
-
-```html example label="Guitar" hint="Six strings: the tuning names them from the 6th to the 1st (E A D G B e) and everything follows - the staff, the neck, the chord charts. The House of the Rising Sun in six-eight (time: [6, 8], a beat is an eighth): an arpeggio per chord, the bass string then 3 2 1 2 3, written as strings without frets that pick the chord sounding there. F is a barre ({ frets: '133211', barre: 1 }): the index finger across all six strings at the 1st fret, a dashed line; a muted string shows ×, an open one nothing."
-<div class="grid gap-3">
-  <div class="fretboard" id="fb-guitar" role="group" aria-label="The House of the Rising Sun">
+  <div class="fretboard" id="fb-guitar-bound" role="group" aria-label="The House of the Rising Sun">
     <div class="fretboard-header">
       <span class="fretboard-title">The House of the Rising Sun</span>
       <button
@@ -884,86 +1158,8 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       }
     </script>
   </div>
-  <div class="fretboard-neck" data-fretboard-for="fb-guitar"></div>
-  <div data-fretboard-for="fb-guitar" data-fretboard-outlet="chords"></div>
-</div>
-```
-
-```html example label="Low G ukulele" hint="Another tuning: a low G ukulele has its 4th string an octave lower (tuning: ['G3', 'C4', 'E4', 'A4'] - the names are labels, written as the player wants them on the staff). When the Saints Go Marching In in G starts on that string: G3 open, A3 at the 2nd fret, B3 at the 4th - notes a re-entrant ukulele does not have. The chord shapes are the usual ones; D7 is a barre at the 2nd fret with the 3rd fret on the 1st string ({ frets: '2223', barre: 2 })."
-<div class="grid gap-3">
-  <div class="fretboard" id="fb-low-g" role="group" aria-label="When the Saints Go Marching In">
-    <div class="fretboard-header">
-      <span class="fretboard-title">When the Saints Go Marching In - low G</span>
-      <button
-        class="btn"
-        data-variant="ghost"
-        data-size="icon-sm"
-        data-fretboard-action="toggle"
-        aria-pressed="false"
-        aria-label="Play"
-        ><i data-lucide="play"></i><i data-lucide="pause"></i
-      ></button>
-      <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop"
-        ><i data-lucide="square"></i
-      ></button>
-    </div>
-    <script type="application/json" class="fretboard-source">
-      {
-        "version": 1,
-        "title": "When the Saints Go Marching In",
-        "tuning": ["G3", "C4", "E4", "A4"],
-        "chords": { "G": "0232", "D7": { "frets": "2223", "barre": 2 } },
-        "scores": [
-          {
-            "id": "g-low",
-            "key": "G",
-            "bpm": 120,
-            "tracks": [
-              {
-                "id": "chords",
-                "kind": "chords",
-                "items": [
-                  { "measure": 1, "beat": 2, "name": "G" },
-                  { "measure": 8, "name": "D7" }
-                ]
-              },
-              {
-                "id": "melody",
-                "kind": "tab",
-                "items": [
-                  { "measure": 1, "beat": 2, "string": 4, "fret": 0 },
-                  { "measure": 1, "beat": 3, "string": 4, "fret": 4 },
-                  { "measure": 1, "beat": 4, "string": 3, "fret": 0 },
-                  { "measure": 2, "beat": 1, "string": 3, "fret": 2, "beats": 4 },
-                  { "measure": 3, "beat": 2, "string": 4, "fret": 0 },
-                  { "measure": 3, "beat": 3, "string": 4, "fret": 4 },
-                  { "measure": 3, "beat": 4, "string": 3, "fret": 0 },
-                  { "measure": 4, "beat": 1, "string": 3, "fret": 2, "beats": 4 },
-                  { "measure": 5, "beat": 2, "string": 4, "fret": 0 },
-                  { "measure": 5, "beat": 3, "string": 4, "fret": 4 },
-                  { "measure": 5, "beat": 4, "string": 3, "fret": 0 },
-                  { "measure": 6, "beat": 1, "string": 3, "fret": 2, "beats": 2 },
-                  { "measure": 6, "beat": 3, "string": 4, "fret": 4, "beats": 2 },
-                  { "measure": 7, "beat": 1, "string": 4, "fret": 0, "beats": 2 },
-                  { "measure": 7, "beat": 3, "string": 4, "fret": 4, "beats": 2 },
-                  { "measure": 8, "beat": 1, "string": 4, "fret": 2, "beats": 4 }
-                ]
-              },
-              {
-                "id": "words",
-                "kind": "lyrics",
-                "label": "EN",
-                "follow": "melody",
-                "text": "Oh when the saints go march-ing in Oh when the saints go march-ing in"
-              }
-            ]
-          }
-        ]
-      }
-    </script>
-  </div>
-  <div class="fretboard-neck" data-fretboard-for="fb-low-g"></div>
-  <div data-fretboard-for="fb-low-g" data-fretboard-outlet="chords"></div>
+  <div class="fretboard-neck" data-fretboard-for="fb-guitar-bound"></div>
+  <div data-fretboard-for="fb-guitar-bound" data-fretboard-outlet="chords"></div>
 </div>
 ```
 
@@ -995,11 +1191,11 @@ Machine contract - verified against <a class="link" href="../schemas/fretboard.s
 <ApiSection component="fretboard" />
 
 <SourceFiles component="fretboard" section="css">
-  <SourceNote for="css">The lines and measures, the staff's string lines as gradients with the fret numbers cut into them, the strum arrows, the playhead, the loop, the neck and the chord diagrams - every colour a theme token but the loop's yellow.</SourceNote>
+  <SourceNote for="css">The lines and measures, the staff's string lines as gradients with the fret numbers cut into them, the strum arrows, the playhead, the loop and the chords outlet's row - every colour a theme token but the loop's yellow. The neck and the chord charts have their own stylesheets.</SourceNote>
 </SourceFiles>
 
 <SourceFiles component="fretboard" section="js">
-  <SourceNote for="js">Resolving the scores (from, chord shapes, strums, followed lyrics), the measure widths and the line breaks, the clock that wakes at the next change, the playhead, the scrolling, the selects and the outlets.</SourceNote>
+  <SourceNote for="js">Resolving the scores (from, chord shapes, strums, followed lyrics), the measure widths and the line breaks, the clock that wakes at the next change, the playhead, the scrolling, the selects, the chords outlet it fills with Chord Charts and the Fretboard Necks it drives.</SourceNote>
 </SourceFiles>
 
 </DocPage>
