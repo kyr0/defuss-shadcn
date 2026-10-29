@@ -1,0 +1,433 @@
+---
+title: "Knobs"
+description: "Knob component - the rotary controls of an audio plugin over a native range input: any scale (linear, exponential, logarithmic, power, decibel or your own), rings for the automation and modulation sources around the value, and a drag that turns finer the farther the pointer is from the knob."
+slug: "knob"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="knob" title="Knobs" component="knob">
+  The rotary controls of an audio plugin - a synthesizer's cutoff, a compressor's attack, a mixer's gain - over a native range input that keeps the value, the keys and the accessible slider. A knob turns 270 degrees on any scale: linear, exponential (every decade of a frequency turns as far), logarithmic, a power curve, decibels on an audio taper, or a scale the page adds; the value snaps to the input's step - stepped knobs mark their steps - and its text follows a format - a metric prefix, a percentage, milliseconds and seconds, a sign, or your own. Around the value ring - the innermost, filled from the knob's origin to its value - each automation or modulation source has a ring of its own: its range, and while it runs, how far it moves the value now; the value ring then marks the effective value. Drag left or right to turn it: near the knob it turns fast, and the farther the pointer is from it, the finer the same move sets the value - the radius it turns at full speed shows while you drag. Double click the value to type it in. The knob never moves: a longer value text spills out on both sides.
+</PageHeader>
+
+<SkillPanel component="knob">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;input type="range" class="knob-input"&gt;</code> in a <code>&lt;div class="knob"&gt;</code>: the value in the knob's units (<code>min</code>, <code>max</code>, <code>step</code>, <code>value</code>, <code>name</code>), submitted and reset by its form, named by its <code>&lt;label for&gt;</code>, read as a slider. The runtime draws the dial over it; without scripting it is the plain range.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range" title="the value, its range and step, the form"><code>&lt;input type="range"&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" title="one drag for mouse, pen and touch"><code>Pointer Events</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/conic-gradient" title="every arc and ring"><code>conic-gradient()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="the readout in the page's locale"><code>Intl.NumberFormat</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="the value's text"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/scripting" title="the plain range without scripting"><code>@media (scripting)</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.knob</code>
+    <code>.knob-input</code>
+    <code>.knob-label</code>
+    <code>.knob-value</code>
+    <code>.knob-rings</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-scale</code> - <code>linear</code>, <code>exponential</code>, <code>logarithmic</code>, <code>power</code>, <code>decibel</code> or a registered one; <code>data-exponent</code> - the curve of power and decibel</SkillText>
+  <SkillText dense>• <code>data-format</code> - <code>number</code>, <code>si</code>, <code>percent</code>, <code>time</code>, <code>signed</code> or a registered one; <code>data-unit</code>, <code>data-decimals</code></SkillText>
+  <SkillText dense>• <code>data-origin</code> - where the value arc starts (0 for pan); <code>data-default</code> - the value a reset goes back to</SkillText>
+  <SkillText dense>• <code>data-ticks</code> - a mark per step of a stepped knob; <code>data-ticks="5"</code> - that many over the turn</SkillText>
+  <SkillText dense>• <code>data-radius</code> - the precision radius in px; <code>data-travel</code> - the drag in px for the whole turn at full speed</SkillText>
+  <SkillText dense>• <code>data-size</code> - <code>sm</code>, <code>lg</code>; <code>data-variant="flat"</code>; <code>data-color</code> - <code>chart-1</code> ... <code>chart-5</code>, <code>destructive</code>; <code>--knob-reserve</code> - ring slots kept free, so a row lines up</SkillText>
+  <SkillText>In <code>script.knob-rings</code>: an array of rings - <code>id</code>, <code>label</code>, <code>amount</code> (-1 to 1 of the turn), <code>bipolar</code>, <code>color</code>; <code>df$.shadcn.knob.modulate(knob, \{ id: output \})</code> runs them</SkillText>
+  </SkillField>
+
+  <SkillField label="Pointer and keys">
+<SkillText dense>• Drag left / right - turn it; the farther from the knob, the finer; <kbd>Shift</kbd> - ten times finer; <kbd>Escape</kbd> - back to where the drag started</SkillText>
+  <SkillText dense>• Double click, <kbd>Ctrl</kbd> / <kbd>Cmd</kbd> + click, <kbd>Delete</kbd> - the default</SkillText>
+  <SkillText dense>• Double click the value, <kbd>Enter</kbd> - type it in (a Number Input, xs): <kbd>Enter</kbd> sets it, <kbd>Escape</kbd> keeps the old one</SkillText>
+  <SkillText dense>• <kbd>Right</kbd> / <kbd>Up</kbd>, <kbd>Left</kbd> / <kbd>Down</kbd> - a step (the input's, else 1 % of the turn; <kbd>Shift</kbd>: 0.1 %); <kbd>Page Up</kbd> / <kbd>Page Down</kbd> - 10 %; <kbd>Home</kbd> / <kbd>End</kbd> - the ends</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Knob" hint="A filter cutoff from 20 Hz to 20 kHz on an exponential scale: every decade turns as far, so 200 Hz, 2 kHz and 20 kHz sit at a third, two thirds and the end of the turn. Drag left or right to turn it - near the knob it follows the pointer fast; move away from it (the dashed circle is the radius it turns at full speed) and the same move turns it finer. Double click the knob to reset it to 1 kHz, double click the value to type one in (Enter sets it, Escape keeps the old one). Its two rings are the sources that modulate it: LFO 1 swings it both ways by 15 % of the turn, Envelope 2 opens it by 30 %."
+<div class="knob" data-size="lg" data-scale="exponential" data-format="si" data-unit="Hz" data-default="1000">
+  <input class="knob-input" type="range" id="kn-cutoff" name="cutoff" min="20" max="20000" step="any" value="1000" />
+  <label class="knob-label" for="kn-cutoff">Cutoff</label>
+  <output class="knob-value" for="kn-cutoff">1.00 kHz</output>
+  <script type="application/json" class="knob-rings">
+    [
+      { "id": "lfo", "label": "LFO 1", "amount": 0.15, "bipolar": true, "color": "chart-2" },
+      { "id": "env", "label": "Envelope 2", "amount": 0.3, "color": "chart-4" }
+    ]
+  </script>
+</div>
+```
+
+```html example label="Precision" hint="A fine tune in cents from its centre (data-origin='0'), with a small precision radius (data-radius='48') and a long travel (data-travel='400'): within 48 px of the knob a 400 px move turns it from end to end; at 96 px half as far, at 192 px a quarter - set it to a tenth of a cent by moving away first. Shift slows any drag ten times; Escape puts it back where the drag started."
+<div
+  class="knob"
+  data-size="lg"
+  data-format="signed"
+  data-unit="ct"
+  data-decimals="1"
+  data-origin="0"
+  data-radius="48"
+  data-travel="400"
+>
+  <input class="knob-input" type="range" id="kn-fine" min="-100" max="100" step="any" value="0" />
+  <label class="knob-label" for="kn-fine">Fine</label>
+  <output class="knob-value" for="kn-fine">0.0 ct</output>
+</div>
+```
+
+```html example label="Scales" hint="Six scales over the same turn: a mix from 0 to 1 written as a percentage (linear), a frequency (exponential, written with a metric prefix), a feedback that turns fast first and fine at the end (logarithmic), an attack time on a power curve (data-exponent='3': fine for short times, written in ms and s), a gain in decibels on an audio taper, and semitones on whole steps (step='1') that fill from 0. The value always snaps to the input's step after the scale."
+<div class="flex flex-wrap items-start gap-6">
+  <div class="knob" data-format="percent">
+    <input class="knob-input" type="range" id="kn-mix" min="0" max="1" step="any" value="0.5" />
+    <label class="knob-label" for="kn-mix">Mix</label>
+    <output class="knob-value" for="kn-mix">50%</output>
+  </div>
+  <div class="knob" data-scale="exponential" data-format="si" data-unit="Hz">
+    <input class="knob-input" type="range" id="kn-freq" min="20" max="20000" step="any" value="440" />
+    <label class="knob-label" for="kn-freq">Frequency</label>
+    <output class="knob-value" for="kn-freq">440 Hz</output>
+  </div>
+  <div class="knob" data-scale="logarithmic" data-unit="%" data-decimals="0">
+    <input class="knob-input" type="range" id="kn-feedback" min="1" max="100" step="any" value="50" />
+    <label class="knob-label" for="kn-feedback">Feedback</label>
+    <output class="knob-value" for="kn-feedback">50 %</output>
+  </div>
+  <div class="knob" data-scale="power" data-exponent="3" data-format="time">
+    <input class="knob-input" type="range" id="kn-attack" min="0" max="10" step="any" value="0.25" />
+    <label class="knob-label" for="kn-attack">Attack</label>
+    <output class="knob-value" for="kn-attack">250 ms</output>
+  </div>
+  <div class="knob" data-scale="decibel" data-format="signed" data-unit="dB" data-decimals="1">
+    <input class="knob-input" type="range" id="kn-gain" min="-60" max="6" step="any" value="0" />
+    <label class="knob-label" for="kn-gain">Gain</label>
+    <output class="knob-value" for="kn-gain">0.0 dB</output>
+  </div>
+  <div class="knob" data-format="signed" data-unit="st" data-origin="0">
+    <input class="knob-input" type="range" id="kn-semi" min="-24" max="24" step="1" value="7" />
+    <label class="knob-label" for="kn-semi">Semitones</label>
+    <output class="knob-value" for="kn-semi">+7 st</output>
+  </div>
+</div>
+```
+
+```html example label="Steps" hint="Stepped knobs move step by step - a drag snaps as it goes, an arrow key moves one step, a typed value settles on the nearest. data-ticks marks every step between the value ring and the face: octaves and semitones from their centre, voices, a waveform switch (its four steps written as names by a format the page adds). data-ticks='5' marks the quarters of a mix in 5 % steps; on an exponential delay from 1 ms to 1 s in milliseconds, data-ticks='4' marks the decades."
+<div class="flex flex-wrap items-start gap-6">
+  <div class="knob" data-format="signed" data-origin="0" data-ticks>
+    <input class="knob-input" type="range" id="kn-octave" min="-3" max="3" step="1" value="1" />
+    <label class="knob-label" for="kn-octave">Octave</label>
+    <output class="knob-value" for="kn-octave">+1</output>
+  </div>
+  <div class="knob" data-format="signed" data-unit="st" data-origin="0" data-ticks>
+    <input class="knob-input" type="range" id="kn-st" min="-12" max="12" step="1" value="7" />
+    <label class="knob-label" for="kn-st">Semitones</label>
+    <output class="knob-value" for="kn-st">+7 st</output>
+  </div>
+  <div class="knob" data-ticks>
+    <input class="knob-input" type="range" id="kn-voices" min="1" max="16" step="1" value="4" />
+    <label class="knob-label" for="kn-voices">Voices</label>
+    <output class="knob-value" for="kn-voices">4</output>
+  </div>
+  <div class="knob" data-format="wave" data-ticks>
+    <input class="knob-input" type="range" id="kn-wave" min="0" max="3" step="1" value="2" />
+    <label class="knob-label" for="kn-wave">Waveform</label>
+    <output class="knob-value" for="kn-wave">Saw</output>
+  </div>
+  <div class="knob" data-format="percent" data-ticks="5">
+    <input class="knob-input" type="range" id="kn-steps-mix" min="0" max="1" step="0.05" value="0.5" />
+    <label class="knob-label" for="kn-steps-mix">Mix</label>
+    <output class="knob-value" for="kn-steps-mix">50%</output>
+  </div>
+  <div class="knob" data-scale="exponential" data-format="time" data-ticks="4">
+    <input class="knob-input" type="range" id="kn-delay" min="0.001" max="1" step="0.001" value="0.1" />
+    <label class="knob-label" for="kn-delay">Delay</label>
+    <output class="knob-value" for="kn-delay">100 ms</output>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const waves = ['Sine', 'Triangle', 'Saw', 'Square'];
+    df$.shadcn.knob.format('wave', (v) => waves[Math.round(v)] ?? String(v));
+  });
+</script>
+```
+
+```html example label="Automation rings" hint="Three sources around one cutoff: LFO 1 swings it both ways (bipolar), Envelope 1 opens it, Macro 1 closes it (a negative amount). Each ring shows its range around the value; run the sources and each ring shows how far its source moves the value now, while the value ring marks the effective value - the knob's value moved by all of them (df$.shadcn.knob.modulate returns it). Turn the knob while they run: the rings move with it."
+<div class="grid gap-3">
+  <div class="knob" data-size="lg" data-scale="exponential" data-format="si" data-unit="Hz">
+    <input class="knob-input" type="range" id="kn-mod" min="20" max="20000" step="any" value="800" />
+    <label class="knob-label" for="kn-mod">Cutoff</label>
+    <output class="knob-value" for="kn-mod">800 Hz</output>
+    <script type="application/json" class="knob-rings">
+      [
+        { "id": "lfo", "label": "LFO 1", "amount": 0.2, "bipolar": true, "color": "chart-2" },
+        { "id": "env", "label": "Envelope 1", "amount": 0.35, "color": "chart-4" },
+        { "id": "macro", "label": "Macro 1", "amount": -0.25, "color": "chart-5" }
+      ]
+    </script>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <button class="btn" data-variant="outline" data-size="sm" id="kn-mod-run" aria-pressed="false"
+      >Run the sources</button
+    >
+    <span class="text-sm text-muted-foreground">Effective: <output id="kn-mod-effective">-</output></span>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const knob = df$('#kn-mod').closest('.knob').get(0);
+    const run = df$('#kn-mod-run');
+    let running = false;
+    let start = 0;
+    const frame = (now) => {
+      if (!running) return;
+      const t = (now - start) / 1000;
+      const phase = t % 2;
+      const hz = df$.shadcn.knob.modulate(knob, {
+        lfo: Math.sin(t * Math.PI),
+        env: phase < 0.3 ? phase / 0.3 : Math.max(0, 1 - (phase - 0.3) / 1.2),
+        macro: (1 - Math.cos(t * 0.5)) / 2,
+      });
+      df$('#kn-mod-effective').text(hz >= 1000 ? (hz / 1000).toFixed(2) + ' kHz' : Math.round(hz) + ' Hz');
+      requestAnimationFrame(frame);
+    };
+    run.on('click', () => {
+      running = !running;
+      run.attr('aria-pressed', String(running));
+      if (running) {
+        start = performance.now();
+        requestAnimationFrame(frame);
+      } else {
+        df$.shadcn.knob.modulate(knob, null);
+        df$('#kn-mod-effective').text('-');
+      }
+    });
+  });
+</script>
+```
+
+```html example label="Sizes, colours and states" hint="data-size='sm' and 'lg' around the default size, data-color for the value arc (a chart colour, destructive), data-variant='flat' without the face, and an input authored disabled - the knob starts in its disabled state: no drag, no keys, and a form leaves it out."
+<div class="flex flex-wrap items-start gap-6">
+  <div class="knob" data-size="sm" data-color="chart-1">
+    <input class="knob-input" type="range" id="kn-sm" min="0" max="100" step="any" value="30" />
+    <label class="knob-label" for="kn-sm">Small</label>
+    <output class="knob-value" for="kn-sm">30</output>
+  </div>
+  <div class="knob" data-color="chart-2">
+    <input class="knob-input" type="range" id="kn-md" min="0" max="100" step="any" value="50" />
+    <label class="knob-label" for="kn-md">Default</label>
+    <output class="knob-value" for="kn-md">50</output>
+  </div>
+  <div class="knob" data-size="lg" data-color="chart-3">
+    <input class="knob-input" type="range" id="kn-lg" min="0" max="100" step="any" value="70" />
+    <label class="knob-label" for="kn-lg">Large</label>
+    <output class="knob-value" for="kn-lg">70</output>
+  </div>
+  <div class="knob" data-variant="flat" data-color="chart-4">
+    <input class="knob-input" type="range" id="kn-flat" min="0" max="100" step="any" value="60" />
+    <label class="knob-label" for="kn-flat">Flat</label>
+    <output class="knob-value" for="kn-flat">60</output>
+  </div>
+  <div class="knob" data-color="destructive">
+    <input class="knob-input" type="range" id="kn-danger" min="0" max="100" step="any" value="85" />
+    <label class="knob-label" for="kn-danger">Drive</label>
+    <output class="knob-value" for="kn-danger">85</output>
+  </div>
+  <div class="knob">
+    <input class="knob-input" type="range" id="kn-off" min="0" max="100" step="any" value="40" disabled />
+    <label class="knob-label" for="kn-off">Disabled</label>
+    <output class="knob-value" for="kn-off">40</output>
+  </div>
+</div>
+```
+
+```html example label="Custom scales and formats" hint="A page adds scales and formats by name. The crossfade turns on a smoothstep curve (data-scale='smooth'): fine at both ends, fast through the middle. The pan writes L20, C and R20 (data-format='pan'). Knobs already on a scale or a format draw again when it is added."
+<div class="flex flex-wrap items-start gap-6">
+  <div class="knob" data-scale="smooth" data-unit="%">
+    <input class="knob-input" type="range" id="kn-xfade" min="0" max="100" step="any" value="50" />
+    <label class="knob-label" for="kn-xfade">Crossfade</label>
+    <output class="knob-value" for="kn-xfade">50 %</output>
+  </div>
+  <div class="knob" data-format="pan" data-origin="0">
+    <input class="knob-input" type="range" id="kn-pan" min="-50" max="50" step="1" value="-20" />
+    <label class="knob-label" for="kn-pan">Pan</label>
+    <output class="knob-value" for="kn-pan">L20</output>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // smoothstep: 3p² - 2p³, and its inverse
+    df$.shadcn.knob.scale('smooth', {
+      value: (p, r) => r.min + (r.max - r.min) * (3 * p * p - 2 * p * p * p),
+      position: (v, r) => 0.5 - Math.sin(Math.asin(1 - (2 * (v - r.min)) / (r.max - r.min)) / 3),
+    });
+    df$.shadcn.knob.format('pan', (v) => (v === 0 ? 'C' : v < 0 ? 'L' + -v : 'R' + v));
+  });
+</script>
+```
+
+```html example label="A synth panel" hint="An oscillator in a Card: octave, semitones and voices on whole steps, a fine tune and a pan that fill from their centre, a level in decibels. LFO 2 modulates the detune and the pan - one source, a ring on each knob it reaches - and Envelope 1 the level: run them and the rings move together. The row keeps a ring slot free on every knob (--knob-reserve: 1), so the knobs with a ring and without one line up."
+<div class="card" style="max-inline-size: 40rem">
+  <div class="card-header">
+    <h3 class="card-title">Oscillator A</h3>
+    <p class="card-description">Wavetable - Basic Shapes</p>
+  </div>
+  <div class="card-content">
+    <div class="flex flex-wrap items-start gap-4" style="--knob-reserve: 1">
+      <div class="knob" data-size="sm" data-format="signed" data-origin="0" data-ticks>
+        <input class="knob-input" type="range" id="kn-oct" min="-4" max="4" step="1" value="0" />
+        <label class="knob-label" for="kn-oct">Octave</label>
+        <output class="knob-value" for="kn-oct">0</output>
+      </div>
+      <div class="knob" data-size="sm" data-format="signed" data-unit="st" data-origin="0">
+        <input class="knob-input" type="range" id="kn-osc-semi" min="-12" max="12" step="1" value="0" />
+        <label class="knob-label" for="kn-osc-semi">Semi</label>
+        <output class="knob-value" for="kn-osc-semi">0 st</output>
+      </div>
+      <div class="knob" data-size="sm" data-format="signed" data-unit="ct" data-decimals="0" data-origin="0">
+        <input class="knob-input" type="range" id="kn-osc-fine" min="-100" max="100" step="any" value="0" />
+        <label class="knob-label" for="kn-osc-fine">Fine</label>
+        <output class="knob-value" for="kn-osc-fine">0 ct</output>
+      </div>
+      <div class="knob" data-size="sm" data-ticks>
+        <input class="knob-input" type="range" id="kn-unison" min="1" max="16" step="1" value="4" />
+        <label class="knob-label" for="kn-unison">Unison</label>
+        <output class="knob-value" for="kn-unison">4</output>
+      </div>
+      <div class="knob" data-size="sm" data-color="chart-2" data-format="percent">
+        <input class="knob-input" type="range" id="kn-detune" min="0" max="1" step="any" value="0.25" />
+        <label class="knob-label" for="kn-detune">Detune</label>
+        <output class="knob-value" for="kn-detune">25%</output>
+        <script type="application/json" class="knob-rings">
+          [{ "id": "lfo2", "label": "LFO 2", "amount": 0.1, "bipolar": true, "color": "chart-3" }]
+        </script>
+      </div>
+      <div class="knob" data-size="sm" data-color="chart-2" data-unit="%">
+        <input class="knob-input" type="range" id="kn-blend" min="0" max="100" step="any" value="75" />
+        <label class="knob-label" for="kn-blend">Blend</label>
+        <output class="knob-value" for="kn-blend">75 %</output>
+      </div>
+      <div class="knob" data-size="sm" data-format="signed" data-origin="0">
+        <input class="knob-input" type="range" id="kn-osc-pan" min="-50" max="50" step="1" value="0" />
+        <label class="knob-label" for="kn-osc-pan">Pan</label>
+        <output class="knob-value" for="kn-osc-pan">0</output>
+        <script type="application/json" class="knob-rings">
+          [{ "id": "lfo2", "label": "LFO 2", "amount": 0.2, "bipolar": true, "color": "chart-3" }]
+        </script>
+      </div>
+      <div class="knob" data-size="sm" data-scale="decibel" data-format="signed" data-unit="dB" data-decimals="1">
+        <input class="knob-input" type="range" id="kn-level" min="-60" max="6" step="any" value="-6" />
+        <label class="knob-label" for="kn-level">Level</label>
+        <output class="knob-value" for="kn-level">-6.0 dB</output>
+        <script type="application/json" class="knob-rings">
+          [{ "id": "env1", "label": "Envelope 1", "amount": 0.25, "color": "chart-4" }]
+        </script>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button class="btn" data-variant="outline" data-size="sm" id="kn-osc-run" aria-pressed="false"
+      >Run LFO 2 and Envelope 1</button
+    >
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const knobs = ['#kn-detune', '#kn-osc-pan', '#kn-level'].map((id) => df$(id).closest('.knob').get(0));
+    const run = df$('#kn-osc-run');
+    let running = false;
+    let start = 0;
+    const frame = (now) => {
+      if (!running) return;
+      const t = (now - start) / 1000;
+      const lfo2 = Math.sin(t * 2 * Math.PI * 0.3);
+      const env1 = Math.exp(-3 * (t % 1.5));
+      for (const knob of knobs) df$.shadcn.knob.modulate(knob, { lfo2, env1 });
+      requestAnimationFrame(frame);
+    };
+    run.on('click', () => {
+      running = !running;
+      run.attr('aria-pressed', String(running));
+      if (running) {
+        start = performance.now();
+        requestAnimationFrame(frame);
+      } else for (const knob of knobs) df$.shadcn.knob.modulate(knob, null);
+    });
+  });
+</script>
+```
+
+```html example label="In a form" hint="The input is the form control: it submits its value under its name, in the knob's units, and a reset puts the authored value back. The gain snaps to half decibels (step='0.5'), the mix to hundredths."
+<form class="grid gap-3" id="kn-form">
+  <div class="flex flex-wrap items-start gap-6">
+    <div class="knob" data-scale="decibel" data-format="signed" data-unit="dB" data-decimals="1">
+      <input class="knob-input" type="range" id="kn-form-gain" name="gain" min="-60" max="6" step="0.5" value="0" />
+      <label class="knob-label" for="kn-form-gain">Gain</label>
+      <output class="knob-value" for="kn-form-gain">0.0 dB</output>
+    </div>
+    <div class="knob" data-format="percent">
+      <input class="knob-input" type="range" id="kn-form-mix" name="mix" min="0" max="1" step="0.01" value="0.5" />
+      <label class="knob-label" for="kn-form-mix">Mix</label>
+      <output class="knob-value" for="kn-form-mix">50%</output>
+    </div>
+  </div>
+  <div class="flex gap-2">
+    <button class="btn" type="submit" data-size="sm">Submit</button>
+    <button class="btn" type="reset" data-variant="outline" data-size="sm">Reset</button>
+  </div>
+  <output class="text-sm text-muted-foreground" id="kn-form-data">gain=0&amp;mix=0.5</output>
+</form>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#kn-form').on('submit', (e) => {
+      e.preventDefault();
+      df$('#kn-form-data').text(new URLSearchParams(new FormData(e.target)).toString());
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.knob</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - at rest: the pointer and the arc from the origin show the value, the readout writes it</li>
+    <li><code>adjusting</code> - being turned: a drag enters it and returns to <code>default</code> when it ends; the precision radius and the circle through the pointer show around the dial</li>
+    <li><code>disabled</code> - the input is disabled: no drag, no keys, and a form leaves it out</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes <code>\{ value \}</code>, merged into the current config - the value in the knob's units, settled on its range and step; <code>getState()</code> reports the live value, also one a drag or a key set. A drag sends the input's <code>input</code> events and <code>knob-change</code> as it goes and <code>change</code> once when it ends.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/knob-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/knob.schema.json"><code>knob.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `number` | | | The value in the knob's units, settled on its range and step; observed from `getState().config.value`. |
+| `adjusting` | `boolean` | `true`, `false` | `false` | Being turned (`setState('adjusting')`): the precision radius shows around the dial. |
+| `disabled` | `boolean` | `true`, `false` | `false` | The input is disabled (`setState('disabled')`): no drag, no keys. |
+```
+
+</StatesSection>
+
+<ApiSection component="knob" />
+
+<SourceFiles component="knob" section="css">
+  <SourceNote for="css">The dial: every arc a conic-gradient masked down to a ring, painted from the positions the runtime writes (the value, the origin, each ring's range and live value, the effective value); the face, the pointer, the precision circles, sizes and colours.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="knob" section="js">
+  <SourceNote for="js">The scales and formats (and the registries a page adds to), the value settled on the range and step, the rings, the drag whose speed is the radius over the distance, the keys, the events and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

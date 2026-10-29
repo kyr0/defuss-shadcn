@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>knob e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/number-input/number-input.css" />
+    <link rel="stylesheet" href="/dist/components/knob/knob.css" />
+  </head>
+  <!-- mirrors the doc page: a cutoff on an exponential scale with three rings (bipolar, unipolar, negative; theme,
+       CSS and unknown colours; a duplicate id), every scale (linear, exponential, logarithmic, power, decibel, a
+       stepped one from its centre with a mark per step, a waveform switch, a stepped exponential delay marking its decades, an exponential range across 0, a custom one), every format (number, si, percent,
+       time, signed, a custom one, another locale), a fine tune with its own radius and travel, the sizes, colours
+       and the flat variant, ring slots kept free (--knob-reserve), an input authored disabled, one without a step, the value typed in (the Number Input's stylesheet), and a form -->
+  <body style="padding: 2rem; display: grid; gap: 2rem; width: 900px; margin: 0">
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: start">
+      <div class="knob" id="kb-cutoff" data-size="lg" data-scale="exponential" data-format="si" data-unit="Hz" data-default="1000">
+        <input class="knob-input" type="range" id="kb-cutoff-input" name="cutoff" min="20" max="20000" step="any" value="1000" />
+        <label class="knob-label" for="kb-cutoff-input">Cutoff</label>
+        <output class="knob-value" for="kb-cutoff-input">1.00 kHz</output>
+        <script type="application/json" class="knob-rings">
+          [
+            { "id": "lfo", "label": "LFO 1", "amount": 0.15, "bipolar": true, "color": "chart-2" },
+            { "id": "env", "label": "Envelope 2", "amount": 0.3, "color": "chart-4" },
+            { "id": "macro", "label": "Macro", "amount": -0.25, "color": "#e11d48" },
+            { "id": "lfo", "label": "A second LFO 1", "amount": 0.9 },
+            { "id": "odd", "amount": 2, "color": "not a colour" }
+          ]
+        </script>
+      </div>
+      <div class="knob" id="kb-fine" data-size="lg" data-origin="0" data-format="signed" data-unit="ct" data-decimals="1" data-radius="48" data-travel="400">
+        <input class="knob-input" type="range" id="kb-fine-input" min="-100" max="100" step="any" value="0" />
+        <label class="knob-label" for="kb-fine-input">Fine</label>
+        <output class="knob-value" for="kb-fine-input">0.0 ct</output>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: start">
+      <div class="knob" id="kb-mix" data-format="percent">
+        <input class="knob-input" type="range" id="kb-mix-input" min="0" max="1" step="any" value="0.5" />
+        <label class="knob-label" for="kb-mix-input">Mix</label>
+        <output class="knob-value" for="kb-mix-input">50%</output>
+      </div>
+      <div class="knob" id="kb-feedback" data-scale="logarithmic" data-unit="%">
+        <input class="knob-input" type="range" id="kb-feedback-input" min="1" max="100" step="any" value="50" />
+        <label class="knob-label" for="kb-feedback-input">Feedback</label>
+        <output class="knob-value" for="kb-feedback-input">50 %</output>
+      </div>
+      <div class="knob" id="kb-attack" data-scale="power" data-exponent="3" data-format="time">
+        <input class="knob-input" type="range" id="kb-attack-input" min="0" max="10" step="any" value="0.25" />
+        <label class="knob-label" for="kb-attack-input">Attack</label>
+        <output class="knob-value" for="kb-attack-input">250 ms</output>
+      </div>
+      <div class="knob" id="kb-gain" data-scale="decibel" data-format="signed" data-unit="dB" data-decimals="1">
+        <input class="knob-input" type="range" id="kb-gain-input" min="-60" max="6" step="any" value="0" />
+        <label class="knob-label" for="kb-gain-input">Gain</label>
+        <output class="knob-value" for="kb-gain-input">0.0 dB</output>
+      </div>
+      <div class="knob" id="kb-semi" data-origin="0" data-format="signed" data-unit="st" data-ticks>
+        <input class="knob-input" type="range" id="kb-semi-input" min="-24" max="24" step="1" value="7" />
+        <label class="knob-label" for="kb-semi-input">Semitones</label>
+        <output class="knob-value" for="kb-semi-input">+7 st</output>
+      </div>
+      <div class="knob" id="kb-wave" data-ticks>
+        <input class="knob-input" type="range" id="kb-wave-input" min="0" max="3" step="1" value="2" />
+        <label class="knob-label" for="kb-wave-input">Waveform</label>
+        <output class="knob-value" for="kb-wave-input">2</output>
+      </div>
+      <div class="knob" id="kb-delay" data-scale="exponential" data-format="time" data-ticks="4">
+        <input class="knob-input" type="range" id="kb-delay-input" min="0.001" max="1" step="0.001" value="0.1" />
+        <label class="knob-label" for="kb-delay-input">Delay</label>
+        <output class="knob-value" for="kb-delay-input">100 ms</output>
+      </div>
+      <div class="knob" id="kb-across" data-scale="exponential">
+        <input class="knob-input" type="range" id="kb-across-input" min="-10" max="10" step="any" value="0" />
+        <label class="knob-label" for="kb-across-input">Across 0</label>
+        <output class="knob-value" for="kb-across-input">0.0</output>
+      </div>
+      <div class="knob" id="kb-xfade" data-scale="smooth" data-unit="%">
+        <input class="knob-input" type="range" id="kb-xfade-input" min="0" max="100" step="any" value="50" />
+        <label class="knob-label" for="kb-xfade-input">Crossfade</label>
+        <output class="knob-value" for="kb-xfade-input">50 %</output>
+      </div>
+      <div class="knob" id="kb-pan" data-origin="0" data-format="pan">
+        <input class="knob-input" type="range" id="kb-pan-input" min="-50" max="50" step="1" value="-20" />
+        <label class="knob-label" for="kb-pan-input">Pan</label>
+        <output class="knob-value" for="kb-pan-input">L20</output>
+      </div>
+      <div class="knob" id="kb-de" lang="de" data-decimals="2" data-unit="Hz">
+        <input class="knob-input" type="range" id="kb-de-input" min="0" max="5000" step="any" value="1234.5" />
+        <label class="knob-label" for="kb-de-input">Frequenz</label>
+        <output class="knob-value" for="kb-de-input">1.234,50 Hz</output>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: start">
+      <div class="knob" id="kb-sm" data-size="sm" data-color="chart-1">
+        <input class="knob-input" type="range" id="kb-sm-input" min="0" max="100" step="any" value="30" />
+        <label class="knob-label" for="kb-sm-input">Small</label>
+        <output class="knob-value" for="kb-sm-input">30</output>
+      </div>
+      <div class="knob" id="kb-md" data-color="chart-2">
+        <input class="knob-input" type="range" id="kb-md-input" min="0" max="100" step="any" value="50" />
+        <label class="knob-label" for="kb-md-input">Default</label>
+        <output class="knob-value" for="kb-md-input">50</output>
+      </div>
+      <div class="knob" id="kb-lg" data-size="lg" data-color="chart-3">
+        <input class="knob-input" type="range" id="kb-lg-input" min="0" max="100" step="any" value="70" />
+        <label class="knob-label" for="kb-lg-input">Large</label>
+        <output class="knob-value" for="kb-lg-input">70</output>
+      </div>
+      <div class="knob" id="kb-flat" data-variant="flat" data-color="chart-4">
+        <input class="knob-input" type="range" id="kb-flat-input" min="0" max="100" step="any" value="60" />
+        <label class="knob-label" for="kb-flat-input">Flat</label>
+        <output class="knob-value" for="kb-flat-input">60</output>
+      </div>
+      <div class="knob" id="kb-danger" data-color="destructive">
+        <input class="knob-input" type="range" id="kb-danger-input" min="0" max="100" step="any" value="85" />
+        <label class="knob-label" for="kb-danger-input">Drive</label>
+        <output class="knob-value" for="kb-danger-input">85</output>
+      </div>
+      <div class="knob" id="kb-off">
+        <input class="knob-input" type="range" id="kb-off-input" min="0" max="100" step="any" value="40" disabled />
+        <label class="knob-label" for="kb-off-input">Disabled</label>
+        <output class="knob-value" for="kb-off-input">40</output>
+      </div>
+      <div class="knob" id="kb-reserve" style="--knob-reserve: 2">
+        <input class="knob-input" type="range" id="kb-reserve-input" min="0" max="100" step="any" value="20" />
+        <label class="knob-label" for="kb-reserve-input">Reserved</label>
+        <output class="knob-value" for="kb-reserve-input">20</output>
+      </div>
+      <div class="knob" id="kb-nostep">
+        <input class="knob-input" type="range" id="kb-nostep-input" min="0" max="1" value="0.37" aria-label="No step" />
+        <output class="knob-value" for="kb-nostep-input">0.37</output>
+      </div>
+    </div>
+
+    <form id="kb-form" style="display: grid; gap: 0.75rem">
+      <div style="display: flex; gap: 1.5rem">
+        <div class="knob" id="kb-form-gain" data-scale="decibel" data-format="signed" data-unit="dB" data-decimals="1">
+          <input class="knob-input" type="range" id="kb-form-gain-input" name="gain" min="-60" max="6" step="0.5" value="0" />
+          <label class="knob-label" for="kb-form-gain-input">Gain</label>
+          <output class="knob-value" for="kb-form-gain-input">0.0 dB</output>
+        </div>
+        <div class="knob" id="kb-form-mix" data-format="percent">
+          <input class="knob-input" type="range" id="kb-form-mix-input" name="mix" min="0" max="1" step="0.01" value="0.5" />
+          <label class="knob-label" for="kb-form-mix-input">Mix</label>
+          <output class="knob-value" for="kb-form-mix-input">50%</output>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem">
+        <button class="btn" type="submit" data-size="sm" id="kb-form-submit">Submit</button>
+        <button class="btn" type="reset" data-variant="outline" data-size="sm" id="kb-form-reset">Reset</button>
+      </div>
+    </form>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/knob/knob.js"></script>
+  </body>
+</html>
