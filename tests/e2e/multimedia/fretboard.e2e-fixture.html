@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>fretboard e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/select/select.css" />
+    <link rel="stylesheet" href="/dist/components/slider/slider.css" />
+    <link rel="stylesheet" href="/dist/components/fretboard/fretboard.css" />
+    <link rel="stylesheet" href="/dist/components/chord-chart/chord-chart.css" />
+    <link rel="stylesheet" href="/dist/components/fretboard-neck/fretboard-neck.css" />
+  </head>
+  <!-- mirrors the doc page: a song of three scores (a tempo from another, another key replacing the chords and the
+       melody) with chords, a melody, strums, a chord column, picked strings, a followed lyrics lane (a hold, markup
+       as text) and a lyrics lane of its own items, every header control, readout and select, a position slider, a
+       neck and a chord chart outside it, a 3/4 score of the same song; a long fast score in a bounded sheet (scrolling), a waltz (three-four) in string colours for the right hand with its chord charts (across and upright) and an upright neck, a
+       narrow score the page scrolls to, one that never scrolls (data-follow="none") and a song without scores -->
+  <body style="padding: 2rem; display: grid; gap: 1.5rem; width: 760px; margin: 0">
+    <div class="fretboard" id="fb-main" role="group" aria-label="Fixture song">
+      <div class="fretboard-header">
+        <span class="fretboard-title">Fixture song</span>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="toggle" aria-pressed="false" aria-label="Play" id="fb-main-toggle"><i data-lucide="play"></i><i data-lucide="pause"></i></button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="stop" aria-label="Stop" id="fb-main-stop"><i data-lucide="square"></i></button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="loop" aria-pressed="false" aria-label="Loop" id="fb-main-loop"><i data-lucide="repeat"></i></button>
+        <span class="fretboard-readout"><output id="fb-main-measure" data-fretboard-output="measure">1</output> / <output id="fb-main-measures" data-fretboard-output="measures">4</output></span>
+        <output class="fretboard-readout" id="fb-main-beat" data-fretboard-output="beat">1</output>
+        <output class="fretboard-readout" id="fb-main-time" data-fretboard-output="time">0:00</output>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="zoom-out" aria-label="Zoom out" id="fb-main-zoom-out"><i data-lucide="zoom-out"></i></button>
+        <output class="fretboard-readout" id="fb-main-zoom" data-fretboard-output="zoom">100%</output>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="zoom-in" aria-label="Zoom in" id="fb-main-zoom-in"><i data-lucide="zoom-in"></i></button>
+        <button class="btn" data-variant="ghost" data-size="icon-sm" data-fretboard-action="zoom-reset" aria-label="Actual size" id="fb-main-zoom-reset"><i data-lucide="scan"></i></button>
+        <select class="select" data-size="sm" data-fretboard-control="key" aria-label="Key" id="fb-main-key"></select>
+        <select class="select" data-size="sm" data-fretboard-control="signature" aria-label="Time signature" id="fb-main-signature"></select>
+        <select class="select" data-size="sm" data-fretboard-control="score" aria-label="Score" id="fb-main-score"></select>
+      </div>
+      <script type="application/json" class="fretboard-source">
+        {
+          "version": 1,
+          "title": "Fixture song",
+          "chords": {
+            "C": "0003",
+            "F": "2010",
+            "G": "0232"
+          },
+          "scores": [
+            {
+              "id": "c-120",
+              "label": "C major, fast",
+              "key": "C",
+              "bpm": 120,
+              "tracks": [
+                {
+                  "id": "chords",
+                  "kind": "chords",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "name": "C"
+                    },
+                    {
+                      "measure": 2,
+                      "name": "F"
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 3,
+                      "name": "C"
+                    },
+                    {
+                      "measure": 3,
+                      "name": "G"
+                    },
+                    {
+                      "measure": 4,
+                      "name": "C"
+                    }
+                  ]
+                },
+                {
+                  "id": "melody",
+                  "kind": "tab",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "beat": 1,
+                      "string": 3,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 2,
+                      "string": 3,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 3,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 4,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 2,
+                      "string": 1,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 3,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 3,
+                      "beat": 1,
+                      "strum": "down"
+                    },
+                    {
+                      "measure": 3,
+                      "beat": 2,
+                      "strum": "up"
+                    },
+                    {
+                      "measure": 4,
+                      "beat": 1,
+                      "chord": "C"
+                    },
+                    {
+                      "measure": 4,
+                      "beat": 3,
+                      "notes": [
+                        {
+                          "string": 1,
+                          "fret": 3
+                        },
+                        {
+                          "string": 4
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "en",
+                  "kind": "lyrics",
+                  "label": "EN",
+                  "lang": "en",
+                  "follow": "melody",
+                  "text": "Twin-kle, twin-kle, lit-tle star, oh _ my <b>!</b>"
+                },
+                {
+                  "id": "de",
+                  "kind": "lyrics",
+                  "label": "DE",
+                  "lang": "de",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "text": "Fun-"
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 2,
+                      "text": "keln"
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 1,
+                      "beats": 1,
+                      "text": "Stern"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "c-34",
+              "key": "C",
+              "bpm": 120,
+              "time": [
+                3,
+                4
+              ],
+              "from": "c-120",
+              "tracks": [
+                {
+                  "id": "chords",
+                  "kind": "chords",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "name": "C"
+                    },
+                    {
+                      "measure": 2,
+                      "name": "F"
+                    },
+                    {
+                      "measure": 3,
+                      "name": "G"
+                    },
+                    {
+                      "measure": 4,
+                      "name": "C"
+                    }
+                  ]
+                },
+                {
+                  "id": "melody",
+                  "kind": "tab",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "beat": 1,
+                      "string": 3,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 3,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 2,
+                      "string": 1,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 3,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 3,
+                      "beat": 1,
+                      "strum": "down"
+                    },
+                    {
+                      "measure": 3,
+                      "beat": 2.5,
+                      "strum": "up"
+                    },
+                    {
+                      "measure": 4,
+                      "beat": 1,
+                      "chord": "C"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "g-120",
+              "key": "G",
+              "bpm": 120,
+              "from": "c-120",
+              "tracks": [
+                {
+                  "id": "chords",
+                  "kind": "chords",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "name": "G"
+                    },
+                    {
+                      "measure": 3,
+                      "name": "D"
+                    }
+                  ]
+                },
+                {
+                  "id": "melody",
+                  "kind": "tab",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "beat": 1,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 2,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 3,
+                      "string": 1,
+                      "fret": 5
+                    },
+                    {
+                      "measure": 1,
+                      "beat": 4,
+                      "string": 1,
+                      "fret": 5
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 7
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 2,
+                      "string": 1,
+                      "fret": 7
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 3,
+                      "string": 1,
+                      "fret": 5
+                    },
+                    {
+                      "measure": 3,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 3,
+                      "beat": 2,
+                      "string": 1,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 4,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 2
+                    },
+                    {
+                      "measure": 4,
+                      "beat": 3,
+                      "string": 1,
+                      "fret": 0
+                    }
+                  ]
+                }
+              ],
+              "chords": {
+                "D": "2220"
+              }
+            }
+          ]
+        }
+      </script>
+    </div>
+    <div data-fretboard-for="fb-main" id="fb-main-outside">
+      <button class="btn" data-variant="outline" data-size="sm" data-fretboard-action="play" id="fb-main-play">Play</button>
+      <button class="btn" data-variant="outline" data-size="sm" data-fretboard-action="pause" id="fb-main-pause">Pause</button>
+      <button class="btn" data-variant="outline" data-size="sm" data-fretboard-action="toggle" aria-pressed="false" id="fb-main-toggle-out">Toggle</button>
+      <output id="fb-main-duration" data-fretboard-output="duration"></output>
+      <output id="fb-main-bpm" data-fretboard-output="bpm"></output>
+      <output id="fb-main-sigout" data-fretboard-output="signature"></output>
+      <output id="fb-main-keyout" data-fretboard-output="key"></output>
+      <output id="fb-main-scoreout" data-fretboard-output="score"></output>
+      <output id="fb-main-chord" data-fretboard-output="chord"></output>
+      <output id="fb-main-loopout" data-fretboard-output="loop"></output>
+      <input class="slider" type="range" min="0" value="0" data-fretboard-control="position" aria-label="Position" id="fb-main-position" />
+    </div>
+    <div class="fretboard-neck" data-fretboard-for="fb-main" id="fb-main-neck"></div>
+    <div data-fretboard-for="fb-main" data-fretboard-outlet="chords" id="fb-main-chords"></div>
+
+    <div class="fretboard" id="fb-long" role="group" aria-label="Sixteen measures" style="--fretboard-height: 10rem">
+      <script type="application/json" class="fretboard-source">
+        {
+          "version": 1,
+          "title": "Sixteen measures",
+          "scores": [
+            {
+              "id": "run",
+              "key": "C",
+              "bpm": 400,
+              "tracks": [
+                {
+                  "id": "notes",
+                  "kind": "tab",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 1,
+                      "string": 2,
+                      "fret": 1
+                    },
+                    {
+                      "measure": 3,
+                      "beat": 1,
+                      "string": 3,
+                      "fret": 2
+                    },
+                    {
+                      "measure": 4,
+                      "beat": 1,
+                      "string": 4,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 5,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 4
+                    },
+                    {
+                      "measure": 6,
+                      "beat": 1,
+                      "string": 2,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 7,
+                      "beat": 1,
+                      "string": 3,
+                      "fret": 1
+                    },
+                    {
+                      "measure": 8,
+                      "beat": 1,
+                      "string": 4,
+                      "fret": 2
+                    },
+                    {
+                      "measure": 9,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 10,
+                      "beat": 1,
+                      "string": 2,
+                      "fret": 4
+                    },
+                    {
+                      "measure": 11,
+                      "beat": 1,
+                      "string": 3,
+                      "fret": 0
+                    },
+                    {
+                      "measure": 12,
+                      "beat": 1,
+                      "string": 4,
+                      "fret": 1
+                    },
+                    {
+                      "measure": 13,
+                      "beat": 1,
+                      "string": 1,
+                      "fret": 2
+                    },
+                    {
+                      "measure": 14,
+                      "beat": 1,
+                      "string": 2,
+                      "fret": 3
+                    },
+                    {
+                      "measure": 15,
+                      "beat": 1,
+                      "string": 3,
+                      "fret": 4
+                    },
+                    {
+                      "measure": 16,
+                      "beat": 1,
+                      "string": 4,
+                      "fret": 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      </script>
+    </div>
+
+    <div class="fretboard" id="fb-waltz" role="group" aria-label="Waltz" data-colors="strings" data-hand="right" data-zoom="1.25">
+      <script type="application/json" class="fretboard-source">
+        {
+          "version": 1,
+          "scores": [
+            {
+              "id": "waltz",
+              "key": "C",
+              "bpm": 90,
+              "time": [
+                3,
+                4
+              ],
+              "tracks": [
+                {
+                  "id": "chords",
+                  "kind": "chords",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "name": "C"
+                    }
+                  ]
+                },
+                {
+                  "id": "strums",
+                  "kind": "tab",
+                  "items": [
+                    {
+                      "measure": 1,
+                      "beat": 1,
+                      "strum": "down"
+                    },
+                    {
+                      "measure": 2,
+                      "beat": 3,
+                      "strum": "down"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "chords": {
+            "C": "0003"
+          }
+        }
+      </script>
+    </div>
+    <div data-fretboard-for="fb-waltz" data-fretboard-outlet="chords" id="fb-waltz-chords"></div>
+    <div data-fretboard-for="fb-waltz" data-fretboard-outlet="chords" data-orientation="vertical" id="fb-waltz-chords-upright"></div>
+    <div class="fretboard-neck" data-fretboard-for="fb-waltz" data-orientation="vertical" id="fb-waltz-neck"></div>
+
+    <div class="fretboard" id="fb-empty" role="group" aria-label="Not a song">
+      <script type="application/json" class="fretboard-source">
+        { "version": 1, "scores": "none"
+      </script>
+    </div>
+
+    <div style="width: 300px; display: grid; gap: 1.5rem">
+      <div class="fretboard" id="fb-page" role="group" aria-label="Eight measures">
+        <script type="application/json" class="fretboard-source">
+          {
+            "version": 1,
+            "title": "Eight measures",
+            "scores": [
+              {
+                "id": "run",
+                "key": "C",
+                "bpm": 300,
+                "tracks": [
+                  {
+                    "id": "notes",
+                    "kind": "tab",
+                    "items": [
+                      {
+                        "measure": 1,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 0
+                      },
+                      {
+                        "measure": 2,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 1
+                      },
+                      {
+                        "measure": 3,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 2
+                      },
+                      {
+                        "measure": 4,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 3
+                      },
+                      {
+                        "measure": 5,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 4
+                      },
+                      {
+                        "measure": 6,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 5
+                      },
+                      {
+                        "measure": 7,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 6
+                      },
+                      {
+                        "measure": 8,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 7
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        </script>
+      </div>
+      <div class="fretboard" id="fb-still" role="group" aria-label="Eight measures, still" data-follow="none">
+        <script type="application/json" class="fretboard-source">
+          {
+            "version": 1,
+            "title": "Eight measures",
+            "scores": [
+              {
+                "id": "run",
+                "key": "C",
+                "bpm": 300,
+                "tracks": [
+                  {
+                    "id": "notes",
+                    "kind": "tab",
+                    "items": [
+                      {
+                        "measure": 1,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 0
+                      },
+                      {
+                        "measure": 2,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 1
+                      },
+                      {
+                        "measure": 3,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 2
+                      },
+                      {
+                        "measure": 4,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 3
+                      },
+                      {
+                        "measure": 5,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 4
+                      },
+                      {
+                        "measure": 6,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 5
+                      },
+                      {
+                        "measure": 7,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 6
+                      },
+                      {
+                        "measure": 8,
+                        "beat": 1,
+                        "string": 1,
+                        "fret": 7
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        </script>
+      </div>
+    </div>
+
+    <div class="fretboard" id="fb-guitar" role="group" aria-label="Guitar with a capo">
+      <div class="fretboard-header">
+        <span class="fretboard-title">Guitar, capo 3</span>
+        <output class="fretboard-readout" id="fb-guitar-capo" data-fretboard-output="capo"></output>
+        <output class="fretboard-readout" id="fb-guitar-scoreout" data-fretboard-output="score"></output>
+        <select class="select" data-size="sm" data-fretboard-control="score" aria-label="Score" id="fb-guitar-score"></select>
+      </div>
+      <script type="application/json" class="fretboard-source">
+        {
+          "version": 1,
+          "title": "Guitar with a capo",
+          "tuning": ["E", "A", "D", "G", "B", "e"],
+          "chords": {
+            "F": { "frets": "133211", "barre": 1 },
+            "Em": "022000",
+            "C": { "frets": "x32010", "barre": 1 }
+          },
+          "scores": [
+            {
+              "id": "capo",
+              "key": "Ab",
+              "capo": 3,
+              "tracks": [
+                { "id": "chords", "kind": "chords", "items": [{ "measure": 1, "name": "F" }, { "measure": 2, "name": "Em" }, { "measure": 2, "beat": 3, "name": "C" }] },
+                {
+                  "id": "picking",
+                  "kind": "tab",
+                  "items": [
+                    { "measure": 1, "beat": 1, "string": 6 },
+                    { "measure": 1, "beat": 2, "string": 3 },
+                    { "measure": 1, "beat": 3, "string": 2 },
+                    { "measure": 1, "beat": 4, "string": 1 },
+                    { "measure": 2, "beat": 1, "string": 6 },
+                    { "measure": 2, "beat": 2, "string": 5 },
+                    { "measure": 2, "beat": 3, "string": 4 }
+                  ]
+                }
+              ]
+            },
+            { "id": "open", "key": "F", "capo": 0, "from": "capo" }
+          ]
+        }
+      </script>
+    </div>
+    <div class="fretboard-neck" data-fretboard-for="fb-guitar" id="fb-guitar-neck"></div>
+    <div class="fretboard-neck" data-fretboard-for="fb-guitar" data-orientation="vertical" id="fb-guitar-upright"></div>
+    <div data-fretboard-for="fb-guitar" data-fretboard-outlet="chords" id="fb-guitar-chords"></div>
+    <div data-fretboard-for="fb-guitar" data-fretboard-outlet="chords" data-orientation="vertical" id="fb-guitar-chords-upright"></div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/chord-chart/chord-chart.js"></script>
+    <script type="module" src="/dist/components/fretboard-neck/fretboard-neck.js"></script>
+    <script type="module" src="/dist/components/fretboard/fretboard.js"></script>
+  </body>
+</html>
