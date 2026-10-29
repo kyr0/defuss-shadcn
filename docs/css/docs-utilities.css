@@ -91,6 +91,9 @@
 .card-title.card-title-xs { font-size: 0.875rem; }
 .card-title.card-title-sm { font-size: 0.9375rem; }
 .card-description.card-desc-sm { font-size: 0.8125rem; }
+/* A card's "more" link (the index pillar cards): a link button, underlined without a hover
+   so it reads as a link at rest. */
+.btn.card-link { padding: 0; height: auto; font-size: 0.8125rem; text-decoration: underline; }
 
 /* Left-aligned Example preview (typography specimens). */
 .preview.preview-left { text-align: left; padding: 2.5rem; }

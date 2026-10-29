@@ -1,7 +1,7 @@
 // dist/components/invoice/invoice.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.10") {
+if (!__df$shared || __df$shared.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -265,5 +265,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=622B4675EF8E960A64756E2164756E21
+//# debugId=DD30574F40A0E96364756E2164756E21
 //# sourceMappingURL=documents.js.map

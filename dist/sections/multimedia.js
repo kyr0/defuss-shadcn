@@ -1,7 +1,7 @@
 // dist/components/video/video.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.10") {
+if (!__df$shared || __df$shared.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, bindMedia, mediaApply, mediaMarkup, mediaRead, mediaTracks } = __df$shared;
@@ -108,7 +108,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // dist/components/audio/audio.js
 var __df$core2 = globalThis.df$;
 var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
-if (!__df$shared2 || __df$shared2.abi !== "0.9.10") {
+if (!__df$shared2 || __df$shared2.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, bindMedia: bindMedia2, mediaApply: mediaApply2, mediaMarkup: mediaMarkup2, mediaRead: mediaRead2, mediaTracks: mediaTracks2 } = __df$shared2;
@@ -202,7 +202,7 @@ new MutationObserver(init2).observe(document, { childList: true, subtree: true }
 // dist/components/media-timeline/media-timeline.js
 var __df$core3 = globalThis.df$;
 var __df$shared3 = __df$core3 && __df$core3.shadcn && __df$core3.shadcn.shared;
-if (!__df$shared3 || __df$shared3.abi !== "0.9.10") {
+if (!__df$shared3 || __df$shared3.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, componentState: componentState3, bindComponent: bindComponent3, bindGlobalKeys, mediaOf, mediaTextTracks, mediaTime, textLocale } = __df$shared3;
@@ -1056,7 +1056,7 @@ new MutationObserver(init3).observe(document, { childList: true, subtree: true }
 // dist/components/fretboard/fretboard.js
 var __df$core4 = globalThis.df$;
 var __df$shared4 = __df$core4 && __df$core4.shadcn && __df$core4.shadcn.shared;
-if (!__df$shared4 || __df$shared4.abi !== "0.9.10") {
+if (!__df$shared4 || __df$shared4.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals4, defussQuery: defussQuery4, componentState: componentState4, bindComponent: bindComponent4, bindGlobalKeys: bindGlobalKeys2, mediaTime: mediaTime2 } = __df$shared4;
@@ -2272,7 +2272,7 @@ new MutationObserver(init4).observe(document, { childList: true, subtree: true }
 // dist/components/fretboard-neck/fretboard-neck.js
 var __df$core5 = globalThis.df$;
 var __df$shared5 = __df$core5 && __df$core5.shadcn && __df$core5.shadcn.shared;
-if (!__df$shared5 || __df$shared5.abi !== "0.9.10") {
+if (!__df$shared5 || __df$shared5.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals5, defussQuery: defussQuery5, componentState: componentState5, bindComponent: bindComponent5 } = __df$shared5;
@@ -2505,7 +2505,7 @@ new MutationObserver(init5).observe(document, { childList: true, subtree: true }
 // dist/components/chord-chart/chord-chart.js
 var __df$core6 = globalThis.df$;
 var __df$shared6 = __df$core6 && __df$core6.shadcn && __df$core6.shadcn.shared;
-if (!__df$shared6 || __df$shared6.abi !== "0.9.10") {
+if (!__df$shared6 || __df$shared6.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals6, defussQuery: defussQuery6, componentState: componentState6, bindComponent: bindComponent6 } = __df$shared6;
@@ -2680,7 +2680,7 @@ new MutationObserver(init6).observe(document, { childList: true, subtree: true }
 // dist/components/knob/knob.js
 var __df$core7 = globalThis.df$;
 var __df$shared7 = __df$core7 && __df$core7.shadcn && __df$core7.shadcn.shared;
-if (!__df$shared7 || __df$shared7.abi !== "0.9.10") {
+if (!__df$shared7 || __df$shared7.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals7, defussQuery: defussQuery7, componentState: componentState7, bindComponent: bindComponent7, textLocale: textLocale2 } = __df$shared7;
@@ -3324,7 +3324,7 @@ new MutationObserver(init7).observe(document, { childList: true, subtree: true }
 // dist/components/envelope/envelope.js
 var __df$core8 = globalThis.df$;
 var __df$shared8 = __df$core8 && __df$core8.shadcn && __df$core8.shadcn.shared;
-if (!__df$shared8 || __df$shared8.abi !== "0.9.10") {
+if (!__df$shared8 || __df$shared8.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals8, defussQuery: defussQuery8, componentState: componentState8, bindComponent: bindComponent8, textLocale: textLocale3 } = __df$shared8;
@@ -4921,7 +4921,7 @@ new MutationObserver(init8).observe(document, { childList: true, subtree: true }
 // dist/components/tacho/tacho.js
 var __df$core9 = globalThis.df$;
 var __df$shared9 = __df$core9 && __df$core9.shadcn && __df$core9.shadcn.shared;
-if (!__df$shared9 || __df$shared9.abi !== "0.9.10") {
+if (!__df$shared9 || __df$shared9.abi !== "0.9.11") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals9, defussQuery: defussQuery9, componentState: componentState9, bindComponent: bindComponent9, textLocale: textLocale4 } = __df$shared9;
@@ -5511,5 +5511,5 @@ df$9.tacho = {
 init9();
 new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
-//# debugId=97B2D74D0169143964756E2164756E21
+//# debugId=FCB517E915BEB34564756E2164756E21
 //# sourceMappingURL=multimedia.js.map

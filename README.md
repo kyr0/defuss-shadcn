@@ -389,7 +389,7 @@ If you use defuss-shadcn in research or want to reference it, cite it as:
   affiliation  = {Independent Researcher},
   title        = {defuss-shadcn: A Themeable, Skill-Described UI Component System in Semantic HTML, CSS and Vanilla JavaScript},
   year         = {2026},
-  version      = {0.9.10},
+  version      = {0.9.11},
   howpublished = {\url{https://www.npmjs.com/package/defuss-shadcn}},
   note         = {npm package, MIT License}
 }

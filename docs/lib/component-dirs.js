@@ -45,4 +45,6 @@ export function componentDir(componentsRoot, name) {
         throw new Error(`no component "${name}" under ${componentsRoot}/<section>/`);
     return hit.dir;
 }
+/** A component's parts file (its individual examples) - named in a module of its own, free of node:fs. */
+export { isPartsFile, partsFileName } from './parts-file.ts';
 //# sourceMappingURL=component-dirs.js.map

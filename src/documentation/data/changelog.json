@@ -21,7 +21,8 @@
         "test(gate): gate only what a change can affect",
         "docs(index): Application Scaffolds card, a link on every pillar card, VAE named; deck slide 17 says non-AI-SLOP",
         "fix(figures): read a figure whose closing tag breaks before its &gt; - 10 deck figures were neither written nor gated"
-      ]
+      ],
+      "hash": "39259e61"
     },
     {
       "version": "v0.9.10",
