@@ -1,0 +1,799 @@
+// -- Tacho -------------------------------------------------------
+// A needle on a scale, like a tachometer: a native <meter> is the value (its min, max, low, high and optimum - the
+// accessible meter, and the plain bar without scripting), the runtime draws the dial over it - the arc, the ticks and
+// their labels, the zones the meter's low / high / optimum define, a needle on a pivot that moves like a real one (a
+// damped spring: it overshoots, settles, and bounces off its end stops) - and the readouts above and below it. A guitar
+// tuner (the note above, the frequency below, the cents left and right of the middle) is a tacho fed by tune() or by
+// listen() on an audio node; a pan position, a rev counter or a VU meter is the same dial with another scale.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent, textLocale } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+const tachoStates = ['default', 'idle'];
+
+/** The config every state takes. */
+export interface TachoConfig {
+  /** the meter's value, inside its min and max; getState() reports the live one */
+  value?: number;
+  /** the big text above the dial (a tuner's note) */
+  label?: string;
+  /** the readout under the pivot; null shows the value in its format (data-format) */
+  text?: string | null;
+  /** the small text under the readout */
+  caption?: string;
+}
+
+// VERIFIED: (verify's API docs gate) the states below are exactly the declared ones, each
+// described, and every config field typed, described and named in the code.
+/** setState() configs per state. */
+export interface TachoStateConfigs {
+  /** Showing the value: the needle on it, the readouts written. */
+  default: TachoConfig;
+  /** No signal (data-idle): the needle goes back to its rest (data-rest) and the readouts dim - a tuner that hears nothing. */
+  idle: TachoConfig;
+}
+
+/** What a format gets besides the value. */
+export interface TachoFormatContext {
+  /** the unit (data-unit), "" without one */
+  unit: string;
+  /** the fraction digits asked for (data-decimals - the readout's; a label on the scale gets null), null for the format's own */
+  decimals: number | null;
+  /** the locale numbers are written in */
+  locale: string;
+  /** the meter's min */
+  min: number;
+  /** the meter's max */
+  max: number;
+  /** true for a label on the scale, false for the readout */
+  tick: boolean;
+}
+
+/** What tacho-change carries. */
+export interface TachoChangeDetail {
+  /** the value */
+  value: number;
+  /** the zone it is in - optimum, suboptimum or even-less-good (the meter's own regions); null without low and high */
+  zone: string | null;
+  /** the big text above the dial */
+  label: string;
+  /** the readout under the pivot */
+  text: string;
+  /** the small text under it */
+  caption: string;
+}
+
+/** What tune() and listen() take. */
+export interface TachoTuneOptions {
+  /** the pitch of A4 in Hz; default 440 */
+  a4?: number;
+  /** tune to the nearest of these notes ("E2", "A2", "D3", "G3", "B3", "E4") instead of the nearest semitone */
+  strings?: string[];
+  /** write the black keys as sharps (default) or flats */
+  notation?: 'sharp' | 'flat';
+}
+
+/** A note and how far a frequency is from it. */
+export interface TachoPitch {
+  /** the note's name: C, C♯ ... B (or with flats) */
+  note: string;
+  /** its octave: A4 is 440 Hz */
+  octave: number;
+  /** how far the frequency is from it, in cents (100 to a semitone): below 0 flat, above 0 sharp */
+  cents: number;
+  /** the note's own frequency in Hz */
+  target: number;
+}
+
+/** A pitch detect() found. */
+export interface TachoDetection {
+  /** the frequency in Hz */
+  frequency: number;
+  /** how periodic the signal is, 0 to 1 - above 0.9 it is a clear tone */
+  clarity: number;
+}
+
+/** per-element runtime (state lives on the element) */
+type Runtime = {
+  meter: HTMLMeterElement;
+  dial: SVGSVGElement;
+  needle: SVGGElement;
+  status: string;
+  /** the readout's own text, null: the value in its format */
+  text: string | null;
+  /** the needle: where it is and how fast it moves (fractions of the scale), where it goes */
+  p: number;
+  v: number;
+  target: number;
+  frame: number;
+  last: number;
+  waiting: (() => void)[];
+  listen: { node: AnalyserNode; source: AudioNode; frame: number; quiet: number; options: TachoTuneOptions } | null;
+};
+
+const NAMES = {
+  sharp: ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'],
+  flat: ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'],
+};
+/** the needle's springs: stiffness and damping per data-needle */
+const NEEDLES: Record<string, [number, number]> = { spring: [220, 18], smooth: [220, 2 * Math.sqrt(220)] };
+/** the end stops, a little past the scale's ends; a needle that hits one bounces back at this share of its speed */
+const STOP = 0.025;
+const BOUNCE = 0.35;
+/** the dial's geometry in user units: the arc's radius, its ticks, the labels outside it */
+const R = 100;
+const MAJOR = 12;
+const MINOR = 6;
+const LABEL = 13;
+
+const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
+const num = (v: unknown, fallback: number): number => {
+  const n = typeof v === 'number' ? v : v === null || v === undefined || v === '' ? NaN : Number(v);
+  return Number.isFinite(n) ? n : fallback;
+};
+const esc = (s: string): string =>
+  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] ?? c);
+const r2 = (v: number): string => String(Math.round(v * 100) / 100);
+const runtimeOf = (el: HTMLElement): Runtime => el._tacho;
+const meterOf = (el: Element): HTMLMeterElement | undefined =>
+  dfDollar(el).children<HTMLMeterElement>('meter.tacho-meter').get(0) ?? undefined;
+
+// -- the scale -----------------------------------------------------
+
+/** the meter's numbers, as the HTML spec clamps them */
+function rangeOf(meter: Element) {
+  const min = num(meter.getAttribute('min'), 0);
+  const max = Math.max(min, num(meter.getAttribute('max'), 1));
+  const low = clamp(num(meter.getAttribute('low'), min), min, max);
+  const high = clamp(num(meter.getAttribute('high'), max), low, max);
+  const optimum = clamp(num(meter.getAttribute('optimum'), (min + max) / 2), min, max);
+  const value = clamp(num(meter.getAttribute('value'), 0), min, max);
+  const zoned = meter.hasAttribute('low') || meter.hasAttribute('high');
+  return { min, max, low, high, optimum, value, zoned };
+}
+type Range = ReturnType<typeof rangeOf>;
+/** the meter's three regions (min - low - high - max), each optimum, suboptimum or even-less-good (the HTML meter's own) */
+function regionsOf(r: Range): { from: number; to: number; zone: string }[] {
+  const at = r.optimum < r.low ? 0 : r.optimum > r.high ? 2 : 1;
+  const zone = (i: number) => (i === at ? 'optimum' : Math.abs(i - at) === 1 ? 'suboptimum' : 'even-less-good');
+  return [
+    { from: r.min, to: r.low, zone: zone(0) },
+    { from: r.low, to: r.high, zone: zone(1) },
+    { from: r.high, to: r.max, zone: zone(2) },
+  ];
+}
+/** the zone of a value - null for a meter without low and high */
+function zoneOf(r: Range, v: number): string | null {
+  if (!r.zoned) return null;
+  const regions = regionsOf(r);
+  return (v < r.low ? regions[0] : v > r.high ? regions[2] : regions[1]).zone;
+}
+const sweepOf = (el: Element): number => clamp(num(el.getAttribute('data-sweep'), 120), 30, 300);
+const fractionOf = (r: Range, v: number): number =>
+  r.max > r.min ? (clamp(v, r.min, r.max) - r.min) / (r.max - r.min) : 0.5;
+/** where the needle rests without a signal: data-rest, else the optimum of a zoned meter, else the middle */
+const restOf = (el: Element, r: Range): number =>
+  clamp(num(el.getAttribute('data-rest'), r.zoned ? r.optimum : (r.min + r.max) / 2), r.min, r.max);
+/** a round step for about ten divisions of a span */
+function niceStep(span: number): number {
+  const raw = span / 10;
+  const p = 10 ** Math.floor(Math.log10(raw));
+  return ([1, 2, 2.5, 5, 10].map((m) => m * p).find((s) => s >= raw) ?? raw) || 1;
+}
+
+// -- formats -------------------------------------------------------
+
+const autoDecimals = (c: TachoFormatContext): number => {
+  const span = Math.abs(c.max - c.min);
+  return Number.isInteger(c.min) && Number.isInteger(c.max) && span >= 10 ? 0 : span >= 1 ? 1 : 2;
+};
+/** the fraction digits: data-decimals, else as many as a label on the scale needs (up to 3), else the range's */
+const digitsOf = (c: TachoFormatContext): [number, number] =>
+  c.decimals !== null ? [c.decimals, c.decimals] : c.tick ? [0, 3] : [autoDecimals(c), autoDecimals(c)];
+const fixed = (locale: string, [lo, hi]: [number, number], sign = false) =>
+  new Intl.NumberFormat(locale, {
+    minimumFractionDigits: lo,
+    maximumFractionDigits: hi,
+    signDisplay: sign ? 'exceptZero' : 'auto',
+  });
+const withUnit = (text: string, c: TachoFormatContext): string => (c.unit && !c.tick ? `${text} ${c.unit}` : text);
+/** the formats by name - a page adds its own with df$.shadcn.tacho.format() */
+const FORMATS: Record<string, (value: number, context: TachoFormatContext) => string> = {
+  number: (v, c) => withUnit(fixed(c.locale, digitsOf(c)).format(v), c),
+  // always with its sign: +12 ct, -3.0 dB
+  signed: (v, c) => withUnit(fixed(c.locale, digitsOf(c), true).format(v), c),
+  // a pan position: L20, C, R15
+  pan: (v, c) => {
+    const n = fixed(c.locale, c.decimals === null ? [0, c.tick ? 3 : 0] : [c.decimals, c.decimals]).format(Math.abs(v));
+    return Number(n.replace(/\D/g, '')) === 0 ? 'C' : `${v < 0 ? 'L' : 'R'}${n}`;
+  },
+};
+function formatted(el: Element, meter: Element, v: number, tick: boolean): string {
+  const r = rangeOf(meter);
+  const d = el.getAttribute('data-decimals');
+  const context: TachoFormatContext = {
+    unit: el.getAttribute('data-unit') ?? '',
+    decimals:
+      tick || d === null || d === '' || !Number.isFinite(Number(d))
+        ? null
+        : Math.max(0, Math.min(6, Math.round(Number(d)))),
+    locale: textLocale(el),
+    min: r.min,
+    max: r.max,
+    tick,
+  };
+  const format = FORMATS[el.getAttribute('data-format') ?? 'number'] ?? FORMATS.number;
+  try {
+    return String(format(v, context));
+  } catch {
+    return FORMATS.number(v, context);
+  }
+}
+
+// -- the dial ------------------------------------------------------
+
+const pointAt = (deg: number, radius: number): [number, number] => {
+  const a = (deg * Math.PI) / 180;
+  return [radius * Math.sin(a), -radius * Math.cos(a)];
+};
+function arc(from: number, to: number, radius: number): string {
+  if (to - from < 1e-6) return '';
+  const [x1, y1] = pointAt(from, radius);
+  const [x2, y2] = pointAt(to, radius);
+  return `M${r2(x1)} ${r2(y1)}A${radius} ${radius} 0 ${to - from > 180 ? 1 : 0} 1 ${r2(x2)} ${r2(y2)}`;
+}
+/** the values of the ticks: the majors (data-ticks: the step) and data-minor ticks between two of them */
+function ticksOf(el: Element, r: Range): { value: number; major: boolean }[] {
+  const span = r.max - r.min;
+  if (span <= 0) return [];
+  const major = num(el.getAttribute('data-ticks'), niceStep(span));
+  if (major <= 0 || span / major > 100) return [];
+  const minors = clamp(Math.round(num(el.getAttribute('data-minor'), 1)), 0, 9);
+  const step = major / (minors + 1);
+  const out: { value: number; major: boolean }[] = [];
+  const first = Math.ceil((r.min - 1e-9) / step);
+  for (let i = first; i * step <= r.max + 1e-9; i++) {
+    const value = Number((i * step).toPrecision(12));
+    const k = value / major;
+    out.push({ value, major: Math.abs(k - Math.round(k)) < 1e-6 });
+  }
+  return out;
+}
+/** which majors carry a label: data-labels="none", "ends", a step ("25"), else every major */
+function labelled(el: Element, r: Range, value: number): boolean {
+  const mode = el.getAttribute('data-labels');
+  if (mode === 'none') return false;
+  if (mode === 'ends') return Math.abs(value - r.min) < 1e-9 || Math.abs(value - r.max) < 1e-9;
+  const step = Number(mode);
+  if (mode && Number.isFinite(step) && step > 0) {
+    const k = value / step;
+    return Math.abs(k - Math.round(k)) < 1e-6;
+  }
+  return true;
+}
+
+/** the dial's SVG: the bounds of the arc, its labels and the pivot; the zones, the ticks, the labels, the needle */
+function dialMarkup(el: Element, meter: Element): string {
+  const r = rangeOf(meter);
+  const sweep = sweepOf(el);
+  const angle = (v: number) => -sweep / 2 + fractionOf(r, v) * sweep;
+  // the bounds: the arc with its labels, and the pivot with the needle's tail
+  let [x0, y0, x1, y1] = [-16, -16, 16, 22];
+  for (let d = -sweep / 2; d <= sweep / 2 + 1e-9; d += sweep / 60) {
+    const [x, y] = pointAt(d, R + LABEL + 9);
+    x0 = Math.min(x0, x);
+    x1 = Math.max(x1, x);
+    y0 = Math.min(y0, y);
+    y1 = Math.max(y1, y);
+  }
+  for (const d of [-90, 0, 90, 180]) {
+    if (Math.abs(d) > sweep / 2) continue;
+    const [x, y] = pointAt(d, R + LABEL + 9);
+    x0 = Math.min(x0, x);
+    x1 = Math.max(x1, x);
+    y0 = Math.min(y0, y);
+    y1 = Math.max(y1, y);
+  }
+  const box = `${r2(x0)} ${r2(y0)} ${r2(x1 - x0)} ${r2(y1 - y0)}`;
+  let parts = `<path class="tacho-track" d="${arc(-sweep / 2, sweep / 2, R)}"></path>`;
+  if (r.zoned)
+    for (const z of regionsOf(r)) {
+      const d = arc(angle(z.from), angle(z.to), R - 3.5);
+      if (d) parts += `<path class="tacho-zone" data-zone="${z.zone}" d="${d}"></path>`;
+    }
+  let majors = '';
+  let minors = '';
+  let labels = '';
+  for (const t of ticksOf(el, r)) {
+    const a = angle(t.value);
+    const [xa, ya] = pointAt(a, R);
+    const [xb, yb] = pointAt(a, R - (t.major ? MAJOR : MINOR));
+    const d = `M${r2(xa)} ${r2(ya)}L${r2(xb)} ${r2(yb)}`;
+    if (t.major) majors += d;
+    else minors += d;
+    if (t.major && labelled(el, r, t.value)) {
+      const [x, y] = pointAt(a, R + LABEL);
+      labels += `<text class="tacho-tick-label" x="${r2(x)}" y="${r2(y)}">${esc(formatted(el, meter, t.value, true))}</text>`;
+    }
+  }
+  parts += `<path class="tacho-tick" d="${minors}"></path><path class="tacho-tick" data-major="" d="${majors}"></path>${labels}`;
+  parts += `<g class="tacho-needle" transform="rotate(${r2(angle(restOf(el, r)))})"><path class="tacho-needle-blade" d="M-2.4 0L-0.6 ${-(R - 4)}L0.6 ${-(R - 4)}L2.4 0L1.6 14L-1.6 14Z"></path></g>`;
+  parts += `<circle class="tacho-pivot" r="7"></circle><circle class="tacho-pivot-cap" r="2.5"></circle>`;
+  return `<svg class="tacho-dial" viewBox="${box}" aria-hidden="true" focusable="false">${parts}</svg>`;
+}
+
+/** Draw the dial again (another scale, sweep or format) - the needle stays where it is. */
+function redraw(el: HTMLElement): void {
+  const rt = runtimeOf(el);
+  const svg = dfDollar(dialMarkup(el, rt.meter)).get(0) as unknown as SVGSVGElement;
+  dfDollar(rt.dial).replaceWith(svg);
+  rt.dial = svg;
+  rt.needle = dfDollar(svg).find<SVGGElement>('.tacho-needle').get(0) as unknown as SVGGElement;
+  point(el);
+  writeAngle(el);
+}
+
+// -- the needle ----------------------------------------------------
+
+function writeAngle(el: HTMLElement): void {
+  const rt = runtimeOf(el);
+  const sweep = sweepOf(el);
+  const t = `rotate(${r2(-sweep / 2 + rt.p * sweep)})`;
+  if (rt.needle.getAttribute('transform') !== t) dfDollar(rt.needle).attr('transform', t);
+}
+const reduced = (): boolean => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+/** the needle's target: the value, or its rest while idle */
+function point(el: HTMLElement): void {
+  const rt = runtimeOf(el);
+  const r = rangeOf(rt.meter);
+  rt.target = fractionOf(r, rt.status === 'idle' ? restOf(el, r) : r.value);
+  const mode = el.getAttribute('data-needle') ?? 'spring';
+  if (mode === 'instant' || !NEEDLES[mode] || reduced()) {
+    rt.p = rt.target;
+    rt.v = 0;
+    writeAngle(el);
+    settle(rt);
+    return;
+  }
+  if (!rt.frame) {
+    rt.last = performance.now();
+    rt.frame = requestAnimationFrame((now) => tick(el, now));
+  }
+}
+/** one frame of the spring: a damped spring pulls the needle to its target, the end stops bounce it back */
+function tick(el: HTMLElement, now: number): void {
+  const rt = runtimeOf(el);
+  rt.frame = 0;
+  if (!el.isConnected) return;
+  const [k, c] = NEEDLES[el.getAttribute('data-needle') ?? 'spring'] ?? NEEDLES.spring;
+  let dt = Math.min(0.05, Math.max(0, (now - rt.last) / 1000));
+  rt.last = now;
+  while (dt > 0) {
+    const h = Math.min(dt, 1 / 240);
+    rt.v += (-k * (rt.p - rt.target) - c * rt.v) * h;
+    rt.p += rt.v * h;
+    if (rt.p < -STOP || rt.p > 1 + STOP) {
+      rt.p = clamp(rt.p, -STOP, 1 + STOP);
+      rt.v = -rt.v * BOUNCE;
+    }
+    dt -= h;
+  }
+  if (Math.abs(rt.p - rt.target) < 2e-4 && Math.abs(rt.v) < 2e-3) {
+    rt.p = rt.target;
+    rt.v = 0;
+    writeAngle(el);
+    settle(rt);
+    return;
+  }
+  writeAngle(el);
+  rt.frame = requestAnimationFrame((t) => tick(el, t));
+}
+function settle(rt: Runtime): void {
+  const waiting = rt.waiting;
+  rt.waiting = [];
+  for (const done of waiting) done();
+}
+
+// -- markup and state ----------------------------------------------
+
+const textOf = (el: Element, sel: string): string => dfDollar(el).children(sel).text();
+
+/** the markup of a state: the meter's value and its text for assistive technology, the label, the readout (its own
+ *  text or the value in its format), the caption, the value's zone; idle is data-idle */
+function applyMarkup(el: Element, stateName: string, config: TachoConfig): void {
+  const meter = meterOf(el);
+  if (!meter) return;
+  if (config.value !== undefined && Number.isFinite(Number(config.value))) {
+    const r = rangeOf(meter);
+    const v = String(Number(clamp(Number(config.value), r.min, r.max).toPrecision(12)));
+    if (meter.getAttribute('value') !== v) dfDollar(meter).attr('value', v);
+  }
+  const r = rangeOf(meter);
+  const write = (sel: string, text: string | undefined) => {
+    const node = dfDollar(el).children(sel);
+    if (node.length && text !== undefined && node.text() !== text) node.text(text);
+  };
+  write('.tacho-label', config.label);
+  const text = typeof config.text === 'string' ? config.text : formatted(el, meter, r.value, false);
+  write('.tacho-value', text);
+  write('.tacho-caption', config.caption);
+  const label = config.label ?? textOf(el, '.tacho-label');
+  const caption = config.caption ?? textOf(el, '.tacho-caption');
+  const spoken = typeof config.text === 'string' ? [label, text, caption].filter(Boolean).join(', ') : text;
+  if (meter.getAttribute('aria-valuetext') !== spoken) dfDollar(meter).attr('aria-valuetext', spoken || null);
+  const zone = zoneOf(r, r.value);
+  if (el.getAttribute('data-zone') !== zone) dfDollar(el).attr('data-zone', zone);
+  const idle = stateName === 'idle' ? '' : null;
+  if (el.getAttribute('data-idle') !== idle) dfDollar(el).attr('data-idle', idle);
+}
+
+/** the config the element shows now */
+function configOf(el: HTMLElement): Required<TachoConfig> {
+  const rt = runtimeOf(el);
+  return {
+    value: rangeOf(rt.meter).value,
+    label: textOf(el, '.tacho-label'),
+    text: rt.text,
+    caption: textOf(el, '.tacho-caption'),
+  };
+}
+
+/** Show a config: the markup, the needle sent on its way, tacho-change told. */
+function show(el: HTMLElement, stateName: string, incoming: TachoConfig): void {
+  const rt = runtimeOf(el);
+  if ('text' in incoming) rt.text = typeof incoming.text === 'string' ? incoming.text : null;
+  const before = JSON.stringify(configOf(el)) + rt.status;
+  rt.status = stateName;
+  applyMarkup(el, stateName, { ...configOf(el), ...incoming, text: rt.text });
+  point(el);
+  const now = configOf(el);
+  if (JSON.stringify(now) + rt.status === before) return;
+  // Fires when the value, a readout or the state changes - every value a tuner hears, every move of a bound input.
+  el.dispatchEvent(
+    new CustomEvent<TachoChangeDetail>('tacho-change', {
+      bubbles: true,
+      detail: {
+        value: now.value,
+        zone: el.getAttribute('data-zone'),
+        label: now.label,
+        text: textOf(el, '.tacho-value'),
+        caption: now.caption,
+      },
+    }),
+  );
+}
+
+/** UI side of setState: the state's markup with its config, the needle sent on its way. */
+function triggerStateChange(el: HTMLElement, stateName: string, config: TachoConfig, incoming: TachoConfig): undefined {
+  if (!runtimeOf(el)) applyMarkup(el, stateName, config);
+  else show(el, stateName, incoming);
+  return undefined;
+}
+
+/** Registry-level API; pass the .tacho element explicitly. Unknown names throw. */
+export const tachoApi = componentState({
+  component: 'tacho',
+  states: tachoStates,
+  // the config is what it shows: a state change keeps it unless it names something else
+  mergeConfig: true,
+  apply: (el, state, _previous, incoming) =>
+    triggerStateChange(el, state.name, state.config as TachoConfig, incoming as TachoConfig),
+  // a value written into the meter, a bound input, tune() and listen() change it without setState
+  read: (el, state) => {
+    const rt = runtimeOf(el);
+    if (!rt) return state;
+    const c = state.config as TachoConfig;
+    const now = configOf(el);
+    if (
+      rt.status === state.name &&
+      c.value === now.value &&
+      c.label === now.label &&
+      c.text === now.text &&
+      c.caption === now.caption
+    )
+      return state;
+    return { name: rt.status, config: now as Record<string, unknown> };
+  },
+  markup: (el, state) => applyMarkup(el, state.name, state.config as TachoConfig),
+  events: ['tacho-change'],
+});
+
+df$.tachoApi = tachoApi;
+df$.tachoStates = tachoStates;
+
+// -- pitch ---------------------------------------------------------
+
+/** a note's MIDI number: "A4" 69, "C♯3" / "Db3" 49 */
+function midiOf(name: string): number | null {
+  const m = /^\s*([A-Ga-g])([#♯b♭]?)(-?\d+)\s*$/.exec(name);
+  if (!m) return null;
+  const base = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 }[m[1].toLowerCase() as 'c'];
+  const shift = m[2] === '#' || m[2] === '♯' ? 1 : m[2] === 'b' || m[2] === '♭' ? -1 : 0;
+  return base + shift + (Number(m[3]) + 1) * 12;
+}
+/** the note nearest a frequency (or the nearest of the strings) and how far it is, in cents */
+function pitchOf(hz: number, options: TachoTuneOptions = {}): TachoPitch {
+  const a4 = num(options.a4, 440) > 0 ? num(options.a4, 440) : 440;
+  const exact = 69 + 12 * Math.log2(hz / a4);
+  const strings = (options.strings ?? []).map(midiOf).filter((n): n is number => n !== null);
+  const midi = strings.length
+    ? strings.reduce((a, b) => (Math.abs(b - exact) < Math.abs(a - exact) ? b : a))
+    : Math.round(exact);
+  const names = options.notation === 'flat' ? NAMES.flat : NAMES.sharp;
+  return {
+    note: names[((midi % 12) + 12) % 12],
+    octave: Math.floor(midi / 12) - 1,
+    cents: Math.round((exact - midi) * 1000) / 10,
+    target: Math.round(a4 * 2 ** ((midi - 69) / 12) * 100) / 100,
+  };
+}
+/** the pitch of a signal - the McLeod pitch method: the normalized square difference over the lags of 50 Hz to 2 kHz,
+ *  its first key maximum above 0.9 of the highest, refined between samples */
+function detectPitch(x: Float32Array, sampleRate: number): TachoDetection | null {
+  const n = x.length;
+  let power = 0;
+  for (let i = 0; i < n; i++) power += x[i] * x[i];
+  if (n < 64 || Math.sqrt(power / n) < 0.01) return null;
+  const minLag = Math.max(2, Math.floor(sampleRate / 2000));
+  const maxLag = Math.min(n >> 1, Math.ceil(sampleRate / 50));
+  const w = n - maxLag - 1;
+  const nsdf = new Float32Array(maxLag + 2);
+  for (let tau = 0; tau <= maxLag + 1; tau++) {
+    let acf = 0;
+    let m = 0;
+    for (let i = 0; i < w; i++) {
+      const a = x[i];
+      const b = x[i + tau];
+      acf += a * b;
+      m += a * a + b * b;
+    }
+    nsdf[tau] = m > 0 ? (2 * acf) / m : 0;
+  }
+  const maxima: number[] = [];
+  let t = 1;
+  while (t <= maxLag && nsdf[t] > 0) t++;
+  while (t <= maxLag) {
+    while (t <= maxLag && nsdf[t] <= 0) t++;
+    let at = -1;
+    while (t <= maxLag && nsdf[t] > 0) {
+      if (at < 0 || nsdf[t] > nsdf[at]) at = t;
+      t++;
+    }
+    if (at > 0) maxima.push(at);
+  }
+  if (!maxima.length) return null;
+  const highest = Math.max(...maxima.map((i) => nsdf[i]));
+  const best = maxima.find((i) => i >= minLag && nsdf[i] >= 0.9 * highest);
+  if (best === undefined) return null;
+  const a = nsdf[best - 1];
+  const b = nsdf[best];
+  const c = nsdf[best + 1];
+  const d = a - 2 * b + c;
+  const shift = d ? (0.5 * (a - c)) / d : 0;
+  return { frequency: sampleRate / (best + shift), clarity: Math.min(1, b - 0.25 * (a - c) * shift) };
+}
+
+/** show a frequency on a tuner: the note above, the frequency below, the cents on the needle */
+function tuneTo(el: HTMLElement, hz: number | null, options: TachoTuneOptions = {}): TachoPitch | null {
+  if (hz === null || !Number.isFinite(Number(hz)) || Number(hz) <= 0) {
+    if (runtimeOf(el).status !== 'idle') el.api?.setState('idle');
+    return null;
+  }
+  const p = pitchOf(Number(hz), options);
+  const locale = textLocale(el);
+  const cents = new Intl.NumberFormat(locale, { maximumFractionDigits: 0, signDisplay: 'exceptZero' }).format(p.cents);
+  el.api?.setState('default', {
+    value: p.cents,
+    label: p.note,
+    text: `${new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Number(hz))} Hz`,
+    caption: `${p.note}${p.octave} · ${cents} ct`,
+  });
+  return p;
+}
+
+function listenFrame(el: HTMLElement): void {
+  const rt = runtimeOf(el);
+  const l = rt.listen;
+  if (!l || !el.isConnected) return;
+  l.frame = 0;
+  const ctx = l.node.context;
+  if (!(ctx instanceof AudioContext) || ctx.state === 'running') {
+    const data = new Float32Array(l.node.fftSize);
+    l.node.getFloatTimeDomainData(data);
+    const found = detectPitch(data, ctx.sampleRate);
+    if (found && found.clarity >= 0.85) {
+      l.quiet = 0;
+      tuneTo(el, found.frequency, l.options);
+    } else if (++l.quiet > 12 && rt.status !== 'idle') tuneTo(el, null);
+  }
+  l.frame = requestAnimationFrame(() => listenFrame(el));
+}
+
+// -- init ----------------------------------------------------------
+
+function init() {
+  dfDollar('.tacho:not([data-init])')
+    .toArray()
+    .forEach((el: HTMLElement) => {
+      el.dataset.init = '';
+      const meter = meterOf(el);
+      if (!meter) return;
+      const dial = dfDollar(dialMarkup(el, meter)).get(0) as unknown as SVGSVGElement;
+      dfDollar(meter).before(dial);
+      const authored = textOf(el, '.tacho-value').trim();
+      const r = rangeOf(meter);
+      const rt: Runtime = {
+        meter,
+        dial,
+        needle: dfDollar(dial).find<SVGGElement>('.tacho-needle').get(0) as unknown as SVGGElement,
+        status: el.hasAttribute('data-idle') ? 'idle' : 'default',
+        // an empty readout shows the value in its format; text written into it is its own
+        text: authored && authored !== formatted(el, meter, r.value, false) ? authored : null,
+        p: fractionOf(r, restOf(el, r)),
+        v: 0,
+        target: 0,
+        frame: 0,
+        last: 0,
+        waiting: [],
+        listen: null,
+      };
+      el._tacho = rt;
+      applyMarkup(el, rt.status, configOf(el));
+      // the needle swings from its rest to the value, as a meter does when it is switched on
+      point(el);
+      // el.store + el.api (AGENTS.md "State through stores"): $('#tuner').api.setState('default', { value: -12 })
+      bindComponent(el, tachoApi, { name: rt.status, config: configOf(el) });
+      // a value written into the meter, another scale, sweep, format or rest: shown and drawn again
+      new MutationObserver((records) => {
+        const scale = records.some((m) => m.attributeName !== 'value' && m.attributeName !== 'aria-valuetext');
+        if (scale) redraw(el);
+        if (records.some((m) => m.attributeName === 'value')) show(el, rt.status, {});
+        else if (scale) applyMarkup(el, rt.status, configOf(el));
+      }).observe(meter, { attributes: true, attributeFilter: ['value', 'min', 'max', 'low', 'high', 'optimum'] });
+      new MutationObserver(() => {
+        redraw(el);
+        applyMarkup(el, rt.status, configOf(el));
+      }).observe(el, {
+        attributes: true,
+        attributeFilter: [
+          'data-sweep',
+          'data-ticks',
+          'data-minor',
+          'data-labels',
+          'data-format',
+          'data-unit',
+          'data-decimals',
+          'data-rest',
+          'lang',
+        ],
+      });
+    });
+}
+
+// inputs bound by data-tacho-for (a range, a number, a knob): the tacho shows their value
+if (!document.__tachoInit) {
+  document.__tachoInit = true;
+  document.addEventListener('input', (e) => {
+    const node = (e.target as Element).closest?.('[data-tacho-for]');
+    const field = e.target as HTMLInputElement;
+    if (!node || !(field instanceof HTMLInputElement)) return;
+    const el = dfDollar(`#${CSS.escape(node.getAttribute('data-tacho-for') ?? '')}`).get(0) as HTMLElement | undefined;
+    if (!el?._tacho || !Number.isFinite(field.valueAsNumber)) return;
+    el.api?.setState('default', { value: field.valueAsNumber });
+  });
+}
+
+/** the tacho of a target: the .tacho element, its meter, or a selector of either */
+const resolve = (target: string | HTMLElement): HTMLElement | undefined => {
+  const el = typeof target === 'string' ? dfDollar(target).get(0) : target;
+  const tacho = el?.closest?.<HTMLElement>('.tacho');
+  return tacho?._tacho ? tacho : undefined;
+};
+
+df$.tacho = {
+  /**
+   * The value, or set it (setState default with { value }: the needle swings to it).
+   * @param target - the .tacho element, its meter, or a selector of either
+   * @param value - the value to show; leave it out to read
+   * @returns the value now; NaN for an unknown element
+   */
+  value: (target: string | HTMLElement, value?: number): number => {
+    const el = resolve(target);
+    if (!el) return NaN;
+    if (value !== undefined && Number.isFinite(value)) el.api?.setState('default', { value });
+    return rangeOf(runtimeOf(el).meter).value;
+  },
+  /**
+   * Show a frequency on a tuner: the nearest note (or string) above in big letters, the frequency below the pivot,
+   * the cents on the needle (the meter's value - a tuner's meter runs from -50 to 50) and note, octave and cents in
+   * the caption. null: no signal - the idle state.
+   * @param target - the .tacho element, its meter, or a selector of either
+   * @param frequency - the frequency in Hz, or null
+   * @param options - the pitch of A4, the strings to tune to, sharps or flats
+   * @returns the note and how far the frequency is from it; null for no signal or an unknown element
+   */
+  tune: (target: string | HTMLElement, frequency: number | null, options?: TachoTuneOptions): TachoPitch | null => {
+    const el = resolve(target);
+    return el ? tuneTo(el, frequency, options) : null;
+  },
+  /**
+   * Tune to an audio node: every frame the pitch of what it plays is detected (detect()) and shown with tune(); a
+   * silence or a sound without a clear pitch for a few frames is the idle state. null stops.
+   * @param target - the .tacho element, its meter, or a selector of either
+   * @param source - the node to listen to (a microphone's MediaStreamAudioSourceNode, an oscillator, a gain), or null
+   * @param options - the pitch of A4, the strings to tune to, sharps or flats
+   * @returns the AnalyserNode it reads, null when it stops or for an unknown element
+   */
+  listen: (
+    target: string | HTMLElement,
+    source: AudioNode | null,
+    options: TachoTuneOptions = {},
+  ): AnalyserNode | null => {
+    const el = resolve(target);
+    if (!el) return null;
+    const rt = runtimeOf(el);
+    if (rt.listen) {
+      if (rt.listen.frame) cancelAnimationFrame(rt.listen.frame);
+      try {
+        rt.listen.source.disconnect(rt.listen.node);
+      } catch {
+        /* already apart */
+      }
+      rt.listen = null;
+    }
+    if (!source) {
+      tuneTo(el, null);
+      return null;
+    }
+    const node = source.context.createAnalyser();
+    node.fftSize = 4096;
+    source.connect(node);
+    rt.listen = { node, source, frame: 0, quiet: 0, options };
+    rt.listen.frame = requestAnimationFrame(() => listenFrame(el));
+    return node;
+  },
+  /**
+   * The note nearest a frequency and how far it is - what tune() shows.
+   * @param frequency - the frequency in Hz
+   * @param options - the pitch of A4, the strings to tune to, sharps or flats
+   * @returns the note, its octave, the cents off and the note's own frequency
+   */
+  pitch: (frequency: number, options?: TachoTuneOptions): TachoPitch => pitchOf(frequency, options),
+  /**
+   * The pitch of a signal (the McLeod pitch method, 50 Hz to 2 kHz) - what listen() runs on every frame.
+   * @param samples - the signal, at least a few periods of its lowest note (2048 samples at 48 kHz for 50 Hz)
+   * @param sampleRate - its sample rate in Hz
+   * @returns the frequency and how clear the tone is; null for silence or no pitch
+   */
+  detect: (samples: Float32Array, sampleRate: number): TachoDetection | null => detectPitch(samples, sampleRate),
+  /**
+   * Wait for the needle to come to rest.
+   * @param target - the .tacho element, its meter, or a selector of either
+   * @returns a promise that resolves when the needle stands on its target
+   */
+  settled: (target: string | HTMLElement): Promise<void> => {
+    const el = resolve(target);
+    if (!el || !runtimeOf(el).frame) return Promise.resolve();
+    return new Promise((done) => runtimeOf(el).waiting.push(done));
+  },
+  /**
+   * Add a format tachos name in data-format - their scales and readouts are written again.
+   * @param name - the format's name
+   * @param format - the value's text, from the value and the tacho's unit, decimals, locale, range and whether it is a label on the scale
+   */
+  format: (name: string, format: (value: number, context: TachoFormatContext) => string): void => {
+    if (!name || typeof format !== 'function') return;
+    FORMATS[name] = format;
+    for (const el of dfDollar(`.tacho[data-init][data-format="${CSS.escape(name)}"]`).toArray() as HTMLElement[])
+      if (el._tacho) {
+        redraw(el);
+        applyMarkup(el, runtimeOf(el).status, configOf(el));
+      }
+  },
+};
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

@@ -1,0 +1,333 @@
+---
+title: "Tacho"
+description: "Tacho component - a needle on a scale over a native meter, like a tachometer: the meter's low, high and optimum as coloured zones, a needle that swings like a real one (a damped spring, end stops), and a guitar tuner on top of it - the note, the frequency, the cents, pitch detection on any audio node; also panning, rev counters and VU meters."
+slug: "tacho"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tacho" title="Tacho" component="tacho">
+  A needle on a scale, read at a glance like a tachometer. The value is a native <code>&lt;meter&gt;</code> - its range and its low, high and optimum regions - and the runtime draws the dial over it: the arc, the ticks and their labels in any format, the meter's regions as green, amber and red zones, and a needle on a pivot that moves like a real one. It is a damped spring: it overshoots and settles, keeps its momentum when the value changes on every frame, and bounces off the end stops just past the scale. A guitar tuner is a tacho from -50 to +50 cents: <code>tune()</code> writes the nearest note above in big letters, the frequency under the pivot and the cents on the needle, to the nearest semitone or the nearest string of an instrument, and <code>listen()</code> detects the pitch of whatever an audio node plays. The same dial shows a pan position, an engine's revs or a VU meter.
+</PageHeader>
+
+<SkillPanel component="tacho">
+  <SkillField label="Native basis">
+<SkillText><code>&lt;meter class="tacho-meter"&gt;</code> in a <code>&lt;div class="tacho"&gt;</code>: the value with its <code>min</code>, <code>max</code>, <code>low</code>, <code>high</code> and <code>optimum</code>, read as a meter (the runtime writes its <code>aria-valuetext</code>) and drawn as the browser's bar without scripting. The dial is an SVG the runtime draws before it.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter" title="the value, its range and its regions"><code>&lt;meter&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode" title="listen(): what an audio node plays"><code>AnalyserNode</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame" title="the needle's spring"><code>requestAnimationFrame()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="labels and readouts in the page's locale"><code>Intl.NumberFormat</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="the needle jumps"><code>prefers-reduced-motion</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/scripting" title="the meter's own bar without scripting"><code>@media (scripting)</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.tacho</code>
+    <code>.tacho-meter</code>
+    <code>.tacho-label</code>
+    <code>.tacho-value</code>
+    <code>.tacho-caption</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-sweep</code> - the arc in degrees (30 to 300, default 120); <code>data-ticks</code> - the step between majors; <code>data-minor</code> - minor ticks between them; <code>data-labels</code> - <code>ends</code>, <code>none</code> or a step</SkillText>
+  <SkillText dense>• <code>data-format</code> - <code>number</code>, <code>signed</code>, <code>pan</code> or one added with <code>df$.shadcn.tacho.format()</code>; <code>data-unit</code>, <code>data-decimals</code> - the readout's</SkillText>
+  <SkillText dense>• <code>data-needle</code> - <code>spring</code>, <code>smooth</code>, <code>instant</code>; <code>data-rest</code> - where it rests while idle</SkillText>
+  <SkillText dense>• <code>data-tacho-for</code> - on an input (or around it): the tacho shows its value; <code>data-idle</code> - authored idle</SkillText>
+  <SkillText dense>• <code>data-size</code> - <code>sm</code>, <code>lg</code>; <code>data-color</code> - <code>chart-1</code> ... <code>chart-5</code>, <code>primary</code></SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Tuner" hint="A guitar tuner: the note in big letters, the frequency under the pivot, the cents on the needle - green within 5 cents of the note. Turn the String knob and the needle swings to the new pitch, overshooting a little and settling like a real one. Play sounds the string's frequency and the tuner listens to it: listen() detects the pitch of the audio (a microphone works the same way, given the permission). Pluck plays a string that starts sharp and settles. Pick an instrument to tune to its strings instead of every semitone."
+<div class="flex flex-wrap items-center gap-8">
+  <div
+    class="tacho"
+    id="tc-tuner"
+    data-size="lg"
+    data-format="signed"
+    data-sweep="100"
+    data-ticks="25"
+    data-minor="4"
+    data-state-demo
+  >
+    <span class="tacho-label">A</span>
+    <meter class="tacho-meter" min="-50" max="50" low="-5" high="5" optimum="0" value="0" aria-label="Tuning in cents">
+      0 cents
+    </meter>
+    <output class="tacho-value">440.0 Hz</output>
+    <span class="tacho-caption">A4 · 0 ct</span>
+  </div>
+  <div class="grid gap-4 justify-items-start">
+    <div class="knob" data-scale="exponential" data-format="si" data-unit="Hz">
+      <input class="knob-input" type="range" id="tc-string" min="40" max="1000" step="any" value="443" />
+      <label class="knob-label" for="tc-string">String</label>
+      <output class="knob-value" for="tc-string">443 Hz</output>
+    </div>
+    <select class="select" data-size="sm" id="tc-mode" aria-label="Tune to">
+      <option value="chromatic">Chromatic</option>
+      <option value="guitar">Guitar (E A D G B E)</option>
+      <option value="bass">Bass (E A D G)</option>
+      <option value="ukulele">Ukulele (G C E A)</option>
+    </select>
+    <div class="flex gap-2">
+      <button class="btn" type="button" data-size="sm" id="tc-play" aria-pressed="false">Play</button>
+      <button class="btn" type="button" data-size="sm" data-variant="outline" id="tc-pluck">Pluck</button>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tacho = df$.shadcn.tacho;
+    const strings = {
+      guitar: ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'],
+      bass: ['E1', 'A1', 'D2', 'G2'],
+      ukulele: ['G4', 'C4', 'E4', 'A4'],
+    };
+    const options = () => ({ strings: strings[df$('#tc-mode').val()] });
+    const hz = () => Number(df$('#tc-string').val());
+    let ctx = null;
+    let tone = null;
+    const audio = async () => {
+      ctx = ctx ?? new AudioContext();
+      await ctx.resume();
+      return ctx;
+    };
+    // silent: the tuner shows the knob's frequency; playing: it hears it
+    const show = () => {
+      if (tone) tone.osc.frequency.setTargetAtTime(hz(), ctx.currentTime, 0.03);
+      else tacho.tune('#tc-tuner', hz(), options());
+    };
+    const stop = () => {
+      if (!tone) return;
+      tone.osc.stop();
+      tone = null;
+      df$('#tc-play').attr('aria-pressed', 'false');
+      tacho.listen('#tc-tuner', null);
+      show();
+    };
+    df$('#tc-string').on('input', show);
+    df$('#tc-mode').on('change', () => (tone ? tacho.listen('#tc-tuner', tone.gain, options()) : show()));
+    df$('#tc-play').on('click', async () => {
+      if (tone) return stop();
+      const c = await audio();
+      const osc = new OscillatorNode(c, { type: 'sawtooth', frequency: hz() });
+      const gain = new GainNode(c, { gain: 0.12 });
+      osc.connect(gain).connect(c.destination);
+      osc.start();
+      tone = { osc, gain };
+      df$('#tc-play').attr('aria-pressed', 'true');
+      tacho.listen('#tc-tuner', gain, options());
+    });
+    // a plucked string: a third of a semitone sharp at first, settling, dying away
+    df$('#tc-pluck').on('click', async () => {
+      stop();
+      const c = await audio();
+      const now = c.currentTime;
+      const osc = new OscillatorNode(c, { type: 'sawtooth', frequency: hz() * 2 ** (35 / 1200) });
+      const gain = new GainNode(c, { gain: 0 });
+      osc.frequency.setTargetAtTime(hz(), now + 0.05, 0.25);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 3);
+      osc.connect(gain).connect(c.destination);
+      osc.start(now);
+      osc.stop(now + 3);
+      tacho.listen('#tc-tuner', gain, options());
+    });
+    show();
+  });
+</script>
+```
+
+```html example label="Panning" hint="A pan position from hard left to hard right: data-format='pan' writes L20, C and R15, the scale is 90 degrees, and the slider drives it through data-tacho-for - any range or number input, or a knob, can. Without low and high the meter has no zones and the needle keeps its colour."
+<div class="grid gap-3 justify-items-center">
+  <div class="tacho" id="tc-pan" data-format="pan" data-sweep="90" data-ticks="25" data-minor="4">
+    <span class="tacho-label">Pan</span>
+    <meter class="tacho-meter" min="-50" max="50" value="-20" aria-label="Pan">L20</meter>
+    <output class="tacho-value"></output>
+  </div>
+  <input class="slider" type="range" min="-50" max="50" value="-20" data-tacho-for="tc-pan" aria-label="Pan" />
+</div>
+```
+
+```html example label="Needles" hint="Three needles get the same values: a spring (the default) swings past and settles, smooth glides without passing, instant jumps. Kick sends all three somewhere new; press it quickly and the spring keeps its momentum from one value to the next. With prefers-reduced-motion every needle jumps."
+<div class="grid gap-4 justify-items-center">
+  <div class="flex flex-wrap justify-center gap-6">
+    <div class="tacho" data-size="sm" id="tc-spring">
+      <span class="tacho-caption">spring</span>
+      <meter class="tacho-meter" min="0" max="100" value="20" aria-label="Spring">20</meter>
+      <output class="tacho-value"></output>
+    </div>
+    <div class="tacho" data-size="sm" id="tc-smooth" data-needle="smooth">
+      <span class="tacho-caption">smooth</span>
+      <meter class="tacho-meter" min="0" max="100" value="20" aria-label="Smooth">20</meter>
+      <output class="tacho-value"></output>
+    </div>
+    <div class="tacho" data-size="sm" id="tc-instant" data-needle="instant">
+      <span class="tacho-caption">instant</span>
+      <meter class="tacho-meter" min="0" max="100" value="20" aria-label="Instant">20</meter>
+      <output class="tacho-value"></output>
+    </div>
+  </div>
+  <button class="btn" type="button" data-size="sm" id="tc-kick">Kick</button>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#tc-kick').on('click', () => {
+      const value = Math.round(Math.random() * 100);
+      for (const id of ['#tc-spring', '#tc-smooth', '#tc-instant']) df$.shadcn.tacho.value(id, value);
+    });
+  });
+</script>
+```
+
+```html example label="Rev counter" hint="240 degrees from 0 to 8000 rpm with the meter's three regions: up to 5500 green (it holds the optimum), to 6500 amber, the redline beyond. A format added with df$.shadcn.tacho.format() writes the scale in thousands and the readout in rpm (its context says which). Rev it: the needle follows the engine frame by frame and keeps its spring."
+<div class="grid gap-3 justify-items-center">
+  <div class="tacho" id="tc-rev" data-sweep="240" data-ticks="1000" data-minor="4" data-format="rpm">
+    <meter
+      class="tacho-meter"
+      min="0"
+      max="8000"
+      low="5500"
+      high="6500"
+      optimum="0"
+      value="800"
+      aria-label="Engine speed"
+    >
+      800 rpm
+    </meter>
+    <output class="tacho-value"></output>
+    <span class="tacho-caption">× 1000 rpm</span>
+  </div>
+  <button class="btn" type="button" data-size="sm" id="tc-rev-go">Rev</button>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tacho = df$.shadcn.tacho;
+    tacho.format('rpm', (v, c) =>
+      c.tick ? String(v / 1000) : `${new Intl.NumberFormat(c.locale).format(Math.round(v / 10) * 10)} rpm`,
+    );
+    let start = 0;
+    const frame = (now) => {
+      const t = (now - start) / 1000;
+      // up through the gears to the redline, then back to idle
+      const rpm =
+        t < 2.4 ? 800 + 6400 * (1 - Math.exp(-2 * t)) + 300 * Math.sin(t * 9) : 800 + 6200 * Math.exp(-2.5 * (t - 2.4));
+      tacho.value('#tc-rev', rpm);
+      if (t < 5) requestAnimationFrame(frame);
+    };
+    df$('#tc-rev-go').on('click', () => {
+      start = performance.now();
+      requestAnimationFrame(frame);
+    });
+  });
+</script>
+```
+
+```html example label="VU meter" hint="A level in dB from -20 to +3: green up to -6, amber to 0, red above. The needle is smooth (a VU meter's ballistics do not overshoot), rests at -20 when idle (data-rest) and the readout keeps one decimal while the scale goes without. Run feeds it a level that breathes like music; Stop leaves it idle."
+<div class="grid gap-3 justify-items-center">
+  <div
+    class="tacho"
+    id="tc-vu"
+    data-sweep="90"
+    data-ticks="5"
+    data-format="signed"
+    data-unit="dB"
+    data-decimals="1"
+    data-rest="-20"
+    data-needle="smooth"
+    data-idle
+  >
+    <span class="tacho-label">VU</span>
+    <meter class="tacho-meter" min="-20" max="3" low="-6" high="0" optimum="-20" value="-20" aria-label="Level">
+      -20 dB
+    </meter>
+    <output class="tacho-value"></output>
+  </div>
+  <button class="btn" type="button" data-size="sm" id="tc-vu-run" aria-pressed="false">Run</button>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = df$('#tc-vu').get(0);
+    const button = df$('#tc-vu-run');
+    let running = false;
+    let start = 0;
+    const frame = (now) => {
+      if (!running) return;
+      const t = (now - start) / 1000;
+      const beat = Math.exp(-6 * ((t * 2) % 1));
+      const db = -14 + 9 * beat + 4 * Math.sin(t * 0.7) + Math.random() * 2;
+      el.api.setState('default', { value: db });
+      requestAnimationFrame(frame);
+    };
+    button.on('click', () => {
+      running = !running;
+      button.attr('aria-pressed', String(running)).text(running ? 'Stop' : 'Run');
+      if (running) {
+        start = performance.now();
+        requestAnimationFrame(frame);
+      } else el.api.setState('idle');
+    });
+  });
+</script>
+```
+
+```html example label="Sizes, colours and idle" hint="data-size sm and lg (or --tacho-size), a chart colour for the needle of a dial without zones, data-labels='ends', a 270 degree sweep, and a tuner authored idle (data-idle): the needle rests, the readouts dim."
+<div class="flex flex-wrap items-end justify-center gap-6">
+  <div class="tacho" data-size="sm" data-color="chart-2" data-labels="ends" data-decimals="2">
+    <meter class="tacho-meter" min="0" max="1" value="0.65" aria-label="Mix">0.65</meter>
+    <output class="tacho-value"></output>
+  </div>
+  <div class="tacho" data-color="chart-4" data-sweep="270" data-ticks="1">
+    <meter class="tacho-meter" min="0" max="10" value="7" aria-label="Drive">7</meter>
+    <output class="tacho-value"></output>
+  </div>
+  <div class="tacho" data-idle data-format="signed" data-ticks="25" data-minor="4" data-labels="ends">
+    <span class="tacho-label">–</span>
+    <meter class="tacho-meter" min="-50" max="50" low="-5" high="5" optimum="0" value="0" aria-label="Tuning in cents">
+      0 cents
+    </meter>
+    <output class="tacho-value">– Hz</output>
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.tacho</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the needle on the value, the readouts written</li>
+    <li><code>idle</code> - no signal (<code>data-idle</code>): the needle goes back to its rest, the readouts dim - a tuner that hears nothing</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes <code>\{ value, label, text, caption \}</code>, merged into the current config: the meter's value (inside its range), the big text above, the readout (<code>null</code>: the value in its format) and the caption. <code>getState()</code> reports what the tacho shows, also what <code>tune()</code>, a bound input or a value written into the meter set; every change sends <code>tacho-change</code>.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tacho-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/tacho.schema.json"><code>tacho.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `number` | | | The meter's value, inside its range; observed from `getState().config.value`. |
+| `idle` | `boolean` | `true`, `false` | `false` | No signal (`setState('idle')`): the needle rests, the readouts dim. |
+```
+
+</StatesSection>
+
+<ApiSection component="tacho" />
+
+<SourceFiles component="tacho" section="css">
+  <SourceNote for="css">The dial's parts (the track, the zones in the meter's three colours, the ticks, their labels, the needle and the pivot), the label, readout and caption, the zone colours of the needle and the label, idle, the meter kept for assistive technology, sizes and the accessibility media queries.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="tacho" section="js">
+  <SourceNote for="js">The scale and the meter's regions, the formats, the dial drawn as SVG, the needle's damped spring with its end stops, the tuner (notes, strings, cents), the pitch detector and listen(), the bound inputs and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>
