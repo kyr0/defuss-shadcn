@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { codeExampleProblems } from '../code-example-contract';
+import { LISTED_PAGES } from '../nav';
 import { pageLinks } from '../page-dirs';
 import { componentPath } from '../repo';
 
@@ -149,6 +150,9 @@ export function Icon({ name }: { name: string }) {
   );
 }
 
+/** a card offers "Open in Studio" once the Studio is listed - not while it is alpha (nav.ts) */
+const STUDIO_OFFERED = LISTED_PAGES.some((p) => p.href === 'studio.html');
+
 const H2_LABEL = 'text-sm font-medium mb-2';
 const H2_HINT = 'text-xs text-muted-foreground mb-3';
 
@@ -263,11 +267,14 @@ export function CodeExample({ source, component, label, hint, height, mode, prev
           <span>Fullscreen</span>
         </button>
         {/* docs only (Rapid Agentic Development): the example - its current source, edits included - opens in the
-            Studio; runtime/code-example.ts puts the source into the address fragment on click */}
-        <a class="code-example-tab" href="full-studio.html" target="_blank" rel="noopener" data-open-studio title="Open this example in the Studio">
-          <Icon name="app-window" />
-          <span>Studio</span>
-        </a>
+            Studio; runtime/code-example.ts puts the source into the address fragment on click. Hidden while the
+            Studio is alpha (nav.ts) - the maintainer's decision of 2026-10-29 */}
+        {STUDIO_OFFERED ? (
+          <a class="code-example-tab" href="full-studio.html" target="_blank" rel="noopener" data-open-studio title="Open this example in the Studio">
+            <Icon name="app-window" />
+            <span>Studio</span>
+          </a>
+        ) : null}
       </div>
       <div class="code-example-panel" data-panel="code" hidden>
         <button type="button" class="code-example-copy" title="Copy the source">

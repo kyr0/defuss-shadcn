@@ -1508,7 +1508,7 @@ flowchart LR
     Export --> Verify
 ```
 
-<DocText><strong>From the docs into the Studio</strong> - every live example on this site has an <em>Open in Studio</em> button: the example's current source (edits included) travels in the address fragment, compressed, and opens as a new project. Nothing is sent to a server.</DocText>
+<DocText><strong>From the docs into the Studio</strong> - an example's source travels in the address fragment (<code>full-studio.html#source=</code>, compressed) and opens as a new project. Nothing is sent to a server. The live examples on this site will carry an <em>Open in Studio</em> button for it once the Studio leaves alpha - until then the button is hidden.</DocText>
 
 <DocText><strong>From the Studio to an agent</strong> - <em>Copy for an agent</em> (Export menu) writes Markdown: the project's pages as HTML and, for every component they use, the link to its skill at this release. Paste it into any harness with the <DocLink href="component-skills.html">component skills</DocLink> and ask for the next step - the agent changes markup it can read, in the language it was taught. The app ZIP carries the same notes as <code>AGENTS.md</code>.</DocText>
 

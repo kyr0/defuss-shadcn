@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
+import { deflateRawSync } from 'node:zlib';
 import { chromium, webkit, type BrowserContext, type Page } from 'playwright';
 import { startServer } from '../server.ts';
 import { offlineJsdelivr } from '../lib/vendor-offline.ts';
@@ -758,21 +759,23 @@ try {
     writeFileSync(join(OUT, 'agent.md'), text);
   });
 
-  await check('Open in Studio: a docs example opens in the Studio with its source (the address fragment, cleared after)', async () => {
+  await check('Open in Studio: hidden on the docs cards while the Studio is alpha; an example in the address fragment still opens (cleared after)', async () => {
     const docs = await ctx.newPage();
     await docs.goto(`${server.url}/dist/documentation/actions/button.html`, { waitUntil: 'load' });
-    await docs.waitForSelector('.code-example[data-init] a[data-open-studio]');
+    await docs.waitForSelector('.code-example[data-init]');
+    assert.equal(await docs.$$eval('.code-example a[data-open-studio]', (els) => els.length), 0, 'no card offers the Studio');
     const source = await docs.evaluate(() => (globalThis as any).df$.shadcn.codeExample.source(document.querySelector('.code-example')));
-    const opened = ctx.waitForEvent('page');
-    await docs.click('.code-example a[data-open-studio]');
-    const studio = await opened;
+    await docs.close();
+    // the route the link took: the source deflate-raw + base64url in #source=
+    const hash = deflateRawSync(Buffer.from(source)).toString('base64url');
+    const studio = await ctx.newPage();
+    await studio.goto(`${STUDIO}#source=${hash}`, { waitUntil: 'load' });
     await studio.waitForFunction(() => (document.getElementById('studio-status')?.textContent ?? '').startsWith('Opened from the docs'), undefined, { timeout: 30000 });
     const r = await studio.evaluate(() => ({ html: (globalThis as any).df$.shadcn.visualEditor.html('#studio-canvas'), hash: location.hash }));
     assert.equal(r.hash, '');
     const firstClass = /class="([^"]+)"/.exec(source)![1];
     assert.ok(r.html.includes(firstClass), `${firstClass} in ${r.html.slice(0, 300)}`);
     await studio.close();
-    await docs.close();
   });
 
   await check('no page errors', async () => {
