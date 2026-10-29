@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>envelope e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/knob/knob.css" />
+    <link rel="stylesheet" href="/dist/components/envelope/envelope.css" />
+  </head>
+  <!-- mirrors the doc page: an ADSR with bound knobs (attack on a power scale, decay, sustain in percent, release), a
+       gate button, a trigger, outputs; a DAHDSR with every bend and a fixed length; the compressor with bound knobs and
+       a meter; a filter (a resonant 24 dB low pass) with a select and a checkbox bound; a five-band EQ (ids, labels,
+       colours, a band off); the sizes and colours; a read-only curve; one authored disabled; one without a source; bound controls in a form -->
+  <body style="padding: 2rem; display: grid; gap: 2rem; width: 900px; margin: 0">
+    <section style="display: grid; gap: 0.75rem">
+      <div class="envelope" id="ev-amp" aria-label="Amp envelope">
+        <script type="application/json" class="envelope-source">
+          { "attack": 0.1, "decay": 0.3, "sustain": 0.6, "release": 0.4, "decayCurve": 0.5 }
+        </script>
+        <p>Level <output data-envelope-output="value" id="ev-amp-value"></output> · <output data-envelope-output="phase" id="ev-amp-phase"></output></p>
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: start">
+        <button class="btn" type="button" id="ev-amp-gate" data-envelope-for="ev-amp" data-envelope-action="gate">Hold</button>
+        <button class="btn" type="button" id="ev-amp-trigger" data-envelope-for="ev-amp" data-envelope-action="trigger" data-value="0.2">Trigger</button>
+        <button class="btn" type="button" id="ev-amp-stop" data-envelope-for="ev-amp" data-envelope-action="stop">Stop</button>
+        <button class="btn" type="button" id="ev-amp-reset" data-envelope-for="ev-amp" data-envelope-action="reset">Reset</button>
+        <div class="knob" id="ev-amp-attack" data-envelope-for="ev-amp" data-envelope-param="attack" data-scale="power" data-exponent="3" data-format="time">
+          <input class="knob-input" type="range" id="ev-amp-attack-input" min="0" max="5" step="any" value="0.1" />
+          <label class="knob-label" for="ev-amp-attack-input">Attack</label>
+          <output class="knob-value" for="ev-amp-attack-input">100 ms</output>
+        </div>
+        <div class="knob" id="ev-amp-sustain" data-envelope-for="ev-amp" data-envelope-param="sustain" data-format="percent">
+          <input class="knob-input" type="range" id="ev-amp-sustain-input" min="0" max="1" step="any" value="0.6" />
+          <label class="knob-label" for="ev-amp-sustain-input">Sustain</label>
+          <output class="knob-value" for="ev-amp-sustain-input">60%</output>
+        </div>
+        <label>Release <input type="number" id="ev-amp-release" data-envelope-for="ev-amp" data-envelope-param="release" min="0" max="32" step="any" value="0.4" /></label>
+      </div>
+    </section>
+
+    <div class="envelope" id="ev-dahdsr" data-length="3" data-color="chart-2" aria-label="Filter envelope">
+      <script type="application/json" class="envelope-source">
+        { "delay": 0.2, "attack": 0.3, "hold": 0.2, "decay": 0.5, "sustain": 0.4, "release": 0.6, "attackCurve": 0.6, "decayCurve": -0.4, "releaseCurve": 0.8 }
+      </script>
+    </div>
+
+    <section style="display: flex; gap: 1.5rem; align-items: start">
+      <div class="envelope" id="ev-comp" data-kind="dynamics" aria-label="Compressor" style="inline-size: 20rem">
+        <script type="application/json" class="envelope-source">
+          { "threshold": -24, "ratio": 4, "knee": 6, "makeup": 3, "attack": 0.01, "release": 0.2 }
+        </script>
+        <p>Reduction <output data-envelope-output="reduction" id="ev-comp-gr"></output> · <output data-envelope-output="phase" id="ev-comp-phase"></output></p>
+      </div>
+      <div class="knob" id="ev-comp-threshold" data-envelope-for="ev-comp" data-envelope-param="threshold" data-format="signed" data-unit="dB" data-decimals="1">
+        <input class="knob-input" type="range" id="ev-comp-threshold-input" min="-60" max="0" step="0.1" value="-24" />
+        <label class="knob-label" for="ev-comp-threshold-input">Threshold</label>
+        <output class="knob-value" for="ev-comp-threshold-input">-24.0 dB</output>
+      </div>
+      <label>Ratio <input type="range" id="ev-comp-ratio" data-envelope-for="ev-comp" data-envelope-param="ratio" min="1" max="20" step="any" value="4" /></label>
+    </section>
+
+    <section style="display: grid; gap: 0.75rem">
+      <div class="envelope" id="ev-filter" data-kind="filter" data-color="chart-3" aria-label="Filter">
+        <script type="application/json" class="envelope-source">
+          { "bands": [{ "id": "cut", "label": "Cutoff", "type": "lowpass", "frequency": 2000, "Q": 6, "slope": 24 }] }
+        </script>
+      </div>
+      <div style="display: flex; gap: 1rem" data-envelope-for="ev-filter">
+        <select id="ev-filter-type" data-envelope-param="cut.type">
+          <option value="lowpass">Low pass</option>
+          <option value="highpass">High pass</option>
+          <option value="bandpass">Band pass</option>
+        </select>
+        <select id="ev-filter-slope" data-envelope-param="cut.slope">
+          <option value="12">12 dB/oct</option>
+          <option value="24">24 dB/oct</option>
+          <option value="48">48 dB/oct</option>
+        </select>
+        <label><input type="checkbox" id="ev-filter-on" data-envelope-param="cut.on" /> On</label>
+      </div>
+    </section>
+
+    <div class="envelope" id="ev-eq" data-kind="filter" data-size="lg" data-range="18" aria-label="Equalizer">
+      <script type="application/json" class="envelope-source">
+        {
+          "bands": [
+            { "id": "low", "label": "Low cut", "type": "highpass", "frequency": 60 },
+            { "id": "bass", "label": "Bass", "type": "lowshelf", "frequency": 150, "gain": 3, "color": "chart-2" },
+            { "type": "peaking", "frequency": 800, "gain": -4, "Q": 2 },
+            { "id": "air", "type": "highshelf", "frequency": 8000, "gain": 4, "color": "#e11d48" },
+            { "id": "notch", "type": "notch", "frequency": 3000, "Q": 8, "on": false }
+          ]
+        }
+      </script>
+    </div>
+
+    <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem">
+      <div class="envelope" id="ev-sm" data-size="sm" data-color="chart-4" aria-label="Small">
+        <script type="application/json" class="envelope-source">{ "attack": 0.005, "decay": 0.2, "sustain": 0, "release": 0.1 }</script>
+      </div>
+      <div class="envelope" id="ev-readonly" data-readonly data-color="chart-5" aria-label="Read only">
+        <script type="application/json" class="envelope-source">{ "attack": 0.5, "decay": 0.5, "sustain": 1, "release": 1 }</script>
+      </div>
+      <div class="envelope" id="ev-off" aria-disabled="true" data-color="destructive" aria-label="Disabled">
+        <script type="application/json" class="envelope-source">{ "attack": 0.2, "decay": 0.2, "sustain": 0.5, "release": 0.3 }</script>
+      </div>
+      <div class="envelope" id="ev-bare" aria-label="Defaults"></div>
+    </section>
+
+    <form id="ev-form" style="display: grid; gap: 0.75rem">
+      <div class="envelope" id="ev-form-env" data-size="sm" aria-label="Envelope in a form">
+        <script type="application/json" class="envelope-source">{ "attack": 0.05, "decay": 0.2, "sustain": 0.7, "release": 0.4 }</script>
+      </div>
+      <div style="display: flex; gap: 1rem" data-envelope-for="ev-form-env">
+        <div class="knob" data-envelope-param="sustain" data-format="percent">
+          <input class="knob-input" type="range" id="ev-form-sustain" name="sustain" min="0" max="1" step="0.01" value="0.7" />
+          <label class="knob-label" for="ev-form-sustain">Sustain</label>
+          <output class="knob-value" for="ev-form-sustain">70%</output>
+        </div>
+        <input type="number" id="ev-form-release" name="release" data-envelope-param="release" min="0" max="10" step="0.001" value="0.4" />
+        <button class="btn" type="reset" id="ev-form-reset">Reset</button>
+      </div>
+    </form>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/knob/knob.js"></script>
+    <script type="module" src="/dist/components/envelope/envelope.js"></script>
+  </body>
+</html>

@@ -1,0 +1,653 @@
+---
+title: "Envelopes"
+description: "Envelope component - the curves of an audio plugin, drawn from one JSON object and edited by their handles: ADSR envelopes with bent slopes, a compressor's transfer curve, filter and EQ responses computed by Web Audio - with bound knobs, playback that shows the live value and phase, and the same parameters driving Web Audio."
+slug: "envelope"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="envelope" title="Envelopes" component="envelope">
+  The curves of an audio plugin, edited where they are drawn. An ADSR envelope - delay, attack, hold, decay, sustain, release - has a handle at the end of every stage and one in the middle of every slope that bends it, as in a synthesizer's envelope page. A compressor shows its transfer curve - threshold, ratio, a soft knee, makeup gain - with its attack and release, and a filter or an EQ shows the response of its bands, computed by the browser's own Web Audio filters, so the curve on screen is the filter that plays. Knobs, range and number inputs, selects and checkboxes bound to a parameter follow the curve both ways. While it plays the curve shows where it is: an envelope its live level and lit phase after a gate opens, a compressor the level going in and out and the gain it takes, a filter its modulated curve over the authored one. The same parameters drive Web Audio: <code>schedule()</code> writes an envelope into any AudioParam, <code>connect()</code> builds the filters or the compressor.
+</PageHeader>
+
+<SkillPanel component="envelope">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div class="envelope"&gt;</code> with its parameters as JSON in a <code>&lt;script type="application/json" class="envelope-source"&gt;</code>. The runtime draws the curve into an inline SVG and lays focusable <code>role="slider"</code> handles over it; a filter's curve is <code>BiquadFilterNode.getFrequencyResponse()</code> of its bands. Bound knobs and inputs stay the native form controls.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode/getFrequencyResponse" title="the filter and EQ curves, from the browser's own filters"><code>getFrequencyResponse()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/OfflineAudioContext" title="a context for the curves that never plays"><code>OfflineAudioContext</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/setValueCurveAtTime" title="schedule(): an envelope into a gain or a frequency"><code>setValueCurveAtTime()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/DynamicsCompressorNode" title="connect(): a compressor, its reduction shown live"><code>DynamicsCompressorNode</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/vector-effect" title="one SVG stretched over the plot"><code>vector-effect</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" title="a handle dragged by mouse, pen or touch"><code>Pointer Events</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="times, levels and frequencies in the page's locale"><code>Intl.NumberFormat</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.envelope</code>
+    <code>.envelope-source</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText dense>• <code>data-kind</code> - <code>adsr</code> (default), <code>dynamics</code>, <code>filter</code></SkillText>
+  <SkillText dense>• <code>data-envelope-for</code> + <code>data-envelope-param</code> - a knob, input or select bound to a parameter (<code>attack</code>, <code>threshold</code>, <code>cut.frequency</code>)</SkillText>
+  <SkillText dense>• <code>data-envelope-action</code> - <code>gate</code> (held), <code>trigger</code> (<code>data-value</code> seconds), <code>stop</code>, <code>reset</code>; <code>data-envelope-output</code> - <code>value</code>, <code>phase</code>, <code>reduction</code></SkillText>
+  <SkillText dense>• <code>data-range</code> - a compressor's floor / a filter's ± dB; <code>data-length</code> - an envelope's shortest span in seconds; <code>data-readonly</code></SkillText>
+  <SkillText dense>• <code>data-size</code> - <code>sm</code>, <code>lg</code>; <code>data-color</code> - <code>chart-1</code> ... <code>chart-5</code>, <code>destructive</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Pointer and keys">
+<SkillText dense>• Drag a handle - its time, level, frequency, gain or bend; <kbd>Shift</kbd> - ten times finer; <kbd>Escape</kbd> - back to where the drag started</SkillText>
+  <SkillText dense>• Double click, <kbd>Ctrl</kbd> / <kbd>Cmd</kbd> + click, <kbd>Delete</kbd> - the handle's authored values</SkillText>
+  <SkillText dense>• <kbd>Left</kbd> / <kbd>Right</kbd> - a time by 10 %, a frequency by a semitone; <kbd>Up</kbd> / <kbd>Down</kbd> - a level, gain, resonance, ratio or bend; <kbd>Page Up</kbd> / <kbd>Page Down</kbd> and the wheel - a band's Q</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Envelope" hint="An amp envelope: attack, decay to the sustain level, release. Drag the round handles - the attack's and the release's along the time, the decay's along the time and up and down for the sustain - and the small ones in the middle of each slope up or down to bend it. Hold the button (or press Space on it) to open the gate: the dot follows the level, the stage it is in lights up, and letting go runs the release. The knobs are bound to the same parameters; turn one and the curve follows."
+<div class="grid gap-3">
+  <div class="envelope" id="en-amp" aria-label="Amp envelope" data-state-demo>
+    <script type="application/json" class="envelope-source">
+      {
+        "attack": 0.02,
+        "decay": 0.35,
+        "sustain": 0.6,
+        "release": 0.6,
+        "attackCurve": 0.3,
+        "decayCurve": 0.6,
+        "releaseCurve": 0.6
+      }
+    </script>
+  </div>
+  <div class="flex flex-wrap items-center gap-4" data-envelope-for="en-amp">
+    <button class="btn" type="button" data-envelope-action="gate">Hold to play</button>
+    <button class="btn" type="button" data-variant="outline" data-envelope-action="trigger" data-value="0.5"
+      >Play 0.5 s</button
+    >
+    <div
+      class="knob"
+      data-size="sm"
+      data-envelope-param="attack"
+      data-scale="power"
+      data-exponent="3"
+      data-format="time"
+    >
+      <input class="knob-input" type="range" id="en-amp-attack" min="0" max="5" step="any" value="0.02" />
+      <label class="knob-label" for="en-amp-attack">Attack</label>
+      <output class="knob-value" for="en-amp-attack">20 ms</output>
+    </div>
+    <div
+      class="knob"
+      data-size="sm"
+      data-envelope-param="decay"
+      data-scale="power"
+      data-exponent="3"
+      data-format="time"
+    >
+      <input class="knob-input" type="range" id="en-amp-decay" min="0" max="5" step="any" value="0.35" />
+      <label class="knob-label" for="en-amp-decay">Decay</label>
+      <output class="knob-value" for="en-amp-decay">350 ms</output>
+    </div>
+    <div class="knob" data-size="sm" data-envelope-param="sustain" data-format="percent">
+      <input class="knob-input" type="range" id="en-amp-sustain" min="0" max="1" step="any" value="0.6" />
+      <label class="knob-label" for="en-amp-sustain">Sustain</label>
+      <output class="knob-value" for="en-amp-sustain">60%</output>
+    </div>
+    <div
+      class="knob"
+      data-size="sm"
+      data-envelope-param="release"
+      data-scale="power"
+      data-exponent="3"
+      data-format="time"
+    >
+      <input class="knob-input" type="range" id="en-amp-release" min="0" max="10" step="any" value="0.6" />
+      <label class="knob-label" for="en-amp-release">Release</label>
+      <output class="knob-value" for="en-amp-release">600 ms</output>
+    </div>
+    <p class="text-sm text-muted-foreground m-0">
+      <output data-envelope-output="phase"></output> <output data-envelope-output="value"></output>
+    </p>
+  </div>
+</div>
+```
+
+```html example label="Delay, hold and bends" hint="All six stages: the delay and hold show because the source names them. Each slope is bent its own way - the attack fast first (0.6), the decay slow first (-0.4), the release fast first (0.8, the tail of an analog envelope). data-length='3' keeps three seconds on the plot, so the curve does not rescale while you edit it. The play button holds the gate for one second."
+<div class="grid gap-3">
+  <div class="envelope" id="en-dahdsr" data-length="3" data-color="chart-2" aria-label="Filter envelope">
+    <script type="application/json" class="envelope-source">
+      {
+        "delay": 0.2,
+        "attack": 0.3,
+        "hold": 0.2,
+        "decay": 0.5,
+        "sustain": 0.4,
+        "release": 0.6,
+        "attackCurve": 0.6,
+        "decayCurve": -0.4,
+        "releaseCurve": 0.8
+      }
+    </script>
+  </div>
+  <div class="flex items-center gap-3" data-envelope-for="en-dahdsr">
+    <button class="btn" type="button" data-size="sm" data-envelope-action="trigger" data-value="1">Play 1 s</button>
+    <button class="btn" type="button" data-size="sm" data-variant="outline" data-envelope-action="reset">Reset</button>
+    <span class="text-sm text-muted-foreground"><output data-envelope-output="phase"></output></span>
+  </div>
+</div>
+```
+
+```html example label="A synth voice" hint="Press the keys (they sound): a sawtooth goes through the filter - a resonant 24 dB low pass, built by connect() from the third curve - and an amplifier the amp envelope drives. The filter envelope opens the cutoff by up to six octaves (Env amount): the filter curve follows it live over its authored curve, dashed, and the cutoff knob's ring shows it. Edit any curve while a key is held - the sound follows."
+<div class="grid gap-4" id="en-voice">
+  <div class="grid grid-cols-auto gap-4" style="--layout-min: 18rem">
+    <div class="grid gap-1">
+      <span class="text-sm font-medium">Amp</span>
+      <div class="envelope" id="en-voice-amp" data-size="sm" aria-label="Amp envelope">
+        <script type="application/json" class="envelope-source">
+          { "attack": 0.005, "decay": 0.4, "sustain": 0.5, "release": 0.4, "decayCurve": 0.6, "releaseCurve": 0.6 }
+        </script>
+      </div>
+    </div>
+    <div class="grid gap-1">
+      <span class="text-sm font-medium">Filter envelope</span>
+      <div class="envelope" id="en-voice-fenv" data-size="sm" data-color="chart-2" aria-label="Filter envelope">
+        <script type="application/json" class="envelope-source">
+          { "attack": 0.01, "decay": 0.3, "sustain": 0.15, "release": 0.3, "decayCurve": 0.7, "releaseCurve": 0.5 }
+        </script>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-auto items-center gap-4" style="--layout-min: 18rem">
+    <div
+      class="envelope"
+      id="en-voice-filter"
+      data-kind="filter"
+      data-size="sm"
+      data-color="chart-3"
+      aria-label="Filter"
+    >
+      <script type="application/json" class="envelope-source">
+        { "bands": [{ "id": "cut", "label": "Cutoff", "type": "lowpass", "frequency": 400, "Q": 8, "slope": 24 }] }
+      </script>
+    </div>
+    <div class="flex flex-wrap items-start gap-4" data-envelope-for="en-voice-filter">
+      <div
+        class="knob"
+        data-size="sm"
+        data-envelope-param="cut.frequency"
+        data-scale="exponential"
+        data-format="si"
+        data-unit="Hz"
+      >
+        <input class="knob-input" type="range" id="en-voice-cutoff" min="20" max="20000" step="any" value="400" />
+        <label class="knob-label" for="en-voice-cutoff">Cutoff</label>
+        <output class="knob-value" for="en-voice-cutoff">400 Hz</output>
+        <script type="application/json" class="knob-rings">
+          [{ "id": "env", "label": "Filter envelope", "amount": 0.6, "color": "chart-2" }]
+        </script>
+      </div>
+      <div
+        class="knob"
+        data-size="sm"
+        data-envelope-param="cut.Q"
+        data-format="signed"
+        data-unit="dB"
+        data-decimals="1"
+      >
+        <input class="knob-input" type="range" id="en-voice-res" min="-12" max="24" step="0.1" value="8" />
+        <label class="knob-label" for="en-voice-res">Resonance</label>
+        <output class="knob-value" for="en-voice-res">+8.0 dB</output>
+      </div>
+      <div class="knob" data-size="sm" data-format="percent" id="en-voice-amount-knob">
+        <input class="knob-input" type="range" id="en-voice-amount" min="0" max="1" step="any" value="0.6" />
+        <label class="knob-label" for="en-voice-amount">Env amount</label>
+        <output class="knob-value" for="en-voice-amount">60%</output>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-wrap gap-1" role="group" aria-label="Keys">
+    <button class="btn" type="button" data-variant="outline" data-note="130.81">C</button>
+    <button class="btn" type="button" data-variant="outline" data-note="146.83">D</button>
+    <button class="btn" type="button" data-variant="outline" data-note="164.81">E</button>
+    <button class="btn" type="button" data-variant="outline" data-note="196">G</button>
+    <button class="btn" type="button" data-variant="outline" data-note="220">A</button>
+    <button class="btn" type="button" data-variant="outline" data-note="261.63">C'</button>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const env = df$.shadcn.envelope;
+    let ctx = null;
+    let osc = null;
+    let amp = null;
+    const start = () => {
+      if (ctx) return ctx.resume();
+      ctx = new AudioContext();
+      osc = new OscillatorNode(ctx, { type: 'sawtooth' });
+      amp = new GainNode(ctx, { gain: 0 });
+      const chain = env.connect('#en-voice-filter', ctx);
+      osc.connect(chain.input);
+      chain.output.connect(amp).connect(ctx.destination);
+      osc.start();
+    };
+    // the amp envelope is the amplifier's gain, frame by frame
+    df$('#en-voice-amp').on('envelope-value', (e) =>
+      amp?.gain.setTargetAtTime(e.detail.value * 0.2, ctx.currentTime, 0.005),
+    );
+    df$('#en-voice-amp').on('envelope-phase', (e) => {
+      if (e.detail.phase === 'idle') amp?.gain.setTargetAtTime(0, ctx.currentTime, 0.005);
+    });
+    // the filter envelope opens the cutoff: up to six octaves at full amount
+    df$('#en-voice-fenv').on('envelope-value', (e) => {
+      const base = env.params('#en-voice-filter').bands[0].frequency;
+      const amount = Number(df$('#en-voice-amount').val());
+      env.modulate('#en-voice-filter', {
+        cut: { frequency: Math.min(20000, base * 2 ** (6 * amount * e.detail.value)) },
+      });
+      df$.shadcn.knob.modulate('#en-voice-cutoff', { env: e.detail.value });
+    });
+    df$('#en-voice-fenv').on('envelope-phase', (e) => {
+      if (e.detail.phase !== 'idle') return;
+      env.modulate('#en-voice-filter', null);
+      df$.shadcn.knob.modulate('#en-voice-cutoff', null);
+    });
+    const down = (e) => {
+      start();
+      osc.frequency.setValueAtTime(Number(e.currentTarget.dataset.note), ctx.currentTime);
+      env.noteOn('#en-voice-amp');
+      env.noteOn('#en-voice-fenv');
+      e.currentTarget.setPointerCapture(e.pointerId);
+    };
+    const up = () => {
+      env.noteOff('#en-voice-amp');
+      env.noteOff('#en-voice-fenv');
+    };
+    df$('#en-voice [data-note]').on('pointerdown', down).on('pointerup', up).on('pointercancel', up);
+  });
+</script>
+```
+
+```html example label="Compressor" hint="A compressor's transfer curve: the level going in along the bottom, coming out up the side, the dashed diagonal is no change. Drag the threshold handle left or right (Up and Down on it set the knee), the ratio handle at 0 dB in up or down. Play the drums (they sound): the browser's DynamicsCompressorNode, built by connect(), compresses them, and the dot shows the level in and out as it attacks and releases - above the curve while the compressor catches up - and the meter the gain it takes."
+<div class="flex flex-wrap items-start gap-6">
+  <div class="envelope" id="en-comp" data-kind="dynamics" data-range="48" aria-label="Compressor">
+    <script type="application/json" class="envelope-source">
+      { "threshold": -24, "ratio": 4, "knee": 6, "makeup": 6, "attack": 0.005, "release": 0.15 }
+    </script>
+  </div>
+  <div class="grid gap-3" data-envelope-for="en-comp">
+    <div class="flex flex-wrap items-start gap-4">
+      <div
+        class="knob"
+        data-size="sm"
+        data-envelope-param="threshold"
+        data-format="signed"
+        data-unit="dB"
+        data-decimals="1"
+      >
+        <input class="knob-input" type="range" id="en-comp-threshold" min="-48" max="0" step="0.5" value="-24" />
+        <label class="knob-label" for="en-comp-threshold">Threshold</label>
+        <output class="knob-value" for="en-comp-threshold">-24.0 dB</output>
+      </div>
+      <div class="knob" data-size="sm" data-envelope-param="ratio" data-scale="exponential" data-decimals="1">
+        <input class="knob-input" type="range" id="en-comp-ratio" min="1" max="20" step="any" value="4" />
+        <label class="knob-label" for="en-comp-ratio">Ratio</label>
+        <output class="knob-value" for="en-comp-ratio">4.0</output>
+      </div>
+      <div class="knob" data-size="sm" data-envelope-param="knee" data-unit="dB" data-decimals="1">
+        <input class="knob-input" type="range" id="en-comp-knee" min="0" max="24" step="0.5" value="6" />
+        <label class="knob-label" for="en-comp-knee">Knee</label>
+        <output class="knob-value" for="en-comp-knee">6.0 dB</output>
+      </div>
+      <div
+        class="knob"
+        data-size="sm"
+        data-envelope-param="makeup"
+        data-format="signed"
+        data-unit="dB"
+        data-decimals="1"
+        data-origin="0"
+      >
+        <input class="knob-input" type="range" id="en-comp-makeup" min="-12" max="24" step="0.5" value="6" />
+        <label class="knob-label" for="en-comp-makeup">Makeup</label>
+        <output class="knob-value" for="en-comp-makeup">+6.0 dB</output>
+      </div>
+      <div class="knob" data-size="sm" data-envelope-param="attack" data-scale="exponential" data-format="time">
+        <input class="knob-input" type="range" id="en-comp-attack" min="0.001" max="1" step="any" value="0.005" />
+        <label class="knob-label" for="en-comp-attack">Attack</label>
+        <output class="knob-value" for="en-comp-attack">5.00 ms</output>
+      </div>
+      <div class="knob" data-size="sm" data-envelope-param="release" data-scale="exponential" data-format="time">
+        <input class="knob-input" type="range" id="en-comp-release" min="0.01" max="1" step="any" value="0.15" />
+        <label class="knob-label" for="en-comp-release">Release</label>
+        <output class="knob-value" for="en-comp-release">150 ms</output>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="btn" type="button" id="en-comp-play" aria-pressed="false">Play drums</button>
+      <span class="text-sm text-muted-foreground">
+        Reduction <output data-envelope-output="reduction"></output> · <output data-envelope-output="phase"></output>
+      </span>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const env = df$.shadcn.envelope;
+    const button = df$('#en-comp-play');
+    let ctx = null;
+    let chain = null;
+    let noise = null;
+    let timer = 0;
+    let next = 0;
+    let step = 0;
+    const hit = (time, kind) => {
+      const gain = new GainNode(ctx, { gain: 0 });
+      gain.connect(chain.input);
+      if (kind === 'kick') {
+        const osc = new OscillatorNode(ctx, { frequency: 120 });
+        osc.frequency.exponentialRampToValueAtTime(45, time + 0.15);
+        gain.gain.setValueAtTime(1, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
+        osc.connect(gain);
+        osc.start(time);
+        osc.stop(time + 0.4);
+        return;
+      }
+      const src = new AudioBufferSourceNode(ctx, { buffer: noise });
+      const filter = new BiquadFilterNode(
+        ctx,
+        kind === 'snare' ? { type: 'bandpass', frequency: 1800 } : { type: 'highpass', frequency: 7000 },
+      );
+      const length = kind === 'snare' ? 0.18 : 0.05;
+      gain.gain.setValueAtTime(kind === 'snare' ? 0.8 : 0.25, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + length);
+      src.connect(filter).connect(gain);
+      src.start(time);
+      src.stop(time + length);
+    };
+    // a lookahead scheduler: eighth notes at 110 bpm, kick on 1 and 3, snare on 2 and 4, hats between
+    const schedule = () => {
+      while (next < ctx.currentTime + 0.2) {
+        const beat = step % 8;
+        if (beat === 0 || beat === 4 || beat === 5) hit(next, 'kick');
+        if (beat === 2 || beat === 6) hit(next, 'snare');
+        hit(next, 'hat');
+        next += 60 / 110 / 2;
+        step++;
+      }
+    };
+    button.on('click', async () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = 0;
+        button.attr('aria-pressed', 'false').text('Play drums');
+        return;
+      }
+      if (!ctx) {
+        ctx = new AudioContext();
+        chain = env.connect('#en-comp', ctx);
+        chain.output.connect(ctx.destination);
+        noise = new AudioBuffer({ length: ctx.sampleRate, sampleRate: ctx.sampleRate });
+        const data = noise.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+      }
+      await ctx.resume();
+      next = ctx.currentTime + 0.05;
+      step = 0;
+      timer = setInterval(schedule, 50);
+      button.attr('aria-pressed', 'true').text('Stop');
+    });
+  });
+</script>
+```
+
+```html example label="Filter" hint="A filter is a band of the Web Audio BiquadFilterNode: its curve is the response the browser computes for it. Drag the handle left or right for the cutoff and up or down for the resonance; the wheel over it sets it too. The selects pick the type and the slope (24 dB per octave is two filters in a row, the resonance twice), the checkbox switches it off. Sweep moves the cutoff with modulate(): the live curve moves over the authored one."
+<div class="grid gap-3">
+  <div class="envelope" id="en-filter" data-kind="filter" data-color="chart-3" aria-label="Filter">
+    <script type="application/json" class="envelope-source">
+      { "bands": [{ "id": "cut", "label": "Cutoff", "type": "lowpass", "frequency": 1200, "Q": 6, "slope": 24 }] }
+    </script>
+  </div>
+  <div class="flex flex-wrap items-center gap-4" data-envelope-for="en-filter">
+    <select class="select" data-size="sm" data-envelope-param="cut.type" aria-label="Type">
+      <option value="lowpass">Low pass</option>
+      <option value="highpass">High pass</option>
+      <option value="bandpass">Band pass</option>
+      <option value="notch">Notch</option>
+    </select>
+    <select class="select" data-size="sm" data-envelope-param="cut.slope" aria-label="Slope">
+      <option value="12">12 dB/oct</option>
+      <option value="24">24 dB/oct</option>
+      <option value="48">48 dB/oct</option>
+    </select>
+    <div class="flex items-center gap-2">
+      <input class="checkbox" type="checkbox" id="en-cut-on-1" data-envelope-param="cut.on" />
+      <label class="label" for="en-cut-on-1">On</label>
+    </div>
+    <button class="btn" type="button" data-size="sm" data-variant="outline" id="en-filter-sweep" aria-pressed="false">
+      Sweep
+    </button>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const env = df$.shadcn.envelope;
+    const button = df$('#en-filter-sweep');
+    let running = false;
+    let start = 0;
+    const frame = (now) => {
+      if (!running) return;
+      const t = (now - start) / 1000;
+      const base = env.params('#en-filter').bands[0].frequency;
+      env.modulate('#en-filter', {
+        cut: { frequency: Math.min(20000, base * 2 ** (2 * Math.sin(t * Math.PI * 0.5))) },
+      });
+      requestAnimationFrame(frame);
+    };
+    button.on('click', () => {
+      running = !running;
+      button.attr('aria-pressed', String(running));
+      if (running) {
+        start = performance.now();
+        requestAnimationFrame(frame);
+      } else env.modulate('#en-filter', null);
+    });
+  });
+</script>
+```
+
+```html example label="EQ" hint="Five bands, their responses added: a low cut, a bass shelf, a bell, an air shelf and a notch that is off (dashed, left out). Each band's own curve is drawn thin in its colour, the sum strong. Drag a handle left or right for its frequency, up or down for its gain (a shelf's handle sits at half its gain); the wheel or Page Up and Page Down over a bell set its Q. The checkboxes switch the bands; a band without an id is named by its number (3.gain)."
+<div class="grid gap-3">
+  <div class="envelope" id="en-eq" data-kind="filter" data-size="lg" data-range="18" aria-label="Equalizer">
+    <script type="application/json" class="envelope-source">
+      {
+        "bands": [
+          { "id": "low", "label": "Low cut", "type": "highpass", "frequency": 40, "slope": 24 },
+          { "id": "bass", "label": "Bass", "type": "lowshelf", "frequency": 120, "gain": 3, "color": "chart-2" },
+          { "type": "peaking", "frequency": 500, "gain": -4, "Q": 1.4, "color": "chart-3" },
+          { "id": "air", "label": "Air", "type": "highshelf", "frequency": 9000, "gain": 4, "color": "chart-4" },
+          {
+            "id": "notch",
+            "label": "Hum",
+            "type": "notch",
+            "frequency": 3500,
+            "Q": 10,
+            "on": false,
+            "color": "chart-5"
+          }
+        ]
+      }
+    </script>
+  </div>
+  <div class="flex flex-wrap items-center gap-4" data-envelope-for="en-eq">
+    <div class="flex items-center gap-2">
+      <input class="checkbox" type="checkbox" id="en-low-on-2" data-envelope-param="low.on" />
+      <label class="label" for="en-low-on-2">Low cut</label>
+    </div>
+    <div class="flex items-center gap-2">
+      <input class="checkbox" type="checkbox" id="en-bass-on-3" data-envelope-param="bass.on" />
+      <label class="label" for="en-bass-on-3">Bass</label>
+    </div>
+    <div class="flex items-center gap-2">
+      <input class="checkbox" type="checkbox" id="en-3-on-4" data-envelope-param="3.on" />
+      <label class="label" for="en-3-on-4">Bell</label>
+    </div>
+    <div class="flex items-center gap-2">
+      <input class="checkbox" type="checkbox" id="en-air-on-5" data-envelope-param="air.on" />
+      <label class="label" for="en-air-on-5">Air</label>
+    </div>
+    <div class="flex items-center gap-2">
+      <input class="checkbox" type="checkbox" id="en-notch-on-6" data-envelope-param="notch.on" />
+      <label class="label" for="en-notch-on-6">Hum</label>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Sizes, colours and states" hint="data-size sm and lg (or --envelope-height), a chart colour, a curve without handles for display (data-readonly), and one authored disabled (aria-disabled='true'): no handle moves."
+<div class="grid grid-cols-auto gap-4" style="--layout-min: 18rem">
+  <div class="envelope" data-size="sm" data-color="chart-1" aria-label="Pluck">
+    <script type="application/json" class="envelope-source">
+      { "attack": 0.002, "decay": 0.25, "sustain": 0, "release": 0.1, "decayCurve": 0.8 }
+    </script>
+  </div>
+  <div class="envelope" data-size="sm" data-color="chart-4" aria-label="Pad">
+    <script type="application/json" class="envelope-source">
+      { "attack": 1.2, "decay": 0.8, "sustain": 0.8, "release": 2, "attackCurve": -0.3 }
+    </script>
+  </div>
+  <div class="envelope" data-readonly data-color="chart-5" aria-label="Read only">
+    <script type="application/json" class="envelope-source">
+      { "attack": 0.4, "decay": 0.4, "sustain": 0.5, "release": 0.8 }
+    </script>
+  </div>
+  <div class="envelope" aria-disabled="true" data-color="destructive" aria-label="Disabled">
+    <script type="application/json" class="envelope-source">
+      { "attack": 0.1, "decay": 0.3, "sustain": 0.7, "release": 0.5 }
+    </script>
+  </div>
+</div>
+```
+
+```html example label="In a form" hint="The bound knobs are the form's controls: they submit the envelope's parameters under their names, and a reset puts the authored values back - the curve follows both."
+<form class="grid gap-3" id="en-form">
+  <div class="envelope" id="en-form-env" data-size="sm" aria-label="Envelope">
+    <script type="application/json" class="envelope-source">
+      { "attack": 0.05, "decay": 0.2, "sustain": 0.7, "release": 0.4 }
+    </script>
+  </div>
+  <div class="flex flex-wrap items-start gap-4" data-envelope-for="en-form-env">
+    <div
+      class="knob"
+      data-size="sm"
+      data-envelope-param="attack"
+      data-scale="power"
+      data-exponent="3"
+      data-format="time"
+    >
+      <input
+        class="knob-input"
+        type="range"
+        id="en-form-attack"
+        name="attack"
+        min="0"
+        max="5"
+        step="0.001"
+        value="0.05"
+      />
+      <label class="knob-label" for="en-form-attack">Attack</label>
+      <output class="knob-value" for="en-form-attack">50 ms</output>
+    </div>
+    <div class="knob" data-size="sm" data-envelope-param="sustain" data-format="percent">
+      <input
+        class="knob-input"
+        type="range"
+        id="en-form-sustain"
+        name="sustain"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.7"
+      />
+      <label class="knob-label" for="en-form-sustain">Sustain</label>
+      <output class="knob-value" for="en-form-sustain">70%</output>
+    </div>
+    <div
+      class="knob"
+      data-size="sm"
+      data-envelope-param="release"
+      data-scale="power"
+      data-exponent="3"
+      data-format="time"
+    >
+      <input
+        class="knob-input"
+        type="range"
+        id="en-form-release"
+        name="release"
+        min="0"
+        max="10"
+        step="0.001"
+        value="0.4"
+      />
+      <label class="knob-label" for="en-form-release">Release</label>
+      <output class="knob-value" for="en-form-release">400 ms</output>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <button class="btn" type="submit" data-size="sm">Submit</button>
+    <button class="btn" type="reset" data-size="sm" data-variant="outline">Reset</button>
+    <output class="text-sm text-muted-foreground" id="en-form-data"></output>
+  </div>
+</form>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#en-form').on('submit', (e) => {
+      e.preventDefault();
+      df$('#en-form-data').text(new URLSearchParams(new FormData(e.target)).toString());
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.envelope</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - at rest: the curve and its handles</li>
+    <li><code>playing</code> - an envelope after its gate opened, until its release ends (<code>\{ gate \}</code>: the gate's length in seconds); a compressor while levels come in; a filter while it is modulated - a dot shows the live value, an envelope its phase</li>
+    <li><code>editing</code> - a handle is dragged (<code>\{ handle \}</code>): its value shows; a drag enters it and returns to <code>default</code> when it ends</li>
+    <li><code>disabled</code> - <code>aria-disabled</code>: no handle moves, playback stops</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes <code>\{ params \}</code>, merged into the current parameters - <code>setState('default', \{ params: \{ attack: 0.2 \} \})</code> changes the attack and keeps the rest; <code>getState()</code> reports all of them, also those a drag, a key or a bound control set. A drag sends <code>envelope-change</code> as it goes (<code>committed: false</code>) and once when it ends; a committed change is written into the source.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/envelope-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/envelope.schema.json"><code>envelope.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `playing` | `boolean` | `true`, `false` | `false` | Playing (`setState('playing')`): an envelope's gate opens, the live value and phase show. |
+| `editing` | `boolean` | `true`, `false` | `false` | A handle is being dragged (`setState('editing')`): its value shows. |
+| `disabled` | `boolean` | `true`, `false` | `false` | Disabled (`setState('disabled')`): no handle moves, playback stops. |
+```
+
+</StatesSection>
+
+<ApiSection component="envelope" />
+
+<SourceFiles component="envelope" section="css">
+  <SourceNote for="css">The plot: one SVG stretched over it with its strokes kept at their width, the ticks, handles and live point laid over it at the fractions the runtime writes, a compressor's meter, an envelope's phase strip; sizes, colours and the accessibility media queries.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="envelope" section="js">
+  <SourceNote for="js">The curves (bent slopes, the soft knee, Web Audio's filter responses), the handles and what each moves, the drag, the keys, the bound controls, playback (the gate, the phases, a compressor's attack and release), schedule() and connect(), and the State API.</SourceNote>
+</SourceFiles>
+
+</DocPage>

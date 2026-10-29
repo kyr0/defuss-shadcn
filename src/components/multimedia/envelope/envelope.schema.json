@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "name": "envelope",
+  "states": {
+    "playing": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".envelope"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "playing",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "editing": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".envelope"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "editing",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".envelope"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "disabled",
+        "args": {}
+      },
+      "observation": {
+        "kind": "api",
+        "name": "@state"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}
