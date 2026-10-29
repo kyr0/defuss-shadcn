@@ -1,6 +1,29 @@
 {
   "entries": [
     {
+      "version": "v0.9.11",
+      "date": "October 29, 2026",
+      "commits": [
+        "docs(code-example): the Studio link is hidden on every card while the Studio is alpha; the address-fragment route still opens an example",
+        "docs(fretboard): one tab per example - each card's State tab sets its Fretboard; the bound neck and chord charts shown in two composites at the end",
+        "feat(multimedia): Fretboard Neck and Chord Chart - the Fretboard's neck and chord charts as components of their own, each with its State API and individual examples; the Fretboard drives them",
+        "feat(tacho): Tacho - a needle dial over a native meter with a damped-spring needle; a guitar tuner with pitch detection, panning, rev counters and VU meters",
+        "feat(envelope): Envelopes - ADSR, compressor and filter curves drawn and edited from one JSON, played live, written into Web Audio",
+        "feat(knob): Knobs - a dial over a native range input with scales, formats, modulation rings and a precision drag",
+        "feat(fretboard): play-along tabs from one JSON - chords, tab and lyrics lanes under one clock, scores per key and time signature, any tuning, capo and barres, zoom and loops",
+        "feat(media-timeline): Space plays and pauses the timeline - its own, a bound one, or with nothing focused the one playing or used last",
+        "chore(agents): gate findings of the parts-files change",
+        "docs(parts): no part cards on the docs pages - each component's individual examples live in its parts file",
+        "docs(routing): the mailbox example is a Card - Navigation Menu folders, a Table per folder, an Alert for the wildcard route",
+        "feat(website): every Website template routes with defuss-dom-router and speaks English and German with defuss-i18n",
+        "feat(guides): Client-side Routing and Translation - every scaffold routes with defuss-dom-router and speaks English and German with defuss-i18n",
+        "chore(agents): updated agent memory after self-reflection",
+        "test(gate): gate only what a change can affect",
+        "docs(index): Application Scaffolds card, a link on every pillar card, VAE named; deck slide 17 says non-AI-SLOP",
+        "fix(figures): read a figure whose closing tag breaks before its &gt; - 10 deck figures were neither written nor gated"
+      ]
+    },
+    {
       "version": "v0.9.10",
       "date": "October 19, 2026",
       "commits": [
