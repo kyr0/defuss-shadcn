@@ -128,6 +128,73 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 ```
 
 
+```html example label="Code: a source tree before and after" hint="Two Code Mockups whose lines carry data-diff - the Modern Paper's Figure 7: three component folders before the move (removed lines) and after it (added lines). Item 2 aligns its listing to the end, so each half of the figure shows its own tree; below 42rem both start at the left."
+<style>
+  #tree-diff {
+    container-type: inline-size;
+  }
+  #tree-diff .mockup-code {
+    padding-block-start: 2.75rem;
+    grid-template-columns: max-content;
+  }
+  #tree-diff .diff-item-2 .mockup-code {
+    justify-content: end;
+  }
+  @container (width < 42rem) {
+    #tree-diff .diff-item-2 .mockup-code {
+      justify-content: start;
+    }
+  }
+</style>
+<figure
+  class="diff"
+  id="tree-diff"
+  aria-label="The source tree before and after the layout change: drag the divider to compare"
+>
+  <div class="diff-item-1">
+    <div class="mockup-code" data-chrome="none" data-variant="muted">
+      <pre><code>src/components/</code></pre>
+      <pre data-diff="remove"><code>  button/</code></pre>
+      <pre><code>    button.css</code></pre>
+      <pre><code>    component-skill.md</code></pre>
+      <pre data-diff="remove"><code>  data-grid/</code></pre>
+      <pre><code>    component-skill.md</code></pre>
+      <pre><code>    data-grid.css</code></pre>
+      <pre><code>    data-grid.schema.json</code></pre>
+      <pre><code>    data-grid.ts</code></pre>
+      <pre data-diff="remove"><code>  dialog/</code></pre>
+      <pre><code>    component-skill.md</code></pre>
+      <pre><code>    dialog.css</code></pre>
+      <pre><code>    dialog.schema.json</code></pre>
+      <pre><code>    dialog.ts</code></pre>
+      <pre><code>  ... 225 more component folders</code></pre>
+    </div>
+    <span class="diff-label">Before</span>
+  </div>
+  <div class="diff-item-2">
+    <div class="mockup-code" data-chrome="none" data-variant="muted">
+      <pre><code>src/components/</code></pre>
+      <pre data-diff="add"><code>  actions/button/</code></pre>
+      <pre><code>    button.css</code></pre>
+      <pre><code>    component-skill.md</code></pre>
+      <pre data-diff="add"><code>  big-data/data-grid/</code></pre>
+      <pre><code>    component-skill.md</code></pre>
+      <pre><code>    data-grid.css</code></pre>
+      <pre><code>    data-grid.schema.json</code></pre>
+      <pre><code>    data-grid.ts</code></pre>
+      <pre data-diff="add"><code>  overlays/dialog/</code></pre>
+      <pre><code>    component-skill.md</code></pre>
+      <pre><code>    dialog.css</code></pre>
+      <pre><code>    dialog.schema.json</code></pre>
+      <pre><code>    dialog.ts</code></pre>
+      <pre><code>  ... 225 more, in 19 sections</code></pre>
+    </div>
+    <span class="diff-label">After</span>
+  </div>
+  <input class="diff-range" type="range" min="0" max="100" value="50" step="0.1" aria-label="Comparison divider" />
+</figure>
+```
+
 ```html example label="Vertical" hint="data-orientation='vertical': item 1 on top, item 2 below, the divider drags up and down (arrow keys too)." height="30"
 <figure class="diff" data-ratio="3/4" data-orientation="vertical" style="max-width: 20rem">
   <div class="diff-item-1">

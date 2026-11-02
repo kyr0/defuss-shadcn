@@ -76,6 +76,31 @@ try {
     assert.ok(r.t.height > 60, `text figure has its content height (${r.t.height})`);
   });
 
+  await check('code: two Code Mockups compare a source tree - before left of the divider, after right; removed and added lines marked', async () => {
+    assert.equal(await layerAt(page, 'd-code', 0.2, 0.3), 'a');
+    assert.equal(await layerAt(page, 'd-code', 0.8, 0.3), 'b');
+    const r = await page.$eval('#d-code', (fig) => {
+      const line = (sel: string) => getComputedStyle(fig.querySelector(sel)!).backgroundColor;
+      const box = fig.getBoundingClientRect();
+      return {
+        removed: [...fig.querySelectorAll('.diff-item-1 pre[data-diff="remove"]')].length,
+        added: [...fig.querySelectorAll('.diff-item-2 pre[data-diff="add"]')].length,
+        remove: line('pre[data-diff="remove"]'),
+        add: line('pre[data-diff="add"]'),
+        plain: line('.diff-item-1 pre:not([data-diff])'),
+        // the content sizes the figure: every line of the longer tree fits
+        fits: fig.querySelector('.diff-item-2 pre:last-of-type')!.getBoundingClientRect().bottom <= box.bottom + 0.5,
+      };
+    });
+    assert.deepEqual([r.removed, r.added], [3, 3]);
+    assert.notEqual(r.remove, r.add);
+    assert.notEqual(r.remove, r.plain);
+    assert.ok(r.fits, 'the figure holds the whole listing');
+    await page.$eval('#d-code', (el) => (el as any).api.setState('after'));
+    assert.equal(await layerAt(page, 'd-code', 0.2, 0.3), 'b');
+    await page.$eval('#d-code', (el) => (el as any).api.setState('default'));
+  });
+
   await check('the divider line sits on --diff-pos; the knob is centered on it', async () => {
     const r = await page.evaluate(() => {
       const el = document.getElementById('d-default')!;
