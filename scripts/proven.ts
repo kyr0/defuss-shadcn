@@ -65,7 +65,9 @@ const fresh = process.env.FULL === '1';
 const record = records[name];
 if (mayReplay(record, before, command.join(' '), fresh)) {
   console.log(replayHeader(name, record));
-  process.stdout.write(record.output);
+  // awaited: process.exit right after a write cuts a piped replay at the pipe buffer (64 KiB) - the vae gate read a
+  // coverage replay without its table (99 KB recorded, 65,780 bytes logged)
+  await Bun.write(Bun.stdout, record.output);
   process.exit(0);
 }
 

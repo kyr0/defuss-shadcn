@@ -135,6 +135,21 @@ try {
     assert.doesNotMatch(r.out, /an input changed/);
     assert.match(proven('unit', write).out, /^proven: unit/);
   });
+
+  await check('a replay larger than a pipe buffer arrives whole through a pipe (the coverage table sits at its end)', () => {
+    // a regression: process.exit right after the write cut a piped replay at 64 KiB - the vae gate read a coverage
+    // replay without its `All files` table
+    const big = `awk 'BEGIN { for (i = 0; i < 4000; i++) printf "line %04d of a long test log ..................................\\n", i; print "All files | 71.9 |" }'`;
+    const first = proven('verify', big, { FULL: '1' });
+    assert.equal(first.code, 0, first.out.slice(-200));
+    // through a shell pipe, as the gate reads it: Bun.spawnSync alone drains fast enough to hide the cut
+    // (VERIFIED 2026-11-01: the unfixed replay delivered 131,350 of 256,282 bytes through `| cat`)
+    const script = `echo "ran verify"; echo x >> "${runs}"; ${big}`;
+    const r = sh(['sh', '-c', `bun "${PROVEN}" verify -- sh -c '${script.replace(/'/g, `'\\''`)}' 2>&1 | cat`]);
+    assert.match(r.out, /^proven: verify/);
+    assert.ok(r.out.length > 250_000, `replayed ${r.out.length} bytes`);
+    assert.match(r.out, /All files \| 71\.9 \|\n?$/);
+  });
 } finally {
   rmSync(base, { recursive: true, force: true });
 }
