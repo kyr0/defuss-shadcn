@@ -1,6 +1,18 @@
 {
   "entries": [
     {
+      "version": "v0.9.12",
+      "date": "November 02, 2026",
+      "commits": [
+        "feat(geography): Geography section - the Geo Map (Natural Earth countries, continents and states in SVG on five projections; pick, focus and drill down - Europe to its countries, Germany to its states, an S2 cell to its children; callouts) and df$.shadcn.geo (WGS84 geodesics, S2 cells, a Morton index, routing over supplied segments), in its own geo.* bundle",
+        "chore(dev): the dev server's bare address redirects to the docs index; CORS on for the Geo Map's data in sandboxed cards",
+        "docs(diff): the Modern Paper's source tree before and after as a Diff example - two Code Mockups whose lines carry data-diff",
+        "fix(code-example): a source set through the API cancels a pending typed rerun (no stale input-origin change); docs cards load the geo bundle",
+        "fix(proven): a replay larger than a pipe buffer arrives whole - a piped coverage replay was cut at 64 KiB and the vae gate lost its coverage table",
+        "chore(agents): defuss-vae 0.9 - agent state moves from .agents/ to .vae/; the release script, the proof inputs and ARCH.md follow"
+      ]
+    },
+    {
       "version": "v0.9.11",
       "date": "October 29, 2026",
       "commits": [
