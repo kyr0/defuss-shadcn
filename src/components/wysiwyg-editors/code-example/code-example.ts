@@ -45,7 +45,7 @@ interface CodeExampleConfig {
   tail?: string | ((source: string) => string);
   /** theme CSS layered last in every preview, or a function returning it - refreshTheme() re-reads it */
   theme?: string | (() => string | Promise<string>) | null;
-  /** your own highlighter: code and a language → the HTML of coloured spans (null: show it plain) */
+  /** your own highlighter: from code and a language to the HTML of coloured spans (null: show it plain) */
   highlight?: ((code: string, language: string) => string | null | Promise<string | null>) | null;
   /** the URL the previews resolve relative references against (`images/x.png` in an example): a `<base href>` first in the preview's head. Default: none - an about:srcdoc document resolves against the host page, which is wrong once that page sits in a folder */
   base?: string | null;
@@ -201,6 +201,7 @@ const EXTRA_BUNDLES: Readonly<Record<string, readonly string[]>> = {
   mermaid: ['mermaid'],
   math: ['math-renderer', 'math-editor', 'math-compute'],
   'visual-editor': ['visual-editor'],
+  geo: ['geo-map'],
 };
 const BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join('|')})(?:\\.min)?\\.js(?:[?#]|$)`);
 /** the extra bundles a preview source needs, in EXTRA_BUNDLES order */
@@ -822,9 +823,9 @@ function loadShiki(shikiUrl) {
   return shikiModule;
 }
 
-/** code → HTML of coloured spans (no wrapper), or null for plain text */
+/** from code to the HTML of coloured spans (no wrapper), or null for plain text */
 /**
- * The configured highlighter: code and a language → a Promise of HTML (coloured spans), or null.
+ * The configured highlighter: from code and a language to a Promise of HTML (coloured spans), or null.
  * @param code - the source text
  * @param language - a Shiki language id ('html', 'css', 'ts', ...)
  * @returns the HTML of coloured spans, null when the highlighter gives none
@@ -896,6 +897,10 @@ function syncScroll(root) {
 /** a page write to the source: repaints, no input event, no rerun loop */
 function writeSource(root, value) {
   const c = root._ce;
+  // a source written from outside supersedes a typed edit still waiting for its rerun - that rerun would run the
+  // new source again and report it as typed (code-example.e2e "an API source supersedes a pending typed rerun")
+  clearTimeout(c.rerunTimer);
+  c.rerunTimer = 0;
   if (c.src.value !== value) c.src.value = value;
   dfDollar(root).attr('data-edited', value !== c.original ? '' : null);
   paint(root);
@@ -1499,7 +1504,7 @@ function leaveOverlays() {
 }
 
 df$.codeExample = {
-  /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle, plus each extra bundle the page loaded that the source uses - bundlesFor), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) → HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it.
+  /** Configure every preview on the page: { styles, scripts } (arrays of URLs or { css } / { js } texts, or a function of the source returning one - default: the page's own stylesheets and all/core bundle, plus each extra bundle the page loaded that the source uses - bundlesFor), tail (markup after the runtime, e.g. an icon library), theme (CSS text or a function returning it - layered last, re-read by refreshTheme), highlight(code, language) returning the HTML of coloured spans (default: Shiki), shiki (its ESM URL), themes ({ light, dark } Shiki themes). Previews built afterwards use it.
    * @param options - the keys to change; the cards on the page repaint their source
    */
   configure(options: CodeExampleConfig = {}): void {
@@ -1515,7 +1520,7 @@ df$.codeExample = {
    * The extra bundles (components kept out of all.*) a preview of this source needs - the default scripts add each
    * one the page loaded; a configured `scripts` function can add them itself.
    * @param source - an example's HTML source
-   * @returns the bundle names (`wysiwyg`, `mermaid`, `math`) whose components the source names, in that order
+   * @returns the bundle names (`wysiwyg`, `mermaid`, `math`, `visual-editor`, `geo`) whose components the source names, in that order
    */
   bundlesFor: (source: string): string[] => neededBundles(source),
   /**

@@ -220,6 +220,19 @@ try {
     await page.$eval('#cx-play', (el) => (globalThis as any).df$.shadcn.codeExample.reset(el));
   });
 
+  await check('an API source supersedes a pending typed rerun: no stale input change follows it', async () => {
+    await page.click('#cx-play .code-example-src');
+    await page.keyboard.press('End');
+    await page.keyboard.type('x');
+    await page.$eval('#cx-play', (el) => (globalThis as any).df$.shadcn.codeExample.reset(el)); // within the debounce
+    const n = await page.evaluate(() => (globalThis as any).__changes.length);
+    await page.waitForTimeout(800); // twice the rerun delay
+    const after = await page.evaluate((n) => (globalThis as any).__changes.slice(n).map((c: { origin: string }) => c.origin), n);
+    assert.deepEqual(after, []);
+    assert.equal(await page.evaluate(() => (globalThis as any).__changes.at(-1).origin), 'api');
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  });
+
   await check('the outside API: setSource / viewport / code-example-change (origin api)', async () => {
     await page.click('#cx-load');
     await page.waitForFunction(() => (globalThis as any).__changes.at(-1)?.origin === 'api');
