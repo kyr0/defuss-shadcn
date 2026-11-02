@@ -422,9 +422,14 @@ export const GEO_VENDOR_URLS: GeoVendorUrls = {
   geodesic: 'https://cdn.jsdelivr.net/npm/geographiclib-geodesic@2.2.0/geographiclib-geodesic.min.js',
   dson: 'https://cdn.jsdelivr.net/npm/defuss-dson@1.1.2/dist/index.mjs',
 };
-/** the data the release ships, on jsDelivr (pinned to the release core reports) */
+/**
+ * the data the release ships: its npm package on jsDelivr (pinned to the release core reports). Not the GitHub route
+ * the docs load the bundles from - VERIFIED (curl, 2026-11-02): the repository is past jsDelivr's 50 MB limit for
+ * /gh/, which answers a file's first fetch with 403 "Package size exceeded" now and then (3 of 31 fresh chunks), and
+ * a map fetches hundreds of them; /npm/ (72 MB unpacked, within its limit) served 41 of 41
+ */
 const releaseData = (): string =>
-  `https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v${df$.shared?.abi ?? '0.0.0'}/dist/components/geo-map/data/manifest.json`;
+  `https://cdn.jsdelivr.net/npm/defuss-shadcn@${df$.shared?.abi ?? '0.0.0'}/dist/components/geo-map/data/manifest.json`;
 
 interface Engines {
   d3: any;
@@ -1824,6 +1829,15 @@ function makeProjection(name: GeoProjectionName, box: Extent, center: LonLat, zo
   else if (name === 'equalArea') p.rotate([-center[0], -center[1], 0]);
   else p.rotate([-center[0], 0, 0]).center([0, clamp(center[1], -85, 85)]);
   p.scale(scale * zoom).translate([(box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2]);
+  // a flat projection zoomed in never shows the empty band past a pole (the card's background over the Arctic, as a
+  // wide Europe frame did): once the map is taller than its box the view stops at the pole's edge; zoomed out, the
+  // whole outline stays where the camera puts it. Only the drawn view - frame() measures unclamped (clip false)
+  if (clip && name !== 'orthographic' && name !== 'equalArea') {
+    const [[, top], [, bottom]] = d3.geoPath(p).bounds({ type: 'Sphere' }) as [[number, number], [number, number]];
+    const dy =
+      bottom - top <= box.y1 - box.y0 ? 0 : top > box.y0 ? box.y0 - top : bottom < box.y1 ? box.y1 - bottom : 0;
+    if (dy) p.translate([(box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2 + dy]);
+  }
   if (clip)
     p.clipExtent([
       [box.x0, box.y0],
@@ -2192,6 +2206,12 @@ function renderMap(el: HTMLElement): void {
   geo.box = { x0: gutter, y0: 0, x1: W - gutter, y1: H };
   geo.svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   geo.projection = makeProjection(v.projection, geo.box, v.center, v.zoom);
+  // the camera follows a view stopped at a pole (makeProjection), so a pan toward it does not wind up unseen
+  if (!geo.flight && v.projection !== 'orthographic' && v.projection !== 'equalArea') {
+    const seen = geo.projection.invert?.([(geo.box.x0 + geo.box.x1) / 2, (geo.box.y0 + geo.box.y1) / 2]);
+    if (seen && Number.isFinite(seen[1]) && Math.abs(seen[1] - v.center[1]) > 1e-6)
+      v.center = [v.center[0], clamp(seen[1], -85, 85)];
+  }
   const path = d3.geoPath(geo.projection);
   const { regions, context } = selectRegions(geo, path);
   geo.ds.maps.add(el);

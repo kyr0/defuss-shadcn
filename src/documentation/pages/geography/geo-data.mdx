@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
 <DocPage meta={meta}>
 
 <PageHeader slug="geo-data" title="Data & Encoding" component="geo-map">
-  The map ships its own boundaries: Natural Earth v5.1.2 (public domain) as 745 small files beside the component, <code>dist/components/geo-map/data/</code>. Nothing is fetched from a map service and no key is needed - the page loads a world overview, then only the chunks the view needs. The data comes with the release (on jsDelivr by default), from your own server (<code>data-src</code>, <code>&lt;meta name="geo-map-data"&gt;</code>, <code>df$.shadcn.geo.configure(\{ data \})</code>) or as your own GeoJSON.
+  The map ships its own boundaries: Natural Earth v5.1.2 (public domain) as 745 small files beside the component, <code>dist/components/geo-map/data/</code>. Nothing is fetched from a map service and no key is needed - the page loads a world overview, then only the chunks the view needs. The data comes with the release (by default from the release's npm package on jsDelivr - its GitHub route, which serves the components, refuses some first fetches for a repository past 50 MB, and a map fetches hundreds of chunks), from your own server (<code>data-src</code>, <code>&lt;meta name="geo-map-data"&gt;</code>, <code>df$.shadcn.geo.configure(\{ data \})</code>) or as your own GeoJSON.
 </PageHeader>
 
 <H2 id="levels-of-detail">Levels of detail</H2>

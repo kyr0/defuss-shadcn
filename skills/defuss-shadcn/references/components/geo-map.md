@@ -46,8 +46,10 @@ and the data decoder are the component's own.
 <div class="geo-map" id="atlas" aria-label="Europe" data-focus="continent:Europe" data-highlight="lift"></div>
 ```
 
-- `data-src` - the data manifest (default: the release's data on jsDelivr,
-  `<meta name="geo-map-data">`, or `df$.shadcn.geo.configure({ data })`). A
+- `data-src` - the data manifest (default: the release's npm package on jsDelivr,
+  `cdn.jsdelivr.net/npm/defuss-shadcn@<version>/`, not its GitHub route, which
+  refuses some first fetches for a repository this size; per page
+  `<meta name="geo-map-data">` or `df$.shadcn.geo.configure({ data })`). A
   GeoJSON `FeatureCollection` URL works too: regions with properties
   `{ id, name, level, parent?, continent? }`, wound either way.
 - `data-center="lon,lat"` and `data-zoom` - the first camera (default

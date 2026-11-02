@@ -167,11 +167,13 @@
       return '';
     }
   }
-  /** the Geo Map's data beside the bundles the page loaded (dist/components/geo-map/data/): the local build, or on
-   *  the published site the release on jsDelivr - '' when the page has no all.css */
+  /** the Geo Map's data beside the bundles the page loaded (dist/components/geo-map/data/) when they are a local build
+   *  - '' on the published site (bundles from jsDelivr) and without all.css: there the component's own default, the
+   *  release's npm package, serves the data (the GitHub route refuses some first fetches - geo-map.ts releaseData) */
   function geoDataUrl() {
     var all = sheetUrls(['components/all.css'])[0];
-    return all ? all.replace(/\/all(?:\.min)?\.css(\?.*)?$/, '/geo-map/data/manifest.json') : '';
+    if (!all || /^https:\/\/cdn\.jsdelivr\.net\//.test(all)) return '';
+    return all.replace(/\/all(?:\.min)?\.css(\?.*)?$/, '/geo-map/data/manifest.json');
   }
   /** after the runtime: the Geo Map's data URL (first - before any network wait, so before a map asks for it),
    *  lucide for icon examples + the theme-switcher demo's base URL */
