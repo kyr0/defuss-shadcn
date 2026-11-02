@@ -27,11 +27,11 @@ describe('proof decisions (scripts/lib/proof.ts)', () => {
     expect(statusWithoutOutputs(status, PROOFS.verify)).toBe(' M a.ts\n M src/documentation/data/unit-tests.json\n?? new.ts');
   });
 
-  it('the gate\'s own state (.agents/) is no input of any proof - a failing gate run appends to its episode log', () => {
-    const listed = ['.agents/EPISODES.md', '.agents/MEMORY.md', 'a.ts', 'src/.agents.ts'];
+  it('the gate\'s own state (.vae/) is no input of any proof - a failing gate run appends to its episode log', () => {
+    const listed = ['.vae/EPISODES.md', '.vae/MEMORY.md', 'a.ts', 'src/.vae.ts'];
     for (const proof of Object.values(PROOFS)) {
-      expect(proofFiles(listed, proof)).toEqual(['a.ts', 'src/.agents.ts']);
-      expect(statusWithoutOutputs(' M .agents/EPISODES.md\n M a.ts\n?? .agents/new.md\nR  x.ts -> .agents/x.ts\n', proof)).toBe(' M a.ts');
+      expect(proofFiles(listed, proof)).toEqual(['a.ts', 'src/.vae.ts']);
+      expect(statusWithoutOutputs(' M .vae/EPISODES.md\n M a.ts\n?? .vae/new.md\nR  x.ts -> .vae/x.ts\n', proof)).toBe(' M a.ts');
     }
   });
 

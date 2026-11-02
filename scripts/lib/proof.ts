@@ -32,12 +32,12 @@ export const PROOFS: Record<string, Proof> = {
 
 /**
  * Tracked folders no proof's command reads: the vae gate's own state (memory, episodes, its policy file). The gate
- * appends to .agents/EPISODES.md on every failing run, so while they counted as inputs, each failed gate run re-ran
+ * appends to .vae/EPISODES.md on every failing run, so while they counted as inputs, each failed gate run re-ran
  * the unit suite, its coverage run and verify on the next one, although none of them had changed.
- * VERIFIED: (grep of scripts/, tests/, vitest.config.ts, package.json, the Makefile, 2026-10-19) nothing reads .agents/
+ * VERIFIED: (grep of scripts/, tests/, vitest.config.ts, package.json, the Makefile, 2026-10-19) nothing reads .vae/
  * but deploy.sh (no proof) - verify only lists it among the dirty files of its non-blocking cleanliness warning.
  */
-export const NOT_INPUTS = ['.agents/'];
+export const NOT_INPUTS = ['.vae/'];
 
 /** A path inside one of the folders no command reads. */
 const unread = (path: string): boolean => NOT_INPUTS.some((dir) => path.startsWith(dir));

@@ -4,7 +4,7 @@
 - VERIFIED[scope] fact BC evidence
 - HYPOTHESIS[scope] claim; falsifier=`cmd`
 - UNKNOWN[scope] gap BC missing evidence
-Replace stale lines instead of appending. Mechanizable lessons belong in tests or .agents/VERIFY.py.
+Replace stale lines instead of appending. Mechanizable lessons belong in tests or .vae/VERIFY.py.
 Budget 4 KiB (`vae.py doctor --repo .`); entries are injected at session start. -->
 - VERIFIED[prose] house style: dash = spaced hyphen ` - ` (never em dash), ellipsis = `...` (never `…`, user decision 2026-10-06); `vae.py prose` over sources = 0 findings BC docs pass 2026-10-06
 - VERIFIED[prose] `prose --fix` on component-skill.md also rewrites the generated `## API` section -> verify `API docs` fails; fix the JSDoc/event comment in the .ts, then `bun run api-docs` BC 7 skills lagged after --fix

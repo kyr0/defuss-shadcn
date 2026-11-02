@@ -11,8 +11,8 @@ set -euo pipefail
 #   ./scripts/deploy.sh patch release→ 0.4.1-beta   → 0.4.2        (patch bump, drop suffix)
 #
 # This is a RELEASE deploy, run on main with a clean tree (agent state in
-# .agents/ excepted). It:
-#   0. Commits pending agent state (.agents/: episodes, memory) on its own
+# .vae/ excepted). It:
+#   0. Commits pending agent state (.vae/: episodes, memory) on its own
 #   1. Moves EVERY version site to the new version (scripts/bump-version.ts:
 #      package.json, the Claude Code plugin manifest, the shared-ABI stamp,
 #      the deck cover - verify's `version sites` gate checks them)
@@ -43,13 +43,13 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
   exit 1
 fi
 
-# .agents/ is agent state (the gate's episode log, memory, the sub-agent
+# .vae/ is agent state (the gate's episode log, memory, the sub-agent
 # registry) that changes on its own while agents work. No build step reads it
 # and no release ships it, so it never blocks a release: step 0 commits it on
 # its own, and step 4b's bump commit adds everything but it.
-AGENT_STATE=':(exclude).agents'
+AGENT_STATE=':(exclude).vae'
 if [[ -n $(git status --porcelain -- . "$AGENT_STATE") ]]; then
-  echo "❌ Working tree is dirty (outside .agents/). Commit or stash changes first."
+  echo "❌ Working tree is dirty (outside .vae/). Commit or stash changes first."
   exit 1
 fi
 
@@ -86,8 +86,8 @@ echo "📦 Releasing v${FULL_VERSION} → ${TAG} (${BUMP_TYPE}${PHASE:+, phase: 
 
 # 0. agent state the sessions before this release left behind lands as its own
 # commit, after every precondition passed and before anything is bumped
-if [[ -n $(git status --porcelain -- .agents) ]]; then
-  git add -A -- .agents
+if [[ -n $(git status --porcelain -- .vae) ]]; then
+  git add -A -- .vae
   git commit -m "chore(agents): updated agent memory after self-reflection"
 fi
 
@@ -126,7 +126,7 @@ git commit -m "docs(changelog): add ${TAG} entry"
 ENTRY_HASH=$(git rev-parse --short HEAD)
 
 # 4b. second commit: stamp that hash into the entry, regenerate, land the bump
-# (the tree was clean outside .agents/ before step 1, so everything left there
+# (the tree was clean outside .vae/ before step 1, so everything left there
 # is this release; agent state stays for its own commit)
 bun scripts/changelog-entry.ts stamp-hash "${NEW_VERSION}" "${ENTRY_HASH}"
 # --force: docs/ already carries this version's stamp from make build, but

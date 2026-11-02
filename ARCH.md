@@ -50,7 +50,7 @@ Three properties make the verifier the loop's backbone:
   file, or template to apply - e.g. `fix: per component: 1) add fixture +
   test per tests/e2e/accordion.e2e.{ts,fixture.html}, 2) bun run e2e`. The
   verifier does not merely reject; it names the agent's next step. The
-  agent's job reduces to: *edit → run → do what the output says → repeat.*
+  agent's job reduces to: *edit, run, do what the output says, repeat.*
 - **Its instructions *generate* missing artifacts.** The checks are coverage
   requirements, not style nits: add a component and the gates demand its doc
   page, skill, State-API states, screenshots per state, and e2e pair - each
@@ -80,7 +80,7 @@ with its check (a component-sections gate for a new folder layout), and a
 gap a change exposes gets one when it can be stated as a check (a
 rendered-page audit after a missed API field, a source scanner taught a new
 syntax). Lessons that hold across tasks become tests, verifier rules or
-AGENTS.md instructions; [`.agents/MEMORY.md`](.agents/MEMORY.md) keeps the rest within a fixed
+AGENTS.md instructions; [`.vae/MEMORY.md`](.vae/MEMORY.md) keeps the rest within a fixed
 4 KiB budget, so the injected memory stays bounded while the executable
 checks grow.
 
