@@ -1,7 +1,7 @@
 // dist/components/product-showcase/product-showcase.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.11") {
+if (!__df$shared || __df$shared.abi !== "0.9.12") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -65,7 +65,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // dist/components/cookie-consent/cookie-consent.js
 var __df$core2 = globalThis.df$;
 var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
-if (!__df$shared2 || __df$shared2.abi !== "0.9.11") {
+if (!__df$shared2 || __df$shared2.abi !== "0.9.12") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, unbindComponent, persisted, reload, forget, persistOk } = __df$shared2;
@@ -910,5 +910,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=259D953A0382D9E364756E2164756E21
+//# debugId=859AA26FF0292BB064756E2164756E21
 //# sourceMappingURL=website.js.map

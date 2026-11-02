@@ -27,6 +27,9 @@ export const EXTRA_BUNDLES = {
     // the Visual Editor - GrapesJS over the system's markup; a part of the WYSIWYG Editors section, kept out of
     // wysiwyg.* (which every docs page loads) like Mermaid and math
     'visual-editor': ['visual-editor'],
+    // the Geography section: the Geo Map and the geography library (df$.shadcn.geo) - d3-geo, GeographicLib and
+    // defuss-dson load from their pinned builds with the first map
+    geo: ['geo-map'],
 };
 /** The extra bundle a component ships in, or null when it rides in all.*. */
 export function extraBundleOf(component) {

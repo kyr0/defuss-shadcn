@@ -10,7 +10,8 @@
         "fix(code-example): a source set through the API cancels a pending typed rerun (no stale input-origin change); docs cards load the geo bundle",
         "fix(proven): a replay larger than a pipe buffer arrives whole - a piped coverage replay was cut at 64 KiB and the vae gate lost its coverage table",
         "chore(agents): defuss-vae 0.9 - agent state moves from .agents/ to .vae/; the release script, the proof inputs and ARCH.md follow"
-      ]
+      ],
+      "hash": "a8c672d3"
     },
     {
       "version": "v0.9.11",
