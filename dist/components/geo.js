@@ -14,7 +14,7 @@ var GEO_VENDOR_URLS = {
   geodesic: "https://cdn.jsdelivr.net/npm/geographiclib-geodesic@2.2.0/geographiclib-geodesic.min.js",
   dson: "https://cdn.jsdelivr.net/npm/defuss-dson@1.1.2/dist/index.mjs"
 };
-var releaseData = () => `https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@v${df$.shared?.abi ?? "0.0.0"}/dist/components/geo-map/data/manifest.json`;
+var releaseData = () => `https://cdn.jsdelivr.net/npm/defuss-shadcn@${df$.shared?.abi ?? "0.0.0"}/dist/components/geo-map/data/manifest.json`;
 var engines = null;
 var enginesPromise = null;
 var settings = {
@@ -1116,6 +1116,12 @@ function makeProjection(name, box, center, zoom, clip = true) {
   else
     p.rotate([-center[0], 0, 0]).center([0, clamp(center[1], -85, 85)]);
   p.scale(scale * zoom).translate([(box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2]);
+  if (clip && name !== "orthographic" && name !== "equalArea") {
+    const [[, top], [, bottom]] = d3.geoPath(p).bounds({ type: "Sphere" });
+    const dy = bottom - top <= box.y1 - box.y0 ? 0 : top > box.y0 ? box.y0 - top : bottom < box.y1 ? box.y1 - bottom : 0;
+    if (dy)
+      p.translate([(box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2 + dy]);
+  }
   if (clip)
     p.clipExtent([
       [box.x0, box.y0],
@@ -1403,6 +1409,11 @@ function renderMap(el) {
   geo.box = { x0: gutter, y0: 0, x1: W - gutter, y1: H };
   geo.svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   geo.projection = makeProjection(v.projection, geo.box, v.center, v.zoom);
+  if (!geo.flight && v.projection !== "orthographic" && v.projection !== "equalArea") {
+    const seen = geo.projection.invert?.([(geo.box.x0 + geo.box.x1) / 2, (geo.box.y0 + geo.box.y1) / 2]);
+    if (seen && Number.isFinite(seen[1]) && Math.abs(seen[1] - v.center[1]) > 0.000001)
+      v.center = [v.center[0], clamp(seen[1], -85, 85)];
+  }
   const path = d3.geoPath(geo.projection);
   const { regions, context } = selectRegions(geo, path);
   geo.ds.maps.add(el);
@@ -2631,5 +2642,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=AAAD9B4A4C946AF364756E2164756E21
+//# debugId=CAF53F18B19FE78964756E2164756E21
 //# sourceMappingURL=geo.js.map

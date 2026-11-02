@@ -7,17 +7,24 @@
     --geo-map-route: #c14e2e;
     --geo-map-cell-fill: color-mix(in oklab, #4e958b 32%, transparent);
     --geo-map-cell-border: #347871;
-    --geo-map-select: var(--primary);
+    /* a pick: a coral that reads on every palette (the theme's primary is near-black in the default theme) */
+    --geo-map-select: oklch(0.6 0.19 25);
     --geo-map-mix: 100%;
+    /* a tone's drawn lightness = l0 + l * lk, its chroma c * ck: identity in light mode; dark mode maps the pastels
+       into the dark range instead of mixing them toward the background (which greyed them) */
+    --geo-map-l0: 0;
+    --geo-map-lk: 1;
+    --geo-map-ck: 1;
     --geo-map-callout-width: 10rem;
     --geo-map-callout-size: 0.875rem;
-    --geo-map-tone-0: #bcc9b5;
-    --geo-map-tone-1: #c7cfb0;
-    --geo-map-tone-2: #d5ceac;
-    --geo-map-tone-3: #aabfba;
-    --geo-map-tone-4: #b9bdca;
-    --geo-map-tone-5: #d7c0b3;
-    --geo-map-tone-6: #aac3bc;
+    --geo-map-tone-0: oklch(0.91 0.055 150);
+    --geo-map-tone-1: oklch(0.93 0.06 95);
+    --geo-map-tone-2: oklch(0.89 0.06 60);
+    --geo-map-tone-3: oklch(0.88 0.05 18);
+    --geo-map-tone-4: oklch(0.88 0.045 318);
+    --geo-map-tone-5: oklch(0.88 0.045 260);
+    --geo-map-tone-6: oklch(0.9 0.05 205);
+    --geo-map-tone: var(--geo-map-tone-0);
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -30,58 +37,58 @@
     font-family: var(--font-sans);
 
     &[data-palette="ocean"] {
-      --geo-map-tone-0: #c6e2e9;
-      --geo-map-tone-1: #a9cedd;
-      --geo-map-tone-2: #8bbaca;
-      --geo-map-tone-3: #72a0bd;
-      --geo-map-tone-4: #668da9;
-      --geo-map-tone-5: #89b5ba;
-      --geo-map-tone-6: #b9d4dd;
+      --geo-map-tone-0: oklch(0.93 0.035 215);
+      --geo-map-tone-1: oklch(0.89 0.05 225);
+      --geo-map-tone-2: oklch(0.85 0.06 235);
+      --geo-map-tone-3: oklch(0.81 0.07 245);
+      --geo-map-tone-4: oklch(0.87 0.05 200);
+      --geo-map-tone-5: oklch(0.83 0.06 255);
+      --geo-map-tone-6: oklch(0.91 0.04 240);
     }
     &[data-palette="forest"] {
-      --geo-map-tone-0: #dce5be;
-      --geo-map-tone-1: #bbd09c;
-      --geo-map-tone-2: #9abc91;
-      --geo-map-tone-3: #7ca795;
-      --geo-map-tone-4: #67958d;
-      --geo-map-tone-5: #a5c9ae;
-      --geo-map-tone-6: #cbd9ac;
+      --geo-map-tone-0: oklch(0.93 0.045 135);
+      --geo-map-tone-1: oklch(0.89 0.07 135);
+      --geo-map-tone-2: oklch(0.85 0.075 145);
+      --geo-map-tone-3: oklch(0.81 0.075 158);
+      --geo-map-tone-4: oklch(0.87 0.06 170);
+      --geo-map-tone-5: oklch(0.83 0.065 140);
+      --geo-map-tone-6: oklch(0.91 0.05 125);
     }
     &[data-palette="sunset"] {
-      --geo-map-tone-0: #e9c4ad;
-      --geo-map-tone-1: #e7ad96;
-      --geo-map-tone-2: #d99291;
-      --geo-map-tone-3: #ca8097;
-      --geo-map-tone-4: #ae80a6;
-      --geo-map-tone-5: #c2a1ad;
-      --geo-map-tone-6: #e4d0bb;
+      --geo-map-tone-0: oklch(0.92 0.06 82);
+      --geo-map-tone-1: oklch(0.88 0.075 65);
+      --geo-map-tone-2: oklch(0.84 0.085 50);
+      --geo-map-tone-3: oklch(0.8 0.085 32);
+      --geo-map-tone-4: oklch(0.86 0.065 15);
+      --geo-map-tone-5: oklch(0.82 0.07 350);
+      --geo-map-tone-6: oklch(0.9 0.06 40);
     }
     &[data-palette="heat"] {
-      --geo-map-tone-0: #fee6a5;
-      --geo-map-tone-1: #f9ca7b;
-      --geo-map-tone-2: #f6a769;
-      --geo-map-tone-3: #e97d61;
-      --geo-map-tone-4: #d05b5e;
-      --geo-map-tone-5: #a9475b;
-      --geo-map-tone-6: #813954;
+      --geo-map-tone-0: oklch(0.96 0.055 95);
+      --geo-map-tone-1: oklch(0.92 0.08 85);
+      --geo-map-tone-2: oklch(0.88 0.09 72);
+      --geo-map-tone-3: oklch(0.84 0.095 58);
+      --geo-map-tone-4: oklch(0.8 0.1 45);
+      --geo-map-tone-5: oklch(0.76 0.1 35);
+      --geo-map-tone-6: oklch(0.72 0.1 27);
     }
     &[data-palette="mono"] {
-      --geo-map-tone-0: var(--secondary);
-      --geo-map-tone-1: var(--muted);
-      --geo-map-tone-2: var(--accent);
-      --geo-map-tone-3: color-mix(in oklab, var(--muted) 70%, var(--foreground));
-      --geo-map-tone-4: var(--secondary);
-      --geo-map-tone-5: var(--muted);
-      --geo-map-tone-6: var(--accent);
+      --geo-map-tone-0: color-mix(in oklab, var(--foreground) 5%, var(--card));
+      --geo-map-tone-1: color-mix(in oklab, var(--foreground) 9%, var(--card));
+      --geo-map-tone-2: color-mix(in oklab, var(--foreground) 13%, var(--card));
+      --geo-map-tone-3: color-mix(in oklab, var(--foreground) 17%, var(--card));
+      --geo-map-tone-4: color-mix(in oklab, var(--foreground) 7%, var(--card));
+      --geo-map-tone-5: color-mix(in oklab, var(--foreground) 11%, var(--card));
+      --geo-map-tone-6: color-mix(in oklab, var(--foreground) 15%, var(--card));
     }
     &[data-palette="chart"] {
-      --geo-map-tone-0: color-mix(in oklab, var(--chart-1) 55%, var(--card));
-      --geo-map-tone-1: color-mix(in oklab, var(--chart-2) 55%, var(--card));
-      --geo-map-tone-2: color-mix(in oklab, var(--chart-3) 55%, var(--card));
-      --geo-map-tone-3: color-mix(in oklab, var(--chart-4) 55%, var(--card));
-      --geo-map-tone-4: color-mix(in oklab, var(--chart-5) 55%, var(--card));
-      --geo-map-tone-5: color-mix(in oklab, var(--chart-1) 35%, var(--card));
-      --geo-map-tone-6: color-mix(in oklab, var(--chart-3) 35%, var(--card));
+      --geo-map-tone-0: color-mix(in oklab, var(--chart-1) 45%, var(--card));
+      --geo-map-tone-1: color-mix(in oklab, var(--chart-2) 40%, var(--card));
+      --geo-map-tone-2: color-mix(in oklab, var(--chart-3) 35%, var(--card));
+      --geo-map-tone-3: color-mix(in oklab, var(--chart-4) 30%, var(--card));
+      --geo-map-tone-4: color-mix(in oklab, var(--chart-5) 25%, var(--card));
+      --geo-map-tone-5: color-mix(in oklab, var(--chart-1) 25%, var(--card));
+      --geo-map-tone-6: color-mix(in oklab, var(--chart-3) 20%, var(--card));
     }
     &[data-variant="plain"] {
       border: 0;
@@ -98,6 +105,16 @@
     --geo-map-cell-fill: color-mix(in oklab, #54bbaf 25%, transparent);
     --geo-map-cell-border: #8adbd2;
     --geo-map-mix: 58%;
+    --geo-map-select: oklch(0.72 0.16 28);
+    --geo-map-l0: 0.2;
+    --geo-map-lk: 0.33;
+    --geo-map-ck: 0.9;
+
+    &:is([data-palette="mono"], [data-palette="chart"]) {
+      --geo-map-l0: 0;
+      --geo-map-lk: 1;
+      --geo-map-ck: 1;
+    }
   }
 
   .geo-map-svg {
@@ -128,6 +145,40 @@
     pointer-events: none;
   }
 
+  /* a region's fill (and its lifted copy's): its tone, light as written; dark through the lightness map above. The
+     context, the pick and the cells set their own fill on a more specific selector */
+  .geo-map-region,
+  .geo-map-lifted {
+    fill: color-mix(in oklab, var(--geo-map-tone) var(--geo-map-mix), var(--background));
+
+    @supports (color: oklch(from red l c h)) {
+      fill: oklch(
+        from var(--geo-map-tone) calc(var(--geo-map-l0) + l * var(--geo-map-lk)) calc(c * var(--geo-map-ck)) h
+      );
+    }
+    &[data-tone="0"] {
+      --geo-map-tone: var(--geo-map-tone-0);
+    }
+    &[data-tone="1"] {
+      --geo-map-tone: var(--geo-map-tone-1);
+    }
+    &[data-tone="2"] {
+      --geo-map-tone: var(--geo-map-tone-2);
+    }
+    &[data-tone="3"] {
+      --geo-map-tone: var(--geo-map-tone-3);
+    }
+    &[data-tone="4"] {
+      --geo-map-tone: var(--geo-map-tone-4);
+    }
+    &[data-tone="5"] {
+      --geo-map-tone: var(--geo-map-tone-5);
+    }
+    &[data-tone="6"] {
+      --geo-map-tone: var(--geo-map-tone-6);
+    }
+  }
+
   .geo-map-region {
     stroke: var(--geo-map-border);
     stroke-width: 0.65;
@@ -139,27 +190,6 @@
       stroke 180ms ease;
     outline: none;
 
-    &[data-tone="0"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-0) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="1"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-1) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="2"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-2) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="3"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-3) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="4"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-4) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="5"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-5) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="6"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-6) var(--geo-map-mix), var(--background));
-    }
     &:focus-visible {
       stroke: var(--ring);
       stroke-width: 2.5;
@@ -246,27 +276,6 @@
     @starting-style {
       translate: 0 0;
       filter: drop-shadow(0 0 0 rgb(0 0 0 / 0));
-    }
-    &[data-tone="0"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-0) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="1"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-1) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="2"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-2) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="3"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-3) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="4"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-4) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="5"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-5) var(--geo-map-mix), var(--background));
-    }
-    &[data-tone="6"] {
-      fill: color-mix(in oklab, var(--geo-map-tone-6) var(--geo-map-mix), var(--background));
     }
     &[aria-pressed="true"] {
       fill: color-mix(in oklab, var(--geo-map-select) 62%, var(--card));

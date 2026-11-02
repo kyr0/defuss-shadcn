@@ -538,6 +538,93 @@ try {
     await idle(page, 'gm-europe');
   });
 
+  await check('palettes: pastel tones in light mode, the same hues in the dark range, a grey mono, a coral pick', async () => {
+    // the drawn colour of every region of a map, as sRGB through a canvas (the computed fill may be oklch or oklab)
+    // unpicked regions without a per-region style (the layers map paints Austria)
+    const fills = (id: string, sel = '.geo-map-regions .geo-map-region:not([aria-pressed="true"]):not([style])') =>
+      page.evaluate(
+        ([id, sel]) => {
+          const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
+          return [...document.querySelectorAll(`#${id} ${sel}`)].map((p) => {
+            ctx.clearRect(0, 0, 1, 1);
+            ctx.fillStyle = getComputedStyle(p).fill;
+            ctx.fillRect(0, 0, 1, 1);
+            return [...ctx.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+          });
+        },
+        [id, sel] as const,
+      );
+    const spread = (c: number[]) => Math.max(...c) - Math.min(...c);
+    const light = await fills('gm-world');
+    assert.ok(new Set(light.map((c) => c.join())).size >= 6, 'seven tones, most of them drawn');
+    assert.ok(light.every((c) => Math.min(...c) > 150 && spread(c) > 8), `pastel, not grey: ${JSON.stringify(light.slice(0, 3))}`);
+    const mono = await fills('gm-layers');
+    assert.ok(mono.every((c) => spread(c) < 8), `mono is grey: ${JSON.stringify(mono.slice(0, 3))}`);
+    const [pick] = await fills('gm-picked', '.geo-map-regions .geo-map-region[aria-pressed="true"]');
+    assert.ok(pick && pick[0]! > 180 && pick[0]! - pick[1]! > 50, `a coral pick, not the near-black primary: ${pick}`);
+    await page.evaluate(() => document.documentElement.classList.add('dark'));
+    try {
+      const dark = await fills('gm-world');
+      assert.ok(dark.every((c) => Math.max(...c) < 150 && Math.max(...c) > 60 && spread(c) > 8), `dark range, hue kept: ${JSON.stringify(dark.slice(0, 3))}`);
+    } finally {
+      await page.evaluate(() => document.documentElement.classList.remove('dark'));
+    }
+  });
+
+  await check('a zoomed flat view stops at the pole: no empty band above the Arctic; a pan back south moves at once', async () => {
+    const edge = () =>
+      page.evaluate(() => {
+        const el = document.querySelector('#gm-europe') as any;
+        const svg = el.querySelector('svg')!.viewBox.baseVal;
+        const geoMap = (globalThis as any).df$.shadcn.geoMap;
+        // the top row of the map's box (between the callout gutters) is on the sphere
+        return { top: geoMap.unproject(el, [svg.width / 2, 1]), lat: el.api.getState().config.center[1] as number };
+      });
+    assert.ok((await edge()).top, 'framed: the top row is on the map');
+    // north as far as it goes: the top row reaches the pole and stays on the map; the camera stopped with the view
+    await page.locator('#gm-europe svg').focus();
+    for (let i = 0; i < 40; i++) await page.keyboard.press('ArrowUp');
+    await frames(page);
+    const north = await edge();
+    assert.ok(north.top && north.top[1] > 85, `at the pole, no band: ${JSON.stringify(north.top)}`);
+    for (let i = 0; i < 10; i++) await page.keyboard.press('ArrowUp');
+    await frames(page);
+    assert.ok(Math.abs((await edge()).lat - north.lat) < 1e-6, 'further north changes nothing');
+    // one step south moves at once - the camera never wound up past the pole
+    await page.keyboard.press('ArrowDown');
+    await frames(page);
+    assert.ok((await edge()).lat < north.lat - 0.1, 'one step south moves');
+    await page.evaluate(() => (globalThis as any).df$.shadcn.geoMap.focus('#gm-europe', 'continent:Europe'));
+    await idle(page, 'gm-europe');
+  });
+
+  await check('without data-src the data comes from the release\'s npm package on jsDelivr (its GitHub route refuses some first fetches)', async () => {
+    const p4 = await browser.newPage();
+    await offlineJsdelivr(p4);
+    const asked: string[] = [];
+    // the release's npm files, served from the build
+    await p4.route(/^https:\/\/cdn\.jsdelivr\.net\/(npm|gh)\/.*defuss-shadcn@/, (route) => {
+      const url = route.request().url();
+      asked.push(url);
+      const m = /\/npm\/defuss-shadcn@[^/]+\/(dist\/components\/geo-map\/data\/[^?]+)$/.exec(url);
+      if (!m) return route.fulfill({ status: 403, body: 'not this route' });
+      return route.fulfill({ status: 200, headers: { 'Access-Control-Allow-Origin': '*' }, body: readFileSync(resolve(import.meta.dirname, '../../..', m[1]!)) });
+    });
+    await p4.route(`${server.url}/tests/e2e/__geo-default.html`, (route) =>
+      route.fulfill({
+        contentType: 'text/html',
+        body: '<!doctype html><link rel="stylesheet" href="/dist/components/geo-map/geo-map.css"><div class="geo-map" id="def" aria-label="Default data"></div><script type="module" src="/dist/components/core.js"></script><script type="module" src="/dist/components/geo-map/geo-map.js"></script>',
+      }),
+    );
+    await p4.goto(`${server.url}/tests/e2e/__geo-default.html`);
+    await p4.waitForFunction(() => document.querySelector('#def')?.getAttribute('data-geo-status') !== 'loading', null, { timeout: 30_000 });
+    const abi = await p4.evaluate(() => (globalThis as any).df$.shadcn.shared.abi as string);
+    assert.equal(await p4.getAttribute('#def', 'data-geo-status'), 'ready', asked.join(', '));
+    assert.equal(asked[0], `https://cdn.jsdelivr.net/npm/defuss-shadcn@${abi}/dist/components/geo-map/data/manifest.json`);
+    assert.ok(asked.every((u) => u.includes('/npm/defuss-shadcn@')), asked.join(', '));
+    await p4.close();
+  });
+
   await check('no page errors', async () => {
     assert.deepEqual(errors, []);
   });

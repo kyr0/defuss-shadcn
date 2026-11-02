@@ -21,10 +21,10 @@
   "unitTestFiles": 45,
   "withJs": 79,
   "withoutJs": 171,
-  "totalSize": 3378728,
-  "totalSizeMinified": 1618954,
-  "totalSizeGz": 987312,
-  "totalSizeGzMinified": 545081,
+  "totalSize": 3380980,
+  "totalSizeMinified": 1619485,
+  "totalSizeGz": 988279,
+  "totalSizeGzMinified": 545330,
   "bundle": {
     "jsSize": 1098837,
     "jsSizeMinified": 638688,
@@ -87,14 +87,14 @@
       "cssSizeGzMinified": 785
     },
     "geo": {
-      "jsSize": 91978,
-      "jsSizeMinified": 53422,
-      "cssSize": 13102,
-      "cssSizeMinified": 9866,
-      "totalSizeGz": 29246,
-      "totalSizeGzMinified": 22253,
-      "jsSizeGzMinified": 20000,
-      "cssSizeGzMinified": 2253
+      "jsSize": 92667,
+      "jsSizeMinified": 53856,
+      "cssSize": 13798,
+      "cssSizeMinified": 9960,
+      "totalSizeGz": 29798,
+      "totalSizeGzMinified": 22503,
+      "jsSizeGzMinified": 20138,
+      "cssSizeGzMinified": 2365
     }
   },
   "sections": {
@@ -452,14 +452,14 @@
         "components/geo.css",
         "components/geo.js"
       ],
-      "jsSize": 91978,
-      "jsSizeMinified": 53422,
-      "cssSize": 13102,
-      "cssSizeMinified": 9866,
-      "totalSizeGz": 29246,
-      "totalSizeGzMinified": 22253,
-      "jsSizeGzMinified": 20000,
-      "cssSizeGzMinified": 2253
+      "jsSize": 92667,
+      "jsSizeMinified": 53856,
+      "cssSize": 13798,
+      "cssSizeMinified": 9960,
+      "totalSizeGz": 29798,
+      "totalSizeGzMinified": 22503,
+      "jsSizeGzMinified": 20138,
+      "cssSizeGzMinified": 2365
     },
     "feedback-status": {
       "heading": "Feedback & Status",
@@ -863,7 +863,7 @@
     "count": 23,
     "minGzMinified": 2014,
     "maxGzMinified": 60512,
-    "meanGzMinified": 17363
+    "meanGzMinified": 17374
   },
   "components": {
     "about-intro": {
@@ -2131,14 +2131,14 @@
       "name": "geo-map",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 125203,
-      "jsSizeMinified": 53582,
-      "cssSize": 13051,
-      "cssSizeMinified": 9827,
-      "totalSizeGz": 38303,
-      "totalSizeGzMinified": 22253,
-      "totalSize": 138254,
-      "totalSizeMinified": 63409
+      "jsSize": 126759,
+      "jsSizeMinified": 54019,
+      "cssSize": 13747,
+      "cssSizeMinified": 9921,
+      "totalSizeGz": 39270,
+      "totalSizeGzMinified": 22502,
+      "totalSize": 140506,
+      "totalSizeMinified": 63940
     },
     "get-in-touch": {
       "name": "get-in-touch",
