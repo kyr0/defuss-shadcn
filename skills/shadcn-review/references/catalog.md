@@ -2,7 +2,7 @@
 
 # Component catalog
 
-249 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+250 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.11/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -143,6 +143,12 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Formula Rendering](../../defuss-shadcn/references/components/math-renderer.md) `math-renderer` | ATM | default, rendered, highlighted, error | yes | Display and inline mathematics in papers, docs and teaching pages - for an editable formula use math-editor, to compute with one use math-compute. |
 | [Formula Editing](../../defuss-shadcn/references/components/math-editor.md) `math-editor` | MOL | default, readonly, disabled, invalid, keyboard-open | yes | Formula input in forms, papers and teaching tools - to show a formula use math-renderer, to compute with it use math-compute. |
 | [Compute & Explain](../../defuss-shadcn/references/components/math-compute.md) `math-compute` | MOL | default, computing, result, explaining, unsupported, error | yes | Showing how a result comes about in papers and teaching pages, or checking an identity - to only show a formula use math-renderer, to edit one use math-editor. |
+
+## Geography
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Geo Map](../../defuss-shadcn/references/components/geo-map.md) `geo-map` | ATM | default, selected, focused | yes | Maps of countries, continents and states - picking regions, drilling down (Europe to its countries, Germany to its states), choropleths, labelled callouts, GPS markers, geodesic lines, S2 cells and routes. For charts on a map's numbers use chart; for a schematic, diagram. |
 
 ## Feedback & Status
 

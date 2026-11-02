@@ -1060,6 +1060,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/gallery-item.png
 **Skill:** [components/gallery-item/component-skill.md](components/gallery-item/component-skill.md)
 
+## Geo Map
+
+**Type:** ATM
+**Why:** An SVG map from first-party vector data - d3-geo projects and clips, every region is a keyboard-reachable path styled by CSS; selection and focus are attributes, so state is markup.
+**When:** Maps of countries, continents and states - picking regions, drilling down (Europe to its countries, Germany to its states), choropleths, labelled callouts, GPS markers, geodesic lines, S2 cells and routes. For charts on a map's numbers use chart; for a schematic, diagram.
+**Files:** dist/components/geo.css + dist/components/geo.js (the extra bundle - load it after all.css / all.js; per component: dist/components/geo-map/geo-map.css + geo-map.js; the data in dist/components/geo-map/data/)
+**Supported states:** default, selected, focused
+**Screenshots:** screenshots/{light,dark}/geo-map.png, screenshots/{light,dark}/geo-map-selected.png, screenshots/{light,dark}/geo-map-focused.png
+**Skill:** [components/geo-map/component-skill.md](components/geo-map/component-skill.md)
+
 ## Get In Touch
 
 **Type:** BLK

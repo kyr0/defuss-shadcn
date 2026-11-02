@@ -22,6 +22,8 @@ const TIMEOUT_SCALE = process.env.CI ? 3 : COVERAGE ? 2 : 1;
  */
 export default defineConfig({
   define: { __TIMEOUT_SCALE__: String(TIMEOUT_SCALE) },
+  // a Geo Map inside an example's opaque-origin sandbox fetches its data cross-origin (vite.config.ts)
+  server: { cors: true },
   test: {
     include: ['tests/**/*.test.ts'],
     browser: {

@@ -75,7 +75,8 @@ var EXTRA_BUNDLES = {
   wysiwyg: ["code-example", "editorjs"],
   mermaid: ["mermaid"],
   math: ["math-renderer", "math-editor", "math-compute"],
-  "visual-editor": ["visual-editor"]
+  "visual-editor": ["visual-editor"],
+  geo: ["geo-map"]
 };
 var BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join("|")})(?:\\.min)?\\.js(?:[?#]|$)`);
 var neededBundles = (source) => Object.keys(EXTRA_BUNDLES).filter((b) => EXTRA_BUNDLES[b].some((m) => new RegExp(`\\b${m}\\b`).test(source || "")));
@@ -654,6 +655,8 @@ function syncScroll(root) {
 }
 function writeSource(root, value) {
   const c = root._ce;
+  clearTimeout(c.rerunTimer);
+  c.rerunTimer = 0;
   if (c.src.value !== value)
     c.src.value = value;
   dfDollar(root).attr("data-edited", value !== c.original ? "" : null);
@@ -2493,5 +2496,5 @@ df$3.visualEditor = {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-//# debugId=1740D45721B9301764756E2164756E21
+//# debugId=AEDDD8C7D4DA731364756E2164756E21
 //# sourceMappingURL=wysiwyg-editors.js.map

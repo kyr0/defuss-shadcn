@@ -130,8 +130,11 @@ describe('every control of every interactive fixture can be operated without an 
         } else if (el instanceof win.HTMLTextAreaElement) {
           el.value = 'ab';
           el.dispatchEvent(new win.Event('input', { bubbles: true }));
-        } else {
+        } else if (typeof el.click === 'function') {
           el.click();
+        } else {
+          // an SVG control (a map's regions, the map itself) has no click(): the event a pointer click fires
+          el.dispatchEvent(new win.MouseEvent('click', { bubbles: true, cancelable: true }));
         }
         for (const key of KEYS) {
           el.dispatchEvent(new win.KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));

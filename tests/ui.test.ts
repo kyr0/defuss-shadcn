@@ -217,6 +217,22 @@ test('questionnaire component: the CodeExample card walks to the review and back
   await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').review === false, 'the questionnaire to leave the review (mirrored)');
 });
 
+test('geo-map component: the CodeExample card picks and frames regions through the State API', async () => {
+  // the first Geo Map example is an executable fence: the State tab's selected / focused rows call
+  // setState in the sandbox, and the card mirrors the observed data-selected / data-focus
+  const { doc } = await openDocPage('geo-map.html');
+  const card = doc.querySelector('.code-example[data-component="geo-map"]') as HTMLElement & {
+    preview?: { setState(state: string, value?: unknown): void };
+  };
+  await waitFor(() => card?.preview, 'geo-map example card to boot its sandbox', 15_000);
+  const values = () => JSON.parse(card.dataset.stateValues || '{}');
+  await waitFor(() => values().selected === 'country:FRA country:DEU', 'the authored selection (mirrored)');
+  card.preview!.setState('selected', 'country:ITA');
+  await waitFor(() => values().selected === 'country:ITA', 'Italy to be picked (mirrored)');
+  card.preview!.setState('focused', 'country:DEU');
+  await waitFor(() => values().focused === 'country:DEU', 'Germany to be framed (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
 test('diagram component: the CodeExample card pauses on a step and plays through the State API', async () => {
   // the first example on the page is a played diagram: the State tab drives
   // the step in the sandbox, the card mirrors data-step-current / the state

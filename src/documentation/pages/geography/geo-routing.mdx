@@ -1,0 +1,290 @@
+---
+title: "Geo Map: Routing"
+description: "Cheap routing in the browser: Dijkstra over segments whose lengths you supply, one-way and two-way, routes from a position inside a segment, a point a distance along the route, and a Morton spatial index for nearest-node and rectangle lookups."
+slug: "geo-routing"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geo-routing" title="Routing" component="geo-map">
+  A route graph from your own data: nodes with positions and segments between them, each with the length you measured - a road's length, a cable's, a travel time in any unit. <code>df$.shadcn.geo.routeGraph(nodes, segments)</code> finds the shortest route with Dijkstra over exactly those lengths, follows one-way segments, starts and ends inside a segment, and finds nodes by position through a Morton index. No server, no tiles - a graph of thousands of segments routes in milliseconds.
+</PageHeader>
+
+<H2 id="shortest">The shortest route</H2>
+
+<DocText><code>graph.route(from, to)</code> returns the length (the sum of the supplied lengths), the nodes passed, the steps (each segment, its direction and its geometry) and the whole path - or <code>null</code> when nothing connects them. The lengths decide, not the geometry: a segment that looks short on the map but carries a long length is avoided. The network below is illustrative - its lengths are made-up numbers, not surveyed road distances.</DocText>
+
+```html example label="Between nine cities" schema="none" hint="Pick two cities: the route is the thick line, its length the sum of the segments' lengths. The marker runs the route once by its own metres (positionAlongRoute)." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div class="flex flex-wrap items-end gap-3">
+    <div class="grid gap-1">
+      <label class="label" for="r-from">From</label>
+      <select class="select" id="r-from"></select>
+    </div>
+    <div class="grid gap-1">
+      <label class="label" for="r-to">To</label>
+      <select class="select" id="r-to"></select>
+    </div>
+    <output class="text-sm" id="r-result"></output>
+  </div>
+  <div
+    class="geo-map"
+    id="network"
+    aria-label="A city network"
+    data-projection="mercator"
+    data-center="10.5,51"
+    data-zoom="11"
+    data-palette="mono"
+    data-graticule="false"
+  ></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const geo = df$.shadcn.geo;
+    const map = df$('#network').get(0);
+    const nodes = [
+      { id: 'munich', name: 'Munich', position: [11.582, 48.1351] },
+      { id: 'augsburg', name: 'Augsburg', position: [10.8978, 48.3705] },
+      { id: 'stuttgart', name: 'Stuttgart', position: [9.1829, 48.7758] },
+      { id: 'nuremberg', name: 'Nuremberg', position: [11.0767, 49.4521] },
+      { id: 'frankfurt', name: 'Frankfurt', position: [8.6821, 50.1109] },
+      { id: 'leipzig', name: 'Leipzig', position: [12.3731, 51.3397] },
+      { id: 'berlin', name: 'Berlin', position: [13.405, 52.52] },
+      { id: 'hamburg', name: 'Hamburg', position: [9.9937, 53.5511] },
+      { id: 'cologne', name: 'Cologne', position: [6.9603, 50.9375] },
+    ];
+    // illustrative lengths in metres - not surveyed road distances
+    const segments = [
+      ['munich', 'augsburg', 70000],
+      ['augsburg', 'stuttgart', 158000],
+      ['munich', 'nuremberg', 170000],
+      ['nuremberg', 'frankfurt', 225000],
+      ['stuttgart', 'frankfurt', 205000],
+      ['nuremberg', 'leipzig', 280000],
+      ['leipzig', 'berlin', 190000],
+      ['frankfurt', 'cologne', 190000],
+      ['cologne', 'hamburg', 425000],
+      ['hamburg', 'berlin', 290000],
+      ['frankfurt', 'berlin', 555000],
+    ].map(([from, to, lengthMeters]) => ({ id: from + '-' + to, from, to, lengthMeters, bidirectional: true }));
+    await geo.load();
+    const graph = geo.routeGraph(nodes, segments);
+    const at = (id) => nodes.find((n) => n.id === id).position;
+    for (const id of ['#r-from', '#r-to'])
+      for (const n of nodes) df$(id).append(df$('<option></option>').attr('value', n.id).text(n.name));
+    df$('#r-from').val('munich');
+    df$('#r-to').val('hamburg');
+    const base = segments.map((s) => ({
+      id: s.id,
+      coordinates: geo.path(at(s.from), at(s.to), 30000),
+      width: 1,
+      dash: '2 3',
+      color: 'var(--muted-foreground)',
+    }));
+    let runner = 0;
+    const show = () => {
+      cancelAnimationFrame(runner);
+      const route = graph.route(df$('#r-from').val(), df$('#r-to').val());
+      df$('#r-result').text(
+        route
+          ? (route.lengthMeters / 1000).toFixed(0) +
+              ' km via ' +
+              route.nodeIds.map((id) => nodes.find((n) => n.id === id).name).join(' - ')
+          : 'no route',
+      );
+      const markers = nodes.map((n) => ({ id: n.id, label: n.name, position: n.position, color: 'var(--foreground)' }));
+      const lines = route
+        ? [
+            ...base,
+            {
+              id: 'route',
+              coordinates: route.steps.flatMap((s, i) =>
+                geo.path(s.coordinates[0], s.coordinates.at(-1), 20000).slice(i ? 1 : 0),
+              ),
+              width: 4,
+            },
+          ]
+        : base;
+      df$.shadcn.geoMap.setLayers(map, { markers, lines });
+      if (!route || !route.lengthMeters) return;
+      // one run along the route, four seconds, timed by the frames: a frame's timestamp may come before
+      // performance.now() read here, and a negative distance is not on the route
+      let t0 = null;
+      const run = (now) => {
+        t0 ??= now;
+        const t = Math.min(1, (now - t0) / 4000);
+        df$.shadcn.geoMap.setLayers(map, {
+          markers: [
+            ...markers,
+            { id: 'runner', position: geo.positionAlongRoute(route, t * route.lengthMeters), shape: 'diamond' },
+          ],
+        });
+        if (t < 1) runner = requestAnimationFrame(run);
+      };
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) runner = requestAnimationFrame(run);
+    };
+    df$('#r-from').on('change', show);
+    df$('#r-to').on('change', show);
+    show();
+  });
+</script>
+```
+
+<H2 id="inside-segments">Starting inside a segment</H2>
+
+<DocText>A vehicle is rarely on a node. <code>graph.routeAt(\{ segment, fraction \}, \{ segment, fraction \})</code> routes between positions inside segments: each segment is cut at the fraction (of its supplied length; on its geometry, by ellipsoidal arc length), one-way segments stay one-way, and the steps report the original segment ids. <code>positionAlongRoute(route, meters)</code> is the position a given distance along any route.</DocText>
+
+```html example label="From 30 % along one segment to 60 % along another" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <output class="text-sm" id="at-result"></output>
+  <div
+    class="geo-map"
+    id="at-map"
+    aria-label="A route between positions inside segments"
+    data-projection="mercator"
+    data-center="10,50.5"
+    data-zoom="14"
+    data-palette="mono"
+    data-graticule="false"
+  ></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const geo = df$.shadcn.geo;
+    await geo.load();
+    const nodes = [
+      { id: 'a', position: [7.5, 50.5] },
+      { id: 'b', position: [9.5, 50.0] },
+      { id: 'c', position: [11.5, 50.5] },
+      { id: 'd', position: [9.5, 51.5] },
+    ];
+    const segments = [
+      { id: 'ab', from: 'a', to: 'b', lengthMeters: 160000, bidirectional: true },
+      { id: 'bc', from: 'b', to: 'c', lengthMeters: 160000, bidirectional: true },
+      { id: 'ad', from: 'a', to: 'd', lengthMeters: 170000 },
+      { id: 'dc', from: 'd', to: 'c', lengthMeters: 170000 },
+    ];
+    const graph = geo.routeGraph(nodes, segments);
+    const route = graph.routeAt({ segment: 'ab', fraction: 0.3 }, { segment: 'bc', fraction: 0.6 });
+    df$('#at-result').text(
+      (route.lengthMeters / 1000).toFixed(0) +
+        ' km over ' +
+        route.steps.map((s) => s.segment).join(', ') +
+        ' (0.7 x 160 + 0.6 x 160)',
+    );
+    df$.shadcn.geoMap.setLayers(df$('#at-map').get(0), {
+      lines: [
+        ...segments.map((s) => ({
+          id: s.id,
+          coordinates: [nodes.find((n) => n.id === s.from).position, nodes.find((n) => n.id === s.to).position],
+          width: 1,
+          dash: '3 3',
+          color: 'var(--muted-foreground)',
+        })),
+        { id: 'route', coordinates: route.coordinates, width: 4 },
+      ],
+      markers: [
+        ...nodes.map((n) => ({ id: n.id, label: n.id, position: n.position, color: 'var(--foreground)' })),
+        { id: 'start', label: 'start', position: route.coordinates[0], shape: 'pin' },
+        { id: 'end', label: 'end', position: route.coordinates.at(-1), shape: 'diamond' },
+      ],
+    });
+  });
+</script>
+```
+
+<H2 id="morton">Finding nodes: the Morton index</H2>
+
+<DocText>The graph keeps its nodes in a Morton (Z-order) index: each position's grid cell on a 2<sup>16</sup> x 2<sup>16</sup> longitude / latitude grid, its two coordinates' bits interleaved into one key. A rectangle becomes a few key ranges, then an exact position test removes the grid's false positives - <code>graph.nodesInBounds(bounds)</code>, rectangles across the antimeridian included. <code>graph.nearestNode(position)</code> measures the WGS84 distance to each candidate (all nodes, or those in a rectangle you give). <code>geo.mortonIndex(items, position)</code> indexes anything with a position.</DocText>
+
+```html example label="Click the map: nodes in a box, the nearest one" schema="none" hint="Each click finds the nearest of 400 random nodes (WGS84 distance) and the nodes within a 4 x 4 degree box around the click. The faint line visits the nodes in Morton order - the Z curve." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <output class="text-sm" id="mo-result">Click the map.</output>
+  <div
+    class="geo-map"
+    id="mo-map"
+    aria-label="Random nodes"
+    data-select="none"
+    data-projection="mercator"
+    data-center="10,50"
+    data-zoom="4"
+    data-palette="mono"
+    data-graticule="false"
+  ></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const geo = df$.shadcn.geo;
+    const map = df$('#mo-map').get(0);
+    await map.api.settled();
+    let seed = 3;
+    const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+    const nodes = Array.from({ length: 400 }, (_, i) => ({
+      id: 'n' + i,
+      position: [rnd() * 40 - 10, rnd() * 25 + 37],
+    }));
+    const graph = geo.routeGraph(nodes, []);
+    const order = graph.mortonOrder().map((id) => nodes[Number(id.slice(1))].position);
+    const draw = (extra = [], box = []) =>
+      df$.shadcn.geoMap.setLayers(map, {
+        markers: [
+          ...nodes.map((n) => ({ id: n.id, position: n.position, color: 'var(--muted-foreground)' })),
+          ...extra,
+        ],
+        lines: [{ id: 'z', coordinates: order, width: 0.6, color: 'var(--muted-foreground)' }, ...box],
+      });
+    draw();
+    df$(map).on('click', (e) => {
+      const svg = df$(map).find('svg').get(0);
+      const r = svg.getBoundingClientRect();
+      const vb = svg.viewBox.baseVal;
+      const p = df$.shadcn.geoMap.unproject(map, [
+        ((e.clientX - r.left) * vb.width) / r.width,
+        ((e.clientY - r.top) * vb.height) / r.height,
+      ]);
+      if (!p) return;
+      const bounds = [p[0] - 2, p[1] - 2, p[0] + 2, p[1] + 2];
+      const inBox = graph.nodesInBounds(bounds);
+      const near = graph.nearestNode(p);
+      df$('#mo-result').text(
+        inBox.length + ' nodes in the box - the nearest is ' + (near.meters / 1000).toFixed(1) + ' km away',
+      );
+      draw(
+        [
+          ...inBox.map((n) => ({ id: 'box-' + n.id, position: n.position, color: 'var(--chart-2)' })),
+          { id: 'near', position: near.node.position, shape: 'pin', label: 'nearest' },
+          { id: 'click', position: p, shape: 'square', color: 'var(--foreground)' },
+        ],
+        [
+          {
+            id: 'box',
+            coordinates: [
+              [bounds[0], bounds[1]],
+              [bounds[2], bounds[1]],
+              [bounds[2], bounds[3]],
+              [bounds[0], bounds[3]],
+              [bounds[0], bounds[1]],
+            ],
+            width: 1.5,
+            color: 'var(--chart-2)',
+          },
+        ],
+      );
+    });
+  });
+</script>
+```
+
+<H2 id="limits">What it is not</H2>
+
+<DocText>The graph minimizes the lengths you give it: there is no A* (an application's lengths may be shorter than the surface distance, so a geodesic heuristic would not be admissible), no turn costs, no contraction hierarchy, no snapping of a GPS position onto a road's interior - <code>nearestNode</code> finds a node, and the distance to it is not part of the route. For a city's or a country's road network, a routing server is the right tool; for a few thousand application-owned segments - a campus, a delivery zone, a network diagram - this runs in the page.</DocText>
+
+<SourceFiles component="geo-map" section="css">
+  <SourceNote for="css">The library lives in the Geo Map component - the stylesheet is the map's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="geo-map" section="js" jsTitle="JS" />
+
+</DocPage>

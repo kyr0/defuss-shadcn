@@ -458,6 +458,29 @@ interface DefussShadcnRegistry {
     engine: (url?: string) => string;
     url: string;
   };
+  /** Geo Map (src/components/geography/geo-map/geo-map.ts): selection, focus, search, camera, layers, projection */
+  geoMap?: {
+    select: (el: HTMLElement | string, keys: string[]) => Promise<void>;
+    focus: (el: HTMLElement | string, region: string | null) => Promise<void>;
+    up: (el: HTMLElement | string) => Promise<void>;
+    reset: (el: HTMLElement | string) => Promise<void>;
+    search: (el: HTMLElement | string, query: string, limit?: number) => Promise<{ key: string; name: string; level: string; label: string }[]>;
+    zoomBy: (el: HTMLElement | string, factor: number) => void;
+    setView: (el: HTMLElement | string, center: [number, number], zoom?: number, animate?: boolean) => Promise<void>;
+    setLayers: (el: HTMLElement | string, layers: Record<string, unknown>) => void;
+    visible: (el: HTMLElement | string) => { key: string; name: string; level: string; anchor: [number, number] | null }[];
+    region: (el: HTMLElement | string, key: string) => { type: string; properties: { id: string; name: string; level: string }; geometry: unknown } | null;
+    project: (el: HTMLElement | string, point: [number, number]) => [number, number] | null;
+    unproject: (el: HTMLElement | string, pixel: [number, number]) => [number, number] | null;
+    stats: (el: HTMLElement | string) => { visibleRegions: number; contextRegions: number; visibleCells: number; visibleMarkers: number; callouts: number; renderMs: number; cachedChunks: number; loadedBytes: number; loading: number };
+    hatch: (el: HTMLElement | string) => string;
+  };
+  /** the geography library (src/components/geography/geo-map/geo-map.ts): engines, geodesics, S2, Morton, routing, DGEO */
+  geo?: {
+    load: () => Promise<void>;
+    configure: (options: { data?: string; urls?: Record<string, string>; views?: Record<string, [number, number, number, number]> }) => void;
+    [member: string]: unknown;
+  };
   /** chart storytelling driver (src/components/chart/chart.ts) */
   chartStory?: typeof import('../components/chart/chart.js').chartStory;
   docs?: DefussShadcnDocsNamespace;

@@ -1,0 +1,155 @@
+---
+title: "Geo Map: Regions & Selection"
+description: "Regions are state on the Geo Map: pick one or several by click, keyboard or the State API, highlight them filled, outlined, pulsing or lifted off the map, and paint any region your own color - a choropleth from data."
+slug: "geo-regions"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geo-regions" title="Regions & Selection" component="geo-map">
+  Every region on the map is a named, focusable path, and which ones are picked is one attribute on the map: <code>data-selected="country:FRA country:DEU"</code>. A click picks a region, Shift-click adds one, the keyboard walks between neighbors, the State API sets any list - and <code>data-highlight</code> decides how a picked region shows: filled, with a marching outline, pulsing, or lifted off the map with its shadow underneath.
+</PageHeader>
+
+<H2 id="picking">Picking</H2>
+
+<DocText>A click picks one region and a second click on it lets it go; Shift, Cmd or Ctrl adds to the selection. <code>data-select="multiple"</code> makes every click a toggle, <code>none</code> turns picking off. Keyboard: Tab to the map's regions, arrows to the nearest region in that direction, Enter or Space to pick, Escape to clear. Every change dispatches <code>geo-map-select</code> with the keys and names.</DocText>
+
+```html example label="Pick countries" schema="none" hint="data-select='multiple': each click toggles a country. The output under the map is bound to the selection; Clear is a data-geo-action button." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div
+    class="geo-map"
+    id="picker"
+    aria-label="Pick countries"
+    data-select="multiple"
+    data-center="10,48"
+    data-zoom="3.5"
+  ></div>
+  <div class="flex flex-wrap items-center gap-3">
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-geo-for="picker"
+      data-geo-action="clear"
+      >Clear</button
+    >
+    <span class="text-sm">Picked: <output data-geo-for="picker" data-geo-output="selection"></output></span>
+  </div>
+</div>
+```
+
+<H2 id="highlight">Highlight styles</H2>
+
+<DocText><code>data-highlight</code> styles the selection: <code>fill</code> (the default - the theme's primary color), <code>outline</code> (a marching dashed outline over a light tint), <code>pulse</code> (the fill breathes) and <code>lift</code> (the region rises a few pixels with a drop shadow, like a tile lifted off the board). Reduced motion keeps the lift and stops the marching and the pulse.</DocText>
+
+```html example label="Four ways to show a selection" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); --geo-map-height: 15rem">
+  <div
+    class="geo-map"
+    aria-label="Fill"
+    data-selected="country:ESP country:SWE"
+    data-center="12,52"
+    data-zoom="3.6"
+  ></div>
+  <div
+    class="geo-map"
+    aria-label="Outline"
+    data-highlight="outline"
+    data-selected="country:ESP country:SWE"
+    data-center="12,52"
+    data-zoom="3.6"
+  ></div>
+  <div
+    class="geo-map"
+    aria-label="Pulse"
+    data-highlight="pulse"
+    data-selected="country:ESP country:SWE"
+    data-center="12,52"
+    data-zoom="3.6"
+  ></div>
+  <div
+    class="geo-map"
+    aria-label="Lift"
+    data-highlight="lift"
+    data-selected="country:ESP country:SWE"
+    data-center="12,52"
+    data-zoom="3.6"
+  ></div>
+</div>
+```
+
+<H2 id="animated">An animated tour</H2>
+
+<DocText>The selection is state, so a script can walk it: <code>setState('selected', \{ selected \})</code> moves the highlight, the CSS transition animates the fill from one region to the next. Hovering a region lifts it in every highlight style - the lift is drawn as a raised copy above the map, so it never hides under a neighbor.</DocText>
+
+```html example label="One region after another" schema="none" hint="Play steps through the Nordic countries one second apart; the highlight is data-highlight='lift'. Hover any country to see the hover lift." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div
+    class="geo-map"
+    id="tour"
+    aria-label="The Nordic countries"
+    data-highlight="lift"
+    data-palette="ocean"
+    data-center="15,62"
+    data-zoom="4.2"
+  ></div>
+  <div class="flex items-center gap-3">
+    <button class="btn" data-size="sm" type="button" id="tour-play">Play</button>
+    <span class="text-sm">Now: <output data-geo-for="tour" data-geo-output="selection"></output></span>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const stops = ['country:NOR', 'country:SWE', 'country:FIN', 'country:DNK', 'country:ISL'];
+    let timer = 0;
+    df$('#tour-play').on('click', () => {
+      clearInterval(timer);
+      let i = 0;
+      const map = df$('#tour').get(0);
+      const step = () => map.api.setState('selected', { selected: [stops[i++ % stops.length]] });
+      step();
+      timer = setInterval(() => (i >= stops.length ? clearInterval(timer) : step()), 1000);
+    });
+  });
+</script>
+```
+
+<H2 id="choropleth">Styles from data</H2>
+
+<DocText>Any region, by key, can carry its own look over the palette: <code>fill</code>, <code>stroke</code>, <code>strokeWidth</code>, <code>dash</code> and <code>opacity</code> - in the layers JSON or through <code>df$.shadcn.geoMap.setLayers(el, \{ styles \})</code>. Mixed toward the card color, one chart token makes a choropleth; <code>df$.shadcn.geoMap.hatch(el)</code> is a hatch fill for regions without data.</DocText>
+
+```html example label="A choropleth" schema="none" hint="The shares are illustrative numbers. Each country's fill mixes --chart-1 into the card color by its share; Switzerland has no value and is hatched." previewStyle="align-items:stretch;"
+<div
+  class="geo-map"
+  id="share"
+  aria-label="Share by country (illustrative)"
+  data-palette="mono"
+  data-center="10,50"
+  data-zoom="5.5"
+  data-projection="mercator"
+></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const share = { DEU: 62, FRA: 48, ITA: 35, ESP: 30, POL: 55, AUT: 70, CZE: 44, NLD: 80, BEL: 66, DNK: 75 };
+    const map = df$('#share').get(0);
+    const styles = {};
+    for (const [id, value] of Object.entries(share))
+      styles['country:' + id] = { fill: 'color-mix(in oklab, var(--chart-1) ' + value + '%, var(--card))' };
+    map.api.settled().then(() => {
+      styles['country:CHE'] = { fill: df$.shadcn.geoMap.hatch(map) };
+      df$.shadcn.geoMap.setLayers(map, { styles });
+    });
+  });
+</script>
+```
+
+<SourceFiles component="geo-map" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Geo Map's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="geo-map" section="js" jsTitle="JS" />
+
+</DocPage>

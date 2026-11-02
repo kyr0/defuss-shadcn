@@ -1,0 +1,227 @@
+---
+title: "Geo Map"
+description: "Geo Map component - countries, continents and states in SVG on five projections: regions picked by click or State API, a focus that frames a region with its children, callouts, markers, geodesic lines and S2 cells, from first-party Natural Earth data loaded as it comes into view."
+slug: "geo-map"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geo-map" title="Geo Map" component="geo-map">
+  A map as markup: a <code>&lt;div class="geo-map"&gt;</code> becomes an SVG of the world's countries, continents or first-order regions, every region a path with a name you can click, tab to and style. What the map shows is attributes - the projection, the level, the palette, the picked regions (<code>data-selected</code>), the framed one (<code>data-focus</code>) - so the State API writes them, CSS animates them and a script may set them. The official d3-geo projects and clips, the data is Natural Earth v5.1.2 in compact chunks that load as they come into view.
+</PageHeader>
+
+<SkillPanel component="geo-map">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div&gt;</code> the component fills with one <code>&lt;svg role="group"&gt;</code>: each region a <code>&lt;path role="button" aria-pressed&gt;</code> with its name. The state is on the element as <code>data-*</code> attributes; the SVG and the camera are the runtime's.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element/path" title="one path per region in view"><code>&lt;path&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" title="pan and pinch"><code>Pointer Events</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the map refits its box"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist" title="search suggestions"><code>&lt;datalist&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt" title="exact S2 cell ids"><code>BigInt</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style" title="the hover lift"><code>@starting-style</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-pressed" title="a picked region"><code>aria-pressed</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.geo-map</code>
+    <code>.geo-map-layers</code>
+    <code>.geo-map-svg</code>
+    <code>.geo-map-region</code>
+    <code>.geo-map-callout</code>
+    <code>.geo-map-tooltip</code>
+    <code>.geo-map-error</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="d3-geo@3.1.1" description="Projections, spherical clipping and SVG paths (d3/d3-geo, ISC) - with d3-array@3.2.4, pinned UMD builds via jsDelivr" />
+    <Variant name="geographiclib-geodesic@2.2.0" description="Karney's geodesics on the WGS84 ellipsoid (MIT/X11) - the distances and the geodesic lines" />
+    <Variant name="defuss-dson@1.1.2" description="The DGEO chunks' metadata format (MIT)" />
+    <Variant name="Natural Earth v5.1.2" description="Countries (110m / 50m), continents, 4,596 first-order regions (10m) - public domain" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• One tab stop for the map: arrows pan, + / - zoom, Home resets, Escape clears the selection, then steps out of the focus</SkillText>
+  <SkillText dense>• Regions are a roving tab stop: arrows move to the nearest region that way, Enter / Space picks it; each has its name and <code>aria-pressed</code></SkillText>
+  <SkillText dense>• Reduced motion: no flights, no pulse; forced colors: system colors throughout</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Europe, framed, two countries picked" hint="data-focus frames a region and shows its children - the rest of the world is dimmed and inert. data-selected picks regions; click another country, Shift-click to add one. The State tab drives the same attributes."
+<div
+  class="geo-map"
+  aria-label="Europe with France and Germany picked"
+  data-focus="continent:Europe"
+  data-selected="country:FRA country:DEU"
+></div>
+```
+
+## Layers
+
+<DocText>A <code>&lt;script type="application/json" class="geo-map-layers"&gt;</code> draws over the boundaries: <b>markers</b> at a GPS position or an S2 cell's center (circle, diamond, square, pin), <b>lines</b> as positions or as the WGS84 geodesic between two (<code>from</code>, <code>to</code>), <b>cells</b> by S2 token and per-region <b>styles</b>. <code>df$.shadcn.geoMap.setLayers(el, layers)</code> replaces any of them later.</DocText>
+
+```html example label="Munich to Berlin" schema="none" hint="The line is the WGS84 geodesic between the two pins; the shaded square is the S2 cell 479f (level 6) that holds Munich; Austria has a style of its own."
+<div
+  class="geo-map"
+  aria-label="Munich to Berlin"
+  data-projection="mercator"
+  data-center="11.5,50.3"
+  data-zoom="9"
+  data-palette="mono"
+>
+  <script type="application/json" class="geo-map-layers">
+    {
+      "markers": [
+        { "id": "muc", "label": "Munich", "position": [11.582, 48.1351], "shape": "pin" },
+        { "id": "ber", "label": "Berlin", "position": [13.405, 52.52], "shape": "diamond" }
+      ],
+      "lines": [{ "id": "muc-ber", "from": [11.582, 48.1351], "to": [13.405, 52.52] }],
+      "cells": ["479f"],
+      "styles": { "country:AUT": { "fill": "var(--chart-2)" } }
+    }
+  </script>
+</div>
+```
+
+## Projections
+
+<DocText>Two projections draw every country at its real size. Equal Earth (the default) shows the whole world; <code>equalArea</code> - Lambert's azimuthal equal-area projection, turned to wherever the camera looks - suits a region, whose shape it also keeps true at the center. Mercator keeps angles and is what web maps use; equirectangular is the plain longitude / latitude grid; <code>equalArea</code> and the orthographic globe rotate when you drag them. A projection change keeps the camera.</DocText>
+
+```html example label="Five projections" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); --geo-map-height: 15rem">
+  <div class="geo-map" aria-label="Equal Earth" data-palette="ocean"></div>
+  <div
+    class="geo-map"
+    aria-label="Equal area"
+    data-projection="equalArea"
+    data-center="15,50"
+    data-palette="chart"
+  ></div>
+  <div class="geo-map" aria-label="Mercator" data-projection="mercator" data-palette="forest"></div>
+  <div class="geo-map" aria-label="Equirectangular" data-projection="equirectangular" data-palette="sunset"></div>
+  <div class="geo-map" aria-label="Globe" data-projection="orthographic" data-center="10,30" data-palette="heat"></div>
+</div>
+```
+
+<DocText>Mercator stretches a region more the farther it lies from the equator. Greenland (2.17 million km²) and the DR Congo (2.34 million km²) are about the same size: Mercator draws Greenland several times larger, an equal-area projection draws them as they are.</DocText>
+
+```html example label="Real sizes: Greenland and the DR Congo" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); --geo-map-height: 18rem">
+  <div
+    class="geo-map"
+    aria-label="Mercator: Greenland drawn larger than the DR Congo"
+    data-projection="mercator"
+    data-center="-10,30"
+    data-zoom="1.3"
+    data-selected="country:GRL country:COD"
+    data-palette="mono"
+  ></div>
+  <div
+    class="geo-map"
+    aria-label="Equal area: Greenland and the DR Congo at their real sizes"
+    data-projection="equalArea"
+    data-center="-10,35"
+    data-zoom="1.3"
+    data-selected="country:GRL country:COD"
+    data-palette="mono"
+  ></div>
+</div>
+```
+
+## Levels
+
+<DocText><code>data-level</code> chooses the boundaries: <code>continent</code>, <code>country</code> (the default), <code>state</code> - Natural Earth's first administrative level - or <code>auto</code>, which follows the zoom (continents below 2x, countries below 8x, states above). A country's detailed outline loads from 3x, its states when they come into view, the unsimplified states from 24x.</DocText>
+
+```html example label="Continents, and the states of the Alps" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); --geo-map-height: 18rem">
+  <div class="geo-map" aria-label="Continents" data-level="continent" data-palette="chart"></div>
+  <div
+    class="geo-map"
+    aria-label="States around the Alps"
+    data-level="state"
+    data-center="10.5,46.5"
+    data-zoom="22"
+    data-projection="mercator"
+  ></div>
+</div>
+```
+
+## Palettes and borders
+
+<DocText>Seven palettes fill the regions - five atlas tones plus <code>mono</code> (the theme's neutral tokens) and <code>chart</code> (<code>--chart-1</code> to <code>--chart-5</code>); dark mode mixes every tone toward the background. <code>data-border</code> draws natural, cased, dashed or no borders; <code>data-graticule="false"</code> hides the grid.</DocText>
+
+```html example label="Mono, chart and heat" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); --geo-map-height: 14rem">
+  <div
+    class="geo-map"
+    aria-label="Mono, cased"
+    data-palette="mono"
+    data-border="cased"
+    data-center="15,50"
+    data-zoom="4"
+  ></div>
+  <div
+    class="geo-map"
+    aria-label="Chart, dashed"
+    data-palette="chart"
+    data-border="dashed"
+    data-center="15,50"
+    data-zoom="4"
+  ></div>
+  <div
+    class="geo-map"
+    aria-label="Heat, no borders"
+    data-palette="heat"
+    data-border="none"
+    data-graticule="false"
+    data-center="15,50"
+    data-zoom="4"
+  ></div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>. The state is a function of the element's attributes and its camera - a click, a search or an attribute written from outside changes it without <code>setState</code>, and <code>getState()</code> reports it:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - nothing picked, nothing framed (<code>data-selected</code> and <code>data-focus</code> removed)</li>
+    <li><code>selected</code> - <code>config.selected</code> regions picked (keys such as <code>country:FRA</code>); entered without a selection (or an empty one), the one the markup declared</li>
+    <li><code>focused</code> - <code>config.focus</code> framed (the camera flies there unless the config names one) with its children shown; a selection may stay; entered without a focus (or an empty one), the one the markup declared</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes the view options too - <code>projection</code>, <code>level</code>, <code>palette</code>, <code>border</code>, <code>graticule</code>, <code>callouts</code> - and the camera, <code>center</code> and <code>zoom</code>. Events: <code>geo-map-select</code>, <code>geo-map-focus</code>, <code>geo-map-view</code> (the camera came to rest), <code>geo-map-render</code>, <code>geo-map-error</code>.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/geo-map-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/geo-map.schema.json"><code>geo-map.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `projection` | `enum` | `equalEarth`, `equalArea`, `mercator`, `equirectangular`, `orthographic` | `"equalEarth"` | The projection (`data-projection`). |
+| `level` | `enum` | `country`, `continent`, `state`, `auto` | `"country"` | The boundaries drawn; `auto` follows the zoom (`data-level`). |
+| `palette` | `enum` | `atlas`, `ocean`, `forest`, `sunset`, `heat`, `mono`, `chart` | `"atlas"` | The region fills (`data-palette`). |
+| `border` | `enum` | `natural`, `cased`, `dashed`, `none` | `"natural"` | The border lines (`data-border`). |
+| `graticule` | `boolean` | `true`, `false` | `true` | The latitude / longitude grid (`data-graticule="false"` hides it). |
+| `callouts` | `boolean` | `true`, `false` | `false` | Leader lines from the regions in view to their names outside the map (`data-callouts`). |
+| `selected` | `string` | `—` | `""` | The picked regions' keys, space separated (`setState('selected', { selected })`, observed from `data-selected`). |
+| `focused` | `string` | `—` | `""` | The framed region's key (`setState('focused', { focus })`, observed from `data-focus`). |
+| `zoom` | `number` | `—` | `1` | The zoom factor, 1 to 1024 - the camera, no markup. |
+```
+
+</StatesSection>
+
+<ApiSection component="geo-map" />
+
+<SourceFiles component="geo-map" section="css" />
+
+<SourceFiles component="geo-map" section="js" jsTitle="JS" />
+
+</DocPage>

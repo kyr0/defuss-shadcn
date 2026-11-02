@@ -1,0 +1,122 @@
+---
+title: "Geo Map: Data & Encoding"
+description: "The Geo Map's data: Natural Earth v5.1.2 in first-party DGEO chunks - a resident world overview, country detail and states loaded as they come into view, measured encoding sizes, the manifest, your own GeoJSON, self-hosting and regeneration."
+slug: "geo-data"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geo-data" title="Data & Encoding" component="geo-map">
+  The map ships its own boundaries: Natural Earth v5.1.2 (public domain) as 745 small files beside the component, <code>dist/components/geo-map/data/</code>. Nothing is fetched from a map service and no key is needed - the page loads a world overview, then only the chunks the view needs. The data comes with the release (on jsDelivr by default), from your own server (<code>data-src</code>, <code>&lt;meta name="geo-map-data"&gt;</code>, <code>df$.shadcn.geo.configure(\{ data \})</code>) or as your own GeoJSON.
+</PageHeader>
+
+<H2 id="levels-of-detail">Levels of detail</H2>
+
+<div class="overflow-x-auto mb-6">
+<table class="table">
+  <thead><tr><th>File</th><th>What</th><th>When it loads</th></tr></thead>
+  <tbody>
+    <tr><td><code>world.dgeo</code></td><td>242 countries and territories (110m, 50m where 110m has none) and the continents dissolved from them - 97 KB</td><td>with the first map; stays resident</td></tr>
+    <tr><td><code>country-&lt;ADM0_A3&gt;.dgeo</code></td><td>one country's 50m outline</td><td>from 3x, when the country is in view</td></tr>
+    <tr><td><code>states-&lt;ADM0_A3&gt;.dgeo</code></td><td>its first-order regions (10m), shared borders simplified once (Visvalingam, 2e-9 sr)</td><td>at the state level from 3x, or when the country is framed</td></tr>
+    <tr><td><code>states-hi-&lt;ADM0_A3&gt;.dgeo</code></td><td>the same regions as published</td><td>from 24x</td></tr>
+    <tr><td><code>manifest.json</code></td><td>the chunk paths, each country's full-detail bounds, the sources' SHA-256</td><td>first</td></tr>
+    <tr><td><code>names.json</code></td><td>every state's id, name and country (4,596) - the search index</td><td>with the first search</td></tr>
+  </tbody>
+</table>
+</div>
+
+<DocText>A chunk is a whole country's regions, not a tile: four load at a time, newest view first, a stale request is dropped, a failed one retries with backoff, and decoded chunks stay in a 24 MB cache (encoded bytes; what a map shows is never evicted). Whether a country is in view is decided by its full-detail bounds, so an island the overview omits still loads its detail; nine territories with states but no country outline (Gibraltar among them) load through the bounds index. Only paths in view enter the SVG.</DocText>
+
+<H2 id="dgeo">DGEO</H2>
+
+<DocText>A DGEO file is a quantized TopoJSON topology whose metadata (objects, properties, transform) is DSON text and whose arcs are raw bytes: each point a pair of ZigZag base-128 varints of its delta to the previous one, the arcs behind an offset table. Neighbouring regions share arcs, so every border is stored once. <code>df$.shadcn.geo.decode(bytes)</code> reads DGEO or plain quantized TopoJSON; <code>features(topology, name)</code> turns an object into GeoJSON features.</DocText>
+
+<div class="overflow-x-auto mb-6">
+<table class="table">
+  <thead><tr><th>Bytes</th><th>Offset</th><th>Field</th></tr></thead>
+  <tbody>
+    <tr><td>4</td><td>0</td><td><code>DGEO</code></td></tr>
+    <tr><td>2 + 2</td><td>4</td><td>version 1, flags 0 (little endian)</td></tr>
+    <tr><td>4 + 4 + 4</td><td>8</td><td>metadata length, arc count, arc payload length</td></tr>
+    <tr><td>metadata length</td><td>20</td><td>the topology without <code>arcs</code>, as DSON</td></tr>
+    <tr><td>(count + 1) x 4</td><td>then</td><td>each arc's offset into the payload</td></tr>
+    <tr><td>payload length</td><td>then</td><td>the arcs: ZigZag varint delta pairs</td></tr>
+  </tbody>
+</table>
+</div>
+
+<DocText>The same world overview in four encodings, measured by <code>scripts/geo-data.ts</code> - DGEO is the smallest file on disk, but over the wire, with the server's Brotli, TopoJSON is about as small. Choose by your host; the map reads both.</DocText>
+
+<div class="overflow-x-auto mb-6">
+<table class="table">
+  <thead><tr><th>Encoding</th><th class="text-end">Raw</th><th class="text-end">gzip</th><th class="text-end">Brotli</th></tr></thead>
+  <tbody>
+    <tr><td>GeoJSON</td><td class="text-end">807,061</td><td class="text-end">275,930</td><td class="text-end">120,922</td></tr>
+    <tr><td>TopoJSON</td><td class="text-end">141,282</td><td class="text-end">47,340</td><td class="text-end">39,394</td></tr>
+    <tr><td>TopoJSON as DSON</td><td class="text-end">287,623</td><td class="text-end">100,191</td><td class="text-end">66,922</td></tr>
+    <tr><td>DGEO</td><td class="text-end">96,602</td><td class="text-end">52,203</td><td class="text-end">40,098</td></tr>
+  </tbody>
+</table>
+</div>
+
+<H2 id="own-regions">Your own regions</H2>
+
+<DocText>A <code>data-src</code> that answers a GeoJSON <code>FeatureCollection</code> replaces the world: every feature a Polygon or MultiPolygon with properties <code>\{ id, name, level \}</code> (<code>continent</code>, <code>country</code> or <code>state</code>; a state names its country in <code>parent</code>). Rings may be wound either way - RFC 7946 or D3 - the map turns each to enclose the smaller area (<code>df$.shadcn.geo.rewind</code>). Search, focus, callouts and styles work the same. The example builds its regions in the page and hands them over as a data URL.</DocText>
+
+```html example label="Three made-up districts" schema="none" hint="The regions are a GeoJSON FeatureCollection built in the page - three rectangles named like districts. Double click one to frame it." previewStyle="align-items:stretch;"
+<div
+  class="geo-map"
+  id="own"
+  aria-label="Three districts"
+  data-callouts="true"
+  data-projection="mercator"
+  data-center="9,48.5"
+  data-zoom="60"
+></div>
+<script>
+  const box = (id, name, w, s, e, n) => ({
+    type: 'Feature',
+    properties: { id, name, level: 'country' },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [w, s],
+          [e, s],
+          [e, n],
+          [w, n],
+          [w, s],
+        ],
+      ],
+    },
+  });
+  const districts = {
+    type: 'FeatureCollection',
+    features: [
+      box('N', 'North District', 8.7, 48.6, 9.4, 48.9),
+      box('W', 'West District', 8.7, 48.2, 9.0, 48.6),
+      box('E', 'East District', 9.0, 48.2, 9.4, 48.6),
+    ],
+  };
+  document.querySelector('#own').dataset.src = 'data:application/json,' + encodeURIComponent(JSON.stringify(districts));
+</script>
+```
+
+<H2 id="hosting">Hosting the data yourself</H2>
+
+<DocText>Copy <code>dist/components/geo-map/data/</code> to your server and point the maps at its <code>manifest.json</code> - per map with <code>data-src</code>, per page with <code>&lt;meta name="geo-map-data" content="/geo/manifest.json"&gt;</code> or <code>df$.shadcn.geo.configure(\{ data \})</code> before the first map. Serve it with the host's compression and long cache lifetimes; a chunk never changes within a release. The engines self-host the same way: <code>configure(\{ urls: \{ d3Array, d3Geo, geodesic, dson \} \})</code> with copies of the pinned builds.</DocText>
+
+<H2 id="regenerating">Regenerating</H2>
+
+<DocText><code>bun scripts/geo-data.ts</code> rebuilds every file from the three pinned Natural Earth GeoJSON sources (about 45 MB, downloaded once into <code>tmp/geo-data/</code>, their SHA-256 written into the manifest); <code>--names</code> rewrites only the search index from the shipped chunks. Only identity and display names are kept from the sources (<code>ADM0_A3</code>, <code>adm1_code</code>, the English name, the continent) - no statistical columns. The boundaries show Natural Earth's worldview and vintage.</DocText>
+
+<SourceFiles component="geo-map" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Geo Map's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="geo-map" section="js" jsTitle="JS" />
+
+</DocPage>

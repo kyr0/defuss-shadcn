@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>geo-map e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/core.css" />
+    <link rel="stylesheet" href="/dist/components/geo-map/geo-map.css" />
+    <style>
+      body { padding: 1rem; max-width: 64rem; font-family: system-ui; }
+      .geo-map { --geo-map-height: 26rem; margin-block: 1rem; }
+    </style>
+  </head>
+  <body>
+    <!-- mirrors the doc pages: the world, a focused continent with callouts, a focused country (its states),
+         a picked selection, projections, palettes, borders, layers, outside controls and readouts -->
+    <div class="geo-map" id="gm-world" data-src="/dist/components/geo-map/data/manifest.json" aria-label="The world"></div>
+
+    <div class="geo-map" id="gm-europe" data-src="/dist/components/geo-map/data/manifest.json" data-focus="continent:Europe" data-callouts="true" data-highlight="lift" aria-label="Europe"></div>
+
+    <div class="geo-map" id="gm-germany" data-src="/dist/components/geo-map/data/manifest.json" data-focus="country:DEU" data-callouts="true" data-highlight="outline" aria-label="Germany"></div>
+
+    <div class="geo-map" id="gm-picked" data-src="/dist/components/geo-map/data/manifest.json" data-selected="country:FRA country:DEU" data-select="multiple" data-highlight="pulse" data-palette="ocean" data-border="cased" aria-label="France and Germany picked"></div>
+
+    <div class="geo-map" id="gm-globe" data-src="/dist/components/geo-map/data/manifest.json" data-projection="orthographic" data-center="10,45" data-palette="forest" data-graticule="false" aria-label="A globe"></div>
+
+    <div class="geo-map" id="gm-plain" data-src="/dist/components/geo-map/data/manifest.json" data-variant="plain" data-palette="mono" data-center="0,0" data-zoom="1" aria-label="A plain map"></div>
+
+    <div class="geo-map" id="gm-layers" data-src="/dist/components/geo-map/data/manifest.json" data-projection="mercator" data-center="11,50" data-zoom="6" data-palette="mono" data-border="dashed" aria-label="Munich to Berlin">
+      <script type="application/json" class="geo-map-layers">
+        {
+          "markers": [
+            { "id": "muc", "label": "Munich", "position": [11.582, 48.1351], "shape": "pin" },
+            { "id": "ber", "label": "Berlin", "position": [13.405, 52.52], "shape": "diamond" },
+            { "id": "cell", "label": "S2 cell", "position": { "s2": "47a1" }, "shape": "square" }
+          ],
+          "lines": [{ "id": "muc-ber", "from": [11.582, 48.1351], "to": [13.405, 52.52] }],
+          "cells": ["479f"],
+          "styles": { "country:AUT": { "fill": "var(--chart-2)" } }
+        }
+      </script>
+    </div>
+
+    <div class="geo-map" id="gm-area" data-src="/dist/components/geo-map/data/manifest.json" data-projection="equalArea" data-center="-10,35" data-selected="country:GRL country:COD" data-palette="mono" aria-label="Greenland and the DR Congo at their real sizes"></div>
+
+    <div class="geo-map" id="gm-cells" data-src="/dist/components/geo-map/data/manifest.json" data-projection="equalArea" data-center="11.6,48.1" data-palette="mono" data-highlight="outline" aria-label="The S2 hierarchy">
+      <script type="application/json" class="geo-map-layers">
+        { "cells": ["1", "3", "5", "7", "9", "b"], "markers": [{ "id": "muc", "label": "Munich", "position": [11.582, 48.1351], "shape": "pin" }] }
+      </script>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn" data-variant="outline" type="button" id="gm-cells-up" data-geo-for="gm-cells" data-geo-action="up">Up</button>
+      <output id="gm-cells-focus" data-geo-for="gm-cells" data-geo-output="focus"></output>
+      <output id="gm-cells-level" data-geo-for="gm-cells" data-geo-output="level"></output>
+    </div>
+
+    <div class="geo-map" id="gm-big" data-src="/dist/components/geo-map/data/manifest.json" data-focus="country:AUT" data-callouts="true" data-palette="ocean" style="--geo-map-callout-size: 20px; --geo-map-callout-width: 13rem" aria-label="The states of Austria, large callouts"></div>
+
+    <div class="flex gap-2" id="gm-controls">
+      <input class="input" type="search" id="gm-search" data-geo-for="gm-world" data-geo-action="search" placeholder="Search a region" aria-label="Search a region" />
+      <button class="btn" data-variant="outline" type="button" id="gm-europe-btn" data-geo-for="gm-world" data-geo-action="focus" data-value="continent:Europe">Europe</button>
+      <button class="btn" data-variant="outline" type="button" id="gm-up" data-geo-for="gm-world" data-geo-action="up">Up</button>
+      <button class="btn" data-variant="outline" type="button" id="gm-reset" data-geo-for="gm-world" data-geo-action="reset">World</button>
+      <button class="btn" data-variant="outline" type="button" id="gm-in" data-geo-for="gm-world" data-geo-action="zoom-in" aria-label="Zoom in">+</button>
+      <select class="select" id="gm-projection" data-geo-for="gm-world" data-geo-param="projection" aria-label="Projection">
+        <option value="equalEarth">Equal Earth</option>
+        <option value="equalArea">Equal area</option>
+        <option value="mercator">Mercator</option>
+        <option value="equirectangular">Equirectangular</option>
+        <option value="orthographic">Globe</option>
+      </select>
+      <label class="label"><input type="checkbox" id="gm-callouts" data-geo-for="gm-world" data-geo-param="callouts" /> Callouts</label>
+      <output id="gm-out-focus" data-geo-for="gm-world" data-geo-output="focus"></output>
+      <output id="gm-out-selection" data-geo-for="gm-world" data-geo-output="selection"></output>
+      <output id="gm-out-zoom" data-geo-for="gm-world" data-geo-output="zoom"></output>
+    </div>
+
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/geo-map/geo-map.js"></script>
+  </body>
+</html>

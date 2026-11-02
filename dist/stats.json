@@ -1,7 +1,7 @@
 {
-  "total": 249,
+  "total": 250,
   "byType": {
-    "ATM": 76,
+    "ATM": 77,
     "MOL": 34,
     "ORG": 6,
     "BLK": 129,
@@ -17,14 +17,14 @@
     "Website": 12
   },
   "tokens": 52,
-  "examples": 1744,
-  "unitTestFiles": 43,
-  "withJs": 78,
+  "examples": 1774,
+  "unitTestFiles": 45,
+  "withJs": 79,
   "withoutJs": 171,
-  "totalSize": 3240121,
-  "totalSizeMinified": 1555487,
-  "totalSizeGz": 948865,
-  "totalSizeGzMinified": 522777,
+  "totalSize": 3378728,
+  "totalSizeMinified": 1618954,
+  "totalSizeGz": 987295,
+  "totalSizeGzMinified": 545051,
   "bundle": {
     "jsSize": 1098837,
     "jsSizeMinified": 638688,
@@ -47,13 +47,13 @@
   },
   "bundles": {
     "wysiwyg": {
-      "jsSize": 74466,
-      "jsSizeMinified": 47077,
+      "jsSize": 74536,
+      "jsSizeMinified": 47135,
       "cssSize": 25048,
       "cssSizeMinified": 16078,
-      "totalSizeGz": 26112,
-      "totalSizeGzMinified": 19890,
-      "jsSizeGzMinified": 16255,
+      "totalSizeGz": 26127,
+      "totalSizeGzMinified": 19911,
+      "jsSizeGzMinified": 16276,
       "cssSizeGzMinified": 3635
     },
     "mermaid": {
@@ -85,6 +85,16 @@
       "totalSizeGzMinified": 5691,
       "jsSizeGzMinified": 4906,
       "cssSizeGzMinified": 785
+    },
+    "geo": {
+      "jsSize": 91978,
+      "jsSizeMinified": 53422,
+      "cssSize": 13102,
+      "cssSizeMinified": 9866,
+      "totalSizeGz": 29244,
+      "totalSizeGzMinified": 22252,
+      "jsSizeGzMinified": 19999,
+      "cssSizeGzMinified": 2253
     }
   },
   "sections": {
@@ -226,13 +236,13 @@
         "sections/wysiwyg-editors.css",
         "sections/wysiwyg-editors.js"
       ],
-      "jsSize": 95484,
-      "jsSizeMinified": 59767,
+      "jsSize": 95554,
+      "jsSizeMinified": 59825,
       "cssSize": 28708,
       "cssSizeMinified": 18244,
-      "totalSizeGz": 32171,
-      "totalSizeGzMinified": 24367,
-      "jsSizeGzMinified": 20322,
+      "totalSizeGz": 32184,
+      "totalSizeGzMinified": 24386,
+      "jsSizeGzMinified": 20341,
       "cssSizeGzMinified": 4045
     },
     "questionnaire": {
@@ -427,6 +437,29 @@
       "totalSizeGzMinified": 16083,
       "jsSizeGzMinified": 13640,
       "cssSizeGzMinified": 2443
+    },
+    "geo": {
+      "heading": "Geography",
+      "members": [
+        "geo-map"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs"
+      ],
+      "files": [
+        "components/geo.css",
+        "components/geo.js"
+      ],
+      "jsSize": 91978,
+      "jsSizeMinified": 53422,
+      "cssSize": 13102,
+      "cssSizeMinified": 9866,
+      "totalSizeGz": 29244,
+      "totalSizeGzMinified": 22252,
+      "jsSizeGzMinified": 19999,
+      "cssSizeGzMinified": 2253
     },
     "feedback-status": {
       "heading": "Feedback & Status",
@@ -827,10 +860,10 @@
     }
   },
   "sectionBundles": {
-    "count": 22,
+    "count": 23,
     "minGzMinified": 2014,
     "maxGzMinified": 60512,
-    "meanGzMinified": 17140
+    "meanGzMinified": 17363
   },
   "components": {
     "about-intro": {
@@ -1422,14 +1455,14 @@
       "name": "code-example",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 80456,
-      "jsSizeMinified": 35920,
+      "jsSize": 80809,
+      "jsSizeMinified": 35978,
       "cssSize": 15074,
       "cssSizeMinified": 9426,
-      "totalSizeGz": 26752,
-      "totalSizeGzMinified": 14717,
-      "totalSize": 95530,
-      "totalSizeMinified": 45346
+      "totalSizeGz": 26881,
+      "totalSizeGzMinified": 14738,
+      "totalSize": 95883,
+      "totalSizeMinified": 45404
     },
     "collapsible": {
       "name": "collapsible",
@@ -2093,6 +2126,19 @@
       "totalSizeGzMinified": 1109,
       "totalSize": 5008,
       "totalSizeMinified": 3213
+    },
+    "geo-map": {
+      "name": "geo-map",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 125203,
+      "jsSizeMinified": 53582,
+      "cssSize": 13051,
+      "cssSizeMinified": 9827,
+      "totalSizeGz": 38301,
+      "totalSizeGzMinified": 22253,
+      "totalSize": 138254,
+      "totalSizeMinified": 63409
     },
     "get-in-touch": {
       "name": "get-in-touch",

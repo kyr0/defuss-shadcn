@@ -65,7 +65,11 @@ function serveDist() {
       const file = Bun.file(join(ROOT, `.${path}`));
       if (!(await file.exists())) return new Response('Not found', { status: 404 });
       return new Response(file, {
-        headers: { 'Content-Type': MIME[path.slice(path.lastIndexOf('.'))] ?? 'application/octet-stream' },
+        headers: {
+          'Content-Type': MIME[path.slice(path.lastIndexOf('.'))] ?? 'application/octet-stream',
+          // the docs cards are opaque-origin sandboxes: the Geo Map fetches its data from here like GitHub Pages serves it
+          'Access-Control-Allow-Origin': '*',
+        },
       });
     },
   });

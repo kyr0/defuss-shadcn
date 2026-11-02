@@ -14,8 +14,8 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 ## 0. Quick start - do exactly this, in this order
 
 1. **Pick the install path** (there are only two - see §1):
-   - The target project has a `package.json` / package manager → **Path A: npm**.
-   - No package manager, or the goal is a standalone `.html` prototype → **Path B: jsDelivr CDN** (plain HTML, **no TypeScript, no build step**).
+   - The target project has a `package.json` / package manager: take **Path A: npm**.
+   - No package manager, or the goal is a standalone `.html` prototype: take **Path B: jsDelivr CDN** (plain HTML, **no TypeScript, no build step**).
 2. **Include exactly three files, in this order:**
    1. `components/core.css` - design tokens + the layout/sizing/accessibility utilities the examples use (`flex`, `gap-4`, `stack`, `sr-only` ...),
    2. `components/all.css` - every component's styles,

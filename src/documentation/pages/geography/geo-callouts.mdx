@@ -1,0 +1,97 @@
+---
+title: "Geo Map: Callouts"
+description: "Callouts on the Geo Map: a leader line from every region in view to its name in a gutter outside the map, the name written above the line - Europe's countries, Germany's states - laid out so labels never overlap."
+slug: "geo-callouts"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geo-callouts" title="Callouts" component="geo-map">
+  The illustration way to label a map: <code>data-callouts="true"</code> leaves a gutter on both sides, and every region in view gets a line from a dot inside it out to the gutter, its name written above the line's end. Regions in the west of the view go to the left gutter, the east to the right; on each side the labels keep their regions' order from top to bottom and never overlap. Hovering a callout lifts its region, clicking it picks the region.
+</PageHeader>
+
+<H2 id="countries">Europe's countries</H2>
+
+<DocText>A focus decides what is labelled: the children of the framed region, here Europe's countries. When there are more regions than the gutters hold, the largest win; the rest stay unlabelled until you zoom in. The gutter is <code>--geo-map-callout-width</code> wide (10rem by default), the names are <code>--geo-map-callout-size</code> high (0.875rem): the rows are spaced by that size, and a name longer than the gutter is shortened by its measured width.</DocText>
+
+```html example label="Europe, labelled" schema="none" previewStyle="align-items:stretch;"
+<div
+  class="geo-map"
+  aria-label="The countries of Europe"
+  data-focus="continent:Europe"
+  data-callouts="true"
+  data-highlight="lift"
+  style="--geo-map-height: 36rem"
+></div>
+```
+
+<H2 id="states">Germany's states</H2>
+
+<DocText>Sixteen states fit on two gutters at any useful height. The dot sits inside each region's largest part - moved inside when the centroid of a curved shape falls outside it - so the line always points at land of that region.</DocText>
+
+```html example label="Germany, labelled" schema="none" hint="Hover a name: its state lifts. Click one: it is picked, and its callout stays marked." previewStyle="align-items:stretch;"
+<div
+  class="geo-map"
+  aria-label="The states of Germany"
+  data-focus="country:DEU"
+  data-callouts="true"
+  data-highlight="outline"
+  data-palette="forest"
+  style="--geo-map-height: 30rem"
+></div>
+```
+
+<H2 id="size">Larger names</H2>
+
+<DocText>For a map on a wall or a slide, set both properties on the map: the rows space out, so fewer regions are labelled in the same height - the largest first.</DocText>
+
+```html example label="Large callouts" schema="none" previewStyle="align-items:stretch;"
+<div
+  class="geo-map"
+  aria-label="The states of Austria"
+  data-focus="country:AUT"
+  data-callouts="true"
+  data-palette="ocean"
+  style="--geo-map-height: 26rem; --geo-map-callout-size: 1.125rem; --geo-map-callout-width: 13rem"
+></div>
+```
+
+<H2 id="toggle">Any view</H2>
+
+<DocText>Without a focus, callouts label the regions drawn at the current level - pan and zoom, and they follow. The <code>callouts</code> option is part of the state (<code>setState(name, \{ callouts: true \})</code>), so a switch bound with <code>data-geo-param="callouts"</code> turns them on and off.</DocText>
+
+```html example label="Callouts on and off" schema="none" hint="Drag the map or zoom with the wheel: the labels follow the regions in view." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div class="switch-item flex items-center gap-2">
+    <input
+      class="switch"
+      type="checkbox"
+      role="switch"
+      id="labels-on"
+      checked
+      data-geo-for="labelled"
+      data-geo-param="callouts"
+    />
+    <label for="labels-on">Callouts</label>
+  </div>
+  <div
+    class="geo-map"
+    id="labelled"
+    aria-label="South America"
+    data-callouts="true"
+    data-center="-60,-20"
+    data-zoom="2.6"
+    data-palette="sunset"
+  ></div>
+</div>
+```
+
+<SourceFiles component="geo-map" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Geo Map's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="geo-map" section="js" jsTitle="JS" />
+
+</DocPage>

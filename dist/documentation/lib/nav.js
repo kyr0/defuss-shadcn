@@ -250,6 +250,17 @@ export const NAV = [
             { label: 'Formula Editing', href: 'math-editor.html', isNew: true },
             { label: 'Compute & Explain', href: 'math-compute.html', isNew: true },
         ] },
+    { heading: 'Geography', icon: 'globe', items: [
+            { label: 'Geography Overview', href: 'geography.html', isNew: true },
+            { label: 'Geo Map', href: 'geo-map.html', isNew: true },
+            { label: 'Regions & Selection', href: 'geo-regions.html', type: 'ATM', isNew: true },
+            { label: 'Search & Focus', href: 'geo-focus.html', type: 'ATM', isNew: true },
+            { label: 'Callouts', href: 'geo-callouts.html', type: 'ATM', isNew: true },
+            { label: 'GPS & Geodesy', href: 'geo-geodesy.html', type: 'ATM', isNew: true },
+            { label: 'S2 Cells', href: 'geo-s2.html', type: 'ATM', isNew: true },
+            { label: 'Routing', href: 'geo-routing.html', type: 'ATM', isNew: true },
+            { label: 'Data & Encoding', href: 'geo-data.html', type: 'ATM', isNew: true },
+        ] },
     { heading: 'Feedback & Status', icon: 'bell-ring', items: [
             { label: 'Spinner', href: 'spinner.html' },
             { label: 'Skeleton', href: 'skeleton.html' },

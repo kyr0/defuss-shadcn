@@ -9,13 +9,13 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.11 - Agent Skill
 
-249 components (171 CSS-only, 78 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+250 components (171 CSS-only, 79 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
 1. **Pick the install path** (there are only two - see §1):
-   - The target project has a `package.json` / package manager → **Path A: npm**.
-   - No package manager, or the goal is a standalone `.html` prototype → **Path B: jsDelivr CDN** (plain HTML, **no TypeScript, no build step**).
+   - The target project has a `package.json` / package manager: take **Path A: npm**.
+   - No package manager, or the goal is a standalone `.html` prototype: take **Path B: jsDelivr CDN** (plain HTML, **no TypeScript, no build step**).
 2. **Include exactly three files, in this order:**
    1. `components/core.css` - design tokens + the layout/sizing/accessibility utilities the examples use (`flex`, `gap-4`, `stack`, `sr-only` ...),
    2. `components/all.css` - every component's styles,
@@ -190,7 +190,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Distribution](../../src/documentation/pages/charts/charts-distribution.mdx) - Distribution and density chart patterns with the chart component: confidence bands, quadrant scatter, jittered strips, matrix and calendar heatmaps, boxplots, and a custom-series violin - all themed from the design tokens.
 - [Composition](../../src/documentation/pages/charts/charts-composition.mdx) - Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens.
 - [Election](../../src/documentation/pages/charts/charts-election.mdx) - Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens.
-- [Narrative](../../src/documentation/pages/charts/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (baseline → comparison → composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
+- [Narrative](../../src/documentation/pages/charts/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (from baseline to comparison to composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
 
 ### Diagrams
 
@@ -228,6 +228,17 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 ### Math
 
 - [Math Overview](../../src/documentation/pages/math/math.mdx) - Mathematics in defuss-shadcn: render a formula with KaTeX, edit it with MathLive, compute and explain it with the Cortex Compute Engine - three components, each loading its engine only when a page uses it.
+
+### Geography
+
+- [Geography Overview](../../src/documentation/pages/geography/geography.mdx) - Geography in defuss-shadcn: an SVG map of countries, continents and states - pick regions, frame one with its children, label everything in view - and the library under it: WGS84 distances, S2 cells and routing over your own segments.
+- [Regions & Selection](../../src/documentation/pages/geography/geo-regions.mdx) - Regions are state on the Geo Map: pick one or several by click, keyboard or the State API, highlight them filled, outlined, pulsing or lifted off the map, and paint any region your own color - a choropleth from data.
+- [Search & Focus](../../src/documentation/pages/geography/geo-focus.mdx) - Find a region by name and frame it: Europe flies into view and shows its countries, Germany its states - the rest of the world dimmed. Search with suggestions, drill down by double click, step out with Up, or set data-focus.
+- [Callouts](../../src/documentation/pages/geography/geo-callouts.mdx) - Callouts on the Geo Map: a leader line from every region in view to its name in a gutter outside the map, the name written above the line - Europe's countries, Germany's states - laid out so labels never overlap.
+- [GPS & Geodesy](../../src/documentation/pages/geography/geo-geodesy.mdx) - GPS positions measured on the WGS84 ellipsoid with GeographicLib: distances and bearings (the inverse problem), where a bearing and distance lead (the direct problem), and geodesic lines a map draws as the shortest surface path.
+- [S2 Cells](../../src/documentation/pages/geography/geo-s2.mdx) - S2 cells in the browser: the cell holding a GPS position at any of 31 levels, hexadecimal tokens and exact 64-bit ids as BigInt, centers and corners, edge neighbors, parents and children - drawn on the Geo Map.
+- [Routing](../../src/documentation/pages/geography/geo-routing.mdx) - Cheap routing in the browser: Dijkstra over segments whose lengths you supply, one-way and two-way, routes from a position inside a segment, a point a distance along the route, and a Morton spatial index for nearest-node and rectangle lookups.
+- [Data & Encoding](../../src/documentation/pages/geography/geo-data.mdx) - The Geo Map's data: Natural Earth v5.1.2 in first-party DGEO chunks - a resident world overview, country detail and states loaded as they come into view, measured encoding sizes, the manifest, your own GeoJSON, self-hosting and regeneration.
 
 ### Application
 
@@ -806,6 +817,14 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** The official Cortex Compute Engine in a dedicated Worker the component starts from its own source - simplify, solve, differentiate, compare, evaluate - with the engine's own steps, every condition the input needs, and a deadline that terminates the worker.
 - **When:** Showing how a result comes about in papers and teaching pages, or checking an identity - to only show a formula use math-renderer, to edit one use math-editor.
 - **States:** `default`, `computing`, `result`, `explaining`, `unsupported`, `error` · **Skill:** [references/components/math-compute.md](references/components/math-compute.md) · **Examples:** [src/documentation/pages/math/math-compute.mdx](../../src/documentation/pages/math/math-compute.mdx)
+
+### Geography
+
+#### Geo Map · ATM · JS
+
+- **Why:** An SVG map from first-party vector data - d3-geo projects and clips, every region is a keyboard-reachable path styled by CSS; selection and focus are attributes, so state is markup.
+- **When:** Maps of countries, continents and states - picking regions, drilling down (Europe to its countries, Germany to its states), choropleths, labelled callouts, GPS markers, geodesic lines, S2 cells and routes. For charts on a map's numbers use chart; for a schematic, diagram.
+- **States:** `default`, `selected`, `focused` · **Skill:** [references/components/geo-map.md](references/components/geo-map.md) · **Examples:** [src/documentation/pages/geography/geo-map.mdx](../../src/documentation/pages/geography/geo-map.mdx)
 
 ### Feedback & Status
 

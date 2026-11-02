@@ -1,0 +1,168 @@
+---
+title: "Geo Map: GPS & Geodesy"
+description: "GPS positions measured on the WGS84 ellipsoid with GeographicLib: distances and bearings (the inverse problem), where a bearing and distance lead (the direct problem), and geodesic lines a map draws as the shortest surface path."
+slug: "geo-geodesy"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geo-geodesy" title="GPS & Geodesy" component="geo-map">
+  A GPS position is a longitude and a latitude on the WGS84 ellipsoid, and the shortest way between two of them is a geodesic on that ellipsoid - not a straight line on any map. <code>df$.shadcn.geo</code> solves both geodesic problems with GeographicLib (Karney's algorithm, accurate to nanometres and stable for nearly antipodal points): <code>inverse(a, b)</code> gives the distance and the bearings, <code>direct(origin, bearing, meters)</code> where that leads, <code>path(a, b)</code> the line to draw. Positions are always <code>[longitude, latitude]</code>, the GeoJSON order.
+</PageHeader>
+
+<H2 id="distance">Distance and bearings</H2>
+
+<DocText>Call <code>await df$.shadcn.geo.load()</code> once (a map does it for you), then every function is synchronous. <code>inverse</code> returns metres along the surface and the bearings at both ends, in degrees clockwise from north; a reference ellipsoid other than WGS84 is the last argument (<code>\{ a, f \}</code> - <code>f: 0</code> is a sphere). The distance excludes altitude, terrain and roads.</DocText>
+
+```html example label="Measure between two GPS positions" schema="none" hint="Edit either position (longitude, latitude) and press Measure: the line is the geodesic, the readout compares WGS84 with a sphere of the mean Earth radius." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <form class="flex flex-wrap items-end gap-3" id="measure">
+    <div class="grid gap-1">
+      <label class="label" for="from">A - longitude, latitude</label>
+      <input class="input" id="from" value="11.582, 48.1351" spellcheck="false" />
+    </div>
+    <div class="grid gap-1">
+      <label class="label" for="to">B - longitude, latitude</label>
+      <input class="input" id="to" value="-74.006, 40.7128" spellcheck="false" />
+    </div>
+    <button class="btn" type="submit">Measure</button>
+  </form>
+  <output class="text-sm" id="distance" aria-live="polite"></output>
+  <div
+    class="geo-map"
+    id="route-map"
+    aria-label="The geodesic from A to B"
+    data-projection="mercator"
+    data-center="-30,48"
+    data-zoom="1.6"
+    data-palette="mono"
+  ></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const geo = df$.shadcn.geo;
+    const map = df$('#route-map').get(0);
+    const parse = (id) => df$(id).val().split(',').map(Number);
+    const km = (m) => (m / 1000).toLocaleString('en', { maximumFractionDigits: 1 }) + ' km';
+    const measure = async () => {
+      await geo.load();
+      try {
+        const a = parse('#from');
+        const b = parse('#to');
+        const d = geo.inverse(a, b);
+        const sphere = geo.inverse(a, b, { a: 6371008.8, f: 0 });
+        df$('#distance').text(
+          km(d.meters) + ' on WGS84, bearing ' + d.initialBearing.toFixed(1) + '° - a sphere says ' + km(sphere.meters),
+        );
+        df$.shadcn.geoMap.setLayers(map, {
+          markers: [
+            { id: 'a', label: 'A', position: a, shape: 'pin' },
+            { id: 'b', label: 'B', position: b, shape: 'diamond' },
+          ],
+          lines: [{ id: 'ab', coordinates: geo.path(a, b, 20000) }],
+        });
+      } catch (err) {
+        df$('#distance').text(err.message);
+      }
+    };
+    df$('#measure').on('submit', (e) => {
+      e.preventDefault();
+      measure();
+    });
+    measure();
+  });
+</script>
+```
+
+<H2 id="geodesic-lines">Geodesic lines</H2>
+
+<DocText><code>path(a, b, maxStepMeters)</code> samples the geodesic at most that far apart (20 km by default); the map draws the samples, and between them its own spherical resampling. On Mercator a long geodesic bends toward the pole - it is the straight line on the globe. A map's layers JSON draws one directly: <code>\{ "id": "x", "from": [..], "to": [..] \}</code>.</DocText>
+
+```html example label="The same lines on a map and a globe" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); --geo-map-height: 18rem">
+  <div
+    class="geo-map"
+    aria-label="Geodesics on Mercator"
+    data-projection="mercator"
+    data-center="-20,40"
+    data-zoom="1.3"
+  >
+    <script type="application/json" class="geo-map-layers">
+      {
+        "lines": [
+          { "id": "fra-sfo", "from": [8.57, 50.03], "to": [-122.38, 37.62] },
+          { "id": "lhr-sin", "from": [-0.45, 51.47], "to": [103.99, 1.36], "dash": "5 4" }
+        ],
+        "markers": [
+          { "id": "fra", "position": [8.57, 50.03], "label": "FRA" },
+          { "id": "sfo", "position": [-122.38, 37.62], "label": "SFO" },
+          { "id": "sin", "position": [103.99, 1.36], "label": "SIN" }
+        ]
+      }
+    </script>
+  </div>
+  <div class="geo-map" aria-label="Geodesics on a globe" data-projection="orthographic" data-center="-40,55">
+    <script type="application/json" class="geo-map-layers">
+      {
+        "lines": [
+          { "id": "fra-sfo", "from": [8.57, 50.03], "to": [-122.38, 37.62] },
+          { "id": "lhr-sin", "from": [-0.45, 51.47], "to": [103.99, 1.36], "dash": "5 4" }
+        ],
+        "markers": [
+          { "id": "fra", "position": [8.57, 50.03], "label": "FRA" },
+          { "id": "sfo", "position": [-122.38, 37.62], "label": "SFO" }
+        ]
+      }
+    </script>
+  </div>
+</div>
+```
+
+<H2 id="direct">Where a bearing leads</H2>
+
+<DocText><code>direct(origin, bearing, meters)</code> is the other half: from a position, in a direction, for a distance. Twelve bearings of 1,500 km each make a ring that is round on the ground - and visibly not round on Mercator.</DocText>
+
+```html example label="1,500 km in every direction" schema="none" previewStyle="align-items:stretch;"
+<div
+  class="geo-map"
+  id="ring"
+  aria-label="1,500 km around Reykjavik"
+  data-projection="mercator"
+  data-center="-20,62"
+  data-zoom="2.6"
+  data-palette="ocean"
+></div>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const geo = df$.shadcn.geo;
+    const map = df$('#ring').get(0);
+    await geo.load();
+    const home = [-21.94, 64.15];
+    const ring = Array.from({ length: 73 }, (_, i) => geo.direct(home, i * 5, 1_500_000));
+    const spokes = Array.from({ length: 12 }, (_, i) => ({
+      id: 'spoke-' + i,
+      coordinates: geo.path(home, geo.direct(home, i * 30, 1_500_000), 50_000),
+      width: 1,
+      dash: '2 3',
+    }));
+    df$.shadcn.geoMap.setLayers(map, {
+      markers: [{ id: 'rvk', label: 'Reykjavik', position: home }],
+      lines: [{ id: 'ring', coordinates: ring }, ...spokes],
+    });
+  });
+</script>
+```
+
+<H2 id="limits">What the numbers mean</H2>
+
+<DocText>WGS84 is the GPS reference ellipsoid - a model of the Earth's shape, about 21 km flatter at the poles than at the equator. A geodesic distance is the shortest path on that surface: no altitude, no terrain, no roads - a road route is its own number (see <DocLink href="geo-routing.html">Routing</DocLink>). The map projects on a sphere, so a drawn geodesic is the ellipsoidal one sampled, then resampled spherically between samples; no pixel error bound is claimed.</DocText>
+
+<SourceFiles component="geo-map" section="css">
+  <SourceNote for="css">The library lives in the Geo Map component - the stylesheet is the map's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="geo-map" section="js" jsTitle="JS" />
+
+</DocPage>

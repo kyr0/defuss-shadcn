@@ -34,6 +34,7 @@
     "file-input": "./file-input.schema.json",
     "fretboard": "./fretboard.schema.json",
     "fretboard-neck": "./fretboard-neck.schema.json",
+    "geo-map": "./geo-map.schema.json",
     "iframe": "./iframe.schema.json",
     "image": "./image.schema.json",
     "input": "./input.schema.json",

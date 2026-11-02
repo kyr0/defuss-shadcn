@@ -1,0 +1,90 @@
+---
+title: "Geography"
+description: "Geography in defuss-shadcn: an SVG map of countries, continents and states - pick regions, frame one with its children, label everything in view - and the library under it: WGS84 distances, S2 cells and routing over your own segments."
+slug: "geography"
+---
+
+import { DocPage, PageHeader, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geography" title="Geography" introStyle="max-width:42rem;">
+  One component and the library it is made of. The <DocLink href="geo-map.html">Geo Map</DocLink> draws Natural Earth's countries, continents and first-order regions in SVG on five projections: a click picks a region, a search or a double click frames one and shows its children - Europe its countries, Germany its states - and callouts name every region in view outside the map. Under it, <code>df$.shadcn.geo</code> measures <DocLink href="geo-geodesy.html">GPS distances</DocLink> on the WGS84 ellipsoid, addresses the globe in <DocLink href="geo-s2.html">S2 cells</DocLink> and finds <DocLink href="geo-routing.html">routes</DocLink> over segments you supply.
+</PageHeader>
+
+```html example label="An atlas" schema="none" hint="Search a continent, a country or a state - Enter frames it and shows what it holds. Double click a country to drill down, Up steps out, a click picks a region. Callouts name everything in view." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <input
+      class="input max-w-64"
+      type="search"
+      data-geo-for="atlas"
+      data-geo-action="search"
+      placeholder="Search: Europe, Germany, Bavaria"
+      aria-label="Search a region"
+    />
+    <button
+      class="btn"
+      data-variant="outline"
+      type="button"
+      data-geo-for="atlas"
+      data-geo-action="focus"
+      data-value="continent:Europe"
+      >Europe</button
+    >
+    <button
+      class="btn"
+      data-variant="outline"
+      type="button"
+      data-geo-for="atlas"
+      data-geo-action="focus"
+      data-value="country:DEU"
+      >Germany</button
+    >
+    <button class="btn" data-variant="ghost" type="button" data-geo-for="atlas" data-geo-action="up">Up</button>
+    <button class="btn" data-variant="ghost" type="button" data-geo-for="atlas" data-geo-action="reset">World</button>
+    <div class="switch-item flex items-center gap-2">
+      <input
+        class="switch"
+        type="checkbox"
+        role="switch"
+        id="atlas-callouts"
+        data-geo-for="atlas"
+        data-geo-param="callouts"
+      />
+      <label for="atlas-callouts">Callouts</label>
+    </div>
+  </div>
+  <div class="geo-map" id="atlas" aria-label="An atlas" data-highlight="lift"></div>
+  <p class="text-sm text-muted-foreground m-0">
+    Showing <output data-geo-for="atlas" data-geo-output="focus"></output> - picked:
+    <output data-geo-for="atlas" data-geo-output="selection"></output>
+  </p>
+</div>
+```
+
+## What is in it
+
+<div class="overflow-x-auto mb-6">
+<table class="table">
+  <thead><tr><th>Page</th><th>What it covers</th></tr></thead>
+  <tbody>
+    <tr><td><DocLink href="geo-map.html">Geo Map</DocLink></td><td>The component: projections, levels, palettes, borders, layers, its State API and API</td></tr>
+    <tr><td><DocLink href="geo-regions.html">Regions &amp; Selection</DocLink></td><td>Picking one or several regions, the four highlight styles, the hover lift, choropleth styles</td></tr>
+    <tr><td><DocLink href="geo-focus.html">Search &amp; Focus</DocLink></td><td>Search by name, framing a region with its children, drilling down and stepping out</td></tr>
+    <tr><td><DocLink href="geo-callouts.html">Callouts</DocLink></td><td>A leader line from every region in view to its name outside the map</td></tr>
+    <tr><td><DocLink href="geo-geodesy.html">GPS &amp; Geodesy</DocLink></td><td>Distances, bearings and geodesic lines on the WGS84 ellipsoid (GeographicLib)</td></tr>
+    <tr><td><DocLink href="geo-s2.html">S2 Cells</DocLink></td><td>Cells from GPS positions, tokens and exact ids, neighbors, parents and children</td></tr>
+    <tr><td><DocLink href="geo-routing.html">Routing</DocLink></td><td>Shortest routes over supplied segment lengths, positions inside segments, a Morton index</td></tr>
+    <tr><td><DocLink href="geo-data.html">Data &amp; Encoding</DocLink></td><td>The Natural Earth data, its levels of detail, the DGEO format, your own GeoJSON</td></tr>
+  </tbody>
+</table>
+</div>
+
+## What it costs
+
+<DocText>The component ships its own code only - the projections and paths (d3-geo with its d3-array helpers), the ellipsoidal geodesics (GeographicLib) and the data's metadata format (defuss-dson) load from their pinned official builds with the first map on a page, about 90 KB minified. S2, the Morton index, the routing and the data decoder are the component's own. The data loads by need: a 97 KB world overview first, a country's detail and its states once they come into view.</DocText>
+
+<DocText>Everything is generalized boundary data at atlas scale: Natural Earth v5.1.2, public domain. A "state" is Natural Earth's first administrative level - a German Land, a French region or department, a US state - not a uniform political category; these are not street or cadastral boundaries.</DocText>
+
+</DocPage>

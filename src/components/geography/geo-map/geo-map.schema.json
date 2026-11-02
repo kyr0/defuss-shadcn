@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "name": "geo-map",
+  "states": {
+    "projection": {
+      "type": "enum",
+      "values": [
+        "equalEarth",
+        "equalArea",
+        "mercator",
+        "equirectangular",
+        "orthographic"
+      ],
+      "default": "equalEarth",
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "projection": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "projection"
+      },
+      "editor": {
+        "component": "select"
+      }
+    },
+    "level": {
+      "type": "enum",
+      "values": [
+        "country",
+        "continent",
+        "state",
+        "auto"
+      ],
+      "default": "country",
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "level": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "level"
+      },
+      "editor": {
+        "component": "select"
+      }
+    },
+    "palette": {
+      "type": "enum",
+      "values": [
+        "atlas",
+        "ocean",
+        "forest",
+        "sunset",
+        "heat",
+        "mono",
+        "chart"
+      ],
+      "default": "atlas",
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "palette": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "palette"
+      },
+      "editor": {
+        "component": "select"
+      }
+    },
+    "border": {
+      "type": "enum",
+      "values": [
+        "natural",
+        "cased",
+        "dashed",
+        "none"
+      ],
+      "default": "natural",
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "border": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "border"
+      },
+      "editor": {
+        "component": "select"
+      }
+    },
+    "graticule": {
+      "type": "boolean",
+      "default": true,
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "graticule": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "graticule"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "callouts": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "callouts": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "callouts"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "selected": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "selected",
+        "args": {
+          "selected": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-selected"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "focused": {
+      "type": "string",
+      "default": "",
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "focused",
+        "args": {
+          "focus": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-focus"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "zoom": {
+      "type": "number",
+      "default": 1,
+      "target": {
+        "kind": "selector",
+        "selector": ".geo-map"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "zoom": "@value"
+        }
+      },
+      "observation": {
+        "kind": "api",
+        "name": "zoom"
+      },
+      "editor": {
+        "component": "number",
+        "props": {
+          "min": 1,
+          "max": 1024,
+          "step": 0.5
+        }
+      }
+    }
+  },
+  "actions": {}
+}

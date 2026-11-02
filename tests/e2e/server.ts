@@ -37,7 +37,12 @@ export function startServer(): { url: string; stop: () => void } {
       const file = Bun.file(resolve(ROOT, `.${path}`));
       if (!(await file.exists())) return new Response('Not found', { status: 404 });
       return new Response(file, {
-        headers: { 'Content-Type': MIME[path.slice(path.lastIndexOf('.'))] ?? 'application/octet-stream' },
+        // a docs example's opaque-origin sandbox fetches data (the Geo Map's) cross-origin, like jsDelivr and
+        // GitHub Pages allow it (both send ACAO: *)
+        headers: {
+          'Content-Type': MIME[path.slice(path.lastIndexOf('.'))] ?? 'application/octet-stream',
+          'Access-Control-Allow-Origin': '*',
+        },
       });
     },
   });

@@ -15,12 +15,12 @@ Themeable, stateful components, built on semantic HTML, modern CSS, and vanilla 
 
 Built using [Verified Agentic Engineering (VAE)](https://vae.defuss.org).
 
-**249 components - 78 with JavaScript, 171 CSS-only - 510.5 KiB minified + compressed - 338.1 KiB as the all.css/all.js bundle**
-171 of 249 components need no JavaScript - native HTML and modern CSS cover them entirely.
-<!-- parity anchor: README ↔ index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
+**250 components - 79 with JavaScript, 171 CSS-only - 532.3 KiB minified + compressed - 338.1 KiB as the all.css/all.js bundle**
+171 of 250 components need no JavaScript - native HTML and modern CSS cover them entirely.
+<!-- parity anchor: README and index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.
 
-**[Documentation & Live Demos →](https://shadcn.defuss.org/)** · [Theme Designer](https://shadcn.defuss.org/guides/theme-designer.html) · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md) · [Paper (PDF)](src/documentation/public/files/verified-agentic-engineering.pdf)
+**[Documentation & Live Demos](https://shadcn.defuss.org/)** · [Theme Designer](https://shadcn.defuss.org/guides/theme-designer.html) · [Architecture (ARCH.md)](ARCH.md) · [Agent skill (SKILL.md)](skills/defuss-shadcn/SKILL.md) · [Paper (PDF)](src/documentation/public/files/verified-agentic-engineering.pdf)
 
 ## TL;DR
 
@@ -32,7 +32,7 @@ defuss-shadcn ships the components as files. Tokens are CSS custom properties in
 - 🎨 **Themeable** - full shadcn semantic token model. 43 [tweakcn](https://tweakcn.com) presets ship as drop-in theme files - swap one and every component updates instantly; light and dark are two palettes of one identity (the same radius in both, gated)
 - 📘 **Component Skills** - every component includes a structured skill - markup, variants, sizes, density, named states, ARIA, and wiring conventions - grounded in web standards; every interactive component also ships a machine-readable `*.schema.json` contract (states, types, defaults, actions) that drives its docs controls and is verifier-enforced; three task skills - `shadcn-plan`, `shadcn-theme`, `shadcn-review` - plan UI from the existing components, write themes and review markup, each with a bundled checker where a program can decide
 - 🔁 **Observable state** - interactive components expose a State API (`el.api.setState('open')`, `el.api.getState()`), so agents and tests can drive every documented state by name without knowing the implementation
-- ♿ **Accessible** - built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists). Keyboard navigation, focus management, and screen reader support by default
+- ♿ **Accessible** - built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists, map regions walked and picked by keyboard). Keyboard navigation, focus management, and screen reader support by default
 - 🧩 **Standalone HTML** - plain HTML, CSS and ES modules, no framework, no build pipeline; the interactive components run on one tiny core runtime, `df$` - [defuss-query](https://www.npmjs.com/package/defuss-query) (DOM selection and events) and [defuss-morph](https://www.npmjs.com/package/defuss-morph) (HTML reconciling) plus the shared State API helpers, shipped once as `core.js` inside `all.js`
 
 The documentation site dogfoods the CDN install: every demo loads `all.css` / `all.js` and its theme from the jsDelivr CDN, pinned to the release it documents (the index page names that release) - if it renders, the CDN install works.
@@ -105,7 +105,7 @@ flowchart LR
 <script type="module" src="https://cdn.jsdelivr.net/gh/kyr0/defuss-shadcn@latest/dist/components/visual-editor.js"></script>
 ```
 
-Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). Four groups are kept out of `all.*` and ship as extra bundles, each loaded after `all.*` or core on a page that uses them: `wysiwyg.css` / `wysiwyg.js` (the HTML Preview Editor `code-example` - editable source + sandboxed live preview, the card every docs example renders in - and Editor.js), `mermaid.css` / `mermaid.js` (Mermaid), `math.css` / `math.js` (Formula Rendering, Formula Editing, Compute & Explain) and `visual-editor.css` / `visual-editor.js` (the Visual Editor - GrapesJS over the components' markup, the canvas of the docs' Studio). Pin a release instead of `@latest` for production: [Installation → Pinning a version](https://shadcn.defuss.org/introduction/installation.html).
+Two delivery modes, one implementation: **load core plus the components you use, or load all alone.** `core.js` installs the callable `df$` runtime (query + morph + the shared component layer at `df$.shadcn.shared`) - every component `.js` requires it, loaded first; a missing or mismatched core fails with one actionable load-order error before anything renders. Every runtime bundle carries a per-release provenance pointer (bundled upstream versions + license hashes; full notice in `components/NOTICE.txt`). Four groups are kept out of `all.*` and ship as extra bundles, each loaded after `all.*` or core on a page that uses them: `wysiwyg.css` / `wysiwyg.js` (the HTML Preview Editor `code-example` - editable source + sandboxed live preview, the card every docs example renders in - and Editor.js), `mermaid.css` / `mermaid.js` (Mermaid), `math.css` / `math.js` (Formula Rendering, Formula Editing, Compute & Explain) and `visual-editor.css` / `visual-editor.js` (the Visual Editor - GrapesJS over the components' markup, the canvas of the docs' Studio). Pin a release instead of `@latest` for production: [Installation: Pinning a version](https://shadcn.defuss.org/introduction/installation.html).
 
 ### Via npm
 
@@ -241,7 +241,7 @@ components/
     └── dialog.js             ← interaction behavior (binds to core, when needed)
 ```
 
-Some components - like Button and Badge - are CSS-only. No JavaScript needed. The full list, with live demos: **[shadcn.defuss.org →](https://shadcn.defuss.org/)**
+Some components - like Button and Badge - are CSS-only. No JavaScript needed. The full list, with live demos: **[shadcn.defuss.org](https://shadcn.defuss.org/)**
 
 ## For AI agents
 
@@ -266,7 +266,7 @@ Three task skills ship next to it (`skills/shadcn-*/`, generated from the releas
 | **`shadcn-theme`** | writes or updates a theme from text, colours, a design guide or images | `scripts/theme-check.mjs` checks tokens, radius and WCAG contrast and names the nearest passing lightness |
 | **`shadcn-review`** | reviews markup or a new component against the guides | `scripts/markup-check.mjs` finds modifier classes, unknown parts, values and tokens, loading mistakes, globals and unnamed icon buttons |
 
-`npx skills add kyr0/defuss-shadcn --skill '*'` installs all four; the Claude Code plugin carries them (`/defuss-shadcn:shadcn-theme`, ...). Per-agent flags, global installs and updates: [Vibe Coding / Agentic Engineering → Install as an AI Agent Skill](https://shadcn.defuss.org/introduction/vibe-coding.html#install-as-an-ai-agent-skill).
+`npx skills add kyr0/defuss-shadcn --skill '*'` installs all four; the Claude Code plugin carries them (`/defuss-shadcn:shadcn-theme`, ...). Per-agent flags, global installs and updates: [Vibe Coding / Agentic Engineering: Install as an AI Agent Skill](https://shadcn.defuss.org/introduction/vibe-coding.html#install-as-an-ai-agent-skill).
 
 ## When to use it
 
@@ -352,12 +352,12 @@ Button is CSS-only, so it has no script; Tooltip's script binds to the `df$` run
 
 The build step exists for maintainers and coding agents only - `dist/` is committed, dependency-free and usable without building anything. The toolchain exists so an agent can **prove** a change instead of trusting it, and every claim in this README is backed by a check you can run:
 
-- `bun run verify` - the static consistency gate, run at the end of every build and the contract every coding agent must satisfy. Among others it checks **structure** (component skills, doc pages, the bundle includes on every page, sidebar links, `dist/` 1:1 with `src/`, the `docs/` release snapshot pinned to its tag), **consistency** (inline source listings match the real files, skill ↔ docs ↔ CSS variant parity, State API contract + per-state coverage across screenshots/docs/skill/e2e, schema ↔ docs state tables, changelog & version sites, every `bun run` / `make` quoted in the docs exists, `dist/stats.json` freshness and the footprint claim above), **quality** (the token boundary rule, undefined utility classes, `prefers-reduced-motion` coverage, init idempotency, dead links, portable paths, strict typecheck, render drift, theme sidebar contrast at WCAG AA in both modes) and **hygiene** (working tree committed - a green build is a committed build). Every failing check prints the offending files **and the exact fix**, so an agent iterates `edit → build → do what it says`.
+- `bun run verify` - the static consistency gate, run at the end of every build and the contract every coding agent must satisfy. Among others it checks **structure** (component skills, doc pages, the bundle includes on every page, sidebar links, `dist/` 1:1 with `src/`, the `docs/` release snapshot pinned to its tag), **consistency** (inline source listings match the real files, variant parity between skill, docs and CSS, State API contract + per-state coverage across screenshots/docs/skill/e2e, schema and docs state tables in agreement, changelog & version sites, every `bun run` / `make` quoted in the docs exists, `dist/stats.json` freshness and the footprint claim above), **quality** (the token boundary rule, undefined utility classes, `prefers-reduced-motion` coverage, init idempotency, dead links, portable paths, strict typecheck, render drift, theme sidebar contrast at WCAG AA in both modes) and **hygiene** (working tree committed - a green build is a committed build). Every failing check prints the offending files **and the exact fix**, so an agent iterates `edit → build → do what it says`.
 - `bun run test:run` - the unit suite in headless Chromium (Vitest browser mode + Playwright, no mocks): the real documentation pages from `dist/documentation/` in a same-origin iframe (the statically rendered chrome, the SPA router, dark mode, dialogs, accordions) plus the contract tests of the schema validator, the skill parser and the stats; the totals of the last full run are recorded in [`src/documentation/data/unit-tests.json`](src/documentation/data/unit-tests.json)
 - `bun run e2e` - one Playwright smoke test per component in [`tests/e2e/<section>/`](tests/e2e/), the folder of its sidebar section: a fixture page using the component in **every** documented configuration (variant, size, State API state), asserted against the unmodified files in `dist/` - "it compiles" is never mistaken for "it works". The site itself is covered too ([`tests/e2e/site/`](tests/e2e/site/)). The runner fingerprints inputs and reruns only what changed; `bun run e2e --all` runs everything
 - `bun run screenshots` - every component and every named state rendered to `screenshots/{light,dark}/`, so an agent can *look* at what it changed; a content-hash manifest re-shoots only what changed
 - `bun run typecheck` - component sources and the whole test tree are TypeScript; the build strips types to plain JS (`noCheck`, see [`tsconfig.json`](tsconfig.json)), so what ships is still zero-dependency vanilla JS
-- `make build` - the whole pipeline: lint → compile → bundle → minify → stats → docs → screenshots → docs-mirror → verify → tests → e2e
+- `make build` - the whole pipeline, in this order: lint, compile, bundle, minify, stats, docs, screenshots, docs-mirror, verify, tests, e2e
 
 ```bash
 bun install        # install dev dependencies (make setup also installs Playwright's Chromium)

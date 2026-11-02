@@ -1,0 +1,132 @@
+---
+title: "Geo Map: Search & Focus"
+description: "Find a region by name and frame it: Europe flies into view and shows its countries, Germany its states - the rest of the world dimmed. Search with suggestions, drill down by double click, step out with Up, or set data-focus."
+slug: "geo-focus"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="geo-focus" title="Search & Focus" component="geo-map">
+  A focus is a region in view with its children shown: focus Europe and the camera flies until Europe fills the map, then the map shows Europe's countries and dims everything else; focus Germany and you get its sixteen states. The focus is one attribute, <code>data-focus</code> - set it in the markup to open framed, from a search box, a button, a double click, or <code>df$.shadcn.geoMap.focus(el, 'Germany')</code>.
+</PageHeader>
+
+<H2 id="search">Search by name</H2>
+
+<DocText>An input with <code>data-geo-action="search"</code> bound to a map (<code>data-geo-for</code>) suggests matching regions in a native <code>&lt;datalist&gt;</code> as you type - continents and countries at once, every state once the names index (about 140 KB) has loaded. Accents and case do not matter; whole names rank first, then names that start with what you typed, then the rest. Enter, or a picked suggestion, frames the region; no match marks the input invalid.</DocText>
+
+```html example label="Search a region" schema="none" hint="Try Europe, Germany, Bavaria, Texas, Sao Paulo or New South Wales. Up steps out one level, World resets." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div class="flex flex-wrap items-center gap-2">
+    <input
+      class="input max-w-72"
+      type="search"
+      data-geo-for="finder"
+      data-geo-action="search"
+      placeholder="A continent, a country or a state"
+      aria-label="Search a region"
+    />
+    <button class="btn" data-variant="outline" type="button" data-geo-for="finder" data-geo-action="up">Up</button>
+    <button class="btn" data-variant="ghost" type="button" data-geo-for="finder" data-geo-action="reset">World</button>
+  </div>
+  <div class="geo-map" id="finder" aria-label="Find a region" data-highlight="outline"></div>
+  <p class="text-sm m-0">
+    Framed: <output data-geo-for="finder" data-geo-output="focus"></output> - showing its
+    <output data-geo-for="finder" data-geo-output="level"></output> regions
+  </p>
+</div>
+```
+
+<H2 id="drill-down">Drill down and step out</H2>
+
+<DocText>Double click a country to frame it with its states (a continent, on a continent map, to frame it with its countries); <code>data-drill="none"</code> turns that off. A <code>data-geo-action="focus"</code> button frames the key or name in its <code>data-value</code> - or, without one, the first picked region. <code>up</code> steps out (a state to its country, a country to its continent, a continent to the world) and Escape does the same once nothing is picked.</DocText>
+
+```html example label="Europe, then Germany, then one state" schema="none" hint="The buttons set the focus; double click any country to drill into it. Pick a region and press 'Frame the picked region'." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div class="flex flex-wrap gap-2">
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-geo-for="drill"
+      data-geo-action="focus"
+      data-value="continent:Europe"
+      >Europe</button
+    >
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-geo-for="drill"
+      data-geo-action="focus"
+      data-value="country:DEU"
+      >Germany</button
+    >
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-geo-for="drill"
+      data-geo-action="focus"
+      data-value="Bavaria"
+      >Bavaria</button
+    >
+    <button class="btn" data-variant="outline" data-size="sm" type="button" data-geo-for="drill" data-geo-action="focus"
+      >Frame the picked region</button
+    >
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" data-geo-for="drill" data-geo-action="up"
+      >Up</button
+    >
+  </div>
+  <div class="geo-map" id="drill" aria-label="Drill down" data-highlight="lift"></div>
+</div>
+```
+
+<H2 id="framing">How a focus frames</H2>
+
+<DocText>A focus frames a region's main body: its largest polygon plus every polygon near that cluster - France is the mainland and Corsica, not French Guiana; an archipelago chains together. Europe, North America and Oceania, whose outlines frame poorly (Russia, the Aleutians, the antimeridian), have built-in frames; <code>df$.shadcn.geo.configure(\{ views \})</code> sets your own bounds per key. A map with <code>data-focus</code> and no <code>data-center</code> / <code>data-zoom</code> opens framed, without a flight.</DocText>
+
+```html example label="Opened on a focus" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); --geo-map-height: 18rem">
+  <div class="geo-map" aria-label="France" data-focus="country:FRA" data-palette="sunset"></div>
+  <div class="geo-map" aria-label="Japan" data-focus="country:JPN" data-palette="ocean"></div>
+</div>
+```
+
+<H2 id="script">From a script</H2>
+
+<DocText><code>df$.shadcn.geoMap.focus(el, region)</code> takes a key or a name and resolves when the camera has arrived; <code>search(el, query, limit)</code> returns the hits (key, name, level and a label with a state's country); <code>up</code> and <code>reset</code> step out. Each focus change dispatches <code>geo-map-focus</code>, each camera rest <code>geo-map-view</code>.</DocText>
+
+```html example label="A guided flight" schema="none" hint="The script flies from continent to country to state and logs every geo-map-focus event." previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <button class="btn" data-size="sm" type="button" id="fly" style="justify-self: start">Fly</button>
+  <div class="geo-map" id="guided" aria-label="A guided flight" data-palette="forest"></div>
+  <ol class="text-sm m-0" id="guided-log"></ol>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const map = df$('#guided').get(0);
+    const log = df$('#guided-log');
+    df$(map).on('geo-map-focus', (e) => log.append(df$('<li></li>').text(e.detail.name ?? 'the world')));
+    df$('#fly').on('click', async () => {
+      log.html('');
+      for (const where of ['South America', 'Brazil', 'Sao Paulo', null]) {
+        await (where ? df$.shadcn.geoMap.focus(map, where) : df$.shadcn.geoMap.reset(map));
+        await new Promise((r) => setTimeout(r, 700));
+      }
+    });
+  });
+</script>
+```
+
+<SourceFiles component="geo-map" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Geo Map's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="geo-map" section="js" jsTitle="JS" />
+
+</DocPage>

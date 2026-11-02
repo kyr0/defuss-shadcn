@@ -165,9 +165,21 @@
             return '';
         }
     }
-    /** after the runtime: lucide for icon examples + the theme-switcher demo's base URL */
+    /** the Geo Map's data beside the bundles the page loaded (dist/components/geo-map/data/): the local build, or on
+     *  the published site the release on jsDelivr - '' when the page has no all.css */
+    function geoDataUrl() {
+        var all = sheetUrls(['components/all.css'])[0];
+        return all ? all.replace(/\/all(?:\.min)?\.css(\?.*)?$/, '/geo-map/data/manifest.json') : '';
+    }
+    /** after the runtime: the Geo Map's data URL (first - before any network wait, so before a map asks for it),
+     *  lucide for icon examples + the theme-switcher demo's base URL */
     function docsTail() {
-        return ('<scr' + 'ipt src="' + LUCIDE + '" data-ce-chrome></scr' + 'ipt>\n' +
+        var geo = geoDataUrl();
+        return ((geo
+            ? '<scr' + 'ipt data-ce-chrome>globalThis.df$&&df$.shadcn.geo&&df$.shadcn.geo.configure({data:' +
+                JSON.stringify(geo) + '});</scr' + 'ipt>\n'
+            : '') +
+            '<scr' + 'ipt src="' + LUCIDE + '" data-ce-chrome></scr' + 'ipt>\n' +
             '<scr' + 'ipt data-ce-chrome>globalThis.lucide && lucide.createIcons();' +
             '(function(){var b=' + JSON.stringify(themeBaseUrl()) + ';if(!b||!globalThis.df$)return;' +
             "df$('.theme-switcher[data-theme-base]').each(function(_i,el){" +

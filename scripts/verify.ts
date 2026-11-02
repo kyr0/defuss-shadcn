@@ -674,6 +674,11 @@ const VENDOR_IMPORTS: Record<string, { site: RegExp; pinned: string; reason: str
     pinned: 'https://cdn.jsdelivr.net/npm/grapesjs@0.23.6/dist/grapes.min.js',
     reason: 'loads the official GrapesJS build (its UMD file, imported as a module - it installs globalThis.grapesjs) on the first editor (pinned jsDelivr; load(url, css) self-hosts it)',
   },
+  'geo-map': {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js',
+    reason: 'loads the official d3-geo (with its d3-array), GeographicLib and defuss-dson builds on the first map or df$.shadcn.geo.load() (pinned jsDelivr files; configure({ urls }) self-hosts them)',
+  },
   editorjs: {
     site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
     pinned: 'https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.31.7/dist/editorjs.mjs',
@@ -690,7 +695,7 @@ function withoutVendorImports(src: string, names: string[], where: string): stri
     if (!v.site.test(out)) vendorProblems.push(`${where}: VENDOR_IMPORTS["${name}"] is stale - its call site is gone; remove the entry`);
     v.site.lastIndex = 0;
     if (!out.includes(v.pinned)) vendorProblems.push(`${where}: ${name}'s vendor URL is not the pinned ${v.pinned}`);
-    if (/(mermaid|shiki|editorjs|marked|katex|mathlive|compute-engine|grapesjs)@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
+    if (/(mermaid|shiki|editorjs|marked|katex|mathlive|compute-engine|grapesjs|d3-array|d3-geo|geographiclib-geodesic|defuss-dson)@latest/.test(out)) vendorProblems.push(`${where}: ${name} must pin its vendor version, never @latest`);
     out = out.replace(v.site, '/* vendor import */');
   }
   return out;
