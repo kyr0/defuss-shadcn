@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "version": "v0.9.13",
+      "date": "November 08, 2026",
+      "commits": [
+        "chore(agents): gate findings of the website reviews and the new sections",
+        "chore: docs, nav, generated skills, dist and the docs snapshot for the new sections",
+        "feat(website): ten portfolio styles, four showcase sites and a light / dark switch on every site - each look in both modes, lightboxes and contact dialogs, the templates reworked after three reviews",
+        "feat(charts): charts bound to a million rows - dataview aggregation, chart.bind() following a Data Grid's filters",
+        "feat(graph-explorer): Graph Explorer over a million nodes with semantic zoom, outlets and plugins; the Knowledge Graph scaffold",
+        "feat(surface): Infinite Surfaces - seamless CSS tiles as pattern x material x projection x motion (alpha)",
+        "feat(shader): Shader - forty-four WebGL2 effects on one shared context, generated controls, custom and registered shaders",
+        "chore(agents): gate findings of the Geo Map data route and palettes",
+        "feat(geo-map): calmer palettes - even oklch tones, an even mono ramp, a coral pick instead of the near-black primary, dark mode keeping each palette's hues",
+        "fix(geo-map): the data loads from the release's npm package on jsDelivr - its GitHub route answered 403 (Package size exceeded) for this repository; a zoomed flat view stops at the pole",
+        "chore(agents): a release left running when a turn ends meets the Stop hook's gate - wait for it in the turn",
+        "docs(installation): the file tree and the import comment say what the arrows meant; the tree lists the geo bundle"
+      ]
+    },
+    {
       "version": "v0.9.12",
       "date": "November 02, 2026",
       "commits": [
