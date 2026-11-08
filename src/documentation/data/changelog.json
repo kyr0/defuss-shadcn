@@ -16,7 +16,8 @@
         "fix(geo-map): the data loads from the release's npm package on jsDelivr - its GitHub route answered 403 (Package size exceeded) for this repository; a zoomed flat view stops at the pole",
         "chore(agents): a release left running when a turn ends meets the Stop hook's gate - wait for it in the turn",
         "docs(installation): the file tree and the import comment say what the arrows meant; the tree lists the geo bundle"
-      ]
+      ],
+      "hash": "95a39d6d"
     },
     {
       "version": "v0.9.12",

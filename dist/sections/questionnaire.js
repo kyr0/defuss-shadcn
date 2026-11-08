@@ -1,7 +1,7 @@
 // dist/components/questionnaire/questionnaire.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.12") {
+if (!__df$shared || __df$shared.abi !== "0.9.13") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, persisted, viewPersistence } = __df$shared;
@@ -1297,5 +1297,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=836E25BDAEECF73064756E2164756E21
+//# debugId=3194306B65575CCF64756E2164756E21
 //# sourceMappingURL=questionnaire.js.map

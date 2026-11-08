@@ -39,6 +39,7 @@ export const STANDALONE_APPS = [
     'scaffold-status-page',
     'scaffold-desktop',
     'scaffold-document-editor',
+    'scaffold-knowledge-graph',
 ];
 /** the Website templates: a site needs an address to route - their full-screen page is where the router owns one
  *  (a docs card is an about:srcdoc frame - the Client-side Routing guide) */
@@ -49,6 +50,7 @@ export const WEBSITE_TEMPLATES = [
     'website-article',
     'website-comments',
     'website-company',
+    'website-resume-portfolio',
     'website-events-promotions',
     'website-media',
     'website-shop',
@@ -56,7 +58,19 @@ export const WEBSITE_TEMPLATES = [
     'website-docs-help',
     'website-search-navigation',
 ];
-export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio', ...WEBSITE_TEMPLATES];
+/**
+ * The portfolio styles of Resume & Portfolio: one-page sites without routes - each a full-screen page beside it.
+ * A list of their own, not part of WEBSITE_TEMPLATES: a template routes and translates (website-templates.e2e drives a
+ * route and German on each), a style does neither - tests/e2e/site/portfolio-styles.e2e.ts checks what a style owes.
+ */
+export const PORTFOLIO_STYLES = ['portfolio-editorial', 'portfolio-playful', 'portfolio-developer', 'portfolio-bento', 'portfolio-brutalist', 'portfolio-photographer', 'portfolio-swiss', 'portfolio-neon', 'portfolio-zine', 'portfolio-minimal'];
+/**
+ * The Showcase sites of Website: one-page sites, each with its own subject, palette, type and three looks, made to
+ * show the components dressed as a brand - no routes, no translation (English), like the portfolio styles; a
+ * full-screen page beside each. tests/e2e/site/showcase-sites.e2e.ts checks what a site owes.
+ */
+export const SHOWCASE_SITES = ['showcase-roastery', 'showcase-observatory', 'showcase-bouldering', 'showcase-records'];
+export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio', ...WEBSITE_TEMPLATES, ...PORTFOLIO_STYLES, ...SHOWCASE_SITES];
 /** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) - its bundle is dist/apps/<name>/. */
 export const appName = (slug) => slug.replace(/^scaffold-/, '');
 /** The ids (file stems) of the generated standalone pages. */
