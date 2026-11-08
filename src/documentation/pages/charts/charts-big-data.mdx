@@ -1,0 +1,425 @@
+---
+title: "Big Data Charts"
+description: "Charts over a million rows: the rows stay in a dataview source, the chart draws their aggregation - grouped by fields, binned by width or calendar unit, measured with count, sum, avg, min, max and distinct - and follows the filters of a Data Grid over the same rows."
+slug: "charts-big-data"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles, SourceNote } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="charts-big-data" title="Big Data Charts" component="chart">
+  A chart cannot draw a million marks, and it does not need to: a reader sees four bars, thirty days or twenty bins. <code>df$.shadcn.chart.bind()</code> keeps the rows in a <code>df$.dataview</code> source - the query engine of the <DocLink href="data-grid.html">Data Grid</DocLink>, the <DocLink href="virtual-list.html">Virtual List</DocLink> and the <DocLink href="data-tree.html">Data Tree</DocLink> - and hands ECharts only their <b>aggregation</b>: grouped by fields, binned by a width or a calendar unit, measured with count, sum, avg, min, max or distinct. Bound to a grid, the chart groups exactly the rows the grid's filters match, from the grid's own filter scan.
+</PageHeader>
+
+<H2 id="a-million-rows">A million rows, a handful of bars</H2>
+
+<DocText>A million orders are generated in the page, wrapped once in <code>df$.dataview.source(rows)</code>, and bound to a chart with an aggregation spec: <code>groupBy</code> a field, one measure, sorted by it. The selects regroup the same rows through <code>binding.update()</code> - ECharts morphs from one set of bars to the next. The <code>chart-data</code> event reports how many rows went into how many groups and how long it took.</DocText>
+
+```html example label="A million orders" schema="none" hint="1,000,000 rows stay in a dataview source; the chart gets four or eight groups. Change the grouping or the measure: one pass over every row, then ECharts morphs the bars." previewStyle="align-items:flex-start;" height="30"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin: 0">
+  <h3 class="chart-title">A million orders</h3>
+  <p class="chart-dek">Every order of a year, grouped in the browser - the chart draws the groups, never the rows.</p>
+  <div class="flex flex-wrap items-end gap-3 mb-3">
+    <label class="grid gap-1 text-sm"
+      >Group by
+      <select class="select" data-size="sm" id="million-group">
+        <option value="region">Region</option>
+        <option value="channel">Channel</option>
+      </select>
+    </label>
+    <label class="grid gap-1 text-sm"
+      >Measure
+      <select class="select" data-size="sm" id="million-measure">
+        <option value="count">Orders</option>
+        <option value="sum">Revenue</option>
+        <option value="avg">Average order</option>
+      </select>
+    </label>
+  </div>
+  <div
+    class="chart"
+    id="million"
+    role="img"
+    aria-label="Orders of a year grouped by region"
+    style="height: 15rem"
+  ></div>
+  <figcaption class="chart-source"><output id="million-info">Generating 1,000,000 orders...</output></figcaption>
+</figure>
+<script type="module">
+  // a year of orders - synthetic, the same on every load
+  const REGIONS = ['Europe', 'Americas', 'Asia', 'Africa'];
+  const CHANNELS = ['web', 'app', 'store', 'partner', 'phone', 'marketplace', 'b2b', 'kiosk'];
+  const orders = (n) => {
+    const rows = new Array(n);
+    for (let i = 0; i < n; i++) {
+      let h = Math.imul(i + 1, 0x9e3779b1);
+      h = Math.imul(h ^ (h >>> 16), 0x85ebca6b);
+      h = (h ^ (h >>> 13)) >>> 0;
+      // not every region or channel sells alike: 45, 30, 15 and 10 % of the orders
+      const region = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3][h % 20];
+      rows[i] = {
+        id: i + 1,
+        region: REGIONS[region],
+        channel: CHANNELS[[0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 5, 6, 7, 7][(h >>> 17) & 15]],
+        amount: Math.round((5 + ((h >>> 5) % 9500) / 100) * [1.4, 1.1, 0.8, 0.6][region] * 100) / 100,
+      };
+    }
+    return rows;
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    const fmt = (n) => n.toLocaleString('en-US');
+    const group = df$('#million-group');
+    const measure = df$('#million-measure');
+    const source = df$.dataview.source(orders(1_000_000));
+    const spec = () => ({
+      groupBy: group.val(),
+      measures: [
+        measure.val() === 'count' ? { op: 'count', as: 'value' } : { op: measure.val(), field: 'amount', as: 'value' },
+      ],
+      sort: { by: 'value', direction: 'desc' },
+    });
+    const option = (rows) => ({
+      tooltip: { trigger: 'axis' },
+      xAxis: { type: 'category', data: rows.map((r) => r[group.val()]) },
+      yAxis: { type: 'value' },
+      series: [{ type: 'bar', name: measure.val(), data: rows.map((r) => Math.round(r.value)) }],
+    });
+    // chart-data: the groups and what they were made of
+    df$('#million').on('chart-data', (e) => {
+      const { total, rows, ms } = e.detail;
+      df$('#million-info').text(`${fmt(total)} orders in ${rows.length} groups - one pass over every row in ${ms} ms`);
+    });
+    const chart = df$.shadcn.chart.bind(df$('#million').get(0), { source, aggregate: spec(), option });
+    df$('#million-group, #million-measure').on('change', () => chart.update({ aggregate: spec(), option }));
+  });
+</script>
+```
+
+<H2 id="buckets">Buckets: time and number</H2>
+
+<DocText>A group key can be <b>binned</b>: <code>bucket: 'day'</code> (or minute, hour, week, month, year - in UTC, a week starts on Monday) groups time values by the unit's start, <code>bucket: 25</code> groups numbers into bins of that width. <code>fill: true</code> adds the empty bins between the first and the last, so a time axis has no gaps that look like a trend.</DocText>
+
+```html example label="Time and number buckets" schema="none" hint="The same 250,000 orders binned twice: by a calendar unit for the line (pick day, week or month) and by 10 EUR for the histogram. fill: true keeps the empty bins." previewStyle="align-items:flex-start;" height="30"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin: 0">
+  <h3 class="chart-title">When orders arrive, and how large they are</h3>
+  <div class="flex flex-wrap items-end gap-3 mb-3">
+    <label class="grid gap-1 text-sm"
+      >Bucket
+      <select class="select" data-size="sm" id="buckets-unit">
+        <option value="day">Day</option>
+        <option value="week">Week</option>
+        <option value="month" selected>Month</option>
+      </select>
+    </label>
+  </div>
+  <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+    <div
+      class="chart"
+      id="buckets-time"
+      role="img"
+      aria-label="Orders per month of the year, rising"
+      style="height: 13rem"
+    ></div>
+    <div
+      class="chart"
+      id="buckets-size"
+      role="img"
+      aria-label="Histogram of order amounts in bins of 10 EUR"
+      style="height: 13rem"
+    ></div>
+  </div>
+  <figcaption class="chart-source">250,000 synthetic orders · grouped with df$.dataview</figcaption>
+</figure>
+<script type="module">
+  const DAY = 864e5;
+  const START = Date.UTC(2026, 0, 1);
+  // more orders as the year goes on, amounts skewed small
+  const orders = (n) => {
+    const rows = new Array(n);
+    for (let i = 0; i < n; i++) {
+      let h = Math.imul(i + 1, 0x9e3779b1);
+      h = Math.imul(h ^ (h >>> 16), 0x85ebca6b);
+      h = (h ^ (h >>> 13)) >>> 0;
+      const u = (h % 100000) / 100000;
+      const v = ((h >>> 3) % 100000) / 100000;
+      rows[i] = { id: i + 1, day: START + Math.floor(365 * Math.sqrt(u)) * DAY, amount: Math.round(5 + 200 * v * v) };
+    }
+    return rows;
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    const source = df$.dataview.source(orders(250_000));
+    const unit = df$('#buckets-unit');
+    const perUnit = () => ({ groupBy: { field: 'day', bucket: unit.val(), as: 'start' }, fill: true });
+    // a static option: the groups join it as dataset.source and the series encode their keys
+    const time = df$.shadcn.chart.bind(df$('#buckets-time').get(0), {
+      source,
+      aggregate: perUnit(),
+      option: {
+        tooltip: { trigger: 'axis' },
+        dataset: { dimensions: ['start', 'count'] },
+        xAxis: { type: 'time' },
+        yAxis: { type: 'value' },
+        series: [
+          {
+            type: 'line',
+            name: 'orders',
+            showSymbol: false,
+            areaStyle: { opacity: 0.15 },
+            encode: { x: 'start', y: 'count' },
+          },
+        ],
+      },
+    });
+    df$.shadcn.chart.bind(df$('#buckets-size').get(0), {
+      source,
+      aggregate: { groupBy: { field: 'amount', bucket: 10, as: 'from' }, fill: true },
+      option: (rows) => ({
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: rows.map((r) => `${r.from}`), name: 'EUR' },
+        yAxis: { type: 'value' },
+        series: [{ type: 'bar', name: 'orders', barCategoryGap: '8%', data: rows.map((r) => r.count) }],
+      }),
+    });
+    unit.on('change', () => time.update({ aggregate: perUnit() }));
+  });
+</script>
+```
+
+<H2 id="follow-a-grid">A grid and the charts that follow it</H2>
+
+<DocText>With <code>follow: grid</code> a chart follows the filters of a <DocLink href="data-grid.html">Data Grid</DocLink> (any element whose store config is a query). Pass the grid's own source - <code>df$.shadcn.dataGrid.source(grid)</code> - and the filter scan the grid runs is the chart's too: it groups exactly the rows the grid shows. The other way round is a page's own wiring: a click on a bar sets a grid filter through <code>dataGrid.query()</code>, and every chart follows.</DocText>
+
+```html example label="Cross-filtering a grid" schema="none" hint="200,000 orders in a Data Grid; both charts group what its filters match. Filter a column, or click a region bar or a channel slice - a second click lets the filter go." previewStyle="align-items:flex-start;" height="44"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<div class="grid gap-3">
+  <p class="text-sm" style="margin: 0"><output id="cross-info">Generating 200,000 orders...</output></p>
+  <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+    <div
+      class="chart"
+      id="cross-region"
+      role="img"
+      aria-label="Revenue by region of the orders the grid shows"
+      style="height: 11rem"
+    ></div>
+    <div
+      class="chart"
+      id="cross-channel"
+      role="img"
+      aria-label="Orders by channel of the orders the grid shows"
+      style="height: 11rem"
+    ></div>
+  </div>
+  <div
+    class="data-grid"
+    id="cross-grid"
+    aria-label="Orders"
+    data-persist="none"
+    data-empty-text="No order matches."
+    style="height: 18rem"
+  >
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem">Id</div>
+          <div class="data-grid-header" data-field="region" data-width="8rem" data-filter="select">Region</div>
+          <div class="data-grid-header" data-field="channel" data-width="8rem" data-filter="select">Channel</div>
+          <div
+            class="data-grid-header"
+            data-field="amount"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="8rem"
+            data-filter="number"
+            >Amount</div
+          >
+          <div class="data-grid-header" data-field="customer" data-width="9rem" data-filter="text">Customer</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  const REGIONS = ['Europe', 'Americas', 'Asia', 'Africa'];
+  const CHANNELS = ['web', 'app', 'store', 'partner'];
+  const orders = (n) => {
+    const rows = new Array(n);
+    for (let i = 0; i < n; i++) {
+      let h = Math.imul(i + 1, 0x9e3779b1);
+      h = Math.imul(h ^ (h >>> 16), 0x85ebca6b);
+      h = (h ^ (h >>> 13)) >>> 0;
+      rows[i] = {
+        id: i + 1,
+        region: REGIONS[[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3][h % 20]],
+        channel: CHANNELS[[0, 0, 0, 0, 0, 1, 1, 1, 2, 3][(h >>> 17) % 10]],
+        amount: Math.round((5 + ((h >>> 4) % 19500) / 100) * 100) / 100,
+        customer: 'c' + String((h >>> 7) % 40000).padStart(5, '0'),
+      };
+    }
+    return rows;
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    const fmt = (n) => n.toLocaleString('en-US');
+    const grid = df$('#cross-grid').get(0);
+    df$.shadcn.dataGrid.setSource(grid, orders(200_000));
+    const source = df$.shadcn.dataGrid.source(grid);
+    df$('#cross-region').on('chart-data', (e) => {
+      const { matched, total, ms } = e.detail;
+      df$('#cross-info').text(`${fmt(matched)} of ${fmt(total)} orders match - grouped in ${ms} ms`);
+    });
+    const region = df$.shadcn.chart.bind(df$('#cross-region').get(0), {
+      source,
+      follow: grid,
+      aggregate: { groupBy: 'region', measures: [{ op: 'sum', field: 'amount', as: 'revenue' }] },
+      option: (rows) => ({
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: rows.map((r) => r.region), axisLabel: { interval: 0 } },
+        yAxis: { type: 'value' },
+        series: [{ type: 'bar', name: 'revenue (EUR)', data: rows.map((r) => Math.round(r.revenue)) }],
+      }),
+    });
+    const channel = df$.shadcn.chart.bind(df$('#cross-channel').get(0), {
+      source,
+      follow: grid,
+      aggregate: { groupBy: 'channel' },
+      option: (rows) => ({
+        tooltip: { trigger: 'item' },
+        legend: { right: 0, orient: 'vertical', top: 'middle' },
+        series: [
+          {
+            type: 'pie',
+            radius: ['45%', '75%'],
+            center: ['35%', '50%'],
+            label: { show: false },
+            data: rows.map((r) => ({ name: r.channel, value: r.count })),
+          },
+        ],
+      }),
+    });
+    // a click filters the grid by what it hit (a second click lets it go); the charts follow the grid
+    const toggle = (field, value) => {
+      const now = grid.store.value.config.filters ?? [];
+      const had = now.some((f) => f.field === field && f.value === value);
+      const rest = now.filter((f) => f.field !== field);
+      df$.shadcn.dataGrid.query(grid, { filters: had ? rest : [...rest, { field, op: 'eq', value }] });
+    };
+    region.mounted.then((chart) => chart.on('click', (p) => toggle('region', p.name)));
+    channel.mounted.then((chart) => chart.on('click', (p) => toggle('channel', p.name)));
+  });
+</script>
+```
+
+<H2 id="top-and-the-rest">The largest groups and the rest</H2>
+
+<DocText><code>limit</code> keeps the first groups after sorting - with a limit the default order is the first measure, largest first - and <code>other</code> names one group that holds every group past it, so the shares still add up to the whole.</DocText>
+
+```html example label="Top countries and the rest" schema="none" hint="Orders from 24 countries, most from a few: limit 6 keeps the largest, other: 'the other 18' merges the rest into one slice, so the donut still shows every order." previewStyle="align-items:flex-start;" height="24"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<figure class="chart-frame" style="margin: 0">
+  <h3 class="chart-title">Orders by country</h3>
+  <div
+    class="chart"
+    id="top-countries"
+    role="img"
+    aria-label="Donut of orders by country: the six largest and the other eighteen as one slice"
+    style="height: 15rem"
+  ></div>
+  <figcaption class="chart-source">250,000 synthetic orders · limit 6, other: 'the other 18'</figcaption>
+</figure>
+<script type="module">
+  const COUNTRIES = [
+    'DEU',
+    'USA',
+    'FRA',
+    'GBR',
+    'JPN',
+    'BRA',
+    'IND',
+    'CAN',
+    'ITA',
+    'ESP',
+    'NLD',
+    'SWE',
+    'POL',
+    'AUT',
+    'CHE',
+    'BEL',
+    'IRL',
+    'DNK',
+    'NOR',
+    'FIN',
+    'PRT',
+    'CZE',
+    'MEX',
+    'AUS',
+  ];
+  document.addEventListener('DOMContentLoaded', () => {
+    const rows = Array.from({ length: 250_000 }, (_, i) => {
+      let h = Math.imul(i + 1, 0x9e3779b1);
+      h = (h ^ (h >>> 15)) >>> 0;
+      // a few countries order most: the index skews toward the start of the list
+      return { id: i + 1, country: COUNTRIES[Math.floor(COUNTRIES.length * Math.pow((h % 100000) / 100000, 2.2))] };
+    });
+    df$.shadcn.chart.bind(df$('#top-countries').get(0), {
+      source: df$.dataview.source(rows),
+      aggregate: { groupBy: 'country', limit: 6, other: 'the other 18' },
+      option: (groups) => ({
+        tooltip: { trigger: 'item' },
+        legend: { right: 0, orient: 'vertical', top: 'middle' },
+        series: [
+          {
+            type: 'pie',
+            radius: ['45%', '75%'],
+            center: ['38%', '50%'],
+            data: groups.map((g) => ({ name: g.country, value: g.count })),
+          },
+        ],
+      }),
+    });
+  });
+</script>
+```
+
+<H2 id="the-spec">The aggregation spec</H2>
+
+<DocText>The spec is plain JSON - a page can keep it in a store, an agent can write it. <code>df$.dataview.aggregate(rows, spec)</code> runs it over any rows; <code>source.aggregate(query, spec)</code> runs it over the rows a query's filters match and keeps the answer until the filters, the spec or the rows change.</DocText>
+
+```js
+const source = df$.dataview.source(rows); // or df$.shadcn.dataGrid.source(grid)
+source.aggregate(
+  { filters: [{ field: 'region', op: 'eq', value: 'Europe' }] },
+  {
+    groupBy: [{ field: 'day', bucket: 'month', as: 'month' }, 'channel'], // fields, bins, calendar units
+    measures: [
+      { op: 'count' },                                     // count
+      { op: 'sum', field: 'amount', as: 'revenue' },       // sum, avg, min, max over the field's numbers
+      { op: 'distinct', field: 'customer', as: 'buyers' }, // how many different values
+    ],
+    sort: { by: 'revenue', direction: 'desc' },
+    limit: 10,
+    other: 'the rest',
+    fill: false, // one binned key: the empty bins too
+  },
+);
+// => { rows: [{ month: 1767225600000, channel: 'web', count: 812, revenue: 40211.5, buyers: 640 }, ...],
+//      matchedRows: 250012, totalRows: 1000000 }
+
+const binding = df$.shadcn.chart.bind(chartEl, {
+  source,                 // the rows
+  aggregate: spec,        // how they become groups
+  follow: gridEl,         // optional: a Data Grid whose filters it follows
+  option: (rows, info) => ({ /* ECharts option of the groups */ }), // or a static option: rows join dataset.source
+});
+binding.update({ aggregate: other }); // regroup the same chart
+binding.mounted.then((chart) => chart.on('click', (p) => { /* filter the grid */ }));
+```
+
+<SourceFiles component="chart">
+  <SourceNote for="css">The chart sizing surface the bound charts mount into.</SourceNote>
+  <SourceNote for="js">bind() - the aggregation lives in src/shared/dataview.ts, emitted once in core (df$.dataview).</SourceNote>
+</SourceFiles>
+
+</DocPage>

@@ -326,6 +326,90 @@ try {
     await page.waitForTimeout(200);
   });
 
+  await check('chart.bind(): a dataview source of 100,000 rows drawn as its aggregation; chart-data reports it', async () => {
+    const r = await page.evaluate(async () => {
+      const REGIONS = ['EU', 'US', 'AP', 'AF'];
+      const CHANNELS = ['web', 'app', 'store'];
+      const rows = Array.from({ length: 100_000 }, (_, i) => ({
+        id: i + 1,
+        region: REGIONS[[0, 0, 0, 1, 1, 2, 3][i % 7]],
+        channel: CHANNELS[(i >> 3) % 3],
+        amount: (i % 100) + 1,
+      }));
+      const g = globalThis as any;
+      g.__rows = rows;
+      const el = document.getElementById('bound')!;
+      const events: any[] = [];
+      el.addEventListener('chart-data', (e) => events.push((e as CustomEvent).detail));
+      const source = g.df$.dataview.source(rows);
+      const binding = g.df$.shadcn.chart.bind(el, {
+        source,
+        aggregate: { groupBy: 'region', measures: [{ op: 'count' }, { op: 'sum', field: 'amount', as: 'revenue' }] },
+        option: (groups: any[]) => ({
+          xAxis: { type: 'category', data: groups.map((x) => x.region) },
+          yAxis: { type: 'value' },
+          series: [{ id: 'n', type: 'bar', data: groups.map((x) => x.count) }],
+        }),
+      });
+      const inst = await binding.mounted;
+      g.__binding = binding;
+      const opt = inst.getOption();
+      const expected = g.df$.dataview.aggregate(rows, { groupBy: 'region' });
+      return { events: events.length, detail: events[0], data: opt.series[0].data, cats: opt.xAxis[0].data, expected, same: inst === g.df$.shadcn.chart.instance(el) };
+    });
+    assert.equal(r.events, 1, 'one chart-data per aggregation');
+    assert.deepEqual([r.detail.total, r.detail.matched, r.detail.rows.length], [100000, 100000, 4]);
+    assert.deepEqual(r.cats, ['AF', 'AP', 'EU', 'US'], 'groups sorted by key');
+    assert.deepEqual(r.data, r.expected.map((x: any) => x.count));
+    assert.equal(r.data.reduce((a: number, b: number) => a + b, 0), 100000, 'every row is in a group');
+    assert.ok(r.same, 'mounted resolves with the registered instance');
+  });
+
+  await check('chart.bind(): update() regroups the same chart; query() filters; dispose() releases it', async () => {
+    const r = await page.evaluate(() => {
+      const g = globalThis as any;
+      const el = document.getElementById('bound')!;
+      const before = g.df$.shadcn.chart.instance(el);
+      g.__binding.update({ aggregate: { groupBy: 'channel' }, option: (groups: any[]) => ({ xAxis: { type: 'category', data: groups.map((x) => x.channel) }, yAxis: { type: 'value' }, series: [{ id: 'n', type: 'bar', data: groups.map((x) => x.count) }] }) });
+      const regrouped = g.df$.shadcn.chart.instance(el).getOption().xAxis[0].data;
+      g.__binding.query({ filters: [{ field: 'region', op: 'eq', value: 'EU' }] });
+      const filtered = g.__binding.rows();
+      const eu = g.__rows.filter((x: any) => x.region === 'EU').length;
+      const same = g.df$.shadcn.chart.instance(el) === before;
+      g.__binding.dispose();
+      return { regrouped, filtered, eu, same, after: g.df$.shadcn.chart.instance(el) === undefined };
+    });
+    assert.deepEqual(r.regrouped, ['app', 'store', 'web']);
+    assert.equal(r.filtered.reduce((n: number, x: any) => n + x.count, 0), r.eu, 'the groups hold exactly the matched rows');
+    assert.ok(r.same, 'the same instance morphs');
+    assert.ok(r.after, 'dispose releases the instance');
+  });
+
+  await check("chart.bind({ follow }): a chart follows a Data Grid's filters over the grid's own source", async () => {
+    await page.evaluate(() => {
+      const g = globalThis as any;
+      const grid = document.getElementById('bound-grid')!;
+      g.df$.shadcn.dataGrid.setSource(grid, g.__rows);
+      g.__follow = g.df$.shadcn.chart.bind(document.getElementById('bound-follow'), {
+        source: g.df$.shadcn.dataGrid.source(grid),
+        follow: grid,
+        aggregate: { groupBy: 'channel' },
+        option: (groups: any[]) => ({ xAxis: { type: 'category', data: groups.map((x) => x.channel) }, yAxis: { type: 'value' }, series: [{ type: 'bar', data: groups.map((x) => x.count) }] }),
+      });
+    });
+    const total = () => page.evaluate(() => (globalThis as any).__follow.rows().reduce((n: number, x: any) => n + x.count, 0));
+    assert.equal(await total(), 100000);
+    // a filter typed in the grid's filter row
+    await page.selectOption('#bound-grid .data-grid-filters select >> nth=0', 'AP');
+    await page.waitForFunction(() => (globalThis as any).__follow.rows().reduce((n: number, x: any) => n + x.count, 0) < 100000);
+    const ap = await page.evaluate(() => (globalThis as any).__rows.filter((x: any) => x.region === 'AP').length);
+    assert.equal(await total(), ap);
+    assert.equal(await page.getAttribute('#bound-grid', 'aria-rowcount'), String(ap + 2), 'the grid shows the same rows');
+    // and back
+    await page.evaluate(() => (globalThis as any).df$.shadcn.dataGrid.query(document.getElementById('bound-grid'), { filters: [] }));
+    await page.waitForFunction(() => (globalThis as any).__follow.rows().reduce((n: number, x: any) => n + x.count, 0) === 100000);
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await assertRenderContract(page, '.chart[id]', ['default'], { runtimeAttrs: ['style','_echarts_instance_'], runtimeOwned: '.chart[id] > *, .chart[id] > * *' });
   });

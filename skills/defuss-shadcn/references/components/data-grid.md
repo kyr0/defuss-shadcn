@@ -105,6 +105,11 @@ dataGrid.setSource(grid, rows, {
 // data-paging="infinite": load(offset, size) → Promise<records[]>; [] ends it
 dataGrid.setSource(logGrid, [], { load: (offset, size) => fetchPage(offset, size) });
 
+// its query source: the records, cached queries, and aggregation over the rows its filters match - a chart
+// bound to it (df$.shadcn.chart.bind with follow: grid) groups exactly what the grid shows
+const source = dataGrid.source(grid);
+source.aggregate({ filters: grid.store.value.config.filters }, { groupBy: 'region' }); // { rows, matchedRows, totalRows }
+
 // the starting query, and where the view is kept (a kept view wins over the starting query)
 dataGrid.setSource(grid, rows, {
   query: { sorters: [{ field: 'date', direction: 'desc' }] },
@@ -220,9 +225,10 @@ The registry globals are `df$.shadcn.dataGridApi` / `df$.shadcn.dataGridStates`;
 
 | Member | Description |
 |---|---|
-| <code>setSource(target: string \| HTMLElement, rows: DataviewRow[], options: DataGridOptions = {}): void</code> | Hand the grid its records. Options: idField ('id'), parentIdField (a tree grid; or data-parent-field), cells ({ field: (el, record, meta) }) custom cell content, load(offset, size) → Promise&lt;records[]&gt; for data-paging="infinite" from a remote source, query ({ sorters, filters, locked, ... }) the starting query, persist ({ area: 'session' \| 'local' \| 'none', prefix, key }) where the view is kept - a kept view wins over the starting query. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr><tr><td><code>rows</code></td><td><code>DataviewRow[]</code></td><td>the records (a tree grid: a flat list linked by parent id)</td></tr><tr><td><code>options</code></td><td><code>DataGridOptions</code> = <code>{}</code></td><td>fields, custom cells, a remote loader, the starting view and its persistence</td></tr></table> |
+| <code>setSource(target: string \| HTMLElement, rows: DataviewRow[], options: DataGridOptions = {}): void</code> | Hand the grid its records. Options: idField ('id'), parentIdField (a tree grid; or data-parent-field), cells ({ field: (el, record, meta) }) custom cell content, load(offset, size) returning a Promise&lt;records[]&gt; for data-paging="infinite" from a remote source, query ({ sorters, filters, locked, ... }) the starting query, persist ({ area: 'session' \| 'local' \| 'none', prefix, key }) where the view is kept - a kept view wins over the starting query. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr><tr><td><code>rows</code></td><td><code>DataviewRow[]</code></td><td>the records (a tree grid: a flat list linked by parent id)</td></tr><tr><td><code>options</code></td><td><code>DataGridOptions</code> = <code>{}</code></td><td>fields, custom cells, a remote loader, the starting view and its persistence</td></tr></table> |
 | <code>query(target: string \| HTMLElement, patch: DataGridQuery): void</code> | Merge into the query: { filters?, sorters?, locked?, page?, expanded?, selected? }. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr><tr><td><code>patch</code></td><td><code>DataGridQuery</code></td><td>the query keys to change</td></tr></table> |
 | <code>rows(target: string \| HTMLElement): DataviewRow[]</code> | The records the query shows. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> <b>Returns</b> <code>DataviewRow[]</code> - the records in query order, every page |
+| <code>source(target: string \| HTMLElement): DataSource&lt;DataviewRow&gt; \| undefined</code> | The grid's query source: its records, the cached query and aggregation over them (source.aggregate(query, spec)) - a chart that groups what the grid's filters match reads this, not a second copy of the records. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> <b>Returns</b> <code>DataSource&lt;DataviewRow&gt; \| undefined</code> - its source, undefined before setSource() |
 | <code>selected(target: string \| HTMLElement): DataviewRow[]</code> | The selected records. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> <b>Returns</b> <code>DataviewRow[]</code> - the selected records, in source order |
 | <code>selectAll(target: string \| HTMLElement): void</code> | Select every row the query shows (data-select="multiple"). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> |
 | <code>clearSelection(target: string \| HTMLElement): void</code> | Select nothing. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> |
@@ -265,7 +271,7 @@ Keyboard (APG grid): arrows move cell by cell (Up from the first row reaches
 the header), Home / End the row's ends, Ctrl+Home / Ctrl+End the first / last
 row, Page Up / Down a screen, Space selects (Shift: a range), Enter on a header
 sorts (Shift+Enter adds it), Enter on a row fires `data-grid-activate`. Tree
-grid, first column: → opens / ← closes or goes to the parent.
+grid, first column: Arrow Right opens, Arrow Left closes or goes to the parent.
 
 ---
 
@@ -277,7 +283,7 @@ grid, first column: → opens / ← closes or goes to the parent.
   focus for them - a field types spaces and moves its caret, Space ticks a box.
 - **A filter is case-insensitive** - text matches anywhere, numbers take `>`
   `>=` `<` `<=` `=` `!=` (`> 100`), a select matches exactly. All filters combine.
-- **Multisort**: a click sorts by that column alone (asc → desc → off);
+- **Multisort**: a click sorts by that column alone (ascending, then descending, then off);
   Shift+click adds it to the sort (or cycles it in place).
 - **Locking moves the column into the sticky group** at the start (authored
   order kept) - the head and every row reorder together.

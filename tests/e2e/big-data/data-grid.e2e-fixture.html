@@ -70,6 +70,19 @@
     </div>
   </div>
 
+  <!-- waiting for its records: no setSource yet - it starts in loading -->
+  <div class="data-grid" id="dg-waiting" aria-label="Waiting for records" data-persist="none" style="height:160px;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number">ID</div>
+          <div class="data-grid-header" data-field="name" data-filter="text">Name</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
   <!-- persistence: local storage under its own key, with an authored sort (data-sort) -->
   <div class="data-grid" id="dg-local" aria-label="Kept locally" data-persist="local" data-persist-key="fixture-grid" style="height:200px;">
     <div class="data-grid-viewport">

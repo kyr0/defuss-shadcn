@@ -7,6 +7,7 @@
   <title>Chart E2E Fixture - defuss-shadcn</title>
   <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
   <link rel="stylesheet" href="/dist/components/chart/chart.css">
+  <link rel="stylesheet" href="/dist/components/data-grid/data-grid.css">
 </head>
 <body>
   <main style="max-width:48rem;margin-inline:auto;padding:2rem;display:flex;flex-direction:column;gap:3rem;">
@@ -59,6 +60,27 @@
       <div class="chart" id="tokens" role="img" aria-label="Chart with token colours" style="width:400px; height:240px;"></div>
     </section>
 
+    <!-- Bound to a data set (chart.bind): rows in a dataview source, the chart draws their aggregation and follows
+         the filters of a Data Grid over the same rows (pages/charts/charts-big-data.mdx) -->
+    <section aria-labelledby="bound-h">
+      <h2 id="bound-h">Bound to a data set</h2>
+      <div class="chart" id="bound" role="img" aria-label="Orders grouped by region" style="width:480px; height:240px;"></div>
+      <div class="chart" id="bound-follow" role="img" aria-label="Orders by channel of the grid's rows" style="width:480px; height:240px;"></div>
+      <div class="data-grid" id="bound-grid" aria-label="Orders" data-persist="none" style="height: 12rem; width: 480px;">
+        <div class="data-grid-viewport">
+          <div class="data-grid-head">
+            <div class="data-grid-row">
+              <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="5rem">Id</div>
+              <div class="data-grid-header" data-field="region" data-width="7rem" data-filter="select">Region</div>
+              <div class="data-grid-header" data-field="channel" data-width="7rem" data-filter="select">Channel</div>
+              <div class="data-grid-header" data-field="amount" data-type="number" data-width="7rem" data-filter="number">Amount</div>
+            </div>
+          </div>
+          <div class="data-grid-body"></div>
+        </div>
+      </div>
+    </section>
+
     <!-- Deck stage: one chart for a whole presentation (chart.deck). Slides
          are toggled by the test directly - the stage only reads data-active. -->
     <section aria-labelledby="stage-h">
@@ -75,5 +97,6 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/chart/chart.js"></script>
+  <script type="module" src="/dist/components/data-grid/data-grid.js"></script>
 </body>
 </html>

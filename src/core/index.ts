@@ -60,6 +60,7 @@ import {
   parseFilter,
   filterText,
   cycleSort,
+  aggregate,
   createDataview,
   evaluateDataview,
   addRows,
@@ -125,6 +126,7 @@ type ShadcnNamespace = {
     parseFilter: typeof parseFilter;
     filterText: typeof filterText;
     cycleSort: typeof cycleSort;
+    aggregate: typeof aggregate;
     virtualWindow: typeof virtualWindow;
     sizerHeight: typeof sizerHeight;
     scrollTopFor: typeof scrollTopFor;
@@ -222,6 +224,7 @@ shadcn.shared = {
   parseFilter,
   filterText,
   cycleSort,
+  aggregate,
   virtualWindow,
   sizerHeight,
   scrollTopFor,
@@ -241,6 +244,7 @@ Reflect.set(df, 'store', { create: createStore, computed, persisted, available: 
 // virtual list, data tree and data grid run on
 Reflect.set(df, 'dataview', {
   source: dataSource,
+  aggregate,
   parseFilter,
   cycleSort,
   create: createDataview,

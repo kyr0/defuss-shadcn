@@ -14,7 +14,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <SkillPanel component="data-grid">
   <SkillField label="Native basis">
-<SkillText>An ARIA <code>grid</code> of divs: ONE scroll container holds a <code>position: sticky</code> head and a windowed body; head and rows share one CSS grid track template, so locked columns are sticky cells and nothing scrolls in JS. <code>df$.shadcn.dataGrid.setSource(el, records)</code> hands it the data.</SkillText>
+<SkillText>An ARIA <code>grid</code> of divs: ONE scroll container holds a <code>position: sticky</code> head and a windowed body; head and rows share one CSS grid track template, so locked columns are sticky cells and nothing scrolls in JS. <code>df$.shadcn.dataGrid.setSource(el, records)</code> hands it the data; <code>df$.shadcn.dataGrid.source(el)</code> is its query source - a chart bound to it groups exactly the rows the grid's filters match (<DocLink href="charts-big-data.html">Big Data Charts</DocLink>).</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">

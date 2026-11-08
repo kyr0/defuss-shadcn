@@ -59,6 +59,7 @@ export {
 // the big-data layer (df$.dataview): cached queries + windowing maths
 export {
   addRows,
+  aggregate,
   createDataview,
   cycleSort,
   dataSource,
@@ -68,6 +69,12 @@ export {
   removeRows,
   setParent,
   updateRows,
+  type AggregateGroup,
+  type AggregateMeasure,
+  type AggregateResult,
+  type AggregateRow,
+  type AggregateSpec,
+  type AggregateUnit,
   type DataQuery,
   type DataResult,
   type DataSource,

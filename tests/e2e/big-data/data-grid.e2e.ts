@@ -116,6 +116,18 @@ try {
     assert.match(s.status, /^[\d,]+ of 100,000 rows match$/);
   });
 
+  await check('source(): the grid\'s own dataview source - its aggregation groups exactly the rows the filters match', async () => {
+    const r = await page.$eval('#dg-orders', (g: any) => {
+      const source = (globalThis as any).df$.shadcn.dataGrid.source(g);
+      const shown = (globalThis as any).df$.shadcn.dataGrid.rows(g);
+      const groups = source.aggregate({ filters: g.store.value.config.filters }, { groupBy: 'status' });
+      return { total: source.rows.length, matched: groups.matchedRows, shown: shown.length, sum: groups.rows.reduce((n: number, x: any) => n + x.count, 0) };
+    });
+    assert.equal(r.total, 100000);
+    assert.equal(r.matched, r.shown, 'the aggregation saw the rows the grid shows');
+    assert.equal(r.sum, r.shown);
+  });
+
   await check('nothing matches → empty (data-empty-text); clearing the filter → default', async () => {
     await page.fill('#dg-orders .data-grid-filter[data-field="customer"]', 'zzzz');
     await page.waitForFunction(() => (document.querySelector('#dg-orders') as any).store.value.name === 'empty');
@@ -363,6 +375,16 @@ try {
       focus: (document.activeElement as HTMLElement).dataset.cellBox,
     }));
     assert.deepEqual(r, { text: 'Ada Lovelac!e', ticked: true, focus: '2' });
+  });
+
+  await check('a grid still waiting for its records takes keys and header clicks without an error', async () => {
+    assert.equal(await page.$eval('#dg-waiting', (g: any) => g.store.value.name), 'loading');
+    await page.click('#dg-waiting .data-grid-header[data-field="name"]');
+    await page.focus('#dg-waiting .data-grid-header[data-field="id"]');
+    for (const key of ['ArrowDown', 'ArrowUp', 'ArrowRight', 'Home', 'End', 'Enter', ' ', 'PageDown']) await page.keyboard.press(key);
+    // a throw here is a page error, which fails the run (the pageerror handler above)
+    await page.waitForTimeout(100);
+    assert.equal(await page.$eval('#dg-waiting', (g: any) => g.store.value.name), 'loading');
   });
 
   await check('prefers-reduced-motion: the loading pulse stops', async () => {

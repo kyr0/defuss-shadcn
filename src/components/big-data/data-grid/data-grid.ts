@@ -31,7 +31,13 @@ import {
   sizerHeight,
   scrollIntoViewTop,
 } from '../../../shared/state-api.js';
-import type { DataviewFilter, DataviewJsonValue, DataviewRow, DataviewSorter } from '../../../shared/dataview.js';
+import type {
+  DataSource,
+  DataviewFilter,
+  DataviewJsonValue,
+  DataviewRow,
+  DataviewSorter,
+} from '../../../shared/dataview.js';
 import type { ViewPersistence } from '../../../shared/store.js';
 
 const df$ = defussGlobals();
@@ -860,7 +866,7 @@ df$.dataGrid = {
   /**
    * Hand the grid its records. Options: idField ('id'), parentIdField (a
    * tree grid; or data-parent-field), cells ({ field: (el, record, meta) })
-   * custom cell content, load(offset, size) → Promise<records[]> for
+   * custom cell content, load(offset, size) returning a Promise<records[]> for
    * data-paging="infinite" from a remote source, query ({ sorters, filters,
    * locked, ... }) the starting query, persist ({ area: 'session' | 'local' |
    * 'none', prefix, key }) where the view is kept - a kept view wins over
@@ -904,6 +910,13 @@ df$.dataGrid = {
    * @returns the records in query order, every page
    */
   rows: (target: string | HTMLElement): DataviewRow[] => (resolve(target)._result?.entries ?? []).map((e) => e.row),
+  /**
+   * The grid's query source: its records, the cached query and aggregation over them (source.aggregate(query,
+   * spec)) - a chart that groups what the grid's filters match reads this, not a second copy of the records.
+   * @param target - the .data-grid element or its selector
+   * @returns its source, undefined before setSource()
+   */
+  source: (target: string | HTMLElement): DataSource<DataviewRow> | undefined => resolve(target)._source,
   /**
    * The selected records.
    * @param target - the .data-grid element or its selector
@@ -970,6 +983,10 @@ function init() {
       dfDollar(body).append(pool);
       grid._parts = { viewport, head, body, pool, footer };
       grid._columns = readColumns(grid);
+      // before its first query (no records yet) a grid shows no rows in the authored column order - keys and clicks on
+      // its headers read both
+      grid._order = grid._columns;
+      grid._shown = [];
       grid._focus = { row: 0, col: 0 };
       grid._selected = new Set();
       grid._rowHeight = parseFloat(getComputedStyle(grid).getPropertyValue('--data-grid-row-height')) || 36;

@@ -16,6 +16,14 @@
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
 import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import type {
+  AggregateRow,
+  AggregateSpec,
+  DataQuery,
+  DataSource,
+  DataviewFilter,
+  DataviewRow,
+} from '../../../shared/dataview.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -60,6 +68,8 @@ interface EChartsInstanceLike {
   isDisposed?(): boolean;
   /** the option as ECharts holds it now */
   getOption(): Option;
+  /** listen to a chart event (click, mouseover, ...) - its params name the series, the item and its data */
+  on?(event: string, handler: (params: Record<string, unknown>) => void): void;
 }
 interface EChartsLike {
   init(el: HTMLElement, theme?: unknown, opts?: { renderer?: string }): EChartsInstanceLike;
@@ -73,6 +83,49 @@ export interface ChartMount {
   setOption(option: Option, notMerge?: boolean): void;
   /** stop observing the element and release the instance */
   dispose(): void;
+}
+
+/** What chart-data carries: the groups a bound chart shows now and what they were made of. */
+export interface ChartDataDetail {
+  /** the aggregated rows - the chart's dataset */
+  rows: AggregateRow[];
+  /** the rows the filters matched */
+  matched: number;
+  /** every row of the source */
+  total: number;
+  /** how long the aggregation took, in ms (0 when the source answered from its cache) */
+  ms: number;
+}
+
+/** What df$.shadcn.chart.bind() takes. */
+export interface ChartBindOptions {
+  /** the rows: df$.dataview.source(rows), or a grid's (df$.shadcn.dataGrid.source(grid)) */
+  source: DataSource<DataviewRow>;
+  /** how the rows become the chart's rows: grouped by fields, binned, measured (count, sum, avg, min, max, distinct) */
+  aggregate: AggregateSpec;
+  /** the starting query - its filters choose the rows */
+  query?: DataQuery;
+  /** an element whose store config is a query (a Data Grid, a Virtual List, a Data Tree): its filters are followed */
+  follow?: HTMLElement;
+  /** the option for the groups: a function of them, or an option they join as dataset.source (series encode its keys) */
+  option?: Option | ((rows: AggregateRow[], info: ChartDataDetail) => Option);
+}
+
+/** Handle returned by df$.shadcn.chart.bind(). */
+export interface ChartBinding {
+  /** the groups the chart shows now */
+  rows: () => AggregateRow[];
+  /** aggregate under another query (its filters) - follow does this on every change of the followed element */
+  query: (query: DataQuery) => void;
+  /** aggregate again - after the source's rows changed (source.setRows) */
+  refresh: () => void;
+  /** group differently or draw differently: a new aggregation and/or option, applied to the same chart */
+  update: (next: { aggregate?: AggregateSpec; option?: ChartBindOptions['option'] }) => void;
+  /** stop following and release the chart */
+  dispose: () => void;
+  /** resolves with the ECharts instance once the chart is mounted (it waits for the element to have a size) - for
+   *  its events: a click on a bar that filters the grid the chart follows */
+  mounted: Promise<EChartsInstanceLike>;
 }
 
 /** Handle returned by df$.shadcn.chartStory() - drive the states like slides. */
@@ -466,6 +519,143 @@ export function instance(el: HTMLElement): EChartsInstanceLike | undefined {
   return instances.get(el);
 }
 
+/** the filters of an element's store config (a grid's query), or none */
+function followedFilters(el: HTMLElement): DataviewFilter[] {
+  const config = (el as HTMLElement & { store?: { value?: { config?: DataQuery } } }).store?.value?.config;
+  return Array.isArray(config?.filters) ? config.filters : [];
+}
+
+/**
+ * A chart over a large data set: the rows stay in a dataview source, the chart draws their aggregation - a million
+ * rows become a handful of groups (grouped by fields, binned by width or calendar unit, measured), and the browser
+ * never lays out a mark per row. With `follow` it follows the filters of a Data Grid (or any element whose store
+ * config is a query), and because a grid's source is passed, its filter scan is shared: the chart groups exactly the
+ * rows the grid shows. Mounts once the element has a size, aggregates again on every query change (one per
+ * microtask), and fires chart-data with each new set of groups.
+ * @param el - the .chart element to draw into
+ * @param options - the source, the aggregation, the starting query, the element to follow and the option for the groups
+ * @returns the groups shown, query(), refresh(), update(), dispose() and the mounted instance
+ */
+export function bind(el: HTMLElement, options: ChartBindOptions): ChartBinding {
+  const opts = { ...options };
+  let query: DataQuery = { filters: opts.query?.filters ?? [] };
+  let rows: AggregateRow[] = [];
+  let handle: ChartMount | null = null;
+  let disposed = false;
+  let pending = false;
+  let wait: ResizeObserver | null = null;
+  let unsubscribe: (() => void) | null = null;
+  let ready: (inst: EChartsInstanceLike) => void = () => {};
+  const mounted = new Promise<EChartsInstanceLike>((resolve) => (ready = resolve));
+  const start = (option: Option): void => {
+    handle = mount(el, option);
+    ready(handle.instance);
+  };
+  const build = (): Option => {
+    const t0 = performance.now();
+    const result = opts.source.aggregate(query, opts.aggregate);
+    rows = result.rows;
+    const info: ChartDataDetail = {
+      rows,
+      matched: result.matchedRows,
+      total: result.totalRows,
+      ms: Math.round((performance.now() - t0) * 10) / 10,
+    };
+    const option =
+      typeof opts.option === 'function'
+        ? opts.option(rows, info)
+        : deepMerge(opts.option ?? {}, { dataset: { source: rows } });
+    // chart-data: the groups the chart shows now and how many rows they were made of
+    el.dispatchEvent(
+      new CustomEvent<ChartDataDetail>('chart-data', {
+        detail: { rows: info.rows, matched: info.matched, total: info.total, ms: info.ms },
+        bubbles: true,
+      }),
+    );
+    return option;
+  };
+  const draw = (): void => {
+    if (disposed) return;
+    if (handle) {
+      handle.setOption(build());
+      return;
+    }
+    const box = el.getBoundingClientRect();
+    if (box.width && box.height) {
+      start(build());
+      return;
+    }
+    // a box without a size yet (an island not laid out, a hidden tab): mount once it has one
+    if (!wait) {
+      wait = new ResizeObserver(() => {
+        const b = el.getBoundingClientRect();
+        if (!b.width || !b.height || handle || disposed) return;
+        wait?.disconnect();
+        wait = null;
+        start(build());
+      });
+      wait.observe(el);
+    }
+  };
+  const schedule = (): void => {
+    if (pending) return;
+    pending = true;
+    queueMicrotask(() => {
+      pending = false;
+      draw();
+    });
+  };
+  const follow = (): void => {
+    const target = opts.follow as (HTMLElement & { store?: { subscribe(fn: () => void): () => void } }) | undefined;
+    if (!target || disposed || unsubscribe) return;
+    if (!target.store) return;
+    query = { filters: followedFilters(target) };
+    let seen = JSON.stringify(query.filters);
+    unsubscribe = target.store.subscribe(() => {
+      const filters = followedFilters(target);
+      const key = JSON.stringify(filters);
+      if (key === seen) return;
+      seen = key;
+      query = { filters };
+      schedule();
+    });
+  };
+  follow();
+  draw();
+  // an element made in the same task initializes in a microtask (its MutationObserver): follow it then
+  if (opts.follow && !unsubscribe)
+    queueMicrotask(() => {
+      follow();
+      if (unsubscribe) schedule();
+    });
+  return {
+    rows: () => rows,
+    query: (q) => {
+      query = { filters: q?.filters ?? [] };
+      draw();
+    },
+    refresh: () => draw(),
+    update: (next) => {
+      if (next.aggregate) opts.aggregate = next.aggregate;
+      if (next.option !== undefined) opts.option = next.option;
+      // a new option replaces the old one: series and axes it drops must go
+      if (handle && next.option !== undefined) {
+        handle.setOption(build(), true);
+        return;
+      }
+      draw();
+    },
+    mounted,
+    dispose: () => {
+      disposed = true;
+      unsubscribe?.();
+      wait?.disconnect();
+      handle?.dispose();
+      handle = null;
+    },
+  };
+}
+
 /** Re-apply the journal from scratch (clear first): the chart's entrance
  * animation plays again. */
 function replay(el: HTMLElement, inst: EChartsInstanceLike): void {
@@ -651,7 +841,7 @@ const DECK_TEMPO: Option = {
 
 /**
  * Why: the deck stage - ONE chart instance for a whole presentation, so
- * every chart slide MORPHS into the next (bars → dots → donut ...) instead of
+ * every chart slide MORPHS into the next (bars, then dots, then a donut ...) instead of
  * cutting between separate charts. The stage is a `.chart.presentation-
  * stage` child of the `.presentation` mount, laid out in artboard
  * coordinates by presentation.css; slides name the state they show with
@@ -773,7 +963,7 @@ export const chartApi = componentState({
 
 df$.chartApi = chartApi;
 df$.chartStates = chartStates;
-df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
+df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck, bind };
 df$.chartStory = chartStory;
 
 function init(): void {
