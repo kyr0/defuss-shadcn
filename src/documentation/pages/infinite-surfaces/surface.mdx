@@ -1,0 +1,1109 @@
+---
+title: "Surface"
+description: "Surface component - seamless repeating textures in CSS alone: 28 tiles, 25 styles, 23 motions and 22 projections, themed by tokens, behind any content."
+slug: "surface"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="surface" title="Surface" component="surface">
+  A texture that repeats without a seam, in CSS alone. Two pseudo-elements behind the content paint it: a solid color cut out by a tile used as a mask - the ink - and a second one for the accent. <code>data-pattern</code> picks the tile, <code>data-style</code> the material, <code>data-motion</code> the movement and <code>data-projection</code> the plane. No JavaScript, no canvas. For lit materials and 3D scenes use the <DocLink href="shader.html">Shader</DocLink>'s <code>surface</code> effect; to try every combination, the <DocLink href="surfaces.html">Pattern Lab</DocLink>.
+</PageHeader>
+
+<SkillPanel component="surface">
+  <SkillField label="Native basis">
+<SkillText>A block element; <code>::before</code> and <code>::after</code> are solid colors masked by a seamless tile, behind the element's content.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image" title="the tile cuts the ink out of a solid color"><code>mask-image</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-composite" title="emboss rims, neon tubes and the fade toward the horizon"><code>mask-composite</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" title="typed offsets and angles that interpolate"><code>@property</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/perspective" title="the plane tips into a floor, a ceiling or a wall"><code>perspective()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence" title="noise tiles without a seam"><code>feTurbulence</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="every motion stops"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.surface</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Styles (data-style)">
+<SkillGrid>
+    <Variant name="flat" description="The ink and the accent as they are (default)" />
+    <Variant name="emboss" description="Raised in the surface's own color: a lit rim toward the light, a shade away from it" />
+    <Variant name="deboss" description="Pressed in: the rims swapped" />
+    <Variant name="neon" description="The edges of every shape as a bright tube in the accent color, a halo around them, on a dark surface" />
+    <Variant name="paper" description="A warm sheet with a grain, the inks printed into it" />
+    <Variant name="outline" description="The edges of the shapes alone, as thin lines" />
+    <Variant name="glow" description="The shapes in a solid color with a soft halo around them" />
+    <Variant name="shadow" description="Solid shapes with a drop shadow away from the light" />
+    <Variant name="long-shadow" description="Solid shapes with a long flat shadow away from the light" />
+    <Variant name="extrude" description="Solid shapes with a short darker side - a block pressed out of the surface" />
+    <Variant name="stamp" description="A rubber stamp: the shapes in red ink that did not take everywhere" />
+    <Variant name="duotone" description="Two inks over a tinted sheet, the accent multiplied over the ink" />
+    <Variant name="risograph" description="Pink and blue plates a little off register on paper" />
+    <Variant name="blueprint" description="White lines on drafting blue over a fine grid" />
+    <Variant name="chalk" description="Chalk on a green board, rough at the edges" />
+    <Variant name="pencil" description="Graphite on paper, grainy" />
+    <Variant name="glass" description="Translucent shapes with a bright rim toward the light on a colored ground" />
+    <Variant name="metal" description="Brushed steel shapes with a bright rim, on dark" />
+    <Variant name="gold" description="Polished gold shapes with a bright rim, on dark" />
+    <Variant name="holographic" description="Shapes in a pastel rainbow foil with a bright rim" />
+    <Variant name="gradient" description="The shapes filled with a gradient of the chart colors" />
+    <Variant name="rainbow" description="The shapes filled with the whole hue circle" />
+    <Variant name="cutout" description="The surface inked, the shapes cut out of it" />
+    <Variant name="halftone" description="The shapes printed as a screen of dots" />
+    <Variant name="chromatic" description="The shapes in two color channels a little apart" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Motion (data-motion)">
+<SkillGrid>
+    <Variant name="drift" description="Slides two tiles per --surface-duration in --surface-direction, at any angle; on a receding plane toward you" />
+    <Variant name="parallax" description="The ink and the accent drift at different speeds" />
+    <Variant name="orbit" description="Circles one tile around its place" />
+    <Variant name="rotate" description="The plane turns slowly" />
+    <Variant name="counter" description="The ink and the accent turn in opposite directions" />
+    <Variant name="spin-zoom" description="Turns while it zooms in and out" />
+    <Variant name="sway" description="Rocks a few degrees back and forth" />
+    <Variant name="swing" description="Swings about its vertical axis in 3D" />
+    <Variant name="tilt" description="Nods about its horizontal axis in 3D" />
+    <Variant name="wobble" description="Skews gently from side to side" />
+    <Variant name="wave" description="Rises and falls with a slight skew" />
+    <Variant name="bounce" description="Hops half a tile" />
+    <Variant name="shake" description="A short tremor, then rest" />
+    <Variant name="glitch" description="Jumps sideways now and then" />
+    <Variant name="breathe" description="Grows a little and back" />
+    <Variant name="zoom" description="Zooms in and out" />
+    <Variant name="heartbeat" description="A double beat, then rest" />
+    <Variant name="pulse" description="The texture fades and returns" />
+    <Variant name="flicker" description="The irregular blink of a neon tube" />
+    <Variant name="blink" description="The accent switches on and off" />
+    <Variant name="twinkle" description="The accent glimmers" />
+    <Variant name="hue" description="Every color turns once round the hue circle" />
+    <Variant name="shimmer" description="A light band sweeps across the ink" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Projections (data-projection)">
+<SkillGrid>
+    <Variant name="flat" description="Facing you (default)" />
+    <Variant name="tilted" description="Tipped back, the far edge fading at the top" />
+    <Variant name="tilted-down" description="Tipped forward, the far edge at the bottom" />
+    <Variant name="tilted-left" description="Turned to the left" />
+    <Variant name="tilted-right" description="Turned to the right" />
+    <Variant name="floor" description="A floor running to a horizon" />
+    <Variant name="floor-low" description="A floor seen from low down" />
+    <Variant name="floor-high" description="A floor seen from above" />
+    <Variant name="ceiling" description="The floor mirrored overhead" />
+    <Variant name="ceiling-low" description="A low ceiling" />
+    <Variant name="wall" description="A wall receding to the right" />
+    <Variant name="wall-left" description="A wall receding to the left" />
+    <Variant name="corridor" description="Two walls meeting in the distance - the ink on the left, the accent on the right" />
+    <Variant name="horizon" description="A floor and a ceiling meeting in the distance - the ink below, the accent above" />
+    <Variant name="isometric" description="Turned 45° and foreshortened - the isometric view" />
+    <Variant name="isometric-left" description="The isometric view turned the other way" />
+    <Variant name="dimetric" description="The 2:1 view of pixel art" />
+    <Variant name="trimetric" description="An uneven axonometric view" />
+    <Variant name="planometric" description="Turned 45°, not foreshortened" />
+    <Variant name="cavalier" description="An oblique view at full depth" />
+    <Variant name="cabinet" description="An oblique view at half depth" />
+    <Variant name="banked" description="A floor tipped sideways" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillGrid>
+    <Variant name="background" description="Fills its parent behind the parent's content" />
+  </SkillGrid>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Graph paper" hint="An empty surface is a block of --surface-aspect (16 / 9); the default pattern is grid."
+<div class="surface" aria-hidden="true" style="border-radius: var(--radius)"></div>
+```
+
+```html example label="A note on ruled paper" hint="A surface with content keeps the texture behind it; paper warms the sheet and adds a grain."
+<section
+  class="surface"
+  data-pattern="ruled"
+  data-style="paper"
+  style="padding: 1.75rem; border-radius: var(--radius); --surface-size: 1.4rem; line-height: 1.75rem"
+>
+  <h3 style="margin: 0; font-size: 1rem; line-height: 1.75rem">Monday</h3>
+  <p style="margin: 0">Pick up the prints, call the framer, order hexagon tiles for the hall.</p>
+</section>
+```
+
+```html example label="Your own inks and size" hint="--surface-ink, --surface-accent, --surface-bg and --surface-size - any CSS color or token."
+<div
+  class="surface"
+  data-pattern="herringbone"
+  aria-hidden="true"
+  style="
+    --surface-size: 14px;
+    --surface-bg: #3b2a1e;
+    --surface-ink: #a0754f;
+    --surface-accent: #8a6142;
+    border-radius: var(--radius);
+  "
+></div>
+```
+
+```html example label="Twenty-eight tiles" hint="Every pattern in the default inks; the accent paints the second color where a pattern has one."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr))">
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="grid" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">grid</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="ruled" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">ruled</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="stripes" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">stripes</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="diagonal" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">diagonal</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="dots" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">dots</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="polka" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">polka</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="checker" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">checker</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="hex" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">hex</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="triangles" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">triangles</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="diamonds" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">diamonds</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="herringbone" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">herringbone</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="plaid" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">plaid</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="waves" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">waves</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="scales" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">scales</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="zigzag" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">zigzag</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="cross" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">cross</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="bricks" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">bricks</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="cubes" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">cubes</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="circuit" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">circuit</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="topography" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">topography</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="terrazzo" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">terrazzo</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="carbon" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">carbon</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="pixel" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">pixel</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="weave" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">weave</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="ornament" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">ornament</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="fibers" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">fibers</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="grain" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">grain</figcaption></figure
+  >
+  <figure class="m-0 grid gap-1"
+    ><div class="surface" data-pattern="grunge" aria-hidden="true" style="border-radius: var(--radius)"></div
+    ><figcaption class="text-xs text-muted-foreground">grunge</figcaption></figure
+  >
+</div>
+```
+
+```html example label="25 styles" hint="Every style on a tile it suits - each works with every pattern. Shadows, rims and bevels fall away from --surface-light-angle."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="flat"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="emboss"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">emboss</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="deboss"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">deboss</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="neon"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">neon</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="paper"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">paper</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="outline"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">outline</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cross"
+      data-style="glow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="shadow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shadow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cross"
+      data-style="long-shadow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">long-shadow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="triangles"
+      data-style="extrude"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">extrude</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-style="stamp"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">stamp</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="plaid"
+      data-style="duotone"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">duotone</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="polka"
+      data-style="risograph"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">risograph</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="circuit"
+      data-style="blueprint"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">blueprint</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="waves"
+      data-style="chalk"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">chalk</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="herringbone"
+      data-style="pencil"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">pencil</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="diamonds"
+      data-style="glass"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glass</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      data-style="metal"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">metal</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-style="gold"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">gold</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cubes"
+      data-style="holographic"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">holographic</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="gradient"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">gradient</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="zigzag"
+      data-style="rainbow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">rainbow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="cutout"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cutout</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-style="halftone"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">halftone</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="diagonal"
+      data-style="chromatic"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">chromatic</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Light, direction and rotation" hint="--surface-light-angle turns the light (the rims and shadows follow), --surface-direction sets where a drift runs, --surface-rotation turns the pattern in its plane."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      data-style="emboss"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-light-angle: 45deg; --surface-bevel: 2px"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">light from the upper right</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="long-shadow"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-light-angle: 270deg"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">light from below</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="diagonal"
+      data-motion="drift"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-direction: 270deg"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">drifting down</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="floor"
+      data-motion="drift"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-direction: 120deg"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">a floor drifting sideways</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="herringbone"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-rotation: 30deg"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">turned 30°</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="neon"
+      data-projection="tilted"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-rotation: 20deg"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted and turned 20°</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Behind a card" hint="The background variant fills the parent behind its content; the parent becomes the stacking context."
+<article class="card" style="max-width: 24rem; overflow: hidden">
+  <div
+    class="surface"
+    data-variant="background"
+    data-pattern="circuit"
+    data-style="neon"
+    data-motion="drift"
+    aria-hidden="true"
+  ></div>
+  <div class="card-header">
+    <p class="card-title" style="color: #fff">Edge cluster</p>
+    <p class="card-description" style="color: #d9d4ff">12 nodes - all healthy</p>
+  </div>
+  <div class="card-content">
+    <button class="btn" type="button">Open console</button>
+  </div>
+</article>
+```
+
+```html example label="22 projections" hint="The plane tips in 3D about a pivot and fades before its tiles get too small to draw; corridor and horizon put the ink on one plane and the accent on the other."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="flat"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="tilted"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="tilted-down"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted-down</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="tilted-left"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted-left</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="tilted-right"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted-right</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="floor"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">floor</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="floor-low"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">floor-low</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="floor-high"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">floor-high</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="ceiling"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ceiling</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="ceiling-low"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ceiling-low</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="wall"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wall</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="wall-left"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wall-left</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="corridor"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">corridor</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="horizon"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">horizon</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="isometric"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">isometric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="isometric-left"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">isometric-left</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="dimetric"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">dimetric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="trimetric"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">trimetric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="planometric"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">planometric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="cavalier"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cavalier</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="cabinet"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cabinet</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-projection="banked"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">banked</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="23 motions" hint="Every motion moves the plane (or its opacity) and loops by whole tiles or returns, so it never jumps; nothing is repainted while it runs. Reduced motion stops them all."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="diagonal"
+      data-motion="drift"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">drift</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="polka"
+      data-motion="parallax"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">parallax</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-motion="orbit"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">orbit</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="triangles"
+      data-motion="rotate"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">rotate</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="plaid"
+      data-motion="counter"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">counter</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="spin-zoom"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">spin-zoom</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="waves"
+      data-motion="sway"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">sway</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-motion="swing"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">swing</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      data-motion="tilt"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilt</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="herringbone"
+      data-motion="wobble"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wobble</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-motion="wave"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wave</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="shadow"
+      data-motion="bounce"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">bounce</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cross"
+      data-motion="shake"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shake</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="stripes"
+      data-style="chromatic"
+      data-motion="glitch"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glitch</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="ornament"
+      data-motion="breathe"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">breathe</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cubes"
+      data-motion="zoom"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">zoom</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="pixel"
+      data-motion="heartbeat"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">heartbeat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="polka"
+      data-motion="pulse"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">pulse</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="zigzag"
+      data-style="neon"
+      data-motion="flicker"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flicker</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-motion="blink"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">blink</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="neon"
+      data-motion="twinkle"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">twinkle</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="terrazzo"
+      data-style="gradient"
+      data-motion="hue"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">hue</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-style="emboss"
+      data-motion="shimmer"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shimmer</figcaption>
+  </figure>
+</div>
+```
+
+<SourceFiles component="surface" section="css" />
+
+</DocPage>

@@ -1,0 +1,744 @@
+---
+title: "Infinite Surfaces: 3D Materials"
+description: "Surfaces that look three-dimensional: 25 CSS styles - emboss, shadows, extrusions, metal, gold, glass, stamps, chalk, blueprint and more - and 28 materials lit per pixel on the GPU, from ceramic and chrome to wood, marble, ice, lava, gems and x-ray."
+slug: "surface-materials"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, DocLink, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="surface-materials" title="3D Materials" component="surface">
+  Depth without geometry. The <DocLink href="surface.html">Surface</DocLink> fakes relief with masks - rims and shadows are the tile moved toward or away from the light - and draws neon and outlines from the tile's own edges. The <DocLink href="shader.html">Shader</DocLink>'s <code>surface</code> effect builds a height field from each pattern's distance to its edges, takes its normals and lights it - so the light can follow the pointer, or <code>data-light</code> and <code>data-elevation</code> place it.
+</PageHeader>
+
+## Relief in CSS
+
+<DocText>25 styles, each with every tile. Emboss, deboss, shadow, long-shadow, extrude, glass, metal, gold and holographic fall away from <code>--surface-light-angle</code> (135deg, the upper left); <code>--surface-bevel</code>, <code>--surface-tube</code> and <code>--surface-glow</code> tune the rims.</DocText>
+
+```html example label="25 CSS styles" schema="none" hint="One tile per style - every style works with every pattern."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="flat"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      data-style="emboss"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-bg: #d6ccc2; --surface-size: 20px"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">emboss</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cross"
+      data-style="deboss"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-bg: #cdd7e1"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">deboss</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="neon"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-accent: #38e8ff"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">neon</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-style="paper"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">paper</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="outline"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">outline</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cross"
+      data-style="glow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="shadow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shadow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cross"
+      data-style="long-shadow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">long-shadow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="triangles"
+      data-style="extrude"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">extrude</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-style="stamp"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">stamp</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="plaid"
+      data-style="duotone"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">duotone</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="polka"
+      data-style="risograph"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">risograph</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="circuit"
+      data-style="blueprint"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">blueprint</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="waves"
+      data-style="chalk"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">chalk</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="herringbone"
+      data-style="pencil"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">pencil</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="diamonds"
+      data-style="glass"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glass</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      data-style="metal"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">metal</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-style="gold"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">gold</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cubes"
+      data-style="holographic"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">holographic</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="gradient"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">gradient</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="zigzag"
+      data-style="rainbow"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">rainbow</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="cutout"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cutout</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-style="halftone"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">halftone</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="diagonal"
+      data-style="chromatic"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">chromatic</figcaption>
+  </figure>
+</div>
+```
+
+## Lit per pixel
+
+<DocText>28 materials on the GPU: <b>bevel</b> (raised tiles, lit, over a darker grout (default)), <b>flat</b> (the colors as they are), <b>emboss</b> (one color, the relief alone draws the pattern), <b>neon</b> (tubes along the lines and around the shapes, a glow on black), <b>glass</b> (tiles that bend what lies behind them), <b>chrome</b> (a mirror of a studio), <b>ceramic</b> (glazed tiles in matte grout), <b>paper</b> (a matte sheet, the pattern pressed and printed in), <b>holo</b> (thin-film colors that turn with the view), <b>quilted</b> (padded cells with a stitched seam), <b>metal</b> (brushed steel, the grain along the tile), <b>gold</b> (a warm mirror), <b>copper</b> (a reddish mirror with a green patina in the grooves), <b>wood</b> (rings across each tile, every tile cut its own way), <b>marble</b> (polished stone with veins), <b>stone</b> (rough, matte and speckled), <b>rubber</b> (dark and soft), <b>plastic</b> (a clear color with a sharp white highlight), <b>velvet</b> (dark facing you, bright at the grazing edges), <b>ice</b> (cold, translucent and cracked), <b>lava</b> (dark rock over glowing grooves), <b>gem</b> (faceted, a deep color with flashes of the spectrum), <b>pearl</b> (soft white with a play of colors), <b>clay</b> (matte, the light wrapping round), <b>toon</b> (three tones and an ink outline), <b>glitter</b> (flecks that twinkle), <b>wireframe</b> (only the outlines and a fine mesh, on black), <b>xray</b> (the slopes bright and the flat dim, on black). The first color is the grout or the surface, the next the classes of shapes. Far away, where a tile is smaller than a pixel, every material fades into its own average color.</DocText>
+
+```html example label="28 materials" schema="none" hint="Move the pointer over a tile - the light follows it."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="bevel"
+      data-colors="#2b2d42 #8d99ae #ef233c #edf2f4"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">bevel</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="cubes"
+      data-material="flat"
+      data-colors="#22223b #f2e9e4 #9a8c98 #4a4e69"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="herringbone"
+      data-material="emboss"
+      data-colors="#e9edc9 #ccd5ae"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">emboss</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="neon"
+      data-colors="#07060d #ff3df0 #38e8ff"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">neon</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="diamonds"
+      data-material="glass"
+      data-colors="#0b1320 #7bdff2 #b2f7ef"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glass</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="bricks"
+      data-material="chrome"
+      data-colors="#111111 #9fb4c7 #c9d6df"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">chrome</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="ceramic"
+      data-colors="#f1faee #1d3557 #e63946"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ceramic</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="scales"
+      data-material="paper"
+      data-colors="#fefae0 #bc6c25 #dda15e"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">paper</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="triangles"
+      data-material="holo"
+      data-colors="#1b1b2f #e9e9ff #ffd6ff"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">holo</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="quilted"
+      data-colors="#3d2c2e #e5989b #ffcdb2"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">quilted</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="bricks"
+      data-material="metal"
+      data-colors="#1a1a1a #9aa5b1 #c4ccd4"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">metal</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="scales"
+      data-material="gold"
+      data-colors="#1c1408 #f2c14e #e0a83c"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">gold</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="copper"
+      data-colors="#1d2b26 #d9825b #b8673f"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">copper</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="herringbone"
+      data-material="wood"
+      data-colors="#2a1a0e #b07d4f #8a5a33"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wood</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="marble"
+      data-colors="#5a5a5a #f2f0ec #d8d2c8"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">marble</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stones"
+      data-material="stone"
+      data-colors="#3b3a36 #9c958a #b8b0a2"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">stone</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="circles"
+      data-material="rubber"
+      data-colors="#111111 #3a3a3a #e63946"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">rubber</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="octagons"
+      data-material="plastic"
+      data-colors="#f8f9fa #ff006e #3a86ff"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">plastic</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stars"
+      data-material="velvet"
+      data-colors="#14070d #7b1e3a #c9184a"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">velvet</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stones"
+      data-material="ice"
+      data-colors="#0b1d2c #cdeffd #a8dadc"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ice</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stones"
+      data-material="lava"
+      data-colors="#100808 #2b1d1a #3a2722"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">lava</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="diamonds"
+      data-material="gem"
+      data-colors="#05030a #6a0dad #0077b6"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">gem</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="scales"
+      data-material="pearl"
+      data-colors="#e9e4dd #f8f5f2 #efe7f5"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">pearl</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="crosses"
+      data-material="clay"
+      data-colors="#e7c8a0 #c96f4a #8a9a5b"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">clay</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="circles"
+      data-material="toon"
+      data-colors="#fffaf0 #ff6b6b #4ecdc4"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">toon</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="glitter"
+      data-colors="#120a1f #c77dff #ffd166"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glitter</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="cubes"
+      data-material="wireframe"
+      data-colors="#020611 #38e8ff #b14aed"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wireframe</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="bricks"
+      data-material="xray"
+      data-colors="#000000 #bde0fe #a2d2ff"
+      data-motion="none"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">xray</figcaption>
+  </figure>
+</div>
+```
+
+## Try a material
+
+<DocText>Every material, configurable: the arrows step through the materials (and start over at the end), the sliders set the light's direction and elevation, the bevel and the depth of the relief.</DocText>
+
+```html example label="A material, configurable" schema="none" hint="The controls are generated from the effect."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="material-lab"
+    data-effect="surface"
+    data-pattern="hex"
+    data-material="gold"
+    data-motion="none"
+    data-colors="#1c1408 #f2c14e #e0a83c"
+    data-interactive
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="material-lab" data-controls="options params colors speed actions"></div>
+</div>
+```
+
+## Cubes, an old illusion
+
+<DocText>Three rhombi in a hexagon, shaded light, middle and dark, read as a cube - the tumbling-blocks quilt. In CSS the left faces are the ink and the right faces the accent; on the GPU the faces are lit as three planes, and with the isometric projection the whole floor turns with them.</DocText>
+
+```html example label="Tumbling blocks" schema="none" hint="CSS on the left, the surface effect on the right."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr))">
+  <div
+    class="surface"
+    data-pattern="cubes"
+    aria-hidden="true"
+    style="
+      border-radius: var(--radius);
+      --surface-ink: #c08552;
+      --surface-accent: #5e3023;
+      --surface-bg: #f3e9dc;
+      --surface-size: 16px;
+    "
+  ></div>
+  <div
+    class="shader"
+    data-effect="surface"
+    data-pattern="cubes"
+    data-material="bevel"
+    data-motion="none"
+    data-colors="#1b1b1b #f3e9dc #c08552 #5e3023"
+    data-scale="6"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-material" description="bevel, flat, emboss, neon, glass, chrome, ceramic, paper, holo, quilted, metal, gold, copper, wood, marble, stone, rubber, plastic, velvet, ice, lava, gem, pearl, clay, toon, glitter, wireframe, xray" />
+  <Variant name="data-light" description="Where the light comes from, in degrees around the view (135 - the upper left)" />
+  <Variant name="data-elevation" description="How high the light stands over the surface, in degrees (45)" />
+  <Variant name="data-bevel" description="The width of the slope at each edge (0.5)" />
+  <Variant name="data-depth" description="How steep the relief is (1)" />
+  <Variant name="data-glow" description="The neon and lava glow (1)" />
+  <Variant name="data-line" description="The grout or line width, in tiles (0.06)" />
+  <Variant name="--surface-light-angle" description="Where the CSS light comes from (135deg)" />
+</SkillGrid>
+
+<SourceFiles component="surface" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="Shader JS" />
+
+</DocPage>

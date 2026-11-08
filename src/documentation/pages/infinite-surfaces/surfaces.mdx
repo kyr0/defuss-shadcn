@@ -1,0 +1,527 @@
+---
+title: "Infinite Surfaces"
+description: "Infinite Surfaces in defuss-shadcn: seamless repeating textures as a combination of pattern, material, projection and motion - in CSS with the Surface component, or lit and in 3D with the Shader's surface effect - and a Pattern Lab to try every combination."
+slug: "surfaces"
+---
+
+import { DocPage, PageHeader, DocText, DocLink, TableCard } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="surfaces" title="Infinite Surfaces" introStyle="max-width:42rem;">
+  A surface that never ends: a tile that repeats without a seam, in any material, laid flat or running to a horizon, still or moving. Every surface here is a combination of four words - a <b>pattern</b>, a <b>material</b>, a <b>projection</b> and a <b>motion</b> - drawn by one of two backends: the <DocLink href="surface.html">Surface</DocLink> component in CSS alone, or the <DocLink href="shader.html">Shader</DocLink>'s <code>surface</code> effect on the GPU. The catalog is grouped by what you need: <DocLink href="surface-patterns.html">classic patterns</DocLink>, <DocLink href="surface-motion.html">animated tiles</DocLink> and <DocLink href="surface-materials.html">3D materials</DocLink>.
+</PageHeader>
+
+## Pattern Lab
+
+<DocText>Pick a backend, then a pattern, a material, a projection and a motion; the preview and its markup follow. The arrows beside a list step through it and start over at its end. Light and elevation place the light (the CSS backend turns them into the direction and the width of its rims and shadows), speed sets the pace (0 stands still), direction where a drift runs and rotation turns the pattern in its plane. The CSS backend offers the Surface's 28 tiles, 25 styles, 22 projections and 23 motions; the shader backend the surface effect's 26 patterns, 28 materials, 13 projections and 24 motions. "Surprise me" draws a random combination.</DocText>
+
+```html example label="Every combination" schema="none" hint="Change a control - the surface and its markup change with it. The arrows beside a list step through it and start over at its end. Move the pointer over a shader surface to move its light."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <form id="lab" class="shader-controls" aria-label="Surface controls">
+    <div class="shader-controls-field">
+      <label class="label" for="lab-backend">Backend</label>
+      <div class="shader-controls-cycle" role="group" aria-label="Backend">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="-1"
+          aria-label="Previous backend"
+        >
+          <i data-lucide="chevron-left" aria-hidden="true"></i>
+        </button>
+        <select class="select" id="lab-backend">
+          <option value="shader" selected>Shader - the surface effect</option>
+          <option value="css">CSS - the Surface component</option>
+        </select>
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="1"
+          aria-label="Next backend"
+        >
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="shader-controls-field">
+      <label class="label" for="lab-pattern">Pattern</label>
+      <div class="shader-controls-cycle" role="group" aria-label="Pattern">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="-1"
+          aria-label="Previous pattern"
+        >
+          <i data-lucide="chevron-left" aria-hidden="true"></i>
+        </button>
+        <select class="select" id="lab-pattern"></select>
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="1"
+          aria-label="Next pattern"
+        >
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="shader-controls-field">
+      <label class="label" for="lab-material">Material</label>
+      <div class="shader-controls-cycle" role="group" aria-label="Material">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="-1"
+          aria-label="Previous material"
+        >
+          <i data-lucide="chevron-left" aria-hidden="true"></i>
+        </button>
+        <select class="select" id="lab-material"></select>
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="1"
+          aria-label="Next material"
+        >
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="shader-controls-field">
+      <label class="label" for="lab-projection">Projection</label>
+      <div class="shader-controls-cycle" role="group" aria-label="Projection">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="-1"
+          aria-label="Previous projection"
+        >
+          <i data-lucide="chevron-left" aria-hidden="true"></i>
+        </button>
+        <select class="select" id="lab-projection"></select>
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="1"
+          aria-label="Next projection"
+        >
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="shader-controls-field">
+      <label class="label" for="lab-motion">Motion</label>
+      <div class="shader-controls-cycle" role="group" aria-label="Motion">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="-1"
+          aria-label="Previous motion"
+        >
+          <i data-lucide="chevron-left" aria-hidden="true"></i>
+        </button>
+        <select class="select" id="lab-motion"></select>
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="1"
+          aria-label="Next motion"
+        >
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head">
+        <label class="label" for="lab-scale">Scale</label>
+        <output class="slider-value" for="lab-scale">8</output>
+      </div>
+      <input class="slider" type="range" id="lab-scale" min="2" max="20" step="1" value="8" />
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head">
+        <label class="label" for="lab-light">Light</label>
+        <output class="slider-value" for="lab-light">135°</output>
+      </div>
+      <input
+        class="slider"
+        type="range"
+        id="lab-light"
+        min="0"
+        max="360"
+        step="5"
+        value="135"
+        data-unit="degree"
+        data-unit-display="narrow"
+      />
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head">
+        <label class="label" for="lab-elevation">Elevation</label>
+        <output class="slider-value" for="lab-elevation">45°</output>
+      </div>
+      <input
+        class="slider"
+        type="range"
+        id="lab-elevation"
+        min="5"
+        max="85"
+        step="1"
+        value="45"
+        data-unit="degree"
+        data-unit-display="narrow"
+      />
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head">
+        <label class="label" for="lab-speed">Speed</label>
+        <output class="slider-value" for="lab-speed">1</output>
+      </div>
+      <input class="slider" type="range" id="lab-speed" min="0" max="3" step="0.05" value="1" />
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head">
+        <label class="label" for="lab-direction">Direction</label>
+        <output class="slider-value" for="lab-direction">30°</output>
+      </div>
+      <input
+        class="slider"
+        type="range"
+        id="lab-direction"
+        min="0"
+        max="360"
+        step="5"
+        value="30"
+        data-unit="degree"
+        data-unit-display="narrow"
+      />
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head">
+        <label class="label" for="lab-rotation">Rotation</label>
+        <output class="slider-value" for="lab-rotation">0°</output>
+      </div>
+      <input
+        class="slider"
+        type="range"
+        id="lab-rotation"
+        min="0"
+        max="360"
+        step="5"
+        value="0"
+        data-unit="degree"
+        data-unit-display="narrow"
+      />
+    </div>
+    <div class="shader-controls-field">
+      <span class="label" id="lab-colors-label">Colors - surface, ink, accent</span>
+      <div class="shader-controls-colors" role="group" aria-labelledby="lab-colors-label">
+        <input type="color" id="lab-c0" value="#dfe7ef" aria-label="Surface color" />
+        <input type="color" id="lab-c1" value="#2a9d8f" aria-label="Ink color" />
+        <input type="color" id="lab-c2" value="#e9c46a" aria-label="Accent color" />
+      </div>
+    </div>
+    <button class="btn" type="button" id="lab-random" data-variant="outline">Surprise me</button>
+  </form>
+  <div class="grid gap-3" style="align-content: start">
+    <div
+      class="shader"
+      id="lab-shader"
+      data-effect="surface"
+      data-pattern="cubes"
+      data-material="ceramic"
+      data-projection="floor"
+      data-motion="drift"
+      data-colors="#dfe7ef #2a9d8f #e9c46a"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <div
+      class="surface"
+      id="lab-css"
+      data-pattern="hex"
+      hidden
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <pre
+      id="lab-code"
+      class="m-0 overflow-x-auto"
+      style="padding: 0.75rem 1rem; border-radius: var(--radius); background: var(--muted); font: 0.75rem/1.5 var(--font-mono)"
+    ></pre>
+  </div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const CSS = {
+      pattern: [
+        'grid',
+        'stripes',
+        'diagonal',
+        'dots',
+        'polka',
+        'checker',
+        'ruled',
+        'hex',
+        'triangles',
+        'diamonds',
+        'herringbone',
+        'plaid',
+        'waves',
+        'scales',
+        'zigzag',
+        'cross',
+        'bricks',
+        'cubes',
+        'circuit',
+        'topography',
+        'terrazzo',
+        'carbon',
+        'pixel',
+        'weave',
+        'ornament',
+        'fibers',
+        'grain',
+        'grunge',
+      ],
+      material: [
+        'flat',
+        'emboss',
+        'deboss',
+        'neon',
+        'paper',
+        'outline',
+        'glow',
+        'shadow',
+        'long-shadow',
+        'extrude',
+        'stamp',
+        'duotone',
+        'risograph',
+        'blueprint',
+        'chalk',
+        'pencil',
+        'glass',
+        'metal',
+        'gold',
+        'holographic',
+        'gradient',
+        'rainbow',
+        'cutout',
+        'halftone',
+        'chromatic',
+      ],
+      projection: [
+        'flat',
+        'tilted',
+        'tilted-down',
+        'tilted-left',
+        'tilted-right',
+        'floor',
+        'floor-low',
+        'floor-high',
+        'ceiling',
+        'ceiling-low',
+        'wall',
+        'wall-left',
+        'corridor',
+        'horizon',
+        'isometric',
+        'isometric-left',
+        'dimetric',
+        'trimetric',
+        'planometric',
+        'cavalier',
+        'cabinet',
+        'banked',
+      ],
+      motion: [
+        'none',
+        'drift',
+        'pulse',
+        'breathe',
+        'zoom',
+        'shimmer',
+        'flicker',
+        'blink',
+        'rotate',
+        'sway',
+        'swing',
+        'wobble',
+        'wave',
+        'bounce',
+        'shake',
+        'orbit',
+        'parallax',
+        'counter',
+        'hue',
+        'glitch',
+        'tilt',
+        'twinkle',
+        'heartbeat',
+        'spin-zoom',
+      ],
+    };
+    const SHADER = df$.shadcn.shader.options('surface');
+    const keys = ['pattern', 'material', 'projection', 'motion'];
+    const shader = df$('#lab-shader');
+    const surface = df$('#lab-css');
+    const pick = (words) => words[Math.floor(Math.random() * words.length)];
+    const value = (id) => df$(`#lab-${id}`).val();
+    const fill = (key, words, keep) => {
+      const select = df$(`#lab-${key}`);
+      select.html(words.map((w) => `<option value="${w}">${w}</option>`).join(''));
+      select.val(words.includes(keep) ? keep : words[0]);
+    };
+    const backend = () => value('backend');
+    const lists = () => (backend() === 'css' ? CSS : SHADER);
+    const fillAll = (values) => keys.forEach((k) => fill(k, lists()[k], values[k]));
+    const render = () => {
+      const v = Object.fromEntries(keys.map((k) => [k, value(k)]));
+      const [scale, light, elevation, speed, direction, rotation] = [
+        'scale',
+        'light',
+        'elevation',
+        'speed',
+        'direction',
+        'rotation',
+      ].map((k) => Number(value(k)));
+      const [c0, c1, c2] = ['c0', 'c1', 'c2'].map(value);
+      let markup;
+      if (backend() === 'css') {
+        const attrs = { 'data-pattern': v.pattern, 'data-style': v.material, 'data-projection': v.projection };
+        // a speed of 0 stands still; the light's elevation sets how wide the rims and shadows are
+        if (speed > 0 && v.motion !== 'none') attrs['data-motion'] = v.motion;
+        if (!attrs['data-motion']) surface.get(0).removeAttribute('data-motion');
+        Object.entries(attrs).forEach(([a, w]) => surface.attr(a, w));
+        const style = [
+          `--surface-size: ${scale * 3}px`,
+          `--surface-bg: ${c0}`,
+          `--surface-ink: ${c1}`,
+          `--surface-accent: ${c2}`,
+          `--surface-light-angle: ${light}deg`,
+          `--surface-bevel: ${(0.5 + 2.5 * Math.cos((elevation * Math.PI) / 180)).toFixed(2)}px`,
+          `--surface-duration: ${speed > 0 ? (12 / speed).toFixed(2) : 12}s`,
+          `--surface-direction: ${direction}deg`,
+          `--surface-rotation: ${rotation}deg`,
+        ].join('; ');
+        surface.attr('style', `border-radius: var(--radius); ${style}`);
+        markup = `<div class="surface"\n  ${Object.entries(attrs)
+          .map(([a, w]) => `${a}="${w}"`)
+          .join('\n  ')}\n  style="${style}"\n  aria-hidden="true"></div>`;
+      } else {
+        const attrs = {
+          'data-effect': 'surface',
+          'data-pattern': v.pattern,
+          'data-material': v.material,
+          'data-projection': v.projection,
+          'data-motion': v.motion === 'none' ? 'none' : v.motion,
+          'data-scale': String(scale),
+          'data-light': String(light),
+          'data-elevation': String(elevation),
+          'data-speed': String(speed),
+          'data-direction': String(direction),
+          'data-rotation': String(rotation),
+          'data-colors': `${c0} ${c1} ${c2}`,
+        };
+        Object.entries(attrs).forEach(([a, w]) => shader.attr(a, w));
+        markup = `<div class="shader"\n  ${Object.entries(attrs)
+          .map(([a, w]) => `${a}="${w}"`)
+          .join('\n  ')}\n  data-interactive\n  aria-hidden="true"></div>`;
+      }
+      shader.prop('hidden', backend() === 'css');
+      surface.prop('hidden', backend() !== 'css');
+      df$('#lab-code').text(markup);
+    };
+    const changeBackend = () => {
+      fillAll(Object.fromEntries(keys.map((k) => [k, value(k)])));
+      render();
+    };
+    // previous / next: the list beside the button, starting over at either end
+    df$('#lab').on('click', (e) => {
+      const button = e.target.closest('[data-step]');
+      if (!button) return;
+      const select = df$(button).parent().find('select').get(0);
+      const n = select.options.length;
+      select.selectedIndex = (select.selectedIndex + Number(button.dataset.step) + n) % n;
+      if (select.id === 'lab-backend') changeBackend();
+      else render();
+    });
+    df$('#lab-backend').on('change', changeBackend);
+    df$('#lab').on('input', render);
+    df$('#lab').on('change', render);
+    df$('#lab-random').on('click', () => {
+      keys.forEach((k) => df$(`#lab-${k}`).val(pick(lists()[k])));
+      df$('#lab-scale').val(String(4 + Math.floor(Math.random() * 10)));
+      df$('#lab-light').val(String(Math.floor(Math.random() * 72) * 5));
+      df$('#lab-rotation').val(String(Math.random() < 0.6 ? 0 : Math.floor(Math.random() * 72) * 5));
+      render();
+    });
+    fillAll({ pattern: 'cubes', material: 'ceramic', projection: 'floor', motion: 'drift' });
+    render();
+  });
+</script>
+```
+
+## Four words
+
+<DocText>A pattern says what repeats, a material how it is lit, a projection on which plane it lies and a motion how it moves. Each is a <code>data-*</code> attribute, so a surface is plain markup an agent can write and a person can read. The words are the same in both backends where both can draw them; the shader adds what needs light and depth per pixel.</DocText>
+
+```mermaid label="A surface" caption="Fig 1. A surface is four independent choices, drawn by CSS or by the GPU."
+flowchart LR
+    P["pattern<br/>hex, bricks, circuit ..."] --> S(("surface"))
+    M["material<br/>flat, emboss, neon, glass, gold ..."] --> S
+    J["projection<br/>flat, floor, wall, tunnel, dome ..."] --> S
+    O["motion<br/>drift, orbit, rain, glitch ..."] --> S
+    S --> C["CSS: .surface<br/>masks and transforms"]
+    S --> G["GPU: .shader data-effect=surface<br/>one fragment pass"]
+```
+
+<TableCard title="the two backends" rows={[
+  ["","CSS - .surface","GPU - .shader data-effect=\"surface\""],
+  ["Patterns","28 tiles (SVG and gradient masks)","26 procedural patterns"],
+  ["Materials","25 styles - emboss, shadows, extrusions, neon, glass, metal, gold, stamp, chalk, blueprint, risograph ...","28 materials lit per pixel - bevel, ceramic, chrome, glass, wood, marble, ice, lava, gem, pearl, toon, x-ray ..."],
+  ["Projections","22 - floors, ceilings, walls, tilts, corridor, horizon, isometric, dimetric, cavalier, cabinet ...","13 - floor, ceiling, wall, hallway, corridor, tunnel, column, dome, sphere, cube, isometric ..."],
+  ["Motion","23 - drift, orbit, rotate, sway, swing, wave, bounce, glitch, breathe, heartbeat, hue ...","24 - drift, ripple, warp, mutate, zoom, spiral, swirl, rain, cascade, flip, spin, sparkle, scan ..."],
+  ["Light","--surface-light-angle: rims and shadows fall away from it","data-light + data-elevation, or the pointer"],
+  ["Direction and rotation","--surface-direction, --surface-rotation","data-direction, data-rotation"],
+  ["Cost","a paint when still; a motion moves a transform - no repaint","one fragment pass per frame while in view; the far plane is only its average"],
+  ["Without script","renders","the CSS poster"],
+  ["Bundle","all.css","shaders.css + shaders.js"],
+]} />
+
+## Seamless by construction
+
+<DocText>A seam appears where a tile's right edge does not continue its left edge. The CSS tiles are drawn so that every shape crossing an edge is drawn again on the opposite side, and the noise tiles use <code>stitchTiles="stitch"</code>. The shader never repeats a tile at all: it evaluates the pattern at every point of an endless plane with <code>fract()</code> and integer cell ids. Where the plane wraps around a tunnel or a ball, the cell ids are taken modulo the number of tiles around it and the noise uses a lattice with the same period, so the last tile meets the first. Motions loop by whole tiles or return to where they started.</DocText>
+
+## Mutation, subtle by default
+
+<DocText>Four kinds of change, from quiet to loud. <b>Cosmetic</b>: <code>data-variation</code> (0.15) jitters each cell's lightness and the share of second-color cells. <b>Geometric</b>: <code>pulse</code> and <code>warp</code> move the edges. <b>Structural</b>: <code>mutate</code> re-rolls cells one by one - truchet arcs turn, maze walls flip, circuit traces rewire, and because an edge belongs to both cells it joins, traces always meet. <b>Interactive</b>: with <code>data-interactive</code> the pointer moves the light and centers the ripple.</DocText>
+
+## Performance
+
+<DocText>CSS first: a still Surface costs a paint and nothing after; a moving one moves a transform, an opacity or a filter, which the compositor runs without repainting (a drift on a receding plane and shimmer repaint per frame). Shaders draw only near the viewport, stop when the tab hides and hold one still frame under reduced motion; <code>data-quality="low"</code> renders at half a pixel per CSS pixel, the default caps the device pixel ratio at 1.5 and a pixel budget, and late frames lower the resolution further. <code>data-fps="30"</code> halves the work of a quiet background. Without WebGL2 a shader shows its CSS poster - for a surface, a Surface behind it is a good fallback.</DocText>
+
+</DocPage>

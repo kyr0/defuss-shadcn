@@ -1,0 +1,784 @@
+---
+title: "Infinite Surfaces: Animated Tiles"
+description: "Seamless tiles that move: 23 CSS motions and 24 on the GPU - drift, orbit, spin, sway, wave, glitch, digital rain and more - each loop seamless, configurable in speed, direction and colors, and still under reduced motion."
+slug: "surface-motion"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, DocLink, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="surface-motion" title="Animated Tiles" component="surface">
+  A moving pattern looks endless only when its loop has no seam. Every CSS motion of the <DocLink href="surface.html">Surface</DocLink> moves its plane by whole tiles or returns to where it started; the <DocLink href="shader.html">Shader</DocLink>'s <code>surface</code> effect moves an endless plane, so any distance works. Both stop under <code>prefers-reduced-motion</code>.
+</PageHeader>
+
+## In CSS
+
+<DocText>23 motions. They move the plane with a transform - or its opacity, or a filter - so a running motion repaints nothing; a receding plane drifts by moving its tile, so its fade toward the horizon stays where it is. <code>--surface-duration</code> sets the loop (12s), <code>--surface-direction</code> where a drift runs (30deg, counterclockwise from the right; on a floor, a ceiling or a wall the default runs toward you).</DocText>
+
+```html example label="23 CSS motions" schema="none" hint="Each loop is seamless - watch one for a while."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="drift"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">drift</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="polka"
+      data-motion="parallax"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">parallax</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="orbit"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">orbit</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="rotate"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">rotate</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="plaid"
+      data-motion="counter"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">counter</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="spin-zoom"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">spin-zoom</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="sway"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">sway</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="swing"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">swing</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="tilt"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilt</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="wobble"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wobble</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="wave"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wave</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="shadow"
+      data-motion="bounce"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">bounce</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cross"
+      data-motion="shake"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shake</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="stripes"
+      data-style="chromatic"
+      data-motion="glitch"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glitch</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="breathe"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">breathe</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="zoom"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">zoom</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="pixel"
+      data-motion="heartbeat"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">heartbeat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-motion="pulse"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">pulse</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="zigzag"
+      data-style="neon"
+      data-motion="flicker"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flicker</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="neon"
+      data-motion="blink"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">blink</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="hex"
+      data-style="neon"
+      data-motion="twinkle"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">twinkle</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="terrazzo"
+      data-style="gradient"
+      data-motion="hue"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">hue</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      data-style="emboss"
+      data-motion="shimmer"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shimmer</figcaption>
+  </figure>
+</div>
+```
+
+## Configure a CSS motion
+
+<DocText>A motion is an attribute and three custom properties: speed is the loop's duration, direction the drift's angle, and the colors are the surface, the ink and the accent. The arrows step through a list and start over at its end.</DocText>
+
+```html example label="A motion, configurable" schema="none" hint="Step through the motions with the arrows; speed, direction and colors follow at once."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <form class="shader-controls" id="mp" aria-label="Motion controls">
+    <div class="shader-controls-field">
+      <label class="label" for="mp-motion">Motion</label>
+      <div class="shader-controls-cycle" role="group" aria-label="Motion">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="-1"
+          aria-label="Previous motion"
+          ><i data-lucide="chevron-left" aria-hidden="true"></i
+        ></button>
+        <select class="select" id="mp-motion"
+          ><option selected>drift</option
+          ><option>parallax</option
+          ><option>orbit</option
+          ><option>rotate</option
+          ><option>counter</option
+          ><option>spin-zoom</option
+          ><option>sway</option
+          ><option>swing</option
+          ><option>tilt</option
+          ><option>wobble</option
+          ><option>wave</option
+          ><option>bounce</option
+          ><option>shake</option
+          ><option>glitch</option
+          ><option>breathe</option
+          ><option>zoom</option
+          ><option>heartbeat</option
+          ><option>pulse</option
+          ><option>flicker</option
+          ><option>blink</option
+          ><option>twinkle</option
+          ><option>hue</option
+          ><option>shimmer</option></select
+        >
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="1"
+          aria-label="Next motion"
+          ><i data-lucide="chevron-right" aria-hidden="true"></i
+        ></button>
+      </div>
+    </div>
+    <div class="shader-controls-field">
+      <label class="label" for="mp-pattern">Pattern</label>
+      <div class="shader-controls-cycle" role="group" aria-label="Pattern">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="-1"
+          aria-label="Previous pattern"
+          ><i data-lucide="chevron-left" aria-hidden="true"></i
+        ></button>
+        <select class="select" id="mp-pattern"
+          ><option>grid</option
+          ><option>hex</option
+          ><option>dots</option
+          ><option>diagonal</option
+          ><option>checker</option
+          ><option>bricks</option
+          ><option>circuit</option
+          ><option>cubes</option
+          ><option>scales</option
+          ><option>zigzag</option></select
+        >
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          data-size="icon-sm"
+          data-step="1"
+          aria-label="Next pattern"
+          ><i data-lucide="chevron-right" aria-hidden="true"></i
+        ></button>
+      </div>
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head"
+        ><label class="label" for="mp-speed">Speed</label><output class="slider-value" for="mp-speed">1</output></div
+      >
+      <input class="slider" type="range" id="mp-speed" min="0.25" max="4" step="0.25" value="1" />
+    </div>
+    <div class="shader-controls-field">
+      <div class="shader-controls-head"
+        ><label class="label" for="mp-direction">Direction</label
+        ><output class="slider-value" for="mp-direction">30°</output></div
+      >
+      <input
+        class="slider"
+        type="range"
+        id="mp-direction"
+        min="0"
+        max="360"
+        step="15"
+        value="30"
+        data-unit="degree"
+        data-unit-display="narrow"
+      />
+    </div>
+    <div class="shader-controls-field">
+      <span class="label" id="mp-colors-label">Colors - surface, ink, accent</span>
+      <div class="shader-controls-colors" role="group" aria-labelledby="mp-colors-label">
+        <input type="color" id="mp-c0" value="#14213d" aria-label="Surface color" />
+        <input type="color" id="mp-c1" value="#fca311" aria-label="Ink color" />
+        <input type="color" id="mp-c2" value="#e5e5e5" aria-label="Accent color" />
+      </div>
+    </div>
+  </form>
+  <div
+    class="surface"
+    id="mp-surface"
+    data-pattern="grid"
+    data-motion="drift"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const surface = df$('#mp-surface');
+    const value = (id) => df$(`#mp-${id}`).val();
+    const render = () => {
+      surface.attr('data-motion', value('motion'));
+      surface.attr('data-pattern', value('pattern'));
+      surface.attr(
+        'style',
+        `border-radius: var(--radius); --surface-duration: ${(12 / Number(value('speed'))).toFixed(2)}s; --surface-direction: ${value('direction')}deg; --surface-bg: ${value('c0')}; --surface-ink: ${value('c1')}; --surface-accent: ${value('c2')}`,
+      );
+    };
+    df$('#mp').on('click', (e) => {
+      const button = e.target.closest('[data-step]');
+      if (!button) return;
+      const select = df$(button).parent().find('select').get(0);
+      const n = select.options.length;
+      select.selectedIndex = (select.selectedIndex + Number(button.dataset.step) + n) % n;
+      render();
+    });
+    df$('#mp').on('input', render);
+    df$('#mp').on('change', render);
+    render();
+  });
+</script>
+```
+
+## On the GPU
+
+<DocText>The surface effect moves the plane itself - 24 motions: <b>drift</b> (slides the plane in data-direction (default); on a floor, in a corridor or a tunnel the camera moves on), <b>none</b> (stands still), <b>pulse</b> (a wave of growing and shrinking shapes), <b>shimmer</b> (a highlight sweeps across), <b>ripple</b> (rings from the pointer), <b>rotate</b> (the view turns), <b>warp</b> (the plane bends like heat haze), <b>mutate</b> (the cells re-roll one by one), <b>orbit</b> (the view circles), <b>zoom</b> (zooms in and out), <b>spiral</b> (turns faster further out), <b>wave</b> (a wave runs across, lit like cloth), <b>breathe</b> (grows a little and back), <b>swirl</b> (a vortex winds and unwinds), <b>rain</b> (a head falls down each column, a fading trail behind it - with glyphs, digital rain), <b>cascade</b> (the cells rise and sink in a diagonal wave), <b>flip</b> (every cell turns over now and then), <b>spin</b> (every cell turns on its own), <b>sparkle</b> (glints flash here and there), <b>cycle</b> (the colors run through the palette), <b>glitch</b> (bands jump sideways in bursts), <b>scan</b> (a bright line runs down the picture), <b>domino</b> (the cells change color in a wave), <b>shake</b> (a short tremor now and then).</DocText>
+
+```html example label="24 shader motions" schema="none" hint="Move the pointer over ripple - the rings start where it is."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="bevel"
+      data-motion="drift"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">drift</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="ceramic"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">none</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="dots"
+      data-material="ceramic"
+      data-motion="pulse"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">pulse</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="diamonds"
+      data-material="chrome"
+      data-motion="shimmer"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shimmer</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="glass"
+      data-motion="ripple"
+      data-interactive
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ripple</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="triangles"
+      data-material="bevel"
+      data-motion="rotate"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">rotate</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="grid"
+      data-material="neon"
+      data-motion="warp"
+      data-colors="#08060f #ff3df0 #38e8ff"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">warp</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="truchet"
+      data-material="bevel"
+      data-motion="mutate"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">mutate</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="cubes"
+      data-material="flat"
+      data-motion="orbit"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">orbit</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="octagons"
+      data-material="plastic"
+      data-motion="zoom"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">zoom</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stars"
+      data-material="flat"
+      data-motion="spiral"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">spiral</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="weave"
+      data-material="velvet"
+      data-motion="wave"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wave</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="circles"
+      data-material="pearl"
+      data-motion="breathe"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">breathe</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="crosses"
+      data-material="clay"
+      data-motion="swirl"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">swirl</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="glyphs"
+      data-material="flat"
+      data-motion="rain"
+      data-colors="#020a04 #1fd65c #b9ffcb"
+      data-scale="14"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">rain</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="toon"
+      data-motion="cascade"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cascade</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="plastic"
+      data-motion="flip"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flip</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="crosses"
+      data-material="bevel"
+      data-motion="spin"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">spin</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stones"
+      data-material="gem"
+      data-motion="sparkle"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">sparkle</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="flat"
+      data-motion="cycle"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cycle</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="bricks"
+      data-material="neon"
+      data-motion="glitch"
+      data-colors="#05010a #ff2e63 #08d9d6"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glitch</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="lattice"
+      data-material="wireframe"
+      data-motion="scan"
+      data-colors="#020611 #38e8ff #b14aed"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">scan</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="bevel"
+      data-motion="domino"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">domino</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stones"
+      data-material="stone"
+      data-motion="shake"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">shake</figcaption>
+  </figure>
+</div>
+```
+
+## Digital rain
+
+<DocText>The glyphs pattern with the rain motion: every column has its own speed, a bright head falls down it, the trail fades behind, and the glyphs change as the head passes. Everything is configurable beside it - the pattern, the material, the motion, the scale, the light, the speed, the direction of a drift and the colors (the background, the trail, the head).</DocText>
+
+```html example label="Matrix" schema="none" hint="The controls are generated from the effect; the arrows step through a list."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="matrix-rain"
+    data-effect="surface"
+    data-pattern="glyphs"
+    data-material="flat"
+    data-motion="rain"
+    data-scale="14"
+    data-colors="#020a04 #1fd65c #b9ffcb"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="matrix-rain" data-controls="options params colors speed actions"></div>
+</div>
+```
+
+## Structural mutation
+
+<DocText>With <code>mutate</code> every cell keeps its own beat and re-rolls when it comes: truchet arcs turn, maze walls flip, circuit traces rewire, a dot changes its color. Because an edge of the circuit belongs to both cells it joins, a rewired trace still meets its neighbors. Slow it down with <code>data-speed</code> for a living background that never draws attention.</DocText>
+
+```html example label="A circuit that rewires" schema="none" hint="Every cell re-rolls on its own beat."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="circuit-rewire"
+    data-effect="surface"
+    data-pattern="circuit"
+    data-material="neon"
+    data-motion="mutate"
+    data-colors="#04110b #36f1a1 #f9f871"
+    data-scale="12"
+    data-speed="1.5"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div
+    class="shader-controls"
+    data-shader-for="circuit-rewire"
+    data-controls="options params colors speed actions"
+  ></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-speed" description="The clock rate of every shader motion (1)" />
+  <Variant name="data-direction" description="Where a shader drift runs, in degrees (30)" />
+  <Variant name="data-variation" description="Per-cell lightness jitter and the share of second-color cells (0.15)" />
+  <Variant name="data-seed" description="Another arrangement of the same pattern (0)" />
+  <Variant name="--surface-duration" description="One loop of a CSS motion (12s)" />
+  <Variant name="--surface-direction" description="Where a CSS drift runs (30deg)" />
+</SkillGrid>
+
+<SourceFiles component="surface" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="Shader JS" />
+
+</DocPage>

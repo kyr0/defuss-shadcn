@@ -1,0 +1,649 @@
+---
+title: "Infinite Surfaces: Classic Patterns"
+description: "Classic repeating patterns as seamless tiles: paper, geometry, textiles and floors, ornament, materials and nature, and the endless procedural patterns of the surface shader."
+slug: "surface-patterns"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, DocLink, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="surface-patterns" title="Classic Patterns" component="surface">
+  The flat patterns every interface reaches for, as seamless CSS tiles of the <DocLink href="surface.html">Surface</DocLink> - cheap, crisp at any size, colored by the theme. A tile repeats by construction; where a pattern should never repeat at all, the <DocLink href="shader.html">Shader</DocLink>'s <code>surface</code> effect computes it per cell.
+</PageHeader>
+
+## Paper
+
+<DocText>Graph, ruled and dot-grid paper - the quiet backgrounds of notes, editors and dashboards. <code>--surface-size</code> sets the unit; graph paper draws a strong line every fifth.</DocText>
+
+```html example label="Three papers" schema="none" hint="grid, ruled and dots on the paper style."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grid"
+      data-style="paper"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">grid</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="ruled"
+      data-style="paper"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ruled</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="dots"
+      data-style="paper"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-size: 16px"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">dots</figcaption>
+  </figure>
+</div>
+```
+
+## Geometry
+
+<DocText>Lines, cells and lattices. Each tile is drawn so that a shape crossing an edge appears again on the opposite side - the repeat has no seam at any size.</DocText>
+
+```html example label="Lines, cells and lattices" schema="none" hint="stripes, diagonal, checker, triangles, diamonds, hex, cross, zigzag and waves."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="stripes" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">stripes</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="diagonal" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">diagonal</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="checker" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">checker</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="triangles" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">triangles</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="diamonds" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">diamonds</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="hex" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">hex</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="cross" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">cross</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="zigzag" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">zigzag</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="waves" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">waves</figcaption>
+  </figure>
+</div>
+```
+
+## Textiles and floors
+
+<DocText>Woven and laid surfaces. The accent paints the second thread or the second direction: plaid's crossing threads, the vertical strands of a basketweave, the vertical bricks of a herringbone parquet.</DocText>
+
+```html example label="Woven and laid" schema="none" hint="plaid, weave, herringbone, carbon and bricks in warm inks."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="plaid"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #7d2a2a; --surface-accent: #e9c46a; --surface-bg: #2b3a55"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">plaid</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="weave"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #c9a66b; --surface-accent: #8c6a3f; --surface-bg: #3a2c1c"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">weave</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="herringbone"
+      aria-hidden="true"
+      style="
+        border-radius: var(--radius);
+        --surface-ink: #b07d4f;
+        --surface-accent: #8a5a33;
+        --surface-bg: #4a3020;
+        --surface-size: 12px;
+      "
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">herringbone</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="carbon"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #5b6270; --surface-bg: #15171c"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">carbon</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #b5543c; --surface-bg: #e8dccb; --surface-size: 18px"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">bricks</figcaption>
+  </figure>
+</div>
+```
+
+## Ornament
+
+<DocText>Patterns from tiles, fabrics and games: seigaiha scales, interlocking circles, tumbling blocks that read as cubes, polka dots and an 8-bit heart.</DocText>
+
+```html example label="Scales, circles and cubes" schema="none" hint="scales, ornament, cubes, polka and pixel."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="scales"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #2a6f97; --surface-bg: #e9f1f7"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">scales</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="ornament"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #9c6644; --surface-accent: #ddb892; --surface-bg: #fdf6ec"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ornament</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="cubes"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #4361ee; --surface-accent: #3a0ca3; --surface-bg: #a5b4fc"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cubes</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="polka"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #f72585; --surface-accent: #4cc9f0; --surface-bg: #fff0f6"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">polka</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="pixel"
+      aria-hidden="true"
+      style="
+        border-radius: var(--radius);
+        --surface-ink: #e63946;
+        --surface-accent: #ffb703;
+        --surface-bg: #1d1d2b;
+        --surface-size: 6px;
+      "
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">pixel</figcaption>
+  </figure>
+</div>
+```
+
+## Materials and nature
+
+<DocText>Textures rather than patterns: contour lines, terrazzo chips, paper fibers, a fine grain and grunge blotches. Grain and grunge are SVG turbulence stitched at the tile's edges, so even noise repeats without a seam.</DocText>
+
+```html example label="Contours, chips and noise" schema="none" hint="topography, terrazzo, fibers, grain and grunge."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="topography"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #588157; --surface-bg: #f4f1e8"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">topography</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="terrazzo"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #9a8c98; --surface-accent: #e07a5f; --surface-bg: #f2e9e4"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">terrazzo</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="fibers"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #a68a64; --surface-bg: #f5ebe0"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">fibers</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div class="surface" data-pattern="grain" aria-hidden="true" style="border-radius: var(--radius)"></div>
+    <figcaption class="text-xs text-muted-foreground">grain</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="grunge"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #6c757d"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">grunge</figcaption>
+  </figure>
+</div>
+```
+
+## Never the same twice
+
+<DocText>A tile repeats - which is right for paper and parquet, and visible in a circuit board or a maze. The surface shader computes truchet arcs, maze walls, circuit traces and contour lines per cell from a hash of the cell, so the plane never repeats. A circuit edge is on or off for both cells it joins, so traces always meet. <code>data-seed</code> draws another arrangement.</DocText>
+
+```html example label="Procedural, no repeat" schema="none" hint="truchet, maze, circuit and topography from the surface effect - flat, so they read as patterns."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="truchet"
+      data-material="flat"
+      data-colors="#fefae0 #bc6c25 #dda15e"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">truchet</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="maze"
+      data-material="flat"
+      data-colors="#0b132b #5bc0be #3a506b"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">maze</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="circuit"
+      data-material="flat"
+      data-colors="#0f3d2e #c8e6a0 #f2c14e"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">circuit</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="topography"
+      data-material="flat"
+      data-colors="#f4f1e8 #588157 #344e41"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">topography</figcaption>
+  </figure>
+</div>
+```
+
+## Every shader pattern
+
+<DocText>The surface effect draws 26 patterns. Ten joined the first sixteen: <b>stripes</b> (bands in two colors with a groove between them), <b>chevron</b> (the stripes folded into zigzags), <b>circles</b> (rings in every cell), <b>octagons</b> (octagons with a small square between every four), <b>stars</b> (five-pointed stars, every other row moved half a cell), <b>stones</b> (rounded cobbles of a moving Voronoi net), <b>cells</b> (the raised borders of an organic net), <b>glyphs</b> (a 5 x 7 character in every cell), <b>crosses</b> (plus signs in two colors), <b>lattice</b> (a diagonal trellis with a stud at every crossing). Stones and cells are a Voronoi net of one moving point per cell, glyphs a 5 x 7 character mirrored so it reads like one - with the <code>rain</code> motion, digital rain.</DocText>
+
+```html example label="26 patterns" schema="none" hint="Beveled, in the theme's chart colors."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">hex</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">checker</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="grid"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">grid</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="dots"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">dots</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="triangles"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">triangles</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="diamonds"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">diamonds</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="bricks"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">bricks</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="herringbone"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">herringbone</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="weave"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">weave</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="scales"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">scales</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="waves"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">waves</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="truchet"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">truchet</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="maze"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">maze</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="cubes"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cubes</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="circuit"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">circuit</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="topography"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">topography</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stripes"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">stripes</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="chevron"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">chevron</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="circles"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">circles</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="octagons"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">octagons</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stars"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">stars</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stones"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">stones</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="cells"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cells</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="glyphs"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">glyphs</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="crosses"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">crosses</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="lattice"
+      data-motion="none"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">lattice</figcaption>
+  </figure>
+</div>
+```
+
+## Try a pattern
+
+<DocText>The controls beside the surface are generated from the effect - every list between a previous and a next button that start over at the end, every parameter as a slider, every color as a swatch.</DocText>
+
+```html example label="A pattern, configurable" schema="none" hint="Step through the patterns with the arrows."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="pattern-lab"
+    data-effect="surface"
+    data-pattern="octagons"
+    data-material="ceramic"
+    data-motion="none"
+    data-colors="#f1faee #1d3557 #e63946 #457b9d"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="pattern-lab" data-controls="options params colors speed actions"></div>
+</div>
+```
+
+<SourceFiles component="surface" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="Shader JS" />
+
+</DocPage>

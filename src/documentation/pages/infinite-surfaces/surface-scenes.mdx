@@ -1,0 +1,541 @@
+---
+title: "Infinite Surfaces: Floors, Walls & Tunnels"
+description: "Endless tiled scenes: floors to a seamless horizon, ceilings, hallways, corridors, tunnels, domes, columns, balls and cubes on the GPU - 13 projections - and 22 CSS projections from floors and walls to isometric, cavalier and banked planes."
+slug: "surface-scenes"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, DocLink, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="surface-scenes" title="Floors, Walls & Tunnels" component="surface">
+  A pattern on a plane in perspective becomes a place. The <DocLink href="surface.html">Surface</DocLink> tips its plane with a CSS perspective transform and fades its far side; the <DocLink href="shader.html">Shader</DocLink>'s <code>surface</code> effect casts a ray per pixel against a floor, a ceiling, walls, a cylinder, a ball or a cube, with fog toward the distance and a cell size that fades into its average color before it can shimmer.
+</PageHeader>
+
+## The infinite floor
+
+<DocText>A floor to the horizon. On the GPU the plane is endless: with <code>drift</code> the camera walks forward forever, and <code>data-tilt</code> raises or lowers the horizon. The horizon is seamless: the fog and the sky start from the same color, and a haze lies along the line itself whatever the fog; on a dark material the line glows on both sides, so the floor brightens into it and sinks into the fog where its pattern is gone. Toward it a tile gets smaller than a pixel - there the pattern is not drawn at all, only its average color, which is also where the frame gets cheap; in between, an FXAA pass smooths the edges and the frames are blended where the detail is finer than a pixel, so nothing crawls while the floor moves.</DocText>
+
+```html example label="A checker floor" schema="none" previewStyle="align-items:stretch;" hint="Ceramic checkers to the horizon, the camera walking forward."
+<div
+  class="shader"
+  data-effect="surface"
+  data-pattern="checker"
+  data-material="ceramic"
+  data-projection="floor"
+  data-colors="#e9ecef #212529 #f8f9fa"
+  aria-hidden="true"
+  style="border-radius: var(--radius); --shader-aspect: 21 / 9"
+></div>
+```
+
+```html example label="A synthwave grid" schema="none" hint="Neon grid floor, the pointer moving the light. Below it the same scene in CSS alone: the accent draws the major lines, the tiles fade before a line gets thinner than a pixel, and the horizon glows at --surface-horizon."
+<div class="grid gap-3">
+  <div
+    class="shader"
+    data-effect="surface"
+    data-pattern="grid"
+    data-material="neon"
+    data-projection="floor"
+    data-colors="#0d0221 #ff2a6d #05d9e8"
+    data-interactive
+    aria-hidden="true"
+    style="border-radius: var(--radius); --shader-aspect: 21 / 9"
+  ></div>
+  <div
+    class="surface"
+    data-pattern="grid"
+    data-projection="floor"
+    data-motion="drift"
+    aria-hidden="true"
+    style="
+      border-radius: var(--radius);
+      --surface-aspect: 21 / 9;
+      --surface-size: 40px;
+      --surface-depth: 60cqi;
+      --surface-horizon: 74%;
+      --surface-bg: #0d0221;
+      --surface-ink: transparent;
+      --surface-accent: #ff2a6d;
+      --surface-horizon-color: #ff5c8a;
+      --surface-duration: 3s;
+    "
+  ></div>
+</div>
+```
+
+## Every projection on the GPU
+
+<DocText>13 projections: <b>flat</b> (facing you (default)), <b>tilted</b> (tipped back), <b>floor</b> (an endless floor to the horizon), <b>wall</b> (a wall at an angle), <b>corridor</b> (four planes around the camera), <b>tunnel</b> (a cylinder around the camera; the pattern wraps), <b>sphere</b> (a ball before the camera; the pattern wraps), <b>isometric</b> (turned 45° and foreshortened), <b>ceiling</b> (an endless ceiling overhead), <b>hallway</b> (a floor and two walls, open to the sky), <b>column</b> (a turning column; the pattern wraps), <b>dome</b> (the inside of a ball overhead), <b>cube</b> (a turning cube, the pattern on each face). Around a tunnel, a column, a ball or a dome the pattern wraps: the number of tiles around is a whole number and the cell ids and the noise repeat with it, so the last tile meets the first. <code>data-fog</code> sets how fast the distance fades.</DocText>
+
+```html example label="13 projections" schema="none" hint="Every one moving with drift - forward, around or turning."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="bevel"
+      data-projection="flat"
+      data-colors="#2b2d42 #8d99ae #ef233c #edf2f4"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="ceramic"
+      data-projection="tilted"
+      data-colors="#e9ecef #212529 #f8f9fa"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="grid"
+      data-material="neon"
+      data-projection="floor"
+      data-colors="#0d0221 #ff2a6d #05d9e8"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">floor</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="bricks"
+      data-material="bevel"
+      data-projection="wall"
+      data-colors="#4a4e69 #b5543c #9d4b38"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wall</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="circuit"
+      data-material="chrome"
+      data-projection="corridor"
+      data-colors="#0b0c10 #66fcf1 #45a29e"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">corridor</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="hex"
+      data-material="neon"
+      data-projection="tunnel"
+      data-colors="#05010a #b14aed #4af2ff"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tunnel</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="scales"
+      data-material="ceramic"
+      data-projection="sphere"
+      data-colors="#e8eddf #3a86ff #8338ec"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">sphere</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="cubes"
+      data-material="flat"
+      data-projection="isometric"
+      data-colors="#1b263b #e0e1dd #778da9 #415a77"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">isometric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="octagons"
+      data-material="plastic"
+      data-projection="ceiling"
+      data-colors="#f8f9fa #3a86ff #ff006e"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ceiling</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="marble"
+      data-projection="hallway"
+      data-colors="#5a5a5a #f2f0ec #222222"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">hallway</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="bricks"
+      data-material="copper"
+      data-projection="column"
+      data-colors="#1d2b26 #d9825b #b8673f"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">column</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="stars"
+      data-material="gold"
+      data-projection="dome"
+      data-colors="#0a0f2c #f2c14e #e0a83c"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">dome</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="shader"
+      data-effect="surface"
+      data-pattern="checker"
+      data-material="plastic"
+      data-projection="cube"
+      data-colors="#e5e5e5 #e63946 #f1faee"
+      aria-hidden="true"
+      style="border-radius: var(--radius)"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cube</figcaption>
+  </figure>
+</div>
+```
+
+## Try a scene
+
+```html example label="A scene, configurable" schema="none" hint="Step through the projections with the arrows; tilt raises the horizon, fog thickens the distance, rotation turns the pattern."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="scene-lab"
+    data-effect="surface"
+    data-pattern="checker"
+    data-material="ceramic"
+    data-projection="hallway"
+    data-colors="#e9ecef #212529 #f8f9fa"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="scene-lab" data-controls="options params colors speed actions"></div>
+</div>
+```
+
+## In CSS
+
+<DocText>22 projections. A receding plane - a floor, a ceiling, a wall, a tilt - is a square tipped about a pivot at the box's edge (where the eye sits) and moved along itself to the point it turns about; it is large enough that a turn about that point never uncovers the box, and it fades before its tiles get too small to draw. A floor or a ceiling goes on as a haze in the box up to its horizon - <code>--surface-horizon</code> above the bottom, worked out from the aspect and the tilt - and <code>--surface-horizon-color</code> draws the line there. Corridor and horizon put the ink and the accent on two planes. The parallel projections - isometric, dimetric, trimetric, planometric, cavalier, cabinet - have no eye at all.</DocText>
+
+```html example label="22 CSS projections" schema="none" hint="The plane tips in 3D about a pivot and fades before its tiles get too small to draw."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr))">
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="flat"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">flat</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="tilted"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="tilted-down"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted-down</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="tilted-left"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted-left</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="tilted-right"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">tilted-right</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="floor"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">floor</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="floor-low"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">floor-low</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="floor-high"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">floor-high</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="ceiling"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ceiling</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="ceiling-low"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">ceiling-low</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="wall"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wall</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="wall-left"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">wall-left</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      data-projection="corridor"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">corridor</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="bricks"
+      data-projection="horizon"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">horizon</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="isometric"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">isometric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="isometric-left"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">isometric-left</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="dimetric"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">dimetric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="trimetric"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">trimetric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="planometric"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">planometric</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="cavalier"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cavalier</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="cabinet"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">cabinet</figcaption>
+  </figure>
+  <figure class="m-0 grid gap-1">
+    <div
+      class="surface"
+      data-pattern="checker"
+      data-projection="banked"
+      aria-hidden="true"
+      style="border-radius: var(--radius); --surface-ink: #3a86ff; --surface-accent: #8338ec; --surface-bg: #f1f5f9"
+    ></div>
+    <figcaption class="text-xs text-muted-foreground">banked</figcaption>
+  </figure>
+</div>
+```
+
+```html example label="Walls, a corridor and a turning floor" schema="none" hint="A brick wall in CSS, a corridor of circuits, and a neon floor that turns - its fade stays round while it spins, so no corner opens."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr))">
+  <div
+    class="surface"
+    data-pattern="bricks"
+    data-style="emboss"
+    data-projection="wall"
+    aria-hidden="true"
+    style="border-radius: var(--radius); --surface-bg: #c9a690"
+  ></div>
+  <div
+    class="surface"
+    data-pattern="circuit"
+    data-style="neon"
+    data-projection="corridor"
+    data-motion="drift"
+    aria-hidden="true"
+    style="border-radius: var(--radius); --surface-accent: #66fcf1"
+  ></div>
+  <div
+    class="surface"
+    data-pattern="grid"
+    data-style="neon"
+    data-projection="tilted"
+    data-motion="rotate"
+    aria-hidden="true"
+    style="border-radius: var(--radius); --surface-accent: #ff2a6d; --surface-duration: 4s"
+  ></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-projection" description="flat, tilted, floor, wall, corridor, tunnel, sphere, isometric, ceiling, hallway, column, dome, cube" />
+  <Variant name="data-tilt" description="The camera's pitch on a floor, the angle of a wall (0.5)" />
+  <Variant name="data-fog" description="How fast the distance fades (0.5)" />
+  <Variant name="data-rotation" description="Turns the pattern in its plane, in degrees (0)" />
+  <Variant name="data-scale" description="Tiles across the view; around a tunnel or a ball a whole number (8)" />
+  <Variant name="--surface-tilt" description="The CSS plane's tilt (62deg)" />
+  <Variant name="--surface-depth" description="The CSS perspective distance (80cqi)" />
+  <Variant name="--surface-horizon" description="Where a CSS floor's horizon lies, above the bottom of the box (from the aspect and the tilt)" />
+  <Variant name="--surface-horizon-color" description="The line along a CSS floor's horizon (the haze; neon and glow: the accent)" />
+  <Variant name="--surface-rotation" description="Turns the CSS pattern in its plane (0deg)" />
+</SkillGrid>
+
+<SourceFiles component="surface" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="Shader JS" />
+
+</DocPage>

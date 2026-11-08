@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surface e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/surface/surface.css">
+  <link rel="stylesheet" href="/dist/components/card/card.css">
+  <style>
+    /* layout only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; background: #fff; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .tile { width: 120px; height: 72px; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc pages: every pattern, every style, every motion, every projection, turning planes that must
+       cover their box, content, the background variant behind a card, a hidden surface -->
+  <div class="row" id="patterns">
+    <div class="surface tile" id="p-stripes" data-pattern="stripes" aria-hidden="true"></div>
+    <div class="surface tile" id="p-diagonal" data-pattern="diagonal" aria-hidden="true"></div>
+    <div class="surface tile" id="p-dots" data-pattern="dots" aria-hidden="true"></div>
+    <div class="surface tile" id="p-polka" data-pattern="polka" aria-hidden="true"></div>
+    <div class="surface tile" id="p-checker" data-pattern="checker" aria-hidden="true"></div>
+    <div class="surface tile" id="p-grid" data-pattern="grid" aria-hidden="true"></div>
+    <div class="surface tile" id="p-ruled" data-pattern="ruled" aria-hidden="true"></div>
+    <div class="surface tile" id="p-hex" data-pattern="hex" aria-hidden="true"></div>
+    <div class="surface tile" id="p-triangles" data-pattern="triangles" aria-hidden="true"></div>
+    <div class="surface tile" id="p-diamonds" data-pattern="diamonds" aria-hidden="true"></div>
+    <div class="surface tile" id="p-herringbone" data-pattern="herringbone" aria-hidden="true"></div>
+    <div class="surface tile" id="p-plaid" data-pattern="plaid" aria-hidden="true"></div>
+    <div class="surface tile" id="p-waves" data-pattern="waves" aria-hidden="true"></div>
+    <div class="surface tile" id="p-scales" data-pattern="scales" aria-hidden="true"></div>
+    <div class="surface tile" id="p-zigzag" data-pattern="zigzag" aria-hidden="true"></div>
+    <div class="surface tile" id="p-cross" data-pattern="cross" aria-hidden="true"></div>
+    <div class="surface tile" id="p-bricks" data-pattern="bricks" aria-hidden="true"></div>
+    <div class="surface tile" id="p-cubes" data-pattern="cubes" aria-hidden="true"></div>
+    <div class="surface tile" id="p-circuit" data-pattern="circuit" aria-hidden="true"></div>
+    <div class="surface tile" id="p-topography" data-pattern="topography" aria-hidden="true"></div>
+    <div class="surface tile" id="p-terrazzo" data-pattern="terrazzo" aria-hidden="true"></div>
+    <div class="surface tile" id="p-carbon" data-pattern="carbon" aria-hidden="true"></div>
+    <div class="surface tile" id="p-pixel" data-pattern="pixel" aria-hidden="true"></div>
+    <div class="surface tile" id="p-weave" data-pattern="weave" aria-hidden="true"></div>
+    <div class="surface tile" id="p-ornament" data-pattern="ornament" aria-hidden="true"></div>
+    <div class="surface tile" id="p-fibers" data-pattern="fibers" aria-hidden="true"></div>
+    <div class="surface tile" id="p-grain" data-pattern="grain" aria-hidden="true"></div>
+    <div class="surface tile" id="p-grunge" data-pattern="grunge" aria-hidden="true"></div>
+  </div>
+  <div class="row" id="styles">
+    <div class="surface tile" id="s-flat" data-pattern="hex" data-style="flat" aria-hidden="true"></div>
+    <div class="surface tile" id="s-emboss" data-pattern="hex" data-style="emboss" aria-hidden="true"></div>
+    <div class="surface tile" id="s-deboss" data-pattern="hex" data-style="deboss" aria-hidden="true"></div>
+    <div class="surface tile" id="s-neon" data-pattern="hex" data-style="neon" aria-hidden="true"></div>
+    <div class="surface tile" id="s-paper" data-pattern="hex" data-style="paper" aria-hidden="true"></div>
+    <div class="surface tile" id="s-outline" data-pattern="hex" data-style="outline" aria-hidden="true"></div>
+    <div class="surface tile" id="s-glow" data-pattern="hex" data-style="glow" aria-hidden="true"></div>
+    <div class="surface tile" id="s-shadow" data-pattern="hex" data-style="shadow" aria-hidden="true"></div>
+    <div class="surface tile" id="s-long-shadow" data-pattern="hex" data-style="long-shadow" aria-hidden="true"></div>
+    <div class="surface tile" id="s-extrude" data-pattern="hex" data-style="extrude" aria-hidden="true"></div>
+    <div class="surface tile" id="s-stamp" data-pattern="hex" data-style="stamp" aria-hidden="true"></div>
+    <div class="surface tile" id="s-duotone" data-pattern="hex" data-style="duotone" aria-hidden="true"></div>
+    <div class="surface tile" id="s-risograph" data-pattern="hex" data-style="risograph" aria-hidden="true"></div>
+    <div class="surface tile" id="s-blueprint" data-pattern="hex" data-style="blueprint" aria-hidden="true"></div>
+    <div class="surface tile" id="s-chalk" data-pattern="hex" data-style="chalk" aria-hidden="true"></div>
+    <div class="surface tile" id="s-pencil" data-pattern="hex" data-style="pencil" aria-hidden="true"></div>
+    <div class="surface tile" id="s-glass" data-pattern="hex" data-style="glass" aria-hidden="true"></div>
+    <div class="surface tile" id="s-metal" data-pattern="hex" data-style="metal" aria-hidden="true"></div>
+    <div class="surface tile" id="s-gold" data-pattern="hex" data-style="gold" aria-hidden="true"></div>
+    <div class="surface tile" id="s-holographic" data-pattern="hex" data-style="holographic" aria-hidden="true"></div>
+    <div class="surface tile" id="s-gradient" data-pattern="hex" data-style="gradient" aria-hidden="true"></div>
+    <div class="surface tile" id="s-rainbow" data-pattern="hex" data-style="rainbow" aria-hidden="true"></div>
+    <div class="surface tile" id="s-cutout" data-pattern="hex" data-style="cutout" aria-hidden="true"></div>
+    <div class="surface tile" id="s-halftone" data-pattern="hex" data-style="halftone" aria-hidden="true"></div>
+    <div class="surface tile" id="s-chromatic" data-pattern="hex" data-style="chromatic" aria-hidden="true"></div>
+  </div>
+  <div class="row" id="motions">
+    <div class="surface tile" id="m-drift" data-pattern="diagonal" data-motion="drift" aria-hidden="true"></div>
+    <div class="surface tile" id="m-parallax" data-pattern="diagonal" data-motion="parallax" aria-hidden="true"></div>
+    <div class="surface tile" id="m-orbit" data-pattern="diagonal" data-motion="orbit" aria-hidden="true"></div>
+    <div class="surface tile" id="m-rotate" data-pattern="diagonal" data-motion="rotate" aria-hidden="true"></div>
+    <div class="surface tile" id="m-counter" data-pattern="diagonal" data-motion="counter" aria-hidden="true"></div>
+    <div class="surface tile" id="m-spin-zoom" data-pattern="diagonal" data-motion="spin-zoom" aria-hidden="true"></div>
+    <div class="surface tile" id="m-sway" data-pattern="diagonal" data-motion="sway" aria-hidden="true"></div>
+    <div class="surface tile" id="m-swing" data-pattern="diagonal" data-motion="swing" aria-hidden="true"></div>
+    <div class="surface tile" id="m-tilt" data-pattern="diagonal" data-motion="tilt" aria-hidden="true"></div>
+    <div class="surface tile" id="m-wobble" data-pattern="diagonal" data-motion="wobble" aria-hidden="true"></div>
+    <div class="surface tile" id="m-wave" data-pattern="diagonal" data-motion="wave" aria-hidden="true"></div>
+    <div class="surface tile" id="m-bounce" data-pattern="diagonal" data-motion="bounce" aria-hidden="true"></div>
+    <div class="surface tile" id="m-shake" data-pattern="diagonal" data-motion="shake" aria-hidden="true"></div>
+    <div class="surface tile" id="m-glitch" data-pattern="diagonal" data-motion="glitch" aria-hidden="true"></div>
+    <div class="surface tile" id="m-breathe" data-pattern="diagonal" data-motion="breathe" aria-hidden="true"></div>
+    <div class="surface tile" id="m-zoom" data-pattern="diagonal" data-motion="zoom" aria-hidden="true"></div>
+    <div class="surface tile" id="m-heartbeat" data-pattern="diagonal" data-motion="heartbeat" aria-hidden="true"></div>
+    <div class="surface tile" id="m-pulse" data-pattern="diagonal" data-motion="pulse" aria-hidden="true"></div>
+    <div class="surface tile" id="m-flicker" data-pattern="diagonal" data-motion="flicker" aria-hidden="true"></div>
+    <div class="surface tile" id="m-blink" data-pattern="diagonal" data-motion="blink" aria-hidden="true"></div>
+    <div class="surface tile" id="m-twinkle" data-pattern="diagonal" data-motion="twinkle" aria-hidden="true"></div>
+    <div class="surface tile" id="m-hue" data-pattern="diagonal" data-motion="hue" aria-hidden="true"></div>
+    <div class="surface tile" id="m-shimmer" data-pattern="diagonal" data-motion="shimmer" aria-hidden="true"></div>
+    <div class="surface tile" id="m-floor-drift" data-pattern="grid" data-style="neon" data-projection="floor" data-motion="drift" aria-hidden="true"></div>
+    <div class="surface tile" id="m-wall-drift" data-pattern="bricks" data-projection="wall" data-motion="drift" aria-hidden="true"></div>
+  </div>
+  <div class="row" id="projections">
+    <div class="surface tile" id="j-flat" data-pattern="grid" data-style="neon" data-projection="flat" aria-hidden="true"></div>
+    <div class="surface tile" id="j-tilted" data-pattern="grid" data-style="neon" data-projection="tilted" aria-hidden="true"></div>
+    <div class="surface tile" id="j-tilted-down" data-pattern="grid" data-style="neon" data-projection="tilted-down" aria-hidden="true"></div>
+    <div class="surface tile" id="j-tilted-left" data-pattern="grid" data-style="neon" data-projection="tilted-left" aria-hidden="true"></div>
+    <div class="surface tile" id="j-tilted-right" data-pattern="grid" data-style="neon" data-projection="tilted-right" aria-hidden="true"></div>
+    <div class="surface tile" id="j-floor" data-pattern="grid" data-style="neon" data-projection="floor" aria-hidden="true"></div>
+    <div class="surface tile" id="j-floor-low" data-pattern="grid" data-style="neon" data-projection="floor-low" aria-hidden="true"></div>
+    <div class="surface tile" id="j-floor-high" data-pattern="grid" data-style="neon" data-projection="floor-high" aria-hidden="true"></div>
+    <div class="surface tile" id="j-ceiling" data-pattern="grid" data-style="neon" data-projection="ceiling" aria-hidden="true"></div>
+    <div class="surface tile" id="j-ceiling-low" data-pattern="grid" data-style="neon" data-projection="ceiling-low" aria-hidden="true"></div>
+    <div class="surface tile" id="j-wall" data-pattern="grid" data-style="neon" data-projection="wall" aria-hidden="true"></div>
+    <div class="surface tile" id="j-wall-left" data-pattern="grid" data-style="neon" data-projection="wall-left" aria-hidden="true"></div>
+    <div class="surface tile" id="j-corridor" data-pattern="grid" data-style="neon" data-projection="corridor" aria-hidden="true"></div>
+    <div class="surface tile" id="j-horizon" data-pattern="grid" data-style="neon" data-projection="horizon" aria-hidden="true"></div>
+    <div class="surface tile" id="j-isometric" data-pattern="grid" data-style="neon" data-projection="isometric" aria-hidden="true"></div>
+    <div class="surface tile" id="j-isometric-left" data-pattern="grid" data-style="neon" data-projection="isometric-left" aria-hidden="true"></div>
+    <div class="surface tile" id="j-dimetric" data-pattern="grid" data-style="neon" data-projection="dimetric" aria-hidden="true"></div>
+    <div class="surface tile" id="j-trimetric" data-pattern="grid" data-style="neon" data-projection="trimetric" aria-hidden="true"></div>
+    <div class="surface tile" id="j-planometric" data-pattern="grid" data-style="neon" data-projection="planometric" aria-hidden="true"></div>
+    <div class="surface tile" id="j-cavalier" data-pattern="grid" data-style="neon" data-projection="cavalier" aria-hidden="true"></div>
+    <div class="surface tile" id="j-cabinet" data-pattern="grid" data-style="neon" data-projection="cabinet" aria-hidden="true"></div>
+    <div class="surface tile" id="j-banked" data-pattern="grid" data-style="neon" data-projection="banked" aria-hidden="true"></div>
+  </div>
+  <!-- a turning plane over red: a solid tile, so any red pixel is a gap (the reported tilted + rotate first) -->
+  <div class="row" id="coverage">
+    <div class="surface tile" id="c-reported" data-pattern="bricks" data-projection="tilted" data-motion="rotate" style="width: 240px; height: 135px; --surface-size: 15px; --surface-bg: rgb(255, 0, 0); --surface-ink: #000; --surface-accent: #000; --_t: linear-gradient(#000 0 0); --_a: linear-gradient(#000 0 0)" aria-hidden="true"></div>
+    <div class="surface tile" id="c-flat" data-pattern="hex" data-motion="rotate" style="width: 240px; height: 135px; --surface-bg: rgb(255, 0, 0); --surface-ink: #000; --surface-accent: #000; --_t: linear-gradient(#000 0 0); --_a: linear-gradient(#000 0 0)" aria-hidden="true"></div>
+    <div class="surface tile" id="c-floor" data-pattern="checker" data-projection="floor" data-motion="spin-zoom" style="width: 240px; height: 135px; --surface-rotation: 45deg; --surface-bg: rgb(255, 0, 0); --surface-ink: #000; --surface-accent: #000; --_t: linear-gradient(#000 0 0); --_a: linear-gradient(#000 0 0)" aria-hidden="true"></div>
+  </div>
+  <div class="row">
+    <div class="surface" id="empty" aria-hidden="true" style="width: 320px"></div>
+    <section class="surface" id="note" data-pattern="ruled" data-style="paper" style="width: 320px; padding: 16px">
+      <h3>Monday</h3>
+      <p>Pick up the prints.</p>
+    </section>
+    <div class="surface tile" id="tuned" data-pattern="herringbone" aria-hidden="true" style="--surface-size: 14px; --surface-bg: rgb(59, 42, 30); --surface-ink: rgb(160, 117, 79); --surface-accent: rgb(138, 97, 66)"></div>
+    <div class="surface tile" id="hidden" data-pattern="dots" hidden aria-hidden="true"></div>
+  </div>
+  <article class="card" id="card" style="max-width: 24rem">
+    <div class="surface" id="bg" data-variant="background" data-pattern="circuit" data-style="neon" data-motion="drift" aria-hidden="true"></div>
+    <div class="card-header"><p class="card-title">Edge cluster</p></div>
+  </article>
+</body>
+</html>
