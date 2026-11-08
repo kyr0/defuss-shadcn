@@ -72,35 +72,42 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-10-20T02:36:32Z s=ba000d18 FINDING security: route parameters and query values reach the DOM learn=none: reviewed: no HTML sink takes route input
 2026-10-20T20:27:45Z s=ba000d18 FINDING routing.mdx show(): an archived message marked Inbox and its back link went to the inbox learn=none: probe tmp/shot-mailbox-views.ts; demo behaviour, not a shipped contract
 2026-10-21T08:22:54Z s=ba000d18 FINDING src/documentation/pages/wysiwyg-editors/studio.mdx: "h1 to h4, lead and muted on Typography" and "each of the 272 shapes on Shapes" learn=none: prose
-2026-10-26T20:13:35Z s=ba000d18 FINDING scripts/verify.ts doc link integrity: every #/route link was a dead anchor learn=verifier: the gate itself: a #/ link on a page without the router still fails
-2026-10-26T20:13:35Z s=ba000d18 FINDING defuss-i18n 0.2.0 peers defuss-query ^0.1.0 / defuss-morph ^0.1.1; this repo ships 0.2.0 (bun add: incorrect peer dependency warning) learn=test: tests/e2e/lib/translation.ts translationGaps() in every scaffold e2e and the guide e2e
-2026-10-26T20:13:35Z s=ba000d18 FINDING docs cards (about:srcdoc): defuss-dom-router start() cannot own the frame address learn=test: routing-translation-docs.e2e drives the mailbox card through the fallback; the scaffold e2e drive the full-screen router
-2026-10-26T20:13:35Z s=ba000d18 FINDING src/documentation/pages/guides/routing.mdx: the "A mailbox with routes" example rendered unstyled learn=test: tests/e2e/site/routing-translation-docs.e2e.ts drives the card (inbox, message, Archive current, wildcard); the look is a screenshot judgement, no mechanical ru
-2026-11-01T20:11:04Z s=470ad3d9 FAIL prose,tests.e2e.1,coverage=?
-2026-11-01T21:09:31Z s=470ad3d9 DONE fp=acf4a6ac54d1 cov=71.8% paths=AGENTS.md,ARCH.md,README.md,bun.lock(+58)
-2026-11-01T21:09:31Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.ts:liveMaps (wantedBySomeMap, loadChunk) learn=test: geo-map.e2e "a map removed from the page lets go of its chunks" - red on the unfixed build, green after
-2026-11-01T21:09:31Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.ts:triggerStateChange + bindControls/act learn=test: state-contract.test operates every control; geo-map.e2e drives the controls of a failed map and asserts no page errors
-2026-11-01T21:09:31Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.ts:triggerStateChange (empty value) learn=test: geo-map.e2e "an empty value enters a state with what the markup declared"
-2026-11-01T21:09:31Z s=470ad3d9 FINDING src/components/wysiwyg-editors/code-example/code-example.ts:EXTRA_BUNDLES learn=test: code-example.e2e "bundlesFor" compares the component list with the build list (extra-bundles.ts)
-2026-11-01T21:09:31Z s=470ad3d9 FINDING src/components/wysiwyg-editors/code-example/code-example.ts:writeSource learn=test: code-example.e2e "an API source supersedes a pending typed rerun" - red before, green after
-2026-11-01T21:09:31Z s=470ad3d9 FINDING scripts/proven.ts:replay learn=test: proven.e2e "a replay larger than a pipe buffer arrives whole through a pipe" - red on the unfixed script
 2026-11-01T21:09:31Z s=470ad3d9 FINDING scripts/create-screenshots.ts:serveDist learn=none: one static server header; the geo-map screenshots show the drawn map (inspected light and dark)
 2026-11-01T21:09:31Z s=470ad3d9 FINDING src/documentation/pages/geography/geo-regions.mdx:114 (L logic) learn=none: a one-off loop bound in a docs example; no mechanical check fits
-2026-11-01T21:09:31Z s=470ad3d9 FINDING tests/geo.test.ts (coverage) learn=test: tests/geo.test.ts holds the library and map contract in the unit run
-2026-11-01T21:09:31Z s=470ad3d9 FINDING AGENTS.md, README.md, ARCH.md, index.mdx, code-example JSDoc, SKILL templates, charts-narrative.mdx (T06) learn=verifier: the gate prose check over changed pages
-2026-11-01T23:15:51Z s=470ad3d9 DONE fp=f0c19f5cfccd cov=71.9% paths=AGENTS.md,ARCH.md,README.md,bun.lock(+61)
 2026-11-01T23:15:51Z s=470ad3d9 FINDING vite.config.ts:docs-index (dev server) learn=none: a dev-server convenience; no gate serves the dev server
-2026-11-02T01:39:08Z s=470ad3d9 DONE fp=c7462e1400a6 cov=71.9% paths=AGENTS.md,ARCH.md,README.md,bun.lock(+61)
 2026-11-02T01:39:08Z s=470ad3d9 FINDING src/documentation/pages/geography/geo-routing.mdx:115 (runner) + geo-map.ts:flyTo learn=none: a frame-timing race in a docs example; no deterministic reproduction for a test
-2026-11-02T01:39:08Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.ts:frame learn=test: geo-map.e2e S2 drill-down asserts a level-9 frame above 600x
-2026-11-02T01:39:08Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.ts:writeOutputs + triggerStateChange (S2 focus) learn=test: geo-map.e2e S2 drill-down writes an invalid focus from outside: no page error, layer cells drawn, reset works - red on the unfixed build
-2026-11-02T02:06:42Z s=470ad3d9 FAIL tests.integration.1,tests.e2e.1
-2026-11-02T02:51:46Z s=470ad3d9 FAIL prose
-2026-11-02T03:02:24Z s=470ad3d9 DONE fp=a9cc4103fe48 cov=71.9% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,AGENTS.md,ARCH.md(+533)
-2026-11-02T03:02:24Z s=470ad3d9 FINDING src/documentation/pages/introduction/installation.mdx:65,91 (T06) learn=verifier: the gate prose check over changed pages
-2026-11-02T03:02:24Z s=470ad3d9 FINDING .vae/MEMORY.md:14 learn=memory: a process rule about turn ends; no gate can check it
-2026-11-02T04:26:07Z s=470ad3d9 DONE fp=ab32d6801a3d cov=71.8% paths=.claude-plugin/plugin.json,.codex-plugin/plugin.json,AGENTS.md,ARCH.md(+533)
-2026-11-02T04:26:07Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.ts:releaseData + src/documentation/runtime/code-example.ts:geoDataUrl learn=test: geo-map.e2e: a map without data-src asks /npm/defuss-shadcn@<abi>/ - red on the old build
-2026-11-02T04:26:07Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.css (palettes, pick) learn=test: geo-map.e2e palettes: pastel light tones, dark range keeping hue, grey mono, coral pick - red on the old build (the pick)
-2026-11-02T04:26:07Z s=470ad3d9 FINDING src/components/geography/geo-map/geo-map.ts:makeProjection + renderMap learn=test: geo-map.e2e: the top row of a map panned north stays on the sphere, further north changes nothing, one step south moves - red on the old build
-2026-11-02T04:26:07Z s=470ad3d9 FINDING src/documentation/pages/index.mdx:5 learn=verifier: README and index commit window + stats claim gates
+2026-11-07T11:00:13Z s=5187d371 FINDING src/documentation/pages/website/portfolio-photographer.mdx:iris portrait learn=none: Documented in src/components/guides/motion/component-skill.md Notes (clip-path is not composed).
+2026-11-07T11:00:13Z s=5187d371 FINDING src/documentation/pages/website/portfolio-developer.mdx:.mk-resume-header-body learn=none: Page-specific composition (a column header); the block stays row-based.
+2026-11-07T11:00:13Z s=5187d371 FINDING src/documentation/pages/website/portfolio-zine.mdx:.pf-band learn=none: A property conflict between two utilities, visible in review; no gate can see it.
+2026-11-07T11:00:13Z s=5187d371 FINDING tests/e2e/site/studio.e2e.ts learn=none: Flake in the alpha Studio test; cause not established - no probe was run.
+2026-11-07T13:58:10Z s=5187d371 FINDING src/documentation/pages/shaders/shaders.mdx:154 B (evidence) learn=none: one-off claim, now stated as observed
+2026-11-07T13:58:10Z s=5187d371 FINDING src/documentation/pages/shaders/shader-3d.mdx:12 P (precision) learn=none: text now matches EFFECTS[].cost
+2026-11-07T13:58:10Z s=5187d371 FINDING src/components/shaders/shader/shader.ts:liquid-metal relief learn=none: visual defect, checked by the card screenshots; shader.e2e pins mask transparency outside the shape
+2026-11-07T16:15:27Z s=5187d371 FINDING src/components/infinite-surfaces/surface/component-skill.md:Custom properties learn=none: prose values copied from CSS have no gate; a test would pin a tuned default, which the rules forbid
+2026-11-07T16:15:27Z s=5187d371 FINDING src/components/shaders/shader/component-skill.md:Attributes data-interactive learn=none: the table is hand-written prose; no generator owns it
+2026-11-07T19:26:14Z s=5187d371 FINDING src/components/infinite-surfaces/surface/surface.css:floor --_fa/--_fb learn=none: the flicker metric needs dozens of GPU screenshots - too slow and machine-dependent for the e2e; the fade geometry and the haze are asserted, the metric lives i
+2026-11-07T19:26:14Z s=5187d371 FINDING src/components/shaders/shader/shader.ts:surface fragment horizon learn=none: a look, judged from rendered frames; no mechanical invariant
+2026-11-07T19:26:14Z s=5187d371 FINDING src/components/shaders/shader/shader.ts:program() learn=none: timings are machine-bound; the e2e waits for every tile within 60 s on SwiftShader, which the old blocking compile also met
+2026-11-07T23:42:58Z s=5187d371 FINDING src/components/graphs/graph-explorer/graph-explorer.ts:Explorer.mount learn=none: the e2e checks every chrome layer exists after mount, which covers it; the inline comment says why the copy stays
+2026-11-08T09:51:40Z s=5187d371 FINDING src/documentation/pages/graphs/graph-edges.mdx:127,170 learn=none: whether an authored id exists depends on the generated graph; no gate reads example graphs
+2026-11-08T12:32:18Z s=5187d371 FINDING src/components/graphs/graph-explorer/graph-explorer.ts:rowsView class names learn=none: a naming collision inside one stylesheet; no gate lists a component's class names
+2026-11-08T12:32:18Z s=5187d371 FINDING src/documentation/pages/application/scaffold-knowledge-graph.mdx:records learn=none: how synthetic demo data looks is judged from rendered frames
+2026-11-08T12:32:18Z s=5187d371 FINDING tests/e2e/site/paper-gallery.e2e.ts:Code Listings print layout learn=none: a load-dependent layout timing; not reproduced alone, so no root cause is established
+2026-11-08T14:24:40Z s=5187d371 FINDING website-events-promotions.mdx: .mk-event-header-inner background learn=none: a pixel-level check of one template’s shader visibility would pin a rendering detail; the screenshot review caught it
+2026-11-08T14:24:40Z s=5187d371 FINDING website-news.mdx: halftone shader on the Evening look learn=none: how a printed photo should look is judged from the rendered frame
+2026-11-08T14:24:40Z s=5187d371 FINDING website-media.mdx: gallery photos and alt texts learn=none: whether an alt text matches a photo needs a human look
+2026-11-08T14:24:40Z s=5187d371 FINDING showcase-records.mdx: tracklist sides learn=none: content correctness of one demo list
+2026-11-08T14:24:40Z s=5187d371 FINDING tests/e2e/site/website-templates.e2e.ts:blog route learn=none: the e2e run itself showed it
+2026-11-08T17:56:54Z s=5187d371 FINDING website-search-navigation / website-shop / website-account-states: sticky side columns learn=none: overlap of sticky elements is visual; no cheap mechanical check - screenshots at phone width are the evidence
+2026-11-08T17:56:54Z s=5187d371 FINDING website-docs-help.mdx: Release notes / Downloads examples learn=none: a CSS authoring rule (a container queries only its descendants); caught by screenshot review
+2026-11-08T17:56:54Z s=5187d371 FINDING website-shop.mdx: season banner on phones learn=none: visual contrast over a photo is not measured by a gate
+2026-11-08T17:56:54Z s=5187d371 FINDING website-landing-page.mdx: header actions on phones learn=none: clipping inside an overflow-hidden header does not change the page scrollWidth, so the phone check cannot see it
+2026-11-08T17:56:54Z s=5187d371 FINDING website-media.mdx: .md-stamp on phones learn=none: visual; overflow-x: clip on the root hides it from the scrollWidth check
+2026-11-08T19:25:59Z s=5187d371 FINDING website-media.mdx: gallery hover learn=none: a dropped declaration is silent; the hover was checked in screenshots
+2026-11-08T19:25:59Z s=5187d371 FINDING resume-entry.css: horizontal variant learn=none: a layout detail seen in a screenshot; the e2e pins the marks on one line
+2026-11-08T19:25:59Z s=5187d371 FINDING collection-item.css: stack variant learn=none: paint order is visual; the e2e pins three prints and the fan-out angles
+2026-11-08T20:38:33Z s=5187d371 FINDING tests/e2e/site/website-templates.e2e.ts: Media deep link learn=none: a test-order fix; the Media viewer itself is checked by the route assertion
+2026-11-08T20:38:33Z s=5187d371 FINDING index.mdx, website-resume-portfolio.mdx, portfolio-photographer/neon.mdx, AGENTS.md: "always dark" learn=none: prose; no gate reads these claims
+2026-11-08T20:38:33Z s=5187d371 FINDING 27 site pages + AGENTS.md: the modes marker learn=none: prose
+2026-11-08T20:38:33Z s=5187d371 FINDING src/components/shaders/shader/shader.parts.md: Shader (background, 18) learn=none: verify passes either way; a size limit on parts is not established as a rule
+2026-11-08T20:38:33Z s=5187d371 FINDING tests/e2e/site/studio.e2e.ts: WebKit drag learn=none: flake in the alpha Studio test

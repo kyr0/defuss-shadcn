@@ -42,7 +42,7 @@ CONFIG = {
     # the pillar bullets' emoji (AGENTS.md "README ↔ index parity": an emoji may lead the bullet); index.mdx - the
     # landing cards' link labels ("State API guide →"), UI glyphs, not prose
     "prose": {"allow": {"plans/document-editor-loading/input/*.md": "–‘’“”„…", "AGENTS.md": "→↔", ".vae/*.md": "→≥",
-                        "README.md": "\U0001FA9F\U0001F3A8\U0001F4D8\U0001F501\u267F\U0001F9E9",
+                        "README.md": "\U0001FA9F\U0001F310\U0001F3A8\U0001F4D8\U0001F501\u267F\U0001F9E9",
                         "src/documentation/pages/index.mdx": "→"}, "phrases": []},
 }
 
