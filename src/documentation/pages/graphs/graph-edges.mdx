@@ -1,0 +1,256 @@
+---
+title: "Graph Explorer: Edge Rules & Labels"
+description: "How the Graph Explorer draws links: declarative style rules the worker evaluates for every edge, aggregated links between clusters, cycles, labels and icons that add words as you zoom in, circuit breakers with health by share, a live breaker simulation - and a selected link's details, built in or of your own."
+slug: "graph-edges"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="graph-edges" title="Edge Rules & Labels" component="graph-explorer">
+  Between clusters a link bundles every link below it - its count and, for circuit breakers, its health. The worker draws all of them into the canvas, styled by <b>rules</b>: plain data it evaluates per edge, because functions never cross into it. The links worth reading also get <b>labels</b> in the DOM - an icon far away, a word closer, details up close - chosen by each link's length on screen, budgeted and never overlapping. A click on a link selects it, and its <b>details</b> - built in or a plugin's - show what it carries.
+</PageHeader>
+
+<H2 id="rules">Rules</H2>
+
+<DocText>An edge plugin's <code>rules</code> are a list of <code>\{ when, style, priority \}</code>: every condition in <code>when</code> must hold - <code>equals</code>, <code>in</code>, <code>exists</code>, <code>gte</code>, <code>lte</code> on an edge field such as <code>kind</code>, <code>type</code>, <code>traffic</code> or <code>breaker.openShare</code> - and the highest priority that matches wins. The style picks a <code>tone</code> (muted, ink, accent, link, ok, warn, danger - the theme's colors), a <code>width</code>, an <code>arrow</code>, a <code>dash</code>, <code>flow</code> along a link with traffic, a <code>pulse</code> or a <code>gap</code>. The back-edges of small cycles curve around and take the accent.</DocText>
+
+```html example label="Reads in the accent color" schema="none" hint="Inside a system, links of the type reads now draw thick and dashed in the accent color - the rule is plain data, evaluated in the worker for every link it draws." previewStyle="align-items:stretch;"
+<div
+  class="graph-explorer"
+  id="rules"
+  data-nodes="100000"
+  data-focus="c8"
+  data-frame
+  aria-label="Edge rules"
+  style="block-size: 26rem"
+></div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.graphExplorer.register(df$('#rules').get(0), {
+      kind: 'edge',
+      name: 'reads-accent',
+      rules: [
+        {
+          when: [{ field: 'type', equals: 'reads' }],
+          style: { tone: 'accent', width: 2.5, arrow: 'end', dash: [6, 3] },
+        },
+      ],
+    });
+  });
+</script>
+```
+
+<H2 id="labels">Labels per zoom level</H2>
+
+<DocText>A label renderer offers three tiers - <code>icon</code>, <code>label</code>, <code>full</code> - each from a length on screen (<code>levels</code>), with a box for collision (<code>sizes</code>) and an optional cap of its own (<code>budget</code>). Every frame the explorer ranks the candidates - the selection's links first, then the renderer's <code>priority</code> - and gives each the richest tier its length, the budget (160 icons, 48 labels, 16 full) and the free space allow. <code>depths</code> limits a renderer to some levels of the hierarchy.</DocText>
+
+```html example label="A label of your own" schema="none" hint="Links between domains say which way most calls go; zoom in and the label adds the counts both ways and marks a cycle's back-edge." previewStyle="align-items:stretch;"
+<div
+  class="graph-explorer"
+  id="labels"
+  data-nodes="100000"
+  data-seed="9"
+  data-frame
+  aria-label="Edge labels"
+  style="block-size: 26rem"
+></div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.graphExplorer.register(df$('#labels').get(0), {
+      kind: 'edge',
+      name: 'share',
+      label: {
+        depths: [0],
+        levels: { icon: 40, label: 90, full: 180 },
+        sizes: { icon: [34, 18], label: [70, 22], full: [150, 22] },
+        match: (e) => (e.kind === 'agg' ? 20 : false),
+        priority: (e) => e.count + e.count2,
+        render: (e, c) => {
+          const way = e.count2 > e.count ? '←' : e.count2 ? '↔' : '→';
+          if (c.tier === 'icon') return c.html`<span class="graph-explorer-edge-count">${way}</span>`;
+          if (c.tier === 'label')
+            return c.html`<span class="graph-explorer-edge-pill">${c.icon('link-2')}<span>${way} ${e.count + e.count2}</span></span>`;
+          return c.html`<span class="graph-explorer-edge-pill">${c.icon('arrow-left-right')}<span>${e.count} → · ← ${e.count2}</span>${e.back ? c.icon('repeat-2', { size: 'xs' }) : ''}</span>`;
+        },
+      },
+    });
+  });
+</script>
+```
+
+<H2 id="breakers">Circuit breakers</H2>
+
+<DocText>Every link between two entities has a breaker: closed, half-open (probing), open (tripped) or cut. A link between clusters bundles many and reports health by share, so one open breaker among 80 does not paint the overview red: at least 30 % open is critical, at least 15 % not closed is degraded. The built-in breaker plugin draws them - an icon far away, the state closer, trips and minutes up close - and the Health Node UI sums them per cluster. The live simulation trips, probes and closes breakers on its own.</DocText>
+
+```html example label="Live breakers" schema="none" hint="Press Live breakers: breakers trip and recover every few hundred milliseconds; the badges, bars and edge labels follow. The Health Node UI shows each domain's share." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      aria-pressed="false"
+      data-graph-explorer-for="breakers"
+      data-graph-explorer-action="live"
+    >
+      Live breakers
+    </button>
+    <div data-graph-explorer-for="breakers" data-graph-explorer-outlet="node-ui"></div>
+  </div>
+  <div
+    class="graph-explorer"
+    id="breakers"
+    data-nodes="100000"
+    data-node-ui="health"
+    data-frame
+    aria-label="Circuit breakers"
+    style="block-size: 26rem"
+  ></div>
+</div>
+```
+
+<H2 id="selecting">Selecting a link</H2>
+
+<DocText>A click on a link - on its label or on its line - selects it (<code>data-selected-edge="c1>c5"</code>, the state's <code>edge</code>): the rest of the graph steps back and the details outlet shows the link - both ends, its links each way, the relations it carries, the breakers it bundles, who sends and who receives most - and the relations outlet its single links. <code>E</code> or a double click expands it to a page, <code>Esc</code> lets it go. From a keyboard the link button at the end of a relation in the details does the same.</DocText>
+
+```html example label="A link's details" schema="none" hint="Click a link between two domains (its line or its count). The details show its traffic both ways, its breakers, its top senders and receivers; Expand shows the link's page." previewStyle="align-items:stretch;"
+<div class="border-layout" data-frame="none" style="block-size: 32rem">
+  <section class="card panel border-layout-center" aria-label="Graph">
+    <div class="panel-body" data-flush>
+      <div
+        class="graph-explorer"
+        id="links"
+        data-nodes="100000"
+        data-selected-edge="c2>c1"
+        aria-label="A service graph"
+      ></div>
+    </div>
+  </section>
+  <div class="resizer border-layout-east" data-min="240" data-max="560">
+    <section class="card panel" style="width: 22rem" aria-labelledby="links-title" data-density="compact">
+      <header class="panel-header">
+        <h3 class="panel-title" id="links-title">
+          Details
+          <span
+            class="text-muted-foreground"
+            data-graph-explorer-for="links"
+            data-graph-explorer-output="details-title"
+          ></span>
+        </h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Details" />
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body" data-graph-explorer-for="links" data-graph-explorer-outlet="details"></div>
+    </section>
+  </div>
+</div>
+```
+
+<H2 id="link-details">A link's details of your own</H2>
+
+<DocText>An edge plugin's <code>detail</code> - <code>\{ match(item), title(item), render(item, ctx) \}</code> - draws the details of a selected link: <code>item.source</code> and <code>item.target</code> are its two nodes, <code>item.edge</code> the link in the view (counts each way, relation, breaker, style), and <code>ctx.fetchEdge(item.id)</code> what the worker knows beyond it - the links by relation, the system pairs and their breakers, the top senders and receivers and single links. Like a node's details it may compose library components; a <DocLink href="chart.html">Chart</DocLink> goes in an island.</DocText>
+
+```html example label="Traffic between domains" schema="none" hint="Click a link between two domains: a plugin shows its calls per minute as a Chart, the share of each direction as bars and the breakers that are not closed. A link between entities keeps the built-in details." previewStyle="align-items:stretch;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<div class="border-layout" data-frame="none" style="block-size: 32rem">
+  <section class="card panel border-layout-center" aria-label="Graph">
+    <div class="panel-body" data-flush>
+      <div
+        class="graph-explorer"
+        id="traffic"
+        data-nodes="100000"
+        data-selected-edge="c2>c1"
+        aria-label="A service graph"
+      ></div>
+    </div>
+  </section>
+  <div class="resizer border-layout-east" data-min="240" data-max="560">
+    <section class="card panel" style="width: 22rem" aria-labelledby="traffic-title" data-density="compact">
+      <header class="panel-header">
+        <h3 class="panel-title" id="traffic-title">
+          Traffic
+          <span
+            class="text-muted-foreground"
+            data-graph-explorer-for="traffic"
+            data-graph-explorer-output="details-title"
+          ></span>
+        </h3>
+      </header>
+      <div class="panel-body" data-graph-explorer-for="traffic" data-graph-explorer-outlet="details"></div>
+    </section>
+  </div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.graphExplorer.register(df$('#traffic').get(0), {
+      kind: 'edge',
+      name: 'traffic',
+      detail: {
+        // links between clusters only; a link between entities keeps the built-in details
+        match: (item) => (item.edge.kind === 'agg' ? 10 : false),
+        title: (item) => `${item.source.label} → ${item.target.label}`,
+        render: (item, c) => {
+          const d = c.request('edge:' + item.id, () => c.fetchEdge(item.id));
+          if (!d) return c.html`<p class="graph-explorer-muted">Loading the links...</p>`;
+          const hours = Array.from({ length: 24 }, (_, k) => k + 'h');
+          const wave = (n, phase) => hours.map((_, k) => Math.round(n * (1 + 0.5 * Math.sin((k + phase) / 3.5))));
+          const calls = c.island(
+            'calls:' + item.id,
+            c.html`<div class="chart" role="img" aria-label="calls per minute, the last 24 hours" style="height:9rem" data-chart="${JSON.stringify(
+              {
+                grid: { left: 36, right: 8, top: 24, bottom: 20 },
+                tooltip: { trigger: 'axis' },
+                legend: { top: 0, right: 0, textStyle: { fontSize: 10 } },
+                xAxis: { type: 'category', data: hours, boundaryGap: false },
+                yAxis: { type: 'value', splitNumber: 3 },
+                series: [
+                  {
+                    name: '→ ' + item.target.label,
+                    type: 'line',
+                    smooth: true,
+                    showSymbol: false,
+                    data: wave(d.forward, 0),
+                    areaStyle: { opacity: 0.14 },
+                  },
+                  {
+                    name: '← ' + item.source.label,
+                    type: 'line',
+                    smooth: true,
+                    showSymbol: false,
+                    data: wave(d.backward, 4),
+                  },
+                ],
+              },
+            )}"></div>`,
+          );
+          const total = Math.max(1, d.forward + d.backward);
+          const share = (label, n) =>
+            c.html`<li><span class="graph-explorer-share-name">${label}</span><span class="graph-explorer-share-value">${n.toLocaleString('en-US')}</span><span class="graph-explorer-bar"><span style="inline-size:${Math.round((n / total) * 100)}%"></span></span></li>`;
+          const bad = d.pairs.filter((p) => p.state !== 'closed');
+          return c.html`<section class="graph-explorer-section"><h4 class="graph-explorer-section-title"><span>Calls per minute</span></h4>${calls}</section>
+            <section class="graph-explorer-section"><h4 class="graph-explorer-section-title"><span>Direction</span></h4>
+              <ul class="graph-explorer-shares">${share(item.source.label + ' → ' + item.target.label, d.forward)}${share(item.target.label + ' → ' + item.source.label, d.backward)}</ul></section>
+            <section class="graph-explorer-section"><h4 class="graph-explorer-section-title"><span>Breakers not closed</span><span class="graph-explorer-section-count">${bad.length}</span></h4>
+              <ul class="graph-explorer-rows">${bad.slice(0, 6).map((p) => c.html`<li class="graph-explorer-row"><button type="button" class="graph-explorer-row-main" data-graph-explorer-goto="${p.from.id}"><span class="graph-explorer-row-name">${p.from.label} → ${p.to.label}</span><span class="graph-explorer-row-meta">${p.trips} trips</span></button><span class="badge graph-explorer-state" data-variant="outline" data-state="${p.state}">${p.state}</span></li>`)}</ul></section>`;
+        },
+      },
+    });
+  });
+</script>
+```
+
+<SourceFiles component="graph-explorer" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Graph Explorer's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="graph-explorer" section="js" jsTitle="JS" />
+
+</DocPage>

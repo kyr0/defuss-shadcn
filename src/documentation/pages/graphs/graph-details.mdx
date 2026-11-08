@@ -1,0 +1,211 @@
+---
+title: "Graph Explorer: Details & Pages"
+description: "The Graph Explorer's details and relations outlets, a node's or a link's full page (Expand maximizes the Panel that holds the details), the drill-down from page to page, and detail renderers that compose library components - a Chart in an island."
+slug: "graph-details"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="graph-details" title="Details & Pages" component="graph-explorer">
+  The first selected node - or the selected link - shows in the <code>details</code> outlet, drawn by a detail renderer: its kind and path, its numbers, actions (Enter, Bring & Go, Expand) and its relations. The <code>relations</code> outlet lists the same relations as a Table whose link column is drawn by the edge label renderers. Expand turns the details into a full page: the <DocLink href="panel.html">Panel</DocLink> holding the outlet is maximized and the renderer gets <code>ctx.expanded</code>. On a page every name opens the next page down.
+</PageHeader>
+
+<H2 id="details">Details, relations and Expand</H2>
+
+<DocText>The details title is an output (<code>data-graph-explorer-output="details-title"</code>): the renderer's title for the selection, the authored text while nothing is selected - here it sits beside the Panel's own label. Expand - the card's button, the details' button, <code>E</code> or <code>setState(..., \{ expanded: true \})</code> - maximizes the details Panel; Back, Escape or the Panel's own tool restore it. A Panel holding the relations outlet renders it when it unfolds. The link button at the end of a relation, or a link's label in the graph, selects the link: its details show its traffic both ways, its breakers and who sends and receives most.</DocText>
+
+```html example label="Details beside the graph" schema="none" hint="Click a domain: the Panel shows its details and the table below its relations. Press E or Expand for its full page - the Panel maximizes over the layout; Back or Escape returns." previewStyle="align-items:stretch;"
+<div class="border-layout" data-frame="none" style="block-size: 34rem">
+  <section class="card panel border-layout-center" aria-label="Graph">
+    <div class="panel-body" data-flush>
+      <div
+        class="graph-explorer"
+        id="details"
+        data-nodes="100000"
+        data-selected="c2"
+        aria-label="A service graph"
+      ></div>
+    </div>
+  </section>
+  <div class="resizer border-layout-east" data-min="220" data-max="560">
+    <section class="card panel" style="width: 20rem" aria-labelledby="details-title" data-density="compact">
+      <header class="panel-header">
+        <h3 class="panel-title" id="details-title">
+          Details
+          <span
+            class="text-muted-foreground"
+            data-graph-explorer-for="details"
+            data-graph-explorer-output="details-title"
+          ></span>
+        </h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Details" />
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body" data-graph-explorer-for="details" data-graph-explorer-outlet="details"></div>
+    </section>
+  </div>
+  <div class="resizer border-layout-south" data-min="96" data-max="400">
+    <section class="card panel" style="height: 11rem" aria-labelledby="relations-title" data-density="compact">
+      <header class="panel-header">
+        <h3 class="panel-title" id="relations-title">
+          Relations
+          <span
+            class="text-muted-foreground"
+            data-graph-explorer-for="details"
+            data-graph-explorer-output="relations-title"
+          ></span>
+        </h3>
+      </header>
+      <div class="panel-body" data-flush data-graph-explorer-for="details" data-graph-explorer-outlet="relations"></div>
+    </section>
+  </div>
+</div>
+```
+
+<H2 id="drill-down">Drill down</H2>
+
+<DocText>An expanded page is the start of a drill-down: every name on it carries <code>data-graph-explorer-goto</code>, and while the page is expanded a click opens that node's page instead of flying the graph there - a domain's systems, a system's entities, an entity's links in and out. The path above the title goes back up; the graph moves along unseen, and the state records only where the drill-down lands, so a router can make every page an address (the <DocLink href="scaffold-knowledge-graph.html">Knowledge Graph</DocLink> scaffold does: Back walks back up).</DocText>
+
+<H2 id="every-row">Every row: grids on the pages</H2>
+
+<DocText>A page holds what is behind a node in full, not a sample: an expanded cluster lists every entity below it in a <DocLink href="data-grid.html">Data Grid</DocLink> - a domain of a million-node graph holds about 40,000 - and an expanded link every single link both ways. The worker builds the rows (<code>ctx.fetchRows(id)</code>); beside the grid, aggregations of the grid's own <code>df$.dataview</code> source show how the rows its filters match split up - by type, owner and the largest systems, or by relation, way and the busiest senders - and follow every filter. A name in the grid opens its page, so the drill-down goes on from there. A renderer of your own binds a grid or a chart in an island's <code>mount</code> - the <DocLink href="scaffold-knowledge-graph.html">Knowledge Graph</DocLink> scaffold puts a million records of a dataset in a grid with <DocLink href="charts-big-data.html">charts bound to it</DocLink>.</DocText>
+
+<H2 id="detail-renderers">A detail renderer of your own</H2>
+
+<DocText>A detail plugin's <code>render(node, ctx)</code> returns the details' markup - or the full page when <code>ctx.expanded</code> is set; <code>title(node)</code> names it. It stays a pure function: data it needs comes through <code>ctx.request(key, load)</code>, which returns <code>undefined</code> until the value arrives and then renders again - the worker's own data through <code>ctx.fetchDetails(id)</code>, <code>ctx.fetchView(id)</code> and <code>ctx.fetchEdge(id)</code>, anything else from your service. The built-in details are made of the library's Badge, Button, Card, Statistic and Table and the explorer's parts - <code>graph-explorer-stats</code>, <code>-section</code>, <code>-rows</code>, <code>-bar</code>, <code>-page</code>, <code>-kpis</code>, <code>-page-grid</code> - and a plugin writes the same classes.</DocText>
+
+<DocText>The details re-render whenever the selection or its data changes, and a re-render reconciles the markup: a component with a script would lose what it drew. <code>ctx.island(key, markup)</code> keeps it - the element stays as long as its key and its markup do. Here a <DocLink href="chart.html">Chart</DocLink> of the latency sits in an island in the side details and on the page.</DocText>
+
+```html example label="API systems with their metrics" schema="none" hint="Enter a domain and pick an API system (the plug icon): its numbers arrive from a pretend metrics service after a moment, its latency is a Chart. Expand shows its page with the latency of the last 24 hours and its endpoints." previewStyle="align-items:stretch;"
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+<div class="border-layout" data-frame="none" style="block-size: 36rem">
+  <section class="card panel border-layout-center" aria-label="Graph">
+    <div class="panel-body" data-flush>
+      <div class="graph-explorer" id="metrics" data-nodes="100000" data-focus="c1" aria-label="A service graph"></div>
+    </div>
+  </section>
+  <div class="resizer border-layout-east" data-min="240" data-max="560">
+    <section class="card panel" style="width: 22rem" aria-labelledby="metrics-title" data-density="compact">
+      <header class="panel-header">
+        <h3 class="panel-title" id="metrics-title">
+          Details
+          <span
+            class="text-muted-foreground"
+            data-graph-explorer-for="metrics"
+            data-graph-explorer-output="details-title"
+          ></span>
+        </h3>
+        <div class="panel-tools">
+          <label class="swap panel-maximize">
+            <input type="checkbox" aria-label="Maximize Details" />
+            <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+            <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body" data-graph-explorer-for="metrics" data-graph-explorer-outlet="details"></div>
+    </section>
+  </div>
+</div>
+<script type="module">
+  // a pretend metrics service: the same numbers for an id, 300 to 700 ms late
+  const hash = (id) => [...id].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 0);
+  const HOURS = Array.from({ length: 24 }, (_, k) => k + 'h');
+  const metrics = (id) =>
+    new Promise((resolve) => {
+      const h = hash(id);
+      const p95 = HOURS.map((_, k) => 60 + ((h >>> (k % 16)) % 120) + Math.round(30 * Math.sin((k + (h % 7)) / 3)));
+      const endpoints = ['GET /v1/orders/{id}', 'POST /v1/orders', 'GET /v1/items', 'DELETE /v1/orders/{id}'];
+      setTimeout(
+        () =>
+          resolve({
+            p95,
+            p50: p95.map((v) => Math.round(v / 2.4)),
+            errors: ((h >>> 8) % 300) / 100,
+            rps: 50 + ((h >>> 12) % 4000),
+            slo: 99 + ((h >>> 4) % 99) / 100,
+            endpoints: endpoints.map((path, k) => ({ path, p95: p95[k * 5] - k * 9 })),
+          }),
+        300 + (h % 400),
+      );
+    });
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.graphExplorer.register(df$('#metrics').get(0), {
+      kind: 'detail',
+      name: 'api-system',
+      match: (n) => (n.kind === 'cluster' && n.typeName === 'API' ? 10 : false),
+      title: (n) => `${n.label} (API)`,
+      render: (n, c) => {
+        const m = c.request('metrics:' + n.id, () => metrics(n.id));
+        if (!m) return c.html`<p class="graph-explorer-muted">Loading the metrics...</p>`;
+        const now = m.p95[23];
+        // a Chart in an island: its canvas stays while the details re-render
+        const latency = (height) =>
+          c.island(
+            `latency:${n.id}:${height}`,
+            c.html`<div class="chart" role="img" aria-label="p50 and p95 latency, the last 24 hours" style="height:${height}" data-chart="${JSON.stringify(
+              {
+                grid: { left: 36, right: 8, top: 24, bottom: 20 },
+                tooltip: { trigger: 'axis' },
+                legend: { top: 0, right: 0, textStyle: { fontSize: 10 } },
+                xAxis: { type: 'category', data: HOURS, boundaryGap: false },
+                yAxis: { type: 'value', splitNumber: 3 },
+                series: [
+                  { name: 'p50', type: 'line', smooth: true, showSymbol: false, data: m.p50 },
+                  {
+                    name: 'p95',
+                    type: 'line',
+                    smooth: true,
+                    showSymbol: false,
+                    data: m.p95,
+                    areaStyle: { opacity: 0.14 },
+                  },
+                ],
+              },
+            )}"></div>`,
+          );
+        const facts = c.html`<dl class="graph-explorer-stats">
+          <div class="graph-explorer-stat"><dt>p95 latency</dt><dd>${now} ms</dd></div>
+          <div class="graph-explorer-stat" data-tone="${m.errors > 1.5 ? 'danger' : 'ok'}"><dt>Error rate</dt><dd>${m.errors.toFixed(2)} %</dd></div>
+          <div class="graph-explorer-stat"><dt>Requests</dt><dd>${m.rps.toLocaleString('en-US')} /s</dd></div>
+          <div class="graph-explorer-stat"><dt>SLO</dt><dd>${m.slo.toFixed(2)} %</dd></div>
+        </dl>`;
+        const toggle = c.expanded
+          ? c.html`<button type="button" class="btn" data-variant="outline" data-size="sm" data-graph-explorer-action="collapse">${c.icon('shrink')} Back to graph</button>`
+          : c.html`<button type="button" class="btn" data-variant="ghost" data-size="sm" data-graph-explorer-action="expand">${c.icon('expand')} Expand</button>`;
+        const actions = c.html`<div class="graph-explorer-detail-actions"><button type="button" class="btn" data-size="sm" data-graph-explorer-action="enter">${c.icon('arrow-right')} Enter system</button>${toggle}</div>`;
+        if (!c.expanded)
+          return c.html`${facts}${actions}<section class="graph-explorer-section"><h4 class="graph-explorer-section-title"><span>Latency, 24 h</span></h4>${latency('8.5rem')}</section>`;
+        const endpoints = c.html`<div class="table-container"><table class="table"><thead><tr class="table-row"><th class="table-head" scope="col">Endpoint</th><th class="table-head" scope="col" style="text-align:right">p95</th></tr></thead><tbody>${m.endpoints.map((e) => c.html`<tr class="table-row"><td class="table-cell"><span class="badge" data-variant="secondary">${e.path.split(' ')[0]}</span> <code>${e.path.split(' ')[1]}</code></td><td class="table-cell" style="text-align:right">${e.p95} ms</td></tr>`)}</tbody></table></div>`;
+        return c.html`<div class="graph-explorer-page">
+          <header class="graph-explorer-page-head"><span class="graph-explorer-detail-tile" data-size="xl">${c.icon('plug-zap', { size: 'xl' })}</span><div class="graph-explorer-page-titles"><h2 class="graph-explorer-page-title">${n.label}</h2><p class="graph-explorer-detail-kicker">API system · ${n.members.toLocaleString('en-US')} nodes</p></div>${actions}</header>
+          <section class="graph-explorer-kpis">
+            <div class="statistic graph-explorer-kpi"><p class="statistic-title">p95 latency</p><p class="statistic-value">${now} ms</p></div>
+            <div class="statistic graph-explorer-kpi" data-tone="${m.errors > 1.5 ? 'danger' : 'ok'}"><p class="statistic-title">Error rate</p><p class="statistic-value">${m.errors.toFixed(2)} %</p></div>
+            <div class="statistic graph-explorer-kpi"><p class="statistic-title">SLO</p><p class="statistic-value">${m.slo.toFixed(2)} %</p></div>
+          </section>
+          <div class="graph-explorer-page-grid">
+            <section class="card graph-explorer-page-card" data-size="sm" data-wide><header class="card-header"><h3 class="card-title">Latency, the last 24 hours</h3></header><div class="card-content">${latency('14rem')}</div></section>
+            <section class="card graph-explorer-page-card" data-size="sm" data-wide><header class="card-header"><h3 class="card-title">Endpoints</h3></header><div class="card-content">${endpoints}</div></section>
+          </div>
+        </div>`;
+      },
+    });
+  });
+</script>
+```
+
+<SourceFiles component="graph-explorer" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Graph Explorer's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="graph-explorer" section="js" jsTitle="JS" />
+
+</DocPage>

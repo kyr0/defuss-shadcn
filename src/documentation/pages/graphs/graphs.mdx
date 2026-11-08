@@ -1,0 +1,60 @@
+---
+title: "Graphs"
+description: "Graphs in defuss-shadcn: the Graph Explorer renders knowledge graphs of up to four million nodes in plain DOM and canvas - a worker draws the far field, a bounded pool of nodes gets markup, and you zoom from domains down to single entities."
+slug: "graphs"
+---
+
+import { DocPage, PageHeader, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="graphs" title="Graphs" introStyle="max-width:42rem;">
+  One component for graphs too big to draw node by node. The <DocLink href="graph-explorer.html">Graph Explorer</DocLink> keeps a million nodes in a Web Worker, draws what is far away into one canvas and gives DOM only to the few hundred nodes worth reading - chips, cards, labels along the edges. You zoom into a cluster to enter it and out to leave it; search, an outline, details and relations sit wherever the page puts them. The <DocLink href="scaffold-knowledge-graph.html">Knowledge Graph</DocLink> scaffold puts them into a Border Layout of Panels and drills from a domain down to a dataset, with pages built from Chart, Geo Map and the other components.
+</PageHeader>
+
+```html example label="A million nodes" schema="none" hint="Zoom with the wheel or a pinch: a cluster that fills most of the view is entered, the breadcrumb follows. Drag to pan - into a neighbour and you are there. Press / and type 'ledger', Enter flies to it. ? shows every key." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="flex-1 min-w-0" data-graph-explorer-for="overview" data-graph-explorer-outlet="breadcrumb"></div>
+    <div class="w-full max-w-72" data-graph-explorer-for="overview" data-graph-explorer-outlet="search"></div>
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-graph-explorer-for="overview"
+      data-graph-explorer-action="fit"
+    >
+      Fit
+    </button>
+  </div>
+  <div
+    class="graph-explorer"
+    id="overview"
+    data-nodes="1000000"
+    data-frame
+    data-hud
+    aria-label="A synthetic service graph of a million nodes"
+    style="block-size: 30rem"
+  ></div>
+</div>
+```
+
+<H2 id="how-it-works">How it works</H2>
+
+<DocText>The worker builds the graph and owns everything that scales with it: the hierarchy of clusters, a layout per cluster (made when you first come near it), the cycles, and every frame's far field - the dots and bulk edges of all nodes in view, drawn into an <code>OffscreenCanvas</code>. With each frame it sends back which nodes are worth a chip or a card. The main thread keeps a pool of DOM slots for those, morphs a slot only when its markup changed, and commits the bitmap and the DOM in the same animation frame. However big the graph, the page holds at most 120 cards, 300 chips and 200 edge labels.</DocText>
+
+```mermaid label="Two threads, one frame" caption="Fig 1. The worker draws everything far away and decides which nodes get markup; the page draws only those."
+flowchart LR
+    Camera["camera<br/>pan, zoom, dive"] -->|"camera id"| Worker["worker:<br/>graph, layouts, cycles"]
+    Worker -->|"ImageBitmap"| Canvas["canvas:<br/>dots and bulk edges"]
+    Worker -->|"tiers: dot, chip, card"| Slots["pooled DOM slots:<br/>chips, cards, labels"]
+    Canvas --> Frame["one animation frame"]
+    Slots --> Frame
+```
+
+<H2 id="topics">Topics</H2>
+
+<DocText><DocLink href="graph-navigation.html">Zoom & Navigation</DocLink> - semantic zoom, the keyboard, search, the breadcrumb and the outline, Bring & Go. <DocLink href="graph-nodes.html">Node Renderers</DocLink> - the Node UIs and your own chips and cards. <DocLink href="graph-edges.html">Edge Rules & Labels</DocLink> - how links are drawn, labelled per zoom level, and the circuit breakers. <DocLink href="graph-details.html">Details & Pages</DocLink> - the details and relations outlets and a node's full page.</DocText>
+
+</DocPage>

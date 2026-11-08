@@ -1,0 +1,171 @@
+---
+title: "Graph Explorer"
+description: "Graph Explorer component - a knowledge graph of 2,000 to 4,000,000 nodes: a worker draws the far field into a canvas, a bounded pool of DOM nodes shows what you read, semantic zoom dives into clusters, and outlets put breadcrumb, search, outline, details and relations wherever the page wants them."
+slug: "graph-explorer"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="graph-explorer" title="Graph Explorer" component="graph-explorer">
+  A graph as one element: a <code>&lt;div class="graph-explorer"&gt;</code> becomes a focusable viewport over a graph of up to four million nodes. A Web Worker builds the graph and draws the far field into a canvas; only the nodes worth reading get DOM - chips, cards, labels along the edges - from renderers you can replace. What it shows is attributes: the cluster you are in (<code>data-focus</code>), the selection (<code>data-selected</code>), the Node UI (<code>data-node-ui</code>), the expanded page (<code>data-expanded</code>). Everything around it - breadcrumb, search, outline, details, relations - is an outlet the page places.
+</PageHeader>
+
+<SkillPanel component="graph-explorer">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div role="application"&gt;</code> with a canvas for the worker's bitmap, an SVG for the highlighted edges and pooled <code>&lt;div&gt;</code> slots for nodes and labels. The state is on the element as <code>data-*</code> attributes; the drawing and the outlets' content are the runtime's.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>, <DocLink href="button.html">Button</DocLink>, <DocLink href="breadcrumb.html">Breadcrumb</DocLink>, <DocLink href="card.html">Card</DocLink>, <DocLink href="input.html">Input</DocLink>, <DocLink href="kbd.html">Kbd</DocLink>, <DocLink href="table.html">Table</DocLink>; Expand works with a <DocLink href="panel.html">Panel</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API" title="the graph off the main thread"><code>Worker</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas" title="the far field, drawn in the worker"><code>OffscreenCanvas</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ImageBitmapRenderingContext" title="the bitmap, shown without a copy"><code>bitmaprenderer</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" title="pan, pinch, press and hold"><code>Pointer Events</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="the keyboard map"><code>popover</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask" title="the icons"><code>mask</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the viewport refits"><code>ResizeObserver</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.graph-explorer</code>
+    <code>.graph-explorer-node</code>
+    <code>.graph-explorer-chip</code>
+    <code>.graph-explorer-card</code>
+    <code>.graph-explorer-edge-label</code>
+    <code>.graph-explorer-icon</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="graph-explorer PoC" description="The design study's proof of concept this component is ported from (MIT, Aron Homberg)" />
+    <Variant name="Lucide (lucide-static 0.469.0)" description="The icon subset, drawn as CSS masks (ISC)" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• One tab stop: arrows move the focus to the nearest node in that direction, Enter enters a cluster, Space selects, Backspace moves up, ? opens the keyboard map</SkillText>
+  <SkillText dense>• The view, the focused node and Bring & Go are announced in a live region (a bound status output, else the explorer's own)</SkillText>
+  <SkillText dense>• Reduced motion: jumps instead of flights, no animated edges; forced colors: system colors on the canvas and in the DOM</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Graph Explorer" hint="A synthetic service graph of 100,000 nodes: six domains, their systems, their entities. Wheel or pinch to zoom, drag to pan; click a node to select it, double click or Enter to go in. The State tab writes the same attributes the clicks do."
+<div
+  class="graph-explorer"
+  id="graph"
+  data-nodes="100000"
+  data-frame
+  aria-label="A service graph"
+  style="block-size: 28rem"
+  data-state-demo
+></div>
+```
+
+<H2 id="outlets">Outlets</H2>
+
+<DocText>An outlet is any element the page binds with <code>data-graph-explorer-for="&lt;id&gt;"</code>: <code>data-graph-explorer-outlet</code> names what the runtime puts in it - <code>breadcrumb</code>, <code>search</code>, <code>outline</code>, <code>details</code>, <code>relations</code>, <code>node-ui</code> - and <code>data-graph-explorer-output</code> a readout - <code>details-title</code>, <code>relations-title</code>, <code>view</code>, <code>status</code>. <code>data-graph-explorer-action</code> buttons move up, fit, run the breaker simulation or open the keyboard map. The <DocLink href="scaffold-knowledge-graph.html">Knowledge Graph</DocLink> scaffold places them in Panels.</DocText>
+
+```html example label="Breadcrumb, search, outline and details" schema="none" hint="Pick a node in the outline or the graph: the details show it. The breadcrumb's crumbs move up; the search flies anywhere." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="flex-1 min-w-0" data-graph-explorer-for="outlets" data-graph-explorer-outlet="breadcrumb"></div>
+    <div class="w-full max-w-64" data-graph-explorer-for="outlets" data-graph-explorer-outlet="search"></div>
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-graph-explorer-for="outlets"
+      data-graph-explorer-action="up"
+    >
+      Up
+    </button>
+  </div>
+  <div class="grid gap-2" style="grid-template-columns: 12rem minmax(0, 1fr) 16rem; block-size: 26rem">
+    <div class="card overflow-hidden" data-graph-explorer-for="outlets" data-graph-explorer-outlet="outline"></div>
+    <div
+      class="graph-explorer"
+      id="outlets"
+      data-nodes="100000"
+      data-seed="11"
+      data-frame
+      aria-label="A service graph"
+    ></div>
+    <div class="card p-3 overflow-auto" data-graph-explorer-for="outlets" data-graph-explorer-outlet="details"></div>
+  </div>
+  <p class="text-sm text-muted-foreground m-0">
+    <output data-graph-explorer-for="outlets" data-graph-explorer-output="status"></output>
+  </p>
+</div>
+```
+
+<H2 id="icons">Icons</H2>
+
+<DocText>Renderers draw icons with <code>ctx.icon(name, \{ size, tone, label \})</code>: a Lucide subset as CSS masks - one empty element each, cheap to morph, painted in the current color. Sizes <code>xs</code>, <code>sm</code>, <code>lg</code> and <code>xl</code> go around the 1rem default; a <code>tone</code> takes the graph's colour role; with a <code>label</code> the icon is an image, else decorative. <code>df$.shadcn.graphExplorer.registerIcon(name, shapes)</code> adds one.</DocText>
+
+```html example label="Icon sizes and tones" schema="none"
+<p class="flex items-center gap-3">
+  <i class="graph-explorer-icon" data-icon="database" data-size="xs" aria-hidden="true"></i>
+  <i class="graph-explorer-icon" data-icon="database" data-size="sm" aria-hidden="true"></i>
+  <i class="graph-explorer-icon" data-icon="database" aria-hidden="true"></i>
+  <i class="graph-explorer-icon" data-icon="database" data-size="lg" aria-hidden="true"></i>
+  <i class="graph-explorer-icon" data-icon="database" data-size="xl" aria-hidden="true"></i>
+  <i
+    class="graph-explorer-icon"
+    data-icon="zap-off"
+    data-size="xl"
+    data-tone="danger"
+    role="img"
+    aria-label="Breaker open"
+  ></i>
+  <i
+    class="graph-explorer-icon"
+    data-icon="shield-check"
+    data-size="xl"
+    data-tone="ok"
+    role="img"
+    aria-label="Breaker closed"
+  ></i>
+</p>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>. The state is the element's attributes - a click, a zoom into a cluster, the Node UI switch or an attribute written from outside changes it without <code>setState</code>, and <code>getState()</code> reports it:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the top level, nothing selected (<code>data-focus</code> and <code>data-selected</code> removed)</li>
+    <li><code>selected</code> - <code>config.selected</code> nodes picked at the top level; an id deeper down flies there, and the state lands in <code>focused</code></li>
+    <li><code>focused</code> - inside the cluster <code>config.focus</code> (the view dives there), with or without a selection</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes <code>nodeUi</code> (<code>data-node-ui</code>) and <code>expanded</code> (<code>data-expanded</code>: the first selected node's page, the details Panel maximized). A config that names a focus or a selection asks for the state that shows it. Events: <code>graph-explorer-select</code>, <code>graph-explorer-focus</code>, <code>graph-explorer-view</code> (the camera came to rest), <code>graph-explorer-node-ui</code>, <code>graph-explorer-action</code>, <code>graph-explorer-error</code>.</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/graph-explorer-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/graph-explorer.schema.json"><code>graph-explorer.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `nodeUi` | `enum` | `default`, `health`, `compact` | `"default"` | How nodes are drawn: Labels, health bars, compact (`data-node-ui`; plugins add more). |
+| `focused` | `string` | `—` | `""` | The cluster the view is in (`setState('focused', { focus })`, observed from `data-focus`). |
+| `selected` | `string` | `—` | `""` | The selected node ids, space separated (observed from `data-selected`). |
+| `edge` | `string` | `—` | `""` | The selected link, `<source id>><target id>` (observed from `data-selected-edge`); nodes and a link are never selected together. |
+| `expanded` | `boolean` | `true`, `false` | `false` | The selection's full page in the details outlet - the first selected node's or the link's (`data-expanded`). |
+```
+
+</StatesSection>
+
+<ApiSection component="graph-explorer" />
+
+<SourceFiles component="graph-explorer" section="css" />
+
+<SourceFiles component="graph-explorer" section="js" jsTitle="JS" />
+
+</DocPage>

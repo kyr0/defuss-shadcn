@@ -1,0 +1,112 @@
+---
+title: "Graph Explorer: Zoom & Navigation"
+description: "Moving through a million-node graph: semantic zoom that enters and leaves clusters, smooth flights between any two nodes, the keyboard, search, the breadcrumb and the outline, signposts to relations off screen, and Bring & Go."
+slug: "graph-navigation"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="graph-navigation" title="Zoom & Navigation" component="graph-explorer">
+  Every cluster of the graph is a disk of its own. Zoom into one until it fills most of the view and you are inside it: the view rebases onto its children, the breadcrumb grows a crumb, the neighbours stay around it as a dimmed backdrop with their contents. Zoom out, or pan off the disk, and you are back one level up. Search, the breadcrumb, the outline and the relations fly anywhere in the graph along one smooth zoom-pan path.
+</PageHeader>
+
+<H2 id="semantic-zoom">Semantic zoom</H2>
+
+<DocText>What a node shows depends on its size on screen: a dot, then a chip with its name, then a card with its numbers and actions. A cluster enters at 85 % of the viewport's short side and is left again below 38 %, so the view never flips back and forth at one zoom. Panning past a cluster's rim hands the view to its parent, which enters the neighbour once that is centered and big enough.</DocText>
+
+```html example label="From domains to entities" schema="none" hint="Use the buttons: Dive enters the domain Search, Deeper flies to one of its entities and selects it, Out and Fit step back. Each flight is one smooth zoom-pan." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="zoom-dive">Dive into c3</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="zoom-deep">Fly to entity n4242</button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-graph-explorer-for="zoom"
+      data-graph-explorer-action="up"
+    >
+      Out
+    </button>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-graph-explorer-for="zoom"
+      data-graph-explorer-action="fit"
+    >
+      Fit
+    </button>
+    <div class="flex-1 min-w-0" data-graph-explorer-for="zoom" data-graph-explorer-outlet="breadcrumb"></div>
+  </div>
+  <div
+    class="graph-explorer"
+    id="zoom"
+    data-nodes="100000"
+    data-frame
+    aria-label="Zoom"
+    style="block-size: 26rem"
+  ></div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const ge = df$.shadcn.graphExplorer;
+    df$('#zoom-dive').on('click', () => ge.dive('#zoom', 'c3'));
+    df$('#zoom-deep').on('click', () => ge.navigate('#zoom', 'n4242'));
+  });
+</script>
+```
+
+<H2 id="keyboard">The keyboard</H2>
+
+<DocText>The explorer is one tab stop. Arrows move the keyboard focus to the nearest node in that direction (Shift + arrows pans), <code>Enter</code> enters a cluster or expands an entity, <code>Space</code> selects (Shift adds), <code>]</code> and <code>[</code> walk the focused node's neighbours, <code>+</code> / <code>-</code> zoom, <code>0</code> fits, <code>Backspace</code> moves up, <code>/</code> jumps to the search, <code>?</code> opens the map of every key. Each move is announced: the node, its type, its size and where it is.</DocText>
+
+<H2 id="search-and-outline">Search and the outline</H2>
+
+<DocText>The search outlet is a combobox over every node: the worker scans names in slices, so a keystroke aborts the previous scan, and the first results show while it runs. <code>#4242</code> finds the entity <code>n4242</code>. The outline lists the path and the view's children, the biggest first, with a filter; a row selects its node, a double click or Enter goes in.</DocText>
+
+```html example label="Search and outline" schema="none" hint="Type ledger or #4242 and press Enter. The outline's rows select; double click a domain to enter it." previewStyle="align-items:stretch;"
+<div class="grid gap-2" style="grid-template-columns: 14rem minmax(0, 1fr); block-size: 28rem">
+  <div class="card overflow-hidden grid" style="grid-template-rows: auto minmax(0, 1fr)">
+    <div class="p-2" data-graph-explorer-for="find" data-graph-explorer-outlet="search"></div>
+    <div class="overflow-hidden" data-graph-explorer-for="find" data-graph-explorer-outlet="outline"></div>
+  </div>
+  <div
+    class="graph-explorer"
+    id="find"
+    data-nodes="100000"
+    data-seed="21"
+    data-frame
+    aria-label="Search and outline"
+  ></div>
+</div>
+```
+
+<H2 id="bring-and-go">Signposts and Bring & Go</H2>
+
+<DocText>Relations that leave the screen become signposts at its edge: the neighbours of the selection, and inside a cluster the clusters its links lead to. Press and hold a node (or press <code>B</code>) and its busiest neighbours line up in a ring around it; choosing one travels there and selects it.</DocText>
+
+```html example label="Bring & Go" schema="none" hint="Press and hold a domain, or focus the graph, move to a node with the arrows and press B. Choose a neighbour in the ring." previewStyle="align-items:stretch;"
+<div
+  class="graph-explorer"
+  id="bring"
+  data-nodes="100000"
+  data-seed="5"
+  data-frame
+  data-selected="c2"
+  aria-label="Bring and Go"
+  style="block-size: 26rem"
+></div>
+```
+
+<SourceFiles component="graph-explorer" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Graph Explorer's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="graph-explorer" section="js" jsTitle="JS" />
+
+</DocPage>

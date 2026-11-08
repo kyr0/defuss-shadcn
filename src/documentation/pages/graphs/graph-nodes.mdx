@@ -1,0 +1,120 @@
+---
+title: "Graph Explorer: Node Renderers"
+description: "How the Graph Explorer draws nodes: chips and cards per zoom level, the Labels, Health and Compact Node UIs and the switch between them, and node renderers of your own - one node type, or a whole Node UI - written with an escaping html template."
+slug: "graph-nodes"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="graph-nodes" title="Node Renderers" component="graph-explorer">
+  A node gets DOM once it is big enough to read: first a chip with its name, then a card with its numbers and actions. Which markup a chip or a card holds is a renderer's - a pure function from the node to <code>ctx.html</code> markup. The built-in renderers come in three Node UIs - Labels, Health and Compact - and a plugin can re-skin one node type or add a whole Node UI of its own.
+</PageHeader>
+
+<H2 id="node-uis">Node UIs</H2>
+
+<DocText><code>data-node-ui</code> picks the Node UI: <code>default</code> (Labels) shows names, sizes and breaker badges, <code>health</code> shows each cluster's links by breaker state as a bar and each entity's freshness, <code>compact</code> smaller boxes so more of them fit. A <code>node-ui</code> outlet is a switch between them (the <code>V</code> key cycles); plugin Node UIs join it.</DocText>
+
+```html example label="Labels, Health, Compact" schema="none" hint="Switch the Node UI above the graph, or focus the graph and press V. Zoom into a domain to see the entities' freshness meters in Health." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div data-graph-explorer-for="uis" data-graph-explorer-outlet="node-ui"></div>
+  <div
+    class="graph-explorer"
+    id="uis"
+    data-nodes="100000"
+    data-node-ui="health"
+    data-frame
+    aria-label="Node UIs"
+    style="block-size: 26rem"
+  ></div>
+</div>
+```
+
+<H2 id="renderers">A renderer of your own</H2>
+
+<DocText><code>df$.shadcn.graphExplorer.register(scope, plugin)</code> adds a node renderer for every explorer (<code>'global'</code>) or one element (its plugins win). <code>match(node)</code> returns a score or <code>false</code> - the highest wins -, <code>sizes</code> give the chip's and the card's box, <code>render(node, ctx)</code> the markup for <code>ctx.tier</code>. Markup is only what <code>ctx.html</code> makes: every interpolation is escaped, and <code>on*</code> attributes, URLs that run code and active elements are stripped before it reaches the page. Anything asynchronous goes through <code>ctx.request(key, load)</code>, which renders the node again when the value arrives.</DocText>
+
+```html example label="Datasets as cards of their own" schema="none" hint="Enter a domain, then a system: Dataset entities draw their row count and a freshness badge. The other entities keep the built-in renderer." previewStyle="align-items:stretch;"
+<div
+  class="graph-explorer"
+  id="datasets"
+  data-nodes="100000"
+  data-focus="c8"
+  data-frame
+  aria-label="Datasets"
+  style="block-size: 26rem"
+></div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const ge = df$.shadcn.graphExplorer;
+    ge.register(df$('#datasets').get(0), {
+      kind: 'node',
+      name: 'dataset',
+      match: (n) => (n.kind === 'entity' && n.typeName === 'Dataset' ? 10 : false),
+      sizes: { chip: [156, 26], card: [236, 100] },
+      render: (n, c) => {
+        const icon = c.icon('database', { cls: 'graph-explorer-type-icon', type: n.type });
+        if (c.tier === 'chip')
+          return c.html`<span class="graph-explorer-chip" data-kind="entity">${icon}<span class="graph-explorer-label">${n.label}</span><span class="graph-explorer-count">${n.attrs.rows}k</span></span>`;
+        const stale = n.attrs.freshness > 24;
+        return c.html`<article class="graph-explorer-card" data-kind="entity">
+          <header class="graph-explorer-card-head">${icon}<strong class="graph-explorer-label">${n.label}</strong></header>
+          <p class="graph-explorer-card-meta">Dataset · ${n.attrs.rows.toLocaleString('en-US')}k rows</p>
+          <p class="graph-explorer-card-flags"><span class="badge" data-variant="${stale ? 'destructive' : 'secondary'}">${stale ? 'stale' : 'fresh'} · ${n.attrs.freshness} h</span><span class="badge" data-variant="outline">owner ${n.attrs.owner}</span></p>
+        </article>`;
+      },
+    });
+  });
+</script>
+```
+
+<DocText>These explorers have no details outlet, so their cards carry no Expand button: a page needs somewhere to show. With an outlet the built-in cards offer it, and a detail plugin's <code>page(node)</code> can say a node has none.</DocText>
+
+<H2 id="node-ui-plugin">A Node UI of your own</H2>
+
+<DocText>A renderer with a <code>variant</code> belongs to that Node UI: <code>variantLabel</code> and <code>variantIcon</code> name it in the switch. It may cover only some nodes - here only entities get an owner avatar; clusters fall back to the renderer without a variant.</DocText>
+
+```html example label="An Owners Node UI" schema="none" hint="Owners is a plugin: entities show their owner's initials; clusters keep the Labels renderer. Enter a system to see them." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div data-graph-explorer-for="owners" data-graph-explorer-outlet="node-ui"></div>
+  <div
+    class="graph-explorer"
+    id="owners"
+    data-nodes="100000"
+    data-focus="c8"
+    data-node-ui="owners"
+    data-frame
+    aria-label="Owners"
+    style="block-size: 26rem"
+  ></div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const OWNERS = ['mira', 'jonas', 'li', 'sam', 'ada', 'omar', 'noor', 'tomas'];
+    df$.shadcn.graphExplorer.register(df$('#owners').get(0), {
+      kind: 'node',
+      name: 'owners',
+      variant: 'owners',
+      variantLabel: 'Owners',
+      variantIcon: 'users',
+      match: (n) => (n.kind === 'entity' ? 0 : false),
+      sizes: { chip: [168, 30], card: [232, 72] },
+      render: (n, c) => {
+        const avatar = c.html`<span class="graph-explorer-avatar" data-type="${OWNERS.indexOf(n.attrs.owner)}">${n.attrs.owner.slice(0, 2).toUpperCase()}</span>`;
+        if (c.tier === 'chip')
+          return c.html`<span class="graph-explorer-chip" data-kind="entity">${avatar}<span class="graph-explorer-label">${n.label}</span></span>`;
+        return c.html`<article class="graph-explorer-card" data-kind="entity"><header class="graph-explorer-card-head">${avatar}<strong class="graph-explorer-label">${n.label}</strong></header><p class="graph-explorer-card-meta">owned by ${n.attrs.owner} · ${n.typeName}</p></article>`;
+      },
+    });
+  });
+</script>
+```
+
+<SourceFiles component="graph-explorer" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Graph Explorer's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="graph-explorer" section="js" jsTitle="JS" />
+
+</DocPage>

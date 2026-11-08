@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>graph-explorer e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/sizing.css" />
+    <link rel="stylesheet" href="/dist/components/all.css" />
+    <link rel="stylesheet" href="/dist/components/graph-explorer/graph-explorer.css" />
+    <style>
+      body { padding: 1rem; max-width: 72rem; font-family: system-ui; }
+      .graph-explorer[data-frame] { block-size: 26rem; margin-block: 1rem; }
+    </style>
+  </head>
+  <body>
+    <!-- mirrors the doc pages: a standalone explorer, the Node UIs, a start inside a cluster, a start with a selection,
+         a start with a link selected, and the application - a Border Layout of Panels holding every outlet, output and
+         action -->
+    <p id="ge-icons">
+      <i class="graph-explorer-icon" data-icon="database" data-size="xs" aria-hidden="true"></i>
+      <i class="graph-explorer-icon" data-icon="database" data-size="sm" aria-hidden="true"></i>
+      <i class="graph-explorer-icon" data-icon="database" aria-hidden="true"></i>
+      <i class="graph-explorer-icon" data-icon="database" data-size="lg" aria-hidden="true"></i>
+      <i class="graph-explorer-icon" data-icon="database" data-size="xl" data-tone="danger" role="img" aria-label="Dataset"></i>
+    </p>
+
+    <div class="graph-explorer" id="ge-basic" data-nodes="20000" data-seed="7" data-frame aria-label="A service graph"></div>
+
+    <div class="graph-explorer" id="ge-health" data-nodes="20000" data-seed="3" data-frame data-hud data-node-ui="health" aria-label="Health"></div>
+
+    <div class="graph-explorer" id="ge-compact" data-nodes="20000" data-seed="5" data-frame data-node-ui="compact" aria-label="Compact"></div>
+
+    <div class="graph-explorer" id="ge-focused" data-nodes="20000" data-seed="7" data-frame data-focus="c3" aria-label="Inside a domain"></div>
+
+    <div class="graph-explorer" id="ge-picked" data-nodes="20000" data-seed="7" data-frame data-selected="c2 c4" aria-label="Two domains picked"></div>
+
+    <div class="graph-explorer" id="ge-link" data-nodes="20000" data-seed="7" data-frame data-selected-edge="c1>c6" aria-label="A link picked"></div>
+
+    <div class="border-layout" id="ge-layout" data-frame="none" style="block-size: 40rem">
+      <header class="border-layout-north flex items-center gap-3 px-3 py-2">
+        <div class="flex-1 min-w-0" data-graph-explorer-for="ge-app" data-graph-explorer-outlet="breadcrumb"></div>
+        <div class="w-full max-w-80" data-graph-explorer-for="ge-app" data-graph-explorer-outlet="search"></div>
+        <button class="btn" data-variant="outline" data-size="sm" type="button" data-graph-explorer-for="ge-app" data-graph-explorer-action="up">Out</button>
+        <button class="btn" data-variant="outline" data-size="sm" type="button" data-graph-explorer-for="ge-app" data-graph-explorer-action="fit">Fit</button>
+        <button class="btn" data-variant="outline" data-size="sm" type="button" aria-pressed="false" data-graph-explorer-for="ge-app" data-graph-explorer-action="live">Live breakers</button>
+        <button class="btn" data-variant="ghost" data-size="sm" type="button" data-graph-explorer-for="ge-app" data-graph-explorer-action="help">Keys</button>
+      </header>
+      <div class="resizer border-layout-west" data-min="160" data-max="420">
+        <section class="card panel" id="ge-outline" style="width: 15rem" aria-labelledby="ge-outline-t" data-density="compact">
+          <header class="panel-header">
+            <h3 class="panel-title" id="ge-outline-t">Outline</h3>
+            <div class="panel-tools">
+              <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Outline" /><span class="swap-off">-</span><span class="swap-on">+</span></label>
+            </div>
+          </header>
+          <div class="panel-body" data-flush data-graph-explorer-for="ge-app" data-graph-explorer-outlet="outline"></div>
+        </section>
+      </div>
+      <section class="card panel border-layout-center" id="ge-graph" aria-labelledby="ge-graph-t" data-density="compact">
+        <header class="panel-header">
+          <h3 class="panel-title" id="ge-graph-t" data-graph-explorer-for="ge-app" data-graph-explorer-output="view">Graph</h3>
+          <div class="panel-tools" data-graph-explorer-for="ge-app" data-graph-explorer-outlet="node-ui"></div>
+        </header>
+        <div class="panel-body" data-flush>
+          <div class="graph-explorer" id="ge-app" data-nodes="20000" data-seed="7" aria-label="The application"></div>
+        </div>
+      </section>
+      <div class="resizer border-layout-east" data-min="240" data-max="640">
+        <section class="card panel" id="ge-details" style="width: 22rem" aria-labelledby="ge-details-t" data-density="compact">
+          <header class="panel-header">
+            <h3 class="panel-title" id="ge-details-t" data-graph-explorer-for="ge-app" data-graph-explorer-output="details-title">Details</h3>
+            <div class="panel-tools">
+              <label class="swap panel-maximize"><input type="checkbox" aria-label="Maximize Details" /><span class="swap-off">+</span><span class="swap-on">-</span></label>
+            </div>
+          </header>
+          <div class="panel-body" data-graph-explorer-for="ge-app" data-graph-explorer-outlet="details"></div>
+        </section>
+      </div>
+      <div class="resizer border-layout-south" data-min="96" data-max="520">
+        <section class="card panel" id="ge-relations" style="height: 12rem" aria-labelledby="ge-relations-t" data-density="compact">
+          <header class="panel-header">
+            <h3 class="panel-title" id="ge-relations-t">Relations <span id="ge-relations-sub" data-graph-explorer-for="ge-app" data-graph-explorer-output="relations-title"></span></h3>
+            <div class="panel-tools">
+              <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Relations" /><span class="swap-off">-</span><span class="swap-on">+</span></label>
+            </div>
+          </header>
+          <div class="panel-body" data-flush data-graph-explorer-for="ge-app" data-graph-explorer-outlet="relations"></div>
+        </section>
+      </div>
+    </div>
+    <p>Status: <output id="ge-status" data-graph-explorer-for="ge-app" data-graph-explorer-output="status"></output></p>
+
+    <script type="module" src="/dist/components/all.js"></script>
+    <script type="module" src="/dist/components/graph-explorer/graph-explorer.js"></script>
+  </body>
+</html>
