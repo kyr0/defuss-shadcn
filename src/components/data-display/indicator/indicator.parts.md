@@ -70,3 +70,11 @@
 ```html example part label="indicator-dot (info, lg)"
 <span class="indicator-dot" data-size="lg" data-variant="info" role="img" aria-label="info"></span>
 ```
+
+```html example part label="indicator-dot (neutral)"
+<span class="indicator-dot" data-variant="neutral" aria-hidden="true"></span>
+```
+
+```html example part label="indicator-dot (warning)"
+<span class="indicator-dot" data-variant="warning" aria-hidden="true"></span>
+```

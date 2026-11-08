@@ -1,0 +1,170 @@
+---
+title: "Repository Item"
+description: "One open-source project of a developer - owner and name as a link over the card, a description, the topics and the numbers: language, stars, forks, licence and the last update."
+slug: "repository-item"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="repository-item" title="Repository Item" component="repository-item">
+  One open-source project of a developer - owner and name as a link over the card, a description, the topics and the numbers: language, stars, forks, licence and the last update. Part of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="repository-item">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;article&gt;</code>: the name as a heading link stretched over the card and a visibility Badge, a description, the topics and the numbers as lists, the last update as <code>&lt;time&gt;</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="badge.html">Badge</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article" title="one self-contained project"><code>&lt;article&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="the last update, machine-readable"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="the card shows its link's focus ring"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#currentcolor_keyword" title="the language dot in its own color"><code>currentColor</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix" title="the topic tint and the hover border"><code>color-mix()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-repository-item</code>
+    <code>.mk-repository-item-head</code>
+    <code>.mk-repository-item-name</code>
+    <code>.mk-repository-item-owner</code>
+    <code>.mk-repository-item-description</code>
+    <code>.mk-repository-item-topics</code>
+    <code>.mk-repository-item-stats</code>
+    <code>.mk-repository-item-language</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="plain"</code> (a row of a list); <code>data-language</code> on the dot: <code>typescript</code>, <code>javascript</code>, <code>css</code>, <code>html</code>, <code>rust</code>, <code>go</code>, <code>python</code>, <code>swift</code>, <code>kotlin</code>, <code>shell</code> - any other language: <code>style="color: ..."</code> on the dot.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A card: the name links the whole card, the numbers sit at its bottom - stars and forks carry a hidden word for screen readers. The dot takes the GitHub colour of data-language." previewStyle="max-width:26rem;margin-inline:auto;"
+<article class="mk-repository-item">
+  <div class="mk-repository-item-head">
+    <i data-lucide="book-marked"></i>
+    <h3 class="mk-repository-item-name"
+      ><a href="#"><span class="mk-repository-item-owner">maraokafor/</span>quiet-tokens</a></h3
+    >
+    <span class="badge" data-variant="outline">Public</span>
+  </div>
+  <p class="mk-repository-item-description"
+    >Design tokens as plain CSS custom properties - one file per theme, light and dark, no build step.</p
+  >
+  <ul class="mk-repository-item-topics" aria-label="Topics">
+    <li>css</li>
+    <li>design-tokens</li>
+    <li>theming</li>
+  </ul>
+  <ul class="mk-repository-item-stats">
+    <li><span class="mk-repository-item-language" data-language="css"></span> CSS</li>
+    <li><i data-lucide="star"></i> 2.4k<span class="sr-only"> stars</span></li>
+    <li><i data-lucide="git-fork"></i> 184<span class="sr-only"> forks</span></li>
+    <li><i data-lucide="scale"></i> MIT</li>
+    <li>Updated <time datetime="2026-10-28">Oct 28</time></li>
+  </ul>
+</article>
+```
+
+```html example label="Plain" hint="data-variant='plain': a row of a list - no card, a rule below. A language without a data-language colour sets the dot's own color." previewStyle="align-items:stretch;"
+<article class="mk-repository-item" data-variant="plain">
+  <div class="mk-repository-item-head">
+    <i data-lucide="book-marked"></i>
+    <h3 class="mk-repository-item-name"
+      ><a href="#"><span class="mk-repository-item-owner">maraokafor/</span>kerning-kit</a></h3
+    >
+  </div>
+  <p class="mk-repository-item-description"
+    >Reads a font's kerning pairs and prints the ones a design system's sizes actually use.</p
+  >
+  <ul class="mk-repository-item-stats">
+    <li><span class="mk-repository-item-language" style="color: #c22d40"></span> Zig</li>
+    <li><i data-lucide="star"></i> 96<span class="sr-only"> stars</span></li>
+    <li><i data-lucide="scale"></i> Apache-2.0</li>
+    <li>Updated <time datetime="2026-08-02">Aug 2</time></li>
+  </ul>
+</article>
+```
+
+```html example label="Pinned repositories" hint="Four cards in an auto-fill grid - the cards stretch to the tallest in a row, their numbers line up at the bottom. Forks and archives carry their Badge." previewStyle="align-items:stretch;"
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1rem; width: 100%">
+  <article class="mk-repository-item">
+    <div class="mk-repository-item-head">
+      <i data-lucide="book-marked"></i>
+      <h3 class="mk-repository-item-name"
+        ><a href="#"><span class="mk-repository-item-owner">maraokafor/</span>quiet-tokens</a></h3
+      >
+      <span class="badge" data-variant="outline">Public</span>
+    </div>
+    <p class="mk-repository-item-description">Design tokens as plain CSS custom properties - one file per theme.</p>
+    <ul class="mk-repository-item-stats">
+      <li><span class="mk-repository-item-language" data-language="css"></span> CSS</li>
+      <li><i data-lucide="star"></i> 2.4k<span class="sr-only"> stars</span></li>
+      <li><i data-lucide="git-fork"></i> 184<span class="sr-only"> forks</span></li>
+    </ul>
+  </article>
+  <article class="mk-repository-item">
+    <div class="mk-repository-item-head">
+      <i data-lucide="book-marked"></i>
+      <h3 class="mk-repository-item-name"
+        ><a href="#"><span class="mk-repository-item-owner">maraokafor/</span>focus-trail</a></h3
+      >
+      <span class="badge" data-variant="outline">Public</span>
+    </div>
+    <p class="mk-repository-item-description"
+      >Shows where keyboard focus went - a devtool overlay for accessibility reviews.</p
+    >
+    <ul class="mk-repository-item-topics" aria-label="Topics">
+      <li>a11y</li>
+      <li>devtools</li>
+    </ul>
+    <ul class="mk-repository-item-stats">
+      <li><span class="mk-repository-item-language" data-language="typescript"></span> TypeScript</li>
+      <li><i data-lucide="star"></i> 812<span class="sr-only"> stars</span></li>
+      <li><i data-lucide="git-fork"></i> 41<span class="sr-only"> forks</span></li>
+    </ul>
+  </article>
+  <article class="mk-repository-item">
+    <div class="mk-repository-item-head">
+      <i data-lucide="git-fork"></i>
+      <h3 class="mk-repository-item-name"
+        ><a href="#"><span class="mk-repository-item-owner">maraokafor/</span>lucide</a></h3
+      >
+      <span class="badge" data-variant="secondary">Fork</span>
+    </div>
+    <p class="mk-repository-item-description">Beautiful and consistent icons - my fork adds the brush set.</p>
+    <ul class="mk-repository-item-stats">
+      <li><span class="mk-repository-item-language" data-language="javascript"></span> JavaScript</li>
+      <li><i data-lucide="star"></i> 12<span class="sr-only"> stars</span></li>
+    </ul>
+  </article>
+  <article class="mk-repository-item">
+    <div class="mk-repository-item-head">
+      <i data-lucide="archive"></i>
+      <h3 class="mk-repository-item-name"
+        ><a href="#"><span class="mk-repository-item-owner">maraokafor/</span>grid-inspector</a></h3
+      >
+      <span class="badge" data-variant="outline">Archived</span>
+    </div>
+    <p class="mk-repository-item-description">Overlay for CSS grid lines - browsers ship their own now.</p>
+    <ul class="mk-repository-item-stats">
+      <li><span class="mk-repository-item-language" data-language="rust"></span> Rust</li>
+      <li><i data-lucide="star"></i> 306<span class="sr-only"> stars</span></li>
+    </ul>
+  </article>
+</div>
+```
+
+<SourceFiles component="repository-item" section="css" />
+
+</DocPage>

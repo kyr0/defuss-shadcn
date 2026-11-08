@@ -25,12 +25,12 @@ forced-reflow retrigger hacks, no JS-generated keyframes.
 - [`Element.getAnimations()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations) - the controller collects the platform's CSSAnimation objects to replay/cancel
 - [`Animation.finished`](https://developer.mozilla.org/en-US/docs/Web/API/Animation/finished) / [`Animation.cancel()`](https://developer.mozilla.org/en-US/docs/Web/API/Animation/cancel) - the lifecycle handle (`finished` rejects on cancel; the controller maps that to a plain resolve)
 - [`clip-path`](https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path) - the wipe/wipe-up/iris entrances (inset/circle interpolation)
-- [`pathLength="1"`](https://developer.mozilla.org/en-US/docs/Web/API/SVGGeometryElement/pathLength) - calibrates distance-along-path so ONE dash rule (1 → 0) fits every stroke geometry
+- [`pathLength="1"`](https://developer.mozilla.org/en-US/docs/Web/API/SVGGeometryElement/pathLength) - calibrates distance-along-path so ONE dash rule (from 1 to 0) fits every stroke geometry
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - near-instant (1ms) instead of none, so the JS `finished` contract behaves identically (REQUIRED)
 
 ## Structure
 
-Declarative (attribute applies → animation runs, including on freshly
+Declarative (the attribute applies, then the animation runs, including on freshly
 inserted DOM):
 
 ```html
@@ -64,7 +64,7 @@ ddf$.draw(pathEl);       // replay a draw-in
 | `data-df-entrance` | Channel | Entrance |
 |---------------|---------|----------|
 | `up` / `down` / `left` / `right` | transform·drift | travel into place from a side |
-| `zoom` / `zoom-out` / `pop` | transform·scale | from .9 / from 1.1 / snap .65→1.07→1 (overshoot) |
+| `zoom` / `zoom-out` / `pop` | transform·scale | from .9 / from 1.1 / snap from .65 over 1.07 to 1 (overshoot) |
 | `spin` / `flip` / `skew` | transform·rotational | rotate in / rotateY with perspective / skewX settle |
 | `blur` | filter | focus pull from blur(12px) |
 | `wipe` / `wipe-up` / `iris` | clip-path | curtain from the left / rising reveal / spotlight open |
@@ -102,9 +102,16 @@ element's normal styling).
 - **Why animations, not transitions**: transitions need a rendered "from"
   state and silently never fire on initial application; animations run
   deterministically when the attribute first applies and replay cleanly
-  (cancel → play) - the reason the first vocabulary demo once rendered static.
+  (cancel, then play) - the reason the first vocabulary demo once rendered static.
 - `animation-composition: add` means an entrance never destroys a
   pre-existing `transform`/`filter` - no inspection or reconstruction needed.
+- **clip-path is not composed**: `wipe`, `wipe-up` and `iris` animate
+  `clip-path`, and the animation keeps its last frame (`fill-mode: both`) - on
+  an element that also carries a clip-path shape (`shape-circle`,
+  `shape-hexagon`, the `cut-corners` fallback from `theme/utils/shapes.css`)
+  the entrance replaces the shape. Put the entrance on a wrapper, or give the
+  element a `border-radius` shape (`corner-arch`, `border-radius: 50%`), which
+  clip-path leaves alone.
 - **Limit**: non-replaced inline boxes (`display: inline` spans) are not
   transformable per CSS - deliberately NOT worked around (a silent
   `display:inline-block` change would alter text wrapping). Wrap or promote

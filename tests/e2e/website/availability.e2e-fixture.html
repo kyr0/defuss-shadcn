@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>availability e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/shapes.css" />
+    <link rel="stylesheet" href="/dist/components/indicator/indicator.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/availability/availability.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Default -->
+    <section class="fx">
+<aside class="mk-availability" aria-labelledby="av-title">
+  <p class="mk-availability-status"
+    ><span class="indicator-dot" data-variant="success" data-animate="ping" aria-hidden="true"></span> Available</p
+  >
+  <h2 class="mk-availability-title" id="av-title">Booking projects from December</h2>
+  <p class="mk-availability-text"
+    >Design-system builds, front-end architecture and accessibility audits - remote, or on site in Berlin.</p
+  >
+  <dl class="mk-availability-facts">
+    <div
+      ><dt>Start</dt><dd><time datetime="2026-12-01">1 Dec 2026</time></dd></div
+    >
+    <div><dt>Capacity</dt><dd>3 days a week</dd></div>
+    <div><dt>Engagement</dt><dd>Freelance, contract</dd></div>
+    <div><dt>Day rate</dt><dd>from €950</dd></div>
+  </dl>
+  <div class="mk-availability-actions">
+    <a class="btn" href="#"><i data-lucide="calendar"></i> Book a call</a>
+    <a class="btn" data-variant="outline" href="mailto:mara@example.com"><i data-lucide="mail"></i> Email me</a>
+  </div>
+</aside>
+    </section>
+    <!-- Banner -->
+    <section class="fx">
+<aside class="mk-availability" data-variant="banner" aria-labelledby="av-banner">
+  <p class="mk-availability-status"
+    ><span class="indicator-dot" data-variant="warning" aria-hidden="true"></span> Limited</p
+  >
+  <h2 class="mk-availability-title" id="av-banner">One day a week free until March - full time from April</h2>
+  <div class="mk-availability-actions">
+    <a class="btn" data-size="sm" href="mailto:mara@example.com">Ask about a project</a>
+  </div>
+</aside>
+    </section>
+    <!-- Booked -->
+    <section class="fx">
+<aside class="mk-availability" aria-labelledby="av-booked">
+  <p class="mk-availability-status"
+    ><span class="indicator-dot" data-variant="neutral" aria-hidden="true"></span> Booked</p
+  >
+  <h2 class="mk-availability-title" id="av-booked">Not taking new work until summer</h2>
+  <dl class="mk-availability-facts">
+    <div
+      ><dt>Next start</dt><dd><time datetime="2027-07-01">July 2027</time></dd></div
+    >
+    <div><dt>Engagement</dt><dd>Contract only</dd></div>
+  </dl>
+  <div class="mk-availability-actions">
+    <a class="btn" data-variant="outline" href="#"><i data-lucide="bell"></i> Join the waiting list</a>
+  </div>
+</aside>
+    </section>
+    <!-- Spotlight -->
+    <section class="fx">
+<aside class="mk-availability pattern-dots" data-variant="spotlight" aria-labelledby="av-spot">
+  <p class="mk-availability-status"><span class="indicator-dot" data-variant="success" data-animate="ping" aria-hidden="true"></span> Available from December</p>
+  <h2 class="mk-availability-title" id="av-spot">Have a product that deserves calm software?</h2>
+  <p class="mk-availability-text">Design systems, front-end architecture, accessibility audits - one project at a time.</p>
+  <div class="mk-availability-actions">
+    <a class="btn" data-variant="secondary" href="mailto:mara@example.com"><i data-lucide="mail"></i> mara@example.com</a>
+    <a class="btn" data-variant="outline" href="#">Book a call</a>
+  </div>
+</aside>
+    </section>
+  </body>
+</html>

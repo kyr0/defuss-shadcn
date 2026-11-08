@@ -22,147 +22,825 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 
 ```html example label="A blog front" schema="none" hint="Routes filter the posts (#/category/engineering, #/archive/2026/10); the switch translates the frame. Blog Header, a featured Blog Item, a grid of cards and the Archive Index in a sidebar - only Blog blocks and layout utilities." previewStyle="align-items:stretch;"
-<div id="site-blog" data-i18n-component style="display: flex; flex-direction: column; gap: 2.5rem; width: 100%">
-  <div class="flex justify-end">
-    <select
-      class="select"
-      data-size="sm"
-      data-app-locale
-      aria-label="Language"
-      data-i18n-aria-label-en="Language"
-      data-i18n-aria-label-de="Sprache"
-      style="width: auto"
-    >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-    </select>
-  </div>
-  <header class="mk-blog-header">
-    <div class="mk-blog-header-copy">
-      <span class="mk-blog-header-eyebrow" data-i18n-target="eyebrow">The Acme Blog</span>
-      <h1 class="mk-blog-header-title" data-i18n-target="title">Notes on building calm software</h1>
-      <p class="mk-blog-header-desc" data-i18n-target="desc"
-        >Essays on product, engineering and design - one post a week, no hot takes.</p
-      >
-    </div>
-    <nav
-      class="mk-blog-header-categories"
-      aria-label="Categories"
-      data-i18n-aria-label-en="Categories"
-      data-i18n-aria-label-de="Kategorien"
-    >
-      <a href="#/" data-router-link aria-current="page"><span data-i18n-target="cat-all">All posts</span></a>
-      <a href="#/category/engineering" data-router-link><span data-i18n-target="cat-engineering">Engineering</span></a>
-      <a href="#/category/design" data-router-link>Design</a>
-      <a href="#/category/company" data-router-link><span data-i18n-target="cat-company">Company</span></a>
-    </nav>
-  </header>
-  <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: flex-start">
-    <div style="flex: 999 1 30rem; display: flex; flex-direction: column; gap: 2rem; min-width: 0">
-      <article class="mk-blog-item" data-category="company" data-month="2026-10" data-variant="featured">
-        <figure class="mk-blog-item-media"
-          ><img src="images/mk-wide3.png" alt="The Acme team at their offsite"
-        /></figure>
-        <div class="mk-blog-item-body">
-          <div class="mk-blog-item-meta"
-            ><span class="badge" data-variant="secondary" data-i18n-target="post-0-cat">Company</span
-            ><span data-i18n-target="post-0-read">12 min read</span></div
-          >
-          <h3 class="mk-blog-item-title"><a href="#">Ten years of Acme: what we got right</a></h3>
-          <p class="mk-blog-item-excerpt">A long look back at a decade of building calm software.</p>
-          <div class="mk-blog-item-byline">
-            <span class="avatar" data-size="sm"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
-            <span class="mk-blog-item-author">Aron Homberg</span>
-            <time data-i18n-target="date-1" class="mk-blog-item-date" datetime="2026-10-01"
-              ><span data-i18n-value="d1001">1 Oct 2026</span></time
-            >
-          </div>
-        </div>
-      </article>
-      <p class="text-sm text-muted-foreground" data-blog-empty data-i18n-target="empty" hidden
-        >No posts of this demo match.</p
-      >
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 2rem">
-        <article class="mk-blog-item" data-category="engineering" data-month="2026-10">
-          <figure class="mk-blog-item-media"
-            ><img src="images/mk-wide.png" alt="A whiteboard full of sketches"
-          /></figure>
-          <div class="mk-blog-item-body">
-            <div class="mk-blog-item-meta"
-              ><span class="badge" data-variant="secondary" data-i18n-target="post-1-cat">Engineering</span
-              ><span data-i18n-target="post-1-read">8 min read</span></div
-            >
-            <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
-            <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience.</p>
-            <div class="mk-blog-item-byline">
-              <span class="avatar" data-size="sm"
-                ><img class="avatar-image" src="images/mk-portrait.png" alt=""
-              /></span>
-              <span class="mk-blog-item-author">Sophie Tan</span>
-              <time data-i18n-target="date-2" class="mk-blog-item-date" datetime="2026-10-01"
-                ><span data-i18n-value="d1001">1 Oct 2026</span></time
-              >
-            </div>
-          </div>
-        </article>
-        <article class="mk-blog-item" data-category="design" data-month="2026-09">
-          <figure class="mk-blog-item-media"
-            ><img src="images/mk-wide2.png" alt="Two designers reviewing a layout"
-          /></figure>
-          <div class="mk-blog-item-body">
-            <div class="mk-blog-item-meta"
-              ><span class="badge" data-variant="secondary" data-i18n-target="post-2-cat">Design</span
-              ><span data-i18n-target="post-2-read">5 min read</span></div
-            >
-            <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
-            <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen.</p>
-            <div class="mk-blog-item-byline">
-              <span class="avatar" data-size="sm"
-                ><img class="avatar-image" src="images/mk-portrait2.png" alt=""
-              /></span>
-              <span class="mk-blog-item-author">Hannah Lee</span>
-              <time data-i18n-target="date-3" class="mk-blog-item-date" datetime="2026-09-24"
-                ><span data-i18n-value="d0924">24 Sep 2026</span></time
-              >
-            </div>
-          </div>
-        </article>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Figtree:wght@400;500;600;700&family=Inter+Tight:wght@500;700;800&display=swap');
+  /* An essay blog on a 74rem page: a quiet site bar, the masthead on a band with a texture under it, the editor's pick
+     as a wide story (photo beside the copy), then the posts as cards with the archive beside them. Serif headlines
+     (Fraunces) over a humanist sans (Figtree); one accent for links and the word that matters. Looks: Journal (ivory
+     and forest green, follows light / dark), Night shift (ink blue and amber, a grain gradient behind the masthead)
+     and Ink (paper white, black and vermilion, grotesque headlines over a halftone of dots). */
+  #site-blog {
+    --background: oklch(0.982 0.005 85);
+    --foreground: oklch(0.22 0.012 70);
+    --card: oklch(0.995 0.003 85);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.95 0.008 85);
+    --muted-foreground: oklch(0.47 0.015 70);
+    --border: oklch(0.22 0.012 70 / 0.12);
+    --input: oklch(0.22 0.012 70 / 0.22);
+    --primary: oklch(0.42 0.075 165);
+    --primary-foreground: oklch(0.985 0.005 85);
+    --secondary: oklch(0.95 0.008 85);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.93 0.025 165);
+    --accent-foreground: oklch(0.3 0.06 165);
+    --ring: var(--primary);
+    --radius: 0.5rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --blog-head: 'Fraunces', Georgia, serif;
+    --blog-band: oklch(0.955 0.012 120);
+    --blog-letter: oklch(0.27 0.04 165);
+    --blog-letter-ink: oklch(0.97 0.01 120);
+    color-scheme: light;
+    container-type: inline-size;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: var(--background);
+    color: var(--foreground);
+    font:
+      400 1rem/1.55 'Figtree',
+      var(--font-sans);
+  }
+  #site-blog > * {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+  }
+  #site-blog > * > :not(.shader, .surface) {
+    max-width: 74rem;
+    margin-inline: auto;
+  }
+  .dark #site-blog[data-look='journal'] {
+    color-scheme: dark;
+    --background: oklch(0.19 0.01 160);
+    --foreground: oklch(0.94 0.008 85);
+    --card: oklch(0.225 0.012 160);
+    --muted: oklch(0.25 0.012 160);
+    --muted-foreground: oklch(0.74 0.015 100);
+    --border: oklch(0.94 0.008 85 / 0.12);
+    --input: oklch(0.94 0.008 85 / 0.22);
+    --primary: oklch(0.78 0.09 165);
+    --primary-foreground: oklch(0.19 0.01 160);
+    --secondary: oklch(0.25 0.012 160);
+    --accent: oklch(0.3 0.04 165);
+    --accent-foreground: oklch(0.88 0.06 165);
+    --blog-band: oklch(0.22 0.014 160);
+    --blog-letter: oklch(0.82 0.08 165);
+    --blog-letter-ink: oklch(0.2 0.03 165);
+  }
+  #site-blog[data-look='night'] {
+    color-scheme: dark;
+    --background: oklch(0.18 0.022 255);
+    --foreground: oklch(0.94 0.012 85);
+    --card: oklch(0.215 0.025 255);
+    --muted: oklch(0.25 0.028 255);
+    --muted-foreground: oklch(0.76 0.02 250);
+    --border: oklch(0.94 0.012 85 / 0.12);
+    --input: oklch(0.94 0.012 85 / 0.22);
+    --primary: oklch(0.82 0.12 75);
+    --primary-foreground: oklch(0.18 0.022 255);
+    --secondary: oklch(0.25 0.028 255);
+    --accent: oklch(0.3 0.04 75);
+    --accent-foreground: oklch(0.88 0.1 80);
+    --blog-band: oklch(0.15 0.025 255);
+    --blog-letter: oklch(0.82 0.12 75);
+    --blog-letter-ink: oklch(0.18 0.022 255);
+  }
+  #site-blog[data-look='ink'] {
+    color-scheme: light;
+    --background: oklch(0.995 0 0);
+    --foreground: oklch(0.14 0 0);
+    --card: oklch(1 0 0);
+    --muted: oklch(0.955 0 0);
+    --muted-foreground: oklch(0.42 0 0);
+    --border: oklch(0.14 0 0 / 0.14);
+    --input: oklch(0.14 0 0 / 0.3);
+    --primary: oklch(0.58 0.2 32);
+    --primary-foreground: oklch(0.995 0 0);
+    --accent: oklch(0.95 0.03 32);
+    --accent-foreground: oklch(0.45 0.17 32);
+    --radius: 0rem;
+    --blog-head: 'Inter Tight', var(--font-sans);
+    --blog-band: oklch(0.955 0 0);
+    --blog-letter: oklch(0.14 0 0);
+    --blog-letter-ink: oklch(0.995 0 0);
+  }
+  #site-blog .blog-look-only {
+    display: none;
+  }
+  #site-blog[data-look='journal'] .blog-look-only[data-for='journal'],
+  #site-blog[data-look='night'] .blog-look-only[data-for='night'],
+  #site-blog[data-look='ink'] .blog-look-only[data-for='ink'] {
+    display: block;
+  }
+  /* the site bar: the name, then the look and the language */
+  #site-blog .blog-bar {
+    border-block-end: 1px solid var(--border);
+  }
+  #site-blog .blog-bar-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    min-height: 4.5rem;
+  }
+  #site-blog .blog-brand {
+    color: var(--foreground);
+    text-decoration: none;
+    font: 600 1.375rem/1 var(--blog-head);
+    letter-spacing: -0.02em;
+  }
+  #site-blog .blog-brand i {
+    color: var(--primary);
+    font-weight: 400;
+  }
+  #site-blog .blog-bar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #site-blog .blog-bar .select {
+    min-width: 8.5rem;
+  }
+  /* the masthead band: a texture under the title, the categories as tabs along its foot */
+  #site-blog .blog-band {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    background: var(--blog-band);
+  }
+  #site-blog .mk-blog-header {
+    position: static;
+    gap: 2.25rem;
+    padding-block: clamp(3rem, 7vw, 5.5rem) 0;
+  }
+  #site-blog .blog-grain {
+    --surface-size: 180px;
+    --surface-ink: oklch(0.3 0.02 90 / 0.035);
+    --surface-bg: transparent;
+  }
+  #site-blog .blog-dots {
+    --surface-size: 14px;
+    --surface-ink: oklch(0.14 0 0 / 0.08);
+    --surface-bg: transparent;
+    mask-image: linear-gradient(100deg, transparent 35%, #000 85%);
+  }
+  #site-blog .blog-glow {
+    opacity: 0.75;
+  }
+  #site-blog .mk-blog-header-copy {
+    gap: 1rem;
+    max-width: 48rem;
+  }
+  #site-blog .mk-blog-header-eyebrow {
+    color: var(--primary);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #site-blog .mk-blog-header-title {
+    font: 600 clamp(2.5rem, 6.5vw, 4.75rem)/1.02 var(--blog-head);
+    letter-spacing: -0.03em;
+  }
+  #site-blog[data-look='ink'] .mk-blog-header-title {
+    font-weight: 800;
+    letter-spacing: -0.045em;
+  }
+  /* the word that matters: italic, in the accent */
+  #site-blog .blog-marker {
+    background: none;
+    color: var(--primary);
+    font-style: italic;
+    font-weight: 400;
+  }
+  #site-blog[data-look='ink'] .blog-marker {
+    font-style: normal;
+    font-weight: 800;
+    text-decoration: underline 0.09em;
+    text-underline-offset: 0.1em;
+  }
+  #site-blog .mk-blog-header-desc {
+    max-width: 36rem;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+  }
+  #site-blog .mk-blog-header-categories {
+    gap: 0 1.75rem;
+    width: 100%;
+    border-block-start: 1px solid var(--border);
+  }
+  #site-blog .mk-blog-header-categories a {
+    height: auto;
+    padding: 1rem 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 transparent;
+  }
+  #site-blog .mk-blog-header-categories a:hover {
+    color: var(--foreground);
+  }
+  #site-blog .mk-blog-header-categories a[aria-current] {
+    background: none;
+    color: var(--foreground);
+    box-shadow: inset 0 -2px 0 var(--primary);
+  }
+  /* the posts and the archive */
+  #site-blog .blog-main {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(3rem, 7vw, 5.5rem);
+  }
+  #site-blog .blog-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+  @container (width > 62rem) {
+    #site-blog .blog-columns {
+      grid-template-columns: minmax(0, 1fr) 15rem;
+      gap: 4rem;
+    }
+  }
+  #site-blog .blog-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    min-width: 0;
+  }
+  #site-blog .mk-blog-item-title {
+    font-family: var(--blog-head);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  #site-blog[data-look='ink'] .mk-blog-item-title {
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  #site-blog .mk-blog-item-title a {
+    color: inherit;
+  }
+  #site-blog .mk-blog-item-meta {
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  #site-blog .mk-blog-item-meta .badge {
+    height: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #site-blog .mk-blog-item-excerpt {
+    color: var(--muted-foreground);
+    line-height: 1.55;
+  }
+  #site-blog .mk-blog-item-byline {
+    font-size: 0.8125rem;
+  }
+  #site-blog .mk-blog-item-media {
+    border-radius: var(--radius-lg);
+  }
+  /* the editor's pick: the photo beside the copy, a label on the photo */
+  #site-blog .blog-lead {
+    position: relative;
+  }
+  #site-blog .blog-lead .mk-blog-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+  @container (width > 46rem) {
+    #site-blog .blog-lead .mk-blog-item {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 2.5rem;
+    }
+  }
+  #site-blog .blog-lead .mk-blog-item-media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-xl);
+  }
+  #site-blog .blog-lead .mk-blog-item-body {
+    gap: 1rem;
+  }
+  #site-blog .blog-lead .mk-blog-item-title {
+    font-size: clamp(1.875rem, 3.4vw, 2.75rem);
+    line-height: 1.08;
+  }
+  #site-blog .blog-lead .mk-blog-item-excerpt {
+    font-size: 1.125rem;
+  }
+  #site-blog .blog-note {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1;
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 20px -8px oklch(0 0 0 / 0.35);
+  }
+  #site-blog[data-look='ink'] .blog-note {
+    border-radius: 0;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: none;
+  }
+  /* the cards: photo, label, title, excerpt, byline - a hairline above the grid */
+  #site-blog .blog-posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 2.75rem 2rem;
+    padding-block-start: 2.75rem;
+    border-block-start: 1px solid var(--border);
+  }
+  #site-blog .blog-posts .mk-blog-item-title {
+    font-size: 1.3125rem;
+    line-height: 1.2;
+  }
+  #site-blog .blog-posts .mk-blog-item-media {
+    transition: opacity 0.2s;
+  }
+  #site-blog .blog-posts .mk-blog-item:hover .mk-blog-item-media {
+    opacity: 0.88;
+  }
+  #site-blog[data-look='ink'] .blog-posts .mk-blog-item-media img {
+    filter: grayscale(1) contrast(1.08);
+  }
+  /* the Sunday letter: the one solid block among the cards */
+  #site-blog .blog-letter {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    background: var(--blog-letter);
+    color: var(--blog-letter-ink);
+  }
+  #site-blog .blog-letter h3 {
+    margin: 0;
+    font: 600 1.625rem/1.15 var(--blog-head);
+    letter-spacing: -0.02em;
+  }
+  #site-blog .blog-letter p {
+    margin: 0;
+    color: color-mix(in oklch, currentColor 78%, transparent);
+  }
+  #site-blog .blog-letter form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 0.5rem;
+  }
+  #site-blog .blog-letter .input {
+    flex: 1 1 10rem;
+    border-color: color-mix(in oklch, currentColor 30%, transparent);
+    background: color-mix(in oklch, currentColor 8%, transparent);
+    color: inherit;
+  }
+  #site-blog .blog-letter .input::placeholder {
+    color: color-mix(in oklch, currentColor 60%, transparent);
+  }
+  #site-blog .blog-letter .btn {
+    background: var(--blog-letter-ink);
+    color: var(--blog-letter);
+  }
+  /* the archive: a quiet column */
+  #site-blog .mk-archive-index-title {
+    margin: 0 0 0.5rem;
+    font:
+      700 0.75rem/1.2 'Figtree',
+      sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  #site-blog .mk-archive-index a[aria-current] {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #site-blog .blog-posts .mk-blog-item-media {
+      transition: none;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #site-blog .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-blog .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #site-blog[data-look='journal'] {
+    --accent: oklch(0.937 0.025 165);
+    --accent-foreground: oklch(0.22 0.012 70);
+  }
+  .dark #site-blog[data-look='journal'] {
+    --accent: oklch(0.28 0.04 165);
+    --accent-foreground: oklch(0.94 0.008 85);
+  }
+  .dark #site-blog[data-look='night'] {
+    --accent: oklch(0.27 0.04 75);
+    --accent-foreground: oklch(0.94 0.012 85);
+  }
+  :root:not(.dark) #site-blog[data-look='night'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.022 255);
+    --foreground: oklch(0.2 0.012 85);
+    --card: oklch(0.997 0.025 255);
+    --card-foreground: oklch(0.2 0.012 85);
+    --muted: oklch(0.95 0.025 255);
+    --muted-foreground: oklch(0.46 0.02 250);
+    --border: oklch(0.2 0.012 85 / 0.12);
+    --input: oklch(0.2 0.012 85 / 0.12);
+    --primary: oklch(0.55 0.12 75);
+    --primary-foreground: oklch(0.985 0.005 75);
+    --secondary: oklch(0.955 0.025 255);
+    --secondary-foreground: oklch(0.25 0.012 85);
+    --accent: oklch(0.94 0.025 75);
+    --accent-foreground: oklch(0.2 0.012 85);
+    --ring: oklch(0.57 0.12 75);
+    --blog-band: oklch(0.989 0.025 255);
+    --blog-letter: oklch(0.57 0.12 75);
+    --blog-letter-ink: oklch(0.973 0.022 255);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #site-blog[data-look='ink'] {
+    --accent-foreground: oklch(0.14 0 0);
+  }
+  .dark #site-blog[data-look='ink'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0 0);
+    --foreground: oklch(0.94 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.94 0 0);
+    --muted: oklch(0.24 0 0);
+    --muted-foreground: oklch(0.74 0 0);
+    --border: oklch(0.95 0 0 / 0.14);
+    --input: oklch(0.95 0 0 / 0.14);
+    --primary: oklch(0.82 0.18 32);
+    --primary-foreground: oklch(0.17 0.03 32);
+    --secondary: oklch(0.25 0.008 85);
+    --secondary-foreground: oklch(0.9 0 0);
+    --accent: oklch(0.26 0.03 32);
+    --accent-foreground: oklch(0.94 0 0);
+    --ring: oklch(0.82 0.18 32);
+    --blog-band: oklch(0.218 0 0);
+    --blog-letter: oklch(0.967 0 0);
+    --blog-letter-ink: oklch(0.158 0 0);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="site-blog" data-look="journal" data-i18n-component>
+  <div class="blog-bar">
+    <div class="blog-bar-inner">
+      <a class="blog-brand" href="#/">Acme <i>Journal</i></a>
+      <div class="blog-bar-controls">
+        <select
+          class="select"
+          data-size="sm"
+          data-site-look
+          aria-label="Look"
+          data-i18n-aria-label-en="Look"
+          data-i18n-aria-label-de="Stil"
+          style="width: auto"
+        >
+          <option value="journal" data-i18n-target="look-journal">Journal</option>
+          <option value="night" data-i18n-target="look-night">Night shift</option>
+          <option value="ink" data-i18n-target="look-ink">Ink</option>
+        </select>
+        <select
+          class="select"
+          data-size="sm"
+          data-app-locale
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          style="width: auto"
+        >
+          <option value="en" lang="en">English</option>
+          <option value="de" lang="de">Deutsch</option>
+        </select>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
       </div>
     </div>
-    <nav class="mk-archive-index" aria-labelledby="blog-archive-title" data-blog-archive style="flex: 1 1 13rem">
-      <h2 class="mk-archive-index-title" id="blog-archive-title" data-i18n-target="archive">Archive</h2>
-      <details class="mk-archive-index-year" name="archive" open>
-        <summary>2026 <span class="mk-archive-index-count">31</span></summary>
-        <ul>
-          <li
-            ><a href="#/archive/2026/10" data-router-link><span data-i18n-target="month-2026-10">October</span></a
-            ><span class="mk-archive-index-count">3</span></li
-          >
-          <li
-            ><a href="#/archive/2026/09" data-router-link>September</a><span class="mk-archive-index-count">6</span></li
-          >
-          <li><a href="#/archive/2026/08" data-router-link>August</a><span class="mk-archive-index-count">4</span></li>
-        </ul>
-      </details>
-      <details class="mk-archive-index-year" name="archive">
-        <summary>2025 <span class="mk-archive-index-count">48</span></summary>
-        <ul>
-          <li
-            ><a href="#/archive/2025/12" data-router-link><span data-i18n-target="month-2025-12">December</span></a
-            ><span class="mk-archive-index-count">5</span></li
-          >
-          <li
-            ><a href="#/archive/2025/11" data-router-link>November</a><span class="mk-archive-index-count">4</span></li
-          >
-        </ul>
-      </details>
-    </nav>
+  </div>
+  <div class="blog-band">
+    <div
+      class="surface blog-grain blog-look-only"
+      data-for="journal"
+      data-variant="background"
+      data-pattern="grain"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="shader blog-glow blog-look-only"
+      data-for="night"
+      data-variant="background"
+      data-effect="grain-gradient"
+      data-colors="oklch(0.2 0.03 255) oklch(0.3 0.06 250) oklch(0.42 0.09 70)"
+      data-background="transparent"
+      data-speed="0.4"
+      data-fps="30"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="surface blog-dots blog-look-only"
+      data-for="ink"
+      data-variant="background"
+      data-pattern="dots"
+      aria-hidden="true"
+    ></div>
+    <header class="mk-blog-header">
+      <div class="mk-blog-header-copy">
+        <span class="mk-blog-header-eyebrow" data-i18n-target="eyebrow">The Acme Blog</span>
+        <h1 class="mk-blog-header-title" data-i18n-target="title"
+          >Notes on building <mark class="blog-marker">calm</mark> software</h1
+        >
+        <p class="mk-blog-header-desc" data-i18n-target="desc"
+          >Essays on product, engineering and design - one post a week, no hot takes.</p
+        >
+      </div>
+      <nav
+        class="mk-blog-header-categories"
+        aria-label="Categories"
+        data-i18n-aria-label-en="Categories"
+        data-i18n-aria-label-de="Kategorien"
+      >
+        <a href="#/" data-router-link aria-current="page"><span data-i18n-target="cat-all">All posts</span></a>
+        <a href="#/category/engineering" data-router-link
+          ><span data-i18n-target="cat-engineering">Engineering</span></a
+        >
+        <a href="#/category/design" data-router-link>Design</a>
+        <a href="#/category/company" data-router-link><span data-i18n-target="cat-company">Company</span></a>
+      </nav>
+    </header>
+  </div>
+  <div class="blog-main">
+    <div class="blog-columns">
+      <div class="blog-stream">
+        <div class="blog-lead">
+          <article class="mk-blog-item" data-category="company" data-month="2026-10" data-variant="horizontal">
+            <figure class="mk-blog-item-media"
+              ><img
+                src="https://picsum.photos/id/2/1600/900"
+                alt="A laptop, a notebook and a cup of coffee on a wooden desk"
+            /></figure>
+            <div class="mk-blog-item-body">
+              <div class="mk-blog-item-meta"
+                ><span class="badge" data-variant="secondary" data-i18n-target="post-0-cat">Company</span
+                ><span data-i18n-target="post-0-read">12 min read</span></div
+              >
+              <h3 class="mk-blog-item-title"><a href="#">Ten years of Acme: what we got right</a></h3>
+              <p class="mk-blog-item-excerpt">A long look back at a decade of building calm software.</p>
+              <div class="mk-blog-item-byline">
+                <span class="avatar" data-size="sm"><span class="avatar-fallback">AH</span></span>
+                <span class="mk-blog-item-author">Aron Homberg</span>
+                <time data-i18n-target="date-1" class="mk-blog-item-date" datetime="2026-10-01"
+                  ><span data-i18n-value="d1001">1 Oct 2026</span></time
+                >
+              </div>
+            </div>
+          </article>
+          <p class="blog-note"><span data-i18n-target="note">Editor's pick</span></p>
+        </div>
+        <p class="text-sm text-muted-foreground" data-blog-empty data-i18n-target="empty" hidden
+          >No posts of this demo match.</p
+        >
+        <div class="blog-posts">
+          <article class="mk-blog-item" data-category="engineering" data-month="2026-10">
+            <figure class="mk-blog-item-media"
+              ><img
+                src="https://picsum.photos/id/26/900/600"
+                alt="A phone, a watch, headphones and a notebook laid out on a desk"
+            /></figure>
+            <div class="mk-blog-item-body">
+              <div class="mk-blog-item-meta"
+                ><span class="badge" data-variant="secondary" data-i18n-target="post-1-cat">Engineering</span
+                ><span data-i18n-target="post-1-read">8 min read</span></div
+              >
+              <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
+              <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience.</p>
+              <div class="mk-blog-item-byline">
+                <span class="avatar" data-size="sm"
+                  ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""
+                /></span>
+                <span class="mk-blog-item-author">Sophie Tan</span>
+                <time data-i18n-target="date-2" class="mk-blog-item-date" datetime="2026-10-01"
+                  ><span data-i18n-value="d1001">1 Oct 2026</span></time
+                >
+              </div>
+            </div>
+          </article>
+          <article class="mk-blog-item" data-category="design" data-month="2026-09">
+            <figure class="mk-blog-item-media"
+              ><img src="https://picsum.photos/id/225/900/600" alt="A glass teapot and cups on a quiet table"
+            /></figure>
+            <div class="mk-blog-item-body">
+              <div class="mk-blog-item-meta"
+                ><span class="badge" data-variant="secondary" data-i18n-target="post-2-cat">Design</span
+                ><span data-i18n-target="post-2-read">5 min read</span></div
+              >
+              <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
+              <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen.</p>
+              <div class="mk-blog-item-byline">
+                <span class="avatar" data-size="sm"
+                  ><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""
+                /></span>
+                <span class="mk-blog-item-author">Hannah Lee</span>
+                <time data-i18n-target="date-3" class="mk-blog-item-date" datetime="2026-09-24"
+                  ><span data-i18n-value="d0924">24 Sep 2026</span></time
+                >
+              </div>
+            </div>
+          </article>
+          <article class="mk-blog-item" data-category="design" data-month="2026-09">
+            <figure class="mk-blog-item-media"
+              ><img src="https://picsum.photos/id/4/900/600" alt="Hands writing in a notebook beside a laptop"
+            /></figure>
+            <div class="mk-blog-item-body">
+              <div class="mk-blog-item-meta"
+                ><span class="badge" data-variant="secondary" data-i18n-target="post-3-cat">Design</span
+                ><span data-i18n-target="post-3-read">6 min read</span></div
+              >
+              <h3 class="mk-blog-item-title"><a href="#">Type that still reads at 2 a.m.</a></h3>
+              <p class="mk-blog-item-excerpt">Line height, contrast and the font size nobody argues about.</p>
+              <div class="mk-blog-item-byline">
+                <span class="avatar" data-size="sm"
+                  ><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""
+                /></span>
+                <span class="mk-blog-item-author">Hannah Lee</span>
+                <time data-i18n-target="date-4" class="mk-blog-item-date" datetime="2026-09-17"
+                  ><span data-i18n-value="d0917">17 Sep 2026</span></time
+                >
+              </div>
+            </div>
+          </article>
+          <article class="mk-blog-item" data-category="engineering" data-month="2026-08">
+            <figure class="mk-blog-item-media"
+              ><img src="https://picsum.photos/id/252/900/600" alt="Hand tools laid out in rows on a white table"
+            /></figure>
+            <div class="mk-blog-item-body">
+              <div class="mk-blog-item-meta"
+                ><span class="badge" data-variant="secondary" data-i18n-target="post-4-cat">Engineering</span
+                ><span data-i18n-target="post-4-read">10 min read</span></div
+              >
+              <h3 class="mk-blog-item-title"><a href="#">The case for boring databases</a></h3>
+              <p class="mk-blog-item-excerpt">Why the newest store is rarely the one you want at 3 a.m.</p>
+              <div class="mk-blog-item-byline">
+                <span class="avatar" data-size="sm"
+                  ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""
+                /></span>
+                <span class="mk-blog-item-author">Sophie Tan</span>
+                <time data-i18n-target="date-5" class="mk-blog-item-date" datetime="2026-08-28"
+                  ><span data-i18n-value="d0828">28 Aug 2026</span></time
+                >
+              </div>
+            </div>
+          </article>
+          <article class="mk-blog-item" data-category="company" data-month="2026-08">
+            <figure class="mk-blog-item-media"
+              ><img src="https://picsum.photos/id/77/900/600" alt="A wooden pier running out into a calm sea"
+            /></figure>
+            <div class="mk-blog-item-body">
+              <div class="mk-blog-item-meta"
+                ><span class="badge" data-variant="secondary" data-i18n-target="post-5-cat">Company</span
+                ><span data-i18n-target="post-5-read">4 min read</span></div
+              >
+              <h3 class="mk-blog-item-title"><a href="#">Why we close on Fridays</a></h3>
+              <p class="mk-blog-item-excerpt">Two years of a four-day week, and what it did to the roadmap.</p>
+              <div class="mk-blog-item-byline">
+                <span class="avatar" data-size="sm"><span class="avatar-fallback">AH</span></span>
+                <span class="mk-blog-item-author">Aron Homberg</span>
+                <time data-i18n-target="date-6" class="mk-blog-item-date" datetime="2026-08-14"
+                  ><span data-i18n-value="d0814">14 Aug 2026</span></time
+                >
+              </div>
+            </div>
+          </article>
+          <aside class="blog-letter" aria-labelledby="blog-letter-title">
+            <h3 id="blog-letter-title" data-i18n-target="letter-title">The Sunday letter</h3>
+            <p data-i18n-target="letter-text">One essay a week in your inbox. Nothing else, ever.</p>
+            <form onsubmit="event.preventDefault()">
+              <input
+                class="input"
+                type="email"
+                autocomplete="email"
+                placeholder="you@example.com"
+                aria-label="Email"
+                data-i18n-aria-label-en="Email"
+                data-i18n-aria-label-de="E-Mail"
+                data-i18n-placeholder-en="you@example.com"
+                data-i18n-placeholder-de="du@beispiel.de"
+              />
+              <button class="btn" type="submit" data-i18n-target="letter-go">Subscribe</button>
+            </form>
+          </aside>
+        </div>
+      </div>
+      <nav class="mk-archive-index" aria-labelledby="blog-archive-title" data-blog-archive>
+        <h2 class="mk-archive-index-title" id="blog-archive-title" data-i18n-target="archive">Archive</h2>
+        <details class="mk-archive-index-year" name="archive" open>
+          <summary>2026 <span class="mk-archive-index-count">31</span></summary>
+          <ul>
+            <li
+              ><a href="#/archive/2026/10" data-router-link><span data-i18n-target="month-2026-10">October</span></a
+              ><span class="mk-archive-index-count">3</span></li
+            >
+            <li
+              ><a href="#/archive/2026/09" data-router-link>September</a
+              ><span class="mk-archive-index-count">6</span></li
+            >
+            <li
+              ><a href="#/archive/2026/08" data-router-link>August</a><span class="mk-archive-index-count">4</span></li
+            >
+          </ul>
+        </details>
+        <details class="mk-archive-index-year" name="archive">
+          <summary>2025 <span class="mk-archive-index-count">48</span></summary>
+          <ul>
+            <li
+              ><a href="#/archive/2025/12" data-router-link><span data-i18n-target="month-2025-12">December</span></a
+              ><span class="mk-archive-index-count">5</span></li
+            >
+            <li
+              ><a href="#/archive/2025/11" data-router-link>November</a
+              ><span class="mk-archive-index-count">4</span></li
+            >
+          </ul>
+        </details>
+      </nav>
+    </div>
   </div>
   <!-- the translations: one template per target and language (defuss-i18n) -->
   <template data-i18n-for="eyebrow" data-i18n-locale="en">The Acme Blog</template>
   <template data-i18n-for="eyebrow" data-i18n-locale="de">Der Acme-Blog</template>
-  <template data-i18n-for="title" data-i18n-locale="en">Notes on building calm software</template>
-  <template data-i18n-for="title" data-i18n-locale="de">Notizen über ruhige Software</template>
+  <template data-i18n-for="title" data-i18n-locale="en"
+    >Notes on building <mark class="blog-marker">calm</mark> software</template
+  >
+  <template data-i18n-for="title" data-i18n-locale="de"
+    >Notizen über <mark class="blog-marker">ruhige</mark> Software</template
+  >
+  <template data-i18n-for="look-journal" data-i18n-locale="en">Journal</template>
+  <template data-i18n-for="look-journal" data-i18n-locale="de">Notizbuch</template>
+  <template data-i18n-for="look-night" data-i18n-locale="en">Night shift</template>
+  <template data-i18n-for="look-night" data-i18n-locale="de">Nachtschicht</template>
+  <template data-i18n-for="look-ink" data-i18n-locale="en">Ink</template>
+  <template data-i18n-for="look-ink" data-i18n-locale="de">Tinte</template>
+  <template data-i18n-for="letter-title" data-i18n-locale="en">The Sunday letter</template>
+  <template data-i18n-for="letter-title" data-i18n-locale="de">Der Sonntagsbrief</template>
+  <template data-i18n-for="letter-text" data-i18n-locale="en"
+    >One essay a week in your inbox. Nothing else, ever.</template
+  >
+  <template data-i18n-for="letter-text" data-i18n-locale="de"
+    >Ein Essay pro Woche im Postfach. Sonst nichts, nie.</template
+  >
+  <template data-i18n-for="letter-go" data-i18n-locale="en">Subscribe</template>
+  <template data-i18n-for="letter-go" data-i18n-locale="de">Abonnieren</template>
+  <template data-i18n-for="note" data-i18n-locale="en">Editor's pick</template>
+  <template data-i18n-for="note" data-i18n-locale="de">Tipp der Redaktion</template>
   <template data-i18n-for="desc" data-i18n-locale="en"
     >Essays on product, engineering and design - one post a week, no hot takes.</template
   >
@@ -193,6 +871,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="date-2" data-i18n-locale="de"><span data-i18n-value="d1001"></span></template>
   <template data-i18n-for="date-3" data-i18n-locale="en"><span data-i18n-value="d0924"></span></template>
   <template data-i18n-for="date-3" data-i18n-locale="de"><span data-i18n-value="d0924"></span></template>
+  <template data-i18n-for="date-4" data-i18n-locale="en"><span data-i18n-value="d0917"></span></template>
+  <template data-i18n-for="date-4" data-i18n-locale="de"><span data-i18n-value="d0917"></span></template>
+  <template data-i18n-for="date-5" data-i18n-locale="en"><span data-i18n-value="d0828"></span></template>
+  <template data-i18n-for="date-5" data-i18n-locale="de"><span data-i18n-value="d0828"></span></template>
+  <template data-i18n-for="date-6" data-i18n-locale="en"><span data-i18n-value="d0814"></span></template>
+  <template data-i18n-for="date-6" data-i18n-locale="de"><span data-i18n-value="d0814"></span></template>
+  <template data-i18n-for="post-3-cat" data-i18n-locale="en">Design</template>
+  <template data-i18n-for="post-3-cat" data-i18n-locale="de">Design</template>
+  <template data-i18n-for="post-3-read" data-i18n-locale="en">6 min read</template>
+  <template data-i18n-for="post-3-read" data-i18n-locale="de">6 Min. Lesezeit</template>
+  <template data-i18n-for="post-4-cat" data-i18n-locale="en">Engineering</template>
+  <template data-i18n-for="post-4-cat" data-i18n-locale="de">Technik</template>
+  <template data-i18n-for="post-4-read" data-i18n-locale="en">10 min read</template>
+  <template data-i18n-for="post-4-read" data-i18n-locale="de">10 Min. Lesezeit</template>
+  <template data-i18n-for="post-5-cat" data-i18n-locale="en">Company</template>
+  <template data-i18n-for="post-5-cat" data-i18n-locale="de">Unternehmen</template>
+  <template data-i18n-for="post-5-read" data-i18n-locale="en">4 min read</template>
+  <template data-i18n-for="post-5-read" data-i18n-locale="de">4 Min. Lesezeit</template>
   <template data-i18n-for="archive" data-i18n-locale="en">Archive</template>
   <template data-i18n-for="archive" data-i18n-locale="de">Archiv</template>
   <template data-i18n-for="month-2026-10" data-i18n-locale="en">October</template>
@@ -205,28 +901,45 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
-  import {
-    createDomI18n,
-    createI18n,
-    resolveLocale,
-  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#site-blog [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
     const site = df$('#site-blog').get(0);
 
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
-      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+      locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale, {
       values: () => ({
         d1001: locale.formatDate(Date.UTC(2026, 9, 1), { dateStyle: 'medium', timeZone: 'UTC' }),
         d0924: locale.formatDate(Date.UTC(2026, 8, 24), { dateStyle: 'medium', timeZone: 'UTC' }),
+        d0917: locale.formatDate(Date.UTC(2026, 8, 17), { dateStyle: 'medium', timeZone: 'UTC' }),
+        d0828: locale.formatDate(Date.UTC(2026, 7, 28), { dateStyle: 'medium', timeZone: 'UTC' }),
+        d0814: locale.formatDate(Date.UTC(2026, 7, 14), { dateStyle: 'medium', timeZone: 'UTC' }),
       }),
     });
     const language = df$('[data-app-locale]');
     language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- the look: one of the site's designs; a shader reads its colors again on defuss-theme-change
+    const look = df$('#site-blog [data-site-look]');
+    look.val(site.dataset.look).on('change', () => {
+      site.dataset.look = look.val();
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
 
     // -- routing
     const routes = [

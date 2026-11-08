@@ -21,122 +21,519 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 </div>
 
 ```html example label="A search results page" schema="none" hint="The search is a query string (#/?q=...&category=design&page=3) - links, the sort and the form write it; the switch translates the page. Breadcrumbs, a large Search Box, the Category Menu, a Filter Sidebar beside the summary, Active Filters, Sort and View controls, results and pagination - then tags and quick links. Only Search & Navigation blocks." previewStyle="align-items:stretch;"
-<div id="site-search" data-i18n-component style="display: flex; flex-direction: column; gap: 2.5rem; width: 100%">
-  <div class="flex justify-end" style="margin-block-end: -1.5rem">
-    <select
-      class="select"
-      data-size="sm"
-      data-app-locale
-      aria-label="Language"
-      data-i18n-aria-label-en="Language"
-      data-i18n-aria-label-de="Sprache"
-      style="width: auto"
-    >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-    </select>
-  </div>
-  <div class="mk-breadcrumbs">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <ol class="breadcrumb-list">
-        <li class="breadcrumb-item"
-          ><a
-            class="breadcrumb-link"
-            href="#"
-            aria-label="Home"
-            data-i18n-aria-label-en="Home"
-            data-i18n-aria-label-de="Start"
-            ><i data-lucide="house"></i></a
-        ></li>
-        <li class="breadcrumb-separator" aria-hidden="true">/</li>
-        <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Help</a></li>
-        <li class="breadcrumb-separator" aria-hidden="true">/</li>
-        <li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Billing</a></li>
-        <li class="breadcrumb-separator" aria-hidden="true">/</li>
-        <li class="breadcrumb-item"><span class="breadcrumb-page" aria-current="page">Invoices</span></li>
-      </ol>
-    </nav>
-    <a class="mk-breadcrumbs-back" href="#"><i data-lucide="chevron-left"></i> Billing</a>
-    <h1 class="mk-breadcrumbs-title">Invoices</h1>
-  </div>
-  <search class="mk-search-box" data-variant="large">
-    <form action="#" method="get" role="search" data-search-form>
-      <label class="sr-only" for="sb-2" data-i18n-target="sn-1-1">Search</label>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap');
+  /* The help centre's search on a 76rem page: a site bar, a tinted band with the trail, the title, one large search
+     box (a soft glow runs round it while it has focus) and the content types as tabs; then the filters beside the
+     results - a quiet list, the matches highlighted, pages and topics below. Schibsted Grotesk throughout, the
+     snippets in Newsreader so they read like the pages they come from. Looks: Catalogue (paper and indigo, follows
+     light / dark), Night owl (ink and violet) and Highlighter (white, the matches marked in yellow). */
+  #site-search {
+    --background: oklch(0.99 0.003 270);
+    --foreground: oklch(0.21 0.02 270);
+    --card: oklch(1 0 0);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.965 0.008 270);
+    --muted-foreground: oklch(0.48 0.02 270);
+    --border: oklch(0.21 0.02 270 / 0.11);
+    --input: oklch(0.21 0.02 270 / 0.22);
+    --primary: oklch(0.48 0.19 275);
+    --primary-foreground: oklch(0.99 0.003 270);
+    --secondary: oklch(0.955 0.018 275);
+    --secondary-foreground: oklch(0.38 0.15 275);
+    --accent: oklch(0.955 0.018 275);
+    --accent-foreground: oklch(0.38 0.15 275);
+    --ring: var(--primary);
+    --radius: 0.625rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --sr-band: oklch(0.965 0.012 275);
+    --sr-mark: oklch(0.93 0.05 275);
+    --sr-mark-ink: oklch(0.32 0.15 275);
+    color-scheme: light;
+    container-type: inline-size;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: var(--background);
+    color: var(--foreground);
+    font:
+      400 1rem/1.55 'Schibsted Grotesk',
+      var(--font-sans);
+  }
+  .dark #site-search[data-look='catalogue'] {
+    color-scheme: dark;
+    --background: oklch(0.18 0.016 275);
+    --foreground: oklch(0.94 0.008 270);
+    --card: oklch(0.215 0.018 275);
+    --muted: oklch(0.24 0.018 275);
+    --muted-foreground: oklch(0.74 0.018 270);
+    --border: oklch(0.94 0.008 270 / 0.11);
+    --input: oklch(0.94 0.008 270 / 0.22);
+    --primary: oklch(0.72 0.14 275);
+    --primary-foreground: oklch(0.18 0.016 275);
+    --secondary: oklch(0.28 0.05 275);
+    --secondary-foreground: oklch(0.88 0.06 275);
+    --accent: oklch(0.28 0.05 275);
+    --accent-foreground: oklch(0.88 0.06 275);
+    --sr-band: oklch(0.21 0.02 275);
+    --sr-mark: oklch(0.34 0.08 275);
+    --sr-mark-ink: oklch(0.92 0.05 275);
+  }
+  #site-search[data-look='owl'] {
+    color-scheme: dark;
+    --background: oklch(0.16 0.025 290);
+    --foreground: oklch(0.94 0.012 290);
+    --card: oklch(0.2 0.03 290);
+    --muted: oklch(0.23 0.03 290);
+    --muted-foreground: oklch(0.75 0.025 290);
+    --border: oklch(0.94 0.012 290 / 0.12);
+    --input: oklch(0.94 0.012 290 / 0.22);
+    --primary: oklch(0.78 0.13 300);
+    --primary-foreground: oklch(0.16 0.025 290);
+    --secondary: oklch(0.28 0.06 300);
+    --secondary-foreground: oklch(0.9 0.07 300);
+    --accent: oklch(0.28 0.06 300);
+    --accent-foreground: oklch(0.9 0.07 300);
+    --sr-band: oklch(0.19 0.03 290);
+    --sr-mark: oklch(0.82 0.11 185 / 0.22);
+    --sr-mark-ink: oklch(0.88 0.1 185);
+  }
+  #site-search[data-look='marker'] {
+    color-scheme: light;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.16 0 0);
+    --card: oklch(1 0 0);
+    --muted: oklch(0.965 0 0);
+    --muted-foreground: oklch(0.42 0 0);
+    --border: oklch(0.16 0 0 / 0.12);
+    --input: oklch(0.16 0 0 / 0.26);
+    --primary: oklch(0.16 0 0);
+    --primary-foreground: oklch(1 0 0);
+    --secondary: oklch(0.965 0 0);
+    --secondary-foreground: oklch(0.16 0 0);
+    --accent: oklch(0.965 0 0);
+    --accent-foreground: oklch(0.16 0 0);
+    --ring: oklch(0.16 0 0);
+    --sr-band: oklch(0.975 0.03 100);
+    --sr-mark: oklch(0.93 0.17 105);
+    --sr-mark-ink: oklch(0.16 0 0);
+  }
+  #site-search > :not(template) {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline: max(clamp(1rem, 4vw, 2.5rem), calc((100% - 76rem) / 2));
+  }
+  /* the site bar */
+  #site-search .sr-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    min-height: 4.5rem;
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--border);
+  }
+  #site-search .sr-brand {
+    margin-inline-end: auto;
+    color: var(--foreground);
+    text-decoration: none;
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #site-search .sr-brand span {
+    color: var(--primary);
+  }
+  #site-search .sr-bar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #site-search .sr-bar .select {
+    min-width: 8rem;
+  }
+  /* the band: trail, title, search box, tabs */
+  #site-search .sr-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+    padding-block: clamp(2.5rem, 6vw, 4rem) 0;
+    background: var(--sr-band);
+    border-block-end: 1px solid var(--border);
+  }
+  #site-search .mk-breadcrumbs {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  #site-search .mk-breadcrumbs-title {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+  #site-search .mk-search-box {
+    position: relative;
+    isolation: isolate;
+    max-width: 48rem;
+    margin: 0;
+  }
+  #site-search .mk-search-box form {
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    box-shadow: 0 10px 30px -12px oklch(0.2 0.05 275 / 0.25);
+  }
+  #site-search .search-glow {
+    inset: -0.5rem;
+    border-radius: 1.1rem;
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+  #site-search .mk-search-box:focus-within .search-glow {
+    opacity: 1;
+  }
+  #site-search .mk-category-menu {
+    max-width: none;
+    margin: 0;
+    border: 0;
+  }
+  #site-search .mk-category-menu a {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+  /* filters beside results */
+  #site-search .sr-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+  @container (width > 56rem) {
+    #site-search .sr-layout {
+      grid-template-columns: 16rem minmax(0, 1fr);
+      gap: 3.5rem;
+    }
+  }
+  @container (width > 56rem) {
+    #site-search .mk-filter-sidebar {
+      position: sticky;
+      top: 1rem;
+    }
+  }
+  #site-search .mk-filter-sidebar-head h2 {
+    font-size: 1rem;
+    font-weight: 800;
+  }
+  #site-search .mk-filter-sidebar-group > summary {
+    font-weight: 700;
+  }
+  #site-search .sr-results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    min-width: 0;
+  }
+  #site-search .sr-sort {
+    display: flex;
+    justify-content: flex-end;
+  }
+  #site-search .sr-list {
+    display: grid;
+    border-block-start: 1px solid var(--border);
+  }
+  #site-search .mk-search-result {
+    padding-block: 1.5rem;
+    border: 0;
+    border-block-end: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+  }
+  #site-search .mk-search-result-path {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  #site-search .mk-search-result-title {
+    margin-block: 0.25rem 0.375rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  #site-search .mk-search-result-title a {
+    color: var(--primary);
+  }
+  #site-search[data-look='marker'] .mk-search-result-title a {
+    color: var(--foreground);
+    text-decoration: underline 2px var(--sr-mark);
+    text-underline-offset: 0.2em;
+  }
+  #site-search .mk-search-result-snippet {
+    max-width: 44rem;
+    font:
+      400 1.0625rem/1.6 'Newsreader',
+      Georgia,
+      serif;
+  }
+  #site-search .mk-search-result-meta {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  #site-search mark {
+    padding: 0 0.15em;
+    border-radius: 0.2em;
+    background: var(--sr-mark);
+    color: var(--sr-mark-ink);
+  }
+  #site-search[data-look='marker'] mark {
+    font-weight: 700;
+  }
+  #site-search .mk-search-summary strong {
+    font-weight: 800;
+  }
+  #site-search .mk-search-summary-suggest a {
+    color: var(--primary);
+    font-weight: 700;
+  }
+  #site-search .pagination-list {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  #site-search > :is(.mk-tag-cloud, .mk-quick-links) {
+    padding-block: 0 clamp(2.5rem, 5vw, 4rem);
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #site-search .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-search .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #site-search[data-look='catalogue'] {
+    --accent: oklch(0.945 0.018 270);
+    --accent-foreground: oklch(0.21 0.02 270);
+  }
+  .dark #site-search[data-look='catalogue'] {
+    --accent: oklch(0.27 0.05 275);
+    --accent-foreground: oklch(0.94 0.008 270);
+  }
+  .dark #site-search[data-look='owl'] {
+    --accent: oklch(0.25 0.05 300);
+    --accent-foreground: oklch(0.94 0.012 290);
+  }
+  :root:not(.dark) #site-search[data-look='owl'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.025 290);
+    --foreground: oklch(0.2 0.012 290);
+    --card: oklch(0.997 0.025 290);
+    --card-foreground: oklch(0.2 0.012 290);
+    --muted: oklch(0.95 0.025 290);
+    --muted-foreground: oklch(0.46 0.025 290);
+    --border: oklch(0.2 0.012 290 / 0.12);
+    --input: oklch(0.2 0.012 290 / 0.12);
+    --primary: oklch(0.53 0.13 300);
+    --primary-foreground: oklch(0.985 0.005 300);
+    --secondary: oklch(0.955 0.025 300);
+    --secondary-foreground: oklch(0.25 0.03 300);
+    --accent: oklch(0.94 0.025 300);
+    --accent-foreground: oklch(0.2 0.012 290);
+    --ring: oklch(0.53 0.13 300);
+    --sr-band: oklch(0.967 0.03 290);
+    --sr-mark: oklch(0.57 0.11 185 / 0.22);
+    --sr-mark-ink: oklch(0.58 0.1 185);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #site-search[data-look='marker'] {
+    --accent: oklch(0.955 0 0);
+  }
+  .dark #site-search[data-look='marker'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0 0);
+    --foreground: oklch(0.94 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.94 0 0);
+    --muted: oklch(0.24 0 0);
+    --muted-foreground: oklch(0.74 0 0);
+    --border: oklch(0.95 0 0 / 0.12);
+    --input: oklch(0.95 0 0 / 0.14);
+    --primary: oklch(0.93 0 0);
+    --primary-foreground: oklch(0.17 0 0);
+    --secondary: oklch(0.25 0 0);
+    --secondary-foreground: oklch(0.9 0 0);
+    --accent: oklch(0.26 0 0);
+    --accent-foreground: oklch(0.94 0 0);
+    --ring: oklch(0.93 0 0);
+    --sr-band: oklch(0.188 0.03 100);
+    --sr-mark: oklch(0.93 0.17 105);
+    --sr-mark-ink: oklch(0.952 0 0);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="site-search" data-look="catalogue" data-i18n-component>
+  <div class="sr-bar">
+    <a class="sr-brand" href="#/" data-router-link>Acme <span>Help</span></a>
+    <div class="sr-bar-controls">
       <select
         class="select"
-        name="scope"
-        aria-label="Search in"
-        data-i18n-aria-label-en="Search in"
-        data-i18n-aria-label-de="Suchen in"
-        ><option data-i18n-target="sn-2-1">Everything</option
-        ><option data-i18n-target="sn-3-1">Docs</option
-        ><option data-i18n-target="sn-4-1">Tasks</option
-        ><option data-i18n-target="sn-5-1">People</option></select
+        data-size="sm"
+        data-site-look
+        aria-label="Look"
+        data-i18n-aria-label-en="Look"
+        data-i18n-aria-label-de="Stil"
+        style="width: auto"
       >
-      <span class="mk-search-box-field"
-        ><i data-lucide="search"></i
-        ><input
-          class="input"
-          id="sb-2"
-          type="search"
-          name="q"
-          placeholder="Search docs, tasks and people"
-          data-i18n-placeholder-en="Search docs, tasks and people"
-          data-i18n-placeholder-de="Doku, Aufgaben und Personen suchen"
-          autocomplete="off"
-          enterkeyhint="search"
-        /><kbd class="kbd">⌘K</kbd></span
+        <option value="catalogue" data-i18n-target="look-catalogue">Catalogue</option>
+        <option value="owl" data-i18n-target="look-owl">Night owl</option>
+        <option value="marker" data-i18n-target="look-marker">Highlighter</option>
+      </select>
+      <select
+        class="select"
+        data-size="sm"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+        style="width: auto"
       >
-      <button class="btn" type="submit" data-i18n-target="sn-1-2">Search</button>
-    </form>
-  </search>
-  <nav
-    class="mk-category-menu"
-    aria-label="Categories"
-    data-i18n-aria-label-en="Categories"
-    data-i18n-aria-label-de="Kategorien"
-  >
-    <ul>
-      <li
-        ><a href="#/" data-router-link data-query="category=" aria-current="page"
-          ><i data-lucide="layout-grid"></i><span data-i18n-target="sn-6-1">All</span><small>248</small></a
-        ></li
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
+      <label class="swap site-mode" data-variant="rotate" data-size="sm">
+        <input
+          type="checkbox"
+          data-site-mode
+          aria-label="Dark mode"
+          data-i18n-aria-label-en="Dark mode"
+          data-i18n-aria-label-de="Dunkler Modus"
+        />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </div>
+  </div>
+  <div class="sr-hero">
+    <div class="mk-breadcrumbs">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"
+            ><a
+              class="breadcrumb-link"
+              href="#"
+              aria-label="Home"
+              data-i18n-aria-label-en="Home"
+              data-i18n-aria-label-de="Start"
+              ><i data-lucide="house"></i></a
+          ></li>
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"
+            ><a class="breadcrumb-link" href="#"><span data-i18n-target="crumb-help">Help centre</span></a></li
+          >
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"
+            ><span class="breadcrumb-page" aria-current="page"
+              ><span data-i18n-target="crumb-search">Search</span></span
+            ></li
+          >
+        </ol>
+      </nav>
+      <a class="mk-breadcrumbs-back" href="#"
+        ><i data-lucide="chevron-left"></i> <span data-i18n-target="crumb-back">Help centre</span></a
       >
-      <li
-        ><a href="#/?category=product" data-router-link data-query="category=product"
-          ><i data-lucide="box"></i><span data-i18n-target="sn-7-1">Product</span><small>64</small></a
-        ></li
-      >
-      <li
-        ><a href="#/?category=engineering" data-router-link data-query="category=engineering"
-          ><i data-lucide="code"></i><span data-i18n-target="sn-8-1">Engineering</span><small>81</small></a
-        ></li
-      >
-      <li
-        ><a href="#/?category=design" data-router-link data-query="category=design"
-          ><i data-lucide="pen-tool"></i><span>Design</span><small>47</small></a
-        ></li
-      >
-      <li
-        ><a href="#/?category=company" data-router-link data-query="category=company"
-          ><i data-lucide="building-2"></i><span data-i18n-target="sn-9-1">Company</span><small>31</small></a
-        ></li
-      >
-      <li
-        ><a href="#/?category=guides" data-router-link data-query="category=guides"
-          ><i data-lucide="book-open"></i><span data-i18n-target="sn-10-1">Guides</span><small>25</small></a
-        ></li
-      >
-    </ul>
-  </nav>
-  <div
-    style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-      gap: 2rem;
-      align-items: start;
-    "
-  >
+      <h1 class="mk-breadcrumbs-title" data-i18n-target="page-title">Search the help centre</h1>
+    </div>
+    <search class="mk-search-box" data-variant="large">
+      <div
+        class="shader search-glow"
+        data-variant="border"
+        data-effect="pulsing-border"
+        data-colors="var(--primary) var(--accent)"
+        data-fps="30"
+        aria-hidden="true"
+      ></div>
+      <form action="#" method="get" role="search" data-search-form>
+        <label class="sr-only" for="sb-2" data-i18n-target="sn-1-1">Search</label>
+        <select
+          class="select"
+          name="scope"
+          aria-label="Search in"
+          data-i18n-aria-label-en="Search in"
+          data-i18n-aria-label-de="Suchen in"
+          ><option data-i18n-target="sn-2-1">Everything</option
+          ><option data-i18n-target="sn-3-1">Docs</option
+          ><option data-i18n-target="sn-4-1">Tasks</option
+          ><option data-i18n-target="sn-5-1">People</option></select
+        >
+        <span class="mk-search-box-field"
+          ><i data-lucide="search"></i
+          ><input
+            class="input"
+            id="sb-2"
+            type="search"
+            name="q"
+            placeholder="Search docs, tasks and people"
+            data-i18n-placeholder-en="Search docs, tasks and people"
+            data-i18n-placeholder-de="Doku, Aufgaben und Personen suchen"
+            autocomplete="off"
+            enterkeyhint="search"
+          /><kbd class="kbd">⌘K</kbd></span
+        >
+        <button class="btn" type="submit" data-i18n-target="sn-1-2">Search</button>
+      </form>
+    </search>
+    <nav
+      class="mk-category-menu"
+      aria-label="Categories"
+      data-i18n-aria-label-en="Categories"
+      data-i18n-aria-label-de="Kategorien"
+    >
+      <ul>
+        <li
+          ><a href="#/" data-router-link data-query="category=" aria-current="page"
+            ><i data-lucide="layout-grid"></i><span data-i18n-target="sn-6-1">All</span><small>248</small></a
+          ></li
+        >
+        <li
+          ><a href="#/?category=product" data-router-link data-query="category=product"
+            ><i data-lucide="box"></i><span data-i18n-target="sn-7-1">Product</span><small>64</small></a
+          ></li
+        >
+        <li
+          ><a href="#/?category=engineering" data-router-link data-query="category=engineering"
+            ><i data-lucide="code"></i><span data-i18n-target="sn-8-1">Engineering</span><small>81</small></a
+          ></li
+        >
+        <li
+          ><a href="#/?category=design" data-router-link data-query="category=design"
+            ><i data-lucide="pen-tool"></i><span>Design</span><small>47</small></a
+          ></li
+        >
+        <li
+          ><a href="#/?category=company" data-router-link data-query="category=company"
+            ><i data-lucide="building-2"></i><span data-i18n-target="sn-9-1">Company</span><small>31</small></a
+          ></li
+        >
+        <li
+          ><a href="#/?category=guides" data-router-link data-query="category=guides"
+            ><i data-lucide="book-open"></i><span data-i18n-target="sn-10-1">Guides</span><small>25</small></a
+          ></li
+        >
+      </ul>
+    </nav>
+  </div>
+  <div class="sr-layout">
     <aside class="mk-filter-sidebar" aria-labelledby="fs-title">
       <form action="#" method="get">
         <div class="mk-filter-sidebar-head"
@@ -144,117 +541,97 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ><a href="#" data-i18n-target="sn-12-1">Clear all</a></div
         >
         <details class="mk-filter-sidebar-group" open
-          ><summary data-i18n-target="sn-13-1">Category</summary
+          ><summary data-i18n-target="sn-13-1">Type</summary
           ><div
             ><fieldset
-              ><legend data-i18n-target="sn-13-2">Category</legend>
+              ><legend data-i18n-target="sn-13-2">Type</legend>
               <label class="mk-filter-sidebar-option"
-                ><input class="checkbox" type="checkbox" name="cat" value="shirts" checked /><span
+                ><input class="checkbox" type="checkbox" name="type" value="guide" checked /><span
                   data-i18n-target="sn-14-1"
-                  >Shirts</span
-                ><small>24</small></label
+                  >Guides</span
+                ><small>81</small></label
               >
               <label class="mk-filter-sidebar-option"
-                ><input class="checkbox" type="checkbox" name="cat" value="knitwear" /><span data-i18n-target="sn-15-1"
-                  >Knitwear</span
-                ><small>18</small></label
+                ><input class="checkbox" type="checkbox" name="type" value="help" /><span data-i18n-target="sn-15-1"
+                  >Help articles</span
+                ><small>64</small></label
               >
               <label class="mk-filter-sidebar-option"
-                ><input class="checkbox" type="checkbox" name="cat" value="trousers" /><span data-i18n-target="sn-16-1"
-                  >Trousers</span
+                ><input class="checkbox" type="checkbox" name="type" value="release" /><span data-i18n-target="sn-16-1"
+                  >Release notes</span
+                ><small>47</small></label
+              >
+              <label class="mk-filter-sidebar-option"
+                ><input class="checkbox" type="checkbox" name="type" value="video" /><span data-i18n-target="sn-17-1"
+                  >Videos</span
                 ><small>12</small></label
-              >
-              <label class="mk-filter-sidebar-option"
-                ><input class="checkbox" type="checkbox" name="cat" value="accessories" /><span
-                  data-i18n-target="sn-17-1"
-                  >Accessories</span
-                ><small>9</small></label
               >
             </fieldset></div
           ></details
         >
         <details class="mk-filter-sidebar-group" open
-          ><summary data-i18n-target="sn-18-1">Price</summary
-          ><div
-            ><div class="mk-filter-sidebar-range"
-              ><label class="sr-only" for="fs-min" data-i18n-target="sn-19-1">Minimum price</label
-              ><input
-                class="input"
-                id="fs-min"
-                name="min"
-                inputmode="numeric"
-                placeholder="€ min"
-                data-i18n-placeholder-en="€ min"
-                data-i18n-placeholder-de="min. €" /><span>–</span
-              ><label class="sr-only" for="fs-max" data-i18n-target="sn-20-1">Maximum price</label
-              ><input
-                class="input"
-                id="fs-max"
-                name="max"
-                inputmode="numeric"
-                placeholder="€ max"
-                data-i18n-placeholder-en="€ max"
-                data-i18n-placeholder-de="max. €" /></div></div
-        ></details>
-        <details class="mk-filter-sidebar-group" open
-          ><summary data-i18n-target="sn-21-1">Color</summary
+          ><summary data-i18n-target="sn-18-1">Product area</summary
           ><div
             ><fieldset
-              ><legend data-i18n-target="sn-21-2">Color</legend
-              ><div class="mk-filter-sidebar-swatches"
-                ><label class="mk-filter-sidebar-swatch" style="--mk-swatch: #d8c9a9"
-                  ><input type="checkbox" name="color" value="sand" checked /><span class="sr-only">Sand</span></label
-                ><label class="mk-filter-sidebar-swatch" style="--mk-swatch: #2f3b4a"
-                  ><input type="checkbox" name="color" value="navy" /><span class="sr-only">Navy</span></label
-                ><label class="mk-filter-sidebar-swatch" style="--mk-swatch: #f2efe8"
-                  ><input type="checkbox" name="color" value="off-white" /><span class="sr-only">Off-white</span></label
-                ><label class="mk-filter-sidebar-swatch" style="--mk-swatch: #5a6b5d"
-                  ><input type="checkbox" name="color" value="moss" /><span class="sr-only">Moss</span></label
-                ><label class="mk-filter-sidebar-swatch" style="--mk-swatch: #8c3b2f"
-                  ><input type="checkbox" name="color" value="rust" /><span class="sr-only">Rust</span></label
-                ></div
-              ></fieldset
-            ></div
-          ></details
-        >
-        <details class="mk-filter-sidebar-group"
-          ><summary data-i18n-target="sn-22-1">Rating</summary
-          ><div
-            ><fieldset
-              ><legend data-i18n-target="sn-23-1">Minimum rating</legend>
+              ><legend data-i18n-target="sn-21-2">Product area</legend>
               <label class="mk-filter-sidebar-option"
-                ><input class="radio" type="radio" name="rating" value="4" /><span
-                  class="mk-filter-sidebar-stars"
-                  aria-hidden="true"
-                  >★★★★☆</span
-                ><span data-i18n-target="sn-24-1">4 & up</span></label
+                ><input class="checkbox" type="checkbox" name="area" value="sync" checked /><span
+                  data-i18n-target="sn-19-1"
+                  >Sync and offline</span
+                ><small>38</small></label
               >
               <label class="mk-filter-sidebar-option"
-                ><input class="radio" type="radio" name="rating" value="3" /><span
-                  class="mk-filter-sidebar-stars"
-                  aria-hidden="true"
-                  >★★★☆☆</span
-                ><span data-i18n-target="sn-25-1">3 & up</span></label
+                ><input class="checkbox" type="checkbox" name="area" value="billing" /><span data-i18n-target="sn-20-1"
+                  >Billing</span
+                ><small>24</small></label
+              >
+              <label class="mk-filter-sidebar-option"
+                ><input class="checkbox" type="checkbox" name="area" value="teams" /><span data-i18n-target="sn-21-1"
+                  >Teams and roles</span
+                ><small>19</small></label
+              >
+            </fieldset></div
+          ></details
+        >
+        <details class="mk-filter-sidebar-group" open
+          ><summary data-i18n-target="sn-22-1">Updated</summary
+          ><div
+            ><fieldset
+              ><legend data-i18n-target="sn-23-1">Updated</legend>
+              <label class="mk-filter-sidebar-option"
+                ><input class="radio" type="radio" name="updated" value="30" checked /><span data-i18n-target="sn-24-1"
+                  >In the last 30 days</span
+                ></label
+              >
+              <label class="mk-filter-sidebar-option"
+                ><input class="radio" type="radio" name="updated" value="365" /><span data-i18n-target="sn-25-1"
+                  >In the last year</span
+                ></label
+              >
+              <label class="mk-filter-sidebar-option"
+                ><input class="radio" type="radio" name="updated" value="any" /><span data-i18n-target="sn-24-2"
+                  >Any time</span
+                ></label
               >
             </fieldset></div
           ></details
         >
         <div class="mk-filter-sidebar-group"
           ><label class="mk-filter-sidebar-option" for="fs-stock"
-            ><span data-i18n-target="sn-26-1">In stock only</span
+            ><span data-i18n-target="sn-26-1">Official docs only</span
             ><input
               class="switch"
               type="checkbox"
               role="switch"
               id="fs-stock"
-              name="stock"
+              name="official"
               style="margin-inline-start: auto"
               checked /></label
         ></div>
-        <button class="btn mk-filter-sidebar-apply" type="submit" data-i18n-target="sn-27-1">Show 24 products</button>
+        <button class="btn mk-filter-sidebar-apply" type="submit" data-i18n-target="sn-27-1">Show 81 results</button>
       </form>
     </aside>
-    <div style="grid-column: span 2; display: grid; gap: 1rem; min-width: 0">
+    <div class="sr-results">
       <div class="mk-search-summary" role="status">
         <p data-i18n-target="results"
           ><strong><span data-i18n-value="total">248</span> results</strong> for
@@ -279,45 +656,47 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><a
               class="mk-active-filters-chip"
               href="#"
-              aria-label="Remove filter Category: Shirts"
-              data-i18n-aria-label-en="Remove filter Category: Shirts"
-              data-i18n-aria-label-de="Filter Kategorie: Shirts entfernen"
-              ><span data-i18n-target="sn-29-1">Category:</span> <span data-i18n-target="sn-14-2">Shirts</span>
+              aria-label="Remove filter Type: Guides"
+              data-i18n-aria-label-en="Remove filter Type: Guides"
+              data-i18n-aria-label-de="Filter Typ: Anleitungen entfernen"
+              ><span data-i18n-target="sn-29-1">Type:</span> <span data-i18n-target="sn-14-2">Guides</span>
               <i data-lucide="x"></i></a
           ></li>
           <li
             ><a
               class="mk-active-filters-chip"
               href="#"
-              aria-label="Remove filter Color: Sand"
-              data-i18n-aria-label-en="Remove filter Color: Sand"
-              data-i18n-aria-label-de="Filter Farbe: Sand entfernen"
-              ><span data-i18n-target="sn-30-1">Color:</span> Sand <i data-lucide="x"></i></a
+              aria-label="Remove filter Area: Sync and offline"
+              data-i18n-aria-label-en="Remove filter Area: Sync and offline"
+              data-i18n-aria-label-de="Filter Bereich: Sync und offline entfernen"
+              ><span data-i18n-target="sn-30-1">Area:</span> <span data-i18n-target="sn-19-2">Sync and offline</span>
+              <i data-lucide="x"></i></a
           ></li>
           <li
             ><a
               class="mk-active-filters-chip"
               href="#"
-              aria-label="Remove filter Price: €50 – €100"
-              data-i18n-aria-label-en="Remove filter Price: €50 – €100"
-              data-i18n-aria-label-de="Filter Preis: 50 € – 100 € entfernen"
-              ><span data-i18n-target="sn-31-1">Price:</span> €50 – €100 <i data-lucide="x"></i></a
+              aria-label="Remove filter Updated: in the last 30 days"
+              data-i18n-aria-label-en="Remove filter Updated: in the last 30 days"
+              data-i18n-aria-label-de="Filter Aktualisiert: in den letzten 30 Tagen entfernen"
+              ><span data-i18n-target="sn-31-1">Updated:</span>
+              <span data-i18n-target="sn-24-3">in the last 30 days</span> <i data-lucide="x"></i></a
           ></li>
         </ul>
         <a class="mk-active-filters-clear" href="#" data-i18n-target="sn-12-2">Clear all</a>
       </nav>
-      <div style="display: flex; justify-content: flex-end"
+      <div class="sr-sort"
         ><div class="mk-sort-control"
           ><label for="so-1" data-i18n-target="sn-32-1">Sort by</label
           ><select class="select" id="so-1" name="sort" data-search-sort
             ><option value="" data-i18n-target="sn-33-1">Most relevant</option
             ><option value="newest" data-i18n-target="sn-34-1">Newest</option
-            ><option value="price-asc" data-i18n-target="sn-35-1">Price: low to high</option
-            ><option value="price-desc" data-i18n-target="sn-36-1">Price: high to low</option></select
+            ><option value="popular" data-i18n-target="sn-35-1">Most read</option
+            ><option value="oldest" data-i18n-target="sn-36-1">Oldest</option></select
           ></div
         ></div
       >
-      <div style="display: grid; max-width: 44rem; width: 100%">
+      <div class="sr-list">
         <article class="mk-search-result">
           <div class="mk-search-result-body">
             <p class="mk-search-result-path"
@@ -517,6 +896,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     </ul>
   </nav>
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="look-catalogue" data-i18n-locale="en">Catalogue</template>
+  <template data-i18n-for="look-catalogue" data-i18n-locale="de">Katalog</template>
+  <template data-i18n-for="look-owl" data-i18n-locale="en">Night owl</template>
+  <template data-i18n-for="look-owl" data-i18n-locale="de">Nachteule</template>
+  <template data-i18n-for="look-marker" data-i18n-locale="en">Highlighter</template>
+  <template data-i18n-for="look-marker" data-i18n-locale="de">Textmarker</template>
   <template data-i18n-for="suggest" data-i18n-locale="en"
     >Did you mean
     <a href="#/?q=calm+software" data-router-link data-query="q=calm software">calm software</a>?</template
@@ -538,6 +923,66 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     ><strong><span data-i18n-value="from"></span>–<span data-i18n-value="to"></span></strong> von
     <strong><span data-i18n-value="total"></span></strong
   ></template>
+  <template data-i18n-for="sn-13-1" data-i18n-locale="en">Type</template>
+  <template data-i18n-for="sn-13-1" data-i18n-locale="de">Typ</template>
+  <template data-i18n-for="sn-13-2" data-i18n-locale="en">Type</template>
+  <template data-i18n-for="sn-13-2" data-i18n-locale="de">Typ</template>
+  <template data-i18n-for="sn-14-1" data-i18n-locale="en">Guides</template>
+  <template data-i18n-for="sn-14-1" data-i18n-locale="de">Anleitungen</template>
+  <template data-i18n-for="sn-14-2" data-i18n-locale="en">Guides</template>
+  <template data-i18n-for="sn-14-2" data-i18n-locale="de">Anleitungen</template>
+  <template data-i18n-for="sn-15-1" data-i18n-locale="en">Help articles</template>
+  <template data-i18n-for="sn-15-1" data-i18n-locale="de">Hilfeartikel</template>
+  <template data-i18n-for="sn-16-1" data-i18n-locale="en">Release notes</template>
+  <template data-i18n-for="sn-16-1" data-i18n-locale="de">Versionshinweise</template>
+  <template data-i18n-for="sn-17-1" data-i18n-locale="en">Videos</template>
+  <template data-i18n-for="sn-17-1" data-i18n-locale="de">Videos</template>
+  <template data-i18n-for="sn-18-1" data-i18n-locale="en">Product area</template>
+  <template data-i18n-for="sn-18-1" data-i18n-locale="de">Produktbereich</template>
+  <template data-i18n-for="sn-21-2" data-i18n-locale="en">Product area</template>
+  <template data-i18n-for="sn-21-2" data-i18n-locale="de">Produktbereich</template>
+  <template data-i18n-for="sn-19-1" data-i18n-locale="en">Sync and offline</template>
+  <template data-i18n-for="sn-19-1" data-i18n-locale="de">Sync und offline</template>
+  <template data-i18n-for="sn-19-2" data-i18n-locale="en">Sync and offline</template>
+  <template data-i18n-for="sn-19-2" data-i18n-locale="de">Sync und offline</template>
+  <template data-i18n-for="sn-20-1" data-i18n-locale="en">Billing</template>
+  <template data-i18n-for="sn-20-1" data-i18n-locale="de">Abrechnung</template>
+  <template data-i18n-for="sn-21-1" data-i18n-locale="en">Teams and roles</template>
+  <template data-i18n-for="sn-21-1" data-i18n-locale="de">Teams und Rollen</template>
+  <template data-i18n-for="sn-22-1" data-i18n-locale="en">Updated</template>
+  <template data-i18n-for="sn-22-1" data-i18n-locale="de">Aktualisiert</template>
+  <template data-i18n-for="sn-23-1" data-i18n-locale="en">Updated</template>
+  <template data-i18n-for="sn-23-1" data-i18n-locale="de">Aktualisiert</template>
+  <template data-i18n-for="sn-24-1" data-i18n-locale="en">In the last 30 days</template>
+  <template data-i18n-for="sn-24-1" data-i18n-locale="de">In den letzten 30 Tagen</template>
+  <template data-i18n-for="sn-24-2" data-i18n-locale="en">Any time</template>
+  <template data-i18n-for="sn-24-2" data-i18n-locale="de">Jederzeit</template>
+  <template data-i18n-for="sn-24-3" data-i18n-locale="en">in the last 30 days</template>
+  <template data-i18n-for="sn-24-3" data-i18n-locale="de">in den letzten 30 Tagen</template>
+  <template data-i18n-for="sn-25-1" data-i18n-locale="en">In the last year</template>
+  <template data-i18n-for="sn-25-1" data-i18n-locale="de">Im letzten Jahr</template>
+  <template data-i18n-for="sn-26-1" data-i18n-locale="en">Official docs only</template>
+  <template data-i18n-for="sn-26-1" data-i18n-locale="de">Nur offizielle Doku</template>
+  <template data-i18n-for="sn-27-1" data-i18n-locale="en">Show 81 results</template>
+  <template data-i18n-for="sn-27-1" data-i18n-locale="de">81 Ergebnisse zeigen</template>
+  <template data-i18n-for="sn-29-1" data-i18n-locale="en">Type:</template>
+  <template data-i18n-for="sn-29-1" data-i18n-locale="de">Typ:</template>
+  <template data-i18n-for="sn-30-1" data-i18n-locale="en">Area:</template>
+  <template data-i18n-for="sn-30-1" data-i18n-locale="de">Bereich:</template>
+  <template data-i18n-for="sn-31-1" data-i18n-locale="en">Updated:</template>
+  <template data-i18n-for="sn-31-1" data-i18n-locale="de">Aktualisiert:</template>
+  <template data-i18n-for="sn-35-1" data-i18n-locale="en">Most read</template>
+  <template data-i18n-for="sn-35-1" data-i18n-locale="de">Meistgelesen</template>
+  <template data-i18n-for="sn-36-1" data-i18n-locale="en">Oldest</template>
+  <template data-i18n-for="sn-36-1" data-i18n-locale="de">Älteste</template>
+  <template data-i18n-for="crumb-help" data-i18n-locale="en">Help centre</template>
+  <template data-i18n-for="crumb-help" data-i18n-locale="de">Hilfe-Center</template>
+  <template data-i18n-for="crumb-search" data-i18n-locale="en">Search</template>
+  <template data-i18n-for="crumb-search" data-i18n-locale="de">Suche</template>
+  <template data-i18n-for="crumb-back" data-i18n-locale="en">Help centre</template>
+  <template data-i18n-for="crumb-back" data-i18n-locale="de">Hilfe-Center</template>
+  <template data-i18n-for="page-title" data-i18n-locale="en">Search the help centre</template>
+  <template data-i18n-for="page-title" data-i18n-locale="de">Das Hilfe-Center durchsuchen</template>
   <template data-i18n-for="sn-1-1" data-i18n-locale="en">Search</template>
   <template data-i18n-for="sn-1-1" data-i18n-locale="de">Suchen</template>
   <template data-i18n-for="sn-1-2" data-i18n-locale="en">Search</template>
@@ -570,60 +1015,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="sn-12-1" data-i18n-locale="de">Alle entfernen</template>
   <template data-i18n-for="sn-12-2" data-i18n-locale="en">Clear all</template>
   <template data-i18n-for="sn-12-2" data-i18n-locale="de">Alle entfernen</template>
-  <template data-i18n-for="sn-13-1" data-i18n-locale="en">Category</template>
-  <template data-i18n-for="sn-13-1" data-i18n-locale="de">Kategorie</template>
-  <template data-i18n-for="sn-13-2" data-i18n-locale="en">Category</template>
-  <template data-i18n-for="sn-13-2" data-i18n-locale="de">Kategorie</template>
-  <template data-i18n-for="sn-14-1" data-i18n-locale="en">Shirts</template>
-  <template data-i18n-for="sn-14-1" data-i18n-locale="de">Hemden</template>
-  <template data-i18n-for="sn-14-2" data-i18n-locale="en">Shirts</template>
-  <template data-i18n-for="sn-14-2" data-i18n-locale="de">Hemden</template>
-  <template data-i18n-for="sn-15-1" data-i18n-locale="en">Knitwear</template>
-  <template data-i18n-for="sn-15-1" data-i18n-locale="de">Strick</template>
-  <template data-i18n-for="sn-16-1" data-i18n-locale="en">Trousers</template>
-  <template data-i18n-for="sn-16-1" data-i18n-locale="de">Hosen</template>
-  <template data-i18n-for="sn-17-1" data-i18n-locale="en">Accessories</template>
-  <template data-i18n-for="sn-17-1" data-i18n-locale="de">Accessoires</template>
-  <template data-i18n-for="sn-18-1" data-i18n-locale="en">Price</template>
-  <template data-i18n-for="sn-18-1" data-i18n-locale="de">Preis</template>
-  <template data-i18n-for="sn-19-1" data-i18n-locale="en">Minimum price</template>
-  <template data-i18n-for="sn-19-1" data-i18n-locale="de">Mindestpreis</template>
-  <template data-i18n-for="sn-20-1" data-i18n-locale="en">Maximum price</template>
-  <template data-i18n-for="sn-20-1" data-i18n-locale="de">Höchstpreis</template>
-  <template data-i18n-for="sn-21-1" data-i18n-locale="en">Color</template>
-  <template data-i18n-for="sn-21-1" data-i18n-locale="de">Farbe</template>
-  <template data-i18n-for="sn-21-2" data-i18n-locale="en">Color</template>
-  <template data-i18n-for="sn-21-2" data-i18n-locale="de">Farbe</template>
-  <template data-i18n-for="sn-22-1" data-i18n-locale="en">Rating</template>
-  <template data-i18n-for="sn-22-1" data-i18n-locale="de">Bewertung</template>
-  <template data-i18n-for="sn-23-1" data-i18n-locale="en">Minimum rating</template>
-  <template data-i18n-for="sn-23-1" data-i18n-locale="de">Mindestbewertung</template>
-  <template data-i18n-for="sn-24-1" data-i18n-locale="en">4 & up</template>
-  <template data-i18n-for="sn-24-1" data-i18n-locale="de">ab 4</template>
-  <template data-i18n-for="sn-25-1" data-i18n-locale="en">3 & up</template>
-  <template data-i18n-for="sn-25-1" data-i18n-locale="de">ab 3</template>
-  <template data-i18n-for="sn-26-1" data-i18n-locale="en">In stock only</template>
-  <template data-i18n-for="sn-26-1" data-i18n-locale="de">Nur vorrätig</template>
-  <template data-i18n-for="sn-27-1" data-i18n-locale="en">Show 24 products</template>
-  <template data-i18n-for="sn-27-1" data-i18n-locale="de">24 Produkte zeigen</template>
   <template data-i18n-for="sn-28-1" data-i18n-locale="en">Clear search</template>
   <template data-i18n-for="sn-28-1" data-i18n-locale="de">Suche löschen</template>
-  <template data-i18n-for="sn-29-1" data-i18n-locale="en">Category:</template>
-  <template data-i18n-for="sn-29-1" data-i18n-locale="de">Kategorie:</template>
-  <template data-i18n-for="sn-30-1" data-i18n-locale="en">Color:</template>
-  <template data-i18n-for="sn-30-1" data-i18n-locale="de">Farbe:</template>
-  <template data-i18n-for="sn-31-1" data-i18n-locale="en">Price:</template>
-  <template data-i18n-for="sn-31-1" data-i18n-locale="de">Preis:</template>
   <template data-i18n-for="sn-32-1" data-i18n-locale="en">Sort by</template>
   <template data-i18n-for="sn-32-1" data-i18n-locale="de">Sortieren nach</template>
   <template data-i18n-for="sn-33-1" data-i18n-locale="en">Most relevant</template>
   <template data-i18n-for="sn-33-1" data-i18n-locale="de">Relevanteste</template>
   <template data-i18n-for="sn-34-1" data-i18n-locale="en">Newest</template>
   <template data-i18n-for="sn-34-1" data-i18n-locale="de">Neueste</template>
-  <template data-i18n-for="sn-35-1" data-i18n-locale="en">Price: low to high</template>
-  <template data-i18n-for="sn-35-1" data-i18n-locale="de">Preis aufsteigend</template>
-  <template data-i18n-for="sn-36-1" data-i18n-locale="en">Price: high to low</template>
-  <template data-i18n-for="sn-36-1" data-i18n-locale="de">Preis absteigend</template>
   <template data-i18n-for="sn-37-1" data-i18n-locale="en">Previous</template>
   <template data-i18n-for="sn-37-1" data-i18n-locale="de">Zurück</template>
   <template data-i18n-for="sn-38-1" data-i18n-locale="en">Next</template>
@@ -656,14 +1055,21 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
-  import {
-    createDomI18n,
-    createI18n,
-    resolveLocale,
-  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#site-search [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
     const site = df$('#site-search').get(0);
 
     // the search the address names - what the page shows when a parameter is missing
@@ -674,7 +1080,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     const get = (key) => query.get(key) ?? DEFAULTS[key];
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
-      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+      locale: 'en', // the demos start in English; the language select offers German
     });
     const texts = createDomI18n(df$).bind(site, locale, {
       getState: () => query,
@@ -687,6 +1093,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     });
     const language = df$('[data-app-locale]');
     language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
+    // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
+    const lookRoot = df$('#site-search').get(0);
+    const look = df$('#site-search [data-site-look]');
+    const applyLook = (name) => {
+      lookRoot.dataset.look = name;
+      df$('#site-search [data-look-set]').each((_i, el) => {
+        const sets = JSON.parse(el.dataset.lookSet);
+        for (const [attr, value] of Object.entries({ ...sets.default, ...sets[name] })) el.setAttribute(attr, value);
+      });
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    };
+    look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
     // -- routing
     const routes = [

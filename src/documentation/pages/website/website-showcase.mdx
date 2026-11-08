@@ -1,0 +1,58 @@
+---
+title: "Showcase"
+description: "One-page sites that dress the same components as four different brands - a coffee roaster, an observatory, a bouldering gym and a record shop - each with its own palette, type, a shader or a texture, a few deliberate irregularities and three looks."
+slug: "website-showcase"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="website-showcase" title="Showcase" introStyle="max-width:42rem;">
+  One-page sites that dress the same components as four different brands - a coffee roaster, an observatory, a bouldering gym and a record shop - each with its own palette, type, a shader or a texture, a few deliberate irregularities and three looks.
+</PageHeader>
+
+<h2 id="method" class="h2-display">The method</h2>
+
+<DocText>A components library gives every site the same parts; what makes a site its own is a handful of decisions that break the grid on purpose, taken from the subject's world. Each site here starts from one subject and keeps to these rules:</DocText>
+
+<ul class="mb-8" style="max-width:46rem;line-height:1.7">
+  <li><b>A palette and two typefaces of its own</b>, set as tokens on the site's root - every component inside follows them.</li>
+  <li><b>One moving surface</b> - a <DocLink href="shader.html">Shader</DocLink> or a textured surface - where the subject has one: steam over a cup, a starfield, contour lines, a turning record.</li>
+  <li><b>A few irregular moves</b>: a speech bubble, something pinned at a slant, a stamp, a ticket, a number circled by hand - each carrying content, not decoration.</li>
+  <li><b>A detail only this subject has</b>: altitudes and cupping scores, magnitudes and seeing in arc-seconds, boulder grades, catalogue numbers and run times.</li>
+  <li><b>Three looks</b> - the Look select swaps the palette, the shader's colours and the paper, so one structure shows three identities.</li>
+</ul>
+
+<h2 id="sites" class="h2-display">The sites</h2>
+
+<div class="grid gap-4 mb-8" style="grid-template-columns:repeat(auto-fill,minmax(16rem,1fr))">
+  <a class="card" data-size="sm" href="showcase-roastery.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Roastery</h3>
+      <p class="card-description">Kiln &amp; Bean: steam rising behind the cup, a turning stamp, the green coffees as tickets. Espresso, Blond roast, Cherry.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="showcase-observatory.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Observatory</h3>
+      <p class="card-description">Hill Observatory: a starfield behind tonight's sky, the moon's phase, what is up and how bright. Night sky, Red light, Day visit.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="showcase-bouldering.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Bouldering Gym</h3>
+      <p class="card-description">Grip: contour lines under the hero, holds scattered over the page, the week's new problems by grade. Chalk, Night session, Granite.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="showcase-records.html" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <h3 class="card-title card-title-sm">Record Shop</h3>
+      <p class="card-description">Lowtide Records: a record turning on a moving light, a tracklist with run times, new arrivals pinned askew. Tape, Vapor, Mono.</p>
+    </div>
+  </a>
+</div>
+
+<DocText>The <DocLink href="website-landing-page.html">Website templates</DocLink> use the same method: each one has three looks in its Look select.</DocText>
+
+</DocPage>

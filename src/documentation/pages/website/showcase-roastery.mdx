@@ -1,0 +1,657 @@
+---
+title: "Roastery"
+description: "A one-page site for a small coffee roaster - steam rising behind the cup, a stamp that turns, the green coffees as tickets with their altitude and process, and a subscription said in a speech bubble. Three looks: Espresso, Blond roast and Cherry."
+slug: "showcase-roastery"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="showcase-roastery" title="Roastery" introStyle="max-width:42rem;">
+  A one-page site for a small coffee roaster - steam rising behind the cup, a stamp that turns, the green coffees as tickets with their altitude and process, and a subscription said in a speech bubble. Three looks: Espresso, Blond roast and Cherry. One of the <DocLink href="website-showcase.html">Showcase</DocLink> sites.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-showcase-roastery.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="Kiln & Bean, coffee roasters" schema="none" hint="The Look select switches the palette, the steam's colours and the paper: Espresso (dark roast), Blond roast (pale and blue) and Cherry (the red of the coffee fruit). The steam is a Shader (smoke) behind the cup, the stamp turns on its own, the coffees are tickets (shapes.css)." previewStyle="align-items:stretch;padding:0;"
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Work+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap');
+  /* Kiln & Bean: a roaster that roasts once a week. Layout: a hero split around the cup, a band of green coffees as
+     tickets, a subscription in a speech bubble, the roast days as a calendar strip. */
+  #sc-roastery {
+    --background: oklch(0.2 0.025 45);
+    --foreground: oklch(0.94 0.025 80);
+    --card: oklch(0.25 0.03 45);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.28 0.03 45);
+    --muted-foreground: oklch(0.76 0.04 70);
+    --border: oklch(0.38 0.04 50);
+    --input: var(--border);
+    --primary: oklch(0.8 0.11 75);
+    --primary-foreground: oklch(0.2 0.025 45);
+    --secondary: oklch(0.3 0.035 45);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.8 0.11 75);
+    --accent-foreground: oklch(0.2 0.025 45);
+    --ring: var(--primary);
+    --radius: 0.5rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --kb-ticket: oklch(0.9 0.04 80);
+    --kb-ticket-ink: oklch(0.22 0.03 45);
+    --kb-bubble: oklch(0.8 0.11 75);
+    --kb-bubble-ink: oklch(0.2 0.025 45);
+    color-scheme: dark;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: clip;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: 'Work Sans', var(--font-sans);
+  }
+  #sc-roastery[data-look='blond'] {
+    color-scheme: light;
+    --background: oklch(0.955 0.025 225);
+    --foreground: oklch(0.27 0.06 250);
+    --card: oklch(0.985 0.012 225);
+    --muted: oklch(0.92 0.03 225);
+    --muted-foreground: oklch(0.45 0.05 245);
+    --border: oklch(0.27 0.06 250 / 0.22);
+    --primary: oklch(0.45 0.13 250);
+    --primary-foreground: oklch(0.985 0.012 225);
+    --secondary: oklch(0.92 0.03 225);
+    --secondary-foreground: oklch(0.27 0.06 250);
+    --accent: oklch(0.86 0.1 75);
+    --accent-foreground: oklch(0.27 0.06 250);
+    --kb-ticket: oklch(0.86 0.1 75);
+    --kb-ticket-ink: oklch(0.27 0.06 250);
+    --kb-bubble: oklch(0.45 0.13 250);
+    --kb-bubble-ink: oklch(0.985 0.012 225);
+  }
+  #sc-roastery[data-look='cherry'] {
+    color-scheme: light;
+    --background: oklch(0.6 0.2 25);
+    --foreground: oklch(0.98 0.02 60);
+    --card: oklch(0.55 0.19 25);
+    --muted: oklch(0.53 0.18 25);
+    --muted-foreground: oklch(0.92 0.04 50);
+    --border: oklch(0.98 0.02 60 / 0.35);
+    --primary: oklch(0.35 0.08 150);
+    --primary-foreground: oklch(0.98 0.02 60);
+    --secondary: oklch(0.53 0.18 25);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.35 0.08 150);
+    --accent-foreground: oklch(0.98 0.02 60);
+    --kb-ticket: oklch(0.98 0.02 60);
+    --kb-ticket-ink: oklch(0.45 0.17 25);
+    --kb-bubble: oklch(0.35 0.08 150);
+    --kb-bubble-ink: oklch(0.98 0.02 60);
+  }
+  #sc-roastery .kb-page {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3.5rem, 8vw, 6rem);
+    max-width: 72rem;
+    margin-inline: auto;
+  }
+  #sc-roastery .kb-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+  #sc-roastery .kb-brand {
+    margin: 0;
+    font:
+      400 1.6rem/1 'Abril Fatface',
+      Georgia,
+      serif;
+  }
+  #sc-roastery .kb-bar nav {
+    display: flex;
+    gap: 1.25rem;
+    margin-inline-start: auto;
+    font-weight: 500;
+  }
+  #sc-roastery .kb-bar nav a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #sc-roastery .kb-bar nav a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+  /* the hero: the promise, the cup with its steam, the turning stamp */
+  #sc-roastery .kb-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  #sc-roastery .kb-hero h1 {
+    margin: 0;
+    font:
+      400 clamp(3rem, 8vw, 6.25rem)/0.95 'Abril Fatface',
+      Georgia,
+      serif;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  #sc-roastery .kb-hero h1 em {
+    font-style: normal;
+    color: var(--primary);
+  }
+  #sc-roastery .kb-hero p {
+    max-width: 34rem;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--muted-foreground);
+  }
+  #sc-roastery .kb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  #sc-roastery .kb-cup {
+    position: relative;
+    isolation: isolate;
+    aspect-ratio: 4 / 5;
+  }
+  #sc-roastery .kb-cup img {
+    position: absolute;
+    inset: 22% 0 0;
+    width: 100%;
+    height: 78%;
+    object-fit: cover;
+    border-radius: 50% 50% var(--radius-xl) var(--radius-xl) / 18% 18% var(--radius-xl) var(--radius-xl);
+  }
+  #sc-roastery .kb-steam {
+    position: absolute;
+    z-index: 1;
+    inset: -6% 8% 46%;
+    width: 84%;
+    height: 60%;
+    mask-image: radial-gradient(45% 55% at 50% 62%, #000 25%, transparent 72%);
+    pointer-events: none;
+  }
+  #sc-roastery .kb-stamp {
+    position: absolute;
+    z-index: 2;
+    left: -2.5rem;
+    bottom: 1.5rem;
+    width: 8.5rem;
+    aspect-ratio: 1;
+    color: var(--primary);
+    animation: kb-turn 22s linear infinite;
+  }
+  #sc-roastery .kb-stamp text {
+    font:
+      500 9.4px/1 'DM Mono',
+      monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    fill: currentColor;
+  }
+  #sc-roastery .kb-stamp circle {
+    fill: none;
+    stroke: currentColor;
+  }
+  @keyframes kb-turn {
+    to {
+      rotate: 360deg;
+    }
+  }
+  /* the green coffees as tickets: origin, altitude, process, the notes the cupping table found */
+  #sc-roastery .kb-section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-block-end: 1.5rem;
+  }
+  #sc-roastery .kb-section-head h2 {
+    margin: 0;
+    font:
+      400 clamp(2rem, 4vw, 3rem)/1 'Abril Fatface',
+      Georgia,
+      serif;
+  }
+  #sc-roastery .kb-section-head p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  #sc-roastery .kb-coffees {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #sc-roastery .kb-coffee {
+    --shape-cut: 0.85rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem 1rem;
+    padding: 1.4rem 1.75rem;
+    background: var(--kb-ticket);
+    color: var(--kb-ticket-ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8125rem;
+  }
+  #sc-roastery .kb-coffee:nth-child(1) {
+    rotate: -1.5deg;
+  }
+  #sc-roastery .kb-coffee:nth-child(2) {
+    rotate: 1deg;
+    translate: 0 0.6rem;
+  }
+  #sc-roastery .kb-coffee:nth-child(3) {
+    rotate: -0.6deg;
+  }
+  #sc-roastery .kb-coffee h3 {
+    grid-column: 1 / -1;
+    margin: 0;
+    font:
+      400 1.75rem/1.05 'Abril Fatface',
+      Georgia,
+      serif;
+  }
+  #sc-roastery .kb-coffee dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 0.75rem;
+    margin: 0;
+  }
+  #sc-roastery .kb-coffee dt {
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.6875rem;
+    padding-block-start: 0.1rem;
+  }
+  #sc-roastery .kb-coffee dd {
+    margin: 0;
+  }
+  #sc-roastery .kb-score {
+    align-self: start;
+    display: grid;
+    place-items: center;
+    width: 3.6rem;
+    aspect-ratio: 1;
+    border: 2px dashed currentColor;
+    border-radius: 50%;
+    font-weight: 500;
+    font-size: 1rem;
+    rotate: 8deg;
+  }
+  #sc-roastery .kb-notes {
+    grid-column: 1 / -1;
+    margin: 0.4rem 0 0;
+    padding-block-start: 0.6rem;
+    border-block-start: 1.5px dashed currentColor;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.9375rem;
+  }
+  /* the subscription, said */
+  #sc-roastery .kb-subscribe {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  #sc-roastery .kb-bubble {
+    position: relative;
+    margin: 0;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border-radius: 2rem;
+    background: var(--kb-bubble);
+    color: var(--kb-bubble-ink);
+    font:
+      400 clamp(1.6rem, 3.5vw, 2.4rem)/1.15 'Abril Fatface',
+      Georgia,
+      serif;
+    rotate: -2deg;
+  }
+  #sc-roastery .kb-bubble::after {
+    content: '';
+    position: absolute;
+    right: 3rem;
+    bottom: -1.4rem;
+    width: 2.2rem;
+    height: 1.5rem;
+    background: inherit;
+    clip-path: polygon(0 0, 100% 0, 85% 100%);
+  }
+  #sc-roastery .kb-plan {
+    display: grid;
+    gap: 1rem;
+  }
+  #sc-roastery .kb-plan ol {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8125rem;
+  }
+  #sc-roastery .kb-plan li {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+  #sc-roastery .kb-plan li b {
+    font:
+      400 1.5rem/1 'Abril Fatface',
+      Georgia,
+      serif;
+  }
+  #sc-roastery .kb-plan meter {
+    width: 100%;
+    accent-color: var(--primary);
+  }
+  #sc-roastery .kb-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  @media (max-width: 48rem) {
+    #sc-roastery :is(.kb-hero, .kb-subscribe) {
+      grid-template-columns: 1fr;
+    }
+    #sc-roastery .kb-stamp {
+      left: 0;
+      width: 6.5rem;
+    }
+    #sc-roastery .kb-bar nav {
+      margin-inline-start: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #sc-roastery .kb-stamp {
+      animation: none;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #sc-roastery .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #sc-roastery .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  .dark #sc-roastery[data-look='espresso'] {
+    --accent: oklch(0.29 0.05 75);
+    --accent-foreground: oklch(0.94 0.025 80);
+  }
+  :root:not(.dark) #sc-roastery[data-look='espresso'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.025 45);
+    --foreground: oklch(0.2 0.025 80);
+    --card: oklch(0.997 0.025 45);
+    --card-foreground: oklch(0.2 0.025 80);
+    --muted: oklch(0.95 0.025 45);
+    --muted-foreground: oklch(0.46 0.03 70);
+    --border: oklch(0.9 0.025 50);
+    --input: oklch(0.88 0.025 50);
+    --primary: oklch(0.55 0.11 75);
+    --primary-foreground: oklch(0.985 0.005 75);
+    --secondary: oklch(0.955 0.025 45);
+    --secondary-foreground: oklch(0.25 0.025 80);
+    --accent: oklch(0.94 0.025 75);
+    --accent-foreground: oklch(0.2 0.025 80);
+    --ring: oklch(0.55 0.11 75);
+    --kb-ticket: oklch(0.267 0.04 80);
+    --kb-ticket-ink: oklch(0.951 0.03 45);
+    --kb-bubble: oklch(0.55 0.11 75);
+    --kb-bubble-ink: oklch(0.962 0.025 45);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #sc-roastery[data-look='blond'] {
+    --accent: oklch(0.91 0.045 75);
+  }
+  .dark #sc-roastery[data-look='blond'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0.025 225);
+    --foreground: oklch(0.94 0.03 250);
+    --card: oklch(0.205 0.012 225);
+    --card-foreground: oklch(0.94 0.03 250);
+    --muted: oklch(0.24 0.03 225);
+    --muted-foreground: oklch(0.74 0.03 245);
+    --border: oklch(0.95 0.02 250 / 0.14);
+    --input: oklch(0.95 0.02 250 / 0.14);
+    --primary: oklch(0.69 0.13 250);
+    --primary-foreground: oklch(0.17 0.03 250);
+    --secondary: oklch(0.25 0.03 225);
+    --secondary-foreground: oklch(0.9 0.03 250);
+    --accent: oklch(0.26 0.035 75);
+    --accent-foreground: oklch(0.94 0.03 250);
+    --ring: oklch(0.69 0.13 250);
+    --kb-ticket: oklch(0.36 0.035 75);
+    --kb-ticket-ink: oklch(0.87 0.03 250);
+    --kb-bubble: oklch(0.69 0.13 250);
+    --kb-bubble-ink: oklch(0.173 0.012 225);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  .dark #sc-roastery[data-look='cherry'] {
+    --background: oklch(0.57 0.2 25);
+    --foreground: oklch(1 0.02 60);
+    --muted-foreground: oklch(1 0.04 50);
+    --accent: oklch(0.5 0.2 25);
+  }
+  :root:not(.dark) #sc-roastery[data-look='cherry'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.025 25);
+    --foreground: oklch(0.2 0.02 60);
+    --card: oklch(0.997 0.025 25);
+    --card-foreground: oklch(0.2 0.02 60);
+    --muted: oklch(0.95 0.025 25);
+    --muted-foreground: oklch(0.46 0.03 50);
+    --border: oklch(0.2 0.02 60 / 0.12);
+    --input: oklch(0.2 0.02 60 / 0.12);
+    --primary: oklch(0.35 0.08 150);
+    --primary-foreground: oklch(0.985 0.005 150);
+    --secondary: oklch(0.955 0.025 25);
+    --secondary-foreground: oklch(0.25 0.02 60);
+    --accent: oklch(0.94 0.025 150);
+    --accent-foreground: oklch(0.2 0.02 60);
+    --ring: oklch(0.35 0.08 150);
+    --kb-ticket: oklch(0.167 0.02 60);
+    --kb-ticket-ink: oklch(0.45 0.17 25);
+    --kb-bubble: oklch(0.879 0.03 150);
+    --kb-bubble-ink: oklch(0.167 0.02 60);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="sc-roastery" data-look="espresso">
+  <div class="kb-page">
+    <div class="kb-bar">
+      <p class="kb-brand">Kiln &amp; Bean</p>
+      <nav aria-label="Site">
+        <a href="#kb-coffees">Coffees</a>
+        <a href="#kb-subscribe">Subscription</a>
+        <a href="#kb-visit">Visit</a>
+      </nav>
+      <select class="select" data-size="sm" data-site-look aria-label="Look" style="width: auto">
+        <option value="espresso">Espresso</option>
+        <option value="blond">Blond roast</option>
+        <option value="cherry">Cherry</option>
+      </select>
+      <label class="swap site-mode" data-variant="rotate" data-size="sm">
+        <input type="checkbox" data-site-mode aria-label="Dark mode" />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </div>
+    <section class="kb-hero" aria-labelledby="kb-title">
+      <div>
+        <h1 id="kb-title">Roasted on Tuesday. <em>In your cup</em> by Friday.</h1>
+        <p
+          >We roast three coffees a week in a 15 kg drum in Leipzig, rest them two days and post them the morning after.
+          Nothing sits on a shelf.</p
+        >
+        <div class="kb-actions">
+          <a class="btn" data-size="lg" href="#kb-coffees">This week's coffees</a>
+          <a class="btn" data-variant="outline" data-size="lg" href="#kb-subscribe">Subscribe</a>
+        </div>
+      </div>
+      <div class="kb-cup">
+        <img src="https://picsum.photos/id/30/800/900" alt="A red mug of coffee on a wooden table" />
+        <div
+          class="shader kb-steam"
+          data-effect="smoke"
+          data-background="transparent"
+          data-look-set='{"default": {"data-colors": "oklch(0.95 0.02 80) oklch(0.8 0.03 70)"}, "blond": {"data-colors": "oklch(1 0 0) oklch(0.85 0.03 225)"}, "cherry": {"data-colors": "oklch(0.98 0.02 60) oklch(0.85 0.06 30)"}}'
+          data-colors="oklch(0.95 0.02 80) oklch(0.8 0.03 70)"
+          data-speed="0.7"
+          data-fps="30"
+          aria-hidden="true"
+        ></div>
+        <svg class="kb-stamp" viewBox="0 0 100 100" aria-hidden="true">
+          <defs><path id="kb-stamp-path" d="M50 50m-38 0a38 38 0 1 1 76 0a38 38 0 1 1-76 0" /></defs>
+          <circle cx="50" cy="50" r="46" stroke-width="1.5" />
+          <circle cx="50" cy="50" r="29" stroke-width="1" stroke-dasharray="2 3" />
+          <text>
+            <textPath href="#kb-stamp-path" textLength="236" lengthAdjust="spacingAndGlyphs">
+              roasted weekly · Leipzig · since 2019 ·
+            </textPath>
+          </text>
+        </svg>
+      </div>
+    </section>
+    <section id="kb-coffees" aria-labelledby="kb-coffees-title">
+      <div class="kb-section-head">
+        <h2 id="kb-coffees-title">This week's coffees</h2>
+        <p>Roasted 3 November · posted 5 November</p>
+      </div>
+      <ul class="kb-coffees">
+        <li class="kb-coffee ticket">
+          <h3>Gedeb, Ethiopia</h3>
+          <dl>
+            <dt>Altitude</dt>
+            <dd>2,100 m</dd>
+            <dt>Process</dt>
+            <dd>Washed</dd>
+            <dt>Variety</dt>
+            <dd>Heirloom</dd>
+          </dl>
+          <span class="kb-score" title="Cupping score">87.5</span>
+          <p class="kb-notes">Jasmine, bergamot, white peach</p>
+        </li>
+        <li class="kb-coffee ticket">
+          <h3>Huila, Colombia</h3>
+          <dl>
+            <dt>Altitude</dt>
+            <dd>1,750 m</dd>
+            <dt>Process</dt>
+            <dd>Honey</dd>
+            <dt>Variety</dt>
+            <dd>Caturra</dd>
+          </dl>
+          <span class="kb-score" title="Cupping score">86</span>
+          <p class="kb-notes">Red apple, panela, cocoa nib</p>
+        </li>
+        <li class="kb-coffee ticket">
+          <h3>Cerrado, Brazil</h3>
+          <dl>
+            <dt>Altitude</dt>
+            <dd>1,150 m</dd>
+            <dt>Process</dt>
+            <dd>Natural</dd>
+            <dt>Variety</dt>
+            <dd>Yellow Bourbon</dd>
+          </dl>
+          <span class="kb-score" title="Cupping score">84.5</span>
+          <p class="kb-notes">Hazelnut, milk chocolate, dried fig</p>
+        </li>
+      </ul>
+    </section>
+    <section id="kb-subscribe" class="kb-subscribe" aria-labelledby="kb-sub-title">
+      <p class="kb-bubble">"Can I just get whatever you roasted this week?" Yes. That is the subscription.</p>
+      <div class="kb-plan">
+        <h2 id="kb-sub-title" class="kb-section-head" style="margin: 0"
+          ><span
+            style="
+              font:
+                400 clamp(2rem, 4vw, 3rem)/1 'Abril Fatface',
+                Georgia,
+                serif;
+            "
+            >How much coffee?</span
+          ></h2
+        >
+        <ol>
+          <li><b>250 g</b> about 16 cups<meter min="0" max="1000" value="250">250 g</meter></li>
+          <li><b>500 g</b> about 33 cups<meter min="0" max="1000" value="500">500 g</meter></li>
+          <li><b>1 kg</b> about 66 cups<meter min="0" max="1000" value="1000">1 kg</meter></li>
+        </ol>
+        <p style="margin: 0; color: var(--muted-foreground)"
+          >Every week or every two. Pause or stop any time before Monday noon.</p
+        >
+        <div class="kb-actions"><a class="btn" href="#kb-subscribe">Start with 250 g · €11</a></div>
+      </div>
+    </section>
+    <footer id="kb-visit" class="kb-foot">
+      <span>Kiln &amp; Bean · Karl-Heine-Straße 82, Leipzig</span>
+      <span>Bar open Wed–Sat, 9:00–17:00 · roasting Tuesdays</span>
+    </footer>
+  </div>
+</div>
+<script type="module">
+  // the look: one of the site's designs. An element with data-look-set takes that look's attributes; a shader reads
+  // its colors again on defuss-theme-change
+  addEventListener('DOMContentLoaded', () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#sc-roastery [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
+    const root = df$('#sc-roastery').get(0);
+    const look = df$('#sc-roastery [data-site-look]');
+    look.val(root.dataset.look).on('change', () => {
+      root.dataset.look = look.val();
+      df$('#sc-roastery [data-look-set]').each((_i, el) => {
+        const sets = JSON.parse(el.dataset.lookSet);
+        for (const [attr, value] of Object.entries({ ...sets.default, ...sets[root.dataset.look] }))
+          el.setAttribute(attr, value);
+      });
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+  });
+</script>
+```
+
+<DocText>Composed from <DocLink href="button.html">Button</DocLink>, <DocLink href="select.html">Select</DocLink>, a <DocLink href="shader.html">Shader</DocLink> (smoke, transparent over the photo) and the <code>ticket</code> shape of shapes.css; the turning stamp is an SVG text on a circle, the roast amounts are native <code>&lt;meter&gt;</code>s. The palettes are tokens on the site's root, so every component inside follows the look.</DocText>
+
+</DocPage>

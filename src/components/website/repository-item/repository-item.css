@@ -1,0 +1,228 @@
+/* -- Repository Item (website · Resume & Portfolio) -----------------------
+   One open-source project of a developer: owner/name as a stretched link, the visibility, a description, the topics
+   and the numbers - language (a dot in its colour), stars, forks, licence, last update. A card in a grid (default),
+   or a row of a list (plain). The language colour comes from data-language or from the dot's own `color` - no
+   script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-repository-item, .mk-repository-item *, .mk-repository-item ::before, .mk-repository-item ::after) {
+    box-sizing: border-box;
+  }
+
+  .mk-repository-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    height: 100%;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    transition: border-color 150ms;
+
+    &:hover {
+      border-color: color-mix(in oklch, var(--foreground) 30%, var(--border));
+    }
+    &:has(.mk-repository-item-name a:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .mk-repository-item-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+
+    & > svg {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+    }
+    & .badge {
+      margin-inline-start: auto;
+    }
+  }
+
+  .mk-repository-item-name {
+    min-width: 0;
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+
+    & a {
+      color: inherit;
+      text-decoration: none;
+
+      /* the whole card is the link */
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+      }
+      &:focus-visible {
+        outline: none;
+      }
+    }
+  }
+  .mk-repository-item:hover .mk-repository-item-name a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .mk-repository-item-owner {
+    color: var(--muted-foreground);
+    font-weight: 400;
+  }
+
+  .mk-repository-item-description {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .mk-repository-item-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      padding: 0.0625rem 0.5rem;
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: var(--foreground);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  }
+
+  /* language, stars, forks, licence, last update - pushed to the bottom of the card */
+  .mk-repository-item-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    margin: auto 0 0;
+    padding: 0.25rem 0 0;
+    list-style: none;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+
+    & li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3125rem;
+    }
+    & svg {
+      flex: none;
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+
+  /* the language dot: its colour is `color` - set by data-language, or inline */
+  .mk-repository-item-language {
+    flex: none;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: currentColor;
+
+    &[data-language="typescript"] {
+      color: #3178c6;
+    }
+    &[data-language="javascript"] {
+      color: #f1e05a;
+    }
+    &[data-language="css"] {
+      color: #663399;
+    }
+    &[data-language="html"] {
+      color: #e34c26;
+    }
+    &[data-language="rust"] {
+      color: #dea584;
+    }
+    &[data-language="go"] {
+      color: #00add8;
+    }
+    &[data-language="python"] {
+      color: #3572a5;
+    }
+    &[data-language="swift"] {
+      color: #f05138;
+    }
+    &[data-language="kotlin"] {
+      color: #a97bff;
+    }
+    &[data-language="shell"] {
+      color: #89e051;
+    }
+  }
+
+  /* plain: a row of a list - no card, a rule below */
+  .mk-repository-item[data-variant="plain"] {
+    height: auto;
+    padding: 0 0 1rem;
+    border: 0;
+    border-block-end: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+
+    &:hover {
+      border-color: var(--border);
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    .mk-repository-item {
+      break-inside: avoid;
+    }
+    .mk-repository-item-language {
+      print-color-adjust: exact;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-repository-item {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .mk-repository-item {
+      border-color: var(--foreground);
+    }
+    .mk-repository-item-owner,
+    .mk-repository-item-description,
+    .mk-repository-item-stats {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-repository-item {
+      border-color: CanvasText;
+    }
+    .mk-repository-item-topics li {
+      border: 1px solid CanvasText;
+    }
+    .mk-repository-item-language {
+      forced-color-adjust: none;
+    }
+  }
+}

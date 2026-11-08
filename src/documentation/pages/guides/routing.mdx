@@ -191,7 +191,7 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
   ["createRouter({ mode: 'hash', routes, prepare })", 'Validates and copies the configuration; routes match in order, the first one wins'],
   ["{ id: 'message', path: '/messages/:id' }", 'A named route with a parameter: to.params.id, decoded once (an encoded / stays data)'],
   ["{ id: 'missing', path: '*' }", 'Everything else - last, since the first match wins'],
-  ['prepare({ to, signal }) → { commit }', 'Build the next view off the page (fetch with signal - a newer navigation aborts it), show it in commit'],
+  ['prepare({ to, signal }): { commit }', 'Build the next view off the page (fetch with signal - a newer navigation aborts it), show it in commit'],
   ['router.attachLinks(root)', 'One delegated click listener for a[data-router-link] under root'],
   ['await router.start()', 'Takes the window and runs the first navigation - the address the page was opened with'],
 ]} />
@@ -275,6 +275,7 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
     <tr><td><DocLink href="website-article.html">Article</DocLink></td><td><code>#/articles/:slug</code></td><td><code>prepare()</code> builds the article from a data block</td></tr>
     <tr><td><DocLink href="website-comments.html">Comments</DocLink></td><td><code>#/comments/:id</code>, <code>?sort=</code></td><td>Highlights the comment, orders the thread</td></tr>
     <tr><td><DocLink href="website-company.html">Company</DocLink></td><td><code>#/team</code>, <code>#/jobs/:department</code>, <code>#/press</code></td><td>The site's pages, a department filter</td></tr>
+    <tr><td><DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink></td><td><code>#/work/:project</code>, <code>?discipline=</code>, <code>#/resume</code></td><td><code>prepare()</code> fills the project from a data block; a discipline filters the work</td></tr>
     <tr><td><DocLink href="website-events-promotions.html">Events &amp; Promotions</DocLink></td><td><code>#/track/:track</code>, <code>#/sessions/:id</code></td><td>Filters the schedule, opens a session</td></tr>
     <tr><td><DocLink href="website-media.html">Media</DocLink></td><td><code>#/photos/:n</code></td><td>Opens the slideshow on the photo</td></tr>
     <tr><td><DocLink href="website-shop.html">Shop</DocLink></td><td><code>#/cart</code>, <code>#/checkout</code>, <code>#/order/:id</code></td><td>One step of the purchase</td></tr>

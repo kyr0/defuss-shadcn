@@ -21,20 +21,523 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 </div>
 
 ```html example label="A news front" schema="none" hint="The sections are routes (#/section/product); the switch translates the frame. News Header (masthead) and a breaking News Ticker above a lead story, a compact headline list beside it and story rows below - composed only from the News blocks and layout utilities." previewStyle="align-items:stretch;"
-<div id="site-news" data-i18n-component style="display: flex; flex-direction: column; gap: 1.5rem; width: 100%">
-  <div class="flex justify-end">
-    <select
-      class="select"
-      data-size="sm"
-      data-app-locale
-      aria-label="Language"
-      data-i18n-aria-label-en="Language"
-      data-i18n-aria-label-de="Sprache"
-      style="width: auto"
-    >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-    </select>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=UnifrakturMaguntia&family=Anton&display=swap');
+  /* A daily paper on a 78rem page: the edition bar, a blackletter nameplate with two ears, the section row between
+     rules, the breaking ticker, the lead story beside the latest headlines, then the story rows. Serif headlines
+     (Newsreader), a grotesque for everything around them (Libre Franklin), one red for the paper's voice. Looks:
+     Broadsheet (newsprint, follows light / dark), Evening edition (navy and amber) and Tabloid (white, red, Anton). */
+  #site-news {
+    --background: oklch(0.968 0.006 85);
+    --foreground: oklch(0.17 0.008 80);
+    --card: oklch(0.985 0.004 85);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.925 0.008 85);
+    --muted-foreground: oklch(0.43 0.012 80);
+    --border: oklch(0.17 0.008 80 / 0.16);
+    --input: oklch(0.17 0.008 80 / 0.28);
+    --primary: oklch(0.5 0.18 27);
+    --primary-foreground: oklch(0.985 0.004 85);
+    --secondary: oklch(0.925 0.008 85);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.925 0.008 85);
+    --accent-foreground: var(--foreground);
+    --ring: var(--primary);
+    --radius: 0rem;
+    --radius-sm: 0rem;
+    --radius-md: 0rem;
+    --radius-lg: 0rem;
+    --radius-xl: 0rem;
+    --news-plate: 'UnifrakturMaguntia', var(--font-serif);
+    --news-head: 'Newsreader', Georgia, serif;
+    --news-sans: 'Libre Franklin', var(--font-sans);
+    --news-body: 'Newsreader', Georgia, serif;
+    --news-rule: var(--foreground);
+    --news-ink: var(--primary);
+    container-type: inline-size;
+    color-scheme: light;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+    width: 100%;
+    padding: 0 clamp(1rem, 4vw, 2.5rem) clamp(2.5rem, 6vw, 4.5rem);
+    background: var(--background);
+    color: var(--foreground);
+    font: 400 1rem/1.5 var(--news-sans);
+  }
+  #site-news > * {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 78rem;
+    margin-inline: auto;
+  }
+  .dark #site-news[data-look='broadsheet'] {
+    color-scheme: dark;
+    --background: oklch(0.19 0.006 80);
+    --foreground: oklch(0.93 0.008 85);
+    --card: oklch(0.22 0.006 80);
+    --muted: oklch(0.26 0.008 80);
+    --muted-foreground: oklch(0.72 0.012 85);
+    --border: oklch(0.93 0.008 85 / 0.16);
+    --input: oklch(0.93 0.008 85 / 0.28);
+    --primary: oklch(0.68 0.17 27);
+    --primary-foreground: oklch(0.16 0.006 80);
+    --secondary: oklch(0.26 0.008 80);
+    --accent: oklch(0.26 0.008 80);
+  }
+  #site-news[data-look='evening'] {
+    color-scheme: dark;
+    --background: oklch(0.2 0.03 258);
+    --foreground: oklch(0.94 0.012 85);
+    --card: oklch(0.235 0.032 258);
+    --muted: oklch(0.27 0.032 258);
+    --muted-foreground: oklch(0.76 0.025 250);
+    --border: oklch(0.94 0.012 85 / 0.16);
+    --input: oklch(0.94 0.012 85 / 0.3);
+    --primary: oklch(0.8 0.13 75);
+    --primary-foreground: oklch(0.2 0.03 258);
+    --secondary: oklch(0.27 0.032 258);
+    --accent: oklch(0.27 0.032 258);
+    --accent-foreground: var(--foreground);
+  }
+  #site-news[data-look='tabloid'] {
+    color-scheme: light;
+    --background: oklch(0.995 0 0);
+    --foreground: oklch(0.13 0 0);
+    --card: oklch(1 0 0);
+    --muted: oklch(0.95 0 0);
+    --muted-foreground: oklch(0.38 0 0);
+    --border: oklch(0.13 0 0 / 0.18);
+    --primary: oklch(0.56 0.22 27);
+    --primary-foreground: oklch(0.995 0 0);
+    --news-plate: 'Anton', Impact, sans-serif;
+    --news-head: 'Anton', Impact, sans-serif;
+    --news-body: 'Libre Franklin', var(--font-sans);
+    --news-ink: var(--foreground);
+  }
+  /* the edition bar: the city edition on the left, the look and the language on the right */
+  #site-news .news-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-block: 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  #site-news .news-bar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #site-news .news-bar .select {
+    width: auto;
+    min-width: 8.5rem;
+  }
+  /* the masthead: the folio line, the nameplate between its ears, the sections between rules */
+  #site-news .mk-news-header[data-variant='masthead'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 2rem;
+    row-gap: 0;
+    max-width: 78rem;
+    padding: 0;
+    border-block-start: 3px solid var(--news-rule);
+  }
+  #site-news .mk-news-header[data-variant='masthead'] > :not(.news-ear, .mk-news-header-title) {
+    grid-column: 1 / -1;
+  }
+  #site-news .mk-news-header[data-variant='masthead'] .mk-news-header-top {
+    padding-block: 0.625rem;
+    border-block: 0;
+    border-block-end: 1px solid var(--border);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  #site-news .mk-news-header-kicker {
+    color: var(--foreground);
+    font-weight: 700;
+  }
+  #site-news .mk-news-header[data-variant='masthead'] .mk-news-header-title {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+    padding-block: clamp(1rem, 2.5vw, 1.75rem);
+    font-family: var(--news-plate);
+    font-weight: 400;
+    font-size: clamp(2.75rem, 7.5vw, 5.75rem);
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  /* the ears: weather and price, set like the paper's small print - no boxes */
+  #site-news .news-ear {
+    grid-row: 2;
+    justify-self: start;
+    display: grid;
+    gap: 0.25rem;
+    max-width: 15rem;
+    margin: 0;
+    padding-inline-start: 0.875rem;
+    border-inline-start: 2px solid var(--news-ink);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--muted-foreground);
+    text-align: start;
+    text-wrap: balance;
+  }
+  #site-news .news-ear:last-of-type {
+    grid-column: 3;
+    justify-self: end;
+    padding-inline: 0 0.875rem;
+    border-inline: 0 2px solid var(--news-ink);
+    text-align: end;
+  }
+  #site-news .news-ear b {
+    font: 700 1.25rem/1.1 var(--news-head);
+    color: var(--foreground);
+  }
+  #site-news .mk-news-header[data-variant='masthead'] .mk-news-header-topics {
+    gap: 0.25rem 1.75rem;
+    border-block: 1px solid var(--news-rule);
+    box-shadow: inset 0 -3px 0 -2px var(--news-rule);
+    padding-block: 0.125rem 0.25rem;
+  }
+  #site-news .mk-news-header[data-variant='masthead'] .mk-news-header-topics a {
+    padding-block: 0.625rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+  #site-news .mk-news-header[data-variant='masthead'] .mk-news-header-topics a[aria-current] {
+    text-decoration: underline 2px var(--primary);
+    text-underline-offset: 0.45em;
+  }
+  #site-news[data-look='tabloid'] .mk-news-header[data-variant='masthead'] .mk-news-header-title {
+    justify-self: center;
+    padding: 0.12em 0.4em 0.08em;
+    margin-block: 1.25rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    text-transform: uppercase;
+  }
+  /* the ticker: a solid label, the headlines between hairlines */
+  #site-news .mk-news-ticker {
+    border: 0;
+    border-block: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 0.9375rem;
+  }
+  #site-news .mk-news-ticker[data-variant='breaking'] .mk-news-ticker-label {
+    padding-inline: 1rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+  #site-news .mk-news-ticker-items a {
+    color: inherit;
+  }
+  /* the front: the lead story beside the latest headlines and the numbers, a column rule between */
+  #site-news .news-front {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+  @container (width > 56rem) {
+    #site-news .news-front {
+      grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
+      gap: 2.75rem;
+    }
+    #site-news .news-front > * + * {
+      border-inline-start: 1px solid var(--border);
+      padding-inline-start: 2.75rem;
+    }
+  }
+  #site-news .mk-news-item {
+    border-color: var(--border);
+  }
+  #site-news .mk-news-item-category {
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  #site-news .mk-news-item-meta {
+    font-size: 0.75rem;
+  }
+  #site-news .mk-news-item-title {
+    font-family: var(--news-head);
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+  #site-news .mk-news-item-title a {
+    color: inherit;
+  }
+  #site-news .mk-news-item[data-variant='lead'] {
+    gap: 1.25rem;
+    padding-block-end: 0;
+    border: 0;
+  }
+  #site-news .mk-news-item[data-variant='lead'] .mk-news-item-body {
+    gap: 0.75rem;
+  }
+  #site-news .mk-news-item[data-variant='lead'] .mk-news-item-title {
+    font-size: clamp(2rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+  }
+  #site-news .mk-news-item[data-variant='lead'] .mk-news-item-summary {
+    max-width: 40rem;
+    font: 400 clamp(1.0625rem, 1.6vw, 1.25rem)/1.5 var(--news-body);
+    color: var(--muted-foreground);
+  }
+  #site-news .news-byline {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  #site-news .news-byline b {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+  #site-news[data-look='tabloid'] .mk-news-item-title {
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+    line-height: 1;
+  }
+  /* the lead photo, screened in halftone - the paper's ink on the paper */
+  #site-news .mk-news-item[data-variant='lead'] .mk-news-item-media {
+    order: 1;
+    aspect-ratio: auto;
+    overflow: visible;
+    background: none;
+  }
+  #site-news .news-screen {
+    --shader-aspect: 16 / 9;
+    display: block;
+    width: 100%;
+  }
+  #site-news .news-credit {
+    margin: 0.5rem 0 0;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-align: end;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  /* the column: section labels on a heavy rule */
+  #site-news .news-label {
+    margin: 0 0 0.25rem;
+    padding-block-start: 0.625rem;
+    border-block-start: 3px solid var(--news-rule);
+    font: 800 0.75rem/1.2 var(--news-sans);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #site-news .mk-news-item[data-variant='compact'] .mk-news-item-title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  #site-news .mk-news-item[data-variant='compact'] .mk-news-item-meta {
+    min-width: 4.5rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  #site-news .news-numbers {
+    margin-block-start: 2rem;
+  }
+  #site-news .news-numbers dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.875rem 1rem;
+    margin: 0.875rem 0 0;
+    align-items: baseline;
+  }
+  #site-news .news-numbers dt {
+    min-width: 3.5rem;
+    font: 700 2rem/1 var(--news-head);
+    color: var(--news-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  #site-news .news-numbers dd {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--muted-foreground);
+  }
+  #site-news[data-look='tabloid'] .news-numbers dt {
+    font-weight: 400;
+    color: var(--primary);
+  }
+  /* the story rows below the fold */
+  #site-news .news-stories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 0 2.5rem;
+    padding-block-start: 0.25rem;
+    border-block-start: 3px solid var(--news-rule);
+  }
+  #site-news .news-stories .mk-news-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.875rem;
+    padding-block: 1.25rem;
+    border: 0;
+  }
+  #site-news .news-stories .mk-news-item-media {
+    order: -1;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+  }
+  #site-news .news-stories .mk-news-item-media img {
+    filter: grayscale(1) contrast(1.05);
+  }
+  #site-news[data-look='evening'] .news-stories .mk-news-item-media img {
+    filter: grayscale(1) sepia(0.45) hue-rotate(185deg) saturate(0.8);
+  }
+  #site-news .news-stories .mk-news-item-title {
+    font-size: 1.375rem;
+    line-height: 1.2;
+  }
+  #site-news .news-stories .mk-news-item-summary {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--muted-foreground);
+  }
+  @container (width < 44rem) {
+    #site-news .news-ear {
+      display: none;
+    }
+    #site-news .mk-news-header[data-variant='masthead'] .mk-news-header-title {
+      grid-column: 1 / -1;
+      justify-self: center;
+      white-space: normal;
+      text-align: center;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #site-news .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-news .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #site-news[data-look='broadsheet'] {
+    --accent: oklch(0.923 0.008 85);
+  }
+  .dark #site-news[data-look='broadsheet'] {
+    --accent: oklch(0.28 0.008 80);
+  }
+  .dark #site-news[data-look='evening'] {
+    --accent: oklch(0.29 0.032 258);
+  }
+  :root:not(.dark) #site-news[data-look='evening'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.025 258);
+    --foreground: oklch(0.2 0.012 85);
+    --card: oklch(0.997 0.025 258);
+    --card-foreground: oklch(0.2 0.012 85);
+    --muted: oklch(0.95 0.025 258);
+    --muted-foreground: oklch(0.46 0.025 250);
+    --border: oklch(0.2 0.012 85 / 0.12);
+    --input: oklch(0.2 0.012 85 / 0.12);
+    --primary: oklch(0.55 0.13 75);
+    --primary-foreground: oklch(0.985 0.005 75);
+    --secondary: oklch(0.955 0.025 258);
+    --secondary-foreground: oklch(0.25 0.012 85);
+    --accent: oklch(0.94 0.025 258);
+    --accent-foreground: oklch(0.2 0.012 85);
+    --ring: oklch(0.55 0.13 75);
+    --news-rule: oklch(0.218 0.012 85);
+    --news-ink: oklch(0.55 0.13 75);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #site-news[data-look='tabloid'] {
+    --accent: oklch(0.95 0.008 0);
+  }
+  .dark #site-news[data-look='tabloid'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0 0);
+    --foreground: oklch(0.94 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.94 0 0);
+    --muted: oklch(0.24 0 0);
+    --muted-foreground: oklch(0.74 0 0);
+    --border: oklch(0.95 0 0 / 0.14);
+    --input: oklch(0.95 0.008 80 / 0.14);
+    --primary: oklch(0.8 0.18 27);
+    --primary-foreground: oklch(0.17 0.03 27);
+    --secondary: oklch(0.25 0.008 85);
+    --secondary-foreground: oklch(0.9 0 0);
+    --accent: oklch(0.26 0.008 0);
+    --accent-foreground: oklch(0.94 0 0);
+    --ring: oklch(0.8 0.18 27);
+    --news-rule: oklch(0.97 0 0);
+    --news-ink: oklch(0.97 0 0);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="site-news" data-look="broadsheet" data-i18n-component>
+  <div class="news-bar">
+    <span data-i18n-target="edition">Lisbon edition · Late city</span>
+    <div class="news-bar-controls">
+      <select
+        class="select"
+        data-size="sm"
+        data-site-look
+        aria-label="Look"
+        data-i18n-aria-label-en="Look"
+        data-i18n-aria-label-de="Stil"
+        style="width: auto"
+      >
+        <option value="broadsheet" data-i18n-target="look-broadsheet">Broadsheet</option>
+        <option value="evening" data-i18n-target="look-evening">Evening edition</option>
+        <option value="tabloid" data-i18n-target="look-tabloid">Tabloid</option>
+      </select>
+      <select
+        class="select"
+        data-size="sm"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+        style="width: auto"
+      >
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
+      <label class="swap site-mode" data-variant="rotate" data-size="sm">
+        <input
+          type="checkbox"
+          data-site-mode
+          aria-label="Dark mode"
+          data-i18n-aria-label-en="Dark mode"
+          data-i18n-aria-label-de="Dunkler Modus"
+        />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </div>
   </div>
   <header class="mk-news-header" data-variant="masthead">
     <div class="mk-news-header-top">
@@ -43,7 +546,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         ><span data-i18n-value="today">Thursday, 1 October 2026</span></time
       >
     </div>
+    <p class="news-ear"
+      ><b data-i18n-target="ear-weather">Lisbon 21°</b
+      ><span data-i18n-target="ear-weather-text">Sunny, a light breeze off the river</span></p
+    >
     <h1 class="mk-news-header-title">The Acme Times</h1>
+    <p class="news-ear"
+      ><b data-i18n-target="ear-price">€2.50</b
+      ><span data-i18n-target="ear-price-text">All the release notes fit to print</span></p
+    >
     <nav
       class="mk-news-header-topics"
       aria-label="Sections"
@@ -91,9 +602,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </div>
     </div>
   </section>
-  <div
-    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 2rem; align-items: start"
-  >
+  <div class="news-front">
     <article class="mk-news-item" data-topic="product" data-variant="lead">
       <div class="mk-news-item-body">
         <div class="mk-news-item-meta">
@@ -107,16 +616,29 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >Offline sync, a faster editor and shared spaces for small teams: what is new in the biggest release since
           launch.</p
         >
+        <p class="news-byline"
+          ><span data-i18n-target="byline">By <b>Marta Silva</b> · 6 min read</span></p
+        >
       </div>
-      <figure class="mk-news-item-media"><img src="images/mk-wide3.png" alt="The new shared spaces view" /></figure>
+      <figure class="mk-news-item-media" style="aspect-ratio: auto; overflow: visible">
+        <div
+          class="shader news-screen"
+          data-effect="halftone"
+          data-cell="5"
+          data-angle="45"
+          data-contrast="1.35"
+          data-speed="0"
+          data-look-set='{"default": {"data-contrast": "1.35"}, "evening": {"data-contrast": "-1.35"}}'
+          ><img
+            src="https://picsum.photos/id/180/1200/750"
+            alt="A laptop and an open notebook on a wooden desk"
+            crossorigin="anonymous"
+        /></div>
+        <figcaption class="news-credit" data-i18n-target="credit">Photo: Acme newsroom</figcaption>
+      </figure>
     </article>
     <section aria-labelledby="latest-title">
-      <h2
-        id="latest-title"
-        style="margin: 0 0 0.25rem; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase"
-        data-i18n-target="latest"
-        >Latest</h2
-      >
+      <h2 id="latest-title" class="news-label" data-i18n-target="latest">Latest</h2>
       <article class="mk-news-item" data-topic="product" data-variant="compact">
         <div class="mk-news-item-body">
           <div class="mk-news-item-meta">
@@ -153,9 +675,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <h3 class="mk-news-item-title"><a href="#">Status: eu-west sync delays resolved</a></h3>
         </div>
       </article>
+      <aside class="news-numbers" aria-labelledby="news-numbers-title">
+        <h2 id="news-numbers-title" class="news-label" data-i18n-target="numbers">By the numbers</h2>
+        <dl>
+          <dt>1M</dt>
+          <dd data-i18n-target="numbers-users">weekly users this summer</dd>
+          <dt>40</dt>
+          <dd data-i18n-target="numbers-team">people build Acme, still</dd>
+          <dt>42</dt>
+          <dd data-i18n-target="numbers-outage">minutes of Tuesday's outage</dd>
+        </dl>
+      </aside>
     </section>
   </div>
-  <div>
+  <div class="news-stories">
     <article class="mk-news-item" data-topic="company">
       <div class="mk-news-item-body">
         <div class="mk-news-item-meta">
@@ -169,7 +702,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >The company crossed a million weekly users this summer - and kept its team at forty people.</p
         >
       </div>
-      <figure class="mk-news-item-media"><img src="images/mk-wide2.png" alt="The Acme team at their offsite" /></figure>
+      <figure class="mk-news-item-media"
+        ><img src="https://picsum.photos/id/259/900/600" alt="A person on a bench before a city skyline"
+      /></figure>
     </article>
     <article class="mk-news-item" data-topic="engineering">
       <div class="mk-news-item-body">
@@ -183,11 +718,60 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <p class="mk-news-item-summary">A post-mortem of Tuesday's 42-minute outage and the three changes it led to.</p>
       </div>
       <figure class="mk-news-item-media"
-        ><img src="images/mk-wide.png" alt="A whiteboard with the incident timeline"
+        ><img src="https://picsum.photos/id/175/900/600" alt="A clock face, close up"
+      /></figure>
+    </article>
+    <article class="mk-news-item" data-topic="product">
+      <div class="mk-news-item-body">
+        <div class="mk-news-item-meta">
+          <span class="mk-news-item-category" data-i18n-target="story-8-cat">Product</span>
+          <time datetime="2026-09-25" data-i18n-target="story-8-date"
+            ><span data-i18n-value="d0925">25 Sep 2026</span></time
+          >
+        </div>
+        <h3 class="mk-news-item-title"><a href="#">Shared spaces, one week in</a></h3>
+        <p class="mk-news-item-summary"
+          >Two thousand teams opened a shared space in the first week. Here is what they put in it.</p
+        >
+      </div>
+      <figure class="mk-news-item-media"
+        ><img src="https://picsum.photos/id/2/900/600" alt="A laptop, a notebook and a coffee on a table"
       /></figure>
     </article>
   </div>
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="edition" data-i18n-locale="en">Lisbon edition · Late city</template>
+  <template data-i18n-for="edition" data-i18n-locale="de">Ausgabe Lissabon · Spätausgabe</template>
+  <template data-i18n-for="byline" data-i18n-locale="en">By <b>Marta Silva</b> · 6 min read</template>
+  <template data-i18n-for="byline" data-i18n-locale="de">Von <b>Marta Silva</b> · 6 Min. Lesezeit</template>
+  <template data-i18n-for="story-8-cat" data-i18n-locale="en">Product</template>
+  <template data-i18n-for="story-8-cat" data-i18n-locale="de">Produkt</template>
+  <template data-i18n-for="story-8-date" data-i18n-locale="en"><span data-i18n-value="d0925"></span></template>
+  <template data-i18n-for="story-8-date" data-i18n-locale="de"><span data-i18n-value="d0925"></span></template>
+  <template data-i18n-for="numbers" data-i18n-locale="en">By the numbers</template>
+  <template data-i18n-for="numbers" data-i18n-locale="de">In Zahlen</template>
+  <template data-i18n-for="numbers-users" data-i18n-locale="en">weekly users this summer</template>
+  <template data-i18n-for="numbers-users" data-i18n-locale="de">Nutzer pro Woche in diesem Sommer</template>
+  <template data-i18n-for="numbers-team" data-i18n-locale="en">people build Acme, still</template>
+  <template data-i18n-for="numbers-team" data-i18n-locale="de">Menschen bauen Acme, immer noch</template>
+  <template data-i18n-for="numbers-outage" data-i18n-locale="en">minutes of Tuesday's outage</template>
+  <template data-i18n-for="numbers-outage" data-i18n-locale="de">Minuten Ausfall am Dienstag</template>
+  <template data-i18n-for="ear-weather" data-i18n-locale="en">Lisbon 21°</template>
+  <template data-i18n-for="ear-weather" data-i18n-locale="de">Lissabon 21°</template>
+  <template data-i18n-for="ear-weather-text" data-i18n-locale="en">Sunny, a light breeze off the river</template>
+  <template data-i18n-for="ear-weather-text" data-i18n-locale="de">Sonnig, leichte Brise vom Fluss</template>
+  <template data-i18n-for="ear-price" data-i18n-locale="en">€2.50</template>
+  <template data-i18n-for="ear-price" data-i18n-locale="de">2,50 €</template>
+  <template data-i18n-for="ear-price-text" data-i18n-locale="en">All the release notes fit to print</template>
+  <template data-i18n-for="ear-price-text" data-i18n-locale="de">Alle Release Notes, die sich drucken lassen</template>
+  <template data-i18n-for="credit" data-i18n-locale="en">Photo: Acme newsroom</template>
+  <template data-i18n-for="credit" data-i18n-locale="de">Foto: Acme-Redaktion</template>
+  <template data-i18n-for="look-broadsheet" data-i18n-locale="en">Broadsheet</template>
+  <template data-i18n-for="look-broadsheet" data-i18n-locale="de">Broadsheet</template>
+  <template data-i18n-for="look-evening" data-i18n-locale="en">Evening edition</template>
+  <template data-i18n-for="look-evening" data-i18n-locale="de">Abendausgabe</template>
+  <template data-i18n-for="look-tabloid" data-i18n-locale="en">Tabloid</template>
+  <template data-i18n-for="look-tabloid" data-i18n-locale="de">Boulevard</template>
   <template data-i18n-for="kicker" data-i18n-locale="en">Vol. 12 · No. 274</template>
   <template data-i18n-for="kicker" data-i18n-locale="de">Jg. 12 · Nr. 274</template>
   <template data-i18n-for="today" data-i18n-locale="en"><span data-i18n-value="today"></span></template>
@@ -232,19 +816,26 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
-  import {
-    createDomI18n,
-    createI18n,
-    resolveLocale,
-  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#site-news [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
     const site = df$('#site-news').get(0);
 
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
-      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+      locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale, {
       values: () => ({
@@ -252,10 +843,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         d1001: locale.formatDate(Date.UTC(2026, 9, 1), { dateStyle: 'medium', timeZone: 'UTC' }),
         d0928: locale.formatDate(Date.UTC(2026, 8, 28), { dateStyle: 'medium', timeZone: 'UTC' }),
         d0927: locale.formatDate(Date.UTC(2026, 8, 27), { dateStyle: 'medium', timeZone: 'UTC' }),
+        d0925: locale.formatDate(Date.UTC(2026, 8, 25), { dateStyle: 'medium', timeZone: 'UTC' }),
       }),
     });
     const language = df$('[data-app-locale]');
     language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
+    // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
+    const lookRoot = df$('#site-news').get(0);
+    const look = df$('#site-news [data-site-look]');
+    const applyLook = (name) => {
+      lookRoot.dataset.look = name;
+      df$('#site-news [data-look-set]').each((_i, el) => {
+        const sets = JSON.parse(el.dataset.lookSet);
+        for (const [attr, value] of Object.entries({ ...sets.default, ...sets[name] })) el.setAttribute(attr, value);
+      });
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    };
+    look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
     // -- routing
     const routes = [

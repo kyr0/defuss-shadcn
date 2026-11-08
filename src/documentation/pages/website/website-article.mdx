@@ -21,27 +21,532 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 </div>
 
 ```html example label="An article page" schema="none" hint="Previous / Next are routes (#/articles/designing-for-calm) whose prepare() builds the article; the switch translates the frame. Article Header, Share Links, Article Body, Author Bio, Article Navigation, Related Items and an Author List (stack) - the Article blocks composed into one page." previewStyle="align-items:stretch;"
-<article id="site-article" data-i18n-component style="display: flex; flex-direction: column; gap: 2rem; width: 100%">
-  <div class="flex justify-end">
-    <select
-      class="select"
-      data-size="sm"
-      data-app-locale
-      aria-label="Language"
-      data-i18n-aria-label-en="Language"
-      data-i18n-aria-label-de="Sprache"
-      style="width: auto"
-    >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-    </select>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&family=Manrope:wght@500;600;700;800&display=swap');
+  /* An engineering long read: a site bar, the headline over a wide photo that leaves the text column, a 40rem column
+     of Literata at reading size, a pull-quote with a hanging mark, then the author, the way on and what to read next.
+     Literata for reading, Manrope for every label around it. Looks: Longform (warm white and deep blue, follows light /
+     dark), Blueprint (navy, a drawing grid behind the headline, cyan) and E-ink (grey paper, black only, a grain). */
+  #site-article {
+    --background: oklch(0.99 0.003 85);
+    --foreground: oklch(0.2 0.012 260);
+    --card: oklch(0.975 0.004 85);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.955 0.005 85);
+    --muted-foreground: oklch(0.46 0.015 260);
+    --border: oklch(0.2 0.012 260 / 0.12);
+    --input: oklch(0.2 0.012 260 / 0.24);
+    --primary: oklch(0.47 0.13 258);
+    --primary-foreground: oklch(0.99 0.003 85);
+    --secondary: oklch(0.955 0.005 85);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.95 0.025 258);
+    --accent-foreground: oklch(0.38 0.12 258);
+    --ring: var(--primary);
+    --radius: 0.5rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --article-read: 'Literata', Georgia, serif;
+    --article-ui: 'Manrope', var(--font-sans);
+    --article-band: transparent;
+    color-scheme: light;
+    container-type: inline-size;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: clip;
+    padding-block-end: clamp(3rem, 7vw, 5.5rem);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--article-ui);
+  }
+  .dark #site-article[data-look='longform'] {
+    color-scheme: dark;
+    --background: oklch(0.19 0.01 260);
+    --foreground: oklch(0.93 0.006 85);
+    --card: oklch(0.225 0.012 260);
+    --muted: oklch(0.25 0.012 260);
+    --muted-foreground: oklch(0.74 0.012 260);
+    --border: oklch(0.93 0.006 85 / 0.12);
+    --input: oklch(0.93 0.006 85 / 0.24);
+    --primary: oklch(0.76 0.11 255);
+    --primary-foreground: oklch(0.19 0.01 260);
+    --secondary: oklch(0.25 0.012 260);
+    --accent: oklch(0.28 0.04 258);
+    --accent-foreground: oklch(0.86 0.08 255);
+  }
+  #site-article[data-look='blueprint'] {
+    color-scheme: dark;
+    --background: oklch(0.24 0.06 255);
+    --foreground: oklch(0.96 0.012 230);
+    --card: oklch(0.28 0.065 255);
+    --muted: oklch(0.3 0.065 255);
+    --muted-foreground: oklch(0.8 0.04 235);
+    --border: oklch(0.96 0.012 230 / 0.16);
+    --input: oklch(0.96 0.012 230 / 0.28);
+    --primary: oklch(0.85 0.11 205);
+    --primary-foreground: oklch(0.22 0.06 255);
+    --secondary: oklch(0.3 0.065 255);
+    --accent: oklch(0.32 0.07 240);
+    --accent-foreground: oklch(0.9 0.08 205);
+    --article-band: oklch(0.21 0.06 255);
+  }
+  #site-article[data-look='eink'] {
+    color-scheme: light;
+    --background: oklch(0.935 0.002 90);
+    --foreground: oklch(0.16 0 0);
+    --card: oklch(0.955 0.002 90);
+    --muted: oklch(0.9 0.002 90);
+    --muted-foreground: oklch(0.38 0 0);
+    --border: oklch(0.16 0 0 / 0.16);
+    --input: oklch(0.16 0 0 / 0.3);
+    --primary: oklch(0.16 0 0);
+    --primary-foreground: oklch(0.935 0.002 90);
+    --secondary: oklch(0.9 0.002 90);
+    --accent: oklch(0.88 0.002 90);
+    --accent-foreground: oklch(0.16 0 0);
+    --radius: 0.125rem;
+  }
+  #site-article .article-look-only {
+    display: none;
+  }
+  #site-article[data-look='blueprint'] .article-look-only[data-for='blueprint'],
+  #site-article[data-look='eink'] .article-look-only[data-for='eink'] {
+    display: block;
+  }
+  /* the site bar */
+  #site-article .article-bar {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    width: 100%;
+    min-height: 4.5rem;
+    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+    border-block-end: 1px solid var(--border);
+  }
+  #site-article .article-brand {
+    color: var(--foreground);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+  }
+  #site-article .article-brand span {
+    color: var(--muted-foreground);
+    font-weight: 600;
+  }
+  #site-article .article-bar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #site-article .article-bar .select {
+    min-width: 8.5rem;
+  }
+  #site-article .article-progress {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    height: 3px;
+    margin-block-end: -3px;
+    background: var(--primary);
+    transform-origin: left;
+    scale: 0 1;
+    animation: article-progress linear both;
+    animation-timeline: scroll(root);
+  }
+  @keyframes article-progress {
+    to {
+      scale: 1 1;
+    }
+  }
+  @supports not (animation-timeline: scroll()) {
+    #site-article .article-progress {
+      display: none;
+    }
+  }
+  /* the header: label, headline, standfirst, the byline - then the wide photo */
+  #site-article .mk-article-header {
+    position: relative;
+    isolation: isolate;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: clamp(3rem, 7vw, 5rem) clamp(1rem, 4vw, 2.5rem) 0;
+  }
+  #site-article .mk-article-header > .surface {
+    inset: 0 0 auto;
+    height: calc(100% - clamp(8rem, 16vw, 14rem));
+    background: var(--article-band);
+  }
+  #site-article .article-grid {
+    --surface-size: 28px;
+    --surface-ink: oklch(0.85 0.08 210 / 0.09);
+    --surface-bg: var(--article-band);
+    mask-image: linear-gradient(#000 60%, transparent);
+  }
+  #site-article .article-grain {
+    --surface-size: 160px;
+    --surface-ink: oklch(0.16 0 0 / 0.06);
+    --surface-bg: transparent;
+  }
+  #site-article .mk-article-header > :is(a, h1, p, div):not(.surface) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 41rem;
+    margin-inline: auto;
+  }
+  #site-article .mk-article-header-category {
+    color: var(--primary);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  #site-article .mk-article-header-title {
+    font: 700 clamp(2.5rem, 6vw, 4.25rem)/1.04 var(--article-read);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  #site-article .mk-article-header-subtitle {
+    margin: 0;
+    color: var(--muted-foreground);
+    font: 400 clamp(1.1875rem, 2vw, 1.4375rem)/1.45 var(--article-read);
+    text-wrap: pretty;
+  }
+  #site-article .mk-article-header-byline {
+    gap: 0.875rem;
+    margin-block-start: 0.5rem;
+    font-size: 0.875rem;
+  }
+  #site-article .mk-article-header-author {
+    color: var(--foreground);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  #site-article .mk-article-header-meta {
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  #site-article .mk-article-header-media {
+    width: 100%;
+    max-width: 62rem;
+    margin: clamp(1.5rem, 4vw, 2.5rem) auto 0;
+  }
+  #site-article .mk-article-header-media img {
+    aspect-ratio: 2 / 1;
+    width: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-xl);
+  }
+  #site-article[data-look='eink'] .mk-article-header-media img {
+    filter: grayscale(1) contrast(1.05);
+  }
+  #site-article .mk-article-header-media figcaption {
+    margin-block-start: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  /* the column */
+  #site-article .article-column {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 1.5rem);
+  }
+  #site-article .mk-share-links {
+    margin-block: 2rem 0;
+    padding-block-end: 1.5rem;
+    border-block-end: 1px solid var(--border);
+  }
+  #site-article .mk-share-links-label {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #site-article .mk-article-body {
+    --_measure: 41rem;
+    box-sizing: border-box;
+    padding-block: 2.25rem 1rem;
+    padding-inline: clamp(1rem, 4vw, 1.5rem);
+    font: 400 clamp(1.0625rem, 1.5vw, 1.1875rem)/1.75 var(--article-read);
+  }
+  #site-article .mk-article-body h2 {
+    margin-block: 2.5rem 0.75rem;
+    font: 700 1.5rem/1.25 var(--article-ui);
+    letter-spacing: -0.02em;
+  }
+  #site-article .mk-article-body a {
+    color: var(--primary);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  #site-article .mk-article-body > p:first-child::first-letter {
+    float: left;
+    margin: 0.1em 0.12em 0 0;
+    font: 700 3.6em/0.8 var(--article-read);
+    color: var(--foreground);
+  }
+  /* the pull-quote: larger, a hanging mark in the accent, a rule above and below */
+  #site-article .mk-article-body > blockquote:not([class]) {
+    position: relative;
+    margin: 2.5rem 0;
+    padding: 1.75rem 0 1.5rem;
+    border: 0;
+    border-block: 1px solid var(--border);
+    background: none;
+    font-style: normal;
+  }
+  #site-article .mk-article-body > blockquote:not([class])::before {
+    content: '\201C';
+    position: absolute;
+    top: 0.15rem;
+    left: -0.05em;
+    color: var(--primary);
+    font: 700 4.5rem/1 var(--article-read);
+  }
+  #site-article .mk-article-body > blockquote:not([class]) p {
+    margin: 0;
+    padding-inline-start: 2.75rem;
+    font: 400 italic clamp(1.375rem, 2.4vw, 1.75rem)/1.35 var(--article-read);
+    letter-spacing: -0.01em;
+  }
+  #site-article .mk-article-body > blockquote:not([class]) cite {
+    display: block;
+    margin-block-start: 0.875rem;
+    padding-inline-start: 2.75rem;
+    color: var(--muted-foreground);
+    font: 700 0.8125rem/1.3 var(--article-ui);
+    font-style: normal;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  /* after the text: the author, the way on, what to read next */
+  #site-article .article-after {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding-block-start: 1.5rem;
+  }
+  #site-article .mk-author-bio {
+    gap: 1.25rem;
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #site-article .mk-author-bio-label {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #site-article .mk-author-bio-name {
+    font: 700 1.25rem/1.2 var(--article-ui);
+  }
+  #site-article .mk-author-bio-name a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #site-article .mk-author-bio-text {
+    font-family: var(--article-read);
+  }
+  #site-article .mk-article-nav-dir {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #site-article .mk-article-nav-title {
+    font: 600 1.0625rem/1.3 var(--article-read);
+  }
+  #site-article .article-next {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  #site-article .article-next h2 {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #site-article .article-next-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    gap: 1.5rem;
+  }
+  #site-article .mk-related-item-title {
+    font: 600 1.0625rem/1.3 var(--article-read);
+  }
+  #site-article .mk-related-item-title a {
+    color: inherit;
+  }
+  #site-article[data-look='eink'] .mk-related-item-media img {
+    filter: grayscale(1);
+  }
+  #site-article .mk-author-list-title {
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #site-article .article-progress {
+      animation: none;
+      display: none;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #site-article .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-article .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #site-article[data-look='longform'] {
+    --accent: oklch(0.945 0.025 258);
+    --accent-foreground: oklch(0.2 0.012 260);
+  }
+  .dark #site-article[data-look='longform'] {
+    --accent-foreground: oklch(0.93 0.006 85);
+  }
+  .dark #site-article[data-look='blueprint'] {
+    --accent: oklch(0.33 0.05 240);
+    --accent-foreground: oklch(0.96 0.012 230);
+  }
+  :root:not(.dark) #site-article[data-look='blueprint'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.025 255);
+    --foreground: oklch(0.2 0.012 230);
+    --card: oklch(0.997 0.025 255);
+    --card-foreground: oklch(0.2 0.012 230);
+    --muted: oklch(0.95 0.025 255);
+    --muted-foreground: oklch(0.46 0.03 235);
+    --border: oklch(0.2 0.012 230 / 0.12);
+    --input: oklch(0.2 0.012 230 / 0.12);
+    --primary: oklch(0.58 0.11 205);
+    --primary-foreground: oklch(0.17 0.03 205);
+    --secondary: oklch(0.955 0.025 255);
+    --secondary-foreground: oklch(0.25 0.012 230);
+    --accent: oklch(0.94 0.025 240);
+    --accent-foreground: oklch(0.2 0.012 230);
+    --ring: oklch(0.58 0.11 205);
+    --article-band: oklch(0.956 0.03 255);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #site-article[data-look='eink'] {
+    --accent: oklch(0.89 0.002 90);
+  }
+  .dark #site-article[data-look='eink'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0.002 90);
+    --foreground: oklch(0.94 0 0);
+    --card: oklch(0.205 0.002 90);
+    --card-foreground: oklch(0.94 0 0);
+    --muted: oklch(0.24 0.002 90);
+    --muted-foreground: oklch(0.74 0 0);
+    --border: oklch(0.95 0 0 / 0.14);
+    --input: oklch(0.95 0 0 / 0.14);
+    --primary: oklch(0.93 0 0);
+    --primary-foreground: oklch(0.17 0 0);
+    --secondary: oklch(0.25 0.002 90);
+    --secondary-foreground: oklch(0.9 0 0);
+    --accent: oklch(0.26 0.002 90);
+    --accent-foreground: oklch(0.94 0 0);
+    --ring: oklch(0.93 0 0);
+    --article-band: oklch(0.97 0 0 / 0);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<article id="site-article" data-look="longform" data-i18n-component>
+  <div class="article-bar">
+    <a class="article-brand" href="#/">Acme <span>Engineering</span></a>
+    <div class="article-bar-controls">
+      <select
+        class="select"
+        data-size="sm"
+        data-site-look
+        aria-label="Look"
+        data-i18n-aria-label-en="Look"
+        data-i18n-aria-label-de="Stil"
+        style="width: auto"
+      >
+        <option value="longform" data-i18n-target="look-longform">Longform</option>
+        <option value="blueprint" data-i18n-target="look-blueprint">Blueprint</option>
+        <option value="eink" data-i18n-target="look-eink">E-ink</option>
+      </select>
+      <select
+        class="select"
+        data-size="sm"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+        style="width: auto"
+      >
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
+      <label class="swap site-mode" data-variant="rotate" data-size="sm">
+        <input
+          type="checkbox"
+          data-site-mode
+          aria-label="Dark mode"
+          data-i18n-aria-label-en="Dark mode"
+          data-i18n-aria-label-de="Dunkler Modus"
+        />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </div>
   </div>
+  <div class="article-progress" aria-hidden="true"></div>
   <header class="mk-article-header">
+    <div
+      class="surface article-grid article-look-only"
+      data-for="blueprint"
+      data-variant="background"
+      data-pattern="grid"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="surface article-grain article-look-only"
+      data-for="eink"
+      data-variant="background"
+      data-pattern="grain"
+      aria-hidden="true"
+    ></div>
     <a class="mk-article-header-category" href="#">Engineering</a>
     <h1 class="mk-article-header-title">How offline sync works in Acme 4.0</h1>
     <p class="mk-article-header-subtitle">CRDTs, a write-ahead log and a lot of patience.</p>
     <div class="mk-article-header-byline">
-      <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+      <span class="avatar"
+        ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" data-article-face
+      /></span>
       <div>
         <a class="mk-article-header-author" href="#">Sophie Tan</a>
         <div class="mk-article-header-meta"
@@ -52,11 +557,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </div>
     </div>
     <figure class="mk-article-header-media">
-      <img src="images/mk-wide.png" alt="A whiteboard sketch of the sync pipeline" />
+      <img src="https://picsum.photos/id/60/1400/700" alt="A desk with a keyboard, a tablet and a notebook" />
       <figcaption>The first sketch of the sync pipeline, March 2026.</figcaption>
     </figure>
   </header>
-  <div style="width: 100%; max-width: 42rem; margin-inline: auto; padding-inline: 1.25rem; box-sizing: border-box">
+  <div class="article-column">
     <div
       class="mk-share-links"
       role="group"
@@ -136,20 +641,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     >
     <blockquote><p>The best sync is the one you forget is there.</p><cite>Hannah Lee, Design</cite></blockquote>
   </div>
-  <div
-    style="
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      width: 100%;
-      max-width: 42rem;
-      margin-inline: auto;
-      padding-inline: 1.25rem;
-      box-sizing: border-box;
-    "
-  >
+  <div class="article-column article-after">
     <section class="mk-author-bio" aria-labelledby="article-bio">
-      <span class="avatar" data-size="lg"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+      <span class="avatar" data-size="lg"
+        ><img class="avatar-image" src="https://i.pravatar.cc/160?img=47" alt=""
+      /></span>
       <div class="mk-author-bio-body">
         <span class="mk-author-bio-label" data-i18n-target="written">Written by</span>
         <h2 class="mk-author-bio-name" id="article-bio"><a href="#">Sophie Tan</a></h2>
@@ -216,11 +712,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <span class="mk-article-nav-title">Testing sync with a lossy network</span>
       </a>
     </nav>
-    <section aria-labelledby="read-next" style="display: flex; flex-direction: column; gap: 1rem">
-      <h2 id="read-next" style="margin: 0; font-size: 1.125rem" data-i18n-target="read-next">Read next</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 1.5rem">
+    <section class="article-next" aria-labelledby="read-next">
+      <h2 id="read-next" data-i18n-target="read-next">Read next</h2>
+      <div class="article-next-grid">
         <article class="mk-related-item" data-variant="card">
-          <figure class="mk-related-item-media"><img src="images/mk-wide2.png" alt="" /></figure>
+          <figure class="mk-related-item-media"><img src="https://picsum.photos/id/225/600/400" alt="" /></figure>
           <div class="mk-related-item-body">
             <span class="mk-related-item-kind" data-i18n-target="kind-article">Article</span>
             <h3 class="mk-related-item-title"
@@ -230,7 +726,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </article>
         <article class="mk-related-item" data-variant="card">
-          <figure class="mk-related-item-media"><img src="images/mk-square.png" alt="" /></figure>
+          <figure class="mk-related-item-media"><img src="https://picsum.photos/id/160/600/600" alt="" /></figure>
           <div class="mk-related-item-body">
             <span class="mk-related-item-kind" data-i18n-target="kind-guide">Guide</span>
             <h3 class="mk-related-item-title"
@@ -240,7 +736,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </article>
         <article class="mk-related-item" data-variant="card">
-          <figure class="mk-related-item-media"><img src="images/mk-wide3.png" alt="" /></figure>
+          <figure class="mk-related-item-media"><img src="https://picsum.photos/id/119/600/400" alt="" /></figure>
           <div class="mk-related-item-body">
             <span class="mk-related-item-kind">Video</span>
             <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
@@ -253,21 +749,21 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <h2 class="mk-author-list-title" id="contributors" data-i18n-target="contributors">Contributors</h2>
       <ul class="mk-author-list-items">
         <li class="mk-author-list-item">
-          <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+          <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" /></span>
           <div class="mk-author-list-who"
             ><a class="mk-author-list-name" href="#">Sophie Tan</a
             ><span class="mk-author-list-role">Staff engineer</span></div
           >
         </li>
         <li class="mk-author-list-item">
-          <span class="avatar"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
+          <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /></span>
           <div class="mk-author-list-who"
             ><a class="mk-author-list-name" href="#">Hannah Lee</a
             ><span class="mk-author-list-role" data-i18n-target="role-hannah">Design lead</span></div
           >
         </li>
         <li class="mk-author-list-item">
-          <span class="avatar"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span>
+          <span class="avatar"><span class="avatar-fallback">AH</span></span>
           <div class="mk-author-list-who"
             ><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div
           >
@@ -314,6 +810,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="look-longform" data-i18n-locale="en">Longform</template>
+  <template data-i18n-for="look-longform" data-i18n-locale="de">Langform</template>
+  <template data-i18n-for="look-blueprint" data-i18n-locale="en">Blueprint</template>
+  <template data-i18n-for="look-blueprint" data-i18n-locale="de">Blaupause</template>
+  <template data-i18n-for="look-eink" data-i18n-locale="en">E-ink</template>
+  <template data-i18n-for="look-eink" data-i18n-locale="de">E-Ink</template>
   <template data-i18n-for="date" data-i18n-locale="en"><span data-i18n-value="date"></span></template>
   <template data-i18n-for="date" data-i18n-locale="de"><span data-i18n-value="date"></span></template>
   <template data-i18n-for="read" data-i18n-locale="en"><span data-i18n-value="minutes"></span> min read</template>
@@ -348,14 +850,21 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
-  import {
-    createDomI18n,
-    createI18n,
-    resolveLocale,
-  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#site-article [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
     const site = df$('#site-article').get(0);
 
     // the articles the routes name, in reading order; the one on the page keeps its authored body
@@ -365,7 +874,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     let current = ARTICLES['offline-sync'];
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
-      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+      locale: 'en', // the demos start in English; the language select offers German
     });
     const texts = createDomI18n(df$).bind(site, locale, {
       getState: () => current,
@@ -376,6 +885,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     });
     const language = df$('[data-app-locale]');
     language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
+    // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
+    const lookRoot = df$('#site-article').get(0);
+    const look = df$('#site-article [data-site-look]');
+    const applyLook = (name) => {
+      lookRoot.dataset.look = name;
+      df$('#site-article [data-look-set]').each((_i, el) => {
+        const sets = JSON.parse(el.dataset.lookSet);
+        for (const [attr, value] of Object.entries({ ...sets.default, ...sets[name] })) el.setAttribute(attr, value);
+      });
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    };
+    look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
     // -- routing
     const routes = [
@@ -400,6 +923,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           df$('.mk-article-header-title').text(article.title);
           df$('.mk-article-header-subtitle').text(article.subtitle);
           df$('.mk-article-header-author').text(article.author);
+          df$('[data-article-face]').attr(
+            'src',
+            'https://i.pravatar.cc/96?img=' + (article.author === 'Hannah Lee' ? 32 : 47),
+          );
           df$('[data-article-date]').attr('datetime', article.date);
           df$('[data-article-body]').html(body);
           for (const [rel, step] of [

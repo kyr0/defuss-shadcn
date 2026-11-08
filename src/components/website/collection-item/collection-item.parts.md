@@ -21,3 +21,33 @@
   </div>
 </article>
 ```
+
+```html example part label="Collection Item (stack)"
+<article class="mk-collection-item" data-variant="stack" style="--mk-collection-tint: oklch(0.93 0.04 60)">
+  <div class="mk-collection-item-stack">
+    <img
+      class="mk-collection-item-media"
+      src="https://picsum.photos/id/1060/600/750"
+      alt="A pour-over coffee being brewed"
+    />
+    <img
+      class="mk-collection-item-media"
+      src="https://picsum.photos/id/225/600/750"
+      alt="A glass teapot of green tea"
+    />
+    <img
+      class="mk-collection-item-media"
+      src="https://picsum.photos/id/431/600/750"
+      alt="A cappuccino with latte art"
+    />
+  </div>
+  <span class="mk-collection-item-badge">New</span>
+  <div class="mk-collection-item-body">
+    <h3 class="mk-collection-item-title"><a href="#">Brew at home</a></h3>
+    <p class="mk-collection-item-count">3 guides, 27 products</p>
+    <span class="mk-collection-item-more" aria-hidden="true"
+      >Shop the collection <i data-lucide="arrow-right"></i
+    ></span>
+  </div>
+</article>
+```

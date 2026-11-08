@@ -3,13 +3,17 @@ import assert from 'node:assert/strict';
 import { startServer } from '../server.ts';
 import { offlineJsdelivr } from '../lib/vendor-offline.ts';
 import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
-import { WEBSITE_TEMPLATES } from '../../../src/documentation/lib/page-dirs.ts';
+import { assertBothModes } from '../lib/site-mode.ts';
+import { PORTFOLIO_STYLES, SHOWCASE_SITES, WEBSITE_TEMPLATES } from '../../../src/documentation/lib/page-dirs.ts';
 
 /**
  * Why: every Website template routes with defuss-dom-router and translates its frame with defuss-i18n (the
  * Client-side Routing and Translation guides) - and only its full-screen page gives the router an address to own.
  * Per template: a deep link shows what its route names, a link or control moves on and Back returns, every target
- * and attribute has English and German, and German shows. The Blog card checks the docs preview's hash fallback.
+ * and attribute has English and German, and German shows. Every template is designed in three looks (a palette, the
+ * textures or shaders under it and how its moves are drawn): its Look select switches all of them - each look its own
+ * background, its own [data-for] layers and only those - and each look in light and dark (the switch flips the page, both
+ * modes keep their text readable). The Blog card checks the docs preview's hash fallback.
  */
 const server = startServer();
 const browser = await chromium.launch();
@@ -28,6 +32,8 @@ const text = (p: Page | Frame, sel: string) => p.$eval(sel, (e) => e.textContent
 const shown = (p: Page | Frame, sel: string, attr: string) =>
   p.$$eval(sel, (els, a) => [...new Set(els.filter((e) => !(e as HTMLElement).hidden).map((e) => (e as HTMLElement).getAttribute(a)))], attr);
 const current = (p: Page | Frame, sel: string) => p.$$eval(sel, (els) => els.filter((e) => e.hasAttribute('aria-current')).map((e) => e.getAttribute('href')));
+/** the page scroll that puts a point of a frame (its top + y) 40 px under the top of the view */
+const scrollY0 = (box: { y: number } | null, y: number) => (box?.y ?? 0) + y - 40;
 /** a link's own click (the router takes it) - some sit in folded or scrolled-away parts */
 const follow = (p: Page | Frame, sel: string) => p.$eval(sel, (a) => (a as HTMLElement).click());
 
@@ -98,6 +104,41 @@ const TEMPLATES: Record<string, { root: string; deep: string; run: (p: Page) => 
     },
     german: ['#about-title', 'Wir bauen ruhige Software für Teams, die liefern'],
   },
+  'website-resume-portfolio': {
+    root: '#site-resume',
+    deep: '#/work/museo-digital',
+    run: async (p) => {
+      // a project route fills the project page from the data block, its next link moves on, Back returns
+      assert.deepEqual(await shown(p, '#site-resume [data-resume-view]', 'data-resume-view'), ['project']);
+      assert.equal(await text(p, '.mk-project-details-title'), 'Museo Digital');
+      await follow(p, '.mk-project-details-next');
+      await p.waitForFunction(() => location.hash === '#/work/quiet-tokens');
+      assert.equal(await text(p, '.mk-project-details-title'), 'quiet-tokens');
+      assert.deepEqual(await p.$$eval('[data-project-deliverables] li', (l) => l.map((x) => x.textContent)), ['Token files CSS', 'Checker CLI', 'Theme gallery Web']);
+      await p.goBack();
+      await p.waitForFunction(() => document.querySelector('.mk-project-details-title')!.textContent === 'Museo Digital');
+      // a discipline filters the work, the filter marks itself
+      await follow(p, '[data-resume-nav] a[href="#/work"]');
+      await follow(p, '[data-resume-filter] a[href="#/work?discipline=design"]');
+      await p.waitForFunction(() => location.hash === '#/work?discipline=design');
+      assert.deepEqual(await shown(p, '#site-resume [data-discipline]', 'data-discipline'), ['design']);
+      assert.deepEqual(await current(p, '[data-resume-filter] a'), ['#/work?discipline=design']);
+      // the CV prints without the site's chrome
+      await follow(p, '[data-resume-nav] a[href="#/resume"]');
+      await p.waitForFunction(() => location.hash === '#/resume');
+      assert.deepEqual(await shown(p, '#site-resume [data-resume-view]', 'data-resume-view'), ['resume']);
+      assert.deepEqual(await current(p, '[data-resume-nav] a'), ['#/resume']);
+      await p.emulateMedia({ media: 'print' });
+      assert.deepEqual(await p.$$eval('[data-resume-noprint]', (e) => e.map((x) => getComputedStyle(x).display)), ['none', 'none']);
+      await p.emulateMedia({ media: 'screen' });
+      // About is the root route
+      await follow(p, '[data-resume-nav] a[href="#/"]');
+      await p.waitForFunction(() => location.hash === '#/');
+      assert.deepEqual(await shown(p, '#site-resume [data-resume-view]', 'data-resume-view'), ['about']);
+      assert.deepEqual(await current(p, '[data-resume-nav] a'), ['#/']);
+    },
+    german: ['[data-i18n-target="av-start-date"]', '1. Dezember 2026'],
+  },
   'website-events-promotions': {
     root: '#site-events',
     deep: '#/track/engineering',
@@ -138,19 +179,20 @@ const TEMPLATES: Record<string, { root: string; deep: string; run: (p: Page) => 
   },
   'website-account-states': {
     root: '#site-account',
-    deep: '#/settings',
+    deep: '#/sign-up',
     run: async (p) => {
-      assert.deepEqual(await shown(p, '#site-account [data-account-view]', 'data-account-view'), ['settings']);
-      assert.deepEqual(await current(p, '#site-account nav a'), ['#/settings']);
-      await follow(p, '#site-account nav a[href="#/"]');
+      assert.deepEqual(await shown(p, '#site-account [data-account-view]', 'data-account-view'), ['sign-up']);
+      await follow(p, '[data-account-view="sign-up"] a[href="#/"]');
       await p.waitForFunction(() => location.hash === '#/');
-      // a valid sign-in (the form's fields are required)
+      assert.deepEqual(await shown(p, '#site-account [data-account-view]', 'data-account-view'), ['sign-in']);
+      // a valid sign-in (the form's fields are required) lands on the signed-in state
       await p.fill('#lf2-email', 'anna@example.com');
       await p.fill('#lf2-pass', 'correct horse');
       await p.$eval('[data-account-sign-in]', (f) => (f as HTMLFormElement).requestSubmit());
-      await p.waitForFunction(() => location.hash === '#/profile');
+      await p.waitForFunction(() => location.hash === '#/welcome');
+      assert.deepEqual(await shown(p, '#site-account [data-account-view]', 'data-account-view'), ['welcome']);
     },
-    german: ['#sec-sign', 'Anmeldung'],
+    german: ['#ss-0', 'Du bist angemeldet'],
   },
   'website-docs-help': {
     root: '#site-docs',
@@ -158,6 +200,11 @@ const TEMPLATES: Record<string, { root: string; deep: string; run: (p: Page) => 
     run: async (p) => {
       assert.deepEqual([await text(p, '[data-docs-title]'), await text(p, '[data-docs-crumb-section]')], ['Roles', 'Guides']);
       assert.equal(await p.$eval('[data-docs-stub]', (s) => (s as HTMLElement).hidden), false);
+      // the bar's section link follows the page's section
+      assert.deepEqual(await current(p, '.docs-top a'), ['#/docs/offline-sync']);
+      await follow(p, '.mk-docs-navigation a[href="#/docs/authentication"]');
+      await p.waitForFunction(() => location.hash === '#/docs/authentication');
+      assert.deepEqual(await current(p, '.docs-top a'), ['#/docs/authentication']);
       await follow(p, '.mk-docs-navigation a[href="#/docs/offline-sync"]');
       await p.waitForFunction(() => location.hash === '#/docs/offline-sync');
       assert.equal(await p.$eval('[data-docs-stub]', (s) => (s as HTMLElement).hidden), true);
@@ -212,7 +259,7 @@ try {
   });
 
   for (const [slug, t] of Object.entries(TEMPLATES)) {
-    await check(`${slug}: ${t.deep} - the route shows what it names, a link moves on; every target in English and German; German`, async () => {
+    await check(`${slug}: ${t.deep} - the route shows what it names, a link moves on; three looks; every target in English and German; German`, async () => {
       const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
       const errors: string[] = [];
       p.on('pageerror', (e) => errors.push(String(e)));
@@ -221,6 +268,37 @@ try {
       await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), t.root, { timeout: 15_000 });
       await p.waitForTimeout(150);
       await t.run(p);
+      // a deep link may have opened a modal (the Media viewer): Escape closes it, so the mode switch is in reach
+      for (let i = 0; i < 3 && (await p.$('dialog[open]:modal')); i++) await p.keyboard.press('Escape');
+      // the looks: each sets data-look, paints its own background and shows exactly its own layers
+      const looks = await p.$$eval(`${t.root} [data-site-look] option`, (o) => o.map((x) => (x as HTMLOptionElement).value));
+      assert.equal(looks.length, 3, 'three looks');
+      const backgrounds = new Set<string>();
+      for (const look of looks) {
+        await p.selectOption(`${t.root} [data-site-look]`, look);
+        const seen = await p.$eval(
+          t.root,
+          (root) => ({
+            look: (root as HTMLElement).dataset.look,
+            background: getComputedStyle(root).backgroundColor,
+            layers: [...root.querySelectorAll('[data-for]')].filter((el) => !el.closest('[hidden]')).map((el) => [(el as HTMLElement).dataset.for, getComputedStyle(el).display !== 'none']),
+          }),
+        );
+        assert.equal(seen.look, look);
+        backgrounds.add(seen.background);
+        // a look's textures reach past the content - never past the page (two once made it 1,856 px wide)
+        const wide = await p.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+        assert.ok(wide <= 0, `${look}: the page scrolls sideways by ${wide}px`);
+        for (const [owner, visible] of seen.layers) assert.equal(visible, owner === look, `${look}: the ${owner} layer`);
+        await assertBothModes(p, t.root, `${slug} ${look}`);
+      }
+      assert.equal(backgrounds.size, 3, 'every look its own background');
+      await p.selectOption(`${t.root} [data-site-look]`, looks[0]);
+      // on a phone too: a grid track sized by a row of tabs once made the Search page 785 px wide at 390
+      await p.setViewportSize({ width: 390, height: 844 });
+      const phone = await p.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      assert.ok(phone <= 0, `at 390 px the page scrolls sideways by ${phone}px`);
+      await p.setViewportSize({ width: 1400, height: 900 });
       assert.deepEqual(await translationGaps(p, t.root), []);
       await chooseLanguage(p, 'de');
       assert.equal(await renderedLanguage(p, t.root), 'de');
@@ -240,6 +318,41 @@ try {
     await follow(f, '#site-blog a[href="#/category/design"]');
     await f.waitForFunction(() => location.href === 'about:srcdoc#/category/design');
     assert.deepEqual(await shown(f, '#site-blog [data-category]', 'data-category'), ['design']);
+    await p.close();
+  });
+
+  await check('the index Websites gallery opens every template, portfolio style and showcase site full screen', async () => {
+    const p = await browser.newPage();
+    await p.goto(`${server.url}/dist/documentation/index.html`, { waitUntil: 'domcontentloaded' });
+    const links = await p.$$eval('#websites ~ div a.card[target="_blank"]', (as) => as.map((a) => a.getAttribute('href')));
+    const want = [...WEBSITE_TEMPLATES, ...PORTFOLIO_STYLES, ...SHOWCASE_SITES].map((slug) => `website/full-${slug}.html`);
+    assert.deepEqual([...links].sort(), want.sort());
+    await p.close();
+  });
+
+  await check('Account settings: the section list follows the page - a click marks its link, scrolling marks the section in view', async () => {
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}/dist/documentation/website/website-account-states.html`);
+    await p.locator('#screens').scrollIntoViewIfNeeded();
+    let f: Frame | undefined;
+    for (let i = 0; i < 100 && !f; i++) {
+      for (const fr of p.frames()) if (await fr.$('#acc-settings .acc-settings-nav').catch(() => null)) f = fr;
+      if (!f) await p.waitForTimeout(150);
+    }
+    assert.ok(f, 'the Account settings preview');
+    const nav = '#acc-settings .acc-settings-nav a';
+    await f.waitForFunction(() => 'df$' in globalThis, undefined, { timeout: 15_000 });
+    await f.waitForTimeout(300);
+    await follow(f, '#acc-settings a[href="#acc-s-security"]');
+    assert.deepEqual(await current(f, nav), ['#acc-s-security']);
+    // scroll the docs page until the notifications fill the view: the observer marks them
+    await p.waitForTimeout(1100);
+    const frame = (await f.frameElement()).boundingBox();
+    const panel = await f.$eval('#acc-s-notify', (e) => e.getBoundingClientRect().top);
+    await p.evaluate((y) => scrollTo({ top: scrollY + y, behavior: 'instant' }), scrollY0(await frame, panel));
+    await f.waitForFunction((sel) => document.querySelector(sel + '[href="#acc-s-notify"]')?.hasAttribute('aria-current'), nav, { timeout: 5000 });
+    assert.deepEqual(await current(f, nav), ['#acc-s-notify']);
     await p.close();
   });
 } finally {

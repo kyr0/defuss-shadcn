@@ -29,15 +29,15 @@ Built from: [Countdown](../../data-display/countdown/component-skill.md), [Butto
 ```html
 <section class="mk-event-countdown" aria-labelledby="ec-1">
   <div class="mk-event-countdown-inner">
-    <span class="mk-event-countdown-eyebrow">Acme Summit 2026</span>
+    <span class="mk-event-countdown-eyebrow">Acme Summit 2027</span>
     <h2 class="mk-event-countdown-title" id="ec-1">Doors open in</h2>
-    <div class="countdown-group mk-event-countdown-timer" data-until="2026-11-12T09:00:00Z">
+    <div class="countdown-group mk-event-countdown-timer" data-until="2027-05-12T09:00:00Z">
       <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl"><span data-unit="days" style="--value:41">41</span></span><span class="countdown-label">days</span></div>
       <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="hours" style="--value:9">09</span></span><span class="countdown-label">hours</span></div>
       <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="minutes" style="--value:30">30</span></span><span class="countdown-label">min</span></div>
       <div class="countdown-unit" data-variant="muted"><span class="countdown" data-size="xl" data-digits="2"><span data-unit="seconds" style="--value:0">00</span></span><span class="countdown-label">sec</span></div>
     </div>
-    <span class="mk-event-countdown-date"><i data-lucide="calendar"></i><time datetime="2026-11-12T09:00Z">12 November 2026, 09:00 UTC</time> · Lisbon</span>
+    <span class="mk-event-countdown-date"><i data-lucide="calendar"></i><time datetime="2027-05-12T09:00Z">12 May 2027, 09:00 UTC</time> · Lisbon</span>
     <a class="btn" data-size="lg" href="#">Get your ticket</a>
   </div>
 </section>

@@ -76,7 +76,11 @@ Built from: [Avatar](avatar.md).
 |-----------|----------|
 | Default | Time, track, title, description, speakers, room, a save toggle |
 | `data-variant="keynote"` | Highlighted: a tinted card in the track color |
+| `data-variant="cover"` | A picture (`img.mk-session-item-cover`, first child) fills the card; the session over a scrim in the track colour, the time and the save toggle as glass chips; the picture leans in on hover / focus |
 | `data-variant="break"` | Muted and compact - coffee, lunch, networking |
+| `.mk-session-item-live` | "Live now" with a pulsing dot (still under reduced motion); the card's border turns red - in any variant |
+| `.mk-session-item-tags` | Format, level and needs as small outline pills - a `<ul aria-label>` |
+| `.mk-session-item-links` | Slides, recording, share - small icon + text links |
 | `--mk-session-color` | The track color (tag and rule) |
 
 ---
@@ -87,8 +91,12 @@ Built from: [Avatar](avatar.md).
 |---------|-----------|-------|
 | save | `<label><input type="checkbox"> … <span class="sr-only">title to my schedule</span></label>` | A real checkbox - announced as checked / not checked |
 | times | `<time datetime>` | Start time machine-readable |
+| cover | `<img alt>` | Says what the picture shows; the title stays the card's name |
+| links | `<a>` + `<span class="sr-only"> of {title}</span>` | "Slides of Sync that never fails" - the short visible word names its session for a screen reader |
 
 ---
 
 ## Notes
+- "Live now" is text, not only a dot - the pulse is decoration and stops under `prefers-reduced-motion`.
+- Pick a cover photo with a calm lower half: the body sits over it; the scrim keeps white text readable over any picture.
 - Give every track a distinct, theme-independent color - and also a name; never color alone.

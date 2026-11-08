@@ -1,0 +1,559 @@
+---
+title: "Record Shop"
+description: "A one-page site for a record shop and small label - a record turning in front of moving light, the label's new release with its tracklist and run times, new arrivals pinned askew with price stickers, and the listening booth hours. Three looks: Tape, Vapor and Mono."
+slug: "showcase-records"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="showcase-records" title="Record Shop" introStyle="max-width:42rem;">
+  A one-page site for a record shop and small label - a record turning in front of moving light, the label's new release with its tracklist and run times, new arrivals pinned askew with price stickers, and the listening booth hours. Three looks: Tape, Vapor and Mono. One of the <DocLink href="website-showcase.html">Showcase</DocLink> sites.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-showcase-records.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="Lowtide Records, Hamburg" schema="none" hint="The Look select switches the shop: Tape (warm brown and orange, like a cassette inlay), Vapor (pink and teal, the light in waves) and Mono (black and white). The light behind the record is a Shader (plasma); the record is conic gradients and turns while the release is shown; the arrivals wear price stickers." previewStyle="align-items:stretch;padding:0;"
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Righteous&family=Karla:wght@400;500;700&family=Overpass+Mono:wght@400;600&display=swap');
+  /* Lowtide Records: a shop by the harbour that presses ten records a year. Layout: the new release as the hero - the
+     record over moving light, its tracklist beside it - then the arrivals as sleeves pinned askew, the booth hours. */
+  #sc-records {
+    --background: oklch(0.93 0.03 70);
+    --foreground: oklch(0.27 0.05 45);
+    --card: oklch(0.96 0.025 75);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.89 0.04 70);
+    --muted-foreground: oklch(0.45 0.06 45);
+    --border: oklch(0.27 0.05 45 / 0.22);
+    --input: var(--border);
+    --primary: oklch(0.65 0.18 45);
+    --primary-foreground: oklch(0.98 0.015 75);
+    --secondary: oklch(0.89 0.04 70);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.65 0.18 45);
+    --accent-foreground: oklch(0.98 0.015 75);
+    --ring: var(--primary);
+    --radius: 0.375rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --lt-label: oklch(0.65 0.18 45);
+    --lt-sticker: oklch(0.88 0.15 95);
+    color-scheme: light;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: clip;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    background: var(--background);
+    color: var(--foreground);
+    font-family: 'Karla', var(--font-sans);
+  }
+  #sc-records[data-look='vapor'] {
+    color-scheme: dark;
+    --background: oklch(0.2 0.06 300);
+    --foreground: oklch(0.95 0.03 330);
+    --card: oklch(0.25 0.07 300);
+    --muted: oklch(0.27 0.07 300);
+    --muted-foreground: oklch(0.8 0.06 320);
+    --border: oklch(0.95 0.03 330 / 0.2);
+    --primary: oklch(0.82 0.13 195);
+    --primary-foreground: oklch(0.2 0.06 300);
+    --secondary: oklch(0.28 0.07 300);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.75 0.18 350);
+    --accent-foreground: oklch(0.2 0.06 300);
+    --lt-label: oklch(0.75 0.18 350);
+    --lt-sticker: oklch(0.82 0.13 195);
+  }
+  #sc-records[data-look='mono'] {
+    color-scheme: light;
+    --background: oklch(0.98 0 0);
+    --foreground: oklch(0.12 0 0);
+    --card: oklch(1 0 0);
+    --muted: oklch(0.94 0 0);
+    --muted-foreground: oklch(0.4 0 0);
+    --border: oklch(0.12 0 0);
+    --primary: oklch(0.12 0 0);
+    --primary-foreground: oklch(0.98 0 0);
+    --secondary: oklch(0.94 0 0);
+    --accent: oklch(0.12 0 0);
+    --accent-foreground: oklch(0.98 0 0);
+    --radius: 0rem;
+    --lt-label: oklch(0.98 0 0);
+    --lt-sticker: oklch(0.98 0 0);
+  }
+  #sc-records[data-look='mono'] img {
+    filter: grayscale(1) contrast(1.15);
+  }
+  #sc-records .lt-page {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3.5rem, 8vw, 6rem);
+    max-width: 72rem;
+    margin-inline: auto;
+  }
+  #sc-records .lt-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+  #sc-records .lt-brand {
+    margin: 0;
+    font:
+      400 1.6rem/1 'Righteous',
+      sans-serif;
+  }
+  #sc-records .lt-bar nav {
+    display: flex;
+    gap: 1.25rem;
+    margin-inline-start: auto;
+    font-weight: 500;
+  }
+  #sc-records .lt-bar nav a {
+    color: inherit;
+    text-decoration: none;
+  }
+  /* the release: the record over moving light, the tracklist beside it */
+  #sc-records .lt-release {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  #sc-records .lt-stage {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: var(--radius-xl);
+    overflow: clip;
+  }
+  #sc-records .lt-stage > .shader {
+    border-radius: inherit;
+    opacity: 0.9;
+  }
+  #sc-records .lt-record {
+    width: 78%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle,
+        oklch(0.12 0 0) 0 3%,
+        var(--lt-label) 3.5% 30%,
+        oklch(0.12 0 0) 30.5% 32%,
+        transparent 32.5%
+      ),
+      repeating-radial-gradient(circle, oklch(0.16 0 0) 0 2px, oklch(0.2 0 0) 2px 3px), oklch(0.15 0 0);
+    box-shadow: 0 1.5rem 3rem -1rem oklch(0 0 0 / 0.6);
+    animation: lt-turn 1.8s linear infinite;
+  }
+  #sc-records .lt-record::after {
+    content: '';
+    position: absolute;
+    inset: 11%;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 30deg,
+      transparent 0 8%,
+      oklch(1 0 0 / 0.12) 12% 16%,
+      transparent 20% 58%,
+      oklch(1 0 0 / 0.1) 62% 66%,
+      transparent 70%
+    );
+    animation: lt-turn 1.8s linear infinite reverse;
+    pointer-events: none;
+  }
+  @keyframes lt-turn {
+    to {
+      rotate: 360deg;
+    }
+  }
+  #sc-records .lt-cat {
+    margin: 0;
+    font:
+      600 0.8125rem/1 'Overpass Mono',
+      monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  #sc-records .lt-release h1 {
+    margin: 0.5rem 0 0.25rem;
+    font:
+      400 clamp(2.6rem, 6.5vw, 5rem)/0.95 'Righteous',
+      sans-serif;
+    text-wrap: balance;
+  }
+  #sc-records .lt-artist {
+    margin: 0 0 1.25rem;
+    font-size: 1.25rem;
+  }
+  #sc-records .lt-tracks {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+    font-family: 'Overpass Mono', monospace;
+    font-size: 0.9rem;
+  }
+  #sc-records .lt-tracks li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-block-end: 1px dashed var(--border);
+  }
+  #sc-records .lt-tracks b {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  #sc-records .lt-tracks time {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground);
+  }
+  #sc-records .lt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  /* the arrivals: sleeves pinned askew with price stickers */
+  #sc-records .lt-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-block-end: 1.75rem;
+  }
+  #sc-records .lt-head h2 {
+    margin: 0;
+    font:
+      400 clamp(1.8rem, 4vw, 2.8rem)/1 'Righteous',
+      sans-serif;
+  }
+  #sc-records .lt-head p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  #sc-records .lt-crate {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 2rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #sc-records .lt-sleeve {
+    position: relative;
+    display: grid;
+    gap: 0.6rem;
+  }
+  #sc-records .lt-sleeve img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    box-shadow: 0 1rem 1.5rem -1rem oklch(0 0 0 / 0.55);
+  }
+  #sc-records .lt-sleeve:nth-child(1) img {
+    rotate: -3deg;
+  }
+  #sc-records .lt-sleeve:nth-child(2) img {
+    rotate: 2deg;
+  }
+  #sc-records .lt-sleeve:nth-child(3) img {
+    rotate: -1deg;
+  }
+  #sc-records .lt-sleeve:nth-child(4) img {
+    rotate: 3deg;
+  }
+  #sc-records .lt-sleeve h3 {
+    margin: 0.4rem 0 0;
+    font-size: 1.05rem;
+  }
+  #sc-records .lt-sleeve p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  #sc-records .lt-price {
+    position: absolute;
+    top: -0.75rem;
+    right: -0.5rem;
+    display: grid;
+    place-items: center;
+    width: 3.6rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--lt-sticker);
+    color: oklch(0.15 0 0);
+    font:
+      600 0.85rem/1 'Overpass Mono',
+      monospace;
+    rotate: 12deg;
+    box-shadow: 0 0.3rem 0.5rem -0.2rem oklch(0 0 0 / 0.4);
+  }
+  #sc-records[data-look='mono'] .lt-price {
+    border: 2px solid oklch(0.12 0 0);
+  }
+  #sc-records .lt-booth {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    border: 2px solid var(--foreground);
+    border-radius: var(--radius-xl);
+    box-shadow: 0.4rem 0.4rem 0 var(--primary);
+  }
+  #sc-records .lt-booth p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  #sc-records .lt-booth b {
+    font-family: 'Righteous', sans-serif;
+    font-weight: 400;
+    font-size: 1.6rem;
+  }
+  #sc-records .lt-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  @media (max-width: 48rem) {
+    #sc-records :is(.lt-release, .lt-booth) {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #sc-records :is(.lt-record, .lt-record::after) {
+      animation: none;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #sc-records .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #sc-records .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #sc-records[data-look='tape'] {
+    --primary-foreground: oklch(0.17 0.03 45);
+    --accent: oklch(0.885 0.045 45);
+    --accent-foreground: oklch(0.27 0.05 45);
+  }
+  .dark #sc-records[data-look='tape'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0.03 70);
+    --foreground: oklch(0.94 0.03 45);
+    --card: oklch(0.205 0.025 75);
+    --card-foreground: oklch(0.94 0.03 45);
+    --muted: oklch(0.24 0.035 70);
+    --muted-foreground: oklch(0.74 0.03 45);
+    --border: oklch(0.95 0.02 45 / 0.14);
+    --input: oklch(0.95 0.02 45 / 0.14);
+    --primary: oklch(0.65 0.18 45);
+    --primary-foreground: oklch(0.17 0.03 45);
+    --secondary: oklch(0.25 0.035 70);
+    --secondary-foreground: oklch(0.9 0.03 45);
+    --accent: oklch(0.26 0.05 45);
+    --accent-foreground: oklch(0.94 0.03 45);
+    --ring: oklch(0.65 0.18 45);
+    --lt-label: oklch(0.65 0.18 45);
+    --lt-sticker: oklch(0.88 0.15 95);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  .dark #sc-records[data-look='vapor'] {
+    --accent: oklch(0.29 0.05 350);
+    --accent-foreground: oklch(0.95 0.03 330);
+  }
+  :root:not(.dark) #sc-records[data-look='vapor'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.025 300);
+    --foreground: oklch(0.2 0.03 330);
+    --card: oklch(0.997 0.025 300);
+    --card-foreground: oklch(0.2 0.03 330);
+    --muted: oklch(0.95 0.025 300);
+    --muted-foreground: oklch(0.46 0.03 320);
+    --border: oklch(0.2 0.02 330 / 0.12);
+    --input: oklch(0.2 0.02 330 / 0.12);
+    --primary: oklch(0.57 0.13 195);
+    --primary-foreground: oklch(0.17 0.03 195);
+    --secondary: oklch(0.955 0.025 300);
+    --secondary-foreground: oklch(0.25 0.03 330);
+    --accent: oklch(0.94 0.025 350);
+    --accent-foreground: oklch(0.2 0.03 330);
+    --ring: oklch(0.57 0.13 195);
+    --lt-label: oklch(0.5 0.18 350);
+    --lt-sticker: oklch(0.57 0.13 195);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #sc-records[data-look='mono'] {
+    --accent: oklch(0.935 0 0);
+    --accent-foreground: oklch(0.12 0 0);
+  }
+  .dark #sc-records[data-look='mono'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0 0);
+    --foreground: oklch(0.94 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.94 0 0);
+    --muted: oklch(0.24 0 0);
+    --muted-foreground: oklch(0.74 0 0);
+    --border: oklch(0.31 0 0);
+    --input: oklch(0.33 0 0);
+    --primary: oklch(0.93 0 0);
+    --primary-foreground: oklch(0.17 0 0);
+    --secondary: oklch(0.25 0 0);
+    --secondary-foreground: oklch(0.9 0 0);
+    --accent: oklch(0.26 0 0);
+    --accent-foreground: oklch(0.94 0 0);
+    --ring: oklch(0.93 0 0);
+    --lt-label: oklch(0.18 0 0);
+    --lt-sticker: oklch(0.18 0 0);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="sc-records" data-look="tape">
+  <div class="lt-page">
+    <div class="lt-bar">
+      <p class="lt-brand">Lowtide</p>
+      <nav aria-label="Site">
+        <a href="#lt-release">New release</a>
+        <a href="#lt-crate">Arrivals</a>
+        <a href="#lt-booth">Booth</a>
+      </nav>
+      <select class="select" data-size="sm" data-site-look aria-label="Look" style="width: auto">
+        <option value="tape">Tape</option>
+        <option value="vapor">Vapor</option>
+        <option value="mono">Mono</option>
+      </select>
+      <label class="swap site-mode" data-variant="rotate" data-size="sm">
+        <input type="checkbox" data-site-mode aria-label="Dark mode" />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </div>
+    <section id="lt-release" class="lt-release" aria-labelledby="lt-title">
+      <div class="lt-stage">
+        <div
+          class="shader"
+          data-variant="background"
+          data-effect="plasma"
+          data-colors="var(--background) var(--primary) var(--lt-label) var(--muted)"
+          data-speed="0.35"
+          data-fps="30"
+          aria-hidden="true"
+        ></div>
+        <div class="lt-record" role="img" aria-label="The record, turning"></div>
+      </div>
+      <div>
+        <p class="lt-cat">LT-014 · 12" LP · 33⅓ rpm · out 21 November</p>
+        <h1 id="lt-title">Harbour Lights</h1>
+        <p class="lt-artist">by Mira Halden</p>
+        <ol class="lt-tracks">
+          <li><b>A1</b><span>Ebb</span><time datetime="PT4M12S">4:12</time></li>
+          <li><b>A2</b><span>Cranes at dusk</span><time datetime="PT5M38S">5:38</time></li>
+          <li><b>A3</b><span>Pier 7</span><time datetime="PT3M51S">3:51</time></li>
+          <li><b>B1</b><span>Container blues</span><time datetime="PT6M04S">6:04</time></li>
+          <li><b>B2</b><span>Low tide</span><time datetime="PT7M20S">7:20</time></li>
+        </ol>
+        <div class="lt-actions">
+          <a class="btn" data-size="lg" href="#lt-release">Pre-order · €24</a>
+          <a class="btn" data-variant="outline" data-size="lg" href="#lt-booth">Listen in the booth</a>
+        </div>
+      </div>
+    </section>
+    <section id="lt-crate" aria-labelledby="lt-crate-title">
+      <div class="lt-head">
+        <h2 id="lt-crate-title">New in the crates</h2>
+        <p>Used and new · graded by hand, Goldmine scale</p>
+      </div>
+      <ul class="lt-crate">
+        <li class="lt-sleeve"
+          ><span class="lt-price">€18</span
+          ><img src="https://picsum.photos/id/39/500/500" alt="A turntable with its tonearm resting" /><h3
+            >Night drive</h3
+          ><p>Sola Verde · 2019 · VG+</p></li
+        >
+        <li class="lt-sleeve"
+          ><span class="lt-price">€32</span
+          ><img src="https://picsum.photos/id/158/500/500" alt="Stage lights over a concert crowd" /><h3
+            >Live at the Docks</h3
+          ><p>The Moorings · 1987 · NM</p></li
+        >
+        <li class="lt-sleeve"
+          ><span class="lt-price">€12</span
+          ><img src="https://picsum.photos/id/145/500/500" alt="Guitar effect pedals on a wooden floor" /><h3
+            >Fuzz &amp; tide</h3
+          ><p>Kelp · 2021 · VG</p></li
+        >
+        <li class="lt-sleeve"
+          ><span class="lt-price">€26</span
+          ><img src="https://picsum.photos/id/304/500/500" alt="A hand on the faders of a mixing desk" /><h3
+            >Desk sessions</h3
+          ><p>Various · 2024 · new</p></li
+        >
+      </ul>
+    </section>
+    <section id="lt-booth" class="lt-booth" aria-labelledby="lt-booth-title">
+      <p
+        ><b id="lt-booth-title">The listening booth</b><br />Two turntables, two pairs of headphones, no rush. Any
+        record in the shop, before you buy it.</p
+      >
+      <p style="font-family: 'Overpass Mono', monospace">Tue - Sat · 12:00 - 20:00</p>
+    </section>
+    <footer class="lt-foot">
+      <span>Lowtide Records · Fischmarkt 4, Hamburg</span>
+      <span>We buy collections - bring them in, we listen first.</span>
+    </footer>
+  </div>
+</div>
+<script type="module">
+  // the look: one of the site's designs; the shader reads its token colors again on defuss-theme-change
+  addEventListener('DOMContentLoaded', () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#sc-records [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
+    const root = df$('#sc-records').get(0);
+    const look = df$('#sc-records [data-site-look]');
+    look.val(root.dataset.look).on('change', () => {
+      root.dataset.look = look.val();
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+  });
+</script>
+```
+
+<DocText>Composed from <DocLink href="button.html">Button</DocLink>, <DocLink href="select.html">Select</DocLink> and a <DocLink href="shader.html">Shader</DocLink> (plasma) whose colours are the site's tokens - so each look relights it. The record is a radial and a repeating radial gradient that turns; the tracklist names each track's side and place, as the label prints it.</DocText>
+
+</DocPage>

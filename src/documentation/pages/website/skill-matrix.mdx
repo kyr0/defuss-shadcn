@@ -1,0 +1,181 @@
+---
+title: "Skill Matrix"
+description: "What someone can do, in groups - each skill a name, its level as a native meter and a note; the levels as bars or as five dots, or the skills as tags without levels."
+slug: "skill-matrix"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="skill-matrix" title="Skill Matrix" component="skill-matrix">
+  What someone can do, in groups - each skill a name, its level as a native meter and a note; the levels as bars or as five dots, or the skills as tags without levels. Part of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="skill-matrix">
+  <SkillField label="Native basis">
+<SkillText>Groups of skills, each a <code>&lt;section&gt;</code> with a heading and a <code>&lt;ul&gt;</code>; a skill is its name (a <code>&lt;label&gt;</code> for its meter), its level as a native <code>&lt;meter min="0" max="5"&gt;</code> and a note.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meter" title="a scalar value in a known range"><code>&lt;meter&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label" title="names the meter with the skill"><code>&lt;label for&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-moz-meter-bar" title="the track and the fill, themed"><code>::-webkit-meter-bar</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask" title="the fill as five whole dots"><code>mask</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Subgrid" title="names, levels and notes line up"><code>subgrid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/print-color-adjust" title="the levels survive printing"><code>print-color-adjust</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-skill-matrix</code>
+    <code>.mk-skill-matrix-group</code>
+    <code>.mk-skill-matrix-title</code>
+    <code>.mk-skill-matrix-list</code>
+    <code>.mk-skill-matrix-skill</code>
+    <code>.mk-skill-matrix-name</code>
+    <code>.mk-skill-matrix-level</code>
+    <code>.mk-skill-matrix-note</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="dots"</code> (each level five dots), <code>data-variant="stars"</code> (five stars, half steps as half stars) and <code>data-variant="tags"</code> (no levels, the skills as pills).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Bars" hint="Each level a native meter named by its label - the value and the range come with the element. The rows of a group share their columns (subgrid); the groups fill an auto-fill grid." previewStyle="align-items:stretch;"
+<div class="mk-skill-matrix">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-eng">
+    <h3 class="mk-skill-matrix-title" id="sm-eng"><i data-lucide="code-xml"></i> Engineering</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-ts">TypeScript</label>
+        <meter class="mk-skill-matrix-level" id="sm-ts" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">9 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-css">CSS</label>
+        <meter class="mk-skill-matrix-level" id="sm-css" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">11 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-a11y">Accessibility</label>
+        <meter class="mk-skill-matrix-level" id="sm-a11y" min="0" max="5" value="4">4 of 5</meter>
+        <span class="mk-skill-matrix-note">6 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-rust">Rust</label>
+        <meter class="mk-skill-matrix-level" id="sm-rust" min="0" max="5" value="2">2 of 5</meter>
+        <span class="mk-skill-matrix-note">1 yr</span>
+      </li>
+    </ul>
+  </section>
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-design">
+    <h3 class="mk-skill-matrix-title" id="sm-design"><i data-lucide="pen-tool"></i> Design</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-figma">Figma</label>
+        <meter class="mk-skill-matrix-level" id="sm-figma" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">7 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-type">Type &amp; layout</label>
+        <meter class="mk-skill-matrix-level" id="sm-type" min="0" max="5" value="4">4 of 5</meter>
+        <span class="mk-skill-matrix-note">11 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-motion">Motion</label>
+        <meter class="mk-skill-matrix-level" id="sm-motion" min="0" max="5" value="3">3 of 5</meter>
+        <span class="mk-skill-matrix-note">4 yrs</span>
+      </li>
+    </ul>
+  </section>
+</div>
+```
+
+```html example label="Dots" hint="data-variant='dots': each level five dots - a mask turns the meter's fill into whole dots, so the meters need max='5' and whole values. Spoken languages with their CEFR level as the note." previewStyle="align-items:stretch;"
+<div class="mk-skill-matrix" data-variant="dots">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-lang">
+    <h3 class="mk-skill-matrix-title" id="sm-lang"><i data-lucide="languages"></i> Languages</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-en">English</label>
+        <meter class="mk-skill-matrix-level" id="sm-en" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">C2</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-de">German</label>
+        <meter class="mk-skill-matrix-level" id="sm-de" min="0" max="5" value="4">4 of 5</meter>
+        <span class="mk-skill-matrix-note">C1</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-yo">Yoruba</label>
+        <meter class="mk-skill-matrix-level" id="sm-yo" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">native</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-fr">French</label>
+        <meter class="mk-skill-matrix-level" id="sm-fr" min="0" max="5" value="2">2 of 5</meter>
+        <span class="mk-skill-matrix-note">A2</span>
+      </li>
+    </ul>
+  </section>
+</div>
+```
+
+```html example label="Stars" hint="data-variant='stars': each level five stars in amber, like the Rating component - a star tile masks the meter, so a value of 4.5 shows four and a half stars. The meters need max='5'; the text inside says the value for browsers without meter support." previewStyle="align-items:stretch;"
+<div class="mk-skill-matrix" data-variant="stars">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-st-tools">
+    <h3 class="mk-skill-matrix-title" id="sm-st-tools"><i data-lucide="pen-tool"></i> Design tools</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-figma">Figma</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-figma" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">daily</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-framer">Framer</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-framer" min="0" max="5" value="4.5">4.5 of 5</meter>
+        <span class="mk-skill-matrix-note">6 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-ae">After Effects</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-ae" min="0" max="5" value="3.5">3.5 of 5</meter>
+        <span class="mk-skill-matrix-note">4 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-blender">Blender</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-blender" min="0" max="5" value="2">2 of 5</meter>
+        <span class="mk-skill-matrix-note">learning</span>
+      </li>
+    </ul>
+  </section>
+</div>
+```
+
+```html example label="Tags" hint="data-variant='tags': no levels - the skills as pills with their note inside. The names are spans, there are no meters." previewStyle="align-items:stretch;"
+<div class="mk-skill-matrix" data-variant="tags">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-tools">
+    <h3 class="mk-skill-matrix-title" id="sm-tools"><i data-lucide="wrench"></i> Tools</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Figma</span></li>
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Storybook</span></li>
+      <li class="mk-skill-matrix-skill"
+        ><span class="mk-skill-matrix-name">Playwright</span> <span class="mk-skill-matrix-note">e2e</span></li
+      >
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Vite</span></li>
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Bun</span></li>
+      <li class="mk-skill-matrix-skill"
+        ><span class="mk-skill-matrix-name">axe</span> <span class="mk-skill-matrix-note">audits</span></li
+      >
+    </ul>
+  </section>
+</div>
+```
+
+<SourceFiles component="skill-matrix" section="css" />
+
+</DocPage>

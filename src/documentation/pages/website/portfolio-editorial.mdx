@@ -1,0 +1,471 @@
+---
+title: "Editorial Portfolio"
+description: "A portfolio set like a magazine - warm paper, a masthead, a serif name beside an arched portrait, a pull quote that rises into view, an index of work whose pictures appear on hover and focus, a feature with a drop cap."
+slug: "portfolio-editorial"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="portfolio-editorial" title="Editorial Portfolio" introStyle="max-width:42rem;">
+  A portfolio set like a magazine - warm paper, a masthead, a serif name beside an arched portrait, a pull quote that rises into view, an index of work whose pictures appear on hover and focus, a feature with a drop cap. One of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> styles.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-portfolio-editorial.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="Clara Moreau, art director" schema="none" hint="The page sets its own palette on its root (warm paper, ink, terracotta) - every block inside takes it. Resume Header (split) with a corner-arch portrait that wipes up (Motion); a Parallax reveal pull quote; Portfolio Grid (index); a feature with a drop cap; Resume Entry (columns); Availability (banner)." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #pf-editorial {
+    --background: oklch(0.972 0.012 80);
+    --foreground: oklch(0.23 0.02 45);
+    --card: oklch(0.985 0.008 80);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.93 0.016 75);
+    --muted-foreground: oklch(0.47 0.025 50);
+    --border: oklch(0.85 0.02 70);
+    --input: var(--border);
+    --primary: oklch(0.52 0.14 38);
+    --primary-foreground: oklch(0.98 0.01 80);
+    --secondary: var(--muted);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.92 0.035 60);
+    --accent-foreground: var(--foreground);
+    --ring: var(--primary);
+    container: pf-editorial / inline-size;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 1.5rem clamp(1rem, 4vw, 3rem) 3rem;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-serif);
+  }
+  .dark #pf-editorial {
+    --background: oklch(0.19 0.012 55);
+    --foreground: oklch(0.93 0.015 80);
+    --card: oklch(0.22 0.012 55);
+    --muted: oklch(0.26 0.014 55);
+    --muted-foreground: oklch(0.72 0.02 70);
+    --border: oklch(0.34 0.016 60);
+    --primary: oklch(0.74 0.12 45);
+    --primary-foreground: oklch(0.18 0.02 40);
+    --accent: oklch(0.28 0.03 50);
+  }
+  /* every type size a quarter larger: the page is zoomed by 1.25 and its measure divided by it, so the
+     columns keep their width while the type, the rules and the spacing grow together */
+  #pf-editorial .pf-page {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3rem, 7vw, 5.5rem);
+    max-width: calc(72rem / 1.25);
+    margin-inline: auto;
+    zoom: 1.25;
+  }
+  #pf-editorial .pf-label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  #pf-editorial .pf-masthead {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 1rem;
+    padding-block-end: 0.75rem;
+    border-block-end: 3px double var(--foreground);
+  }
+  #pf-editorial .pf-wordmark {
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  #pf-editorial .pf-masthead nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.25rem;
+  }
+  #pf-editorial .pf-masthead a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #pf-editorial .pf-masthead a:is(:hover, :focus-visible) {
+    color: var(--primary);
+  }
+  #pf-editorial .mk-resume-header-name {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.035em;
+  }
+  #pf-editorial .mk-portfolio-grid-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  #pf-editorial .pf-about .pf-label {
+    margin-block-end: 1rem;
+  }
+  #pf-editorial .mk-resume-header-photo {
+    filter: grayscale(1) sepia(0.15) contrast(1.05);
+  }
+  #pf-editorial .pf-quote {
+    max-width: 52rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+  #pf-editorial .pf-quote blockquote {
+    margin: 0 0 1.25rem;
+    font-size: clamp(1.75rem, 1rem + 3vw, 3.25rem);
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  #pf-editorial .pf-quote blockquote::before {
+    content: '“';
+    display: block;
+    color: var(--primary);
+    font-size: 2em;
+    line-height: 0.5;
+  }
+  #pf-editorial .pf-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block-end: 1rem;
+  }
+  #pf-editorial .pf-feature {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 2rem clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  #pf-editorial .pf-feature figure {
+    margin: 0;
+  }
+  #pf-editorial .pf-feature img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  #pf-editorial .pf-feature figcaption {
+    margin-block-start: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+  #pf-editorial .pf-feature h2 {
+    margin: 0.5rem 0 1rem;
+    font-size: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+  #pf-editorial .pf-feature p {
+    margin: 0 0 1rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+  #pf-editorial .pf-dropcap::first-letter {
+    float: inline-start;
+    margin: 0.35rem 0.6rem 0 0;
+    color: var(--primary);
+    font-size: 4.25rem;
+    font-weight: 500;
+    line-height: 0.8;
+  }
+  #pf-editorial .pf-facts {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 0.25rem 2.5rem;
+    margin: 1.5rem 0 0;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--border);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+  }
+  #pf-editorial .pf-facts dt {
+    color: var(--muted-foreground);
+  }
+  #pf-editorial .pf-facts dd {
+    grid-row: 2;
+    margin: 0;
+    font-weight: 500;
+  }
+  #pf-editorial .pf-about {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 2.5rem 4rem;
+    align-items: start;
+  }
+  #pf-editorial .pf-awards {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  #pf-editorial .pf-awards li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.65rem;
+    border-block-end: 1px solid var(--border);
+  }
+  #pf-editorial .pf-awards span {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  #pf-editorial .pf-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block-start: 1rem;
+    border-block-start: 3px double var(--foreground);
+  }
+  @container pf-editorial (max-width: 40rem) {
+    #pf-editorial .pf-masthead {
+      grid-template-columns: 1fr;
+      justify-items: center;
+    }
+    #pf-editorial .pf-masthead nav {
+      justify-content: center;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #pf-editorial .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #pf-editorial .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  #pf-editorial {
+    position: relative;
+  }
+  #pf-editorial > .site-mode {
+    position: absolute;
+    z-index: 20;
+    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #pf-editorial {
+    --accent: oklch(0.927 0.035 60);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="pf-editorial">
+  <label class="swap site-mode" data-variant="rotate" data-size="sm">
+    <input type="checkbox" data-site-mode aria-label="Dark mode" />
+    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+  </label>
+  <div class="pf-page">
+    <header class="pf-masthead">
+      <p class="pf-label">No. 15 · Autumn 2026</p>
+      <span class="pf-wordmark">Clara Moreau</span>
+      <nav class="pf-label" aria-label="Sections">
+        <a href="#pf-ed-work">Work</a>
+        <a href="#pf-ed-about">About</a>
+        <a href="#pf-ed-contact">Contact</a>
+      </nav>
+    </header>
+    <header class="mk-resume-header" data-variant="split">
+      <img
+        class="mk-resume-header-photo corner-arch"
+        src="https://picsum.photos/id/1027/800/1000"
+        alt="Clara Moreau"
+        data-df-entrance="wipe-up"
+      />
+      <div class="mk-resume-header-body">
+        <p class="pf-label" data-df-entrance="fade">Art direction · Paris and Berlin</p>
+        <h1 class="mk-resume-header-name" data-df-entrance="up">Clara Moreau</h1>
+        <p class="mk-resume-header-role" data-df-entrance="up" style="--df-motion-delay: 150ms"
+          >Art director for magazines, books and the brands that read them</p
+        >
+        <p class="mk-resume-header-summary" data-df-entrance="up" style="--df-motion-delay: 300ms"
+          >Fifteen years of covers, grids and typefaces chosen with care. I believe a page should breathe before it
+          speaks.</p
+        >
+        <div class="mk-resume-header-actions" data-df-entrance="up" style="--df-motion-delay: 450ms">
+          <a class="btn" href="#pf-ed-work">Selected work</a>
+          <a class="btn" data-variant="ghost" href="mailto:clara@example.com">clara@example.com</a>
+        </div>
+      </div>
+    </header>
+    <figure class="pf-quote parallax-reveal">
+      <blockquote>Clara treats white space like a co-author - it gets the best lines.</blockquote>
+      <figcaption class="pf-label">Hélène Marchand, editor in chief, Revue Lumière</figcaption>
+    </figure>
+    <section id="pf-ed-work" aria-labelledby="pf-ed-work-title">
+      <div class="pf-head">
+        <h2 class="pf-label" id="pf-ed-work-title">Selected work</h2>
+        <p class="pf-label">2016 - 2026</p>
+      </div>
+      <ul class="mk-portfolio-grid" data-variant="index">
+        <li class="mk-portfolio-grid-item">
+          <a class="mk-portfolio-grid-link" href="#">
+            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1073/800/600" alt="" />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Revue Lumière, a redesign</strong>
+              <span class="mk-portfolio-grid-meta">Magazine · 2026</span>
+            </span>
+          </a>
+        </li>
+        <li class="mk-portfolio-grid-item">
+          <a class="mk-portfolio-grid-link" href="#">
+            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/24/800/600" alt="" />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">The Quiet Atlas</strong>
+              <span class="mk-portfolio-grid-meta">Book · 2024</span>
+            </span>
+          </a>
+        </li>
+        <li class="mk-portfolio-grid-item">
+          <a class="mk-portfolio-grid-link" href="#">
+            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1068/800/600" alt="" />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Maison Verre</strong>
+              <span class="mk-portfolio-grid-meta">Identity · 2023</span>
+            </span>
+          </a>
+        </li>
+        <li class="mk-portfolio-grid-item">
+          <a class="mk-portfolio-grid-link" href="#">
+            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/800/600" alt="" />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Festival du Livre</strong>
+              <span class="mk-portfolio-grid-meta">Campaign · 2021</span>
+            </span>
+          </a>
+        </li>
+        <li class="mk-portfolio-grid-item">
+          <a class="mk-portfolio-grid-link" href="#">
+            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/82/800/600" alt="" />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Eleven Gardens</strong>
+              <span class="mk-portfolio-grid-meta">Exhibition · 2019</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <article class="pf-feature" aria-labelledby="pf-ed-feature">
+      <figure class="parallax-reveal">
+        <img src="https://picsum.photos/id/1073/1200/900" alt="Spreads of the redesigned Revue Lumière" />
+        <figcaption>Revue Lumière, issue 212 - the first on the new grid.</figcaption>
+      </figure>
+      <div>
+        <p class="pf-label">Feature</p>
+        <h2 id="pf-ed-feature">A monthly that reads slower on purpose</h2>
+        <p class="pf-dropcap"
+          >Revue Lumière had grown loud: six typefaces, a cover line on every inch. We cut it to two faces, one cover
+          image and a grid of nine columns that lets long reads run wide and short ones sit quietly in the margin.</p
+        >
+        <p>Newsstand sales rose for the first time in a decade; the letters page asked us to never change it again.</p>
+        <dl class="pf-facts">
+          <dt>Client</dt>
+          <dd>Revue Lumière</dd>
+          <dt>Role</dt>
+          <dd>Art direction</dd>
+          <dt>Year</dt>
+          <dd>2026</dd>
+        </dl>
+      </div>
+    </article>
+    <section id="pf-ed-about" class="pf-about" aria-labelledby="pf-ed-about-title">
+      <div>
+        <h2 class="pf-label" id="pf-ed-about-title">Recognition</h2>
+        <ul class="pf-awards">
+          <li>Type Directors Club, certificate <span>2025</span></li>
+          <li>Art Directors Club, silver <span>2023</span></li>
+          <li>European Design Awards, gold <span>2021</span></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pf-label">Career</h2>
+        <ol class="mk-resume-entries" data-variant="columns">
+          <li class="mk-resume-entry">
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Art director, own studio</h3>
+                <p class="mk-resume-entry-org"><span>Paris and Berlin</span></p>
+                <p class="mk-resume-entry-when"><time datetime="2018">2018</time> - today</p>
+              </div>
+            </div>
+          </li>
+          <li class="mk-resume-entry">
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Design director</h3>
+                <p class="mk-resume-entry-org"><a href="#">Revue Lumière</a></p>
+                <p class="mk-resume-entry-when"
+                  ><time datetime="2013">2013</time> - <time datetime="2018">2018</time></p
+                >
+              </div>
+            </div>
+          </li>
+          <li class="mk-resume-entry">
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Graphic design, MA</h3>
+                <p class="mk-resume-entry-org"><a href="#">École Estienne</a></p>
+                <p class="mk-resume-entry-when"
+                  ><time datetime="2009">2009</time> - <time datetime="2011">2011</time></p
+                >
+              </div>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+    <aside id="pf-ed-contact" class="mk-availability" data-variant="banner" aria-labelledby="pf-ed-contact-title">
+      <p class="mk-availability-status"
+        ><span class="indicator-dot" data-variant="warning" aria-hidden="true"></span> Limited</p
+      >
+      <p class="mk-availability-title" id="pf-ed-contact-title">Taking two book projects for autumn 2027</p>
+      <div class="mk-availability-actions">
+        <a class="btn" data-variant="outline" href="mailto:clara@example.com">Write to the studio</a>
+      </div>
+    </aside>
+    <footer class="pf-foot pf-label">
+      <span>Clara Moreau Studio</span>
+      <span>Set in Fraunces</span>
+    </footer>
+  </div>
+</div>
+<script type="module">
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#pf-editorial [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+  });
+</script>
+```
+
+<DocText>Built from <DocLink href="resume-header.html">Resume Header</DocLink> (split), <DocLink href="portfolio-grid.html">Portfolio Grid</DocLink> (index), <DocLink href="resume-entry.html">Resume Entry</DocLink> (columns) and <DocLink href="availability.html">Availability</DocLink> (banner). The palette is the page's own: tokens set on its root, so every block inside follows it, in dark mode too. The arch is <code>corner-arch</code> from <DocLink href="shapes.html">Shapes</DocLink>, the entrances are <DocLink href="motion.html">Motion</DocLink>'s, the quote and the feature picture are <DocLink href="parallax.html">Parallax</DocLink> reveals.</DocText>
+
+</DocPage>

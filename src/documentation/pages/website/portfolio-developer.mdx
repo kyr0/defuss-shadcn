@@ -1,0 +1,576 @@
+---
+title: "Developer Portfolio"
+description: "A portfolio that boots like a terminal - a status line, matrix rain behind the shell, a shell that types who you are, a hexagon avatar, pinned repositories, a year of activity as a sparkline, a stack in dots, a career as a git log and writing in a plain list."
+slug: "portfolio-developer"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="portfolio-developer" title="Developer Portfolio" introStyle="max-width:42rem;">
+  A portfolio that boots like a terminal - a status line, matrix rain behind the shell, a shell that types who you are, a hexagon avatar, pinned repositories, a year of activity as a sparkline, a stack in dots, a career as a git log and writing in a plain list. One of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> styles.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-portfolio-developer.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="Sam Lindqvist, infrastructure engineer" schema="none" hint="A terminal palette in light and dark (the switch top right); the hero is a screen that stays dark: the Shader's matrix rain behind a Code Mockup with a Typewriter on the prompt; everything below reads 15 % larger (zoom on the page column); Resume Header (compact) with a shape-hexagon avatar; Repository Items as Parallax reveals; an inline SVG sparkline with Stats (cards); Skill Matrix (dots); Resume Entry (timeline); Availability (banner)." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #pf-developer {
+    --background: oklch(0.16 0.012 250);
+    --foreground: oklch(0.93 0.01 250);
+    --card: oklch(0.195 0.014 250);
+    --card-foreground: var(--foreground);
+    --popover: var(--card);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.235 0.016 250);
+    --muted-foreground: oklch(0.7 0.02 250);
+    --border: oklch(0.31 0.016 250);
+    --input: var(--border);
+    --primary: oklch(0.82 0.17 152);
+    --primary-foreground: oklch(0.2 0.04 152);
+    --secondary: var(--muted);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.27 0.04 152);
+    --accent-foreground: var(--foreground);
+    --ring: var(--primary);
+    --chart-1: oklch(0.82 0.17 152);
+    --chart-2: oklch(0.78 0.13 220);
+    color-scheme: dark;
+    container: pf-developer / inline-size;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 0 3rem;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+  #pf-developer .pf-status {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    padding: 0.5rem clamp(1rem, 4vw, 2.5rem);
+    padding-inline-end: 4rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+  #pf-developer .pf-status span:first-child::before {
+    content: '[0] ';
+    opacity: 0.6;
+  }
+  /* everything below the hero reads 15 % larger: zoom scales the blocks' rem sizes too, the width is compensated */
+  #pf-developer .pf-page {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3rem, 6vw, 4.5rem);
+    max-width: calc(72rem / 1.15);
+    margin-inline: auto;
+    padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+    zoom: 1.15;
+  }
+  #pf-developer {
+    --site-mode-top: 2.75rem;
+  }
+  /* the hero: a terminal over matrix rain - a screen, dark in both modes */
+  #pf-developer .pf-hero {
+    color-scheme: dark;
+    --background: oklch(0.16 0.012 250);
+    --foreground: oklch(0.93 0.01 250);
+    --card: oklch(0.195 0.014 250);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.235 0.016 250);
+    --muted-foreground: oklch(0.74 0.02 250);
+    --border: oklch(0.31 0.016 250);
+    --input: var(--border);
+    --primary: oklch(0.82 0.17 152);
+    --primary-foreground: oklch(0.2 0.04 152);
+    --accent: oklch(0.27 0.04 152);
+    --accent-foreground: var(--foreground);
+    overflow: hidden;
+    padding: clamp(2.5rem, 7vw, 5.5rem) clamp(1rem, 4vw, 2.5rem);
+    background: oklch(0.11 0.02 160);
+    color: var(--foreground);
+  }
+  #pf-developer .pf-rain {
+    opacity: 0.55;
+  }
+  /* a shade behind the copy keeps the rain from running through the words */
+  #pf-developer .pf-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(75% 95% at 35% 50%, oklch(0.11 0.02 160 / 0.82), transparent 75%);
+  }
+  #pf-developer h2 {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+  }
+  #pf-developer h2::before {
+    content: '## ';
+    color: var(--primary);
+  }
+  #pf-developer .pf-boot {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 2.5rem;
+    max-width: calc(72rem / 1.15);
+    margin-inline: auto;
+    zoom: 1.15;
+  }
+  #pf-developer .pf-boot .mk-resume-header {
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: oklch(0.16 0.012 250 / 0.72);
+    backdrop-filter: blur(6px);
+  }
+  @container pf-developer (max-width: 52rem) {
+    #pf-developer .pf-boot {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  #pf-developer .mockup-code pre {
+    white-space: pre-wrap;
+  }
+  #pf-developer .mk-resume-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #pf-developer .mk-resume-header-body {
+    flex: none;
+  }
+  #pf-developer .mk-resume-header-photo {
+    width: 6rem;
+    height: auto;
+    aspect-ratio: 1;
+    filter: grayscale(1) contrast(1.1);
+  }
+  #pf-developer .mk-resume-header-name {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  #pf-developer .mk-resume-header-facts {
+    flex-direction: column;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+  #pf-developer .mk-repository-item-name,
+  #pf-developer .mk-resume-entry-when,
+  #pf-developer .mk-skill-matrix-note {
+    font-family: var(--font-mono);
+  }
+  #pf-developer .pf-activity {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #pf-developer .pf-activity svg {
+    display: block;
+    width: 100%;
+    height: 7rem;
+    overflow: visible;
+  }
+  #pf-developer .pf-activity-axis {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+  }
+  #pf-developer .mk-stat-value {
+    font-family: var(--font-mono);
+    color: var(--primary);
+  }
+  #pf-developer .pf-two {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 2.5rem 3.5rem;
+    align-items: start;
+  }
+  #pf-developer .pf-posts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #pf-developer .pf-posts li {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0 1rem;
+    padding-block: 0.75rem;
+    border-block-end: 1px dashed var(--border);
+  }
+  #pf-developer .pf-posts time {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  #pf-developer .pf-posts a {
+    color: inherit;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  #pf-developer .pf-posts a:is(:hover, :focus-visible) {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+  #pf-developer .pf-posts p {
+    grid-column: 2;
+    margin: 0.15rem 0 0;
+    font-size: 0.9375rem;
+    color: var(--muted-foreground);
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #pf-developer .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #pf-developer .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  #pf-developer {
+    position: relative;
+  }
+  #pf-developer > .site-mode {
+    position: absolute;
+    z-index: 20;
+    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  .dark #pf-developer {
+    --accent: oklch(0.25 0.04 152);
+  }
+  :root:not(.dark) #pf-developer {
+    color-scheme: light;
+    --background: oklch(0.985 0.012 250);
+    --foreground: oklch(0.2 0.01 250);
+    --card: oklch(0.997 0.014 250);
+    --card-foreground: oklch(0.2 0.01 250);
+    --popover: oklch(0.997 0.014 250);
+    --popover-foreground: oklch(0.2 0.01 250);
+    --muted: oklch(0.95 0.016 250);
+    --muted-foreground: oklch(0.46 0.02 250);
+    --border: oklch(0.9 0.016 250);
+    --input: oklch(0.88 0.016 250);
+    --primary: oklch(0.57 0.17 152);
+    --primary-foreground: oklch(0.17 0.03 152);
+    --secondary: oklch(0.955 0.016 250);
+    --secondary-foreground: oklch(0.25 0.01 250);
+    --accent: oklch(0.94 0.025 152);
+    --accent-foreground: oklch(0.2 0.01 250);
+    --ring: oklch(0.57 0.17 152);
+    --chart-1: oklch(0.57 0.17 152);
+    --chart-2: oklch(0.53 0.13 220);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="pf-developer">
+  <label class="swap site-mode" data-variant="rotate" data-size="sm">
+    <input type="checkbox" data-site-mode aria-label="Dark mode" />
+    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+  </label>
+  <p class="pf-status" aria-hidden="true">
+    <span>sam@stockholm: ~/portfolio</span>
+    <span>main ✓ · utf-8 · 14:02</span>
+  </p>
+  <section class="pf-hero" aria-label="Introduction">
+    <div
+      class="shader pf-rain"
+      data-variant="background"
+      data-effect="matrix"
+      data-size="18"
+      data-rain="0.7"
+      data-trail="0.7"
+      data-speed="0.5"
+      data-fps="30"
+      aria-hidden="true"
+    ></div>
+    <div class="pf-boot">
+      <div class="mockup-code" data-chrome="mac" data-title="~/sam - zsh" data-df-entrance="wipe">
+        <pre data-prefix="$"><code><span class="typewriter"><span>whoami</span></span></code></pre>
+        <pre data-prefix=">" data-tone="success"><code>Sam Lindqvist - infrastructure engineer, Stockholm</code></pre>
+        <pre data-prefix="$"><code>cat now.txt</code></pre>
+        <pre data-prefix=">"><code>Making build pipelines boring at Globex. Maintaining tidewater and sqlite-cdc.</code></pre>
+        <pre data-prefix="$"><code>uptime --career</code></pre>
+        <pre data-prefix=">" data-tone="warning"><code>9 years, 0 pages at 3 a.m. this quarter</code></pre>
+      </div>
+      <header class="mk-resume-header" data-variant="compact">
+        <img
+          class="mk-resume-header-photo shape-hexagon"
+          src="https://picsum.photos/id/1005/400/400"
+          alt="Sam Lindqvist"
+          data-df-entrance="spin"
+        />
+        <div class="mk-resume-header-body">
+          <h1 class="mk-resume-header-name">sam.lindqvist</h1>
+          <p class="mk-resume-header-role">Infrastructure engineer. I make deploys dull.</p>
+          <ul class="mk-resume-header-facts">
+            <li><i data-lucide="map-pin"></i> Stockholm, UTC+1</li>
+            <li
+              ><i data-lucide="code-xml"></i>
+              <a href="https://github.com/" target="_blank" rel="noopener">github.com/samlq</a></li
+            >
+            <li><i data-lucide="mail"></i> <a href="mailto:sam@example.com">sam@example.com</a></li>
+          </ul>
+        </div>
+      </header>
+    </div>
+  </section>
+  <div class="pf-page">
+    <section aria-labelledby="pf-dev-repos">
+      <h2 id="pf-dev-repos">pinned</h2>
+      <div class="grid grid-cols-auto gap-4">
+        <article class="mk-repository-item parallax-reveal">
+          <div class="mk-repository-item-head">
+            <i data-lucide="book-marked"></i>
+            <h3 class="mk-repository-item-name"
+              ><a href="#"><span class="mk-repository-item-owner">samlq/</span>tidewater</a></h3
+            >
+            <span class="badge" data-variant="outline">Public</span>
+          </div>
+          <p class="mk-repository-item-description"
+            >Back-pressure for job queues - a queue that says no before the database does.</p
+          >
+          <ul class="mk-repository-item-topics" aria-label="Topics">
+            <li>queues</li>
+            <li>postgres</li>
+          </ul>
+          <ul class="mk-repository-item-stats">
+            <li><span class="mk-repository-item-language" data-language="go"></span> Go</li>
+            <li><i data-lucide="star"></i> 5.1k<span class="sr-only"> stars</span></li>
+            <li><i data-lucide="git-fork"></i> 290<span class="sr-only"> forks</span></li>
+          </ul>
+        </article>
+        <article class="mk-repository-item parallax-reveal">
+          <div class="mk-repository-item-head">
+            <i data-lucide="book-marked"></i>
+            <h3 class="mk-repository-item-name"
+              ><a href="#"><span class="mk-repository-item-owner">samlq/</span>sqlite-cdc</a></h3
+            >
+            <span class="badge" data-variant="outline">Public</span>
+          </div>
+          <p class="mk-repository-item-description"
+            >Change data capture for SQLite - stream every write to Kafka, NATS or a file.</p
+          >
+          <ul class="mk-repository-item-topics" aria-label="Topics">
+            <li>sqlite</li>
+            <li>cdc</li>
+          </ul>
+          <ul class="mk-repository-item-stats">
+            <li><span class="mk-repository-item-language" data-language="rust"></span> Rust</li>
+            <li><i data-lucide="star"></i> 1.9k<span class="sr-only"> stars</span></li>
+            <li><i data-lucide="git-fork"></i> 77<span class="sr-only"> forks</span></li>
+          </ul>
+        </article>
+        <article class="mk-repository-item parallax-reveal">
+          <div class="mk-repository-item-head">
+            <i data-lucide="book-marked"></i>
+            <h3 class="mk-repository-item-name"
+              ><a href="#"><span class="mk-repository-item-owner">samlq/</span>dotfiles</a></h3
+            >
+            <span class="badge" data-variant="outline">Public</span>
+          </div>
+          <p class="mk-repository-item-description">zsh, tmux and neovim - set up in one command on a fresh machine.</p>
+          <ul class="mk-repository-item-topics" aria-label="Topics">
+            <li>neovim</li>
+            <li>tmux</li>
+          </ul>
+          <ul class="mk-repository-item-stats">
+            <li><span class="mk-repository-item-language" data-language="shell"></span> Shell</li>
+            <li><i data-lucide="star"></i> 412<span class="sr-only"> stars</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+    <section aria-labelledby="pf-dev-activity">
+      <h2 id="pf-dev-activity">activity --last 12 months</h2>
+      <div class="pf-activity">
+        <svg
+          viewBox="0 0 520 100"
+          preserveAspectRatio="none"
+          role="img"
+          aria-label="Commits per month, rising from 40 to 140 over the year"
+        >
+          <defs>
+            <linearGradient id="pf-dev-fill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" style="stop-color: var(--chart-1); stop-opacity: 0.35" />
+              <stop offset="1" style="stop-color: var(--chart-1); stop-opacity: 0" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M0 80 L47 72 L94 76 L141 60 L188 64 L235 48 L282 52 L329 38 L376 42 L423 26 L470 30 L520 12 L520 100 L0 100 Z"
+            fill="url(#pf-dev-fill)"
+          />
+          <path
+            d="M0 80 L47 72 L94 76 L141 60 L188 64 L235 48 L282 52 L329 38 L376 42 L423 26 L470 30 L520 12"
+            fill="none"
+            style="stroke: var(--chart-1)"
+            stroke-width="2"
+            vector-effect="non-scaling-stroke"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <div class="pf-activity-axis" aria-hidden="true"
+          ><span>Nov 2025</span><span>May 2026</span><span>Oct 2026</span></div
+        >
+        <section class="mk-stats" style="padding: 0">
+          <div class="mk-stats-grid" data-variant="cards">
+            <div class="mk-stat"
+              ><span class="mk-stat-value">1,284</span><span class="mk-stat-label">commits</span></div
+            >
+            <div class="mk-stat"
+              ><span class="mk-stat-value">312</span><span class="mk-stat-label">pull requests merged</span></div
+            >
+            <div class="mk-stat"
+              ><span class="mk-stat-value">7.4k</span><span class="mk-stat-label">stars across repos</span></div
+            >
+          </div>
+        </section>
+      </div>
+    </section>
+    <div class="pf-two">
+      <section aria-labelledby="pf-dev-stack">
+        <h2 id="pf-dev-stack">stack</h2>
+        <div class="mk-skill-matrix" data-variant="dots">
+          <section class="mk-skill-matrix-group" aria-label="Languages and systems">
+            <ul class="mk-skill-matrix-list">
+              <li class="mk-skill-matrix-skill">
+                <label class="mk-skill-matrix-name" for="pf-dev-go">Go</label>
+                <meter class="mk-skill-matrix-level" id="pf-dev-go" min="0" max="5" value="5">5 of 5</meter>
+                <span class="mk-skill-matrix-note">8 yrs</span>
+              </li>
+              <li class="mk-skill-matrix-skill">
+                <label class="mk-skill-matrix-name" for="pf-dev-pg">PostgreSQL</label>
+                <meter class="mk-skill-matrix-level" id="pf-dev-pg" min="0" max="5" value="5">5 of 5</meter>
+                <span class="mk-skill-matrix-note">9 yrs</span>
+              </li>
+              <li class="mk-skill-matrix-skill">
+                <label class="mk-skill-matrix-name" for="pf-dev-k8s">Kubernetes</label>
+                <meter class="mk-skill-matrix-level" id="pf-dev-k8s" min="0" max="5" value="4">4 of 5</meter>
+                <span class="mk-skill-matrix-note">6 yrs</span>
+              </li>
+              <li class="mk-skill-matrix-skill">
+                <label class="mk-skill-matrix-name" for="pf-dev-rust">Rust</label>
+                <meter class="mk-skill-matrix-level" id="pf-dev-rust" min="0" max="5" value="3">3 of 5</meter>
+                <span class="mk-skill-matrix-note">3 yrs</span>
+              </li>
+              <li class="mk-skill-matrix-skill">
+                <label class="mk-skill-matrix-name" for="pf-dev-nix">Nix</label>
+                <meter class="mk-skill-matrix-level" id="pf-dev-nix" min="0" max="5" value="2">2 of 5</meter>
+                <span class="mk-skill-matrix-note">1 yr</span>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </section>
+      <section aria-labelledby="pf-dev-log">
+        <h2 id="pf-dev-log">git log --career</h2>
+        <ol class="mk-resume-entries" data-variant="timeline">
+          <li class="mk-resume-entry">
+            <span class="mk-resume-entry-mark" aria-hidden="true"></span>
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Staff engineer, build and release</h3>
+                <p class="mk-resume-entry-org"><a href="#">Globex</a></p>
+                <p class="mk-resume-entry-when"><time datetime="2022-01">2022</time> - today</p>
+              </div>
+            </div>
+          </li>
+          <li class="mk-resume-entry">
+            <span class="mk-resume-entry-mark" aria-hidden="true"></span>
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Site reliability engineer</h3>
+                <p class="mk-resume-entry-org"><a href="#">Initech</a></p>
+                <p class="mk-resume-entry-when"
+                  ><time datetime="2017-03">2017</time> - <time datetime="2021-12">2021</time></p
+                >
+              </div>
+            </div>
+          </li>
+          <li class="mk-resume-entry">
+            <span class="mk-resume-entry-mark" aria-hidden="true"></span>
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">B.Sc. Computer Science</h3>
+                <p class="mk-resume-entry-org"><a href="#">KTH Stockholm</a></p>
+                <p class="mk-resume-entry-when"
+                  ><time datetime="2014">2014</time> - <time datetime="2017">2017</time></p
+                >
+              </div>
+            </div>
+          </li>
+        </ol>
+      </section>
+    </div>
+    <section aria-labelledby="pf-dev-posts">
+      <h2 id="pf-dev-posts">writing</h2>
+      <ul class="pf-posts">
+        <li>
+          <time datetime="2026-09-14">2026-09-14</time>
+          <a href="#">Your queue needs a no</a>
+          <p>Back-pressure explained with a coffee shop and a very long line.</p>
+        </li>
+        <li>
+          <time datetime="2026-05-02">2026-05-02</time>
+          <a href="#">Twelve months without a 3 a.m. page</a>
+          <p>What we changed in on-call, and what we deleted.</p>
+        </li>
+        <li>
+          <time datetime="2025-11-20">2025-11-20</time>
+          <a href="#">SQLite is a fine message bus (until it is not)</a>
+          <p>Notes from building sqlite-cdc.</p>
+        </li>
+      </ul>
+    </section>
+    <aside class="mk-availability" data-variant="banner" aria-labelledby="pf-dev-hire">
+      <p class="mk-availability-status"
+        ><span class="indicator-dot" data-variant="neutral" aria-hidden="true"></span> Not looking</p
+      >
+      <p class="mk-availability-title" id="pf-dev-hire">Happy at Globex - but always up for a talk about queues.</p>
+      <div class="mk-availability-actions">
+        <a class="btn" data-size="sm" href="mailto:sam@example.com">Write me</a>
+      </div>
+    </aside>
+  </div>
+</div>
+<script type="module">
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#pf-developer [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+  });
+</script>
+```
+
+<DocText>Built from <DocLink href="mockup-code.html">Code Mockup</DocLink> with a <DocLink href="typewriter.html">Typewriter</DocLink>, <DocLink href="resume-header.html">Resume Header</DocLink> (compact), <DocLink href="repository-item.html">Repository Item</DocLink>, <DocLink href="stats.html">Stats</DocLink> (cards), <DocLink href="skill-matrix.html">Skill Matrix</DocLink> (dots), <DocLink href="resume-entry.html">Resume Entry</DocLink> (timeline) and <DocLink href="availability.html">Availability</DocLink> (banner). The page has a light and a dark palette (the switch in the corner); the hero keeps the dark one in both modes - a screen with the <DocLink href="shader-patterns.html">Shader</DocLink>'s matrix rain behind the terminal. <code>shape-hexagon</code> is a <DocLink href="shapes.html">Shapes</DocLink> utility, the reveals are <DocLink href="parallax.html">Parallax</DocLink>'s.</DocText>
+
+</DocPage>

@@ -14,37 +14,456 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Docs & Help blocks composed into one page - the source is the page. Every page in the docs navigation is a route of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/docs/permissions</code>) - the current link, the breadcrumb, the title and the pager follow it; the language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink>, the docs stay as written.</DocText>
+<DocText>A product's documentation, composed from the Docs & Help blocks - the source is the page. Every page in the docs navigation is a route of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/docs/permissions</code>): the current link, the bar's section, the breadcrumb, the title and the pager follow it, and the language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink>. The Look select changes the palette and the type.</DocText>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-website-docs-help.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
 </div>
 
-```html example label="A docs page" schema="none" hint="Every docs page is a route (#/docs/roles) - link, breadcrumb, title and pager follow; the switch translates the frame. Docs Navigation beside the Docs Content and a Code Example, then the release notes (Release Header + Release Items), the roadmap, help categories and downloads - only Docs & Help blocks." previewStyle="align-items:stretch;"
-<div id="site-docs" data-i18n-component style="display: flex; flex-direction: column; gap: 4rem; width: 100%">
-  <div class="flex justify-end" style="margin-block-end: -3rem">
-    <select
-      class="select"
-      data-size="sm"
-      data-app-locale
-      aria-label="Language"
-      data-i18n-aria-label-en="Language"
-      data-i18n-aria-label-de="Sprache"
-      style="width: auto"
+```html example label="A docs page" schema="none" hint="Every docs page is a route (#/docs/roles) - the navigation, the bar's section, the breadcrumb, the title and the pager follow; the switch translates the frame. Docs Navigation beside the Docs Content with a Code Example - only Docs & Help blocks." previewStyle="align-items:stretch;padding:0;"
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap');
+  /* A product's documentation on an 80rem page: a site bar (brand, sections, search, the look and the language), the
+     docs navigation in a quiet column, the article in a 46rem reading measure with its code on dark panels. IBM Plex
+     Sans to read, Plex Mono for code. Looks: Manual (white and blue, follows light / dark), Console (warm black, amber,
+     the headings in Plex Mono) and Field guide (paper and forest green, Literata headings). */
+  #site-docs {
+    --background: oklch(0.995 0.002 250);
+    --foreground: oklch(0.22 0.02 255);
+    --card: oklch(1 0 0);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.965 0.006 250);
+    --muted-foreground: oklch(0.48 0.02 255);
+    --border: oklch(0.22 0.02 255 / 0.11);
+    --input: oklch(0.22 0.02 255 / 0.2);
+    --primary: oklch(0.52 0.19 258);
+    --primary-foreground: oklch(0.99 0.003 250);
+    --secondary: oklch(0.96 0.02 255);
+    --secondary-foreground: oklch(0.4 0.16 258);
+    --accent: oklch(0.955 0.025 258);
+    --accent-foreground: oklch(0.4 0.16 258);
+    --ring: var(--primary);
+    --radius: 0.5rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --docs-heading: 'IBM Plex Sans', var(--font-sans);
+    color-scheme: light;
+    container-type: inline-size;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: max(44rem, var(--scaffold-height, 0px));
+    overflow-x: clip;
+    background: var(--background);
+    color: var(--foreground);
+    font:
+      400 1rem/1.6 'IBM Plex Sans',
+      var(--font-sans);
+  }
+  .dark #site-docs[data-look='manual'] {
+    color-scheme: dark;
+    --background: oklch(0.18 0.012 255);
+    --foreground: oklch(0.94 0.006 250);
+    --card: oklch(0.21 0.014 255);
+    --muted: oklch(0.235 0.016 255);
+    --muted-foreground: oklch(0.74 0.015 250);
+    --border: oklch(0.94 0.006 250 / 0.11);
+    --input: oklch(0.94 0.006 250 / 0.22);
+    --primary: oklch(0.74 0.13 255);
+    --primary-foreground: oklch(0.18 0.012 255);
+    --secondary: oklch(0.27 0.04 258);
+    --secondary-foreground: oklch(0.88 0.06 255);
+    --accent: oklch(0.27 0.04 258);
+    --accent-foreground: oklch(0.88 0.06 255);
+  }
+  #site-docs[data-look='console'] {
+    color-scheme: dark;
+    --background: oklch(0.165 0.008 60);
+    --foreground: oklch(0.93 0.02 85);
+    --card: oklch(0.195 0.01 60);
+    --muted: oklch(0.215 0.012 60);
+    --muted-foreground: oklch(0.73 0.03 80);
+    --border: oklch(0.93 0.02 85 / 0.11);
+    --input: oklch(0.93 0.02 85 / 0.22);
+    --primary: oklch(0.81 0.14 75);
+    --primary-foreground: oklch(0.165 0.008 60);
+    --secondary: oklch(0.25 0.03 70);
+    --secondary-foreground: oklch(0.9 0.08 80);
+    --accent: oklch(0.26 0.04 70);
+    --accent-foreground: oklch(0.9 0.1 80);
+    --radius: 0.25rem;
+    --docs-heading: 'IBM Plex Mono', var(--font-mono);
+  }
+  #site-docs[data-look='field'] {
+    color-scheme: light;
+    --background: oklch(0.972 0.012 115);
+    --foreground: oklch(0.26 0.05 155);
+    --card: oklch(0.985 0.008 110);
+    --muted: oklch(0.94 0.018 120);
+    --muted-foreground: oklch(0.45 0.045 150);
+    --border: oklch(0.26 0.05 155 / 0.14);
+    --input: oklch(0.26 0.05 155 / 0.26);
+    --primary: oklch(0.44 0.11 155);
+    --primary-foreground: oklch(0.985 0.008 110);
+    --secondary: oklch(0.93 0.035 135);
+    --secondary-foreground: oklch(0.32 0.08 155);
+    --accent: oklch(0.93 0.035 135);
+    --accent-foreground: oklch(0.32 0.08 155);
+    --radius: 0.75rem;
+    --docs-heading: 'Literata', Georgia, serif;
+  }
+  #site-docs [hidden] {
+    display: none !important;
+  }
+  #site-docs > :not(template) {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline: max(clamp(1rem, 4vw, 2.5rem), calc((100% - 80rem) / 2));
+  }
+  /* the site bar */
+  #site-docs .docs-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 2rem;
+    min-height: 4.25rem;
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--border);
+  }
+  #site-docs .docs-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--foreground);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    text-decoration: none;
+  }
+  #site-docs .docs-brand svg {
+    color: var(--primary);
+  }
+  #site-docs .docs-brand span {
+    color: var(--muted-foreground);
+    font-weight: 500;
+  }
+  #site-docs .docs-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+  }
+  #site-docs .docs-top a {
+    padding-block: 0.25rem;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  #site-docs .docs-top a:hover,
+  #site-docs .docs-top a[aria-current] {
+    color: var(--foreground);
+  }
+  #site-docs .docs-top a[aria-current] {
+    box-shadow: 0 2px var(--primary);
+  }
+  #site-docs .docs-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: min(100%, 15rem);
+    height: 2.25rem;
+    margin-inline-start: auto;
+    padding: 0 0.375rem 0 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  #site-docs .docs-search svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  #site-docs .docs-search kbd {
+    margin-inline-start: auto;
+    padding: 0.0625rem 0.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    font:
+      500 0.75rem 'IBM Plex Mono',
+      var(--font-mono);
+  }
+  #site-docs .docs-search:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  #site-docs .docs-bar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #site-docs .docs-bar .select {
+    width: auto;
+    min-width: 7.5rem;
+  }
+  /* the navigation beside the article */
+  #site-docs .docs-layout {
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+    padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem);
+  }
+  @container (width > 56rem) {
+    #site-docs .docs-layout {
+      grid-template-columns: 15rem minmax(0, 1fr);
+      gap: clamp(3rem, 5vw, 5rem);
+    }
+    #site-docs .docs-side {
+      position: sticky;
+      top: 1.5rem;
+    }
+  }
+  #site-docs .docs-side {
+    position: relative;
+    isolation: isolate;
+  }
+  #site-docs .mk-docs-navigation {
+    max-width: none;
+  }
+  #site-docs .mk-docs-navigation-heading {
+    color: var(--foreground);
+  }
+  #site-docs .mk-docs-navigation a[aria-current] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+    font-weight: 600;
+  }
+  /* the article */
+  #site-docs .docs-main {
+    min-width: 0;
+  }
+  #site-docs .mk-docs-content {
+    max-width: 46rem;
+    margin: 0;
+  }
+  #site-docs :is(.mk-docs-content-title, .mk-docs-content-prose h2) {
+    font-family: var(--docs-heading);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  #site-docs .mk-docs-content-title {
+    font-size: clamp(2rem, 4vw, 2.625rem);
+    line-height: 1.1;
+  }
+  #site-docs .mk-docs-content-lead {
+    font-size: 1.1875rem;
+    line-height: 1.55;
+  }
+  #site-docs .mk-docs-content-prose {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  #site-docs .mk-docs-content-prose h2 {
+    margin-block-start: 2.5rem;
+    padding-block-start: 2rem;
+    border-block-start: 1px solid var(--border);
+    font-size: 1.5rem;
+  }
+  #site-docs :is(code, pre, kbd) {
+    font-family: 'IBM Plex Mono', var(--font-mono);
+  }
+  #site-docs .mk-docs-content-prose pre {
+    border-radius: var(--radius-lg);
+  }
+  #site-docs .mk-code-block {
+    margin-block: 1.25rem;
+    border-radius: var(--radius-lg);
+  }
+  #site-docs .mk-docs-content-callout {
+    border-radius: var(--radius-lg);
+  }
+  #site-docs .mk-docs-content-callout:not([data-tone]) {
+    border-color: var(--primary);
+    background: color-mix(in oklch, var(--primary) 8%, transparent);
+    & svg,
+    & strong {
+      color: var(--primary);
+    }
+  }
+  #site-docs .mk-docs-content-pager a {
+    border-radius: var(--radius-lg);
+  }
+  /* narrow: the search takes its own row, the sections scroll sideways */
+  @container (width < 40rem) {
+    #site-docs .docs-top {
+      order: 3;
+      flex-wrap: nowrap;
+      width: 100%;
+      overflow-x: auto;
+    }
+    #site-docs .docs-top a {
+      white-space: nowrap;
+    }
+    #site-docs .docs-search {
+      order: 2;
+      flex: 1 1 100%;
+      margin-inline-start: 0;
+    }
+    #site-docs .docs-bar-controls {
+      order: 1;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #site-docs .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-docs .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #site-docs[data-look='manual'] {
+    --accent: oklch(0.95 0.025 258);
+    --accent-foreground: oklch(0.22 0.02 255);
+  }
+  .dark #site-docs[data-look='manual'] {
+    --accent-foreground: oklch(0.94 0.006 250);
+  }
+  .dark #site-docs[data-look='console'] {
+    --accent: oklch(0.255 0.04 70);
+    --accent-foreground: oklch(0.93 0.02 85);
+  }
+  :root:not(.dark) #site-docs[data-look='console'] {
+    color-scheme: light;
+    --background: oklch(0.985 0.008 60);
+    --foreground: oklch(0.2 0.02 85);
+    --card: oklch(0.997 0.01 60);
+    --card-foreground: oklch(0.2 0.02 85);
+    --muted: oklch(0.95 0.012 60);
+    --muted-foreground: oklch(0.46 0.03 80);
+    --border: oklch(0.2 0.02 85 / 0.11);
+    --input: oklch(0.2 0.02 85 / 0.12);
+    --primary: oklch(0.56 0.14 75);
+    --primary-foreground: oklch(0.985 0.005 75);
+    --secondary: oklch(0.955 0.025 70);
+    --secondary-foreground: oklch(0.25 0.03 80);
+    --accent: oklch(0.94 0.025 70);
+    --accent-foreground: oklch(0.2 0.02 85);
+    --ring: oklch(0.56 0.14 75);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #site-docs[data-look='field'] {
+    --accent: oklch(0.927 0.035 135);
+    --accent-foreground: oklch(0.26 0.05 155);
+  }
+  .dark #site-docs[data-look='field'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0.012 115);
+    --foreground: oklch(0.94 0.03 155);
+    --card: oklch(0.205 0.008 110);
+    --card-foreground: oklch(0.94 0.03 155);
+    --muted: oklch(0.24 0.018 120);
+    --muted-foreground: oklch(0.74 0.03 150);
+    --border: oklch(0.95 0.02 155 / 0.14);
+    --input: oklch(0.95 0.02 155 / 0.14);
+    --primary: oklch(0.68 0.11 155);
+    --primary-foreground: oklch(0.17 0.03 155);
+    --secondary: oklch(0.25 0.035 135);
+    --secondary-foreground: oklch(0.9 0.03 155);
+    --accent: oklch(0.26 0.035 135);
+    --accent-foreground: oklch(0.94 0.03 155);
+    --ring: oklch(0.68 0.11 155);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="site-docs" data-look="manual" data-i18n-component>
+  <header class="docs-bar">
+    <a class="docs-brand" href="#/" data-router-link
+      ><svg
+        viewBox="0 0 24 24"
+        width="22"
+        height="22"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" />
+        <path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg
+      >Acme <span>Docs</span></a
     >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-    </select>
-  </div>
-  <div
-    style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-      gap: 2.5rem;
-      align-items: start;
-    "
-  >
-    <div style="max-width: 16rem">
+    <nav class="docs-top" aria-label="Sections" data-i18n-aria-label-en="Sections" data-i18n-aria-label-de="Bereiche">
+      <a
+        href="#/docs/offline-sync"
+        data-router-link
+        data-docs-top="guides"
+        aria-current="true"
+        data-i18n-target="top-guides"
+        >Guides</a
+      >
+      <a href="#/docs/authentication" data-router-link data-docs-top="api" data-i18n-target="top-api">API reference</a>
+      <a href="#" data-i18n-target="top-changelog">Changelog</a>
+      <a href="#" data-i18n-target="top-help">Help centre</a>
+    </nav>
+    <button class="docs-search" type="button"
+      ><i data-lucide="search"></i><span data-i18n-target="search">Search the docs</span><kbd>⌘K</kbd></button
+    >
+    <div class="docs-bar-controls">
+      <select
+        class="select"
+        data-size="sm"
+        data-site-look
+        aria-label="Look"
+        data-i18n-aria-label-en="Look"
+        data-i18n-aria-label-de="Stil"
+      >
+        <option value="manual" data-i18n-target="look-manual">Manual</option>
+        <option value="console" data-i18n-target="look-console">Console</option>
+        <option value="field" data-i18n-target="look-field">Field guide</option>
+      </select>
+      <select
+        class="select"
+        data-size="sm"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+      >
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
+      <label class="swap site-mode" data-variant="rotate" data-size="sm">
+        <input
+          type="checkbox"
+          data-site-mode
+          aria-label="Dark mode"
+          data-i18n-aria-label-en="Dark mode"
+          data-i18n-aria-label-de="Dunkler Modus"
+        />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </div>
+  </header>
+  <div class="docs-layout">
+    <aside class="docs-side">
       <nav
         class="mk-docs-navigation"
         aria-label="Documentation"
@@ -64,7 +483,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <li><a href="#/docs/installation" data-router-link>Installation</a></li>
           <li><a href="#/docs/quick-start" data-router-link>Quick start</a></li>
         </ul>
-        <details open>
+        <details open data-docs-section="guides">
           <summary class="mk-docs-navigation-heading" data-i18n-target="dh-3-1">Guides</summary>
           <ul>
             <li><a href="#/docs/workspaces" data-router-link>Workspaces</a></li>
@@ -83,7 +502,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             </li>
           </ul>
         </details>
-        <details>
+        <details data-docs-section="api">
           <summary class="mk-docs-navigation-heading" data-i18n-target="dh-4-1">API reference</summary>
           <ul
             ><li><a href="#/docs/authentication" data-router-link>Authentication</a></li
@@ -92,8 +511,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >
         </details>
       </nav>
-    </div>
-    <div style="grid-column: span 2; display: grid; gap: 1.5rem; min-width: 0">
+    </aside>
+    <main class="docs-main">
       <article class="mk-docs-content" aria-labelledby="dc-title">
         <nav
           class="breadcrumb"
@@ -133,8 +552,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <h2 id="dc-enable">Turn it on</h2>
           <p
             >Offline sync is on by default for new workspaces. For older ones, enable it in
-            <code>Settings → Sync</code> or with the CLI:</p
+            <code>Settings → Sync</code>, or install the CLI:</p
           >
+          <figure class="mk-code-block">
+            <div class="mk-code-block-head">
+              <div class="mk-code-block-tabs" role="radiogroup" aria-label="Package manager">
+                <label><input type="radio" name="cb-pm" value="npm" checked />npm</label
+                ><label><input type="radio" name="cb-pm" value="pnpm" />pnpm</label
+                ><label><input type="radio" name="cb-pm" value="bun" />bun</label>
+              </div>
+              <button class="mk-code-block-copy" type="button" aria-label="Copy code"
+                ><i data-lucide="copy"></i
+              ></button>
+            </div>
+            <pre data-tab="npm"><code><span>npm install --global @acme/cli</span></code></pre>
+            <pre data-tab="pnpm"><code><span>pnpm add --global @acme/cli</span></code></pre>
+            <pre data-tab="bun"><code><span>bun add --global @acme/cli</span></code></pre>
+            <span class="mk-code-block-status" role="status"></span>
+          </figure>
+          <p>Then turn it on for the workspace you are in:</p>
           <pre><code>acme workspace sync --offline on</code></pre>
           <aside class="mk-docs-content-callout" role="note"
             ><i data-lucide="info"></i
@@ -185,320 +621,43 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ></nav
         >
       </article>
-      <figure class="mk-code-block">
-        <div class="mk-code-block-head">
-          <div class="mk-code-block-tabs" role="radiogroup" aria-label="Package manager">
-            <label><input type="radio" name="cb-pm" value="npm" checked />npm</label
-            ><label><input type="radio" name="cb-pm" value="pnpm" />pnpm</label
-            ><label><input type="radio" name="cb-pm" value="bun" />bun</label>
-          </div>
-          <button class="mk-code-block-copy" type="button" aria-label="Copy code"><i data-lucide="copy"></i></button>
-        </div>
-        <pre data-tab="npm"><code><span>npm install defuss-shadcn</span></code></pre>
-        <pre data-tab="pnpm"><code><span>pnpm add defuss-shadcn</span></code></pre>
-        <pre data-tab="bun"><code><span>bun add defuss-shadcn</span></code></pre>
-        <span class="mk-code-block-status" role="status"></span>
-      </figure>
-    </div>
-  </div>
-  <header class="mk-release-header">
-    <div class="mk-release-header-tags"
-      ><code class="mk-release-header-version">v4.0.0</code
-      ><span class="badge" data-variant="default" data-size="sm" data-i18n-target="dh-8-1">Major</span
-      ><span class="badge" data-variant="outline" data-size="sm" data-i18n-target="dh-9-1">2 breaking changes</span
-      ><time datetime="2026-09-28">28 September 2026</time></div
-    >
-    <h1 class="mk-release-header-title">Acme 4.0: offline sync for everyone</h1>
-    <p class="mk-release-header-summary"
-      >The biggest release in two years: every workspace now works offline, search got three times faster, and the
-      editor learned tables.</p
-    >
-    <ul class="mk-release-header-highlights">
-      <li
-        ><i data-lucide="wifi-off"></i><strong data-i18n-target="dh-10-1">Offline everywhere</strong
-        ><span data-i18n-target="dh-11-1">Sync catches up on its own.</span></li
-      >
-      <li
-        ><i data-lucide="zap"></i><strong data-i18n-target="dh-12-1">3× faster search</strong
-        ><span data-i18n-target="dh-13-1">Results while you type.</span></li
-      >
-      <li
-        ><i data-lucide="table"></i><strong data-i18n-target="dh-14-1">Tables in docs</strong
-        ><span data-i18n-target="dh-15-1">Sort, filter, resize.</span></li
-      >
-    </ul>
-    <div class="mk-release-header-links"
-      ><a class="btn" href="#"><i data-lucide="download"></i> <span data-i18n-target="dh-16-1">Download</span></a
-      ><a class="btn" data-variant="outline" href="#" data-i18n-target="dh-17-1">Full changelog</a
-      ><a class="btn" data-variant="ghost" href="#"
-        ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-          <path
-            d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"
-          />
-        </svg>
-        <span data-i18n-target="dh-18-1">Source</span></a
-      ></div
-    >
-  </header>
-  <div style="width: 100%; max-width: 44rem">
-    <article class="mk-release-item">
-      <span class="mk-release-item-type" data-type="new" data-i18n-target="dh-19-2">New</span>
-      <div class="mk-release-item-body">
-        <h3 class="mk-release-item-title" data-i18n-target="dh-14-2">Tables in docs</h3>
-        <p class="mk-release-item-desc"
-          >Insert a table with /table - sort, filter and resize columns. Paste from a spreadsheet and the structure
-          comes along.</p
-        >
-        <img class="mk-release-item-media" src="https://picsum.photos/seed/rel-table/1000/500" alt="" />
-        <p class="mk-release-item-meta"
-          ><a href="#">#4812</a> ·
-          <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait2.png" alt="" /></span>
-          by Hannah</p
-        >
-      </div>
-    </article>
-    <article class="mk-release-item">
-      <span class="mk-release-item-type" data-type="improved" data-i18n-target="dh-20-1">Improved</span>
-      <div class="mk-release-item-body">
-        <h3 class="mk-release-item-title">Search is three times faster</h3>
-        <p class="mk-release-item-desc">Results appear while you type, even in workspaces with 100,000 docs.</p>
-        <p class="mk-release-item-meta"
-          ><a href="#">#4790</a> ·
-          <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span> by
-          Sophie</p
-        >
-      </div>
-    </article>
-    <article class="mk-release-item">
-      <span class="mk-release-item-type" data-type="fixed" data-i18n-target="dh-21-1">Fixed</span>
-      <div class="mk-release-item-body">
-        <h3 class="mk-release-item-title">Sync no longer stalls after waking a laptop</h3>
-        <p class="mk-release-item-meta"
-          ><a href="#">#4801</a> ·
-          <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait.png" alt="" /></span> by
-          Sophie</p
-        >
-      </div>
-    </article>
-    <article class="mk-release-item">
-      <span class="mk-release-item-type" data-type="breaking" data-i18n-target="dh-22-1">Breaking</span>
-      <div class="mk-release-item-body">
-        <h3 class="mk-release-item-title">API v1 tokens stop working on 1 December</h3>
-        <p class="mk-release-item-desc"
-          >Create a v2 token in Settings → API; the old endpoints answer 410 after that date.</p
-        >
-        <p class="mk-release-item-meta"><a href="#">#4777</a></p>
-      </div>
-    </article>
-  </div>
-  <div class="mk-roadmap-board">
-    <section aria-labelledby="rb-planned"
-      ><h3 id="rb-planned" data-i18n-target="dh-23-1">Planned</h3>
-      <article class="mk-roadmap-item" aria-labelledby="rm-1">
-        <div class="mk-roadmap-item-top"
-          ><span class="mk-roadmap-item-status" data-status="planned" data-i18n-target="dh-23-2">Planned</span
-          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q1 2027</span></div
-        >
-        <h3 class="mk-roadmap-item-title" id="rm-1">Calendar view for tasks</h3>
-        <p class="mk-roadmap-item-desc">See deadlines across projects in one month view.</p>
-        <div class="mk-roadmap-item-foot">
-          <ul class="mk-roadmap-item-tags"
-            ><li>Tasks</li></ul
-          >
-          <label class="mk-roadmap-item-vote"
-            ><input type="checkbox" name="vote" value="rm-1" /><i data-lucide="chevron-up"></i><span>214</span
-            ><span class="sr-only"> votes - vote for Calendar view for tasks</span></label
-          >
-        </div>
-      </article>
-      <article class="mk-roadmap-item" aria-labelledby="rm-2">
-        <div class="mk-roadmap-item-top"
-          ><span class="mk-roadmap-item-status" data-status="planned" data-i18n-target="dh-23-3">Planned</span
-          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q2 2027</span></div
-        >
-        <h3 class="mk-roadmap-item-title" id="rm-2">Public pages</h3>
-        <p class="mk-roadmap-item-desc">Publish a doc as a website with your domain.</p>
-        <div class="mk-roadmap-item-foot">
-          <ul class="mk-roadmap-item-tags"
-            ><li>Docs</li
-            ><li>Web</li></ul
-          >
-          <label class="mk-roadmap-item-vote"
-            ><input type="checkbox" name="vote" value="rm-2" /><i data-lucide="chevron-up"></i><span>98</span
-            ><span class="sr-only"> votes - vote for Public pages</span></label
-          >
-        </div>
-      </article>
-    </section>
-    <section aria-labelledby="rb-progress"
-      ><h3 id="rb-progress" data-i18n-target="dh-24-1">In progress</h3>
-      <article class="mk-roadmap-item" aria-labelledby="rm-3">
-        <div class="mk-roadmap-item-top"
-          ><span class="mk-roadmap-item-status" data-status="progress" data-i18n-target="dh-24-2">In progress</span
-          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Nov 2026</span></div
-        >
-        <h3 class="mk-roadmap-item-title" id="rm-3">Acme mobile app</h3>
-        <p class="mk-roadmap-item-desc">Everything on the desk, in your pocket - offline included.</p>
-        <progress class="progress" value="60" max="100" aria-label="60% done">60%</progress>
-        <div class="mk-roadmap-item-foot">
-          <ul class="mk-roadmap-item-tags"
-            ><li>iOS</li
-            ><li>Android</li></ul
-          >
-          <label class="mk-roadmap-item-vote"
-            ><input type="checkbox" name="vote" value="rm-3" checked /><i data-lucide="chevron-up"></i><span>512</span
-            ><span class="sr-only"> votes - vote for Acme mobile app</span></label
-          >
-        </div>
-      </article>
-    </section>
-    <section aria-labelledby="rb-shipped"
-      ><h3 id="rb-shipped" data-i18n-target="dh-25-1">Shipped</h3>
-      <article class="mk-roadmap-item" aria-labelledby="rm-4">
-        <div class="mk-roadmap-item-top"
-          ><span class="mk-roadmap-item-status" data-status="shipped" data-i18n-target="dh-25-2">Shipped</span
-          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Sep 2026</span></div
-        >
-        <h3 class="mk-roadmap-item-title" id="rm-4">Offline sync</h3>
-        <p class="mk-roadmap-item-desc">Shipped in 4.0 for every workspace.</p>
-        <div class="mk-roadmap-item-foot">
-          <ul class="mk-roadmap-item-tags"
-            ><li>Sync</li></ul
-          >
-          <label class="mk-roadmap-item-vote"
-            ><input type="checkbox" name="vote" value="rm-4" /><i data-lucide="chevron-up"></i><span>1204</span
-            ><span class="sr-only"> votes - vote for Offline sync</span></label
-          >
-        </div>
-      </article>
-    </section>
-  </div>
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; width: 100%">
-    <article class="mk-help-category">
-      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
-      <div class="mk-help-category-body">
-        <h3 class="mk-help-category-title"><a href="#" data-i18n-target="dh-2-2">Getting started</a></h3>
-        <p class="mk-help-category-desc" data-i18n-target="dh-26-1">Set up your workspace and invite your team.</p>
-        <p class="mk-help-category-count" data-i18n-target="dh-27-1">18 articles</p>
-        <ul class="mk-help-category-top"
-          ><li><a href="#">Create a workspace</a></li
-          ><li><a href="#">Invite teammates</a></li
-          ><li><a href="#">Import from Notion</a></li></ul
-        >
-      </div>
-    </article>
-    <article class="mk-help-category">
-      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="credit-card"></i></span>
-      <div class="mk-help-category-body">
-        <h3 class="mk-help-category-title"><a href="#" data-i18n-target="dh-28-1">Billing & plans</a></h3>
-        <p class="mk-help-category-desc" data-i18n-target="dh-29-1">Invoices, seats, upgrades and refunds.</p>
-        <p class="mk-help-category-count" data-i18n-target="dh-30-1">24 articles</p>
-        <ul class="mk-help-category-top"
-          ><li><a href="#">Change your plan</a></li
-          ><li><a href="#">Download an invoice</a></li></ul
-        >
-      </div>
-    </article>
-    <article class="mk-help-category">
-      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="refresh-cw"></i></span>
-      <div class="mk-help-category-body">
-        <h3 class="mk-help-category-title"><a href="#" data-i18n-target="dh-31-1">Sync & offline</a></h3>
-        <p class="mk-help-category-desc" data-i18n-target="dh-32-1">How your work stays in sync everywhere.</p>
-        <p class="mk-help-category-count" data-i18n-target="dh-33-1">12 articles</p>
-        <ul class="mk-help-category-top"
-          ><li><a href="#">Sync is stuck</a></li
-          ><li><a href="#">Work offline</a></li></ul
-        >
-      </div>
-    </article>
-    <article class="mk-help-category">
-      <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="shield"></i></span>
-      <div class="mk-help-category-body">
-        <h3 class="mk-help-category-title"><a href="#" data-i18n-target="dh-34-1">Security</a></h3>
-        <p class="mk-help-category-desc" data-i18n-target="dh-35-1">Two-factor, SSO, data handling.</p>
-        <p class="mk-help-category-count" data-i18n-target="dh-36-1">15 articles</p>
-        <ul class="mk-help-category-top"
-          ><li><a href="#">Turn on two-factor</a></li
-          ><li><a href="#">Set up SSO</a></li></ul
-        >
-      </div>
-    </article>
-  </div>
-  <div style="display: grid; gap: 0.75rem; max-width: 44rem; width: 100%">
-    <article class="mk-download-item">
-      <span class="mk-download-item-file" data-ext="DMG" aria-hidden="true">DMG</span>
-      <div class="mk-download-item-body">
-        <h3 class="mk-download-item-name">Acme for macOS</h3>
-        <p class="mk-download-item-desc">Universal build for Apple silicon and Intel.</p>
-        <p class="mk-download-item-meta"
-          ><span>v4.0.2</span><span>148 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p
-        >
-        <details class="mk-download-item-checksum"
-          ><summary>SHA-256</summary><code>9f2c…a41b 7e08 3d55 c1f0 66b2 e9a4 0c71</code></details
-        >
-      </div>
-      <a
-        class="btn"
-        data-variant="outline"
-        data-size="sm"
-        href="#"
-        download
-        aria-label="Download Acme for macOS (DMG, 148 MB)"
-        data-i18n-aria-label-en="Download Acme for macOS (DMG, 148 MB)"
-        data-i18n-aria-label-de="Acme for macOS herunterladen (DMG, 148 MB)"
-        ><i data-lucide="download"></i> <span data-i18n-target="dh-16-2">Download</span></a
-      >
-    </article>
-    <article class="mk-download-item">
-      <span class="mk-download-item-file" data-ext="EXE" aria-hidden="true">EXE</span>
-      <div class="mk-download-item-body">
-        <h3 class="mk-download-item-name">Acme for Windows</h3>
-        <p class="mk-download-item-desc">Windows 10 and 11, 64-bit.</p>
-        <p class="mk-download-item-meta"
-          ><span>v4.0.2</span><span>132 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p
-        >
-        <details class="mk-download-item-checksum"
-          ><summary>SHA-256</summary><code>41d0…77e2 9b13 0aa6 f2c8 15e4 b7d9 3c02</code></details
-        >
-      </div>
-      <a
-        class="btn"
-        data-variant="outline"
-        data-size="sm"
-        href="#"
-        download
-        aria-label="Download Acme for Windows (EXE, 132 MB)"
-        data-i18n-aria-label-en="Download Acme for Windows (EXE, 132 MB)"
-        data-i18n-aria-label-de="Acme for Windows herunterladen (EXE, 132 MB)"
-        ><i data-lucide="download"></i> <span data-i18n-target="dh-16-3">Download</span></a
-      >
-    </article>
-    <article class="mk-download-item">
-      <span class="mk-download-item-file" data-ext="PDF" aria-hidden="true">PDF</span>
-      <div class="mk-download-item-body">
-        <h3 class="mk-download-item-name">Security whitepaper</h3>
-        <p class="mk-download-item-desc">How Acme stores, encrypts and hosts your data.</p>
-        <p class="mk-download-item-meta"
-          ><span>Edition 2026</span><span>2.4 MB</span><span><time datetime="2026-08-01">1 Aug 2026</time></span></p
-        >
-        <details class="mk-download-item-checksum"
-          ><summary>SHA-256</summary><code>c8a1…0f3e 52d7 9e14 7ab0 c3f6 1d28 e5b9</code></details
-        >
-      </div>
-      <a
-        class="btn"
-        data-variant="outline"
-        data-size="sm"
-        href="#"
-        download
-        aria-label="Download Security whitepaper (PDF, 2.4 MB)"
-        data-i18n-aria-label-en="Download Security whitepaper (PDF, 2.4 MB)"
-        data-i18n-aria-label-de="Security whitepaper herunterladen (PDF, 2,4 MB)"
-        ><i data-lucide="download"></i> <span data-i18n-target="dh-16-4">Download</span></a
-      >
-    </article>
+    </main>
   </div>
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="look-manual" data-i18n-locale="en">Manual</template>
+  <template data-i18n-for="look-manual" data-i18n-locale="de">Handbuch</template>
+  <template data-i18n-for="look-console" data-i18n-locale="en">Console</template>
+  <template data-i18n-for="look-console" data-i18n-locale="de">Konsole</template>
+  <template data-i18n-for="look-field" data-i18n-locale="en">Field guide</template>
+  <template data-i18n-for="look-field" data-i18n-locale="de">Feldbuch</template>
+  <template data-i18n-for="top-guides" data-i18n-locale="en">Guides</template>
+  <template data-i18n-for="top-guides" data-i18n-locale="de">Anleitungen</template>
+  <template data-i18n-for="top-api" data-i18n-locale="en">API reference</template>
+  <template data-i18n-for="top-api" data-i18n-locale="de">API-Referenz</template>
+  <template data-i18n-for="top-changelog" data-i18n-locale="en">Changelog</template>
+  <template data-i18n-for="top-changelog" data-i18n-locale="de">Änderungen</template>
+  <template data-i18n-for="top-help" data-i18n-locale="en">Help centre</template>
+  <template data-i18n-for="top-help" data-i18n-locale="de">Hilfe</template>
+  <template data-i18n-for="search" data-i18n-locale="en">Search the docs</template>
+  <template data-i18n-for="search" data-i18n-locale="de">Doku durchsuchen</template>
+  <template data-i18n-for="dh-1-1" data-i18n-locale="en">v4.0 (latest)</template>
+  <template data-i18n-for="dh-1-1" data-i18n-locale="de">v4.0 (aktuell)</template>
+  <template data-i18n-for="dh-2-1" data-i18n-locale="en">Getting started</template>
+  <template data-i18n-for="dh-2-1" data-i18n-locale="de">Erste Schritte</template>
+  <template data-i18n-for="dh-3-1" data-i18n-locale="en">Guides</template>
+  <template data-i18n-for="dh-3-1" data-i18n-locale="de">Anleitungen</template>
+  <template data-i18n-for="dh-19-1" data-i18n-locale="en">New</template>
+  <template data-i18n-for="dh-19-1" data-i18n-locale="de">Neu</template>
+  <template data-i18n-for="dh-4-1" data-i18n-locale="en">API reference</template>
+  <template data-i18n-for="dh-4-1" data-i18n-locale="de">API-Referenz</template>
+  <template data-i18n-for="dh-3-2" data-i18n-locale="en">Guides</template>
+  <template data-i18n-for="dh-3-2" data-i18n-locale="de">Anleitungen</template>
+  <template data-i18n-for="dh-5-1" data-i18n-locale="en">Updated</template>
+  <template data-i18n-for="dh-5-1" data-i18n-locale="de">Aktualisiert</template>
+  <template data-i18n-for="dh-6-1" data-i18n-locale="en">6 min read</template>
+  <template data-i18n-for="dh-6-1" data-i18n-locale="de">6 Min. Lesezeit</template>
+  <template data-i18n-for="dh-7-1" data-i18n-locale="en">Edit this page</template>
+  <template data-i18n-for="dh-7-1" data-i18n-locale="de">Diese Seite bearbeiten</template>
   <template data-i18n-for="stub" data-i18n-locale="en"
     >This page has no article in this demo - Offline sync has one.</template
   >
@@ -509,123 +668,41 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="pager-prev" data-i18n-locale="de">Zurück</template>
   <template data-i18n-for="pager-next" data-i18n-locale="en">Next</template>
   <template data-i18n-for="pager-next" data-i18n-locale="de">Weiter</template>
-  <template data-i18n-for="dh-1-1" data-i18n-locale="en">v4.0 (latest)</template>
-  <template data-i18n-for="dh-1-1" data-i18n-locale="de">v4.0 (aktuell)</template>
-  <template data-i18n-for="dh-2-1" data-i18n-locale="en">Getting started</template>
-  <template data-i18n-for="dh-2-1" data-i18n-locale="de">Erste Schritte</template>
-  <template data-i18n-for="dh-2-2" data-i18n-locale="en">Getting started</template>
-  <template data-i18n-for="dh-2-2" data-i18n-locale="de">Erste Schritte</template>
-  <template data-i18n-for="dh-3-1" data-i18n-locale="en">Guides</template>
-  <template data-i18n-for="dh-3-1" data-i18n-locale="de">Anleitungen</template>
-  <template data-i18n-for="dh-3-2" data-i18n-locale="en">Guides</template>
-  <template data-i18n-for="dh-3-2" data-i18n-locale="de">Anleitungen</template>
-  <template data-i18n-for="dh-4-1" data-i18n-locale="en">API reference</template>
-  <template data-i18n-for="dh-4-1" data-i18n-locale="de">API-Referenz</template>
-  <template data-i18n-for="dh-5-1" data-i18n-locale="en">Updated</template>
-  <template data-i18n-for="dh-5-1" data-i18n-locale="de">Aktualisiert</template>
-  <template data-i18n-for="dh-6-1" data-i18n-locale="en">6 min read</template>
-  <template data-i18n-for="dh-6-1" data-i18n-locale="de">6 Min. Lesezeit</template>
-  <template data-i18n-for="dh-7-1" data-i18n-locale="en">Edit this page</template>
-  <template data-i18n-for="dh-7-1" data-i18n-locale="de">Diese Seite bearbeiten</template>
-  <template data-i18n-for="dh-8-1" data-i18n-locale="en">Major</template>
-  <template data-i18n-for="dh-8-1" data-i18n-locale="de">Hauptversion</template>
-  <template data-i18n-for="dh-9-1" data-i18n-locale="en">2 breaking changes</template>
-  <template data-i18n-for="dh-9-1" data-i18n-locale="de">2 inkompatible Änderungen</template>
-  <template data-i18n-for="dh-10-1" data-i18n-locale="en">Offline everywhere</template>
-  <template data-i18n-for="dh-10-1" data-i18n-locale="de">Überall offline</template>
-  <template data-i18n-for="dh-11-1" data-i18n-locale="en">Sync catches up on its own.</template>
-  <template data-i18n-for="dh-11-1" data-i18n-locale="de">Sync holt von selbst auf.</template>
-  <template data-i18n-for="dh-12-1" data-i18n-locale="en">3× faster search</template>
-  <template data-i18n-for="dh-12-1" data-i18n-locale="de">3× schnellere Suche</template>
-  <template data-i18n-for="dh-13-1" data-i18n-locale="en">Results while you type.</template>
-  <template data-i18n-for="dh-13-1" data-i18n-locale="de">Ergebnisse schon beim Tippen.</template>
-  <template data-i18n-for="dh-14-1" data-i18n-locale="en">Tables in docs</template>
-  <template data-i18n-for="dh-14-1" data-i18n-locale="de">Tabellen in Dokumenten</template>
-  <template data-i18n-for="dh-14-2" data-i18n-locale="en">Tables in docs</template>
-  <template data-i18n-for="dh-14-2" data-i18n-locale="de">Tabellen in Dokumenten</template>
-  <template data-i18n-for="dh-15-1" data-i18n-locale="en">Sort, filter, resize.</template>
-  <template data-i18n-for="dh-15-1" data-i18n-locale="de">Sortieren, filtern, Größe ändern.</template>
-  <template data-i18n-for="dh-16-1" data-i18n-locale="en">Download</template>
-  <template data-i18n-for="dh-16-1" data-i18n-locale="de">Herunterladen</template>
-  <template data-i18n-for="dh-16-2" data-i18n-locale="en">Download</template>
-  <template data-i18n-for="dh-16-2" data-i18n-locale="de">Herunterladen</template>
-  <template data-i18n-for="dh-16-3" data-i18n-locale="en">Download</template>
-  <template data-i18n-for="dh-16-3" data-i18n-locale="de">Herunterladen</template>
-  <template data-i18n-for="dh-16-4" data-i18n-locale="en">Download</template>
-  <template data-i18n-for="dh-16-4" data-i18n-locale="de">Herunterladen</template>
-  <template data-i18n-for="dh-17-1" data-i18n-locale="en">Full changelog</template>
-  <template data-i18n-for="dh-17-1" data-i18n-locale="de">Vollständiges Änderungsprotokoll</template>
-  <template data-i18n-for="dh-18-1" data-i18n-locale="en">Source</template>
-  <template data-i18n-for="dh-18-1" data-i18n-locale="de">Quellcode</template>
-  <template data-i18n-for="dh-19-1" data-i18n-locale="en">New</template>
-  <template data-i18n-for="dh-19-1" data-i18n-locale="de">Neu</template>
-  <template data-i18n-for="dh-19-2" data-i18n-locale="en">New</template>
-  <template data-i18n-for="dh-19-2" data-i18n-locale="de">Neu</template>
-  <template data-i18n-for="dh-20-1" data-i18n-locale="en">Improved</template>
-  <template data-i18n-for="dh-20-1" data-i18n-locale="de">Verbessert</template>
-  <template data-i18n-for="dh-21-1" data-i18n-locale="en">Fixed</template>
-  <template data-i18n-for="dh-21-1" data-i18n-locale="de">Behoben</template>
-  <template data-i18n-for="dh-22-1" data-i18n-locale="en">Breaking</template>
-  <template data-i18n-for="dh-22-1" data-i18n-locale="de">Inkompatibel</template>
-  <template data-i18n-for="dh-23-1" data-i18n-locale="en">Planned</template>
-  <template data-i18n-for="dh-23-1" data-i18n-locale="de">Geplant</template>
-  <template data-i18n-for="dh-23-2" data-i18n-locale="en">Planned</template>
-  <template data-i18n-for="dh-23-2" data-i18n-locale="de">Geplant</template>
-  <template data-i18n-for="dh-23-3" data-i18n-locale="en">Planned</template>
-  <template data-i18n-for="dh-23-3" data-i18n-locale="de">Geplant</template>
-  <template data-i18n-for="dh-24-1" data-i18n-locale="en">In progress</template>
-  <template data-i18n-for="dh-24-1" data-i18n-locale="de">In Arbeit</template>
-  <template data-i18n-for="dh-24-2" data-i18n-locale="en">In progress</template>
-  <template data-i18n-for="dh-24-2" data-i18n-locale="de">In Arbeit</template>
-  <template data-i18n-for="dh-25-1" data-i18n-locale="en">Shipped</template>
-  <template data-i18n-for="dh-25-1" data-i18n-locale="de">Veröffentlicht</template>
-  <template data-i18n-for="dh-25-2" data-i18n-locale="en">Shipped</template>
-  <template data-i18n-for="dh-25-2" data-i18n-locale="de">Veröffentlicht</template>
-  <template data-i18n-for="dh-26-1" data-i18n-locale="en">Set up your workspace and invite your team.</template>
-  <template data-i18n-for="dh-26-1" data-i18n-locale="de"
-    >Richte deinen Arbeitsbereich ein und lade dein Team ein.</template
-  >
-  <template data-i18n-for="dh-27-1" data-i18n-locale="en">18 articles</template>
-  <template data-i18n-for="dh-27-1" data-i18n-locale="de">18 Artikel</template>
-  <template data-i18n-for="dh-28-1" data-i18n-locale="en">Billing & plans</template>
-  <template data-i18n-for="dh-28-1" data-i18n-locale="de">Abrechnung und Tarife</template>
-  <template data-i18n-for="dh-29-1" data-i18n-locale="en">Invoices, seats, upgrades and refunds.</template>
-  <template data-i18n-for="dh-29-1" data-i18n-locale="de">Rechnungen, Plätze, Upgrades und Erstattungen.</template>
-  <template data-i18n-for="dh-30-1" data-i18n-locale="en">24 articles</template>
-  <template data-i18n-for="dh-30-1" data-i18n-locale="de">24 Artikel</template>
-  <template data-i18n-for="dh-31-1" data-i18n-locale="en">Sync & offline</template>
-  <template data-i18n-for="dh-31-1" data-i18n-locale="de">Sync und offline</template>
-  <template data-i18n-for="dh-32-1" data-i18n-locale="en">How your work stays in sync everywhere.</template>
-  <template data-i18n-for="dh-32-1" data-i18n-locale="de">Wie deine Arbeit überall synchron bleibt.</template>
-  <template data-i18n-for="dh-33-1" data-i18n-locale="en">12 articles</template>
-  <template data-i18n-for="dh-33-1" data-i18n-locale="de">12 Artikel</template>
-  <template data-i18n-for="dh-34-1" data-i18n-locale="en">Security</template>
-  <template data-i18n-for="dh-34-1" data-i18n-locale="de">Sicherheit</template>
-  <template data-i18n-for="dh-35-1" data-i18n-locale="en">Two-factor, SSO, data handling.</template>
-  <template data-i18n-for="dh-35-1" data-i18n-locale="de">Zwei-Faktor, SSO, Umgang mit Daten.</template>
-  <template data-i18n-for="dh-36-1" data-i18n-locale="en">15 articles</template>
-  <template data-i18n-for="dh-36-1" data-i18n-locale="de">15 Artikel</template>
 </div>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
-  import {
-    createDomI18n,
-    createI18n,
-    resolveLocale,
-  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#site-docs [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
     const site = df$('#site-docs').get(0);
 
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
-      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+      locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale);
     const language = df$('[data-app-locale]');
     language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- the look: one of the site's designs; a surface or shader reads its colors again on defuss-theme-change
+    const look = df$('#site-docs [data-site-look]');
+    look.val(site.dataset.look).on('change', () => {
+      site.dataset.look = look.val();
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
 
     // -- routing
     const routes = [
@@ -650,6 +727,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       // its section: the heading above its list (a summary of a group, or the heading paragraph)
       const group = link.closest('details')?.querySelector('summary') ?? df$('.mk-docs-navigation-heading').get(0);
       df$('[data-docs-crumb-section]').text(group.textContent.trim());
+      // the bar's section link follows the page's section
+      const section = link.closest('[data-docs-section]')?.dataset.docsSection ?? 'guides';
+      df$('[data-docs-top]').each((_i, top) => {
+        if (top.dataset.docsTop === section) top.setAttribute('aria-current', 'true');
+        else top.removeAttribute('aria-current');
+      });
       df$('[data-docs-crumb]').text(label(link));
       df$('[data-docs-title]').text(label(link));
       const article = link.getAttribute('href') === '#/docs/offline-sync';
@@ -680,6 +763,1263 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   });
 </script>
+```
+
+<h2 id="pages" class="h2-display">More pages</h2>
+
+<DocText>The other pages of a product's documentation and help, each one example of its own: the release notes, the roadmap, the front page of a help centre, a help article and the downloads. They take the palette of the page they sit on.</DocText>
+
+```html example label="Release notes" schema="none" hint="A changelog page: the versions in a rail, the latest release opened - its Release Header (version, date, highlights, links) over its Release Items, one per change, typed New, Improved, Fixed or Breaking." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #docs-releases {
+    container-type: inline-size;
+    box-sizing: border-box;
+    width: 100%;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #docs-releases .rl-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  @container (width > 52rem) {
+    #docs-releases .rl-layout {
+      grid-template-columns: 11rem minmax(0, 46rem);
+      gap: 4rem;
+    }
+    #docs-releases .rl-rail {
+      position: sticky;
+      top: 1.5rem;
+    }
+  }
+  #docs-releases .rl-rail {
+    align-self: start;
+    display: grid;
+    gap: 0.75rem;
+  }
+  #docs-releases .rl-rail h2 {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #docs-releases .rl-rail ol {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-inline-start: 1px solid var(--border);
+  }
+  #docs-releases .rl-rail a {
+    display: grid;
+    margin-inline-start: -1px;
+    padding: 0.375rem 0.75rem;
+    border-inline-start: 2px solid transparent;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+  #docs-releases .rl-rail a b {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+  #docs-releases .rl-rail a[aria-current] {
+    border-color: var(--primary);
+  }
+  #docs-releases .rl-rail a[aria-current] b {
+    color: var(--primary);
+  }
+  #docs-releases .rl-main {
+    display: grid;
+    gap: 2.5rem;
+    min-width: 0;
+  }
+  #docs-releases .mk-release-header {
+    max-width: none;
+    margin: 0;
+    padding: 0 0 2.5rem;
+    border-block-end: 1px solid var(--border);
+  }
+  #docs-releases .rl-items {
+    display: grid;
+  }
+</style>
+<div id="docs-releases">
+  <div class="rl-layout">
+    <nav class="rl-rail" aria-labelledby="rl-versions">
+      <h2 id="rl-versions">Versions</h2>
+      <ol>
+        <li
+          ><a href="#" aria-current="page"><b>4.0.0</b>28 Sep 2026</a></li
+        >
+        <li
+          ><a href="#"><b>3.9.2</b>2 Sep 2026</a></li
+        >
+        <li
+          ><a href="#"><b>3.9.0</b>12 Aug 2026</a></li
+        >
+        <li
+          ><a href="#"><b>3.8.4</b>21 Jul 2026</a></li
+        >
+        <li
+          ><a href="#"><b>3.8.0</b>30 Jun 2026</a></li
+        >
+      </ol>
+    </nav>
+    <div class="rl-main">
+      <header class="mk-release-header">
+        <div class="mk-release-header-tags"
+          ><code class="mk-release-header-version">v4.0.0</code
+          ><span class="badge" data-variant="default" data-size="sm">Major</span
+          ><span class="badge" data-variant="outline" data-size="sm">2 breaking changes</span
+          ><time datetime="2026-09-28">28 September 2026</time></div
+        >
+        <h1 class="mk-release-header-title">Acme 4.0: offline sync for everyone</h1>
+        <p class="mk-release-header-summary"
+          >The biggest release in two years: every workspace now works offline, search got three times faster, and the
+          editor learned tables.</p
+        >
+        <ul class="mk-release-header-highlights">
+          <li
+            ><i data-lucide="wifi-off"></i><strong>Offline everywhere</strong
+            ><span>Sync catches up on its own.</span></li
+          >
+          <li><i data-lucide="zap"></i><strong>3× faster search</strong><span>Results while you type.</span></li>
+          <li><i data-lucide="table"></i><strong>Tables in docs</strong><span>Sort, filter, resize.</span></li>
+        </ul>
+        <div class="mk-release-header-links"
+          ><a class="btn" href="#"><i data-lucide="download"></i> <span>Download</span></a
+          ><a class="btn" data-variant="outline" href="#">Full changelog</a
+          ><a class="btn" data-variant="ghost" href="#"
+            ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"
+              />
+            </svg>
+            <span>Source</span></a
+          ></div
+        >
+      </header>
+
+      <div class="rl-items">
+        <article class="mk-release-item">
+          <span class="mk-release-item-type" data-type="new">New</span>
+          <div class="mk-release-item-body">
+            <h3 class="mk-release-item-title">Tables in docs</h3>
+            <p class="mk-release-item-desc"
+              >Insert a table with /table - sort, filter and resize columns. Paste from a spreadsheet and the structure
+              comes along.</p
+            >
+            <img class="mk-release-item-media" src="https://picsum.photos/id/180/1000/500" alt="" />
+            <p class="mk-release-item-meta"
+              ><a href="#">#4812</a> ·
+              <span class="avatar" data-size="xs"
+                ><img class="avatar-image" src="https://i.pravatar.cc/48?img=32" alt=""
+              /></span>
+              by Hannah</p
+            >
+          </div>
+        </article>
+        <article class="mk-release-item">
+          <span class="mk-release-item-type" data-type="improved">Improved</span>
+          <div class="mk-release-item-body">
+            <h3 class="mk-release-item-title">Search is three times faster</h3>
+            <p class="mk-release-item-desc">Results appear while you type, even in workspaces with 100,000 docs.</p>
+            <p class="mk-release-item-meta"
+              ><a href="#">#4790</a> ·
+              <span class="avatar" data-size="xs"
+                ><img class="avatar-image" src="https://i.pravatar.cc/48?img=47" alt=""
+              /></span>
+              by Sophie</p
+            >
+          </div>
+        </article>
+        <article class="mk-release-item">
+          <span class="mk-release-item-type" data-type="fixed">Fixed</span>
+          <div class="mk-release-item-body">
+            <h3 class="mk-release-item-title">Sync no longer stalls after waking a laptop</h3>
+            <p class="mk-release-item-meta"
+              ><a href="#">#4801</a> ·
+              <span class="avatar" data-size="xs"
+                ><img class="avatar-image" src="https://i.pravatar.cc/48?img=47" alt=""
+              /></span>
+              by Sophie</p
+            >
+          </div>
+        </article>
+        <article class="mk-release-item">
+          <span class="mk-release-item-type" data-type="breaking">Breaking</span>
+          <div class="mk-release-item-body">
+            <h3 class="mk-release-item-title">API v1 tokens stop working on 1 December</h3>
+            <p class="mk-release-item-desc"
+              >Create a v2 token in Settings → API; the old endpoints answer 410 after that date.</p
+            >
+            <p class="mk-release-item-meta"><a href="#">#4777</a></p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Roadmap" schema="none" hint="A public roadmap: Roadmap Items in three columns - planned, in progress, shipped - each with its quarter, its tags and a vote that counts up when it is checked." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #docs-roadmap {
+    box-sizing: border-box;
+    display: grid;
+    gap: 2rem;
+    width: 100%;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  #docs-roadmap .rm-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+  #docs-roadmap .rm-head h2 {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  #docs-roadmap .rm-head p {
+    max-width: 36rem;
+    margin: 0.375rem 0 0;
+    color: var(--muted-foreground);
+  }
+  #docs-roadmap .mk-roadmap-board {
+    max-width: none;
+    margin: 0;
+  }
+</style>
+<div id="docs-roadmap">
+  <div class="rm-head">
+    <div>
+      <h2>Roadmap</h2>
+      <p>What we are building next. Vote for what matters to you - we read every vote when we plan a quarter.</p>
+    </div>
+    <a class="btn" href="#"><i data-lucide="lightbulb"></i> Suggest a feature</a>
+  </div>
+  <div class="mk-roadmap-board">
+    <section aria-labelledby="rb-planned"
+      ><h3 id="rb-planned">Planned</h3>
+      <article class="mk-roadmap-item" aria-labelledby="rm-1">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="planned">Planned</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q1 2027</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rm-1">Calendar view for tasks</h3>
+        <p class="mk-roadmap-item-desc">See deadlines across projects in one month view.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Tasks</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rm-1" /><i data-lucide="chevron-up"></i><span>214</span
+            ><span class="sr-only"> votes - vote for Calendar view for tasks</span></label
+          >
+        </div>
+      </article>
+      <article class="mk-roadmap-item" aria-labelledby="rm-2">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="planned">Planned</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q2 2027</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rm-2">Public pages</h3>
+        <p class="mk-roadmap-item-desc">Publish a doc as a website with your domain.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Docs</li
+            ><li>Web</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rm-2" /><i data-lucide="chevron-up"></i><span>98</span
+            ><span class="sr-only"> votes - vote for Public pages</span></label
+          >
+        </div>
+      </article>
+    </section>
+    <section aria-labelledby="rb-progress"
+      ><h3 id="rb-progress">In progress</h3>
+      <article class="mk-roadmap-item" aria-labelledby="rm-3">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="progress">In progress</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Nov 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rm-3">Acme mobile app</h3>
+        <p class="mk-roadmap-item-desc">Everything on the desk, in your pocket - offline included.</p>
+        <progress class="progress" value="60" max="100" aria-label="60% done">60%</progress>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>iOS</li
+            ><li>Android</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rm-3" checked /><i data-lucide="chevron-up"></i><span>512</span
+            ><span class="sr-only"> votes - vote for Acme mobile app</span></label
+          >
+        </div>
+      </article>
+    </section>
+    <section aria-labelledby="rb-shipped"
+      ><h3 id="rb-shipped">Shipped</h3>
+      <article class="mk-roadmap-item" aria-labelledby="rm-4">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="shipped">Shipped</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Sep 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rm-4">Offline sync</h3>
+        <p class="mk-roadmap-item-desc">Shipped in 4.0 for every workspace.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Sync</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rm-4" /><i data-lucide="chevron-up"></i><span>1204</span
+            ><span class="sr-only"> votes - vote for Offline sync</span></label
+          >
+        </div>
+      </article>
+    </section>
+  </div>
+</div>
+```
+
+```html example label="Roadmap as a timeline" schema="none" hint="The same Roadmap Items on a vertical line, oldest at the top: the dot in the status colour (in progress with a halo, planned hollow), the month on the other side of the line; wide, the items alternate sides, narrow they all sit on one side with the month above." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #docs-roadmap-v {
+    box-sizing: border-box;
+    container-type: inline-size;
+    display: grid;
+    gap: 2.5rem;
+    width: 100%;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--muted);
+    color: var(--foreground);
+    --rm-shipped: #15803d;
+    --rm-progress: #1d4ed8;
+    --rm-planned: var(--muted-foreground);
+  }
+  .dark #docs-roadmap-v {
+    --rm-shipped: #4ade80;
+    --rm-progress: #60a5fa;
+  }
+  #docs-roadmap-v .rm-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+  #docs-roadmap-v .rm-head h2 {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  #docs-roadmap-v .rm-head p {
+    max-width: 36rem;
+    margin: 0.375rem 0 0;
+    color: var(--muted-foreground);
+  }
+  #docs-roadmap-v .rm-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+  }
+  #docs-roadmap-v .rm-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  #docs-roadmap-v .rm-legend span::before,
+  #docs-roadmap-v .rm-dot {
+    content: '';
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--rm-planned);
+  }
+  #docs-roadmap-v :is(.rm-legend span, li)[data-status='shipped'] :is(.rm-dot),
+  #docs-roadmap-v .rm-legend span[data-status='shipped']::before {
+    background: var(--rm-shipped);
+  }
+  #docs-roadmap-v :is(.rm-legend span, li)[data-status='progress'] :is(.rm-dot),
+  #docs-roadmap-v .rm-legend span[data-status='progress']::before {
+    background: var(--rm-progress);
+  }
+  #docs-roadmap-v li[data-status='planned'] .rm-dot {
+    border: 2px solid var(--rm-planned);
+    background: var(--muted);
+  }
+  #docs-roadmap-v li[data-status='progress'] .rm-dot {
+    box-shadow: 0 0 0 0.375rem color-mix(in oklch, var(--rm-progress) 22%, transparent);
+  }
+  #docs-roadmap-v .rm-date {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  #docs-roadmap-v .rm-line {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #docs-roadmap-v .rm-line {
+    display: grid;
+    gap: 1.5rem;
+  }
+  #docs-roadmap-v .rm-line > li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    column-gap: 1rem;
+    row-gap: 0.5rem;
+  }
+  /* the line: from each dot down to the next */
+  #docs-roadmap-v .rm-line > li:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    inset-block: 1.25rem -1.5rem;
+    inset-inline-start: calc(0.75rem - 1px);
+    width: 2px;
+    background: var(--border);
+  }
+  #docs-roadmap-v .rm-line > li[data-status='shipped']:not(:last-child)::before {
+    background: var(--rm-shipped);
+  }
+  #docs-roadmap-v .rm-dot {
+    z-index: 1;
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: center;
+    margin-block-start: 0.25rem;
+  }
+  #docs-roadmap-v .rm-date {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  #docs-roadmap-v .mk-roadmap-item {
+    grid-column: 2;
+  }
+  @container (width > 48rem) {
+    #docs-roadmap-v .rm-line > li {
+      grid-template-columns: minmax(0, 1fr) 1.5rem minmax(0, 1fr);
+      column-gap: 2rem;
+    }
+    #docs-roadmap-v .rm-line > li:not(:last-child)::before {
+      inset-inline-start: calc(50% - 1px);
+    }
+    #docs-roadmap-v .rm-dot {
+      grid-column: 2;
+      margin-block-start: 1.25rem;
+    }
+    #docs-roadmap-v .rm-line > li:not(:last-child)::before {
+      inset-block-start: 2.25rem;
+    }
+    #docs-roadmap-v .rm-date {
+      grid-row: 1;
+      margin-block-start: 1.125rem;
+    }
+    #docs-roadmap-v .mk-roadmap-item {
+      grid-row: 1;
+    }
+    #docs-roadmap-v .rm-line > li:nth-child(odd) .mk-roadmap-item {
+      grid-column: 1;
+    }
+    #docs-roadmap-v .rm-line > li:nth-child(odd) .rm-date {
+      grid-column: 3;
+    }
+    #docs-roadmap-v .rm-line > li:nth-child(even) .mk-roadmap-item {
+      grid-column: 3;
+    }
+    #docs-roadmap-v .rm-line > li:nth-child(even) .rm-date {
+      grid-column: 1;
+      text-align: end;
+    }
+  }
+</style>
+<section id="docs-roadmap-v" aria-labelledby="rv-title">
+  <div class="rm-head">
+    <div>
+      <h2 id="rv-title">Roadmap</h2>
+      <p>From what shipped to what comes next - one line, oldest at the top.</p>
+    </div>
+    <p class="rm-legend" aria-hidden="true"
+      ><span data-status="shipped">Shipped</span><span data-status="progress">In progress</span
+      ><span data-status="planned">Planned</span></p
+    >
+  </div>
+  <ol class="rm-line">
+    <li data-status="shipped">
+      <span class="rm-dot" aria-hidden="true"></span>
+      <time class="rm-date" datetime="2026-07">Jul 2026</time>
+      <article class="mk-roadmap-item" aria-labelledby="rv-1">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="shipped">Shipped</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Jul 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rv-1">Comments on any block</h3>
+        <p class="mk-roadmap-item-desc">Discuss a paragraph, a table row or a picture where it is.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Docs</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rv-1" /><i data-lucide="chevron-up"></i><span>640</span
+            ><span class="sr-only"> votes - vote for Comments on any block</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="shipped">
+      <span class="rm-dot" aria-hidden="true"></span>
+      <time class="rm-date" datetime="2026-09">Sep 2026</time>
+      <article class="mk-roadmap-item" aria-labelledby="rv-2">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="shipped">Shipped</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Sep 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rv-2">Offline sync</h3>
+        <p class="mk-roadmap-item-desc">Work on a plane; everything merges when you land.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Sync</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rv-2" /><i data-lucide="chevron-up"></i><span>1204</span
+            ><span class="sr-only"> votes - vote for Offline sync</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="progress">
+      <span class="rm-dot" aria-hidden="true"></span>
+      <time class="rm-date" datetime="2026-11">Nov 2026</time>
+      <article class="mk-roadmap-item" aria-labelledby="rv-3">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="progress">In progress</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Nov 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rv-3">Acme mobile app</h3>
+        <p class="mk-roadmap-item-desc">Everything on the desk, in your pocket - offline included.</p>
+        <progress class="progress" value="60" max="100" aria-label="60% done">60%</progress>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>iOS</li
+            ><li>Android</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rv-3" checked /><i data-lucide="chevron-up"></i><span>512</span
+            ><span class="sr-only"> votes - vote for Acme mobile app</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="planned">
+      <span class="rm-dot" aria-hidden="true"></span>
+      <time class="rm-date" datetime="2027-01">Q1 2027</time>
+      <article class="mk-roadmap-item" aria-labelledby="rv-4">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="planned">Planned</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q1 2027</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rv-4">Calendar view for tasks</h3>
+        <p class="mk-roadmap-item-desc">See deadlines across projects in one month view.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Tasks</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rv-4" /><i data-lucide="chevron-up"></i><span>214</span
+            ><span class="sr-only"> votes - vote for Calendar view for tasks</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="planned">
+      <span class="rm-dot" aria-hidden="true"></span>
+      <time class="rm-date" datetime="2027-04">Q2 2027</time>
+      <article class="mk-roadmap-item" aria-labelledby="rv-5">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="planned">Planned</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q2 2027</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rv-5">Public pages</h3>
+        <p class="mk-roadmap-item-desc">Publish a doc as a website with your domain.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Docs</li
+            ><li>Web</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rv-5" /><i data-lucide="chevron-up"></i><span>98</span
+            ><span class="sr-only"> votes - vote for Public pages</span></label
+          >
+        </div>
+      </article>
+    </li>
+  </ol>
+</section>
+```
+
+```html example label="Roadmap on a line" schema="none" hint="The Roadmap Items side by side on a horizontal line, oldest first: the month and the dot on the line, the item under it; the shipped stretch of the line in green. More items than fit scroll sideways with scroll snap." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #docs-roadmap-h {
+    box-sizing: border-box;
+    container-type: inline-size;
+    display: grid;
+    gap: 2.5rem;
+    width: 100%;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--muted);
+    color: var(--foreground);
+    --rm-shipped: #15803d;
+    --rm-progress: #1d4ed8;
+    --rm-planned: var(--muted-foreground);
+  }
+  .dark #docs-roadmap-h {
+    --rm-shipped: #4ade80;
+    --rm-progress: #60a5fa;
+  }
+  #docs-roadmap-h .rm-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+  #docs-roadmap-h .rm-head h2 {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  #docs-roadmap-h .rm-head p {
+    max-width: 36rem;
+    margin: 0.375rem 0 0;
+    color: var(--muted-foreground);
+  }
+  #docs-roadmap-h .rm-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+  }
+  #docs-roadmap-h .rm-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  #docs-roadmap-h .rm-legend span::before,
+  #docs-roadmap-h .rm-dot {
+    content: '';
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--rm-planned);
+  }
+  #docs-roadmap-h :is(.rm-legend span, li)[data-status='shipped'] :is(.rm-dot),
+  #docs-roadmap-h .rm-legend span[data-status='shipped']::before {
+    background: var(--rm-shipped);
+  }
+  #docs-roadmap-h :is(.rm-legend span, li)[data-status='progress'] :is(.rm-dot),
+  #docs-roadmap-h .rm-legend span[data-status='progress']::before {
+    background: var(--rm-progress);
+  }
+  #docs-roadmap-h li[data-status='planned'] .rm-dot {
+    border: 2px solid var(--rm-planned);
+    background: var(--muted);
+  }
+  #docs-roadmap-h li[data-status='progress'] .rm-dot {
+    box-shadow: 0 0 0 0.375rem color-mix(in oklch, var(--rm-progress) 22%, transparent);
+  }
+  #docs-roadmap-h .rm-date {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  #docs-roadmap-h .rm-line {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #docs-roadmap-h .rm-line {
+    display: grid;
+    grid-auto-columns: minmax(16rem, 1fr);
+    grid-auto-flow: column;
+    gap: 1rem;
+    padding-block-end: 0.75rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+  }
+  #docs-roadmap-h .rm-line > li {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 0.75rem;
+    align-content: start;
+    scroll-snap-align: start;
+  }
+  /* the line: through the dots, from each one to the next */
+  #docs-roadmap-h .rm-line > li:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    inset-block-start: calc(1.875rem + 0.375rem - 1px);
+    inset-inline: 1.25rem -1rem;
+    height: 2px;
+    background: var(--border);
+  }
+  #docs-roadmap-h .rm-line > li[data-status='shipped']:not(:last-child)::before {
+    background: var(--rm-shipped);
+  }
+  #docs-roadmap-h .rm-dot {
+    z-index: 1;
+    margin-inline-start: 0.25rem;
+  }
+  #docs-roadmap-h .rm-date {
+    grid-row: 1;
+  }
+  /* equal cards with the votes at the foot */
+  #docs-roadmap-h .mk-roadmap-item {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  #docs-roadmap-h .mk-roadmap-item-foot {
+    margin-block-start: auto;
+  }
+</style>
+<section id="docs-roadmap-h" aria-labelledby="rh-title">
+  <div class="rm-head">
+    <div>
+      <h2 id="rh-title">Roadmap</h2>
+      <p>Where the product is headed, quarter by quarter - scroll along the line.</p>
+    </div>
+    <p class="rm-legend" aria-hidden="true"
+      ><span data-status="shipped">Shipped</span><span data-status="progress">In progress</span
+      ><span data-status="planned">Planned</span></p
+    >
+  </div>
+  <ol class="rm-line">
+    <li data-status="shipped">
+      <time class="rm-date" datetime="2026-07">Jul 2026</time>
+      <span class="rm-dot" aria-hidden="true"></span>
+      <article class="mk-roadmap-item" aria-labelledby="rh-1">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="shipped">Shipped</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Jul 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rh-1">Comments on any block</h3>
+        <p class="mk-roadmap-item-desc">Discuss a paragraph, a table row or a picture where it is.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Docs</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rh-1" /><i data-lucide="chevron-up"></i><span>640</span
+            ><span class="sr-only"> votes - vote for Comments on any block</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="shipped">
+      <time class="rm-date" datetime="2026-09">Sep 2026</time>
+      <span class="rm-dot" aria-hidden="true"></span>
+      <article class="mk-roadmap-item" aria-labelledby="rh-2">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="shipped">Shipped</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Sep 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rh-2">Offline sync</h3>
+        <p class="mk-roadmap-item-desc">Work on a plane; everything merges when you land.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Sync</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rh-2" /><i data-lucide="chevron-up"></i><span>1204</span
+            ><span class="sr-only"> votes - vote for Offline sync</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="progress">
+      <time class="rm-date" datetime="2026-11">Nov 2026</time>
+      <span class="rm-dot" aria-hidden="true"></span>
+      <article class="mk-roadmap-item" aria-labelledby="rh-3">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="progress">In progress</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Nov 2026</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rh-3">Acme mobile app</h3>
+        <p class="mk-roadmap-item-desc">Everything on the desk, in your pocket - offline included.</p>
+        <progress class="progress" value="60" max="100" aria-label="60% done">60%</progress>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>iOS</li
+            ><li>Android</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rh-3" checked /><i data-lucide="chevron-up"></i><span>512</span
+            ><span class="sr-only"> votes - vote for Acme mobile app</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="planned">
+      <time class="rm-date" datetime="2027-01">Q1 2027</time>
+      <span class="rm-dot" aria-hidden="true"></span>
+      <article class="mk-roadmap-item" aria-labelledby="rh-4">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="planned">Planned</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q1 2027</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rh-4">Calendar view for tasks</h3>
+        <p class="mk-roadmap-item-desc">See deadlines across projects in one month view.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Tasks</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rh-4" /><i data-lucide="chevron-up"></i><span>214</span
+            ><span class="sr-only"> votes - vote for Calendar view for tasks</span></label
+          >
+        </div>
+      </article>
+    </li>
+    <li data-status="planned">
+      <time class="rm-date" datetime="2027-04">Q2 2027</time>
+      <span class="rm-dot" aria-hidden="true"></span>
+      <article class="mk-roadmap-item" aria-labelledby="rh-5">
+        <div class="mk-roadmap-item-top"
+          ><span class="mk-roadmap-item-status" data-status="planned">Planned</span
+          ><span class="mk-roadmap-item-when"><i data-lucide="calendar"></i>Q2 2027</span></div
+        >
+        <h3 class="mk-roadmap-item-title" id="rh-5">Public pages</h3>
+        <p class="mk-roadmap-item-desc">Publish a doc as a website with your domain.</p>
+        <div class="mk-roadmap-item-foot">
+          <ul class="mk-roadmap-item-tags"
+            ><li>Docs</li
+            ><li>Web</li></ul
+          >
+          <label class="mk-roadmap-item-vote"
+            ><input type="checkbox" name="vote" value="rh-5" /><i data-lucide="chevron-up"></i><span>98</span
+            ><span class="sr-only"> votes - vote for Public pages</span></label
+          >
+        </div>
+      </article>
+    </li>
+  </ol>
+</section>
+```
+
+```html example label="Help centre" schema="none" hint="The front page of a help centre: one question and a search box on a tinted band, the topics as Help Categories with their top articles, then guides and templates as Resource Items." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #docs-help {
+    box-sizing: border-box;
+    display: grid;
+    width: 100%;
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #docs-help > * {
+    box-sizing: border-box;
+    padding-inline: max(clamp(1rem, 4vw, 2.5rem), calc((100% - 68rem) / 2));
+  }
+  #docs-help .hc-hero {
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+    background:
+      radial-gradient(70% 90% at 50% 0%, color-mix(in oklch, var(--primary) 12%, transparent), transparent 70%),
+      var(--muted);
+    text-align: center;
+  }
+  #docs-help .hc-hero h2 {
+    margin: 0;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  #docs-help .hc-search {
+    position: relative;
+    width: min(100%, 36rem);
+  }
+  #docs-help .hc-search svg {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    translate: 0 -50%;
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+  #docs-help .hc-search .input {
+    height: 3.25rem;
+    padding-inline-start: 2.75rem;
+    border-radius: var(--radius-xl);
+    background: var(--background);
+    font-size: 1rem;
+    box-shadow: 0 12px 30px -18px oklch(0 0 0 / 0.35);
+  }
+  #docs-help .hc-popular {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  #docs-help .hc-popular a {
+    color: var(--foreground);
+    font-weight: 500;
+  }
+  #docs-help .hc-section {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: clamp(2rem, 5vw, 3rem) 0;
+  }
+  #docs-help .hc-section:last-child {
+    padding-block-end: clamp(2rem, 5vw, 3.5rem);
+  }
+  #docs-help .hc-section > h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  #docs-help :is(.hc-grid, .hc-resources) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+  }
+  #docs-help .hc-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  }
+</style>
+<div id="docs-help">
+  <div class="hc-hero">
+    <h2>How can we help?</h2>
+    <form class="hc-search" role="search" action="#" method="get">
+      <i data-lucide="search"></i>
+      <label class="sr-only" for="hc-q">Search the help centre</label>
+      <input
+        class="input"
+        id="hc-q"
+        type="search"
+        name="q"
+        placeholder="Search for articles, e.g. invoices"
+        enterkeyhint="search"
+      />
+    </form>
+    <p class="hc-popular"
+      >Popular: <a href="#">Reset your password</a> · <a href="#">Change your plan</a> ·
+      <a href="#">Sync is stuck</a></p
+    >
+  </div>
+  <section class="hc-section" aria-labelledby="hc-topics">
+    <h2 id="hc-topics">Browse by topic</h2>
+    <div class="hc-grid">
+      <article class="mk-help-category">
+        <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+        <div class="mk-help-category-body">
+          <h3 class="mk-help-category-title"><a href="#">Getting started</a></h3>
+          <p class="mk-help-category-desc">Set up your workspace and invite your team.</p>
+          <p class="mk-help-category-count">18 articles</p>
+          <ul class="mk-help-category-top"
+            ><li><a href="#">Create a workspace</a></li
+            ><li><a href="#">Invite teammates</a></li
+            ><li><a href="#">Import from Notion</a></li></ul
+          >
+        </div>
+      </article>
+      <article class="mk-help-category">
+        <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="credit-card"></i></span>
+        <div class="mk-help-category-body">
+          <h3 class="mk-help-category-title"><a href="#">Billing & plans</a></h3>
+          <p class="mk-help-category-desc">Invoices, seats, upgrades and refunds.</p>
+          <p class="mk-help-category-count">24 articles</p>
+          <ul class="mk-help-category-top"
+            ><li><a href="#">Change your plan</a></li
+            ><li><a href="#">Download an invoice</a></li></ul
+          >
+        </div>
+      </article>
+      <article class="mk-help-category">
+        <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="refresh-cw"></i></span>
+        <div class="mk-help-category-body">
+          <h3 class="mk-help-category-title"><a href="#">Sync & offline</a></h3>
+          <p class="mk-help-category-desc">How your work stays in sync everywhere.</p>
+          <p class="mk-help-category-count">12 articles</p>
+          <ul class="mk-help-category-top"
+            ><li><a href="#">Sync is stuck</a></li
+            ><li><a href="#">Work offline</a></li></ul
+          >
+        </div>
+      </article>
+      <article class="mk-help-category">
+        <span class="mk-help-category-icon" aria-hidden="true"><i data-lucide="shield"></i></span>
+        <div class="mk-help-category-body">
+          <h3 class="mk-help-category-title"><a href="#">Security</a></h3>
+          <p class="mk-help-category-desc">Two-factor, SSO, data handling.</p>
+          <p class="mk-help-category-count">15 articles</p>
+          <ul class="mk-help-category-top"
+            ><li><a href="#">Turn on two-factor</a></li
+            ><li><a href="#">Set up SSO</a></li></ul
+          >
+        </div>
+      </article>
+    </div>
+  </section>
+  <section class="hc-section" aria-labelledby="hc-guides">
+    <h2 id="hc-guides">Guides and templates</h2>
+    <div class="hc-resources">
+      <article class="mk-resource-item">
+        <div class="mk-resource-item-body">
+          <span class="mk-resource-item-type"><i data-lucide="book-open"></i>Guide</span>
+          <h3 class="mk-resource-item-title"><a href="#">Planning a launch with five teams</a></h3>
+          <p class="mk-resource-item-desc">A step-by-step playbook with a board template.</p>
+          <p class="mk-resource-item-meta">12 min read</p>
+        </div>
+        <span class="mk-resource-item-cta" aria-hidden="true">Read the guide <i data-lucide="arrow-right"></i></span>
+      </article>
+      <article class="mk-resource-item">
+        <div class="mk-resource-item-body">
+          <span class="mk-resource-item-type"><i data-lucide="layout-template"></i>Template</span>
+          <h3 class="mk-resource-item-title"><a href="#">Weekly async update</a></h3>
+          <p class="mk-resource-item-desc">Replace your status meeting with one doc.</p>
+          <p class="mk-resource-item-meta">Acme template · 2.1k uses</p>
+        </div>
+        <span class="mk-resource-item-cta" aria-hidden="true">Use template <i data-lucide="arrow-right"></i></span>
+      </article>
+      <article class="mk-resource-item">
+        <div class="mk-resource-item-body">
+          <span class="mk-resource-item-type"><i data-lucide="video"></i>Video</span>
+          <h3 class="mk-resource-item-title"><a href="#">Acme in ten minutes</a></h3>
+          <p class="mk-resource-item-desc">Docs, tasks and sync, shown on one real project.</p>
+          <p class="mk-resource-item-meta">10:24</p>
+        </div>
+        <span class="mk-resource-item-cta" aria-hidden="true">Watch <i data-lucide="arrow-right"></i></span>
+      </article>
+    </div>
+  </section>
+</div>
+```
+
+```html example label="A help article" schema="none" hint="One answer, start to finish: breadcrumb, title, the steps numbered, a tip, the case it does not cover folded away, a Feedback Form asking whether it helped and the related articles." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #docs-article {
+    box-sizing: border-box;
+    width: 100%;
+    padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #docs-article .mk-help-article {
+    max-width: 42rem;
+    margin-inline: auto;
+  }
+</style>
+<div id="docs-article">
+  <article class="mk-help-article" aria-labelledby="ha-title">
+    <nav class="breadcrumb" aria-label="Breadcrumb"
+      ><ol class="breadcrumb-list"
+        ><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Help</a></li
+        ><li class="breadcrumb-separator" aria-hidden="true">/</li
+        ><li class="breadcrumb-item"><a class="breadcrumb-link" href="#">Billing</a></li
+        ><li class="breadcrumb-separator" aria-hidden="true">/</li
+        ><li class="breadcrumb-item"
+          ><span class="breadcrumb-page" aria-current="page">Change your billing email</span></li
+        ></ol
+      ></nav
+    >
+    <h1 class="mk-help-article-title" id="ha-title">Change your billing email</h1>
+    <p class="mk-help-article-meta">Updated <time datetime="2026-09-12">12 Sep 2026</time> · 2 min read</p>
+    <p class="mk-help-article-lead"
+      >Invoices and payment reminders go to the billing email. Only workspace owners can change it.</p
+    >
+    <ol class="mk-help-article-steps">
+      <li
+        ><div
+          ><strong>Open Settings</strong
+          ><p>Press <kbd>⌘</kbd> <kbd>,</kbd> or choose Settings from your avatar menu.</p></div
+        ></li
+      >
+      <li
+        ><div
+          ><strong>Go to Billing → Details</strong><p>You'll see the current billing email under "Invoices".</p></div
+        ></li
+      >
+      <li
+        ><div
+          ><strong>Enter the new address and save</strong
+          ><p>We send a confirmation link to the new address. The change applies once it is confirmed.</p></div
+        ></li
+      >
+    </ol>
+    <div class="mk-help-article-tip"
+      ><i data-lucide="lightbulb"></i
+      ><p>Use a shared address like billing@yourcompany.com so invoices don't depend on one person.</p></div
+    >
+    <details class="mk-help-article-stuck"
+      ><summary>Still stuck?</summary
+      ><p
+        >If you can't see Billing, you're not an owner of this workspace. Ask an owner, or
+        <a href="#">contact support</a>.</p
+      ></details
+    >
+    <form class="mk-feedback-form" data-variant="inline" action="#" method="post">
+      <fieldset
+        ><legend>Was this article helpful?</legend
+        ><div class="mk-feedback-form-yesno"
+          ><label><input type="radio" name="ha-helpful" value="yes" /><i data-lucide="thumbs-up"></i> Yes</label
+          ><label><input type="radio" name="ha-helpful" value="no" /><i data-lucide="thumbs-down"></i> No</label></div
+        ></fieldset
+      >
+      <p class="mk-feedback-form-thanks" role="status">Thanks for letting us know.</p>
+    </form>
+    <ul class="mk-help-article-related"
+      ><li><h2>Related articles</h2></li
+      ><li
+        ><a href="#"><i data-lucide="file-text"></i>Download an invoice</a></li
+      ><li
+        ><a href="#"><i data-lucide="file-text"></i>Add a VAT number</a></li
+      ></ul
+    >
+  </article>
+</div>
+```
+
+```html example label="Downloads" schema="none" hint="A downloads page: the apps and documents as Download Items - format, size, date, the checksum folded away and one button each - with a note on which build to pick." previewStyle="align-items:stretch;padding:0;"
+<style>
+  #docs-downloads {
+    container-type: inline-size;
+    box-sizing: border-box;
+    width: 100%;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #docs-downloads .dl-layout {
+    display: grid;
+    gap: 2rem;
+  }
+  @container (width > 52rem) {
+    #docs-downloads .dl-layout {
+      grid-template-columns: 16rem minmax(0, 44rem);
+      gap: 4rem;
+    }
+  }
+  #docs-downloads .dl-intro h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  #docs-downloads .dl-intro p {
+    margin: 0.5rem 0 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+  }
+  #docs-downloads .dl-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+</style>
+<div id="docs-downloads">
+  <div class="dl-layout">
+    <div class="dl-intro">
+      <h2>Downloads</h2>
+      <p
+        >Acme 4.0.2 for every platform. The apps update themselves; check the SHA-256 when you install from a mirror.</p
+      >
+    </div>
+    <div class="dl-list">
+      <article class="mk-download-item">
+        <span class="mk-download-item-file" data-ext="DMG" aria-hidden="true">DMG</span>
+        <div class="mk-download-item-body">
+          <h3 class="mk-download-item-name">Acme for macOS</h3>
+          <p class="mk-download-item-desc">Universal build for Apple silicon and Intel.</p>
+          <p class="mk-download-item-meta"
+            ><span>v4.0.2</span><span>148 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p
+          >
+          <details class="mk-download-item-checksum"
+            ><summary>SHA-256</summary><code>9f2c…a41b 7e08 3d55 c1f0 66b2 e9a4 0c71</code></details
+          >
+        </div>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="#"
+          download
+          aria-label="Download Acme for macOS (DMG, 148 MB)"
+          ><i data-lucide="download"></i> <span>Download</span></a
+        >
+      </article>
+      <article class="mk-download-item">
+        <span class="mk-download-item-file" data-ext="EXE" aria-hidden="true">EXE</span>
+        <div class="mk-download-item-body">
+          <h3 class="mk-download-item-name">Acme for Windows</h3>
+          <p class="mk-download-item-desc">Windows 10 and 11, 64-bit.</p>
+          <p class="mk-download-item-meta"
+            ><span>v4.0.2</span><span>132 MB</span><span><time datetime="2026-09-28">28 Sep 2026</time></span></p
+          >
+          <details class="mk-download-item-checksum"
+            ><summary>SHA-256</summary><code>41d0…77e2 9b13 0aa6 f2c8 15e4 b7d9 3c02</code></details
+          >
+        </div>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="#"
+          download
+          aria-label="Download Acme for Windows (EXE, 132 MB)"
+          ><i data-lucide="download"></i> <span>Download</span></a
+        >
+      </article>
+      <article class="mk-download-item">
+        <span class="mk-download-item-file" data-ext="PDF" aria-hidden="true">PDF</span>
+        <div class="mk-download-item-body">
+          <h3 class="mk-download-item-name">Security whitepaper</h3>
+          <p class="mk-download-item-desc">How Acme stores, encrypts and hosts your data.</p>
+          <p class="mk-download-item-meta"
+            ><span>Edition 2026</span><span>2.4 MB</span><span><time datetime="2026-08-01">1 Aug 2026</time></span></p
+          >
+          <details class="mk-download-item-checksum"
+            ><summary>SHA-256</summary><code>c8a1…0f3e 52d7 9e14 7ab0 c3f6 1d28 e5b9</code></details
+          >
+        </div>
+        <a
+          class="btn"
+          data-variant="outline"
+          data-size="sm"
+          href="#"
+          download
+          aria-label="Download Security whitepaper (PDF, 2.4 MB)"
+          ><i data-lucide="download"></i> <span>Download</span></a
+        >
+      </article>
+    </div>
+  </div>
+</div>
 ```
 
 <h2 id="blocks" class="h2-display">The blocks</h2>

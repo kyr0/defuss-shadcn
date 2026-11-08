@@ -1,0 +1,408 @@
+---
+title: "Portfolio Grid"
+description: "The work, arranged with character - a bento mosaic, masonry columns, scattered polaroids, a film strip that snaps, or an editorial index whose pictures appear on hover and focus."
+slug: "portfolio-grid"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="portfolio-grid" title="Portfolio Grid" component="portfolio-grid">
+  The work, arranged with character - a bento mosaic, masonry columns, scattered polaroids, a film strip that snaps, or an editorial index whose pictures appear on hover and focus. Part of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="portfolio-grid">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;ul&gt;</code> of projects; each item one link around the picture and a caption (title and meta), so the whole tile is one focusable target named by its caption.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText>Plain HTML; character from the shape utilities (<code>theme/utils/shapes.css</code>), <DocLink href="motion.html">Motion</DocLink> entrances and <DocLink href="parallax.html">Parallax</DocLink> reveals.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/grid-auto-flow" title="the mosaic fills its gaps"><code>grid-auto-flow: dense</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/columns" title="masonry columns"><code>columns</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type" title="the strip stops on each project"><code>scroll-snap</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries" title="narrow, the spans fold"><code>Container queries</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible" title="the index shows its picture for the keyboard too"><code>:focus-visible</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters" title="the index numbers its rows"><code>counter()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-portfolio-grid</code>
+    <code>.mk-portfolio-grid-item</code>
+    <code>.mk-portfolio-grid-link</code>
+    <code>.mk-portfolio-grid-media</code>
+    <code>.mk-portfolio-grid-caption</code>
+    <code>.mk-portfolio-grid-title</code>
+    <code>.mk-portfolio-grid-meta</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="masonry"</code>, <code>data-variant="scatter"</code>, <code>data-variant="strip"</code>, <code>data-variant="index"</code> on the list (omitted: the bento mosaic); <code>data-span="wide"</code>, <code>"tall"</code>, <code>"big"</code> on a mosaic item.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Bento" hint="The default mosaic: 12rem rows, dense flow - data-span='big' takes two by two, 'wide' two columns, 'tall' two rows. The caption sits on a scrim; hover or focus zooms the picture." previewStyle="align-items:stretch;"
+<ul class="mk-portfolio-grid">
+  <li class="mk-portfolio-grid-item" data-span="big">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-northwind/900/900" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Northwind design system</strong>
+        <span class="mk-portfolio-grid-meta">Design system · 2025</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-museo/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Museo Digital</strong>
+        <span class="mk-portfolio-grid-meta">Website · 2024</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item" data-span="tall">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-atlas/600/1200" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Atlas Transit</strong>
+        <span class="mk-portfolio-grid-meta">Mobile app · 2023</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item" data-span="wide">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-kite/1200/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Kite Festival</strong>
+        <span class="mk-portfolio-grid-meta">Campaign · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-field/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Field Notes</strong>
+        <span class="mk-portfolio-grid-meta">Editorial · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-nordlicht/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Nordlicht Coffee</strong>
+        <span class="mk-portfolio-grid-meta">Packaging · 2021</span>
+      </span>
+    </a>
+  </li>
+</ul>
+```
+
+```html example label="Masonry" hint="data-variant='masonry': columns of natural heights, the caption under each picture. Each item rises into view as it scrolls in - .parallax-reveal, a scroll-driven animation." previewStyle="align-items:stretch;"
+<ul class="mk-portfolio-grid" data-variant="masonry">
+  <li class="mk-portfolio-grid-item parallax-reveal">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-northwind/600/800" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Northwind design system</strong>
+        <span class="mk-portfolio-grid-meta">Design system · 2025</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item parallax-reveal">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-museo/600/450" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Museo Digital</strong>
+        <span class="mk-portfolio-grid-meta">Website · 2024</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item parallax-reveal">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-atlas/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Atlas Transit</strong>
+        <span class="mk-portfolio-grid-meta">Mobile app · 2023</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item parallax-reveal">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-kite/600/900" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Kite Festival</strong>
+        <span class="mk-portfolio-grid-meta">Campaign · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item parallax-reveal">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-field/600/400" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Field Notes</strong>
+        <span class="mk-portfolio-grid-meta">Editorial · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item parallax-reveal">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-nordlicht/600/700" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Nordlicht Coffee</strong>
+        <span class="mk-portfolio-grid-meta">Packaging · 2021</span>
+      </span>
+    </a>
+  </li>
+</ul>
+```
+
+```html example label="Scatter" hint="data-variant='scatter': polaroids on a table, each tilted a little differently - hover or focus straightens and lifts one. A sticker of tape (frame-tape) on two of them." previewStyle="align-items:stretch;"
+<ul class="mk-portfolio-grid" data-variant="scatter">
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link frame-tape" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-northwind/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Northwind design system</strong>
+        <span class="mk-portfolio-grid-meta">Design system · 2025</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-museo/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Museo Digital</strong>
+        <span class="mk-portfolio-grid-meta">Website · 2024</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-atlas/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Atlas Transit</strong>
+        <span class="mk-portfolio-grid-meta">Mobile app · 2023</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link frame-tape" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-kite/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Kite Festival</strong>
+        <span class="mk-portfolio-grid-meta">Campaign · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-field/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Field Notes</strong>
+        <span class="mk-portfolio-grid-meta">Editorial · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-nordlicht/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Nordlicht Coffee</strong>
+        <span class="mk-portfolio-grid-meta">Packaging · 2021</span>
+      </span>
+    </a>
+  </li>
+</ul>
+```
+
+```html example label="Strip" hint="data-variant='strip': a film strip - one row that scrolls sideways and snaps to each project; tab to a tile and it scrolls into view. corner-arch (shapes.css) arches every picture." previewStyle="align-items:stretch;"
+<ul class="mk-portfolio-grid" data-variant="strip">
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-arch" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-northwind/640/800" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Northwind design system</strong>
+        <span class="mk-portfolio-grid-meta">Design system · 2025</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-arch" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-museo/640/800" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Museo Digital</strong>
+        <span class="mk-portfolio-grid-meta">Website · 2024</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-arch" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-atlas/640/800" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Atlas Transit</strong>
+        <span class="mk-portfolio-grid-meta">Mobile app · 2023</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-arch" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-kite/640/800" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Kite Festival</strong>
+        <span class="mk-portfolio-grid-meta">Campaign · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-arch" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-field/640/800" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Field Notes</strong>
+        <span class="mk-portfolio-grid-meta">Editorial · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-arch" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-nordlicht/640/800" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Nordlicht Coffee</strong>
+        <span class="mk-portfolio-grid-meta">Packaging · 2021</span>
+      </span>
+    </a>
+  </li>
+</ul>
+```
+
+```html example label="Index" hint="data-variant='index': an editorial index - numbered rows of big titles; the picture appears beside the title on hover AND keyboard focus. Narrow, each row shows its picture as a thumbnail." previewStyle="align-items:stretch;"
+<ul class="mk-portfolio-grid" data-variant="index">
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-northwind/800/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Northwind design system</strong>
+        <span class="mk-portfolio-grid-meta">Design system · 2025</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-museo/800/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Museo Digital</strong>
+        <span class="mk-portfolio-grid-meta">Website · 2024</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-atlas/800/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Atlas Transit</strong>
+        <span class="mk-portfolio-grid-meta">Mobile app · 2023</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-kite/800/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Kite Festival</strong>
+        <span class="mk-portfolio-grid-meta">Campaign · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-field/800/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Field Notes</strong>
+        <span class="mk-portfolio-grid-meta">Editorial · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-nordlicht/800/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Nordlicht Coffee</strong>
+        <span class="mk-portfolio-grid-meta">Packaging · 2021</span>
+      </span>
+    </a>
+  </li>
+</ul>
+```
+
+```html example label="Shaped tiles" hint="Shape utilities on the tiles: shape-hexagon, corner-blob, shape-flower, shape-squircle, corner-leaf and cut-corners from shapes.css cut each picture differently - the mosaic stays a grid." previewStyle="align-items:stretch;"
+<ul class="mk-portfolio-grid">
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link shape-hexagon" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-northwind/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Northwind design system</strong>
+        <span class="mk-portfolio-grid-meta">Design system · 2025</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-blob" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-museo/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Museo Digital</strong>
+        <span class="mk-portfolio-grid-meta">Website · 2024</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link shape-flower" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-atlas/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Atlas Transit</strong>
+        <span class="mk-portfolio-grid-meta">Mobile app · 2023</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link shape-squircle" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-kite/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Kite Festival</strong>
+        <span class="mk-portfolio-grid-meta">Campaign · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link corner-leaf" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-field/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Field Notes</strong>
+        <span class="mk-portfolio-grid-meta">Editorial · 2022</span>
+      </span>
+    </a>
+  </li>
+  <li class="mk-portfolio-grid-item">
+    <a class="mk-portfolio-grid-link cut-corners" href="#">
+      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-nordlicht/600/600" alt="" />
+      <span class="mk-portfolio-grid-caption">
+        <strong class="mk-portfolio-grid-title">Nordlicht Coffee</strong>
+        <span class="mk-portfolio-grid-meta">Packaging · 2021</span>
+      </span>
+    </a>
+  </li>
+</ul>
+```
+
+<SourceFiles component="portfolio-grid" section="css" />
+
+</DocPage>

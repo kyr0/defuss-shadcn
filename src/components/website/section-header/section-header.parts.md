@@ -17,3 +17,11 @@
   </div>
 </header>
 ```
+
+```html example part label="Section Header (divider)"
+<header class="mk-section-header" data-variant="divider" style="padding-inline: 0">
+  <div class="mk-section-header-copy">
+    <h2 class="mk-section-header-title" id="cv-experience" data-i18n-target="cv-experience">Experience</h2>
+  </div>
+</header>
+```

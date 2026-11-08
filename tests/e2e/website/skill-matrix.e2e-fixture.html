@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>skill-matrix e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/accessibility.css" />
+    <link rel="stylesheet" href="/dist/components/skill-matrix/skill-matrix.css" />
+    <style>body { padding: 2rem; margin: 0; font-family: sans-serif; } body > section.fx { margin-block-end: 3rem; }</style>
+  </head>
+  <body>
+    <!-- Bars -->
+    <section class="fx">
+<div class="mk-skill-matrix">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-eng">
+    <h3 class="mk-skill-matrix-title" id="sm-eng"><i data-lucide="code-xml"></i> Engineering</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-ts">TypeScript</label>
+        <meter class="mk-skill-matrix-level" id="sm-ts" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">9 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-css">CSS</label>
+        <meter class="mk-skill-matrix-level" id="sm-css" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">11 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-a11y">Accessibility</label>
+        <meter class="mk-skill-matrix-level" id="sm-a11y" min="0" max="5" value="4">4 of 5</meter>
+        <span class="mk-skill-matrix-note">6 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-rust">Rust</label>
+        <meter class="mk-skill-matrix-level" id="sm-rust" min="0" max="5" value="2">2 of 5</meter>
+        <span class="mk-skill-matrix-note">1 yr</span>
+      </li>
+    </ul>
+  </section>
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-design">
+    <h3 class="mk-skill-matrix-title" id="sm-design"><i data-lucide="pen-tool"></i> Design</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-figma">Figma</label>
+        <meter class="mk-skill-matrix-level" id="sm-figma" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">7 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-type">Type &amp; layout</label>
+        <meter class="mk-skill-matrix-level" id="sm-type" min="0" max="5" value="4">4 of 5</meter>
+        <span class="mk-skill-matrix-note">11 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-motion">Motion</label>
+        <meter class="mk-skill-matrix-level" id="sm-motion" min="0" max="5" value="3">3 of 5</meter>
+        <span class="mk-skill-matrix-note">4 yrs</span>
+      </li>
+    </ul>
+  </section>
+</div>
+    </section>
+    <!-- Dots -->
+    <section class="fx">
+<div class="mk-skill-matrix" data-variant="dots">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-lang">
+    <h3 class="mk-skill-matrix-title" id="sm-lang"><i data-lucide="languages"></i> Languages</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-en">English</label>
+        <meter class="mk-skill-matrix-level" id="sm-en" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">C2</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-de">German</label>
+        <meter class="mk-skill-matrix-level" id="sm-de" min="0" max="5" value="4">4 of 5</meter>
+        <span class="mk-skill-matrix-note">C1</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-yo">Yoruba</label>
+        <meter class="mk-skill-matrix-level" id="sm-yo" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">native</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-fr">French</label>
+        <meter class="mk-skill-matrix-level" id="sm-fr" min="0" max="5" value="2">2 of 5</meter>
+        <span class="mk-skill-matrix-note">A2</span>
+      </li>
+    </ul>
+  </section>
+</div>
+    </section>
+    <!-- Stars -->
+    <section class="fx">
+<div class="mk-skill-matrix" data-variant="stars">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-st-tools">
+    <h3 class="mk-skill-matrix-title" id="sm-st-tools"><i data-lucide="pen-tool"></i> Design tools</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-figma">Figma</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-figma" min="0" max="5" value="5">5 of 5</meter>
+        <span class="mk-skill-matrix-note">daily</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-framer">Framer</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-framer" min="0" max="5" value="4.5">4.5 of 5</meter>
+        <span class="mk-skill-matrix-note">6 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-ae">After Effects</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-ae" min="0" max="5" value="3.5">3.5 of 5</meter>
+        <span class="mk-skill-matrix-note">4 yrs</span>
+      </li>
+      <li class="mk-skill-matrix-skill">
+        <label class="mk-skill-matrix-name" for="sm-st-blender">Blender</label>
+        <meter class="mk-skill-matrix-level" id="sm-st-blender" min="0" max="5" value="2">2 of 5</meter>
+        <span class="mk-skill-matrix-note">learning</span>
+      </li>
+    </ul>
+  </section>
+</div>
+    </section>
+    <!-- Tags -->
+    <section class="fx">
+<div class="mk-skill-matrix" data-variant="tags">
+  <section class="mk-skill-matrix-group" aria-labelledby="sm-tools">
+    <h3 class="mk-skill-matrix-title" id="sm-tools"><i data-lucide="wrench"></i> Tools</h3>
+    <ul class="mk-skill-matrix-list">
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Figma</span></li>
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Storybook</span></li>
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Playwright</span> <span class="mk-skill-matrix-note">e2e</span></li>
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Vite</span></li>
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Bun</span></li>
+      <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">axe</span> <span class="mk-skill-matrix-note">audits</span></li>
+    </ul>
+  </section>
+</div>
+    </section>
+  </body>
+</html>

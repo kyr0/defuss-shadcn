@@ -1,0 +1,124 @@
+---
+title: "Availability"
+description: "Says whether someone can be hired and on what terms - the status, a sentence, start, capacity, engagement and rate, and the ways to get in touch; a card or a banner across the page."
+slug: "availability"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="availability" title="Availability" component="availability">
+  Says whether someone can be hired and on what terms - the status, a sentence, start, capacity, engagement and rate, and the ways to get in touch; a card or a banner across the page. Part of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> blocks.
+</PageHeader>
+
+<SkillPanel component="availability">
+  <SkillField label="Native basis">
+<SkillText>An <code>&lt;aside&gt;</code> named by its heading: the status (an Indicator dot and a word), a sentence, the terms as a <code>&lt;dl&gt;</code> and the ways to get in touch as links.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="indicator.html">Indicator</DocLink>, <DocLink href="button.html">Button</DocLink>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/aside" title="a named complementary landmark"><code>&lt;aside&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl" title="the terms as label and value"><code>&lt;dl&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="the start date, machine-readable"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#linking_to_an_email_address" title="opens the visitor's mail program"><code>mailto:</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.mk-availability</code>
+    <code>.mk-availability-status</code>
+    <code>.mk-availability-title</code>
+    <code>.mk-availability-text</code>
+    <code>.mk-availability-facts</code>
+    <code>.mk-availability-actions</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="banner"</code> (one row across the page), <code>data-variant="spotlight"</code> (the closing call on the primary colour); the status is the Indicator dot's variant - <code>success</code>, <code>warning</code>, <code>neutral</code>.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Default" hint="A card: the status (a pinging success dot - still under reduced motion), the heading, a sentence, the terms as a dl between two rules, the actions. The actions leave a printed page." previewStyle="max-width:34rem;margin-inline:auto;"
+<aside class="mk-availability" aria-labelledby="av-title">
+  <p class="mk-availability-status"
+    ><span class="indicator-dot" data-variant="success" data-animate="ping" aria-hidden="true"></span> Available</p
+  >
+  <h2 class="mk-availability-title" id="av-title">Booking projects from December</h2>
+  <p class="mk-availability-text"
+    >Design-system builds, front-end architecture and accessibility audits - remote, or on site in Berlin.</p
+  >
+  <dl class="mk-availability-facts">
+    <div
+      ><dt>Start</dt><dd><time datetime="2026-12-01">1 Dec 2026</time></dd></div
+    >
+    <div><dt>Capacity</dt><dd>3 days a week</dd></div>
+    <div><dt>Engagement</dt><dd>Freelance, contract</dd></div>
+    <div><dt>Day rate</dt><dd>from €950</dd></div>
+  </dl>
+  <div class="mk-availability-actions">
+    <a class="btn" href="#"><i data-lucide="calendar"></i> Book a call</a>
+    <a class="btn" data-variant="outline" href="mailto:mara@example.com"><i data-lucide="mail"></i> Email me</a>
+  </div>
+</aside>
+```
+
+```html example label="Banner" hint="data-variant='banner': one row across the page - status, heading and actions; it wraps when narrow." previewStyle="align-items:stretch;"
+<aside class="mk-availability" data-variant="banner" aria-labelledby="av-banner">
+  <p class="mk-availability-status"
+    ><span class="indicator-dot" data-variant="warning" aria-hidden="true"></span> Limited</p
+  >
+  <h2 class="mk-availability-title" id="av-banner">One day a week free until March - full time from April</h2>
+  <div class="mk-availability-actions">
+    <a class="btn" data-size="sm" href="mailto:mara@example.com">Ask about a project</a>
+  </div>
+</aside>
+```
+
+```html example label="Booked" hint="A neutral dot says booked; the card still offers the next free date and a waiting list." previewStyle="max-width:34rem;margin-inline:auto;"
+<aside class="mk-availability" aria-labelledby="av-booked">
+  <p class="mk-availability-status"
+    ><span class="indicator-dot" data-variant="neutral" aria-hidden="true"></span> Booked</p
+  >
+  <h2 class="mk-availability-title" id="av-booked">Not taking new work until summer</h2>
+  <dl class="mk-availability-facts">
+    <div
+      ><dt>Next start</dt><dd><time datetime="2027-07-01">July 2027</time></dd></div
+    >
+    <div><dt>Engagement</dt><dd>Contract only</dd></div>
+  </dl>
+  <div class="mk-availability-actions">
+    <a class="btn" data-variant="outline" href="#"><i data-lucide="bell"></i> Join the waiting list</a>
+  </div>
+</aside>
+```
+
+```html example label="Spotlight" hint="data-variant='spotlight': the closing call on the primary colour, the heading headline-sized; pattern-dots (shapes.css) adds texture in the text colour. Secondary buttons stand on it." previewStyle="align-items:stretch;"
+<aside class="mk-availability pattern-dots" data-variant="spotlight" aria-labelledby="av-spot">
+  <p class="mk-availability-status"
+    ><span class="indicator-dot" data-variant="success" data-animate="ping" aria-hidden="true"></span> Available from
+    December</p
+  >
+  <h2 class="mk-availability-title" id="av-spot">Have a product that deserves calm software?</h2>
+  <p class="mk-availability-text"
+    >Design systems, front-end architecture, accessibility audits - one project at a time.</p
+  >
+  <div class="mk-availability-actions">
+    <a class="btn" data-variant="secondary" href="mailto:mara@example.com"
+      ><i data-lucide="mail"></i> mara@example.com</a
+    >
+    <a class="btn" data-variant="outline" href="#">Book a call</a>
+  </div>
+</aside>
+```
+
+<SourceFiles component="availability" section="css" />
+
+</DocPage>

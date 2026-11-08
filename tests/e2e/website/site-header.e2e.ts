@@ -9,9 +9,9 @@ import { cssSmoke } from '../lib/css-smoke.ts';
  */
 await cssSmoke('site-header', [
   {
-    label: 'inner row is a space-between flex bar, 56px min height',
+    label: 'inner row is a space-between flex bar, 72px min height (room above and below the row)',
     selector: '.mk-header-inner',
-    css: { display: 'flex', 'justify-content': 'space-between', 'min-height': '56px' },
+    css: { display: 'flex', 'justify-content': 'space-between', 'min-height': '72px' },
   },
   {
     label: 'brand icon is 20px and name uses primary color (≠ header bg)',

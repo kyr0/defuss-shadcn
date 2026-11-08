@@ -1,0 +1,1144 @@
+---
+title: "Playful Portfolio"
+description: "A portfolio with a grin - a pastel hero with wobbling blobs, a flower-shaped portrait wearing a spinning sticker, a headline that rotates what the illustrator draws, polaroids on a table that filter by kind and open in a viewer, how a drawing happens, commissions with prices, kind words in speech bubbles, a shelf of shape stickers and a contact dialog."
+slug: "portfolio-playful"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="portfolio-playful" title="Playful Portfolio" introStyle="max-width:42rem;">
+  A portfolio with a grin - a pastel hero with wobbling blobs, a flower-shaped portrait wearing a spinning sticker, a headline that rotates what the illustrator draws, polaroids on a table that filter by kind and open in a viewer, how a drawing happens, commissions with prices, kind words in speech bubbles, a shelf of shape stickers and a contact dialog. One of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> styles.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-portfolio-playful.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="Juno Park, illustrator" schema="none" hint="A cream, cobalt and candy palette and Bricolage Grotesque on the page's root; corner-blob blobs that wobble behind the hero; Text Rotate; a shape-flower portrait with a shape-burst sticker; News Ticker (pill); Portfolio Grid (scatter) with frame-tape - radios filter it by kind (:has()), each piece is a button that opens the Media Gallery's viewer (commandfor + command="show-modal") on its drawing; four process cards, three offers whose buttons open the contact dialog with their kind chosen, two speech-bubble quotes; a shelf of shape-heart, shape-cloud, shape-star-6 and shape-daisy stickers; Skill Matrix (tags); Availability (spotlight) on pattern-polka. Motion pops everything in." previewStyle="align-items:stretch;padding:0;"
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap');
+  #pf-playful {
+    --background: oklch(0.985 0.014 95);
+    --foreground: oklch(0.27 0.06 275);
+    --card: oklch(1 0 0);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.95 0.02 300);
+    --muted-foreground: oklch(0.48 0.05 275);
+    --border: oklch(0.88 0.03 290);
+    --input: var(--border);
+    --primary: oklch(0.5 0.22 266);
+    --primary-foreground: oklch(0.985 0.01 95);
+    --secondary: oklch(0.93 0.05 350);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.93 0.13 98);
+    --accent-foreground: var(--foreground);
+    --ring: var(--primary);
+    --chart-1: oklch(0.72 0.17 28);
+    --chart-2: oklch(0.6 0.2 266);
+    --chart-3: oklch(0.8 0.13 165);
+    --chart-4: oklch(0.83 0.1 350);
+    --chart-5: oklch(0.88 0.16 92);
+    --radius: 1rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    container: pf-playful / inline-size;
+    box-sizing: border-box;
+    width: 100%;
+    overflow: clip;
+    padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: 'Bricolage Grotesque', var(--font-sans);
+  }
+  .dark #pf-playful {
+    --background: oklch(0.22 0.045 278);
+    --foreground: oklch(0.96 0.02 95);
+    --card: oklch(0.27 0.05 278);
+    --muted: oklch(0.3 0.05 285);
+    --muted-foreground: oklch(0.8 0.04 290);
+    --border: oklch(0.38 0.05 285);
+    --primary: oklch(0.78 0.14 266);
+    --primary-foreground: oklch(0.2 0.05 278);
+    --secondary: oklch(0.36 0.07 350);
+    --accent: oklch(0.42 0.08 98);
+  }
+  #pf-playful .pf-page {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3rem, 7vw, 5rem);
+    max-width: 72rem;
+    margin-inline: auto;
+  }
+  #pf-playful .pf-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 2.5rem;
+    padding: clamp(1.75rem, 5vw, 4rem);
+    border-radius: calc(var(--radius) * 2.5);
+    background-color: var(--secondary);
+    overflow: clip;
+    isolation: isolate;
+  }
+  #pf-playful .pf-hero.pattern-dots {
+    --shape-ink: color-mix(in oklch, var(--foreground) 14%, transparent);
+  }
+  #pf-playful .pf-blob {
+    position: absolute;
+    z-index: -1;
+    width: clamp(12rem, 30cqi, 22rem);
+    aspect-ratio: 1;
+    opacity: 0.55;
+    animation: pf-playful-wobble 9s ease-in-out infinite alternate;
+  }
+  @keyframes pf-playful-wobble {
+    to {
+      border-radius: 38% 62% 42% 58% / 60% 37% 63% 40%;
+      rotate: 25deg;
+      scale: 1.12;
+    }
+  }
+  #pf-playful .pf-hi {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  #pf-playful .pf-hi span {
+    display: inline-block;
+    rotate: -8deg;
+  }
+  #pf-playful .pf-title {
+    margin: 0;
+    font-size: clamp(2.5rem, 1.25rem + 4.2cqi, 4.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.045em;
+  }
+  #pf-playful .pf-title .text-rotate {
+    display: block;
+  }
+  #pf-playful .pf-lede {
+    max-width: 30rem;
+    margin: 0;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  #pf-playful .btn {
+    border-radius: 999px;
+  }
+  #pf-playful .pf-portrait {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 22rem);
+  }
+  #pf-playful .pf-portrait img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  #pf-playful .pf-sticker {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    display: grid;
+    place-items: center;
+    width: 7rem;
+    aspect-ratio: 1;
+    background: var(--accent);
+    color: var(--foreground);
+    font-weight: 800;
+    font-size: 1.0625rem;
+    text-align: center;
+    line-height: 1.05;
+    animation: pf-playful-spin 16s linear infinite;
+  }
+  @keyframes pf-playful-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+  #pf-playful h2 {
+    margin: 0 0 1.75rem;
+    font-size: clamp(2rem, 1rem + 3cqi, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+  #pf-playful h2 mark {
+    padding-inline: 0.15em;
+    border-radius: 0.3em;
+    background: var(--accent);
+    color: inherit;
+  }
+  #pf-playful .mk-portfolio-grid-title {
+    font-family: inherit;
+    font-style: normal;
+    font-weight: 600;
+  }
+  #pf-playful .pf-shelf {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+  }
+  #pf-playful .pf-shelf span {
+    display: grid;
+    place-items: center;
+    width: min(100%, 9rem);
+    aspect-ratio: 1;
+    margin: 0 auto 0.75rem;
+    color: var(--foreground);
+    font-size: 2.5rem;
+    transition:
+      rotate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      scale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #pf-playful .pf-shelf li:hover span {
+    rotate: -10deg;
+    scale: 1.08;
+  }
+  #pf-playful .pf-shelf p {
+    margin: 0;
+    font-weight: 600;
+  }
+  #pf-playful .mk-availability[data-variant='spotlight'] {
+    --primary: var(--chart-2);
+    border-radius: calc(var(--radius) * 2.5);
+  }
+  #pf-playful .mk-availability.pattern-polka {
+    --shape-ink: color-mix(in oklch, white 14%, transparent);
+  }
+  @container pf-playful (max-width: 46rem) {
+    #pf-playful .pf-hero {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #pf-playful .pf-blob,
+    #pf-playful .pf-sticker {
+      animation: none;
+    }
+    #pf-playful .pf-shelf span {
+      transition: none;
+    }
+  }
+  /* the work: a filter over the pieces (radios; :has() hides the other kinds), each piece opens the viewer */
+  #pf-playful .pf-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: -0.5rem 0 1.75rem;
+  }
+  #pf-playful .pf-filter label {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.9rem;
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    background: var(--card);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      rotate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #pf-playful .pf-filter label:hover {
+    rotate: -2deg;
+  }
+  #pf-playful .pf-filter input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #pf-playful .pf-filter label:has(:checked) {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  #pf-playful .pf-filter label:has(:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  #pf-playful:has(.pf-filter [value='book']:checked) .mk-portfolio-grid-item:not([data-kind='book']),
+  #pf-playful:has(.pf-filter [value='mascot']:checked) .mk-portfolio-grid-item:not([data-kind='mascot']),
+  #pf-playful:has(.pf-filter [value='pack']:checked) .mk-portfolio-grid-item:not([data-kind='pack']),
+  #pf-playful:has(.pf-filter [value='way']:checked) .mk-portfolio-grid-item:not([data-kind='way']) {
+    display: none;
+  }
+  #pf-playful button.mk-portfolio-grid-link {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: zoom-in;
+  }
+  #pf-playful .pf-viewer .mk-media-gallery-track p {
+    max-width: 40rem;
+    margin-inline: auto;
+    line-height: 1.5;
+  }
+  #pf-playful .pf-viewer::backdrop {
+    background: oklch(0.08 0.01 260 / 0.94);
+    backdrop-filter: blur(10px);
+  }
+  #pf-playful .pf-viewer strong {
+    color: #fff;
+  }
+  #pf-playful .pf-viewer-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  #pf-playful .pf-viewer-step {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: oklch(1 0 0 / 0.15);
+    color: #fff;
+    cursor: pointer;
+  }
+  #pf-playful .pf-viewer-step:hover {
+    background: oklch(1 0 0 / 0.28);
+  }
+  #pf-playful .pf-viewer-step:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+  /* how a drawing happens: four cards, a numbered blob on each */
+  #pf-playful .pf-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+  }
+  #pf-playful .pf-steps li {
+    display: grid;
+    align-content: start;
+    gap: 0.6rem;
+    padding: 1.5rem;
+    border: 2px solid var(--border);
+    border-radius: calc(var(--radius) * 1.5);
+    background: var(--card);
+  }
+  #pf-playful .pf-steps li:nth-child(even) {
+    rotate: 1deg;
+  }
+  #pf-playful .pf-steps li:nth-child(odd) {
+    rotate: -1deg;
+  }
+  #pf-playful .pf-step-num {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    aspect-ratio: 1;
+    color: oklch(0.27 0.06 275);
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  #pf-playful .pf-steps h3 {
+    margin: 0.25rem 0 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #pf-playful .pf-steps p {
+    margin: 0;
+    color: var(--muted-foreground);
+    line-height: 1.55;
+  }
+  #pf-playful .pf-step-time {
+    justify-self: start;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: var(--muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  /* commissions: three offers, the middle one lifted */
+  #pf-playful .pf-offers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    align-items: center;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #pf-playful .pf-offer {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: 0.6rem;
+    padding: 1.75rem;
+    border: 2px solid var(--border);
+    border-radius: calc(var(--radius) * 2);
+    background: var(--card);
+    transition: translate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #pf-playful .pf-offer:hover {
+    translate: 0 -0.35rem;
+  }
+  #pf-playful .pf-offer[data-featured] {
+    padding-block: 2.5rem;
+    border-color: var(--primary);
+    box-shadow: 0.5rem 0.5rem 0 var(--pf-offer);
+  }
+  #pf-playful .pf-offer-badge {
+    position: absolute;
+    top: -0.85rem;
+    right: 1.5rem;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    rotate: 3deg;
+  }
+  #pf-playful .pf-offer-icon {
+    width: 3rem;
+    aspect-ratio: 1;
+    background: var(--pf-offer);
+  }
+  #pf-playful .pf-offer h3 {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 800;
+  }
+  #pf-playful .pf-offer p {
+    margin: 0;
+    color: var(--muted-foreground);
+    line-height: 1.5;
+  }
+  #pf-playful .pf-offer .pf-offer-price {
+    color: var(--foreground);
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  #pf-playful .pf-offer-price small {
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  /* kind words: two speech bubbles */
+  #pf-playful .pf-words {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 2rem;
+  }
+  #pf-playful .pf-word {
+    margin: 0;
+  }
+  #pf-playful .pf-word blockquote {
+    position: relative;
+    margin: 0 0 1.25rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: 1.75rem;
+    background: var(--pf-word);
+    color: var(--pf-word-fg, oklch(0.27 0.06 275));
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  #pf-playful .pf-word blockquote::after {
+    content: '';
+    position: absolute;
+    left: 2rem;
+    bottom: -0.9rem;
+    width: 1.5rem;
+    height: 1rem;
+    background: var(--pf-word);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+  #pf-playful .pf-word figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+  }
+  /* the contact dialog: a form, then a thank-you */
+  #pf-playful .pf-hello {
+    width: min(92vw, 32rem);
+    margin: auto;
+    padding: 0;
+    border: 2px solid var(--border);
+    border-radius: calc(var(--radius) * 2);
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: 0.6rem 0.6rem 0 var(--chart-4);
+  }
+  #pf-playful .pf-hello::backdrop {
+    background: oklch(0.27 0.06 275 / 0.45);
+    backdrop-filter: blur(4px);
+  }
+  #pf-playful .pf-hello-form,
+  #pf-playful .pf-hello-done {
+    display: grid;
+    gap: 1rem;
+    padding: 1.75rem;
+  }
+  #pf-playful .pf-hello h2 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+  #pf-playful .pf-hello-lede {
+    margin: -0.5rem 0 0;
+    color: var(--muted-foreground);
+  }
+  #pf-playful .pf-hello-row {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  #pf-playful .pf-budget {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #pf-playful .pf-budget legend {
+    margin-block-end: 0.4rem;
+  }
+  #pf-playful .pf-budget label {
+    padding: 0.35rem 0.8rem;
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #pf-playful .pf-budget input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #pf-playful .pf-budget label:has(:checked) {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  #pf-playful .pf-budget label:has(:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  #pf-playful .pf-hello-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  #pf-playful .pf-hello-done {
+    justify-items: center;
+    text-align: center;
+  }
+  #pf-playful .pf-hello-done p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  #pf-playful .pf-hello-done .pf-sticker {
+    position: static;
+  }
+  #pf-playful .pf-hello:not([data-sent]) .pf-hello-done,
+  #pf-playful .pf-hello[data-sent] .pf-hello-form {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #pf-playful :is(.pf-filter label, .pf-offer) {
+      transition: none;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #pf-playful .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #pf-playful .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  #pf-playful {
+    position: relative;
+  }
+  #pf-playful > .site-mode {
+    position: absolute;
+    z-index: 20;
+    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #pf-playful {
+    --accent: oklch(0.94 0.045 98);
+  }
+  .dark #pf-playful {
+    --accent: oklch(0.31 0.05 98);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="pf-playful">
+  <label class="swap site-mode" data-variant="rotate" data-size="sm">
+    <input type="checkbox" data-site-mode aria-label="Dark mode" />
+    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+  </label>
+  <div class="pf-page">
+    <section class="pf-hero pattern-dots" aria-labelledby="pf-play-title">
+      <span
+        class="pf-blob corner-blob"
+        style="inset: auto auto -6rem -5rem; background: var(--chart-5)"
+        aria-hidden="true"
+      ></span>
+      <span
+        class="pf-blob corner-blob-3"
+        style="inset: -6rem -4rem auto auto; background: var(--chart-3); animation-delay: -4s"
+        aria-hidden="true"
+      ></span>
+      <div class="flex flex-col gap-5">
+        <p class="pf-hi" data-df-entrance="pop"><span>👋</span> Hi, I'm Juno.</p>
+        <h1 class="pf-title" id="pf-play-title" data-df-entrance="up">
+          I draw
+          <span class="text-rotate"
+            ><span
+              ><span style="color: var(--chart-2)">monsters</span><span style="color: var(--chart-1)">maps</span
+              ><span style="color: oklch(0.6 0.15 165)">manuals</span
+              ><span style="color: oklch(0.62 0.2 350)">mascots</span></span
+            ></span
+          >
+          for people who like to smile.
+        </h1>
+        <p class="pf-lede" data-df-entrance="up" style="--df-motion-delay: 150ms"
+          >Picture books, wayfinding and characters for brands - from Busan, drawn in Lisbon.</p
+        >
+        <div class="flex flex-wrap gap-2" data-df-entrance="up" style="--df-motion-delay: 250ms">
+          <a class="btn" data-size="lg" href="#pf-play-work"><i data-lucide="sparkles"></i> See the drawings</a>
+          <button
+            class="btn"
+            data-size="lg"
+            data-variant="outline"
+            type="button"
+            commandfor="pf-play-hello"
+            command="show-modal"
+            >Say hello</button
+          >
+        </div>
+      </div>
+      <div class="pf-portrait" data-df-entrance="pop" style="--df-motion-delay: 300ms">
+        <div class="drop-shadow-float"
+          ><img class="shape-flower" src="https://picsum.photos/id/64/700/700" alt="Juno Park"
+        /></div>
+        <span class="pf-sticker shape-burst" aria-hidden="true">Hi<br />there!</span>
+      </div>
+    </section>
+    <section class="mk-news-ticker" data-variant="pill" aria-label="Clients">
+      <span class="mk-news-ticker-label">Drawn for</span>
+      <div class="mk-news-ticker-viewport">
+        <div class="mk-news-ticker-track">
+          <ul class="mk-news-ticker-items">
+            <li><a href="#">Penguin Kids</a></li>
+            <li><a href="#">Lisbon Oceanarium</a></li>
+            <li><a href="#">The Guardian</a></li>
+            <li><a href="#">Busan Zoo</a></li>
+            <li><a href="#">Duolingo</a></li>
+            <li><a href="#">Kiel Kite Festival</a></li>
+          </ul>
+          <ul class="mk-news-ticker-items" aria-hidden="true" inert>
+            <li><a href="#">Penguin Kids</a></li>
+            <li><a href="#">Lisbon Oceanarium</a></li>
+            <li><a href="#">The Guardian</a></li>
+            <li><a href="#">Busan Zoo</a></li>
+            <li><a href="#">Duolingo</a></li>
+            <li><a href="#">Kiel Kite Festival</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section id="pf-play-work" aria-labelledby="pf-play-work-title">
+      <h2 id="pf-play-work-title">Fresh off the <mark>desk</mark></h2>
+      <div class="pf-filter" role="radiogroup" aria-label="Show">
+        <label><input type="radio" name="pf-play-kind" value="all" checked />Everything</label>
+        <label><input type="radio" name="pf-play-kind" value="book" />Picture books</label>
+        <label><input type="radio" name="pf-play-kind" value="mascot" />Mascots</label>
+        <label><input type="radio" name="pf-play-kind" value="pack" />Packaging</label>
+        <label><input type="radio" name="pf-play-kind" value="way" />Wayfinding</label>
+      </div>
+      <ul class="mk-portfolio-grid" data-variant="scatter">
+        <li class="mk-portfolio-grid-item" data-kind="book" data-df-entrance="pop" style="--df-motion-delay: 0ms">
+          <button
+            class="mk-portfolio-grid-link frame-tape"
+            type="button"
+            commandfor="pf-play-viewer"
+            command="show-modal"
+            data-slide="0"
+          >
+            <img
+              class="mk-portfolio-grid-media"
+              src="https://picsum.photos/id/1069/600/600"
+              alt="An orange jellyfish in deep blue water"
+            />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Deep-sea bedtime</strong>
+              <span class="mk-portfolio-grid-meta">Picture book</span>
+            </span>
+          </button>
+        </li>
+        <li class="mk-portfolio-grid-item" data-kind="mascot" data-df-entrance="pop" style="--df-motion-delay: 90ms">
+          <button
+            class="mk-portfolio-grid-link"
+            type="button"
+            commandfor="pf-play-viewer"
+            command="show-modal"
+            data-slide="1"
+          >
+            <img
+              class="mk-portfolio-grid-media"
+              src="https://picsum.photos/id/1084/600/600"
+              alt="Two walruses resting on a rock"
+            />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Walrus Wally</strong>
+              <span class="mk-portfolio-grid-meta">Mascot</span>
+            </span>
+          </button>
+        </li>
+        <li class="mk-portfolio-grid-item" data-kind="pack" data-df-entrance="pop" style="--df-motion-delay: 180ms">
+          <button
+            class="mk-portfolio-grid-link frame-tape"
+            type="button"
+            commandfor="pf-play-viewer"
+            command="show-modal"
+            data-slide="2"
+          >
+            <img
+              class="mk-portfolio-grid-media"
+              src="https://picsum.photos/id/1080/600/600"
+              alt="Fresh strawberries in market crates"
+            />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Berry good jam</strong>
+              <span class="mk-portfolio-grid-meta">Packaging</span>
+            </span>
+          </button>
+        </li>
+        <li class="mk-portfolio-grid-item" data-kind="way" data-df-entrance="pop" style="--df-motion-delay: 270ms">
+          <button
+            class="mk-portfolio-grid-link"
+            type="button"
+            commandfor="pf-play-viewer"
+            command="show-modal"
+            data-slide="3"
+          >
+            <img
+              class="mk-portfolio-grid-media"
+              src="https://picsum.photos/id/1062/600/600"
+              alt="A pug wrapped in a blanket on a bed"
+            />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Dog park map</strong>
+              <span class="mk-portfolio-grid-meta">Wayfinding</span>
+            </span>
+          </button>
+        </li>
+        <li class="mk-portfolio-grid-item" data-kind="book" data-df-entrance="pop" style="--df-motion-delay: 360ms">
+          <button
+            class="mk-portfolio-grid-link frame-tape"
+            type="button"
+            commandfor="pf-play-viewer"
+            command="show-modal"
+            data-slide="4"
+          >
+            <img
+              class="mk-portfolio-grid-media"
+              src="https://picsum.photos/id/1003/600/600"
+              alt="A young deer standing in a sunlit forest"
+            />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Little deer, big forest</strong>
+              <span class="mk-portfolio-grid-meta">Picture book</span>
+            </span>
+          </button>
+        </li>
+        <li class="mk-portfolio-grid-item" data-kind="mascot" data-df-entrance="pop" style="--df-motion-delay: 450ms">
+          <button
+            class="mk-portfolio-grid-link"
+            type="button"
+            commandfor="pf-play-viewer"
+            command="show-modal"
+            data-slide="5"
+          >
+            <img
+              class="mk-portfolio-grid-media"
+              src="https://picsum.photos/id/433/600/600"
+              alt="A brown bear looking into the camera"
+            />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Bear's bakery</strong>
+              <span class="mk-portfolio-grid-meta">Mascot</span>
+            </span>
+          </button>
+        </li>
+        <li class="mk-portfolio-grid-item" data-kind="way" data-df-entrance="pop" style="--df-motion-delay: 540ms">
+          <button
+            class="mk-portfolio-grid-link frame-tape"
+            type="button"
+            commandfor="pf-play-viewer"
+            command="show-modal"
+            data-slide="6"
+          >
+            <img
+              class="mk-portfolio-grid-media"
+              src="https://picsum.photos/id/237/600/600"
+              alt="A black puppy sitting on wooden boards"
+            />
+            <span class="mk-portfolio-grid-caption">
+              <strong class="mk-portfolio-grid-title">Puppy school signs</strong>
+              <span class="mk-portfolio-grid-meta">Wayfinding</span>
+            </span>
+          </button>
+        </li>
+      </ul>
+      <dialog class="mk-media-gallery-viewer pf-viewer" id="pf-play-viewer" aria-label="Drawings">
+        <div class="mk-media-gallery-viewer-inner">
+          <ul class="mk-media-gallery-track" tabindex="0" aria-label="Drawings - scroll sideways">
+            <li
+              ><img src="https://picsum.photos/id/1069/1400/1050" alt="An orange jellyfish in deep blue water" /><p
+                ><strong>Deep-sea bedtime</strong> · Picture book for Penguin Kids, 2026 · 1 / 7<br />Thirty-two pages
+                of glowing creatures that get sleepier on every spread.</p
+              ></li
+            >
+            <li
+              ><img src="https://picsum.photos/id/1084/1400/1050" alt="Two walruses resting on a rock" /><p
+                ><strong>Walrus Wally</strong> · Mascot for Lisbon Oceanarium, 2026 · 2 / 7<br />A grumpy, kind walrus
+                who explains the tanks to children - twelve poses and a costume.</p
+              ></li
+            >
+            <li
+              ><img src="https://picsum.photos/id/1080/1400/1050" alt="Fresh strawberries in market crates" /><p
+                ><strong>Berry good jam</strong> · Packaging for Quinta do Monte, 2025 · 3 / 7<br />Six jam labels;
+                every fruit has a face and an opinion.</p
+              ></li
+            >
+            <li
+              ><img src="https://picsum.photos/id/1062/1400/1050" alt="A pug wrapped in a blanket on a bed" /><p
+                ><strong>Dog park map</strong> · Wayfinding for Câmara de Lisboa, 2025 · 4 / 7<br />Signs for three dog
+                parks, drawn so a dog owner reads them at a jog.</p
+              ></li
+            >
+            <li
+              ><img src="https://picsum.photos/id/1003/1400/1050" alt="A young deer standing in a sunlit forest" /><p
+                ><strong>Little deer, big forest</strong> · Picture book for Busan Zoo, 2024 · 5 / 7<br />A board book
+                about getting lost and found again, printed in Korean and English.</p
+              ></li
+            >
+            <li
+              ><img src="https://picsum.photos/id/433/1400/1050" alt="A brown bear looking into the camera" /><p
+                ><strong>Bear's bakery</strong> · Mascot for Duolingo, 2024 · 6 / 7<br />A baker bear for a language
+                course on food words - flour on every paw.</p
+              ></li
+            >
+            <li
+              ><img src="https://picsum.photos/id/237/1400/1050" alt="A black puppy sitting on wooden boards" /><p
+                ><strong>Puppy school signs</strong> · Wayfinding for Kiel Kite Festival, 2023 · 7 / 7<br />Arrows with
+                ears: the festival grounds, mapped for small and tall visitors.</p
+              ></li
+            >
+          </ul>
+          <div class="pf-viewer-steps">
+            <button class="pf-viewer-step" type="button" data-viewer-step="-1" aria-label="Previous drawing"
+              ><i data-lucide="arrow-left"></i
+            ></button>
+            <p class="mk-media-gallery-hint">Swipe, scroll or use ← → · Esc closes</p>
+            <button class="pf-viewer-step" type="button" data-viewer-step="1" aria-label="Next drawing"
+              ><i data-lucide="arrow-right"></i
+            ></button>
+          </div>
+          <form method="dialog"
+            ><button class="mk-media-gallery-close" aria-label="Close"><i data-lucide="x"></i></button
+          ></form>
+        </div>
+      </dialog>
+    </section>
+    <section aria-labelledby="pf-play-how">
+      <h2 id="pf-play-how">How a drawing <mark>happens</mark></h2>
+      <ol class="pf-steps" data-df-stagger style="--df-motion-stagger-step: 90ms">
+        <li data-df-entrance="up">
+          <span class="pf-step-num corner-blob" style="background: var(--chart-4)">1</span>
+          <h3>A call and a coffee</h3>
+          <p>Thirty minutes about who will read it, where it hangs and what it must never look like.</p>
+          <span class="pf-step-time">day 1</span>
+        </li>
+        <li data-df-entrance="up">
+          <span class="pf-step-num corner-blob-2" style="background: var(--chart-3)">2</span>
+          <h3>Thumbnails</h3>
+          <p>A page of tiny pencil sketches. You circle the ones that make you smile.</p>
+          <span class="pf-step-time">week 1</span>
+        </li>
+        <li data-df-entrance="up">
+          <span class="pf-step-num corner-blob-3" style="background: var(--chart-5)">3</span>
+          <h3>Colour roughs</h3>
+          <p>Two directions in colour, drawn at size - one safe, one a little braver.</p>
+          <span class="pf-step-time">week 2</span>
+        </li>
+        <li data-df-entrance="up">
+          <span class="pf-step-num corner-blob" style="background: var(--chart-1)">4</span>
+          <h3>Final files</h3>
+          <p>Print-ready, layered and animated where it helps. Two rounds of changes included.</p>
+          <span class="pf-step-time">week 3-4</span>
+        </li>
+      </ol>
+    </section>
+    <section aria-labelledby="pf-play-price">
+      <h2 id="pf-play-price">Things you can <mark>commission</mark></h2>
+      <ul class="pf-offers">
+        <li class="pf-offer" style="--pf-offer: var(--chart-4)">
+          <span class="pf-offer-icon shape-heart" aria-hidden="true"></span>
+          <h3>Spot illustration</h3>
+          <p class="pf-offer-price"><small>from</small> €350</p>
+          <p>One drawing for an article, a menu or a label. About a week.</p>
+          <button
+            class="btn"
+            data-variant="outline"
+            type="button"
+            commandfor="pf-play-hello"
+            command="show-modal"
+            data-hello-kind="spot"
+            >Ask about this</button
+          >
+        </li>
+        <li class="pf-offer" data-featured style="--pf-offer: var(--chart-3)">
+          <span class="pf-offer-badge">Most asked</span>
+          <span class="pf-offer-icon shape-cloud" aria-hidden="true"></span>
+          <h3>A mascot</h3>
+          <p class="pf-offer-price"><small>from</small> €2,400</p>
+          <p>A character with a name, a turnaround sheet and twelve poses. Four weeks.</p>
+          <button class="btn" type="button" commandfor="pf-play-hello" command="show-modal" data-hello-kind="mascot"
+            >Ask about this</button
+          >
+        </li>
+        <li class="pf-offer" style="--pf-offer: var(--chart-5)">
+          <span class="pf-offer-icon shape-star-6" aria-hidden="true"></span>
+          <h3>Picture book</h3>
+          <p class="pf-offer-price"><small>from</small> €6,500</p>
+          <p>Thirty-two pages with a cover, from storyboard to print files. About three months.</p>
+          <button
+            class="btn"
+            data-variant="outline"
+            type="button"
+            commandfor="pf-play-hello"
+            command="show-modal"
+            data-hello-kind="book"
+            >Ask about this</button
+          >
+        </li>
+      </ul>
+    </section>
+    <section aria-labelledby="pf-play-words">
+      <h2 id="pf-play-words">Kind <mark>words</mark></h2>
+      <div class="pf-words">
+        <figure class="pf-word" style="--pf-word: var(--secondary); --pf-word-fg: var(--secondary-foreground)">
+          <blockquote>"Children queue to take a photo with Wally. Nobody queues for our old logo."</blockquote>
+          <figcaption
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=45" alt="" /></span
+            >Priya Natarajan, Lisbon Oceanarium</figcaption
+          >
+        </figure>
+        <figure class="pf-word" style="--pf-word: oklch(0.93 0.06 165)">
+          <blockquote>"Juno draws the joke you did not know the brief had."</blockquote>
+          <figcaption
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=13" alt="" /></span
+            >Marco Rossi, Penguin Kids</figcaption
+          >
+        </figure>
+      </div>
+    </section>
+    <section aria-labelledby="pf-play-shelf">
+      <h2 id="pf-play-shelf">Little things I keep <mark>drawing</mark></h2>
+      <ul class="pf-shelf" data-df-stagger style="--df-motion-stagger-step: 100ms">
+        <li data-df-entrance="pop">
+          <span class="shape-heart" style="background: var(--chart-4)" aria-hidden="true"></span>
+          <p>Hearts with feet</p>
+        </li>
+        <li data-df-entrance="pop">
+          <span class="shape-cloud" style="background: var(--chart-3)" aria-hidden="true"></span>
+          <p>Sleepy clouds</p>
+        </li>
+        <li data-df-entrance="pop">
+          <span class="shape-star-6" style="background: var(--chart-5)" aria-hidden="true"></span>
+          <p>Stars that wink</p>
+        </li>
+        <li data-df-entrance="pop">
+          <span class="shape-daisy" style="background: var(--chart-1)" aria-hidden="true"></span>
+          <p>Daisies, always</p>
+        </li>
+      </ul>
+    </section>
+    <section aria-labelledby="pf-play-skills">
+      <h2 id="pf-play-skills">What's in the <mark>pencil case</mark></h2>
+      <div class="mk-skill-matrix" data-variant="tags">
+        <section class="mk-skill-matrix-group" aria-labelledby="pf-play-tools">
+          <h3 class="mk-skill-matrix-title" id="pf-play-tools"><i data-lucide="pencil"></i> Tools</h3>
+          <ul class="mk-skill-matrix-list">
+            <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Procreate</span></li>
+            <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Gouache</span></li>
+            <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">After Effects</span></li>
+            <li class="mk-skill-matrix-skill"
+              ><span class="mk-skill-matrix-name">Rive</span> <span class="mk-skill-matrix-note">interactive</span></li
+            >
+            <li class="mk-skill-matrix-skill"><span class="mk-skill-matrix-name">Risograph</span></li>
+          </ul>
+        </section>
+        <section class="mk-skill-matrix-group" aria-labelledby="pf-play-lang">
+          <h3 class="mk-skill-matrix-title" id="pf-play-lang"><i data-lucide="languages"></i> Languages</h3>
+          <ul class="mk-skill-matrix-list">
+            <li class="mk-skill-matrix-skill"
+              ><span class="mk-skill-matrix-name">Korean</span> <span class="mk-skill-matrix-note">native</span></li
+            >
+            <li class="mk-skill-matrix-skill"
+              ><span class="mk-skill-matrix-name">English</span> <span class="mk-skill-matrix-note">fluent</span></li
+            >
+            <li class="mk-skill-matrix-skill"
+              ><span class="mk-skill-matrix-name">Portuguese</span>
+              <span class="mk-skill-matrix-note">getting there</span></li
+            >
+          </ul>
+        </section>
+      </div>
+    </section>
+    <aside class="mk-availability pattern-polka" data-variant="spotlight" aria-labelledby="pf-play-hire">
+      <p class="mk-availability-status"
+        ><span class="indicator-dot" data-variant="success" data-animate="ping" aria-hidden="true"></span> Booking
+        spring 2027</p
+      >
+      <h2 class="mk-availability-title" id="pf-play-hire">Got a character that needs a face?</h2>
+      <div class="mk-availability-actions">
+        <button
+          class="btn"
+          data-size="lg"
+          data-variant="secondary"
+          type="button"
+          commandfor="pf-play-hello"
+          command="show-modal"
+          ><i data-lucide="pencil"></i> Tell me about it</button
+        >
+        <a class="btn" data-size="lg" data-variant="ghost" href="mailto:juno@example.com"
+          ><i data-lucide="mail"></i> juno@example.com</a
+        >
+      </div>
+    </aside>
+    <dialog class="pf-hello" id="pf-play-hello" aria-labelledby="pf-play-hello-title">
+      <form class="pf-hello-form" data-hello>
+        <h2 id="pf-play-hello-title">Say hello</h2>
+        <p class="pf-hello-lede">A few lines are plenty - I answer within two days.</p>
+        <div class="pf-hello-row">
+          <label class="label" for="pf-hello-name">Your name</label>
+          <input class="input" id="pf-hello-name" name="name" autocomplete="name" required />
+        </div>
+        <div class="pf-hello-row">
+          <label class="label" for="pf-hello-mail">Email</label>
+          <input class="input" id="pf-hello-mail" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div class="pf-hello-row">
+          <label class="label" for="pf-hello-kind">What is it?</label>
+          <select class="select" id="pf-hello-kind" name="kind">
+            <option value="spot">A spot illustration</option>
+            <option value="mascot">A mascot</option>
+            <option value="book">A picture book</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+        <fieldset class="pf-hello-row pf-budget">
+          <legend class="label">Budget</legend>
+          <label><input type="radio" name="budget" value="s" checked />under €1k</label>
+          <label><input type="radio" name="budget" value="m" />€1-5k</label>
+          <label><input type="radio" name="budget" value="l" />€5k+</label>
+        </fieldset>
+        <div class="pf-hello-row">
+          <label class="label" for="pf-hello-text">Tell me about it</label>
+          <textarea class="textarea" id="pf-hello-text" name="message" rows="4" required></textarea>
+        </div>
+        <div class="pf-hello-actions">
+          <button class="btn" data-variant="ghost" type="button" commandfor="pf-play-hello" command="close"
+            >Cancel</button
+          >
+          <button class="btn" type="submit"><i data-lucide="send"></i> Send</button>
+        </div>
+      </form>
+      <div class="pf-hello-done" tabindex="-1">
+        <span class="pf-sticker shape-burst" aria-hidden="true">Yay!</span>
+        <h2>Thank you!</h2>
+        <p>Your note is on my desk. I answer within two days - usually with a doodle.</p>
+        <button class="btn" type="button" commandfor="pf-play-hello" command="close">Close</button>
+      </div>
+    </dialog>
+  </div>
+</div>
+<script type="module">
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#pf-playful [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
+    // the viewer: the button's command opens the dialog, then the click scrolls it to that drawing
+    const track = df$('#pf-play-viewer .mk-media-gallery-track');
+    const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    df$('#pf-playful [data-slide]').on('click', (event) => {
+      const n = Number(event.currentTarget.dataset.slide);
+      setTimeout(() => track.children().get(n)?.scrollIntoView({ block: 'nearest', inline: 'start' }));
+    });
+    df$('#pf-play-viewer [data-viewer-step]').on('click', (event) => {
+      const el = track.get(0);
+      el.scrollBy({
+        left: Number(event.currentTarget.dataset.viewerStep) * el.clientWidth,
+        behavior: still() ? 'instant' : 'smooth',
+      });
+    });
+
+    // the contact dialog: an offer's button picks its kind; sending shows the thank-you (a demo - nothing leaves the page)
+    const hello = df$('#pf-play-hello');
+    df$('#pf-playful [data-hello-kind]').on('click', (event) => {
+      df$('#pf-hello-kind').val(event.currentTarget.dataset.helloKind);
+    });
+    df$('#pf-playful [data-hello]').on('submit', (event) => {
+      event.preventDefault();
+      hello.attr('data-sent', '');
+      hello.find('.pf-hello-done').get(0).focus();
+    });
+    hello.on('close', () => {
+      hello.attr('data-sent', null);
+      hello.find('form').get(0).reset();
+    });
+  });
+</script>
+```
+
+<DocText>Built from <DocLink href="text-rotate.html">Text Rotate</DocLink>, <DocLink href="news-ticker.html">News Ticker</DocLink> (pill), <DocLink href="portfolio-grid.html">Portfolio Grid</DocLink> (scatter), <DocLink href="skill-matrix.html">Skill Matrix</DocLink> (tags), <DocLink href="availability.html">Availability</DocLink> (spotlight), <DocLink href="avatar.html">Avatar</DocLink> and a contact <DocLink href="dialog.html">Dialog</DocLink> with <DocLink href="input.html">Input</DocLink>, <DocLink href="select.html">Select</DocLink> and <DocLink href="textarea.html">Textarea</DocLink>. The pieces open in the <DocLink href="media-gallery.html">Media Gallery</DocLink>'s viewer; the filter is radios read by <code>:has()</code>. The palette, the round corners and the typeface are set on the page's root. The flower, the blobs, the burst, the tape, the stickers and the patterns are <DocLink href="shapes.html">Shapes</DocLink> utilities, the entrances <DocLink href="motion.html">Motion</DocLink>'s.</DocText>
+
+</DocPage>

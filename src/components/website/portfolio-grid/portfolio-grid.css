@@ -1,0 +1,398 @@
+/* -- Portfolio Grid (website · Resume & Portfolio) ------------------------
+   The work, arranged: a list of projects, each a link around its picture and caption. A bento mosaic (default -
+   items span wide, tall or big, the gaps fill densely), masonry columns, scattered polaroids that straighten on
+   hover, a film strip that scrolls sideways and snaps, or an editorial index of big titles whose picture shows on
+   hover and focus. The list is a container: narrow, the spans fold and the index shows its pictures inline. No
+   script - pair the items with shape utilities, Motion entrances or Parallax reveals for character. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-portfolio-grid, .mk-portfolio-grid *, .mk-portfolio-grid ::before, .mk-portfolio-grid ::after) {
+    box-sizing: border-box;
+  }
+
+  /* bento: a dense mosaic - items span wide, tall or big */
+  .mk-portfolio-grid {
+    container: mk-portfolio-grid / inline-size;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    grid-auto-rows: 12rem;
+    grid-auto-flow: dense;
+    gap: 1rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: mk-portfolio-grid;
+  }
+
+  .mk-portfolio-grid-item {
+    min-width: 0;
+    counter-increment: mk-portfolio-grid;
+
+    &[data-span="wide"] {
+      grid-column: span 2;
+    }
+    &[data-span="tall"] {
+      grid-row: span 2;
+    }
+    &[data-span="big"] {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
+
+  .mk-portfolio-grid-link {
+    position: relative;
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 3px;
+    }
+  }
+
+  .mk-portfolio-grid-media {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: scale 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-media {
+    scale: 1.06;
+  }
+
+  /* the caption: over the picture on a scrim in the mosaic, under it elsewhere */
+  .mk-portfolio-grid-caption {
+    position: absolute;
+    inset: auto 0 0;
+    display: grid;
+    gap: 0.125rem;
+    padding: 2.5rem 1rem 0.875rem;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.72), rgb(0 0 0 / 0));
+    color: #fff;
+    transition: translate 300ms ease;
+  }
+  .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-caption {
+    translate: 0 -0.25rem;
+  }
+  .mk-portfolio-grid-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  .mk-portfolio-grid-meta {
+    font-size: 0.8125rem;
+    opacity: 0.85;
+  }
+
+  /* narrow: the spans fold into the single column */
+  @container mk-portfolio-grid (max-width: 26rem) {
+    .mk-portfolio-grid-item[data-span] {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+
+  /* masonry, scatter, strip: the caption sits under the picture */
+  .mk-portfolio-grid:is([data-variant="masonry"], [data-variant="scatter"], [data-variant="strip"]) {
+    & .mk-portfolio-grid-link {
+      height: auto;
+      overflow: visible;
+      background: none;
+    }
+    & .mk-portfolio-grid-media {
+      height: auto;
+      border-radius: var(--radius-xl);
+    }
+    & .mk-portfolio-grid-caption {
+      position: static;
+      padding: 0.75rem 0.125rem 0;
+      background: none;
+      color: inherit;
+    }
+    & .mk-portfolio-grid-meta {
+      color: var(--muted-foreground);
+      opacity: 1;
+    }
+    & .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-caption {
+      translate: none;
+    }
+  }
+
+  /* masonry: columns of natural heights */
+  .mk-portfolio-grid[data-variant="masonry"] {
+    display: block;
+    columns: 15rem;
+    column-gap: 1rem;
+
+    & .mk-portfolio-grid-item {
+      margin-block-end: 1.25rem;
+      break-inside: avoid;
+    }
+    & .mk-portfolio-grid-link {
+      border-radius: var(--radius-xl);
+    }
+    & .mk-portfolio-grid-media {
+      overflow: hidden;
+    }
+  }
+
+  /* scatter: polaroids on a table - each one tilted, straight and lifted on hover or focus */
+  .mk-portfolio-grid[data-variant="scatter"] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem 0.5rem;
+    padding-block: 1rem;
+
+    & .mk-portfolio-grid-item {
+      --mk-portfolio-grid-tilt: -3deg;
+      position: relative;
+      width: clamp(10rem, 30%, 15rem);
+
+      &:nth-child(2n) {
+        --mk-portfolio-grid-tilt: 2.5deg;
+      }
+      &:nth-child(3n) {
+        --mk-portfolio-grid-tilt: -1.5deg;
+      }
+      &:nth-child(5n) {
+        --mk-portfolio-grid-tilt: 4deg;
+      }
+      &:has(:hover, :focus-visible) {
+        z-index: 1;
+      }
+    }
+    & .mk-portfolio-grid-link {
+      padding: 0.75rem 0.75rem 1rem;
+      border-radius: 2px;
+      background: var(--card);
+      color: var(--card-foreground);
+      box-shadow: var(--shadow-lg);
+      rotate: var(--mk-portfolio-grid-tilt);
+      transition:
+        rotate 300ms ease,
+        scale 300ms ease,
+        box-shadow 300ms ease;
+
+      &:is(:hover, :focus-visible) {
+        rotate: 0deg;
+        scale: 1.06;
+        box-shadow: var(--shadow-2xl);
+      }
+    }
+    & .mk-portfolio-grid-media {
+      aspect-ratio: 1;
+      border-radius: 0;
+    }
+    & .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-media {
+      scale: none;
+    }
+    & .mk-portfolio-grid-caption {
+      text-align: center;
+    }
+    & .mk-portfolio-grid-title {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 500;
+    }
+  }
+
+  /* strip: a film strip that scrolls sideways and snaps to each project */
+  .mk-portfolio-grid[data-variant="strip"] {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: min(78%, 20rem);
+    grid-auto-rows: auto;
+    gap: 1.25rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-block-end: 0.75rem;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0.25rem;
+
+    & .mk-portfolio-grid-item {
+      scroll-snap-align: start;
+    }
+    & .mk-portfolio-grid-link {
+      overflow: hidden;
+    }
+    & .mk-portfolio-grid-media {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* index: an editorial list - numbered big titles; the picture shows beside the title on hover or focus */
+  .mk-portfolio-grid[data-variant="index"] {
+    display: block;
+    border-block-start: 1px solid var(--border);
+
+    & .mk-portfolio-grid-item {
+      position: relative;
+      border-block-end: 1px solid var(--border);
+    }
+    & .mk-portfolio-grid-link {
+      position: static;
+      display: grid;
+      grid-template-columns: 3rem minmax(0, 1fr) auto;
+      align-items: baseline;
+      gap: 1rem;
+      height: auto;
+      padding-block: 1.25rem;
+      overflow: visible;
+      border-radius: 0;
+      background: none;
+
+      &::before {
+        content: counter(mk-portfolio-grid, decimal-leading-zero);
+        color: var(--muted-foreground);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+    }
+    & .mk-portfolio-grid-caption {
+      position: static;
+      display: contents;
+      padding: 0;
+      background: none;
+      color: inherit;
+    }
+    & .mk-portfolio-grid-title {
+      font-size: clamp(1.5rem, 1rem + 3cqi, 3rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      transition: translate 300ms ease;
+    }
+    & .mk-portfolio-grid-meta {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      opacity: 1;
+      text-align: end;
+    }
+    & .mk-portfolio-grid-media {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-end: 22%;
+      z-index: 1;
+      width: clamp(9rem, 22cqi, 15rem);
+      height: auto;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      opacity: 0;
+      pointer-events: none;
+      rotate: -4deg;
+      scale: 0.85;
+      translate: 0 -50%;
+      transition:
+        opacity 250ms ease,
+        scale 300ms cubic-bezier(0.2, 0.7, 0.2, 1),
+        rotate 300ms ease;
+    }
+    & .mk-portfolio-grid-link:is(:hover, :focus-visible) {
+      & .mk-portfolio-grid-title {
+        translate: 0.75rem 0;
+      }
+      & .mk-portfolio-grid-media {
+        opacity: 1;
+        rotate: 2deg;
+        scale: 1;
+      }
+    }
+  }
+
+  /* a narrow index: each picture a thumbnail in the row, always shown */
+  @container mk-portfolio-grid (max-width: 36rem) {
+    .mk-portfolio-grid[data-variant="index"] {
+      & .mk-portfolio-grid-link {
+        grid-template-columns: 4rem minmax(0, 1fr);
+        align-items: center;
+
+        &::before {
+          display: none;
+        }
+      }
+      & .mk-portfolio-grid-media {
+        position: static;
+        grid-row: span 2;
+        width: 4rem;
+        opacity: 1;
+        rotate: none;
+        scale: none;
+        translate: none;
+        box-shadow: none;
+      }
+      & .mk-portfolio-grid-meta {
+        grid-column: 2;
+        text-align: start;
+      }
+      & .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-title {
+        translate: none;
+      }
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    .mk-portfolio-grid-item {
+      break-inside: avoid;
+    }
+    .mk-portfolio-grid[data-variant="strip"] {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      overflow: visible;
+    }
+    .mk-portfolio-grid[data-variant="index"] .mk-portfolio-grid-media {
+      display: none;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-portfolio-grid-media,
+    .mk-portfolio-grid-caption,
+    .mk-portfolio-grid-title,
+    .mk-portfolio-grid[data-variant="scatter"] .mk-portfolio-grid-link {
+      transition: none;
+    }
+    .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-media {
+      scale: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .mk-portfolio-grid-caption {
+      background: rgb(0 0 0 / 0.85);
+    }
+    .mk-portfolio-grid:is(
+        [data-variant="masonry"],
+        [data-variant="scatter"],
+        [data-variant="strip"],
+        [data-variant="index"]
+      )
+      .mk-portfolio-grid-meta {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-portfolio-grid-link {
+      border: 1px solid CanvasText;
+    }
+    .mk-portfolio-grid-caption {
+      forced-color-adjust: none;
+      background: Canvas;
+      color: CanvasText;
+    }
+  }
+}

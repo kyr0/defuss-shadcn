@@ -15,4 +15,12 @@ await cssSmoke('event-countdown', [
     if (!bg.includes('radial-gradient')) throw new Error(bg);
   } },
   { label: 'inline: one row', selector: '.mk-event-countdown[data-variant="inline"] .mk-event-countdown-inner', css: { 'flex-direction': 'row' } },
+  { label: 'inline: the early bird ticks - data-duration is a deadline counted from the page load, so the demo never runs out', run: async (page) => {
+    await page.waitForFunction(() => (document.querySelector('.mk-event-countdown[data-variant="inline"] .countdown-group') as HTMLElement | null)?.dataset.stateName === 'running');
+    const seconds = () => page.evaluate(() => document.querySelector('.mk-event-countdown[data-variant="inline"] [data-unit="seconds"]')!.textContent);
+    const first = await seconds();
+    await page.waitForTimeout(1600);
+    const later = await seconds();
+    if (first === later) throw new Error(`the seconds stayed at ${first}`);
+  } },
 ]);

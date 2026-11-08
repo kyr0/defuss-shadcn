@@ -3860,11 +3860,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
-  import {
-    createDomI18n,
-    createI18n,
-    resolveLocale,
-  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
@@ -3872,7 +3868,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
     // -- translation: the markup is the catalog (the templates at the end of the app)
     const locale = createI18n({
-      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+      locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(app, locale);
     const language = df$('[data-app-locale]');
@@ -3930,14 +3926,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <ul class="text-sm" style="display:grid;gap:0.5rem;max-width:46rem;padding-inline-start:1.25rem">
   <li><strong>Layout</strong> - a rail, the chat list, the conversation and an optional contact-info column in one grid; below 48rem of width you see the list <em>or</em> the chat, with a back link.</li>
-  <li><strong>Resizable list</strong> - the chat list sits in a <DocLink href="resizer.html">Resizer</DocLink> with <code>data-variant="divider"</code>: drag its edge, or Tab to it and press ← / →; a double-click restores the default width, and the width you chose is remembered.</li>
+  <li><strong>Resizable list</strong> - the chat list sits in a <DocLink href="resizer.html">Resizer</DocLink> with <code>data-variant="divider"</code>: drag its edge, or Tab to it and press the left or right arrow key; a double-click restores the default width, and the width you chose is remembered.</li>
   <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: <code>#/</code> is the list, <code>#/chats/:id</code> a chat (the <code>:id</code> parameter names its thread); the commit shows that thread, marks its row read and current, fills the info column and, below 48rem, swaps the list for the chat. Back and forward work, chats are linkable. Inside the docs preview the same routes match the frame's hash. See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
   <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: Settings › App language switches the rail, the list, the panels, the info column and every label that names a contact (attribute variants: <code>data-i18n-aria-label-de</code>) between English and German. Messages, toasts and replies stay as they were written. See <DocLink href="translation.html">Translation</DocLink>.</li>
   <li><strong>CSS state</strong> - the rail tabs, the filter chips (All / Unread / Favourites / Groups), the contact-info column, the voice-note player and the composer's mic / send swap (<code>:placeholder-shown</code>) are form state read by <code>:has()</code>.</li>
   <li><strong>Conversations</strong> - the <DocLink href="session.html">Session</DocLink> component scrolls each transcript and follows new messages; rows are <DocLink href="bubble.html">Bubbles</DocLink> with tails and reactions, <DocLink href="marker.html">Markers</DocLink> for the day separators, a <DocLink href="message.html">Message</DocLink> attachment for the file; delivery ticks use the Message status.</li>
   <li><strong>Composer</strong> - the <DocLink href="textarea.html">Textarea</DocLink> group grows with the text; the emoji panel is a <DocLink href="popover.html">Popover</DocLink>, the attach menu a <DocLink href="dropdown.html">Dropdown</DocLink>.</li>
   <li><strong>Calls and info</strong> - a <DocLink href="dialog.html">Dialog</DocLink> that rings and then times the call; the info column has <DocLink href="switch.html">Switches</DocLink> and <DocLink href="toast.html">Toast</DocLink> feedback.</li>
-  <li><strong>Script</strong> - sending (✓ → ✓✓ → blue ✓✓, "typing...", a reply), the unread badges, the search, emoji insertion, the call timer and the dark-mode switch.</li>
+  <li><strong>Script</strong> - sending (one tick, then two, then two blue ones, "typing...", a reply), the unread badges, the search, emoji insertion, the call timer and the dark-mode switch.</li>
   <li><strong>Full screen</strong> - <DocLink href="app-messenger.html">app-messenger.html</DocLink> is generated from this page's example at build time.</li>
 </ul>
 
