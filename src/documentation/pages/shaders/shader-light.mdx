@@ -1,0 +1,244 @@
+---
+title: "Shaders: Light & Glow"
+description: "Light shaders: god rays from a point the pointer can move, a northern-light aurora, a pulsing border that runs light around a card, a holographic foil over a picture, and lights out of focus."
+slug: "shader-light"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader-light" title="Light & Glow" component="shader">
+  Effects that shine: rays for a logo reveal, an aurora behind a hero, a glow around a call to action, foil on a card. Light adds to its background - a dark one makes it glow, <code>data-background="transparent"</code> lets the page show through.
+</PageHeader>
+
+## God rays
+
+<DocText>Rays fan out from an origin - above the top edge by default - in three layers of angular noise that drift at their own pace, fading with distance. With <code>data-interactive</code> the origin follows the pointer.</DocText>
+
+```html example label="Rays from above" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="god-rays-demo"
+    data-effect="god-rays"
+    data-interactive
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="god-rays-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-origin-x / -y" description="Where the light comes from, 0-1 of the box (0.5, 1.08 - above the top)" />
+  <Variant name="data-density" description="How many rays (1)" />
+  <Variant name="data-intensity" description="Their brightness (1)" />
+  <Variant name="data-spread" description="How far they reach (1)" />
+</SkillGrid>
+
+## Aurora
+
+<DocText>Three curtains of light ripple over a night sky with a few stars. The colors run along the curtains from their foot upward; <code>data-height</code> lifts them.</DocText>
+
+```html example label="Northern lights" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="aurora-demo"
+    data-effect="aurora"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="aurora-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-intensity" description="The light (1)" />
+  <Variant name="data-stars" description="How many stars, 0 for none (1)" />
+  <Variant name="data-height" description="How high the curtains hang (1)" />
+</SkillGrid>
+
+## Pulsing border
+
+<DocText>A ring on the edge of its box - or, as <code>data-variant="border"</code>, on its parent's edge with the parent's corner radius - with light spots running around it and a breathing glow. The inside stays clear.</DocText>
+
+```html example label="A button and a field" schema="none" hint="The button glows around its own edge; the input glows while it has focus. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="grid gap-4 items-center"
+    style="grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); padding: 1.5rem"
+  >
+    <button class="btn" type="button" data-size="lg">
+      <span
+        class="shader"
+        id="pulsing-border-demo"
+        data-variant="border"
+        data-effect="pulsing-border"
+        data-spots="2"
+        data-colors="#f472b6 #facc15 #38bdf8"
+        style="--shader-glow: 0.75rem"
+        aria-hidden="true"
+      ></span>
+      Get early access
+    </button>
+    <label class="grid gap-2 focus-glow">
+      <span class="label">Ask anything</span>
+      <span style="display: block; position: relative; isolation: isolate; border-radius: var(--radius-md)">
+        <span
+          class="shader"
+          data-variant="border"
+          data-effect="pulsing-border"
+          data-thickness="1.5"
+          data-colors="#7c5cff #2bd9ff"
+          style="--shader-glow: 0.75rem"
+          aria-hidden="true"
+        ></span>
+        <input class="input" type="text" placeholder="Search the docs" />
+      </span>
+    </label>
+  </div>
+  <div class="shader-controls" data-shader-for="pulsing-border-demo"></div>
+</div>
+<style>
+  .focus-glow .shader {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .focus-glow:focus-within .shader {
+    opacity: 1;
+  }
+</style>
+```
+
+<SkillGrid>
+  <Variant name="data-thickness" description="The ring's width in CSS pixels (2)" />
+  <Variant name="data-softness" description="How far the glow spreads (1)" />
+  <Variant name="data-spots" description="Light spots running around (3)" />
+  <Variant name="data-pulse" description="How much the glow breathes (0.6)" />
+  <Variant name="--shader-glow" description="How far the border variant reaches past its parent (1.25rem)" />
+</SkillGrid>
+
+## Hologram
+
+<DocText>Holographic foil: rainbow bands that shift with the viewing angle, a sheen that sweeps across, glints and faint scanlines. Over a picture inside the shader the foil lies on the photo; <code>data-interactive</code> tilts it with the pointer.</DocText>
+
+```html example label="A foil portrait" schema="none" hint="Move the pointer over the card to tilt it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="hologram-demo"
+    data-effect="hologram"
+    data-interactive
+    style="max-width: 22rem; border-radius: 1rem"
+  >
+    <img src="https://picsum.photos/id/64/720/960" alt="A portrait" crossorigin="anonymous" width="720" height="960" />
+  </div>
+  <div class="shader-controls" data-shader-for="hologram-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-intensity" description="How strong the foil is (0.85)" />
+  <Variant name="data-scanlines" description="The scanlines, 0 for none (0.6)" />
+  <Variant name="data-sparkle" description="The glints (1)" />
+</SkillGrid>
+
+## Bokeh
+
+<DocText>Out-of-focus lights: four layers of discs, each brighter at its rim like a lens aperture, drifting upward at different speeds and twinkling. The nearer a layer, the larger and softer its discs. Without <code>data-colors</code> it takes a warm and cool evening palette.</DocText>
+
+```html example label="Lights out of focus" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="bokeh-demo"
+    data-effect="bokeh"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="bokeh-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-size" description="The size of the discs (1)" />
+  <Variant name="data-density" description="How many cells hold a light, 0-1 (0.7)" />
+  <Variant name="data-blur" description="How soft their edges are (0.5)" />
+</SkillGrid>
+
+## Prism
+
+<DocText>Beams of white light split into their colors: four bending bands, each a spectrum from red to violet across its width, with a soft glow around it in the palette and a few glints.</DocText>
+
+```html example label="Light through a prism" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="prism-demo"
+    data-effect="prism"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="prism-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-spread" description="How wide each spectrum is (0.6)" />
+  <Variant name="data-sparkle" description="The glints over the beams (0.5)" />
+  <Variant name="data-angle" description="The beams' angle in degrees (-12)" />
+</SkillGrid>
+
+## Lightning
+
+<DocText>Bolts strike from the top, each on a new jagged path with a branch, flicker and fade, and light the clouds behind them. Most moments are dark - the flashes are what you see. The core and the halo are measured in pixels, so a bolt stays a sharp line at any size.</DocText>
+
+```html example label="A thunderstorm" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="lightning-demo"
+    data-effect="lightning"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="lightning-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-bolts" description="How many bolts can strike, 1-3 (2)" />
+  <Variant name="data-branch" description="How long the branches are, 0-1 (0.6)" />
+  <Variant name="data-glow" description="The halo and the flash on the clouds (1)" />
+</SkillGrid>
+
+## Fireflies
+
+<DocText>Points of light drift on their own slow paths over a dark gradient and blink on their own rhythms - a quiet background for a hero or an empty state.</DocText>
+
+```html example label="A summer night" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="fireflies-demo"
+    data-effect="fireflies"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="fireflies-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-count" description="How many fireflies, up to 40 (24)" />
+  <Variant name="data-glow" description="The glow around each (1)" />
+  <Variant name="data-drift" description="How fast they wander (1)" />
+</SkillGrid>
+
+<SourceFiles component="shader" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="JS" />
+
+</DocPage>

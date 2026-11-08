@@ -1,0 +1,245 @@
+---
+title: "Shaders: Gradients & Noise"
+description: "Gradient and noise shaders: a mesh gradient of moving color points, a grainy gradient, a domain-warped marble, glowing neural noise an ordered dither that rasterizes a scene or a photo, and a classic plasma."
+slug: "shader-gradients"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader-gradients" title="Gradients & Noise" component="shader">
+  Surfaces made of color: the quiet backgrounds of a landing page and the textures of an editorial one. Each is a <code>.shader</code> with its <code>data-effect</code>; colors and parameters are <code>data-*</code> attributes.
+</PageHeader>
+
+## Mesh gradient
+
+<DocText>Up to eight color points drift on slow orbits; every pixel takes their colors weighted by distance and mixed in Oklab, so the blends stay vivid instead of turning gray. A noise field bends the space between them, a gentle swirl turns its middle.</DocText>
+
+```html example label="Five colors, drifting" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="mesh-gradient-demo"
+    data-effect="mesh-gradient"
+    data-colors="#ff9a8b #ff6a88 #a18cd1 #6ee7f9 #fbc2eb"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="mesh-gradient-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-distortion" description="How far the noise bends the space (0.8)" />
+  <Variant name="data-swirl" description="The turn at the middle (0.35)" />
+  <Variant name="data-grain" description="Film grain over it (0)" />
+</SkillGrid>
+
+## Grain gradient
+
+<DocText>A soft gradient from the first color to the last, its bands shaped by slow noise and broken up by grain at every transition - the texture of risograph prints and premium landing pages. Without <code>data-colors</code> it starts at the page background and runs through the chart colors.</DocText>
+
+```html example label="Dusk in grain" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="grain-gradient-demo"
+    data-effect="grain-gradient"
+    data-colors="#120a2a #5b2bd6 #ff6b9a #ffd27a"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="grain-gradient-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-softness" description="How soft the band edges are (0.8)" />
+  <Variant name="data-grain" description="How much the grain breaks them up (0.5)" />
+  <Variant name="data-zoom" description="The size of the shapes (1)" />
+</SkillGrid>
+
+## Warp
+
+<DocText>Noise fed into itself twice - domain warping - folds into marble, smoke and lava. The colors run from the first (the deep folds) to the last (the bright veins).</DocText>
+
+```html example label="Marbled lava" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="warp-demo"
+    data-effect="warp"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="warp-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-zoom" description="The scale of the folds (1)" />
+  <Variant name="data-warp" description="How strongly the noise folds itself (1)" />
+  <Variant name="data-contrast" description="The spread of the colors (1.15)" />
+</SkillGrid>
+
+## Neuro noise
+
+<DocText>Layers of rotated waves add up to glowing filaments - a network that slowly rewires itself. The first color is the glow, the second its bright core, the third the hottest strands; the background shows between them.</DocText>
+
+```html example label="A rose network" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="neuro-noise-demo"
+    data-effect="neuro-noise"
+    data-colors="#ff2d75 #ffb3c8 #ffffff"
+    data-background="#0d0410"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="neuro-noise-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-zoom" description="The size of the cells (1)" />
+  <Variant name="data-brightness" description="The glow (1)" />
+</SkillGrid>
+
+## Dithering
+
+<DocText>An ordered 8 × 8 Bayer dither rasterizes a moving scene - or a picture inside the shader - into its colors, sorted from dark to light, at <code>data-pixel</code> CSS pixels a dot. With <code>data-interactive</code> the pointer opens a window onto the original.</DocText>
+
+```html example label="A scene and a photo, dithered" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over the photo. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    data-effect="dithering"
+    data-colors="#0b132b #3a506b #5bc0be #f6f7eb"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+  <div
+    class="shader"
+    id="dithering-demo"
+    data-effect="dithering"
+    data-interactive
+    data-pixel="2"
+    data-colors="#2b1d0e #ffe8c2"
+    style="border-radius: var(--radius)"
+  >
+    <img
+      src="https://picsum.photos/id/1043/800/500"
+      alt="A rocky coast"
+      crossorigin="anonymous"
+      width="800"
+      height="500"
+    />
+  </div>
+  <div class="shader-controls" data-shader-for="dithering-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-pixel" description="The size of one dot in CSS pixels (3)" />
+  <Variant name="data-reveal" description="The radius of the pointer's window (0.18)" />
+  <Variant name="data-contrast" description="Contrast before the dither (1.2)" />
+</SkillGrid>
+
+## Plasma
+
+<DocText>Four sine waves - along x, along y, along the diagonal and around a wandering center - summed and run through the palette as a cycle. The oldest effect of the demo scene, here mixed in Oklab, so the bands stay bright between two colors. <code>data-warp</code> bends the plane before the waves are read.</DocText>
+
+```html example label="Sine waves through a palette" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="plasma-demo"
+    data-effect="plasma"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="plasma-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-zoom" description="The scale of the waves (1)" />
+  <Variant name="data-warp" description="How much the plane bends (1)" />
+</SkillGrid>
+
+## Silk
+
+<DocText>A sheet of cloth in slow folds: a sine sheet carried by a few drifting waves, lit with a wrapped diffuse light so the shadows stay colored and a narrow sheen along each crest. The ramp runs from the palette's first color in the folds to its last on the highlights.</DocText>
+
+```html example label="Folds of silk" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="silk-demo"
+    data-effect="silk"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="silk-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-folds" description="How many folds cross the box (4)" />
+  <Variant name="data-sheen" description="The highlight on the crests (0.8)" />
+  <Variant name="data-zoom" description="The scale of the cloth (1)" />
+</SkillGrid>
+
+## Marble
+
+<DocText>Polished stone with veins: noise warped twice over itself gives the cloudy ground, a folded sine through it the veins - at least a pixel wide, so they never break up. The veins flow slowly; <code>data-flow="0"</code> keeps the stone still.</DocText>
+
+```html example label="Veined stone" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="marble-demo"
+    data-effect="marble"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="marble-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-veins" description="How wide the veins are, 0-1 (0.4)" />
+  <Variant name="data-flow" description="How fast the stone flows (1)" />
+  <Variant name="data-zoom" description="The scale of the pattern (1)" />
+</SkillGrid>
+
+## Oil
+
+<DocText>A thin film of oil on dark water: the film's thickness shifts the phase of each color channel differently - the interference colors of a soap bubble or a puddle - and a slow swirl moves it.</DocText>
+
+```html example label="An oil slick" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="oil-demo"
+    data-effect="oil"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="oil-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-film" description="How many interference bands (1)" />
+  <Variant name="data-swirl" description="How much the film swirls (1)" />
+  <Variant name="data-zoom" description="The scale of the slick (1)" />
+</SkillGrid>
+
+<SourceFiles component="shader" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="JS" />
+
+</DocPage>

@@ -1,0 +1,282 @@
+---
+title: "Shaders: Patterns & Trails"
+description: "Pattern shaders: dots orbiting in a grid, an animated contour map with hillshading that the pointer raises, glowing trails that follow the pointer, stained glass, a halftone screen and a kaleidoscope."
+slug: "shader-patterns"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader-patterns" title="Patterns & Trails" component="shader">
+  Ordered surfaces that move: a grid of dots, the contour lines of a landscape, a line of light that follows the pointer. Without <code>data-colors</code> the pattern takes the theme's chart colors on the page background.
+</PageHeader>
+
+## Dot orbit
+
+<DocText>A dot per grid cell circles its center at its own pace and breathes with a wave that runs out from the middle; dots near the pointer grow with <code>data-interactive</code>. The grid is measured in CSS pixels, so it stays crisp at any size.</DocText>
+
+```html example label="A breathing grid" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="dot-orbit-demo"
+    data-effect="dot-orbit"
+    data-interactive
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="dot-orbit-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-spacing" description="The grid in CSS pixels (26)" />
+  <Variant name="data-size" description="The dots' size, 0-1 of a cell (0.5)" />
+  <Variant name="data-orbit" description="How far they circle (0.4)" />
+</SkillGrid>
+
+## Topography
+
+<DocText>A landscape of noise drawn as a contour map: lines at every height step, every fifth one heavier, the slopes hillshaded from the north-west and tinted by height. With <code>data-interactive</code> the pointer raises a hill.</DocText>
+
+```html example label="A contour map" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="topography-demo"
+    data-effect="topography"
+    data-interactive
+    data-colors="#a3b18a #588157 #3a5a40"
+    data-background="#f4f1e8"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="topography-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-lines" description="Contour lines per unit of height (12)" />
+  <Variant name="data-thickness" description="Their width in CSS pixels (1)" />
+  <Variant name="data-zoom" description="The scale of the landscape (1)" />
+  <Variant name="data-relief" description="The hillshading (0.8)" />
+</SkillGrid>
+
+## Trails
+
+<DocText>A line of light follows the pointer and fades, drifting like smoke as it goes; its color runs through the palette. Without a pointer it draws a figure of its own. The trail lives in a texture that each frame reads, fades and draws into again.</DocText>
+
+```html example label="A line of light" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="trails-demo"
+    data-effect="trails"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="trails-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-decay" description="How much of the trail each frame keeps (0.978)" />
+  <Variant name="data-brush" description="The width of the line (1)" />
+  <Variant name="data-flow" description="How much it drifts (1)" />
+</SkillGrid>
+
+## Stained glass
+
+<DocText>A Voronoi diagram: every cell is the region closest to one moving point, its glass a color of the palette, lit brighter at its center. The lead between the cells is the true distance to the cell's border - measured along the bisectors with every neighbor - so it keeps one width all around.</DocText>
+
+```html example label="Cells of colored glass" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="voronoi-demo"
+    data-effect="voronoi"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="voronoi-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-scale" description="Cells across the height (5)" />
+  <Variant name="data-lead" description="The width of the lead (0.06)" />
+  <Variant name="data-glow" description="The light at the center of each cell (0.6)" />
+</SkillGrid>
+
+## Halftone
+
+<DocText>A print screen: the picture is sampled once per cell of a rotated grid and drawn as a dot whose area grows with the darkness - the way a newspaper prints a photo. The grid is measured in CSS pixels. Without a picture it screens a moving pattern of its own.</DocText>
+
+```html example label="A photo as dots" schema="none" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid grid-cols-2 gap-4">
+  <div class="shader" id="halftone-demo" data-effect="halftone" style="border-radius: var(--radius)">
+    <img
+      src="https://picsum.photos/id/1062/800/500"
+      alt="A dog wrapped in a blanket"
+      crossorigin="anonymous"
+      width="800"
+      height="500"
+    />
+  </div>
+  <div
+    class="shader"
+    data-effect="halftone"
+    data-cell="12"
+    data-angle="45"
+    data-colors="#1d3557 #f1faee"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="halftone-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-cell" description="The screen's cell in CSS pixels (8)" />
+  <Variant name="data-angle" description="The screen's angle in degrees (15)" />
+  <Variant name="data-contrast" description="The contrast of the tones (1.2)" />
+</SkillGrid>
+
+## Kaleidoscope
+
+<DocText>The plane folded into mirrored wedges around the center, turning slowly, over a flowing noise in the palette - or over a picture child, mirrored at its edges.</DocText>
+
+```html example label="Mirrored wedges" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="kaleidoscope-demo"
+    data-effect="kaleidoscope"
+    data-segments="10"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="kaleidoscope-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-segments" description="The number of wedges (8)" />
+  <Variant name="data-zoom" description="The scale (1)" />
+  <Variant name="data-twist" description="How fast the picture turns inside the wedges (1)" />
+</SkillGrid>
+
+## Matrix
+
+<DocText>Columns of glyphs fall at their own speeds: a bright head, a trail that fades behind it and the glyphs changing as it passes. Each glyph is a 5 x 7 grid drawn in the shader and mirrored so it reads like a character; the grid is measured in CSS pixels, so <code>data-size</code> is the glyph height.</DocText>
+
+```html example label="Digital rain" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="matrix-demo"
+    data-effect="matrix"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="matrix-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-size" description="The glyph height in px (16)" />
+  <Variant name="data-rain" description="How fast the columns fall (1)" />
+  <Variant name="data-trail" description="How long the trails are, 0-1 (0.6)" />
+</SkillGrid>
+
+## Op art
+
+<DocText>Two sets of rings around two moving centers, combined as an exclusive or - the moire is where they disagree. Every edge is smoothed to the pixel, and where the rings get finer than a pixel they fade to gray instead of breaking into noise. Without <code>data-colors</code> it uses the theme's foreground and background.</DocText>
+
+```html example label="A moire" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="op-art-demo"
+    data-effect="op-art"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="op-art-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-rings" description="How many rings per unit (18)" />
+  <Variant name="data-offset" description="How far apart the centers move (0.5)" />
+  <Variant name="data-warp" description="How much the rings wobble (0.3)" />
+</SkillGrid>
+
+## Glitch
+
+<DocText>A picture that glitches in bursts: blocks slide sideways, lines jitter, the color channels split and a block now and then inverts - and most moments it is clean. The picture is the element's <code>img</code>; without one it glitches a test card of the palette.</DocText>
+
+```html example label="A broken signal" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="glitch-demo"
+    data-effect="glitch"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  >
+    <img
+      src="https://picsum.photos/id/1015/960/600"
+      alt="A lake between mountains"
+      crossorigin="anonymous"
+      width="960"
+      height="600"
+    />
+  </div>
+  <div class="shader-controls" data-shader-for="glitch-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-amount" description="How often and how hard it glitches, 0-1 (0.7)" />
+  <Variant name="data-blocks" description="How small the sliding blocks are, 0-1 (0.5)" />
+  <Variant name="data-shift" description="How far the color channels split (1)" />
+</SkillGrid>
+
+## CRT
+
+<DocText>A picture on a curved tube: the screen bends at its edges, scanlines run across it (never finer than two device pixels, so they cannot alias), a red-green-blue aperture grid and a soft bloom brighten it, and a band rolls slowly down. Without a picture it shows color bars.</DocText>
+
+```html example label="An old television" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="crt-demo"
+    data-effect="crt"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  >
+    <img
+      src="https://picsum.photos/id/1015/960/600"
+      alt="A lake between mountains"
+      crossorigin="anonymous"
+      width="960"
+      height="600"
+    />
+  </div>
+  <div class="shader-controls" data-shader-for="crt-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-curve" description="How much the screen bends (0.6)" />
+  <Variant name="data-scanlines" description="The scanlines per screen height (240)" />
+  <Variant name="data-glow" description="The bloom (0.6)" />
+</SkillGrid>
+
+<SourceFiles component="shader" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="JS" />
+
+</DocPage>

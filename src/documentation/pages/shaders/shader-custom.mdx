@@ -1,0 +1,119 @@
+---
+title: "Shaders: Custom Shaders"
+description: "Your own GLSL in the Shader component: a fragment shader in a script element with the prelude's uniforms and helpers, numeric parameters as data attributes, effects registered for a page, and effects layered with CSS blend modes."
+slug: "shader-custom"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader-custom" title="Custom Shaders" component="shader">
+  Bring your own GLSL. Put a fragment shader in a <code>&lt;script type="x-shader/x-fragment"&gt;</code> inside the shader and it runs on the same engine as the built-in effects - one context, the palette resolved from the theme, the pointer, reduced motion, the poster.
+</PageHeader>
+
+## A fragment shader
+
+<DocText>Write the body; the prelude comes first. It declares <code>v_uv</code> (0-1, origin bottom left), <code>fragColor</code> (premultiplied alpha), the uniforms and the helpers. Every <code>uniform float u_name</code> beyond the prelude's is a parameter the element sets with <code>data-name</code> (underscores written as dashes) - here <code>data-rings</code> and <code>data-arms</code>.</DocText>
+
+```html example label="Rings in the palette" schema="none" previewStyle="align-items:stretch;"
+<div
+  class="shader"
+  data-effect="custom"
+  data-rings="9"
+  data-arms="3"
+  data-colors="#0f172a #6366f1 #22d3ee #f0abfc"
+  aria-hidden="true"
+  style="--shader-aspect: 21 / 9; border-radius: var(--radius)"
+>
+  <script type="x-shader/x-fragment">
+    uniform float u_rings, u_arms;
+    void main() {
+      vec2 p = centered();
+      float a = atan(p.y, p.x), r = length(p);
+      float wave = sin(r * u_rings * TAU - u_time * 1.5 + a * floor(u_arms) + gnoise(p * 3. + u_time * .2));
+      fragColor = vec4(dither(ramp(.5 + .5 * wave * (1. - r))), 1.);
+    }
+  </script>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="u_resolution, u_pixel_ratio" description="The render size in device pixels, and device pixels per CSS pixel" />
+  <Variant name="u_time, u_delta" description="Seconds on the effect's clock, and since the last frame" />
+  <Variant name="u_pointer, u_hover" description="The eased pointer in v_uv space, and 0-1 while it is over the element (data-interactive)" />
+  <Variant name="u_colors[8], u_color_count" description="The palette, resolved from data-colors (sRGB)" />
+  <Variant name="u_background" description="The background, sRGB with alpha" />
+  <Variant name="u_image, u_has_image" description="The picture inside the shader, fitted to the box" />
+  <Variant name="gnoise, gnoise3, fbm, hash12, hash22" description="Gradient noise in 2D and 3D, fractal noise, hashes" />
+  <Variant name="ramp, rampCycle, mixOk, color(i)" description="The palette as a ramp, mixed in Oklab" />
+  <Variant name="centered, aspect, rot, sdRoundBox" description="Coordinates, rotation, a rounded box distance" />
+  <Variant name="over, backdrop, dither" description="Composite over the background, remove banding" />
+</SkillGrid>
+
+<DocText>A shader with a compile error does not throw: the element keeps its poster and fires <code>shader-error</code> with the driver's log in <code>detail.message</code>. A source that starts with <code>#version</code> is used as it is, without the prelude.</DocText>
+
+## An effect for the page
+
+<DocText><code>df$.shadcn.shader.register(name, effect)</code> adds an effect every shader on the page can name: its <code>params</code> are the defaults of its <code>data-*</code> attributes, its <code>colors</code> the default palette (tokens follow the theme).</DocText>
+
+```html example label="A registered effect" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
+  <div class="shader" data-effect="plasma" aria-hidden="true" style="border-radius: var(--radius)"></div>
+  <div
+    class="shader"
+    data-effect="plasma"
+    data-scale="7"
+    data-colors="#ff006e #fb5607 #ffbe0b"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.shader.register('plasma', {
+      params: { scale: 4 },
+      colors: ['var(--chart-1)', 'var(--chart-3)', 'var(--chart-5)'],
+      fragment: `uniform float u_scale;
+void main() {
+  vec2 p = centered() * u_scale;
+  float v = sin(p.x + u_time) + sin(p.y * 1.3 - u_time * .8) + sin(length(p) * 1.6 - u_time * 1.2);
+  fragColor = vec4(dither(rampCycle(v * .12 + u_time * .03)), 1.);
+}`,
+    });
+  });
+</script>
+```
+
+## Layers
+
+<DocText>Every shader is a box, so effects compose like boxes: stack two backgrounds and give the upper one a <code>mix-blend-mode</code> - here god rays in <code>screen</code> over a grain gradient, behind the content.</DocText>
+
+```html example label="Rays over grain" schema="none" previewStyle="align-items:stretch;"
+<section style="border-radius: var(--radius); padding: 4rem 2rem; color: white; text-align: center; overflow: hidden">
+  <div
+    class="shader"
+    data-variant="background"
+    data-effect="grain-gradient"
+    data-colors="#05030f #2a1466 #7b2cbf #ff9e6d"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="shader"
+    data-variant="background"
+    data-effect="god-rays"
+    data-background="#000"
+    data-origin-y="1.2"
+    aria-hidden="true"
+    style="mix-blend-mode: screen"
+  ></div>
+  <h2 style="margin: 0; font-size: clamp(1.75rem, 5vw, 2.75rem)">Two shaders, one context</h2>
+  <p style="opacity: 0.85">Composed by the browser, like any two boxes.</p>
+</section>
+```
+
+<SourceFiles component="shader" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="JS" />
+
+</DocPage>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shader e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/shader/shader.css">
+  <style>
+    /* layout only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; background: #fff; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .tile { width: 112px; height: 64px; aspect-ratio: auto; }
+    .host { width: 240px; padding: 24px; border-radius: 12px; background: #f4f4f5; margin: 28px; }
+    .spacer { height: 3000px; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc pages: every built-in effect, the generated controls, the post passes (FXAA, smoothing), the surface effect's named options, a ripple that answers a press, the three variants, a picture source (inline SVG and an
+       image), a custom shader, a shader with a GLSL error, an unknown effect, twins for determinism, a pointer
+       effect, an effect far below the fold -->
+  <div class="row" id="tiles">
+    <div class="shader tile" id="t-mesh-gradient" data-effect="mesh-gradient"></div>
+    <div class="shader tile" id="t-grain-gradient" data-effect="grain-gradient"></div>
+    <div class="shader tile" id="t-warp" data-effect="warp"></div>
+    <div class="shader tile" id="t-neuro-noise" data-effect="neuro-noise"></div>
+    <div class="shader tile" id="t-dithering" data-effect="dithering"></div>
+    <div class="shader tile" id="t-god-rays" data-effect="god-rays"></div>
+    <div class="shader tile" id="t-aurora" data-effect="aurora"></div>
+    <div class="shader tile" id="t-pulsing-border" data-effect="pulsing-border" data-background="#101018"></div>
+    <div class="shader tile" id="t-hologram" data-effect="hologram"></div>
+    <div class="shader tile" id="t-metaballs" data-effect="metaballs"></div>
+    <div class="shader tile" id="t-liquid-metal" data-effect="liquid-metal" data-background="#101018"></div>
+    <div class="shader tile" id="t-water" data-effect="water"></div>
+    <div class="shader tile" id="t-fluted-glass" data-effect="fluted-glass"></div>
+    <div class="shader tile" id="t-fluid" data-effect="fluid"></div>
+    <div class="shader tile" id="t-dot-orbit" data-effect="dot-orbit"></div>
+    <div class="shader tile" id="t-topography" data-effect="topography"></div>
+    <div class="shader tile" id="t-trails" data-effect="trails"></div>
+    <div class="shader tile" id="t-orb" data-effect="orb"></div>
+    <div class="shader tile" id="t-galaxy" data-effect="galaxy"></div>
+    <div class="shader tile" id="t-waves" data-effect="waves"></div>
+    <div class="shader tile" id="t-plasma" data-effect="plasma"></div>
+    <div class="shader tile" id="t-bokeh" data-effect="bokeh"></div>
+    <div class="shader tile" id="t-ripple" data-effect="ripple"></div>
+    <div class="shader tile" id="t-voronoi" data-effect="voronoi"></div>
+    <div class="shader tile" id="t-halftone" data-effect="halftone"></div>
+    <div class="shader tile" id="t-kaleidoscope" data-effect="kaleidoscope"></div>
+    <div class="shader tile" id="t-clouds" data-effect="clouds"></div>
+    <div class="shader tile" id="t-fire" data-effect="fire"></div>
+    <div class="shader tile" id="t-starfield" data-effect="starfield"></div>
+    <div class="shader tile" id="t-silk" data-effect="silk"></div>
+    <div class="shader tile" id="t-nebula" data-effect="nebula"></div>
+    <div class="shader tile" id="t-prism" data-effect="prism"></div>
+    <div class="shader tile" id="t-matrix" data-effect="matrix"></div>
+    <div class="shader tile" id="t-marble" data-effect="marble"></div>
+    <div class="shader tile" id="t-oil" data-effect="oil"></div>
+    <div class="shader tile" id="t-op-art" data-effect="op-art"></div>
+    <div class="shader tile" id="t-lightning" data-effect="lightning"></div>
+    <div class="shader tile" id="t-snow" data-effect="snow"></div>
+    <div class="shader tile" id="t-fireflies" data-effect="fireflies"></div>
+    <div class="shader tile" id="t-glitch" data-effect="glitch"></div>
+    <div class="shader tile" id="t-crt" data-effect="crt"></div>
+    <div class="shader tile" id="t-caustics" data-effect="caustics"></div>
+    <div class="shader tile" id="t-smoke" data-effect="smoke"></div>
+    <div class="shader tile" id="t-surface" data-effect="surface"></div>
+  </div>
+
+  <div class="row">
+    <div class="shader tile" id="twin-a" data-effect="mesh-gradient" data-colors="rgb(255, 0, 80) rgb(0, 120, 255) rgb(255, 200, 0)"></div>
+    <div class="shader tile" id="twin-b" data-effect="mesh-gradient" data-colors="rgb(255, 0, 80) rgb(0, 120, 255) rgb(255, 200, 0)"></div>
+    <div class="shader tile" id="themed" data-effect="mesh-gradient"></div>
+    <div class="shader tile" id="still" data-effect="warp" data-speed="0"></div>
+    <div class="shader tile" id="pointer" data-effect="metaballs" data-interactive data-count="1" data-size="0.4" data-background="rgb(0, 0, 0)"></div>
+    <div class="shader tile" id="custom" data-rings="6">
+      <script type="x-shader/x-fragment">
+        uniform float u_rings;
+        void main() {
+          float r = .5 + .5 * sin(length(centered()) * u_rings * TAU - u_time);
+          fragColor = vec4(r, 0., 1. - r, 1.);
+        }
+      </script>
+    </div>
+    <div class="shader tile" id="broken" data-effect="custom">
+      <script type="x-shader/x-fragment">void main() { fragColor = vec4(oops, 1.); }</script>
+    </div>
+    <div class="shader tile" id="unknown" data-effect="no-such-effect"></div>
+  </div>
+
+  <div class="row">
+    <div class="shader tile" id="sf" data-effect="surface" data-motion="none" data-speed="0"></div>
+    <div class="shader tile" id="tap" data-effect="ripple" data-drops="0"></div>
+  </div>
+
+  <!-- generated controls next to a surface; a surface drawn without the post passes -->
+  <div class="row">
+    <div class="shader tile" id="ctl" data-effect="surface" data-motion="none" data-speed="0"></div>
+    <div class="shader-controls" id="ctl-box" data-shader-for="ctl" data-controls="effect options params colors speed actions" style="width: 260px"></div>
+    <div class="shader tile" id="raw" data-effect="surface" data-motion="none" data-speed="0" data-aa="none" data-smooth="0"></div>
+  </div>
+
+  <div class="row">
+    <section class="host" id="bg-host">
+      <div class="shader" id="bg" data-variant="background" data-effect="aurora"></div>
+      <p>Text over an aurora</p>
+    </section>
+    <div class="host" id="border-host">
+      <div class="shader" id="border" data-variant="border" data-effect="pulsing-border"></div>
+      <p>A glowing box</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="shader" id="metal" data-effect="liquid-metal" style="width: 160px">
+      <svg viewBox="0 0 100 100" role="img" aria-label="A triangle"><path d="M50 10 90 90H10Z" fill="currentColor" /></svg>
+    </div>
+    <div class="shader" id="dither" data-effect="dithering" style="width: 200px">
+      <img src="/dist/documentation/videos/harbour-poster.jpg" alt="A harbour at dawn" width="640" height="360">
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="shader tile" id="below" data-effect="galaxy"></div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/shader/shader.js"></script>
+</body>
+</html>

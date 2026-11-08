@@ -1,0 +1,269 @@
+---
+title: "Shader"
+description: "Shader component - animated WebGL2 effects inside or behind any element: gradients, light, liquid, patterns and small 3D scenes, drawn by one shared context, in the theme's colors, with a CSS poster before the first frame and without WebGL2."
+slug: "shader"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader" title="Shader" component="shader">
+  An animated surface in one element. Write <code>&lt;div class="shader" data-effect="..."&gt;</code>; the runtime draws the effect on the GPU and keeps the element an ordinary box - sized, rounded, clipped and stacked like any other. Every effect on the page shares one WebGL2 context, draws only near the viewport, holds a still frame under reduced motion and shows a CSS poster until its first frame (and where WebGL2 is missing). Its colors come from the theme unless you name others.
+</PageHeader>
+
+<SkillPanel component="shader">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div&gt;</code> with a runtime <code>&lt;canvas aria-hidden="true"&gt;</code>: one shared WebGL2 context renders each instance's frame and copies it into that canvas.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext" title="every effect is a GLSL ES 3.00 fragment pass"><code>WebGL2</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage" title="the shared frame copied into each instance"><code>drawImage()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="only instances near the viewport draw"><code>IntersectionObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the render size follows the box"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="one still frame, no clock"><code>prefers-reduced-motion</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.shader</code>
+    <code>.shader-canvas</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants">
+<SkillGrid>
+    <Variant name="(none)" description="A block - 16 / 9, or the size of its picture" />
+    <Variant name='data-variant="background"' description="Fills its parent behind the content" />
+    <Variant name='data-variant="border"' description="A glow around its parent's edge, the inside clear" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• The canvas is <code>aria-hidden</code>; a decorative effect gets <code>aria-hidden="true"</code>, a meaningful one <code>role="img"</code> and a label</SkillText>
+  <SkillText dense>• Reduced motion shows one still frame; more contrast hides the background variant; forced colors show the system colors</SkillText>
+  <SkillText dense>• <code>data-interactive</code> only listens to the pointer - it never captures clicks or scrolling</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="A mesh gradient" hint="The State tab switches the effect, its speed and the clock. data-colors takes any CSS colors; without it the effect uses the theme's chart colors."
+<div
+  class="shader"
+  data-effect="mesh-gradient"
+  data-colors="#4900ff #00c9ff #fb52d4 #ffb86b"
+  aria-hidden="true"
+  style="width: 100%; max-width: 40rem; border-radius: var(--radius)"
+></div>
+```
+
+## Behind the content
+
+<DocText><code>data-variant="background"</code> fills the parent behind its content: the parent becomes <code>position: relative</code> and <code>isolation: isolate</code>, the shader sits at <code>z-index: -1</code> inside it. Pick colors that keep the text readable over every frame - here a dark background with light text.</DocText>
+
+```html example label="A hero on an aurora" schema="none" previewStyle="align-items:stretch;"
+<section style="border-radius: var(--radius); padding: 4rem 2rem; color: white; overflow: hidden">
+  <div class="shader" data-variant="background" data-effect="aurora" aria-hidden="true"></div>
+  <p style="margin: 0 0 0.5rem; letter-spacing: 0.2em; font-size: 0.75rem; text-transform: uppercase; opacity: 0.8">
+    Night shift
+  </p>
+  <h2 style="margin: 0; font-size: clamp(1.75rem, 5vw, 3rem); line-height: 1.1">Ship while the sky moves</h2>
+  <p style="max-width: 32rem; opacity: 0.85"
+    >The aurora is one element behind the content - no image, no video, a few kilobytes of GLSL.</p
+  >
+  <button class="btn" type="button" style="margin-top: 1rem">Start building</button>
+</section>
+```
+
+## Around a card
+
+<DocText><code>data-variant="border"</code> reaches <code>--shader-glow</code> (1.25rem) past its parent's edges and draws a ring on the parent's edge, with its corner radius; the inside stays clear, so the card keeps its own background. The <code>pulsing-border</code> effect sends light spots around the ring.</DocText>
+
+```html example label="A glowing card" schema="none"
+<div class="card" style="max-width: 22rem">
+  <div
+    class="shader"
+    data-variant="border"
+    data-effect="pulsing-border"
+    data-colors="#ff4d8d #7c5cff #2bd9ff"
+    aria-hidden="true"
+  ></div>
+  <div class="card-header">
+    <h3 class="card-title">Pro plan</h3>
+    <p class="card-description">Everything in Team, plus the things you asked for.</p>
+  </div>
+  <div class="card-content"
+    ><p style="margin: 0; font-size: 2rem; font-weight: 600"
+      >$24 <span style="font-size: 0.875rem; font-weight: 400">per month</span></p
+    ></div
+  >
+  <div class="card-footer"><button class="btn" type="button" style="width: 100%">Upgrade</button></div>
+</div>
+```
+
+## Colors and the theme
+
+<DocText>Colors resolve inside the element, so tokens follow the theme - and tokens set on a section apply to the shader in it. Switch the site's theme or dark mode: the first gradient below changes with it. <code>data-background</code> is the color behind an effect with transparent parts.</DocText>
+
+```html example label="Theme tokens and fixed colors" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
+  <div
+    class="shader"
+    data-effect="mesh-gradient"
+    data-colors="var(--chart-1) var(--chart-3) var(--primary) var(--chart-5)"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+  <div
+    class="shader"
+    data-effect="mesh-gradient"
+    data-colors="#ff7e5f #feb47b #ffd86f #fc6262"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+  <div
+    class="shader"
+    data-effect="mesh-gradient"
+    data-colors="oklch(0.75 0.15 160) oklch(0.6 0.2 250) oklch(0.85 0.1 90)"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+</div>
+```
+
+## Speed, parameters and the pointer
+
+<DocText><code>data-speed</code> scales the clock (<code>0</code> holds the still frame). Each effect has its own parameters as <code>data-*</code> attributes - the effect pages list them. <code>data-interactive</code> makes an effect follow the pointer: the metaballs gain one under it.</DocText>
+
+```html example label="Slow, tuned, following the pointer" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over the right tile."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
+  <div
+    class="shader"
+    data-effect="mesh-gradient"
+    data-speed="0.4"
+    data-distortion="1.4"
+    data-swirl="0.9"
+    data-grain="0.6"
+    data-colors="#0f172a #6366f1 #ec4899 #f59e0b"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+  <div
+    class="shader"
+    data-effect="metaballs"
+    data-interactive
+    data-count="9"
+    data-colors="#22d3ee #a78bfa #f472b6"
+    data-background="#0b1020"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+</div>
+```
+
+## A picture as the source
+
+<DocText>A picture inside the shader is its source: it sizes the box, stays in the DOM for assistive technology (transparent once the first frame shows) and is what <code>liquid-metal</code> shapes, <code>dithering</code> rasterizes and <code>hologram</code> foils. An inline SVG is always readable; an image from another origin needs <code>crossorigin="anonymous"</code> and a server that allows it - otherwise the effect runs without it and the picture stays visible.</DocText>
+
+```html example label="A logo in liquid metal, a photo dithered" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3 items-center" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
+  <div class="shader" data-effect="liquid-metal" style="max-width: 14rem; margin: auto">
+    <svg viewBox="0 0 200 200" role="img" aria-label="A star logo">
+      <path d="M100 8l26 62 66 6-50 44 15 66-57-35-57 35 15-66L8 76l66-6z" fill="currentColor" />
+    </svg>
+  </div>
+  <div class="shader" data-effect="dithering" data-interactive data-pixel="2" style="border-radius: var(--radius)">
+    <img
+      src="https://picsum.photos/id/1036/800/500"
+      alt="A snowy forest road"
+      crossorigin="anonymous"
+      width="800"
+      height="500"
+    />
+  </div>
+</div>
+```
+
+## Cost and quality
+
+<DocText>One context draws every shader on the page; an effect costs GPU time only while it is near the viewport, its clock runs and the tab shows - with nothing in view for a while the context is released, and each canvas keeps its last frame. <code>data-quality="auto"</code> renders at up to 1.5 device pixels within a pixel budget and lowers the resolution while frames run late; <code>low</code> renders at half a pixel per CSS pixel, <code>high</code> at up to 2 device pixels. <code>data-fps</code> caps the frame rate - 30 is plenty for a quiet background.</DocText>
+
+```html example label="A background at half resolution and 30 frames a second" schema="none" previewStyle="align-items:stretch;"
+<section style="border-radius: var(--radius); padding: 3rem 2rem; color: white; overflow: hidden">
+  <div
+    class="shader"
+    data-variant="background"
+    data-effect="warp"
+    data-quality="low"
+    data-fps="30"
+    aria-hidden="true"
+  ></div>
+  <h3 style="margin: 0 0 0.5rem; font-size: 1.5rem">Quiet, and cheap</h3>
+  <p style="margin: 0; max-width: 28rem; opacity: 0.9">A slow background needs neither every pixel nor every frame.</p>
+</section>
+```
+
+## Reduced motion and the poster
+
+<DocText>Under <code>prefers-reduced-motion: reduce</code> an effect shows one still frame - the moment <code>data-time</code> names, else the effect's own - and its clock never starts; the pointer still redraws an interactive one. Before the first frame, without WebGL2 or without script, the element shows its poster: a CSS gradient close to the effect, or <code>--shader-poster</code>. The State API's <code>paused</code> holds the frame as well - a pause button is one call.</DocText>
+
+```html example label="A pause button" schema="none" previewStyle="align-items:stretch;"
+<div class="grid gap-3">
+  <div
+    class="shader"
+    id="pausable"
+    data-effect="galaxy"
+    data-time="12"
+    aria-hidden="true"
+    style="--shader-aspect: 21 / 9; border-radius: var(--radius)"
+  ></div>
+  <button
+    class="btn"
+    data-variant="outline"
+    type="button"
+    aria-pressed="false"
+    id="pause-galaxy"
+    style="justify-self: start"
+    >Pause</button
+  >
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const shader = df$('#pausable').get(0);
+    df$('#pause-galaxy').on('click', (e) => {
+      const paused = e.currentTarget.getAttribute('aria-pressed') !== 'true';
+      shader.api.setState(paused ? 'paused' : 'default');
+      e.currentTarget.setAttribute('aria-pressed', String(paused));
+      e.currentTarget.textContent = paused ? 'Play' : 'Pause';
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each shader:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - running; <code>{"{ effect, speed, colors }"}</code> write their <code>data-*</code> attributes</li>
+    <li><code>paused</code> - frozen on one frame; <code>{"{ time }"}</code> jumps to a moment</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/shader-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/shader.schema.json"><code>shader.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `effect` | `enum` | `mesh-gradient`, `grain-gradient`, `warp`, `neuro-noise`, `dithering`, `god-rays`, `aurora`, `pulsing-border`, `hologram`, `metaballs`, `liquid-metal`, `water`, `fluted-glass`, `fluid`, `dot-orbit`, `topography`, `trails`, `orb`, `galaxy`, `waves`, `plasma`, `bokeh`, `ripple`, `voronoi`, `halftone`, `kaleidoscope`, `clouds`, `fire`, `starfield`, `silk`, `nebula`, `prism`, `matrix`, `marble`, `oil`, `op-art`, `lightning`, `snow`, `fireflies`, `glitch`, `crt`, `caustics`, `smoke`, `surface` | `mesh-gradient` | The effect (`data-effect`); `setState(state, { effect })` switches it. |
+| `speed` | `number` |  | `1` | The clock rate (`data-speed`); `0` holds the still frame. |
+| `paused` | `boolean` | `true`, `false` | `false` | Frozen on one frame; unchecking runs the clock again. |
+```
+
+</StatesSection>
+
+<ApiSection component="shader" />
+
+<SourceFiles component="shader" />
+
+</DocPage>

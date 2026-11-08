@@ -1,0 +1,230 @@
+---
+title: "Shaders: Liquid & Glass"
+description: "Liquid and glass shaders: glossy metaballs, liquid metal on a logo, water with caustics and refraction, fluted glass over a picture, an interactive fluid simulation, and rings a press starts on water."
+slug: "shader-liquid"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader-liquid" title="Liquid & Glass" component="shader">
+  Surfaces that flow and bend light: blobs that merge, chrome that runs over a logo, water over a photo, reeded glass, and ink you can stir. The picture effects read a picture inside the shader - an inline SVG, or an image served with CORS.
+</PageHeader>
+
+## Metaballs
+
+<DocText>Blobs drift and merge where their fields meet; each keeps its color and the merged surface blends them. The field's slope lights the surface, so the blobs read as glossy drops. With <code>data-interactive</code> one more blob follows the pointer.</DocText>
+
+```html example label="Drops on violet" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="metaballs-demo"
+    data-effect="metaballs"
+    data-interactive
+    data-colors="#ff7a59 #ffc75f #f9f871 #ff5e78"
+    data-background="#2b1055"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="metaballs-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-count" description="How many blobs, up to 16 (7)" />
+  <Variant name="data-size" description="Their size (1)" />
+  <Variant name="data-gloss" description="The highlight (1)" />
+</SkillGrid>
+
+## Liquid metal
+
+<DocText>Chrome stripes flow over a shape and bend at its bevel, with a colored fringe where the light splits. The shape is the picture inside the shader - its alpha, contained in the box - or a rounded square without one. The colors are the stripes of the environment it reflects.</DocText>
+
+```html example label="A ring and a word in metal" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-6 items-center" style="grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); padding: 1rem">
+  <div class="shader" id="liquid-metal-demo" data-effect="liquid-metal" style="max-width: 12rem; margin: auto">
+    <svg viewBox="0 0 200 200" role="img" aria-label="A ring logo">
+      <path
+        fill-rule="evenodd"
+        fill="currentColor"
+        d="M100 12a88 88 0 1 1 0 176 88 88 0 0 1 0-176zm0 48a40 40 0 1 0 0 80 40 40 0 0 0 0-80z"
+      />
+    </svg>
+  </div>
+  <div
+    class="shader"
+    data-effect="liquid-metal"
+    data-colors="#fff4d6 #f2b84b #7a4a12 #ffe7a3 #b5761f"
+    style="max-width: 16rem; margin: auto"
+  >
+    <svg viewBox="0 0 320 120" role="img" aria-label="GOLD">
+      <text
+        x="160"
+        y="96"
+        text-anchor="middle"
+        font-family="system-ui, sans-serif"
+        font-weight="900"
+        font-size="104"
+        fill="currentColor"
+      >
+        GOLD
+      </text>
+    </svg>
+  </div>
+  <div class="shader-controls" data-shader-for="liquid-metal-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-repetition" description="How many stripes (3)" />
+  <Variant name="data-distortion" description="How much they flow (0.6)" />
+  <Variant name="data-bevel" description="The width of the bevel (1)" />
+  <Variant name="data-shift" description="Offsets the stripes (0)" />
+</SkillGrid>
+
+## Water
+
+<DocText>Moving waves refract what lies under them and focus the light into caustics - the bright net on the floor of a pool. Under it lies the picture inside the shader, or a gradient from the first color (deep) to the second (shallow); the third is the light.</DocText>
+
+```html example label="A pool and a photo" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div class="shader" data-effect="water" aria-hidden="true" style="border-radius: var(--radius)"></div>
+  <div
+    class="shader"
+    id="water-demo"
+    data-effect="water"
+    data-refraction="1.2"
+    data-caustics="0.6"
+    style="border-radius: var(--radius)"
+  >
+    <img
+      src="https://picsum.photos/id/1080/800/500"
+      alt="Strawberries"
+      crossorigin="anonymous"
+      width="800"
+      height="500"
+    />
+  </div>
+  <div class="shader-controls" data-shader-for="water-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-caustics" description="The light net (0.8)" />
+  <Variant name="data-refraction" description="How far the waves bend what lies under them (0.5)" />
+  <Variant name="data-zoom" description="The size of the waves (1)" />
+</SkillGrid>
+
+## Fluted glass
+
+<DocText>Reeded glass: every flute is a small lens that flips and squeezes the picture behind it, shaded at its edges, with a hint of color fringing. Behind it lies the picture inside the shader, or the colors drifting.</DocText>
+
+```html example label="Reeded glass over color and a photo" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div class="shader" data-effect="fluted-glass" aria-hidden="true" style="border-radius: var(--radius)"></div>
+  <div
+    class="shader"
+    id="fluted-glass-demo"
+    data-effect="fluted-glass"
+    data-flutes="22"
+    data-angle="12"
+    style="border-radius: var(--radius)"
+  >
+    <img
+      src="https://picsum.photos/id/1025/800/500"
+      alt="A dog in a blanket"
+      crossorigin="anonymous"
+      width="800"
+      height="500"
+    />
+  </div>
+  <div class="shader-controls" data-shader-for="fluted-glass-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-flutes" description="Flutes across the width (14)" />
+  <Variant name="data-distortion" description="How strongly each flute bends (0.7)" />
+  <Variant name="data-angle" description="Their angle in degrees (0 - upright)" />
+  <Variant name="data-shade" description="The shading at their edges (0.6)" />
+</SkillGrid>
+
+## Fluid
+
+<DocText>A real fluid simulation - advection, vorticity and a pressure solve every frame, in half-float textures - that drops ink in the colors by itself and follows the pointer: drag across it to stir. It needs float render targets (WebGL2 with <code>EXT_color_buffer_float</code>); without them the poster stays.</DocText>
+
+```html example label="Ink to stir" schema="none" previewStyle="align-items:stretch;" hint="Drag the pointer across it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="fluid-demo"
+    data-effect="fluid"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="fluid-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-curl" description="The swirl the vorticity adds (24)" />
+  <Variant name="data-dissipation" description="How fast the ink fades (0.45)" />
+  <Variant name="data-radius" description="The size of a drop (0.4)" />
+  <Variant name="data-shading" description="The relief of the ink (0.6)" />
+</SkillGrid>
+
+## Ripple
+
+<DocText>Rings on a water surface: a drop falls every few seconds on its own, and a press starts a ring where it lands (the last eight presses are the <code>u_taps</code> uniform). Each ring bends what lies below - a picture child, or a gradient of the palette - and catches a highlight. <code>data-drops="0"</code> leaves the surface still until it is touched.</DocText>
+
+```html example label="Press the water" schema="none" previewStyle="align-items:stretch;" hint="Press anywhere on the water. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div class="shader" id="ripple-demo" data-effect="ripple" data-drops="0.4" style="border-radius: var(--radius)">
+    <img
+      src="https://picsum.photos/id/1011/800/500"
+      alt="A boat on a lake"
+      crossorigin="anonymous"
+      width="800"
+      height="500"
+    />
+  </div>
+  <div class="shader-controls" data-shader-for="ripple-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-strength" description="How far a ring bends the picture (0.6)" />
+  <Variant name="data-decay" description="How fast a ring fades (0.6)" />
+  <Variant name="data-drops" description="Drops a second on their own; 0 = only presses (0.6)" />
+</SkillGrid>
+
+## Caustics
+
+<DocText>The net of light on the floor of a pool: two moving cell patterns at different scales, bright along the borders where the water focuses the sun, gathering where the nets meet. The FXAA pass keeps the thin lines smooth.</DocText>
+
+```html example label="Light on a pool floor" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="caustics-demo"
+    data-effect="caustics"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="caustics-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-scale" description="How many cells (4)" />
+  <Variant name="data-light" description="How bright the net is (1)" />
+  <Variant name="data-warp" description="How much the water bends it (0.4)" />
+</SkillGrid>
+
+<SourceFiles component="shader" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="JS" />
+
+</DocPage>

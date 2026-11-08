@@ -1,0 +1,194 @@
+---
+title: "Shaders: Nature & Space"
+description: "Nature and space shaders: drifting clouds lit from above, a fire that licks upward over the page, and a starfield that streaks into warp."
+slug: "shader-nature"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader-nature" title="Nature & Space" component="shader">
+  Skies, flames and stars, each one fragment shader over fractal noise or hashed cells. Each comes with a palette of its own; <code>data-colors</code> repaints it - a pink dusk, a blue gas flame, a green warp.
+</PageHeader>
+
+## Clouds
+
+<DocText>Fractal noise, warped by a second, slower noise so the shapes curl, cut by <code>data-cover</code> into clouds over a sky that pales toward the horizon. A second sample, taken a little nearer the sun, tells each point how much cloud lies above it: tops come out lit, bases shaded. The four colors are the zenith, the horizon, the light and the shade.</DocText>
+
+```html example label="A summer sky" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="clouds-demo"
+    data-effect="clouds"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="clouds-demo"></div>
+</div>
+```
+
+```html example label="A dusk with heavier cover" schema="none" previewStyle="align-items:stretch;"
+<div
+  class="shader"
+  data-effect="clouds"
+  data-cover="0.68"
+  data-colors="#3b2c5e #f4a261 #ffe8d6 #6d597a"
+  aria-hidden="true"
+  style="--shader-aspect: 21 / 9; border-radius: var(--radius)"
+></div>
+```
+
+<SkillGrid>
+  <Variant name="data-cover" description="How much of the sky is cloud, 0-1 (0.5)" />
+  <Variant name="data-softness" description="How soft the edges are (0.6)" />
+  <Variant name="data-zoom" description="The size of the clouds (1)" />
+</SkillGrid>
+
+## Fire
+
+<DocText>Two layers of noise rising at different speeds, strongest at the bottom and fading with <code>data-height</code>, mapped through the palette from black to white heat. Above the flames the effect turns transparent over <code>data-background</code>, so a fire can burn along the foot of a section.</DocText>
+
+```html example label="Flames along the foot of a section" schema="none"
+<section
+  style="border-radius: var(--radius); padding: 3rem 2rem 6rem; color: #fff3c4; background: #0a0505; overflow: hidden"
+>
+  <div class="shader" data-variant="background" data-effect="fire" data-height="0.55" aria-hidden="true"></div>
+  <h3 style="margin: 0 0 0.5rem; font-size: 1.5rem">Hot deals until midnight</h3>
+  <p style="margin: 0; opacity: 0.8">Everything in the forge, 40% off.</p>
+</section>
+```
+
+```html example label="A gas flame" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="fire-demo"
+    data-effect="fire"
+    data-colors="#02030a #0b2a8c #1f7bff #8fd3ff #f2fbff"
+    data-background="#02030a"
+    data-height="0.6"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="fire-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-intensity" description="How hot it burns (1)" />
+  <Variant name="data-height" description="How far up the flames reach, 0-1 of the box (0.75)" />
+  <Variant name="data-zoom" description="The size of the tongues (1)" />
+</SkillGrid>
+
+## Starfield
+
+<DocText>Six layers of hashed stars that move toward the viewer and fade in and out at the ends of their depth, so the field never runs dry. With <code>data-warp</code> each star stretches along its direction from the center - the faster, the longer the streak.</DocText>
+
+```html example label="Into warp" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="starfield-demo"
+    data-effect="starfield"
+    data-warp="0.9"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="starfield-demo"></div>
+</div>
+```
+
+```html example label="A quiet night sky" schema="none" previewStyle="align-items:stretch;"
+<div
+  class="shader"
+  data-effect="starfield"
+  data-warp="0"
+  data-speed="0.3"
+  data-density="0.8"
+  aria-hidden="true"
+  style="--shader-aspect: 21 / 9; border-radius: var(--radius)"
+></div>
+```
+
+<SkillGrid>
+  <Variant name="data-density" description="How many cells hold a star, 0-1 (0.6)" />
+  <Variant name="data-warp" description="The streaks and the speed toward the viewer (0.4)" />
+  <Variant name="data-twinkle" description="How much the stars flicker (0.5)" />
+</SkillGrid>
+
+## Nebula
+
+<DocText>Glowing gas warped by noise in three colors, dark lanes of dust across it and two layers of twinkling stars - the stars on a grid of CSS pixels, so they stay points at any size.</DocText>
+
+```html example label="A star-forming cloud" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="nebula-demo"
+    data-effect="nebula"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="nebula-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-density" description="How thick the gas is (0.9)" />
+  <Variant name="data-stars" description="How many stars, 0 for none (0.6)" />
+  <Variant name="data-zoom" description="The scale of the cloud (1)" />
+</SkillGrid>
+
+## Snow
+
+<DocText>Five layers of flakes over a sky gradient: the near ones large, fast and out of focus, the far ones small and slow. Every flake sways; <code>data-wind</code> blows them sideways.</DocText>
+
+```html example label="Falling snow" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="snow-demo"
+    data-effect="snow"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="snow-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-density" description="How many flakes, 0-1 (0.55)" />
+  <Variant name="data-wind" description="The wind, -1 to 1 (0.3)" />
+  <Variant name="data-size" description="The size of the flakes (1)" />
+</SkillGrid>
+
+## Smoke
+
+<DocText>Smoke rising and curling: noise carried upward and warped by itself, denser near the bottom, lit from above so each puff has a bright top and a shaded base.</DocText>
+
+```html example label="Rising smoke" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="smoke-demo"
+    data-effect="smoke"
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="smoke-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-density" description="How thick the smoke is (0.8)" />
+  <Variant name="data-rise" description="How fast it rises (1)" />
+  <Variant name="data-zoom" description="The scale of the puffs (1)" />
+</SkillGrid>
+
+<SourceFiles component="shader" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="JS" />
+
+</DocPage>

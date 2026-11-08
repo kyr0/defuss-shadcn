@@ -1,0 +1,292 @@
+/* -- Shader ------------------------------------------------------------------
+   A WebGL2 effect inside or behind an element. The runtime adds a 2D canvas
+   (.shader-canvas) the shared WebGL2 context copies each frame into; until
+   the first frame - and wherever WebGL2 is missing - the element shows its
+   poster: a static gradient of the same palette (--shader-poster).
+   Variants: block (default, 16 / 9 or its picture's size), background (fills
+   its parent behind the content) and border (a glow around its parent). */
+@layer components {
+  .shader {
+    --shader-aspect: 16 / 9;
+    --shader-glow: 1.25rem;
+    --shader-poster-default:
+      radial-gradient(120% 90% at 15% 20%, color-mix(in oklch, var(--chart-1) 75%, transparent), transparent 60%),
+      radial-gradient(100% 80% at 85% 25%, color-mix(in oklch, var(--chart-3) 70%, transparent), transparent 60%),
+      radial-gradient(110% 90% at 50% 100%, color-mix(in oklch, var(--chart-5) 65%, transparent), transparent 65%),
+      var(--muted);
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: var(--shader-aspect);
+    background: var(--shader-poster, var(--shader-poster-default));
+    background-size: cover;
+
+    &[hidden] {
+      display: none;
+    }
+
+    & > .shader-canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+    &[data-ready]:not([data-fallback]) > .shader-canvas {
+      opacity: 1;
+    }
+    &[data-fallback] > .shader-canvas {
+      display: none;
+    }
+
+    /* the picture an effect reads: it sizes the box, stays for assistive technology, and gives way to the canvas */
+    &:has(> img, > svg, > video) {
+      aspect-ratio: auto;
+      background: none;
+    }
+    & > :is(img, svg, video) {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      transition: opacity 0.6s ease;
+    }
+    /* an inline SVG has no width of its own: it takes the box's, and the box takes the room it is given */
+    &:has(> svg) {
+      inline-size: 100%;
+      & > svg {
+        width: 100%;
+      }
+    }
+    &[data-ready]:not([data-fallback], [data-image="blocked"]) > :is(img, svg, video) {
+      opacity: 0;
+    }
+    & > script {
+      display: none;
+    }
+
+    /* the posters of the effects with their own palettes - close to their first frame */
+    &[data-effect="warp"] {
+      --shader-poster-default:
+        radial-gradient(90% 80% at 30% 40%, #e0548c, transparent 70%),
+        radial-gradient(80% 70% at 75% 70%, #ffb36b, transparent 70%), #2a1a5e;
+    }
+    &:is(
+      [data-effect="neuro-noise"],
+      [data-effect="god-rays"],
+      [data-effect="aurora"],
+      [data-effect="galaxy"],
+      [data-effect="orb"],
+      [data-effect="fluid"],
+      [data-effect="trails"]
+    ) {
+      --shader-poster-default:
+        radial-gradient(70% 60% at 50% 45%, color-mix(in oklch, #7a6cff 35%, transparent), transparent 70%), #06070f;
+    }
+    &[data-effect="hologram"] {
+      --shader-poster-default: linear-gradient(115deg, #ff8fd8, #8fe3ff 35%, #b7ffcf 55%, #fff3a0 75%, #c9a8ff);
+    }
+    &:is([data-effect="liquid-metal"], [data-effect="pulsing-border"]) {
+      --shader-poster-default: none;
+    }
+    &[data-effect="water"] {
+      --shader-poster-default: linear-gradient(#18a0b4, #0a4d68);
+    }
+    &[data-effect="fluted-glass"] {
+      --shader-poster-default:
+        repeating-linear-gradient(90deg, rgb(255 255 255 / 0.18) 0 2px, transparent 2px 7.14%),
+        linear-gradient(120deg, #ff5f6d, #ffc371 40%, #47cacc 70%, #5b5bd6);
+    }
+    &[data-effect="waves"] {
+      --shader-poster-default: linear-gradient(#35548a, #f6c49c 48%, #0f7d8c 52%, #03253a);
+    }
+    &:is([data-effect="dot-orbit"], [data-effect="topography"], [data-effect="metaballs"], [data-effect="dithering"]) {
+      --shader-poster-default: var(--background);
+    }
+    &[data-effect="plasma"] {
+      --shader-poster-default:
+        radial-gradient(70% 80% at 40% 30%, #ff006e, transparent 70%),
+        radial-gradient(80% 80% at 80% 70%, #3a86ff, transparent 70%), #fb5607;
+    }
+    &:is([data-effect="bokeh"], [data-effect="starfield"]) {
+      --shader-poster-default:
+        radial-gradient(60% 60% at 50% 50%, color-mix(in oklch, #9b8cff 18%, transparent), transparent 70%), #07070f;
+    }
+    &[data-effect="ripple"] {
+      --shader-poster-default: linear-gradient(#3fb8c7, #0d5c75);
+    }
+    &[data-effect="voronoi"] {
+      --shader-poster-default: conic-gradient(from 30deg, #d1495b, #edae49, #00798c, #30638e, #7f5a83, #d1495b);
+    }
+    &[data-effect="clouds"] {
+      --shader-poster-default: linear-gradient(#2f6fc4, #a9d1f5);
+    }
+    &[data-effect="fire"] {
+      --shader-poster-default: linear-gradient(#0a0505 35%, #b3160b 70%, #ffb21f);
+    }
+    &[data-effect="silk"] {
+      --shader-poster-default: linear-gradient(135deg, #2b0f3a, #7a2e8e 45%, #e07bb5 75%, #ffe3f1);
+    }
+    &[data-effect="nebula"] {
+      --shader-poster-default: radial-gradient(circle at 40% 45%, #f72585 0, #3a0ca3 35%, #05030d 75%);
+    }
+    &[data-effect="prism"] {
+      --shader-poster-default: linear-gradient(
+        170deg,
+        #0b0b12 40%,
+        #ff5f5f 46%,
+        #ffd25f 48%,
+        #5fff8a 50%,
+        #5fc8ff 52%,
+        #a05fff 54%,
+        #0b0b12 60%
+      );
+    }
+    &[data-effect="matrix"] {
+      --shader-poster-default: linear-gradient(#020a04, #0b3d1a);
+    }
+    &[data-effect="marble"] {
+      --shader-poster-default: linear-gradient(120deg, #f4f1ec, #d9d4cc 60%, #f4f1ec);
+    }
+    &[data-effect="oil"] {
+      --shader-poster-default: linear-gradient(120deg, #0a0a0f, #3b2a5c 40%, #1f5c5a 60%, #1d1b2a);
+    }
+    &[data-effect="op-art"] {
+      --shader-poster-default: repeating-radial-gradient(circle, var(--foreground) 0 6px, var(--background) 6px 12px);
+    }
+    &:is([data-effect="lightning"], [data-effect="crt"]) {
+      --shader-poster-default: linear-gradient(#070914, #141a33);
+    }
+    &[data-effect="snow"] {
+      --shader-poster-default: linear-gradient(#6c8ead, #1b2a41);
+    }
+    &[data-effect="fireflies"] {
+      --shader-poster-default: linear-gradient(#0b2e22, #03140d);
+    }
+    &[data-effect="glitch"] {
+      --shader-poster-default: linear-gradient(90deg, #ff2e63, #08d9d6, #252a34, #eaeaea);
+    }
+    &[data-effect="caustics"] {
+      --shader-poster-default: linear-gradient(#20a4c4, #0b4f6c);
+    }
+    &[data-effect="smoke"] {
+      --shader-poster-default: linear-gradient(#26262e, #101014);
+    }
+
+    /* behind the content of its parent: the parent becomes the positioning and stacking context */
+    &[data-variant="background"] {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      aspect-ratio: auto;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    /* a glow around its parent: the box reaches --shader-glow past the parent's edges, the inside stays clear */
+    &[data-variant="border"] {
+      --shader-poster-default: none;
+      position: absolute;
+      inset: calc(-1 * var(--shader-glow));
+      z-index: -1;
+      overflow: visible;
+      aspect-ratio: auto;
+      pointer-events: none;
+    }
+  }
+
+  /* outside controls, generated from the effect: a list between a previous and a next button, sliders, colors */
+  .shader-controls {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    min-inline-size: 0;
+
+    & .shader-controls-field {
+      display: grid;
+      gap: 0.375rem;
+      min-inline-size: 0;
+    }
+    & .shader-controls-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    & .slider-value {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      font-variant-numeric: tabular-nums;
+    }
+    & .shader-controls-cycle {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 0.25rem;
+      align-items: center;
+      & .select {
+        inline-size: 100%;
+        min-inline-size: 0;
+      }
+    }
+    & .shader-controls-colors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      & input[type="color"] {
+        inline-size: 2rem;
+        block-size: 2rem;
+        padding: 0.125rem;
+        border: 1px solid var(--input);
+        border-radius: var(--radius-sm);
+        background: var(--background);
+        cursor: pointer;
+        &:focus-visible {
+          outline: 2px solid var(--ring);
+          outline-offset: 2px;
+        }
+      }
+    }
+    & .shader-controls-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  }
+
+  :where(:has(> .shader:is([data-variant="background"], [data-variant="border"]))) {
+    position: relative;
+    isolation: isolate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shader > .shader-canvas,
+    .shader > :is(img, svg, video) {
+      transition: none;
+    }
+  }
+
+  /* more contrast: no moving picture behind text */
+  @media (prefers-contrast: more) {
+    .shader[data-variant="background"] {
+      display: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .shader {
+      background: Canvas;
+      & > .shader-canvas {
+        display: none;
+      }
+      & > :is(img, svg, video) {
+        opacity: 1;
+      }
+      &:is([data-variant="background"], [data-variant="border"]) {
+        display: none;
+      }
+    }
+  }
+}

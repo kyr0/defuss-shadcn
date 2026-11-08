@@ -1,0 +1,95 @@
+---
+title: "Shaders: 3D Scenes"
+description: "3D shaders without a 3D library: a raymarched iridescent glass orb, a spiral galaxy with parallax stars, and an ocean at sunset - each one fragment shader."
+slug: "shader-3d"
+---
+
+import { DocPage, PageHeader, SourceFiles, DocText, SkillGrid, Variant } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="shader-3d" title="3D Scenes" component="shader">
+  Depth without a 3D engine: each scene is one fragment shader - no meshes, no scene graph, no extra download. The orb and the waves cast a ray per pixel; they cost more than the flat effects, so they render at three quarters of the resolution, and every effect lowers it further while frames run late. The galaxy is a disk drawn in perspective.
+</PageHeader>
+
+## Orb
+
+<DocText>A glass sphere with a wobbling surface, raymarched against its noise: it reflects a small studio, refracts it, and a thin film over it breaks the light into iridescent color. With <code>data-interactive</code> the camera follows the pointer.</DocText>
+
+```html example label="A glass orb" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="orb-demo"
+    data-effect="orb"
+    data-interactive
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="orb-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-size" description="The orb's size (1)" />
+  <Variant name="data-iridescence" description="The thin-film colors (1)" />
+  <Variant name="data-wobble" description="How much its surface moves (1)" />
+</SkillGrid>
+
+## Galaxy
+
+<DocText>A spiral galaxy seen at an angle: logarithmic arms with dust lanes, a nebula, a warm core and three layers of twinkling stars that shift against each other - parallax - with <code>data-interactive</code>.</DocText>
+
+```html example label="A spiral galaxy" schema="none" previewStyle="align-items:stretch;" hint="Move the pointer over it. The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="shader"
+    id="galaxy-demo"
+    data-effect="galaxy"
+    data-interactive
+    aria-hidden="true"
+    style="--shader-aspect: 16 / 10; border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="galaxy-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-arms" description="Spiral arms (3)" />
+  <Variant name="data-twist" description="How tightly they wind (2.6)" />
+  <Variant name="data-stars" description="How many stars (1)" />
+  <Variant name="data-tilt" description="The angle we see the disk at, 1 = face on (0.55)" />
+</SkillGrid>
+
+## Waves
+
+<DocText>An open ocean at a low sun: a height field of seven wave trains, raymarched from a camera gliding over it, with Fresnel reflection of the sky, light through the crests, a glittering sun path and haze toward the horizon. The colors are the deep water, the shallow water, the horizon, the zenith and the sun.</DocText>
+
+```html example label="Sunset and moonlight" schema="none" previewStyle="align-items:stretch;" hint="The controls beside it are generated from the effect: its lists, its parameters and its colors."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div class="shader" data-effect="waves" aria-hidden="true" style="border-radius: var(--radius)"></div>
+  <div
+    class="shader"
+    id="waves-demo"
+    data-effect="waves"
+    data-height="1.6"
+    data-choppy="1.4"
+    data-colors="#020b16 #0b3b5c #2c4a7a #070d24 #cfe3ff"
+    aria-hidden="true"
+    style="border-radius: var(--radius)"
+  ></div>
+  <div class="shader-controls" data-shader-for="waves-demo"></div>
+</div>
+```
+
+<SkillGrid>
+  <Variant name="data-height" description="The wave height (1)" />
+  <Variant name="data-choppy" description="How sharp the crests are (1)" />
+  <Variant name="data-camera" description="The camera's height (1)" />
+</SkillGrid>
+
+<SourceFiles component="shader" section="css" />
+
+<SourceFiles component="shader" section="js" jsTitle="JS" />
+
+</DocPage>
