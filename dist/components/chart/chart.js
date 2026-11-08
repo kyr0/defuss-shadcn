@@ -389,6 +389,147 @@ export function mount(el, option = {}) {
 export function instance(el) {
     return instances.get(el);
 }
+/** the filters of an element's store config (a grid's query), or none */
+function followedFilters(el) {
+    const config = el.store?.value?.config;
+    return Array.isArray(config?.filters) ? config.filters : [];
+}
+/**
+ * A chart over a large data set: the rows stay in a dataview source, the chart draws their aggregation - a million
+ * rows become a handful of groups (grouped by fields, binned by width or calendar unit, measured), and the browser
+ * never lays out a mark per row. With `follow` it follows the filters of a Data Grid (or any element whose store
+ * config is a query), and because a grid's source is passed, its filter scan is shared: the chart groups exactly the
+ * rows the grid shows. Mounts once the element has a size, aggregates again on every query change (one per
+ * microtask), and fires chart-data with each new set of groups.
+ * @param el - the .chart element to draw into
+ * @param options - the source, the aggregation, the starting query, the element to follow and the option for the groups
+ * @returns the groups shown, query(), refresh(), update(), dispose() and the mounted instance
+ */
+export function bind(el, options) {
+    const opts = { ...options };
+    let query = { filters: opts.query?.filters ?? [] };
+    let rows = [];
+    let handle = null;
+    let disposed = false;
+    let pending = false;
+    let wait = null;
+    let unsubscribe = null;
+    let ready = () => { };
+    const mounted = new Promise((resolve) => (ready = resolve));
+    const start = (option) => {
+        handle = mount(el, option);
+        ready(handle.instance);
+    };
+    const build = () => {
+        const t0 = performance.now();
+        const result = opts.source.aggregate(query, opts.aggregate);
+        rows = result.rows;
+        const info = {
+            rows,
+            matched: result.matchedRows,
+            total: result.totalRows,
+            ms: Math.round((performance.now() - t0) * 10) / 10,
+        };
+        const option = typeof opts.option === 'function'
+            ? opts.option(rows, info)
+            : deepMerge(opts.option ?? {}, { dataset: { source: rows } });
+        // chart-data: the groups the chart shows now and how many rows they were made of
+        el.dispatchEvent(new CustomEvent('chart-data', {
+            detail: { rows: info.rows, matched: info.matched, total: info.total, ms: info.ms },
+            bubbles: true,
+        }));
+        return option;
+    };
+    const draw = () => {
+        if (disposed)
+            return;
+        if (handle) {
+            handle.setOption(build());
+            return;
+        }
+        const box = el.getBoundingClientRect();
+        if (box.width && box.height) {
+            start(build());
+            return;
+        }
+        // a box without a size yet (an island not laid out, a hidden tab): mount once it has one
+        if (!wait) {
+            wait = new ResizeObserver(() => {
+                const b = el.getBoundingClientRect();
+                if (!b.width || !b.height || handle || disposed)
+                    return;
+                wait?.disconnect();
+                wait = null;
+                start(build());
+            });
+            wait.observe(el);
+        }
+    };
+    const schedule = () => {
+        if (pending)
+            return;
+        pending = true;
+        queueMicrotask(() => {
+            pending = false;
+            draw();
+        });
+    };
+    const follow = () => {
+        const target = opts.follow;
+        if (!target || disposed || unsubscribe)
+            return;
+        if (!target.store)
+            return;
+        query = { filters: followedFilters(target) };
+        let seen = JSON.stringify(query.filters);
+        unsubscribe = target.store.subscribe(() => {
+            const filters = followedFilters(target);
+            const key = JSON.stringify(filters);
+            if (key === seen)
+                return;
+            seen = key;
+            query = { filters };
+            schedule();
+        });
+    };
+    follow();
+    draw();
+    // an element made in the same task initializes in a microtask (its MutationObserver): follow it then
+    if (opts.follow && !unsubscribe)
+        queueMicrotask(() => {
+            follow();
+            if (unsubscribe)
+                schedule();
+        });
+    return {
+        rows: () => rows,
+        query: (q) => {
+            query = { filters: q?.filters ?? [] };
+            draw();
+        },
+        refresh: () => draw(),
+        update: (next) => {
+            if (next.aggregate)
+                opts.aggregate = next.aggregate;
+            if (next.option !== undefined)
+                opts.option = next.option;
+            // a new option replaces the old one: series and axes it drops must go
+            if (handle && next.option !== undefined) {
+                handle.setOption(build(), true);
+                return;
+            }
+            draw();
+        },
+        mounted,
+        dispose: () => {
+            disposed = true;
+            unsubscribe?.();
+            wait?.disconnect();
+            handle?.dispose();
+            handle = null;
+        },
+    };
+}
 /** Re-apply the journal from scratch (clear first): the chart's entrance
  * animation plays again. */
 function replay(el, inst) {
@@ -562,7 +703,7 @@ const DECK_TEMPO = {
 };
 /**
  * Why: the deck stage - ONE chart instance for a whole presentation, so
- * every chart slide MORPHS into the next (bars → dots → donut ...) instead of
+ * every chart slide MORPHS into the next (bars, then dots, then a donut ...) instead of
  * cutting between separate charts. The stage is a `.chart.presentation-
  * stage` child of the `.presentation` mount, laid out in artboard
  * coordinates by presentation.css; slides name the state they show with
@@ -680,7 +821,7 @@ export const chartApi = componentState({
 });
 df$.chartApi = chartApi;
 df$.chartStates = chartStates;
-df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
+df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck, bind };
 df$.chartStory = chartStory;
 function init() {
     dfDollar('.chart:not([data-init])').toArray().forEach((el) => {

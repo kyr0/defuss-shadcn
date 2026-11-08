@@ -1,0 +1,271 @@
+/* -- Resume Header (website · Resume & Portfolio) -------------------------
+   Opens a personal site or a CV: the portrait, the name as the page's <h1>, the role, a short summary, the facts
+   (where, how long, which languages, how to reach you), the actions and the profiles elsewhere. Beside the portrait
+   (default), centered, or compact - the head of a printed CV. The layout wraps by itself (flex-wrap), the name
+   scales with the header's width (a container) - no breakpoints, no script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-resume-header, .mk-resume-header *, .mk-resume-header ::before, .mk-resume-header ::after) {
+    box-sizing: border-box;
+  }
+
+  .mk-resume-header {
+    container: mk-resume-header / inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem 2.5rem;
+    width: 100%;
+  }
+
+  .mk-resume-header-photo {
+    flex: 0 0 auto;
+    width: clamp(6rem, 22cqi, 11rem);
+    aspect-ratio: 1;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    object-fit: cover;
+  }
+
+  .mk-resume-header-body {
+    display: flex;
+    flex: 1 1 22rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  /* the availability line above the name: an Indicator dot and a sentence in a pill */
+  .mk-resume-header-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .mk-resume-header-name {
+    margin: 0;
+    font-size: clamp(2rem, 1.25rem + 3.5cqi, 3.25rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .mk-resume-header-role {
+    margin: 0;
+    color: var(--foreground);
+    font-size: clamp(1.0625rem, 0.9rem + 0.8cqi, 1.375rem);
+    font-weight: 500;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  .mk-resume-header-summary {
+    max-width: 40rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  /* where, how long, which languages, how to reach you - an icon and a phrase each */
+  .mk-resume-header-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+
+    & li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    & svg {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+    }
+    & a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: var(--foreground);
+        text-decoration-color: currentColor;
+      }
+    }
+  }
+
+  .mk-resume-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-start: 0.25rem;
+  }
+
+  /* the profiles elsewhere: icon buttons in a row */
+  .mk-resume-header-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* centered: the portrait above, everything on the axis */
+  .mk-resume-header[data-variant="centered"] {
+    flex-direction: column;
+    text-align: center;
+
+    & .mk-resume-header-body {
+      flex-basis: auto;
+      align-items: center;
+    }
+    & .mk-resume-header-photo {
+      border-radius: 50%;
+    }
+    & .mk-resume-header-facts,
+    & .mk-resume-header-actions {
+      justify-content: center;
+    }
+  }
+
+  /* compact: the head of a CV - a small portrait, a smaller name, a rule below */
+  .mk-resume-header[data-variant="compact"] {
+    gap: 1rem 1.5rem;
+    padding-block-end: 1.25rem;
+    border-block-end: 1px solid var(--border);
+
+    & .mk-resume-header-photo {
+      width: 5rem;
+    }
+    & .mk-resume-header-body {
+      gap: 0.375rem;
+    }
+    & .mk-resume-header-name {
+      font-size: clamp(1.5rem, 1.1rem + 1.5cqi, 2rem);
+    }
+    & .mk-resume-header-role {
+      font-size: 1rem;
+    }
+    & .mk-resume-header-facts {
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* poster: the name as the picture - huge, uppercase, tight; the role a tilted label; the portrait tilted beside.
+     The row runs end to start: the portrait (first in the markup) sits at the end, and when the row wraps it goes
+     first, above the text. A container query restyles only what is inside the header, never the header itself - the
+     wrap is how the header itself changes with its width. */
+  .mk-resume-header[data-variant="poster"] {
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    gap: 1.5rem 2rem;
+
+    & .mk-resume-header-photo {
+      align-self: flex-start;
+      width: clamp(6rem, 22cqi, 14rem);
+      rotate: 4deg;
+      /* the tilt pokes out of its box - room for it, so a lone portrait on a narrow row stays inside */
+      margin: 0.5rem 0.75rem;
+    }
+    & .mk-resume-header-body {
+      flex: 1 1 20rem;
+      gap: 1rem;
+    }
+    & .mk-resume-header-name {
+      font-size: clamp(3rem, 0.5rem + 11cqi, 9rem);
+      font-weight: 800;
+      line-height: 0.86;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+    & .mk-resume-header-role {
+      padding: 0.25rem 0.75rem;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-size: clamp(1rem, 0.8rem + 0.8cqi, 1.375rem);
+      rotate: -1.5deg;
+    }
+  }
+
+  /* split: the text and a tall portrait side by side - the portrait fills its share of the row. The two bases and
+     the gap add up to 34rem, the width below which the query stacks them (portrait first, landscape) */
+  .mk-resume-header[data-variant="split"] {
+    flex-direction: row-reverse;
+    gap: 2rem 3.5rem;
+
+    & .mk-resume-header-photo {
+      flex: 0.85 1 12rem;
+      width: auto;
+      min-width: 0;
+      aspect-ratio: 4 / 5;
+    }
+    & .mk-resume-header-body {
+      flex: 1.15 1 18.5rem;
+      gap: 1rem;
+    }
+    & .mk-resume-header-name {
+      font-size: clamp(2.5rem, 0.75rem + 6.5cqi, 5.5rem);
+      line-height: 0.95;
+    }
+  }
+
+  /* narrow: the split portrait takes the whole first row, in landscape */
+  @container mk-resume-header (max-width: 34rem) {
+    .mk-resume-header[data-variant="split"] .mk-resume-header-photo {
+      flex-basis: 100%;
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    /* buttons do nothing on paper - the facts carry the contact details */
+    .mk-resume-header-actions {
+      display: none;
+    }
+    .mk-resume-header-facts a {
+      text-decoration: none;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-resume-header-status,
+    .mk-resume-header-summary,
+    .mk-resume-header-facts {
+      color: var(--foreground);
+    }
+    .mk-resume-header-status {
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-resume-header-status {
+      border-color: CanvasText;
+    }
+    .mk-resume-header-photo {
+      outline: 1px solid CanvasText;
+    }
+  }
+}

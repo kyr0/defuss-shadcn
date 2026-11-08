@@ -4406,20 +4406,28 @@ function dataSource(rows, options = {}) {
   let cache = null;
   let matchKey = "";
   let matchIds = null;
+  let matchRows = [];
   let branches = null;
+  let aggKey = "";
+  let aggCache = null;
   const matching = (filters) => {
     const key = JSON.stringify(filters);
     if (matchIds && key === matchKey)
       return matchIds;
     const tests = filters.map(predicate);
     const ids = [];
+    const hits = [];
     for (const row of current)
-      if (tests.every((t) => t(row)))
+      if (tests.every((t) => t(row))) {
         ids.push(row[idField]);
+        hits.push(row);
+      }
     matchKey = key;
     matchIds = ids;
+    matchRows = hits;
     return ids;
   };
+  const activeFilters = (q = {}) => (q.filters ?? []).filter((f) => f && f.field && f.value !== "" && f.value != null);
   return {
     get rows() {
       return current;
@@ -4430,7 +4438,7 @@ function dataSource(rows, options = {}) {
       const key = JSON.stringify([q.filters ?? [], q.sorters ?? [], q.expanded ?? [], q.collapsed ?? []]);
       if (cache && key === cacheKey)
         return cache;
-      const filters = (q.filters ?? []).filter((f) => f && f.field && f.value !== "" && f.value != null);
+      const filters = activeFilters(q);
       const filtering = filters.length > 0;
       const view = createDataview({
         idField,
@@ -4457,7 +4465,10 @@ function dataSource(rows, options = {}) {
       cache = null;
       cacheKey = "";
       matchIds = null;
+      matchRows = [];
       branches = null;
+      aggCache = null;
+      aggKey = "";
     },
     branchIds() {
       if (!options.tree)
@@ -4472,8 +4483,210 @@ function dataSource(rows, options = {}) {
       }
       branches = current.filter((row) => parents.has(row[idField])).map((row) => row[idField]);
       return branches;
+    },
+    aggregate(q, spec) {
+      const filters = activeFilters(q);
+      const key = JSON.stringify([filters, spec]);
+      if (aggCache && key === aggKey)
+        return aggCache;
+      let rows = current;
+      if (filters.length) {
+        matching(filters);
+        rows = matchRows;
+      }
+      aggCache = { rows: aggregate(rows, spec), matchedRows: rows.length, totalRows: current.length };
+      aggKey = key;
+      return aggCache;
     }
   };
+}
+var UNIT_MS = { minute: 60000, hour: 3600000, day: 86400000, week: 604800000 };
+function valueAt(row, path) {
+  if (!path.includes("."))
+    return Object.hasOwn(row, path) ? row[path] : undefined;
+  let v = row;
+  for (const part of path.split(".")) {
+    if (v == null || typeof v !== "object" || !Object.hasOwn(v, part))
+      return;
+    v = v[part];
+  }
+  return v;
+}
+function timeOf(v) {
+  if (typeof v === "number")
+    return v;
+  if (v instanceof Date)
+    return v.getTime();
+  if (typeof v === "string" && v)
+    return Date.parse(v);
+  return Number.NaN;
+}
+function unitStart(ms, unit) {
+  const fixed = UNIT_MS[unit];
+  if (unit === "week")
+    return Math.floor((ms - 4 * 86400000) / fixed) * fixed + 4 * 86400000;
+  if (fixed)
+    return Math.floor(ms / fixed) * fixed;
+  const d = new Date(ms);
+  return unit === "month" ? Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) : Date.UTC(d.getUTCFullYear(), 0, 1);
+}
+function unitNext(ms, unit) {
+  const fixed = UNIT_MS[unit];
+  if (fixed)
+    return ms + fixed;
+  const d = new Date(ms);
+  return unit === "month" ? Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1) : Date.UTC(d.getUTCFullYear() + 1, 0, 1);
+}
+function keyFn(group) {
+  const { field, bucket } = group;
+  if (bucket === undefined)
+    return (row) => valueAt(row, field) ?? null;
+  if (typeof bucket === "number") {
+    if (!(bucket > 0))
+      throw new RangeError("aggregate: a numeric bucket must be a positive width");
+    return (row) => {
+      const v = valueAt(row, field);
+      return typeof v === "number" && Number.isFinite(v) ? Math.floor(v / bucket) * bucket : null;
+    };
+  }
+  if (!["minute", "hour", "day", "week", "month", "year"].includes(bucket))
+    throw new RangeError(`aggregate: unknown time bucket "${bucket}"`);
+  return (row) => {
+    const t = timeOf(valueAt(row, field));
+    return Number.isFinite(t) ? unitStart(t, bucket) : null;
+  };
+}
+var compare = (a, b) => {
+  if (a === b)
+    return 0;
+  if (a == null)
+    return 1;
+  if (b == null)
+    return -1;
+  if (typeof a === "number" && typeof b === "number")
+    return a - b;
+  return String(a).localeCompare(String(b));
+};
+function aggregate(rows, spec = {}) {
+  const groups = (spec.groupBy === undefined ? [] : Array.isArray(spec.groupBy) ? spec.groupBy : [spec.groupBy]).map((g) => typeof g === "string" ? { field: g } : g);
+  const measures = spec.measures?.length ? spec.measures : [{ op: "count" }];
+  for (const m of measures)
+    if (m.op !== "count" && !m.field)
+      throw new TypeError(`aggregate: the measure "${m.op}" needs a field`);
+  const keyNames = groups.map((g) => g.as ?? g.field);
+  const measureNames = measures.map((m) => m.as ?? (m.op === "count" ? "count" : m.op + "_" + m.field));
+  const keys = groups.map(keyFn);
+  const fresh = (k) => ({
+    keys: k,
+    count: 0,
+    m: measures.map((m) => m.op === "distinct" ? new Set : [0, 0, Infinity, -Infinity])
+  });
+  const add = (acc, row) => {
+    acc.count++;
+    for (let j = 0;j < measures.length; j++) {
+      const m = measures[j];
+      if (m.op === "count")
+        continue;
+      const v = valueAt(row, m.field);
+      const slot = acc.m[j];
+      if (slot instanceof Set) {
+        if (v != null)
+          slot.add(v);
+        continue;
+      }
+      if (typeof v !== "number" || !Number.isFinite(v))
+        continue;
+      slot[0] += v;
+      slot[1]++;
+      if (v < slot[2])
+        slot[2] = v;
+      if (v > slot[3])
+        slot[3] = v;
+    }
+  };
+  const map = new Map;
+  const single = keys.length === 1 ? keys[0] : null;
+  for (const row of rows) {
+    let acc;
+    if (single) {
+      const k = single(row);
+      acc = map.get(k);
+      if (!acc)
+        map.set(k, acc = fresh([k]));
+    } else {
+      const ks = keys.map((f) => f(row));
+      const id = keys.length ? JSON.stringify(ks) : "";
+      acc = map.get(id);
+      if (!acc)
+        map.set(id, acc = fresh(ks));
+    }
+    add(acc, row);
+  }
+  const g0 = groups[0];
+  if (spec.fill && groups.length === 1 && g0.bucket !== undefined && map.size > 1) {
+    const present = [...map.keys()].filter((k) => typeof k === "number");
+    if (present.length) {
+      const lo = Math.min(...present), hi = Math.max(...present);
+      const step = (k) => typeof g0.bucket === "number" ? k + g0.bucket : unitNext(k, g0.bucket);
+      let n = 0;
+      for (let k = lo;k <= hi && n < 1e4; k = step(k), n++)
+        if (!map.has(k))
+          map.set(k, fresh([k]));
+    }
+  }
+  let list = [...map.values()];
+  const value = (acc, j) => {
+    const m = measures[j];
+    if (m.op === "count")
+      return acc.count;
+    const slot = acc.m[j];
+    if (slot instanceof Set)
+      return slot.size;
+    if (m.op === "sum")
+      return slot[0];
+    if (!slot[1])
+      return null;
+    return m.op === "avg" ? slot[0] / slot[1] : m.op === "min" ? slot[2] : slot[3];
+  };
+  const sortBy = spec.sort?.by ?? (spec.limit !== undefined ? measureNames[0] : keyNames[0]);
+  const dir = spec.sort?.direction ?? (spec.sort || spec.limit === undefined ? "asc" : "desc");
+  if (sortBy !== undefined) {
+    const ki = keyNames.indexOf(sortBy), mi = measureNames.indexOf(sortBy);
+    if (ki < 0 && mi < 0)
+      throw new RangeError(`aggregate: cannot sort by "${sortBy}" - not a key or a measure`);
+    const pick = (a) => ki >= 0 ? a.keys[ki] : value(a, mi);
+    list.sort((a, b) => (dir === "desc" ? -1 : 1) * compare(pick(a), pick(b)));
+  }
+  if (spec.limit !== undefined && list.length > spec.limit) {
+    const rest = list.slice(spec.limit);
+    list = list.slice(0, Math.max(0, spec.limit));
+    if (spec.other !== undefined) {
+      const other = fresh(keyNames.map((_, i) => i === 0 ? spec.other : null));
+      for (const acc of rest) {
+        other.count += acc.count;
+        acc.m.forEach((slot, j) => {
+          const into = other.m[j];
+          if (slot instanceof Set)
+            for (const v of slot)
+              into.add(v);
+          else {
+            const t = into;
+            t[0] += slot[0];
+            t[1] += slot[1];
+            t[2] = Math.min(t[2], slot[2]);
+            t[3] = Math.max(t[3], slot[3]);
+          }
+        });
+      }
+      list.push(other);
+    }
+  }
+  return list.map((acc) => {
+    const out = {};
+    keyNames.forEach((name, i) => out[name] = acc.keys[i]);
+    measureNames.forEach((name, j) => out[name] = value(acc, j));
+    return out;
+  });
 }
 function parseFilter(field, text, kind = "text") {
   const raw = text.trim();
@@ -4724,6 +4937,7 @@ shadcn.shared = {
   parseFilter,
   filterText,
   cycleSort,
+  aggregate,
   virtualWindow,
   sizerHeight,
   scrollTopFor,
@@ -4732,6 +4946,7 @@ shadcn.shared = {
 Reflect.set(df, "store", { create: createStore, computed, persisted, available: storageAvailable });
 Reflect.set(df, "dataview", {
   source: dataSource,
+  aggregate,
   parseFilter,
   cycleSort,
   create: createDataview,
@@ -4778,6 +4993,6 @@ installDdf({
   coerceIndex
 });
 
-//# debugId=E9C022AF1CBF8CA164756E2164756E21
+//# debugId=E4E761F6140235AB64756E2164756E21
 /* defuss-shadcn v0.9.12 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=core.js.map

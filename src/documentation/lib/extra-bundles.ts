@@ -30,6 +30,12 @@ export const EXTRA_BUNDLES: Readonly<Record<string, readonly string[]>> = {
   // the Geography section: the Geo Map and the geography library (df$.shadcn.geo) - d3-geo, GeographicLib and
   // defuss-dson load from their pinned builds with the first map
   geo: ['geo-map'],
+  // the Shaders section: WebGL2 effects drawn by one shared context - the GLSL of every effect rides along, so it
+  // stays out of all.* like the other engines
+  shaders: ['shader'],
+  // the Graphs section: the Graph Explorer - its worker (the graph, the layouts, the far field) rides along as one
+  // stringified function, and its icon set as CSS masks, so it stays out of all.* like the other engines
+  graphs: ['graph-explorer'],
 };
 
 /** The extra bundle a component ships in, or null when it rides in all.*. */

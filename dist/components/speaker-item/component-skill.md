@@ -68,7 +68,10 @@ An `<article>` named by the speaker: a portrait with descriptive `alt`, name, ro
 |-----------|----------|
 | Default | Square portrait (grayscale, color on hover), name, role, talk link |
 | `data-variant="featured"` | A keynote: portrait beside a bio, larger type |
+| `data-variant="overlay"` | The portrait fills a 3:4 card, tags, name and role over a scrim; the talk and the social links appear on hover / focus (always on touch screens) |
 | `data-variant="compact"` | A round portrait, name, role and talk on one row |
+| `.mk-speaker-item-tags` | The topics, a `<ul aria-label="Topics">` of short words - in any variant |
+| `.mk-speaker-item-social` | The speaker elsewhere: a `<ul aria-label>` of icon links, each named by its `aria-label` ("Sophie Tan on LinkedIn") - in any variant |
 
 ---
 
@@ -78,8 +81,12 @@ An `<article>` named by the speaker: a portrait with descriptive `alt`, name, ro
 |---------|-----------|-------|
 | root | `<article aria-labelledby>` | Named by the speaker |
 | talk | `<a>` | Links the session by its title |
+| tags | `<ul aria-label="Topics">` | A list, so its length is announced |
+| social | `<ul aria-label="Name elsewhere">` + `<a aria-label>` | The icons are `aria-hidden`; each link says whose profile on which network |
 
 ---
 
 ## Notes
+- The overlay variant hides the talk and the links until hover or focus-within - a keyboard user tabbing into the card sees them, and `@media (hover: none)` shows them on touch screens.
+- Brand icons are inline SVG with `fill="currentColor"` (Lucide has no brand marks); a website link takes Lucide's `globe`.
 - Write role and company as the speaker wants them - ask.

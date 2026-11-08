@@ -46,8 +46,26 @@
       scale 500ms cubic-bezier(0.2, 0.7, 0.2, 1),
       filter 300ms ease;
   }
-  .mk-collection-item:hover .mk-collection-item-media {
-    filter: brightness(0.94);
+  /* the card lifts, its picture casts a shadow and warms up */
+  .mk-collection-item {
+    transition: translate 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .mk-collection-item:not([data-variant]):is(:hover, :has(:focus-visible)) {
+    translate: 0 -0.25rem;
+    & .mk-collection-item-media {
+      box-shadow: var(--shadow-lg);
+      filter: saturate(1.15);
+    }
+    & .mk-collection-item-more {
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+    }
+  }
+  .mk-collection-item-media {
+    transition:
+      scale 500ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 300ms ease,
+      box-shadow 300ms ease;
   }
   .mk-collection-item-body {
     display: grid;
@@ -133,6 +151,115 @@
     }
   }
 
+  /* a short label over the picture: New, Bestseller, -20 % (data-tone="sale") */
+  .mk-collection-item-badge {
+    position: absolute;
+    z-index: 1;
+    inset: 0.75rem auto auto 0.75rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    &[data-tone="sale"] {
+      background: #dc2626;
+      color: #fff;
+    }
+  }
+
+  /* overlay: a glass badge; the cue rises on hover or focus */
+  .mk-collection-item[data-variant="overlay"] {
+    & .mk-collection-item-badge:not([data-tone]) {
+      border: 1px solid oklch(1 0 0 / 0.35);
+      background: oklch(1 0 0 / 0.18);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      box-shadow: none;
+    }
+    & .mk-collection-item-more {
+      opacity: 0;
+      translate: 0 0.5rem;
+      transition:
+        opacity 200ms ease,
+        translate 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    &:is(:hover, :has(:focus-visible)) .mk-collection-item-more {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+  @media (hover: none) {
+    .mk-collection-item[data-variant="overlay"] .mk-collection-item-more {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* stack: three pictures of the collection as prints on a tinted panel; they fan out on hover or focus */
+  .mk-collection-item[data-variant="stack"] {
+    & .mk-collection-item-stack {
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+      aspect-ratio: 5 / 4;
+      padding: 1rem;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      background: var(--mk-collection-tint, var(--muted));
+    }
+    & .mk-collection-item-media {
+      grid-area: 1 / 1;
+      width: 46%;
+      border: 0.25rem solid #fff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      transition:
+        rotate 450ms cubic-bezier(0.2, 0.7, 0.2, 1),
+        translate 450ms cubic-bezier(0.2, 0.7, 0.2, 1),
+        scale 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    & .mk-collection-item-media:nth-child(1) {
+      rotate: -9deg;
+      translate: -50% 5%;
+    }
+    & .mk-collection-item-media:nth-child(2) {
+      rotate: 9deg;
+      translate: 50% 5%;
+    }
+    /* the third print lies on top: the turned ones paint above an unturned one otherwise */
+    & .mk-collection-item-media:nth-child(3) {
+      z-index: 1;
+    }
+    &:is(:hover, :has(:focus-visible)) {
+      & .mk-collection-item-media:nth-child(1) {
+        rotate: -15deg;
+        translate: -66% 9%;
+      }
+      & .mk-collection-item-media:nth-child(2) {
+        rotate: 15deg;
+        translate: 66% 9%;
+      }
+      & .mk-collection-item-media:nth-child(3) {
+        scale: 1.08;
+        translate: 0 -3%;
+      }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mk-collection-item,
+    .mk-collection-item[data-variant="stack"] .mk-collection-item-media,
+    .mk-collection-item[data-variant="overlay"] .mk-collection-item-more {
+      transition: none;
+    }
+    .mk-collection-item:not([data-variant]):is(:hover, :has(:focus-visible)) {
+      translate: none;
+    }
+  }
+
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .mk-collection-item-media,
@@ -145,6 +272,11 @@
   }
 
   @media (forced-colors: active) {
+    .mk-collection-item-badge {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
     .mk-collection-item:is([data-variant="overlay"], [data-variant="banner"]) .mk-collection-item-body {
       background: Canvas;
       color: CanvasText;

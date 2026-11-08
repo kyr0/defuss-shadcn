@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "name": "shader",
+  "states": {
+    "effect": {
+      "type": "enum",
+      "values": [
+        "mesh-gradient",
+        "grain-gradient",
+        "warp",
+        "neuro-noise",
+        "dithering",
+        "god-rays",
+        "aurora",
+        "pulsing-border",
+        "hologram",
+        "metaballs",
+        "liquid-metal",
+        "water",
+        "fluted-glass",
+        "fluid",
+        "dot-orbit",
+        "topography",
+        "trails",
+        "orb",
+        "galaxy",
+        "waves",
+        "plasma",
+        "bokeh",
+        "ripple",
+        "voronoi",
+        "halftone",
+        "kaleidoscope",
+        "clouds",
+        "fire",
+        "starfield",
+        "silk",
+        "nebula",
+        "prism",
+        "matrix",
+        "marble",
+        "oil",
+        "op-art",
+        "lightning",
+        "snow",
+        "fireflies",
+        "glitch",
+        "crt",
+        "caustics",
+        "smoke",
+        "surface"
+      ],
+      "default": "mesh-gradient",
+      "target": {
+        "kind": "selector",
+        "selector": ".shader"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "effect": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-effect"
+      },
+      "editor": {
+        "component": "select"
+      }
+    },
+    "speed": {
+      "type": "number",
+      "default": 1,
+      "target": {
+        "kind": "selector",
+        "selector": ".shader"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "@current",
+        "args": {
+          "speed": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-speed"
+      },
+      "editor": {
+        "component": "number"
+      }
+    },
+    "paused": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".shader"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "paused"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

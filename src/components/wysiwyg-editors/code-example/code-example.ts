@@ -202,6 +202,8 @@ const EXTRA_BUNDLES: Readonly<Record<string, readonly string[]>> = {
   math: ['math-renderer', 'math-editor', 'math-compute'],
   'visual-editor': ['visual-editor'],
   geo: ['geo-map'],
+  shaders: ['shader'],
+  graphs: ['graph-explorer'],
 };
 const BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join('|')})(?:\\.min)?\\.js(?:[?#]|$)`);
 /** the extra bundles a preview source needs, in EXTRA_BUNDLES order */

@@ -168,6 +168,196 @@
     }
   }
 
+  /* format, level and needs as small outline tags */
+  .mk-session-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    & li {
+      padding: 0.0625rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+  /* happening now: a pulsing dot beside the time */
+  .mk-session-item-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: fit-content;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, #dc2626 14%, transparent);
+    color: color-mix(in oklab, #dc2626 80%, var(--foreground));
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    &::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: #dc2626;
+      animation: mk-session-live 1.6s ease-out infinite;
+    }
+  }
+  @keyframes mk-session-live {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in oklch, #dc2626 55%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 0.45rem transparent;
+    }
+  }
+  .mk-session-item:has(.mk-session-item-live) {
+    border-color: color-mix(in oklch, #dc2626 45%, var(--border));
+  }
+  /* slides, recording, share: small links under the session */
+  .mk-session-item-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8125rem;
+    & a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--muted-foreground);
+      font-weight: 600;
+      text-decoration: none;
+      &:hover {
+        color: var(--foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
+    }
+    & svg {
+      width: 0.9375rem;
+      height: 0.9375rem;
+    }
+  }
+
+  /* cover: a picture fills the card, the session over a scrim in the track's colour; time and save float on top */
+  .mk-session-item[data-variant="cover"] {
+    position: relative;
+    isolation: isolate;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr;
+    min-height: 22rem;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--radius-xl);
+    background: oklch(0.18 0.02 260);
+    color: #fff;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(transparent 20%, oklch(0.12 0.02 260 / 0.9) 78%),
+        linear-gradient(135deg, color-mix(in oklch, var(--mk-session-color) 45%, transparent), transparent 60%);
+    }
+    & .mk-session-item-cover {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: scale 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    &:is(:hover, :focus-within) .mk-session-item-cover {
+      scale: 1.05;
+    }
+    /* the time as a glass chip in the corner */
+    & .mk-session-item-time {
+      display: flex;
+      align-items: baseline;
+      gap: 0.375rem;
+      width: fit-content;
+      height: fit-content;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background: oklch(0.12 0.02 260 / 0.45);
+      backdrop-filter: blur(8px);
+      & span,
+      & small {
+        margin: 0;
+        color: oklch(1 0 0 / 0.75);
+      }
+      & span::before {
+        content: "- ";
+      }
+    }
+    & .mk-session-item-body {
+      grid-column: 1 / -1;
+      align-self: end;
+    }
+    & .mk-session-item-track {
+      background: var(--mk-session-color);
+      color: #fff;
+    }
+    & .mk-session-item-live {
+      background: #dc2626;
+      color: #fff;
+      &::before {
+        background: #fff;
+      }
+    }
+    & .mk-session-item-title {
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    & :is(.mk-session-item-desc, .mk-session-item-room, .mk-session-item-links a) {
+      color: oklch(1 0 0 / 0.78);
+    }
+    & .mk-session-item-links a:hover {
+      color: #fff;
+    }
+    & .mk-session-item-tags li {
+      border-color: oklch(1 0 0 / 0.3);
+      color: oklch(1 0 0 / 0.85);
+    }
+    & .mk-session-item-save {
+      grid-column: 2;
+      grid-row: 1;
+      border-color: oklch(1 0 0 / 0.3);
+      background: oklch(0.12 0.02 260 / 0.45);
+      backdrop-filter: blur(8px);
+    }
+    & .mk-session-item-save:has(input:checked) {
+      border-color: #fff;
+      background: #fff;
+      color: oklch(0.15 0.02 260);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mk-session-item-live::before {
+      animation: none;
+    }
+    .mk-session-item[data-variant="cover"] .mk-session-item-cover {
+      transition: none;
+    }
+  }
+
   /* -- Accessibility ------------------------------------------- */
   @media (forced-colors: active) {
     .mk-session-item {

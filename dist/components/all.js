@@ -4406,20 +4406,28 @@ function dataSource(rows, options = {}) {
   let cache = null;
   let matchKey = "";
   let matchIds = null;
+  let matchRows = [];
   let branches = null;
+  let aggKey = "";
+  let aggCache = null;
   const matching = (filters) => {
     const key = JSON.stringify(filters);
     if (matchIds && key === matchKey)
       return matchIds;
     const tests = filters.map(predicate);
     const ids = [];
+    const hits = [];
     for (const row of current)
-      if (tests.every((t) => t(row)))
+      if (tests.every((t) => t(row))) {
         ids.push(row[idField]);
+        hits.push(row);
+      }
     matchKey = key;
     matchIds = ids;
+    matchRows = hits;
     return ids;
   };
+  const activeFilters = (q = {}) => (q.filters ?? []).filter((f) => f && f.field && f.value !== "" && f.value != null);
   return {
     get rows() {
       return current;
@@ -4430,7 +4438,7 @@ function dataSource(rows, options = {}) {
       const key = JSON.stringify([q.filters ?? [], q.sorters ?? [], q.expanded ?? [], q.collapsed ?? []]);
       if (cache && key === cacheKey)
         return cache;
-      const filters = (q.filters ?? []).filter((f) => f && f.field && f.value !== "" && f.value != null);
+      const filters = activeFilters(q);
       const filtering = filters.length > 0;
       const view = createDataview({
         idField,
@@ -4457,7 +4465,10 @@ function dataSource(rows, options = {}) {
       cache = null;
       cacheKey = "";
       matchIds = null;
+      matchRows = [];
       branches = null;
+      aggCache = null;
+      aggKey = "";
     },
     branchIds() {
       if (!options.tree)
@@ -4472,8 +4483,210 @@ function dataSource(rows, options = {}) {
       }
       branches = current.filter((row) => parents.has(row[idField])).map((row) => row[idField]);
       return branches;
+    },
+    aggregate(q, spec) {
+      const filters = activeFilters(q);
+      const key = JSON.stringify([filters, spec]);
+      if (aggCache && key === aggKey)
+        return aggCache;
+      let rows = current;
+      if (filters.length) {
+        matching(filters);
+        rows = matchRows;
+      }
+      aggCache = { rows: aggregate(rows, spec), matchedRows: rows.length, totalRows: current.length };
+      aggKey = key;
+      return aggCache;
     }
   };
+}
+var UNIT_MS = { minute: 60000, hour: 3600000, day: 86400000, week: 604800000 };
+function valueAt(row, path) {
+  if (!path.includes("."))
+    return Object.hasOwn(row, path) ? row[path] : undefined;
+  let v = row;
+  for (const part of path.split(".")) {
+    if (v == null || typeof v !== "object" || !Object.hasOwn(v, part))
+      return;
+    v = v[part];
+  }
+  return v;
+}
+function timeOf(v) {
+  if (typeof v === "number")
+    return v;
+  if (v instanceof Date)
+    return v.getTime();
+  if (typeof v === "string" && v)
+    return Date.parse(v);
+  return Number.NaN;
+}
+function unitStart(ms, unit) {
+  const fixed = UNIT_MS[unit];
+  if (unit === "week")
+    return Math.floor((ms - 4 * 86400000) / fixed) * fixed + 4 * 86400000;
+  if (fixed)
+    return Math.floor(ms / fixed) * fixed;
+  const d = new Date(ms);
+  return unit === "month" ? Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1) : Date.UTC(d.getUTCFullYear(), 0, 1);
+}
+function unitNext(ms, unit) {
+  const fixed = UNIT_MS[unit];
+  if (fixed)
+    return ms + fixed;
+  const d = new Date(ms);
+  return unit === "month" ? Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1) : Date.UTC(d.getUTCFullYear() + 1, 0, 1);
+}
+function keyFn(group) {
+  const { field, bucket } = group;
+  if (bucket === undefined)
+    return (row) => valueAt(row, field) ?? null;
+  if (typeof bucket === "number") {
+    if (!(bucket > 0))
+      throw new RangeError("aggregate: a numeric bucket must be a positive width");
+    return (row) => {
+      const v = valueAt(row, field);
+      return typeof v === "number" && Number.isFinite(v) ? Math.floor(v / bucket) * bucket : null;
+    };
+  }
+  if (!["minute", "hour", "day", "week", "month", "year"].includes(bucket))
+    throw new RangeError(`aggregate: unknown time bucket "${bucket}"`);
+  return (row) => {
+    const t = timeOf(valueAt(row, field));
+    return Number.isFinite(t) ? unitStart(t, bucket) : null;
+  };
+}
+var compare = (a, b) => {
+  if (a === b)
+    return 0;
+  if (a == null)
+    return 1;
+  if (b == null)
+    return -1;
+  if (typeof a === "number" && typeof b === "number")
+    return a - b;
+  return String(a).localeCompare(String(b));
+};
+function aggregate(rows, spec = {}) {
+  const groups = (spec.groupBy === undefined ? [] : Array.isArray(spec.groupBy) ? spec.groupBy : [spec.groupBy]).map((g) => typeof g === "string" ? { field: g } : g);
+  const measures = spec.measures?.length ? spec.measures : [{ op: "count" }];
+  for (const m of measures)
+    if (m.op !== "count" && !m.field)
+      throw new TypeError(`aggregate: the measure "${m.op}" needs a field`);
+  const keyNames = groups.map((g) => g.as ?? g.field);
+  const measureNames = measures.map((m) => m.as ?? (m.op === "count" ? "count" : m.op + "_" + m.field));
+  const keys = groups.map(keyFn);
+  const fresh = (k) => ({
+    keys: k,
+    count: 0,
+    m: measures.map((m) => m.op === "distinct" ? new Set : [0, 0, Infinity, -Infinity])
+  });
+  const add = (acc, row) => {
+    acc.count++;
+    for (let j = 0;j < measures.length; j++) {
+      const m = measures[j];
+      if (m.op === "count")
+        continue;
+      const v = valueAt(row, m.field);
+      const slot = acc.m[j];
+      if (slot instanceof Set) {
+        if (v != null)
+          slot.add(v);
+        continue;
+      }
+      if (typeof v !== "number" || !Number.isFinite(v))
+        continue;
+      slot[0] += v;
+      slot[1]++;
+      if (v < slot[2])
+        slot[2] = v;
+      if (v > slot[3])
+        slot[3] = v;
+    }
+  };
+  const map = new Map;
+  const single = keys.length === 1 ? keys[0] : null;
+  for (const row of rows) {
+    let acc;
+    if (single) {
+      const k = single(row);
+      acc = map.get(k);
+      if (!acc)
+        map.set(k, acc = fresh([k]));
+    } else {
+      const ks = keys.map((f) => f(row));
+      const id = keys.length ? JSON.stringify(ks) : "";
+      acc = map.get(id);
+      if (!acc)
+        map.set(id, acc = fresh(ks));
+    }
+    add(acc, row);
+  }
+  const g0 = groups[0];
+  if (spec.fill && groups.length === 1 && g0.bucket !== undefined && map.size > 1) {
+    const present = [...map.keys()].filter((k) => typeof k === "number");
+    if (present.length) {
+      const lo = Math.min(...present), hi = Math.max(...present);
+      const step = (k) => typeof g0.bucket === "number" ? k + g0.bucket : unitNext(k, g0.bucket);
+      let n = 0;
+      for (let k = lo;k <= hi && n < 1e4; k = step(k), n++)
+        if (!map.has(k))
+          map.set(k, fresh([k]));
+    }
+  }
+  let list = [...map.values()];
+  const value = (acc, j) => {
+    const m = measures[j];
+    if (m.op === "count")
+      return acc.count;
+    const slot = acc.m[j];
+    if (slot instanceof Set)
+      return slot.size;
+    if (m.op === "sum")
+      return slot[0];
+    if (!slot[1])
+      return null;
+    return m.op === "avg" ? slot[0] / slot[1] : m.op === "min" ? slot[2] : slot[3];
+  };
+  const sortBy = spec.sort?.by ?? (spec.limit !== undefined ? measureNames[0] : keyNames[0]);
+  const dir = spec.sort?.direction ?? (spec.sort || spec.limit === undefined ? "asc" : "desc");
+  if (sortBy !== undefined) {
+    const ki = keyNames.indexOf(sortBy), mi = measureNames.indexOf(sortBy);
+    if (ki < 0 && mi < 0)
+      throw new RangeError(`aggregate: cannot sort by "${sortBy}" - not a key or a measure`);
+    const pick = (a) => ki >= 0 ? a.keys[ki] : value(a, mi);
+    list.sort((a, b) => (dir === "desc" ? -1 : 1) * compare(pick(a), pick(b)));
+  }
+  if (spec.limit !== undefined && list.length > spec.limit) {
+    const rest = list.slice(spec.limit);
+    list = list.slice(0, Math.max(0, spec.limit));
+    if (spec.other !== undefined) {
+      const other = fresh(keyNames.map((_, i) => i === 0 ? spec.other : null));
+      for (const acc of rest) {
+        other.count += acc.count;
+        acc.m.forEach((slot, j) => {
+          const into = other.m[j];
+          if (slot instanceof Set)
+            for (const v of slot)
+              into.add(v);
+          else {
+            const t = into;
+            t[0] += slot[0];
+            t[1] += slot[1];
+            t[2] = Math.min(t[2], slot[2]);
+            t[3] = Math.max(t[3], slot[3]);
+          }
+        });
+      }
+      list.push(other);
+    }
+  }
+  return list.map((acc) => {
+    const out = {};
+    keyNames.forEach((name, i) => out[name] = acc.keys[i]);
+    measureNames.forEach((name, j) => out[name] = value(acc, j));
+    return out;
+  });
 }
 function parseFilter(field, text, kind = "text") {
   const raw = text.trim();
@@ -4724,6 +4937,7 @@ shadcn.shared = {
   parseFilter,
   filterText,
   cycleSort,
+  aggregate,
   virtualWindow,
   sizerHeight,
   scrollTopFor,
@@ -4732,6 +4946,7 @@ shadcn.shared = {
 Reflect.set(df, "store", { create: createStore, computed, persisted, available: storageAvailable });
 Reflect.set(df, "dataview", {
   source: dataSource,
+  aggregate,
   parseFilter,
   cycleSort,
   create: createDataview,
@@ -8048,6 +8263,129 @@ function mount(el, option = {}) {
 function instance(el) {
   return instances2.get(el);
 }
+function followedFilters(el) {
+  const config = el.store?.value?.config;
+  return Array.isArray(config?.filters) ? config.filters : [];
+}
+function bind(el, options) {
+  const opts = { ...options };
+  let query = { filters: opts.query?.filters ?? [] };
+  let rows = [];
+  let handle = null;
+  let disposed = false;
+  let pending = false;
+  let wait = null;
+  let unsubscribe = null;
+  let ready = () => {};
+  const mounted = new Promise((resolve) => ready = resolve);
+  const start = (option) => {
+    handle = mount(el, option);
+    ready(handle.instance);
+  };
+  const build = () => {
+    const t0 = performance.now();
+    const result = opts.source.aggregate(query, opts.aggregate);
+    rows = result.rows;
+    const info = {
+      rows,
+      matched: result.matchedRows,
+      total: result.totalRows,
+      ms: Math.round((performance.now() - t0) * 10) / 10
+    };
+    const option = typeof opts.option === "function" ? opts.option(rows, info) : deepMerge(opts.option ?? {}, { dataset: { source: rows } });
+    el.dispatchEvent(new CustomEvent("chart-data", {
+      detail: { rows: info.rows, matched: info.matched, total: info.total, ms: info.ms },
+      bubbles: true
+    }));
+    return option;
+  };
+  const draw = () => {
+    if (disposed)
+      return;
+    if (handle) {
+      handle.setOption(build());
+      return;
+    }
+    const box = el.getBoundingClientRect();
+    if (box.width && box.height) {
+      start(build());
+      return;
+    }
+    if (!wait) {
+      wait = new ResizeObserver(() => {
+        const b = el.getBoundingClientRect();
+        if (!b.width || !b.height || handle || disposed)
+          return;
+        wait?.disconnect();
+        wait = null;
+        start(build());
+      });
+      wait.observe(el);
+    }
+  };
+  const schedule = () => {
+    if (pending)
+      return;
+    pending = true;
+    queueMicrotask(() => {
+      pending = false;
+      draw();
+    });
+  };
+  const follow = () => {
+    const target = opts.follow;
+    if (!target || disposed || unsubscribe)
+      return;
+    if (!target.store)
+      return;
+    query = { filters: followedFilters(target) };
+    let seen = JSON.stringify(query.filters);
+    unsubscribe = target.store.subscribe(() => {
+      const filters = followedFilters(target);
+      const key = JSON.stringify(filters);
+      if (key === seen)
+        return;
+      seen = key;
+      query = { filters };
+      schedule();
+    });
+  };
+  follow();
+  draw();
+  if (opts.follow && !unsubscribe)
+    queueMicrotask(() => {
+      follow();
+      if (unsubscribe)
+        schedule();
+    });
+  return {
+    rows: () => rows,
+    query: (q) => {
+      query = { filters: q?.filters ?? [] };
+      draw();
+    },
+    refresh: () => draw(),
+    update: (next) => {
+      if (next.aggregate)
+        opts.aggregate = next.aggregate;
+      if (next.option !== undefined)
+        opts.option = next.option;
+      if (handle && next.option !== undefined) {
+        handle.setOption(build(), true);
+        return;
+      }
+      draw();
+    },
+    mounted,
+    dispose: () => {
+      disposed = true;
+      unsubscribe?.();
+      wait?.disconnect();
+      handle?.dispose();
+      handle = null;
+    }
+  };
+}
 function replay(el, inst) {
   const journal = journals.get(el);
   const raw = inst._rawSetOption;
@@ -8249,7 +8587,7 @@ var chartApi = componentState({
 });
 df$11.chartApi = chartApi;
 df$11.chartStates = chartStates;
-df$11.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
+df$11.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck, bind };
 df$11.chartStory = chartStory;
 function init11() {
   dfDollar11(".chart:not([data-init])").toArray().forEach((el) => {
@@ -11057,6 +11395,7 @@ df$19.dataGrid = {
     query(resolve6(target), patch);
   },
   rows: (target) => (resolve6(target)._result?.entries ?? []).map((e) => e.row),
+  source: (target) => resolve6(target)._source,
   selected(target) {
     const grid = resolve6(target);
     const ids = grid._selected ?? new Set;
@@ -11097,6 +11436,8 @@ function init19() {
     dfDollar18(body).append(pool);
     grid._parts = { viewport, head, body, pool, footer };
     grid._columns = readColumns(grid);
+    grid._order = grid._columns;
+    grid._shown = [];
     grid._focus = { row: 0, col: 0 };
     grid._selected = new Set;
     grid._rowHeight = parseFloat(getComputedStyle(grid).getPropertyValue("--data-grid-row-height")) || 36;
@@ -18528,7 +18869,7 @@ function rangeOf2(el, input) {
   };
 }
 var scaleOf = (el) => SCALES[el.getAttribute("data-scale") ?? "linear"] ?? linear;
-function valueAt(el, p) {
+function valueAt2(el, p) {
   const r = rangeOf2(el, runtimeOf4(el).input);
   let v = NaN;
   try {
@@ -18802,7 +19143,7 @@ function onPointerMove2(el, e) {
   const travel = Math.max(20, num7(el.getAttribute("data-travel"), 200));
   d.p = clamp6(d.p + dx / travel * speedAt(d, e) * (e.shiftKey ? 0.1 : 1), 0, 1);
   reach(el, e);
-  show2(el, valueAt(el, d.p), false);
+  show2(el, valueAt2(el, d.p), false);
 }
 function endDrag2(el, cancel, rest = true) {
   const rt = runtimeOf4(el);
@@ -18835,11 +19176,11 @@ function onKey3(el, e) {
   if (dir && step > 0)
     value = rt.value + dir * step * Math.sign(rangeOf2(el, rt.input).max - rangeOf2(el, rt.input).min || 1);
   else if (dir)
-    value = valueAt(el, rt.p + dir * (e.shiftKey ? FINE_STEP : KEY_STEP));
+    value = valueAt2(el, rt.p + dir * (e.shiftKey ? FINE_STEP : KEY_STEP));
   else if (e.key === "PageUp" || e.key === "PageDown")
-    value = valueAt(el, rt.p + (e.key === "PageUp" ? PAGE_STEP : -PAGE_STEP));
+    value = valueAt2(el, rt.p + (e.key === "PageUp" ? PAGE_STEP : -PAGE_STEP));
   else if (e.key === "Home" || e.key === "End")
-    value = valueAt(el, e.key === "Home" ? 0 : 1);
+    value = valueAt2(el, e.key === "Home" ? 0 : 1);
   else if (e.key === "Delete" || e.key === "Backspace")
     value = defaultOf(el);
   else if (e.key === "Enter" && !rt.drag) {
@@ -19040,7 +19381,7 @@ df$33.knob = {
     let p = rt.p;
     for (const r of rt.rings)
       p += r.amount * (rt.live.get(r.id) ?? 0);
-    return settle2(el, valueAt(el, clamp6(p, 0, 1)));
+    return settle2(el, valueAt2(el, clamp6(p, 0, 1)));
   },
   scale: (name, scale) => {
     if (!name || typeof scale?.value !== "function" || typeof scale?.position !== "function")
@@ -19226,7 +19567,7 @@ function lengthOf2(rt) {
     return m;
   return Math.max(0, ...rt.rows.flatMap((r) => r.items.map((p) => p.end)));
 }
-var timeOf = (rt) => rt.media ? rt.media.currentTime : rt.clock ? Math.min(rt.duration, rt.clock.from + (performance.now() - rt.clock.at) / 1000) : rt.time;
+var timeOf2 = (rt) => rt.media ? rt.media.currentTime : rt.clock ? Math.min(rt.duration, rt.clock.from + (performance.now() - rt.clock.at) / 1000) : rt.time;
 var playingOf = (rt) => rt.media ? !rt.media.paused && !rt.media.ended : !!rt.clock;
 var rateOf = (rt) => rt.media ? rt.media.playbackRate : 1;
 function activeAt2(rt, time) {
@@ -19348,7 +19689,7 @@ function runPlayhead(el) {
     return;
   rt.anim?.cancel();
   rt.anim = undefined;
-  const t = Math.min(rt.duration, timeOf(rt));
+  const t = Math.min(rt.duration, timeOf2(rt));
   head.style.setProperty("left", pct(t, rt.duration));
   const rate = rateOf(rt);
   const to = rt.loop && t < rt.loop.end ? rt.loop.end : rt.duration;
@@ -19369,7 +19710,7 @@ function loopWatch(el) {
   const loop = rt.loop;
   if (!loop || !playingOf(rt))
     return;
-  const t = timeOf(rt);
+  const t = timeOf2(rt);
   if (t < loop.start - 0.05 || t >= loop.end - 0.01) {
     seek2(el, loop.start);
     return;
@@ -19377,7 +19718,7 @@ function loopWatch(el) {
   const rate = rateOf(rt) || 1;
   rt.loopTimer = setTimeout(() => {
     rt.loopTimer = undefined;
-    if (rt.loop && playingOf(rt) && timeOf(rt) >= rt.loop.end - 0.05)
+    if (rt.loop && playingOf(rt) && timeOf2(rt) >= rt.loop.end - 0.05)
       seek2(el, rt.loop.start);
     else
       loopWatch(el);
@@ -19385,7 +19726,7 @@ function loopWatch(el) {
 }
 function paint4(el, restart = false) {
   const rt = runtimeOf5(el);
-  const t = timeOf(rt);
+  const t = timeOf2(rt);
   const d = rt.duration;
   const playing = playingOf(rt);
   const anim = rt.anim;
@@ -19508,7 +19849,7 @@ function runClock2(el, on) {
   if (on === !!rt.clock)
     return;
   if (!on) {
-    rt.time = timeOf(rt);
+    rt.time = timeOf2(rt);
     rt.clock = undefined;
     paint4(el, true);
     return;
@@ -19521,7 +19862,7 @@ function runClock2(el, on) {
   const tick = () => {
     if (rt.clockRun !== run || !rt.clock)
       return;
-    if (timeOf(rt) >= rt.duration) {
+    if (timeOf2(rt) >= rt.duration) {
       rt.time = rt.duration;
       rt.clock = undefined;
       paint4(el, true);
@@ -19538,7 +19879,7 @@ function setLoop2(el, loop) {
   if (sameLoop2(loop, rt.loop))
     return;
   rt.loop = loop;
-  const t = timeOf(rt);
+  const t = timeOf2(rt);
   if (loop && (t < loop.start || t >= loop.end))
     seek2(el, loop.start);
   else
@@ -19591,7 +19932,7 @@ function triggerStateChange34(el, stateName, config, incoming) {
   if (!m && stateName !== "playing")
     runClock2(el, false);
   if ("time" in incoming)
-    seek2(el, num8(incoming.time, timeOf(rt)));
+    seek2(el, num8(incoming.time, timeOf2(rt)));
   if ("loop" in incoming)
     setLoop2(el, loopOf2(incoming.loop, rt.duration));
   if (!m) {
@@ -19618,7 +19959,7 @@ var mediaTimelineApi = componentState({
     if (!rt)
       return state;
     const name = playingOf(rt) ? "playing" : "default";
-    const time = timeOf(rt);
+    const time = timeOf2(rt);
     const c = state.config;
     const loop = rt.loop;
     if (name === state.name && c.time === time && c.zoom === rt.zoom && c.data === rt.data && c.loop === loop)
@@ -19803,7 +20144,7 @@ function init34() {
         el.api?.setState(now3(el), { loop: null });
     });
     dfDollar33(scroll).on("keydown", (e) => {
-      const t = timeOf(rt);
+      const t = timeOf2(rt);
       const loop = loopKey(e, rt, t);
       if (loop !== undefined) {
         e.preventDefault();
@@ -19904,7 +20245,7 @@ df$34.mediaTimeline = {
     if (!el?._timeline)
       return [];
     const rt = runtimeOf5(el);
-    return activeAt2(rt, time ?? timeOf(rt));
+    return activeAt2(rt, time ?? timeOf2(rt));
   }
 };
 init34();
@@ -23263,7 +23604,7 @@ function readFlow(root) {
 }
 var operand = (value, answers) => value && typeof value === "object" && !Array.isArray(value) && ("field" in value) ? answers[value.field] : value;
 var lower2 = (v) => String(v ?? "").toLowerCase();
-function compare(a, b) {
+function compare2(a, b) {
   const na = typeof a === "number" ? a : a === "" || a == null ? NaN : Number(a);
   const nb = typeof b === "number" ? b : b === "" || b == null ? NaN : Number(b);
   if (!Number.isNaN(na) && !Number.isNaN(nb))
@@ -23284,13 +23625,13 @@ function holds(cond, answers) {
     case "neq":
       return Array.isArray(v) ? !v.includes(target) : lower2(v) !== lower2(target);
     case "gt":
-      return !isEmpty(v) && !isEmpty(target) && compare(v, target) > 0;
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) > 0;
     case "gte":
-      return !isEmpty(v) && !isEmpty(target) && compare(v, target) >= 0;
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) >= 0;
     case "lt":
-      return !isEmpty(v) && !isEmpty(target) && compare(v, target) < 0;
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) < 0;
     case "lte":
-      return !isEmpty(v) && !isEmpty(target) && compare(v, target) <= 0;
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) <= 0;
     case "in":
       return (Array.isArray(target) ? target : [target]).some((t) => Array.isArray(v) ? v.includes(t) : lower2(v) === lower2(t));
     case "includes":
@@ -29494,6 +29835,6 @@ df$71.win = windowActions;
 init71();
 new MutationObserver(init71).observe(document, { childList: true, subtree: true });
 
-//# debugId=C5E0A95FC49BA07664756E2164756E21
+//# debugId=06F20E6BD3FEFDF064756E2164756E21
 /* defuss-shadcn v0.9.12 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

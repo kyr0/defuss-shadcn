@@ -181,12 +181,12 @@ try {
     await p.click('#dash-orders-grid .data-grid-rows > .data-grid-row:nth-child(2) .data-grid-cell:nth-child(3)');
     await p.waitForFunction(() => document.querySelector('.dash-bulk-count')!.textContent === '1 Bestellung ausgewählt');
     await p.close();
-    // a German browser starts in German (resolveLocale over navigator.languages)
+    // a German browser starts in English too - the demos speak the documentation's language, the select offers German
     const de = await browser.newPage({ locale: 'de-DE' });
     await offlineJsdelivr(de);
     await de.goto(`${server.url}${PAGE}`);
-    await de.waitForFunction(() => document.querySelector('[data-dash]')?.getAttribute('lang') === 'de', undefined, { timeout: 15_000 });
-    assert.equal(await de.$eval('[data-app-locale]', (s) => (s as HTMLSelectElement).value), 'de');
+    await de.waitForFunction(() => document.querySelector('[data-dash]')?.getAttribute('lang') === 'en', undefined, { timeout: 15_000 });
+    assert.equal(await de.$eval('[data-app-locale]', (s) => (s as HTMLSelectElement).value), 'en');
     await de.close();
   });
 

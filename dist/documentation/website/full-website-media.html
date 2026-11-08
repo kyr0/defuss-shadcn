@@ -15,25 +15,543 @@
 <link rel="stylesheet" href="../css/docs-theme.css" />
 <link rel="stylesheet" href="../css/docs-utilities.css" />
 <link rel="stylesheet" href="../../components/all.css" />
+<link rel="stylesheet" href="../../components/shaders.css" />
 <style>:root { --scaffold-height: 100dvh; } html, body { margin: 0; } body { background: var(--background); color: var(--foreground); }</style>
 </head>
 <body>
-<div id="site-media" data-i18n-component style="display: flex; flex-direction: column; gap: 4rem; width: 100%">
-  <div class="flex justify-end" style="margin-block-end: -2.5rem">
-    <select
-      class="select"
-      data-size="sm"
-      data-app-locale
-      aria-label="Language"
-      data-i18n-aria-label-en="Language"
-      data-i18n-aria-label-de="Sprache"
-      style="width: auto"
-    >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-    </select>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+  /* Acme Stories, the company's media room, on one 76rem grid with ONE language: an Instrument Serif title per
+     section, Instrument Sans for everything else, square-cornered pictures, sections numbered 01-05 on a hairline,
+     one accent. The film always plays in a dark screening band. Moves: a customs stamp on the first picture, film
+     frames around the stills in Cinema, the podcast cover turning like a record while it plays. Looks: Gallery
+     (white walls and vermilion, follows light / dark), Cinema (black, amber, grain over the stills) and Archive
+     (warm paper, sepia prints, brown ink). */
+  #site-media {
+    --background: oklch(0.99 0 0);
+    --foreground: oklch(0.18 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: var(--foreground);
+    --muted: oklch(0.96 0 0);
+    --muted-foreground: oklch(0.44 0 0);
+    --border: oklch(0.18 0 0 / 0.12);
+    --input: oklch(0.18 0 0 / 0.24);
+    --primary: oklch(0.18 0 0);
+    --primary-foreground: oklch(0.99 0 0);
+    --secondary: oklch(0.96 0 0);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.58 0.2 32);
+    --accent-foreground: oklch(0.99 0 0);
+    --ring: var(--accent);
+    /* one corner for every box in the site - pictures, players, cards, buttons alike */
+    --radius: 0.375rem;
+    --radius-sm: var(--radius);
+    --radius-md: var(--radius);
+    --radius-lg: var(--radius);
+    --radius-xl: var(--radius);
+    --md-title: 'Instrument Serif', Georgia, serif;
+    --md-stamp: oklch(0.5 0.16 255);
+    --md-photo: saturate(1);
+    color-scheme: light;
+    container-type: inline-size;
+    counter-reset: md;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: clip;
+    background: var(--background);
+    color: var(--foreground);
+    font:
+      400 1rem/1.55 'Instrument Sans',
+      var(--font-sans);
+  }
+  .dark #site-media[data-look='gallery'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0 0);
+    --foreground: oklch(0.95 0 0);
+    --card: oklch(0.21 0 0);
+    --muted: oklch(0.24 0 0);
+    --muted-foreground: oklch(0.74 0 0);
+    --border: oklch(0.95 0 0 / 0.12);
+    --input: oklch(0.95 0 0 / 0.24);
+    --primary: oklch(0.95 0 0);
+    --primary-foreground: oklch(0.17 0 0);
+    --secondary: oklch(0.24 0 0);
+    --accent: oklch(0.7 0.17 35);
+    --md-stamp: oklch(0.75 0.12 255);
+  }
+  #site-media[data-look='cinema'] {
+    color-scheme: dark;
+    --background: oklch(0.12 0 0);
+    --foreground: oklch(0.94 0.01 85);
+    --card: oklch(0.16 0 0);
+    --muted: oklch(0.2 0 0);
+    --muted-foreground: oklch(0.74 0.01 85);
+    --border: oklch(0.94 0.01 85 / 0.12);
+    --input: oklch(0.94 0.01 85 / 0.24);
+    --primary: oklch(0.82 0.13 80);
+    --primary-foreground: oklch(0.12 0 0);
+    --secondary: oklch(0.2 0 0);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.82 0.13 80);
+    --accent-foreground: oklch(0.12 0 0);
+    --md-stamp: oklch(0.82 0.13 80);
+  }
+  #site-media[data-look='archive'] {
+    color-scheme: light;
+    --background: oklch(0.955 0.018 78);
+    --foreground: oklch(0.26 0.03 50);
+    --card: oklch(0.975 0.014 78);
+    --muted: oklch(0.925 0.022 75);
+    --muted-foreground: oklch(0.46 0.035 55);
+    --border: oklch(0.26 0.03 50 / 0.14);
+    --input: oklch(0.26 0.03 50 / 0.26);
+    --primary: oklch(0.36 0.06 45);
+    --primary-foreground: oklch(0.975 0.014 78);
+    --secondary: oklch(0.925 0.022 75);
+    --secondary-foreground: var(--foreground);
+    --accent: oklch(0.48 0.12 40);
+    --accent-foreground: oklch(0.975 0.014 78);
+    --md-stamp: oklch(0.45 0.12 30);
+    --md-photo: sepia(0.55) saturate(0.8) contrast(1.02);
+  }
+  #site-media .md-look-only {
+    display: none;
+  }
+  #site-media[data-look='cinema'] .md-look-only[data-for='cinema'] {
+    display: block;
+  }
+  /* one grid for every section */
+  #site-media > :not(template) {
+    box-sizing: border-box;
+    width: 100%;
+    padding-inline: max(clamp(1rem, 4vw, 2.5rem), calc((100% - 76rem) / 2));
+  }
+  #site-media .md-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    min-height: 4.5rem;
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--border);
+  }
+  #site-media .md-brand {
+    margin-inline-end: auto;
+    color: var(--foreground);
+    text-decoration: none;
+    font: 400 1.625rem/1 var(--md-title);
+  }
+  #site-media .md-brand i {
+    color: var(--accent);
+  }
+  #site-media .md-bar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #site-media .md-bar .select {
+    min-width: 8rem;
+  }
+  /* sections: a number on a hairline, then the content */
+  #site-media > .md-section {
+    counter-increment: md;
+    padding-block: clamp(3rem, 6vw, 4.5rem);
+  }
+  #site-media > .md-section::before {
+    content: counter(md, decimal-leading-zero);
+    display: block;
+    margin-block-end: 1.5rem;
+    padding-block-start: 0.75rem;
+    border-block-start: 1px solid var(--foreground);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  #site-media
+    :is(.mk-text-media-title, .mk-media-gallery-head h2, .mk-video-player-caption h3, .mk-audio-player-title) {
+    font-family: var(--md-title);
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  #site-media img {
+    filter: var(--md-photo);
+  }
+  /* the opening: copy beside the first picture, a customs stamp on it */
+  #site-media .md-hero {
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+  }
+  #site-media .mk-text-media {
+    max-width: none;
+    margin: 0;
+  }
+  #site-media .mk-text-media-title {
+    font-size: clamp(2.75rem, 6.5vw, 5rem);
+    line-height: 0.98;
+  }
+  #site-media .mk-text-media-text {
+    font-size: 1.125rem;
+    color: var(--muted-foreground);
+  }
+  #site-media .mk-text-media-eyebrow {
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  #site-media .mk-text-media-media {
+    position: relative;
+    overflow: visible;
+  }
+  #site-media .mk-text-media-media img {
+    border-radius: var(--radius);
+  }
+  #site-media .md-stamp {
+    position: absolute;
+    z-index: 2;
+    left: -1.75rem;
+    bottom: -1.75rem;
+    display: grid;
+    place-items: center;
+    width: 7.5rem;
+    aspect-ratio: 1;
+    margin: 0;
+    padding: 1.25rem;
+    border: 3px double var(--md-stamp);
+    border-radius: 50%;
+    color: var(--md-stamp);
+    background: var(--background);
+    text-align: center;
+    font:
+      700 0.6875rem/1.2 'Instrument Sans',
+      sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    rotate: -12deg;
+  }
+  #site-media .md-stamp b {
+    display: block;
+    font-size: 1.375rem;
+    letter-spacing: 0.04em;
+  }
+  @container (width < 40rem) {
+    #site-media .md-stamp {
+      left: 0.75rem;
+      bottom: -1.25rem;
+      width: 6rem;
+      padding: 1rem;
+    }
+  }
+  /* photos: the grid, film frames in Cinema */
+  #site-media .mk-media-gallery {
+    position: relative;
+    isolation: isolate;
+    max-width: none;
+    margin: 0;
+  }
+  #site-media .mk-media-gallery-head h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  #site-media .mk-media-gallery-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 0.75rem;
+  }
+  #site-media .mk-media-gallery-grid figure {
+    border-radius: var(--radius);
+  }
+  #site-media[data-look='cinema'] .mk-media-gallery-grid figure {
+    padding: 0.85rem 0;
+    border-radius: 0;
+    background:
+      repeating-linear-gradient(90deg, oklch(0.93 0.02 85 / 0.85) 0 0.45rem, transparent 0.45rem 1.05rem) 0 0.2rem /
+        100% 0.4rem no-repeat,
+      repeating-linear-gradient(90deg, oklch(0.93 0.02 85 / 0.85) 0 0.45rem, transparent 0.45rem 1.05rem) 0
+        calc(100% - 0.2rem) / 100% 0.4rem no-repeat,
+      oklch(0.06 0 0);
+  }
+  #site-media[data-look='cinema'] .mk-media-gallery-grid img {
+    filter: sepia(0.35) contrast(1.1) saturate(0.8);
+  }
+  #site-media .md-grain {
+    z-index: 1;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    opacity: 0.22;
+  }
+  /* the film: always in a dark screening band */
+  #site-media > .md-film {
+    color-scheme: dark;
+    --background: oklch(0.14 0 0);
+    --foreground: oklch(0.95 0.005 85);
+    --card: oklch(0.18 0 0);
+    --muted: oklch(0.22 0 0);
+    --muted-foreground: oklch(0.74 0.005 85);
+    --border: oklch(0.95 0.005 85 / 0.14);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-media > .md-film::before {
+    border-color: var(--foreground);
+  }
+  #site-media .mk-video-player {
+    max-width: none;
+    margin: 0;
+  }
+  #site-media .mk-video-player-caption h3 {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+  }
+  /* listen: the player beside the episodes */
+  #site-media .md-listen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+  @container (width > 56rem) {
+    #site-media .md-listen {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+  #site-media .md-listen::before {
+    grid-column: 1 / -1;
+    margin-block-end: 0 !important;
+  }
+  #site-media .mk-audio-player,
+  #site-media .mk-playlist {
+    border-radius: var(--radius-xl);
+  }
+  #site-media .mk-audio-player-cover {
+    border-radius: 50%;
+    animation: md-spin 6s linear infinite paused;
+  }
+  #site-media .mk-audio-player:has(audio:not([paused])) .mk-audio-player-cover {
+    animation-play-state: running;
+  }
+  @keyframes md-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+  /* compare and share: the before / after beside what people posted */
+  #site-media .md-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+  }
+  @container (width > 56rem) {
+    #site-media .md-pair {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+  }
+  #site-media .md-pair::before {
+    grid-column: 1 / -1;
+    margin-block-end: 0 !important;
+  }
+  #site-media .md-pair .mk-before-after {
+    max-width: none;
+    margin: 0;
+  }
+  #site-media .md-posts {
+    display: grid;
+    gap: 1rem;
+  }
+  #site-media .mk-social-post {
+    border-radius: var(--radius-xl);
+  }
+  /* the opening's two calls to action */
+  #site-media .md-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-start: 0.75rem;
+  }
+  /* Lisbon: every picture lifts and sharpens under the pointer, the others step back */
+  #site-media .mk-media-gallery-grid figure {
+    position: relative;
+    overflow: hidden;
+  }
+  #site-media .mk-media-gallery-grid img {
+    transition:
+      scale 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 0.4s;
+  }
+  #site-media .mk-media-gallery-grid a:is(:hover, :focus-visible) img {
+    scale: 1.07;
+  }
+  #site-media .mk-media-gallery-grid:has(a:is(:hover, :focus-visible)) a:not(:is(:hover, :focus-visible)) img {
+    filter: var(--md-photo) saturate(0.35) brightness(0.8);
+  }
+  #site-media .mk-media-gallery-grid figcaption {
+    position: absolute;
+    inset: auto 0 0;
+    padding: 2.5rem 1rem 0.85rem;
+    background: linear-gradient(transparent, oklch(0.1 0 0 / 0.7));
+    color: oklch(0.98 0 0);
+    font: 400 1.25rem/1.1 var(--md-title);
+    translate: 0 100%;
+    transition: translate 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  #site-media .mk-media-gallery-grid a:is(:hover, :focus-visible) figcaption {
+    translate: 0 0;
+  }
+  #site-media .mk-media-gallery-grid a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+    border-radius: var(--radius);
+  }
+  /* a hovered episode: a quiet tint, never the accent */
+  #site-media .mk-playlist-item label:hover {
+    background: var(--muted);
+  }
+  /* the podcast: the cover beside the episode, the player as wide as its column */
+  #site-media .mk-audio-player[data-variant='podcast'] {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+  #site-media .mk-audio-player[data-variant='podcast'] .mk-audio-player-cover {
+    width: 8rem;
+    height: 8rem;
+  }
+  #site-media .mk-audio-player-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  #site-media .mk-audio-player-controls audio {
+    flex: 1 1 14rem;
+    min-width: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #site-media .mk-audio-player-cover {
+      animation: none;
+    }
+    #site-media .mk-media-gallery-grid :is(img, figcaption) {
+      transition: none;
+    }
+  }
+  /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
+  #site-media .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-media .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  :root:not(.dark) #site-media[data-look='gallery'] {
+    --accent: oklch(0.945 0.045 32);
+    --accent-foreground: oklch(0.18 0 0);
+  }
+  .dark #site-media[data-look='gallery'] {
+    --accent: oklch(0.26 0.05 35);
+    --accent-foreground: oklch(0.95 0 0);
+  }
+  .dark #site-media[data-look='cinema'] {
+    --accent: oklch(0.24 0.05 80);
+    --accent-foreground: oklch(0.94 0.01 85);
+  }
+  :root:not(.dark) #site-media[data-look='cinema'] {
+    color-scheme: light;
+    --background: oklch(0.985 0 0);
+    --foreground: oklch(0.2 0.01 85);
+    --card: oklch(0.997 0 0);
+    --card-foreground: oklch(0.2 0.01 85);
+    --muted: oklch(0.95 0 0);
+    --muted-foreground: oklch(0.46 0.01 85);
+    --border: oklch(0.2 0.01 85 / 0.12);
+    --input: oklch(0.2 0.01 85 / 0.12);
+    --primary: oklch(0.55 0.13 80);
+    --primary-foreground: oklch(0.985 0.005 80);
+    --secondary: oklch(0.955 0 0);
+    --secondary-foreground: oklch(0.25 0.01 85);
+    --accent: oklch(0.94 0.025 80);
+    --accent-foreground: oklch(0.2 0.01 85);
+    --ring: oklch(0.57 0.13 80);
+    --md-stamp: oklch(0.57 0.13 80);
+    --popover: oklch(0.997 0 0);
+    --popover-foreground: oklch(0.2 0 0);
+  }
+  :root:not(.dark) #site-media[data-look='archive'] {
+    --accent: oklch(0.91 0.045 40);
+    --accent-foreground: oklch(0.26 0.03 50);
+  }
+  .dark #site-media[data-look='archive'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0.018 78);
+    --foreground: oklch(0.94 0.03 50);
+    --card: oklch(0.205 0.014 78);
+    --card-foreground: oklch(0.94 0.03 50);
+    --muted: oklch(0.24 0.022 75);
+    --muted-foreground: oklch(0.74 0.03 55);
+    --border: oklch(0.95 0.02 50 / 0.14);
+    --input: oklch(0.95 0.02 50 / 0.14);
+    --primary: oklch(0.66 0.06 45);
+    --primary-foreground: oklch(0.17 0.03 45);
+    --secondary: oklch(0.25 0.022 75);
+    --secondary-foreground: oklch(0.9 0.03 50);
+    --accent: oklch(0.26 0.042 40);
+    --accent-foreground: oklch(0.94 0.03 50);
+    --ring: oklch(0.72 0.12 40);
+    --md-stamp: oklch(0.69 0.12 30);
+    --popover: oklch(0.215 0 0);
+    --popover-foreground: oklch(0.94 0 0);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="site-media" data-look="gallery" data-i18n-component>
+  <div class="md-bar">
+    <a class="md-brand" href="#/">Acme <i>Stories</i></a>
+    <div class="md-bar-controls">
+      <select
+        class="select"
+        data-size="sm"
+        data-site-look
+        aria-label="Look"
+        data-i18n-aria-label-en="Look"
+        data-i18n-aria-label-de="Stil"
+        style="width: auto"
+      >
+        <option value="gallery" data-i18n-target="look-gallery">Gallery</option>
+        <option value="cinema" data-i18n-target="look-cinema">Cinema</option>
+        <option value="archive" data-i18n-target="look-archive">Archive</option>
+      </select>
+      <select
+        class="select"
+        data-size="sm"
+        data-app-locale
+        aria-label="Language"
+        data-i18n-aria-label-en="Language"
+        data-i18n-aria-label-de="Sprache"
+        style="width: auto"
+      >
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+      </select>
+      <label class="swap site-mode" data-variant="rotate" data-size="sm">
+        <input
+          type="checkbox"
+          data-site-mode
+          aria-label="Dark mode"
+          data-i18n-aria-label-en="Dark mode"
+          data-i18n-aria-label-de="Dunkler Modus"
+        />
+        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+      </label>
+    </div>
   </div>
-  <section class="mk-text-media" aria-labelledby="tm-1">
+  <section class="mk-text-media md-hero" aria-labelledby="tm-1">
     <div class="mk-text-media-layout">
       <div class="mk-text-media-copy">
         <span class="mk-text-media-eyebrow" data-i18n-target="eyebrow">Offline first</span>
@@ -47,16 +565,35 @@
           ><li><i data-lucide="check"></i><span data-i18n-target="tm-conflicts">Conflicts resolve themselves</span></li
           ><li><i data-lucide="check"></i><span data-i18n-target="tm-devices">Works on every device</span></li></ul
         >
-        <a class="mk-text-media-link" href="#"
-          ><span data-i18n-target="tm-link">How sync works</span> <i data-lucide="arrow-right"></i
-        ></a>
+        <div class="md-cta">
+          <a class="btn" data-size="lg" href="#"
+            ><span data-i18n-target="tm-link">How sync works</span> <i data-lucide="arrow-right"></i
+          ></a>
+          <a class="btn" data-variant="outline" data-size="lg" href="#vp-title"
+            ><i data-lucide="play"></i> <span data-i18n-target="tm-watch">Watch the film</span></a
+          >
+        </div>
       </div>
       <figure class="mk-text-media-media"
-        ><img src="https://picsum.photos/seed/tm-cabin/1000/750" alt="A laptop on a table in a mountain cabin"
-      /></figure>
+        ><img src="https://picsum.photos/id/48/1000/750" alt="A laptop on a café table" /><p
+          class="md-stamp"
+          aria-hidden="true"
+          ><span><b>LIS</b><span data-i18n-target="stamp">works offline · 2026</span></span></p
+        ></figure
+      >
     </div>
   </section>
-  <section class="mk-media-gallery" aria-labelledby="mg-title">
+  <section class="mk-media-gallery md-section" aria-labelledby="mg-title">
+    <div
+      class="shader md-grain md-look-only"
+      data-for="cinema"
+      data-variant="background"
+      data-effect="grain-gradient"
+      data-colors="oklch(0.5 0 0) oklch(0.7 0.05 80)"
+      data-speed="2"
+      data-fps="24"
+      aria-hidden="true"
+    ></div>
     <header class="mk-media-gallery-head">
       <h2 id="mg-title" data-i18n-target="mg-title">Lisbon, autumn 2026</h2>
       <span data-i18n-target="mg-count">8 photos</span>
@@ -89,36 +626,84 @@
     <ul class="mk-media-gallery-grid">
       <li
         ><a href="#/photos/1" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-1/800/600" alt="Harbour at dawn" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/211/800/600" alt="Boats moored in a harbour" /><figcaption
+              data-i18n-target="mg-c1"
+              >The harbour</figcaption
+            ></figure
+          ></a
+        ></li
+      >
       <li
         ><a href="#/photos/2" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-2/600/800" alt="Stairs in Alfama" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/240/600/800" alt="A person on white stone stairs" /><figcaption
+              data-i18n-target="mg-c2"
+              >White stairs</figcaption
+            ></figure
+          ></a
+        ></li
+      >
       <li
         ><a href="#/photos/3" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-3/800/500" alt="River light" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/164/800/500" alt="Houses and boats along a canal" /><figcaption
+              data-i18n-target="mg-c3"
+              >Canal houses</figcaption
+            ></figure
+          ></a
+        ></li
+      >
       <li
         ><a href="#/photos/4" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-4/600/600" alt="Tiles" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/210/600/600" alt="A red brick wall" /><figcaption
+              data-i18n-target="mg-c4"
+              >A red wall</figcaption
+            ></figure
+          ></a
+        ></li
+      >
       <li
         ><a href="#/photos/5" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-5/800/600" alt="Market morning" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/292/800/600" alt="Vegetables on a cutting board" /><figcaption
+              data-i18n-target="mg-c5"
+              >Market morning</figcaption
+            ></figure
+          ></a
+        ></li
+      >
       <li
         ><a href="#/photos/6" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-6/600/900" alt="Old tram" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/111/600/900" alt="A vintage car parked in the street" /><figcaption
+              data-i18n-target="mg-c6"
+              >An old car</figcaption
+            ></figure
+          ></a
+        ></li
+      >
       <li
         ><a href="#/photos/7" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-7/800/600" alt="Coastline" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/14/800/600" alt="A rocky shore and the open sea" /><figcaption
+              data-i18n-target="mg-c7"
+              >The open sea</figcaption
+            ></figure
+          ></a
+        ></li
+      >
       <li
         ><a href="#/photos/8" data-router-link style="display: block"
-          ><figure><img src="https://picsum.photos/seed/mg-8/700/500" alt="Rooftops" /></figure></a
-      ></li>
+          ><figure
+            ><img src="https://picsum.photos/id/288/700/500" alt="The rooftops of an old town" /><figcaption
+              data-i18n-target="mg-c8"
+              >Over the rooftops</figcaption
+            ></figure
+          ></a
+        ></li
+      >
     </ul>
     <dialog
       class="mk-media-gallery-viewer"
@@ -136,25 +721,45 @@
           data-i18n-aria-label-de="Fotos - seitwärts scrollen"
         >
           <li
-            ><img src="https://picsum.photos/seed/mg-1/1600/1200" alt="Harbour at dawn" /><p
-              >1 / 8 · Harbour at dawn</p
+            ><img src="https://picsum.photos/id/211/1600/1200" alt="Boats moored in a harbour" /><p
+              >1 / 8 · Boats moored in a harbour</p
             ></li
           >
           <li
-            ><img src="https://picsum.photos/seed/mg-2/1200/1600" alt="Stairs in Alfama" /><p
-              >2 / 8 · Stairs in Alfama</p
+            ><img src="https://picsum.photos/id/240/1200/1600" alt="A person on white stone stairs" /><p
+              >2 / 8 · A person on white stone stairs</p
             ></li
           >
-          <li><img src="https://picsum.photos/seed/mg-3/1600/1000" alt="River light" /><p>3 / 8 · River light</p></li>
-          <li><img src="https://picsum.photos/seed/mg-4/1200/1200" alt="Tiles" /><p>4 / 8 · Tiles</p></li>
           <li
-            ><img src="https://picsum.photos/seed/mg-5/1600/1200" alt="Market morning" /><p
-              >5 / 8 · Market morning</p
+            ><img src="https://picsum.photos/id/164/1600/1000" alt="Houses and boats along a canal" /><p
+              >3 / 8 · Houses and boats along a canal</p
             ></li
           >
-          <li><img src="https://picsum.photos/seed/mg-6/1200/1800" alt="Old tram" /><p>6 / 8 · Old tram</p></li>
-          <li><img src="https://picsum.photos/seed/mg-7/1600/1200" alt="Coastline" /><p>7 / 8 · Coastline</p></li>
-          <li><img src="https://picsum.photos/seed/mg-8/1400/1000" alt="Rooftops" /><p>8 / 8 · Rooftops</p></li>
+          <li
+            ><img src="https://picsum.photos/id/210/1200/1200" alt="A red brick wall" /><p
+              >4 / 8 · A red brick wall</p
+            ></li
+          >
+          <li
+            ><img src="https://picsum.photos/id/292/1600/1200" alt="Vegetables on a cutting board" /><p
+              >5 / 8 · Vegetables on a cutting board</p
+            ></li
+          >
+          <li
+            ><img src="https://picsum.photos/id/111/1200/1800" alt="A vintage car parked in the street" /><p
+              >6 / 8 · A vintage car parked in the street</p
+            ></li
+          >
+          <li
+            ><img src="https://picsum.photos/id/14/1600/1200" alt="A rocky shore and the open sea" /><p
+              >7 / 8 · A rocky shore and the open sea</p
+            ></li
+          >
+          <li
+            ><img src="https://picsum.photos/id/288/1400/1000" alt="The rooftops of an old town" /><p
+              >8 / 8 · The rooftops of an old town</p
+            ></li
+          >
         </ul>
         <p class="mk-media-gallery-hint" data-i18n-target="mg-hint">Swipe, scroll or use ← → · Esc closes</p>
         <form method="dialog"
@@ -168,37 +773,34 @@
       </div>
     </dialog>
   </section>
-  <figure class="mk-video-player" data-variant="transcript">
-    <div class="mk-video-player-layout">
-      <div class="mk-video-player-frame">
-        <video id="vp-3" controls preload="metadata" playsinline poster="../images/mk-wide3.png">
-          <source src="../videos/demo.webm" type="video/webm" />
-          <source src="../videos/demo.mp4" type="video/mp4" />
-          <track kind="captions" src="../videos/demo.en.vtt" srclang="en" label="English" default />
-          Your browser does not support video. <a href="../videos/demo.mp4">Download the video</a>.
-        </video>
+  <section class="md-section md-film" aria-labelledby="vp-title">
+    <figure class="mk-video-player" data-variant="transcript">
+      <div class="mk-video-player-layout">
+        <div class="mk-video-player-frame">
+          <video id="vp-3" controls preload="metadata" playsinline poster="https://picsum.photos/id/257/1280/720">
+            <source src="../videos/demo.webm" type="video/webm" />
+            <source src="../videos/demo.mp4" type="video/mp4" />
+            <track kind="captions" src="../videos/demo.en.vtt" srclang="en" label="English" default />
+            Your browser does not support video. <a href="../videos/demo.mp4">Download the video</a>.
+          </video>
+        </div>
+        <section class="mk-video-player-transcript" aria-labelledby="vp-tr" tabindex="0">
+          <h3 id="vp-tr" data-i18n-target="transcript">Transcript</h3>
+          <p><time datetime="PT0S">0:00</time>Plan the week on one calm board.</p>
+          <p><time datetime="PT2S">0:02</time>Drafts, docs and tasks stay linked.</p>
+          <p><time datetime="PT4S">0:04</time>Ship it - and everyone sees what changed.</p>
+        </section>
       </div>
-      <section class="mk-video-player-transcript" aria-labelledby="vp-tr" tabindex="0">
-        <h3 id="vp-tr" data-i18n-target="transcript">Transcript</h3>
-        <p><time datetime="PT0S">0:00</time>Plan the week on one calm board.</p>
-        <p><time datetime="PT2S">0:02</time>Drafts, docs and tasks stay linked.</p>
-        <p><time datetime="PT4S">0:04</time>Ship it - and everyone sees what changed.</p>
-      </section>
-    </div>
-    <figcaption class="mk-video-player-caption"><h3 data-i18n-target="vp-caption">Acme in 60 seconds</h3></figcaption>
-  </figure>
-  <div
-    style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-      gap: 2rem;
-      align-items: start;
-    "
-  >
+      <figcaption class="mk-video-player-caption"
+        ><h3 id="vp-title" data-i18n-target="vp-caption">Acme in 60 seconds</h3></figcaption
+      >
+    </figure>
+  </section>
+  <div class="md-section md-listen">
     <article class="mk-audio-player" data-variant="podcast" aria-labelledby="ap-3">
       <img
         class="mk-audio-player-cover"
-        src="https://picsum.photos/seed/podcast-cover2/600/600"
+        src="https://picsum.photos/id/39/600/600"
         alt="Cover of The Calm Letter podcast"
       />
       <div class="mk-audio-player-body">
@@ -230,7 +832,6 @@
       aria-label="The Calm Letter - episodes"
       data-i18n-aria-label-en="The Calm Letter - episodes"
       data-i18n-aria-label-de="The Calm Letter - Folgen"
-      style="max-width: 40rem"
     >
       <li class="mk-playlist-item" data-variant="episode">
         <label>
@@ -268,116 +869,126 @@
       </li>
     </ol>
   </div>
-  <figure class="mk-before-after" data-variant="toggle" style="max-width: 40rem">
-    <div class="mk-before-after-stage">
-      <img
-        class="mk-before-after-before"
-        src="https://picsum.photos/seed/ba-room/1200/800?grayscale"
-        alt="Before: the living room, grey and empty"
-      />
-      <img
-        class="mk-before-after-after"
-        src="https://picsum.photos/seed/ba-room/1200/800"
-        alt="After: the living room, furnished and warm"
-      />
+  <div class="md-section md-pair">
+    <figure class="mk-before-after" data-variant="toggle">
+      <div class="mk-before-after-stage">
+        <img
+          class="mk-before-after-before"
+          src="https://picsum.photos/seed/ba-room/1200/800?grayscale"
+          alt="Before: the living room, grey and empty"
+        />
+        <img
+          class="mk-before-after-after"
+          src="https://picsum.photos/seed/ba-room/1200/800"
+          alt="After: the living room, furnished and warm"
+        />
+      </div>
+      <div class="switch-item mk-before-after-toggle"
+        ><input class="switch" type="checkbox" role="switch" id="ba-toggle" /><label for="ba-toggle"
+          >Show after</label
+        ></div
+      >
+    </figure>
+    <div class="md-posts">
+      <article class="mk-social-post" data-variant="quote">
+        <header class="mk-social-post-head">
+          <span class="avatar"><img class="avatar-image" src="../images/mk-portrait2.png" alt="" /></span>
+          <div class="mk-social-post-who"
+            ><a class="mk-social-post-name" href="#"
+              >Hannah Lee<svg
+                class="mk-social-post-verified"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                role="img"
+                aria-label="Verified account"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"
+                />
+                <path
+                  d="m7.5 12.2 3 3 6-6.4"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                /></svg></a
+            ><span class="mk-social-post-handle">@hannahdesigns</span></div
+          >
+          <span class="mk-social-post-network" role="img" aria-label="Posted on X"
+            ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path
+                d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
+              /></svg
+          ></span>
+        </header>
+        <div class="mk-social-post-text"
+          ><p>Acme is the first tool my designers asked to keep after the trial. That never happens.</p></div
+        >
+        <footer class="mk-social-post-foot">
+          <a class="mk-social-post-time" href="#"><time datetime="2026-09-12">Sep 12, 2026</time></a>
+          <ul class="mk-social-post-stats"
+            ><li><i data-lucide="heart"></i>320<span class="sr-only"> likes</span></li></ul
+          >
+        </footer>
+      </article>
+      <article class="mk-social-post" data-variant="quote">
+        <header class="mk-social-post-head">
+          <span class="avatar"><img class="avatar-image" src="../images/mk-portrait.png" alt="" /></span>
+          <div class="mk-social-post-who"
+            ><a class="mk-social-post-name" href="#"
+              >Marco Rossi<svg
+                class="mk-social-post-verified"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                role="img"
+                aria-label="Verified account"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"
+                />
+                <path
+                  d="m7.5 12.2 3 3 6-6.4"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                /></svg></a
+            ><span class="mk-social-post-handle">@marco</span></div
+          >
+          <span class="mk-social-post-network" role="img" aria-label="Posted on X"
+            ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path
+                d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
+              /></svg
+          ></span>
+        </header>
+        <div class="mk-social-post-text"
+          ><p>Our weekly sync went from 90 minutes to 20. I have my Thursday afternoons back.</p></div
+        >
+        <footer class="mk-social-post-foot">
+          <a class="mk-social-post-time" href="#"><time datetime="2026-08-30">Aug 30, 2026</time></a>
+          <ul class="mk-social-post-stats"
+            ><li><i data-lucide="heart"></i>188<span class="sr-only"> likes</span></li></ul
+          >
+        </footer>
+      </article>
     </div>
-    <div class="switch-item mk-before-after-toggle"
-      ><input class="switch" type="checkbox" role="switch" id="ba-toggle" /><label for="ba-toggle"
-        >Show after</label
-      ></div
-    >
-  </figure>
-  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; width: 100%">
-    <article class="mk-social-post" data-variant="quote">
-      <header class="mk-social-post-head">
-        <span class="avatar"><img class="avatar-image" src="../images/mk-portrait2.png" alt="" /></span>
-        <div class="mk-social-post-who"
-          ><a class="mk-social-post-name" href="#"
-            >Hannah Lee<svg
-              class="mk-social-post-verified"
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              role="img"
-              aria-label="Verified account"
-            >
-              <path
-                fill="currentColor"
-                d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"
-              />
-              <path
-                d="m7.5 12.2 3 3 6-6.4"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              /></svg></a
-          ><span class="mk-social-post-handle">@hannahdesigns</span></div
-        >
-        <span class="mk-social-post-network" role="img" aria-label="Posted on X"
-          ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-            <path
-              d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
-            /></svg
-        ></span>
-      </header>
-      <div class="mk-social-post-text"
-        ><p>Acme is the first tool my designers asked to keep after the trial. That never happens.</p></div
-      >
-      <footer class="mk-social-post-foot">
-        <a class="mk-social-post-time" href="#"><time datetime="2026-09-12">Sep 12, 2026</time></a>
-        <ul class="mk-social-post-stats"
-          ><li><i data-lucide="heart"></i>320<span class="sr-only"> likes</span></li></ul
-        >
-      </footer>
-    </article>
-    <article class="mk-social-post" data-variant="quote">
-      <header class="mk-social-post-head">
-        <span class="avatar"><img class="avatar-image" src="../images/mk-portrait.png" alt="" /></span>
-        <div class="mk-social-post-who"
-          ><a class="mk-social-post-name" href="#"
-            >Marco Rossi<svg
-              class="mk-social-post-verified"
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              role="img"
-              aria-label="Verified account"
-            >
-              <path
-                fill="currentColor"
-                d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5 3.6.4Z"
-              />
-              <path
-                d="m7.5 12.2 3 3 6-6.4"
-                fill="none"
-                stroke="#fff"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              /></svg></a
-          ><span class="mk-social-post-handle">@marco</span></div
-        >
-        <span class="mk-social-post-network" role="img" aria-label="Posted on X"
-          ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-            <path
-              d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
-            /></svg
-        ></span>
-      </header>
-      <div class="mk-social-post-text"
-        ><p>Our weekly sync went from 90 minutes to 20. I have my Thursday afternoons back.</p></div
-      >
-      <footer class="mk-social-post-foot">
-        <a class="mk-social-post-time" href="#"><time datetime="2026-08-30">Aug 30, 2026</time></a>
-        <ul class="mk-social-post-stats"
-          ><li><i data-lucide="heart"></i>188<span class="sr-only"> likes</span></li></ul
-        >
-      </footer>
-    </article>
   </div>
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="stamp" data-i18n-locale="en">works offline · 2026</template>
+  <template data-i18n-for="stamp" data-i18n-locale="de">funktioniert offline · 2026</template>
+  <template data-i18n-for="look-gallery" data-i18n-locale="en">Gallery</template>
+  <template data-i18n-for="look-gallery" data-i18n-locale="de">Galerie</template>
+  <template data-i18n-for="look-cinema" data-i18n-locale="en">Cinema</template>
+  <template data-i18n-for="look-cinema" data-i18n-locale="de">Kino</template>
+  <template data-i18n-for="look-archive" data-i18n-locale="en">Archive</template>
+  <template data-i18n-for="look-archive" data-i18n-locale="de">Archiv</template>
   <template data-i18n-for="eyebrow" data-i18n-locale="en">Offline first</template>
   <template data-i18n-for="eyebrow" data-i18n-locale="de">Zuerst offline</template>
   <template data-i18n-for="tm-title" data-i18n-locale="en">Your work travels with you</template>
@@ -388,6 +999,24 @@
   <template data-i18n-for="tm-conflicts" data-i18n-locale="de">Konflikte lösen sich von selbst</template>
   <template data-i18n-for="tm-devices" data-i18n-locale="en">Works on every device</template>
   <template data-i18n-for="tm-devices" data-i18n-locale="de">Funktioniert auf jedem Gerät</template>
+  <template data-i18n-for="mg-c1" data-i18n-locale="en">The harbour</template>
+  <template data-i18n-for="mg-c1" data-i18n-locale="de">Der Hafen</template>
+  <template data-i18n-for="mg-c2" data-i18n-locale="en">White stairs</template>
+  <template data-i18n-for="mg-c2" data-i18n-locale="de">Weiße Treppen</template>
+  <template data-i18n-for="mg-c3" data-i18n-locale="en">Canal houses</template>
+  <template data-i18n-for="mg-c3" data-i18n-locale="de">Häuser am Kanal</template>
+  <template data-i18n-for="mg-c4" data-i18n-locale="en">A red wall</template>
+  <template data-i18n-for="mg-c4" data-i18n-locale="de">Eine rote Mauer</template>
+  <template data-i18n-for="mg-c5" data-i18n-locale="en">Market morning</template>
+  <template data-i18n-for="mg-c5" data-i18n-locale="de">Markt am Morgen</template>
+  <template data-i18n-for="mg-c6" data-i18n-locale="en">An old car</template>
+  <template data-i18n-for="mg-c6" data-i18n-locale="de">Ein alter Wagen</template>
+  <template data-i18n-for="mg-c7" data-i18n-locale="en">The open sea</template>
+  <template data-i18n-for="mg-c7" data-i18n-locale="de">Das offene Meer</template>
+  <template data-i18n-for="mg-c8" data-i18n-locale="en">Over the rooftops</template>
+  <template data-i18n-for="mg-c8" data-i18n-locale="de">Über den Dächern</template>
+  <template data-i18n-for="tm-watch" data-i18n-locale="en">Watch the film</template>
+  <template data-i18n-for="tm-watch" data-i18n-locale="de">Den Film ansehen</template>
   <template data-i18n-for="tm-link" data-i18n-locale="en">How sync works</template>
   <template data-i18n-for="tm-link" data-i18n-locale="de">So funktioniert Sync</template>
   <template data-i18n-for="mg-count" data-i18n-locale="en">8 photos</template>
@@ -416,23 +1045,44 @@
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
-  import {
-    createDomI18n,
-    createI18n,
-    resolveLocale,
-  } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$('#site-media [data-site-mode]');
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
     const site = df$('#site-media').get(0);
 
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
-      locale: navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean) ?? 'en',
+      locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale);
     const language = df$('[data-app-locale]');
     language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
+    // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
+    const lookRoot = df$('#site-media').get(0);
+    const look = df$('#site-media [data-site-look]');
+    const applyLook = (name) => {
+      lookRoot.dataset.look = name;
+      df$('#site-media [data-look-set]').each((_i, el) => {
+        const sets = JSON.parse(el.dataset.lookSet);
+        for (const [attr, value] of Object.entries({ ...sets.default, ...sets[name] })) el.setAttribute(attr, value);
+      });
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    };
+    look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
     // -- routing
     const routes = [
@@ -467,6 +1117,7 @@
   });
 </script>
 <script type="module" src="../../components/all.js"></script>
+<script type="module" src="../../components/shaders.js"></script>
 
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>globalThis.lucide && lucide.createIcons();</script>

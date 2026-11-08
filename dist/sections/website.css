@@ -26,16 +26,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    min-height: 3.5rem;
+    min-height: 4.5rem;
     max-width: 80rem;
     margin-inline: auto;
-    padding: 0.5rem 1.25rem;
+    padding: 1rem 1.25rem;
   }
 
   .mk-header-brand {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
     flex-shrink: 0;
     /* the glyph follows the name - never the browser's link blue */
     color: var(--primary);
@@ -50,8 +50,9 @@
 
   .mk-header-name {
     color: var(--primary);
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     white-space: nowrap;
   }
 
@@ -11802,6 +11803,1766 @@
   }
 }
 
+/* ── components/resume-header/resume-header.css ── */
+/* -- Resume Header (website · Resume & Portfolio) -------------------------
+   Opens a personal site or a CV: the portrait, the name as the page's <h1>, the role, a short summary, the facts
+   (where, how long, which languages, how to reach you), the actions and the profiles elsewhere. Beside the portrait
+   (default), centered, or compact - the head of a printed CV. The layout wraps by itself (flex-wrap), the name
+   scales with the header's width (a container) - no breakpoints, no script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-resume-header, .mk-resume-header *, .mk-resume-header ::before, .mk-resume-header ::after) {
+    box-sizing: border-box;
+  }
+
+  .mk-resume-header {
+    container: mk-resume-header / inline-size;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem 2.5rem;
+    width: 100%;
+  }
+
+  .mk-resume-header-photo {
+    flex: 0 0 auto;
+    width: clamp(6rem, 22cqi, 11rem);
+    aspect-ratio: 1;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    object-fit: cover;
+  }
+
+  .mk-resume-header-body {
+    display: flex;
+    flex: 1 1 22rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  /* the availability line above the name: an Indicator dot and a sentence in a pill */
+  .mk-resume-header-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .mk-resume-header-name {
+    margin: 0;
+    font-size: clamp(2rem, 1.25rem + 3.5cqi, 3.25rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .mk-resume-header-role {
+    margin: 0;
+    color: var(--foreground);
+    font-size: clamp(1.0625rem, 0.9rem + 0.8cqi, 1.375rem);
+    font-weight: 500;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  .mk-resume-header-summary {
+    max-width: 40rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  /* where, how long, which languages, how to reach you - an icon and a phrase each */
+  .mk-resume-header-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+
+    & li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    & svg {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+    }
+    & a {
+      color: inherit;
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: var(--foreground);
+        text-decoration-color: currentColor;
+      }
+    }
+  }
+
+  .mk-resume-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-start: 0.25rem;
+  }
+
+  /* the profiles elsewhere: icon buttons in a row */
+  .mk-resume-header-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* centered: the portrait above, everything on the axis */
+  .mk-resume-header[data-variant="centered"] {
+    flex-direction: column;
+    text-align: center;
+
+    & .mk-resume-header-body {
+      flex-basis: auto;
+      align-items: center;
+    }
+    & .mk-resume-header-photo {
+      border-radius: 50%;
+    }
+    & .mk-resume-header-facts,
+    & .mk-resume-header-actions {
+      justify-content: center;
+    }
+  }
+
+  /* compact: the head of a CV - a small portrait, a smaller name, a rule below */
+  .mk-resume-header[data-variant="compact"] {
+    gap: 1rem 1.5rem;
+    padding-block-end: 1.25rem;
+    border-block-end: 1px solid var(--border);
+
+    & .mk-resume-header-photo {
+      width: 5rem;
+    }
+    & .mk-resume-header-body {
+      gap: 0.375rem;
+    }
+    & .mk-resume-header-name {
+      font-size: clamp(1.5rem, 1.1rem + 1.5cqi, 2rem);
+    }
+    & .mk-resume-header-role {
+      font-size: 1rem;
+    }
+    & .mk-resume-header-facts {
+      font-size: 0.8125rem;
+    }
+  }
+
+  /* poster: the name as the picture - huge, uppercase, tight; the role a tilted label; the portrait tilted beside.
+     The row runs end to start: the portrait (first in the markup) sits at the end, and when the row wraps it goes
+     first, above the text. A container query restyles only what is inside the header, never the header itself - the
+     wrap is how the header itself changes with its width. */
+  .mk-resume-header[data-variant="poster"] {
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    gap: 1.5rem 2rem;
+
+    & .mk-resume-header-photo {
+      align-self: flex-start;
+      width: clamp(6rem, 22cqi, 14rem);
+      rotate: 4deg;
+      /* the tilt pokes out of its box - room for it, so a lone portrait on a narrow row stays inside */
+      margin: 0.5rem 0.75rem;
+    }
+    & .mk-resume-header-body {
+      flex: 1 1 20rem;
+      gap: 1rem;
+    }
+    & .mk-resume-header-name {
+      font-size: clamp(3rem, 0.5rem + 11cqi, 9rem);
+      font-weight: 800;
+      line-height: 0.86;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+    & .mk-resume-header-role {
+      padding: 0.25rem 0.75rem;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      font-size: clamp(1rem, 0.8rem + 0.8cqi, 1.375rem);
+      rotate: -1.5deg;
+    }
+  }
+
+  /* split: the text and a tall portrait side by side - the portrait fills its share of the row. The two bases and
+     the gap add up to 34rem, the width below which the query stacks them (portrait first, landscape) */
+  .mk-resume-header[data-variant="split"] {
+    flex-direction: row-reverse;
+    gap: 2rem 3.5rem;
+
+    & .mk-resume-header-photo {
+      flex: 0.85 1 12rem;
+      width: auto;
+      min-width: 0;
+      aspect-ratio: 4 / 5;
+    }
+    & .mk-resume-header-body {
+      flex: 1.15 1 18.5rem;
+      gap: 1rem;
+    }
+    & .mk-resume-header-name {
+      font-size: clamp(2.5rem, 0.75rem + 6.5cqi, 5.5rem);
+      line-height: 0.95;
+    }
+  }
+
+  /* narrow: the split portrait takes the whole first row, in landscape */
+  @container mk-resume-header (max-width: 34rem) {
+    .mk-resume-header[data-variant="split"] .mk-resume-header-photo {
+      flex-basis: 100%;
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    /* buttons do nothing on paper - the facts carry the contact details */
+    .mk-resume-header-actions {
+      display: none;
+    }
+    .mk-resume-header-facts a {
+      text-decoration: none;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-resume-header-status,
+    .mk-resume-header-summary,
+    .mk-resume-header-facts {
+      color: var(--foreground);
+    }
+    .mk-resume-header-status {
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-resume-header-status {
+      border-color: CanvasText;
+    }
+    .mk-resume-header-photo {
+      outline: 1px solid CanvasText;
+    }
+  }
+}
+
+/* ── components/availability/availability.css ── */
+/* -- Availability (website · Resume & Portfolio) --------------------------
+   Says whether someone can be hired and on what terms: the status (an Indicator dot and a word), a sentence, the
+   facts (start, capacity, engagement, rate) as a <dl> and the ways to get in touch. A card (default) or one row
+   across the page (banner). The dot's variant carries the status colour - no script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-availability, .mk-availability *, .mk-availability ::before, .mk-availability ::after) {
+    box-sizing: border-box;
+  }
+
+  .mk-availability {
+    container: mk-availability / inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.875rem;
+    width: 100%;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* the status: an Indicator dot and a word */
+  .mk-availability-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .mk-availability-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .mk-availability-text {
+    max-width: 40rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  /* start, capacity, engagement, rate: label over value, as many columns as fit */
+  .mk-availability-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+    gap: 0.875rem 1.5rem;
+    width: 100%;
+    margin: 0.25rem 0;
+    padding-block: 1rem;
+    border-block: 1px solid var(--border);
+
+    & div {
+      display: grid;
+      gap: 0.125rem;
+    }
+    & dt {
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+    }
+    & dd {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 500;
+    }
+  }
+
+  .mk-availability-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* banner: one row - status, the sentence, the actions; anything else on a row of its own */
+  .mk-availability[data-variant="banner"] {
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    padding: 0.875rem 1.25rem;
+    box-shadow: none;
+
+    & .mk-availability-title {
+      flex: 1 1 16rem;
+      font-size: 1rem;
+    }
+    & .mk-availability-text,
+    & .mk-availability-facts {
+      flex-basis: 100%;
+    }
+  }
+
+  /* spotlight: the closing call - centered on the primary colour, the heading as large as a headline */
+  .mk-availability[data-variant="spotlight"] {
+    align-items: center;
+    gap: 1.25rem;
+    padding: clamp(2rem, 7cqi, 4.5rem) clamp(1.25rem, 5cqi, 3rem);
+    border-color: transparent;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    text-align: center;
+
+    & .mk-availability-status {
+      color: var(--primary-foreground);
+    }
+    & .mk-availability-title {
+      max-width: 22ch;
+      font-size: clamp(2rem, 1rem + 5cqi, 4.25rem);
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+    }
+    & .mk-availability-text {
+      color: color-mix(in oklch, var(--primary-foreground) 78%, transparent);
+    }
+    & .mk-availability-facts {
+      border-color: color-mix(in oklch, var(--primary-foreground) 22%, transparent);
+
+      & dt {
+        color: color-mix(in oklch, var(--primary-foreground) 70%, transparent);
+      }
+    }
+    & .mk-availability-actions {
+      justify-content: center;
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    .mk-availability {
+      break-inside: avoid;
+      box-shadow: none;
+    }
+    .mk-availability-actions {
+      display: none;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-availability {
+      border-color: var(--foreground);
+    }
+    .mk-availability-status,
+    .mk-availability-text,
+    .mk-availability-facts dt {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-availability[data-variant="spotlight"] {
+      border-color: CanvasText;
+    }
+    .mk-availability,
+    .mk-availability-facts {
+      border-color: CanvasText;
+    }
+  }
+}
+
+/* ── components/resume-entry/resume-entry.css ── */
+/* -- Resume Entry (website · Resume & Portfolio) --------------------------
+   One line of a CV - a position, a degree, a volunteer role, a talk: the title, the organisation, when and where,
+   a sentence, the highlights and the skills it used; several roles at one employer as a promotion path. Entries
+   with a logo and rules between them (default), on a line through their logos (timeline), or with the dates in
+   a column of their own (columns, the classic CV). The list is a container: narrow, the dates move under the
+   title - no breakpoints, no script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-resume-entries, .mk-resume-entries *, .mk-resume-entries ::before, .mk-resume-entries ::after) {
+    box-sizing: border-box;
+  }
+
+  .mk-resume-entries {
+    container: mk-resume-entries / inline-size;
+    display: grid;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mk-resume-entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    column-gap: 1rem;
+    padding-block: 1.25rem;
+
+    &:first-child {
+      padding-block-start: 0;
+    }
+    &:last-child {
+      padding-block-end: 0;
+    }
+    & + .mk-resume-entry {
+      border-block-start: 1px solid var(--border);
+    }
+    /* no logo: the body takes the row */
+    &:not(:has(> .mk-resume-entry-mark)) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* the organisation's logo (an <img>) or its initials (a <span>); an empty span is a dot */
+  .mk-resume-entry-mark {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+    object-fit: cover;
+  }
+  .mk-resume-entry-mark:not(img):empty {
+    justify-self: center;
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-block-start: 0.3rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--primary);
+  }
+
+  .mk-resume-entry-body {
+    display: grid;
+    align-content: start;
+    gap: 0.625rem;
+    min-width: 0;
+  }
+
+  /* title and organisation on the start side, when and where on the end side */
+  .mk-resume-entry-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.125rem 1rem;
+
+    & > .mk-resume-entry-title {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    & > .mk-resume-entry-org {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    & > .mk-resume-entry-when {
+      grid-column: 2;
+      grid-row: 1;
+      text-align: end;
+    }
+    & > .mk-resume-entry-where {
+      grid-column: 2;
+      grid-row: 2;
+      text-align: end;
+    }
+  }
+
+  .mk-resume-entry-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  /* the organisation and the kind of engagement, dot-separated */
+  .mk-resume-entry-org {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+
+    & > * + *::before {
+      content: "·";
+      margin-inline-end: 0.5rem;
+      color: var(--muted-foreground);
+    }
+    & > :not(:first-child) {
+      color: var(--muted-foreground);
+    }
+    & a {
+      color: inherit;
+      font-weight: 500;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+    }
+  }
+
+  .mk-resume-entry-when,
+  .mk-resume-entry-where {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .mk-resume-entry-when {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .mk-resume-entry-text {
+    max-width: 44rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .mk-resume-entry-highlights {
+    display: grid;
+    gap: 0.25rem;
+    max-width: 44rem;
+    margin: 0;
+    padding-inline-start: 1.125rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+
+    & li::marker {
+      color: var(--muted-foreground);
+    }
+  }
+
+  /* the skills it used */
+  .mk-resume-entry-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      padding: 0.125rem 0.5rem;
+      border-radius: 999px;
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  }
+
+  /* several roles at one employer: a promotion path on a short line */
+  .mk-resume-entry-roles {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & > li {
+      position: relative;
+      display: grid;
+      gap: 0.25rem;
+      padding-inline-start: 1.25rem;
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset-block-start: 0.45rem;
+        inset-inline-start: 0;
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: var(--muted-foreground);
+      }
+      &:first-child::before {
+        background: var(--primary);
+      }
+      &:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        inset-block: 1.2rem -0.8rem;
+        inset-inline-start: calc(0.25rem - 1px);
+        width: 2px;
+        background: var(--border);
+      }
+    }
+  }
+  .mk-resume-entry-role {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  /* timeline: no rules - one line runs through the logos */
+  .mk-resume-entries[data-variant="timeline"] {
+    & > .mk-resume-entry {
+      padding-block: 0 1.75rem;
+      border-block-start: 0;
+
+      &:last-child {
+        padding-block-end: 0;
+      }
+      &:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        inset-block: 3.25rem 0.5rem;
+        inset-inline-start: calc(1.375rem - 1px);
+        width: 2px;
+        background: var(--border);
+      }
+      &:has(> .mk-resume-entry-mark:not(img):empty):not(:last-child)::before {
+        inset-block-start: 1.6rem;
+      }
+    }
+  }
+
+  /* columns: the classic CV - the dates in a column of their own, no logos */
+  .mk-resume-entries[data-variant="columns"] {
+    & > .mk-resume-entry {
+      grid-template-columns: minmax(0, 1fr);
+      padding-inline-start: 9.5rem;
+    }
+    & .mk-resume-entry-mark {
+      display: none;
+    }
+    & .mk-resume-entry-body {
+      position: relative;
+    }
+    /* the body is a grid AND the date's containing block: the head's grid placement would pick its area */
+    & .mk-resume-entry-head > .mk-resume-entry-when {
+      position: absolute;
+      grid-area: auto;
+      inset-block-start: 0.1rem;
+      inset-inline-start: -9.5rem;
+      width: 8rem;
+      color: var(--foreground);
+      font-weight: 500;
+      text-align: start;
+      white-space: normal;
+    }
+  }
+
+  /* narrow: when and where move under the title, the date column folds in */
+  @container mk-resume-entries (max-width: 34rem) {
+    .mk-resume-entry-head {
+      grid-template-columns: minmax(0, 1fr);
+
+      & > .mk-resume-entry-title,
+      & > .mk-resume-entry-org,
+      & > .mk-resume-entry-when,
+      & > .mk-resume-entry-where {
+        grid-column: 1;
+        grid-row: auto;
+        text-align: start;
+      }
+    }
+    .mk-resume-entries[data-variant="columns"] {
+      & > .mk-resume-entry {
+        padding-inline-start: 0;
+      }
+      & .mk-resume-entry-head > .mk-resume-entry-when {
+        position: static;
+        width: auto;
+        color: var(--muted-foreground);
+        font-weight: 400;
+      }
+    }
+  }
+
+  /* horizontal: the entries side by side, left to right on one line through their marks; more than fit scroll sideways */
+  .mk-resume-entries[data-variant="horizontal"] {
+    grid-auto-columns: minmax(14rem, 1fr);
+    grid-auto-flow: column;
+    padding-block-end: 0.75rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+
+    & > .mk-resume-entry {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 1rem;
+      align-content: start;
+      padding: 0 1.5rem 0 0;
+      border-block-start: 0;
+      scroll-snap-align: start;
+
+      &:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        inset-block-start: calc(1.375rem - 1px);
+        inset-inline: 3.25rem 0.5rem;
+        height: 2px;
+        background: var(--border);
+      }
+      &:has(> .mk-resume-entry-mark:not(img):empty):not(:last-child)::before {
+        inset-block-start: calc(0.7375rem - 1px);
+        inset-inline-start: 1.375rem;
+      }
+    }
+    & .mk-resume-entry-mark:not(img):empty {
+      justify-self: start;
+    }
+    /* the date leads, the rest stacks under it */
+    & .mk-resume-entry-head {
+      grid-template-columns: minmax(0, 1fr);
+
+      & > .mk-resume-entry-when {
+        grid-column: 1;
+        grid-row: 1;
+        color: var(--primary);
+        font-weight: 600;
+        text-align: start;
+      }
+      & > .mk-resume-entry-title {
+        grid-row: 2;
+      }
+      & > .mk-resume-entry-org {
+        grid-row: 3;
+      }
+      & > .mk-resume-entry-where {
+        grid-column: 1;
+        grid-row: 4;
+        text-align: start;
+      }
+    }
+  }
+
+  /* the projects of an entry: Project Items in a grid under it - the timeline and the work in one view */
+  .mk-resume-entry-projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+    gap: 1.25rem 1rem;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    .mk-resume-entry {
+      break-inside: avoid;
+    }
+    /* on paper the horizontal line stacks: nothing may hide in a scroll box */
+    .mk-resume-entries[data-variant="horizontal"] {
+      grid-auto-flow: row;
+      overflow: visible;
+
+      & > .mk-resume-entry {
+        padding-block-end: 1rem;
+      }
+      & > .mk-resume-entry::before {
+        display: none;
+      }
+    }
+    .mk-resume-entry-tags li {
+      border: 1px solid var(--border);
+      background: none;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-resume-entry-org > :not(:first-child),
+    .mk-resume-entry-when,
+    .mk-resume-entry-where,
+    .mk-resume-entry-text {
+      color: var(--foreground);
+    }
+    .mk-resume-entry-tags li {
+      border: 1px solid var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-resume-entry-tags li,
+    .mk-resume-entry-mark {
+      border: 1px solid CanvasText;
+    }
+    .mk-resume-entry-mark:not(img):empty,
+    .mk-resume-entry-roles > li::before,
+    .mk-resume-entry-roles > li::after,
+    .mk-resume-entries[data-variant="timeline"] > .mk-resume-entry::before,
+    .mk-resume-entries[data-variant="horizontal"] > .mk-resume-entry::before {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+  }
+}
+
+/* ── components/skill-matrix/skill-matrix.css ── */
+/* -- Skill Matrix (website · Resume & Portfolio) --------------------------
+   What someone can do, in groups: each skill a name, its level as a native <meter> and a note (years, a CEFR
+   level). Levels as bars (default) or as five dots (dots - the mask turns the meter's fill into whole dots), or no
+   levels at all (tags, pills). The rows of a group share their columns through subgrid; the groups fill an
+   auto-fill grid - no breakpoints, no script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-skill-matrix, .mk-skill-matrix *, .mk-skill-matrix ::before, .mk-skill-matrix ::after) {
+    box-sizing: border-box;
+  }
+
+  .mk-skill-matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: 2rem 2.5rem;
+    width: 100%;
+  }
+
+  .mk-skill-matrix-group {
+    display: grid;
+    align-content: start;
+    gap: 0.875rem;
+    min-width: 0;
+  }
+
+  .mk-skill-matrix-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+
+    & svg {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+    }
+  }
+
+  /* name | level | note - one set of columns for the whole group */
+  .mk-skill-matrix-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(4rem, 6.5rem) auto;
+    align-items: center;
+    gap: 0.625rem 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mk-skill-matrix-skill {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+  }
+
+  .mk-skill-matrix-name {
+    grid-column: 1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .mk-skill-matrix-note {
+    grid-column: 3;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    white-space: nowrap;
+  }
+
+  /* the level: a native <meter>, drawn as a bar - track and fill per engine */
+  .mk-skill-matrix-level {
+    --mk-skill-matrix-bar: 0.375rem;
+    display: block;
+    grid-column: 2;
+    width: 100%;
+    height: var(--mk-skill-matrix-bar);
+    border: 0;
+    border-radius: 999px;
+    background: var(--muted);
+    appearance: none;
+
+    /* Chromium resolves a percentage height of its bar to half the meter: a length, inherited from the meter */
+    &::-webkit-meter-bar {
+      height: var(--mk-skill-matrix-bar);
+      border: 0;
+      border-radius: 999px;
+      background: var(--muted);
+    }
+    &::-webkit-meter-optimum-value,
+    &::-webkit-meter-suboptimum-value,
+    &::-webkit-meter-even-less-good-value {
+      height: var(--mk-skill-matrix-bar);
+      border-radius: 999px;
+      background: var(--primary);
+    }
+    &::-moz-meter-bar {
+      border-radius: 999px;
+      background: var(--primary);
+    }
+  }
+
+  /* dots: five dots - a 20% tile per dot, so a fill that ends on a whole step ends between two dots */
+  .mk-skill-matrix[data-variant="dots"] {
+    & .mk-skill-matrix-list {
+      grid-template-columns: minmax(0, 1fr) 5rem auto;
+    }
+    & .mk-skill-matrix-level {
+      --mk-skill-matrix-bar: 0.75rem;
+      border-radius: 0;
+      mask: radial-gradient(circle closest-side, #000 92%, transparent) 0 50% / 20% 100% repeat-x;
+
+      /* square ends: a rounded end would bite into the last whole dot */
+      &::-webkit-meter-bar,
+      &::-webkit-meter-optimum-value,
+      &::-webkit-meter-suboptimum-value,
+      &::-webkit-meter-even-less-good-value {
+        border-radius: 0;
+      }
+      &::-moz-meter-bar {
+        border-radius: 0;
+      }
+    }
+  }
+
+  /* stars: each level five stars - a star tile masks the meter, so half steps show half a star; amber like Rating */
+  .mk-skill-matrix[data-variant="stars"] {
+    --mk-skill-matrix-star: #f59e0b;
+    --mk-skill-matrix-empty: color-mix(in oklch, var(--foreground) 14%, transparent);
+
+    & .mk-skill-matrix-list {
+      grid-template-columns: minmax(0, 1fr) 6.25rem auto;
+    }
+    & .mk-skill-matrix-level {
+      --mk-skill-matrix-bar: 1.25rem;
+      border-radius: 0;
+      background: var(--mk-skill-matrix-empty);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'/%3E%3C/svg%3E")
+        0 50% / 20% 100% repeat-x;
+
+      &::-webkit-meter-bar {
+        border-radius: 0;
+        background: var(--mk-skill-matrix-empty);
+      }
+      &::-webkit-meter-optimum-value,
+      &::-webkit-meter-suboptimum-value,
+      &::-webkit-meter-even-less-good-value {
+        border-radius: 0;
+        background: var(--mk-skill-matrix-star);
+      }
+      &::-moz-meter-bar {
+        border-radius: 0;
+        background: var(--mk-skill-matrix-star);
+      }
+    }
+  }
+
+  /* tags: no levels - the skills as pills, the note inside */
+  .mk-skill-matrix[data-variant="tags"] {
+    & .mk-skill-matrix-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    & .mk-skill-matrix-skill {
+      display: flex;
+      align-items: baseline;
+      gap: 0.375rem;
+      padding: 0.3125rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+    }
+    & .mk-skill-matrix-name {
+      font-size: 0.8125rem;
+    }
+    & .mk-skill-matrix-level {
+      display: none;
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    .mk-skill-matrix-group {
+      break-inside: avoid;
+    }
+    /* a level is a background - paper keeps it only when asked */
+    .mk-skill-matrix-level {
+      print-color-adjust: exact;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-contrast: more) {
+    .mk-skill-matrix-note,
+    .mk-skill-matrix-title svg {
+      color: var(--foreground);
+    }
+    .mk-skill-matrix-level {
+      outline: 1px solid var(--foreground);
+    }
+    .mk-skill-matrix[data-variant="tags"] .mk-skill-matrix-skill {
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-skill-matrix[data-variant="stars"] .mk-skill-matrix-level {
+      outline: 0;
+      background: GrayText;
+      &::-webkit-meter-bar {
+        background: GrayText;
+      }
+      &::-webkit-meter-optimum-value,
+      &::-webkit-meter-suboptimum-value,
+      &::-webkit-meter-even-less-good-value {
+        background: Highlight;
+      }
+      &::-moz-meter-bar {
+        background: Highlight;
+      }
+    }
+    .mk-skill-matrix-level {
+      forced-color-adjust: none;
+      background: Canvas;
+      outline: 1px solid CanvasText;
+
+      &::-webkit-meter-bar {
+        background: Canvas;
+      }
+      &::-webkit-meter-optimum-value,
+      &::-webkit-meter-suboptimum-value,
+      &::-webkit-meter-even-less-good-value {
+        background: Highlight;
+      }
+      &::-moz-meter-bar {
+        background: Highlight;
+      }
+    }
+    .mk-skill-matrix[data-variant="tags"] .mk-skill-matrix-skill {
+      border-color: CanvasText;
+    }
+  }
+}
+
+/* ── components/repository-item/repository-item.css ── */
+/* -- Repository Item (website · Resume & Portfolio) -----------------------
+   One open-source project of a developer: owner/name as a stretched link, the visibility, a description, the topics
+   and the numbers - language (a dot in its colour), stars, forks, licence, last update. A card in a grid (default),
+   or a row of a list (plain). The language colour comes from data-language or from the dot's own `color` - no
+   script. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-repository-item, .mk-repository-item *, .mk-repository-item ::before, .mk-repository-item ::after) {
+    box-sizing: border-box;
+  }
+
+  .mk-repository-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    height: 100%;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    transition: border-color 150ms;
+
+    &:hover {
+      border-color: color-mix(in oklch, var(--foreground) 30%, var(--border));
+    }
+    &:has(.mk-repository-item-name a:focus-visible) {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .mk-repository-item-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+
+    & > svg {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--muted-foreground);
+    }
+    & .badge {
+      margin-inline-start: auto;
+    }
+  }
+
+  .mk-repository-item-name {
+    min-width: 0;
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+
+    & a {
+      color: inherit;
+      text-decoration: none;
+
+      /* the whole card is the link */
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+      }
+      &:focus-visible {
+        outline: none;
+      }
+    }
+  }
+  .mk-repository-item:hover .mk-repository-item-name a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .mk-repository-item-owner {
+    color: var(--muted-foreground);
+    font-weight: 400;
+  }
+
+  .mk-repository-item-description {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .mk-repository-item-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    & li {
+      padding: 0.0625rem 0.5rem;
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: var(--foreground);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+  }
+
+  /* language, stars, forks, licence, last update - pushed to the bottom of the card */
+  .mk-repository-item-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    margin: auto 0 0;
+    padding: 0.25rem 0 0;
+    list-style: none;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+
+    & li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3125rem;
+    }
+    & svg {
+      flex: none;
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+
+  /* the language dot: its colour is `color` - set by data-language, or inline */
+  .mk-repository-item-language {
+    flex: none;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: currentColor;
+
+    &[data-language="typescript"] {
+      color: #3178c6;
+    }
+    &[data-language="javascript"] {
+      color: #f1e05a;
+    }
+    &[data-language="css"] {
+      color: #663399;
+    }
+    &[data-language="html"] {
+      color: #e34c26;
+    }
+    &[data-language="rust"] {
+      color: #dea584;
+    }
+    &[data-language="go"] {
+      color: #00add8;
+    }
+    &[data-language="python"] {
+      color: #3572a5;
+    }
+    &[data-language="swift"] {
+      color: #f05138;
+    }
+    &[data-language="kotlin"] {
+      color: #a97bff;
+    }
+    &[data-language="shell"] {
+      color: #89e051;
+    }
+  }
+
+  /* plain: a row of a list - no card, a rule below */
+  .mk-repository-item[data-variant="plain"] {
+    height: auto;
+    padding: 0 0 1rem;
+    border: 0;
+    border-block-end: 1px solid var(--border);
+    border-radius: 0;
+    background: none;
+
+    &:hover {
+      border-color: var(--border);
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    .mk-repository-item {
+      break-inside: avoid;
+    }
+    .mk-repository-item-language {
+      print-color-adjust: exact;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-repository-item {
+      transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .mk-repository-item {
+      border-color: var(--foreground);
+    }
+    .mk-repository-item-owner,
+    .mk-repository-item-description,
+    .mk-repository-item-stats {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-repository-item {
+      border-color: CanvasText;
+    }
+    .mk-repository-item-topics li {
+      border: 1px solid CanvasText;
+    }
+    .mk-repository-item-language {
+      forced-color-adjust: none;
+    }
+  }
+}
+
+/* ── components/portfolio-grid/portfolio-grid.css ── */
+/* -- Portfolio Grid (website · Resume & Portfolio) ------------------------
+   The work, arranged: a list of projects, each a link around its picture and caption. A bento mosaic (default -
+   items span wide, tall or big, the gaps fill densely), masonry columns, scattered polaroids that straighten on
+   hover, a film strip that scrolls sideways and snaps, or an editorial index of big titles whose picture shows on
+   hover and focus. The list is a container: narrow, the spans fold and the index shows its pictures inline. No
+   script - pair the items with shape utilities, Motion entrances or Parallax reveals for character. */
+
+@layer components {
+  /* every box in the block measures border-box - the same on any page */
+  :where(.mk-portfolio-grid, .mk-portfolio-grid *, .mk-portfolio-grid ::before, .mk-portfolio-grid ::after) {
+    box-sizing: border-box;
+  }
+
+  /* bento: a dense mosaic - items span wide, tall or big */
+  .mk-portfolio-grid {
+    container: mk-portfolio-grid / inline-size;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    grid-auto-rows: 12rem;
+    grid-auto-flow: dense;
+    gap: 1rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: mk-portfolio-grid;
+  }
+
+  .mk-portfolio-grid-item {
+    min-width: 0;
+    counter-increment: mk-portfolio-grid;
+
+    &[data-span="wide"] {
+      grid-column: span 2;
+    }
+    &[data-span="tall"] {
+      grid-row: span 2;
+    }
+    &[data-span="big"] {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
+
+  .mk-portfolio-grid-link {
+    position: relative;
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 3px;
+    }
+  }
+
+  .mk-portfolio-grid-media {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: scale 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-media {
+    scale: 1.06;
+  }
+
+  /* the caption: over the picture on a scrim in the mosaic, under it elsewhere */
+  .mk-portfolio-grid-caption {
+    position: absolute;
+    inset: auto 0 0;
+    display: grid;
+    gap: 0.125rem;
+    padding: 2.5rem 1rem 0.875rem;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.72), rgb(0 0 0 / 0));
+    color: #fff;
+    transition: translate 300ms ease;
+  }
+  .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-caption {
+    translate: 0 -0.25rem;
+  }
+  .mk-portfolio-grid-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  .mk-portfolio-grid-meta {
+    font-size: 0.8125rem;
+    opacity: 0.85;
+  }
+
+  /* narrow: the spans fold into the single column */
+  @container mk-portfolio-grid (max-width: 26rem) {
+    .mk-portfolio-grid-item[data-span] {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+
+  /* masonry, scatter, strip: the caption sits under the picture */
+  .mk-portfolio-grid:is([data-variant="masonry"], [data-variant="scatter"], [data-variant="strip"]) {
+    & .mk-portfolio-grid-link {
+      height: auto;
+      overflow: visible;
+      background: none;
+    }
+    & .mk-portfolio-grid-media {
+      height: auto;
+      border-radius: var(--radius-xl);
+    }
+    & .mk-portfolio-grid-caption {
+      position: static;
+      padding: 0.75rem 0.125rem 0;
+      background: none;
+      color: inherit;
+    }
+    & .mk-portfolio-grid-meta {
+      color: var(--muted-foreground);
+      opacity: 1;
+    }
+    & .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-caption {
+      translate: none;
+    }
+  }
+
+  /* masonry: columns of natural heights */
+  .mk-portfolio-grid[data-variant="masonry"] {
+    display: block;
+    columns: 15rem;
+    column-gap: 1rem;
+
+    & .mk-portfolio-grid-item {
+      margin-block-end: 1.25rem;
+      break-inside: avoid;
+    }
+    & .mk-portfolio-grid-link {
+      border-radius: var(--radius-xl);
+    }
+    & .mk-portfolio-grid-media {
+      overflow: hidden;
+    }
+  }
+
+  /* scatter: polaroids on a table - each one tilted, straight and lifted on hover or focus */
+  .mk-portfolio-grid[data-variant="scatter"] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem 0.5rem;
+    padding-block: 1rem;
+
+    & .mk-portfolio-grid-item {
+      --mk-portfolio-grid-tilt: -3deg;
+      position: relative;
+      width: clamp(10rem, 30%, 15rem);
+
+      &:nth-child(2n) {
+        --mk-portfolio-grid-tilt: 2.5deg;
+      }
+      &:nth-child(3n) {
+        --mk-portfolio-grid-tilt: -1.5deg;
+      }
+      &:nth-child(5n) {
+        --mk-portfolio-grid-tilt: 4deg;
+      }
+      &:has(:hover, :focus-visible) {
+        z-index: 1;
+      }
+    }
+    & .mk-portfolio-grid-link {
+      padding: 0.75rem 0.75rem 1rem;
+      border-radius: 2px;
+      background: var(--card);
+      color: var(--card-foreground);
+      box-shadow: var(--shadow-lg);
+      rotate: var(--mk-portfolio-grid-tilt);
+      transition:
+        rotate 300ms ease,
+        scale 300ms ease,
+        box-shadow 300ms ease;
+
+      &:is(:hover, :focus-visible) {
+        rotate: 0deg;
+        scale: 1.06;
+        box-shadow: var(--shadow-2xl);
+      }
+    }
+    & .mk-portfolio-grid-media {
+      aspect-ratio: 1;
+      border-radius: 0;
+    }
+    & .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-media {
+      scale: none;
+    }
+    & .mk-portfolio-grid-caption {
+      text-align: center;
+    }
+    & .mk-portfolio-grid-title {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 500;
+    }
+  }
+
+  /* strip: a film strip that scrolls sideways and snaps to each project */
+  .mk-portfolio-grid[data-variant="strip"] {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: min(78%, 20rem);
+    grid-auto-rows: auto;
+    gap: 1.25rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-block-end: 0.75rem;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0.25rem;
+
+    & .mk-portfolio-grid-item {
+      scroll-snap-align: start;
+    }
+    & .mk-portfolio-grid-link {
+      overflow: hidden;
+    }
+    & .mk-portfolio-grid-media {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* index: an editorial list - numbered big titles; the picture shows beside the title on hover or focus */
+  .mk-portfolio-grid[data-variant="index"] {
+    display: block;
+    border-block-start: 1px solid var(--border);
+
+    & .mk-portfolio-grid-item {
+      position: relative;
+      border-block-end: 1px solid var(--border);
+    }
+    & .mk-portfolio-grid-link {
+      position: static;
+      display: grid;
+      grid-template-columns: 3rem minmax(0, 1fr) auto;
+      align-items: baseline;
+      gap: 1rem;
+      height: auto;
+      padding-block: 1.25rem;
+      overflow: visible;
+      border-radius: 0;
+      background: none;
+
+      &::before {
+        content: counter(mk-portfolio-grid, decimal-leading-zero);
+        color: var(--muted-foreground);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+    }
+    & .mk-portfolio-grid-caption {
+      position: static;
+      display: contents;
+      padding: 0;
+      background: none;
+      color: inherit;
+    }
+    & .mk-portfolio-grid-title {
+      font-size: clamp(1.5rem, 1rem + 3cqi, 3rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      transition: translate 300ms ease;
+    }
+    & .mk-portfolio-grid-meta {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      opacity: 1;
+      text-align: end;
+    }
+    & .mk-portfolio-grid-media {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-end: 22%;
+      z-index: 1;
+      width: clamp(9rem, 22cqi, 15rem);
+      height: auto;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      opacity: 0;
+      pointer-events: none;
+      rotate: -4deg;
+      scale: 0.85;
+      translate: 0 -50%;
+      transition:
+        opacity 250ms ease,
+        scale 300ms cubic-bezier(0.2, 0.7, 0.2, 1),
+        rotate 300ms ease;
+    }
+    & .mk-portfolio-grid-link:is(:hover, :focus-visible) {
+      & .mk-portfolio-grid-title {
+        translate: 0.75rem 0;
+      }
+      & .mk-portfolio-grid-media {
+        opacity: 1;
+        rotate: 2deg;
+        scale: 1;
+      }
+    }
+  }
+
+  /* a narrow index: each picture a thumbnail in the row, always shown */
+  @container mk-portfolio-grid (max-width: 36rem) {
+    .mk-portfolio-grid[data-variant="index"] {
+      & .mk-portfolio-grid-link {
+        grid-template-columns: 4rem minmax(0, 1fr);
+        align-items: center;
+
+        &::before {
+          display: none;
+        }
+      }
+      & .mk-portfolio-grid-media {
+        position: static;
+        grid-row: span 2;
+        width: 4rem;
+        opacity: 1;
+        rotate: none;
+        scale: none;
+        translate: none;
+        box-shadow: none;
+      }
+      & .mk-portfolio-grid-meta {
+        grid-column: 2;
+        text-align: start;
+      }
+      & .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-title {
+        translate: none;
+      }
+    }
+  }
+
+  /* -- Print ------------------------------------------------------ */
+  @media print {
+    .mk-portfolio-grid-item {
+      break-inside: avoid;
+    }
+    .mk-portfolio-grid[data-variant="strip"] {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      overflow: visible;
+    }
+    .mk-portfolio-grid[data-variant="index"] .mk-portfolio-grid-media {
+      display: none;
+    }
+  }
+
+  /* -- Accessibility ------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .mk-portfolio-grid-media,
+    .mk-portfolio-grid-caption,
+    .mk-portfolio-grid-title,
+    .mk-portfolio-grid[data-variant="scatter"] .mk-portfolio-grid-link {
+      transition: none;
+    }
+    .mk-portfolio-grid-link:is(:hover, :focus-visible) .mk-portfolio-grid-media {
+      scale: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .mk-portfolio-grid-caption {
+      background: rgb(0 0 0 / 0.85);
+    }
+    .mk-portfolio-grid:is(
+        [data-variant="masonry"],
+        [data-variant="scatter"],
+        [data-variant="strip"],
+        [data-variant="index"]
+      )
+      .mk-portfolio-grid-meta {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .mk-portfolio-grid-link {
+      border: 1px solid CanvasText;
+    }
+    .mk-portfolio-grid-caption {
+      forced-color-adjust: none;
+      background: Canvas;
+      color: CanvasText;
+    }
+  }
+}
+
 /* ── components/cta/cta.css ── */
 /* -- CTA (website · Events & Promotions) ----------------------------------
    Combines a focused message with a prominent action - centered, split, on a dark glow or over a picture. */
@@ -12340,17 +14101,21 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.75rem 1.5rem;
-    padding: 0.75rem 1.25rem;
+    gap: 1rem 2rem;
+    padding: 1.5rem 2rem;
 
     & .mk-event-countdown-title {
-      font-size: 1rem;
+      font-size: clamp(1.25rem, 3cqi, 1.625rem);
+    }
+    & .mk-event-countdown-timer {
+      gap: 0.5rem;
     }
     & .countdown-unit {
-      padding: 0.25rem 0.5rem;
+      min-width: 4.25rem;
+      padding: 0.5rem 0.75rem;
     }
     & .countdown {
-      font-size: 1.125rem;
+      font-size: 1.75rem;
     }
   }
 
@@ -13169,8 +14934,154 @@
     }
   }
 
+  /* topics as tags - in any variant */
+  .mk-speaker-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    & li {
+      padding: 0.125rem 0.5rem;
+      border-radius: 999px;
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+  /* where else to find the speaker - icon links, each named by its aria-label */
+  .mk-speaker-item-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    & a {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted-foreground);
+      transition:
+        color 150ms ease,
+        background-color 150ms ease;
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+    }
+    & svg {
+      width: 0.9375rem;
+      height: 0.9375rem;
+    }
+  }
+
+  /* overlay: the portrait fills the card, the name over a scrim; the talk and the links come up on hover */
+  .mk-speaker-item[data-variant="overlay"] {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-content: end;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--muted);
+    color: #fff;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(transparent 30%, oklch(0.14 0.02 260 / 0.55) 55%, oklch(0.12 0.02 260 / 0.92));
+    }
+    & .mk-speaker-item-photo {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      height: 100%;
+      aspect-ratio: auto;
+      border-radius: 0;
+      transition:
+        filter 300ms ease,
+        scale 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    &:is(:hover, :focus-within) .mk-speaker-item-photo {
+      scale: 1.05;
+    }
+    & .mk-speaker-item-body {
+      gap: 0.3rem;
+      padding: 1.25rem;
+    }
+    & .mk-speaker-item-name {
+      font-size: 1.375rem;
+      letter-spacing: -0.02em;
+    }
+    & .mk-speaker-item-role {
+      color: oklch(1 0 0 / 0.78);
+    }
+    & .mk-speaker-item-tags li {
+      background: oklch(1 0 0 / 0.16);
+      color: #fff;
+      backdrop-filter: blur(6px);
+    }
+    & .mk-speaker-item-talk {
+      color: #fff;
+      opacity: 0;
+      translate: 0 0.5rem;
+      transition:
+        opacity 250ms ease,
+        translate 250ms ease;
+    }
+    & .mk-speaker-item-social {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      margin: 0;
+      opacity: 0;
+      translate: 0 -0.5rem;
+      transition:
+        opacity 250ms ease,
+        translate 250ms ease;
+      & a {
+        border-color: oklch(1 0 0 / 0.25);
+        background: oklch(0.12 0.02 260 / 0.45);
+        color: #fff;
+        backdrop-filter: blur(8px);
+        &:hover {
+          background: #fff;
+          color: oklch(0.15 0.02 260);
+        }
+      }
+    }
+    &:is(:hover, :focus-within) :is(.mk-speaker-item-talk, .mk-speaker-item-social) {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+  /* no hover on touch: everything shows */
+  @media (hover: none) {
+    .mk-speaker-item[data-variant="overlay"] :is(.mk-speaker-item-talk, .mk-speaker-item-social) {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
+    .mk-speaker-item[data-variant="overlay"]
+      :is(.mk-speaker-item-photo, .mk-speaker-item-talk, .mk-speaker-item-social) {
+      transition: none;
+    }
     .mk-speaker-item-photo {
       transition: none;
     }
@@ -13351,6 +15262,196 @@
     & .mk-session-item-time time {
       font-size: 0.9375rem;
       font-weight: 600;
+    }
+  }
+
+  /* format, level and needs as small outline tags */
+  .mk-session-item-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    & li {
+      padding: 0.0625rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  }
+  /* happening now: a pulsing dot beside the time */
+  .mk-session-item-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: fit-content;
+    padding: 0.0625rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, #dc2626 14%, transparent);
+    color: color-mix(in oklab, #dc2626 80%, var(--foreground));
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    &::before {
+      content: "";
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: #dc2626;
+      animation: mk-session-live 1.6s ease-out infinite;
+    }
+  }
+  @keyframes mk-session-live {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in oklch, #dc2626 55%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 0.45rem transparent;
+    }
+  }
+  .mk-session-item:has(.mk-session-item-live) {
+    border-color: color-mix(in oklch, #dc2626 45%, var(--border));
+  }
+  /* slides, recording, share: small links under the session */
+  .mk-session-item-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8125rem;
+    & a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--muted-foreground);
+      font-weight: 600;
+      text-decoration: none;
+      &:hover {
+        color: var(--foreground);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
+    }
+    & svg {
+      width: 0.9375rem;
+      height: 0.9375rem;
+    }
+  }
+
+  /* cover: a picture fills the card, the session over a scrim in the track's colour; time and save float on top */
+  .mk-session-item[data-variant="cover"] {
+    position: relative;
+    isolation: isolate;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr;
+    min-height: 22rem;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--radius-xl);
+    background: oklch(0.18 0.02 260);
+    color: #fff;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(transparent 20%, oklch(0.12 0.02 260 / 0.9) 78%),
+        linear-gradient(135deg, color-mix(in oklch, var(--mk-session-color) 45%, transparent), transparent 60%);
+    }
+    & .mk-session-item-cover {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: scale 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    &:is(:hover, :focus-within) .mk-session-item-cover {
+      scale: 1.05;
+    }
+    /* the time as a glass chip in the corner */
+    & .mk-session-item-time {
+      display: flex;
+      align-items: baseline;
+      gap: 0.375rem;
+      width: fit-content;
+      height: fit-content;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background: oklch(0.12 0.02 260 / 0.45);
+      backdrop-filter: blur(8px);
+      & span,
+      & small {
+        margin: 0;
+        color: oklch(1 0 0 / 0.75);
+      }
+      & span::before {
+        content: "- ";
+      }
+    }
+    & .mk-session-item-body {
+      grid-column: 1 / -1;
+      align-self: end;
+    }
+    & .mk-session-item-track {
+      background: var(--mk-session-color);
+      color: #fff;
+    }
+    & .mk-session-item-live {
+      background: #dc2626;
+      color: #fff;
+      &::before {
+        background: #fff;
+      }
+    }
+    & .mk-session-item-title {
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    & :is(.mk-session-item-desc, .mk-session-item-room, .mk-session-item-links a) {
+      color: oklch(1 0 0 / 0.78);
+    }
+    & .mk-session-item-links a:hover {
+      color: #fff;
+    }
+    & .mk-session-item-tags li {
+      border-color: oklch(1 0 0 / 0.3);
+      color: oklch(1 0 0 / 0.85);
+    }
+    & .mk-session-item-save {
+      grid-column: 2;
+      grid-row: 1;
+      border-color: oklch(1 0 0 / 0.3);
+      background: oklch(0.12 0.02 260 / 0.45);
+      backdrop-filter: blur(8px);
+    }
+    & .mk-session-item-save:has(input:checked) {
+      border-color: #fff;
+      background: #fff;
+      color: oklch(0.15 0.02 260);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mk-session-item-live::before {
+      animation: none;
+    }
+    .mk-session-item[data-variant="cover"] .mk-session-item-cover {
+      transition: none;
     }
   }
 
@@ -15553,8 +17654,26 @@
       scale 500ms cubic-bezier(0.2, 0.7, 0.2, 1),
       filter 300ms ease;
   }
-  .mk-collection-item:hover .mk-collection-item-media {
-    filter: brightness(0.94);
+  /* the card lifts, its picture casts a shadow and warms up */
+  .mk-collection-item {
+    transition: translate 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .mk-collection-item:not([data-variant]):is(:hover, :has(:focus-visible)) {
+    translate: 0 -0.25rem;
+    & .mk-collection-item-media {
+      box-shadow: var(--shadow-lg);
+      filter: saturate(1.15);
+    }
+    & .mk-collection-item-more {
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+    }
+  }
+  .mk-collection-item-media {
+    transition:
+      scale 500ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      filter 300ms ease,
+      box-shadow 300ms ease;
   }
   .mk-collection-item-body {
     display: grid;
@@ -15640,6 +17759,115 @@
     }
   }
 
+  /* a short label over the picture: New, Bestseller, -20 % (data-tone="sale") */
+  .mk-collection-item-badge {
+    position: absolute;
+    z-index: 1;
+    inset: 0.75rem auto auto 0.75rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+    &[data-tone="sale"] {
+      background: #dc2626;
+      color: #fff;
+    }
+  }
+
+  /* overlay: a glass badge; the cue rises on hover or focus */
+  .mk-collection-item[data-variant="overlay"] {
+    & .mk-collection-item-badge:not([data-tone]) {
+      border: 1px solid oklch(1 0 0 / 0.35);
+      background: oklch(1 0 0 / 0.18);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      box-shadow: none;
+    }
+    & .mk-collection-item-more {
+      opacity: 0;
+      translate: 0 0.5rem;
+      transition:
+        opacity 200ms ease,
+        translate 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    &:is(:hover, :has(:focus-visible)) .mk-collection-item-more {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+  @media (hover: none) {
+    .mk-collection-item[data-variant="overlay"] .mk-collection-item-more {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* stack: three pictures of the collection as prints on a tinted panel; they fan out on hover or focus */
+  .mk-collection-item[data-variant="stack"] {
+    & .mk-collection-item-stack {
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+      aspect-ratio: 5 / 4;
+      padding: 1rem;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      background: var(--mk-collection-tint, var(--muted));
+    }
+    & .mk-collection-item-media {
+      grid-area: 1 / 1;
+      width: 46%;
+      border: 0.25rem solid #fff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      transition:
+        rotate 450ms cubic-bezier(0.2, 0.7, 0.2, 1),
+        translate 450ms cubic-bezier(0.2, 0.7, 0.2, 1),
+        scale 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    & .mk-collection-item-media:nth-child(1) {
+      rotate: -9deg;
+      translate: -50% 5%;
+    }
+    & .mk-collection-item-media:nth-child(2) {
+      rotate: 9deg;
+      translate: 50% 5%;
+    }
+    /* the third print lies on top: the turned ones paint above an unturned one otherwise */
+    & .mk-collection-item-media:nth-child(3) {
+      z-index: 1;
+    }
+    &:is(:hover, :has(:focus-visible)) {
+      & .mk-collection-item-media:nth-child(1) {
+        rotate: -15deg;
+        translate: -66% 9%;
+      }
+      & .mk-collection-item-media:nth-child(2) {
+        rotate: 15deg;
+        translate: 66% 9%;
+      }
+      & .mk-collection-item-media:nth-child(3) {
+        scale: 1.08;
+        translate: 0 -3%;
+      }
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mk-collection-item,
+    .mk-collection-item[data-variant="stack"] .mk-collection-item-media,
+    .mk-collection-item[data-variant="overlay"] .mk-collection-item-more {
+      transition: none;
+    }
+    .mk-collection-item:not([data-variant]):is(:hover, :has(:focus-visible)) {
+      translate: none;
+    }
+  }
+
   /* -- Accessibility ------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
     .mk-collection-item-media,
@@ -15652,6 +17880,11 @@
   }
 
   @media (forced-colors: active) {
+    .mk-collection-item-badge {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
     .mk-collection-item:is([data-variant="overlay"], [data-variant="banner"]) .mk-collection-item-body {
       background: Canvas;
       color: CanvasText;

@@ -217,6 +217,22 @@ test('questionnaire component: the CodeExample card walks to the review and back
   await waitFor(() => JSON.parse(card.dataset.stateValues || '{}').review === false, 'the questionnaire to leave the review (mirrored)');
 });
 
+test('shader component: the CodeExample card switches the effect and the speed through the State API', async () => {
+  // the first Shader example is an executable fence: the State tab's effect / speed rows call setState in the
+  // sandbox, and the card mirrors the observed data-effect / data-speed
+  const { doc } = await openDocPage('shader.html');
+  const card = doc.querySelector('.code-example[data-component="shader"]') as HTMLElement & {
+    preview?: { setState(state: string, value?: unknown): void };
+  };
+  await waitFor(() => card?.preview, 'shader example card to boot its sandbox', 15_000);
+  const values = () => JSON.parse(card.dataset.stateValues || '{}');
+  await waitFor(() => values().effect === 'mesh-gradient', 'the authored effect (mirrored)');
+  card.preview!.setState('effect', 'waves');
+  await waitFor(() => values().effect === 'waves', 'the effect switched to waves (mirrored)');
+  card.preview!.setState('speed', 0.5);
+  await waitFor(() => String(values().speed) === '0.5', 'the speed written (mirrored)');
+}, 30_000 * __TIMEOUT_SCALE__);
+
 test('geo-map component: the CodeExample card picks and frames regions through the State API', async () => {
   // the first Geo Map example is an executable fence: the State tab's selected / focused rows call
   // setState in the sandbox, and the card mirrors the observed data-selected / data-focus

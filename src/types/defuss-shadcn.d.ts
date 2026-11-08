@@ -421,6 +421,7 @@ interface DefussShadcnRegistry {
     theme: typeof import('../components/chart/chart.js').chartTheme;
     color: typeof import('../components/chart/chart.js').chartColor;
     deck: typeof import('../components/chart/chart.js').chartDeck;
+    bind: typeof import('../components/chart/chart.js').bind;
   };
   /** mermaid imperative API (src/components/mermaid/mermaid.ts): lazy loader, renders, token theme */
   mermaid?: {
@@ -480,6 +481,27 @@ interface DefussShadcnRegistry {
     load: () => Promise<void>;
     configure: (options: { data?: string; urls?: Record<string, string>; views?: Record<string, [number, number, number, number]> }) => void;
     [member: string]: unknown;
+  };
+  /** Graph Explorer (src/components/graphs/graph-explorer/graph-explorer.ts): navigation, selection, Node UIs, plugins, diagnostics */
+  graphExplorer?: {
+    navigate: (target: HTMLElement | string, id: string) => Promise<void>;
+    dive: (target: HTMLElement | string, id: string) => Promise<void>;
+    up: (target: HTMLElement | string) => Promise<boolean>;
+    fit: (target: HTMLElement | string) => Promise<string>;
+    select: (target: HTMLElement | string, ids: string[]) => void;
+    setNodeUi: (target: HTMLElement | string, name: string) => void;
+    expand: (target: HTMLElement | string, id: string) => Promise<void>;
+    collapse: (target: HTMLElement | string) => void;
+    destroy: (target: HTMLElement | string) => void;
+    [member: string]: unknown;
+  };
+  /** Shader (src/components/shaders/shader/shader.ts): the effects, registration, the engine's counts, one redraw */
+  shader?: {
+    effects: () => string[];
+    options: (effect: string) => Record<string, string[]>;
+    register: (name: string, effect: { fragment: string; params?: Record<string, number>; colors?: string[]; background?: string; still?: number; image?: 'mask' | 'image'; interactive?: boolean; cost?: number; sortColors?: boolean; options?: Record<string, string[]> }) => void;
+    stats: () => { supported: boolean; contexts: number; programs: number; instances: number; visible: number; animating: number; frames: number; scale: number };
+    frame: (target: string | HTMLElement) => Promise<void>;
   };
   /** chart storytelling driver (src/components/chart/chart.ts) */
   chartStory?: typeof import('../components/chart/chart.js').chartStory;

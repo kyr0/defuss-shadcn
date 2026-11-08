@@ -43,7 +43,11 @@ async function open(slug: string, nth = 0): Promise<{ page: Page; frame: Frame; 
   const card = page.locator('.code-example').nth(nth);
   await card.scrollIntoViewIfNeeded();
   const frame = (await (await card.locator('iframe').first().elementHandle())!.contentFrame())!;
-  await frame.waitForFunction(() => typeof (globalThis as any).df$ === 'function' && document.querySelector('.paper, .iframe'));
+  // polled on a timer: a card above may grow while this one boots and push it out of view, where the frame gets no
+  // animation frames (a rAF-polled wait never ran - VERIFIED on paper-charts' print card); complete, so an example's
+  // DOMContentLoaded handlers are bound before a click (VERIFIED: House Styles' first click went unheard); into view again
+  await frame.waitForFunction(() => document.readyState === 'complete' && typeof (globalThis as any).df$ === 'function' && document.querySelector('.paper, .iframe'), undefined, { polling: 100 });
+  await card.scrollIntoViewIfNeeded();
   return { page, frame, errors };
 }
 

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "name": "graph-explorer",
+  "states": {
+    "nodeUi": {
+      "type": "enum",
+      "values": ["default", "health", "compact"],
+      "default": "default",
+      "target": { "kind": "selector", "selector": ".graph-explorer" },
+      "mutation": { "kind": "api", "name": "@current", "args": { "nodeUi": "@value" } },
+      "observation": { "kind": "api", "name": "nodeUi" },
+      "editor": { "component": "select" }
+    },
+    "focused": {
+      "type": "string",
+      "default": "",
+      "target": { "kind": "selector", "selector": ".graph-explorer" },
+      "mutation": { "kind": "api", "name": "focused", "args": { "focus": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-focus" },
+      "editor": { "component": "text" }
+    },
+    "selected": {
+      "type": "string",
+      "default": "",
+      "target": { "kind": "selector", "selector": ".graph-explorer" },
+      "mutation": { "kind": "api", "name": "@current", "args": { "selected": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-selected" },
+      "editor": { "component": "text" }
+    },
+    "edge": {
+      "type": "string",
+      "default": "",
+      "target": { "kind": "selector", "selector": ".graph-explorer" },
+      "mutation": { "kind": "api", "name": "@current", "args": { "edge": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-selected-edge" },
+      "editor": { "component": "text" }
+    },
+    "expanded": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "selector", "selector": ".graph-explorer" },
+      "mutation": { "kind": "api", "name": "@current", "args": { "expanded": "@value" } },
+      "observation": { "kind": "api", "name": "expanded" },
+      "editor": { "component": "checkbox" }
+    }
+  },
+  "actions": {}
+}

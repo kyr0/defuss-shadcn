@@ -97,11 +97,13 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 
 /** every element of the documented markup (#markup) - what a missing section stylesheet or script
  *  changes; elements a runtime appends to <body> on its own (a live region of a component outside
- *  the section) are not the section's markup */
+ *  the section) are not the section's markup. Drawn content is left out like a canvas's: the Graph
+ *  Explorer's layers and its outlets' content fill with the worker's messages, which arrive at their
+ *  own time in each load (the explorer and the outlet elements themselves are compared) */
 function snapshot(page: Page): Promise<string[]> {
   return page.evaluate(() =>
     [...document.querySelectorAll('#markup *')]
-      .filter((el) => !el.closest('svg, canvas, script, style, iframe, video'))
+      .filter((el) => !el.closest('svg, canvas, script, style, iframe, video, .graph-explorer > [data-ce-chrome], [data-graph-explorer-for] > [data-ce-chrome]'))
       .map((el, i) => {
         const cs = getComputedStyle(el);
         const r = el.getBoundingClientRect();

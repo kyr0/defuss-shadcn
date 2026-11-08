@@ -10371,16 +10371,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    min-height: 3.5rem;
+    min-height: 4.5rem;
     max-width: 80rem;
     margin-inline: auto;
-    padding: 0.5rem 1.25rem;
+    padding: 1rem 1.25rem;
   }
 
   .mk-header-brand {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
     flex-shrink: 0;
     /* the glyph follows the name - never the browser's link blue */
     color: var(--primary);
@@ -10395,8 +10395,9 @@
 
   .mk-header-name {
     color: var(--primary);
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     white-space: nowrap;
   }
 

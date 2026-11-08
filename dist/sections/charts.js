@@ -264,6 +264,129 @@ function mount(el, option = {}) {
 function instance(el) {
   return instances.get(el);
 }
+function followedFilters(el) {
+  const config = el.store?.value?.config;
+  return Array.isArray(config?.filters) ? config.filters : [];
+}
+function bind(el, options) {
+  const opts = { ...options };
+  let query = { filters: opts.query?.filters ?? [] };
+  let rows = [];
+  let handle = null;
+  let disposed = false;
+  let pending = false;
+  let wait = null;
+  let unsubscribe = null;
+  let ready = () => {};
+  const mounted = new Promise((resolve) => ready = resolve);
+  const start = (option) => {
+    handle = mount(el, option);
+    ready(handle.instance);
+  };
+  const build = () => {
+    const t0 = performance.now();
+    const result = opts.source.aggregate(query, opts.aggregate);
+    rows = result.rows;
+    const info = {
+      rows,
+      matched: result.matchedRows,
+      total: result.totalRows,
+      ms: Math.round((performance.now() - t0) * 10) / 10
+    };
+    const option = typeof opts.option === "function" ? opts.option(rows, info) : deepMerge(opts.option ?? {}, { dataset: { source: rows } });
+    el.dispatchEvent(new CustomEvent("chart-data", {
+      detail: { rows: info.rows, matched: info.matched, total: info.total, ms: info.ms },
+      bubbles: true
+    }));
+    return option;
+  };
+  const draw = () => {
+    if (disposed)
+      return;
+    if (handle) {
+      handle.setOption(build());
+      return;
+    }
+    const box = el.getBoundingClientRect();
+    if (box.width && box.height) {
+      start(build());
+      return;
+    }
+    if (!wait) {
+      wait = new ResizeObserver(() => {
+        const b = el.getBoundingClientRect();
+        if (!b.width || !b.height || handle || disposed)
+          return;
+        wait?.disconnect();
+        wait = null;
+        start(build());
+      });
+      wait.observe(el);
+    }
+  };
+  const schedule = () => {
+    if (pending)
+      return;
+    pending = true;
+    queueMicrotask(() => {
+      pending = false;
+      draw();
+    });
+  };
+  const follow = () => {
+    const target = opts.follow;
+    if (!target || disposed || unsubscribe)
+      return;
+    if (!target.store)
+      return;
+    query = { filters: followedFilters(target) };
+    let seen = JSON.stringify(query.filters);
+    unsubscribe = target.store.subscribe(() => {
+      const filters = followedFilters(target);
+      const key = JSON.stringify(filters);
+      if (key === seen)
+        return;
+      seen = key;
+      query = { filters };
+      schedule();
+    });
+  };
+  follow();
+  draw();
+  if (opts.follow && !unsubscribe)
+    queueMicrotask(() => {
+      follow();
+      if (unsubscribe)
+        schedule();
+    });
+  return {
+    rows: () => rows,
+    query: (q) => {
+      query = { filters: q?.filters ?? [] };
+      draw();
+    },
+    refresh: () => draw(),
+    update: (next) => {
+      if (next.aggregate)
+        opts.aggregate = next.aggregate;
+      if (next.option !== undefined)
+        opts.option = next.option;
+      if (handle && next.option !== undefined) {
+        handle.setOption(build(), true);
+        return;
+      }
+      draw();
+    },
+    mounted,
+    dispose: () => {
+      disposed = true;
+      unsubscribe?.();
+      wait?.disconnect();
+      handle?.dispose();
+      handle = null;
+    }
+  };
+}
 function replay(el, inst) {
   const journal = journals.get(el);
   const raw = inst._rawSetOption;
@@ -465,7 +588,7 @@ var chartApi = componentState({
 });
 df$.chartApi = chartApi;
 df$.chartStates = chartStates;
-df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck };
+df$.chart = { mount, instance, theme: chartTheme, color: chartColor, deck: chartDeck, bind };
 df$.chartStory = chartStory;
 function init() {
   dfDollar(".chart:not([data-init])").toArray().forEach((el) => {
@@ -495,5 +618,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=8E9D3D6A0D56A91F64756E2164756E21
+//# debugId=21DF5B14C6F994DF64756E2164756E21
 //# sourceMappingURL=charts.js.map

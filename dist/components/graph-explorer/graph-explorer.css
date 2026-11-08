@@ -1,0 +1,1677 @@
+/* Graph Explorer - a knowledge graph of up to millions of nodes: a worker-drawn far field under a bounded pool of DOM
+ * nodes, edge labels per zoom level, outlets the page places (breadcrumb, search, outline, details, relations, Node UI).
+ * Its own properties derive from the tweakcn token set only (AGENTS.md "Token boundary rule"); the status colours ok and
+ * warn have no token and are literals (amber and green read as degraded and healthy in every theme; a chart colour
+ * such as --chart-1 is light blue in the default theme and read as information). The icons are a Lucide subset (ISC, lucide-static 0.469.0 - Copyright (c)
+ * Lucide Contributors 2022, portions Cole Bemis 2013-2022 as part of Feather, MIT) drawn as CSS masks: an icon is one
+ * empty element, cheap to morph and painted in the current color. */
+@layer components {
+  /* the explorer and everything bound to it share the graph's colour roles */
+  :where(.graph-explorer, [data-graph-explorer-for]) {
+    --graph-paper: var(--background);
+    --graph-node: var(--popover);
+    --graph-node-ink: var(--popover-foreground);
+    --graph-edge: color-mix(in oklch, var(--muted-foreground) 55%, transparent);
+    --graph-accent: var(--chart-2);
+    --graph-link: var(--chart-4);
+    --graph-ok: oklch(0.6 0.14 155);
+    --graph-warn: oklch(0.72 0.16 65);
+    --graph-danger: var(--destructive);
+    --graph-focus: var(--ring);
+    --graph-radius: var(--radius-md);
+  }
+  /* a tone is a colour role - inside the explorer and its outlets, and on what renderers draw (an icon on its own
+     too: the fallbacks are the roles' defaults) */
+  :where(.graph-explorer, [data-graph-explorer-for], [class*="graph-explorer-"]) {
+    &[data-tone="muted"],
+    & [data-tone="muted"] {
+      --tone: var(--muted-foreground);
+    }
+    &[data-tone="ink"],
+    & [data-tone="ink"] {
+      --tone: var(--foreground);
+    }
+    &[data-tone="accent"],
+    & [data-tone="accent"] {
+      --tone: var(--graph-accent, var(--chart-2));
+    }
+    &[data-tone="link"],
+    & [data-tone="link"] {
+      --tone: var(--graph-link, var(--chart-4));
+    }
+    &[data-tone="ok"],
+    & [data-tone="ok"] {
+      --tone: var(--graph-ok, oklch(0.6 0.14 155));
+    }
+    &[data-tone="warn"],
+    & [data-tone="warn"] {
+      --tone: var(--graph-warn, oklch(0.72 0.16 65));
+    }
+    &[data-tone="danger"],
+    & [data-tone="danger"] {
+      --tone: var(--graph-danger, var(--destructive));
+    }
+  }
+
+  /* ---------------------------------------------------------- the viewport: canvas, edges, slots, labels */
+  .graph-explorer {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: var(--graph-explorer-min-height, 20rem);
+    overflow: hidden;
+    contain: strict;
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+    outline: none;
+    background: var(--graph-paper); /* flat on purpose: a centered gradient reads as an empty cluster */
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--graph-focus);
+    }
+    &[data-panning] {
+      cursor: grabbing;
+    }
+    /* framed when it stands alone (in a Panel the panel is the frame) */
+    &[data-frame] {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    & .graph-explorer-canvas,
+    & .graph-explorer-edges,
+    & .graph-explorer-world,
+    & .graph-explorer-edge-labels,
+    & .graph-explorer-signs,
+    & .graph-explorer-ring {
+      position: absolute;
+      inset: 0;
+    }
+    & .graph-explorer-canvas {
+      inline-size: 100%;
+      block-size: 100%;
+      transform-origin: 50% 50%;
+      pointer-events: none;
+    }
+    & .graph-explorer-edges {
+      inline-size: 100%;
+      block-size: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    & .graph-explorer-world,
+    & .graph-explorer-signs,
+    & .graph-explorer-edge-labels {
+      pointer-events: none;
+    }
+    & .graph-explorer-probe {
+      position: absolute;
+      inline-size: 0;
+      block-size: 0;
+      overflow: hidden;
+    }
+    & .graph-explorer-live {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    & .graph-explorer-loading {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: center;
+      gap: 0.5rem;
+      justify-items: center;
+      color: var(--muted-foreground);
+      background: var(--graph-paper);
+      & progress {
+        inline-size: 12rem;
+        accent-color: var(--primary);
+      }
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    /* the pooled node slots */
+    & .graph-explorer-node {
+      position: absolute;
+      left: 0;
+      top: 0;
+      pointer-events: auto;
+      contain: layout style;
+      transition: opacity 0.18s ease;
+      @starting-style {
+        opacity: 0;
+      }
+      &[hidden] {
+        display: none;
+      }
+    }
+    &[data-dim] .graph-explorer-node:not([data-hl]) {
+      opacity: 0.32;
+    }
+    & .graph-explorer-node[data-selected] > * {
+      outline: 2px solid var(--graph-focus);
+      outline-offset: 1px;
+    }
+    & .graph-explorer-node[data-kbd] > * {
+      box-shadow:
+        0 0 0 4px color-mix(in oklch, var(--graph-focus) 40%, transparent),
+        var(--shadow-md);
+    }
+    & .graph-explorer-focus-ring {
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 999px;
+      border: 2px solid var(--graph-focus);
+      box-shadow: 0 0 0 4px color-mix(in oklch, var(--graph-focus) 30%, transparent);
+      pointer-events: none;
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    /* the promoted edges (SVG) of the selection, the hover and the keyboard focus */
+    & .graph-explorer-edge {
+      fill: none;
+      stroke: var(--graph-edge);
+      stroke-linecap: round;
+      &[data-tone] {
+        stroke: var(--tone);
+      }
+      &[data-flow] {
+        stroke-dasharray: 2 7;
+        animation: graph-explorer-flow 0.9s linear infinite;
+      }
+      &[data-pulse] {
+        animation: graph-explorer-pulse 1.6s ease-in-out infinite;
+      }
+      /* the selected link */
+      &[data-selected] {
+        stroke: var(--graph-accent);
+        stroke-width: 3.5px;
+        filter: drop-shadow(0 0 3px color-mix(in oklch, var(--graph-accent) 55%, transparent));
+      }
+    }
+    /* a click on a promoted link selects it: a wide transparent stroke under the line */
+    & .graph-explorer-edge-hit {
+      fill: none;
+      stroke: transparent;
+      stroke-width: 14px;
+      stroke-linecap: round;
+      pointer-events: stroke;
+      cursor: pointer;
+    }
+    & .graph-explorer-edge-head {
+      fill: var(--graph-edge);
+      stroke: none;
+      &[data-selected] {
+        fill: var(--graph-accent);
+      }
+      &[data-tone] {
+        fill: var(--tone);
+      }
+    }
+
+    /* the edge labels (DOM, budgeted); a click selects the link */
+    & .graph-explorer-edge-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: auto;
+      cursor: pointer;
+      border-radius: 999px;
+      &[hidden] {
+        display: none;
+      }
+      &[data-selected] {
+        outline: 2px solid var(--graph-accent);
+        outline-offset: 1px;
+        z-index: 1;
+      }
+    }
+
+    /* signposts to relations off screen, and Bring & Go */
+    & .graph-explorer-sign {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      max-inline-size: 14rem;
+      padding: 0.125rem 0.5rem;
+      border: 1px solid var(--tone, var(--border));
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--popover) 92%, transparent);
+      color: var(--popover-foreground);
+      font: inherit;
+      font-size: 0.6875rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      &:hover,
+      &:focus-visible {
+        background: var(--accent);
+        outline: 2px solid var(--ring);
+      }
+    }
+    & .graph-explorer-ring {
+      pointer-events: auto;
+      background: color-mix(in oklch, var(--graph-paper) 55%, transparent);
+      &[hidden] {
+        display: none;
+      }
+    }
+    & .graph-explorer-ring-center {
+      position: absolute;
+      left: 0;
+      top: 0;
+      inline-size: 14px;
+      block-size: 14px;
+      margin: -7px 0 0 -7px;
+      border-radius: 999px;
+      background: var(--graph-focus);
+      box-shadow: 0 0 0 6px color-mix(in oklch, var(--graph-focus) 30%, transparent);
+    }
+    & .graph-explorer-ring-item {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+      transition: translate 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition-delay: calc(var(--k, 0) * 18ms);
+      display: flex;
+      gap: 0.375rem;
+      align-items: center;
+      max-inline-size: 11rem;
+      padding: 0.25rem 0.625rem;
+      border: 1px solid var(--tone, var(--border));
+      border-radius: 999px;
+      background: var(--popover);
+      color: var(--popover-foreground);
+      font: inherit;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      &:hover,
+      &:focus-visible {
+        outline: 2px solid var(--ring);
+      }
+    }
+
+    & .graph-explorer-hud {
+      position: absolute;
+      inset-inline-end: 0.5rem;
+      inset-block-end: 0.5rem;
+      margin: 0;
+      padding: 0.375rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: color-mix(in oklch, var(--popover) 88%, transparent);
+      color: var(--popover-foreground);
+      border: 1px solid var(--border);
+      font: 0.6875rem/1.45 var(--font-mono);
+      pointer-events: none;
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    /* the keyboard map (a popover in the top layer) */
+    & .graph-explorer-help {
+      max-inline-size: min(34rem, calc(100vw - 2rem));
+      padding: 0;
+      margin: auto;
+      border: 1px solid var(--border);
+      cursor: auto;
+      user-select: text;
+      &::backdrop {
+        background: color-mix(in oklch, var(--background) 40%, transparent);
+      }
+    }
+    & .graph-explorer-keys {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      & td {
+        padding: 0.25rem 0.5rem;
+        vertical-align: top;
+      }
+      & td:first-child {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  /* a Panel's body that holds the explorer gives it all its room */
+  :where(.panel-body):has(> .graph-explorer) {
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    padding: 0;
+    overflow: hidden;
+    & > .graph-explorer {
+      min-block-size: 0;
+    }
+  }
+
+  /* ---------------------------------------------------------- what renderers draw: chips, cards, labels */
+  .graph-explorer-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    inline-size: 100%;
+    block-size: 100%;
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--graph-node);
+    color: var(--graph-node-ink);
+    box-shadow: var(--shadow-xs);
+    font-size: 0.75rem;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    &[data-kind="cluster"] {
+      font-weight: 500;
+    }
+    &[data-density="compact"] {
+      gap: 0.25rem;
+      padding-inline: 0.375rem;
+      font-size: 0.6875rem;
+    }
+  }
+  .graph-explorer-card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+    inline-size: 100%;
+    block-size: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--graph-radius);
+    background: var(--graph-node);
+    color: var(--graph-node-ink);
+    box-shadow: var(--shadow-md);
+    font-size: 0.75rem;
+    overflow: hidden;
+    cursor: pointer;
+    &[data-density="compact"] {
+      padding: 0.375rem 0.5rem;
+      & .graph-explorer-card-meta {
+        font-size: 0.6875rem;
+      }
+    }
+    & .graph-explorer-health {
+      inline-size: 100%;
+      block-size: 8px;
+      margin: 0.375rem 0 0.25rem;
+    }
+  }
+  .graph-explorer-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-inline-size: 0;
+    font-size: 0.8125rem;
+  }
+  .graph-explorer-card-meta {
+    margin: 0;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .graph-explorer-card-flags {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    & .badge {
+      font-size: 0.6875rem;
+    }
+  }
+  .graph-explorer-card-enter {
+    position: absolute;
+    inset-inline-end: 0.5rem;
+    inset-block-end: 0.5rem;
+  }
+  .graph-explorer-card-expand.btn {
+    margin-inline-start: auto;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    min-inline-size: 0;
+    padding: 0;
+    color: var(--muted-foreground);
+  }
+  .graph-explorer-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-inline-size: 0;
+    flex: 1 1 auto;
+  }
+  .graph-explorer-count {
+    margin-inline-start: auto;
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  .graph-explorer-cycle {
+    color: var(--graph-accent);
+    font-weight: 700;
+  }
+  .graph-explorer-muted {
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+  .graph-explorer-pad {
+    padding: 0.75rem;
+  }
+  /* a type's color: a dot (the outline) or an icon */
+  .graph-explorer-type {
+    flex: none;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 999px;
+    background: var(--type-color, var(--muted-foreground));
+  }
+  .graph-explorer-type-icon {
+    color: var(--type-color, currentColor);
+  }
+  :is(.graph-explorer-type, .graph-explorer-type-icon, .graph-explorer-avatar) {
+    &[data-type="0"] {
+      --type-color: var(--chart-1);
+    }
+    &[data-type="1"] {
+      --type-color: var(--chart-2);
+    }
+    &[data-type="2"] {
+      --type-color: var(--chart-3);
+    }
+    &[data-type="3"] {
+      --type-color: var(--chart-4);
+    }
+    &[data-type="4"] {
+      --type-color: var(--chart-5);
+    }
+    &[data-type="5"] {
+      --type-color: oklch(from var(--chart-1) l c calc(h + 150));
+    }
+    &[data-type="6"] {
+      --type-color: oklch(from var(--chart-1) l c calc(h + 210));
+    }
+    &[data-type="7"] {
+      --type-color: oklch(from var(--chart-1) l c calc(h + 280));
+    }
+  }
+  .badge.graph-explorer-warn,
+  .badge.graph-explorer-state[data-state="half-open"] {
+    background: color-mix(in oklch, var(--graph-warn) 18%, transparent);
+    color: var(--foreground);
+    border-color: color-mix(in oklch, var(--graph-warn) 60%, transparent);
+  }
+  .badge.graph-explorer-state[data-state="open"] {
+    background: var(--destructive);
+    color: var(--destructive-foreground, white);
+  }
+  .badge.graph-explorer-state[data-state="cut"] {
+    background: transparent;
+    border-color: var(--foreground);
+    color: var(--foreground);
+  }
+
+  /* the Health and Owners Node UIs */
+  .graph-explorer-health {
+    display: flex;
+    gap: 1px;
+    flex: 0 0 auto;
+    inline-size: 44px;
+    block-size: 6px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--muted);
+    & > span {
+      min-inline-size: 0;
+      background: var(--tone);
+    }
+    & > span[style*="flex:0"] {
+      display: none;
+    }
+  }
+  .graph-explorer-pill {
+    flex: none;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 0.625rem;
+    line-height: 16px;
+    background: color-mix(in oklch, var(--tone) 16%, transparent);
+    color: var(--foreground);
+  }
+  .graph-explorer-meter-row {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.375rem 0 0;
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+  }
+  .graph-explorer-meter {
+    block-size: 6px;
+    border-radius: 999px;
+    background: var(--muted);
+    overflow: hidden;
+    & > span {
+      display: block;
+      block-size: 100%;
+      background: var(--tone);
+    }
+  }
+  .graph-explorer-avatar {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    inline-size: 20px;
+    block-size: 20px;
+    border-radius: 999px;
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--background);
+    background: var(--type-color, var(--chart-1));
+  }
+
+  /* edge labels: an icon, a count, a pill or a badge */
+  .graph-explorer-edge-icon {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 20px;
+    block-size: 20px;
+    border-radius: 999px;
+    background: var(--popover);
+    color: var(--muted-foreground);
+    border: 1px solid color-mix(in oklch, var(--tone, var(--muted-foreground)) 45%, transparent);
+    box-shadow: var(--shadow-xs);
+    &[data-tone] {
+      color: var(--tone);
+    }
+    & .graph-explorer-icon {
+      inline-size: 12px;
+      block-size: 12px;
+    }
+  }
+  .graph-explorer-edge-count {
+    display: inline-block;
+    min-inline-size: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    text-align: center;
+    background: var(--popover);
+    color: var(--muted-foreground);
+    border: 1px solid var(--border);
+    font-size: 0.625rem;
+    line-height: 16px;
+    font-variant-numeric: tabular-nums;
+    box-shadow: var(--shadow-xs);
+  }
+  .graph-explorer-edge-pill,
+  .graph-explorer-edge-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 7px 1px 5px;
+    border-radius: 999px;
+    border: 1px solid var(--tone, var(--border));
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-xs);
+    font-size: 0.6875rem;
+    line-height: 18px;
+    white-space: nowrap;
+    & .graph-explorer-icon {
+      inline-size: 12px;
+      block-size: 12px;
+    }
+    & .graph-explorer-muted {
+      font-size: 0.625rem;
+    }
+  }
+  .graph-explorer-edge-badge[data-tone="danger"] {
+    background: var(--destructive);
+    color: var(--destructive-foreground, white);
+    border-color: var(--destructive);
+    & .graph-explorer-icon {
+      color: inherit;
+    }
+  }
+  .graph-explorer-edge-badge[data-tone="warn"] {
+    border-color: var(--graph-warn);
+  }
+  .graph-explorer-edge-sub {
+    opacity: 0.8;
+    font-size: 0.625rem;
+  }
+
+  /* ---------------------------------------------------------- the outlets */
+  .graph-explorer-path {
+    min-inline-size: 0;
+    overflow: hidden;
+    & .breadcrumb-list {
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+  }
+  .graph-explorer-search {
+    position: relative;
+    min-inline-size: 12rem;
+  }
+  .graph-explorer-search-input.input {
+    inline-size: 100%;
+    padding-inline-start: 2rem;
+  }
+  .graph-explorer-search-icon {
+    position: absolute;
+    inset-inline-start: 0.625rem;
+    top: 50%;
+    translate: 0 -50%;
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+  .graph-explorer-results {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    max-block-size: 22rem;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    & [role="option"] {
+      display: grid;
+      gap: 0.125rem;
+      padding: 0.375rem 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      &[aria-selected="true"],
+      &:hover {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+    }
+    &[hidden] {
+      display: none;
+    }
+  }
+  .graph-explorer-result-label {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .graph-explorer-result-path,
+  .graph-explorer-result-more {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .graph-explorer-result-more {
+    padding: 0.375rem 0.5rem;
+  }
+
+  .graph-explorer-node-ui {
+    display: inline-flex;
+    gap: 0.125rem;
+    & .btn {
+      gap: 0.3rem;
+      block-size: 1.75rem;
+      padding-inline: 0.5rem;
+      font-size: 0.75rem;
+      &[aria-pressed="true"] {
+        background: var(--accent);
+        color: var(--accent-foreground);
+      }
+    }
+    & .graph-explorer-icon {
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+    }
+  }
+  [data-graph-explorer-action="live"][aria-pressed="true"] {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+  }
+
+  .graph-explorer-outline {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    block-size: 100%;
+    min-block-size: 0;
+    overflow: hidden;
+  }
+  .graph-explorer-outline-head {
+    padding: 0.5rem;
+    border-block-end: 1px solid var(--border);
+  }
+  .graph-explorer-outline-filter.input {
+    inline-size: 100%;
+  }
+  .graph-explorer-outline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem;
+    overflow: auto;
+    overscroll-behavior: contain;
+    & li[aria-selected="true"] > .graph-explorer-outline-item {
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      font-weight: 600;
+    }
+  }
+  .graph-explorer-outline-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    inline-size: 100%;
+    padding: 0.25rem 0.375rem;
+    padding-inline-start: calc(0.375rem + var(--depth, 0) * 0.625rem);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
+    text-align: start;
+    cursor: pointer;
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+  .graph-explorer-outline-path .graph-explorer-outline-item {
+    color: var(--muted-foreground);
+    font-weight: 500;
+  }
+  .graph-explorer-outline-path:last-of-type .graph-explorer-outline-item {
+    color: var(--foreground);
+  }
+  .graph-explorer-outline-more {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+  }
+
+  /* the details (a node's or a link's), and their whole page when expanded. Built from the library's Badge,
+     Button, Card, Statistic and Table plus the parts below; plugins use the same classes */
+  .graph-explorer-details {
+    display: grid;
+    align-content: start;
+    gap: 0.875rem;
+    container-type: inline-size;
+    font-size: 0.8125rem;
+  }
+  .graph-explorer-island {
+    min-inline-size: 0;
+  }
+  .graph-explorer-empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    padding: 2rem 0.5rem;
+    text-align: center;
+    color: var(--muted-foreground);
+    & p {
+      margin: 0;
+    }
+    & > .graph-explorer-icon {
+      opacity: 0.5;
+    }
+  }
+  .graph-explorer-detail-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .graph-explorer-detail-tile {
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: var(--radius-md);
+    background: var(--muted);
+    color: var(--graph-accent);
+    box-shadow: inset 0 0 0 1px var(--border);
+    &[data-size="xl"] {
+      inline-size: 3.5rem;
+      block-size: 3.5rem;
+      border-radius: var(--radius-lg);
+    }
+  }
+  .graph-explorer-detail-titles,
+  .graph-explorer-page-titles {
+    display: grid;
+    gap: 0.125rem;
+    min-inline-size: 0;
+  }
+  .graph-explorer-detail-kicker {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+  .graph-explorer-cycle-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--muted-foreground);
+    font-weight: 400;
+  }
+  .graph-explorer-trail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    & .graph-explorer-link {
+      color: inherit;
+    }
+  }
+  .graph-explorer-trail-sep {
+    opacity: 0.6;
+  }
+  .graph-explorer-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  /* facts: a grid of label and value cells */
+  .graph-explorer-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--border);
+  }
+  .graph-explorer-stat {
+    display: grid;
+    gap: 0.125rem;
+    min-inline-size: 0;
+    padding: 0.5rem 0.625rem;
+    background: var(--card);
+    & dt {
+      font-size: 0.6875rem;
+      color: var(--muted-foreground);
+    }
+    & dd {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &[data-tone] dd {
+      color: var(--tone);
+    }
+    & .badge {
+      font-size: 0.6875rem;
+    }
+  }
+  .graph-explorer-section {
+    display: grid;
+    gap: 0.25rem;
+    padding-block-start: 0.75rem;
+    border-block-start: 1px solid var(--border);
+  }
+  .graph-explorer-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0 0 0.125rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  .graph-explorer-section-count {
+    padding: 0 0.375rem;
+    border-radius: 999px;
+    background: var(--muted);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+  /* a list of nodes: a click opens one, the link button inspects the link to it */
+  .graph-explorer-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1px;
+  }
+  .graph-explorer-row {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    border-radius: var(--radius-sm);
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    & > .graph-explorer-bar {
+      flex: 0 0 3.5rem;
+      margin-inline-end: 0.375rem;
+    }
+    & > .badge {
+      flex: none;
+      font-size: 0.625rem;
+    }
+  }
+  .graph-explorer-row-main {
+    flex: 1;
+    min-inline-size: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.3125rem 0.375rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+    & > .graph-explorer-icon {
+      color: var(--muted-foreground);
+    }
+  }
+  .graph-explorer-row-name {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .graph-explorer-row-meta {
+    display: flex;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .graph-explorer-row-link,
+  .graph-explorer-edge-btn {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    background: none;
+    color: var(--muted-foreground);
+    font: inherit;
+    cursor: pointer;
+    &:hover {
+      color: var(--foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+  }
+  .graph-explorer-row-link {
+    inline-size: 1.625rem;
+    block-size: 1.625rem;
+    border-radius: var(--radius-sm);
+    &:hover {
+      background: var(--muted);
+    }
+  }
+  .graph-explorer-edge-btn {
+    padding: 0;
+    border-radius: 999px;
+  }
+  .graph-explorer-more {
+    margin: 0.125rem 0 0;
+    padding-inline: 0.375rem;
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+  }
+  /* a share as a bar, in the tone of its kind */
+  .graph-explorer-bar {
+    display: block;
+    block-size: 0.375rem;
+    min-inline-size: 2rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--tone, var(--graph-accent)) 16%, transparent);
+    overflow: hidden;
+    & > span {
+      display: block;
+      block-size: 100%;
+      border-radius: inherit;
+      background: var(--tone, var(--graph-accent));
+    }
+  }
+  .graph-explorer-shares {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    & li {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.25rem 0.75rem;
+      align-items: center;
+    }
+    & .graph-explorer-bar {
+      grid-column: 1 / -1;
+    }
+  }
+  .graph-explorer-share-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .graph-explorer-share-value {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+  .graph-explorer-legend {
+    list-style: none;
+    margin: 0.375rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.875rem;
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+    & li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      &::before {
+        content: "";
+        inline-size: 0.5rem;
+        block-size: 0.5rem;
+        border-radius: 2px;
+        background: var(--tone);
+      }
+    }
+  }
+  /* the two ends of a link */
+  .graph-explorer-ends {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .graph-explorer-ends-arrow {
+    display: grid;
+    place-items: center;
+    color: var(--muted-foreground);
+  }
+  .graph-explorer-end {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0 0.5rem;
+    min-inline-size: 0;
+    padding: 0.5rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    color: var(--card-foreground);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 1px;
+    }
+    & > .graph-explorer-icon {
+      grid-row: span 2;
+    }
+  }
+  .graph-explorer-end-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .graph-explorer-end-type {
+    font-size: 0.6875rem;
+    color: var(--muted-foreground);
+  }
+  .graph-explorer-rel-table {
+    font-size: 0.8125rem;
+    & :is(.table-cell, .table-head) {
+      padding-block: 0.3rem;
+    }
+    & tr[data-graph-explorer-goto] {
+      cursor: pointer;
+      &:hover {
+        background: var(--accent);
+      }
+    }
+    & .graph-explorer-rel-edge :is(.graph-explorer-edge-pill, .graph-explorer-edge-badge) {
+      box-shadow: none;
+    }
+    & .graph-explorer-bar-col {
+      inline-size: 8rem;
+    }
+  }
+  .graph-explorer-rel-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .graph-explorer-relations .table-container {
+    border: 0;
+    border-radius: 0;
+  }
+  .graph-explorer-link {
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-align: start;
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+    }
+    & > .graph-explorer-icon {
+      color: var(--muted-foreground);
+    }
+  }
+  /* the expanded page: a head, key figures as Statistics, Cards in a grid */
+  .graph-explorer-page {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem 2rem;
+    & .graph-explorer-health {
+      inline-size: 100%;
+      block-size: 12px;
+    }
+    & > .graph-explorer-ends {
+      max-inline-size: 44rem;
+    }
+  }
+  .graph-explorer-page-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+  }
+  .graph-explorer-page-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    overflow-wrap: anywhere;
+  }
+  .graph-explorer-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.75rem;
+  }
+  .graph-explorer-kpi {
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow-xs);
+    & .statistic-value {
+      font-size: 1.5rem;
+      font-variant-numeric: tabular-nums;
+    }
+    &[data-tone] .statistic-value {
+      color: var(--tone);
+    }
+  }
+  .graph-explorer-page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+  /* every row behind a node or a link: a Data Grid and the shares of what its filters match */
+  .graph-explorer-records {
+    display: grid;
+    gap: 0.75rem;
+    min-inline-size: 0;
+  }
+  .graph-explorer-records-count {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .graph-explorer-records-shares {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+    gap: 1rem 1.5rem;
+    font-size: 0.8125rem;
+    &:empty {
+      display: none;
+    }
+  }
+  .graph-explorer-records-share {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    min-inline-size: 0;
+  }
+  .graph-explorer-grid {
+    --data-grid-row-height: 30px;
+    font-size: 0.8125rem;
+    & .graph-explorer-link {
+      max-inline-size: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  .graph-explorer-page-card {
+    min-inline-size: 0;
+    &[data-wide] {
+      grid-column: 1 / -1;
+    }
+    & .card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      & > .graph-explorer-icon {
+        color: var(--muted-foreground);
+      }
+    }
+    & .card-content {
+      display: grid;
+      gap: 0.75rem;
+      min-inline-size: 0;
+    }
+  }
+  @container (max-width: 48rem) {
+    .graph-explorer-page-head {
+      grid-template-columns: auto minmax(0, 1fr);
+      & .graph-explorer-detail-actions {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+  @container (max-width: 34rem) {
+    .graph-explorer-node-ui-label {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /* ---------------------------------------------------------- icons */
+  .graph-explorer-icon {
+    display: inline-block;
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    vertical-align: middle;
+    background-color: currentColor;
+    -webkit-mask: var(--graph-explorer-icon) center / 100% 100% no-repeat;
+    mask: var(--graph-explorer-icon) center / 100% 100% no-repeat;
+    &[data-size="xs"] {
+      inline-size: 0.75rem;
+      block-size: 0.75rem;
+    }
+    &[data-size="sm"] {
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+    }
+    &[data-size="lg"] {
+      inline-size: 1.5rem;
+      block-size: 1.5rem;
+    }
+    &[data-size="xl"] {
+      inline-size: 2rem;
+      block-size: 2rem;
+    }
+    &[data-tone] {
+      color: var(--tone);
+    }
+  }
+
+  @keyframes graph-explorer-flow {
+    to {
+      stroke-dashoffset: -9;
+    }
+  }
+  @keyframes graph-explorer-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .graph-explorer .graph-explorer-edge {
+      animation: none !important;
+    }
+    .graph-explorer :is(.graph-explorer-node, .graph-explorer-ring-item) {
+      transition: none;
+    }
+  }
+  @media (prefers-contrast: more) {
+    .graph-explorer .graph-explorer-edge {
+      stroke-width: 2.75;
+    }
+    :is(.graph-explorer-chip, .graph-explorer-card) {
+      border-width: 2px;
+      border-color: var(--foreground);
+    }
+  }
+  @media (forced-colors: active) {
+    :is(.graph-explorer-chip, .graph-explorer-card, .graph-explorer-sign, .graph-explorer-ring-item) {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      color: CanvasText;
+      forced-color-adjust: none;
+    }
+    .graph-explorer .graph-explorer-edge {
+      stroke: CanvasText;
+    }
+    .graph-explorer .graph-explorer-edge-head {
+      fill: CanvasText;
+    }
+    .graph-explorer .graph-explorer-node[data-selected] > * {
+      outline-color: Highlight;
+    }
+    .graph-explorer-icon {
+      background-color: CanvasText;
+      forced-color-adjust: none;
+    }
+  }
+
+  /* the icon set: a Lucide subset (see the header) */
+  .graph-explorer-icon[data-icon="chevron-up"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="chevron-down"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="maximize-2"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 3 21 3 21 9' /%3E %3Cpolyline points='9 21 3 21 3 15' /%3E %3Cline x1='21' x2='14' y1='3' y2='10' /%3E %3Cline x1='3' x2='10' y1='21' y2='14' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="minimize-2"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 14 10 14 10 20' /%3E %3Cpolyline points='20 10 14 10 14 4' /%3E %3Cline x1='14' x2='21' y1='10' y2='3' /%3E %3Cline x1='3' x2='10' y1='21' y2='14' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="x"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18' /%3E %3Cpath d='m6 6 12 12' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="list-tree"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12h-8' /%3E %3Cpath d='M21 6H8' /%3E %3Cpath d='M21 18h-8' /%3E %3Cpath d='M3 6v4c0 1.1.9 2 2 2h3' /%3E %3Cpath d='M3 10v6c0 1.1.9 2 2 2h3' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="waypoints"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='4.5' r='2.5' /%3E %3Cpath d='m10.2 6.3-3.9 3.9' /%3E %3Ccircle cx='4.5' cy='12' r='2.5' /%3E %3Cpath d='M7 12h10' /%3E %3Ccircle cx='19.5' cy='12' r='2.5' /%3E %3Cpath d='m13.8 17.7 3.9-3.9' /%3E %3Ccircle cx='12' cy='19.5' r='2.5' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="panel-right"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' /%3E %3Cpath d='M15 3v18' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="rows-3"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' /%3E %3Cpath d='M21 9H3' /%3E %3Cpath d='M21 15H3' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="database"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3' /%3E %3Cpath d='M3 5V19A9 3 0 0 0 21 19V5' /%3E %3Cpath d='M3 12A9 3 0 0 0 21 12' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="plug"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22v-5' /%3E %3Cpath d='M9 8V2' /%3E %3Cpath d='M15 8V2' /%3E %3Cpath d='M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="file-text"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z' /%3E %3Cpath d='M14 2v4a2 2 0 0 0 2 2h4' /%3E %3Cpath d='M10 9H8' /%3E %3Cpath d='M16 13H8' /%3E %3Cpath d='M16 17H8' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="user"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' /%3E %3Ccircle cx='12' cy='7' r='4' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="clock"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Cpolyline points='12 6 12 12 16 14' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="radio"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.9 19.1C1 15.2 1 8.8 4.9 4.9' /%3E %3Cpath d='M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5' /%3E %3Ccircle cx='12' cy='12' r='2' /%3E %3Cpath d='M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5' /%3E %3Cpath d='M19.1 4.9C23 8.8 23 15.1 19.1 19' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="plug-zap"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z' /%3E %3Cpath d='m2 22 3-3' /%3E %3Cpath d='M7.5 13.5 10 11' /%3E %3Cpath d='M10.5 16.5 13 14' /%3E %3Cpath d='m18 3-4 4h6l-4 4' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="cog"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z' /%3E %3Cpath d='M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z' /%3E %3Cpath d='M12 2v2' /%3E %3Cpath d='M12 22v-2' /%3E %3Cpath d='m17 20.66-1-1.73' /%3E %3Cpath d='M11 10.27 7 3.34' /%3E %3Cpath d='m20.66 17-1.73-1' /%3E %3Cpath d='m3.34 7 1.73 1' /%3E %3Cpath d='M14 12h8' /%3E %3Cpath d='M2 12h2' /%3E %3Cpath d='m20.66 7-1.73 1' /%3E %3Cpath d='m3.34 17 1.73-1' /%3E %3Cpath d='m17 3.34-1 1.73' /%3E %3Cpath d='m11 13.73-4 6.93' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="waves"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1' /%3E %3Cpath d='M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1' /%3E %3Cpath d='M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="boxes"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z' /%3E %3Cpath d='m7 16.5-4.74-2.85' /%3E %3Cpath d='m7 16.5 5-3' /%3E %3Cpath d='M7 16.5v5.17' /%3E %3Cpath d='M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z' /%3E %3Cpath d='m17 16.5-5-3' /%3E %3Cpath d='m17 16.5 4.74-2.85' /%3E %3Cpath d='M17 16.5v5.17' /%3E %3Cpath d='M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z' /%3E %3Cpath d='M12 8 7.26 5.15' /%3E %3Cpath d='m12 8 4.74-2.85' /%3E %3Cpath d='M12 13.5V8' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="box"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z' /%3E %3Cpath d='m3.3 7 8.7 5 8.7-5' /%3E %3Cpath d='M12 22V12' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="zap"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="eye"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0' /%3E %3Ccircle cx='12' cy='12' r='3' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="key-round"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z' /%3E %3Ccircle cx='16.5' cy='7.5' r='.5' fill='currentColor' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="link"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71' /%3E %3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="link-2"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 17H7A5 5 0 0 1 7 7h2' /%3E %3Cpath d='M15 7h2a5 5 0 1 1 0 10h-2' /%3E %3Cline x1='8' x2='16' y1='12' y2='12' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="zap-off"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.513 4.856 13.12 2.17a.5.5 0 0 1 .86.46l-1.377 4.317' /%3E %3Cpath d='M15.656 10H20a1 1 0 0 1 .78 1.63l-1.72 1.773' /%3E %3Cpath d='M16.273 16.273 10.88 21.83a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14H4a1 1 0 0 1-.78-1.63l4.507-4.643' /%3E %3Cpath d='m2 2 20 20' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="circle-dashed"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.1 2.182a10 10 0 0 1 3.8 0' /%3E %3Cpath d='M13.9 21.818a10 10 0 0 1-3.8 0' /%3E %3Cpath d='M17.609 3.721a10 10 0 0 1 2.69 2.7' /%3E %3Cpath d='M2.182 13.9a10 10 0 0 1 0-3.8' /%3E %3Cpath d='M20.279 17.609a10 10 0 0 1-2.7 2.69' /%3E %3Cpath d='M21.818 10.1a10 10 0 0 1 0 3.8' /%3E %3Cpath d='M3.721 6.391a10 10 0 0 1 2.7-2.69' /%3E %3Cpath d='M6.391 20.279a10 10 0 0 1-2.69-2.7' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="scissors"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='3' /%3E %3Cpath d='M8.12 8.12 12 12' /%3E %3Cpath d='M20 4 8.12 15.88' /%3E %3Ccircle cx='6' cy='18' r='3' /%3E %3Cpath d='M14.8 14.8 20 20' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="shield-check"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z' /%3E %3Cpath d='m9 12 2 2 4-4' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="triangle-alert"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3' /%3E %3Cpath d='M12 9v4' /%3E %3Cpath d='M12 17h.01' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="search"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8' /%3E %3Cpath d='m21 21-4.3-4.3' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="arrow-up"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 7-7 7 7' /%3E %3Cpath d='M12 19V5' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="scan"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7V5a2 2 0 0 1 2-2h2' /%3E %3Cpath d='M17 3h2a2 2 0 0 1 2 2v2' /%3E %3Cpath d='M21 17v2a2 2 0 0 1-2 2h-2' /%3E %3Cpath d='M7 21H5a2 2 0 0 1-2-2v-2' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="radio-tower"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.9 16.1C1 12.2 1 5.8 4.9 1.9' /%3E %3Cpath d='M7.8 4.7a6.14 6.14 0 0 0-.8 7.5' /%3E %3Ccircle cx='12' cy='9' r='2' /%3E %3Cpath d='M16.2 4.8c2 2 2.26 5.11.8 7.47' /%3E %3Cpath d='M19.1 1.9a9.96 9.96 0 0 1 0 14.1' /%3E %3Cpath d='M9.5 18h5' /%3E %3Cpath d='m8 22 4-11 4 11' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="keyboard"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 8h.01' /%3E %3Cpath d='M12 12h.01' /%3E %3Cpath d='M14 8h.01' /%3E %3Cpath d='M16 12h.01' /%3E %3Cpath d='M18 8h.01' /%3E %3Cpath d='M6 8h.01' /%3E %3Cpath d='M7 16h10' /%3E %3Cpath d='M8 12h.01' /%3E %3Crect width='20' height='16' x='2' y='4' rx='2' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="expand"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21 21-6-6m6 6v-4.8m0 4.8h-4.8' /%3E %3Cpath d='M3 16.2V21m0 0h4.8M3 21l6-6' /%3E %3Cpath d='M21 7.8V3m0 0h-4.8M21 3l-6 6' /%3E %3Cpath d='M3 7.8V3m0 0h4.8M3 3l6 6' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="shrink"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 15 6 6m-6-6v4.8m0-4.8h4.8' /%3E %3Cpath d='M9 19.8V15m0 0H4.2M9 15l-6 6' /%3E %3Cpath d='M15 4.2V9m0 0h4.8M15 9l6-6' /%3E %3Cpath d='M9 4.2V9m0 0H4.2M9 9 3 3' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="repeat-2"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m2 9 3-3 3 3' /%3E %3Cpath d='M13 18H7a2 2 0 0 1-2-2V6' /%3E %3Cpath d='m22 15-3 3-3-3' /%3E %3Cpath d='M11 6h6a2 2 0 0 1 2 2v10' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="refresh-cw"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8' /%3E %3Cpath d='M21 3v5h-5' /%3E %3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16' /%3E %3Cpath d='M8 16H3v5' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="users"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' /%3E %3Ccircle cx='9' cy='7' r='4' /%3E %3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87' /%3E %3Cpath d='M16 3.13a4 4 0 0 1 0 7.75' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="activity"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="layers"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z' /%3E %3Cpath d='M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12' /%3E %3Cpath d='M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="gauge"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 14 4-4' /%3E %3Cpath d='M3.34 19a10 10 0 1 1 17.32 0' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="circle-alert"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Cline x1='12' x2='12' y1='8' y2='12' /%3E %3Cline x1='12' x2='12.01' y1='16' y2='16' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="arrow-right"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14' /%3E %3Cpath d='m12 5 7 7-7 7' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="arrow-left"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 19-7-7 7-7' /%3E %3Cpath d='M19 12H5' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="arrow-left-right"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3 4 7l4 4' /%3E %3Cpath d='M4 7h16' /%3E %3Cpath d='m16 21 4-4-4-4' /%3E %3Cpath d='M20 17H4' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="git-merge"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='18' r='3' /%3E %3Ccircle cx='6' cy='6' r='3' /%3E %3Cpath d='M6 21V9a9 9 0 0 0 9 9' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="network"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='16' y='16' width='6' height='6' rx='1' /%3E %3Crect x='2' y='16' width='6' height='6' rx='1' /%3E %3Crect x='9' y='2' width='6' height='6' rx='1' /%3E %3Cpath d='M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3' /%3E %3Cpath d='M12 12V8' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="info"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Cpath d='M12 16v-4' /%3E %3Cpath d='M12 8h.01' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="folder-tree"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z' /%3E %3Cpath d='M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z' /%3E %3Cpath d='M3 5a2 2 0 0 0 2 2h3' /%3E %3Cpath d='M3 3v13a2 2 0 0 0 2 2h3' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="layout-dashboard"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='9' x='3' y='3' rx='1' /%3E %3Crect width='7' height='5' x='14' y='3' rx='1' /%3E %3Crect width='7' height='9' x='14' y='12' rx='1' /%3E %3Crect width='7' height='5' x='3' y='16' rx='1' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="table"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18' /%3E %3Crect width='18' height='18' x='3' y='3' rx='2' /%3E %3Cpath d='M3 9h18' /%3E %3Cpath d='M3 15h18' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="crosshair"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Cline x1='22' x2='18' y1='12' y2='12' /%3E %3Cline x1='6' x2='2' y1='12' y2='12' /%3E %3Cline x1='12' x2='12' y1='6' y2='2' /%3E %3Cline x1='12' x2='12' y1='22' y2='18' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="target"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Ccircle cx='12' cy='12' r='6' /%3E %3Ccircle cx='12' cy='12' r='2' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="hash"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' x2='20' y1='9' y2='9' /%3E %3Cline x1='4' x2='20' y1='15' y2='15' /%3E %3Cline x1='10' x2='8' y1='3' y2='21' /%3E %3Cline x1='16' x2='14' y1='3' y2='21' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="tag"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z' /%3E %3Ccircle cx='7.5' cy='7.5' r='.5' fill='currentColor' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="workflow"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='8' height='8' x='3' y='3' rx='2' /%3E %3Cpath d='M7 11v4a2 2 0 0 0 2 2h4' /%3E %3Crect width='8' height='8' x='13' y='13' rx='2' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="server"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='8' x='2' y='2' rx='2' ry='2' /%3E %3Crect width='20' height='8' x='2' y='14' rx='2' ry='2' /%3E %3Cline x1='6' x2='6.01' y1='6' y2='6' /%3E %3Cline x1='6' x2='6.01' y1='18' y2='18' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="globe"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Cpath d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20' /%3E %3Cpath d='M2 12h20' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="timer"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='10' x2='14' y1='2' y2='2' /%3E %3Cline x1='12' x2='15' y1='14' y2='11' /%3E %3Ccircle cx='12' cy='14' r='8' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="book-open"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 7v14' /%3E %3Cpath d='M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="send"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z' /%3E %3Cpath d='m21.854 2.147-10.94 10.939' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="external-link"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 3h6v6' /%3E %3Cpath d='M10 14 21 3' /%3E %3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="circle"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="circle-check"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Cpath d='m9 12 2 2 4-4' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="ban"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10' /%3E %3Cpath d='m4.9 4.9 14.2 14.2' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="lock"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2' /%3E %3Cpath d='M7 11V7a5 5 0 0 1 10 0v4' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="git-branch"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='6' x2='6' y1='3' y2='15' /%3E %3Ccircle cx='18' cy='6' r='3' /%3E %3Ccircle cx='6' cy='18' r='3' /%3E %3Cpath d='M18 9a9 9 0 0 1-9 9' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="split"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 3h5v5' /%3E %3Cpath d='M8 3H3v5' /%3E %3Cpath d='M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3' /%3E %3Cpath d='m15 9 6-6' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="route"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='19' r='3' /%3E %3Cpath d='M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15' /%3E %3Ccircle cx='18' cy='5' r='3' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="milestone"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 13v8' /%3E %3Cpath d='M12 3v3' /%3E %3Cpath d='M4 6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h13a2 2 0 0 0 1.152-.365l3.424-2.317a1 1 0 0 0 0-1.635l-3.424-2.318A2 2 0 0 0 17 6z' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="signal"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 20h.01' /%3E %3Cpath d='M7 20v-4' /%3E %3Cpath d='M12 20v-8' /%3E %3Cpath d='M17 20V8' /%3E %3Cpath d='M22 4v16' /%3E%3C/svg%3E");
+  }
+  .graph-explorer-icon[data-icon="history"] {
+    --graph-explorer-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8' /%3E %3Cpath d='M3 3v5h5' /%3E %3Cpath d='M12 7v5l4 2' /%3E%3C/svg%3E");
+  }
+}

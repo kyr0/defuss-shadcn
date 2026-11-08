@@ -1,59 +1,59 @@
 {
-  "total": 250,
+  "total": 259,
   "byType": {
-    "ATM": 77,
-    "MOL": 34,
+    "ATM": 79,
+    "MOL": 35,
     "ORG": 6,
-    "BLK": 129,
+    "BLK": 135,
     "TPL": 4
   },
-  "templatePages": 69,
-  "templates": 73,
+  "templatePages": 86,
+  "templates": 90,
   "templateGroups": {
     "WYSIWYG Editors": 1,
-    "Application": 8,
+    "Application": 9,
     "Presentations": 33,
     "Papers": 15,
-    "Website": 12
+    "Website": 28
   },
   "tokens": 52,
-  "examples": 1774,
-  "unitTestFiles": 45,
-  "withJs": 79,
-  "withoutJs": 171,
-  "totalSize": 3380980,
-  "totalSizeMinified": 1619485,
-  "totalSizeGz": 988279,
-  "totalSizeGzMinified": 545330,
+  "examples": 1942,
+  "unitTestFiles": 47,
+  "withJs": 81,
+  "withoutJs": 178,
+  "totalSize": 4045671,
+  "totalSizeMinified": 2036996,
+  "totalSizeGz": 1153121,
+  "totalSizeGzMinified": 664513,
   "bundle": {
-    "jsSize": 1098837,
-    "jsSizeMinified": 638688,
-    "cssSize": 1475667,
-    "cssSizeMinified": 839516,
-    "totalSizeGz": 550781,
-    "totalSizeGzMinified": 346219,
-    "jsSizeGzMinified": 199724,
-    "cssSizeGzMinified": 146495
+    "jsSize": 1109222,
+    "jsSizeMinified": 644032,
+    "cssSize": 1602599,
+    "cssSizeMinified": 926068,
+    "totalSizeGz": 579865,
+    "totalSizeGzMinified": 365962,
+    "jsSizeGzMinified": 201659,
+    "cssSizeGzMinified": 164303
   },
   "core": {
-    "jsSize": 167096,
-    "jsSizeMinified": 87563,
+    "jsSize": 174180,
+    "jsSizeMinified": 91359,
     "cssSize": 134461,
     "cssSizeMinified": 109277,
-    "totalSizeGz": 54123,
-    "totalSizeGzMinified": 39804,
-    "jsSizeGzMinified": 29888,
+    "totalSizeGz": 56095,
+    "totalSizeGzMinified": 41155,
+    "jsSizeGzMinified": 31239,
     "cssSizeGzMinified": 9916
   },
   "bundles": {
     "wysiwyg": {
-      "jsSize": 74536,
-      "jsSizeMinified": 47135,
+      "jsSize": 74589,
+      "jsSizeMinified": 47180,
       "cssSize": 25048,
       "cssSizeMinified": 16078,
-      "totalSizeGz": 26125,
-      "totalSizeGzMinified": 19911,
-      "jsSizeGzMinified": 16276,
+      "totalSizeGz": 26151,
+      "totalSizeGzMinified": 19937,
+      "jsSizeGzMinified": 16302,
       "cssSizeGzMinified": 3635
     },
     "mermaid": {
@@ -95,6 +95,26 @@
       "totalSizeGzMinified": 22503,
       "jsSizeGzMinified": 20138,
       "cssSizeGzMinified": 2365
+    },
+    "shaders": {
+      "jsSize": 155825,
+      "jsSizeMinified": 132202,
+      "cssSize": 9471,
+      "cssSizeMinified": 6168,
+      "totalSizeGz": 48120,
+      "totalSizeGzMinified": 44291,
+      "jsSizeGzMinified": 42263,
+      "cssSizeGzMinified": 2028
+    },
+    "graphs": {
+      "jsSize": 213790,
+      "jsSizeMinified": 134294,
+      "cssSize": 69840,
+      "cssSizeMinified": 56630,
+      "totalSizeGz": 66832,
+      "totalSizeGzMinified": 53527,
+      "jsSizeGzMinified": 44392,
+      "cssSizeGzMinified": 9135
     }
   },
   "sections": {
@@ -236,13 +256,13 @@
         "sections/wysiwyg-editors.css",
         "sections/wysiwyg-editors.js"
       ],
-      "jsSize": 95554,
-      "jsSizeMinified": 59825,
+      "jsSize": 95607,
+      "jsSizeMinified": 59870,
       "cssSize": 28708,
       "cssSizeMinified": 18244,
-      "totalSizeGz": 32185,
-      "totalSizeGzMinified": 24387,
-      "jsSizeGzMinified": 20342,
+      "totalSizeGz": 32209,
+      "totalSizeGzMinified": 24412,
+      "jsSizeGzMinified": 20367,
       "cssSizeGzMinified": 4045
     },
     "questionnaire": {
@@ -359,13 +379,13 @@
         "sections/big-data.css",
         "sections/big-data.js"
       ],
-      "jsSize": 71981,
-      "jsSizeMinified": 42178,
+      "jsSize": 72084,
+      "jsSizeMinified": 42233,
       "cssSize": 30296,
       "cssSizeMinified": 18755,
-      "totalSizeGz": 22221,
-      "totalSizeGzMinified": 16371,
-      "jsSizeGzMinified": 12679,
+      "totalSizeGz": 22246,
+      "totalSizeGzMinified": 16393,
+      "jsSizeGzMinified": 12701,
       "cssSizeGzMinified": 3692
     },
     "charts": {
@@ -374,19 +394,20 @@
         "chart"
       ],
       "needs": [
-        "Primitives"
+        "Primitives",
+        "Big Data"
       ],
       "files": [
         "sections/charts.css",
         "sections/charts.js"
       ],
-      "jsSize": 17188,
-      "jsSizeMinified": 9966,
+      "jsSize": 20363,
+      "jsSizeMinified": 11451,
       "cssSize": 2706,
       "cssSizeMinified": 1044,
-      "totalSizeGz": 6499,
-      "totalSizeGzMinified": 4545,
-      "jsSizeGzMinified": 4050,
+      "totalSizeGz": 7346,
+      "totalSizeGzMinified": 5132,
+      "jsSizeGzMinified": 4637,
       "cssSizeGzMinified": 495
     },
     "diagrams": {
@@ -411,6 +432,34 @@
       "totalSizeGzMinified": 27452,
       "jsSizeGzMinified": 19210,
       "cssSizeGzMinified": 8242
+    },
+    "graphs": {
+      "heading": "Graphs",
+      "members": [
+        "graph-explorer"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs",
+        "Data Display",
+        "Big Data",
+        "Charts",
+        "Navigation",
+        "Application"
+      ],
+      "files": [
+        "components/graphs.css",
+        "components/graphs.js"
+      ],
+      "jsSize": 213790,
+      "jsSizeMinified": 134294,
+      "cssSize": 69840,
+      "cssSizeMinified": 56630,
+      "totalSizeGz": 66832,
+      "totalSizeGzMinified": 53527,
+      "jsSizeGzMinified": 44392,
+      "cssSizeGzMinified": 9135
     },
     "math": {
       "heading": "Math",
@@ -460,6 +509,51 @@
       "totalSizeGzMinified": 22503,
       "jsSizeGzMinified": 20138,
       "cssSizeGzMinified": 2365
+    },
+    "shaders": {
+      "heading": "Shaders",
+      "members": [
+        "shader"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs",
+        "Data Display"
+      ],
+      "files": [
+        "components/shaders.css",
+        "components/shaders.js"
+      ],
+      "jsSize": 155825,
+      "jsSizeMinified": 132202,
+      "cssSize": 9471,
+      "cssSizeMinified": 6168,
+      "totalSizeGz": 48120,
+      "totalSizeGzMinified": 44291,
+      "jsSizeGzMinified": 42263,
+      "cssSizeGzMinified": 2028
+    },
+    "infinite-surfaces": {
+      "heading": "Infinite Surfaces",
+      "members": [
+        "surface"
+      ],
+      "needs": [
+        "Primitives",
+        "Data Display"
+      ],
+      "files": [
+        "sections/infinite-surfaces.css"
+      ],
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 67790,
+      "cssSizeMinified": 51822,
+      "totalSizeGz": 14573,
+      "totalSizeGzMinified": 11124,
+      "jsSizeGzMinified": 0,
+      "cssSizeGzMinified": 11124
     },
     "feedback-status": {
       "heading": "Feedback & Status",
@@ -753,6 +847,12 @@
         "comparison-table",
         "credential-item",
         "press-item",
+        "resume-header",
+        "availability",
+        "resume-entry",
+        "skill-matrix",
+        "repository-item",
+        "portfolio-grid",
         "cta",
         "announcement",
         "offer-banner",
@@ -851,19 +951,19 @@
       ],
       "jsSize": 39646,
       "jsSizeMinified": 27174,
-      "cssSize": 563723,
-      "cssSizeMinified": 341516,
-      "totalSizeGz": 93012,
-      "totalSizeGzMinified": 60512,
+      "cssSize": 622864,
+      "cssSizeMinified": 376150,
+      "totalSizeGz": 103261,
+      "totalSizeGzMinified": 66116,
       "jsSizeGzMinified": 8572,
-      "cssSizeGzMinified": 51940
+      "cssSizeGzMinified": 57544
     }
   },
   "sectionBundles": {
-    "count": 23,
+    "count": 26,
     "minGzMinified": 2014,
-    "maxGzMinified": 60512,
-    "meanGzMinified": 17374
+    "maxGzMinified": 66116,
+    "meanGzMinified": 19799
   },
   "components": {
     "about-intro": {
@@ -1099,6 +1199,19 @@
       "totalSizeGzMinified": 4994,
       "totalSize": 31364,
       "totalSizeMinified": 13870
+    },
+    "availability": {
+      "name": "availability",
+      "type": "BLK",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 4551,
+      "cssSizeMinified": 2603,
+      "totalSizeGz": 1398,
+      "totalSizeGzMinified": 873,
+      "totalSize": 4551,
+      "totalSizeMinified": 2603
     },
     "avatar": {
       "name": "avatar",
@@ -1403,14 +1516,14 @@
       "name": "chart",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 32291,
-      "jsSizeMinified": 10162,
+      "jsSize": 37418,
+      "jsSizeMinified": 11659,
       "cssSize": 2659,
       "cssSizeMinified": 1002,
-      "totalSizeGz": 12047,
-      "totalSizeGzMinified": 4537,
-      "totalSize": 34950,
-      "totalSizeMinified": 11164
+      "totalSizeGz": 13469,
+      "totalSizeGzMinified": 5126,
+      "totalSize": 40077,
+      "totalSizeMinified": 12661
     },
     "checkbox": {
       "name": "checkbox",
@@ -1455,14 +1568,14 @@
       "name": "code-example",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 80809,
-      "jsSizeMinified": 35978,
+      "jsSize": 80866,
+      "jsSizeMinified": 36023,
       "cssSize": 15074,
       "cssSizeMinified": 9426,
-      "totalSizeGz": 26881,
-      "totalSizeGzMinified": 14738,
-      "totalSize": 95883,
-      "totalSizeMinified": 45404
+      "totalSizeGz": 26911,
+      "totalSizeGzMinified": 14764,
+      "totalSize": 95940,
+      "totalSizeMinified": 45449
     },
     "collapsible": {
       "name": "collapsible",
@@ -1483,12 +1596,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 4135,
-      "cssSizeMinified": 2707,
-      "totalSizeGz": 1274,
-      "totalSizeGzMinified": 924,
-      "totalSize": 4135,
-      "totalSizeMinified": 2707
+      "cssSize": 8017,
+      "cssSizeMinified": 5189,
+      "totalSizeGz": 2036,
+      "totalSizeGzMinified": 1421,
+      "totalSize": 8017,
+      "totalSizeMinified": 5189
     },
     "collection-pagination": {
       "name": "collection-pagination",
@@ -1689,14 +1802,14 @@
       "name": "data-grid",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 42454,
-      "jsSizeMinified": 18641,
+      "jsSize": 43089,
+      "jsSizeMinified": 18696,
       "cssSize": 13128,
       "cssSizeMinified": 8758,
-      "totalSizeGz": 14769,
-      "totalSizeGzMinified": 8918,
-      "totalSize": 55582,
-      "totalSizeMinified": 27399
+      "totalSizeGz": 14968,
+      "totalSizeGzMinified": 8938,
+      "totalSize": 56217,
+      "totalSizeMinified": 27454
     },
     "data-tree": {
       "name": "data-tree",
@@ -1925,12 +2038,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 2826,
-      "cssSizeMinified": 1848,
-      "totalSizeGz": 948,
-      "totalSizeGzMinified": 683,
-      "totalSize": 2826,
-      "totalSizeMinified": 1848
+      "cssSize": 2927,
+      "cssSizeMinified": 1920,
+      "totalSizeGz": 975,
+      "totalSizeGzMinified": 705,
+      "totalSize": 2927,
+      "totalSizeMinified": 1920
     },
     "event-description": {
       "name": "event-description",
@@ -2152,6 +2265,19 @@
       "totalSizeGzMinified": 1110,
       "totalSize": 5578,
       "totalSizeMinified": 3368
+    },
+    "graph-explorer": {
+      "name": "graph-explorer",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 276096,
+      "jsSizeMinified": 134446,
+      "cssSize": 69775,
+      "cssSizeMinified": 56588,
+      "totalSizeGz": 79655,
+      "totalSizeGzMinified": 53497,
+      "totalSize": 345871,
+      "totalSizeMinified": 191034
     },
     "heading-anchor": {
       "name": "heading-anchor",
@@ -2894,6 +3020,19 @@
       "totalSize": 7314,
       "totalSizeMinified": 3028
     },
+    "portfolio-grid": {
+      "name": "portfolio-grid",
+      "type": "BLK",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 10756,
+      "cssSizeMinified": 6527,
+      "totalSizeGz": 2690,
+      "totalSizeGzMinified": 1787,
+      "totalSize": 10756,
+      "totalSizeMinified": 6527
+    },
     "presentation": {
       "name": "presentation",
       "type": "TPL",
@@ -3180,6 +3319,19 @@
       "totalSize": 2358,
       "totalSizeMinified": 1420
     },
+    "repository-item": {
+      "name": "repository-item",
+      "type": "BLK",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 5323,
+      "cssSizeMinified": 3080,
+      "totalSizeGz": 1613,
+      "totalSizeGzMinified": 1065,
+      "totalSize": 5323,
+      "totalSizeMinified": 3080
+    },
     "reset-request": {
       "name": "reset-request",
       "type": "BLK",
@@ -3218,6 +3370,32 @@
       "totalSizeGzMinified": 957,
       "totalSize": 4140,
       "totalSizeMinified": 2703
+    },
+    "resume-entry": {
+      "name": "resume-entry",
+      "type": "BLK",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 11054,
+      "cssSizeMinified": 6381,
+      "totalSizeGz": 2644,
+      "totalSizeGzMinified": 1628,
+      "totalSize": 11054,
+      "totalSizeMinified": 6381
+    },
+    "resume-header": {
+      "name": "resume-header",
+      "type": "BLK",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 7322,
+      "cssSizeMinified": 3824,
+      "totalSizeGz": 2158,
+      "totalSizeGzMinified": 1155,
+      "totalSize": 7322,
+      "totalSizeMinified": 3824
     },
     "roadmap-item": {
       "name": "roadmap-item",
@@ -3394,12 +3572,25 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 4581,
-      "cssSizeMinified": 3022,
-      "totalSizeGz": 1300,
-      "totalSizeGzMinified": 952,
-      "totalSize": 4581,
-      "totalSizeMinified": 3022
+      "cssSize": 9514,
+      "cssSizeMinified": 6261,
+      "totalSizeGz": 2308,
+      "totalSizeGzMinified": 1707,
+      "totalSize": 9514,
+      "totalSizeMinified": 6261
+    },
+    "shader": {
+      "name": "shader",
+      "type": "ATM",
+      "withJs": true,
+      "jsSize": 177083,
+      "jsSizeMinified": 132238,
+      "cssSize": 9422,
+      "cssSizeMinified": 6125,
+      "totalSizeGz": 53936,
+      "totalSizeGzMinified": 44458,
+      "totalSize": 186505,
+      "totalSizeMinified": 138363
     },
     "share-links": {
       "name": "share-links",
@@ -3472,12 +3663,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 8774,
-      "cssSizeMinified": 4859,
-      "totalSizeGz": 2496,
-      "totalSizeGzMinified": 1496,
-      "totalSize": 8774,
-      "totalSizeMinified": 4859
+      "cssSize": 8796,
+      "cssSizeMinified": 4876,
+      "totalSizeGz": 2503,
+      "totalSizeGzMinified": 1499,
+      "totalSize": 8796,
+      "totalSizeMinified": 4876
     },
     "skeleton": {
       "name": "skeleton",
@@ -3491,6 +3682,19 @@
       "totalSizeGzMinified": 296,
       "totalSize": 1186,
       "totalSizeMinified": 665
+    },
+    "skill-matrix": {
+      "name": "skill-matrix",
+      "type": "BLK",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 7110,
+      "cssSizeMinified": 4226,
+      "totalSizeGz": 1984,
+      "totalSizeGzMinified": 1193,
+      "totalSize": 7110,
+      "totalSizeMinified": 4226
     },
     "slider": {
       "name": "slider",
@@ -3563,12 +3767,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 3638,
-      "cssSizeMinified": 2381,
-      "totalSizeGz": 1149,
-      "totalSizeGzMinified": 867,
-      "totalSize": 3638,
-      "totalSizeMinified": 2381
+      "cssSize": 7341,
+      "cssSizeMinified": 4678,
+      "totalSizeGz": 1917,
+      "totalSizeGzMinified": 1398,
+      "totalSize": 7341,
+      "totalSizeMinified": 4678
     },
     "spinner": {
       "name": "spinner",
@@ -3647,6 +3851,19 @@
       "totalSizeGzMinified": 841,
       "totalSize": 3826,
       "totalSizeMinified": 2339
+    },
+    "surface": {
+      "name": "surface",
+      "type": "ATM",
+      "withJs": false,
+      "jsSize": 0,
+      "jsSizeMinified": 0,
+      "cssSize": 67739,
+      "cssSizeMinified": 51769,
+      "totalSizeGz": 14541,
+      "totalSizeGzMinified": 11084,
+      "totalSize": 67739,
+      "totalSizeMinified": 51769
     },
     "survey-question": {
       "name": "survey-question",
@@ -4153,13 +4370,13 @@
         "toggle-group",
         "typography"
       ],
-      "jsSize": 298670,
-      "jsSizeMinified": 163156,
+      "jsSize": 309031,
+      "jsSizeMinified": 168499,
       "cssSize": 361720,
       "cssSizeMinified": 224065,
-      "totalSizeGz": 131728,
-      "totalSizeGzMinified": 82108,
-      "jsSizeGzMinified": 51555,
+      "totalSizeGz": 134492,
+      "totalSizeGzMinified": 84066,
+      "jsSizeGzMinified": 53513,
       "cssSizeGzMinified": 30553
     },
     "messenger": {
@@ -4184,13 +4401,13 @@
         "toast",
         "typography"
       ],
-      "jsSize": 218129,
-      "jsSizeMinified": 117793,
+      "jsSize": 225213,
+      "jsSizeMinified": 121589,
       "cssSize": 273939,
       "cssSizeMinified": 179177,
-      "totalSizeGz": 96927,
-      "totalSizeGzMinified": 62120,
-      "jsSizeGzMinified": 38508,
+      "totalSizeGz": 98884,
+      "totalSizeGzMinified": 63466,
+      "jsSizeGzMinified": 39854,
       "cssSizeGzMinified": 23612
     },
     "issue-tracker": {
@@ -4222,13 +4439,13 @@
         "toggle-group",
         "typography"
       ],
-      "jsSize": 269411,
-      "jsSizeMinified": 147639,
+      "jsSize": 276597,
+      "jsSizeMinified": 151490,
       "cssSize": 325947,
       "cssSizeMinified": 205861,
-      "totalSizeGz": 117292,
-      "totalSizeGzMinified": 74069,
-      "jsSizeGzMinified": 46164,
+      "totalSizeGz": 119273,
+      "totalSizeGzMinified": 75460,
+      "jsSizeGzMinified": 47555,
       "cssSizeGzMinified": 27905
     },
     "notes": {
@@ -4260,13 +4477,13 @@
         "tree-view",
         "typography"
       ],
-      "jsSize": 235048,
-      "jsSizeMinified": 126118,
+      "jsSize": 242132,
+      "jsSizeMinified": 129914,
       "cssSize": 314799,
       "cssSizeMinified": 197184,
-      "totalSizeGz": 106296,
-      "totalSizeGzMinified": 66074,
-      "jsSizeGzMinified": 39817,
+      "totalSizeGz": 108287,
+      "totalSizeGzMinified": 67436,
+      "jsSizeGzMinified": 41179,
       "cssSizeGzMinified": 26257
     },
     "status-page": {
@@ -4293,13 +4510,13 @@
         "toggle-group",
         "typography"
       ],
-      "jsSize": 228303,
-      "jsSizeMinified": 122696,
+      "jsSize": 238562,
+      "jsSizeMinified": 127984,
       "cssSize": 281121,
       "cssSizeMinified": 180682,
-      "totalSizeGz": 100675,
-      "totalSizeGzMinified": 64038,
-      "jsSizeGzMinified": 40416,
+      "totalSizeGz": 103451,
+      "totalSizeGzMinified": 65928,
+      "jsSizeGzMinified": 42306,
       "cssSizeGzMinified": 23622
     },
     "desktop": {
@@ -4340,14 +4557,14 @@
         "typography",
         "window"
       ],
-      "jsSize": 268931,
-      "jsSizeMinified": 146687,
-      "cssSize": 397491,
-      "cssSizeMinified": 249433,
-      "totalSizeGz": 129823,
-      "totalSizeGzMinified": 80382,
-      "jsSizeGzMinified": 45946,
-      "cssSizeGzMinified": 34436
+      "jsSize": 276015,
+      "jsSizeMinified": 150483,
+      "cssSize": 397513,
+      "cssSizeMinified": 249450,
+      "totalSizeGz": 131813,
+      "totalSizeGzMinified": 81719,
+      "jsSizeGzMinified": 47271,
+      "cssSizeGzMinified": 34448
     },
     "document-editor": {
       "page": "scaffold-document-editor",
@@ -4376,14 +4593,50 @@
         "toolbar",
         "typography"
       ],
-      "jsSize": 249852,
-      "jsSizeMinified": 137201,
+      "jsSize": 256936,
+      "jsSizeMinified": 140997,
       "cssSize": 299385,
       "cssSizeMinified": 190977,
-      "totalSizeGz": 108805,
-      "totalSizeGzMinified": 69933,
-      "jsSizeGzMinified": 44297,
+      "totalSizeGz": 110776,
+      "totalSizeGzMinified": 71296,
+      "jsSizeGzMinified": 45660,
       "cssSizeGzMinified": 25636
+    },
+    "knowledge-graph": {
+      "page": "scaffold-knowledge-graph",
+      "href": "application/app-knowledge-graph.html",
+      "components": [
+        "avatar",
+        "badge",
+        "border-layout",
+        "breadcrumb",
+        "button",
+        "card",
+        "chart",
+        "data-grid",
+        "geo-map",
+        "graph-explorer",
+        "icon",
+        "input",
+        "kbd",
+        "panel",
+        "progress",
+        "resizer",
+        "select",
+        "statistic",
+        "swap",
+        "table",
+        "timeline",
+        "typography"
+      ],
+      "jsSize": 581334,
+      "jsSizeMinified": 338454,
+      "cssSize": 378232,
+      "cssSizeMinified": 255805,
+      "totalSizeGz": 212747,
+      "totalSizeGzMinified": 149903,
+      "jsSizeGzMinified": 113096,
+      "cssSizeGzMinified": 36807
     }
   }
 }

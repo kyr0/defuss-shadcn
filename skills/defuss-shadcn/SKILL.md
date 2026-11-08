@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.12 - Agent Skill
 
-250 components (171 CSS-only, 79 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+259 components (178 CSS-only, 81 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -191,6 +191,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Composition](../../src/documentation/pages/charts/charts-composition.mdx) - Composition chart patterns on the chart component - small multiples, theme river, treemap, sunburst, sankey, chord and waffle dot matrix, themed from the design tokens.
 - [Election](../../src/documentation/pages/charts/charts-election.mdx) - Election-night chart patterns on the chart component - editorial gauge, parliament hemicycle, majority bar, hex cartogram and swing arrows, themed from the design tokens.
 - [Narrative](../../src/documentation/pages/charts/charts-narrative.mdx) - Data storytelling with the chart component - a chartStory state machine (from baseline to comparison to composition), universalTransition morphs across chart forms, an animated bar race, and a custom-series vector field.
+- [Big Data](../../src/documentation/pages/charts/charts-big-data.mdx) - Charts over a million rows: the rows stay in a dataview source, the chart draws their aggregation - grouped by fields, binned by width or calendar unit, measured with count, sum, avg, min, max and distinct - and follows the filters of a Data Grid over the same rows.
 
 ### Diagrams
 
@@ -225,6 +226,14 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Quadrant](../../src/documentation/pages/diagrams/diagram-quadrant.mdx) - Consultant-style 2×2 scenario matrices with the diagram component - two driver ranges, four named scenarios, the bet in the accent; step by step and as a delta.
 - [Policy Trace](../../src/documentation/pages/diagrams/diagram-policy-trace.mdx) - Animated policy evaluation traces with the diagram component - ordered rules, two requests side by side, pass / fail / skipped / not reached, the first divergence; played rule by rule and as a policy delta.
 
+### Graphs
+
+- [Graphs Overview](../../src/documentation/pages/graphs/graphs.mdx) - Graphs in defuss-shadcn: the Graph Explorer renders knowledge graphs of up to four million nodes in plain DOM and canvas - a worker draws the far field, a bounded pool of nodes gets markup, and you zoom from domains down to single entities.
+- [Zoom & Navigation](../../src/documentation/pages/graphs/graph-navigation.mdx) - Moving through a million-node graph: semantic zoom that enters and leaves clusters, smooth flights between any two nodes, the keyboard, search, the breadcrumb and the outline, signposts to relations off screen, and Bring & Go.
+- [Node Renderers](../../src/documentation/pages/graphs/graph-nodes.mdx) - How the Graph Explorer draws nodes: chips and cards per zoom level, the Labels, Health and Compact Node UIs and the switch between them, and node renderers of your own - one node type, or a whole Node UI - written with an escaping html template.
+- [Edge Rules & Labels](../../src/documentation/pages/graphs/graph-edges.mdx) - How the Graph Explorer draws links: declarative style rules the worker evaluates for every edge, aggregated links between clusters, cycles, labels and icons that add words as you zoom in, circuit breakers with health by share, a live breaker simulation - and a selected link's details, built in or of your own.
+- [Details & Pages](../../src/documentation/pages/graphs/graph-details.mdx) - The Graph Explorer's details and relations outlets, a node's or a link's full page (Expand maximizes the Panel that holds the details), the drill-down from page to page, and detail renderers that compose library components - a Chart in an island.
+
 ### Math
 
 - [Math Overview](../../src/documentation/pages/math/math.mdx) - Mathematics in defuss-shadcn: render a formula with KaTeX, edit it with MathLive, compute and explain it with the Cortex Compute Engine - three components, each loading its engine only when a page uses it.
@@ -240,6 +249,24 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Routing](../../src/documentation/pages/geography/geo-routing.mdx) - Cheap routing in the browser: Dijkstra over segments whose lengths you supply, one-way and two-way, routes from a position inside a segment, a point a distance along the route, and a Morton spatial index for nearest-node and rectangle lookups.
 - [Data & Encoding](../../src/documentation/pages/geography/geo-data.mdx) - The Geo Map's data: Natural Earth v5.1.2 in first-party DGEO chunks - a resident world overview, country detail and states loaded as they come into view, measured encoding sizes, the manifest, your own GeoJSON, self-hosting and regeneration.
 
+### Shaders
+
+- [Shaders Overview](../../src/documentation/pages/shaders/shaders.mdx) - Shaders in defuss-shadcn: forty-four animated WebGL2 effects - gradients, light, liquid, patterns, nature, 3D scenes and endless tiled surfaces - plus your own GLSL, drawn by one shared context in the theme's colors, with reduced motion, posters and a fallback built in.
+- [Gradients & Noise](../../src/documentation/pages/shaders/shader-gradients.mdx) - Gradient and noise shaders: a mesh gradient of moving color points, a grainy gradient, a domain-warped marble, glowing neural noise an ordered dither that rasterizes a scene or a photo, and a classic plasma.
+- [Light & Glow](../../src/documentation/pages/shaders/shader-light.mdx) - Light shaders: god rays from a point the pointer can move, a northern-light aurora, a pulsing border that runs light around a card, a holographic foil over a picture, and lights out of focus.
+- [Liquid & Glass](../../src/documentation/pages/shaders/shader-liquid.mdx) - Liquid and glass shaders: glossy metaballs, liquid metal on a logo, water with caustics and refraction, fluted glass over a picture, an interactive fluid simulation, and rings a press starts on water.
+- [Patterns & Trails](../../src/documentation/pages/shaders/shader-patterns.mdx) - Pattern shaders: dots orbiting in a grid, an animated contour map with hillshading that the pointer raises, glowing trails that follow the pointer, stained glass, a halftone screen and a kaleidoscope.
+- [Nature & Space](../../src/documentation/pages/shaders/shader-nature.mdx) - Nature and space shaders: drifting clouds lit from above, a fire that licks upward over the page, and a starfield that streaks into warp.
+- [3D Scenes](../../src/documentation/pages/shaders/shader-3d.mdx) - 3D shaders without a 3D library: a raymarched iridescent glass orb, a spiral galaxy with parallax stars, and an ocean at sunset - each one fragment shader.
+- [Custom Shaders](../../src/documentation/pages/shaders/shader-custom.mdx) - Your own GLSL in the Shader component: a fragment shader in a script element with the prelude's uniforms and helpers, numeric parameters as data attributes, effects registered for a page, and effects layered with CSS blend modes.
+
+### Infinite Surfaces
+
+- [Infinite Surfaces](../../src/documentation/pages/infinite-surfaces/surfaces.mdx) - Infinite Surfaces in defuss-shadcn: seamless repeating textures as a combination of pattern, material, projection and motion - in CSS with the Surface component, or lit and in 3D with the Shader's surface effect - and a Pattern Lab to try every combination.
+- [Classic Patterns](../../src/documentation/pages/infinite-surfaces/surface-patterns.mdx) - Classic repeating patterns as seamless tiles: paper, geometry, textiles and floors, ornament, materials and nature, and the endless procedural patterns of the surface shader.
+- [Animated Tiles](../../src/documentation/pages/infinite-surfaces/surface-motion.mdx) - Seamless tiles that move: 23 CSS motions and 24 on the GPU - drift, orbit, spin, sway, wave, glitch, digital rain and more - each loop seamless, configurable in speed, direction and colors, and still under reduced motion.
+- [3D Materials](../../src/documentation/pages/infinite-surfaces/surface-materials.mdx) - Surfaces that look three-dimensional: 25 CSS styles - emboss, shadows, extrusions, metal, gold, glass, stamps, chalk, blueprint and more - and 28 materials lit per pixel on the GPU, from ceramic and chrome to wood, marble, ice, lava, gems and x-ray.
+
 ### Application
 
 - [Scaffolds](../../src/documentation/pages/application/application-scaffolds.mdx) - Complete, clickable application UIs built only from the shipped components - start a product from a working shell instead of a blank page.
@@ -250,6 +277,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Status Page](../../src/documentation/pages/application/scaffold-status-page.mdx) - Application scaffold: a Statuspage-style status page - overall status, active incidents with their timeline, scheduled maintenance with a countdown, component groups with 90-day uptime bars, response-time metrics, past incidents and history - plus the operator console that creates, updates and resolves incidents live; built only from the shipped components.
   - [Desktop](../../src/documentation/pages/application/scaffold-desktop.mdx) - Application scaffold: a Windows-style desktop - wallpaper and icons, movable windows, a taskbar with a start menu, quick settings and a clock with a calendar, context menus to change the layout and the theme, and working apps: an editor, a calculator, a browser, settings and a recycle bin - built only from the shipped components.
   - [Document Editor](../../src/documentation/pages/application/scaffold-document-editor.mdx) - Application scaffold: a Google-Docs-style document editor - Markdown documents in Editor.js with a formatting toolbar, a comment column that scrolls on its own with comments tied to spans of the text, replies and quotes, a document list, sharing and autosave - built only from the shipped components.
+  - [Knowledge Graph](../../src/documentation/pages/application/scaffold-knowledge-graph.mdx) - Application scaffold: a knowledge graph of a million services, datasets and people - the Graph Explorer in a Border Layout of Panels, details that drill down from a domain to a system to a dataset, links you can inspect, and detail pages composed from Chart, Geo Map, Avatar, Timeline, Progress, Table, Badge and Statistic; built only from the shipped components.
 
 ### Presentations
 
@@ -315,11 +343,27 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Article](../../src/documentation/pages/website/website-article.mdx) - Website blocks - Article: Blocks for a single article or post, top to bottom: its header, the formatted body, share links, the author's bio and the contributors, related reading and the previous / next articles.
 - [Comments](../../src/documentation/pages/website/website-comments.mdx) - Website blocks - Comments: Blocks for a discussion under an article or a product: the header with the count and sort order, the form for a new comment, and the comments with their nested replies.
 - [Company](../../src/documentation/pages/website/website-company.mdx) - Website blocks - Company: Blocks for the pages about the organization itself: who you are, the team, open roles and applications, services and how you work, use cases and case studies, portfolio projects, history, integrations, comparisons, credentials and press.
+- [Resume & Portfolio](../../src/documentation/pages/website/website-resume-portfolio.mdx) - Website blocks - Resume & Portfolio: Blocks for a developer's or designer's personal site: who you are and whether you can be hired, the projects you did, your open-source work, and a CV with experience, education and skills that prints.
+  - [Editorial Portfolio](../../src/documentation/pages/website/portfolio-editorial.mdx) - A portfolio set like a magazine - warm paper, a masthead, a serif name beside an arched portrait, a pull quote that rises into view, an index of work whose pictures appear on hover and focus, a feature with a drop cap.
+  - [Playful Portfolio](../../src/documentation/pages/website/portfolio-playful.mdx) - A portfolio with a grin - a pastel hero with wobbling blobs, a flower-shaped portrait wearing a spinning sticker, a headline that rotates what the illustrator draws, polaroids on a table that filter by kind and open in a viewer, how a drawing happens, commissions with prices, kind words in speech bubbles, a shelf of shape stickers and a contact dialog.
+  - [Developer Portfolio](../../src/documentation/pages/website/portfolio-developer.mdx) - A portfolio that boots like a terminal - a status line, matrix rain behind the shell, a shell that types who you are, a hexagon avatar, pinned repositories, a year of activity as a sparkline, a stack in dots, a career as a git log and writing in a plain list.
+  - [Bento Portfolio](../../src/documentation/pages/website/portfolio-bento.mdx) - A whole portfolio on one screen - a bento of tiles in different colours, each one doing something: a portrait that opens the About dialog, availability with the quarter's slots and a Hire me form, the time in Tokyo, the work opening into case studies, three client quotes to flip through, links with an address to copy, writing in an accordion and what the designer is doing now.
+  - [Brutalist Portfolio](../../src/documentation/pages/website/portfolio-brutalist.mdx) - A portfolio that shouts - acid yellow, black rules, a name in capitals as big as the screen, a tilted portrait with a hard shadow, a spinning sticker, work in thick frames, a process in numbered boxes, a rate card and a cut-corner call to action.
+  - [Photographer Portfolio](../../src/documentation/pages/website/portfolio-photographer.mdx) - A portfolio that is mostly pictures, on a black or a white gallery wall - a parallax opening whose name floats over the photograph, a round portrait that opens like an iris, recent work in masonry that zooms into view, a before and after of the edit, the series as a film strip and a wave-edged contact.
+  - [Swiss Portfolio](../../src/documentation/pages/website/portfolio-swiss.mdx) - A portfolio on a strict grid - black, white and one red, a name set flush left across the page, numbered sections, a red square that slides in, work in grayscale that turns to colour, numbers set large and a career in columns.
+  - [Neon Portfolio](../../src/documentation/pages/website/portfolio-neon.mdx) - A portfolio that glows - a night palette, an aurora drifting behind glass cards, a gradient name, a shell that types what the artist makes, work on a film strip, a release you can play, the shows as numbers and skills as gradient bars.
+  - [Zine Portfolio](../../src/documentation/pages/website/portfolio-zine.mdx) - A portfolio glued together by hand - grainy paper, a name in cut-out letters, a taped polaroid and a stamp, marker highlights and a handwritten note, zines scattered on the table, torn edges, fair tickets and a mailing list.
+  - [Minimal Portfolio](../../src/documentation/pages/website/portfolio-minimal.mdx) - A portfolio that is mostly words, set like a printed page - one narrow column, a big italic name with its initial again as an outline, a drop cap, small-caps headings numbered in outline figures, links underlined in the accent, ruled paper drifting slowly behind. Every section fades in after the last.
 - [Events & Promotions](../../src/documentation/pages/website/website-events-promotions.mdx) - Website blocks - Events & Promotions: Blocks for campaigns, events and places: calls to action, announcements, offers and countdowns, bookings, event listings and pages - header, description, speakers, sessions and registration - and locations with maps, a store finder and opening hours.
 - [Media](../../src/documentation/pages/website/website-media.mdx) - Website blocks - Media: Blocks for pictures, video, audio and social content: single pictures with a large view, galleries with shared controls, text beside media, native video and audio players, playlists, before / after comparisons and locally rendered social posts.
 - [Shop](../../src/documentation/pages/website/website-shop.mdx) - Website blocks - Shop: Blocks for a store front and its checkout: collections and products, the cart and its summary, discount codes, address, delivery and payment, the order summary and confirmation, shipment tracking and the wishlist.
 - [Account & States](../../src/documentation/pages/website/website-account-states.mdx) - Website blocks - Account & States: Blocks for accounts and the moments around them: sign in, providers, sign up and password resets, profiles and settings, support, feedback and surveys and form progress - and the states every product needs: empty, error, success, coming soon, maintenance and 404.
 - [Docs & Help](../../src/documentation/pages/website/website-docs-help.mdx) - Website blocks - Docs & Help: Blocks for documentation, help centers and release communication: resources and downloads, the docs navigation and page body, code examples with tabs and copy, release headers and items, roadmap cards, help categories and how-to articles.
+- [Showcase](../../src/documentation/pages/website/website-showcase.mdx) - One-page sites that dress the same components as four different brands - a coffee roaster, an observatory, a bouldering gym and a record shop - each with its own palette, type, a shader or a texture, a few deliberate irregularities and three looks.
+  - [Roastery](../../src/documentation/pages/website/showcase-roastery.mdx) - A one-page site for a small coffee roaster - steam rising behind the cup, a stamp that turns, the green coffees as tickets with their altitude and process, and a subscription said in a speech bubble. Three looks: Espresso, Blond roast and Cherry.
+  - [Observatory](../../src/documentation/pages/website/showcase-observatory.mdx) - A one-page site for a public observatory - a starfield behind tonight's sky, the moon's phase, what is up and how bright, a constellation pinned up with a hint in a speech bubble and the next public night as a ticket. Three looks: Night sky, Red light and Day visit.
+  - [Bouldering Gym](../../src/documentation/pages/website/showcase-bouldering.mdx) - A one-page site for a bouldering gym - contour lines under the hero, climbing holds scattered over the page, the week's new problems by grade and colour, the setter's beta in a speech bubble and a day pass as a ticket. Three looks: Chalk, Night session and Granite.
+  - [Record Shop](../../src/documentation/pages/website/showcase-records.mdx) - A one-page site for a record shop and small label - a record turning in front of moving light, the label's new release with its tracklist and run times, new arrivals pinned askew with price stickers, and the listening booth hours. Three looks: Tape, Vapor and Mono.
 - [Search & Navigation](../../src/documentation/pages/website/website-search-navigation.mdx) - Website blocks - Search & Navigation: Blocks for finding and moving around: the search box and its suggestions, the results summary and results, filter bars and sidebars, active filters, sort and view controls, pagination and load more, tags, category menus, breadcrumbs, on-page contents and quick links.
 
 ## 4. Component index
@@ -798,6 +842,14 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts).
 - **States:** `default`, `rendered`, `error` · **Skill:** [references/components/mermaid.md](references/components/mermaid.md) · **Examples:** [src/documentation/pages/diagrams/mermaid.mdx](../../src/documentation/pages/diagrams/mermaid.mdx)
 
+### Graphs
+
+#### Graph Explorer · MOL · JS
+
+- **Why:** A worker draws the far field into one canvas and decides which few hundred nodes get DOM, so a million-node graph stays a bounded page; every node, label and panel you read is plain, themed, keyboard-reachable HTML.
+- **When:** Exploring large connected data - service maps, data lineage, knowledge graphs, dependency graphs - by semantic zoom, search and drill-down. For a schematic you draw by hand, diagram; for a small text-defined diagram, mermaid; for a tree of records, data-tree.
+- **States:** `default`, `selected`, `focused` · **Skill:** [references/components/graph-explorer.md](references/components/graph-explorer.md) · **Examples:** [src/documentation/pages/graphs/graph-explorer.mdx](../../src/documentation/pages/graphs/graph-explorer.mdx)
+
 ### Math
 
 #### Formula Rendering · ATM · JS
@@ -825,6 +877,22 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** An SVG map from first-party vector data - d3-geo projects and clips, every region is a keyboard-reachable path styled by CSS; selection and focus are attributes, so state is markup.
 - **When:** Maps of countries, continents and states - picking regions, drilling down (Europe to its countries, Germany to its states), choropleths, labelled callouts, GPS markers, geodesic lines, S2 cells and routes. For charts on a map's numbers use chart; for a schematic, diagram.
 - **States:** `default`, `selected`, `focused` · **Skill:** [references/components/geo-map.md](references/components/geo-map.md) · **Examples:** [src/documentation/pages/geography/geo-map.mdx](../../src/documentation/pages/geography/geo-map.mdx)
+
+### Shaders
+
+#### Shader · ATM · JS
+
+- **Why:** WebGL2 draws the effect on the GPU while the element stays a plain box - one shared context renders every instance into its own 2D canvas (no context limit, one compile per program), the CSS poster shows before the first frame, without WebGL2 and in forced colors, and the colors resolve from the theme's tokens.
+- **When:** An animated surface - a hero or section background (mesh gradient, aurora, waves), a glow running around a card, liquid metal on a logo, a dithered or holographic picture, a small 3D scene, your own GLSL. For entrance motion use Motion; for scroll-linked depth use Parallax; for a static pattern use shapes.css.
+- **States:** `default`, `paused` · **Skill:** [references/components/shader.md](references/components/shader.md) · **Examples:** [src/documentation/pages/shaders/shader.mdx](../../src/documentation/pages/shaders/shader.mdx)
+
+### Infinite Surfaces
+
+#### Surface · ATM · CSS
+
+- **Why:** CSS alone - a seamless SVG or gradient tile used as a mask paints the ink, so a texture repeats without a seam at any size, follows the theme's tokens, moves on the compositor, and tips into 3D with a perspective transform. No script, no canvas, no GPU context.
+- **When:** A repeating texture behind or inside a box - graph or ruled paper, hexagons, bricks, herringbone, circuits, topography, terrazzo, grain - flat, embossed, neon or printed, drifting or pulsing, laid flat or as a floor, a ceiling or a wall. For lit materials, tunnels, corridors, spheres and pointer-driven relief use the Shader's surface effect; for a one-off background on any element the shapes.css pattern-* utilities.
+- **States:** `default` · **Skill:** [references/components/surface.md](references/components/surface.md) · **Examples:** [src/documentation/pages/infinite-surfaces/surface.mdx](../../src/documentation/pages/infinite-surfaces/surface.mdx)
 
 ### Feedback & Status
 
@@ -1385,6 +1453,42 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** An article whose external headline link covers the item, with the outlet and a `<time>` - and a new-tab hint for screen readers. No script.
 - **When:** Press and "in the news" pages. Your own announcements are news-item; customer quotes are testimonials.
 - **States:** `default` · **Skill:** [references/components/press-item.md](references/components/press-item.md) · **Examples:** [src/documentation/pages/website/press-item.mdx](../../src/documentation/pages/website/press-item.mdx)
+
+#### Resume Header · BLK · CSS
+
+- **Why:** A `<header>` with the name as the page's `<h1>`, facts as a list and real links - flex-wrap moves the text under the portrait and a container query unit scales the name, no breakpoints, no script.
+- **When:** The top of a personal site, a portfolio or a CV. A community member's public profile with counts takes profile-header; a byline under an article takes author-bio.
+- **States:** `default` · **Skill:** [references/components/resume-header.md](references/components/resume-header.md) · **Examples:** [src/documentation/pages/website/resume-header.mdx](../../src/documentation/pages/website/resume-header.mdx)
+
+#### Availability · BLK · CSS
+
+- **Why:** An `<aside>` named by its heading, the terms as a `<dl>` and real links - the status colour is an Indicator dot, the banner a flex row that wraps. No script.
+- **When:** A freelancer's or job seeker's "hire me" on a portfolio or CV. A sales call to action takes cta; a contact form takes get-in-touch.
+- **States:** `default` · **Skill:** [references/components/availability.md](references/components/availability.md) · **Examples:** [src/documentation/pages/website/availability.mdx](../../src/documentation/pages/website/availability.mdx)
+
+#### Resume Entry · BLK · CSS
+
+- **Why:** An ordered list of entries, each a heading, paragraphs, `<time>` elements and lists - the date column and the timeline are grid, borders and pseudo-elements; a container query moves the dates under the title when narrow. No script.
+- **When:** The experience, education, volunteering or talks of a CV. A company's own history takes timeline-item; a generic event list takes the timeline component.
+- **States:** `default` · **Skill:** [references/components/resume-entry.md](references/components/resume-entry.md) · **Examples:** [src/documentation/pages/website/resume-entry.mdx](../../src/documentation/pages/website/resume-entry.mdx)
+
+#### Skill Matrix · BLK · CSS
+
+- **Why:** Each level is a native `<meter>` named by its `<label>` - assistive technology gets the skill, the level and its range from the element itself; the bars and dots are the meter's own parts and a mask, the rows share columns through subgrid. No script.
+- **When:** The skills, tools and languages of a CV or a portfolio. Numbers about a company take stats; a progress towards a goal takes progress.
+- **States:** `default` · **Skill:** [references/components/skill-matrix.md](references/components/skill-matrix.md) · **Examples:** [src/documentation/pages/website/skill-matrix.mdx](../../src/documentation/pages/website/skill-matrix.mdx)
+
+#### Repository Item · BLK · CSS
+
+- **Why:** An `<article>` whose heading link is stretched over the card, the numbers as a list with screen-reader words - the language dot is the dot's own `color`, set by data-language or inline. No script.
+- **When:** A developer's open-source work on a portfolio or a CV. Visual work with a picture takes project-item; a downloadable file takes download-item.
+- **States:** `default` · **Skill:** [references/components/repository-item.md](references/components/repository-item.md) · **Examples:** [src/documentation/pages/website/repository-item.mdx](../../src/documentation/pages/website/repository-item.mdx)
+
+#### Portfolio Grid · BLK · CSS
+
+- **Why:** A plain list of links around a picture and a caption - the mosaic, the masonry columns, the polaroids, the film strip and the editorial index are CSS grid, columns, transforms and scroll snap; the index shows a picture on hover AND keyboard focus. No script.
+- **When:** The work on a portfolio, studio or photographer's site, arranged with character. One project with more context takes project-item; the page of one project takes project-details.
+- **States:** `default` · **Skill:** [references/components/portfolio-grid.md](references/components/portfolio-grid.md) · **Examples:** [src/documentation/pages/website/portfolio-grid.mdx](../../src/documentation/pages/website/portfolio-grid.mdx)
 
 #### CTA · BLK · CSS
 

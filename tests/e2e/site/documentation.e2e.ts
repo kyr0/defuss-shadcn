@@ -491,9 +491,10 @@ try {
     }
   });
 
-  // the maintainer (2026-10-18): the Studio is too fragile to offer - not in the sidebar. An alpha page is listed
-  // nowhere (nav.ts listed): checked on the page before it in the NAV order, whose sidebar and pager would name it
-  await check('an alpha page (the Studio) is listed nowhere - sidebar, pager, search index, root SKILL.md - and still renders', async () => {
+  // the maintainer: the Studio (2026-10-18) and Floors, Walls & Tunnels (2026-11-07) are too fragile to offer - not in
+  // the sidebar. An alpha page is listed nowhere (nav.ts listed): checked on the page before it in the NAV order,
+  // whose sidebar and pager would name it
+  await check('an alpha page (the Studio, Floors, Walls & Tunnels) is listed nowhere - sidebar, pager, search index, root SKILL.md - and still renders', async () => {
     const index = readFileSync(join(ROOT, 'dist', 'documentation', 'js', 'search-index.js'), 'utf8');
     const skill = readFileSync(join(ROOT, 'skills', 'defuss-shadcn', 'SKILL.md'), 'utf8');
     for (const alpha of ALL_PAGES.filter((p) => p.alpha)) {
@@ -513,7 +514,13 @@ try {
       assert.ok(!index.includes(`"h":"${rel}`), `the search index lists ${rel}`);
       assert.ok(!skill.includes(`pages/${rel.replace(/\.html$/, '.mdx')})`), `the root SKILL.md lists ${slug}`);
       await page.goto(`${server.url}/dist/documentation/${rel}`);
-      assert.equal(await page.evaluate(() => document.querySelector('main h1')?.textContent?.trim()), alpha.label, `${rel} renders`);
+      // the heading's own text - a component page's type badge sits inside it
+      const h1 = await page.evaluate(() => {
+        const h = document.querySelector('main h1')?.cloneNode(true) as HTMLElement | undefined;
+        h?.querySelectorAll('.type-badge').forEach((b) => b.remove());
+        return h?.textContent?.trim();
+      });
+      assert.equal(h1, alpha.label, `${rel} renders`);
     }
   });
 

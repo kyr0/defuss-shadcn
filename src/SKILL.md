@@ -270,6 +270,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/autocomplete.png, screenshots/{light,dark}/autocomplete-open.png, screenshots/{light,dark}/autocomplete-loading.png, screenshots/{light,dark}/autocomplete-empty.png, screenshots/{light,dark}/autocomplete-error.png
 **Skill:** [components/big-data/autocomplete/component-skill.md](components/big-data/autocomplete/component-skill.md)
 
+## Availability
+
+**Type:** BLK
+**Why:** An <aside> named by its heading, the terms as a <dl> and real links - the status colour is an Indicator dot, the banner a flex row that wraps. No script.
+**When:** A freelancer's or job seeker's "hire me" on a portfolio or CV. A sales call to action takes cta; a contact form takes get-in-touch.
+**Files:** dist/components/availability/availability.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/availability.png
+**Skill:** [components/website/availability/component-skill.md](components/website/availability/component-skill.md)
+
 ## Avatar
 
 **Type:** ATM
@@ -1080,6 +1090,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/get-in-touch.png
 **Skill:** [components/website/get-in-touch/component-skill.md](components/website/get-in-touch/component-skill.md)
 
+## Graph Explorer
+
+**Type:** MOL
+**Why:** A worker draws the far field into one canvas and decides which few hundred nodes get DOM, so a million-node graph stays a bounded page; every node, label and panel you read is plain, themed, keyboard-reachable HTML.
+**When:** Exploring large connected data - service maps, data lineage, knowledge graphs, dependency graphs - by semantic zoom, search and drill-down. For a schematic you draw by hand, diagram; for a small text-defined diagram, mermaid; for a tree of records, data-tree.
+**Files:** dist/components/graphs.css + dist/components/graphs.js (the extra bundle - load it after all.css / all.js; per component: dist/components/graph-explorer/graph-explorer.css + graph-explorer.js)
+**Supported states:** default, selected, focused
+**Screenshots:** screenshots/{light,dark}/graph-explorer.png, screenshots/{light,dark}/graph-explorer-selected.png, screenshots/{light,dark}/graph-explorer-focused.png
+**Skill:** [components/graphs/graph-explorer/component-skill.md](components/graphs/graph-explorer/component-skill.md)
+
 ## Heading Anchor
 
 **Type:** ATM
@@ -1650,6 +1670,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/popover.png, screenshots/{light,dark}/popover-open.png
 **Skill:** [components/overlays/popover/component-skill.md](components/overlays/popover/component-skill.md)
 
+## Portfolio Grid
+
+**Type:** BLK
+**Why:** A plain list of links around a picture and a caption - the mosaic, the masonry columns, the polaroids, the film strip and the editorial index are CSS grid, columns, transforms and scroll snap; the index shows a picture on hover AND keyboard focus. No script.
+**When:** The work on a portfolio, studio or photographer's site, arranged with character. One project with more context takes project-item; the page of one project takes project-details.
+**Files:** dist/components/portfolio-grid/portfolio-grid.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/portfolio-grid.png
+**Skill:** [components/website/portfolio-grid/component-skill.md](components/website/portfolio-grid/component-skill.md)
+
 ## Presentation
 
 **Type:** TPL
@@ -1870,6 +1900,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/release-item.png
 **Skill:** [components/website/release-item/component-skill.md](components/website/release-item/component-skill.md)
 
+## Repository Item
+
+**Type:** BLK
+**Why:** An <article> whose heading link is stretched over the card, the numbers as a list with screen-reader words - the language dot is the dot's own `color`, set by data-language or inline. No script.
+**When:** A developer's open-source work on a portfolio or a CV. Visual work with a picture takes project-item; a downloadable file takes download-item.
+**Files:** dist/components/repository-item/repository-item.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/repository-item.png
+**Skill:** [components/website/repository-item/component-skill.md](components/website/repository-item/component-skill.md)
+
 ## Reset Request
 
 **Type:** BLK
@@ -1899,6 +1939,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/resource-item.png
 **Skill:** [components/website/resource-item/component-skill.md](components/website/resource-item/component-skill.md)
+
+## Resume Entry
+
+**Type:** BLK
+**Why:** An ordered list of entries, each a heading, paragraphs, <time> elements and lists - the date column and the timeline are grid, borders and pseudo-elements; a container query moves the dates under the title when narrow. No script.
+**When:** The experience, education, volunteering or talks of a CV. A company's own history takes timeline-item; a generic event list takes the timeline component.
+**Files:** dist/components/resume-entry/resume-entry.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/resume-entry.png
+**Skill:** [components/website/resume-entry/component-skill.md](components/website/resume-entry/component-skill.md)
+
+## Resume Header
+
+**Type:** BLK
+**Why:** A <header> with the name as the page's <h1>, facts as a list and real links - flex-wrap moves the text under the portrait and a container query unit scales the name, no breakpoints, no script.
+**When:** The top of a personal site, a portfolio or a CV. A community member's public profile with counts takes profile-header; a byline under an article takes author-bio.
+**Files:** dist/components/resume-header/resume-header.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/resume-header.png
+**Skill:** [components/website/resume-header/component-skill.md](components/website/resume-header/component-skill.md)
 
 ## Roadmap Item
 
@@ -2040,6 +2100,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/session-item.png
 **Skill:** [components/website/session-item/component-skill.md](components/website/session-item/component-skill.md)
 
+## Shader
+
+**Type:** ATM
+**Why:** WebGL2 draws the effect on the GPU while the element stays a plain box - one shared context renders every instance into its own 2D canvas (no context limit, one compile per program), the CSS poster shows before the first frame, without WebGL2 and in forced colors, and the colors resolve from the theme's tokens.
+**When:** An animated surface - a hero or section background (mesh gradient, aurora, waves), a glow running around a card, liquid metal on a logo, a dithered or holographic picture, a small 3D scene, your own GLSL. For entrance motion use Motion; for scroll-linked depth use Parallax; for a static pattern use shapes.css.
+**Files:** dist/components/shader/shader.css + dist/components/shader/shader.js - in the shaders.* extra bundle (dist/components/shaders.css + .js), loaded after all.* or core.*
+**Supported states:** default, paused
+**Screenshots:** screenshots/{light,dark}/shader.png, screenshots/{light,dark}/shader-paused.png
+**Skill:** [components/shaders/shader/component-skill.md](components/shaders/shader/component-skill.md)
+
 ## Share Links
 
 **Type:** BLK
@@ -2109,6 +2179,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/skeleton.png
 **Skill:** [components/feedback-status/skeleton/component-skill.md](components/feedback-status/skeleton/component-skill.md)
+
+## Skill Matrix
+
+**Type:** BLK
+**Why:** Each level is a native <meter> named by its <label> - assistive technology gets the skill, the level and its range from the element itself; the bars and dots are the meter's own parts and a mask, the rows share columns through subgrid. No script.
+**When:** The skills, tools and languages of a CV or a portfolio. Numbers about a company take stats; a progress towards a goal takes progress.
+**Files:** dist/components/skill-matrix/skill-matrix.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/skill-matrix.png
+**Skill:** [components/website/skill-matrix/component-skill.md](components/website/skill-matrix/component-skill.md)
 
 ## Slider
 
@@ -2229,6 +2309,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/support-form.png
 **Skill:** [components/website/support-form/component-skill.md](components/website/support-form/component-skill.md)
+
+## Surface
+
+**Type:** ATM
+**Why:** CSS alone - a seamless SVG or gradient tile used as a mask paints the ink, so a texture repeats without a seam at any size, follows the theme's tokens, moves on the compositor, and tips into 3D with a perspective transform. No script, no canvas, no GPU context.
+**When:** A repeating texture behind or inside a box - graph or ruled paper, hexagons, bricks, herringbone, circuits, topography, terrazzo, grain - flat, embossed, neon or printed, drifting or pulsing, laid flat or as a floor, a ceiling or a wall. For lit materials, tunnels, corridors, spheres and pointer-driven relief use the Shader's surface effect; for a one-off background on any element the shapes.css pattern-* utilities.
+**Files:** dist/components/surface/surface.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/surface.png
+**Skill:** [components/infinite-surfaces/surface/component-skill.md](components/infinite-surfaces/surface/component-skill.md)
 
 ## Survey Question
 

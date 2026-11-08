@@ -2,7 +2,7 @@
 
 # Component catalog
 
-250 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+259 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.12/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -136,6 +136,12 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Diagram](../../defuss-shadcn/references/components/diagram.md) `diagram` | ATM | default, playing, paused, active | yes | Architecture, flows, state machines, ER and schema, sequences, org charts, swimlanes, layers, containment, loops, data platforms, matrices, fishbones, Wardley maps, journeys, kanban, story maps, quadrants, policy traces. Data charts (values on axes) are chart; text-defined diagrams you already have in Mermaid syntax are mermaid. |
 | [Mermaid](../../defuss-shadcn/references/components/mermaid.md) `mermaid` | ATM | default, rendered, error | yes | Flowcharts, sequence, class, state, ER, Gantt and other text-defined diagrams in docs and apps - for data charts use chart (ECharts). |
 
+## Graphs
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Graph Explorer](../../defuss-shadcn/references/components/graph-explorer.md) `graph-explorer` | MOL | default, selected, focused | yes | Exploring large connected data - service maps, data lineage, knowledge graphs, dependency graphs - by semantic zoom, search and drill-down. For a schematic you draw by hand, diagram; for a small text-defined diagram, mermaid; for a tree of records, data-tree. |
+
 ## Math
 
 | Component | Type | States | JS | When |
@@ -149,6 +155,18 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | Component | Type | States | JS | When |
 | --- | --- | --- | --- | --- |
 | [Geo Map](../../defuss-shadcn/references/components/geo-map.md) `geo-map` | ATM | default, selected, focused | yes | Maps of countries, continents and states - picking regions, drilling down (Europe to its countries, Germany to its states), choropleths, labelled callouts, GPS markers, geodesic lines, S2 cells and routes. For charts on a map's numbers use chart; for a schematic, diagram. |
+
+## Shaders
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Shader](../../defuss-shadcn/references/components/shader.md) `shader` | ATM | default, paused | yes | An animated surface - a hero or section background (mesh gradient, aurora, waves), a glow running around a card, liquid metal on a logo, a dithered or holographic picture, a small 3D scene, your own GLSL. For entrance motion use Motion; for scroll-linked depth use Parallax; for a static pattern use shapes.css. |
+
+## Infinite Surfaces
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Surface](../../defuss-shadcn/references/components/surface.md) `surface` | ATM | default | - | A repeating texture behind or inside a box - graph or ruled paper, hexagons, bricks, herringbone, circuits, topography, terrazzo, grain - flat, embossed, neon or printed, drifting or pulsing, laid flat or as a floor, a ceiling or a wall. For lit materials, tunnels, corridors, spheres and pointer-driven relief use the Shader's surface effect; for a one-off background on any element the shapes.css pattern-* utilities. |
 
 ## Feedback & Status
 
@@ -289,6 +307,12 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Comparison Table](../../defuss-shadcn/references/components/comparison-table.md) `comparison-table` | BLK | default | - | Product vs. competitors, plan vs. plan, before vs. after. Plan prices with buy buttons use pricing. |
 | [Credential Item](../../defuss-shadcn/references/components/credential-item.md) `credential-item` | BLK | default | - | Trust, security and compliance pages. Customer logos are brand-logos; press coverage is press-item. |
 | [Press Item](../../defuss-shadcn/references/components/press-item.md) `press-item` | BLK | default | - | Press and "in the news" pages. Your own announcements are news-item; customer quotes are testimonials. |
+| [Resume Header](../../defuss-shadcn/references/components/resume-header.md) `resume-header` | BLK | default | - | The top of a personal site, a portfolio or a CV. A community member's public profile with counts takes profile-header; a byline under an article takes author-bio. |
+| [Availability](../../defuss-shadcn/references/components/availability.md) `availability` | BLK | default | - | A freelancer's or job seeker's "hire me" on a portfolio or CV. A sales call to action takes cta; a contact form takes get-in-touch. |
+| [Resume Entry](../../defuss-shadcn/references/components/resume-entry.md) `resume-entry` | BLK | default | - | The experience, education, volunteering or talks of a CV. A company's own history takes timeline-item; a generic event list takes the timeline component. |
+| [Skill Matrix](../../defuss-shadcn/references/components/skill-matrix.md) `skill-matrix` | BLK | default | - | The skills, tools and languages of a CV or a portfolio. Numbers about a company take stats; a progress towards a goal takes progress. |
+| [Repository Item](../../defuss-shadcn/references/components/repository-item.md) `repository-item` | BLK | default | - | A developer's open-source work on a portfolio or a CV. Visual work with a picture takes project-item; a downloadable file takes download-item. |
+| [Portfolio Grid](../../defuss-shadcn/references/components/portfolio-grid.md) `portfolio-grid` | BLK | default | - | The work on a portfolio, studio or photographer's site, arranged with character. One project with more context takes project-item; the page of one project takes project-details. |
 | [CTA](../../defuss-shadcn/references/components/cta.md) `cta` | BLK | default | - | Between sections or at the end of a page, whenever one action matters most. A list of choices is pricing; an email field alone is newsletter. |
 | [Announcement](../../defuss-shadcn/references/components/announcement.md) `announcement` | BLK | default | - | Releases, outages, policy changes, events. Promotions with a code are offer-banner; transient feedback is the toast component. |
 | [Offer Banner](../../defuss-shadcn/references/components/offer-banner.md) `offer-banner` | BLK | default | - | Sales, launch discounts, seasonal offers. Plain news is announcement; a plan list is pricing. |

@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { startServer } from '../server.ts';
 import { offlineJsdelivr, waitEditorsSettled } from '../lib/vendor-offline.ts';
+import { extraBundleOf } from '../../../src/documentation/lib/extra-bundles.ts';
 
 /**
  * Why: dist/stats.json publishes what each Application Scaffold ships when it
@@ -38,7 +39,11 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 function snapshot(page: Page): Promise<string[]> {
   return page.evaluate(() =>
     [...document.body.querySelectorAll('*')]
-      .filter((el) => !el.closest('svg, canvas, script, style'))
+      // drawn content is left out like a canvas: the Graph Explorer's layers and its outlets fill with its worker's
+      // messages, which arrive at their own time in each load (the explorer and the outlets themselves are compared);
+      // toast.js mounts its empty container on every page that loads it - the whole system does, an app without
+      // toasts (the knowledge graph) rightly does not
+      .filter((el) => !el.closest('svg, canvas, script, style, .graph-explorer > [data-ce-chrome], [data-graph-explorer-for] > [data-ce-chrome], body > #toast-container:empty'))
       .map((el, i) => {
         const cs = getComputedStyle(el);
         const r = el.getBoundingClientRect();
@@ -54,7 +59,7 @@ function snapshot(page: Page): Promise<string[]> {
   );
 }
 
-async function open(href: string, full: boolean): Promise<{ page: Page; errors: string[] }> {
+async function open(href: string, full: boolean, extras: string[] = []): Promise<{ page: Page; errors: string[] }> {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   await page.clock.install({ time: new Date('2026-03-14T09:30:00Z') });
   const errors: string[] = [];
@@ -67,10 +72,12 @@ async function open(href: string, full: boolean): Promise<{ page: Page; errors: 
   const url = `${server.url}/dist/documentation/${href}`;
   if (full) {
     // the same page on the whole system: core.css + all.css + the wysiwyg extra bundle (Editor.js lives there), all.js + wysiwyg.js - what every docs page loads
+    // - and the other extra bundles that hold one of the app's components (the knowledge graph: graphs, geo)
+    const bundles = ['wysiwyg', ...extras.filter((b) => b !== 'wysiwyg')];
     await page.route(url, async (route) => {
       const body = (await (await route.fetch()).text())
-        .replace(/<link rel="stylesheet" href="(?:\.\.\/)+apps\/[^"]+\.min\.css" id="tokens-css" \/>/, '<link rel="stylesheet" href="../../components/core.css" id="tokens-css" /><link rel="stylesheet" href="../../components/all.css" /><link rel="stylesheet" href="../../components/wysiwyg.css" />')
-        .replace(/<script type="module" src="(?:\.\.\/)+apps\/[^"]+\.min\.js"><\/script>/, '<script type="module" src="../../components/all.js"></script><script type="module" src="../../components/wysiwyg.js"></script>');
+        .replace(/<link rel="stylesheet" href="(?:\.\.\/)+apps\/[^"]+\.min\.css" id="tokens-css" \/>/, '<link rel="stylesheet" href="../../components/core.css" id="tokens-css" /><link rel="stylesheet" href="../../components/all.css" />' + bundles.map((b) => `<link rel="stylesheet" href="../../components/${b}.css" />`).join(''))
+        .replace(/<script type="module" src="(?:\.\.\/)+apps\/[^"]+\.min\.js"><\/script>/, '<script type="module" src="../../components/all.js"></script>' + bundles.map((b) => `<script type="module" src="../../components/${b}.js"></script>`).join(''));
       assert.ok(body.includes('../components/all.js'), 'the full variant swapped the bundle in');
       await route.fulfill({ contentType: 'text/html', body });
     });
@@ -91,8 +98,9 @@ try {
       const html = readFileSync(join(ROOT, 'dist', 'documentation', app.href), 'utf8');
       assert.ok(html.includes(`../../apps/${name}/${name}.min.css`) && html.includes(`../../apps/${name}/${name}.min.js`));
       assert.ok(!/(?:href|src)="(?:\.\.\/)+components\//.test(html), 'no system file beside the app bundle');
+      const extras = [...new Set(app.components.map(extraBundleOf).filter((b): b is string => !!b))];
       const lean = await open(app.href, false);
-      const full = await open(app.href, true);
+      const full = await open(app.href, true, extras);
       assert.deepEqual(lean.errors, [], 'no script error on the app bundle');
       assert.deepEqual(full.errors, [], 'no script error on the whole system');
       // the registry: every component the app uses registered its State API (JS ones)

@@ -1292,6 +1292,7 @@ df$3.dataGrid = {
     query2(resolve2(target), patch);
   },
   rows: (target) => (resolve2(target)._result?.entries ?? []).map((e) => e.row),
+  source: (target) => resolve2(target)._source,
   selected(target) {
     const grid = resolve2(target);
     const ids = grid._selected ?? new Set;
@@ -1332,6 +1333,8 @@ function init3() {
     dfDollar3(body).append(pool);
     grid._parts = { viewport, head, body, pool, footer };
     grid._columns = readColumns(grid);
+    grid._order = grid._columns;
+    grid._shown = [];
     grid._focus = { row: 0, col: 0 };
     grid._selected = new Set;
     grid._rowHeight = parseFloat(getComputedStyle(grid).getPropertyValue("--data-grid-row-height")) || 36;
@@ -1868,5 +1871,5 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-//# debugId=317691A39C3F1DF264756E2164756E21
+//# debugId=8C78EE534BC560B264756E2164756E21
 //# sourceMappingURL=big-data.js.map
