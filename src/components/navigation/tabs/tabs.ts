@@ -393,5 +393,44 @@ function init() {
     });
 }
 
-init();
-new MutationObserver(init).observe(document, { childList: true, subtree: true });
+// a link to something inside a hidden panel (#websites on the docs' front page, a table-of-contents entry) selects
+// that panel's tab first - the fragment's target would stay invisible otherwise; panels inside panels open outside in
+function revealFragment(): void {
+  let id = '';
+  try {
+    id = decodeURIComponent(location.hash.slice(1));
+  } catch {
+    return;
+  }
+  if (!id || id.startsWith('/')) return; // a router's #/path is no fragment
+  const target = dfDollar('#' + CSS.escape(id)).get(0) as HTMLElement | undefined;
+  if (!target) return;
+  const hidden: HTMLElement[] = [];
+  const panelOf = (el: Element | null) =>
+    el ? (dfDollar(el).closest('[role="tabpanel"]').get(0) as HTMLElement | undefined) : undefined;
+  for (let panel = panelOf(target); panel; panel = panelOf(panel.parentElement))
+    if (panel.hidden) hidden.unshift(panel);
+  if (!hidden.length) return;
+  for (const panel of hidden) {
+    const tab = dfDollar<HTMLButtonElement>('[role="tab"][aria-controls="' + CSS.escape(panel.id) + '"]').get(0);
+    const tablist = tab && dfDollar(tab).closest('[role="tablist"]').get(0);
+    if (!tab || tab.disabled || !tablist) return;
+    activateTab(tab, dfDollar(tablist).find<HTMLButtonElement>('[role="tab"]').toArray());
+  }
+  target.scrollIntoView(); // the browser scrolled while it was hidden
+}
+
+let fragmentsBound = false;
+function initAll() {
+  const before = dfDollar('[role="tablist"][data-init]').length;
+  init();
+  // new tabs (a page load, a docs navigation): the address may point into one of their panels
+  if (dfDollar('[role="tablist"][data-init]').length !== before) revealFragment();
+  if (!fragmentsBound) {
+    fragmentsBound = true;
+    addEventListener('hashchange', revealFragment);
+  }
+}
+
+initAll();
+new MutationObserver(initAll).observe(document, { childList: true, subtree: true });

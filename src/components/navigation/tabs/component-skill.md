@@ -297,5 +297,6 @@ The registry global is `df$.shadcn.tabsApi` / `df$.shadcn.tabsStates`.
 - Arrow keys cycle through tabs (wrap around) - this is the roving tabindex pattern
 - The active panel uses `tabindex="0"` so it can receive focus from the tab trigger
 - Use `hidden` attribute on inactive panels for accessibility (screen readers skip them)
+- A link to an element inside a hidden panel (`#id` - on load, on `hashchange`, or after a docs navigation adds the tabs) selects that panel's tab first and scrolls the target into view; panels inside panels open from the outside in. A router's `#/path` is left alone
 - Disabled tabs carry the native `disabled` attribute (authored, or via `api.setState('disabled')`) and are skipped by keyboard navigation
 - For lazy-loaded content, panels can be rendered empty and populated on activation

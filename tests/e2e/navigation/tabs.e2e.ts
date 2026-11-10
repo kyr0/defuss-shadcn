@@ -114,6 +114,22 @@ try {
     assert.equal(await selected(page, 'line-tab-reports'), 'false', 'disabled tab stays unselected');
   });
 
+  await check('a link into a hidden panel (#id) selects its tab and shows the target; a page loaded with one too', async () => {
+    await page.evaluate(() => (document.querySelector('#tab-account') as HTMLElement).click());
+    await page.evaluate(() => (location.hash = 'password-rules'));
+    await page.waitForFunction(() => !(document.getElementById('panel-password') as HTMLElement).hidden);
+    assert.equal(await page.getAttribute('#tab-password', 'aria-selected'), 'true');
+    assert.equal(await page.getAttribute('#tab-account', 'aria-selected'), 'false');
+    const fresh = await browser.newPage();
+    await fresh.goto(`${server.url}${FIXTURE}#password-rules`);
+    await fresh.waitForFunction(() => !(document.getElementById('panel-password') as HTMLElement).hidden);
+    await fresh.close();
+    await page.evaluate(() => {
+      history.replaceState(null, '', location.pathname);
+      (document.querySelector('#tab-account') as HTMLElement).click();
+    });
+  });
+
   await check('state API: unknown state names throw', async () => {
     const err = await page.evaluate(() => {
       try {

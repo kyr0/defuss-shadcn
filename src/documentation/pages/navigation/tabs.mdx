@@ -979,6 +979,10 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
+<H2 id="deep-links">Links into a panel</H2>
+
+<DocText>A link to an element inside a hidden panel selects that panel's tab first, then scrolls to the element - when the page loads with the fragment, when the fragment changes, and when a docs navigation brings the tabs in. Panels inside panels open from the outside in; a router's <code>#/path</code> is left alone. The front page uses it: its table of contents and the Websites card point into the tabbed views.</DocText>
+
 <StatesSection>
   <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
