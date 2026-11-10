@@ -1,0 +1,512 @@
+---
+title: "Design Language"
+description: "Which component for which use case: small or big data, lists, trees, linked data, time series, associative data, read-only or editable - a decision tree and a use-case index with links to every page, skill and section folder."
+slug: "design-language"
+---
+
+import { DocPage, PageHeader, DocText, DocLink, H2, UseCaseTable } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="design-language" title="Design Language" introStyle="max-width:40rem;">
+  Which component for which job. Ask three questions in order - what does the user do, what shape is the data, how
+  much of it is there - and the answer is usually one row of the index below. Each row links the page to look at, the
+  skill an agent reads and the folder of its section.
+</PageHeader>
+
+<H2>The three questions</H2>
+
+<DocText><strong>1. What does the user do?</strong> Read, choose or edit, move around, or get told something. Reading needs no controls; every control you add is something to learn. <strong>2. What shape is the data?</strong> One value, records, a hierarchy, links between things, values over time, keys with values, places. The shape picks the family. <strong>3. How much?</strong> Up to a few hundred elements, render all of it: the browser's find, print and accessibility tools work on the whole. Beyond that, take a windowed component - it draws the rows in view and runs every query over all of them (<DocLink href="charts-big-data.html">a million rows</DocLink>).</DocText>
+
+```diagram
+{
+  "type": "flow",
+  "eyebrow": "Question 1",
+  "title": "What does the user do?",
+  "caption": "Each answer has its own diagram below - except moving around, which has one family.",
+  "cols": 3,
+  "nodes": [
+    {
+      "id": "do",
+      "name": "What does the user do?",
+      "col": 1,
+      "row": 1,
+      "rspan": 4,
+      "shape": "diamond"
+    },
+    {
+      "id": "read",
+      "name": "Read",
+      "col": 2,
+      "row": 1,
+      "meta": "Showing data"
+    },
+    {
+      "id": "choose",
+      "name": "Choose or edit",
+      "col": 2,
+      "row": 2,
+      "meta": "Taking input"
+    },
+    {
+      "id": "move",
+      "name": "Move around",
+      "col": 2,
+      "row": 3
+    },
+    {
+      "id": "told",
+      "name": "Get told",
+      "col": 2,
+      "row": 4,
+      "meta": "Telling the user"
+    },
+    {
+      "id": "nav",
+      "name": "Navbar, Sidebar, Tabs, Breadcrumb, Command",
+      "col": 3,
+      "row": 3,
+      "tone": "accent"
+    }
+  ],
+  "edges": [
+    {
+      "from": "do",
+      "to": "read"
+    },
+    {
+      "from": "do",
+      "to": "choose"
+    },
+    {
+      "from": "do",
+      "to": "move"
+    },
+    {
+      "from": "do",
+      "to": "told"
+    },
+    {
+      "from": "move",
+      "to": "nav"
+    }
+  ]
+}
+```
+
+```diagram
+{
+  "type": "flow",
+  "eyebrow": "Reading - questions 2 and 3",
+  "title": "Records, hierarchies and links: the amount decides",
+  "caption": "Up to a few hundred, render everything; beyond that, a windowed component that queries all rows.",
+  "cols": 3,
+  "nodes": [
+    {
+      "id": "rec",
+      "name": "Records",
+      "col": 1,
+      "row": 2,
+      "eyebrow": "Shape"
+    },
+    {
+      "id": "rec-q",
+      "name": "How many?",
+      "col": 2,
+      "row": 2,
+      "shape": "diamond"
+    },
+    {
+      "id": "rec-few",
+      "name": "Table, Card, Timeline",
+      "col": 3,
+      "row": 1
+    },
+    {
+      "id": "rec-many",
+      "name": "Data Grid, Virtual List",
+      "col": 3,
+      "row": 3
+    },
+    {
+      "id": "tree",
+      "name": "Hierarchy",
+      "col": 1,
+      "row": 5,
+      "eyebrow": "Shape"
+    },
+    {
+      "id": "tree-q",
+      "name": "How many?",
+      "col": 2,
+      "row": 5,
+      "shape": "diamond"
+    },
+    {
+      "id": "tree-few",
+      "name": "Tree View",
+      "col": 3,
+      "row": 4
+    },
+    {
+      "id": "tree-many",
+      "name": "Data Tree, Tree Grid",
+      "col": 3,
+      "row": 6
+    },
+    {
+      "id": "link",
+      "name": "Links",
+      "col": 1,
+      "row": 8,
+      "eyebrow": "Shape"
+    },
+    {
+      "id": "link-q",
+      "name": "Explain or explore?",
+      "col": 2,
+      "row": 8,
+      "shape": "diamond"
+    },
+    {
+      "id": "link-explain",
+      "name": "Illustrative Diagram, Mermaid",
+      "col": 3,
+      "row": 7
+    },
+    {
+      "id": "link-explore",
+      "name": "Graph Explorer",
+      "col": 3,
+      "row": 9
+    }
+  ],
+  "edges": [
+    {
+      "from": "rec",
+      "to": "rec-q"
+    },
+    {
+      "from": "rec-q",
+      "to": "rec-few",
+      "label": "hundreds"
+    },
+    {
+      "from": "rec-q",
+      "to": "rec-many",
+      "label": "thousands"
+    },
+    {
+      "from": "tree",
+      "to": "tree-q"
+    },
+    {
+      "from": "tree-q",
+      "to": "tree-few",
+      "label": "small"
+    },
+    {
+      "from": "tree-q",
+      "to": "tree-many",
+      "label": "big"
+    },
+    {
+      "from": "link",
+      "to": "link-q"
+    },
+    {
+      "from": "link-q",
+      "to": "link-explain",
+      "label": "explain"
+    },
+    {
+      "from": "link-q",
+      "to": "link-explore",
+      "label": "explore"
+    }
+  ]
+}
+```
+
+```diagram
+{
+  "type": "flow",
+  "eyebrow": "Reading - question 2",
+  "title": "Values, time series, keys and places: the shape decides",
+  "cols": 2,
+  "nodes": [
+    {
+      "id": "one",
+      "name": "One value",
+      "col": 1,
+      "row": 1,
+      "eyebrow": "Shape"
+    },
+    {
+      "id": "one-c",
+      "name": "Statistic, Badge, Progress, Tacho",
+      "col": 2,
+      "row": 1
+    },
+    {
+      "id": "time",
+      "name": "Over time",
+      "col": 1,
+      "row": 2,
+      "eyebrow": "Shape"
+    },
+    {
+      "id": "time-c",
+      "name": "Chart, Timeline, Media Timeline",
+      "col": 2,
+      "row": 2
+    },
+    {
+      "id": "kv",
+      "name": "Keys and values",
+      "col": 1,
+      "row": 3,
+      "eyebrow": "Shape"
+    },
+    {
+      "id": "kv-c",
+      "name": "Property Grid, Table",
+      "col": 2,
+      "row": 3
+    },
+    {
+      "id": "geo",
+      "name": "Places",
+      "col": 1,
+      "row": 4,
+      "eyebrow": "Shape"
+    },
+    {
+      "id": "geo-c",
+      "name": "Geo Map",
+      "col": 2,
+      "row": 4
+    }
+  ],
+  "edges": [
+    {
+      "from": "one",
+      "to": "one-c"
+    },
+    {
+      "from": "time",
+      "to": "time-c"
+    },
+    {
+      "from": "kv",
+      "to": "kv-c"
+    },
+    {
+      "from": "geo",
+      "to": "geo-c"
+    }
+  ]
+}
+```
+
+```diagram
+{
+  "type": "flow",
+  "eyebrow": "Taking input",
+  "title": "Choosing counts the options; editing names the thing edited",
+  "cols": 3,
+  "nodes": [
+    {
+      "id": "pick",
+      "name": "Choose",
+      "col": 1,
+      "row": 2,
+      "eyebrow": "Task"
+    },
+    {
+      "id": "pick-q",
+      "name": "How many options?",
+      "col": 2,
+      "row": 2,
+      "shape": "diamond"
+    },
+    {
+      "id": "pick-two",
+      "name": "Switch, Swap, Toggle",
+      "col": 3,
+      "row": 1
+    },
+    {
+      "id": "pick-seven",
+      "name": "Radio Group, Toggle Group",
+      "col": 3,
+      "row": 2
+    },
+    {
+      "id": "pick-more",
+      "name": "Select, Combobox, Autocomplete",
+      "col": 3,
+      "row": 3
+    },
+    {
+      "id": "edit",
+      "name": "Edit",
+      "col": 1,
+      "row": 5,
+      "eyebrow": "Task"
+    },
+    {
+      "id": "edit-q",
+      "name": "What is edited?",
+      "col": 2,
+      "row": 5,
+      "shape": "diamond"
+    },
+    {
+      "id": "edit-record",
+      "name": "Form, Questionnaire",
+      "col": 3,
+      "row": 4
+    },
+    {
+      "id": "edit-records",
+      "name": "Data Grid",
+      "col": 3,
+      "row": 5
+    },
+    {
+      "id": "edit-text",
+      "name": "Editor.js, Textarea",
+      "col": 3,
+      "row": 6
+    }
+  ],
+  "edges": [
+    {
+      "from": "pick",
+      "to": "pick-q"
+    },
+    {
+      "from": "pick-q",
+      "to": "pick-two",
+      "label": "2 to 4"
+    },
+    {
+      "from": "pick-q",
+      "to": "pick-seven",
+      "label": "up to 7"
+    },
+    {
+      "from": "pick-q",
+      "to": "pick-more",
+      "label": "more"
+    },
+    {
+      "from": "edit",
+      "to": "edit-q"
+    },
+    {
+      "from": "edit-q",
+      "to": "edit-record",
+      "label": "a record"
+    },
+    {
+      "from": "edit-q",
+      "to": "edit-records",
+      "label": "many"
+    },
+    {
+      "from": "edit-q",
+      "to": "edit-text",
+      "label": "text"
+    }
+  ]
+}
+```
+
+```diagram
+{
+  "type": "flow",
+  "eyebrow": "Telling the user",
+  "title": "Must the user answer?",
+  "cols": 2,
+  "nodes": [
+    {
+      "id": "answer",
+      "name": "Must the user answer?",
+      "col": 1,
+      "row": 1,
+      "rspan": 3,
+      "shape": "diamond"
+    },
+    {
+      "id": "dialog",
+      "name": "Alert Dialog",
+      "col": 2,
+      "row": 1,
+      "tone": "accent"
+    },
+    {
+      "id": "toast",
+      "name": "Toast",
+      "col": 2,
+      "row": 2
+    },
+    {
+      "id": "alert",
+      "name": "Alert",
+      "col": 2,
+      "row": 3
+    }
+  ],
+  "edges": [
+    {
+      "from": "answer",
+      "to": "dialog",
+      "label": "yes"
+    },
+    {
+      "from": "answer",
+      "to": "toast",
+      "label": "no, it passes"
+    },
+    {
+      "from": "answer",
+      "to": "alert",
+      "label": "no, it stays"
+    }
+  ]
+}
+```
+
+<H2>Data you show</H2>
+
+<UseCaseTable group="show" />
+
+<H2>Input you take</H2>
+
+<UseCaseTable group="take" />
+
+<H2>Moving around</H2>
+
+<UseCaseTable group="move" />
+
+<H2>Telling the user</H2>
+
+<UseCaseTable group="tell" />
+
+<H2>Rules of thumb</H2>
+
+<DocText><strong>The platform first.</strong> A native control - <code>select</code>, <code>details</code>, <code>dialog</code>, a checkbox - brings its keys, its form value and its accessibility with it. Take the scripted component when the native one cannot do the job: a search over many options, a windowed list, a tree with columns. See <DocLink href="native-web-apis.html">Native Web APIs</DocLink>.</DocText>
+
+<DocText><strong>Show before you hide.</strong> Two to seven options fit on screen: radios, a toggle group, tabs. A list that opens costs a click and hides the choice; a modal costs the whole page. Open a dialog only for a focused task, and an alert dialog only when the answer is required.</DocText>
+
+<DocText><strong>Search from eight.</strong> This system offers a search field once a list holds more than seven options: the <DocLink href="combobox.html">Combobox</DocLink>, the <DocLink href="language-switcher.html">Language Switcher</DocLink> from eight languages, the <DocLink href="command.html">Command</DocLink> palette for a whole app.</DocText>
+
+<DocText><strong>Explain small, explore big.</strong> An <DocLink href="diagram.html">Illustrative Diagram</DocLink> makes one point with a few dozen boxes and can reveal it step by step. When the reader has to find their own way through thousands of nodes, the <DocLink href="graph-explorer.html">Graph Explorer</DocLink> zooms by meaning and loads what is near.</DocText>
+
+<DocText><strong>Interactive only where it pays.</strong> A chart that makes one point stays still and says it in its title (<DocLink href="charts-narrative.html">Narrative</DocLink>); a chart for exploring gets tooltips, zoom and a grid that filters it. Every interaction is something to discover, to learn and to keep working.</DocText>
+
+<DocText><strong>One look, one language.</strong> Variants and sizes are data attributes on the same classes, and every component reads the same tokens, so a page built from several of them looks like one thing - see <DocLink href="data-attribute-api.html">Data Attribute API</DocLink> and <DocLink href="theming.html">Theming</DocLink>. An agent finds each component's markup in its skill; the whole system is one skill, <code>skills/defuss-shadcn/SKILL.md</code> (<DocLink href="component-skills.html">Component Skills</DocLink>).</DocText>
+
+</DocPage>
