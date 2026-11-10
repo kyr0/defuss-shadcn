@@ -1,0 +1,232 @@
+---
+title: "Terminal"
+description: "Terminal component - a live command line on the official xterm.js: a prompt, a line editor with history and completion, commands the page registers, replayed sessions, output from the page, the theme's colours, a DOS look, a State API."
+slug: "terminal"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="terminal" title="Terminal" component="terminal">
+  A command line that takes input. One <code>&lt;div class="terminal"&gt;</code> opens the official <a class="link" href="https://xtermjs.org">xterm.js</a> with its fit, clipboard, serialize and web-links addons, and runs a small shell on it: a prompt, a line editor with history and Tab completion, and the commands the page registers - each a function that returns its output. A JSON script replays a session, the page writes into it, and every colour is a custom property from the theme. A transcript to read and copy takes the <DocLink href="mockup-code.html">Code</DocLink> mockup instead.
+</PageHeader>
+
+<SkillPanel component="terminal">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div class="terminal"&gt;</code>; the runtime opens xterm.js in a <code>.terminal-screen</code> inside it. A <code>&lt;script type="application/json" class="terminal-script"&gt;</code> child replays a session.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import" title="xterm.js loads with the first terminal"><code>import()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the screen fits its box"><code>ResizeObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="a replay starts when it shows"><code>IntersectionObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" title="Ctrl+C aborts a command"><code>AbortController</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API" title="OSC 52 copy and paste"><code>Clipboard API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="terminal-command, terminal-ready"><code>CustomEvent</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.terminal</code>
+    <code>.terminal-screen</code>
+    <code>.terminal-script</code>
+    <code>.terminal-error</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="@xterm/xterm@6.0.0" description="The official terminal emulator (xtermjs/xterm.js, MIT) - lib/xterm.mjs and css/xterm.css via jsDelivr, pinned" />
+    <Variant name="addon-fit, -clipboard, -serialize, -web-links" description="Loaded with it: the screen fits its box, OSC 52 reaches the clipboard, the buffer serializes to HTML or VT, URLs are links" />
+    <Variant name="configure({ urls })" description="Self-host: point the loader at your copies of the same builds" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• <code>aria-label</code> on the terminal names it and xterm's input</SkillText>
+  <SkillText dense>• <code>aria-busy="true"</code> while a command or a replay runs</SkillText>
+  <SkillText dense>• <code>data-screen-reader</code> turns on xterm's screen-reader mode (a live region, the rows as text)</SkillText>
+  <SkillText dense>• Tab on an empty line moves the focus on, Shift+Tab back - the terminal never traps it</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="A shell" hint="Click into it and type help. The commands come from the page: a handler returns its output - a string, lines, or a promise of them - or writes through its context. Up and Down walk the history, Tab completes a name, Ctrl+C aborts count. A cancelable terminal-command event comes before every line."
+<div
+  class="terminal"
+  id="term-shell"
+  aria-label="A shell - type help"
+  data-title="bash"
+  data-prompt="$ "
+  data-prompt-tone="success"
+></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { terminal } = df$.shadcn;
+    terminal.commands('term-shell', {
+      date: { description: 'prints the date', run: () => new Date().toDateString() },
+      greet: { description: 'greets someone', run: ({ args }) => `Hello, ${args[0] ?? 'world'}!` },
+      colors: {
+        description: 'the theme colours',
+        run: () => ['success', 'warning', 'info', 'destructive', 'muted'].map((t) => terminal.tone(t, t)).join('  '),
+      },
+      count: {
+        description: 'counts to ten, a line a second',
+        run: async ({ writeln, signal }) => {
+          for (let i = 1; i <= 10 && !signal.aborted; i++) {
+            writeln(String(i));
+            await new Promise((done) => setTimeout(done, 1000));
+          }
+        },
+      },
+    });
+    df$('#term-shell').on('terminal-command', (event) => {
+      if (event.detail.name !== 'rm') return;
+      event.preventDefault();
+      terminal.writeln('term-shell', terminal.tone('rm: not in a demo', 'destructive'));
+    });
+  });
+</script>
+```
+
+```html example label="A replayed session" hint="A JSON script of steps: each command is typed at the prompt and answered by its output. data-autoplay plays it when the terminal first shows, after that many ms; a key press finishes it at once, then the prompt takes input."
+<div
+  class="terminal"
+  aria-label="A replayed install"
+  data-chrome="mac"
+  data-title="~/app - zsh"
+  data-prompt="~/app % "
+  data-rows="9"
+  data-autoplay="600"
+>
+  <script type="application/json" class="terminal-script">
+    [
+      { "command": "npm i defuss-shadcn", "output": ["added 1 package in 2s"] },
+      {
+        "command": "ls node_modules/defuss-shadcn/dist",
+        "output": "SKILL.md  apps  components  schemas  sections  theme"
+      },
+      { "command": "echo ready", "tone": "success" }
+    ]
+  </script>
+</div>
+```
+
+```html example label="DOS" hint="data-variant=&quot;dos&quot; is a PC's text mode: the 16 colours on black, square corners, an underline cursor. data-not-found answers an unknown command; commands are found as typed, else in lower case, so DIR finds dir."
+<div
+  class="terminal"
+  id="term-dos"
+  aria-label="Command prompt"
+  data-variant="dos"
+  data-chrome="none"
+  data-rows="10"
+  data-prompt="C:&#92;&gt;"
+  data-not-found="Bad command or file name"
+></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.terminal.commands('term-dos', {
+      ver: () => ['', 'DF-DOS Version 6.22'],
+      dir: () => [
+        ' Volume in drive C is DEFUSS',
+        '',
+        'AUTOEXEC BAT        104  11-10-26  9:00a',
+        'CONFIG   SYS         96  11-10-26  9:00a',
+        'GAMES        <DIR>       11-10-26  9:00a',
+        '        2 file(s)        200 bytes',
+      ],
+    });
+  });
+</script>
+```
+
+```html example label="Output from the page" hint="data-readonly is output only - no prompt, no input. The page writes lines with writeln() and colours them with tone(); text() reads back what the screen shows, serialize() returns the buffer as HTML or VT sequences."
+<div class="flex flex-col gap-3">
+  <div
+    class="terminal"
+    id="term-log"
+    aria-label="Build log"
+    data-readonly
+    data-chrome="none"
+    data-size="sm"
+    data-rows="8"
+  ></div>
+  <div class="flex gap-2">
+    <button class="btn" data-size="sm" type="button" id="term-log-run">Run the build</button>
+    <button class="btn" data-size="sm" data-variant="outline" type="button" id="term-log-text">Read it as text</button>
+  </div>
+  <output class="text-sm text-muted-foreground" id="term-log-out"></output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { terminal } = df$.shadcn;
+    const steps = [
+      ['lint', 'muted'],
+      ['compile 126 components', 'info'],
+      ['bundle all.css, all.js', 'info'],
+      ['3 warnings', 'warning'],
+      ['done in 4.2 s', 'success'],
+    ];
+    df$('#term-log-run').on('click', async () => {
+      for (const [line, tone] of steps) {
+        await terminal.writeln('term-log', terminal.tone(line, tone));
+        await new Promise((done) => setTimeout(done, 300));
+      }
+    });
+    df$('#term-log-text').on('click', () => {
+      const lines = terminal.text('term-log').split('\n').filter(Boolean);
+      df$('#term-log-out').text(`${lines.length} lines, the last: ${lines.at(-1) ?? 'none'}`);
+    });
+  });
+</script>
+```
+
+```html example label="Muted and sizes" hint="data-variant=&quot;muted&quot; takes the page's muted surface and text - light in light mode - with the ANSI colours mixed toward the text. data-size sm and lg set the font size; the rows follow."
+<div class="flex flex-col gap-3">
+  <div
+    class="terminal"
+    aria-label="A small muted shell"
+    data-variant="muted"
+    data-size="sm"
+    data-rows="4"
+    data-prompt="&gt; "
+  ></div>
+  <div
+    class="terminal"
+    aria-label="A large shell"
+    data-size="lg"
+    data-rows="4"
+    data-chrome="none"
+    data-cursor="bar"
+  ></div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each terminal:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - a prompt that takes input (<code>config.prompt</code> sets <code>data-prompt</code>)</li>
+    <li><code>running</code> - a command runs: <code>setState('running', &#123; command &#125;)</code> types it and runs it; without a command the script replays. It lands in <code>default</code></li>
+    <li><code>readonly</code> - output only: no prompt, no input (<code>data-readonly</code>)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/terminal-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/terminal.schema.json"><code>terminal.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `prompt` | `string` | — | `"$ "` | The prompt (`data-prompt`) - a waiting prompt changes at once. |
+| `running` | `boolean` | `true`, `false` | `false` | A command runs (`aria-busy`) - checked, the script replays; it lands in `default` when done. |
+| `readonly` | `boolean` | `true`, `false` | `false` | Output only: no prompt, no input (`data-readonly`). |
+```
+
+</StatesSection>
+
+<ApiSection component="terminal" />
+
+<SourceFiles component="terminal" />
+
+</DocPage>

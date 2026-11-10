@@ -96,6 +96,42 @@ try {
     assert.deepEqual(await bar('calc'), [true, true]);
   });
 
+  await check('the command prompt: a DOS shell over the drive - dir, cd, type, the not-found answer; exit closes it', async () => {
+    const screen = () => page.evaluate(() => (globalThis as any).df$.shadcn.terminal.text('os-cmd-term') as string);
+    const until = (re: RegExp) =>
+      page.waitForFunction((src) => new RegExp(src, 'm').test((globalThis as any).df$.shadcn.terminal.text('os-cmd-term')), re.source, { timeout: 10_000 });
+    const run = async (line: string, re: RegExp) => {
+      await page.focus('#os-cmd-term .xterm-helper-textarea');
+      await page.keyboard.type(line, { delay: 5 });
+      await page.keyboard.press('Enter');
+      await until(re);
+    };
+    assert.equal(await shown('[data-app-btn="cmd"]'), false, 'not running yet: no taskbar button');
+    await page.click('.os-start-btn');
+    await page.click('#os-start [data-launch="cmd"]');
+    await page.waitForFunction(() => document.getElementById('os-cmd-term')?.hasAttribute('data-ready'), undefined, { timeout: 15_000 });
+    assert.deepEqual(await bar('cmd'), [true, true]);
+    // the banner replays when it first shows, then the prompt waits
+    await until(/^DF-DOS Version 6\.22\nType HELP for the commands, EXIT to close\.\n\nC:[\\]>$/);
+    await run('DIR', /^APPS {24}<DIR>/);
+    assert.match(await screen(), /^DOCS {24}<DIR>/m);
+    assert.match(await screen(), /^AUTOEXEC\.BAT/m);
+    await run('cd docs', /^C:[\\]DOCS>$/);
+    await run('dir', /^Welcome\.txt\s+\d+ 11-10-26/);
+    await run('type welcome.txt', /^Welcome to your desktop!$/);
+    await run('format c:', /^Bad command or file name$/);
+    await run('cd ..', /^C:[\\]>$/);
+    await run('ver', /^DF-DOS Version 6\.22$/);
+    await page.focus('#os-cmd-term .xterm-helper-textarea');
+    await page.keyboard.type('exit', { delay: 5 });
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => !(document.getElementById('os-cmd') as HTMLDialogElement).open, undefined, { timeout: 5_000 });
+    // the taskbar follows on a later frame
+    await page.waitForFunction(() => !document.querySelector('[data-app-btn="cmd"]')!.hasAttribute('data-running'), undefined, { timeout: 5_000 });
+    assert.deepEqual(await bar('cmd'), [false, false]);
+    assert.equal(await shown('[data-app-btn="cmd"]'), false);
+  });
+
   await check('a maximized window comes back maximized', async () => {
     await page.click('[data-app-btn="editor"]');
     await page.click('#os-ed-1 .window-maximize');

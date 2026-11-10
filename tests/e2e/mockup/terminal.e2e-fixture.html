@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>terminal e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/terminal/terminal.css" />
+  </head>
+  <body style="padding: 2rem; max-width: 48rem; display: grid; gap: 1rem">
+    <!-- mirrors the doc page: a shell with page commands and a terminal-command listener, a replayed session
+         (mac chrome, title, rows, autoplay), a read-only log, the DOS variant, muted + sm, lg + bar cursor,
+         and one inside a hidden box -->
+    <div class="terminal" id="t-shell" aria-label="A shell - type help" data-title="bash" data-prompt="$ " data-prompt-tone="success"></div>
+    <div class="terminal" id="t-replay" aria-label="A replayed install" data-chrome="mac" data-title="~/app - zsh" data-prompt="~/app % " data-rows="9" data-autoplay="300" data-speed="5">
+      <script type="application/json" class="terminal-script">
+        [
+          { "command": "npm i defuss-shadcn", "output": ["added 1 package in 2s"] },
+          { "command": "ls node_modules/defuss-shadcn/dist", "output": "SKILL.md  apps  components  schemas  sections  theme" },
+          { "command": "echo ready", "tone": "success" }
+        ]
+      </script>
+    </div>
+    <div class="terminal" id="t-log" aria-label="Build log" data-readonly data-chrome="none" data-size="sm" data-rows="8"></div>
+    <div class="terminal" id="t-dos" aria-label="Command prompt" data-variant="dos" data-chrome="none" data-rows="10" data-prompt="C:&#92;&gt;" data-not-found="Bad command or file name"></div>
+    <div class="terminal" id="t-muted" aria-label="A small muted shell" data-variant="muted" data-size="sm" data-rows="4" data-prompt="&gt; "></div>
+    <div class="terminal" id="t-lg" aria-label="A large shell" data-size="lg" data-rows="4" data-chrome="none" data-cursor="bar"></div>
+    <div id="t-box" hidden>
+      <div class="terminal" id="t-hidden" aria-label="A shell in a closed box" data-rows="4"></div>
+    </div>
+    <p><a href="#after" id="after">after the terminals</a></p>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/terminal/terminal.js"></script>
+    <script type="module">
+      const { terminal } = df$.shadcn;
+      terminal.commands('t-shell', {
+        date: { description: 'prints the date', run: () => new Date(2026, 10, 10).toDateString() },
+        greet: { description: 'greets someone', run: ({ args }) => `Hello, ${args[0] ?? 'world'}!` },
+        count: {
+          description: 'counts to ten, a line a second',
+          run: async ({ writeln, signal }) => {
+            for (let i = 1; i <= 10 && !signal.aborted; i++) {
+              writeln(String(i));
+              await new Promise((done) => setTimeout(done, 400));
+            }
+          },
+        },
+      });
+      df$('#t-shell').on('terminal-command', (event) => {
+        if (event.detail.name !== 'rm') return;
+        event.preventDefault();
+        terminal.writeln('t-shell', terminal.tone('rm: not in a demo', 'destructive'));
+      });
+      terminal.commands('t-dos', {
+        ver: () => ['', 'DF-DOS Version 6.22'],
+        dir: () => [' Volume in drive C is DEFUSS', 'AUTOEXEC BAT        104', '        1 file(s)        104 bytes'],
+      });
+    </script>
+  </body>
+</html>

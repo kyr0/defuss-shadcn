@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "name": "terminal",
+  "states": {
+    "prompt": {
+      "type": "string",
+      "default": "$ ",
+      "target": {
+        "kind": "selector",
+        "selector": ".terminal"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "default",
+        "args": {
+          "prompt": "@value"
+        }
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-prompt"
+      },
+      "editor": {
+        "component": "text"
+      }
+    },
+    "running": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".terminal"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "running"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    },
+    "readonly": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".terminal"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "readonly"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -747,6 +747,17 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     width: min(26rem, calc(100% - 2rem));
   }
 
+  /* command prompt: the DOS terminal fills the window */
+  .os-cmd-body {
+    display: flex;
+    padding: 0;
+    background: #000;
+    & > .terminal {
+      flex: 1;
+      --terminal-height: 22rem;
+    }
+  }
+
   /* calculator */
   .os-calc-body {
     display: grid;
@@ -1419,6 +1430,18 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           role="option"
           aria-selected="false"
           tabindex="-1"
+          data-open="cmd"
+          data-kind="app"
+          data-name="Command Prompt"
+          ><span class="os-tile" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
+          ><span>Command Prompt</span></button
+        >
+        <button
+          class="os-icon"
+          data-context-menu="os-icon-ctx"
+          role="option"
+          aria-selected="false"
+          tabindex="-1"
           data-open="settings"
           data-kind="app"
           data-name="Settings"
@@ -1742,6 +1765,54 @@ Things to try:
       </div>
     </dialog>
     <dialog
+      class="window os-cmd"
+      id="os-cmd"
+      data-app="cmd"
+      style="--window-x: 14rem; --window-y: 5rem; --window-w: 42rem"
+    >
+      <header class="window-titlebar"
+        ><span class="window-icon os-wicon" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
+        ><h2 class="window-title">Command Prompt</h2
+        ><form method="dialog" class="window-controls"
+          ><button
+            type="button"
+            class="window-minimize"
+            aria-label="Minimize"
+            data-i18n-aria-label-en="Minimize"
+            data-i18n-aria-label-de="Minimieren"
+          ></button
+          ><button
+            type="button"
+            class="window-maximize"
+            aria-label="Maximize"
+            data-i18n-aria-label-en="Maximize"
+            data-i18n-aria-label-de="Maximieren"
+          ></button
+          ><button
+            class="window-close"
+            aria-label="Close"
+            data-i18n-aria-label-en="Close"
+            data-i18n-aria-label-de="Schließen"
+          ></button></form
+      ></header>
+      <div class="window-body os-cmd-body" data-flush>
+        <div
+          class="terminal"
+          id="os-cmd-term"
+          aria-label="Command Prompt - type help"
+          data-variant="dos"
+          data-chrome="none"
+          data-prompt="C:&#92;&gt;"
+          data-not-found="Bad command or file name"
+          data-autoplay="0"
+        >
+          <script type="application/json" class="terminal-script">
+            [{ "output": ["DF-DOS Version 6.22", "Type HELP for the commands, EXIT to close.", ""] }]
+          </script>
+        </div>
+      </div>
+    </dialog>
+    <dialog
       class="window os-settings"
       id="os-settings"
       data-app="settings"
@@ -1916,11 +1987,20 @@ Things to try:
               ><span
                 ><strong data-i18n-target="set-lang">Language</strong
                 ><small data-i18n-target="set-lang-d">Menus, apps and labels of the desktop</small></span
-              ><select class="select os-locale" data-size="sm" id="os-s-lang" data-app-locale>
-                <option value="en" lang="en">English</option>
-                <option value="de" lang="de">Deutsch</option>
-              </select></label
-            >
+              ><div
+                class="language-switcher os-locale"
+                id="os-s-lang"
+                data-app-locale
+                role="group"
+                aria-label="Language"
+                data-i18n-aria-label-en="Language"
+                data-i18n-aria-label-de="Sprache"
+                data-languages="en de"
+                data-value="en"
+                data-size="sm"
+                data-align="end"
+              ></div
+            ></label>
           </div>
           <div
             class="tab-content os-set-panel"
@@ -2122,6 +2202,15 @@ Things to try:
       <button
         class="os-tb-btn os-tb-app"
         type="button"
+        data-app-btn="cmd"
+        data-unpinned
+        aria-label="Command Prompt"
+        title="Command Prompt"
+        ><span class="os-tile" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
+      ></button>
+      <button
+        class="os-tb-btn os-tb-app"
+        type="button"
         data-app-btn="bin"
         data-unpinned
         aria-label="Recycle Bin"
@@ -2192,6 +2281,10 @@ Things to try:
         <button class="os-app" type="button" data-launch="calc"
           ><span class="os-tile" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
           ><span data-i18n-target="app-calc">Calculator</span></button
+        >
+        <button class="os-app" type="button" data-launch="cmd"
+          ><span class="os-tile" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
+          ><span data-i18n-target="app-cmd">Command Prompt</span></button
         >
         <button class="os-app" type="button" data-launch="settings"
           ><span class="os-tile" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
@@ -3150,6 +3243,8 @@ Things to try:
   <template data-i18n-for="start-all" data-i18n-locale="de">Alle Apps</template>
   <template data-i18n-for="app-calc" data-i18n-locale="en">Calculator</template>
   <template data-i18n-for="app-calc" data-i18n-locale="de">Rechner</template>
+  <template data-i18n-for="app-cmd" data-i18n-locale="en">Command Prompt</template>
+  <template data-i18n-for="app-cmd" data-i18n-locale="de">Eingabeaufforderung</template>
   <template data-i18n-for="app-settings" data-i18n-locale="en">Settings</template>
   <template data-i18n-for="app-settings" data-i18n-locale="de">Einstellungen</template>
   <template data-i18n-for="app-bin" data-i18n-locale="en">Recycle Bin</template>
@@ -3282,7 +3377,14 @@ Things to try:
     const desk = app.querySelector('.os-desktop');
     const W = () => df$.shadcn.win;
     const toast = (title, description) => df$.shadcn.toast.show(description ? { title, description } : { title });
-    const APPS = { browser: 'Browser', editor: 'Editor', calc: 'Calculator', settings: 'Settings', bin: 'Recycle Bin' };
+    const APPS = {
+      browser: 'Browser',
+      editor: 'Editor',
+      calc: 'Calculator',
+      cmd: 'Command Prompt',
+      settings: 'Settings',
+      bin: 'Recycle Bin',
+    };
     const FILES = {
       'Welcome.txt':
         'Welcome to your desktop!\n\nThis whole desktop is one HTML page built from defuss-shadcn components.\n\nThings to try:\n- Right-click the desktop to change the icon size, the background or the theme.\n- Open the start menu and search for an app.\n- Drag windows by their title bar, double-click it to maximize.\n- Click the clock for the calendar, the Wi-Fi / volume icons for quick settings.\n- Edit this text and press Ctrl+S to save it.\n',
@@ -3372,6 +3474,117 @@ Things to try:
     };
     if (document.readyState === 'loading') addEventListener('DOMContentLoaded', keep);
     else setTimeout(keep);
+
+    // -- the command prompt: the Terminal component's shell with DOS commands over a small drive -
+    // the DOCS folder holds the desktop's documents (FILES, as the editor saves them), APPS starts the apps
+    const DRIVE = 'C:' + '\\'; // the drive's root
+    const ROOT_FILES = {
+      'AUTOEXEC.BAT': '@ECHO OFF\nPROMPT $P$G\nPATH ' + DRIVE + 'APPS',
+      'CONFIG.SYS': 'FILES=40\nBUFFERS=20\nDEVICE=' + DRIVE + 'HIMEM.SYS',
+    };
+    const EXES = { 'BROWSER.EXE': 'browser', 'CALC.EXE': 'calc', 'EDITOR.EXE': 'editor', 'SETTINGS.EXE': 'settings' };
+    const DIRS = { [DRIVE]: ['APPS', 'DOCS'], [DRIVE + 'APPS']: [], [DRIVE + 'DOCS']: [] };
+    const STAMP = '11-10-26   9:00a';
+    let cwd = DRIVE;
+    const filesIn = (dir) =>
+      dir === DRIVE
+        ? Object.entries(ROOT_FILES).map(([n, t]) => [n, t.length])
+        : dir === DRIVE + 'APPS'
+          ? Object.keys(EXES).map((n) => [n, 40960])
+          : Object.keys(FILES).map((n) => [n, FILES[n].length]);
+    const named = (list, name) => list.find((n) => n.toLowerCase() === String(name).toLowerCase());
+    const textOf = (name) => {
+      if (cwd === DRIVE + 'DOCS') {
+        const f = named(Object.keys(FILES), name);
+        return f === undefined ? undefined : FILES[f];
+      }
+      if (cwd === DRIVE) {
+        const f = named(Object.keys(ROOT_FILES), name);
+        return f === undefined ? undefined : ROOT_FILES[f];
+      }
+    };
+    const runApp = (name) => {
+      const exe = named(Object.keys(EXES), /\./.test(name) ? name : name + '.EXE');
+      if (!exe) return false;
+      open(EXES[exe]);
+      return true;
+    };
+    const dos = {
+      dir: {
+        description: 'lists the directory',
+        run: () => {
+          const dirs = cwd === DRIVE ? DIRS[cwd] : ['.', '..'];
+          const files = filesIn(cwd);
+          const bytes = files.reduce((n, [, size]) => n + size, 0);
+          return [
+            ' Volume in drive C is DEFUSS',
+            ' Directory of ' + cwd,
+            '',
+            ...dirs.map((d) => d.padEnd(28) + '<DIR>'.padEnd(10) + STAMP),
+            ...files.map(([n, size]) => n.padEnd(28) + String(size).padStart(9) + ' ' + STAMP),
+            String(files.length).padStart(9) + ' file(s)' + String(bytes).padStart(15) + ' bytes',
+          ];
+        },
+      },
+      cd: {
+        description: 'changes the directory (cd docs, cd ..)',
+        run: ({ args }) => {
+          const to = args.join(' ');
+          if (!to) return cwd;
+          if (to === '..' || to === '\\' || /^c:\\?$/i.test(to)) cwd = DRIVE;
+          else {
+            const d = cwd === DRIVE && named(DIRS[cwd], to.replace(/\\$/, ''));
+            if (!d) return 'Invalid directory';
+            cwd = DRIVE + d;
+          }
+          df$.shadcn.terminal.prompt('os-cmd-term', cwd + '>');
+        },
+      },
+      cls: { description: 'clears the screen', run: () => df$.shadcn.terminal.clear('os-cmd-term') },
+      type: {
+        description: 'shows a text file',
+        run: ({ args }) => textOf(args.join(' ')) ?? 'File not found - ' + (args.join(' ') || '(none)'),
+      },
+      edit: {
+        description: 'opens a document in the editor',
+        run: ({ args }) => {
+          const f = named(Object.keys(FILES), args.join(' '));
+          if (f === undefined) return 'File not found - ' + (args.join(' ') || '(none)');
+          open('file:' + f);
+        },
+      },
+      start: {
+        description: 'starts an app (start calc)',
+        run: ({ args }) => (runApp(args[0] || '') ? undefined : 'Bad command or file name'),
+      },
+      tree: {
+        description: 'shows the folders',
+        run: () => ['Folder PATH listing for volume DEFUSS', DRIVE, '+---APPS', '\\---DOCS'],
+      },
+      ver: { description: 'shows the version', run: () => ['', 'DF-DOS Version 6.22', ''] },
+      date: { description: 'shows the date', run: () => 'Current date is ' + new Date().toLocaleDateString('en-US') },
+      time: { description: 'shows the time', run: () => 'Current time is ' + new Date().toLocaleTimeString('en-US') },
+      mem: {
+        description: 'shows the memory',
+        run: () => [
+          '',
+          '    655360 bytes total conventional memory',
+          '    634272 bytes available to DF-DOS',
+          '    592816 largest executable program size',
+          '',
+        ],
+      },
+      exit: { description: 'closes the window', run: () => void W().close(app.querySelector('#os-cmd')) },
+    };
+    // an app's name runs it, as from the APPS folder (calc, CALC.EXE)
+    for (const exe of Object.keys(EXES)) {
+      const run = () => void runApp(exe);
+      dos[exe.toLowerCase()] = { hidden: true, run };
+      dos[exe.slice(0, -4).toLowerCase()] = { hidden: true, run };
+    }
+    const shell = () => df$.shadcn.terminal.commands('os-cmd-term', dos);
+    if (document.readyState === 'loading') addEventListener('DOMContentLoaded', shell);
+    else setTimeout(shell);
 
     // -- windows and the taskbar ---------------------------------------------------------
     const wins = (a) => [...desk.querySelectorAll('.window' + (a ? '[data-app="' + a + '"]' : ''))];
@@ -4270,8 +4483,8 @@ Things to try:
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(app, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- routing: the address names what was opened last - an app, a file or a site
     const routes = [
@@ -4311,6 +4524,7 @@ Things to try:
   <li><strong>Desktop</strong> - icons are a listbox (click selects, double-click or Enter opens, Delete recycles a file, arrows move); right-clicking an icon opens its own menu.</li>
   <li><strong>Editor</strong> - a <DocLink href="menubar.html">Menubar</DocLink> with save, save as (a <DocLink href="dialog.html">Dialog</DocLink>), zoom, word wrap and status bar; closing with unsaved changes asks through an <DocLink href="alert-dialog.html">Alert Dialog</DocLink>.</li>
   <li><strong>Calculator</strong> - clicks and the keyboard, unary keys, a running expression line.</li>
+  <li><strong>Command Prompt</strong> - a <DocLink href="terminal.html">Terminal</DocLink> in its DOS look: <code>dir</code>, <code>cd</code>, <code>type</code>, <code>cls</code>, <code>ver</code>, <code>mem</code> and friends over a small drive whose <code>C:&#92;DOCS</code> holds the desktop's documents as the editor saves them; <code>edit</code> opens one in the editor, <code>calc</code> or <code>start browser</code> starts an app, <code>exit</code> closes the window.</li>
   <li><strong>Browser</strong> - a real <code>&lt;iframe&gt;</code>: type an address or search Wikipedia, go back and forward through what you asked for, open the page in a new tab. Sites that refuse to be framed (an <code>X-Frame-Options</code> or CSP <code>frame-ancestors</code> header - Google, Bing, MDN...) get an honest page with a new-tab link instead of a blank frame; three demo sites are the <DocLink href="website-landing-page.html">Website blocks</DocLink> in a same-origin <code>srcdoc</code>. This example is the docs' one <code>sandbox="embed"</code> fence besides the cookie consent, so the framed pages work here too.</li>
   <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: whatever a launcher opens - the start menu, the desktop icons, the context menu - is a route (<code>#/apps/:app</code>, <code>#/files/:name</code>, <code>#/browse/:site</code>), so a deep link opens that window on load and Back brings the window before to the front; <code>#/</code> is the bare desktop. Inside the docs preview the same routes match the frame's hash. See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
   <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: Settings › Personalization › Language translates the start menu, quick settings, the context menus, the Settings app and the window controls between English and German. The apps' own content and toasts stay English. See <DocLink href="translation.html">Translation</DocLink>.</li>
