@@ -141,3 +141,4 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-10T07:44:47Z s=5187d371 FINDING unit suite - the search worker learn=none: a unit test would need the vendors served to Vitest
 2026-11-10T11:35:24Z s=5187d371 FINDING Makefile build / scripts/deploy.sh 4b / scripts/verify.ts gates 12, 12b (PNG part), 24 learn=none: a removal by decision; verify OK and 297/297 e2e without it
 2026-11-10T11:35:24Z s=5187d371 FINDING AGENTS.md, README.md + index.mdx, ARCH.md, the flagship deck, state-api / architecture pages, SKILL_tpl.md learn=none: docs; documentation.e2e renders the architecture page from ARCH.md and passed
+2026-11-10T11:51:47Z s=5187d371 FINDING scripts/build.ts step 2 copy filter + 2b section flatten learn=none: make build passed with the file still in src/components/graphs/; a test would have to create Finder metadata in src/, the pipeline run is the observation
