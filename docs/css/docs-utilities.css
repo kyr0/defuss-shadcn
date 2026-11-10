@@ -195,3 +195,19 @@
 
 /* Accessibility: `.sr-only` ships in theme/utils/accessibility.css (loaded on every
    doc page by DocPage) - dogfooded, not redefined here. */
+
+/* the front page's scaffold cards: the app's icon on a primary tile */
+.home-app-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.home-app-icon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}

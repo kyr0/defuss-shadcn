@@ -2,7 +2,7 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.9.14",
       "created": [
         "design-language",
         "industry-agency",
@@ -35,6 +35,7 @@
         "graphs",
         "heading-anchor",
         "index",
+        "installation",
         "panel",
         "portfolio-bento",
         "portfolio-brutalist",

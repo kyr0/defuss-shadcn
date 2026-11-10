@@ -58,6 +58,10 @@ export const WEBSITE_TEMPLATES = [
     'website-docs-help',
     'website-search-navigation',
 ];
+/** the Website templates of a page or a part of one, not a whole site (an article, a comments thread, the account
+ *  screens, a search page): routed and translated like the rest, but the front page's Websites gallery lists whole
+ *  sites only (the maintainer, 2026-11-09) */
+export const WEBSITE_PAGE_TEMPLATES = ['website-article', 'website-comments', 'website-account-states', 'website-search-navigation'];
 /**
  * The portfolio styles of Resume & Portfolio: one-page sites without routes - each a full-screen page beside it.
  * A list of their own, not part of WEBSITE_TEMPLATES: a template routes and translates (website-templates.e2e drives a
@@ -70,7 +74,10 @@ export const PORTFOLIO_STYLES = ['portfolio-editorial', 'portfolio-playful', 'po
  * full-screen page beside each. tests/e2e/site/showcase-sites.e2e.ts checks what a site owes.
  */
 export const SHOWCASE_SITES = ['showcase-roastery', 'showcase-observatory', 'showcase-bouldering', 'showcase-records'];
-export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio', ...WEBSITE_TEMPLATES, ...PORTFOLIO_STYLES, ...SHOWCASE_SITES];
+/** The industry sites (Website › Industries): one-page sites like the showcases - a restaurant, a hair salon, a hotel, a
+ *  doctor's practice, a spa, a law firm, an agency and an AI startup (the maintainer, 2026-11-09). */
+export const INDUSTRY_SITES = ['industry-restaurant', 'industry-salon', 'industry-hotel', 'industry-practice', 'industry-spa', 'industry-law', 'industry-agency', 'industry-ai'];
+export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio', ...WEBSITE_TEMPLATES, ...PORTFOLIO_STYLES, ...SHOWCASE_SITES, ...INDUSTRY_SITES];
 /** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) - its bundle is dist/apps/<name>/. */
 export const appName = (slug) => slug.replace(/^scaffold-/, '');
 /** The ids (file stems) of the generated standalone pages. */

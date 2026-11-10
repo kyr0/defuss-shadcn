@@ -27,7 +27,8 @@
         "feat(terminal): Terminal - a live command line on xterm.js 6 with a shell of its own (prompt, history, completion, commands, replayed sessions); the Desktop's Command Prompt runs on it",
         "feat(command): data-filter=&quot;none&quot; - the page writes the items from its own search, the palette keeps its keys, highlight and Enter",
         "feat(docs): the palette searches with defuss-search - BM25 fused with Winzling-reranker's ColBERT scan over an index built from the rendered pages; the model loads after the page and is cached, defuss-lid reads the query's language"
-      ]
+      ],
+      "hash": "683a05d4"
     },
     {
       "version": "v0.9.13",
