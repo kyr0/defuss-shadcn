@@ -23,6 +23,11 @@
     "src/documentation/runtime/prefs.ts",
     "src/documentation/runtime/themes.ts",
     "src/documentation/runtime/theme-switcher.ts",
-    "src/documentation/runtime/layout.ts"
+    "src/documentation/runtime/layout.ts",
+    "src/documentation/runtime/whats-new.ts",
+    "src/documentation/runtime/whats-new-core.ts",
+    // the search worker and its semantic half: bundled into js/search/ by scripts/build-search-worker.ts
+    "src/documentation/runtime/search-worker.ts",
+    "src/documentation/runtime/search-semantic.ts"
   ]
 }
