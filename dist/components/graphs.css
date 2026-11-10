@@ -1,6 +1,6 @@
 /* ── components/graph-explorer/graph-explorer.css ── */
 /* Graph Explorer - a knowledge graph of up to millions of nodes: a worker-drawn far field under a bounded pool of DOM
- * nodes, edge labels per zoom level, outlets the page places (breadcrumb, search, outline, details, relations, Node UI).
+ * nodes, edge labels per zoom level, outlets the page places (breadcrumb, search, outline, details, relations, layers).
  * Its own properties derive from the tweakcn token set only (AGENTS.md "Token boundary rule"); the status colours ok and
  * warn have no token and are literals (amber and green read as degraded and healthy in every theme; a chart colour
  * such as --chart-1 is light blue in the default theme and read as information). The icons are a Lucide subset (ISC, lucide-static 0.469.0 - Copyright (c)
@@ -90,6 +90,7 @@
     & .graph-explorer-world,
     & .graph-explorer-edge-labels,
     & .graph-explorer-signs,
+    & .graph-explorer-changes,
     & .graph-explorer-ring {
       position: absolute;
       inset: 0;
@@ -108,8 +109,26 @@
     }
     & .graph-explorer-world,
     & .graph-explorer-signs,
+    & .graph-explorer-changes,
     & .graph-explorer-edge-labels {
       pointer-events: none;
+    }
+    & .graph-explorer-changes {
+      overflow: hidden;
+    }
+    /* a changed node: a glowing dot at its top right in its layer's colour (the Indicator's ping), for a while */
+    & .graph-explorer-change-dot {
+      position: absolute;
+      left: 0;
+      top: 0;
+      inline-size: 0.625rem;
+      block-size: 0.625rem;
+      margin: -0.3125rem 0 0 -0.3125rem;
+      color: var(--graph-explorer-layer, var(--graph-accent));
+      box-shadow:
+        0 0 0 2px var(--card),
+        0 0 0.5rem 0.125rem color-mix(in oklch, currentColor 70%, transparent);
+      animation: graph-explorer-change-fade linear forwards;
     }
     & .graph-explorer-probe {
       position: absolute;
@@ -206,6 +225,14 @@
         filter: drop-shadow(0 0 3px color-mix(in oklch, var(--graph-accent) 55%, transparent));
       }
     }
+    /* a changed link: the line lights up in its layer's colour and fades */
+    & .graph-explorer-edge-flash {
+      fill: none;
+      stroke: var(--graph-explorer-layer, var(--graph-accent));
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 4px var(--graph-explorer-layer, var(--graph-accent)));
+      animation: graph-explorer-change-fade ease-out forwards;
+    }
     /* a click on a promoted link selects it: a wide transparent stroke under the line */
     & .graph-explorer-edge-hit {
       fill: none;
@@ -214,6 +241,10 @@
       stroke-linecap: round;
       pointer-events: stroke;
       cursor: pointer;
+    }
+    /* a calm line is the relations layer's colour (set by the runtime from the theme's chart colours) */
+    & :is(.graph-explorer-edge, .graph-explorer-edge-head)[data-tone="muted"] {
+      --tone: var(--graph-explorer-relations, var(--muted-foreground));
     }
     & .graph-explorer-edge-head {
       fill: var(--graph-edge);
@@ -246,7 +277,7 @@
       }
     }
 
-    /* signposts to relations off screen, and Bring & Go */
+    /* signposts to relations off screen, and the neighbour ring (Jump to a neighbour) */
     & .graph-explorer-sign {
       position: absolute;
       left: 0;
@@ -392,11 +423,6 @@
     &[data-kind="cluster"] {
       font-weight: 500;
     }
-    &[data-density="compact"] {
-      gap: 0.25rem;
-      padding-inline: 0.375rem;
-      font-size: 0.6875rem;
-    }
   }
   .graph-explorer-card {
     position: relative;
@@ -415,12 +441,6 @@
     font-size: 0.75rem;
     overflow: hidden;
     cursor: pointer;
-    &[data-density="compact"] {
-      padding: 0.375rem 0.5rem;
-      & .graph-explorer-card-meta {
-        font-size: 0.6875rem;
-      }
-    }
     & .graph-explorer-health {
       inline-size: 100%;
       block-size: 8px;
@@ -450,10 +470,9 @@
       font-size: 0.6875rem;
     }
   }
-  .graph-explorer-card-enter {
-    position: absolute;
-    inset-inline-end: 0.5rem;
-    inset-block-end: 0.5rem;
+  .graph-explorer-card-actions {
+    display: flex;
+    justify-content: flex-end;
   }
   .graph-explorer-card-expand.btn {
     margin-inline-start: auto;
@@ -468,6 +487,69 @@
     text-overflow: ellipsis;
     min-inline-size: 0;
     flex: 1 1 auto;
+  }
+  /* the nodes layer's colour on what it draws: a chip, a card */
+  .graph-explorer :is(.graph-explorer-chip, .graph-explorer-card) {
+    border-color: color-mix(in oklch, var(--graph-explorer-nodes, var(--border)) 55%, var(--border));
+    background: color-mix(in oklch, var(--graph-explorer-nodes, var(--graph-node)) 9%, var(--graph-node));
+  }
+  /* a layer's part of a node: bordered and tinted in the layer's colour - a band in a card, a pill in a chip */
+  .graph-explorer-part {
+    --graph-explorer-layer: var(--muted-foreground);
+    box-sizing: border-box;
+    min-inline-size: 0;
+    border: 1px solid color-mix(in oklch, var(--graph-explorer-layer) 70%, transparent);
+    background: color-mix(in oklch, var(--graph-explorer-layer) 13%, transparent);
+    color: var(--graph-node-ink);
+    & .graph-explorer-card-meta,
+    & .graph-explorer-meter-row {
+      margin: 0;
+      color: inherit;
+    }
+    & .graph-explorer-count {
+      margin: 0;
+      color: inherit;
+    }
+    & .graph-explorer-health {
+      margin: 0.125rem 0;
+    }
+  }
+  :is(.graph-explorer-card, .graph-explorer-parts-only[data-tier="card"]) > .graph-explorer-part {
+    display: grid;
+    gap: 0.125rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: calc(var(--graph-radius) - 2px);
+  }
+  :is(.graph-explorer-chip, .graph-explorer-parts-only[data-tier="chip"]) > .graph-explorer-part {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.0625rem 0.3125rem;
+    border-radius: 999px;
+    line-height: 1;
+    &:first-of-type {
+      margin-inline-start: auto;
+    }
+  }
+  /* the parts of a node whose own layer is hidden */
+  .graph-explorer-parts-only {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    inline-size: 100%;
+    block-size: 100%;
+    box-sizing: border-box;
+    padding-inline: 0.25rem;
+    font-size: 0.75rem;
+    &[data-tier="card"] {
+      display: grid;
+      align-content: start;
+      padding: 0.375rem;
+      border-radius: var(--graph-radius);
+      background: color-mix(in oklch, var(--graph-node) 80%, transparent);
+      box-shadow: var(--shadow-xs);
+    }
   }
   .graph-explorer-count {
     margin-inline-start: auto;
@@ -539,7 +621,7 @@
     color: var(--foreground);
   }
 
-  /* the Health and Owners Node UIs */
+  /* the Health and Owners layers */
   .graph-explorer-health {
     display: flex;
     gap: 1px;
@@ -746,23 +828,57 @@
     padding: 0.375rem 0.5rem;
   }
 
-  .graph-explorer-node-ui {
+  /* the layer switch: a Toggle Group, every layer with its colour as an Indicator dot and its tint when shown;
+     Compact after a Separator - the toggles keep the Toggle's own sizes (a rule of the same weight here would win or
+     lose by the order the stylesheets come in: graphs.css loads after all.css, an app bundle sorts by name) */
+  .graph-explorer-layers {
     display: inline-flex;
-    gap: 0.125rem;
-    & .btn {
-      gap: 0.3rem;
-      block-size: 1.75rem;
-      padding-inline: 0.5rem;
-      font-size: 0.75rem;
-      &[aria-pressed="true"] {
-        background: var(--accent);
-        color: var(--accent-foreground);
-      }
+    align-items: center;
+    gap: 0.375rem;
+    min-inline-size: 0;
+    & .toggle-group {
+      gap: 0.25rem;
+    }
+    & .separator[data-orientation="vertical"] {
+      block-size: 1.25rem;
     }
     & .graph-explorer-icon {
       inline-size: 0.875rem;
       block-size: 0.875rem;
     }
+    & .toggle.graph-explorer-layer {
+      --graph-explorer-layer: var(--muted-foreground);
+      & .indicator-dot {
+        color: var(--graph-explorer-layer);
+        background-color: transparent;
+        box-shadow: inset 0 0 0 1.5px currentColor;
+      }
+      &:hover {
+        background-color: color-mix(in oklch, var(--graph-explorer-layer) 10%, transparent);
+      }
+      &[aria-pressed="true"] {
+        background-color: color-mix(in oklch, var(--graph-explorer-layer) 18%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--graph-explorer-layer) 60%, transparent);
+        color: var(--foreground);
+        & .indicator-dot {
+          background-color: currentColor;
+        }
+        &:hover {
+          background-color: color-mix(in oklch, var(--graph-explorer-layer) 28%, transparent);
+        }
+      }
+    }
+  }
+  /* an edge label in its layer's colour (a breaker's danger badge keeps its own) */
+  .graph-explorer-edge-label[data-layer]
+    > :is(
+      .graph-explorer-edge-pill,
+      .graph-explorer-edge-badge,
+      .graph-explorer-edge-count,
+      .graph-explorer-edge-icon
+    ):not([data-tone="danger"]) {
+    border-color: color-mix(in oklch, var(--graph-explorer-layer) 75%, transparent);
+    background: color-mix(in oklch, var(--graph-explorer-layer) 14%, var(--popover));
   }
   [data-graph-explorer-action="live"][aria-pressed="true"] {
     background: var(--primary);
@@ -1264,6 +1380,24 @@
     align-items: center;
     gap: 1rem;
   }
+  /* an expanded page's "Back to graph" points toward the graph: a row of its own above the head, at its start - at
+     its end when the details sit in a west region (the graph is then to their right). Any renderer that puts the
+     collapse action among its actions gets it. */
+  .graph-explorer-page-head:has(> .graph-explorer-detail-actions > [data-graph-explorer-action="collapse"]) {
+    position: relative;
+    padding-block-start: 2.75rem;
+    & > .graph-explorer-detail-actions > [data-graph-explorer-action="collapse"] {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+    }
+  }
+  :where(.border-layout-west)
+    .graph-explorer-page-head
+    > .graph-explorer-detail-actions
+    > [data-graph-explorer-action="collapse"] {
+    inset-inline: auto 0;
+  }
   .graph-explorer-page-title {
     margin: 0;
     font-size: 1.5rem;
@@ -1361,7 +1495,7 @@
     }
   }
   @container (max-width: 34rem) {
-    .graph-explorer-node-ui-label {
+    .graph-explorer-layer-label {
       position: absolute;
       inline-size: 1px;
       block-size: 1px;
@@ -1412,9 +1546,91 @@
       opacity: 0.35;
     }
   }
+  /* a change stays bright, then fades (the runtime takes the mark away when it ends) */
+  @keyframes graph-explorer-change-fade {
+    0%,
+    60% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* ---------------------------------------------------------- the Updates outlet: one compact row per change */
+  /* .virtual-list too: the list's own row height would win where its sheet comes later (an app bundle) */
+  .graph-explorer-updates.virtual-list,
+  .graph-explorer-updates {
+    --virtual-list-row-height: 2rem;
+    box-sizing: border-box;
+    block-size: 100%;
+    min-block-size: 6rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+
+    & .virtual-list-row {
+      padding: 0;
+    }
+  }
+  .graph-explorer-update {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: 2rem;
+    padding: 0 0.625rem;
+    border: 0;
+    border-block-end: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+    background: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 0.8125rem;
+    text-align: start;
+    cursor: pointer;
+
+    & > .indicator-dot {
+      color: var(--graph-explorer-layer, var(--graph-accent));
+      &[data-tone] {
+        color: var(--tone);
+      }
+    }
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+  .graph-explorer-update-label {
+    flex: 0 1 auto;
+    max-inline-size: 45%;
+    overflow: hidden;
+    font-weight: 500;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .graph-explorer-update-text {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .graph-explorer-update-time {
+    flex: none;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .graph-explorer .graph-explorer-edge {
+    .graph-explorer .graph-explorer-edge,
+    .graph-explorer :is(.graph-explorer-change-dot, .graph-explorer-edge-flash) {
       animation: none !important;
     }
     .graph-explorer :is(.graph-explorer-node, .graph-explorer-ring-item) {
@@ -1431,6 +1647,13 @@
     }
   }
   @media (forced-colors: active) {
+    .graph-explorer-part {
+      border-color: CanvasText;
+    }
+    .graph-explorer .graph-explorer-node > :is(.graph-explorer-chip, .graph-explorer-card) {
+      border-color: CanvasText;
+      background: Canvas;
+    }
     :is(.graph-explorer-chip, .graph-explorer-card, .graph-explorer-sign, .graph-explorer-ring-item) {
       border: 1px solid CanvasText;
       background: Canvas;
@@ -1439,6 +1662,21 @@
     }
     .graph-explorer .graph-explorer-edge {
       stroke: CanvasText;
+    }
+    .graph-explorer .graph-explorer-edge-flash {
+      stroke: Highlight;
+      filter: none;
+    }
+    .graph-explorer .graph-explorer-change-dot {
+      forced-color-adjust: none;
+      color: Highlight;
+      box-shadow: none;
+    }
+    .graph-explorer-update {
+      border-block-end-color: CanvasText;
+      &:is(:hover, :focus-visible) {
+        outline: 2px solid Highlight;
+      }
     }
     .graph-explorer .graph-explorer-edge-head {
       fill: CanvasText;

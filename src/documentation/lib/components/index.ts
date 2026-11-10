@@ -12,6 +12,7 @@ export { StatesSection } from './states-section';
 export { ApiSection } from './api-section';
 export { StatsClaim, StatsCards, CssOnlyStat, ComponentJsSplit } from './stats-claim';
 export { ChangelogEntries } from './changelog-entries';
+export { WhatsNewDialog } from './whats-new-dialog';
 export { ArchBody } from './arch-body';
 export { Demo } from './demo';
 export { TypeBadge, NavTypeBadge } from './type-badge';
@@ -21,3 +22,5 @@ export { DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Varia
 export { DeckRail } from './deck-rail';
 export { DeclaredStatesTable } from './declared-states';
 export { SectionBundleTable, SectionLoad, SectionTotal, AllTotal, ZipLink } from './section-bundles';
+export { UseCaseTable } from './use-case-index';
+export { WhatsNewPages } from './whats-new-pages';

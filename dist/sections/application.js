@@ -516,6 +516,168 @@ function syncState(layout) {
   else
     layout.dataset.stateName = name;
 }
+var stackOf = (region) => {
+  const pane = region && paneOf(region);
+  return pane?.classList.contains("border-layout-stack") ? pane : null;
+};
+var panelsOf = (stack) => Array.from(stack.children).filter((c) => c.classList.contains("panel"));
+var isRow = (stack, side) => stack.dataset.direction === "row" || stack.dataset.direction !== "column" && (side === "north" || side === "south");
+var extent = (panel, row) => {
+  const box = panel.getBoundingClientRect();
+  return row ? box.width : box.height;
+};
+var minOf = (panel) => {
+  const bar = dfDollar3(panel).children(".panel-header").get(0)?.getBoundingClientRect().height ?? 40;
+  return num(panel.dataset.min, Math.round(bar + 32));
+};
+var open = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
+var titleOf = (panel) => dfDollar3(panel).find(":scope > .panel-header .panel-title").text().trim() || panel.getAttribute("aria-label") || "";
+function exclusive(stack, again) {
+  if (!stack.hasAttribute("data-exclusive"))
+    return;
+  const opened = panelsOf(stack).filter(open);
+  const fresh = opened.filter((p) => p !== stack._open);
+  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
+  stack._open = keep;
+  for (const p of opened) {
+    if (p === keep)
+      continue;
+    if (p.api)
+      p.api.setState("minimized");
+    else if ((stack._waits = (stack._waits ?? 0) + 1) < 50)
+      setTimeout(again);
+  }
+}
+function syncStack(layout, side, region, stack) {
+  exclusive(stack, () => syncStack(layout, side, region, stack));
+  const row = isRow(stack, side);
+  const panels = panelsOf(stack);
+  for (const panel of panels.slice(1)) {
+    const prev = panel.previousElementSibling;
+    if (prev?.classList.contains("border-layout-stack-divider"))
+      continue;
+    dfDollar3(panel).before(dfDollar3(`<div class="border-layout-stack-divider" role="separator" aria-orientation="${row ? "vertical" : "horizontal"}" data-ce-chrome></div>`));
+  }
+  let last = null, pending = null;
+  for (const child of Array.from(stack.children)) {
+    if (child.classList.contains("border-layout-stack-divider")) {
+      child._prev = child._next = null;
+      if (last && !pending)
+        pending = child;
+      else if (!child.hidden)
+        child.hidden = true;
+    } else if (child.classList.contains("panel") && !child.hidden) {
+      if (pending) {
+        if (pending.hidden)
+          pending.hidden = false;
+        pending._prev = last;
+        pending._next = child;
+        pending = null;
+      }
+      last = child;
+    }
+  }
+  if (pending && !pending.hidden)
+    pending.hidden = true;
+  for (const d of dfDollar3(stack).children(".border-layout-stack-divider").toArray()) {
+    const live = !d.hidden && open(d._prev) && open(d._next);
+    d.setAttribute("aria-disabled", String(!live));
+    d.tabIndex = live ? 0 : -1;
+    if (!d._prev)
+      continue;
+    if (!d._prev.id)
+      d._prev.id = `${stack.id || layout.id || "stack"}-${Math.random().toString(36).slice(2, 7)}`;
+    d.setAttribute("aria-controls", d._prev.id);
+    d.setAttribute("aria-label", `Resize ${titleOf(d._prev) || "panel"}`);
+    if (live) {
+      const both = extent(d._prev, row) + extent(d._next, row);
+      d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
+      d.setAttribute("aria-valuemin", String(minOf(d._prev)));
+      d.setAttribute("aria-valuemax", String(Math.round(both - minOf(d._next))));
+    }
+  }
+  const shown = panels.filter((p) => !p.hidden);
+  const folded = shown.length > 0 && shown.every((p) => p.hasAttribute("data-minimized"));
+  region.toggleAttribute("data-panel-minimized", folded);
+  region.toggleAttribute("data-stack-closed", panels.length > 0 && !shown.length);
+  const handle = region.classList.contains("resizer") ? dfDollar3(region).children(".resizer-handle").get(0) : null;
+  if (handle)
+    handle.inert = folded || !shown.length;
+}
+function moveDivider(layout, side, divider, delta) {
+  const { _prev: a, _next: b } = divider;
+  if (!a || !b || !open(a) || !open(b))
+    return;
+  const stack = divider.parentElement;
+  const sizes = new Map(panelsOf(stack).filter(open).map((p) => [p, extent(p, isRow(stack, side))]));
+  const both = sizes.get(a) + sizes.get(b);
+  const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
+  sizes.set(a, next);
+  sizes.set(b, both - next);
+  for (const [p, px] of sizes)
+    p.style.setProperty("--border-layout-share", String(Math.round(px)));
+}
+function initStacks(layout) {
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    const stack = stackOf(region);
+    if (!stack || stack._stackInit)
+      continue;
+    stack._stackInit = true;
+    const sync = () => syncStack(layout, side, region, stack);
+    sync();
+    new MutationObserver((records) => {
+      const panel = (r) => r.target.parentElement === stack && r.target.classList.contains("panel");
+      if (records.some((r) => r.type === "childList" && r.target === stack || r.type === "attributes" && panel(r)))
+        sync();
+    }).observe(stack, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-minimized", "hidden"]
+    });
+    queueMicrotask(sync);
+    stack.addEventListener("pointerdown", (e) => {
+      const divider = e.target.closest?.(".border-layout-stack-divider");
+      if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
+        return;
+      e.preventDefault();
+      divider.setPointerCapture(e.pointerId);
+      divider.setAttribute("data-resizing", "");
+      let at = isRow(stack, side) ? e.clientX : e.clientY;
+      const move = (ev) => {
+        const pos = isRow(stack, side) ? ev.clientX : ev.clientY;
+        moveDivider(layout, side, divider, pos - at);
+        at = pos;
+        sync();
+      };
+      const end = () => {
+        divider.removeAttribute("data-resizing");
+        divider.removeEventListener("pointermove", move);
+        divider.removeEventListener("pointerup", end);
+        divider.removeEventListener("pointercancel", end);
+        save(layout);
+      };
+      divider.addEventListener("pointermove", move);
+      divider.addEventListener("pointerup", end);
+      divider.addEventListener("pointercancel", end);
+    });
+    stack.addEventListener("keydown", (e) => {
+      const divider = e.target.closest?.(".border-layout-stack-divider");
+      if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
+        return;
+      const step = e.shiftKey ? 100 : 10;
+      const back = isRow(stack, side) ? "ArrowLeft" : "ArrowUp", fwd = isRow(stack, side) ? "ArrowRight" : "ArrowDown";
+      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
+      if (!delta)
+        return;
+      e.preventDefault();
+      moveDivider(layout, side, divider, delta);
+      sync();
+      save(layout);
+    });
+  }
+}
 var saved = new Map;
 var savedFor = (layout) => {
   const key = `defuss-shadcn:border-layout:${layout.dataset.save}`;
@@ -532,11 +694,18 @@ function save(layout) {
   const data = {};
   for (const side of REGIONS) {
     const region = regionOf(layout, side);
-    if (!region?.classList.contains("resizer"))
+    const stack = stackOf(region);
+    const weights = stack ? panelsOf(stack).map((p) => num(p.style.getPropertyValue("--border-layout-share"), 0) || null) : null;
+    if (!region?.classList.contains("resizer")) {
+      if (weights)
+        data[side] = { stack: weights };
       continue;
+    }
     const pane = paneOf(region);
     const px = Math.round(num(pane?.style[SIDES[side].size], NaN));
     data[side] = { size: Number.isFinite(px) ? px : null, collapsed: region.hasAttribute("data-collapsed") };
+    if (weights)
+      data[side].stack = weights;
   }
   savedFor(layout).set(data);
 }
@@ -554,7 +723,14 @@ function restore(layout) {
       continue;
     if (saved.size)
       setSize(region, side, saved.size);
-    region.toggleAttribute("data-collapsed", !!saved.collapsed);
+    if (region.classList.contains("resizer"))
+      region.toggleAttribute("data-collapsed", !!saved.collapsed);
+    const stack = stackOf(region);
+    if (stack && Array.isArray(saved.stack))
+      panelsOf(stack).forEach((p, i) => {
+        if (saved.stack[i])
+          p.style.setProperty("--border-layout-share", String(saved.stack[i]));
+      });
   }
   layout._restoring = false;
 }
@@ -625,6 +801,7 @@ function init3() {
       region._authored = sizeOf(region, side) || null;
     }
     restore(layout);
+    initStacks(layout);
     const before = (e) => {
       const handle = e.target.closest?.(".resizer-handle");
       if (!handle || handle.parentElement?.parentElement !== layout)
@@ -1588,7 +1765,7 @@ var windowStates = ["default", "maximized", "minimized", "closed"];
 var topZ = 10;
 var KEEP = 48;
 var resolve4 = (target) => typeof target === "string" ? dfDollar6("#" + CSS.escape(target)).get(0) ?? dfDollar6(target).get(0) : target;
-var titleOf = (w) => dfDollar6(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
+var titleOf2 = (w) => dfDollar6(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 function moveTo(w, x, y) {
   const parent = w.offsetParent;
@@ -1617,7 +1794,7 @@ function raise(w) {
       o.removeAttribute("data-active");
   });
   w.setAttribute("data-active", "");
-  w.dispatchEvent(new CustomEvent("window-focus", { bubbles: true, detail: { title: titleOf(w) } }));
+  w.dispatchEvent(new CustomEvent("window-focus", { bubbles: true, detail: { title: titleOf2(w) } }));
 }
 function showQuietly(w) {
   const prev = document.activeElement;
@@ -2469,5 +2646,5 @@ df$7.docComments = {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=2EA41D833531609364756E2164756E21
+//# debugId=4947DC8825CB136B64756E2164756E21
 //# sourceMappingURL=application.js.map

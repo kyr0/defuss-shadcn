@@ -1479,7 +1479,13 @@ function canvasesOf(root) {
     return dfDollar(delta).find(".diagram-canvas").toArray();
   return dfDollar(root).children(".diagram-canvas").toArray();
 }
+function sameShown(a, b) {
+  if (!a || !b || a.name !== b.name)
+    return false;
+  return JSON.stringify(a.config ?? {}) === JSON.stringify(b.config ?? {});
+}
 function triggerStateChange(root, state) {
+  const unchanged = sameShown(root._shown, state);
   applyMarkup(root, state);
   clearTimeout(root._timer);
   const { max } = stepPlan(root);
@@ -1496,7 +1502,8 @@ function triggerStateChange(root, state) {
   }
   const wasActive = root._shown?.name === "active" ? root._shown.config?.ref ?? null : null;
   root._shown = state;
-  sync(root);
+  if (!unchanged)
+    sync(root);
   const ref = state.name === "active" ? state.config?.ref ?? null : null;
   const about = describe(root, ref);
   updateOutputs(root, about);
@@ -1774,6 +1781,7 @@ df$.diagram = {
     dfDollar(root).children(".diagram-delta").remove();
     dfDollar(root).html(markupOf(merged));
     setup(root);
+    root._shown = null;
     if (root.api)
       triggerStateChange(root, root.store?.value ?? { name: "default", config: {} });
     return root;
@@ -2297,5 +2305,5 @@ function init2() {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=DD69FB7DEA5CDD9964756E2164756E21
+//# debugId=3B66F9F6AE26F8F864756E2164756E21
 //# sourceMappingURL=diagrams.js.map

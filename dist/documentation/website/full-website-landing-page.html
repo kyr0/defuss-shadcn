@@ -616,12 +616,277 @@
     opacity: 0.22;
     mix-blend-mode: multiply;
   }
+  /* a part a route leaves out stays out, whatever display its block gives it */
+  #top [hidden] {
+    display: none !important;
+  }
+  /* a page of its own - a post, a product, a legal page - on the site's 72rem grid */
+  #top .lp-page {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 74.5rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  #top .lp-back {
+    margin-block-end: 1.5rem;
+  }
+  #top .lp-post {
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+  #top .lp-post .mk-article-header-title {
+    font-weight: 800;
+    letter-spacing: -0.035em;
+  }
+  #top .lp-post .mk-article-body {
+    margin-block: 2rem 3rem;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  #top .lp-post .mk-article-body h2 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #top .lp-cover img {
+    border-radius: calc(var(--radius) * 1.5);
+  }
+  #top .lp-related {
+    margin-block: 3rem 2rem;
+  }
+  #top .lp-related-title {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #top .lp-related-list {
+    display: grid;
+    gap: 1rem;
+  }
+  #top .lp-related-more {
+    margin: 1rem 0 0;
+  }
+  #top :is(.lp-related-more, .lp-product-more, .lp-legal-contact) a {
+    color: var(--primary);
+    font-weight: 600;
+    text-underline-offset: 3px;
+  }
+  #top .lp-product .mk-section-header-title {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+  #top .lp-product-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+    margin-block: 2.5rem;
+  }
+  @media (min-width: 56rem) {
+    #top .lp-product-grid {
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 4rem;
+    }
+  }
+  #top .lp-product-shot {
+    margin: 0;
+  }
+  #top .lp-product-shot img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+  #top .lp-points {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #top .lp-points li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    column-gap: 0.875rem;
+  }
+  #top .lp-points li::before {
+    content: '✓';
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    color: var(--primary);
+    font-weight: 800;
+  }
+  #top .lp-points strong {
+    font-size: 1.0625rem;
+  }
+  #top .lp-points span {
+    color: var(--muted-foreground);
+  }
+  #top .lp-product-quote {
+    margin: 3rem 0;
+    padding: 2rem clamp(1.5rem, 4vw, 3rem);
+    border-radius: calc(var(--radius) * 1.5);
+    background: var(--lp-band);
+    font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  #top .lp-product-quote p {
+    margin: 0 0 0.75rem;
+  }
+  #top .lp-product-quote footer {
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  #top .lp-product-more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+    color: var(--muted-foreground);
+  }
+  #top .lp-legal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem 4rem;
+    align-items: start;
+  }
+  @media (min-width: 52rem) {
+    #top .lp-legal {
+      grid-template-columns: 13rem minmax(0, 46rem);
+    }
+    #top .lp-legal-nav {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+  #top .lp-legal-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  #top .lp-legal-nav :is(a, button) {
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-weight: 500;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  #top .lp-legal-nav :is(a, button):hover,
+  #top .lp-legal-nav a[aria-current] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  #top .lp-legal-title {
+    margin: 0;
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+  #top .lp-legal-updated {
+    margin: 0.75rem 0 1.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+  }
+  #top .lp-legal-lead {
+    margin: 0 0 1rem;
+    font-size: 1.1875rem;
+    line-height: 1.55;
+  }
+  #top .lp-legal-body {
+    line-height: 1.7;
+  }
+  #top .lp-legal-body h2 {
+    margin: 2rem 0 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #top .lp-legal-body p {
+    margin: 0;
+  }
+  #top .lp-legal-contact {
+    margin-block-start: 2.5rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--border);
+    color: var(--muted-foreground);
+  }
+  /* buttons that read like the links next to them: Book a demo in the FAQ, Demo and Cookie Settings in the footer */
+  #top button.mk-faq-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+  }
+  #top .lp-foot-button {
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+  #top .lp-foot-button:hover {
+    color: var(--foreground);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  #top :is(.lp-foot-button, .lp-legal-nav button):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  #top .lp-subscribed {
+    margin: 0.75rem 0 0;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  #top .mk-hero-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  /* the dialogs: two fields side by side where there is room */
+  .lp-dialog .lp-dialog-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 1rem;
+  }
+  .lp-dialog .lp-field {
+    display: grid;
+    gap: 0.375rem;
+  }
+  .lp-dialog .lp-field[data-span='full'] {
+    grid-column: 1 / -1;
+  }
+  .lp-dialog .lp-dialog-done {
+    display: grid;
+    gap: 0.75rem;
+  }
 </style>
 <div id="top" data-look="daybreak" data-i18n-component style="display: flex; flex-direction: column; width: 100%">
   <div>
     <header class="mk-header" data-variant="sticky" style="width: 100%">
       <div class="mk-header-inner">
-        <a href="#" class="mk-header-brand"
+        <a href="#/" data-router-link class="mk-header-brand"
           ><svg
             viewBox="0 0 24 24"
             width="24"
@@ -653,11 +918,15 @@
                   <path d="m6 9 6 6 6-6"></path></svg
               ></button>
               <div class="nav-menu-content" id="mk-sh-products" popover>
-                <a class="nav-menu-content-link" href="#"
+                <a class="nav-menu-content-link" href="#/product/analytics" data-router-link
                   ><strong>Analytics</strong><p data-i18n-target="lp-2-1">View your dashboard and metrics</p></a
                 >
-                <a class="nav-menu-content-link" href="#"
+                <a class="nav-menu-content-link" href="#/product/automation" data-router-link
                   ><strong>Automation</strong><p data-i18n-target="lp-3-1">Build workflows and integrations</p></a
+                >
+                <a class="nav-menu-content-link" href="#/product/integrations" data-router-link
+                  ><strong>Integrations</strong
+                  ><p data-i18n-target="lp-nav-int">Connect the tools you already use</p></a
                 >
               </div>
             </li>
@@ -684,18 +953,19 @@
             <option value="midnight" data-i18n-target="look-midnight">Midnight</option>
             <option value="sunbeam" data-i18n-target="look-sunbeam">Sunbeam</option>
           </select>
-          <select
-            class="select"
-            data-size="sm"
+          <div
+            class="language-switcher"
             data-app-locale
+            role="group"
             aria-label="Language"
             data-i18n-aria-label-en="Language"
             data-i18n-aria-label-de="Sprache"
-            style="width: auto"
-          >
-            <option value="en" lang="en">English</option>
-            <option value="de" lang="de">Deutsch</option>
-          </select>
+            data-languages="en de"
+            data-value="en"
+            data-size="sm"
+            data-flag-shape="rounded"
+            data-align="end"
+          ></div>
           <label class="swap site-mode" data-variant="rotate" data-size="sm">
             <input
               type="checkbox"
@@ -707,10 +977,21 @@
             <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
             <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
           </label>
-          <button type="button" class="btn mk-header-wide" data-variant="ghost" data-size="sm" data-i18n-target="lp-6-1"
-            >Login</button
+          <a
+            class="btn mk-header-wide"
+            data-variant="ghost"
+            data-size="sm"
+            href="full-website-account-states.html"
+            data-i18n-target="lp-6-1"
+            >Login</a
           >
-          <button type="button" class="btn mk-header-wide" data-size="sm" data-i18n-target="lp-7-1">Get started</button>
+          <a
+            class="btn mk-header-wide"
+            data-size="sm"
+            href="full-website-account-states.html#/sign-up"
+            data-i18n-target="lp-7-1"
+            >Get started</a
+          >
           <button
             type="button"
             class="btn mk-header-menu"
@@ -755,25 +1036,48 @@
             <p class="mk-header-sheet-label" data-i18n-target="lp-1-2">Products</p>
             <ul class="mk-header-sheet-nav">
               <li
-                ><a href="#" data-sheet-close>Analytics <small>Dashboards</small></a></li
+                ><a href="#/product/analytics" data-router-link data-sheet-close
+                  >Analytics <small data-i18n-target="lp-sheet-1">Dashboards</small></a
+                ></li
               >
               <li
-                ><a href="#" data-sheet-close>Automation <small>Workflows</small></a></li
+                ><a href="#/product/automation" data-router-link data-sheet-close
+                  >Automation <small data-i18n-target="lp-sheet-2">Workflows</small></a
+                ></li
+              >
+              <li
+                ><a href="#/product/integrations" data-router-link data-sheet-close
+                  >Integrations <small data-i18n-target="lp-sheet-3">Connections</small></a
+                ></li
               >
             </ul>
             <p class="mk-header-sheet-label" data-i18n-target="lp-8-1">Company</p>
             <ul class="mk-header-sheet-nav">
-              <li><a href="#" data-sheet-close data-i18n-target="lp-5-2">Pricing</a></li>
+              <li><a href="#/features" data-router-link data-sheet-close data-i18n-target="lp-sheet-4">Features</a></li>
+              <li><a href="#/pricing" data-router-link data-sheet-close data-i18n-target="lp-5-2">Pricing</a></li>
+              <li><a href="#/blog" data-router-link data-sheet-close>Blog</a></li>
+              <li><a href="#/faq" data-router-link data-sheet-close>FAQ</a></li>
             </ul>
           </div>
           <div class="sheet-footer mk-header-sheet-actions">
-            <button type="button" class="btn" data-variant="outline" data-i18n-target="lp-6-2">Login</button>
-            <button type="button" class="btn" data-i18n-target="lp-7-2">Get started</button>
+            <a class="btn" data-variant="outline" href="full-website-account-states.html" data-i18n-target="lp-6-2"
+              >Login</a
+            >
+            <a class="btn" href="full-website-account-states.html#/sign-up" data-i18n-target="lp-7-2">Get started</a>
           </div>
         </div>
       </dialog>
     </header>
-    <section class="parallax" aria-label="Introduction" style="padding-block: clamp(4rem, 10vw, 8rem) 2rem">
+    <!-- the route announcer: says where a link went - the section or the page - for screen readers -->
+    <p class="sr-only" role="status" data-lp-announce></p>
+    <section
+      class="parallax"
+      aria-label="Introduction"
+      data-i18n-aria-label-en="Introduction"
+      data-i18n-aria-label-de="Einleitung"
+      data-lp-home
+      style="padding-block: clamp(4rem, 10vw, 8rem) 2rem"
+    >
       <div class="parallax-layer" data-depth="far" aria-hidden="true">
         <div
           class="shader lp-light lp-look-only"
@@ -849,7 +1153,16 @@
               contexts.</p
             >
             <div class="mk-hero-actions"
-              ><button type="button" class="btn" data-i18n-target="lp-12-1">Get Started</button></div
+              ><a class="btn" href="full-website-account-states.html#/sign-up" data-i18n-target="lp-12-1">Get Started</a
+              ><button
+                type="button"
+                class="btn"
+                data-variant="outline"
+                commandfor="lp-demo-dialog"
+                command="show-modal"
+                data-i18n-target="lp-hero-demo"
+                >Book a demo</button
+              ></div
             >
             <ul
               class="lp-gone"
@@ -866,7 +1179,7 @@
       </div>
     </section>
   </div>
-  <div class="parallax-reveal" data-reveal="zoom" style="padding-inline: 1.25rem">
+  <div class="parallax-reveal" data-reveal="zoom" data-lp-home style="padding-inline: 1.25rem">
     <figure class="mk-showcase frame-window drop-shadow-float" style="width: 100%">
       <img
         class="mk-showcase-poster"
@@ -894,7 +1207,7 @@
       </button>
     </figure>
   </div>
-  <div class="parallax-reveal lp-band">
+  <div id="lp-customers" class="parallax-reveal lp-band" data-lp-home>
     <section class="mk-logos" style="width: 100%">
       <div class="mk-logos-row">
         <a class="mk-logo" href="https://vercel.com" target="_blank" rel="noopener noreferrer"
@@ -933,7 +1246,7 @@
       <p class="mk-logos-caption" data-i18n-target="lp-13-1">Trusted by leading companies</p>
     </section>
   </div>
-  <div id="lp-features" class="parallax-reveal">
+  <div id="lp-features" class="parallax-reveal" data-lp-home>
     <section class="mk-features" style="width: 100%">
       <div class="mk-features-head">
         <span class="mk-features-eyebrow" data-i18n-target="lp-14-1">Benefits</span>
@@ -1057,7 +1370,7 @@
     </section>
   </div>
   <!-- the workflow, flown through: the stage pins while the words pass (the Parallax page's fly-through) -->
-  <div style="padding-inline: 1.25rem">
+  <div data-lp-home style="padding-inline: 1.25rem">
     <section
       class="parallax"
       data-sticky
@@ -1292,7 +1605,7 @@
       </div>
     </section>
   </div>
-  <div class="parallax-reveal" style="padding-block-end: 2rem">
+  <div class="parallax-reveal" data-lp-home style="padding-block-end: 2rem">
     <section class="mk-stats" style="width: 100%">
       <div class="mk-stats-layout">
         <div class="mk-stats-copy">
@@ -1324,7 +1637,15 @@
                 ></span
               >
               <span class="mk-stat-label" data-i18n-target="lp-33-1">Projects completed</span>
-              <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our clients</a>
+              <a
+                href="#/customers"
+                data-router-link
+                class="btn mk-stat-link"
+                data-variant="link"
+                data-size="default"
+                data-i18n-target="lp-stat-1"
+                >Our clients</a
+              >
             </div>
             <div class="mk-stat">
               <span class="mk-stat-value"
@@ -1346,7 +1667,15 @@
                 ></span
               >
               <span class="mk-stat-label" data-i18n-target="lp-34-1">Delivery across teams</span>
-              <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Learn more</a>
+              <a
+                href="#/features"
+                data-router-link
+                class="btn mk-stat-link"
+                data-variant="link"
+                data-size="default"
+                data-i18n-target="lp-stat-2"
+                >Learn more</a
+              >
             </div>
             <div class="mk-stat">
               <span class="mk-stat-value"
@@ -1368,7 +1697,15 @@
                 ></span
               >
               <span class="mk-stat-label" data-i18n-target="lp-35-1">User satisfaction</span>
-              <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">See feedback</a>
+              <a
+                href="#/testimonials"
+                data-router-link
+                class="btn mk-stat-link"
+                data-variant="link"
+                data-size="default"
+                data-i18n-target="lp-stat-3"
+                >See feedback</a
+              >
             </div>
             <div class="mk-stat">
               <span class="mk-stat-value"
@@ -1390,7 +1727,15 @@
                 ></span
               >
               <span class="mk-stat-label" data-i18n-target="lp-36-1">With active customers</span>
-              <a href="#" class="btn mk-stat-link" data-variant="link" data-size="default">Our users</a>
+              <a
+                href="#/product/analytics"
+                data-router-link
+                class="btn mk-stat-link"
+                data-variant="link"
+                data-size="default"
+                data-i18n-target="lp-stat-4"
+                >Our users</a
+              >
             </div>
           </div>
         </div>
@@ -1400,7 +1745,7 @@
       </div>
     </section>
   </div>
-  <div class="parallax-reveal lp-band">
+  <div id="lp-testimonials" class="parallax-reveal lp-band" data-lp-home>
     <section class="mk-testimonials" style="width: 100%">
       <div class="mk-testimonial-quote-block">
         <div class="mk-testimonial-context"
@@ -1468,9 +1813,9 @@
             ><p>Acme cut our planning meetings in half. The roadmap finally writes itself.</p></blockquote
           >
           <figcaption class="mk-testimonial-card-author"
-            ><span class="avatar"><span class="avatar-fallback">AH</span></span
+            ><span class="avatar"><span class="avatar-fallback">JW</span></span
             ><span class="mk-testimonial-card-info"
-              ><span class="mk-testimonial-card-name">Aron Homberg</span
+              ><span class="mk-testimonial-card-name">Jonas Weber</span
               ><span class="mk-testimonial-card-role">Product Manager</span></span
             ></figcaption
           >
@@ -1586,6 +1931,7 @@
     aria-label="Pricing"
     data-i18n-aria-label-en="Pricing"
     data-i18n-aria-label-de="Preise"
+    data-lp-home
     style="padding-block: 3rem"
   >
     <div class="parallax-layer" data-depth="far" aria-hidden="true">
@@ -1667,8 +2013,13 @@
               >
             </div>
             <div class="mk-plan-cta"
-              ><button type="button" class="btn" data-variant="outline" data-size="lg" data-i18n-target="lp-7-3"
-                >Get started</button
+              ><a
+                class="btn"
+                data-variant="outline"
+                data-size="lg"
+                href="full-website-account-states.html#/sign-up"
+                data-i18n-target="lp-7-3"
+                >Get started</a
               ></div
             >
             <ul class="mk-plan-features">
@@ -1789,7 +2140,13 @@
                 >
               </div>
               <div class="mk-plan-cta"
-                ><button type="button" class="btn" data-size="lg" data-i18n-target="lp-7-4">Get started</button></div
+                ><a
+                  class="btn"
+                  data-size="lg"
+                  href="full-website-account-states.html#/sign-up"
+                  data-i18n-target="lp-7-4"
+                  >Get started</a
+                ></div
               >
               <ul class="mk-plan-features">
                 <li class="mk-plan-feature"
@@ -1902,8 +2259,13 @@
               >
             </div>
             <div class="mk-plan-cta"
-              ><button type="button" class="btn" data-variant="outline" data-size="lg" data-i18n-target="lp-7-5"
-                >Get started</button
+              ><a
+                class="btn"
+                data-variant="outline"
+                data-size="lg"
+                href="full-website-account-states.html#/sign-up"
+                data-i18n-target="lp-7-5"
+                >Get started</a
               ></div
             >
             <ul class="mk-plan-features">
@@ -1973,7 +2335,7 @@
       </section>
     </div>
   </section>
-  <div class="parallax-reveal lp-band">
+  <div id="lp-blog" class="parallax-reveal lp-band" data-lp-home>
     <section class="mk-blog" style="width: 100%">
       <div class="mk-blog-head">
         <div class="mk-blog-head-copy">
@@ -1983,16 +2345,22 @@
             >Insights, tips, and stories to help you work smarter and finish faster.</p
           >
         </div>
-        <a href="#" class="btn mk-blog-see-all" data-variant="secondary">See all</a>
+        <a
+          href="full-website-blog.html"
+          class="btn mk-blog-see-all"
+          data-variant="secondary"
+          data-i18n-target="lp-blog-all"
+          >See all</a
+        >
       </div>
       <div class="mk-blog-grid">
-        <a href="#" class="mk-blog-card">
+        <a href="#/blog/flow" data-router-link class="mk-blog-card">
           <figure class="mk-blog-media corner-squircle" style="--shape-round: 1.75rem"
             ><img alt="A person typing on a laptop" src="https://picsum.photos/id/1/900/600"
           /></figure>
           <div class="mk-blog-body">
             <div class="mk-blog-meta"
-              ><span class="mk-blog-category">Productivity</span
+              ><span class="mk-blog-category" data-i18n-target="lp-post-1-cat">Productivity</span
               ><span class="mk-blog-read"
                 ><svg
                   viewBox="0 0 24 24"
@@ -2011,8 +2379,8 @@
               ></div
             >
             <div class="mk-blog-copy">
-              <h3 class="mk-blog-card-title">5 Ways AI Helps Teams Stay in Flow</h3>
-              <p class="mk-blog-excerpt"
+              <h3 class="mk-blog-card-title" data-i18n-target="lp-post-1-title">5 Ways AI Helps Teams Stay in Flow</h3>
+              <p class="mk-blog-excerpt" data-i18n-target="lp-post-1-excerpt"
                 >Discover simple ways to cut distractions and keep your team focused on meaningful work.</p
               >
             </div>
@@ -2025,13 +2393,13 @@
             >
           </div>
         </a>
-        <a href="#" class="mk-blog-card">
+        <a href="#/blog/context" data-router-link class="mk-blog-card">
           <figure class="mk-blog-media corner-squircle" style="--shape-round: 1.75rem"
             ><img alt="A phone, a watch, headphones and a notebook on a desk" src="https://picsum.photos/id/26/900/600"
           /></figure>
           <div class="mk-blog-body">
             <div class="mk-blog-meta"
-              ><span class="mk-blog-category">Workflow</span
+              ><span class="mk-blog-category" data-i18n-target="lp-post-2-cat">Workflow</span
               ><span class="mk-blog-read"
                 ><svg
                   viewBox="0 0 24 24"
@@ -2050,8 +2418,8 @@
               ></div
             >
             <div class="mk-blog-copy">
-              <h3 class="mk-blog-card-title">The End of Context Switching</h3>
-              <p class="mk-blog-excerpt"
+              <h3 class="mk-blog-card-title" data-i18n-target="lp-post-2-title">The End of Context Switching</h3>
+              <p class="mk-blog-excerpt" data-i18n-target="lp-post-2-excerpt"
                 >How AI keeps your focus where it matters and removes the friction between your tools.</p
               >
             </div>
@@ -2064,13 +2432,13 @@
             >
           </div>
         </a>
-        <a href="#" class="mk-blog-card">
+        <a href="#/blog/small-teams" data-router-link class="mk-blog-card">
           <figure class="mk-blog-media corner-squircle" style="--shape-round: 1.75rem"
             ><img alt="A laptop on a café table" src="https://picsum.photos/id/48/900/600"
           /></figure>
           <div class="mk-blog-body">
             <div class="mk-blog-meta"
-              ><span class="mk-blog-category">Startups</span
+              ><span class="mk-blog-category" data-i18n-target="lp-post-3-cat">Startups</span
               ><span class="mk-blog-read"
                 ><svg
                   viewBox="0 0 24 24"
@@ -2089,15 +2457,15 @@
               ></div
             >
             <div class="mk-blog-copy">
-              <h3 class="mk-blog-card-title">Why Small Teams Win Big with AI</h3>
-              <p class="mk-blog-excerpt"
+              <h3 class="mk-blog-card-title" data-i18n-target="lp-post-3-title">Why Small Teams Win Big with AI</h3>
+              <p class="mk-blog-excerpt" data-i18n-target="lp-post-3-excerpt"
                 >Lean setups, smarter workflows, and faster delivery for teams that punch above their weight.</p
               >
             </div>
             <div class="mk-blog-author"
-              ><span class="avatar"><span class="avatar-fallback">AH</span></span
+              ><span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/160?img=12" alt="" /></span
               ><div class="flex flex-col"
-                ><span class="mk-blog-author-name">Aron Homberg</span
+                ><span class="mk-blog-author-name">Leon Brandt</span
                 ><time class="mk-blog-author-date" datetime="2026-09-04">4 Sept, 2026</time></div
               ></div
             >
@@ -2106,7 +2474,7 @@
       </div>
     </section>
   </div>
-  <div id="lp-faq" class="parallax-reveal">
+  <div id="lp-faq" class="parallax-reveal" data-lp-home>
     <section class="mk-faq" style="width: 100%">
       <div class="mk-faq-head">
         <span class="mk-faq-eyebrow" data-i18n-target="lp-63-1">Support</span>
@@ -2139,7 +2507,8 @@
             ><p class="mk-faq-answer"
               >A personal AI workspace that helps teams cut context switching and finish faster.</p
             ><a class="mk-faq-link" href="#/features" data-router-link
-              >How Acme AI works<svg
+              ><span data-i18n-target="lp-faq-how">How Acme AI works</span
+              ><svg
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -2173,8 +2542,9 @@
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">Who is Acme AI for?</h3
             ><p class="mk-faq-answer">Creators, teams, and businesses of all sizes.</p
-            ><a class="mk-faq-link" href="#"
-              >Who uses Acme<svg
+            ><a class="mk-faq-link" href="#/customers" data-router-link
+              ><span data-i18n-target="lp-faq-who">Who uses Acme</span
+              ><svg
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -2209,7 +2579,8 @@
             ><h3 class="mk-faq-question">How much does it cost?</h3
             ><p class="mk-faq-answer">Flexible plans starting at 199 USD - see the pricing section.</p
             ><a class="mk-faq-link" href="#/pricing" data-router-link
-              >Compare the plans<svg
+              ><span data-i18n-target="lp-faq-plans">Compare the plans</span
+              ><svg
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -2243,8 +2614,9 @@
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">Do I need technical skills?</h3
             ><p class="mk-faq-answer">No. It works out of the box with minimal setup.</p
-            ><a class="mk-faq-link" href="#"
-              >The setup guide<svg
+            ><a class="mk-faq-link" href="full-website-docs-help.html#/docs/quick-start"
+              ><span data-i18n-target="lp-faq-setup">The setup guide</span
+              ><svg
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -2282,8 +2654,9 @@
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">Can I try it before I buy?</h3
             ><p class="mk-faq-answer">Yes - we offer a demo so you can see how it fits your workflow.</p
-            ><a class="mk-faq-link" href="#"
-              >Book a demo<svg
+            ><button type="button" class="mk-faq-link" commandfor="lp-demo-dialog" command="show-modal"
+              ><span data-i18n-target="lp-faq-demo">Book a demo</span
+              ><svg
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -2295,7 +2668,7 @@
                 aria-hidden="true"
               >
                 <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path></svg></a
+                <path d="m12 5 7 7-7 7"></path></svg></button
           ></div>
         </article>
         <article class="mk-faq-item">
@@ -2317,8 +2690,9 @@
           <div class="mk-faq-text"
             ><h3 class="mk-faq-question">How does Acme handle my data?</h3
             ><p class="mk-faq-answer">All data is encrypted and never shared with third parties.</p
-            ><a class="mk-faq-link" href="#"
-              >Security & privacy<svg
+            ><a class="mk-faq-link" href="#/legal/security" data-router-link
+              ><span data-i18n-target="lp-faq-security">Security &amp; privacy</span
+              ><svg
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
@@ -2336,6 +2710,177 @@
       </div>
     </section>
   </div>
+  <!-- a page of its own: a blog post, a product or a legal page - filled from the data block #lp-pages -->
+  <div class="lp-page" data-lp-page hidden>
+    <article class="lp-post" data-lp-view="post" aria-labelledby="lp-post-title">
+      <a class="btn lp-back" data-variant="ghost" data-size="sm" href="#/blog" data-router-link
+        ><svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m12 19-7-7 7-7"></path>
+          <path d="M19 12H5"></path></svg
+        ><span data-i18n-target="lp-back-blog">All posts</span></a
+      >
+      <header class="mk-article-header">
+        <a class="mk-article-header-category" href="#/blog" data-router-link data-lp-field="category">Productivity</a>
+        <h1 class="mk-article-header-title" id="lp-post-title" data-lp-field="title">
+          5 Ways AI Helps Teams Stay in Flow
+        </h1>
+        <p class="mk-article-header-subtitle" data-lp-field="subtitle"></p>
+        <div class="mk-article-header-byline">
+          <span class="avatar"
+            ><img class="avatar-image" data-lp-avatar src="https://i.pravatar.cc/160?img=47" alt=""
+          /></span>
+          <div>
+            <span class="mk-article-header-author" data-lp-field="author">Sophie Tan</span>
+            <div class="mk-article-header-meta"
+              ><time data-lp-date datetime="2026-09-04">4 September 2026</time
+              ><span data-lp-minutes>8 min read</span></div
+            >
+          </div>
+        </div>
+        <figure class="mk-article-header-media lp-cover"
+          ><img data-lp-cover src="https://picsum.photos/id/1/1600/800" alt=""
+        /></figure>
+      </header>
+      <div class="mk-article-body" data-lp-body></div>
+      <section class="mk-author-bio" aria-labelledby="lp-bio-name">
+        <span class="avatar" data-size="lg"
+          ><img class="avatar-image" data-lp-avatar src="https://i.pravatar.cc/160?img=47" alt=""
+        /></span>
+        <div class="mk-author-bio-body">
+          <span class="mk-author-bio-label" data-i18n-target="lp-written-by">Written by</span>
+          <h2 class="mk-author-bio-name" id="lp-bio-name" data-lp-field="author">Sophie Tan</h2>
+          <p class="mk-author-bio-text" data-lp-field="bio"></p>
+        </div>
+      </section>
+      <section class="lp-related" aria-labelledby="lp-related-title">
+        <h2 class="lp-related-title" id="lp-related-title" data-i18n-target="lp-related">More from the blog</h2>
+        <div class="lp-related-list">
+          <article class="mk-related-item" data-lp-related>
+            <figure class="mk-related-item-media"><img src="https://picsum.photos/id/26/480/320" alt="" /></figure>
+            <div class="mk-related-item-body">
+              <span class="mk-related-item-kind" data-lp-related-kind>Workflow</span>
+              <h3 class="mk-related-item-title"
+                ><a href="#/blog/context" data-router-link data-lp-related-link>The End of Context Switching</a></h3
+              >
+              <p class="mk-related-item-meta" data-lp-related-meta>7 min read</p>
+            </div>
+          </article>
+          <article class="mk-related-item" data-lp-related>
+            <figure class="mk-related-item-media"><img src="https://picsum.photos/id/48/480/320" alt="" /></figure>
+            <div class="mk-related-item-body">
+              <span class="mk-related-item-kind" data-lp-related-kind>Startups</span>
+              <h3 class="mk-related-item-title"
+                ><a href="#/blog/small-teams" data-router-link data-lp-related-link
+                  >Why Small Teams Win Big with AI</a
+                ></h3
+              >
+              <p class="mk-related-item-meta" data-lp-related-meta>3 min read</p>
+            </div>
+          </article>
+        </div>
+        <p class="lp-related-more"
+          ><a href="full-website-blog.html" data-i18n-target="lp-blog-more">Read every post on the Acme blog</a></p
+        >
+      </section>
+      <nav
+        class="mk-article-nav"
+        aria-label="More posts"
+        data-i18n-aria-label-en="More posts"
+        data-i18n-aria-label-de="Weitere Beiträge"
+      >
+        <a class="mk-article-nav-link" href="#/blog/small-teams" data-router-link rel="prev"
+          ><span class="mk-article-nav-dir"><span data-i18n-target="lp-prev">Previous</span></span
+          ><span class="mk-article-nav-title" data-lp-near>Why Small Teams Win Big with AI</span></a
+        >
+        <a class="mk-article-nav-link" href="#/blog/context" data-router-link rel="next"
+          ><span class="mk-article-nav-dir"><span data-i18n-target="lp-next">Next</span></span
+          ><span class="mk-article-nav-title" data-lp-near>The End of Context Switching</span></a
+        >
+      </nav>
+    </article>
+    <article class="lp-product" data-lp-view="product" aria-labelledby="lp-product-title">
+      <header class="mk-section-header" data-variant="split" style="padding-inline: 0">
+        <div class="mk-section-header-copy">
+          <span class="mk-section-header-eyebrow" data-lp-field="eyebrow">Analytics</span>
+          <h1 class="mk-section-header-title" id="lp-product-title" data-lp-field="title">See what moves your work</h1>
+          <p class="mk-section-header-desc" data-lp-field="lead"></p>
+        </div>
+        <div class="mk-section-header-actions">
+          <a class="btn" href="full-website-account-states.html#/sign-up" data-i18n-target="lp-p-start">Start free</a>
+          <button
+            type="button"
+            class="btn"
+            data-variant="outline"
+            commandfor="lp-demo-dialog"
+            command="show-modal"
+            data-i18n-target="lp-p-demo"
+            >Book a demo</button
+          >
+        </div>
+      </header>
+      <div class="lp-product-grid">
+        <figure class="lp-product-shot frame-window drop-shadow-float"
+          ><img data-lp-cover src="https://picsum.photos/id/0/1200/800" alt=""
+        /></figure>
+        <ul class="lp-points">
+          <li data-lp-point><strong></strong><span></span></li>
+          <li data-lp-point><strong></strong><span></span></li>
+          <li data-lp-point><strong></strong><span></span></li>
+        </ul>
+      </div>
+      <blockquote class="lp-product-quote"
+        ><p data-lp-field="quote"></p><footer data-lp-field="quoteBy"></footer
+      ></blockquote>
+      <nav
+        class="lp-product-more"
+        aria-label="More of Acme"
+        data-i18n-aria-label-en="More of Acme"
+        data-i18n-aria-label-de="Mehr von Acme"
+      >
+        <span data-i18n-target="lp-p-more">Also in Acme</span>
+        <a href="#/product/automation" data-router-link data-lp-other>Automation</a>
+        <a href="#/product/integrations" data-router-link data-lp-other>Integrations</a>
+        <a href="#/pricing" data-router-link data-i18n-target="lp-p-plans">Compare the plans</a>
+      </nav>
+    </article>
+    <div class="lp-legal" data-lp-view="legal">
+      <nav
+        class="lp-legal-nav"
+        aria-label="Legal"
+        data-i18n-aria-label-en="Legal"
+        data-i18n-aria-label-de="Rechtliches"
+      >
+        <a href="#/legal/privacy" data-router-link data-i18n-target="lp-legal-1">Privacy Policy</a>
+        <a href="#/legal/terms" data-router-link data-i18n-target="lp-legal-2">Terms of Service</a>
+        <a href="#/legal/security" data-router-link data-i18n-target="lp-legal-3">Security</a>
+        <button type="button" data-cookie-consent-open="lp-consent" data-i18n-target="lp-legal-4"
+          >Cookie Settings</button
+        >
+      </nav>
+      <article class="lp-legal-doc" aria-labelledby="lp-legal-title">
+        <h1 class="lp-legal-title" id="lp-legal-title" data-lp-field="title">Privacy Policy</h1>
+        <p class="lp-legal-updated"
+          ><span data-i18n-target="lp-updated">Last updated</span> <time data-lp-date datetime="2026-09-01"></time
+        ></p>
+        <p class="lp-legal-lead" data-lp-field="lead"></p>
+        <div class="lp-legal-body" data-lp-body></div>
+        <p class="lp-legal-contact"
+          ><span data-i18n-target="lp-legal-ask">Questions about this page? Write to</span>
+          <a href="mailto:legal@acme.example">legal@acme.example</a></p
+        >
+      </article>
+    </div>
+  </div>
   <div class="parallax-reveal" data-reveal="zoom" style="padding-inline: 1.25rem">
     <section class="mk-contact" style="width: 100%">
       <div class="mk-contact-avatars"
@@ -2347,7 +2892,14 @@
         <h2 class="mk-contact-title" data-i18n-target="lp-65-1">Want to know more?</h2>
         <p class="mk-contact-desc" data-i18n-target="lp-66-1">Our team is here to help you get the answers you need.</p>
       </div>
-      <button type="button" class="btn mk-contact-cta">Get in touch</button>
+      <button
+        type="button"
+        class="btn mk-contact-cta"
+        commandfor="lp-contact-dialog"
+        command="show-modal"
+        data-i18n-target="lp-contact-cta"
+        >Get in touch</button
+      >
     </section>
   </div>
   <div class="lp-end">
@@ -2361,7 +2913,7 @@
             >
           </div>
           <div class="mk-newsletter-form-col">
-            <form class="mk-newsletter-form" action="#" method="post">
+            <form class="mk-newsletter-form" action="#/" method="post" data-lp-newsletter>
               <label class="sr-only" for="mk-nl-email" data-i18n-target="lp-69-1">Email address</label>
               <input
                 class="input"
@@ -2416,6 +2968,9 @@
                 <line x1="12" x2="12.01" y1="16" y2="16"></line></svg
               ><span data-i18n-target="lp-72-1">Please enter a valid email address.</span></span
             >
+            <p class="lp-subscribed" role="status" data-lp-subscribed hidden
+              ><span data-i18n-target="lp-subscribed">Thank you - we sent a link to confirm your address.</span></p
+            >
           </div>
         </div>
       </section>
@@ -2426,46 +2981,66 @@
           <div class="mk-footer-col">
             <h3 class="mk-footer-heading" data-i18n-target="lp-73-1">Product</h3>
             <ul class="mk-footer-list">
-              <li><a href="#" data-i18n-target="lp-4-2">Features</a></li>
-              <li><a href="#" data-i18n-target="lp-5-4">Pricing</a></li>
+              <li><a href="#/features" data-router-link data-i18n-target="lp-4-2">Features</a></li>
+              <li><a href="#/pricing" data-router-link data-i18n-target="lp-5-4">Pricing</a></li>
               <li
-                ><a href="#">Integrations <span class="badge" data-variant="outline">New</span></a></li
+                ><a href="#/product/integrations" data-router-link
+                  >Integrations <span class="badge" data-variant="outline" data-i18n-target="lp-foot-new">New</span></a
+                ></li
               >
-              <li><a href="#">Demo</a></li>
+              <li
+                ><button
+                  type="button"
+                  class="lp-foot-button"
+                  commandfor="lp-demo-dialog"
+                  command="show-modal"
+                  data-i18n-target="lp-foot-demo"
+                  >Demo</button
+                ></li
+              >
             </ul>
           </div>
           <div class="mk-footer-col">
             <h3 class="mk-footer-heading" data-i18n-target="lp-8-2">Company</h3>
             <ul class="mk-footer-list">
-              <li><a href="#" data-i18n-target="lp-74-1">About Us</a></li>
-              <li><a href="#" data-i18n-target="lp-75-1">Careers</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#" data-i18n-target="lp-76-1">Press</a></li>
+              <li><a href="full-website-company.html" data-i18n-target="lp-74-1">About Us</a></li>
+              <li><a href="full-website-company.html#/jobs" data-i18n-target="lp-75-1">Careers</a></li>
+              <li><a href="full-website-blog.html">Blog</a></li>
+              <li><a href="full-website-company.html#/press" data-i18n-target="lp-76-1">Press</a></li>
             </ul>
           </div>
           <div class="mk-footer-col">
             <h3 class="mk-footer-heading" data-i18n-target="lp-77-1">Resources</h3>
             <ul class="mk-footer-list">
-              <li><a href="#" data-i18n-target="lp-78-1">Help Center</a></li>
-              <li><a href="#">FAQs</a></li>
-              <li><a href="#" data-i18n-target="lp-79-1">Guides</a></li>
-              <li><a href="#">Community</a></li>
+              <li><a href="full-website-docs-help.html#/help" data-i18n-target="lp-78-1">Help Center</a></li>
+              <li><a href="#/faq" data-router-link>FAQs</a></li>
+              <li><a href="full-website-docs-help.html#/docs/introduction" data-i18n-target="lp-79-1">Guides</a></li>
+              <li><a href="full-website-comments.html" data-i18n-target="lp-foot-community">Community</a></li>
             </ul>
           </div>
           <div class="mk-footer-col">
             <h3 class="mk-footer-heading" data-i18n-target="lp-80-1">Legal</h3>
             <ul class="mk-footer-list">
-              <li><a href="#" data-i18n-target="lp-81-1">Privacy Policy</a></li>
-              <li><a href="#" data-i18n-target="lp-82-1">Terms of Service</a></li>
-              <li><a href="#" data-i18n-target="lp-83-1">Security</a></li>
-              <li><a href="#" data-cookie-consent-open="lp-consent" data-i18n-target="lp-84-1">Cookie Settings</a></li>
+              <li><a href="#/legal/privacy" data-router-link data-i18n-target="lp-81-1">Privacy Policy</a></li>
+              <li><a href="#/legal/terms" data-router-link data-i18n-target="lp-82-1">Terms of Service</a></li>
+              <li><a href="#/legal/security" data-router-link data-i18n-target="lp-83-1">Security</a></li>
+              <li
+                ><button
+                  type="button"
+                  class="lp-foot-button"
+                  data-cookie-consent-open="lp-consent"
+                  data-i18n-target="lp-84-1"
+                  >Cookie Settings</button
+                ></li
+              >
             </ul>
           </div>
         </nav>
         <hr class="separator mk-footer-rule" />
         <div class="mk-footer-bottom">
           <a
-            href="#"
+            href="#/"
+            data-router-link
             class="mk-footer-brand"
             aria-label="Go to home page"
             data-i18n-aria-label-en="Go to home page"
@@ -2486,7 +3061,7 @@
           >
           <div class="mk-footer-meta">
             <div class="mk-footer-social">
-              <a href="#" aria-label="LinkedIn"
+              <a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="LinkedIn"
                 ><svg
                   viewBox="0 0 24 24"
                   width="24"
@@ -2502,7 +3077,7 @@
                   <rect width="4" height="12" x="2" y="9"></rect>
                   <circle cx="4" cy="4" r="2"></circle></svg
               ></a>
-              <a href="#" aria-label="Twitter"
+              <a href="https://x.com/" target="_blank" rel="noopener" aria-label="X (Twitter)"
                 ><svg
                   viewBox="0 0 24 24"
                   width="24"
@@ -2526,6 +3101,513 @@
       <p class="lp-wordmark" aria-hidden="true">Acme</p>
     </footer>
   </div>
+  <!-- Book a demo and Get in touch: native dialogs, opened by command buttons -->
+  <dialog id="lp-demo-dialog" class="dialog lp-dialog" aria-labelledby="lp-demo-title">
+    <div class="dialog-content">
+      <form class="lp-dialog-form" data-lp-form>
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="lp-demo-title" data-i18n-target="lp-demo-title">Book a demo</h2>
+          <p class="dialog-description" data-i18n-target="lp-demo-desc"
+            >Thirty minutes with a product specialist - your questions, your workflow, no slides.</p
+          >
+        </div>
+        <div class="dialog-body lp-dialog-fields">
+          <div class="lp-field"
+            ><label class="label" for="lp-demo-name" data-i18n-target="lp-f-name">Name</label
+            ><input class="input" id="lp-demo-name" name="name" autocomplete="name" required
+          /></div>
+          <div class="lp-field"
+            ><label class="label" for="lp-demo-mail" data-i18n-target="lp-f-work">Work email</label
+            ><input class="input" id="lp-demo-mail" name="email" type="email" autocomplete="email" required
+          /></div>
+          <div class="lp-field"
+            ><label class="label" for="lp-demo-size" data-i18n-target="lp-f-size">Team size</label
+            ><select class="select" id="lp-demo-size" name="size"
+              ><option>1 - 10</option
+              ><option>11 - 50</option
+              ><option>51 - 200</option
+              ><option data-i18n-target="lp-f-more">More than 200</option></select
+            ></div
+          >
+          <div class="lp-field"
+            ><label class="label" for="lp-demo-day" data-i18n-target="lp-f-day">Preferred day</label
+            ><input class="input" id="lp-demo-day" name="day" type="date" min="2026-11-10" required
+          /></div>
+        </div>
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="btn"
+            data-variant="outline"
+            commandfor="lp-demo-dialog"
+            command="close"
+            data-i18n-target="lp-f-cancel"
+            >Cancel</button
+          >
+          <button type="submit" class="btn" data-i18n-target="lp-f-request">Request a demo</button>
+        </div>
+      </form>
+      <div class="lp-dialog-done" role="status" data-lp-done hidden>
+        <h2 class="dialog-title" data-i18n-target="lp-demo-done">Thank you - your demo is requested</h2>
+        <p class="dialog-description" data-i18n-target="lp-demo-done-text"
+          >A product specialist will email you an invitation for the day you picked within one working day.</p
+        >
+        <div class="dialog-footer"
+          ><button type="button" class="btn" commandfor="lp-demo-dialog" command="close" data-i18n-target="lp-f-close"
+            >Close</button
+          ></div
+        >
+      </div>
+    </div>
+  </dialog>
+  <dialog id="lp-contact-dialog" class="dialog lp-dialog" aria-labelledby="lp-contact-title">
+    <div class="dialog-content">
+      <form class="lp-dialog-form" data-lp-form>
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="lp-contact-title" data-i18n-target="lp-contact-title">Get in touch</h2>
+          <p class="dialog-description" data-i18n-target="lp-contact-desc"
+            >Ask us anything - a person from our team answers, usually the same day.</p
+          >
+        </div>
+        <div class="dialog-body lp-dialog-fields">
+          <div class="lp-field"
+            ><label class="label" for="lp-contact-name" data-i18n-target="lp-f-name-2">Name</label
+            ><input class="input" id="lp-contact-name" name="name" autocomplete="name" required
+          /></div>
+          <div class="lp-field"
+            ><label class="label" for="lp-contact-mail" data-i18n-target="lp-f-mail">Email</label
+            ><input class="input" id="lp-contact-mail" name="email" type="email" autocomplete="email" required
+          /></div>
+          <div class="lp-field" data-span="full"
+            ><label class="label" for="lp-contact-text" data-i18n-target="lp-f-message">Message</label
+            ><textarea class="textarea" id="lp-contact-text" name="message" rows="4" required></textarea
+          ></div
+          >
+        </div>
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="btn"
+            data-variant="outline"
+            commandfor="lp-contact-dialog"
+            command="close"
+            data-i18n-target="lp-f-cancel-2"
+            >Cancel</button
+          >
+          <button type="submit" class="btn" data-i18n-target="lp-f-send">Send message</button>
+        </div>
+      </form>
+      <div class="lp-dialog-done" role="status" data-lp-done hidden>
+        <h2 class="dialog-title" data-i18n-target="lp-contact-done">Message sent</h2>
+        <p class="dialog-description" data-i18n-target="lp-contact-done-text"
+          >Thank you for writing. We answer within one working day - usually sooner.</p
+        >
+        <div class="dialog-footer"
+          ><button
+            type="button"
+            class="btn"
+            commandfor="lp-contact-dialog"
+            command="close"
+            data-i18n-target="lp-f-close-2"
+            >Close</button
+          ></div
+        >
+      </div>
+    </div>
+  </dialog>
+  <!-- the pages the routes name: blog posts, products and the legal pages, each in English and German -->
+  <script type="application/json" id="lp-pages">
+    {
+      "words": { "en": { "read": "min read" }, "de": { "read": "Min. Lesezeit" } },
+      "post": {
+        "flow": {
+          "image": 1,
+          "author": "Sophie Tan",
+          "face": 47,
+          "date": "2026-09-04",
+          "minutes": 8,
+          "en": {
+            "category": "Productivity",
+            "title": "5 Ways AI Helps Teams Stay in Flow",
+            "subtitle": "Five small habits - and the tools behind them - that keep a team's attention on the work instead of on the work about the work.",
+            "alt": "A person typing on a laptop",
+            "bio": "Sophie leads product research at Acme. She has spent ten years watching teams work and still takes notes by hand.",
+            "body": [
+              "Flow is fragile. A single ping costs more than the minute it takes to read - it costs the twenty minutes it takes to get back into the problem. Most teams know this and still run on notifications.",
+              "## 1. Batch the noise",
+              "Acme collects mentions, reviews and status changes into two digests a day. Nothing urgent waits: a blocked task or a failed deploy still reaches you at once, everything else arrives when you have room for it.",
+              "## 2. Let the summary come to you",
+              "Before a meeting, Acme writes the one-paragraph summary of what changed since the last one. Teams that use it cut their weekly status calls by a third - and nobody reads a thread of forty comments to catch up.",
+              "## 3. Keep the next step visible",
+              "Every task carries its next step in plain words. When you come back from lunch, you read one line and you are back in it.",
+              "## 4. Protect the mornings, 5. end the day on purpose",
+              "Focus blocks hold your notifications until noon, and a short end-of-day note tells tomorrow's you where to start. Neither is clever. Both are habits our calmest customers share."
+            ]
+          },
+          "de": {
+            "category": "Produktivität",
+            "title": "5 Wege, wie KI Teams im Flow hält",
+            "subtitle": "Fünf kleine Gewohnheiten - und die Werkzeuge dahinter -, die die Aufmerksamkeit eines Teams bei der Arbeit halten statt bei der Arbeit über die Arbeit.",
+            "alt": "Eine Person tippt auf einem Laptop",
+            "bio": "Sophie leitet die Produktforschung bei Acme. Sie beobachtet seit zehn Jahren, wie Teams arbeiten, und schreibt ihre Notizen noch immer von Hand.",
+            "body": [
+              "Flow ist zerbrechlich. Eine einzige Benachrichtigung kostet mehr als die Minute, sie zu lesen - sie kostet die zwanzig Minuten, bis man wieder im Problem ist. Die meisten Teams wissen das und arbeiten trotzdem im Takt der Benachrichtigungen.",
+              "## 1. Das Rauschen bündeln",
+              "Acme sammelt Erwähnungen, Reviews und Statuswechsel in zwei Zusammenfassungen pro Tag. Dringendes wartet nicht: Eine blockierte Aufgabe oder ein fehlgeschlagenes Deployment erreicht dich sofort, alles andere kommt, wenn du Zeit dafür hast.",
+              "## 2. Die Zusammenfassung kommt zu dir",
+              "Vor einem Meeting schreibt Acme in einem Absatz, was sich seit dem letzten geändert hat. Teams, die das nutzen, kürzen ihre wöchentlichen Status-Calls um ein Drittel - und niemand liest sich mehr durch vierzig Kommentare.",
+              "## 3. Den nächsten Schritt sichtbar halten",
+              "Jede Aufgabe trägt ihren nächsten Schritt in einfachen Worten. Wenn du aus der Mittagspause kommst, liest du eine Zeile und bist wieder drin.",
+              "## 4. Die Vormittage schützen, 5. den Tag bewusst beenden",
+              "Fokuszeiten halten deine Benachrichtigungen bis mittags zurück, und eine kurze Notiz am Abend sagt deinem Ich von morgen, wo es weitergeht. Beides ist nicht raffiniert. Beides sind Gewohnheiten, die unsere ruhigsten Kunden teilen."
+            ]
+          }
+        },
+        "context": {
+          "image": 26,
+          "author": "Hannah Lee",
+          "face": 32,
+          "date": "2026-09-04",
+          "minutes": 7,
+          "en": {
+            "category": "Workflow",
+            "title": "The End of Context Switching",
+            "subtitle": "Your tools should come to your work - not the other way round.",
+            "alt": "A phone, a watch, headphones and a notebook on a desk",
+            "bio": "Hannah designs the Acme workspace. Before Acme she built editors for two newsrooms, where every second of a deadline counted.",
+            "body": [
+              "Count the tabs you have open right now. Each one is a small promise to come back - and each return costs you the thread you were holding.",
+              "## Where the time goes",
+              "In our own study of 120 teams, people switched tools about 300 times a day. Most switches were not work: they were looking for the place where the work was.",
+              "## Bring the context along",
+              "Acme pulls the pieces of a task into the task: the design file, the pull request, the customer's email. You open one thing and everything you need is already there.",
+              "## Fewer places, fewer decisions",
+              "The goal is not one tool for everything. It is one place to start - and an assistant that knows where the rest lives, so you never have to remember."
+            ]
+          },
+          "de": {
+            "category": "Workflow",
+            "title": "Das Ende des Kontextwechsels",
+            "subtitle": "Deine Werkzeuge sollten zu deiner Arbeit kommen - nicht umgekehrt.",
+            "alt": "Ein Telefon, eine Uhr, Kopfhörer und ein Notizbuch auf einem Schreibtisch",
+            "bio": "Hannah gestaltet den Acme-Arbeitsbereich. Vor Acme hat sie Editoren für zwei Redaktionen gebaut, in denen jede Sekunde vor Redaktionsschluss zählte.",
+            "body": [
+              "Zähl die Tabs, die gerade offen sind. Jeder ist ein kleines Versprechen, zurückzukommen - und jede Rückkehr kostet dich den Faden, den du gerade hältst.",
+              "## Wohin die Zeit geht",
+              "In unserer eigenen Studie mit 120 Teams wechselten Menschen etwa 300-mal am Tag das Werkzeug. Die meisten Wechsel waren keine Arbeit: Sie waren die Suche nach dem Ort, an dem die Arbeit lag.",
+              "## Den Kontext mitnehmen",
+              "Acme holt die Teile einer Aufgabe in die Aufgabe: die Designdatei, den Pull-Request, die E-Mail des Kunden. Du öffnest eine Sache, und alles, was du brauchst, ist schon da.",
+              "## Weniger Orte, weniger Entscheidungen",
+              "Das Ziel ist nicht ein Werkzeug für alles. Es ist ein Ort zum Anfangen - und ein Assistent, der weiß, wo der Rest liegt, damit du es dir nie merken musst."
+            ]
+          }
+        },
+        "small-teams": {
+          "image": 48,
+          "author": "Leon Brandt",
+          "face": 12,
+          "date": "2026-09-04",
+          "minutes": 3,
+          "en": {
+            "category": "Startups",
+            "title": "Why Small Teams Win Big with AI",
+            "subtitle": "Fewer hand-offs, faster decisions - and an assistant for the chores nobody was hired to do.",
+            "alt": "A laptop on a café table",
+            "bio": "Leon co-founded two startups before joining Acme, where he now works with the teams of five to fifty that make up most of our customers.",
+            "body": [
+              "A team of five has an unfair advantage: everyone knows what everyone else is doing. The trouble starts with the chores - the reports, the hand-offs, the meeting notes - that grow faster than the team.",
+              "## The chores scale, the team does not",
+              "Acme takes the work nobody was hired for: it writes the weekly update, files the bug from the support chat and reminds the right person when a review waits.",
+              "## Decide in the open",
+              "Small teams decide fast because they decide together. Acme keeps those decisions findable, so the sixth person who joins can read why, instead of asking."
+            ]
+          },
+          "de": {
+            "category": "Startups",
+            "title": "Warum kleine Teams mit KI groß gewinnen",
+            "subtitle": "Weniger Übergaben, schnellere Entscheidungen - und ein Assistent für die Pflichten, für die niemand eingestellt wurde.",
+            "alt": "Ein Laptop auf einem Cafétisch",
+            "bio": "Leon hat zwei Startups mitgegründet, bevor er zu Acme kam. Heute arbeitet er mit den Teams von fünf bis fünfzig Leuten, die die meisten unserer Kunden sind.",
+            "body": [
+              "Ein Team aus fünf Leuten hat einen unfairen Vorteil: Alle wissen, woran die anderen arbeiten. Schwierig wird es mit den Pflichten - Berichte, Übergaben, Protokolle -, die schneller wachsen als das Team.",
+              "## Die Pflichten wachsen, das Team nicht",
+              "Acme übernimmt die Arbeit, für die niemand eingestellt wurde: Es schreibt das Wochen-Update, legt den Fehler aus dem Support-Chat an und erinnert die richtige Person, wenn ein Review wartet.",
+              "## Offen entscheiden",
+              "Kleine Teams entscheiden schnell, weil sie gemeinsam entscheiden. Acme hält diese Entscheidungen auffindbar, damit die sechste Person, die dazukommt, nachlesen kann, warum - statt zu fragen."
+            ]
+          }
+        }
+      },
+      "product": {
+        "analytics": {
+          "image": 0,
+          "en": {
+            "eyebrow": "Analytics",
+            "title": "See what moves your work",
+            "lead": "Dashboards that build themselves from the work you already do - cycle time, throughput and where things wait.",
+            "alt": "A laptop and a phone with charts on a wooden desk",
+            "points": [
+              [
+                "Live dashboards",
+                "Every project gets its own board of the numbers that matter, updated as tasks move."
+              ],
+              [
+                "Bottleneck alerts",
+                "Acme points at the review queue or the hand-off where work waits longest - before a deadline does."
+              ],
+              ["A Monday digest", "One email at the start of the week: what shipped, what slipped and why."]
+            ],
+            "quote": "We stopped arguing about the numbers and started fixing the queue.",
+            "quoteBy": "Lena Fischer, Head of Delivery at Northwind"
+          },
+          "de": {
+            "eyebrow": "Analytics",
+            "title": "Sieh, was deine Arbeit bewegt",
+            "lead": "Dashboards, die sich aus der Arbeit bauen, die du ohnehin machst - Durchlaufzeit, Durchsatz und wo Dinge warten.",
+            "alt": "Ein Laptop und ein Telefon mit Diagrammen auf einem Holztisch",
+            "points": [
+              [
+                "Live-Dashboards",
+                "Jedes Projekt bekommt eine eigene Übersicht der Zahlen, die zählen - aktualisiert, sobald sich Aufgaben bewegen."
+              ],
+              [
+                "Hinweise auf Engpässe",
+                "Acme zeigt auf die Review-Schlange oder die Übergabe, an der Arbeit am längsten wartet - bevor es eine Deadline tut."
+              ],
+              [
+                "Ein Montags-Überblick",
+                "Eine E-Mail zum Wochenstart: was geliefert wurde, was sich verschoben hat und warum."
+              ]
+            ],
+            "quote": "Wir haben aufgehört, über die Zahlen zu streiten, und angefangen, die Warteschlange zu lösen.",
+            "quoteBy": "Lena Fischer, Head of Delivery bei Northwind"
+          }
+        },
+        "automation": {
+          "image": 2,
+          "en": {
+            "eyebrow": "Automation",
+            "title": "Let the routine run itself",
+            "lead": "Describe a workflow in a sentence and Acme builds it - triggers, steps and the people to ask.",
+            "alt": "A laptop, a notebook and a cup of coffee on a desk",
+            "points": [
+              [
+                "Rules in plain words",
+                "When a bug is marked urgent, assign it to the person on call and post it in the team channel."
+              ],
+              ["Approvals that wait for you", "A step can pause for a person's yes - and remind them politely, once."],
+              ["A history of every run", "See what ran, when and why - and undo a run that should not have happened."]
+            ],
+            "quote": "Our release checklist runs itself now. We just read the summary.",
+            "quoteBy": "Omar Haddad, Engineering Manager at Globex"
+          },
+          "de": {
+            "eyebrow": "Automatisierung",
+            "title": "Lass die Routine von selbst laufen",
+            "lead": "Beschreib einen Ablauf in einem Satz, und Acme baut ihn - Auslöser, Schritte und die Menschen, die gefragt werden.",
+            "alt": "Ein Laptop, ein Notizbuch und eine Tasse Kaffee auf einem Schreibtisch",
+            "points": [
+              [
+                "Regeln in einfachen Worten",
+                "Wenn ein Fehler als dringend markiert wird, weise ihn der Bereitschaft zu und poste ihn im Team-Kanal."
+              ],
+              [
+                "Freigaben, die auf dich warten",
+                "Ein Schritt kann auf das Ja einer Person warten - und sie höflich erinnern, einmal."
+              ],
+              [
+                "Ein Verlauf jedes Laufs",
+                "Sieh, was wann und warum lief - und mach einen Lauf rückgängig, der nicht hätte passieren sollen."
+              ]
+            ],
+            "quote": "Unsere Release-Checkliste läuft jetzt von selbst. Wir lesen nur noch die Zusammenfassung.",
+            "quoteBy": "Omar Haddad, Engineering Manager bei Globex"
+          }
+        },
+        "integrations": {
+          "image": 201,
+          "en": {
+            "eyebrow": "Integrations",
+            "title": "Works with the tools you already use",
+            "lead": "Over 80 connections - your calendar, your code host, your chat and your files - set up in a click, kept in sync both ways.",
+            "alt": "The corner of a desk with a laptop",
+            "points": [
+              ["Two-way sync", "Change a task in Acme or in the other tool - both stay the same, without duplicates."],
+              ["One sign-in", "Connect once with your company account; Acme only asks for what it needs."],
+              ["An open API", "Build your own connection with the REST API and webhooks, documented in the Acme docs."]
+            ],
+            "quote": "We connected our calendar and our code host before lunch on day one.",
+            "quoteBy": "Mia Novak, CTO at Initech"
+          },
+          "de": {
+            "eyebrow": "Integrationen",
+            "title": "Funktioniert mit den Werkzeugen, die du schon nutzt",
+            "lead": "Über 80 Verbindungen - Kalender, Code-Hosting, Chat und Dateien - mit einem Klick eingerichtet und in beide Richtungen synchron.",
+            "alt": "Die Ecke eines Schreibtischs mit einem Laptop",
+            "points": [
+              [
+                "Synchron in beide Richtungen",
+                "Ändere eine Aufgabe in Acme oder im anderen Werkzeug - beide bleiben gleich, ohne Dubletten."
+              ],
+              [
+                "Eine Anmeldung",
+                "Verbinde dich einmal mit deinem Firmenkonto; Acme fragt nur nach dem, was es braucht."
+              ],
+              [
+                "Eine offene API",
+                "Bau deine eigene Verbindung mit der REST-API und Webhooks, dokumentiert in der Acme-Doku."
+              ]
+            ],
+            "quote": "Kalender und Code-Hosting waren am ersten Tag vor dem Mittagessen verbunden.",
+            "quoteBy": "Mia Novak, CTO bei Initech"
+          }
+        }
+      },
+      "legal": {
+        "privacy": {
+          "date": "2026-09-01",
+          "en": {
+            "title": "Privacy Policy",
+            "lead": "What we collect when you use Acme, why we need it, and how you stay in control of it.",
+            "body": [
+              [
+                "What we collect",
+                "Your account details (name, email, company), the content you create in Acme, and technical data such as your browser and the pages you visit in the app."
+              ],
+              [
+                "Why we collect it",
+                "To run the service you signed up for, to keep it secure and to improve it. We never sell your data and never use your content to train models for anyone else."
+              ],
+              [
+                "Where it is stored",
+                "In data centres in the European Union. Backups are encrypted and kept for 30 days."
+              ],
+              [
+                "Your rights",
+                "You can see, export, correct and delete your data at any time from your account settings, or ask us to do it for you."
+              ]
+            ]
+          },
+          "de": {
+            "title": "Datenschutz",
+            "lead": "Was wir erheben, wenn du Acme nutzt, warum wir es brauchen und wie du die Kontrolle darüber behältst.",
+            "body": [
+              [
+                "Was wir erheben",
+                "Deine Kontodaten (Name, E-Mail, Firma), die Inhalte, die du in Acme erstellst, und technische Daten wie deinen Browser und die Seiten, die du in der App besuchst."
+              ],
+              [
+                "Warum wir es erheben",
+                "Um den Dienst zu betreiben, für den du dich angemeldet hast, ihn sicher zu halten und ihn zu verbessern. Wir verkaufen deine Daten nie und nutzen deine Inhalte nie, um Modelle für andere zu trainieren."
+              ],
+              [
+                "Wo sie gespeichert werden",
+                "In Rechenzentren in der Europäischen Union. Sicherungen sind verschlüsselt und werden 30 Tage aufbewahrt."
+              ],
+              [
+                "Deine Rechte",
+                "Du kannst deine Daten jederzeit in den Kontoeinstellungen einsehen, exportieren, berichtigen und löschen - oder uns bitten, das für dich zu tun."
+              ]
+            ]
+          }
+        },
+        "terms": {
+          "date": "2026-08-15",
+          "en": {
+            "title": "Terms of Service",
+            "lead": "The agreement between you and Acme Inc. when you use our products - in plain words where we can.",
+            "body": [
+              [
+                "Your account",
+                "You are responsible for the people you invite and for keeping your password safe. One person, one account."
+              ],
+              [
+                "Your content",
+                "What you create in Acme stays yours. You give us the permission we need to store it, show it to the people you share it with and back it up."
+              ],
+              [
+                "Paying for Acme",
+                "Paid plans renew each month or year until you cancel. If you cancel, you keep your plan until the end of the period you paid for."
+              ],
+              [
+                "Ending the agreement",
+                "You can delete your workspace at any time. We may close accounts that break these terms, and will tell you why."
+              ]
+            ]
+          },
+          "de": {
+            "title": "Nutzungsbedingungen",
+            "lead": "Die Vereinbarung zwischen dir und Acme Inc., wenn du unsere Produkte nutzt - in einfachen Worten, wo es geht.",
+            "body": [
+              [
+                "Dein Konto",
+                "Du bist für die Menschen verantwortlich, die du einlädst, und dafür, dein Passwort sicher aufzubewahren. Eine Person, ein Konto."
+              ],
+              [
+                "Deine Inhalte",
+                "Was du in Acme erstellst, bleibt deins. Du gibst uns die Erlaubnis, die wir brauchen, um es zu speichern, den Menschen zu zeigen, mit denen du es teilst, und es zu sichern."
+              ],
+              [
+                "Bezahlen",
+                "Bezahlte Tarife verlängern sich monatlich oder jährlich, bis du kündigst. Nach einer Kündigung behältst du deinen Tarif bis zum Ende des bezahlten Zeitraums."
+              ],
+              [
+                "Ende der Vereinbarung",
+                "Du kannst deinen Arbeitsbereich jederzeit löschen. Wir können Konten schließen, die gegen diese Bedingungen verstoßen, und sagen dir, warum."
+              ]
+            ]
+          }
+        },
+        "security": {
+          "date": "2026-10-01",
+          "en": {
+            "title": "Security",
+            "lead": "How we protect your work - from the data centre to your browser.",
+            "body": [
+              [
+                "Encryption",
+                "All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Keys are rotated every 90 days."
+              ],
+              [
+                "Access",
+                "Only a small on-call team can reach production systems, always through single sign-on with a hardware key, and every access is logged."
+              ],
+              [
+                "Audits",
+                "An independent firm tests Acme twice a year. Our SOC 2 Type II report is available on request."
+              ],
+              [
+                "Reporting a problem",
+                "Found a vulnerability? Write to security@acme.example - we answer within one working day and credit every valid report."
+              ]
+            ]
+          },
+          "de": {
+            "title": "Sicherheit",
+            "lead": "Wie wir deine Arbeit schützen - vom Rechenzentrum bis in deinen Browser.",
+            "body": [
+              [
+                "Verschlüsselung",
+                "Alle Daten sind bei der Übertragung (TLS 1.3) und im Ruhezustand (AES-256) verschlüsselt. Die Schlüssel wechseln alle 90 Tage."
+              ],
+              [
+                "Zugriff",
+                "Nur ein kleines Bereitschaftsteam erreicht die Produktivsysteme, immer per Single Sign-on mit Hardware-Schlüssel, und jeder Zugriff wird protokolliert."
+              ],
+              [
+                "Prüfungen",
+                "Eine unabhängige Firma testet Acme zweimal im Jahr. Unseren SOC-2-Type-II-Bericht schicken wir auf Anfrage."
+              ],
+              [
+                "Ein Problem melden",
+                "Eine Schwachstelle gefunden? Schreib an security@acme.example - wir antworten innerhalb eines Werktags und nennen jede gültige Meldung."
+              ]
+            ]
+          }
+        }
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
   <template data-i18n-for="lp-bubble" data-i18n-locale="en">No credit card. No sales call. Ever.</template>
   <template data-i18n-for="lp-bubble" data-i18n-locale="de">Keine Kreditkarte. Kein Verkaufsgespräch. Nie.</template>
@@ -2809,6 +3891,176 @@
   <template data-i18n-for="lp-85-1" data-i18n-locale="de"
     >© Copyright Acme Inc. 2026. Alle Rechte vorbehalten.</template
   >
+  <template data-i18n-for="lp-nav-int" data-i18n-locale="en">Connect the tools you already use</template>
+  <template data-i18n-for="lp-nav-int" data-i18n-locale="de">Verbinde die Werkzeuge, die du schon nutzt</template>
+  <template data-i18n-for="lp-sheet-1" data-i18n-locale="en">Dashboards</template>
+  <template data-i18n-for="lp-sheet-1" data-i18n-locale="de">Dashboards</template>
+  <template data-i18n-for="lp-sheet-2" data-i18n-locale="en">Workflows</template>
+  <template data-i18n-for="lp-sheet-2" data-i18n-locale="de">Abläufe</template>
+  <template data-i18n-for="lp-sheet-3" data-i18n-locale="en">Connections</template>
+  <template data-i18n-for="lp-sheet-3" data-i18n-locale="de">Verbindungen</template>
+  <template data-i18n-for="lp-sheet-4" data-i18n-locale="en">Features</template>
+  <template data-i18n-for="lp-sheet-4" data-i18n-locale="de">Funktionen</template>
+  <template data-i18n-for="lp-hero-demo" data-i18n-locale="en">Book a demo</template>
+  <template data-i18n-for="lp-hero-demo" data-i18n-locale="de">Demo buchen</template>
+  <template data-i18n-for="lp-stat-1" data-i18n-locale="en">Our clients</template>
+  <template data-i18n-for="lp-stat-1" data-i18n-locale="de">Unsere Kunden</template>
+  <template data-i18n-for="lp-stat-2" data-i18n-locale="en">Learn more</template>
+  <template data-i18n-for="lp-stat-2" data-i18n-locale="de">Mehr erfahren</template>
+  <template data-i18n-for="lp-stat-3" data-i18n-locale="en">See feedback</template>
+  <template data-i18n-for="lp-stat-3" data-i18n-locale="de">Stimmen lesen</template>
+  <template data-i18n-for="lp-stat-4" data-i18n-locale="en">Our users</template>
+  <template data-i18n-for="lp-stat-4" data-i18n-locale="de">Unsere Nutzer</template>
+  <template data-i18n-for="lp-blog-all" data-i18n-locale="en">See all</template>
+  <template data-i18n-for="lp-blog-all" data-i18n-locale="de">Alle ansehen</template>
+  <template data-i18n-for="lp-post-1-cat" data-i18n-locale="en">Productivity</template>
+  <template data-i18n-for="lp-post-1-cat" data-i18n-locale="de">Produktivität</template>
+  <template data-i18n-for="lp-post-1-title" data-i18n-locale="en">5 Ways AI Helps Teams Stay in Flow</template>
+  <template data-i18n-for="lp-post-1-title" data-i18n-locale="de">5 Wege, wie KI Teams im Flow hält</template>
+  <template data-i18n-for="lp-post-1-excerpt" data-i18n-locale="en"
+    >Discover simple ways to cut distractions and keep your team focused on meaningful work.</template
+  >
+  <template data-i18n-for="lp-post-1-excerpt" data-i18n-locale="de"
+    >Einfache Wege, Ablenkungen zu kappen und dein Team bei der Arbeit zu halten, die zählt.</template
+  >
+  <template data-i18n-for="lp-post-2-cat" data-i18n-locale="en">Workflow</template>
+  <template data-i18n-for="lp-post-2-cat" data-i18n-locale="de">Workflow</template>
+  <template data-i18n-for="lp-post-2-title" data-i18n-locale="en">The End of Context Switching</template>
+  <template data-i18n-for="lp-post-2-title" data-i18n-locale="de">Das Ende des Kontextwechsels</template>
+  <template data-i18n-for="lp-post-2-excerpt" data-i18n-locale="en"
+    >How AI keeps your focus where it matters and removes the friction between your tools.</template
+  >
+  <template data-i18n-for="lp-post-2-excerpt" data-i18n-locale="de"
+    >Wie KI deinen Fokus dort hält, wo er zählt, und die Reibung zwischen deinen Werkzeugen entfernt.</template
+  >
+  <template data-i18n-for="lp-post-3-cat" data-i18n-locale="en">Startups</template>
+  <template data-i18n-for="lp-post-3-cat" data-i18n-locale="de">Startups</template>
+  <template data-i18n-for="lp-post-3-title" data-i18n-locale="en">Why Small Teams Win Big with AI</template>
+  <template data-i18n-for="lp-post-3-title" data-i18n-locale="de">Warum kleine Teams mit KI groß gewinnen</template>
+  <template data-i18n-for="lp-post-3-excerpt" data-i18n-locale="en"
+    >Lean setups, smarter workflows, and faster delivery for teams that punch above their weight.</template
+  >
+  <template data-i18n-for="lp-post-3-excerpt" data-i18n-locale="de"
+    >Schlanke Abläufe, klügere Workflows und schnellere Lieferung für Teams, die über sich hinauswachsen.</template
+  >
+  <template data-i18n-for="lp-faq-how" data-i18n-locale="en">How Acme AI works</template>
+  <template data-i18n-for="lp-faq-how" data-i18n-locale="de">So funktioniert Acme AI</template>
+  <template data-i18n-for="lp-faq-who" data-i18n-locale="en">Who uses Acme</template>
+  <template data-i18n-for="lp-faq-who" data-i18n-locale="de">Wer Acme nutzt</template>
+  <template data-i18n-for="lp-faq-plans" data-i18n-locale="en">Compare the plans</template>
+  <template data-i18n-for="lp-faq-plans" data-i18n-locale="de">Tarife vergleichen</template>
+  <template data-i18n-for="lp-faq-setup" data-i18n-locale="en">The setup guide</template>
+  <template data-i18n-for="lp-faq-setup" data-i18n-locale="de">Die Einrichtungsanleitung</template>
+  <template data-i18n-for="lp-faq-demo" data-i18n-locale="en">Book a demo</template>
+  <template data-i18n-for="lp-faq-demo" data-i18n-locale="de">Demo buchen</template>
+  <template data-i18n-for="lp-faq-security" data-i18n-locale="en">Security &amp; privacy</template>
+  <template data-i18n-for="lp-faq-security" data-i18n-locale="de">Sicherheit und Datenschutz</template>
+  <template data-i18n-for="lp-contact-cta" data-i18n-locale="en">Get in touch</template>
+  <template data-i18n-for="lp-contact-cta" data-i18n-locale="de">Kontakt aufnehmen</template>
+  <template data-i18n-for="lp-subscribed" data-i18n-locale="en"
+    >Thank you - we sent a link to confirm your address.</template
+  >
+  <template data-i18n-for="lp-subscribed" data-i18n-locale="de"
+    >Danke - wir haben dir einen Link zur Bestätigung geschickt.</template
+  >
+  <template data-i18n-for="lp-foot-new" data-i18n-locale="en">New</template>
+  <template data-i18n-for="lp-foot-new" data-i18n-locale="de">Neu</template>
+  <template data-i18n-for="lp-foot-demo" data-i18n-locale="en">Demo</template>
+  <template data-i18n-for="lp-foot-demo" data-i18n-locale="de">Demo</template>
+  <template data-i18n-for="lp-foot-community" data-i18n-locale="en">Community</template>
+  <template data-i18n-for="lp-foot-community" data-i18n-locale="de">Community</template>
+  <template data-i18n-for="lp-back-blog" data-i18n-locale="en">All posts</template>
+  <template data-i18n-for="lp-back-blog" data-i18n-locale="de">Alle Beiträge</template>
+  <template data-i18n-for="lp-written-by" data-i18n-locale="en">Written by</template>
+  <template data-i18n-for="lp-written-by" data-i18n-locale="de">Geschrieben von</template>
+  <template data-i18n-for="lp-related" data-i18n-locale="en">More from the blog</template>
+  <template data-i18n-for="lp-related" data-i18n-locale="de">Mehr aus dem Blog</template>
+  <template data-i18n-for="lp-blog-more" data-i18n-locale="en">Read every post on the Acme blog</template>
+  <template data-i18n-for="lp-blog-more" data-i18n-locale="de">Alle Beiträge im Acme-Blog lesen</template>
+  <template data-i18n-for="lp-prev" data-i18n-locale="en">Previous</template>
+  <template data-i18n-for="lp-prev" data-i18n-locale="de">Vorheriger</template>
+  <template data-i18n-for="lp-next" data-i18n-locale="en">Next</template>
+  <template data-i18n-for="lp-next" data-i18n-locale="de">Nächster</template>
+  <template data-i18n-for="lp-p-start" data-i18n-locale="en">Start free</template>
+  <template data-i18n-for="lp-p-start" data-i18n-locale="de">Kostenlos starten</template>
+  <template data-i18n-for="lp-p-demo" data-i18n-locale="en">Book a demo</template>
+  <template data-i18n-for="lp-p-demo" data-i18n-locale="de">Demo buchen</template>
+  <template data-i18n-for="lp-p-more" data-i18n-locale="en">Also in Acme</template>
+  <template data-i18n-for="lp-p-more" data-i18n-locale="de">Außerdem in Acme</template>
+  <template data-i18n-for="lp-p-plans" data-i18n-locale="en">Compare the plans</template>
+  <template data-i18n-for="lp-p-plans" data-i18n-locale="de">Tarife vergleichen</template>
+  <template data-i18n-for="lp-legal-1" data-i18n-locale="en">Privacy Policy</template>
+  <template data-i18n-for="lp-legal-1" data-i18n-locale="de">Datenschutz</template>
+  <template data-i18n-for="lp-legal-2" data-i18n-locale="en">Terms of Service</template>
+  <template data-i18n-for="lp-legal-2" data-i18n-locale="de">Nutzungsbedingungen</template>
+  <template data-i18n-for="lp-legal-3" data-i18n-locale="en">Security</template>
+  <template data-i18n-for="lp-legal-3" data-i18n-locale="de">Sicherheit</template>
+  <template data-i18n-for="lp-legal-4" data-i18n-locale="en">Cookie Settings</template>
+  <template data-i18n-for="lp-legal-4" data-i18n-locale="de">Cookie-Einstellungen</template>
+  <template data-i18n-for="lp-updated" data-i18n-locale="en">Last updated</template>
+  <template data-i18n-for="lp-updated" data-i18n-locale="de">Zuletzt aktualisiert am</template>
+  <template data-i18n-for="lp-legal-ask" data-i18n-locale="en">Questions about this page? Write to</template>
+  <template data-i18n-for="lp-legal-ask" data-i18n-locale="de">Fragen zu dieser Seite? Schreib an</template>
+  <template data-i18n-for="lp-demo-title" data-i18n-locale="en">Book a demo</template>
+  <template data-i18n-for="lp-demo-title" data-i18n-locale="de">Demo buchen</template>
+  <template data-i18n-for="lp-demo-desc" data-i18n-locale="en"
+    >Thirty minutes with a product specialist - your questions, your workflow, no slides.</template
+  >
+  <template data-i18n-for="lp-demo-desc" data-i18n-locale="de"
+    >Dreißig Minuten mit jemandem aus dem Produktteam - deine Fragen, dein Ablauf, keine Folien.</template
+  >
+  <template data-i18n-for="lp-f-name" data-i18n-locale="en">Name</template>
+  <template data-i18n-for="lp-f-name" data-i18n-locale="de">Name</template>
+  <template data-i18n-for="lp-f-work" data-i18n-locale="en">Work email</template>
+  <template data-i18n-for="lp-f-work" data-i18n-locale="de">Geschäftliche E-Mail</template>
+  <template data-i18n-for="lp-f-size" data-i18n-locale="en">Team size</template>
+  <template data-i18n-for="lp-f-size" data-i18n-locale="de">Teamgröße</template>
+  <template data-i18n-for="lp-f-more" data-i18n-locale="en">More than 200</template>
+  <template data-i18n-for="lp-f-more" data-i18n-locale="de">Mehr als 200</template>
+  <template data-i18n-for="lp-f-day" data-i18n-locale="en">Preferred day</template>
+  <template data-i18n-for="lp-f-day" data-i18n-locale="de">Wunschtag</template>
+  <template data-i18n-for="lp-f-cancel" data-i18n-locale="en">Cancel</template>
+  <template data-i18n-for="lp-f-cancel" data-i18n-locale="de">Abbrechen</template>
+  <template data-i18n-for="lp-f-request" data-i18n-locale="en">Request a demo</template>
+  <template data-i18n-for="lp-f-request" data-i18n-locale="de">Demo anfragen</template>
+  <template data-i18n-for="lp-demo-done" data-i18n-locale="en">Thank you - your demo is requested</template>
+  <template data-i18n-for="lp-demo-done" data-i18n-locale="de">Danke - deine Demo ist angefragt</template>
+  <template data-i18n-for="lp-demo-done-text" data-i18n-locale="en"
+    >A product specialist will email you an invitation for the day you picked within one working day.</template
+  >
+  <template data-i18n-for="lp-demo-done-text" data-i18n-locale="de"
+    >Jemand aus dem Produktteam schickt dir innerhalb eines Werktags eine Einladung für deinen Wunschtag.</template
+  >
+  <template data-i18n-for="lp-f-close" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="lp-f-close" data-i18n-locale="de">Schließen</template>
+  <template data-i18n-for="lp-contact-title" data-i18n-locale="en">Get in touch</template>
+  <template data-i18n-for="lp-contact-title" data-i18n-locale="de">Kontakt aufnehmen</template>
+  <template data-i18n-for="lp-contact-desc" data-i18n-locale="en"
+    >Ask us anything - a person from our team answers, usually the same day.</template
+  >
+  <template data-i18n-for="lp-contact-desc" data-i18n-locale="de"
+    >Frag uns alles - ein Mensch aus unserem Team antwortet, meist noch am selben Tag.</template
+  >
+  <template data-i18n-for="lp-f-name-2" data-i18n-locale="en">Name</template>
+  <template data-i18n-for="lp-f-name-2" data-i18n-locale="de">Name</template>
+  <template data-i18n-for="lp-f-mail" data-i18n-locale="en">Email</template>
+  <template data-i18n-for="lp-f-mail" data-i18n-locale="de">E-Mail</template>
+  <template data-i18n-for="lp-f-message" data-i18n-locale="en">Message</template>
+  <template data-i18n-for="lp-f-message" data-i18n-locale="de">Nachricht</template>
+  <template data-i18n-for="lp-f-cancel-2" data-i18n-locale="en">Cancel</template>
+  <template data-i18n-for="lp-f-cancel-2" data-i18n-locale="de">Abbrechen</template>
+  <template data-i18n-for="lp-f-send" data-i18n-locale="en">Send message</template>
+  <template data-i18n-for="lp-f-send" data-i18n-locale="de">Nachricht senden</template>
+  <template data-i18n-for="lp-contact-done" data-i18n-locale="en">Message sent</template>
+  <template data-i18n-for="lp-contact-done" data-i18n-locale="de">Nachricht gesendet</template>
+  <template data-i18n-for="lp-contact-done-text" data-i18n-locale="en"
+    >Thank you for writing. We answer within one working day - usually sooner.</template
+  >
+  <template data-i18n-for="lp-contact-done-text" data-i18n-locale="de"
+    >Danke für deine Nachricht. Wir antworten innerhalb eines Werktags - meist schneller.</template
+  >
+  <template data-i18n-for="lp-f-close-2" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="lp-f-close-2" data-i18n-locale="de">Schließen</template>
 </div>
 <div class="fab" data-scroll-top>
   <a
@@ -2872,8 +4124,8 @@
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -2889,16 +4141,176 @@
     };
     look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
+    // -- the forms: the newsletter thanks in place; a dialog's form turns into its confirmation, and is fresh again
+    // once the dialog closes
+    df$('[data-lp-newsletter]').on('submit', (event) => {
+      event.preventDefault();
+      event.target.reset();
+      df$('[data-lp-subscribed]').prop('hidden', false);
+    });
+    df$('#top .lp-dialog').each((_i, dialog) => {
+      const form = df$(dialog).find('[data-lp-form]');
+      const done = df$(dialog).find('[data-lp-done]');
+      form.on('submit', (event) => {
+        event.preventDefault();
+        form.prop('hidden', true);
+        done.prop('hidden', false);
+      });
+      df$(dialog).on('close', () => {
+        form.get(0).reset();
+        form.prop('hidden', false);
+        done.prop('hidden', true);
+      });
+    });
+
+    // -- the pages: blog posts, products and the legal pages from one data block, in the language shown
+    const PAGES = JSON.parse(df$('#lp-pages').text());
+    const pageView = df$('[data-lp-page]');
+    let opened = null;
+    const date = (iso) => locale.formatDate(Date.parse(iso), { dateStyle: 'long', timeZone: 'UTC' });
+    const minutes = (n) => n + ' ' + (PAGES.words[locale.locale] ?? PAGES.words.en).read;
+    // a body: paragraphs, and "## " lines as headings - written as text, never as markup
+    const writeBody = (target, lines) => {
+      target.html('');
+      for (const line of lines) {
+        if (Array.isArray(line)) {
+          target.append(df$('<h2></h2>').text(line[0])).append(df$('<p></p>').text(line[1]));
+        } else if (line.startsWith('## ')) target.append(df$('<h2></h2>').text(line.slice(3)));
+        else target.append(df$('<p></p>').text(line));
+      }
+    };
+    const fill = (view, text) =>
+      view.find('[data-lp-field]').each((_i, field) => {
+        df$(field).text(text[field.dataset.lpField] ?? '');
+      });
+    const RENDER = {
+      post(slug) {
+        const item = PAGES.post[slug];
+        const text = item[locale.locale] ?? item.en;
+        const view = df$('[data-lp-view="post"]');
+        fill(view, { ...text, author: item.author });
+        view.find('[data-lp-avatar]').attr('src', 'https://i.pravatar.cc/160?img=' + item.face);
+        view
+          .find('[data-lp-cover]')
+          .attr('src', 'https://picsum.photos/id/' + item.image + '/1600/800')
+          .attr('alt', text.alt);
+        view.find('[data-lp-date]').attr('datetime', item.date).text(date(item.date));
+        view.find('[data-lp-minutes]').text(minutes(item.minutes));
+        writeBody(view.find('[data-lp-body]'), text.body);
+        const order = Object.keys(PAGES.post);
+        const near = (step) => order[(order.indexOf(slug) + step + order.length) % order.length];
+        // the other posts: related items and the way back and on
+        view.find('[data-lp-related]').each((i, card) => {
+          const other = near(i + 1);
+          const o = PAGES.post[other];
+          const t = o[locale.locale] ?? o.en;
+          df$(card)
+            .find('img')
+            .attr('src', 'https://picsum.photos/id/' + o.image + '/480/320');
+          df$(card).find('[data-lp-related-kind]').text(t.category);
+          df$(card)
+            .find('[data-lp-related-link]')
+            .attr('href', '#/blog/' + other)
+            .text(t.title);
+          df$(card)
+            .find('[data-lp-related-meta]')
+            .text(date(o.date) + ' · ' + minutes(o.minutes));
+        });
+        for (const [rel, step] of [
+          ['prev', -1],
+          ['next', 1],
+        ]) {
+          const other = near(step);
+          const link = view.find('.mk-article-nav-link[rel="' + rel + '"]').attr('href', '#/blog/' + other);
+          link.find('[data-lp-near]').text((PAGES.post[other][locale.locale] ?? PAGES.post[other].en).title);
+        }
+      },
+      product(slug) {
+        const item = PAGES.product[slug];
+        const text = item[locale.locale] ?? item.en;
+        const view = df$('[data-lp-view="product"]');
+        fill(view, text);
+        view
+          .find('[data-lp-cover]')
+          .attr('src', 'https://picsum.photos/id/' + item.image + '/1200/800')
+          .attr('alt', text.alt);
+        view.find('[data-lp-point]').each((i, point) => {
+          df$(point).find('strong').text(text.points[i][0]);
+          df$(point).find('span').text(text.points[i][1]);
+        });
+        const others = Object.keys(PAGES.product).filter((s) => s !== slug);
+        view.find('[data-lp-other]').each((i, link) => {
+          const other = PAGES.product[others[i]];
+          df$(link)
+            .attr('href', '#/product/' + others[i])
+            .text((other[locale.locale] ?? other.en).eyebrow);
+        });
+      },
+      legal(slug) {
+        const item = PAGES.legal[slug];
+        const text = item[locale.locale] ?? item.en;
+        const view = df$('[data-lp-view="legal"]');
+        fill(view, text);
+        view.find('[data-lp-date]').attr('datetime', item.date).text(date(item.date));
+        writeBody(view.find('[data-lp-body]'), text.body);
+        view.find('.lp-legal-nav a').each((_i, link) => {
+          if (link.getAttribute('href') === '#/legal/' + slug) link.setAttribute('aria-current', 'page');
+          else link.removeAttribute('aria-current');
+        });
+      },
+    };
+    const render = () => opened && RENDER[opened.kind](opened.slug);
+    // a language change writes the open page again
+    locale.subscribe(render);
+
     // -- routing
     const routes = [
       { id: 'top', path: '/' },
+      { id: 'post', path: '/blog/:slug' },
+      { id: 'product', path: '/product/:slug' },
+      { id: 'legal', path: '/legal/:slug' },
       { id: 'section', path: '/:section' },
+      { id: 'missing', path: '*' },
     ];
-    const SECTIONS = ['features', 'pricing', 'faq'];
+    const SECTIONS = ['features', 'pricing', 'faq', 'customers', 'testimonials', 'blog'];
     const motion = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
     let first = true;
-    // a section route scrolls to its section and marks its header link; #/ is the top
+    // a page route shows its page in place of the landing sections; a section route scrolls to its section and
+    // marks its header link; #/ is the top
+    // where a link went, in words: the heading of the section or the page, read as shown (so in the language shown)
+    const announce = (el) => {
+      const heading = el && df$(el).find('h1, h2, h3, .mk-logos-caption, .mk-testimonial-context').get(0);
+      df$('[data-lp-announce]').text(heading ? heading.textContent.replace(/\s+/g, ' ').trim() : '');
+    };
     const show = (to) => {
+      const kind = PAGES[to.routeId]?.[to.params.slug] ? to.routeId : null;
+      opened = kind && { kind, slug: to.params.slug };
+      queueMicrotask(() =>
+        announce(
+          kind
+            ? df$('[data-lp-view="' + kind + '"]').get(0)
+            : to.routeId === 'section' && SECTIONS.includes(to.params.section)
+              ? df$('#lp-' + to.params.section).get(0)
+              : null,
+        ),
+      );
+      df$('#top [data-lp-home]').each((_i, part) => {
+        part.hidden = !!kind;
+      });
+      pageView.prop('hidden', !kind);
+      df$('#top [data-lp-view]').each((_i, view) => {
+        view.hidden = view.dataset.lpView !== kind;
+      });
+      if (kind) {
+        render();
+        df$('.mk-header-nav [data-router-link]').each((_i, link) => {
+          if (link.getAttribute('href') === location.hash) link.setAttribute('aria-current', 'true');
+          else link.removeAttribute('aria-current');
+        });
+        scrollTo({ top: 0, behavior: 'instant' });
+        first = false;
+        return;
+      }
       const section = to.routeId === 'section' && SECTIONS.includes(to.params.section) ? to.params.section : null;
       df$('.mk-header-nav [data-router-link]').each((_i, link) => {
         if (link.getAttribute('href') === '#/' + section) link.setAttribute('aria-current', 'true');

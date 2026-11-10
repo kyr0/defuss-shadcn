@@ -4542,6 +4542,9 @@
 
     /* ── Slide ─────────────────────────────────── */
     & .carousel-slide {
+      /* the width a flex-basis names includes a slide's border and padding: three of calc(33.333% - 0.667rem)
+         fit with a bordered slide too */
+      box-sizing: border-box;
       flex: 0 0 100%;
       scroll-snap-align: start;
       scroll-snap-stop: always;

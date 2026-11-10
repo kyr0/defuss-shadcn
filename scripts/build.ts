@@ -8,6 +8,7 @@ import { parseThemes } from './lib/contrast.ts';
 import { themeCssText, themeFileName, themeJsonText, themeJsonFileName } from './lib/theme-css.ts';
 import { schemaManifestText } from './lib/schema.ts';
 import { componentDirs, isPartsFile } from '../src/documentation/lib/component-dirs.ts';
+import { writeWhatsNew } from './lib/whats-new-files.ts';
 import { flattenComponentLinks, flattenSkillIndex } from '../src/documentation/lib/component-links.ts';
 
 /**
@@ -53,6 +54,10 @@ const sharedBindingFor = (names: string): string =>
   );
 
 // fresh tree so deleted sources never linger in dist/
+// what's new: the pending release's pages (git since the last release tag) - the docs build reads the record
+const whatsNewChanged = writeWhatsNew();
+if (whatsNewChanged) console.log('src/documentation/data/whats-new.json: the pending release updated');
+
 rmSync(DIST, { recursive: true, force: true });
 
 // 0. regenerate the agent-facing SKILL.md index from src/SKILL_tpl.md + the

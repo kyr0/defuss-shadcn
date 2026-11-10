@@ -303,3 +303,15 @@
 ```html example part label="Button (dashed)"
 <button class="btn" data-variant="dashed"><i data-lucide="plus"></i> Add item</button>
 ```
+
+```html example part label="Button (ghost, sm, disabled)"
+<button class="btn" data-variant="ghost" data-size="sm" type="button" disabled>
+  <i data-lucide="arrow-left"></i> Back
+</button>
+```
+
+```html example part label="Button (ghost, xs, disabled)"
+<button class="btn" data-variant="ghost" data-size="xs" type="button" disabled
+  ><i data-lucide="arrow-left"></i> Back</button
+>
+```

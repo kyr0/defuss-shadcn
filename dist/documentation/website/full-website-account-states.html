@@ -206,6 +206,14 @@
     font-weight: 600;
     letter-spacing: -0.03em;
   }
+  /* the footer's links in the site's ink (they showed the browser's default blue) */
+  #site-account .acc-legal a {
+    color: inherit;
+    text-underline-offset: 3px;
+  }
+  #site-account .acc-legal a:hover {
+    color: var(--foreground);
+  }
   #site-account .acc-legal {
     margin: 0;
     color: var(--muted-foreground);
@@ -310,15 +318,17 @@
     --muted-foreground: oklch(0.46 0.02 240);
     --border: oklch(0.2 0.008 230 / 0.12);
     --input: oklch(0.2 0.008 230 / 0.12);
-    --primary: oklch(0.57 0.12 200);
-    --primary-foreground: oklch(0.17 0.03 200);
+    /* the button white on a deeper teal (5:1), like the dark mode's light-on-dark */
+    --primary: oklch(0.5 0.1 200);
+    --primary-foreground: oklch(0.99 0.004 200);
     --secondary: oklch(0.955 0.025 220);
     --secondary-foreground: oklch(0.25 0.03 200);
     --accent: oklch(0.94 0.025 220);
     --accent-foreground: oklch(0.2 0.008 230);
-    --ring: oklch(0.57 0.12 200);
-    --acc-aside: oklch(0.993 0.02 260);
-    --acc-aside-ink: oklch(0.167 0.01 285);
+    --ring: oklch(0.5 0.1 200);
+    /* the side panel stays the night sky its nebula draws - light text on it in both modes */
+    --acc-aside: oklch(0.1 0.02 260);
+    --acc-aside-ink: oklch(0.95 0.008 230);
     --popover: oklch(0.997 0 0);
     --popover-foreground: oklch(0.2 0 0);
   }
@@ -381,17 +391,20 @@
             <option value="midnight" data-i18n-target="look-midnight">Midnight</option>
             <option value="paper" data-i18n-target="look-paper">Paper</option>
           </select>
-          <select
-            class="select"
-            data-size="sm"
+          <div
+            class="language-switcher"
             data-app-locale
+            role="group"
             aria-label="Language"
             data-i18n-aria-label-en="Language"
             data-i18n-aria-label-de="Sprache"
-          >
-            <option value="en" lang="en">English</option>
-            <option value="de" lang="de">Deutsch</option>
-          </select>
+            data-languages="en de"
+            data-value="en"
+            data-size="sm"
+            data-variant="swap"
+            data-display="icon"
+            data-flag-shape="squircle"
+          ></div>
           <label class="swap site-mode" data-variant="rotate" data-size="sm">
             <input
               type="checkbox"
@@ -415,7 +428,8 @@
             <a
               class="btn"
               data-variant="outline"
-              href="#"
+              href="#/sso/google"
+              data-router-link
               aria-label="Continue with Google"
               data-i18n-aria-label-en="Continue with Google"
               data-i18n-aria-label-de="Weiter mit Google"
@@ -437,7 +451,8 @@
             <a
               class="btn"
               data-variant="outline"
-              href="#"
+              href="#/sso/apple"
+              data-router-link
               aria-label="Continue with Apple"
               data-i18n-aria-label-en="Continue with Apple"
               data-i18n-aria-label-de="Weiter mit Apple"
@@ -449,7 +464,8 @@
             <a
               class="btn"
               data-variant="outline"
-              href="#"
+              href="#/sso/github"
+              data-router-link
               aria-label="Continue with GitHub"
               data-i18n-aria-label-en="Continue with GitHub"
               data-i18n-aria-label-de="Weiter mit GitHub"
@@ -461,7 +477,8 @@
             <a
               class="btn"
               data-variant="outline"
-              href="#"
+              href="#/sso/microsoft"
+              data-router-link
               aria-label="Continue with Microsoft"
               data-i18n-aria-label-en="Continue with Microsoft"
               data-i18n-aria-label-de="Weiter mit Microsoft"
@@ -529,7 +546,8 @@
             >
             <label class="mk-signup-form-terms"
               ><input class="checkbox" type="checkbox" name="terms" required /><span data-i18n-target="acc-11-1"
-                >I agree to the <a href="#">Terms</a> and the <a href="#">Privacy Policy</a>.</span
+                >I agree to the <a href="#/terms" data-router-link>Terms</a> and the
+                <a href="#/privacy" data-router-link>Privacy Policy</a>.</span
               ></label
             >
             <button class="btn" type="submit" data-i18n-target="acc-12-1">Create account</button>
@@ -569,14 +587,63 @@
             >Welcome back, Anna. Your workspace has three new comments since Friday.</p
           >
           <div class="mk-success-state-actions"
-            ><a class="btn" href="#" data-i18n-target="acc-17-3">Open workspace</a
+            ><a class="btn" href="../application/app-notes.html" data-i18n-target="acc-17-3">Open workspace</a
             ><a class="btn" data-variant="outline" href="#/" data-router-link data-i18n-target="acc-17-4"
               >Sign out</a
             ></div
           >
         </section>
+        <section class="acc-card acc-page" aria-labelledby="sso-title" data-account-view="sso" hidden>
+          <span class="mk-reset-request-icon" aria-hidden="true"><i data-lucide="link-2"></i></span>
+          <h1 id="sso-title"
+            ><span data-i18n-target="sso-title">Continue with</span> <span data-account-provider>Google</span></h1
+          >
+          <p data-i18n-target="sso-text"
+            >Acme asks for your name, your email address and your profile picture - nothing else. You can remove the
+            connection at any time in your account settings.</p
+          >
+          <a class="btn" href="#/welcome" data-router-link data-i18n-target="sso-go">Continue</a>
+          <a class="mk-reset-request-back" href="#/" data-router-link
+            ><i data-lucide="arrow-left"></i> <span data-i18n-target="sso-back">Use email instead</span></a
+          >
+        </section>
+        <section class="acc-card acc-page" aria-labelledby="terms-title" data-account-view="terms" hidden>
+          <h1 id="terms-title" data-i18n-target="terms-title">Terms of service</h1>
+          <p data-i18n-target="terms-1"
+            >Acme gives your team a workspace for plans, documents and tasks. You keep every right to what you put in
+            it; we only process it to run the service.</p
+          >
+          <p data-i18n-target="terms-2"
+            >A trial lasts 14 days and ends by itself. A paid plan renews monthly and can be cancelled at any time,
+            effective at the end of the month.</p
+          >
+          <p data-i18n-target="terms-3">Questions about these terms go to legal@acme.example.</p>
+          <a class="mk-reset-request-back" href="#/sign-up" data-router-link
+            ><i data-lucide="arrow-left"></i> <span data-i18n-target="terms-back">Back to the sign-up</span></a
+          >
+        </section>
+        <section class="acc-card acc-page" aria-labelledby="privacy-title" data-account-view="privacy" hidden>
+          <h1 id="privacy-title" data-i18n-target="privacy-title">Privacy policy</h1>
+          <p data-i18n-target="privacy-1"
+            >We store your name, your email address and what your team writes in Acme - in data centres in the European
+            Union.</p
+          >
+          <p data-i18n-target="privacy-2"
+            >We never sell your data and never use it to train models. Logs that could identify you are deleted after 30
+            days.</p
+          >
+          <p data-i18n-target="privacy-3"
+            >You can export or delete everything at any time; privacy@acme.example answers within a week.</p
+          >
+          <a class="mk-reset-request-back" href="#/sign-up" data-router-link
+            ><i data-lucide="arrow-left"></i> <span data-i18n-target="privacy-back">Back to the sign-up</span></a
+          >
+        </section>
       </div>
-      <p class="acc-legal" data-i18n-target="acc-legal">© 2026 Acme · Privacy · Terms</p>
+      <p class="acc-legal" data-i18n-target="acc-legal"
+        >© 2026 Acme · <a href="#/privacy" data-router-link>Privacy</a> ·
+        <a href="#/terms" data-router-link>Terms</a></p
+      >
     </div>
     <figure class="acc-aside">
       <div
@@ -654,10 +721,12 @@
   <template data-i18n-for="acc-10-2" data-i18n-locale="en">A number or a symbol</template>
   <template data-i18n-for="acc-10-2" data-i18n-locale="de">Eine Zahl oder ein Symbol</template>
   <template data-i18n-for="acc-11-1" data-i18n-locale="en"
-    >I agree to the <a href="#">Terms</a> and the <a href="#">Privacy Policy</a>.</template
+    >I agree to the <a href="#/terms" data-router-link>Terms</a> and the
+    <a href="#/privacy" data-router-link>Privacy Policy</a>.</template
   >
   <template data-i18n-for="acc-11-1" data-i18n-locale="de"
-    >Ich stimme den <a href="#">AGB</a> und der <a href="#">Datenschutzerklärung</a> zu.</template
+    >Ich stimme den <a href="#/terms" data-router-link>AGB</a> und der
+    <a href="#/privacy" data-router-link>Datenschutzerklärung</a> zu.</template
   >
   <template data-i18n-for="acc-12-1" data-i18n-locale="en">Create account</template>
   <template data-i18n-for="acc-12-1" data-i18n-locale="de">Konto erstellen</template>
@@ -699,8 +768,80 @@
   <template data-i18n-for="acc-q-2" data-i18n-locale="de">Marco Rossi, COO bei Globex</template>
   <template data-i18n-for="acc-q-3" data-i18n-locale="en">teams plan their week in Acme</template>
   <template data-i18n-for="acc-q-3" data-i18n-locale="de">Teams planen ihre Woche in Acme</template>
-  <template data-i18n-for="acc-legal" data-i18n-locale="en">© 2026 Acme · Privacy · Terms</template>
-  <template data-i18n-for="acc-legal" data-i18n-locale="de">© 2026 Acme · Datenschutz · AGB</template>
+  <template data-i18n-for="acc-legal" data-i18n-locale="en"
+    >© 2026 Acme · <a href="#/privacy" data-router-link>Privacy</a> ·
+    <a href="#/terms" data-router-link>Terms</a></template
+  >
+  <template data-i18n-for="acc-legal" data-i18n-locale="de"
+    >© 2026 Acme · <a href="#/privacy" data-router-link>Datenschutz</a> ·
+    <a href="#/terms" data-router-link>AGB</a></template
+  >
+  <template data-i18n-for="sso-title" data-i18n-locale="en">Continue with</template>
+  <template data-i18n-for="sso-title" data-i18n-locale="de">Weiter mit</template>
+  <template data-i18n-for="sso-text" data-i18n-locale="en"
+    >Acme asks for your name, your email address and your profile picture - nothing else. You can remove the connection
+    at any time in your account settings.</template
+  >
+  <template data-i18n-for="sso-text" data-i18n-locale="de"
+    >Acme fragt nur nach deinem Namen, deiner E-Mail-Adresse und deinem Profilbild. Du kannst die Verbindung jederzeit
+    in deinen Kontoeinstellungen trennen.</template
+  >
+  <template data-i18n-for="sso-go" data-i18n-locale="en">Continue</template>
+  <template data-i18n-for="sso-go" data-i18n-locale="de">Weiter</template>
+  <template data-i18n-for="sso-back" data-i18n-locale="en">Use email instead</template>
+  <template data-i18n-for="sso-back" data-i18n-locale="de">Lieber mit E-Mail</template>
+  <template data-i18n-for="terms-title" data-i18n-locale="en">Terms of service</template>
+  <template data-i18n-for="terms-title" data-i18n-locale="de">Allgemeine Geschäftsbedingungen</template>
+  <template data-i18n-for="terms-1" data-i18n-locale="en"
+    >Acme gives your team a workspace for plans, documents and tasks. You keep every right to what you put in it; we
+    only process it to run the service.</template
+  >
+  <template data-i18n-for="terms-1" data-i18n-locale="de"
+    >Acme gibt deinem Team einen Arbeitsbereich für Pläne, Dokumente und Aufgaben. Alle Rechte an deinen Inhalten
+    bleiben bei dir; wir verarbeiten sie nur, um den Dienst zu betreiben.</template
+  >
+  <template data-i18n-for="terms-2" data-i18n-locale="en"
+    >A trial lasts 14 days and ends by itself. A paid plan renews monthly and can be cancelled at any time, effective at
+    the end of the month.</template
+  >
+  <template data-i18n-for="terms-2" data-i18n-locale="de"
+    >Ein Test dauert 14 Tage und endet von selbst. Ein bezahlter Tarif verlängert sich monatlich und ist jederzeit zum
+    Monatsende kündbar.</template
+  >
+  <template data-i18n-for="terms-3" data-i18n-locale="en"
+    >Questions about these terms go to legal@acme.example.</template
+  >
+  <template data-i18n-for="terms-3" data-i18n-locale="de"
+    >Fragen zu diesen Bedingungen gehen an legal@acme.example.</template
+  >
+  <template data-i18n-for="terms-back" data-i18n-locale="en">Back to the sign-up</template>
+  <template data-i18n-for="terms-back" data-i18n-locale="de">Zurück zur Registrierung</template>
+  <template data-i18n-for="privacy-title" data-i18n-locale="en">Privacy policy</template>
+  <template data-i18n-for="privacy-title" data-i18n-locale="de">Datenschutzerklärung</template>
+  <template data-i18n-for="privacy-1" data-i18n-locale="en"
+    >We store your name, your email address and what your team writes in Acme - in data centres in the European
+    Union.</template
+  >
+  <template data-i18n-for="privacy-1" data-i18n-locale="de"
+    >Wir speichern deinen Namen, deine E-Mail-Adresse und was dein Team in Acme schreibt - in Rechenzentren in der
+    Europäischen Union.</template
+  >
+  <template data-i18n-for="privacy-2" data-i18n-locale="en"
+    >We never sell your data and never use it to train models. Logs that could identify you are deleted after 30
+    days.</template
+  >
+  <template data-i18n-for="privacy-2" data-i18n-locale="de"
+    >Wir verkaufen deine Daten nie und trainieren nie Modelle damit. Protokolle, die dich erkennbar machen, löschen wir
+    nach 30 Tagen.</template
+  >
+  <template data-i18n-for="privacy-3" data-i18n-locale="en"
+    >You can export or delete everything at any time; privacy@acme.example answers within a week.</template
+  >
+  <template data-i18n-for="privacy-3" data-i18n-locale="de"
+    >Du kannst jederzeit alles exportieren oder löschen; privacy@acme.example antwortet innerhalb einer Woche.</template
+  >
+  <template data-i18n-for="privacy-back" data-i18n-locale="en">Back to the sign-up</template>
+  <template data-i18n-for="privacy-back" data-i18n-locale="de">Zurück zur Registrierung</template>
 </div>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
@@ -727,8 +868,8 @@
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs; a shader reads its colors again on defuss-theme-change
     const look = df$('#site-account [data-site-look]');
@@ -743,10 +884,17 @@
       { id: 'sign-up', path: '/sign-up' },
       { id: 'reset', path: '/reset' },
       { id: 'welcome', path: '/welcome' },
+      { id: 'sso', path: '/sso/:provider' },
+      { id: 'terms', path: '/terms' },
+      { id: 'privacy', path: '/privacy' },
       { id: 'missing', path: '*' },
     ];
+    // a social sign-in names its provider before it goes on
+    const PROVIDERS = { google: 'Google', apple: 'Apple', github: 'GitHub', microsoft: 'Microsoft' };
     const show = (to) => {
-      const view = to.routeId === 'missing' ? 'sign-in' : to.routeId;
+      const provider = to.routeId === 'sso' ? PROVIDERS[to.params.provider] : null;
+      const view = to.routeId === 'missing' || (to.routeId === 'sso' && !provider) ? 'sign-in' : to.routeId;
+      if (provider) df$('#site-account [data-account-provider]').text(provider);
       df$('#site-account [data-account-view]').each((_i, card) => {
         card.hidden = card.dataset.accountView !== view;
       });
@@ -764,12 +912,22 @@
       event.preventDefault();
       go('/');
     });
-    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    // a new page opens at its start, the way a page load would - the first view stays where the reader is
+    let shownPath = null;
+    const showAt = (to) => {
+      show(to);
+      if (shownPath !== null && shownPath !== to.path)
+        df$('#site-account [data-account-view]:not([hidden])')
+          .get(0)
+          ?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      shownPath = to.path;
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => showAt(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      const follow = () => showAt(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
       addEventListener('hashchange', follow);
       follow();
     }

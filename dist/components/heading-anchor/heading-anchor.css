@@ -2,14 +2,38 @@
 
 @layer components {
   .heading-anchor {
+    /* the room between the glyph and the heading text */
+    --heading-anchor-gap: 0.375rem;
     color: var(--muted-foreground);
     text-decoration: none;
     font-weight: 400;
-    margin-right: 0.375rem;
+
+    /* -- In front (the default): the glyph hangs in front of the heading, in the gutter - the heading's text keeps
+       its own start edge - and shows while the heading is hovered, the link is focused or the section is the target */
+    display: inline-block;
+    inline-size: 1em;
+    margin-inline: calc(-1em - var(--heading-anchor-gap)) var(--heading-anchor-gap);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 150ms ease;
+
+    &:focus-visible {
+      opacity: 1;
+    }
+
+    /* -- Before / after the text: inline, always shown ----------- */
+    &[data-placement="before"] {
+      display: inline;
+      inline-size: auto;
+      margin-inline: 0 var(--heading-anchor-gap);
+      opacity: 1;
+    }
 
     &[data-placement="after"] {
-      margin-right: 0;
-      margin-left: 0.375rem;
+      display: inline;
+      inline-size: auto;
+      margin-inline: var(--heading-anchor-gap) 0;
+      opacity: 1;
     }
 
     &[data-size="xs"] {
@@ -34,9 +58,31 @@
     }
   }
 
+  /* the heading it sits in is hovered, or is the target of the address */
+  :hover > .heading-anchor,
+  :target > .heading-anchor {
+    opacity: 1;
+  }
+
+  /* no hover on touch screens, and a narrow gutter: the glyph goes back in front of the text, always shown */
+  @media (hover: none) {
+    .heading-anchor:not([data-placement="before"], [data-placement="after"]) {
+      display: inline;
+      inline-size: auto;
+      margin-inline: 0 var(--heading-anchor-gap);
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .heading-anchor {
       transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .heading-anchor {
+      color: var(--foreground);
     }
   }
 

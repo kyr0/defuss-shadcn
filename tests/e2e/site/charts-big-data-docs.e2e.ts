@@ -28,7 +28,12 @@ async function frameWith(page: Page, sel: string): Promise<Frame> {
   const cards = page.locator('.code-example');
   for (let k = 0; k < (await cards.count()); k++) {
     await cards.nth(k).scrollIntoViewIfNeeded();
-    for (const f of page.frames()) if (f !== page.mainFrame() && (await f.$(sel).catch(() => null))) return f;
+    for (const f of page.frames())
+      if (f !== page.mainFrame() && (await f.$(sel).catch(() => null))) {
+        // a frame booted ahead of its card: bring its card into view - a chart mounts only in view
+        await (await f.frameElement()).scrollIntoViewIfNeeded();
+        return f;
+      }
   }
   throw new Error(`no example holds ${sel}`);
 }

@@ -35,6 +35,10 @@ import { prefs } from './prefs.js';
      whose remembered toggle is closed. */
   var rootEl = document.documentElement;
   rootEl.toggleAttribute('data-nav-docked', prefs.navDocked.value);
+  /* The keys the header shows (⌘ K or Ctrl K, Kbd keys in the search field) follow the platform: Apple systems
+     name the Command key, every other one Ctrl - the shortcut handler accepts both. */
+  var ua = (navigator as any).userAgentData;
+  rootEl.dataset.platform = /mac|iphone|ipad|ipod/i.test((ua && ua.platform) || navigator.platform || navigator.userAgent) ? 'apple' : 'other';
   var closedSections = Object.keys(prefs.navCollapsed.value).filter(function (k) { return prefs.navCollapsed.value[k] === '0'; });
   if (closedSections.length) rootEl.dataset.navClosed = closedSections.join(' ');
 

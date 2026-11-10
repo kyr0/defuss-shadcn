@@ -62,7 +62,7 @@
       400 1rem/1.6 'Albert Sans',
       var(--font-sans);
   }
-  #site-company > :is([data-company-view], .co-bar) {
+  #site-company > :is([data-company-view], .co-bar, .co-footer) {
     box-sizing: border-box;
     width: 100%;
     padding-inline: max(clamp(1rem, 4vw, 2.5rem), calc((100% - 76rem) / 2));
@@ -134,25 +134,33 @@
   #site-company[data-look='tram'] .co-look-only[data-for='tram'] {
     display: block;
   }
-  /* the header: the name, the routes at reading size, the look and the language */
+  /* the header (the Site Header block in the site's bar): the name, the routes at reading size, the look and the
+     language */
   #site-company .co-bar {
     position: sticky;
     top: 0;
     z-index: 10;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 2rem;
-    min-height: 4.5rem;
-    padding-block: 0.75rem;
     border-block-end: 1px solid var(--border);
     background: color-mix(in oklch, var(--background) 88%, transparent);
     backdrop-filter: blur(12px);
   }
+  #site-company .co-bar .mk-header-inner {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.75rem 2rem;
+    max-width: none;
+    min-height: 4.5rem;
+    margin: 0;
+    padding: 0.75rem 0;
+  }
   #site-company .co-brand {
     color: var(--foreground);
     text-decoration: none;
+  }
+  #site-company .co-brand .mk-header-name {
+    color: var(--foreground);
     font: 400 1.625rem/1 var(--co-head);
+    letter-spacing: 0;
   }
   #site-company .co-nav {
     display: flex;
@@ -464,6 +472,245 @@
   #site-company [hidden] {
     display: none !important;
   }
+  /* the pages a list opens: a role, a case study, a press story - serif titles, the site's cards */
+  #site-company :is(.mk-job-details-title, .mk-case-study-title, .co-story-title) {
+    font: 400 clamp(2.25rem, 4.5vw, 3.5rem)/1.05 var(--co-head);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  #site-company :is(.mk-job-details-body, .mk-case-study-body, .co-story-body) h2 {
+    font: 400 1.625rem/1.2 var(--co-head);
+  }
+  #site-company :is(.mk-job-details-summary, .mk-case-study-facts) {
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #site-company .mk-job-details-summary .btn {
+    width: 100%;
+  }
+  #site-company .co-work {
+    display: grid;
+    gap: 2rem;
+  }
+  #site-company .co-work-title {
+    margin: 0;
+    font: 400 clamp(2.25rem, 4.5vw, 3.5rem)/1.05 var(--co-head);
+  }
+  #site-company .co-work-lead {
+    max-width: 38rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1.125rem;
+  }
+  #site-company .co-work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: 1.5rem;
+  }
+  #site-company .mk-case-preview {
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #site-company .mk-case-preview-title a {
+    color: var(--foreground);
+    font: 400 1.5rem/1.2 var(--co-head);
+  }
+  #site-company .mk-case-preview-metric strong {
+    color: var(--primary);
+  }
+  #site-company[data-look='tram'] :is(.mk-case-preview-metric strong, .mk-case-preview-more) {
+    color: var(--foreground);
+  }
+  #site-company .mk-case-study-results dd {
+    font-family: var(--co-head);
+    font-weight: 400;
+  }
+  /* a press story: the outlet's quote large, what they wrote, the press contact */
+  #site-company .co-story {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 46rem;
+  }
+  #site-company .co-story-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+  }
+  #site-company .co-story-meta strong {
+    color: var(--primary);
+    font: 400 1.25rem/1.2 var(--co-head);
+  }
+  #site-company[data-look='tram'] .co-story-meta strong {
+    color: var(--foreground);
+  }
+  #site-company .co-story-title {
+    margin: 0;
+  }
+  #site-company .co-story-quote {
+    margin: 0;
+    padding-inline-start: 1.25rem;
+    border-inline-start: 3px solid var(--primary);
+    font: 400 italic 1.625rem/1.35 var(--co-head);
+  }
+  #site-company .co-story-body {
+    display: grid;
+    gap: 1rem;
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+  }
+  #site-company .co-story-body p {
+    margin: 0;
+  }
+  #site-company .co-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: fit-content;
+    color: var(--muted-foreground);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  #site-company .co-back:hover {
+    color: var(--foreground);
+  }
+  #site-company .co-back svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  /* previous and next under a page */
+  #site-company .co-pager {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    margin-block-start: 3rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--border);
+  }
+  #site-company .co-pager a {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  #site-company .co-pager a:hover {
+    border-color: var(--primary);
+  }
+  #site-company .co-pager a + a {
+    text-align: end;
+  }
+  #site-company .co-pager span {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  #site-company .co-pager strong {
+    font: 400 1.25rem/1.25 var(--co-head);
+  }
+  /* the application: a dialog in the site's card colours */
+  #site-company .co-dialog {
+    width: min(94vw, 46rem);
+    max-height: min(92dvh, 60rem);
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 2);
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: var(--shadow-2xl);
+    overscroll-behavior: contain;
+  }
+  #site-company .co-dialog::backdrop {
+    background: oklch(0.15 0.03 262 / 0.55);
+    backdrop-filter: blur(6px);
+  }
+  #site-company .co-dialog-body {
+    position: relative;
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+  #site-company .co-dialog h2 {
+    margin: 0;
+    padding-inline-end: 2.5rem;
+    font: 400 1.875rem/1.15 var(--co-head);
+  }
+  #site-company .co-dialog-x {
+    position: absolute;
+    inset: 1rem 1rem auto auto;
+  }
+  #site-company .co-dialog .mk-application-form {
+    max-width: none;
+  }
+  #site-company .co-dialog .co-apply-done {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  #site-company .co-dialog:not([data-sent]) .co-apply-done,
+  #site-company .co-dialog[data-sent] .co-apply-form {
+    display: none;
+  }
+  #site-company .co-apply-done > svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+    border-radius: 999px;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+  }
+  #site-company .co-apply-done p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  /* the footer: the Site Footer block on the site's band */
+  #site-company .co-footer {
+    border-block-start: 1px solid var(--border);
+    background: var(--co-band);
+    color: var(--foreground);
+  }
+  #site-company .co-footer .mk-footer-inner {
+    max-width: none;
+    margin: 0;
+    padding: clamp(3rem, 6vw, 4.5rem) 0 2rem;
+  }
+  @container (width > 48rem) {
+    #site-company .co-footer .mk-footer-top {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+      gap: 4rem;
+    }
+  }
+  #site-company .co-footer .mk-footer-brand {
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  #site-company .co-footer .mk-footer-brand-name {
+    font: 400 2rem/1 var(--co-head);
+  }
+  #site-company .co-footer .mk-footer-about p {
+    font-size: 0.9375rem;
+  }
+  #site-company .co-footer .mk-footer-heading {
+    color: var(--foreground);
+    font: 400 1.25rem/1.2 var(--co-head);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  #site-company .co-footer .mk-footer-list a {
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+  #site-company .co-footer .mk-footer-list a:hover,
+  #site-company .co-footer .mk-footer-social a:hover {
+    color: var(--foreground);
+  }
   /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
   #site-company .site-mode {
     flex: none;
@@ -538,59 +785,63 @@
   /* -- modes: end -- */
 </style>
 <div id="site-company" data-look="azulejo" data-i18n-component>
-  <div class="co-bar">
-    <a class="co-brand" href="#/">Acme</a>
-    <nav
-      class="co-nav"
-      data-company-nav="site"
-      aria-label="Company"
-      data-i18n-aria-label-en="Company"
-      data-i18n-aria-label-de="Unternehmen"
-    >
-      <a href="#/" data-router-link aria-current="page"><span data-i18n-target="nav-0">About</span></a>
-      <a href="#/team" data-router-link>Team</a>
-      <a href="#/jobs" data-router-link>Jobs</a>
-      <a href="#/press" data-router-link><span data-i18n-target="nav-3">Press</span></a>
-    </nav>
-    <div class="co-bar-controls">
-      <select
-        class="select"
-        data-size="sm"
-        data-site-look
-        aria-label="Look"
-        data-i18n-aria-label-en="Look"
-        data-i18n-aria-label-de="Stil"
-        style="width: auto"
+  <header class="mk-header co-bar" data-variant="sticky">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand co-brand" href="#/" data-router-link><span class="mk-header-name">Acme</span></a>
+      <nav
+        class="mk-header-nav co-nav"
+        data-company-nav="site"
+        aria-label="Company"
+        data-i18n-aria-label-en="Company"
+        data-i18n-aria-label-de="Unternehmen"
       >
-        <option value="azulejo" data-i18n-target="look-azulejo">Azulejo</option>
-        <option value="atlantic" data-i18n-target="look-atlantic">Atlantic</option>
-        <option value="tram" data-i18n-target="look-tram">Tram 28</option>
-      </select>
-      <select
-        class="select"
-        data-size="sm"
-        data-app-locale
-        aria-label="Language"
-        data-i18n-aria-label-en="Language"
-        data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input
-          type="checkbox"
-          data-site-mode
-          aria-label="Dark mode"
-          data-i18n-aria-label-en="Dark mode"
-          data-i18n-aria-label-de="Dunkler Modus"
-        />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
+        <a href="#/" data-router-link aria-current="page"><span data-i18n-target="nav-0">About</span></a>
+        <a href="#/work" data-router-link><span data-i18n-target="nav-work">Work</span></a>
+        <a href="#/team" data-router-link>Team</a>
+        <a href="#/jobs" data-router-link>Jobs</a>
+        <a href="#/press" data-router-link><span data-i18n-target="nav-3">Press</span></a>
+      </nav>
+      <div class="mk-header-actions co-bar-controls">
+        <select
+          class="select"
+          data-size="sm"
+          data-site-look
+          aria-label="Look"
+          data-i18n-aria-label-en="Look"
+          data-i18n-aria-label-de="Stil"
+          style="width: auto"
+        >
+          <option value="azulejo" data-i18n-target="look-azulejo">Azulejo</option>
+          <option value="atlantic" data-i18n-target="look-atlantic">Atlantic</option>
+          <option value="tram" data-i18n-target="look-tram">Tram 28</option>
+        </select>
+        <div
+          class="language-switcher"
+          data-app-locale
+          role="group"
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-flag-style="shadow"
+          data-align="end"
+        ></div>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+      </div>
     </div>
-  </div>
+  </header>
   <section class="mk-about-intro co-hero co-band" aria-labelledby="about-title" data-company-view="about">
     <div
       class="surface co-tiles co-look-only"
@@ -623,7 +874,7 @@
         <h2 class="mk-about-intro-title" id="about-title" data-i18n-target="co-2-1"
           >We build calm software for teams that ship</h2
         >
-        <p class="mk-about-intro-lead"
+        <p class="mk-about-intro-lead" data-i18n-target="c2-lead"
           >Acme started in a Lisbon flat in 2016 with one question: why does work software make people anxious? Ten
           years later, forty of us answer it every day.</p
         >
@@ -647,19 +898,19 @@
       <ul class="mk-about-intro-values">
         <li
           ><i data-lucide="feather"></i><h3 data-i18n-target="co-9-1">Calm by default</h3
-          ><p>No red badges, no dark patterns - attention is our users' to give.</p></li
+          ><p data-i18n-target="c2-v1">No red badges, no dark patterns - attention is our users' to give.</p></li
         >
         <li
           ><i data-lucide="lock"></i><h3 data-i18n-target="co-10-1">Private first</h3
-          ><p>Your data is yours. We never sell it and never train on it.</p></li
+          ><p data-i18n-target="c2-v2">Your data is yours. We never sell it and never train on it.</p></li
         >
         <li
           ><i data-lucide="hand-heart"></i><h3 data-i18n-target="co-11-1">Kind and direct</h3
-          ><p>We say what we mean, and we mean well.</p></li
+          ><p data-i18n-target="c2-v3">We say what we mean, and we mean well.</p></li
         >
         <li
           ><i data-lucide="leaf"></i><h3 data-i18n-target="co-12-1">Built to last</h3
-          ><p>Profitable, independent and here for the next decade.</p></li
+          ><p data-i18n-target="c2-v4">Profitable, independent and here for the next decade.</p></li
         >
       </ul>
     </div>
@@ -669,28 +920,30 @@
       <span class="mk-process-step-number" aria-hidden="true">01</span>
       <div class="mk-process-step-body">
         <h3 class="mk-process-step-title" data-i18n-target="co-13-1">Discover</h3>
-        <p class="mk-process-step-desc">Two workshops to map goals, users and constraints.</p>
+        <p class="mk-process-step-desc" data-i18n-target="c2-p1">Two workshops to map goals, users and constraints.</p>
       </div>
     </li>
     <li class="mk-process-step">
       <span class="mk-process-step-number" aria-hidden="true">02</span>
       <div class="mk-process-step-body">
         <h3 class="mk-process-step-title">Design</h3>
-        <p class="mk-process-step-desc">Prototypes tested with real customers every week.</p>
+        <p class="mk-process-step-desc" data-i18n-target="c2-p2">Prototypes tested with real customers every week.</p>
       </div>
     </li>
     <li class="mk-process-step">
       <span class="mk-process-step-number" aria-hidden="true">03</span>
       <div class="mk-process-step-body">
         <h3 class="mk-process-step-title" data-i18n-target="co-14-1">Build</h3>
-        <p class="mk-process-step-desc">Small releases behind flags - nothing big-bang.</p>
+        <p class="mk-process-step-desc" data-i18n-target="c2-p3">Small releases behind flags - nothing big-bang.</p>
       </div>
     </li>
     <li class="mk-process-step">
       <span class="mk-process-step-number" aria-hidden="true">04</span>
       <div class="mk-process-step-body">
         <h3 class="mk-process-step-title" data-i18n-target="co-15-1">Grow</h3>
-        <p class="mk-process-step-desc">We measure, learn and hand over a team that can run it.</p>
+        <p class="mk-process-step-desc" data-i18n-target="c2-p4"
+          >We measure, learn and hand over a team that can run it.</p
+        >
       </div>
     </li>
   </ol>
@@ -698,11 +951,15 @@
     <article class="mk-team-member" aria-labelledby="tm-0">
       <div class="mk-team-member-portrait">
         <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=25" alt="Portrait of Sophie Tan" />
-        <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Lisbon</span>
+        <span class="mk-team-member-tag"
+          ><i data-lucide="map-pin"></i><span data-i18n-target="c2-t1">Lisbon</span></span
+        >
         <ul class="mk-team-member-links">
           <li
             ><a
-              href="#"
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Sophie Tan on LinkedIn"
               data-i18n-aria-label-en="Sophie Tan on LinkedIn"
               data-i18n-aria-label-de="Sophie Tan auf LinkedIn"
@@ -713,7 +970,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Sophie Tan on GitHub"
               data-i18n-aria-label-en="Sophie Tan on GitHub"
               data-i18n-aria-label-de="Sophie Tan auf GitHub"
@@ -724,7 +983,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Sophie Tan on X"
               data-i18n-aria-label-en="Sophie Tan on X"
               data-i18n-aria-label-de="Sophie Tan auf X"
@@ -735,7 +996,7 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="mailto:sophie@acme.example"
               aria-label="Email Sophie Tan"
               data-i18n-aria-label-en="Email Sophie Tan"
               data-i18n-aria-label-de="Sophie Tan eine E-Mail schreiben"
@@ -746,7 +1007,9 @@
       <div class="mk-team-member-body">
         <h3 class="mk-team-member-name" id="tm-0">Sophie Tan</h3>
         <p class="mk-team-member-role" data-i18n-target="co-16-1">Head of Engineering</p>
-        <p class="mk-team-member-bio">Builds the sync engine. Previously at a database company you have heard of.</p>
+        <p class="mk-team-member-bio" data-i18n-target="c2-b1"
+          >Builds the sync engine. Previously at a database company you have heard of.</p
+        >
       </div>
     </article>
     <article class="mk-team-member" aria-labelledby="tm-1">
@@ -756,7 +1019,9 @@
         <ul class="mk-team-member-links">
           <li
             ><a
-              href="#"
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Hannah Lee on LinkedIn"
               data-i18n-aria-label-en="Hannah Lee on LinkedIn"
               data-i18n-aria-label-de="Hannah Lee auf LinkedIn"
@@ -767,7 +1032,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Hannah Lee on GitHub"
               data-i18n-aria-label-en="Hannah Lee on GitHub"
               data-i18n-aria-label-de="Hannah Lee auf GitHub"
@@ -778,7 +1045,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Hannah Lee on X"
               data-i18n-aria-label-en="Hannah Lee on X"
               data-i18n-aria-label-de="Hannah Lee auf X"
@@ -789,7 +1058,7 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="mailto:hannah@acme.example"
               aria-label="Email Hannah Lee"
               data-i18n-aria-label-en="Email Hannah Lee"
               data-i18n-aria-label-de="Hannah Lee eine E-Mail schreiben"
@@ -799,18 +1068,24 @@
       </div>
       <div class="mk-team-member-body">
         <h3 class="mk-team-member-name" id="tm-1">Hannah Lee</h3>
-        <p class="mk-team-member-role">Design Lead</p>
-        <p class="mk-team-member-bio">Makes Acme quiet. Believes every badge has to earn its place.</p>
+        <p class="mk-team-member-role" data-i18n-target="c2-r2">Design Lead</p>
+        <p class="mk-team-member-bio" data-i18n-target="c2-b2"
+          >Makes Acme quiet. Believes every badge has to earn its place.</p
+        >
       </div>
     </article>
     <article class="mk-team-member" aria-labelledby="tm-2">
       <div class="mk-team-member-portrait">
         <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=12" alt="Portrait of Alex Moreau" />
-        <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Lisbon</span>
+        <span class="mk-team-member-tag"
+          ><i data-lucide="map-pin"></i><span data-i18n-target="c2-t2">Lisbon</span></span
+        >
         <ul class="mk-team-member-links">
           <li
             ><a
-              href="#"
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Alex Moreau on LinkedIn"
               data-i18n-aria-label-en="Alex Moreau on LinkedIn"
               data-i18n-aria-label-de="Alex Moreau auf LinkedIn"
@@ -821,7 +1096,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Alex Moreau on GitHub"
               data-i18n-aria-label-en="Alex Moreau on GitHub"
               data-i18n-aria-label-de="Alex Moreau auf GitHub"
@@ -832,7 +1109,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Alex Moreau on X"
               data-i18n-aria-label-en="Alex Moreau on X"
               data-i18n-aria-label-de="Alex Moreau auf X"
@@ -843,7 +1122,7 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="mailto:alex@acme.example"
               aria-label="Email Alex Moreau"
               data-i18n-aria-label-en="Email Alex Moreau"
               data-i18n-aria-label-de="Alex Moreau eine E-Mail schreiben"
@@ -854,7 +1133,9 @@
       <div class="mk-team-member-body">
         <h3 class="mk-team-member-name" id="tm-2">Alex Moreau</h3>
         <p class="mk-team-member-role" data-i18n-target="co-18-1">Co-founder & CEO</p>
-        <p class="mk-team-member-bio">Writes the weekly letter and still answers support on Fridays.</p>
+        <p class="mk-team-member-bio" data-i18n-target="c2-b3"
+          >Writes the weekly letter and still answers support on Fridays.</p
+        >
       </div>
     </article>
     <article class="mk-team-member" aria-labelledby="tm-3">
@@ -864,7 +1145,9 @@
         <ul class="mk-team-member-links">
           <li
             ><a
-              href="#"
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Priya Natarajan on LinkedIn"
               data-i18n-aria-label-en="Priya Natarajan on LinkedIn"
               data-i18n-aria-label-de="Priya Natarajan auf LinkedIn"
@@ -875,7 +1158,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Priya Natarajan on GitHub"
               data-i18n-aria-label-en="Priya Natarajan on GitHub"
               data-i18n-aria-label-de="Priya Natarajan auf GitHub"
@@ -886,7 +1171,9 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
               aria-label="Priya Natarajan on X"
               data-i18n-aria-label-en="Priya Natarajan on X"
               data-i18n-aria-label-de="Priya Natarajan auf X"
@@ -897,7 +1184,7 @@
           ></li>
           <li
             ><a
-              href="#"
+              href="mailto:priya@acme.example"
               aria-label="Email Priya Natarajan"
               data-i18n-aria-label-en="Email Priya Natarajan"
               data-i18n-aria-label-de="Priya Natarajan eine E-Mail schreiben"
@@ -908,7 +1195,9 @@
       <div class="mk-team-member-body">
         <h3 class="mk-team-member-name" id="tm-3">Priya Natarajan</h3>
         <p class="mk-team-member-role" data-i18n-target="co-17-1">Chief Product Officer</p>
-        <p class="mk-team-member-bio">Leads product and research after eight years building tools for hospitals.</p>
+        <p class="mk-team-member-bio" data-i18n-target="c2-b4"
+          >Leads product and research after eight years building tools for hospitals.</p
+        >
       </div>
     </article>
   </div>
@@ -916,8 +1205,8 @@
     <li class="mk-timeline-item">
       <time class="mk-timeline-item-date" datetime="2016">2016</time>
       <div class="mk-timeline-item-body">
-        <h3 class="mk-timeline-item-title">A flat in Lisbon</h3>
-        <p class="mk-timeline-item-text"
+        <h3 class="mk-timeline-item-title" data-i18n-target="c2-h1">A flat in Lisbon</h3>
+        <p class="mk-timeline-item-text" data-i18n-target="c2-h1t"
           >Alex and Sophie quit their jobs and build the first prototype on a kitchen table.</p
         >
       </div>
@@ -925,30 +1214,34 @@
     <li class="mk-timeline-item">
       <time class="mk-timeline-item-date" datetime="2018">2018</time>
       <div class="mk-timeline-item-body">
-        <h3 class="mk-timeline-item-title">The first thousand teams</h3>
-        <p class="mk-timeline-item-text">Word of mouth only - we still have no marketing budget.</p>
+        <h3 class="mk-timeline-item-title" data-i18n-target="c2-h2">The first thousand teams</h3>
+        <p class="mk-timeline-item-text" data-i18n-target="c2-h2t"
+          >Word of mouth only - we still have no marketing budget.</p
+        >
       </div>
     </li>
     <li class="mk-timeline-item" data-variant="milestone">
-      <time class="mk-timeline-item-date" datetime="2021-03">March 2021</time>
+      <time class="mk-timeline-item-date" datetime="2021-03" data-i18n-target="c2-h3d">March 2021</time>
       <div class="mk-timeline-item-body">
-        <h3 class="mk-timeline-item-title">Acme 2.0 and offline sync</h3>
-        <p class="mk-timeline-item-text">A two-year rewrite ships: Acme works on a plane, in a tunnel, anywhere.</p>
+        <h3 class="mk-timeline-item-title" data-i18n-target="c2-h3">Acme 2.0 and offline sync</h3>
+        <p class="mk-timeline-item-text" data-i18n-target="c2-h3t"
+          >A two-year rewrite ships: Acme works on a plane, in a tunnel, anywhere.</p
+        >
         <img class="mk-timeline-item-media" src="https://picsum.photos/id/0/900/506" alt="" />
       </div>
     </li>
     <li class="mk-timeline-item">
       <time class="mk-timeline-item-date" datetime="2024">2024</time>
       <div class="mk-timeline-item-body">
-        <h3 class="mk-timeline-item-title">Berlin and Montreal</h3>
-        <p class="mk-timeline-item-text">Two new offices, forty people, still profitable.</p>
+        <h3 class="mk-timeline-item-title" data-i18n-target="c2-h4">Berlin and Montreal</h3>
+        <p class="mk-timeline-item-text" data-i18n-target="c2-h4t">Two new offices, forty people, still profitable.</p>
       </div>
     </li>
     <li class="mk-timeline-item">
       <time class="mk-timeline-item-date" datetime="2026">2026</time>
       <div class="mk-timeline-item-body">
-        <h3 class="mk-timeline-item-title">Twelve thousand teams</h3>
-        <p class="mk-timeline-item-text">And the calmest release we have ever shipped.</p>
+        <h3 class="mk-timeline-item-title" data-i18n-target="c2-h5">Twelve thousand teams</h3>
+        <p class="mk-timeline-item-text" data-i18n-target="c2-h5t">And the calmest release we have ever shipped.</p>
       </div>
     </li>
   </ol>
@@ -970,7 +1263,7 @@
           >
         </dl>
       </div>
-      <a class="mk-credential-item-verify" href="#" target="_blank" rel="noopener"
+      <a class="mk-credential-item-verify" href="https://www.certipedia.com/" target="_blank" rel="noopener"
         ><i data-lucide="badge-check"></i> <span data-i18n-target="co-22-1">Verify</span
         ><span class="sr-only"> ISO/IEC 27001:2022 with TÜV Rheinland (opens in a new tab)</span></a
       >
@@ -992,7 +1285,7 @@
           >
         </dl>
       </div>
-      <a class="mk-credential-item-verify" href="#" target="_blank" rel="noopener"
+      <a class="mk-credential-item-verify" href="https://www.aicpa-cima.com/" target="_blank" rel="noopener"
         ><i data-lucide="badge-check"></i> <span data-i18n-target="co-22-2">Verify</span
         ><span class="sr-only"> SOC 2 Type II with Prescient Assurance (opens in a new tab)</span></a
       >
@@ -1019,7 +1312,7 @@
       <article class="mk-job-item">
         <div class="mk-job-item-main">
           <h3 class="mk-job-item-title"
-            ><a href="#">Senior Sync Engineer</a>
+            ><a href="#/job/sync-engineer" data-router-link>Senior Sync Engineer</a>
             <span class="badge" data-variant="default" data-size="sm">New</span></h3
           >
           <ul class="mk-job-item-meta">
@@ -1036,7 +1329,9 @@
       </article>
       <article class="mk-job-item">
         <div class="mk-job-item-main">
-          <h3 class="mk-job-item-title"><a href="#">Frontend Engineer, Editor</a></h3>
+          <h3 class="mk-job-item-title"
+            ><a href="#/job/frontend-editor" data-router-link>Frontend Engineer, Editor</a></h3
+          >
           <ul class="mk-job-item-meta">
             <li><i data-lucide="briefcase"></i>Engineering</li>
             <li><i data-lucide="map-pin"></i>Berlin</li>
@@ -1052,7 +1347,7 @@
       </article>
       <article class="mk-job-item">
         <div class="mk-job-item-main">
-          <h3 class="mk-job-item-title"><a href="#">Site Reliability Engineer</a></h3>
+          <h3 class="mk-job-item-title"><a href="#/job/sre" data-router-link>Site Reliability Engineer</a></h3>
           <ul class="mk-job-item-meta">
             <li><i data-lucide="briefcase"></i>Engineering</li>
             <li><i data-lucide="map-pin"></i>Remote (EU)</li>
@@ -1071,12 +1366,12 @@
       <article class="mk-job-item">
         <div class="mk-job-item-main">
           <h3 class="mk-job-item-title"
-            ><a href="#">Product Designer, Mobile</a>
+            ><a href="#/job/product-designer" data-router-link>Product Designer, Mobile</a>
             <span class="badge" data-variant="default" data-size="sm">New</span></h3
           >
           <ul class="mk-job-item-meta">
             <li><i data-lucide="briefcase"></i>Design</li>
-            <li><i data-lucide="map-pin"></i>Lisbon</li>
+            <li><i data-lucide="map-pin"></i><span data-i18n-target="c2-jl">Lisbon</span></li>
             <li><i data-lucide="clock"></i><span data-i18n-target="co-28-1">Part-time</span></li>
             <li><i data-lucide="wifi"></i>Hybrid</li>
           </ul>
@@ -1095,17 +1390,15 @@
         ><span class="mk-press-item-publication">The Ledger</span><time datetime="2026-08-12">12 Aug 2026</time></div
       >
       <blockquote class="mk-press-item-quote"
-        ><p>The rare productivity tool that gives you your afternoon back.</p></blockquote
+        ><p data-i18n-target="c2-q1">The rare productivity tool that gives you your afternoon back.</p></blockquote
       >
       <h3 class="mk-press-item-title"
-        ><a href="#" target="_blank" rel="noopener"
-          >The 40-person company quietly taking on the giants<span class="sr-only">
-            (The Ledger, opens in a new tab)</span
-          ></a
+        ><a href="#/press/ledger" data-router-link data-i18n-target="c2-s1"
+          >The 40-person company quietly taking on the giants</a
         ></h3
       >
       <span class="mk-press-item-more" aria-hidden="true"
-        ><span data-i18n-target="co-34-1">Read on The Ledger</span> <i data-lucide="arrow-up-right"></i
+        ><span data-i18n-target="co-34-1">What The Ledger wrote</span> <i data-lucide="arrow-right"></i
       ></span>
     </article>
     <article class="mk-press-item" data-variant="quote">
@@ -1113,16 +1406,784 @@
         ><span class="mk-press-item-publication">TechDaily</span><time datetime="2026-09-28">28 Sep 2026</time></div
       >
       <blockquote class="mk-press-item-quote"
-        ><p>Sync that simply never fails - we tried, on a transatlantic flight.</p></blockquote
+        ><p data-i18n-target="c2-q2">Sync that simply never fails - we tried, on a transatlantic flight.</p></blockquote
       >
       <h3 class="mk-press-item-title"
-        ><a href="#" target="_blank" rel="noopener"
-          >Acme 4.0 makes offline-first the default<span class="sr-only"> (TechDaily, opens in a new tab)</span></a
+        ><a href="#/press/techdaily" data-router-link data-i18n-target="c2-s2"
+          >Acme 4.0 makes offline-first the default</a
         ></h3
       >
-      <span class="mk-press-item-more" aria-hidden="true">Read on TechDaily <i data-lucide="arrow-up-right"></i></span>
+      <span class="mk-press-item-more" aria-hidden="true"
+        ><span data-i18n-target="co-34-2">What TechDaily wrote</span> <i data-lucide="arrow-right"></i
+      ></span>
     </article>
   </div>
+  <!-- Work: the case studies, cards drawn from the data block -->
+  <section class="co-work" aria-labelledby="work-title" data-company-view="work" hidden>
+    <span class="mk-about-intro-eyebrow" data-i18n-target="w-eyebrow">Case studies</span>
+    <h2 class="co-work-title" id="work-title" data-i18n-target="w-title">Teams that got calmer</h2>
+    <p class="co-work-lead" data-i18n-target="w-lead"
+      >Three customers on what changed after they moved their work to Acme - in their numbers, not ours.</p
+    >
+    <div class="co-work-grid" data-co-cases></div>
+  </section>
+  <template data-co-case-card>
+    <article class="mk-case-preview">
+      <figure class="mk-case-preview-media"><img src="https://picsum.photos/id/180/800/500" alt="" /></figure>
+      <div class="mk-case-preview-body">
+        <div class="mk-case-preview-meta"
+          ><span class="mk-case-preview-logo" data-case-card="client"></span
+          ><span class="badge" data-variant="outline" data-case-card="industry"></span
+        ></div>
+        <h3 class="mk-case-preview-title"><a href="#/work" data-router-link data-case-card="title"></a></h3>
+        <p class="mk-case-preview-metric"
+          ><strong data-case-card="metric"></strong> <span data-case-card="metricLabel"></span
+        ></p>
+        <span class="mk-case-preview-more" aria-hidden="true"
+          ><span data-case-card="more"></span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 6l6 6-6 6" /></svg
+        ></span>
+      </div>
+    </article>
+  </template>
+  <!-- a case study: one page, filled from the data block -->
+  <div data-company-view="case" hidden>
+    <article class="mk-case-study" aria-labelledby="cs-title">
+      <a class="co-back" href="#/work" data-router-link
+        ><i data-lucide="arrow-left"></i> <span data-i18n-target="cs-back">All case studies</span></a
+      >
+      <header class="mk-case-study-head">
+        <div class="mk-case-study-client"
+          ><strong data-case-field="client"></strong
+          ><span class="badge" data-variant="outline" data-case-field="industry"></span
+          ><span data-case-field="size"></span
+        ></div>
+        <h1 class="mk-case-study-title" id="cs-title" data-case-field="title"></h1>
+        <figure class="mk-case-study-cover"
+          ><img src="https://picsum.photos/id/180/1600/700" alt="" data-case-cover
+        /></figure>
+      </header>
+      <dl class="mk-case-study-results" data-case-results></dl>
+      <div class="mk-case-study-layout">
+        <div class="mk-case-study-body">
+          <section aria-labelledby="cs-challenge"
+            ><h2 id="cs-challenge" data-i18n-target="cs-challenge">The challenge</h2><p data-case-field="challenge"></p
+          ></section>
+          <section aria-labelledby="cs-approach"
+            ><h2 id="cs-approach" data-i18n-target="cs-approach">The approach</h2
+            ><ol class="mk-case-study-steps" data-case-steps></ol
+          ></section>
+          <section aria-labelledby="cs-results">
+            <h2 id="cs-results" data-i18n-target="cs-results">The results</h2>
+            <p data-case-field="outcome"></p>
+            <figure class="mk-case-study-quote">
+              <blockquote><p data-case-field="quote"></p></blockquote>
+              <figcaption
+                ><span class="avatar"
+                  ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" data-case-avatar /></span
+                ><div><strong data-case-field="person"></strong><br /><span data-case-field="role"></span></div
+              ></figcaption>
+            </figure>
+          </section>
+        </div>
+        <dl class="mk-case-study-facts">
+          <div><dt data-i18n-target="cs-client">Client</dt><dd data-case-field="company"></dd></div>
+          <div><dt data-i18n-target="cs-industry">Industry</dt><dd data-case-field="sector"></dd></div>
+          <div><dt data-i18n-target="cs-plan">Plan</dt><dd data-case-field="plan"></dd></div>
+          <div><dt data-i18n-target="cs-timeline">Timeline</dt><dd data-case-field="timeline"></dd></div>
+        </dl>
+      </div>
+      <nav
+        class="co-pager"
+        aria-label="More case studies"
+        data-i18n-aria-label-en="More case studies"
+        data-i18n-aria-label-de="Weitere Fallstudien"
+      >
+        <a href="#/work/initech" data-router-link data-case-pager="prev"
+          ><span data-i18n-target="cs-prev">Previous case study</span><strong data-pager-title></strong
+        ></a>
+        <a href="#/work/globex" data-router-link data-case-pager="next"
+          ><span data-i18n-target="cs-next">Next case study</span><strong data-pager-title></strong
+        ></a>
+      </nav>
+    </article>
+  </div>
+  <!-- a role: Job Details filled from the data block; Apply opens the application dialog -->
+  <div data-company-view="job" hidden>
+    <article class="mk-job-details" aria-labelledby="jd-title">
+      <header class="mk-job-details-head">
+        <a class="mk-job-details-back" href="#/jobs" data-router-link
+          ><i data-lucide="arrow-left"></i> <span data-i18n-target="jd-back">All open roles</span></a
+        >
+        <h1 class="mk-job-details-title" id="jd-title" data-job-field="title"></h1>
+        <div class="mk-job-details-tags">
+          <span class="badge" data-variant="secondary" data-job-field="department"></span>
+          <span class="badge" data-variant="outline" data-job-field="location"></span>
+          <span class="badge" data-variant="outline" data-job-field="type"></span>
+        </div>
+      </header>
+      <div class="mk-job-details-layout">
+        <div class="mk-job-details-body">
+          <section aria-labelledby="jd-about"
+            ><h2 id="jd-about" data-i18n-target="jd-about">About the role</h2><p data-job-field="about"></p
+          ></section>
+          <section aria-labelledby="jd-do"
+            ><h2 id="jd-do" data-i18n-target="jd-do">What you will do</h2
+            ><ul class="mk-job-details-list" data-job-list="do"></ul
+          ></section>
+          <section aria-labelledby="jd-need"
+            ><h2 id="jd-need" data-i18n-target="jd-need">What you bring</h2
+            ><ul class="mk-job-details-list" data-job-list="bring"></ul
+          ></section>
+          <section aria-labelledby="jd-perks">
+            <h2 id="jd-perks" data-i18n-target="jd-perks">Benefits</h2>
+            <ul class="mk-job-details-benefits">
+              <li><i data-lucide="tree-palm"></i><span data-i18n-target="jd-b1">30 days off</span></li>
+              <li><i data-lucide="laptop"></i><span data-i18n-target="jd-b2">Equipment of your choice</span></li>
+              <li><i data-lucide="graduation-cap"></i><span data-i18n-target="jd-b3">€2k learning budget</span></li>
+              <li><i data-lucide="heart-pulse"></i><span data-i18n-target="jd-b4">Private health insurance</span></li>
+              <li><i data-lucide="plane"></i><span data-i18n-target="jd-b5">Two offsites a year</span></li>
+              <li><i data-lucide="baby"></i><span data-i18n-target="jd-b6">20 weeks parental leave</span></li>
+            </ul>
+          </section>
+        </div>
+        <aside class="mk-job-details-summary" aria-labelledby="jd-summary">
+          <h2 id="jd-summary" data-i18n-target="jd-summary">Summary</h2>
+          <dl>
+            <div><dt data-i18n-target="jd-salary">Salary</dt><dd data-job-field="salary"></dd></div>
+            <div><dt data-i18n-target="jd-location">Location</dt><dd data-job-field="location"></dd></div>
+            <div><dt data-i18n-target="jd-team">Team</dt><dd data-job-field="team"></dd></div>
+            <div><dt data-i18n-target="jd-start">Start</dt><dd data-job-field="start"></dd></div>
+          </dl>
+          <button class="btn" type="button" commandfor="co-apply" command="show-modal" data-company-apply-open
+            ><span data-i18n-target="jd-apply">Apply for this role</span></button
+          >
+        </aside>
+      </div>
+      <nav
+        class="co-pager"
+        aria-label="More open roles"
+        data-i18n-aria-label-en="More open roles"
+        data-i18n-aria-label-de="Weitere offene Stellen"
+      >
+        <a href="#/job/product-designer" data-router-link data-job-pager="prev"
+          ><span data-i18n-target="jd-prev">Previous role</span><strong data-pager-title></strong
+        ></a>
+        <a href="#/job/frontend-editor" data-router-link data-job-pager="next"
+          ><span data-i18n-target="jd-next">Next role</span><strong data-pager-title></strong
+        ></a>
+      </nav>
+    </article>
+  </div>
+  <!-- a press story: what the outlet wrote, filled from the data block -->
+  <div data-company-view="story" hidden>
+    <article class="co-story" aria-labelledby="st-title">
+      <a class="co-back" href="#/press" data-router-link
+        ><i data-lucide="arrow-left"></i> <span data-i18n-target="st-back">All press</span></a
+      >
+      <p class="co-story-meta"
+        ><strong data-story-field="publication"></strong><time data-story-date></time
+        ><span data-story-field="author"></span
+      ></p>
+      <h1 class="co-story-title" id="st-title" data-story-field="headline"></h1>
+      <blockquote class="co-story-quote"><p data-story-field="quote"></p></blockquote>
+      <div class="co-story-body" data-story-body></div>
+      <p class="co-story-body"
+        ><span
+          ><span data-i18n-target="st-contact">Writing about Acme? Our press team answers within a day:</span>
+          <a href="mailto:press@acme.example">press@acme.example</a></span
+        ></p
+      >
+      <nav
+        class="co-pager"
+        aria-label="More press"
+        data-i18n-aria-label-en="More press"
+        data-i18n-aria-label-de="Weitere Presseberichte"
+      >
+        <a href="#/press/techdaily" data-router-link data-story-pager="next"
+          ><span data-i18n-target="st-next">Next story</span><strong data-pager-title></strong
+        ></a>
+      </nav>
+    </article>
+  </div>
+  <!-- the application: the Application Form in a dialog, for the role on screen -->
+  <dialog class="co-dialog" id="co-apply" aria-labelledby="co-apply-title">
+    <div class="co-dialog-body">
+      <button
+        class="btn co-dialog-x"
+        data-variant="ghost"
+        data-size="icon"
+        type="button"
+        commandfor="co-apply"
+        command="close"
+        aria-label="Close"
+        data-i18n-aria-label-en="Close"
+        data-i18n-aria-label-de="Schließen"
+        ><i data-lucide="x"></i
+      ></button>
+      <h2 id="co-apply-title"
+        ><span data-i18n-target="ap-title">Apply for</span> <span data-job-field="title"></span
+      ></h2>
+      <section class="mk-application-form co-apply-form" aria-labelledby="co-apply-title">
+        <form data-company-apply>
+          <fieldset class="mk-application-form-section">
+            <legend class="mk-application-form-legend"
+              ><strong data-i18n-target="ap-l1">Personal details</strong
+              ><span data-i18n-target="ap-l1d">How we reach you.</span></legend
+            >
+            <div class="mk-application-form-fields">
+              <div class="mk-application-form-field"
+                ><label class="label" for="ap-name" data-i18n-target="ap-name">Full name</label
+                ><input class="input" id="ap-name" name="name" autocomplete="name" required
+              /></div>
+              <div class="mk-application-form-field"
+                ><label class="label" for="ap-email" data-i18n-target="ap-email">Email</label
+                ><input class="input" id="ap-email" type="email" name="email" autocomplete="email" required
+              /></div>
+              <div class="mk-application-form-field" data-span="full"
+                ><label class="label" for="ap-where" data-i18n-target="ap-where">Where are you based?</label
+                ><select class="select" id="ap-where" name="location"
+                  ><option value="pt" data-i18n-target="ap-w1">Portugal</option
+                  ><option value="de" data-i18n-target="ap-w2">Germany</option
+                  ><option value="ca" data-i18n-target="ap-w3">Canada</option
+                  ><option value="eu" data-i18n-target="ap-w4">Elsewhere in the EU</option></select
+                ></div
+              >
+            </div>
+          </fieldset>
+          <fieldset class="mk-application-form-section">
+            <legend class="mk-application-form-legend"
+              ><strong data-i18n-target="ap-l2">Documents</strong
+              ><span data-i18n-target="ap-l2d">PDF or DOCX, up to 10 MB.</span></legend
+            >
+            <div class="mk-application-form-fields">
+              <div class="mk-application-form-field" data-span="full">
+                <label class="mk-application-form-upload" for="ap-cv"
+                  ><i data-lucide="upload"></i><strong data-i18n-target="ap-cv">Upload your résumé</strong
+                  ><span data-i18n-target="ap-cvd">or drop it here</span>
+                  <input id="ap-cv" type="file" name="cv" accept=".pdf,.docx" required aria-describedby="ap-cv-hint" />
+                </label>
+                <span class="mk-application-form-hint" id="ap-cv-hint" data-i18n-target="ap-cvh"
+                  >Required - PDF or DOCX.</span
+                >
+              </div>
+              <div class="mk-application-form-field" data-span="full"
+                ><label class="label" for="ap-note"
+                  ><span data-i18n-target="ap-note">Why Acme?</span>
+                  <span class="mk-application-form-hint" data-i18n-target="ap-noteh">(a few sentences)</span></label
+                ><textarea class="textarea" id="ap-note" name="note" rows="4"></textarea
+              ></div
+              >
+            </div>
+          </fieldset>
+          <fieldset class="mk-application-form-section">
+            <legend class="mk-application-form-legend"
+              ><strong data-i18n-target="ap-l3">Links</strong
+              ><span data-i18n-target="ap-l3d">Anything that shows your work.</span></legend
+            >
+            <div class="mk-application-form-fields">
+              <div class="mk-application-form-field"
+                ><label class="label" for="ap-in">LinkedIn</label
+                ><input class="input" id="ap-in" type="url" name="linkedin" placeholder="https://linkedin.com/in/..."
+              /></div>
+              <div class="mk-application-form-field"
+                ><label class="label" for="ap-gh" data-i18n-target="ap-gh">GitHub or portfolio</label
+                ><input class="input" id="ap-gh" type="url" name="portfolio" placeholder="https://..."
+              /></div>
+            </div>
+          </fieldset>
+          <div class="mk-application-form-actions">
+            <label class="mk-application-form-consent"
+              ><input class="checkbox" type="checkbox" name="consent" required /><span data-i18n-target="ap-consent"
+                >I agree that Acme stores my application for 12 months.</span
+              ></label
+            >
+            <button class="btn" type="submit"><span data-i18n-target="ap-submit">Submit application</span></button>
+          </div>
+        </form>
+      </section>
+      <div class="co-apply-done" tabindex="-1">
+        <i data-lucide="check"></i>
+        <h2 data-i18n-target="ap-thanks">Thank you - your application is in</h2>
+        <p data-i18n-target="ap-next"
+          >We read every application ourselves and answer within five working days, from a real person's address.</p
+        >
+        <button class="btn" type="button" commandfor="co-apply" command="close"
+          ><span data-i18n-target="ap-close">Close</span></button
+        >
+      </div>
+    </div>
+  </dialog>
+  <!-- the footer: the Site Footer block -->
+  <footer class="mk-footer co-footer">
+    <div class="mk-footer-inner">
+      <div class="mk-footer-top">
+        <div class="mk-footer-about">
+          <a class="mk-footer-brand" href="#/" data-router-link><span class="mk-footer-brand-name">Acme</span></a>
+          <p data-i18n-target="ft-line"
+            >Calm software for teams that ship - made in Lisbon, Berlin and Montreal since 2016.</p
+          >
+          <div class="mk-footer-social">
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme on LinkedIn"
+              data-i18n-aria-label-en="Acme on LinkedIn"
+              data-i18n-aria-label-de="Acme auf LinkedIn"
+              ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"
+                /></svg
+            ></a>
+            <a
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme on GitHub"
+              data-i18n-aria-label-en="Acme on GitHub"
+              data-i18n-aria-label-de="Acme auf GitHub"
+              ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.1c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"
+                /></svg
+            ></a>
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme on X"
+              data-i18n-aria-label-en="Acme on X"
+              data-i18n-aria-label-de="Acme auf X"
+              ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
+                /></svg
+            ></a>
+          </div>
+        </div>
+        <nav
+          class="mk-footer-nav"
+          aria-label="Footer"
+          data-i18n-aria-label-en="Footer"
+          data-i18n-aria-label-de="Fußzeile"
+        >
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-h1">Company</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/" data-router-link data-i18n-target="ft-about">About</a></li>
+              <li><a href="#/work" data-router-link data-i18n-target="ft-work">Case studies</a></li>
+              <li><a href="#/team" data-router-link>Team</a></li>
+              <li><a href="#/press" data-router-link data-i18n-target="ft-press">Press</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-h2">Careers</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/jobs" data-router-link data-i18n-target="ft-jobs">Open roles</a></li>
+              <li><a href="#/jobs/engineering" data-router-link data-i18n-target="ft-eng">Engineering</a></li>
+              <li><a href="#/jobs/design" data-router-link>Design</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-h3">Contact</h3>
+            <ul class="mk-footer-list">
+              <li><a href="mailto:hello@acme.example">hello@acme.example</a></li>
+              <li><a href="mailto:press@acme.example">press@acme.example</a></li>
+              <li><a href="tel:+351210000000">+351 21 000 0000</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <hr class="separator mk-footer-rule" />
+      <div class="mk-footer-bottom">
+        <p class="mk-footer-copy" data-i18n-target="ft-copy">© 2026 Acme, Lda. · Rua das Flores 28, 1200-195 Lisbon</p>
+        <p class="mk-footer-copy" data-i18n-target="ft-offices">Lisbon · Berlin · Montreal</p>
+      </div>
+    </div>
+  </footer>
+  <!-- the case studies, roles and press stories the routes name, in English and German -->
+  <script type="application/json" id="company-data">
+    {
+      "ui": { "en": { "more": "Read the case study" }, "de": { "more": "Fallstudie lesen" } },
+      "cases": {
+        "northwind": {
+          "client": "Northwind",
+          "plan": "Enterprise",
+          "person": "Marta Silva",
+          "avatar": 47,
+          "photo": 214,
+          "en": {
+            "title": "How Northwind cut planning meetings in half",
+            "industry": "Logistics",
+            "size": "· 1,200 employees",
+            "company": "Northwind Logistics",
+            "sector": "Transport and logistics",
+            "timeline": "6 weeks",
+            "metric": ["−52%", "meeting time"],
+            "results": [
+              ["−52%", "less time in planning meetings"],
+              ["38", "teams onboarded in six weeks"],
+              ["4", "tools replaced"]
+            ],
+            "challenge": "Northwind's 38 regional teams planned routes in spreadsheets, discussed them by email and decided in a weekly two-hour call. Nobody trusted the latest version.",
+            "steps": [
+              ["One planning board per region", "Imported from the spreadsheets in a day."],
+              ["Decisions written down", "Every change has an owner and a reason."],
+              ["The weekly call became async", "A fifteen-minute review of open questions only."]
+            ],
+            "outcome": "Six weeks later every region planned on Acme. Meetings shrank by half, and route changes reached the drivers a day earlier.",
+            "quote": "We stopped arguing about which spreadsheet was right. Now we argue about routes - which is the job.",
+            "role": "Head of Operations, Northwind",
+            "alt": "A city seen from above, its streets in a grid"
+          },
+          "de": {
+            "title": "Wie Northwind die Planungsmeetings halbierte",
+            "industry": "Logistik",
+            "size": "· 1.200 Beschäftigte",
+            "company": "Northwind Logistics",
+            "sector": "Transport und Logistik",
+            "timeline": "6 Wochen",
+            "metric": ["−52 %", "Meetingzeit"],
+            "results": [
+              ["−52 %", "weniger Zeit in Planungsmeetings"],
+              ["38", "Teams in sechs Wochen an Bord"],
+              ["4", "Werkzeuge abgelöst"]
+            ],
+            "challenge": "Die 38 Regionalteams von Northwind planten Routen in Tabellen, besprachen sie per E-Mail und entschieden in einem wöchentlichen Zwei-Stunden-Call. Niemand traute der neuesten Version.",
+            "steps": [
+              ["Ein Planungsboard pro Region", "An einem Tag aus den Tabellen übernommen."],
+              ["Entscheidungen schriftlich", "Jede Änderung hat eine Verantwortliche und einen Grund."],
+              ["Der Wochen-Call wurde asynchron", "Nur noch fünfzehn Minuten für offene Fragen."]
+            ],
+            "outcome": "Sechs Wochen später planten alle Regionen mit Acme. Die Meetings schrumpften um die Hälfte, und Routenänderungen erreichten die Fahrer einen Tag früher.",
+            "quote": "Wir streiten nicht mehr darüber, welche Tabelle stimmt. Jetzt streiten wir über Routen - und das ist unser Job.",
+            "role": "Leiterin Betrieb, Northwind",
+            "alt": "Eine Stadt von oben, ihre Straßen im Raster"
+          }
+        },
+        "globex": {
+          "client": "Globex",
+          "plan": "Enterprise",
+          "person": "Daniel Okafor",
+          "avatar": 60,
+          "photo": 180,
+          "en": {
+            "title": "Globex brings 400 researchers onto one wiki",
+            "industry": "Research",
+            "size": "· 3,000 employees",
+            "company": "Globex Research",
+            "sector": "Life sciences",
+            "timeline": "3 months",
+            "metric": ["400", "researchers"],
+            "results": [
+              ["400", "researchers on one wiki"],
+              ["9", "old wikis retired"],
+              ["−70%", "duplicate documents"]
+            ],
+            "challenge": "Globex's labs kept their findings in nine different wikis. A result found in Basel was often found again in Boston a year later.",
+            "steps": [
+              ["One space per lab", "The nine wikis moved over in a month, links intact."],
+              ["A weekly digest", "Every lab reads what the others learned, in five minutes."],
+              ["Offline in the field", "Researchers on ships and in the desert write without a connection."]
+            ],
+            "outcome": "Within a quarter, 400 researchers worked in one place. Duplicate documents fell by 70 percent, and two labs started a joint study they found through the digest.",
+            "quote": "The digest is the first email our researchers actually look forward to.",
+            "role": "Director of Research, Globex",
+            "alt": "A laptop and a notebook on a desk"
+          },
+          "de": {
+            "title": "Globex bringt 400 Forschende in ein Wiki",
+            "industry": "Forschung",
+            "size": "· 3.000 Beschäftigte",
+            "company": "Globex Research",
+            "sector": "Biowissenschaften",
+            "timeline": "3 Monate",
+            "metric": ["400", "Forschende"],
+            "results": [
+              ["400", "Forschende in einem Wiki"],
+              ["9", "alte Wikis abgeschaltet"],
+              ["−70 %", "doppelte Dokumente"]
+            ],
+            "challenge": "Die Labore von Globex hielten ihre Ergebnisse in neun verschiedenen Wikis fest. Was Basel herausfand, fand Boston oft ein Jahr später noch einmal heraus.",
+            "steps": [
+              ["Ein Bereich pro Labor", "Die neun Wikis zogen in einem Monat um, mit allen Links."],
+              ["Ein wöchentlicher Überblick", "Jedes Labor liest in fünf Minuten, was die anderen gelernt haben."],
+              ["Offline im Feld", "Forschende auf Schiffen und in der Wüste schreiben ohne Verbindung."]
+            ],
+            "outcome": "Innerhalb eines Quartals arbeiteten 400 Forschende an einem Ort. Doppelte Dokumente gingen um 70 Prozent zurück, und zwei Labore begannen eine gemeinsame Studie, die sie über den Überblick fanden.",
+            "quote": "Der Überblick ist die erste E-Mail, auf die sich unsere Forschenden wirklich freuen.",
+            "role": "Forschungsdirektor, Globex",
+            "alt": "Ein Laptop und ein Notizbuch auf einem Schreibtisch"
+          }
+        },
+        "initech": {
+          "client": "Initech",
+          "plan": "Team",
+          "person": "Lena Fischer",
+          "avatar": 44,
+          "photo": 119,
+          "en": {
+            "title": "Initech ships weekly instead of quarterly",
+            "industry": "SaaS",
+            "size": "· 240 employees",
+            "company": "Initech",
+            "sector": "Software",
+            "timeline": "8 weeks",
+            "metric": ["12×", "more releases"],
+            "results": [
+              ["12×", "more releases a year"],
+              ["1 day", "from merge to customers"],
+              ["0", "rollbacks since the switch"]
+            ],
+            "challenge": "Initech released four times a year. Each release was a weekend of stress, and finished features waited months for the next date.",
+            "steps": [
+              ["Release notes as the plan", "Every feature starts as the note customers will read."],
+              ["Flags instead of branches", "Unfinished work ships switched off."],
+              ["A Thursday ritual", "One short review, then the release goes out."]
+            ],
+            "outcome": "Initech now ships every Thursday. Customers see their requests within weeks, and the release weekend is a thing of the past.",
+            "quote": "Our releases got so small that nobody needs to stay late for them any more.",
+            "role": "VP Engineering, Initech",
+            "alt": "Computer accessories laid out on a white desk"
+          },
+          "de": {
+            "title": "Initech liefert wöchentlich statt vierteljährlich",
+            "industry": "SaaS",
+            "size": "· 240 Beschäftigte",
+            "company": "Initech",
+            "sector": "Software",
+            "timeline": "8 Wochen",
+            "metric": ["12×", "mehr Releases"],
+            "results": [
+              ["12×", "mehr Releases im Jahr"],
+              ["1 Tag", "vom Merge bis zur Kundschaft"],
+              ["0", "Rollbacks seit dem Wechsel"]
+            ],
+            "challenge": "Initech veröffentlichte viermal im Jahr. Jedes Release bedeutete ein Wochenende voller Stress, und fertige Funktionen warteten monatelang auf den nächsten Termin.",
+            "steps": [
+              ["Release Notes als Plan", "Jede Funktion beginnt als die Notiz, die die Kundschaft lesen wird."],
+              ["Flags statt Branches", "Unfertige Arbeit wird ausgeschaltet ausgeliefert."],
+              ["Ein Ritual am Donnerstag", "Eine kurze Durchsicht, dann geht das Release raus."]
+            ],
+            "outcome": "Initech liefert jetzt jeden Donnerstag aus. Die Kundschaft sieht ihre Wünsche nach wenigen Wochen umgesetzt, und das Release-Wochenende gehört der Vergangenheit an.",
+            "quote": "Unsere Releases sind so klein geworden, dass dafür niemand mehr länger bleiben muss.",
+            "role": "VP Engineering, Initech",
+            "alt": "Computerzubehör auf einem weißen Schreibtisch"
+          }
+        }
+      },
+      "jobs": {
+        "sync-engineer": {
+          "title": "Senior Sync Engineer",
+          "salary": "€95k – €120k + equity",
+          "en": {
+            "department": "Engineering",
+            "location": "Lisbon or remote (EU)",
+            "type": "Full-time",
+            "team": "Sync · 3 engineers",
+            "start": "As soon as possible",
+            "about": "You will own the engine that keeps twelve thousand teams in sync - offline-first, conflict-free and fast on a train in a tunnel. You work with two other engineers and report to Sophie Tan, our Head of Engineering.",
+            "do": [
+              "Design and ship the next version of our CRDT-based sync protocol",
+              "Profile and speed up sync on low-end phones and slow networks",
+              "Pair with designers on how a conflict looks to people"
+            ],
+            "bring": [
+              "Five or more years building distributed or local-first systems",
+              "Deep TypeScript or Rust - and curiosity for both",
+              "Clear writing: we decide in documents, not meetings"
+            ]
+          },
+          "de": {
+            "department": "Technik",
+            "location": "Lissabon oder remote (EU)",
+            "type": "Vollzeit",
+            "team": "Sync · 3 Engineers",
+            "start": "So bald wie möglich",
+            "about": "Du verantwortest die Engine, die zwölftausend Teams synchron hält - offline zuerst, konfliktfrei und schnell, auch im Zug im Tunnel. Du arbeitest mit zwei weiteren Engineers und berichtest an Sophie Tan, unsere Leiterin Technik.",
+            "do": [
+              "Die nächste Version unseres CRDT-basierten Sync-Protokolls entwerfen und ausliefern",
+              "Sync auf einfachen Telefonen und langsamen Netzen messen und beschleunigen",
+              "Mit dem Design klären, wie ein Konflikt für Menschen aussieht"
+            ],
+            "bring": [
+              "Fünf oder mehr Jahre mit verteilten oder Local-first-Systemen",
+              "Tiefes TypeScript oder Rust - und Neugier auf beides",
+              "Klares Schreiben: Wir entscheiden in Dokumenten, nicht in Meetings"
+            ]
+          }
+        },
+        "frontend-editor": {
+          "title": "Frontend Engineer, Editor",
+          "salary": "€80k – €100k",
+          "en": {
+            "department": "Engineering",
+            "location": "Berlin, hybrid",
+            "type": "Full-time",
+            "team": "Editor · 4 engineers",
+            "start": "January 2027",
+            "about": "The editor is where people spend their day in Acme. You will make it faster to open, kinder to type in and usable for everyone who works with a keyboard or a screen reader.",
+            "do": [
+              "Build editor features in TypeScript on the web platform's own APIs",
+              "Keep typing latency under one frame on a five-year-old laptop",
+              "Test with people who use assistive technology, every month"
+            ],
+            "bring": [
+              "Three or more years of front-end work on a complex product",
+              "A feel for text: selections, input methods and undo",
+              "Care for accessibility and the details nobody asked for"
+            ]
+          },
+          "de": {
+            "department": "Technik",
+            "location": "Berlin, hybrid",
+            "type": "Vollzeit",
+            "team": "Editor · 4 Engineers",
+            "start": "Januar 2027",
+            "about": "Im Editor verbringen die Menschen ihren Tag in Acme. Du machst ihn schneller beim Öffnen, angenehmer beim Tippen und nutzbar für alle, die mit Tastatur oder Screenreader arbeiten.",
+            "do": [
+              "Editor-Funktionen in TypeScript mit den Web-APIs der Plattform bauen",
+              "Die Tipp-Latenz auf einem fünf Jahre alten Laptop unter einem Frame halten",
+              "Jeden Monat mit Menschen testen, die assistive Technik nutzen"
+            ],
+            "bring": [
+              "Drei oder mehr Jahre Frontend-Arbeit an einem komplexen Produkt",
+              "Gespür für Text: Auswahl, Eingabemethoden und Rückgängig",
+              "Sorgfalt bei Barrierefreiheit und bei Details, nach denen niemand gefragt hat"
+            ]
+          }
+        },
+        "sre": {
+          "title": "Site Reliability Engineer",
+          "salary": "€90k – €110k",
+          "en": {
+            "department": "Engineering",
+            "location": "Remote (EU)",
+            "type": "Full-time",
+            "team": "Platform · 3 engineers",
+            "start": "As soon as possible",
+            "about": "Twelve thousand teams trust us with their work. You keep our servers boring: quiet dashboards, rehearsed incidents and an on-call rota nobody dreads.",
+            "do": [
+              "Run our Postgres fleet and the sync relays in three regions",
+              "Turn every incident into a written review and one lasting fix",
+              "Cut our cloud bill without cutting corners"
+            ],
+            "bring": [
+              "Experience running production systems people depend on",
+              "Comfort with Linux, Postgres and infrastructure as code",
+              "A calm voice at three in the morning"
+            ]
+          },
+          "de": {
+            "department": "Technik",
+            "location": "Remote (EU)",
+            "type": "Vollzeit",
+            "team": "Plattform · 3 Engineers",
+            "start": "So bald wie möglich",
+            "about": "Zwölftausend Teams vertrauen uns ihre Arbeit an. Du hältst unsere Server langweilig: ruhige Dashboards, geprobte Störfälle und eine Rufbereitschaft, vor der sich niemand fürchtet.",
+            "do": [
+              "Unsere Postgres-Flotte und die Sync-Relays in drei Regionen betreiben",
+              "Aus jedem Störfall eine schriftliche Auswertung und eine dauerhafte Lösung machen",
+              "Die Cloud-Rechnung senken, ohne an der Sorgfalt zu sparen"
+            ],
+            "bring": [
+              "Erfahrung mit Produktionssystemen, auf die sich Menschen verlassen",
+              "Sicherheit mit Linux, Postgres und Infrastructure as Code",
+              "Eine ruhige Stimme um drei Uhr morgens"
+            ]
+          }
+        },
+        "product-designer": {
+          "title": "Product Designer, Mobile",
+          "salary": "€55k – €70k (80%)",
+          "en": {
+            "department": "Design",
+            "location": "Lisbon, hybrid",
+            "type": "Part-time (80%)",
+            "team": "Mobile · 2 designers, 3 engineers",
+            "start": "December 2026",
+            "about": "Our phone apps are where a quick decision happens between two meetings. You will design them end to end - from the first sketch to the release notes - with Hannah Lee, our Design Lead.",
+            "do": [
+              "Design and prototype the iOS and Android apps",
+              "Test with customers every week and share what you learned",
+              "Grow the design system with the engineers who build it"
+            ],
+            "bring": [
+              "A portfolio of shipped mobile work",
+              "Interaction design that respects people's attention",
+              "Four days a week - we mean the 80%"
+            ]
+          },
+          "de": {
+            "department": "Design",
+            "location": "Lissabon, hybrid",
+            "type": "Teilzeit (80 %)",
+            "team": "Mobile · 2 im Design, 3 Engineers",
+            "start": "Dezember 2026",
+            "about": "In unseren Apps fällt die schnelle Entscheidung zwischen zwei Meetings. Du gestaltest sie von Anfang bis Ende - von der ersten Skizze bis zu den Release Notes - mit Hannah Lee, unserer Design Lead.",
+            "do": [
+              "Die iOS- und Android-Apps entwerfen und als Prototyp bauen",
+              "Jede Woche mit der Kundschaft testen und teilen, was du gelernt hast",
+              "Das Designsystem mit den Engineers weiterentwickeln, die es bauen"
+            ],
+            "bring": [
+              "Ein Portfolio mit veröffentlichten mobilen Arbeiten",
+              "Interaktionsdesign, das die Aufmerksamkeit der Menschen respektiert",
+              "Vier Tage pro Woche - die 80 % sind ernst gemeint"
+            ]
+          }
+        }
+      },
+      "press": {
+        "ledger": {
+          "publication": "The Ledger",
+          "date": "2026-08-12",
+          "en": {
+            "headline": "The 40-person company quietly taking on the giants",
+            "author": "by Clara Mendes",
+            "quote": "The rare productivity tool that gives you your afternoon back.",
+            "body": [
+              "The Ledger spent a week in our Lisbon office in July and followed how a small, profitable team competes with companies a hundred times its size.",
+              "The piece covers our weekly release rhythm, why we still have no sales team, and how answering support on Fridays shapes what we build next."
+            ]
+          },
+          "de": {
+            "headline": "Das Unternehmen mit 40 Leuten, das leise gegen die Großen antritt",
+            "author": "von Clara Mendes",
+            "quote": "Das seltene Produktivitätswerkzeug, das einem den Nachmittag zurückgibt.",
+            "body": [
+              "The Ledger verbrachte im Juli eine Woche in unserem Büro in Lissabon und verfolgte, wie ein kleines, profitables Team gegen Unternehmen antritt, die hundertmal so groß sind.",
+              "Der Bericht erzählt von unserem wöchentlichen Release-Rhythmus, warum wir noch immer kein Vertriebsteam haben und wie der Support am Freitag bestimmt, was wir als Nächstes bauen."
+            ]
+          }
+        },
+        "techdaily": {
+          "publication": "TechDaily",
+          "date": "2026-09-28",
+          "en": {
+            "headline": "Acme 4.0 makes offline-first the default",
+            "author": "by Jonas Weber",
+            "quote": "Sync that simply never fails - we tried, on a transatlantic flight.",
+            "body": [
+              "TechDaily's review team tested Acme 4.0 for a month: on trains, in a basement and on a nine-hour flight from Lisbon to Montreal.",
+              "Their verdict: edits made offline merged without a single conflict dialog, and the apps opened in under a second on a five-year-old phone."
+            ]
+          },
+          "de": {
+            "headline": "Acme 4.0 macht Offline-first zum Standard",
+            "author": "von Jonas Weber",
+            "quote": "Sync, der einfach nie versagt - wir haben es auf einem Transatlantikflug ausprobiert.",
+            "body": [
+              "Das Testteam von TechDaily prüfte Acme 4.0 einen Monat lang: im Zug, im Keller und auf einem neunstündigen Flug von Lissabon nach Montreal.",
+              "Das Urteil: Offline gemachte Änderungen wurden ohne einen einzigen Konfliktdialog zusammengeführt, und die Apps öffneten auf einem fünf Jahre alten Telefon in unter einer Sekunde."
+            ]
+          }
+        }
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
   <template data-i18n-for="hiring" data-i18n-locale="en">We are hiring: 4 open roles</template>
   <template data-i18n-for="hiring" data-i18n-locale="de">Wir stellen ein: 4 offene Stellen</template>
@@ -1218,8 +2279,305 @@
   <template data-i18n-for="co-32-1" data-i18n-locale="de">Vor 3 Wochen veröffentlicht</template>
   <template data-i18n-for="co-33-1" data-i18n-locale="en">Posted today</template>
   <template data-i18n-for="co-33-1" data-i18n-locale="de">Heute veröffentlicht</template>
-  <template data-i18n-for="co-34-1" data-i18n-locale="en">Read on The Ledger</template>
-  <template data-i18n-for="co-34-1" data-i18n-locale="de">Bei The Ledger lesen</template>
+  <template data-i18n-for="co-34-1" data-i18n-locale="en">What The Ledger wrote</template>
+  <template data-i18n-for="co-34-1" data-i18n-locale="de">Was The Ledger schrieb</template>
+  <template data-i18n-for="co-34-2" data-i18n-locale="en">What TechDaily wrote</template>
+  <template data-i18n-for="co-34-2" data-i18n-locale="de">Was TechDaily schrieb</template>
+  <template data-i18n-for="nav-work" data-i18n-locale="en">Work</template>
+  <template data-i18n-for="nav-work" data-i18n-locale="de">Projekte</template>
+  <template data-i18n-for="c2-lead" data-i18n-locale="en"
+    >Acme started in a Lisbon flat in 2016 with one question: why does work software make people anxious? Ten years
+    later, forty of us answer it every day.</template
+  >
+  <template data-i18n-for="c2-lead" data-i18n-locale="de"
+    >Acme begann 2016 in einer Wohnung in Lissabon mit einer Frage: Warum macht Arbeitssoftware Menschen nervös? Zehn
+    Jahre später beantworten wir sie zu vierzigst jeden Tag.</template
+  >
+  <template data-i18n-for="c2-v1" data-i18n-locale="en"
+    >No red badges, no dark patterns - attention is our users' to give.</template
+  >
+  <template data-i18n-for="c2-v1" data-i18n-locale="de"
+    >Keine roten Zähler, keine Tricks - Aufmerksamkeit schenken unsere Nutzer selbst.</template
+  >
+  <template data-i18n-for="c2-v2" data-i18n-locale="en"
+    >Your data is yours. We never sell it and never train on it.</template
+  >
+  <template data-i18n-for="c2-v2" data-i18n-locale="de"
+    >Deine Daten gehören dir. Wir verkaufen sie nie und trainieren nie damit.</template
+  >
+  <template data-i18n-for="c2-v3" data-i18n-locale="en">We say what we mean, and we mean well.</template>
+  <template data-i18n-for="c2-v3" data-i18n-locale="de">Wir sagen, was wir meinen, und wir meinen es gut.</template>
+  <template data-i18n-for="c2-v4" data-i18n-locale="en">Profitable, independent and here for the next decade.</template>
+  <template data-i18n-for="c2-v4" data-i18n-locale="de"
+    >Profitabel, unabhängig und auch im nächsten Jahrzehnt da.</template
+  >
+  <template data-i18n-for="c2-p1" data-i18n-locale="en">Two workshops to map goals, users and constraints.</template>
+  <template data-i18n-for="c2-p1" data-i18n-locale="de">Zwei Workshops zu Zielen, Nutzern und Grenzen.</template>
+  <template data-i18n-for="c2-p2" data-i18n-locale="en">Prototypes tested with real customers every week.</template>
+  <template data-i18n-for="c2-p2" data-i18n-locale="de">Prototypen, jede Woche mit echten Kunden getestet.</template>
+  <template data-i18n-for="c2-p3" data-i18n-locale="en">Small releases behind flags - nothing big-bang.</template>
+  <template data-i18n-for="c2-p3" data-i18n-locale="de">Kleine Releases hinter Flags - kein großer Knall.</template>
+  <template data-i18n-for="c2-p4" data-i18n-locale="en"
+    >We measure, learn and hand over a team that can run it.</template
+  >
+  <template data-i18n-for="c2-p4" data-i18n-locale="de"
+    >Wir messen, lernen und übergeben an ein Team, das es selbst betreibt.</template
+  >
+  <template data-i18n-for="c2-b1" data-i18n-locale="en"
+    >Builds the sync engine. Previously at a database company you have heard of.</template
+  >
+  <template data-i18n-for="c2-b1" data-i18n-locale="de"
+    >Baut die Sync-Engine. Vorher bei einer Datenbankfirma, von der du gehört hast.</template
+  >
+  <template data-i18n-for="c2-b2" data-i18n-locale="en"
+    >Makes Acme quiet. Believes every badge has to earn its place.</template
+  >
+  <template data-i18n-for="c2-b2" data-i18n-locale="de"
+    >Macht Acme leise. Findet, dass sich jeder Zähler seinen Platz verdienen muss.</template
+  >
+  <template data-i18n-for="c2-b3" data-i18n-locale="en"
+    >Writes the weekly letter and still answers support on Fridays.</template
+  >
+  <template data-i18n-for="c2-b3" data-i18n-locale="de"
+    >Schreibt den Wochenbrief und beantwortet freitags noch immer den Support.</template
+  >
+  <template data-i18n-for="c2-b4" data-i18n-locale="en"
+    >Leads product and research after eight years building tools for hospitals.</template
+  >
+  <template data-i18n-for="c2-b4" data-i18n-locale="de"
+    >Leitet Produkt und Forschung nach acht Jahren mit Werkzeugen für Krankenhäuser.</template
+  >
+  <template data-i18n-for="c2-t1" data-i18n-locale="en">Lisbon</template>
+  <template data-i18n-for="c2-t1" data-i18n-locale="de">Lissabon</template>
+  <template data-i18n-for="c2-t2" data-i18n-locale="en">Lisbon</template>
+  <template data-i18n-for="c2-t2" data-i18n-locale="de">Lissabon</template>
+  <template data-i18n-for="c2-r2" data-i18n-locale="en">Design Lead</template>
+  <template data-i18n-for="c2-r2" data-i18n-locale="de">Design-Leiterin</template>
+  <template data-i18n-for="c2-h1" data-i18n-locale="en">A flat in Lisbon</template>
+  <template data-i18n-for="c2-h1" data-i18n-locale="de">Eine Wohnung in Lissabon</template>
+  <template data-i18n-for="c2-h1t" data-i18n-locale="en"
+    >Alex and Sophie quit their jobs and build the first prototype on a kitchen table.</template
+  >
+  <template data-i18n-for="c2-h1t" data-i18n-locale="de"
+    >Alex und Sophie kündigen und bauen den ersten Prototyp auf einem Küchentisch.</template
+  >
+  <template data-i18n-for="c2-h2" data-i18n-locale="en">The first thousand teams</template>
+  <template data-i18n-for="c2-h2" data-i18n-locale="de">Die ersten tausend Teams</template>
+  <template data-i18n-for="c2-h2t" data-i18n-locale="en"
+    >Word of mouth only - we still have no marketing budget.</template
+  >
+  <template data-i18n-for="c2-h2t" data-i18n-locale="de"
+    >Nur durch Empfehlung - wir haben bis heute kein Marketingbudget.</template
+  >
+  <template data-i18n-for="c2-h3d" data-i18n-locale="en">March 2021</template>
+  <template data-i18n-for="c2-h3d" data-i18n-locale="de">März 2021</template>
+  <template data-i18n-for="c2-h3" data-i18n-locale="en">Acme 2.0 and offline sync</template>
+  <template data-i18n-for="c2-h3" data-i18n-locale="de">Acme 2.0 und Offline-Sync</template>
+  <template data-i18n-for="c2-h3t" data-i18n-locale="en"
+    >A two-year rewrite ships: Acme works on a plane, in a tunnel, anywhere.</template
+  >
+  <template data-i18n-for="c2-h3t" data-i18n-locale="de"
+    >Zwei Jahre Neubau gehen live: Acme funktioniert im Flugzeug, im Tunnel, überall.</template
+  >
+  <template data-i18n-for="c2-h4" data-i18n-locale="en">Berlin and Montreal</template>
+  <template data-i18n-for="c2-h4" data-i18n-locale="de">Berlin und Montreal</template>
+  <template data-i18n-for="c2-h4t" data-i18n-locale="en">Two new offices, forty people, still profitable.</template>
+  <template data-i18n-for="c2-h4t" data-i18n-locale="de"
+    >Zwei neue Büros, vierzig Menschen, weiter profitabel.</template
+  >
+  <template data-i18n-for="c2-h5" data-i18n-locale="en">Twelve thousand teams</template>
+  <template data-i18n-for="c2-h5" data-i18n-locale="de">Zwölftausend Teams</template>
+  <template data-i18n-for="c2-h5t" data-i18n-locale="en">And the calmest release we have ever shipped.</template>
+  <template data-i18n-for="c2-h5t" data-i18n-locale="de"
+    >Und das ruhigste Release, das wir je ausgeliefert haben.</template
+  >
+  <template data-i18n-for="c2-jl" data-i18n-locale="en">Lisbon</template>
+  <template data-i18n-for="c2-jl" data-i18n-locale="de">Lissabon</template>
+  <template data-i18n-for="c2-q1" data-i18n-locale="en"
+    >The rare productivity tool that gives you your afternoon back.</template
+  >
+  <template data-i18n-for="c2-q1" data-i18n-locale="de"
+    >Das seltene Produktivitätswerkzeug, das einem den Nachmittag zurückgibt.</template
+  >
+  <template data-i18n-for="c2-s1" data-i18n-locale="en">The 40-person company quietly taking on the giants</template>
+  <template data-i18n-for="c2-s1" data-i18n-locale="de"
+    >Das Unternehmen mit 40 Leuten, das leise gegen die Großen antritt</template
+  >
+  <template data-i18n-for="c2-q2" data-i18n-locale="en"
+    >Sync that simply never fails - we tried, on a transatlantic flight.</template
+  >
+  <template data-i18n-for="c2-q2" data-i18n-locale="de"
+    >Sync, der einfach nie versagt - wir haben es auf einem Transatlantikflug ausprobiert.</template
+  >
+  <template data-i18n-for="c2-s2" data-i18n-locale="en">Acme 4.0 makes offline-first the default</template>
+  <template data-i18n-for="c2-s2" data-i18n-locale="de">Acme 4.0 macht Offline-first zum Standard</template>
+  <template data-i18n-for="w-eyebrow" data-i18n-locale="en">Case studies</template>
+  <template data-i18n-for="w-eyebrow" data-i18n-locale="de">Fallstudien</template>
+  <template data-i18n-for="w-title" data-i18n-locale="en">Teams that got calmer</template>
+  <template data-i18n-for="w-title" data-i18n-locale="de">Teams, die ruhiger wurden</template>
+  <template data-i18n-for="w-lead" data-i18n-locale="en"
+    >Three customers on what changed after they moved their work to Acme - in their numbers, not ours.</template
+  >
+  <template data-i18n-for="w-lead" data-i18n-locale="de"
+    >Drei Kunden erzählen, was sich änderte, als ihre Arbeit zu Acme zog - in ihren Zahlen, nicht in unseren.</template
+  >
+  <template data-i18n-for="cs-back" data-i18n-locale="en">All case studies</template>
+  <template data-i18n-for="cs-back" data-i18n-locale="de">Alle Fallstudien</template>
+  <template data-i18n-for="cs-challenge" data-i18n-locale="en">The challenge</template>
+  <template data-i18n-for="cs-challenge" data-i18n-locale="de">Die Aufgabe</template>
+  <template data-i18n-for="cs-approach" data-i18n-locale="en">The approach</template>
+  <template data-i18n-for="cs-approach" data-i18n-locale="de">Der Weg</template>
+  <template data-i18n-for="cs-results" data-i18n-locale="en">The results</template>
+  <template data-i18n-for="cs-results" data-i18n-locale="de">Das Ergebnis</template>
+  <template data-i18n-for="cs-client" data-i18n-locale="en">Client</template>
+  <template data-i18n-for="cs-client" data-i18n-locale="de">Kunde</template>
+  <template data-i18n-for="cs-industry" data-i18n-locale="en">Industry</template>
+  <template data-i18n-for="cs-industry" data-i18n-locale="de">Branche</template>
+  <template data-i18n-for="cs-plan" data-i18n-locale="en">Plan</template>
+  <template data-i18n-for="cs-plan" data-i18n-locale="de">Tarif</template>
+  <template data-i18n-for="cs-timeline" data-i18n-locale="en">Timeline</template>
+  <template data-i18n-for="cs-timeline" data-i18n-locale="de">Dauer</template>
+  <template data-i18n-for="cs-prev" data-i18n-locale="en">Previous case study</template>
+  <template data-i18n-for="cs-prev" data-i18n-locale="de">Vorige Fallstudie</template>
+  <template data-i18n-for="cs-next" data-i18n-locale="en">Next case study</template>
+  <template data-i18n-for="cs-next" data-i18n-locale="de">Nächste Fallstudie</template>
+  <template data-i18n-for="jd-back" data-i18n-locale="en">All open roles</template>
+  <template data-i18n-for="jd-back" data-i18n-locale="de">Alle offenen Stellen</template>
+  <template data-i18n-for="jd-about" data-i18n-locale="en">About the role</template>
+  <template data-i18n-for="jd-about" data-i18n-locale="de">Über die Stelle</template>
+  <template data-i18n-for="jd-do" data-i18n-locale="en">What you will do</template>
+  <template data-i18n-for="jd-do" data-i18n-locale="de">Was du tust</template>
+  <template data-i18n-for="jd-need" data-i18n-locale="en">What you bring</template>
+  <template data-i18n-for="jd-need" data-i18n-locale="de">Was du mitbringst</template>
+  <template data-i18n-for="jd-perks" data-i18n-locale="en">Benefits</template>
+  <template data-i18n-for="jd-perks" data-i18n-locale="de">Was wir bieten</template>
+  <template data-i18n-for="jd-b1" data-i18n-locale="en">30 days off</template>
+  <template data-i18n-for="jd-b1" data-i18n-locale="de">30 Tage Urlaub</template>
+  <template data-i18n-for="jd-b2" data-i18n-locale="en">Equipment of your choice</template>
+  <template data-i18n-for="jd-b2" data-i18n-locale="de">Ausstattung deiner Wahl</template>
+  <template data-i18n-for="jd-b3" data-i18n-locale="en">€2k learning budget</template>
+  <template data-i18n-for="jd-b3" data-i18n-locale="de">2.000 € Weiterbildungsbudget</template>
+  <template data-i18n-for="jd-b4" data-i18n-locale="en">Private health insurance</template>
+  <template data-i18n-for="jd-b4" data-i18n-locale="de">Private Krankenversicherung</template>
+  <template data-i18n-for="jd-b5" data-i18n-locale="en">Two offsites a year</template>
+  <template data-i18n-for="jd-b5" data-i18n-locale="de">Zwei Offsites im Jahr</template>
+  <template data-i18n-for="jd-b6" data-i18n-locale="en">20 weeks parental leave</template>
+  <template data-i18n-for="jd-b6" data-i18n-locale="de">20 Wochen Elternzeit</template>
+  <template data-i18n-for="jd-summary" data-i18n-locale="en">Summary</template>
+  <template data-i18n-for="jd-summary" data-i18n-locale="de">Auf einen Blick</template>
+  <template data-i18n-for="jd-salary" data-i18n-locale="en">Salary</template>
+  <template data-i18n-for="jd-salary" data-i18n-locale="de">Gehalt</template>
+  <template data-i18n-for="jd-location" data-i18n-locale="en">Location</template>
+  <template data-i18n-for="jd-location" data-i18n-locale="de">Ort</template>
+  <template data-i18n-for="jd-team" data-i18n-locale="en">Team</template>
+  <template data-i18n-for="jd-team" data-i18n-locale="de">Team</template>
+  <template data-i18n-for="jd-start" data-i18n-locale="en">Start</template>
+  <template data-i18n-for="jd-start" data-i18n-locale="de">Beginn</template>
+  <template data-i18n-for="jd-apply" data-i18n-locale="en">Apply for this role</template>
+  <template data-i18n-for="jd-apply" data-i18n-locale="de">Auf diese Stelle bewerben</template>
+  <template data-i18n-for="jd-prev" data-i18n-locale="en">Previous role</template>
+  <template data-i18n-for="jd-prev" data-i18n-locale="de">Vorige Stelle</template>
+  <template data-i18n-for="jd-next" data-i18n-locale="en">Next role</template>
+  <template data-i18n-for="jd-next" data-i18n-locale="de">Nächste Stelle</template>
+  <template data-i18n-for="st-back" data-i18n-locale="en">All press</template>
+  <template data-i18n-for="st-back" data-i18n-locale="de">Alle Presseberichte</template>
+  <template data-i18n-for="st-contact" data-i18n-locale="en"
+    >Writing about Acme? Our press team answers within a day:</template
+  >
+  <template data-i18n-for="st-contact" data-i18n-locale="de"
+    >Du schreibst über Acme? Unser Presseteam antwortet innerhalb eines Tages:</template
+  >
+  <template data-i18n-for="st-next" data-i18n-locale="en">Next story</template>
+  <template data-i18n-for="st-next" data-i18n-locale="de">Nächster Bericht</template>
+  <template data-i18n-for="ap-title" data-i18n-locale="en">Apply for</template>
+  <template data-i18n-for="ap-title" data-i18n-locale="de">Bewerbung als</template>
+  <template data-i18n-for="ap-l1" data-i18n-locale="en">Personal details</template>
+  <template data-i18n-for="ap-l1" data-i18n-locale="de">Persönliche Angaben</template>
+  <template data-i18n-for="ap-l1d" data-i18n-locale="en">How we reach you.</template>
+  <template data-i18n-for="ap-l1d" data-i18n-locale="de">Wie wir dich erreichen.</template>
+  <template data-i18n-for="ap-name" data-i18n-locale="en">Full name</template>
+  <template data-i18n-for="ap-name" data-i18n-locale="de">Vollständiger Name</template>
+  <template data-i18n-for="ap-email" data-i18n-locale="en">Email</template>
+  <template data-i18n-for="ap-email" data-i18n-locale="de">E-Mail</template>
+  <template data-i18n-for="ap-where" data-i18n-locale="en">Where are you based?</template>
+  <template data-i18n-for="ap-where" data-i18n-locale="de">Wo lebst du?</template>
+  <template data-i18n-for="ap-w1" data-i18n-locale="en">Portugal</template>
+  <template data-i18n-for="ap-w1" data-i18n-locale="de">Portugal</template>
+  <template data-i18n-for="ap-w2" data-i18n-locale="en">Germany</template>
+  <template data-i18n-for="ap-w2" data-i18n-locale="de">Deutschland</template>
+  <template data-i18n-for="ap-w3" data-i18n-locale="en">Canada</template>
+  <template data-i18n-for="ap-w3" data-i18n-locale="de">Kanada</template>
+  <template data-i18n-for="ap-w4" data-i18n-locale="en">Elsewhere in the EU</template>
+  <template data-i18n-for="ap-w4" data-i18n-locale="de">Anderswo in der EU</template>
+  <template data-i18n-for="ap-l2" data-i18n-locale="en">Documents</template>
+  <template data-i18n-for="ap-l2" data-i18n-locale="de">Unterlagen</template>
+  <template data-i18n-for="ap-l2d" data-i18n-locale="en">PDF or DOCX, up to 10 MB.</template>
+  <template data-i18n-for="ap-l2d" data-i18n-locale="de">PDF oder DOCX, bis 10 MB.</template>
+  <template data-i18n-for="ap-cv" data-i18n-locale="en">Upload your résumé</template>
+  <template data-i18n-for="ap-cv" data-i18n-locale="de">Lebenslauf hochladen</template>
+  <template data-i18n-for="ap-cvd" data-i18n-locale="en">or drop it here</template>
+  <template data-i18n-for="ap-cvd" data-i18n-locale="de">oder hier ablegen</template>
+  <template data-i18n-for="ap-cvh" data-i18n-locale="en">Required - PDF or DOCX.</template>
+  <template data-i18n-for="ap-cvh" data-i18n-locale="de">Pflichtfeld - PDF oder DOCX.</template>
+  <template data-i18n-for="ap-note" data-i18n-locale="en">Why Acme?</template>
+  <template data-i18n-for="ap-note" data-i18n-locale="de">Warum Acme?</template>
+  <template data-i18n-for="ap-noteh" data-i18n-locale="en">(a few sentences)</template>
+  <template data-i18n-for="ap-noteh" data-i18n-locale="de">(ein paar Sätze)</template>
+  <template data-i18n-for="ap-l3" data-i18n-locale="en">Links</template>
+  <template data-i18n-for="ap-l3" data-i18n-locale="de">Links</template>
+  <template data-i18n-for="ap-l3d" data-i18n-locale="en">Anything that shows your work.</template>
+  <template data-i18n-for="ap-l3d" data-i18n-locale="de">Alles, was deine Arbeit zeigt.</template>
+  <template data-i18n-for="ap-gh" data-i18n-locale="en">GitHub or portfolio</template>
+  <template data-i18n-for="ap-gh" data-i18n-locale="de">GitHub oder Portfolio</template>
+  <template data-i18n-for="ap-consent" data-i18n-locale="en"
+    >I agree that Acme stores my application for 12 months.</template
+  >
+  <template data-i18n-for="ap-consent" data-i18n-locale="de"
+    >Ich bin einverstanden, dass Acme meine Bewerbung 12 Monate speichert.</template
+  >
+  <template data-i18n-for="ap-submit" data-i18n-locale="en">Submit application</template>
+  <template data-i18n-for="ap-submit" data-i18n-locale="de">Bewerbung absenden</template>
+  <template data-i18n-for="ap-thanks" data-i18n-locale="en">Thank you - your application is in</template>
+  <template data-i18n-for="ap-thanks" data-i18n-locale="de">Danke - deine Bewerbung ist angekommen</template>
+  <template data-i18n-for="ap-next" data-i18n-locale="en"
+    >We read every application ourselves and answer within five working days, from a real person's address.</template
+  >
+  <template data-i18n-for="ap-next" data-i18n-locale="de"
+    >Wir lesen jede Bewerbung selbst und antworten innerhalb von fünf Arbeitstagen, von der Adresse eines echten
+    Menschen.</template
+  >
+  <template data-i18n-for="ap-close" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="ap-close" data-i18n-locale="de">Schließen</template>
+  <template data-i18n-for="ft-line" data-i18n-locale="en"
+    >Calm software for teams that ship - made in Lisbon, Berlin and Montreal since 2016.</template
+  >
+  <template data-i18n-for="ft-line" data-i18n-locale="de"
+    >Ruhige Software für Teams, die liefern - seit 2016 aus Lissabon, Berlin und Montreal.</template
+  >
+  <template data-i18n-for="ft-h1" data-i18n-locale="en">Company</template>
+  <template data-i18n-for="ft-h1" data-i18n-locale="de">Unternehmen</template>
+  <template data-i18n-for="ft-about" data-i18n-locale="en">About</template>
+  <template data-i18n-for="ft-about" data-i18n-locale="de">Über uns</template>
+  <template data-i18n-for="ft-work" data-i18n-locale="en">Case studies</template>
+  <template data-i18n-for="ft-work" data-i18n-locale="de">Fallstudien</template>
+  <template data-i18n-for="ft-press" data-i18n-locale="en">Press</template>
+  <template data-i18n-for="ft-press" data-i18n-locale="de">Presse</template>
+  <template data-i18n-for="ft-h2" data-i18n-locale="en">Careers</template>
+  <template data-i18n-for="ft-h2" data-i18n-locale="de">Karriere</template>
+  <template data-i18n-for="ft-jobs" data-i18n-locale="en">Open roles</template>
+  <template data-i18n-for="ft-jobs" data-i18n-locale="de">Offene Stellen</template>
+  <template data-i18n-for="ft-eng" data-i18n-locale="en">Engineering</template>
+  <template data-i18n-for="ft-eng" data-i18n-locale="de">Technik</template>
+  <template data-i18n-for="ft-h3" data-i18n-locale="en">Contact</template>
+  <template data-i18n-for="ft-h3" data-i18n-locale="de">Kontakt</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="en"
+    >© 2026 Acme, Lda. · Rua das Flores 28, 1200-195 Lisbon</template
+  >
+  <template data-i18n-for="ft-copy" data-i18n-locale="de"
+    >© 2026 Acme, Lda. · Rua das Flores 28, 1200-195 Lissabon</template
+  >
+  <template data-i18n-for="ft-offices" data-i18n-locale="en">Lisbon · Berlin · Montreal</template>
+  <template data-i18n-for="ft-offices" data-i18n-locale="de">Lissabon · Berlin · Montreal</template>
 </div>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
@@ -1246,8 +2604,8 @@
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -1263,27 +2621,154 @@
     };
     look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
+    // -- the pages the lists open: case studies, roles and press stories come from one data block in English and German
+    // and are drawn again when the language changes
+    const DATA = JSON.parse(df$('#company-data').text());
+    const CASES = Object.keys(DATA.cases);
+    const JOBS = Object.keys(DATA.jobs);
+    const STORIES = Object.keys(DATA.press);
+    const tr = (item) => item[locale.locale] ?? item.en;
+    // writes each [attr] element's text from the values (by the attribute's value)
+    const fill = (scope, attr, values) =>
+      scope.find('[' + attr + ']').each((_i, el) => {
+        const key = el.getAttribute(attr);
+        if (key in values) df$(el).text(values[key]);
+      });
+    // previous and next in the list's order, wrapping around
+    const pager = (scope, attr, base, keys, key, title) => {
+      const i = keys.indexOf(key);
+      const around = { prev: keys[(i - 1 + keys.length) % keys.length], next: keys[(i + 1) % keys.length] };
+      for (const [dir, to] of Object.entries(around)) {
+        const link = scope.find('[' + attr + '="' + dir + '"]');
+        link.attr('href', base + to);
+        link.find('[data-pager-title]').text(title(to));
+      }
+    };
+    const drawCards = () => {
+      const host = df$('#site-company [data-co-cases]').html('');
+      const card = df$('#site-company [data-co-case-card]').get(0).content.firstElementChild;
+      for (const key of CASES) {
+        const item = DATA.cases[key];
+        const t = tr(item);
+        const el = df$(card.cloneNode(true));
+        el.find('img')
+          .attr('src', 'https://picsum.photos/id/' + item.photo + '/800/500')
+          .attr('alt', t.alt);
+        el.find('[data-case-card="title"]').attr('href', '#/work/' + key);
+        fill(el, 'data-case-card', {
+          client: item.client,
+          industry: t.industry,
+          title: t.title,
+          metric: t.metric[0],
+          metricLabel: t.metric[1],
+          more: tr(DATA.ui).more,
+        });
+        host.append(el);
+      }
+    };
+    const drawCase = (key) => {
+      const item = DATA.cases[key];
+      const t = tr(item);
+      const page = df$('#site-company [data-company-view="case"]');
+      fill(page, 'data-case-field', { ...t, client: item.client, person: item.person, plan: item.plan });
+      page
+        .find('[data-case-cover]')
+        .attr('src', 'https://picsum.photos/id/' + item.photo + '/1600/700')
+        .attr('alt', t.alt);
+      page.find('[data-case-avatar]').attr('src', 'https://i.pravatar.cc/96?img=' + item.avatar);
+      const results = page.find('[data-case-results]').html('');
+      for (const [value, label] of t.results) {
+        results.append(df$('<div></div>').append(df$('<dt></dt>').text(label)).append(df$('<dd></dd>').text(value)));
+      }
+      const steps = page.find('[data-case-steps]').html('');
+      for (const [head, text] of t.steps) {
+        steps.append(
+          df$('<li></li>').append(df$('<strong></strong>').text(head)).append(df$('<span></span>').text(text)),
+        );
+      }
+      pager(page, 'data-case-pager', '#/work/', CASES, key, (k) => tr(DATA.cases[k]).title);
+    };
+    const drawJob = (key) => {
+      const item = DATA.jobs[key];
+      const t = tr(item);
+      const page = df$('#site-company [data-company-view="job"]');
+      const fields = { ...t, title: item.title, salary: item.salary };
+      fill(page, 'data-job-field', fields);
+      fill(df$('#co-apply'), 'data-job-field', fields);
+      for (const part of ['do', 'bring']) {
+        const list = page.find('[data-job-list="' + part + '"]').html('');
+        for (const line of t[part]) list.append(df$('<li></li>').text(line));
+      }
+      pager(page, 'data-job-pager', '#/job/', JOBS, key, (k) => DATA.jobs[k].title);
+    };
+    const drawStory = (key) => {
+      const item = DATA.press[key];
+      const t = tr(item);
+      const page = df$('#site-company [data-company-view="story"]');
+      fill(page, 'data-story-field', { ...t, publication: item.publication });
+      page
+        .find('[data-story-date]')
+        .attr('datetime', item.date)
+        .text(locale.formatDate(Date.parse(item.date + 'T12:00:00Z'), { dateStyle: 'long', timeZone: 'UTC' }));
+      const body = page.find('[data-story-body]').html('');
+      for (const text of t.body) body.append(df$('<p></p>').text(text));
+      pager(page, 'data-story-pager', '#/press/', STORIES, key, (k) => tr(DATA.press[k]).headline);
+    };
+
+    // -- the application: the dialog's form thanks the applicant; closing it starts over
+    const apply = df$('#co-apply');
+    df$('#site-company [data-company-apply]').on('submit', (event) => {
+      event.preventDefault();
+      apply.attr('data-sent', '');
+      apply.find('.co-apply-done').get(0).focus();
+    });
+    apply.on('close', () => {
+      apply.attr('data-sent', null);
+      apply.find('form').get(0).reset();
+    });
+
     // -- routing
     const routes = [
       { id: 'about', path: '/' },
+      { id: 'work', path: '/work' },
+      { id: 'case', path: '/work/:case' },
       { id: 'team', path: '/team' },
       { id: 'jobs', path: '/jobs' },
       { id: 'department', path: '/jobs/:department' },
+      { id: 'job', path: '/job/:job' },
       { id: 'press', path: '/press' },
+      { id: 'story', path: '/press/:story' },
       { id: 'missing', path: '*' },
     ];
+    // a page's list: the nav marks it, an unknown item falls back to it
+    const LIST = { case: 'work', job: 'jobs', story: 'press' };
+    const ITEMS = { case: DATA.cases, job: DATA.jobs, story: DATA.press };
+    let current = { view: 'about', key: null };
+    const draw = () => {
+      drawCards();
+      if (current.view === 'case') drawCase(current.key);
+      if (current.view === 'job') drawJob(current.key);
+      if (current.view === 'story') drawStory(current.key);
+    };
+    locale.subscribe(draw);
     // one page of the site at a time; a department filters the jobs
     const show = (to) => {
-      const view = to.routeId === 'department' ? 'jobs' : to.routeId === 'missing' ? 'about' : to.routeId;
+      const routed = { department: 'jobs', missing: 'about' }[to.routeId] ?? to.routeId;
+      const key = ITEMS[routed] ? to.params[routed] : null;
+      const view = ITEMS[routed] && !ITEMS[routed][key] ? LIST[routed] : routed;
       const department = to.routeId === 'department' ? to.params.department : null;
+      current = { view, key };
+      draw();
       df$('#site-company [data-company-view]').each((_i, block) => {
         block.hidden = block.dataset.companyView !== view;
       });
       df$('#site-company [data-department]').each((_i, group) => {
         group.hidden = !!department && group.dataset.department !== department;
       });
-      // the site's nav marks the page, the jobs' nav the department (All roles without one)
-      const page = '#' + (view === 'about' ? '/' : '/' + view);
+      // the site's nav marks the page (a case, a role or a story its list), the jobs' nav the department (All roles
+      // without one)
+      const list = LIST[view] ?? view;
+      const page = '#' + (list === 'about' ? '/' : '/' + list);
       const mark = (links, href) =>
         df$(links).each((_i, link) => {
           if (link.getAttribute('href') === href) link.setAttribute('aria-current', 'page');
@@ -1292,12 +2777,22 @@
       mark('[data-company-nav="site"] [data-router-link]', page);
       mark('[data-company-nav="departments"] [data-router-link]', department ? '#' + to.path : '#/jobs');
     };
-    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    // a new page opens at its start, the way a page load would - the first view stays where the reader is
+    let shownPath = null;
+    const showAt = (to) => {
+      show(to);
+      if (shownPath !== null && shownPath !== to.path)
+        df$('#site-company [data-company-view]:not([hidden])')
+          .get(0)
+          ?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      shownPath = to.path;
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => showAt(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      const follow = () => showAt(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
       addEventListener('hashchange', follow);
       follow();
     }

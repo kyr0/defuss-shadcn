@@ -4,6 +4,7 @@ import { SiteNav } from './site-nav';
 import { PrevNext } from './prev-next';
 import { EditPage } from './edit-page';
 import { docsRoot, pageRel, pageUrl } from '../page-dirs';
+import { whatsNewReleases } from '../whats-new-data';
 
 export interface DocPageMeta {
   title: string;
@@ -47,7 +48,14 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
     }
   }
   return (
-    <html lang="en" data-page={rel} data-docs-root={docsRoot(meta.slug)}>
+    <html
+      lang="en"
+      data-page={rel}
+      data-docs-root={docsRoot(meta.slug)}
+      data-whats-new={whatsNewReleases()
+        .map((r) => r.version)
+        .join(' ')}
+    >
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -132,6 +140,8 @@ export function DocPage({ meta, mainStyle, aside, children }: DocPageProps) {
         <script type="module" src="js/shiki-highlight.js"></script>
         <script type="module" src="../components/all.js"></script>
         <script type="module" src="../components/wysiwyg.js"></script>
+        {/* the search palette's worker (runtime/docs-search.ts) - after all.js: it renders through df$ */}
+        <script type="module" src="js/docs-search.js"></script>
         <script src="https://unpkg.com/lucide@1.8.0" integrity="sha384-+8nbzwDAyu5kAjqtR/XKxIgPHQD2TflvbZgeDZn5t3JP+OOogNH1jXnfel8ZAgzS" crossorigin="anonymous"></script>
         <script>{`globalThis.lucide?.createIcons();`}</script>
       </body>

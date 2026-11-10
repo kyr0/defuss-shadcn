@@ -69,34 +69,6 @@
   #pf-swiss .pf-grid > * {
     grid-column: 1 / -1;
   }
-  #pf-swiss .pf-top {
-    display: grid;
-    grid-template-columns: subgrid;
-    padding-block: 0.6rem 2rem;
-    border-block-start: 2px solid var(--foreground);
-    font-size: 1.0625rem;
-    font-weight: 500;
-    line-height: 1.35;
-  }
-  #pf-swiss .pf-top > :nth-child(1) {
-    grid-column: span 3;
-  }
-  #pf-swiss .pf-top > :nth-child(2) {
-    grid-column: span 3;
-  }
-  #pf-swiss .pf-top > :nth-child(3) {
-    grid-column: span 3;
-  }
-  #pf-swiss .pf-top > :nth-child(4) {
-    grid-column: span 3;
-    text-align: end;
-  }
-  #pf-swiss .pf-top p {
-    margin: 0;
-  }
-  #pf-swiss .pf-top a {
-    color: inherit;
-  }
   #pf-swiss .pf-hero {
     position: relative;
     display: grid;
@@ -263,10 +235,6 @@
     color: var(--primary);
   }
   @container pf-swiss (max-width: 48rem) {
-    #pf-swiss .pf-top > :nth-child(n) {
-      grid-column: span 6;
-      text-align: start;
-    }
     #pf-swiss .pf-name {
       grid-column: 1 / -1;
     }
@@ -317,10 +285,295 @@
   #pf-swiss {
     position: relative;
   }
-  #pf-swiss > .site-mode {
-    position: absolute;
-    z-index: 20;
-    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
+  #pf-swiss [hidden] {
+    display: none !important;
+  }
+  /* the views - the home page and a page per project - sit on the same twelve columns */
+  #pf-swiss [data-pf-view] {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+  }
+  #pf-swiss [data-pf-view] > * {
+    grid-column: 1 / -1;
+  }
+  /* the Site Header on the grid: the name, the numbered index, the city and the mode. No container of its own - a
+     container is laid out on its own and cannot take its parent's columns */
+  #pf-swiss .mk-header {
+    container: none;
+    display: grid;
+    grid-template-columns: subgrid;
+    background: none;
+    color: inherit;
+    border-block-start: 2px solid var(--foreground);
+  }
+  #pf-swiss .mk-header-inner {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: start;
+    column-gap: normal;
+    row-gap: 0.75rem;
+    min-height: 4.5rem;
+    max-width: none;
+    margin: 0;
+    padding: 0.6rem 0 2rem;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  #pf-swiss .mk-header-brand {
+    grid-column: span 3;
+    display: block;
+    color: inherit;
+  }
+  #pf-swiss .mk-header-name {
+    display: block;
+    color: inherit;
+    font-size: inherit;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  #pf-swiss .pf-brand-line {
+    display: block;
+    color: var(--muted-foreground);
+  }
+  #pf-swiss .mk-header-nav {
+    display: block;
+    grid-column: span 6;
+  }
+  #pf-swiss .nav-menu-list {
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+  }
+  #pf-swiss .nav-menu-link {
+    gap: 0.4rem;
+    padding: 0;
+    border-radius: 0;
+    color: inherit;
+    font-size: inherit;
+    text-underline-offset: 0.25em;
+  }
+  #pf-swiss .nav-menu-link span {
+    color: var(--primary);
+  }
+  #pf-swiss .nav-menu-link:is(:hover, :focus-visible, [aria-current]) {
+    background: none;
+    color: inherit;
+    text-decoration: underline 2px;
+  }
+  #pf-swiss .mk-header-actions {
+    grid-column: span 3;
+    justify-content: end;
+    gap: 1rem;
+  }
+  /* a project page: the name across the grid, the facts beside the brief, the pictures, then the next project */
+  #pf-swiss .pf-case-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0;
+    padding-block: 0.6rem 2rem;
+    border-block-start: 2px solid var(--foreground);
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+  #pf-swiss .pf-case-bar a {
+    color: inherit;
+    text-underline-offset: 0.25em;
+  }
+  #pf-swiss .pf-case-bar a:is(:hover, :focus-visible) {
+    color: var(--primary);
+  }
+  #pf-swiss .pf-case-title {
+    grid-column: 1 / span 10;
+    margin: 0;
+    font-size: clamp(3rem, 9cqi, 8.5rem);
+    font-weight: 800;
+    letter-spacing: -0.055em;
+    line-height: 0.88;
+    text-wrap: balance;
+  }
+  #pf-swiss .pf-case-mark {
+    grid-column: 12 / span 1;
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--primary);
+  }
+  #pf-swiss .pf-case-intro {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    row-gap: 2rem;
+    padding-block: clamp(2rem, 5cqi, 4rem);
+  }
+  #pf-swiss .pf-case-intro > dl {
+    grid-column: span 3;
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.45;
+  }
+  #pf-swiss .pf-case-intro dt {
+    margin-block-start: 1rem;
+    font-weight: 700;
+  }
+  #pf-swiss .pf-case-intro dt:first-child {
+    margin-block-start: 0;
+  }
+  #pf-swiss .pf-case-intro dd {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  #pf-swiss .pf-case-intro > p {
+    grid-column: span 9;
+    margin: 0;
+    font-size: clamp(1.25rem, 0.9rem + 1.3cqi, 2.125rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: pretty;
+  }
+  #pf-swiss .pf-case-cover {
+    grid-column: 1 / -1;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-block-end: clamp(3rem, 7cqi, 6rem);
+    object-fit: cover;
+  }
+  #pf-swiss .pf-section p {
+    margin: 0;
+    max-width: 46rem;
+    font-size: 1.1875rem;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  #pf-swiss .pf-case-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.75rem, 2cqi, 1.5rem);
+    margin-block-start: 1.5rem;
+  }
+  #pf-swiss .pf-case-pair img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  #pf-swiss .pf-case-pager {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    padding-block: 1rem clamp(3rem, 7cqi, 6rem);
+    border-block-start: 2px solid var(--foreground);
+  }
+  #pf-swiss .pf-case-pager a {
+    grid-column: span 6;
+    display: grid;
+    gap: 0.25rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  #pf-swiss .pf-case-pager a + a {
+    text-align: end;
+  }
+  #pf-swiss .pf-case-pager small {
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+  #pf-swiss .pf-case-pager small span {
+    color: var(--primary);
+  }
+  #pf-swiss .pf-case-pager strong {
+    font-size: clamp(1.5rem, 1rem + 2cqi, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  #pf-swiss .pf-case-pager a:is(:hover, :focus-visible) strong {
+    color: var(--primary);
+  }
+  /* the Site Footer: the index once more in four numbered columns, the studio's address, the name */
+  #pf-swiss .mk-footer {
+    grid-column: 1 / -1;
+    background: none;
+    color: inherit;
+    border-block-start: 2px solid var(--foreground);
+  }
+  #pf-swiss .mk-footer-inner {
+    gap: 1.5rem;
+    max-width: none;
+    padding: 1rem 0 0;
+  }
+  #pf-swiss .mk-footer-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem clamp(0.75rem, 2cqi, 1.5rem);
+  }
+  #pf-swiss .mk-footer-heading {
+    color: inherit;
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+  #pf-swiss .mk-footer-heading span {
+    color: var(--primary);
+  }
+  #pf-swiss .mk-footer-list {
+    gap: 0.35rem;
+    font-size: 1.0625rem;
+  }
+  #pf-swiss .mk-footer-list a:is(:hover, :focus-visible) {
+    color: var(--primary);
+    text-decoration: none;
+  }
+  #pf-swiss .mk-footer address {
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+    font-style: normal;
+    line-height: 1.45;
+  }
+  #pf-swiss .mk-footer-rule {
+    height: 2px;
+    margin: 0;
+    border: 0;
+    background: var(--foreground);
+  }
+  #pf-swiss .mk-footer-brand {
+    color: inherit;
+  }
+  #pf-swiss .mk-footer-brand-name {
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+  #pf-swiss .mk-footer-copy {
+    font-size: 1rem;
+  }
+  @container pf-swiss (max-width: 48rem) {
+    #pf-swiss .mk-header-brand {
+      grid-column: span 8;
+    }
+    #pf-swiss .mk-header-actions {
+      grid-column: span 4;
+    }
+    #pf-swiss .mk-header-nav {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    #pf-swiss .pf-place {
+      display: none;
+    }
+    #pf-swiss .pf-case-title {
+      grid-column: 1 / span 9;
+    }
+    #pf-swiss .pf-case-mark {
+      grid-column: 10 / -1;
+    }
+    #pf-swiss :is(.pf-case-intro > dl, .pf-case-intro > p, .pf-case-pager a) {
+      grid-column: 1 / -1;
+    }
+    #pf-swiss .pf-case-pager {
+      row-gap: 1.5rem;
+    }
+    #pf-swiss .mk-footer-nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
   :root:not(.dark) #pf-swiss {
@@ -335,142 +588,360 @@
   /* -- modes: end -- */
 </style>
 <div id="pf-swiss">
-  <label class="swap site-mode" data-variant="rotate" data-size="sm">
-    <input type="checkbox" data-site-mode aria-label="Dark mode" />
-    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-  </label>
   <div class="pf-grid">
-    <header class="pf-top">
-      <p>Lukas Graf</p>
-      <p>Grafik, Typografie, Plakate</p>
-      <p>Zürich, CH</p>
-      <p><a href="mailto:lukas@example.com">lukas@example.com</a></p>
-    </header>
-    <section class="pf-hero" aria-labelledby="pf-sw-name">
-      <h1 class="pf-name" id="pf-sw-name">
-        <span data-df-entrance="wipe">Lukas</span>
-        <span data-df-entrance="wipe" style="--df-motion-delay: 150ms">Graf</span>
-      </h1>
-      <span class="pf-square" data-df-entrance="left" style="--df-motion-delay: 400ms" aria-hidden="true"></span>
-    </section>
-    <section class="pf-intro" aria-label="About">
-      <img src="https://picsum.photos/id/669/600/800" alt="Lukas Graf" data-df-entrance="fade" />
-      <p
-        >Posters, identities and typefaces for museums, theatres and the city of Zürich. Fourteen years of grids - and
-        of knowing when to break one.</p
-      >
-      <dl>
-        <dt>Now</dt>
-        <dd>Identity of the Kunsthaus 2027 season</dd>
-        <dt>Teaching</dt>
-        <dd>Typography, ZHdK, since 2019</dd>
-        <dt>Member</dt>
-        <dd>Alliance Graphique Internationale</dd>
-      </dl>
-    </section>
-    <section class="pf-section" aria-labelledby="pf-sw-work">
-      <h2 id="pf-sw-work"><span>01</span> Work</h2>
-      <ul class="mk-portfolio-grid">
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/700/700" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Tonhalle season posters</strong>
-              <span class="mk-portfolio-grid-meta">Posters, 2026</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/939/700/700" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Kunsthaus wayfinding</strong>
-              <span class="mk-portfolio-grid-meta">Signage, 2025</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/403/700/700" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Limmat Grotesk</strong>
-              <span class="mk-portfolio-grid-meta">Typeface, 2024</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1047/700/700" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">City of Zürich</strong>
-              <span class="mk-portfolio-grid-meta">Identity, 2022</span>
-            </span>
-          </a>
-        </li>
-      </ul>
-    </section>
-    <section class="pf-section" aria-labelledby="pf-sw-numbers">
-      <h2 id="pf-sw-numbers"><span>02</span> In numbers</h2>
-      <div class="mk-stats">
-        <div class="mk-stats-grid">
-          <div class="mk-stat"
-            ><span class="mk-stat-value">212</span><span class="mk-stat-label">posters printed</span></div
-          >
-          <div class="mk-stat"
-            ><span class="mk-stat-value">14</span><span class="mk-stat-label">typefaces released</span></div
-          >
-          <div class="mk-stat"
-            ><span class="mk-stat-value">9</span><span class="mk-stat-label">Swiss Design Awards</span></div
-          >
+    <header class="mk-header">
+      <div class="mk-header-inner">
+        <a class="mk-header-brand" href="#/" data-router-link
+          ><span class="mk-header-name">Lukas Graf</span
+          ><span class="pf-brand-line">Grafik, Typografie, Plakate</span></a
+        >
+        <nav class="mk-header-nav" aria-label="Main">
+          <ul class="nav-menu-list">
+            <li class="nav-menu-item"
+              ><a class="nav-menu-link" href="#/work" data-router-link><span>01</span> Work</a></li
+            >
+            <li class="nav-menu-item"
+              ><a class="nav-menu-link" href="#/numbers" data-router-link><span>02</span> In numbers</a></li
+            >
+            <li class="nav-menu-item"
+              ><a class="nav-menu-link" href="#/career" data-router-link><span>03</span> Career</a></li
+            >
+            <li class="nav-menu-item"
+              ><a class="nav-menu-link" href="#/contact" data-router-link><span>04</span> Contact</a></li
+            >
+          </ul>
+        </nav>
+        <div class="mk-header-actions">
+          <span class="pf-place">Zürich, CH</span>
+          <label class="swap site-mode" data-variant="rotate" data-size="sm">
+            <input type="checkbox" data-site-mode aria-label="Dark mode" />
+            <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+            <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+          </label>
         </div>
       </div>
-    </section>
-    <section class="pf-section" aria-labelledby="pf-sw-cv">
-      <h2 id="pf-sw-cv"><span>03</span> Career</h2>
-      <ol class="mk-resume-entries" data-variant="columns">
-        <li class="mk-resume-entry">
-          <div class="mk-resume-entry-body">
-            <div class="mk-resume-entry-head">
-              <h3 class="mk-resume-entry-title">Own studio</h3>
-              <p class="mk-resume-entry-org"><span>Zürich</span></p>
-              <p class="mk-resume-entry-when"><time datetime="2016">2016</time> - today</p>
-            </div>
+    </header>
+    <div data-pf-view="home">
+      <section class="pf-hero" aria-labelledby="pf-sw-name">
+        <h1 class="pf-name" id="pf-sw-name">
+          <span data-df-entrance="wipe">Lukas</span>
+          <span data-df-entrance="wipe" style="--df-motion-delay: 150ms">Graf</span>
+        </h1>
+        <span class="pf-square" data-df-entrance="left" style="--df-motion-delay: 400ms" aria-hidden="true"></span>
+      </section>
+      <section class="pf-intro" aria-label="About">
+        <img src="https://picsum.photos/id/669/600/800" alt="Lukas Graf" data-df-entrance="fade" />
+        <p
+          >Posters, identities and typefaces for museums, concert halls and the old town of Zürich. Fourteen years of
+          grids - and of knowing when to break one.</p
+        >
+        <dl>
+          <dt>Now</dt>
+          <dd>Identity of Museum Rietpark's 2027 season</dd>
+          <dt>Teaching</dt>
+          <dd>Typography evening class, since 2019</dd>
+          <dt>Member</dt>
+          <dd>Swiss Poster Guild</dd>
+        </dl>
+      </section>
+      <section class="pf-section" aria-labelledby="pf-sw-work" data-pf-section="work">
+        <h2 id="pf-sw-work"><span>01</span> Work</h2>
+        <ul class="mk-portfolio-grid">
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/halle-neun" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/700/700" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Halle Neun season posters</strong>
+                <span class="mk-portfolio-grid-meta">Posters, 2026</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/rietpark" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/939/700/700" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Museum Rietpark wayfinding</strong>
+                <span class="mk-portfolio-grid-meta">Signage, 2025</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/limmat-grotesk" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/403/700/700" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Limmat Grotesk</strong>
+                <span class="mk-portfolio-grid-meta">Typeface, 2024</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/altstadt" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1047/700/700" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Altstadt Society</strong>
+                <span class="mk-portfolio-grid-meta">Identity, 2022</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </section>
+      <section class="pf-section" aria-labelledby="pf-sw-numbers" data-pf-section="numbers">
+        <h2 id="pf-sw-numbers"><span>02</span> In numbers</h2>
+        <div class="mk-stats">
+          <div class="mk-stats-grid">
+            <div class="mk-stat"
+              ><span class="mk-stat-value">212</span><span class="mk-stat-label">posters printed</span></div
+            >
+            <div class="mk-stat"
+              ><span class="mk-stat-value">14</span><span class="mk-stat-label">typefaces released</span></div
+            >
+            <div class="mk-stat"
+              ><span class="mk-stat-value">9</span><span class="mk-stat-label">design awards</span></div
+            >
           </div>
-        </li>
-        <li class="mk-resume-entry">
-          <div class="mk-resume-entry-body">
-            <div class="mk-resume-entry-head">
-              <h3 class="mk-resume-entry-title">Designer</h3>
-              <p class="mk-resume-entry-org"><a href="#">Studio Brunner</a></p>
-              <p class="mk-resume-entry-when"><time datetime="2012">2012</time> - <time datetime="2016">2016</time></p>
+        </div>
+      </section>
+      <section class="pf-section" aria-labelledby="pf-sw-cv" data-pf-section="career">
+        <h2 id="pf-sw-cv"><span>03</span> Career</h2>
+        <ol class="mk-resume-entries" data-variant="columns">
+          <li class="mk-resume-entry">
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Own studio</h3>
+                <p class="mk-resume-entry-org"><span>Zürich</span></p>
+                <p class="mk-resume-entry-when"><time datetime="2016">2016</time> - today</p>
+              </div>
             </div>
-          </div>
-        </li>
-        <li class="mk-resume-entry">
-          <div class="mk-resume-entry-body">
-            <div class="mk-resume-entry-head">
-              <h3 class="mk-resume-entry-title">Visual communication, BA</h3>
-              <p class="mk-resume-entry-org"><a href="#">Schule für Gestaltung Basel</a></p>
-              <p class="mk-resume-entry-when"><time datetime="2008">2008</time> - <time datetime="2012">2012</time></p>
+          </li>
+          <li class="mk-resume-entry">
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Designer</h3>
+                <p class="mk-resume-entry-org"><span>Studio Brunner, Zürich</span></p>
+                <p class="mk-resume-entry-when"
+                  ><time datetime="2012">2012</time> - <time datetime="2016">2016</time></p
+                >
+              </div>
             </div>
-          </div>
-        </li>
-      </ol>
-    </section>
-    <section class="pf-section" aria-labelledby="pf-sw-contact">
-      <h2 id="pf-sw-contact"><span>04</span> Contact</h2>
-      <div>
-        <aside class="mk-availability" data-variant="banner" aria-labelledby="pf-sw-hire">
-          <p class="mk-availability-status"
-            ><span class="indicator-dot" data-variant="warning" aria-hidden="true"></span> Limited</p
-          >
-          <p class="mk-availability-title" id="pf-sw-hire">Two poster commissions open for 2027</p>
-        </aside>
-        <a class="pf-mail" href="mailto:lukas@example.com">lukas@example.com</a>
+          </li>
+          <li class="mk-resume-entry">
+            <div class="mk-resume-entry-body">
+              <div class="mk-resume-entry-head">
+                <h3 class="mk-resume-entry-title">Visual communication, BA</h3>
+                <p class="mk-resume-entry-org"><span>Hochschule Rhein, Basel</span></p>
+                <p class="mk-resume-entry-when"
+                  ><time datetime="2008">2008</time> - <time datetime="2012">2012</time></p
+                >
+              </div>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="pf-section" aria-labelledby="pf-sw-contact" data-pf-section="contact">
+        <h2 id="pf-sw-contact"><span>04</span> Contact</h2>
+        <div>
+          <aside class="mk-availability" data-variant="banner" aria-labelledby="pf-sw-hire">
+            <p class="mk-availability-status"
+              ><span class="indicator-dot" data-variant="warning" aria-hidden="true"></span> Limited</p
+            >
+            <p class="mk-availability-title" id="pf-sw-hire">Two poster commissions open for 2027</p>
+          </aside>
+          <a class="pf-mail" href="mailto:lukas@example.com">lukas@example.com</a>
+        </div>
+      </section>
+    </div>
+    <article data-pf-view="project" aria-labelledby="pf-sw-case-title" hidden>
+      <p class="pf-case-bar">
+        <a href="#/work" data-router-link>← Back to the index</a>
+        <span><span data-case="no">01</span> / 04</span>
+      </p>
+      <h1 class="pf-case-title" id="pf-sw-case-title" data-case="title">Halle Neun season posters</h1>
+      <span class="pf-case-mark" aria-hidden="true"></span>
+      <div class="pf-case-intro">
+        <dl>
+          <dt>Client</dt>
+          <dd data-case="client">Halle Neun, Zürich</dd>
+          <dt>Discipline</dt>
+          <dd data-case="kind">Posters</dd>
+          <dt>Year</dt>
+          <dd data-case="year">2026</dd>
+          <dt>Role</dt>
+          <dd data-case="role">Design, typography, print supervision</dd>
+        </dl>
+        <p data-case="summary"
+          >Forty-two concerts, forty-two posters, one grid - a season you can read from across the tram stop.</p
+        >
       </div>
-    </section>
+      <img
+        class="pf-case-cover"
+        data-case-img="0"
+        data-w="1600"
+        data-h="900"
+        src="https://picsum.photos/id/951/1600/900"
+        alt="A building front striped in red, yellow and white"
+      />
+      <section class="pf-section" aria-labelledby="pf-sw-brief">
+        <h2 id="pf-sw-brief"><span>A</span> Brief</h2>
+        <p data-case="brief"
+          >Halle Neun books jazz, chamber music and electronics in one old engine shed. The season needed one voice for
+          three audiences, and posters that still read at fifty metres on a wet Tuesday.</p
+        >
+      </section>
+      <section class="pf-section" aria-labelledby="pf-sw-making">
+        <h2 id="pf-sw-making"><span>B</span> Work</h2>
+        <div>
+          <p data-case="work"
+            >Every poster sits on the same twelve columns: the date in red at the top left, the act set as large as the
+            grid allows, the hall's stripes as the only image. The stripes turn by genre - level for chamber music,
+            slanted for jazz, upright for the electronic nights - so the series sorts itself on a wall.</p
+          >
+          <div class="pf-case-pair">
+            <img
+              data-case-img="1"
+              data-w="800"
+              data-h="800"
+              src="https://picsum.photos/id/158/800/800"
+              alt="Stage lights fanning out over a concert crowd"
+            />
+            <img
+              data-case-img="2"
+              data-w="800"
+              data-h="800"
+              src="https://picsum.photos/id/117/800/800"
+              alt="Raised hands in front of a lit stage in a dark hall"
+            />
+          </div>
+        </div>
+      </section>
+      <section class="pf-section" aria-labelledby="pf-sw-result">
+        <h2 id="pf-sw-result"><span>C</span> Result</h2>
+        <p data-case="result"
+          >Nine more nights sold out than the season before. The posters went up in 180 frames across the city, and the
+          stripes moved onto the tickets, the programme and the doors of the hall.</p
+        >
+      </section>
+      <nav class="pf-case-pager" aria-label="More work">
+        <a href="#/work/altstadt" data-router-link data-case-link="prev"
+          ><small>← <span>Previous</span></small
+          ><strong data-case-title="prev">Altstadt Society</strong></a
+        >
+        <a href="#/work/rietpark" data-router-link data-case-link="next"
+          ><small><span>Next</span> →</small><strong data-case-title="next">Museum Rietpark wayfinding</strong></a
+        >
+      </nav>
+    </article>
+    <footer class="mk-footer">
+      <div class="mk-footer-inner">
+        <nav class="mk-footer-nav" aria-label="Footer">
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading"><span>01</span> Work</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/work/halle-neun" data-router-link>Halle Neun season posters</a></li>
+              <li><a href="#/work/rietpark" data-router-link>Museum Rietpark wayfinding</a></li>
+              <li><a href="#/work/limmat-grotesk" data-router-link>Limmat Grotesk</a></li>
+              <li><a href="#/work/altstadt" data-router-link>Altstadt Society</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading"><span>02</span> Studio</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/numbers" data-router-link>In numbers</a></li>
+              <li><a href="#/career" data-router-link>Career</a></li>
+              <li><a href="#/contact" data-router-link>Contact</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading"><span>03</span> Elsewhere</h3>
+            <ul class="mk-footer-list">
+              <li><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+              <li><a href="https://www.behance.net/" target="_blank" rel="noopener">Behance</a></li>
+              <li><a href="mailto:lukas@example.com">lukas@example.com</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading"><span>04</span> Address</h3>
+            <address>Lukas Graf Grafik<br />Ankerstrasse 12<br />8004 Zürich</address>
+          </div>
+        </nav>
+        <hr class="separator mk-footer-rule" />
+        <div class="mk-footer-bottom">
+          <a class="mk-footer-brand" href="#/" data-router-link><span class="mk-footer-brand-name">Lukas Graf</span></a>
+          <div class="mk-footer-meta">
+            <p class="mk-footer-copy">© 2026 Lukas Graf · Set in Inter Tight on twelve columns</p>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
+  <!-- the projects the routes name, in order -->
+  <script type="application/json" id="pf-swiss-work">
+    {
+      "halle-neun": {
+        "title": "Halle Neun season posters",
+        "kind": "Posters",
+        "year": "2026",
+        "client": "Halle Neun, Zürich",
+        "role": "Design, typography, print supervision",
+        "summary": "Forty-two concerts, forty-two posters, one grid - a season you can read from across the tram stop.",
+        "brief": "Halle Neun books jazz, chamber music and electronics in one old engine shed. The season needed one voice for three audiences, and posters that still read at fifty metres on a wet Tuesday.",
+        "work": "Every poster sits on the same twelve columns: the date in red at the top left, the act set as large as the grid allows, the hall's stripes as the only image. The stripes turn by genre - level for chamber music, slanted for jazz, upright for the electronic nights - so the series sorts itself on a wall.",
+        "result": "Nine more nights sold out than the season before. The posters went up in 180 frames across the city, and the stripes moved onto the tickets, the programme and the doors of the hall.",
+        "images": [
+          [951, "A building front striped in red, yellow and white"],
+          [158, "Stage lights fanning out over a concert crowd"],
+          [117, "Raised hands in front of a lit stage in a dark hall"]
+        ]
+      },
+      "rietpark": {
+        "title": "Museum Rietpark wayfinding",
+        "kind": "Signage",
+        "year": "2025",
+        "client": "Museum Rietpark, Zürich",
+        "role": "Wayfinding system, pictograms, type",
+        "summary": "Four buildings, eleven floors, one rule: you never need to read more than three words to find the next room.",
+        "brief": "The museum had grown into four buildings joined by bridges and a tunnel. Visitors met forty different signs on the way to the café, and the guards answered the same question four hundred times a day.",
+        "work": "Each building got a number and a colour, each floor a large figure set in Limmat Grotesk, each room a three-word name. The signs hang at one height everywhere, the arrows always point from the edge of the panel, and the pictograms share one stroke width with the type.",
+        "result": "Questions at the front desk dropped by two thirds in the first month. The system now runs from the tickets to the museum's map and its website, and the tunnel has become the shortest way in.",
+        "images": [
+          [939, "A narrow corner tower against a white sky"],
+          [240, "A person sitting at the top of white stone steps"],
+          [101, "A concrete tower against a pale sky"]
+        ]
+      },
+      "limmat-grotesk": {
+        "title": "Limmat Grotesk",
+        "kind": "Typeface",
+        "year": "2024",
+        "client": "Self-initiated, released 2024",
+        "role": "Type design, engineering",
+        "summary": "A grotesk for signs and posters - tight at display sizes, open at the size of a room number, eight weights.",
+        "brief": "Wayfinding work kept failing on the same letters: an l that looked like a 1, an a that closed up at a distance. I wanted one family that works on a poster and on a door at the end of a long corridor.",
+        "work": "Three years of drawing, mostly evenings. Two optical sizes share one skeleton: Display spaces tight and keeps its curves taut, Text opens the apertures and gives the 1, l and I distinct shapes. Every glyph was tested on printed signs at ten, twenty and fifty metres.",
+        "result": "Released in eight weights with 640 glyphs each. It sets the Halle Neun posters and the Rietpark signs, and three other studios license it for their own wayfinding.",
+        "images": [
+          [403, "An old typewriter, close up"],
+          [4, "Hands writing in a notebook beside a laptop"],
+          [1073, "Open books laid out page by page"]
+        ]
+      },
+      "altstadt": {
+        "title": "Altstadt Society",
+        "kind": "Identity",
+        "year": "2022",
+        "client": "Altstadt Society, Zürich",
+        "role": "Identity, guidelines, signage for 60 shops",
+        "summary": "An identity for the shops of the old town - one mark that sixty owners can hang in their own window.",
+        "brief": "The old town's shop owners formed a society and wanted to be found together without losing their own signs. Everything had to work in two colours, on enamel, in a window decal and on a paper bag.",
+        "work": "The mark is the outline of the old town's streets reduced to six strokes. Each shop gets the mark with its house number, cut in enamel or printed in one colour, and a guide of twelve pages tells the owners where it goes and where it never goes.",
+        "result": "Sixty shops carry the mark today. The society's walking map, printed twice a year, became the most-taken leaflet at the station, and the enamel plates are now a souvenir of their own.",
+        "images": [
+          [1047, "A narrow brick alley with fire escapes"],
+          [288, "The roofs and spires of an old town"],
+          [164, "Old houses and boats along a canal"]
+        ]
+      }
+    }
+  </script>
 </div>
 <script type="module">
   // df$ comes with the component bundle - a full-screen page loads it after this module
@@ -485,6 +956,88 @@
     });
     new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     syncMode();
+  });
+</script>
+<script type="module">
+  // routing: defuss-dom-router owns the address - the home page, its sections and a page per project
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+
+  addEventListener('DOMContentLoaded', async () => {
+    const site = df$('#pf-swiss').get(0);
+    const WORK = JSON.parse(df$('#pf-swiss-work').text());
+    const ORDER = Object.keys(WORK);
+    const SECTIONS = ['work', 'numbers', 'career', 'contact'];
+    const routes = [
+      { id: 'home', path: '/' },
+      { id: 'project', path: '/work/:project' },
+      { id: 'section', path: '/:section' },
+      { id: 'missing', path: '*' },
+    ];
+    // a project page from the data block: its texts, its pictures, the projects before and after it
+    const fill = (slug) => {
+      const project = WORK[slug];
+      const at = ORDER.indexOf(slug);
+      const near = { prev: ORDER[(at + ORDER.length - 1) % ORDER.length], next: ORDER[(at + 1) % ORDER.length] };
+      const view = df$('#pf-swiss [data-pf-view="project"]');
+      view.find('[data-case]').each((_i, el) => {
+        df$(el).text(el.dataset.case === 'no' ? String(at + 1).padStart(2, '0') : project[el.dataset.case]);
+      });
+      view.find('[data-case-img]').each((_i, img) => {
+        const [id, alt] = project.images[Number(img.dataset.caseImg)];
+        df$(img)
+          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('alt', alt);
+      });
+      for (const [rel, to] of Object.entries(near)) {
+        view.find('[data-case-link="' + rel + '"]').attr('href', '#/work/' + to);
+        view.find('[data-case-title="' + rel + '"]').text(WORK[to].title);
+      }
+    };
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let shown = null;
+    // one view shown, the header marks where the reader is; a section route scrolls there, a new page opens at its top
+    const show = (to) => {
+      const slug = to.routeId === 'project' && Object.hasOwn(WORK, to.params.project) ? to.params.project : null;
+      const section = to.routeId === 'section' && SECTIONS.includes(to.params.section) ? to.params.section : null;
+      const name = slug ? 'project' : 'home';
+      if (slug) fill(slug);
+      df$('#pf-swiss [data-pf-view]').each((_i, view) => {
+        view.hidden = view.dataset.pfView !== name;
+      });
+      const here = slug ? '#/work' : section ? '#/' + section : null;
+      df$('#pf-swiss .mk-header-nav a').each((_i, link) => {
+        df$(link).attr('aria-current', link.getAttribute('href') === here ? 'page' : null);
+      });
+      // the page opens where its address says - at once, once its pictures have laid it out; a click glides there
+      const target = section ? df$('#pf-swiss [data-pf-section="' + section + '"]').get(0) : shown ? site : null;
+      const behavior = shown === name && !still ? 'smooth' : 'instant';
+      const go = () => target?.scrollIntoView({ behavior, block: 'start' });
+      if (!shown && document.readyState !== 'complete') addEventListener('load', go, { once: true });
+      else go();
+      shown = name;
+      last = to;
+    };
+    let last = null;
+    // a link to where the reader already is leaves the address as it is - it still scrolls there
+    df$(site).on('click', (event) => {
+      const link = event.target.closest('a[data-router-link]');
+      if (link && last && link.getAttribute('href') === (location.hash || '#/')) show(last);
+    });
+    // the page scrolls itself (to a section) - the router's own scroll would stop that glide
+    const router = createRouter({
+      mode: 'hash',
+      scroll: 'manual',
+      routes,
+      prepare: ({ to }) => ({ commit: () => show(to) }),
+    });
+    router.attachLinks(site);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
   });
 </script>
 <script type="module" src="../../components/all.js"></script>

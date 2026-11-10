@@ -2,7 +2,12 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
+import { brotliDecompressSync } from 'node:zlib';
 import { parseHTML } from 'linkedom';
+import { pageSearchDocs, type SearchDoc } from './lib/search-docs.ts';
+import { searchFingerprint, searchPages } from './lib/search-docs-files.ts';
+import { searchIndexProblems } from './lib/search-index-check.ts';
+import { MODEL_FINGERPRINT, searchPins } from './search-index.ts';
 import { auditUtilities, walk } from './lib/audit.ts';
 import { declaredStates } from './lib/inputs.ts';
 import { componentFingerprints } from './lib/inputs-files.ts';
@@ -56,6 +61,7 @@ import { appPlans } from './lib/apps-files.ts';
 import { flattenComponentLinks, flattenSkillIndex } from '../src/documentation/lib/component-links.ts';
 import { appName, docsDistToSrc, isDocsSsgAuthoringSrc, STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile, STANDALONE_DOCS, standaloneDocFile } from './lib/docs-ssg.ts';
 import { markdownLinkProblems, type MdDoc } from './lib/links.ts';
+import { whatsNewProblems } from './lib/whats-new-files.ts';
 import { versionDrift, PIN_GLOBS, PIN_IGNORE, pinDrift } from './lib/version-sites.ts';
 import { apiGaps, apiMarkdown, apiSectionOf, readComponentApi } from '../src/documentation/lib/component-api.ts';
 import { DF_ADOPTION_LEGACY, QUERY_BASELINE, QUERY_RE, RENDER_LEGACY, SINK_BASELINE, SINK_RE, hasRender, ratchet, scan } from './lib/dom-discipline.ts';
@@ -218,8 +224,13 @@ const pageUrls = new Map<string, string[]>();
 /** the pages that route with defuss-dom-router in hash mode: a `#/…` fragment there is a route, not an anchor
  *  (the Client-side Routing guide; the scaffolds' links are `#/orders`) */
 const routedPages = new Set<string>();
+/** the docs search's pages (every listed sidebar page) and the documents each holds now - for `search index ↔ docs` */
+const searchPageOf = new Map(searchPages().map((sp) => [sp.rel, sp]));
+const searchDocsOf = new Map<string, SearchDoc[]>();
 for (const [page, html] of docHtml) {
   const { document } = parseHTML(html);
+  const searchPage = searchPageOf.get(page);
+  if (searchPage) searchDocsOf.set(page, pageSearchDocs(document as unknown as Document, searchPage));
   if (html.includes('defuss-dom-router@')) routedPages.add(page);
   pageIds.set(
     page,
@@ -567,6 +578,15 @@ check(
   'run `bun scripts/stat-figures.ts` (after `bun run stats`, or `bun scripts/time-verify.ts --agent "…"` for the verify.* figures), then rebuild the docs',
 );
 
+// 10d2. What's new: the pending release's entry in data/whats-new.json lists exactly the sidebar pages whose files
+// changed since the last release tag (scripts/lib/whats-new.ts) - the docs mark them for readers who have not seen
+// them, so a page changed without its entry would never be pointed out, and a stale one points at nothing new.
+check(
+  "what's new ↔ release diff",
+  whatsNewProblems(),
+  'run `bun scripts/whats-new.ts --write` (build.ts writes it on every build), then rebuild the docs',
+);
+
 // 10e. README must PROMINENTLY state the current numbers - total, withJs,
 // withoutJs and the KiB-formatted gzip sizes - as the exact sentence generated
 // from dist/stats.json (shared renderer in lib/stats.ts). A stale or missing
@@ -678,6 +698,11 @@ const VENDOR_IMPORTS: Record<string, { site: RegExp; pinned: string; reason: str
     site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
     pinned: 'https://cdn.jsdelivr.net/npm/d3-geo@3.1.1/dist/d3-geo.min.js',
     reason: 'loads the official d3-geo (with its d3-array), GeographicLib and defuss-dson builds on the first map or df$.shadcn.geo.load() (pinned jsDelivr files; configure({ urls }) self-hosts them)',
+  },
+  terminal: {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/lib/xterm.mjs',
+    reason: 'loads the official xterm.js build, its fit / clipboard / serialize / web-links addons and its stylesheet on the first terminal (pinned jsDelivr ESM files; configure({ urls }) self-hosts them)',
   },
   editorjs: {
     site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
@@ -858,6 +883,42 @@ check(
   if (existsSync(dir))
     for (const f of readdirSync(dir)) if (!fresh.has(`studio/examples/${f}`)) libraryProblems.push(`dist/documentation/studio/examples/${f} is no page's`);
   check('studio library fresh', libraryProblems, 'run `bun run build:docs` - scripts/build-docs.ts writes the Studio library from the docs examples and the components (scripts/lib/studio-library-files.ts)');
+}
+// 10f4. the docs search index (dist/documentation/search/) is the index of the docs as they render now: the documents
+// of every listed page (read in the one parse above), their fingerprint under the pinned model, the vendor pins and
+// both Brotli files (scripts/lib/search-index-check.ts). scripts/build-docs.ts rebuilds it after every docs build
+{
+  const missing = [...searchPageOf.keys()].filter((rel) => !searchDocsOf.has(rel));
+  const docs = [...searchPageOf.keys()].flatMap((rel) => searchDocsOf.get(rel) ?? []);
+  const dir = join(DOCS_DIST, 'search');
+  const read = <T,>(f: () => T): T | undefined => {
+    try {
+      return f();
+    } catch {
+      return undefined;
+    }
+  };
+  const manifest = read(() => JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8')));
+  const brotliFile = (file: string | undefined) =>
+    read(() => {
+      const stored = readFileSync(join(dir, file ?? ''));
+      return { stored: stored.length, decoded: new Uint8Array(brotliDecompressSync(stored)) };
+    });
+  check(
+    'search index ↔ docs',
+    [
+      ...missing.map((rel) => `${rel} is listed in the sidebar but not rendered`),
+      ...searchIndexProblems({
+        manifest,
+        fingerprint: searchFingerprint(docs, MODEL_FINGERPRINT),
+        docs,
+        pins: searchPins(),
+        documents: brotliFile(manifest?.documents?.file),
+        tokens: brotliFile(manifest?.tokens?.file),
+      }),
+    ],
+    'run `bun run build:docs` - scripts/build-docs.ts rebuilds the search index from the rendered pages (scripts/search-index.ts; it encodes only the texts .cache/search/ lacks)',
+  );
 }
 // 10f4. individual examples: every component a docs example is made of is also an example of its own - one instance
 // of each kind, in its component's parts file (src/components/<section>/<name>/<name>.parts.md, ```html example part
@@ -1414,7 +1475,8 @@ if (existsSync(DIST)) {
   // the ids and the links come from the one page pass (gate 6)
   for (const f of docPages) {
     for (const url of pageUrls.get(f) ?? []) {
-      if (/^(https?:|mailto:|data:|javascript:)/i.test(url)) continue;
+      // another scheme (https:, mailto:, tel:, data:, javascript: ...) is no file of ours
+      if (/^[a-z][a-z0-9+.-]*:/i.test(url)) continue;
       // demo placeholders: no target at all, or the conventional "..." stub
       if (url === '' || url === '#' || url === '...') continue;
       // a hash route on a page whose router owns the fragment; on any other page it is a dead anchor
@@ -1436,7 +1498,10 @@ if (existsSync(DIST)) {
       // cross-page anchor: #id inside a sibling html page must exist there
       // too; non-html targets (CDN links, assets) carry no page ids of ours.
       if (anchor && targetAbs.endsWith('.html')) {
-        const ids = pageIds.get(relative(join(DIST, 'documentation'), targetAbs));
+        const target = relative(join(DIST, 'documentation'), targetAbs);
+        // a hash route into a page whose router owns the fragment (a site's sub-page)
+        if (anchor.startsWith('/') && routedPages.has(target)) continue;
+        const ids = pageIds.get(target);
         if (ids && !ids.has(anchor)) linkProblems.push(`${f}: dead cross-page anchor ${url}`);
       }
     }

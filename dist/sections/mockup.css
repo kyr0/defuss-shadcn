@@ -449,3 +449,251 @@
     }
   }
 }
+
+/* ── components/terminal/terminal.css ── */
+/* -- Terminal component ------------------------------------------------- */
+/* A terminal emulator (xterm.js) in the Code Mockup's window. xterm paints
+   its own cells, so its colours are custom properties the runtime reads:
+   --terminal-background / -foreground / -cursor / -cursor-accent /
+   -selection and the sixteen ANSI colours (--terminal-red ...
+   --terminal-bright-white). A variant sets them; a theme or a page can set
+   any of them. --terminal-cursor-style (block, bar, underline) and
+   --terminal-line-height (a factor) are read the same way. */
+
+@layer components {
+  /* xterm.js names its own element "terminal xterm" too - every rule here skips it */
+  .terminal:not(.xterm) {
+    /* the default: a dark screen in every theme, the Code Mockup's tones */
+    --terminal-background: oklch(0.21 0.006 286);
+    --terminal-foreground: oklch(0.94 0 0);
+    --terminal-cursor: var(--terminal-foreground);
+    --terminal-cursor-accent: var(--terminal-background);
+    --terminal-selection: color-mix(in oklch, var(--terminal-foreground) 28%, transparent);
+    --terminal-black: oklch(0.32 0.01 286);
+    --terminal-red: oklch(0.72 0.18 25);
+    --terminal-green: oklch(0.8 0.16 150);
+    --terminal-yellow: oklch(0.84 0.15 80);
+    --terminal-blue: oklch(0.76 0.13 245);
+    --terminal-magenta: oklch(0.76 0.15 320);
+    --terminal-cyan: oklch(0.8 0.11 200);
+    --terminal-white: oklch(0.86 0 0);
+    --terminal-bright-black: oklch(0.62 0.01 286);
+    --terminal-bright-red: oklch(0.8 0.15 25);
+    --terminal-bright-green: oklch(0.88 0.15 150);
+    --terminal-bright-yellow: oklch(0.91 0.13 90);
+    --terminal-bright-blue: oklch(0.84 0.11 245);
+    --terminal-bright-magenta: oklch(0.84 0.13 320);
+    --terminal-bright-cyan: oklch(0.88 0.1 200);
+    --terminal-bright-white: oklch(0.99 0 0);
+    --terminal-cursor-style: block;
+    --terminal-line-height: 1.25;
+    --terminal-height: 20rem;
+    --terminal-padding: 0.5rem 1rem 0.75rem;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    block-size: var(--terminal-height);
+    padding-block-start: 2.5rem;
+    border-radius: var(--radius-xl);
+    background: var(--terminal-background);
+    color: var(--terminal-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    text-align: start;
+    /* a terminal reads left to right inside an RTL page too */
+    direction: ltr;
+    unicode-bidi: isolate;
+    overflow: hidden;
+
+    /* -- Window chrome, as the Code Mockup's: three dots; data-chrome="mac"
+       colours them, data-chrome="none" drops the bar --------------------- */
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: 1rem;
+      inset-inline-start: 1.25rem;
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 9999px;
+      color: color-mix(in oklch, var(--terminal-foreground) 60%, var(--terminal-background));
+      background: currentColor;
+      opacity: 0.45;
+      box-shadow:
+        1.25rem 0 0 currentColor,
+        2.5rem 0 0 currentColor;
+    }
+    &[data-chrome="mac"]::before {
+      opacity: 1;
+      background: oklch(0.68 0.2 25);
+      box-shadow:
+        1.25rem 0 0 oklch(0.82 0.16 85),
+        2.5rem 0 0 oklch(0.74 0.17 145);
+    }
+    &[data-chrome="none"] {
+      padding-block-start: 0;
+    }
+    &[data-chrome="none"]::before {
+      display: none;
+    }
+    /* a title in the bar: data-title="bash - 80x24" */
+    &[data-title]:not([data-chrome="none"])::after {
+      content: attr(data-title);
+      position: absolute;
+      inset-block-start: 0.75rem;
+      inset-inline: 4.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      line-height: 1.25rem;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: color-mix(in oklch, var(--terminal-foreground) 65%, var(--terminal-background));
+    }
+
+    /* data-rows: as high as that many rows - the screen sizes the box */
+    &[data-rows] {
+      block-size: auto;
+    }
+    &:focus-within {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+
+    /* -- Sizes ------------------------------------------------------------ */
+    &[data-size="sm"] {
+      font-size: 0.75rem;
+    }
+    &[data-size="lg"] {
+      font-size: 1rem;
+    }
+
+    /* -- Variants --------------------------------------------------------- */
+    /* muted: the page's own surface - light in light mode; the ANSI colours
+       are mixed toward the text so they keep their contrast in both */
+    &[data-variant="muted"] {
+      --terminal-background: var(--muted);
+      --terminal-foreground: var(--foreground);
+      --terminal-black: var(--foreground);
+      --terminal-red: color-mix(in oklch, var(--foreground) 30%, oklch(0.6 0.2 25));
+      --terminal-green: color-mix(in oklch, var(--foreground) 35%, oklch(0.62 0.16 150));
+      --terminal-yellow: color-mix(in oklch, var(--foreground) 40%, oklch(0.7 0.15 75));
+      --terminal-blue: color-mix(in oklch, var(--foreground) 30%, oklch(0.6 0.16 255));
+      --terminal-magenta: color-mix(in oklch, var(--foreground) 30%, oklch(0.6 0.18 320));
+      --terminal-cyan: color-mix(in oklch, var(--foreground) 35%, oklch(0.62 0.11 200));
+      --terminal-white: var(--muted-foreground);
+      --terminal-bright-black: var(--muted-foreground);
+      --terminal-bright-red: var(--terminal-red);
+      --terminal-bright-green: var(--terminal-green);
+      --terminal-bright-yellow: var(--terminal-yellow);
+      --terminal-bright-blue: var(--terminal-blue);
+      --terminal-bright-magenta: var(--terminal-magenta);
+      --terminal-bright-cyan: var(--terminal-cyan);
+      --terminal-bright-white: var(--foreground);
+      border: 1px solid var(--border);
+    }
+    /* dos: the 16 colours of a PC's text mode on black, square, an
+       underline cursor */
+    &[data-variant="dos"] {
+      --terminal-background: #000000;
+      --terminal-foreground: #aaaaaa;
+      --terminal-cursor: #aaaaaa;
+      --terminal-selection: rgb(170 170 170 / 0.35);
+      --terminal-black: #000000;
+      --terminal-red: #aa0000;
+      --terminal-green: #00aa00;
+      --terminal-yellow: #aa5500;
+      --terminal-blue: #0000aa;
+      --terminal-magenta: #aa00aa;
+      --terminal-cyan: #00aaaa;
+      --terminal-white: #aaaaaa;
+      --terminal-bright-black: #555555;
+      --terminal-bright-red: #ff5555;
+      --terminal-bright-green: #55ff55;
+      --terminal-bright-yellow: #ffff55;
+      --terminal-bright-blue: #5555ff;
+      --terminal-bright-magenta: #ff55ff;
+      --terminal-bright-cyan: #55ffff;
+      --terminal-bright-white: #ffffff;
+      --terminal-cursor-style: underline;
+      --terminal-line-height: 1.1;
+      border-radius: 0;
+    }
+  }
+
+  /* the screen xterm opens in (the runtime adds it) - the fit addon measures
+     its content box */
+  .terminal-screen {
+    flex: 1 1 0px;
+    box-sizing: content-box;
+    min-block-size: 0;
+    min-inline-size: 0;
+    padding: var(--terminal-padding);
+    .terminal[data-rows] > & {
+      flex: none;
+    }
+  }
+
+  /* the vendor build failed to load: the reason, in place of the screen */
+  .terminal-error {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--terminal-red);
+  }
+
+  /* -- Accessibility ------------------------------------------------------ */
+  /* reduced motion: the runtime stops the cursor's blink and the replay's typing (the lines appear at once) */
+  @media (prefers-reduced-motion: reduce) {
+    .terminal-screen {
+      scroll-behavior: auto;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .terminal:not(.xterm) {
+      --terminal-foreground: oklch(1 0 0);
+      --terminal-bright-black: oklch(0.8 0 0);
+      border: 1px solid var(--terminal-foreground);
+    }
+    .terminal:not(.xterm)[data-variant="muted"] {
+      --terminal-foreground: var(--foreground);
+      --terminal-bright-black: var(--foreground);
+      border-color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    /* the runtime reads these: the system colours, converted like any other */
+    .terminal:not(.xterm),
+    .terminal:not(.xterm)[data-variant] {
+      --terminal-background: Canvas;
+      --terminal-foreground: CanvasText;
+      --terminal-cursor: CanvasText;
+      --terminal-cursor-accent: Canvas;
+      --terminal-selection: Highlight;
+      --terminal-black: Canvas;
+      --terminal-red: CanvasText;
+      --terminal-green: CanvasText;
+      --terminal-yellow: CanvasText;
+      --terminal-blue: CanvasText;
+      --terminal-magenta: CanvasText;
+      --terminal-cyan: CanvasText;
+      --terminal-white: CanvasText;
+      --terminal-bright-black: CanvasText;
+      --terminal-bright-red: CanvasText;
+      --terminal-bright-green: CanvasText;
+      --terminal-bright-yellow: CanvasText;
+      --terminal-bright-blue: CanvasText;
+      --terminal-bright-magenta: CanvasText;
+      --terminal-bright-cyan: CanvasText;
+      --terminal-bright-white: CanvasText;
+      border: 1px solid CanvasText;
+      forced-color-adjust: none;
+    }
+  }
+}

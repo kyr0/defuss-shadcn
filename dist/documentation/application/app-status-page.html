@@ -956,17 +956,19 @@
     <a class="btn" data-variant="ghost" data-size="sm" href="#/manage" data-router-link
       ><i data-lucide="settings-2"></i><span data-i18n-target="top-manage">Manage</span></a
     >
-    <select
-      class="select sp-locale"
-      data-size="sm"
+    <div
+      class="language-switcher sp-locale"
       data-app-locale
+      role="group"
       aria-label="Language"
       data-i18n-aria-label-en="Language"
       data-i18n-aria-label-de="Sprache"
-    >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-    </select>
+      data-languages="en de"
+      data-value="en"
+      data-size="sm"
+      data-variant="swap"
+      data-display="code"
+    ></div>
     <button
       class="btn"
       data-variant="ghost"
@@ -3289,8 +3291,8 @@
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(app, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- routing: the status, the history, the console and one route per incident (#/incidents/i-api)
     const routes = [

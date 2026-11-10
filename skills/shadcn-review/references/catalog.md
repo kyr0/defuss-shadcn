@@ -2,7 +2,7 @@
 
 # Component catalog
 
-259 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+261 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.13/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -24,7 +24,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Separator](../../defuss-shadcn/references/components/separator.md) `separator` | ATM | default | - | Dividing content groups visually and semantically. |
 | [Icon](../../defuss-shadcn/references/components/icon.md) `icon` | ATM | default | - | Any icon anywhere in the system - keeps size and stroke uniform across components. |
 | [Kbd](../../defuss-shadcn/references/components/kbd.md) `kbd` | ATM | default | - | Showing a shortcut in a menu item, a tooltip, a command palette row, or prose. Not for code, which is inline-code. |
-| [Heading Anchor](../../defuss-shadcn/references/components/heading-anchor.md) `heading-anchor` | ATM | default | - | Section permalinks in docs/blogs/specs - before or after the heading text. |
+| [Heading Anchor](../../defuss-shadcn/references/components/heading-anchor.md) `heading-anchor` | ATM | default | - | Section permalinks in docs/blogs/specs - in front of the heading (shown on hover), before or after its text. |
 
 ## Actions
 
@@ -207,6 +207,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Menubar](../../defuss-shadcn/references/components/menubar.md) `menubar` | MOL | default, open | yes | The persistent command bar of an app-like page - File / Edit / View / Help. One menu of actions takes dropdown; site navigation takes navbar or navigation-menu. |
 | [Navigation Menu](../../defuss-shadcn/references/components/navigation-menu.md) `navigation-menu` | ATM | default, open | yes | Top-level navigation, optionally with mega-menu panels per item. |
 | [Theme Switcher](../../defuss-shadcn/references/components/theme-switcher.md) `theme-switcher` | MOL | default, open | yes | Live theme pickers for docs sites, previews, or settings pages - unless the theme is fixed at deploy time (then just link the file directly). |
+| [Language Switcher](../../defuss-shadcn/references/components/language-switcher.md) `language-switcher` | MOL | default, open | yes | Switching the page's language in a site header, a footer, a toolbar or an app's settings - the page lists the languages it supports; for a free choice among many values that are not languages, use a Combobox. |
 
 ## Application
 
@@ -234,6 +235,7 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | Component | Type | States | JS | When |
 | --- | --- | --- | --- | --- |
 | [Code Mockup](../../defuss-shadcn/references/components/mockup-code.md) `mockup-code` | ATM | default | - | Showing commands and their output as a terminal - install steps, CLI docs, a session transcript - or a change as a git-style diff (added / removed lines, word changes, an animated reveal). Source code with syntax colours takes a highlighted code block; a single inline key takes kbd. |
+| [Terminal](../../defuss-shadcn/references/components/terminal.md) `terminal` | ATM | default, running, readonly | yes | An interactive command line - a shell on a developer's site, a mock DOS or Unix app in a desktop, a REPL or a log that streams into a live terminal. A transcript that only has to be read (install steps, CLI docs, a diff) takes the Code Mockup - no script, copyable text. |
 
 ## Presentations
 

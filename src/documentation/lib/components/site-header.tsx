@@ -58,11 +58,18 @@ export function SiteHeader(_props: Props) {
           <input
             type="text"
             class="header-search-input"
-            placeholder="Search docs… (⌘K)"
+            placeholder="Search docs..."
             aria-label="Search documentation"
+            aria-keyshortcuts="Meta+K Control+K"
             autocomplete="off"
             readonly
           />
+          {/* the shortcut as Kbd keys - ⌘ on Apple systems, Ctrl elsewhere (<html data-platform>, layout.ts) */}
+          <kbd class="kbd-group header-search-keys" aria-hidden="true">
+            <kbd class="kbd" data-size="sm" data-key="meta">⌘</kbd>
+            <kbd class="kbd" data-size="sm" data-key="ctrl">Ctrl</kbd>
+            <kbd class="kbd" data-size="sm">K</kbd>
+          </kbd>
         </div>
         <div style="flex:1;"></div>
         <nav style="display:flex;align-items:center;gap:0.5rem;">
@@ -118,6 +125,15 @@ export function SiteHeader(_props: Props) {
           </div>
           <div class="command-list" id="docs-palette-list"></div>
           <div class="command-empty" hidden>No results found.</div>
+          {/* runtime/docs-search.ts: which search answers, the model download, the query's language */}
+          <div class="docs-search-status" id="docs-palette-status" hidden>
+            <span class="docs-search-mode" role="status"></span>
+            <progress class="progress" max="100" aria-label="Semantic search download" hidden></progress>
+            <span class="badge" data-variant="outline" data-docs-search-language hidden></span>
+            <button class="btn" type="button" data-variant="link" data-size="sm" data-docs-search-semantic hidden>
+              Add semantic search
+            </button>
+          </div>
         </div>
       </dialog>
     </>

@@ -320,7 +320,9 @@ void main() {
   float th = max(u_thickness, .5) * u_pixel_ratio;
   float line = 1. - smoothstep(th * .5, th * .5 + u_pixel_ratio, abs(d));
   float glowR = max(u_frame.x * .7 * max(u_softness, .05), u_pixel_ratio);
-  float glow = d > 0. ? exp(-d / glowR) : exp(d / (glowR * .35));
+  // outside, the glow reaches zero before the canvas ends (u_frame.x past the frame) - exp alone left about a quarter of
+  // it at the edge, a hard rectangle around every pulsing border
+  float glow = d > 0. ? exp(-d / glowR) * (1. - smoothstep(u_frame.x * .5, u_frame.x, d)) : exp(d / (glowR * .35));
   float energy = (.35 + .9 * travel) * pulse;
   vec3 col = rampCycle(ang / TAU + t * .04);
   float alpha = clamp(line * (.8 + .2 * travel) + glow * energy * .9, 0., 1.);
@@ -2407,11 +2409,17 @@ var engine = {
   raf: 0,
   frames: 0,
   scale: 1,
+  level: 0,
+  raisedAt: -Infinity,
+  held: false,
+  good: 0,
   lastTick: 0,
+  window: 0,
+  windowStart: 0,
   slow: 0,
-  fast: 0,
   idleSince: 0,
   io: null,
+  near: null,
   ro: null,
   controls: new Set
 };
@@ -3243,20 +3251,36 @@ function easePointer(inst, dt) {
 function moving(inst) {
   return inst.easing || Math.abs(inst.pointerTarget[0] - inst.pointer[0]) + Math.abs(inst.pointerTarget[1] - inst.pointer[1]) + Math.abs(inst.hoverTarget - inst.hover) > 0.0005;
 }
+var QUALITY_LEVELS = [1, 0.75, 0.5];
+var ADAPT_WINDOW = 120;
+var ADAPT_WINDOW_MS = 2000;
+var RAISE_HOLD_MS = 20000;
 function adapt(now) {
   const interval = engine.lastTick ? now - engine.lastTick : 16;
   engine.lastTick = now;
-  if (interval > 30 && interval < 250)
+  if (interval >= 1000)
+    return;
+  if (!engine.window)
+    engine.windowStart = now;
+  engine.window++;
+  if (interval > 30)
     engine.slow++;
-  else if (interval < 20)
-    engine.fast++;
-  if (engine.slow > 24) {
-    engine.scale = Math.max(0.5, engine.scale * 0.85);
-    engine.slow = engine.fast = 0;
-  } else if (engine.fast > 300 && engine.scale < 1) {
-    engine.scale = Math.min(1, engine.scale * 1.1);
-    engine.slow = engine.fast = 0;
-  }
+  if (engine.window < 8 || engine.window < ADAPT_WINDOW && now - engine.windowStart < ADAPT_WINDOW_MS)
+    return;
+  const late = engine.slow / engine.window;
+  engine.window = engine.slow = 0;
+  if (late >= 0.25 && engine.level < QUALITY_LEVELS.length - 1) {
+    engine.level++;
+    engine.good = 0;
+    if (now - engine.raisedAt < RAISE_HOLD_MS)
+      engine.held = true;
+  } else if (late <= 0.02 && !engine.held && engine.level > 0 && ++engine.good >= 8) {
+    engine.level--;
+    engine.good = 0;
+    engine.raisedAt = now;
+  } else if (late > 0.02)
+    engine.good = 0;
+  engine.scale = QUALITY_LEVELS[engine.level];
 }
 function schedule() {
   if (!engine.raf)
@@ -3265,13 +3289,16 @@ function schedule() {
 function tick(now) {
   engine.raf = 0;
   let visible = 0;
+  let preparing = 0;
   for (const inst of engine.instances) {
     if (!inst.el.isConnected)
       destroy(inst);
     else if (inst.visible)
       visible++;
+    else if (inst.near && inst.dirty)
+      preparing++;
   }
-  if (!visible) {
+  if (!visible && !preparing) {
     if (engine.gl && !engine.idleSince)
       engine.idleSince = now;
     if (engine.gl && now - engine.idleSince > 8000)
@@ -3294,12 +3321,14 @@ function tick(now) {
   engine.compileUntil = performance.now() + 24;
   let waiting = false;
   for (const inst of engine.instances) {
-    if (!inst.visible || !inst.dirty)
+    if (!(inst.visible || inst.near) || !inst.dirty)
       continue;
     refresh(inst);
     if (inst.dirty)
       waiting = true;
   }
+  if (waiting)
+    more = true;
   const hold = waiting && !engine.parallel;
   for (const inst of engine.instances) {
     if (!inst.visible || inst.error && !inst.dirty)
@@ -3357,6 +3386,7 @@ function destroy(inst) {
     engine.gl.deleteTexture(inst.texture);
   inst.texture = null;
   engine.io?.unobserve(inst.el);
+  engine.near?.unobserve(inst.el);
   engine.ro?.unobserve(inst.el);
   inst.attrObserver?.disconnect();
   engine.instances.delete(inst);
@@ -3416,6 +3446,16 @@ function listen() {
         inst.visible = entry.isIntersecting;
         if (inst.visible)
           wake(inst);
+      }
+    }, { rootMargin: "0px" });
+    engine.near = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const inst = entry.target._shader;
+        if (!inst)
+          continue;
+        inst.near = entry.isIntersecting;
+        if (inst.near && inst.dirty)
+          schedule();
       }
     }, { rootMargin: "20% 0px" });
   }
@@ -3752,6 +3792,7 @@ function init() {
       canvas,
       ctx: canvas.getContext("2d"),
       visible: !engine.io,
+      near: !engine.near,
       running: true,
       needsFrame: true,
       dirty: true,
@@ -3822,6 +3863,7 @@ function init() {
     });
     inst.attrObserver.observe(el, { attributes: true, childList: true, subtree: true, characterData: true });
     engine.io?.observe(el);
+    engine.near?.observe(el);
     engine.ro?.observe(el);
     bindComponent(el, shaderApi, { name: "default", config: {} });
     el.dataset.stateName = "default";
@@ -3835,5 +3877,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=EA8F8179E5667D6364756E2164756E21
+//# debugId=719A5318FD69E70E64756E2164756E21
 //# sourceMappingURL=shaders.js.map

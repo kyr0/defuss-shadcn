@@ -111,30 +111,50 @@
     margin: clamp(3.5rem, 8vw, 6rem) auto 0;
     padding-inline: clamp(1rem, 3vw, 2.5rem);
   }
+  #sc-observatory [hidden] {
+    display: none !important;
+  }
+  /* the Site Header: over the sky - the telescope and the name in Unbounded, the sections, the look and the mode */
   #sc-observatory .ob-bar {
     grid-column: 1 / -1;
     align-self: start;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
+    background: none;
+    color: inherit;
   }
-  #sc-observatory .ob-brand {
-    margin: 0;
+  #sc-observatory .mk-header-inner {
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    max-width: none;
+    min-height: 4.5rem;
+    padding: 0;
+  }
+  #sc-observatory :is(.mk-header-brand, .mk-footer-brand) {
+    gap: 0.6rem;
+    color: inherit;
+  }
+  #sc-observatory :is(.mk-header-brand, .mk-footer-brand) svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--primary);
+  }
+  #sc-observatory :is(.mk-header-name, .mk-footer-brand-name) {
+    color: inherit;
     font:
       800 1.05rem/1 'Unbounded',
       sans-serif;
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
-  #sc-observatory .ob-bar nav {
+  #sc-observatory .mk-header-nav {
     display: flex;
-    gap: 1.25rem;
     margin-inline-start: auto;
   }
-  #sc-observatory .ob-bar nav a {
+  #sc-observatory .nav-menu-link {
     color: inherit;
-    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+  #sc-observatory .mk-header-actions {
+    gap: 0.5rem;
   }
   /* the sky */
   #sc-observatory .ob-hero {
@@ -166,6 +186,15 @@
     font-size: 1.125rem;
     line-height: 1.55;
     color: var(--muted-foreground);
+  }
+  /* the day sky stays bright in dark mode: the light text there sits on a pane of the night ground */
+  .dark #sc-observatory[data-look='day'] .ob-hero p {
+    width: fit-content;
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--background) 62%, transparent);
+    backdrop-filter: blur(8px);
+    color: var(--foreground);
   }
   /* tonight: the moon, the seeing, the times */
   #sc-observatory .ob-tonight {
@@ -366,19 +395,130 @@
     background: var(--primary-foreground);
     color: var(--primary);
   }
-  #sc-observatory .ob-foot {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-block-start: 1.5rem;
+  /* the Site Footer: how to get up the hill, when the dome opens, tonight's sky, the club and its legal notes */
+  #sc-observatory .mk-footer {
+    background: none;
+    color: inherit;
+  }
+  #sc-observatory .mk-footer-inner {
+    max-width: none;
+    padding: 2rem 0 0;
     border-block-start: 1px solid var(--border);
+  }
+  #sc-observatory .mk-footer-heading {
+    color: inherit;
+    font:
+      500 0.75rem/1.3 'IBM Plex Mono',
+      monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  #sc-observatory .mk-footer address {
+    font-style: normal;
+    line-height: 1.5;
+  }
+  #sc-observatory .ob-note {
+    margin: 0;
     color: var(--muted-foreground);
     font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  #sc-observatory .ob-hours {
+    display: grid;
+    gap: 0.15rem;
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+  #sc-observatory .ob-hours dt {
+    color: var(--muted-foreground);
+    font:
+      500 0.75rem/1.4 'IBM Plex Mono',
+      monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  #sc-observatory .ob-hours dt:not(:first-child) {
+    margin-block-start: 0.5rem;
+  }
+  #sc-observatory .ob-hours dd {
+    margin: 0;
+  }
+  #sc-observatory .mk-footer-list :is(a, button) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  #sc-observatory .mk-footer-list :is(a, button):is(:hover, :focus-visible) {
+    color: var(--primary);
+  }
+  #sc-observatory .mk-footer-rule {
+    margin: 0;
+    background: var(--border);
+  }
+  #sc-observatory .mk-footer-copy {
+    color: var(--muted-foreground);
+  }
+  /* the dialogs: the booking and the legal notes, on the look's card */
+  #sc-observatory .sc-dialog {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--card-foreground);
+  }
+  #sc-observatory .sc-dialog .dialog-title {
+    font:
+      800 1.35rem/1.15 'Unbounded',
+      sans-serif;
+    letter-spacing: -0.01em;
+  }
+  #sc-observatory .sc-dialog .dialog-description {
+    color: var(--muted-foreground);
+  }
+  #sc-observatory :is(.sc-form, .sc-done) {
+    display: grid;
+    gap: 1rem;
+  }
+  #sc-observatory .sc-row {
+    display: grid;
+    gap: 0.4rem;
+  }
+  #sc-observatory .sc-dialog:not([data-sent]) .sc-done,
+  #sc-observatory .sc-dialog[data-sent] .sc-form {
+    display: none;
+  }
+  #sc-observatory .sc-legal {
+    display: grid;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+  #sc-observatory .sc-legal :is(p, address) {
+    margin: 0;
+    font-style: normal;
+  }
+  #sc-observatory .sc-legal a {
+    color: inherit;
   }
   @media (max-width: 48rem) {
     #sc-observatory :is(.ob-hero, .ob-find) {
       grid-template-columns: 1fr;
+    }
+    #sc-observatory .mk-header-inner {
+      column-gap: 0.75rem;
+    }
+    #sc-observatory .mk-header-name {
+      font-size: 0.8125rem;
+    }
+    #sc-observatory .mk-header-nav {
+      order: 3;
+      width: 100%;
+      margin-inline-start: -0.75rem;
+    }
+    #sc-observatory .mk-header-actions {
+      margin-inline-start: auto;
     }
     #sc-observatory .ob-ticket {
       grid-template-columns: 1fr;
@@ -537,30 +677,42 @@
       data-fps="30"
       aria-hidden="true"
     ></div>
-    <div class="ob-bar">
-      <p class="ob-brand">Hill Observatory</p>
-      <nav aria-label="Site">
-        <a href="#ob-up">Tonight</a>
-        <a href="#ob-night">Public nights</a>
-      </nav>
-      <select class="select" data-size="sm" data-site-look aria-label="Look" style="width: auto">
-        <option value="night">Night sky</option>
-        <option value="red">Red light</option>
-        <option value="day">Day visit</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input type="checkbox" data-site-mode aria-label="Dark mode" />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
-    </div>
+    <header class="mk-header ob-bar">
+      <div class="mk-header-inner">
+        <a class="mk-header-brand" href="#sc-observatory"
+          ><i data-lucide="telescope"></i><span class="mk-header-name">Hill Observatory</span></a
+        >
+        <nav class="mk-header-nav" aria-label="Site">
+          <ul class="nav-menu-list">
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#ob-up">Tonight</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#ob-find">Find it</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#ob-night">Public nights</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#ob-visit">Visit</a></li>
+          </ul>
+        </nav>
+        <div class="mk-header-actions">
+          <select class="select" data-size="sm" data-site-look aria-label="Look" style="width: auto">
+            <option value="night">Night sky</option>
+            <option value="red">Red light</option>
+            <option value="day">Day visit</option>
+          </select>
+          <label class="swap site-mode" data-variant="rotate" data-size="sm">
+            <input type="checkbox" data-site-mode aria-label="Dark mode" />
+            <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+            <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+          </label>
+        </div>
+      </div>
+    </header>
     <div>
       <h1 id="ob-title">Clear skies from nine tonight</h1>
       <p
         >A 60 cm telescope on the hill above town, and an astronomer who will point it at whatever you ask - every
         Friday after dark.</p
       >
-      <a class="btn" data-size="lg" href="#ob-night">Book a public night</a>
+      <button class="btn" data-size="lg" type="button" commandfor="ob-book" command="show-modal"
+        >Book a public night</button
+      >
     </div>
     <aside class="ob-tonight" aria-labelledby="ob-tonight-title">
       <h2 id="ob-tonight-title">Tonight · Fri 14 Nov</h2>
@@ -615,7 +767,7 @@
         </table>
       </div>
     </section>
-    <section class="ob-find" aria-labelledby="ob-find-title">
+    <section id="ob-find" class="ob-find" aria-labelledby="ob-find-title">
       <figure class="ob-chart" style="margin: 0">
         <svg viewBox="0 0 320 180" role="img" aria-label="Cassiopeia: five stars in the shape of a W">
           <polyline
@@ -661,13 +813,148 @@
         ><small>Public night · doors 19:30 · 2 hours</small>Up to 24 visitors, warm clothes, no telescope needed.
         Cancelled if it is cloudy - we email at 17:00.</span
       >
-      <a class="btn" href="#ob-night">€6 · Book</a>
+      <button class="btn" type="button" commandfor="ob-book" command="show-modal">€6 · Book</button>
     </section>
-    <footer class="ob-foot">
-      <span>Hill Observatory · Sternwartenweg 3 · 412 m above sea level</span>
-      <span>Bring a torch with a red filter - white light ruins everyone's night vision.</span>
+    <footer id="ob-visit" class="mk-footer">
+      <div class="mk-footer-inner">
+        <nav class="mk-footer-nav" aria-label="Footer">
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Find the hill</h3>
+            <address>Hill Observatory<br />Sternwartenweg 3<br />412 m above sea level</address>
+            <p class="ob-note">Bus 7 to Sternwarte, then ten minutes uphill on foot.</p>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">When we open</h3>
+            <dl class="ob-hours">
+              <dt>Public nights</dt>
+              <dd>Fridays, doors 19:30</dd>
+              <dt>Sun telescope</dt>
+              <dd>Sundays 14:00 - 16:00</dd>
+              <dt>Cloudy?</dt>
+              <dd>We email at 17:00</dd>
+            </dl>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Tonight</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#ob-up">What is up</a></li>
+              <li><a href="#ob-find">Find it yourself</a></li>
+              <li><a href="#ob-night">The next public night</a></li>
+              <li><button type="button" commandfor="ob-book" command="show-modal">Book a night</button></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">The club</h3>
+            <ul class="mk-footer-list">
+              <li><a href="mailto:night@example.com">night@example.com</a></li>
+              <li><button type="button" commandfor="ob-imprint" command="show-modal">Imprint</button></li>
+              <li><button type="button" commandfor="ob-privacy" command="show-modal">Privacy</button></li>
+            </ul>
+          </div>
+        </nav>
+        <hr class="separator mk-footer-rule" />
+        <div class="mk-footer-bottom">
+          <a class="mk-footer-brand" href="#sc-observatory"
+            ><i data-lucide="telescope"></i><span class="mk-footer-brand-name">Hill Observatory</span></a
+          >
+          <div class="mk-footer-meta">
+            <p class="mk-footer-copy">Bring a torch with a red filter - white light ruins everyone's night vision.</p>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
+  <dialog class="dialog sc-dialog" id="ob-book" aria-labelledby="ob-book-title">
+    <div class="dialog-content">
+      <form class="sc-form" data-sc-form>
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="ob-book-title">Book a public night</h2>
+          <p class="dialog-description"
+            >Two hours at the 60 cm telescope with an astronomer. €6 a person, paid at the door.</p
+          >
+        </div>
+        <div class="sc-row">
+          <label class="label" for="ob-book-night">Which Friday?</label>
+          <select class="select" id="ob-book-night" name="night">
+            <option>Fri 14 Nov - 6 places left</option>
+            <option>Fri 21 Nov - 15 places left</option>
+            <option>Fri 28 Nov - 22 places left</option>
+          </select>
+        </div>
+        <div class="sc-row">
+          <label class="label" for="ob-book-people">How many of you?</label>
+          <input
+            class="input"
+            id="ob-book-people"
+            name="people"
+            type="number"
+            min="1"
+            max="6"
+            value="2"
+            inputmode="numeric"
+            required
+          />
+        </div>
+        <div class="sc-row">
+          <label class="label" for="ob-book-name">Name</label>
+          <input class="input" id="ob-book-name" name="name" autocomplete="name" required />
+        </div>
+        <div class="sc-row">
+          <label class="label" for="ob-book-mail">Email - for the cloud warning</label>
+          <input class="input" id="ob-book-mail" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div class="dialog-footer">
+          <button class="btn" data-variant="outline" type="button" commandfor="ob-book" command="close">Cancel</button>
+          <button class="btn" type="submit">Book my places</button>
+        </div>
+      </form>
+      <div class="sc-done" tabindex="-1">
+        <h2 class="dialog-title">See you on the hill</h2>
+        <p class="dialog-description"
+          >Doors open at 19:30. If the sky closes, we email you at 17:00 and your places move to the next clear Friday.
+          Dress for a cold dome.</p
+        >
+        <div class="dialog-footer">
+          <button class="btn" type="button" commandfor="ob-book" command="close">Close</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog sc-dialog" id="ob-imprint" aria-labelledby="ob-imprint-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="ob-imprint-title">Imprint</h2>
+        <p class="dialog-description">Who runs this site</p>
+      </div>
+      <div class="sc-legal">
+        <address>Hill Observatory, a registered club<br />Sternwartenweg 3<br />412 m above sea level</address>
+        <p>Chair of the board: Dr. Lea Brandt<br />Register of associations: VR 0000</p>
+        <p>Contact: <a href="mailto:night@example.com">night@example.com</a></p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" type="button" commandfor="ob-imprint" command="close">Close</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog sc-dialog" id="ob-privacy" aria-labelledby="ob-privacy-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="ob-privacy-title">Privacy</h2>
+        <p class="dialog-description">What we keep, and why</p>
+      </div>
+      <div class="sc-legal">
+        <p>This site sets no cookies and runs no trackers. The fonts come from Google Fonts.</p>
+        <p
+          >For a booking we keep your name and email until the night is over - to send the cloud warning at 17:00 - and
+          delete them the week after. We never pass them on.</p
+        >
+        <p>Questions or a request to delete: <a href="mailto:privacy@example.com">privacy@example.com</a></p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" type="button" commandfor="ob-privacy" command="close">Close</button>
+      </div>
+    </div>
+  </dialog>
 </div>
 <script type="module">
   // the look: one of the site's designs; a shader reads its colors again on defuss-theme-change
@@ -682,6 +969,20 @@
     });
     new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     syncMode();
+
+    // the booking form: sending shows the confirmation (a demo - nothing leaves the page); closing resets it
+    df$('#sc-observatory [data-sc-form]').each((_i, form) => {
+      const dialog = df$(form).closest('dialog');
+      df$(form).on('submit', (event) => {
+        event.preventDefault();
+        dialog.attr('data-sent', '');
+        dialog.find('.sc-done').get(0).focus();
+      });
+      dialog.on('close', () => {
+        dialog.attr('data-sent', null);
+        form.reset();
+      });
+    });
 
     const root = df$('#sc-observatory').get(0);
     const look = df$('#sc-observatory [data-site-look]');

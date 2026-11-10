@@ -53,8 +53,15 @@ const LIVE_REF =
  * samples keep their dist-relative paths.
  */
 export function mirrorTransform(text: string, version: string): string {
-  return text.replace(LIVE_REF, `$1${cdnBase(version)}/$2/`);
+  return text.replace(LIVE_REF, `$1${cdnBase(version)}/$2/`).replace(LOCAL_GEO_DATA, '');
 }
+
+/**
+ * A full-screen page's Geo Map data tag (scripts/build-docs.ts geoMeta) names this build's data folder, which the
+ * docs tree does not carry: the snapshot drops it and the maps load the release's npm package (geo-map.ts
+ * releaseData - the GitHub route refuses some first fetches).
+ */
+const LOCAL_GEO_DATA = /<meta name="geo-map-data" content="(?:\.\.\/)+components\/[^"]*" \/>\n?/g;
 
 /** GitHub Pages serves a blank page for unknown URLs unless a 404.html exists. */
 const NOT_FOUND_PAGE = '404.html';
@@ -80,5 +87,7 @@ export function unpinnedRefs(html: string, version: string): string[] {
   const out: string[] = [];
   const re = /<(?:a|link|script|img|iframe|source|span)\b[^>]*?(?:href|src|data-spec-href)="(https:\/\/cdn\.jsdelivr\.net\/gh\/kyr0\/defuss-shadcn@([^/"]+)\/dist\/[^"]*)"/g;
   for (const m of html.matchAll(re)) if (m[2] !== `v${version}`) out.push(m[1]);
+  // a local data path the snapshot cannot serve
+  for (const m of html.matchAll(LOCAL_GEO_DATA)) out.push(m[0].trim());
   return out;
 }

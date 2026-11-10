@@ -42,7 +42,7 @@
     --secondary-foreground: var(--foreground);
     --accent: oklch(0.58 0.2 32);
     --accent-foreground: oklch(0.99 0 0);
-    --ring: var(--accent);
+    --ring: var(--md-brand);
     /* one corner for every box in the site - pictures, players, cards, buttons alike */
     --radius: 0.375rem;
     --radius-sm: var(--radius);
@@ -129,22 +129,43 @@
     padding-inline: max(clamp(1rem, 4vw, 2.5rem), calc((100% - 76rem) / 2));
   }
   #site-media .md-bar {
+    border-block-end: 1px solid var(--border);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-media .md-bar .mk-header-inner {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.75rem 1.5rem;
+    max-width: none;
+    min-height: 4.5rem;
+    margin: 0;
+    padding: 0.75rem 0;
+  }
+  #site-media .md-nav {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1.5rem;
-    min-height: 4.5rem;
-    padding-block: 0.75rem;
-    border-block-end: 1px solid var(--border);
+    gap: 0.25rem 1.5rem;
+    margin-inline-end: auto;
+  }
+  #site-media .md-nav a {
+    padding-block: 0.375rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  #site-media .md-nav a:hover,
+  #site-media .md-nav a[aria-current] {
+    color: var(--foreground);
   }
   #site-media .md-brand {
-    margin-inline-end: auto;
     color: var(--foreground);
     text-decoration: none;
     font: 400 1.625rem/1 var(--md-title);
   }
   #site-media .md-brand i {
-    color: var(--accent);
+    color: var(--md-brand);
   }
   #site-media .md-bar-controls {
     display: flex;
@@ -165,7 +186,7 @@
     margin-block-end: 1.5rem;
     padding-block-start: 0.75rem;
     border-block-start: 1px solid var(--foreground);
-    color: var(--accent);
+    color: var(--md-brand);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -197,7 +218,7 @@
     color: var(--muted-foreground);
   }
   #site-media .mk-text-media-eyebrow {
-    color: var(--accent);
+    color: var(--md-brand);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -448,6 +469,190 @@
     background: var(--accent);
     color: var(--accent-foreground);
   }
+  #site-media [hidden] {
+    display: none !important;
+  }
+  /* the playlist: the episode playing shows its bars */
+  #site-media .mk-playlist-item label {
+    cursor: pointer;
+  }
+  /* more stories: three cards, each a page */
+  #site-media .md-stories-title {
+    margin: 0 0 1.75rem;
+    font: 400 clamp(2rem, 4vw, 2.75rem)/1.1 var(--md-title);
+  }
+  #site-media .md-story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: 2rem 1.5rem;
+  }
+  #site-media .md-story {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+  }
+  #site-media .md-story img {
+    width: 100%;
+    aspect-ratio: 10 / 7;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  #site-media :is(.md-story-eyebrow) {
+    margin-block-start: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  #site-media .md-story-title {
+    margin: 0;
+    font: 400 1.5rem/1.2 var(--md-title);
+  }
+  #site-media .md-story-title a {
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  #site-media .md-story-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  #site-media .md-story:hover .md-story-title a {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  #site-media .md-story p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  /* a story's page: a reading column */
+  #site-media > [data-media-view='story'] {
+    padding-block: clamp(2.5rem, 5vw, 4rem) clamp(3.5rem, 7vw, 5.5rem);
+  }
+  #site-media .md-page {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+  #site-media .md-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: fit-content;
+    color: var(--muted-foreground);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  #site-media .md-back:hover {
+    color: var(--foreground);
+  }
+  #site-media .md-back svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  #site-media .md-page-title {
+    margin: 0;
+    font: 400 clamp(2.5rem, 6vw, 4rem)/1.05 var(--md-title);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  #site-media .md-page-lead {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+  #site-media .md-page-photo {
+    margin: 0.5rem 0;
+  }
+  #site-media .md-page-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+  #site-media .md-page-body {
+    display: grid;
+    gap: 1rem;
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+  #site-media .md-page-body p {
+    margin: 0;
+  }
+  #site-media .md-pager {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 1rem;
+    margin-block-start: 2rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--foreground);
+  }
+  #site-media .md-pager a {
+    display: grid;
+    gap: 0.25rem;
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  #site-media .md-pager a + a {
+    text-align: end;
+  }
+  #site-media .md-pager span {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  #site-media .md-pager strong {
+    font: 400 1.375rem/1.2 var(--md-title);
+  }
+  #site-media .md-pager a:hover strong {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  /* the footer: the Site Footer block under a hairline */
+  #site-media .md-footer {
+    border-block-start: 1px solid var(--foreground);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-media .md-footer .mk-footer-inner {
+    max-width: none;
+    margin: 0;
+    padding: clamp(3rem, 6vw, 4.5rem) 0 2rem;
+  }
+  @container (width > 48rem) {
+    #site-media .md-footer .mk-footer-top {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+      gap: 4rem;
+    }
+  }
+  #site-media .md-footer .mk-footer-brand-name {
+    color: var(--foreground);
+    font: 400 1.75rem/1 var(--md-title);
+  }
+  #site-media .md-footer .mk-footer-brand-name i {
+    color: var(--md-brand);
+  }
+  #site-media .md-footer .mk-footer-heading {
+    color: var(--foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  #site-media .md-footer :is(.mk-footer-list a, .mk-footer-social a) {
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+  #site-media .md-footer :is(.mk-footer-list a, .mk-footer-social a):hover {
+    color: var(--foreground);
+  }
   /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
   :root:not(.dark) #site-media[data-look='gallery'] {
     --accent: oklch(0.945 0.045 32);
@@ -508,55 +713,92 @@
     --popover-foreground: oklch(0.94 0 0);
   }
   /* -- modes: end -- */
+  /* the brand's ink for text - eyebrows, section numbers, the wordmark's mark, the focus ring (--accent is the hover
+     surface, a tint too faint for text): vermilion, amber or sepia, 4.5:1 on each look's ground in both modes */
+  :root:not(.dark) #site-media {
+    --md-brand: oklch(0.53 0.2 32);
+  }
+  .dark #site-media {
+    --md-brand: oklch(0.74 0.15 35);
+  }
+  :root:not(.dark) #site-media[data-look='cinema'] {
+    --md-brand: oklch(0.5 0.11 75);
+  }
+  .dark #site-media[data-look='cinema'] {
+    --md-brand: oklch(0.82 0.13 80);
+  }
+  :root:not(.dark) #site-media[data-look='archive'] {
+    --md-brand: oklch(0.47 0.12 40);
+  }
+  .dark #site-media[data-look='archive'] {
+    --md-brand: oklch(0.75 0.1 45);
+  }
 </style>
 <div id="site-media" data-look="gallery" data-i18n-component>
-  <div class="md-bar">
-    <a class="md-brand" href="#/">Acme <i>Stories</i></a>
-    <div class="md-bar-controls">
-      <select
-        class="select"
-        data-size="sm"
-        data-site-look
-        aria-label="Look"
-        data-i18n-aria-label-en="Look"
-        data-i18n-aria-label-de="Stil"
-        style="width: auto"
+  <header class="mk-header md-bar">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand md-brand" href="#/" data-router-link>Acme <i>Stories</i></a>
+      <nav
+        class="mk-header-nav md-nav"
+        data-media-nav
+        aria-label="Sections"
+        data-i18n-aria-label-en="Sections"
+        data-i18n-aria-label-de="Bereiche"
       >
-        <option value="gallery" data-i18n-target="look-gallery">Gallery</option>
-        <option value="cinema" data-i18n-target="look-cinema">Cinema</option>
-        <option value="archive" data-i18n-target="look-archive">Archive</option>
-      </select>
-      <select
-        class="select"
-        data-size="sm"
-        data-app-locale
-        aria-label="Language"
-        data-i18n-aria-label-en="Language"
-        data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input
-          type="checkbox"
-          data-site-mode
-          aria-label="Dark mode"
-          data-i18n-aria-label-en="Dark mode"
-          data-i18n-aria-label-de="Dunkler Modus"
-        />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
+        <a href="#md-photos" data-i18n-target="nav-photos">Photos</a>
+        <a href="#md-film" data-i18n-target="nav-film">Film</a>
+        <a href="#md-listen">Podcast</a>
+        <a href="#md-stories" data-i18n-target="nav-stories">Stories</a>
+      </nav>
+      <div class="mk-header-actions md-bar-controls">
+        <select
+          class="select"
+          data-size="sm"
+          data-site-look
+          aria-label="Look"
+          data-i18n-aria-label-en="Look"
+          data-i18n-aria-label-de="Stil"
+          style="width: auto"
+        >
+          <option value="gallery" data-i18n-target="look-gallery">Gallery</option>
+          <option value="cinema" data-i18n-target="look-cinema">Cinema</option>
+          <option value="archive" data-i18n-target="look-archive">Archive</option>
+        </select>
+        <div
+          class="language-switcher"
+          data-app-locale
+          role="group"
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-display="icon"
+          data-flag-shape="squircle"
+          data-flag-style="glossy"
+          data-align="end"
+        ></div>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+      </div>
     </div>
-  </div>
-  <section class="mk-text-media md-hero" aria-labelledby="tm-1">
+  </header>
+  <section class="mk-text-media md-hero" aria-labelledby="tm-1" data-media-view="home">
     <div class="mk-text-media-layout">
       <div class="mk-text-media-copy">
         <span class="mk-text-media-eyebrow" data-i18n-target="eyebrow">Offline first</span>
         <h2 class="mk-text-media-title" id="tm-1" data-i18n-target="tm-title">Your work travels with you</h2>
-        <p class="mk-text-media-text"
+        <p class="mk-text-media-text" data-i18n-target="tm-text"
           >Every change is saved on your device first and synced when you are back online - on a plane, in a tunnel, at
           the cabin.</p
         >
@@ -566,10 +808,10 @@
           ><li><i data-lucide="check"></i><span data-i18n-target="tm-devices">Works on every device</span></li></ul
         >
         <div class="md-cta">
-          <a class="btn" data-size="lg" href="#"
+          <a class="btn" data-size="lg" href="#/stories/sync" data-router-link
             ><span data-i18n-target="tm-link">How sync works</span> <i data-lucide="arrow-right"></i
           ></a>
-          <a class="btn" data-variant="outline" data-size="lg" href="#vp-title"
+          <a class="btn" data-variant="outline" data-size="lg" href="#md-film"
             ><i data-lucide="play"></i> <span data-i18n-target="tm-watch">Watch the film</span></a
           >
         </div>
@@ -583,7 +825,7 @@
       >
     </div>
   </section>
-  <section class="mk-media-gallery md-section" aria-labelledby="mg-title">
+  <section class="mk-media-gallery md-section" id="md-photos" aria-labelledby="mg-title" data-media-view="home">
     <div
       class="shader md-grain md-look-only"
       data-for="cinema"
@@ -722,42 +964,42 @@
         >
           <li
             ><img src="https://picsum.photos/id/211/1600/1200" alt="Boats moored in a harbour" /><p
-              >1 / 8 · Boats moored in a harbour</p
+              >1 / 8 · <span data-i18n-target="cap-1">Boats moored in a harbour</span></p
             ></li
           >
           <li
             ><img src="https://picsum.photos/id/240/1200/1600" alt="A person on white stone stairs" /><p
-              >2 / 8 · A person on white stone stairs</p
+              >2 / 8 · <span data-i18n-target="cap-2">A person on white stone stairs</span></p
             ></li
           >
           <li
             ><img src="https://picsum.photos/id/164/1600/1000" alt="Houses and boats along a canal" /><p
-              >3 / 8 · Houses and boats along a canal</p
+              >3 / 8 · <span data-i18n-target="cap-3">Houses and boats along a canal</span></p
             ></li
           >
           <li
             ><img src="https://picsum.photos/id/210/1200/1200" alt="A red brick wall" /><p
-              >4 / 8 · A red brick wall</p
+              >4 / 8 · <span data-i18n-target="cap-4">A red brick wall</span></p
             ></li
           >
           <li
             ><img src="https://picsum.photos/id/292/1600/1200" alt="Vegetables on a cutting board" /><p
-              >5 / 8 · Vegetables on a cutting board</p
+              >5 / 8 · <span data-i18n-target="cap-5">Vegetables on a cutting board</span></p
             ></li
           >
           <li
             ><img src="https://picsum.photos/id/111/1200/1800" alt="A vintage car parked in the street" /><p
-              >6 / 8 · A vintage car parked in the street</p
+              >6 / 8 · <span data-i18n-target="cap-6">A vintage car parked in the street</span></p
             ></li
           >
           <li
             ><img src="https://picsum.photos/id/14/1600/1200" alt="A rocky shore and the open sea" /><p
-              >7 / 8 · A rocky shore and the open sea</p
+              >7 / 8 · <span data-i18n-target="cap-7">A rocky shore and the open sea</span></p
             ></li
           >
           <li
             ><img src="https://picsum.photos/id/288/1400/1000" alt="The rooftops of an old town" /><p
-              >8 / 8 · The rooftops of an old town</p
+              >8 / 8 · <span data-i18n-target="cap-8">The rooftops of an old town</span></p
             ></li
           >
         </ul>
@@ -773,7 +1015,7 @@
       </div>
     </dialog>
   </section>
-  <section class="md-section md-film" aria-labelledby="vp-title">
+  <section class="md-section md-film" id="md-film" aria-labelledby="vp-title" data-media-view="home">
     <figure class="mk-video-player" data-variant="transcript">
       <div class="mk-video-player-layout">
         <div class="mk-video-player-frame">
@@ -786,9 +1028,15 @@
         </div>
         <section class="mk-video-player-transcript" aria-labelledby="vp-tr" tabindex="0">
           <h3 id="vp-tr" data-i18n-target="transcript">Transcript</h3>
-          <p><time datetime="PT0S">0:00</time>Plan the week on one calm board.</p>
-          <p><time datetime="PT2S">0:02</time>Drafts, docs and tasks stay linked.</p>
-          <p><time datetime="PT4S">0:04</time>Ship it - and everyone sees what changed.</p>
+          <p><time datetime="PT0S">0:00</time><span data-i18n-target="tr-1">Plan the week on one calm board.</span></p>
+          <p
+            ><time datetime="PT2S">0:02</time
+            ><span data-i18n-target="tr-2">Drafts, docs and tasks stay linked.</span></p
+          >
+          <p
+            ><time datetime="PT4S">0:04</time
+            ><span data-i18n-target="tr-3">Ship it - and everyone sees what changed.</span></p
+          >
         </section>
       </div>
       <figcaption class="mk-video-player-caption"
@@ -796,7 +1044,7 @@
       >
     </figure>
   </section>
-  <div class="md-section md-listen">
+  <div class="md-section md-listen" id="md-listen" data-media-view="home">
     <article class="mk-audio-player" data-variant="podcast" aria-labelledby="ap-3">
       <img
         class="mk-audio-player-cover"
@@ -804,24 +1052,31 @@
         alt="Cover of The Calm Letter podcast"
       />
       <div class="mk-audio-player-body">
-        <span class="mk-audio-player-show" data-i18n-target="ap-show">The Calm Letter · Episode 41</span>
-        <h3 class="mk-audio-player-title" id="ap-3">Writing decisions down</h3>
+        <span class="mk-audio-player-show"
+          ><span data-i18n-target="ap-show">The Calm Letter · Episode</span>
+          <span data-episode-field="n">42</span></span
+        >
+        <h3 class="mk-audio-player-title" id="ap-3" data-episode-field="title">Why we never ship on Fridays</h3>
         <span class="mk-audio-player-meta"
-          >With Hannah Lee · 14 sec · <time datetime="2026-09-23">23 Sep 2026</time></span
+          ><span data-episode-field="guest">With Alex Moreau and Sophie Tan</span> ·
+          <time datetime="2026-09-30" data-episode-date>30 Sep 2026</time></span
         >
         <div class="mk-audio-player-controls">
-          <audio controls preload="none" src="../videos/demo-audio.mp3"></audio>
+          <audio controls preload="none" src="../videos/demo-audio.mp3" data-episode-audio></audio>
           <a class="btn" data-variant="outline" data-size="sm" href="../videos/demo-audio.mp3" download
             ><i data-lucide="download"></i> MP3</a
           >
         </div>
         <details class="mk-audio-player-notes">
           <summary data-i18n-target="ap-notes">Show notes</summary>
-          <p>Hannah explains how her team replaced status meetings with written decisions - and what they kept.</p>
-          <ul
+          <p data-episode-field="notes"
+            >Alex and Sophie explain why Acme ships on Thursdays, what happens when a release goes wrong, and how a
+            quiet weekend became a rule.</p
+          >
+          <ul data-episode-chapters
             ><li>0:00 Intro</li
-            ><li>0:05 The decision log</li
-            ><li>0:10 What we kept</li></ul
+            ><li>0:04 The Thursday rule</li
+            ><li>0:09 When it goes wrong</li></ul
           >
         </details>
       </div>
@@ -843,7 +1098,7 @@
           <span class="mk-playlist-item-text"
             ><strong>Why we never ship on Fridays</strong
             ><small>The Calm Letter · <time datetime="2026-09-30">2026-09-30</time></small
-            ><span class="mk-playlist-item-desc"
+            ><span class="mk-playlist-item-desc" data-i18n-target="ep-d42"
               >Alex and Sophie on release rhythms, weekends and why boring deploys are the best deploys.</span
             ></span
           >
@@ -860,16 +1115,50 @@
           <span class="mk-playlist-item-text"
             ><strong>Writing decisions down</strong
             ><small>The Calm Letter · <time datetime="2026-09-23">2026-09-23</time></small
-            ><span class="mk-playlist-item-desc"
+            ><span class="mk-playlist-item-desc" data-i18n-target="ep-d41"
               >Hannah explains how her team replaced status meetings with a written decision log.</span
             ></span
           >
           <span class="mk-playlist-item-duration">28 min</span>
         </label>
       </li>
+      <li class="mk-playlist-item" data-variant="episode">
+        <label>
+          <input type="radio" name="episode" value="40" />
+          <span class="mk-playlist-item-index" aria-hidden="true"
+            ><span>40</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i
+          ></span>
+          <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/ep-40/160/160" alt="" />
+          <span class="mk-playlist-item-text"
+            ><strong>Support on Fridays</strong
+            ><small>The Calm Letter · <time datetime="2026-09-16">2026-09-16</time></small
+            ><span class="mk-playlist-item-desc" data-i18n-target="ep-d40"
+              >Why the CEO still answers support tickets every Friday - and what it changed in the product.</span
+            ></span
+          >
+          <span class="mk-playlist-item-duration">25 min</span>
+        </label>
+      </li>
+      <li class="mk-playlist-item" data-variant="episode">
+        <label>
+          <input type="radio" name="episode" value="39" />
+          <span class="mk-playlist-item-index" aria-hidden="true"
+            ><span>39</span><i class="mk-playlist-item-bars"><b></b><b></b><b></b></i
+          ></span>
+          <img class="mk-playlist-item-cover" src="https://picsum.photos/seed/ep-39/160/160" alt="" />
+          <span class="mk-playlist-item-text"
+            ><strong>Designing for one hand</strong
+            ><small>The Calm Letter · <time datetime="2026-09-09">2026-09-09</time></small
+            ><span class="mk-playlist-item-desc" data-i18n-target="ep-d39"
+              >Priya on phone apps you can use while holding a coffee - reach, gestures and big targets.</span
+            ></span
+          >
+          <span class="mk-playlist-item-duration">30 min</span>
+        </label>
+      </li>
     </ol>
   </div>
-  <div class="md-section md-pair">
+  <div class="md-section md-pair" data-media-view="home">
     <figure class="mk-before-after" data-variant="toggle">
       <div class="mk-before-after-stage">
         <img
@@ -884,7 +1173,9 @@
         />
       </div>
       <div class="switch-item mk-before-after-toggle"
-        ><input class="switch" type="checkbox" role="switch" id="ba-toggle" /><label for="ba-toggle"
+        ><input class="switch" type="checkbox" role="switch" id="ba-toggle" /><label
+          for="ba-toggle"
+          data-i18n-target="ba-after"
           >Show after</label
         ></div
       >
@@ -894,7 +1185,7 @@
         <header class="mk-social-post-head">
           <span class="avatar"><img class="avatar-image" src="../images/mk-portrait2.png" alt="" /></span>
           <div class="mk-social-post-who"
-            ><a class="mk-social-post-name" href="#"
+            ><a class="mk-social-post-name" href="https://x.com/" target="_blank" rel="noopener"
               >Hannah Lee<svg
                 class="mk-social-post-verified"
                 viewBox="0 0 24 24"
@@ -925,10 +1216,14 @@
           ></span>
         </header>
         <div class="mk-social-post-text"
-          ><p>Acme is the first tool my designers asked to keep after the trial. That never happens.</p></div
+          ><p data-i18n-target="post-1"
+            >Acme is the first tool my designers asked to keep after the trial. That never happens.</p
+          ></div
         >
         <footer class="mk-social-post-foot">
-          <a class="mk-social-post-time" href="#"><time datetime="2026-09-12">Sep 12, 2026</time></a>
+          <a class="mk-social-post-time" href="https://x.com/" target="_blank" rel="noopener"
+            ><time datetime="2026-09-12" data-i18n-target="post-1-date">Sep 12, 2026</time></a
+          >
           <ul class="mk-social-post-stats"
             ><li><i data-lucide="heart"></i>320<span class="sr-only"> likes</span></li></ul
           >
@@ -938,7 +1233,7 @@
         <header class="mk-social-post-head">
           <span class="avatar"><img class="avatar-image" src="../images/mk-portrait.png" alt="" /></span>
           <div class="mk-social-post-who"
-            ><a class="mk-social-post-name" href="#"
+            ><a class="mk-social-post-name" href="https://x.com/" target="_blank" rel="noopener"
               >Marco Rossi<svg
                 class="mk-social-post-verified"
                 viewBox="0 0 24 24"
@@ -969,10 +1264,14 @@
           ></span>
         </header>
         <div class="mk-social-post-text"
-          ><p>Our weekly sync went from 90 minutes to 20. I have my Thursday afternoons back.</p></div
+          ><p data-i18n-target="post-2"
+            >Our weekly sync went from 90 minutes to 20. I have my Thursday afternoons back.</p
+          ></div
         >
         <footer class="mk-social-post-foot">
-          <a class="mk-social-post-time" href="#"><time datetime="2026-08-30">Aug 30, 2026</time></a>
+          <a class="mk-social-post-time" href="https://x.com/" target="_blank" rel="noopener"
+            ><time datetime="2026-08-30" data-i18n-target="post-2-date">Aug 30, 2026</time></a
+          >
           <ul class="mk-social-post-stats"
             ><li><i data-lucide="heart"></i>188<span class="sr-only"> likes</span></li></ul
           >
@@ -980,6 +1279,320 @@
       </article>
     </div>
   </div>
+  <!-- more stories: each opens its page -->
+  <section class="md-section md-stories" id="md-stories" aria-labelledby="md-stories-title" data-media-view="home">
+    <h2 class="md-stories-title" id="md-stories-title" data-i18n-target="st-title">More stories</h2>
+    <div class="md-story-grid">
+      <article class="md-story">
+        <img
+          src="https://picsum.photos/id/48/800/560"
+          alt="A laptop on a café table"
+          data-i18n-alt-en="A laptop on a café table"
+          data-i18n-alt-de="Ein Laptop auf einem Cafétisch"
+        />
+        <span class="md-story-eyebrow" data-i18n-target="st-sync-eyebrow">Offline first</span>
+        <h3 class="md-story-title"
+          ><a href="#/stories/sync" data-router-link data-i18n-target="st-sync-title">How sync works</a></h3
+        >
+        <p data-i18n-target="st-sync-text"
+          >Every change is saved on your device first. Here is what happens next - in plain words.</p
+        >
+      </article>
+      <article class="md-story">
+        <img
+          src="https://picsum.photos/id/288/800/560"
+          alt="The rooftops of an old town"
+          data-i18n-alt-en="The rooftops of an old town"
+          data-i18n-alt-de="Die Dächer einer Altstadt"
+        />
+        <span class="md-story-eyebrow" data-i18n-target="st-lisbon-eyebrow">Photo walk</span>
+        <h3 class="md-story-title"
+          ><a href="#/stories/lisbon" data-router-link data-i18n-target="st-lisbon-title"
+            >Lisbon in eight pictures</a
+          ></h3
+        >
+        <p data-i18n-target="st-lisbon-text"
+          >An autumn morning from the harbour to the rooftops - the walk behind our gallery.</p
+        >
+      </article>
+      <article class="md-story">
+        <img
+          src="https://picsum.photos/id/39/800/560"
+          alt="A record turning on a turntable"
+          data-i18n-alt-en="A record turning on a turntable"
+          data-i18n-alt-de="Eine Schallplatte auf einem Plattenspieler"
+        />
+        <span class="md-story-eyebrow">Podcast</span>
+        <h3 class="md-story-title"
+          ><a href="#/stories/letter" data-router-link data-i18n-target="st-letter-title">Behind The Calm Letter</a></h3
+        >
+        <p data-i18n-target="st-letter-text"
+          >How a weekly email became a podcast - recorded in one take, every Tuesday.</p
+        >
+      </article>
+    </div>
+  </section>
+  <!-- a story: its page, filled from the data block -->
+  <div data-media-view="story" hidden>
+    <article class="md-page" aria-labelledby="sp-title">
+      <a class="md-back" href="#/" data-router-link
+        ><i data-lucide="arrow-left"></i> <span data-i18n-target="sp-back">All stories</span></a
+      >
+      <span class="md-story-eyebrow" data-story-field="eyebrow"></span>
+      <h1 class="md-page-title" id="sp-title" data-story-field="title"></h1>
+      <p class="md-page-lead" data-story-field="lead"></p>
+      <figure class="md-page-photo"><img src="https://picsum.photos/id/48/1600/800" alt="" data-story-photo /></figure>
+      <div class="md-page-body" data-story-body></div>
+      <p
+        ><a class="btn" data-variant="outline" href="#md-film" data-story-link
+          ><span data-story-field="link"></span> <i data-lucide="arrow-right"></i></a
+      ></p>
+      <nav
+        class="md-pager"
+        aria-label="More stories"
+        data-i18n-aria-label-en="More stories"
+        data-i18n-aria-label-de="Weitere Geschichten"
+      >
+        <a href="#/stories/letter" data-router-link data-story-pager="prev"
+          ><span data-i18n-target="sp-prev">Previous story</span><strong data-pager-title></strong
+        ></a>
+        <a href="#/stories/lisbon" data-router-link data-story-pager="next"
+          ><span data-i18n-target="sp-next">Next story</span><strong data-pager-title></strong
+        ></a>
+      </nav>
+    </article>
+  </div>
+  <!-- the footer: the Site Footer block -->
+  <footer class="mk-footer md-footer">
+    <div class="mk-footer-inner">
+      <div class="mk-footer-top">
+        <div class="mk-footer-about">
+          <a class="mk-footer-brand md-brand" href="#/" data-router-link
+            ><span class="mk-footer-brand-name">Acme <i>Stories</i></span></a
+          >
+          <p data-i18n-target="ft-line"
+            >Photos, films and a podcast from the people who build Acme - in Lisbon and on the road.</p
+          >
+          <div class="mk-footer-social">
+            <a
+              href="https://www.youtube.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme Stories on YouTube"
+              data-i18n-aria-label-en="Acme Stories on YouTube"
+              data-i18n-aria-label-de="Acme Stories auf YouTube"
+              ><i data-lucide="circle-play"></i
+            ></a>
+            <a
+              href="https://www.instagram.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme Stories on Instagram"
+              data-i18n-aria-label-en="Acme Stories on Instagram"
+              data-i18n-aria-label-de="Acme Stories auf Instagram"
+              ><i data-lucide="camera"></i
+            ></a>
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme Stories on X"
+              data-i18n-aria-label-en="Acme Stories on X"
+              data-i18n-aria-label-de="Acme Stories auf X"
+              ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
+                /></svg
+            ></a>
+          </div>
+        </div>
+        <nav
+          class="mk-footer-nav"
+          aria-label="Footer"
+          data-i18n-aria-label-en="Footer"
+          data-i18n-aria-label-de="Fußzeile"
+        >
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-watch">Watch and listen</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#md-photos" data-i18n-target="ft-photos">Photos</a></li>
+              <li><a href="#/photos/1" data-router-link data-i18n-target="ft-slides">Slideshow</a></li>
+              <li><a href="#md-film" data-i18n-target="ft-film">Film</a></li>
+              <li><a href="#md-listen">Podcast</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-stories">Stories</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/stories/sync" data-router-link data-i18n-target="ft-s1">How sync works</a></li>
+              <li><a href="#/stories/lisbon" data-router-link data-i18n-target="ft-s2">Lisbon in eight pictures</a></li>
+              <li><a href="#/stories/letter" data-router-link data-i18n-target="ft-s3">Behind The Calm Letter</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-contact">Contact</h3>
+            <ul class="mk-footer-list">
+              <li><a href="mailto:stories@acme.example">stories@acme.example</a></li>
+              <li><a href="mailto:podcast@acme.example">podcast@acme.example</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <hr class="separator mk-footer-rule" />
+      <div class="mk-footer-bottom">
+        <p class="mk-footer-copy" data-i18n-target="ft-copy">© 2026 Acme, Lda. · Photos and films by the Acme team.</p>
+      </div>
+    </div>
+  </footer>
+  <!-- the pages the routes name, in English and German -->
+  <script type="application/json" id="media-data">
+    {
+      "episodes": {
+        "39": {
+          "title": "Designing for one hand",
+          "date": "2026-09-09",
+          "en": {
+            "guest": "With Priya Natarajan",
+            "notes": "Priya walks through the redesign of Acme's phone app for one-handed use, with the measurements behind every change.",
+            "chapters": ["0:00 Intro", "0:05 The thumb zone", "0:10 Big targets"]
+          },
+          "de": {
+            "guest": "Mit Priya Natarajan",
+            "notes": "Priya zeigt die Neugestaltung der Acme-App für die Bedienung mit einer Hand - mit den Messungen hinter jeder Änderung.",
+            "chapters": ["0:00 Einstieg", "0:05 Die Daumenzone", "0:10 Große Ziele"]
+          }
+        },
+        "40": {
+          "title": "Support on Fridays",
+          "date": "2026-09-16",
+          "en": {
+            "guest": "With Alex Moreau",
+            "notes": "Alex on a habit he kept from the first year: one day a week in the support inbox, and the three features it led to.",
+            "chapters": ["0:00 Intro", "0:04 The Friday inbox", "0:09 Three features"]
+          },
+          "de": {
+            "guest": "Mit Alex Moreau",
+            "notes": "Alex über eine Gewohnheit aus dem ersten Jahr: ein Tag pro Woche im Support-Postfach - und die drei Funktionen, die daraus entstanden.",
+            "chapters": ["0:00 Einstieg", "0:04 Das Freitagspostfach", "0:09 Drei Funktionen"]
+          }
+        },
+        "41": {
+          "title": "Writing decisions down",
+          "date": "2026-09-23",
+          "en": {
+            "guest": "With Hannah Lee",
+            "notes": "Hannah explains how her team replaced status meetings with written decisions - and what they kept.",
+            "chapters": ["0:00 Intro", "0:05 The decision log", "0:10 What we kept"]
+          },
+          "de": {
+            "guest": "Mit Hannah Lee",
+            "notes": "Hannah erklärt, wie ihr Team Status-Meetings durch schriftliche Entscheidungen ersetzt hat - und was geblieben ist.",
+            "chapters": ["0:00 Einstieg", "0:05 Das Entscheidungslog", "0:10 Was geblieben ist"]
+          }
+        },
+        "42": {
+          "title": "Why we never ship on Fridays",
+          "date": "2026-09-30",
+          "en": {
+            "guest": "With Alex Moreau and Sophie Tan",
+            "notes": "Alex and Sophie explain why Acme ships on Thursdays, what happens when a release goes wrong, and how a quiet weekend became a rule.",
+            "chapters": ["0:00 Intro", "0:04 The Thursday rule", "0:09 When it goes wrong"]
+          },
+          "de": {
+            "guest": "Mit Alex Moreau und Sophie Tan",
+            "notes": "Alex und Sophie erklären, warum Acme donnerstags ausliefert, was passiert, wenn ein Release schiefgeht, und wie aus einem ruhigen Wochenende eine Regel wurde.",
+            "chapters": ["0:00 Einstieg", "0:04 Die Donnerstagsregel", "0:09 Wenn es schiefgeht"]
+          }
+        }
+      },
+      "stories": {
+        "sync": {
+          "photo": 48,
+          "href": "#md-film",
+          "en": {
+            "eyebrow": "Offline first",
+            "title": "How sync works",
+            "lead": "Every change is saved on your device first. Here is what happens next - in plain words.",
+            "body": [
+              "When you type, Acme writes the change to your device before it does anything else. There is no spinner and no waiting for a server: the edit is yours the moment you make it.",
+              "When a connection comes back, your device and our servers compare notes. Each change carries who made it and when, so two edits to the same paragraph merge instead of overwriting each other.",
+              "If two people change the very same word, you see both versions side by side and pick one. In the last year that happened in fewer than one in ten thousand edits."
+            ],
+            "link": "Watch the film",
+            "alt": "A laptop on a café table"
+          },
+          "de": {
+            "eyebrow": "Offline zuerst",
+            "title": "So funktioniert der Sync",
+            "lead": "Jede Änderung landet zuerst auf deinem Gerät. Was danach passiert - in einfachen Worten.",
+            "body": [
+              "Wenn du tippst, schreibt Acme die Änderung zuerst auf dein Gerät. Kein Ladekreis, kein Warten auf einen Server: Die Änderung gehört dir, sobald du sie machst.",
+              "Sobald wieder eine Verbindung da ist, gleichen dein Gerät und unsere Server ihre Notizen ab. Jede Änderung trägt mit, wer sie wann gemacht hat - zwei Änderungen am selben Absatz werden zusammengeführt, statt sich zu überschreiben.",
+              "Ändern zwei Menschen genau dasselbe Wort, siehst du beide Fassungen nebeneinander und wählst eine. Im letzten Jahr kam das bei weniger als einer von zehntausend Änderungen vor."
+            ],
+            "link": "Den Film ansehen",
+            "alt": "Ein Laptop auf einem Cafétisch"
+          }
+        },
+        "lisbon": {
+          "photo": 288,
+          "href": "#/photos/1",
+          "en": {
+            "eyebrow": "Photo walk",
+            "title": "Lisbon in eight pictures",
+            "lead": "An autumn morning from the harbour to the rooftops - the walk behind our gallery.",
+            "body": [
+              "We started at the harbour before seven, when the boats were still tied up and the light came in low over the river.",
+              "From there the walk climbed through the old town: white stairs, a canal of moored boats, a red wall that turned orange as the sun rose.",
+              "By noon we were on the rooftops. All eight photos are in the gallery - open the slideshow and step through them in the order we took them."
+            ],
+            "link": "Open the slideshow",
+            "alt": "The rooftops of an old town"
+          },
+          "de": {
+            "eyebrow": "Fotospaziergang",
+            "title": "Lissabon in acht Bildern",
+            "lead": "Ein Herbstmorgen vom Hafen bis über die Dächer - der Spaziergang hinter unserer Galerie.",
+            "body": [
+              "Wir fingen vor sieben am Hafen an, als die Boote noch vertäut waren und das Licht flach über den Fluss kam.",
+              "Von dort stieg der Weg durch die Altstadt: weiße Treppen, ein Kanal voller Boote, eine rote Mauer, die mit der Sonne orange wurde.",
+              "Mittags waren wir über den Dächern. Alle acht Fotos sind in der Galerie - öffne die Diashow und geh sie in der Reihenfolge durch, in der wir sie aufgenommen haben."
+            ],
+            "link": "Diashow öffnen",
+            "alt": "Die Dächer einer Altstadt"
+          }
+        },
+        "letter": {
+          "photo": 39,
+          "href": "#md-listen",
+          "en": {
+            "eyebrow": "Podcast",
+            "title": "Behind The Calm Letter",
+            "lead": "How a weekly email became a podcast - recorded in one take, every Tuesday.",
+            "body": [
+              "The Calm Letter started as a weekly email from Alex to every customer. Two years ago people began to ask for an audio version they could hear on the way to work.",
+              "Each episode is recorded on Tuesday in one take, edited only for coughs, and published the same evening. Guests are colleagues and customers - never sponsors.",
+              "Every episode has show notes with chapters, so you can jump to the part you need."
+            ],
+            "link": "Listen to the latest episode",
+            "alt": "A record turning on a turntable"
+          },
+          "de": {
+            "eyebrow": "Podcast",
+            "title": "Hinter The Calm Letter",
+            "lead": "Wie aus einer wöchentlichen E-Mail ein Podcast wurde - jeden Dienstag in einem Take aufgenommen.",
+            "body": [
+              "The Calm Letter begann als wöchentliche E-Mail von Alex an alle Kunden. Vor zwei Jahren fragten die ersten nach einer Audiofassung für den Weg zur Arbeit.",
+              "Jede Folge wird dienstags in einem Take aufgenommen, nur um Huster gekürzt und noch am selben Abend veröffentlicht. Zu Gast sind Kolleginnen, Kollegen und Kunden - nie Sponsoren.",
+              "Zu jeder Folge gibt es Shownotes mit Kapiteln, damit du direkt zu dem Teil springen kannst, den du brauchst."
+            ],
+            "link": "Die neueste Folge hören",
+            "alt": "Eine Schallplatte auf einem Plattenspieler"
+          }
+        }
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
   <template data-i18n-for="stamp" data-i18n-locale="en">works offline · 2026</template>
   <template data-i18n-for="stamp" data-i18n-locale="de">funktioniert offline · 2026</template>
@@ -1037,10 +1650,152 @@
   <template data-i18n-for="transcript" data-i18n-locale="de">Transkript</template>
   <template data-i18n-for="vp-caption" data-i18n-locale="en">Acme in 60 seconds</template>
   <template data-i18n-for="vp-caption" data-i18n-locale="de">Acme in 60 Sekunden</template>
-  <template data-i18n-for="ap-show" data-i18n-locale="en">The Calm Letter · Episode 41</template>
-  <template data-i18n-for="ap-show" data-i18n-locale="de">The Calm Letter · Folge 41</template>
+  <template data-i18n-for="ap-show" data-i18n-locale="en">The Calm Letter · Episode</template>
+  <template data-i18n-for="ap-show" data-i18n-locale="de">The Calm Letter · Folge</template>
   <template data-i18n-for="ap-notes" data-i18n-locale="en">Show notes</template>
   <template data-i18n-for="ap-notes" data-i18n-locale="de">Shownotes</template>
+  <template data-i18n-for="nav-photos" data-i18n-locale="en">Photos</template>
+  <template data-i18n-for="nav-photos" data-i18n-locale="de">Fotos</template>
+  <template data-i18n-for="nav-film" data-i18n-locale="en">Film</template>
+  <template data-i18n-for="nav-film" data-i18n-locale="de">Film</template>
+  <template data-i18n-for="nav-stories" data-i18n-locale="en">Stories</template>
+  <template data-i18n-for="nav-stories" data-i18n-locale="de">Geschichten</template>
+  <template data-i18n-for="tm-text" data-i18n-locale="en"
+    >Every change is saved on your device first and synced when you are back online - on a plane, in a tunnel, at the
+    cabin.</template
+  >
+  <template data-i18n-for="tm-text" data-i18n-locale="de"
+    >Jede Änderung wird zuerst auf deinem Gerät gespeichert und synchronisiert, sobald du wieder online bist - im
+    Flugzeug, im Tunnel, in der Hütte.</template
+  >
+  <template data-i18n-for="tr-1" data-i18n-locale="en">Plan the week on one calm board.</template>
+  <template data-i18n-for="tr-1" data-i18n-locale="de">Plane die Woche auf einem ruhigen Board.</template>
+  <template data-i18n-for="tr-2" data-i18n-locale="en">Drafts, docs and tasks stay linked.</template>
+  <template data-i18n-for="tr-2" data-i18n-locale="de">Entwürfe, Dokumente und Aufgaben bleiben verknüpft.</template>
+  <template data-i18n-for="tr-3" data-i18n-locale="en">Ship it - and everyone sees what changed.</template>
+  <template data-i18n-for="tr-3" data-i18n-locale="de">Ausliefern - und alle sehen, was sich geändert hat.</template>
+  <template data-i18n-for="ep-d42" data-i18n-locale="en"
+    >Alex and Sophie on release rhythms, weekends and why boring deploys are the best deploys.</template
+  >
+  <template data-i18n-for="ep-d42" data-i18n-locale="de"
+    >Alex und Sophie über Release-Rhythmen, Wochenenden und warum langweilige Deploys die besten sind.</template
+  >
+  <template data-i18n-for="ep-d41" data-i18n-locale="en"
+    >Hannah explains how her team replaced status meetings with a written decision log.</template
+  >
+  <template data-i18n-for="ep-d41" data-i18n-locale="de"
+    >Hannah erklärt, wie ihr Team Status-Meetings durch ein schriftliches Entscheidungslog ersetzt hat.</template
+  >
+  <template data-i18n-for="ep-d40" data-i18n-locale="en"
+    >Why the CEO still answers support tickets every Friday - and what it changed in the product.</template
+  >
+  <template data-i18n-for="ep-d40" data-i18n-locale="de"
+    >Warum der CEO freitags noch immer Support-Tickets beantwortet - und was das am Produkt verändert hat.</template
+  >
+  <template data-i18n-for="ep-d39" data-i18n-locale="en"
+    >Priya on phone apps you can use while holding a coffee - reach, gestures and big targets.</template
+  >
+  <template data-i18n-for="ep-d39" data-i18n-locale="de"
+    >Priya über Apps, die man mit einem Kaffee in der Hand bedienen kann - Reichweite, Gesten und große Ziele.</template
+  >
+  <template data-i18n-for="ba-after" data-i18n-locale="en">Show after</template>
+  <template data-i18n-for="ba-after" data-i18n-locale="de">Nachher zeigen</template>
+  <template data-i18n-for="post-1" data-i18n-locale="en"
+    >Acme is the first tool my designers asked to keep after the trial. That never happens.</template
+  >
+  <template data-i18n-for="post-1" data-i18n-locale="de"
+    >Acme ist das erste Werkzeug, das mein Designteam nach dem Test behalten wollte. Das passiert sonst nie.</template
+  >
+  <template data-i18n-for="post-2" data-i18n-locale="en"
+    >Our weekly sync went from 90 minutes to 20. I have my Thursday afternoons back.</template
+  >
+  <template data-i18n-for="post-2" data-i18n-locale="de"
+    >Unser Wochentermin schrumpfte von 90 auf 20 Minuten. Ich habe meine Donnerstagnachmittage zurück.</template
+  >
+  <template data-i18n-for="post-1-date" data-i18n-locale="en">Sep 12, 2026</template>
+  <template data-i18n-for="post-1-date" data-i18n-locale="de">12. Sept. 2026</template>
+  <template data-i18n-for="post-2-date" data-i18n-locale="en">Aug 30, 2026</template>
+  <template data-i18n-for="post-2-date" data-i18n-locale="de">30. Aug. 2026</template>
+  <template data-i18n-for="st-title" data-i18n-locale="en">More stories</template>
+  <template data-i18n-for="st-title" data-i18n-locale="de">Weitere Geschichten</template>
+  <template data-i18n-for="st-sync-eyebrow" data-i18n-locale="en">Offline first</template>
+  <template data-i18n-for="st-sync-eyebrow" data-i18n-locale="de">Offline zuerst</template>
+  <template data-i18n-for="st-sync-title" data-i18n-locale="en">How sync works</template>
+  <template data-i18n-for="st-sync-title" data-i18n-locale="de">So funktioniert der Sync</template>
+  <template data-i18n-for="st-sync-text" data-i18n-locale="en"
+    >Every change is saved on your device first. Here is what happens next - in plain words.</template
+  >
+  <template data-i18n-for="st-sync-text" data-i18n-locale="de"
+    >Jede Änderung landet zuerst auf deinem Gerät. Was danach passiert - in einfachen Worten.</template
+  >
+  <template data-i18n-for="st-lisbon-eyebrow" data-i18n-locale="en">Photo walk</template>
+  <template data-i18n-for="st-lisbon-eyebrow" data-i18n-locale="de">Fotospaziergang</template>
+  <template data-i18n-for="st-lisbon-title" data-i18n-locale="en">Lisbon in eight pictures</template>
+  <template data-i18n-for="st-lisbon-title" data-i18n-locale="de">Lissabon in acht Bildern</template>
+  <template data-i18n-for="st-lisbon-text" data-i18n-locale="en"
+    >An autumn morning from the harbour to the rooftops - the walk behind our gallery.</template
+  >
+  <template data-i18n-for="st-lisbon-text" data-i18n-locale="de"
+    >Ein Herbstmorgen vom Hafen bis über die Dächer - der Spaziergang hinter unserer Galerie.</template
+  >
+  <template data-i18n-for="st-letter-title" data-i18n-locale="en">Behind The Calm Letter</template>
+  <template data-i18n-for="st-letter-title" data-i18n-locale="de">Hinter The Calm Letter</template>
+  <template data-i18n-for="st-letter-text" data-i18n-locale="en"
+    >How a weekly email became a podcast - recorded in one take, every Tuesday.</template
+  >
+  <template data-i18n-for="st-letter-text" data-i18n-locale="de"
+    >Wie aus einer wöchentlichen E-Mail ein Podcast wurde - jeden Dienstag in einem Take aufgenommen.</template
+  >
+  <template data-i18n-for="sp-back" data-i18n-locale="en">All stories</template>
+  <template data-i18n-for="sp-back" data-i18n-locale="de">Alle Geschichten</template>
+  <template data-i18n-for="sp-prev" data-i18n-locale="en">Previous story</template>
+  <template data-i18n-for="sp-prev" data-i18n-locale="de">Vorige Geschichte</template>
+  <template data-i18n-for="sp-next" data-i18n-locale="en">Next story</template>
+  <template data-i18n-for="sp-next" data-i18n-locale="de">Nächste Geschichte</template>
+  <template data-i18n-for="ft-line" data-i18n-locale="en"
+    >Photos, films and a podcast from the people who build Acme - in Lisbon and on the road.</template
+  >
+  <template data-i18n-for="ft-line" data-i18n-locale="de"
+    >Fotos, Filme und ein Podcast von den Menschen, die Acme bauen - in Lissabon und unterwegs.</template
+  >
+  <template data-i18n-for="ft-watch" data-i18n-locale="en">Watch and listen</template>
+  <template data-i18n-for="ft-watch" data-i18n-locale="de">Sehen und hören</template>
+  <template data-i18n-for="ft-photos" data-i18n-locale="en">Photos</template>
+  <template data-i18n-for="ft-photos" data-i18n-locale="de">Fotos</template>
+  <template data-i18n-for="ft-slides" data-i18n-locale="en">Slideshow</template>
+  <template data-i18n-for="ft-slides" data-i18n-locale="de">Diashow</template>
+  <template data-i18n-for="ft-film" data-i18n-locale="en">Film</template>
+  <template data-i18n-for="ft-film" data-i18n-locale="de">Film</template>
+  <template data-i18n-for="ft-stories" data-i18n-locale="en">Stories</template>
+  <template data-i18n-for="ft-stories" data-i18n-locale="de">Geschichten</template>
+  <template data-i18n-for="ft-s1" data-i18n-locale="en">How sync works</template>
+  <template data-i18n-for="ft-s1" data-i18n-locale="de">So funktioniert der Sync</template>
+  <template data-i18n-for="ft-s2" data-i18n-locale="en">Lisbon in eight pictures</template>
+  <template data-i18n-for="ft-s2" data-i18n-locale="de">Lissabon in acht Bildern</template>
+  <template data-i18n-for="ft-s3" data-i18n-locale="en">Behind The Calm Letter</template>
+  <template data-i18n-for="ft-s3" data-i18n-locale="de">Hinter The Calm Letter</template>
+  <template data-i18n-for="ft-contact" data-i18n-locale="en">Contact</template>
+  <template data-i18n-for="ft-contact" data-i18n-locale="de">Kontakt</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="en"
+    >© 2026 Acme, Lda. · Photos and films by the Acme team.</template
+  >
+  <template data-i18n-for="ft-copy" data-i18n-locale="de">© 2026 Acme, Lda. · Fotos und Filme vom Acme-Team.</template>
+  <template data-i18n-for="cap-1" data-i18n-locale="en">Boats moored in a harbour</template>
+  <template data-i18n-for="cap-1" data-i18n-locale="de">Boote im Hafen vertäut</template>
+  <template data-i18n-for="cap-2" data-i18n-locale="en">A person on white stone stairs</template>
+  <template data-i18n-for="cap-2" data-i18n-locale="de">Ein Mensch auf weißen Steintreppen</template>
+  <template data-i18n-for="cap-3" data-i18n-locale="en">Houses and boats along a canal</template>
+  <template data-i18n-for="cap-3" data-i18n-locale="de">Häuser und Boote an einem Kanal</template>
+  <template data-i18n-for="cap-4" data-i18n-locale="en">A red brick wall</template>
+  <template data-i18n-for="cap-4" data-i18n-locale="de">Eine rote Backsteinmauer</template>
+  <template data-i18n-for="cap-5" data-i18n-locale="en">Vegetables on a cutting board</template>
+  <template data-i18n-for="cap-5" data-i18n-locale="de">Gemüse auf einem Schneidebrett</template>
+  <template data-i18n-for="cap-6" data-i18n-locale="en">A vintage car parked in the street</template>
+  <template data-i18n-for="cap-6" data-i18n-locale="de">Ein Oldtimer am Straßenrand</template>
+  <template data-i18n-for="cap-7" data-i18n-locale="en">A rocky shore and the open sea</template>
+  <template data-i18n-for="cap-7" data-i18n-locale="de">Eine felsige Küste und das offene Meer</template>
+  <template data-i18n-for="cap-8" data-i18n-locale="en">The rooftops of an old town</template>
+  <template data-i18n-for="cap-8" data-i18n-locale="de">Die Dächer einer Altstadt</template>
 </div>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
@@ -1067,8 +1822,8 @@
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -1084,16 +1839,96 @@
     };
     look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
+    // -- the stories and the podcast's episodes come from one data block in English and German, drawn again when the
+    // language changes
+    const DATA = JSON.parse(df$('#media-data').text());
+    const STORIES = Object.keys(DATA.stories);
+    const tr = (item) => item[locale.locale] ?? item.en;
+    const fill = (scope, attr, values) =>
+      scope.find('[' + attr + ']').each((_i, el) => {
+        const key = el.getAttribute(attr);
+        if (key in values) df$(el).text(values[key]);
+      });
+    const day = (iso) => locale.formatDate(Date.parse(iso + 'T12:00:00Z'), { dateStyle: 'medium', timeZone: 'UTC' });
+
+    // -- the playlist plays its item: picking an episode puts it into the player above and starts it
+    const player = df$('#site-media .mk-audio-player');
+    const audio = df$('#site-media [data-episode-audio]').get(0);
+    const episode = () => df$('#site-media input[name="episode"]:checked').val() || '42';
+    const drawEpisode = () => {
+      const n = episode();
+      const item = DATA.episodes[n];
+      const t = tr(item);
+      fill(player, 'data-episode-field', { ...t, n, title: item.title });
+      player.find('[data-episode-date]').attr('datetime', item.date).text(day(item.date));
+      const list = player.find('[data-episode-chapters]').html('');
+      for (const line of t.chapters) list.append(df$('<li></li>').text(line));
+    };
+    df$('#site-media input[name="episode"]').on('change', () => {
+      drawEpisode();
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    });
+
+    const drawStory = (key) => {
+      const item = DATA.stories[key];
+      const t = tr(item);
+      const page = df$('#site-media [data-media-view="story"]');
+      fill(page, 'data-story-field', t);
+      page
+        .find('[data-story-photo]')
+        .attr('src', 'https://picsum.photos/id/' + item.photo + '/1600/800')
+        .attr('alt', t.alt);
+      const body = page.find('[data-story-body]').html('');
+      for (const text of t.body) body.append(df$('<p></p>').text(text));
+      page.find('[data-story-link]').attr('href', item.href);
+      const i = STORIES.indexOf(key);
+      const around = {
+        prev: STORIES[(i - 1 + STORIES.length) % STORIES.length],
+        next: STORIES[(i + 1) % STORIES.length],
+      };
+      for (const [dir, to] of Object.entries(around)) {
+        const link = page.find('[data-story-pager="' + dir + '"]');
+        link.attr('href', '#/stories/' + to);
+        link.find('[data-pager-title]').text(tr(DATA.stories[to]).title);
+      }
+    };
+
     // -- routing
     const routes = [
       { id: 'page', path: '/' },
       { id: 'photo', path: '/photos/:n' },
+      { id: 'story', path: '/stories/:id' },
       { id: 'missing', path: '*' },
     ];
     const viewer = df$('#mg-viewer').get(0);
     const slides = df$('#mg-viewer .mk-media-gallery-track > li');
-    // a photo route opens the slideshow on that photo; any other route closes it
+    let story = null;
+    const draw = () => {
+      drawEpisode();
+      if (story) drawStory(story);
+    };
+    locale.subscribe(draw);
+    const showView = (view) => {
+      df$('#site-media [data-media-view]').each((_i, part) => {
+        part.hidden = part.dataset.mediaView !== view;
+      });
+    };
+    // a photo route opens the slideshow on that photo over the front page, a story route the story's page; any other
+    // route closes the slideshow
+    // the story shown last (undefined before the first view)
+    let shownStory;
     const show = (to) => {
+      story = to.routeId === 'story' && DATA.stories[to.params.id] ? to.params.id : null;
+      draw();
+      showView(story ? 'story' : 'home');
+      // a story opens at its start, the front page again at its top - the first view stays where the reader is; a
+      // photo opens in the slideshow above the page
+      if (shownStory !== undefined && story !== shownStory)
+        df$(story ? '#site-media [data-media-view="story"]' : '#site-media')
+          .get(0)
+          ?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      shownStory = story;
       const slide = to.routeId === 'photo' ? slides.get(Number(to.params.n) - 1) : undefined;
       if (!slide) return viewer.open && viewer.close();
       if (!viewer.open) viewer.showModal();
@@ -1105,12 +1940,26 @@
       if (router.getSnapshot().current) router.navigate('#/');
       else location.hash = '/';
     });
+    // the header's and the footer's section links are in-page anchors of the front page: from a story they bring the
+    // front page back first
+    addEventListener('hashchange', () => {
+      const id = location.hash.slice(1);
+      if (!id || id.startsWith('/')) return;
+      const target = df$('#site-media [id="' + id + '"]').get(0);
+      if (!target || !target.closest('[hidden]')) return;
+      story = null;
+      showView('home');
+      target.scrollIntoView({ behavior: 'instant' });
+    });
     const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      const follow = () => {
+        if (location.hash && !location.hash.startsWith('#/')) return;
+        show(preview.resolve(location.hash || '#/'));
+      };
       addEventListener('hashchange', follow);
       follow();
     }

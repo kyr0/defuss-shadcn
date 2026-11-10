@@ -7238,7 +7238,7 @@
       margin-block-start: 1.75em;
     }
     & .heading-anchor {
-      margin-inline-end: 0.25em;
+      --heading-anchor-gap: 0.25em;
     }
   }
 
@@ -7359,7 +7359,7 @@
       grid-template-columns: 12rem minmax(0, 1fr);
 
       & > .toc {
-        display: flex;
+        display: block;
         position: sticky;
         inset-block-start: 1rem;
         align-self: start;

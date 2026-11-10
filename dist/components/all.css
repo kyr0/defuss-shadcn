@@ -2089,7 +2089,7 @@
       margin-block-start: 1.75em;
     }
     & .heading-anchor {
-      margin-inline-end: 0.25em;
+      --heading-anchor-gap: 0.25em;
     }
   }
 
@@ -2210,7 +2210,7 @@
       grid-template-columns: 12rem minmax(0, 1fr);
 
       & > .toc {
-        display: flex;
+        display: block;
         position: sticky;
         inset-block-start: 1rem;
         align-self: start;
@@ -6347,9 +6347,153 @@
     }
   }
 
+  /* -- Stacks: several Panels on one side -----------------------------
+     A region's pane may be a .border-layout-stack of Panels: top to bottom in
+     west / east, side by side in north / south. The panels share the region
+     by weight (--border-layout-share, a flex-grow the runtime writes as px when a
+     divider moves);
+     a minimized one shrinks to its title bar and the others take its room.
+     When every panel is minimized the region folds like a single panel:
+     north / south to the bars, west / east to vertical tabs.
+     data-direction="row" | "column" lays them side by side or top to bottom on
+     any side; in a row on west / east a minimized panel is a vertical tab. */
+  .border-layout-stack {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    & > .panel {
+      flex: var(--border-layout-share, 1) 1 0px;
+      min-width: 0;
+      min-height: 0;
+      border: 0;
+      border-radius: 0;
+    }
+    & > .panel[data-minimized] {
+      flex: none;
+    }
+  }
+  .border-layout
+    > :is(.border-layout-north, .border-layout-south)
+    > .border-layout-stack:not([data-direction="column"]),
+  .border-layout > .border-layout-stack:is(.border-layout-north, .border-layout-south):not([data-direction="column"]),
+  .border-layout-stack[data-direction="row"] {
+    flex-direction: row;
+  }
+  /* north / south: a minimized panel keeps its bar at the start of its column */
+  :is(.border-layout-north, .border-layout-south)
+    > .border-layout-stack:not([data-direction="column"])
+    > .panel[data-minimized],
+  .border-layout-stack:is(.border-layout-north, .border-layout-south):not([data-direction="column"])
+    > .panel[data-minimized] {
+    align-self: flex-start;
+  }
+  /* west / east in a row (and every west / east stack folded): a minimized
+     panel turns into a vertical tab - the Panel's own west / east tab, for
+     panels a stack holds */
+  :is(.border-layout-west, .border-layout-east) > .border-layout-stack[data-direction="row"] > .panel[data-minimized],
+  .border-layout-stack[data-direction="row"]:is(.border-layout-west, .border-layout-east) > .panel[data-minimized],
+  .border-layout > :is(.border-layout-west, .border-layout-east)[data-panel-minimized] > .border-layout-stack > .panel,
+  .border-layout > .border-layout-stack:is(.border-layout-west, .border-layout-east)[data-panel-minimized] > .panel {
+    inline-size: auto !important;
+    min-inline-size: 0;
+    container-type: normal;
+
+    & > .panel-header {
+      flex: 1;
+      writing-mode: vertical-rl;
+      padding-block: 0.25rem;
+      padding-inline: 0.375rem 0.75rem;
+      border-block-end: 0;
+    }
+    & .panel-tools {
+      order: -1;
+      margin-inline: 0 0.25rem;
+    }
+    & .panel-maximize {
+      display: none;
+    }
+  }
+
+  /* the divider between two panels: a line with a wider hit area */
+  .border-layout-stack-divider {
+    position: relative;
+    z-index: 4;
+    flex: none;
+    block-size: var(--_line-width);
+    margin-block: calc((var(--_hit) - var(--_line-width)) / -2);
+    padding-block: calc((var(--_hit) - var(--_line-width)) / 2);
+    background: var(--_line-color) content-box;
+    cursor: row-resize;
+    touch-action: none;
+    transition: background-color 120ms;
+
+    &:is(:hover, :focus-visible, [data-resizing]) {
+      background-color: var(--_accent);
+      outline: none;
+    }
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--_accent);
+    }
+    /* next to a minimized panel there is nothing to share */
+    &[aria-disabled="true"] {
+      cursor: default;
+      background-color: var(--_line-color);
+    }
+  }
+  :is(.border-layout-north, .border-layout-south)
+    > .border-layout-stack:not([data-direction="column"])
+    > .border-layout-stack-divider,
+  .border-layout-stack:is(.border-layout-north, .border-layout-south):not([data-direction="column"])
+    > .border-layout-stack-divider,
+  .border-layout-stack[data-direction="row"] > .border-layout-stack-divider {
+    block-size: auto;
+    inline-size: var(--_line-width);
+    margin-block: 0;
+    padding-block: 0;
+    margin-inline: calc((var(--_hit) - var(--_line-width)) / -2);
+    padding-inline: calc((var(--_hit) - var(--_line-width)) / 2);
+    cursor: col-resize;
+  }
+
+  /* every panel minimized: the region folds with them */
+  .border-layout > .resizer[data-panel-minimized] > .border-layout-stack {
+    overflow: hidden;
+  }
+  .border-layout > :is(.border-layout-north, .border-layout-south)[data-panel-minimized] > .border-layout-stack,
+  .border-layout > .border-layout-stack:is(.border-layout-north, .border-layout-south)[data-panel-minimized] {
+    block-size: auto !important;
+  }
+  .border-layout > :is(.border-layout-west, .border-layout-east)[data-panel-minimized] > .border-layout-stack,
+  .border-layout > .border-layout-stack:is(.border-layout-west, .border-layout-east)[data-panel-minimized] {
+    inline-size: auto !important;
+    min-inline-size: 0;
+
+    & > .border-layout-stack-divider {
+      display: none;
+    }
+    /* the tabs share the height - side by side in a row */
+    &:not([data-direction="row"]) > .panel[data-minimized] {
+      flex: 1 1 0px;
+    }
+    &:not([data-direction="row"]) > .panel ~ .panel {
+      border-block-start: var(--_line-width) var(--_line-style) var(--_line-color);
+    }
+    &[data-direction="row"] > .panel ~ .panel {
+      border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color);
+    }
+  }
+  /* every panel closed: the region leaves with them */
+  .border-layout > [data-stack-closed] {
+    display: none;
+  }
+
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .border-layout > .resizer > .resizer-handle::before {
+    .border-layout > .resizer > .resizer-handle::before,
+    .border-layout-stack-divider {
       transition: none;
     }
   }
@@ -6368,6 +6512,13 @@
     }
     .border-layout > .resizer > .resizer-handle::before {
       forced-color-adjust: none;
+    }
+    .border-layout-stack-divider {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+      &:is(:hover, :focus-visible, [data-resizing]) {
+        background-color: Highlight;
+      }
     }
   }
 }
@@ -8670,6 +8821,9 @@
 
     /* ── Slide ─────────────────────────────────── */
     & .carousel-slide {
+      /* the width a flex-basis names includes a slide's border and padding: three of calc(33.333% - 0.667rem)
+         fit with a bordered slide too */
+      box-sizing: border-box;
       flex: 0 0 100%;
       scroll-snap-align: start;
       scroll-snap-stop: always;
@@ -24006,14 +24160,38 @@
 
 @layer components {
   .heading-anchor {
+    /* the room between the glyph and the heading text */
+    --heading-anchor-gap: 0.375rem;
     color: var(--muted-foreground);
     text-decoration: none;
     font-weight: 400;
-    margin-right: 0.375rem;
+
+    /* -- In front (the default): the glyph hangs in front of the heading, in the gutter - the heading's text keeps
+       its own start edge - and shows while the heading is hovered, the link is focused or the section is the target */
+    display: inline-block;
+    inline-size: 1em;
+    margin-inline: calc(-1em - var(--heading-anchor-gap)) var(--heading-anchor-gap);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 150ms ease;
+
+    &:focus-visible {
+      opacity: 1;
+    }
+
+    /* -- Before / after the text: inline, always shown ----------- */
+    &[data-placement="before"] {
+      display: inline;
+      inline-size: auto;
+      margin-inline: 0 var(--heading-anchor-gap);
+      opacity: 1;
+    }
 
     &[data-placement="after"] {
-      margin-right: 0;
-      margin-left: 0.375rem;
+      display: inline;
+      inline-size: auto;
+      margin-inline: var(--heading-anchor-gap) 0;
+      opacity: 1;
     }
 
     &[data-size="xs"] {
@@ -24038,9 +24216,31 @@
     }
   }
 
+  /* the heading it sits in is hovered, or is the target of the address */
+  :hover > .heading-anchor,
+  :target > .heading-anchor {
+    opacity: 1;
+  }
+
+  /* no hover on touch screens, and a narrow gutter: the glyph goes back in front of the text, always shown */
+  @media (hover: none) {
+    .heading-anchor:not([data-placement="before"], [data-placement="after"]) {
+      display: inline;
+      inline-size: auto;
+      margin-inline: 0 var(--heading-anchor-gap);
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .heading-anchor {
       transition: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .heading-anchor {
+      color: var(--foreground);
     }
   }
 
@@ -27247,6 +27447,277 @@
     .label:has(+ [data-disabled]) {
       opacity: 1;
       color: GrayText;
+    }
+  }
+}
+
+/* ── components/language-switcher/language-switcher.css ── */
+/* -- Language Switcher component -------------------------------------
+   The runtime writes a shipped Combobox (a Swap, or radio items for a
+   Dropdown Menu) into the element; these
+   rules size it to its content and draw the flags. A flag is the language's
+   code (::before) under its SVG (::after): a flag that fails to load leaves
+   the code readable. Shape, scale and finish are attributes on the root. */
+
+@layer components {
+  .language-switcher {
+    --language-switcher-flag-height: 1rem;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+
+    /* -- Flag scale ----------------------------------------------- */
+    &[data-flag-size="xs"] {
+      --language-switcher-flag-height: 0.75rem;
+    }
+    &[data-flag-size="sm"] {
+      --language-switcher-flag-height: 0.875rem;
+    }
+    &[data-flag-size="lg"] {
+      --language-switcher-flag-height: 1.25rem;
+    }
+    &[data-flag-size="xl"] {
+      --language-switcher-flag-height: 1.75rem;
+    }
+
+    /* -- Flag shapes ---------------------------------------------- */
+    &[data-flag-shape="rounded"] .language-switcher-flag {
+      border-radius: calc(var(--language-switcher-flag-height) * 0.25);
+    }
+    &[data-flag-shape="square"] .language-switcher-flag {
+      inline-size: var(--language-switcher-flag-height);
+    }
+    &[data-flag-shape="squircle"] .language-switcher-flag {
+      inline-size: var(--language-switcher-flag-height);
+      border-radius: 32%;
+    }
+    &[data-flag-shape="circle"] .language-switcher-flag {
+      inline-size: var(--language-switcher-flag-height);
+      border-radius: 50%;
+    }
+
+    /* -- Flag finishes -------------------------------------------- */
+    &[data-flag-style="ring"] .language-switcher-flag {
+      outline: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent);
+      outline-offset: -1px;
+    }
+    &[data-flag-style="shadow"] .language-switcher-flag {
+      box-shadow:
+        0 0 0 1px var(--border),
+        var(--shadow-sm);
+    }
+    &[data-flag-style="glossy"] .language-switcher-flag {
+      --language-switcher-gloss: linear-gradient(
+        160deg,
+        oklch(1 0 0 / 0.55),
+        oklch(1 0 0 / 0) 42%,
+        oklch(0 0 0 / 0) 58%,
+        oklch(0 0 0 / 0.2)
+      );
+      outline: 1px solid oklch(0 0 0 / 0.12);
+      outline-offset: -1px;
+    }
+
+    /* the code shown instead of a name (a condensed footer, a toolbar) */
+    &[data-display="code"] .language-switcher-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .language-switcher-flag {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    inline-size: calc(var(--language-switcher-flag-height) * 4 / 3);
+    block-size: var(--language-switcher-flag-height);
+    border-radius: 2px;
+    overflow: hidden;
+    background-color: var(--muted);
+    transition: scale 150ms ease;
+
+    &::before {
+      content: attr(data-code);
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-size: calc(var(--language-switcher-flag-height) * 0.5);
+      font-weight: 600;
+      line-height: 1;
+      color: var(--muted-foreground);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--language-switcher-gloss, none), var(--language-switcher-flag, none);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    /* a flag in the dark is a little dimmer, so it does not glare beside the text */
+    :where(.dark) &::after {
+      filter: brightness(0.92) saturate(0.95);
+    }
+  }
+
+  .language-switcher-icon {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .language-switcher-label {
+    white-space: nowrap;
+  }
+
+  /* -- The Combobox face ------------------------------------------ */
+  .language-switcher-combobox {
+    display: inline-block;
+
+    & .combobox-trigger {
+      width: auto;
+      justify-content: flex-start;
+      gap: 0.5rem;
+    }
+
+    & .combobox-value {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      font-weight: 500;
+    }
+
+    /* a language is always chosen: no clear button, the chevron stays */
+    & .combobox-clear {
+      display: none !important;
+    }
+    &.combobox:has(.combobox-value) .combobox-trigger > .combobox-chevron {
+      display: block;
+    }
+
+    & .combobox-content {
+      width: max-content;
+      min-width: max(anchor-size(width), 13rem);
+      max-width: min(22rem, calc(100vw - 1rem));
+      position-try-fallbacks:
+        flip-inline,
+        flip-block,
+        flip-block flip-inline;
+    }
+
+    /* a short list needs no search box; it stays for the keys (arrows, Enter) */
+    & .combobox-search[data-quiet] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /* the list opens toward the start edge where the switcher sits at the end (a header's right side) */
+  .language-switcher[data-align="end"] .combobox-content {
+    left: auto;
+    right: anchor(right);
+  }
+
+  .language-switcher-option {
+    gap: 0.625rem;
+
+    &[data-highlighted] .language-switcher-flag,
+    &:hover .language-switcher-flag {
+      scale: 1.08;
+    }
+  }
+
+  .language-switcher-name {
+    white-space: nowrap;
+  }
+
+  .language-switcher-alt {
+    margin-inline-start: auto;
+    padding-inline-start: 1rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+
+    &[hidden] {
+      display: none;
+    }
+    .language-switcher-option[data-highlighted] &,
+    .language-switcher-option:hover & {
+      color: inherit;
+      opacity: 0.75;
+    }
+  }
+
+  /* -- The Menu face: radio items in a Dropdown Menu ----------------- */
+  .language-switcher[data-variant="menu"] {
+    display: block;
+  }
+  .language-switcher-menu {
+    display: contents;
+  }
+  .language-switcher-item {
+    gap: 0.625rem;
+
+    &[data-highlighted] .language-switcher-flag,
+    &:hover .language-switcher-flag {
+      scale: 1.08;
+    }
+    & .language-switcher-alt {
+      color: var(--muted-foreground);
+    }
+  }
+
+  /* -- The Swap face ---------------------------------------------- */
+  .language-switcher-swap {
+    & .swap-on,
+    & .swap-off {
+      gap: 0.375rem;
+      padding-inline: 0.375rem;
+    }
+    & .language-switcher-label {
+      font-weight: 500;
+    }
+  }
+
+  /* -- Accessibility ---------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .language-switcher-flag {
+      transition: none;
+    }
+    :is(.language-switcher-option, .language-switcher-item) .language-switcher-flag {
+      scale: none !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .language-switcher-flag {
+      outline: 1px solid var(--foreground);
+      outline-offset: -1px;
+    }
+    .language-switcher-alt {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    /* the flag keeps its own colors; a system-color frame marks its edge */
+    .language-switcher-flag {
+      forced-color-adjust: none;
+      outline: 1px solid CanvasText;
+      outline-offset: -1px;
     }
   }
 }
@@ -46485,10 +46956,11 @@
       opacity: 0;
     }
   }
-  /* dot + badge / dot + chevron share the pushed-right slot */
+  /* dot + badge / dot + chevron share the pushed-right slot - a hidden dot (news this reader has seen) leaves
+     the slot to the badge or the chevron */
   .sidebar-badge + .sidebar-dot,
-  .sidebar-dot + .sidebar-badge,
-  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot ~ svg:last-child {
+  .sidebar-dot:not([hidden]) + .sidebar-badge,
+  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot:not([hidden]) ~ svg:last-child {
     margin-left: 0;
   }
   .app-sidebar[data-state="collapsed"] {

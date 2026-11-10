@@ -588,8 +588,47 @@ function init3() {
     });
   });
 }
-init3();
-new MutationObserver(init3).observe(document, { childList: true, subtree: true });
+function revealFragment() {
+  let id = "";
+  try {
+    id = decodeURIComponent(location.hash.slice(1));
+  } catch {
+    return;
+  }
+  if (!id || id.startsWith("/"))
+    return;
+  const target = dfDollar3("#" + CSS.escape(id)).get(0);
+  if (!target)
+    return;
+  const hidden = [];
+  const panelOf = (el) => el ? dfDollar3(el).closest('[role="tabpanel"]').get(0) : undefined;
+  for (let panel = panelOf(target);panel; panel = panelOf(panel.parentElement))
+    if (panel.hidden)
+      hidden.unshift(panel);
+  if (!hidden.length)
+    return;
+  for (const panel of hidden) {
+    const tab = dfDollar3('[role="tab"][aria-controls="' + CSS.escape(panel.id) + '"]').get(0);
+    const tablist = tab && dfDollar3(tab).closest('[role="tablist"]').get(0);
+    if (!tab || tab.disabled || !tablist)
+      return;
+    activateTab(tab, dfDollar3(tablist).find('[role="tab"]').toArray());
+  }
+  target.scrollIntoView();
+}
+var fragmentsBound = false;
+function initAll() {
+  const before = dfDollar3('[role="tablist"][data-init]').length;
+  init3();
+  if (dfDollar3('[role="tablist"][data-init]').length !== before)
+    revealFragment();
+  if (!fragmentsBound) {
+    fragmentsBound = true;
+    addEventListener("hashchange", revealFragment);
+  }
+}
+initAll();
+new MutationObserver(initAll).observe(document, { childList: true, subtree: true });
 
 // dist/components/dropdown/dropdown.js
 var __df$core4 = globalThis.df$;
@@ -1314,5 +1353,504 @@ document.addEventListener(THEME_EVENT, (e) => {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=AF4866821776FFBA64756E2164756E21
+// dist/components/language-switcher/language-switcher.js
+var __df$core8 = globalThis.df$;
+var __df$shared8 = __df$core8 && __df$core8.shadcn && __df$core8.shadcn.shared;
+if (!__df$shared8 || __df$shared8.abi !== "0.9.13") {
+  throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
+}
+var { defussGlobals: defussGlobals8, defussQuery: defussQuery8, componentState: componentState8, bindComponent: bindComponent8 } = __df$shared8;
+var df$8 = defussGlobals8();
+var dfDollar8 = defussQuery8();
+var languageSwitcherStates = ["default", "open"];
+var SEED = `af Afrikaans|Afrikaans|za
+am Amharic|አማርኛ|et
+ar Arabic|العربية|sa
+bg Bulgarian|български|bg
+bg-Latn Bulgarian (Latin)|bulgarski|bg
+bn Bangla|বাংলা|bd
+bs Bosnian|bosanski|ba
+ca Catalan|català|es-ct
+ceb Cebuano|Binisaya|ph
+co Corsican|corsu|fr
+cs Czech|čeština|cz
+cy Welsh|Cymraeg|gb-wls
+da Danish|dansk|dk
+de German|Deutsch|de
+el Greek|Ελληνικά|gr
+el-Latn Greek (Latin)|Ellinika|gr
+en English|English|gb
+eo Esperanto|Esperanto|
+es Spanish|español|es
+et Estonian|eesti|ee
+eu Basque|euskara|es-pv
+fa Persian|فارسی|ir
+fi Finnish|suomi|fi
+fil Filipino|Filipino|ph
+fr French|français|fr
+fy Western Frisian|Frysk|nl
+ga Irish|Gaeilge|ie
+gd Scottish Gaelic|Gàidhlig|gb-sct
+gl Galician|galego|es-ga
+gu Gujarati|ગુજરાતી|in
+ha Hausa|Hausa|ng
+haw Hawaiian|ʻŌlelo Hawaiʻi|us
+hi Hindi|हिन्दी|in
+hi-Latn Hindi (Latin)|Hindi|in
+hmn Hmong|Hmoob|la
+hr Croatian|hrvatski|hr
+ht Haitian Creole|Kreyòl ayisyen|ht
+hu Hungarian|magyar|hu
+hy Armenian|հայերեն|am
+id Indonesian|Bahasa Indonesia|id
+ig Igbo|Asụsụ Igbo|ng
+is Icelandic|íslenska|is
+it Italian|italiano|it
+iw Hebrew|עברית|il
+ja Japanese|日本語|jp
+ja-Latn Japanese (Latin)|Nihongo|jp
+jv Javanese|Basa Jawa|id
+ka Georgian|ქართული|ge
+kk Kazakh|қазақ тілі|kz
+km Khmer|ខ្មែរ|kh
+kn Kannada|ಕನ್ನಡ|in
+ko Korean|한국어|kr
+ku Kurdish|Kurdî|iq
+ky Kyrgyz|кыргызча|kg
+la Latin|Latina|va
+lb Luxembourgish|Lëtzebuergesch|lu
+lo Lao|ລາວ|la
+lt Lithuanian|lietuvių|lt
+lv Latvian|latviešu|lv
+mg Malagasy|Malagasy|mg
+mi Māori|Māori|nz
+mk Macedonian|македонски|mk
+ml Malayalam|മലയാളം|in
+mn Mongolian|монгол|mn
+mr Marathi|मराठी|in
+ms Malay|Bahasa Melayu|my
+mt Maltese|Malti|mt
+my Burmese|မြန်မာ|mm
+ne Nepali|नेपाली|np
+nl Dutch|Nederlands|nl
+no Norwegian|norsk|no
+ny Nyanja|Chichewa|mw
+pa Punjabi|ਪੰਜਾਬੀ|in
+pl Polish|polski|pl
+ps Pashto|پښتو|af
+pt Portuguese|português|pt
+ro Romanian|română|ro
+ru Russian|русский|ru
+ru-Latn Russian (Latin)|Russkiy|ru
+sd Sindhi|سنڌي|pk
+si Sinhala|සිංහල|lk
+sk Slovak|slovenčina|sk
+sl Slovenian|slovenščina|si
+sm Samoan|Gagana Sāmoa|ws
+sn Shona|chiShona|zw
+so Somali|Soomaali|so
+sq Albanian|shqip|al
+sr Serbian|српски|rs
+st Southern Sotho|Sesotho|ls
+su Sundanese|Basa Sunda|id
+sv Swedish|svenska|se
+sw Swahili|Kiswahili|tz
+ta Tamil|தமிழ்|in
+te Telugu|తెలుగు|in
+tg Tajik|тоҷикӣ|tj
+th Thai|ไทย|th
+tr Turkish|Türkçe|tr
+uk Ukrainian|українська|ua
+ur Urdu|اردو|pk
+uz Uzbek|oʻzbekcha|uz
+vi Vietnamese|Tiếng Việt|vn
+xh Xhosa|isiXhosa|za
+yi Yiddish|ייִדיש|il
+yo Yoruba|Èdè Yorùbá|ng
+zh Chinese|中文|cn
+zh-Latn Chinese (Pinyin)|Zhōngwén|cn
+zu Zulu|isiZulu|za`;
+var RTL = new Set(["ar", "fa", "iw", "he", "ps", "sd", "ur", "yi"]);
+var LANGUAGES = SEED.split(`
+`).map((line) => {
+  const sp = line.indexOf(" ");
+  const code = line.slice(0, sp);
+  const [english, native, region] = line.slice(sp + 1).split("|");
+  return { code, english, native, region, dir: RTL.has(code) ? "rtl" : "ltr" };
+});
+var BY_CODE = new Map(LANGUAGES.map((l) => [l.code.toLowerCase(), l]));
+var ALIAS = { he: "iw", nb: "no", tl: "fil" };
+var settings = {
+  flags: "https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/{shape}/{region}.svg"
+};
+var resolve = (t) => typeof t === "string" ? dfDollar8("#" + CSS.escape(t)).get(0) ?? dfDollar8(t).get(0) : t;
+var esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+function partsOf(tag) {
+  try {
+    const l = new Intl.Locale(tag);
+    return { language: l.language, script: l.script ?? "", region: (l.region ?? "").toLowerCase() };
+  } catch {
+    const [language = "", ...rest] = tag.split(/[-_]/);
+    return {
+      language: language.toLowerCase(),
+      script: rest.find((p) => p.length === 4) ?? "",
+      region: (rest.find((p) => p.length === 2) ?? "").toLowerCase()
+    };
+  }
+}
+function seedOf(tag) {
+  const { language, script } = partsOf(tag);
+  const lang = ALIAS[language] ?? language;
+  return BY_CODE.get(tag.toLowerCase()) ?? (script ? BY_CODE.get(`${lang}-${script}`.toLowerCase()) : undefined) ?? BY_CODE.get(lang);
+}
+var capitalize = (name, locale) => {
+  if (!name)
+    return name;
+  let first;
+  try {
+    first = name.charAt(0).toLocaleUpperCase(locale);
+  } catch {
+    first = name.charAt(0).toUpperCase();
+  }
+  return first + name.slice(1);
+};
+var displayCache = new Map;
+function displayNames(locale, type) {
+  const key = `${type}:${locale}`;
+  if (!displayCache.has(key)) {
+    let d = null;
+    try {
+      d = new Intl.DisplayNames([locale], { type, fallback: "none" });
+      if (new Intl.Locale(d.resolvedOptions().locale).language !== partsOf(locale).language)
+        d = null;
+    } catch {
+      d = null;
+    }
+    displayCache.set(key, d);
+  }
+  return displayCache.get(key) ?? null;
+}
+function cldrName(locale, type, code) {
+  try {
+    return displayNames(locale, type)?.of(code);
+  } catch {
+    return;
+  }
+}
+function nameIn(tag, locale) {
+  const seed = seedOf(tag);
+  const { region } = partsOf(tag);
+  const self = partsOf(locale).language === partsOf(tag).language;
+  if (seed && !region && seed.code.toLowerCase() === tag.toLowerCase().replace(/^he$/, "iw")) {
+    if (self)
+      return capitalize(seed.native, tag);
+    if (partsOf(locale).language === "en")
+      return seed.english;
+  }
+  const n = cldrName(locale, "language", tag.replace(/^iw\b/, "he"));
+  if (n && n.toLowerCase() !== tag.toLowerCase())
+    return capitalize(n, locale);
+  const base = seed ? self ? capitalize(seed.native, tag) : seed.english : tag;
+  if (!region)
+    return base;
+  const regionName = cldrName(locale, "region", region.toUpperCase()) ?? region.toUpperCase();
+  return `${base} (${regionName})`;
+}
+function regionFor(el, tag) {
+  for (const pair of (el.dataset.flags || "").split(/\s+/).filter(Boolean)) {
+    const [t, r] = pair.split(":");
+    if (t && t.toLowerCase() === tag.toLowerCase())
+      return (r || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+  }
+  return (partsOf(tag).region || seedOf(tag)?.region || "").replace(/[^a-z0-9-]/g, "");
+}
+var languagesOf = (el) => {
+  const list = (el.dataset.languages || "en").split(/[\s,]+/).filter(Boolean);
+  return list.length ? list : ["en"];
+};
+var valueOf = (el, languages = languagesOf(el)) => {
+  const v = (el.dataset.value || "").toLowerCase();
+  return languages.find((l) => l.toLowerCase() === v) ?? languages[0];
+};
+var nextOf = (el, tag) => {
+  const languages = languagesOf(el);
+  return languages[(languages.indexOf(tag) + 1) % languages.length];
+};
+var codeLabel = (tag) => {
+  const { language, region } = partsOf(tag);
+  return (region ? `${language}-${region}` : language).toUpperCase();
+};
+var dirOf = (tag) => RTL.has(partsOf(tag).language) ? "rtl" : "ltr";
+var idPart = (tag) => tag.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+function flagHtml(el, tag) {
+  if (el.dataset.flag === "none")
+    return "";
+  const region = regionFor(el, tag);
+  const shape = ["square", "circle", "squircle"].includes(el.dataset.flagShape || "") ? "1x1" : "4x3";
+  const url = region ? settings.flags.replace("{shape}", shape).replace("{region}", region) : "";
+  const image = region ? ` data-region="${esc(region)}" style="--language-switcher-flag: url('${esc(url)}')"` : "";
+  return `<span class="language-switcher-flag" data-code="${esc(partsOf(tag).language.toUpperCase())}"${image} aria-hidden="true"></span>`;
+}
+var GLOBE = '<svg class="language-switcher-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
+var CHEVRON = '<svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>';
+function faceHtml(el, tag) {
+  const display = el.dataset.display || "label";
+  const flag = flagHtml(el, tag) || (display === "icon" ? GLOBE : "");
+  const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf(el)) : nameIn(tag, tag);
+  return `${flag}${text ? `<span class="language-switcher-label" lang="${esc(tag)}" dir="${dirOf(tag)}">${esc(text)}</span>` : ""}`;
+}
+var labelOf2 = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
+var ariaOf = (el, tag) => `${labelOf2(el)}: ${nameIn(tag, tag)}`;
+function namesOf(el, tag, ui) {
+  const own = nameIn(tag, tag), shown = nameIn(tag, ui);
+  if (el.dataset.names === "native")
+    return { name: own, lang: tag, alt: "", altLang: tag };
+  if (el.dataset.names === "ui")
+    return { name: shown, lang: ui, alt: shown === own ? "" : own, altLang: tag };
+  return { name: own, lang: tag, alt: shown === own ? "" : shown, altLang: ui };
+}
+var optionInner = (el, tag, ui) => {
+  const n = namesOf(el, tag, ui);
+  return `${flagHtml(el, tag)}<span class="language-switcher-name" lang="${esc(n.lang)}" dir="${dirOf(n.lang)}">${esc(n.name)}</span><span class="language-switcher-alt" lang="${esc(n.altLang)}" dir="${dirOf(n.altLang)}"${n.alt ? "" : " hidden"}>${esc(n.alt)}</span>`;
+};
+function comboboxHtml(el, uid) {
+  const languages = languagesOf(el);
+  const value = valueOf(el, languages);
+  const search = el.dataset.search || "Search languages...";
+  const options = languages.map((tag) => `<div role="option" id="${uid}-${idPart(tag)}" class="combobox-item language-switcher-option" data-value="${esc(tag)}" aria-selected="${tag === value}">${optionInner(el, tag, value)}</div>`).join("");
+  const icon = (el.dataset.display || "label") === "icon";
+  return `<div class="combobox language-switcher-combobox" data-ce-chrome${el.dataset.size ? ` data-size="${esc(el.dataset.size)}"` : ""}>
+<button type="button" class="btn combobox-trigger" data-variant="${esc(el.dataset.buttonVariant || "ghost")}"${icon ? ' data-size="icon"' : ""} aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(ariaOf(el, value))}" aria-controls="${uid}-popover"><span class="combobox-value">${faceHtml(el, value)}</span>${icon ? "" : CHEVRON}</button>
+<div id="${uid}-popover" class="combobox-content language-switcher-content" popover>
+<div class="combobox-search"${languages.length > 7 ? "" : " data-quiet"}><input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="${uid}-listbox" aria-activedescendant="" aria-autocomplete="list" placeholder="${esc(search)}" aria-label="${esc(search)}"></div>
+<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc(labelOf2(el))}"><div class="combobox-empty" hidden>${esc(el.dataset.empty || "No language found.")}</div>${options}</div>
+</div>
+</div>`;
+}
+function swapHtml(el) {
+  const value = valueOf(el);
+  return `<label class="swap language-switcher-swap"${el.dataset.swap === "fade" ? "" : ` data-variant="${esc(el.dataset.swap || "flip")}"`} data-ce-chrome${el.dataset.size ? ` data-size="${esc(el.dataset.size)}"` : ""}>
+<input type="checkbox" role="button" aria-label="${esc(swapLabel(el, value))}">
+<span class="swap-off">${faceHtml(el, value)}</span>
+<span class="swap-on">${faceHtml(el, nextOf(el, value))}</span>
+</label>`;
+}
+function menuHtml(el) {
+  const value = valueOf(el);
+  return `<div class="language-switcher-menu" data-ce-chrome>${languagesOf(el).map((tag) => `<button type="button" class="dropdown-item dropdown-radio language-switcher-item" role="menuitemradio" tabindex="-1" aria-checked="${tag === value}" data-value="${esc(tag)}">${optionInner(el, tag, value)}</button>`).join("")}</div>`;
+}
+var swapLabel = (el, value) => {
+  const next = nextOf(el, value);
+  return `${ariaOf(el, value)} - ${el.dataset.next || "next"}: ${nameIn(next, next)}`;
+};
+var STRUCTURE = [
+  "languages",
+  "variant",
+  "display",
+  "names",
+  "flag",
+  "flags",
+  "flagShape",
+  "size",
+  "buttonVariant",
+  "search",
+  "empty",
+  "next",
+  "swap"
+];
+var structureOf = (el) => STRUCTURE.map((k) => el.dataset[k] ?? "").join("|");
+var chromeOf = (el) => dfDollar8(el).children("[data-ce-chrome]").get(0);
+function draw(el) {
+  const uid = el.id ? `${el.id}-ls` : el._lsId ??= `language-switcher-${++sequence}`;
+  const focused = el.contains(document.activeElement);
+  dfDollar8(el).children("[data-ce-chrome]").remove();
+  const variant = el.dataset.variant;
+  dfDollar8(el).append(dfDollar8(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
+  el._lsStructure = structureOf(el);
+  el._lsValue = valueOf(el);
+  if (focused)
+    dfDollar8(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
+}
+var sequence = 0;
+function update(el) {
+  if (el._lsStructure !== structureOf(el) || !chromeOf(el))
+    return draw(el);
+  const value = valueOf(el);
+  const changed = el._lsValue !== value;
+  el._lsValue = value;
+  const chrome = dfDollar8(chromeOf(el));
+  if (el.dataset.variant === "swap") {
+    const input = chrome.find(":scope > input").get(0);
+    if (changed) {
+      const [shown, hidden] = input.checked ? [".swap-on", ".swap-off"] : [".swap-off", ".swap-on"];
+      chrome.find(`:scope > ${shown}`).html(faceHtml(el, value));
+      chrome.find(`:scope > ${hidden}`).html(faceHtml(el, nextOf(el, value)));
+    }
+    dfDollar8(input).attr("aria-label", swapLabel(el, value));
+    return;
+  }
+  if (el.dataset.variant === "menu") {
+    if (!changed)
+      return;
+    chrome.find(".language-switcher-item").each((_i, item) => {
+      const tag = item.dataset.value || "";
+      dfDollar8(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
+    });
+    return;
+  }
+  chrome.find(".combobox-trigger").attr("aria-label", ariaOf(el, value));
+  chrome.find('[role="listbox"]').attr("aria-label", labelOf2(el));
+  if (!changed)
+    return;
+  chrome.find(".combobox-value").html(faceHtml(el, value)).attr("data-placeholder", null);
+  chrome.find(".language-switcher-option").each((_i, option) => {
+    const tag = option.dataset.value || "";
+    dfDollar8(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
+  });
+}
+function choose(el, tag, announce = true) {
+  const languages = languagesOf(el);
+  const next = languages.find((l) => l.toLowerCase() === String(tag).toLowerCase());
+  if (!next)
+    return false;
+  const previous = valueOf(el, languages);
+  if (el.dataset.value !== next)
+    dfDollar8(el).attr("data-value", next);
+  update(el);
+  if (announce && next !== previous)
+    el.dispatchEvent(new CustomEvent("language-change", {
+      bubbles: true,
+      detail: { value: next, previous, name: nameIn(next, next), dir: dirOf(next) }
+    }));
+  return true;
+}
+var popoverOf = (el) => dfDollar8(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
+var isOpen = (el) => {
+  try {
+    return !!popoverOf(el)?.matches(":popover-open");
+  } catch {
+    return false;
+  }
+};
+function applyMarkup7(el, _name, config) {
+  const languages = languagesOf(el);
+  const value = languages.find((l) => l.toLowerCase() === String(config?.value ?? "").toLowerCase());
+  if (value)
+    dfDollar8(el).attr("data-value", value);
+}
+function triggerStateChange8(el, name, config) {
+  if (config?.value)
+    choose(el, config.value, false);
+  const popover = popoverOf(el);
+  if (!popover)
+    return;
+  if (name === "open" && !isOpen(el))
+    dfDollar8(el).find(".combobox-trigger").get(0)?.click();
+  else if (name !== "open" && isOpen(el))
+    popover.hidePopover();
+}
+var languageSwitcherApi = componentState8({
+  component: "language-switcher",
+  states: languageSwitcherStates,
+  mergeConfig: true,
+  apply: (el, state) => triggerStateChange8(el, state.name, state.config),
+  read: (el) => ({ name: isOpen(el) ? "open" : "default", config: { value: valueOf(el) } }),
+  markup: (el, state) => applyMarkup7(el, state.name, state.config)
+});
+df$8.languageSwitcherApi = languageSwitcherApi;
+df$8.languageSwitcherStates = languageSwitcherStates;
+function init8() {
+  dfDollar8(".language-switcher:not([data-init])").each((_i, el) => {
+    el.dataset.init = "";
+    if (!el.dataset.value || valueOf(el) !== el.dataset.value)
+      dfDollar8(el).attr("data-value", valueOf(el));
+    draw(el);
+    dfDollar8(el).on("combobox:change", (e) => {
+      const value = e.detail?.values?.[0];
+      el._lsValue = "";
+      if (!value || !choose(el, value))
+        update(el);
+      languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    });
+    dfDollar8(el).on("change", (e) => {
+      const input = e.target;
+      if (!input.matches(".language-switcher-swap > input") || input.closest(".language-switcher") !== el)
+        return;
+      choose(el, nextOf(el, valueOf(el)));
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    });
+    const pick = (item) => {
+      const it = item;
+      if (!it?.matches?.(".language-switcher-item") || it.closest(".language-switcher") !== el)
+        return;
+      el._lsValue = "";
+      if (!choose(el, it.dataset.value || ""))
+        update(el);
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    };
+    dfDollar8(el).on("dropdown:select", (e) => pick(e.detail?.item));
+    dfDollar8(el).on("click", (e) => {
+      const item = e.target?.closest?.(".language-switcher-item");
+      if (item && !item.closest('[role="menu"]'))
+        pick(item);
+    });
+    dfDollar8(el).on("keydown", (e) => {
+      const input = e.target;
+      if (e.key !== "Enter" || !input.matches?.(".language-switcher-swap > input"))
+        return;
+      e.preventDefault();
+      input.click();
+    });
+    el.addEventListener("toggle", () => languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) }), true);
+    new MutationObserver(() => update(el)).observe(el, { attributes: true, attributeFilter: OBSERVED });
+    bindComponent8(el, languageSwitcherApi, { name: "default", config: { value: valueOf(el) } });
+  });
+}
+var OBSERVED = [
+  "data-value",
+  "data-label",
+  "aria-label",
+  ...STRUCTURE.map((k) => "data-" + k.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()))
+];
+df$8.languageSwitcher = {
+  languages: () => LANGUAGES.map((l) => ({ ...l })),
+  name: (tag, locale) => nameIn(tag, locale ?? tag),
+  region: (tag) => partsOf(tag).region || seedOf(tag)?.region || "",
+  choose: (target, tag) => {
+    const el = resolve(target);
+    if (!el || !choose(el, tag))
+      return false;
+    languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    return true;
+  },
+  bind: (target, i18n) => {
+    const el = resolve(target);
+    if (!el || !i18n)
+      return () => {};
+    const follow = (locale) => {
+      if (locale && locale.toLowerCase() !== valueOf(el).toLowerCase() && choose(el, locale, false))
+        languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    };
+    follow(i18n.locale);
+    const onChange = (e) => {
+      const value = e.detail.value;
+      if (value !== i18n.locale)
+        i18n.setLocale(value);
+    };
+    el.addEventListener("language-change", onChange);
+    const stop = i18n.subscribe?.((snapshot) => follow(snapshot.locale));
+    return () => {
+      el.removeEventListener("language-change", onChange);
+      stop?.();
+    };
+  },
+  configure: (options) => {
+    if (options?.flags)
+      settings.flags = options.flags;
+  }
+};
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+
+//# debugId=E40E69D1D4AACE5064756E2164756E21
 //# sourceMappingURL=navigation.js.map

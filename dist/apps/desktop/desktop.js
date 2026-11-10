@@ -5855,9 +5855,514 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/overlays/context-menu/context-menu.ts
+// src/components/forms-inputs/combobox/combobox.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
+var comboboxStates = ["default", "open"];
+function applyMarkup4(_el, _stateName) {}
+function triggerStateChange4(popover, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      popover._close?.();
+      break;
+    case "open":
+      popover._open?.();
+      break;
+  }
+}
+var comboboxApi = componentState({
+  component: "combobox",
+  states: comboboxStates,
+  apply: (popover, state) => triggerStateChange4(popover, state.name, state.config),
+  read: (popover, state) => {
+    const selected = Array.from(dfDollar4(popover).find('[role="option"][aria-selected="true"]').toArray());
+    const labels = selected.map((o) => o.textContent?.trim() ?? "");
+    return {
+      name: popover.matches(":popover-open") ? "open" : "default",
+      config: {
+        ...state.config,
+        value: labels.join(", "),
+        values: selected.map((o) => o.dataset.value ?? o.textContent?.trim() ?? ""),
+        labels
+      }
+    };
+  },
+  markup: (el, state) => applyMarkup4(el, state.name)
+});
+df$4.comboboxApi = comboboxApi;
+df$4.comboboxStates = comboboxStates;
+var esc3 = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+var idPart = (t) => t.replace(/[^\w-]/g, "_");
+var comboSeq = 0;
+function hideEmptyGroups(listbox) {
+  dfDollar4(listbox).find(".combobox-group-label").each((_i, label) => {
+    let next = label.nextElementSibling;
+    let groupHasVisible = false;
+    while (next && !next.classList.contains("combobox-group-label") && !next.classList.contains("combobox-separator")) {
+      if (next.getAttribute("role") === "option" && !next.hidden && !next.classList.contains("combobox-create"))
+        groupHasVisible = true;
+      next = next.nextElementSibling;
+    }
+    dfDollar4(label).prop("hidden", !groupHasVisible);
+  });
+  dfDollar4(listbox).find(".combobox-separator").each((_i, sep) => {
+    const prev = sep.previousElementSibling;
+    const next = sep.nextElementSibling;
+    dfDollar4(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
+  });
+}
+function initTags(wrapper) {
+  const field = dfDollar4(wrapper).find(".combobox-field").get(0);
+  const input = dfDollar4(wrapper).find(".combobox-field-input").get(0);
+  const popover = dfDollar4(wrapper).find(".combobox-content").get(0);
+  const listbox = dfDollar4(wrapper).find('[role="listbox"]').get(0);
+  if (!field || !input || !popover || !listbox)
+    return;
+  const empty = dfDollar4(wrapper).find(".combobox-empty").get(0);
+  const creatable = wrapper.hasAttribute("data-creatable");
+  const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+  const options = () => Array.from(dfDollar4(listbox).find('[role="option"]:not(.combobox-create)').toArray());
+  const valueOf = (o) => o.dataset.value ?? o.textContent.trim();
+  const labelOf = (o) => o.textContent.trim();
+  dfDollar4(listbox).attr("aria-multiselectable", "true");
+  const anchorId = `--combobox-${uid}`;
+  dfDollar4(field).css("anchorName", anchorId);
+  dfDollar4(popover).css("positionAnchor", anchorId);
+  const tags = document.createElement("span");
+  tags.className = "combobox-tags";
+  dfDollar4(input).before(tags);
+  let createRow = null;
+  if (creatable) {
+    createRow = document.createElement("div");
+    createRow.className = "combobox-item combobox-create";
+    createRow.id = `${uid}-create`;
+    createRow.setAttribute("role", "option");
+    createRow.setAttribute("aria-selected", "false");
+    createRow.hidden = true;
+    dfDollar4(listbox).prepend(createRow);
+  }
+  let highlighted = null;
+  const highlight = (el) => {
+    if (highlighted)
+      dfDollar4(highlighted).data("highlighted", null);
+    highlighted = el;
+    if (el) {
+      dfDollar4(el).data("highlighted", "");
+      el.scrollIntoView({ block: "nearest" });
+      dfDollar4(input).attr("aria-activedescendant", el.id);
+    } else
+      dfDollar4(input).attr("aria-activedescendant", null);
+  };
+  const visible = () => dfDollar4(listbox).find('[role="option"]').toArray().filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
+  const isOpen = () => popover.matches(":popover-open");
+  const open = () => {
+    if (!isOpen())
+      safeShowPopover(popover);
+    dfDollar4(input).attr("aria-expanded", "true");
+  };
+  const close = () => {
+    if (isOpen())
+      popover.hidePopover();
+    dfDollar4(input).attr("aria-expanded", "false");
+    highlight(null);
+  };
+  popover._open = () => {
+    open();
+    filter();
+  };
+  popover._close = close;
+  bindComponent(popover, comboboxApi);
+  const filter = () => {
+    const text = input.value.trim();
+    const q = text.toLowerCase();
+    let exact = null;
+    let any = false;
+    for (const o of options()) {
+      const match = !q || labelOf(o).toLowerCase().includes(q);
+      dfDollar4(o).prop("hidden", !match);
+      if (match)
+        any = true;
+      if (q && labelOf(o).toLowerCase() === q)
+        exact = o;
+    }
+    if (createRow) {
+      const showCreate = !!text && !exact;
+      dfDollar4(createRow).prop("hidden", !showCreate);
+      if (showCreate)
+        dfDollar4(createRow).text(`Create "${text}"`);
+    }
+    hideEmptyGroups(listbox);
+    if (empty)
+      dfDollar4(empty).prop("hidden", any || !!createRow && !createRow.hidden);
+    highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? visible()[0] ?? null : null));
+  };
+  const render = (announce = true, created = null) => {
+    const chosen = options().filter((o) => o.getAttribute("aria-selected") === "true");
+    const labels = chosen.map(labelOf);
+    const values = chosen.map(valueOf);
+    const name = wrapper.dataset.name;
+    dfDollar4(tags).morph(labels.map((label, i) => `<span class="combobox-tag" id="${uid}-tag-${idPart(values[i])}">${esc3(label)}<button type="button" class="combobox-tag-remove" data-value="${esc3(values[i])}" aria-label="Remove ${esc3(label)}" tabindex="-1"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc3(name)}" value="${esc3(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+    if (input.dataset.placeholder === undefined)
+      input.dataset.placeholder = input.placeholder;
+    input.placeholder = labels.length ? "" : input.dataset.placeholder;
+    if (announce)
+      wrapper.dispatchEvent(new CustomEvent("combobox:change", {
+        bubbles: true,
+        detail: { values, labels, created }
+      }));
+  };
+  const commit = (row) => {
+    const text = input.value.trim();
+    let created = null;
+    if (createRow && row === createRow || !row && creatable && text) {
+      if (!text)
+        return;
+      const exact = options().find((o) => labelOf(o).toLowerCase() === text.toLowerCase());
+      if (exact)
+        row = exact;
+      else {
+        const option = document.createElement("div");
+        option.className = "combobox-item";
+        option.setAttribute("role", "option");
+        option.dataset.value = text;
+        option.dataset.created = "";
+        option.id = `${uid}-opt-${idPart(text)}-${options().length}`;
+        dfDollar4(option).text(text);
+        const firstGroup = dfDollar4(listbox).find(".combobox-group-label").get(0);
+        if (firstGroup)
+          dfDollar4(firstGroup).before(option);
+        else
+          dfDollar4(listbox).append(option);
+        row = option;
+        created = text;
+      }
+      dfDollar4(row).attr("aria-selected", "true");
+    } else if (row) {
+      if (row.getAttribute("aria-disabled") === "true")
+        return;
+      const on = row.getAttribute("aria-selected") === "true";
+      dfDollar4(row).attr("aria-selected", on && !text ? "false" : "true");
+    } else
+      return;
+    dfDollar4(input).val("");
+    render(true, created);
+    filter();
+    input.focus();
+  };
+  render(false);
+  filter();
+  field.addEventListener("mousedown", (e) => {
+    if (!e.target.closest("button, input")) {
+      e.preventDefault();
+      input.focus();
+    }
+  });
+  tags.addEventListener("click", (e) => {
+    const btn = e.target.closest(".combobox-tag-remove");
+    if (!btn)
+      return;
+    const option = options().find((o) => valueOf(o) === btn.dataset.value);
+    if (option)
+      dfDollar4(option).attr("aria-selected", "false");
+    render();
+    filter();
+    input.focus();
+  });
+  input.addEventListener("focus", () => {
+    open();
+    filter();
+  });
+  input.addEventListener("input", () => {
+    open();
+    filter();
+  });
+  input.addEventListener("keydown", (e) => {
+    const rows = visible();
+    const at = highlighted ? rows.indexOf(highlighted) : -1;
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        open();
+        highlight(rows[Math.min(at + 1, rows.length - 1)] ?? null);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        highlight(rows[Math.max(at - 1, 0)] ?? null);
+        break;
+      case "Enter":
+        e.preventDefault();
+        commit(highlighted);
+        break;
+      case ",":
+        if (input.value.trim()) {
+          e.preventDefault();
+          commit(highlighted);
+        }
+        break;
+      case "Backspace": {
+        if (input.value !== "")
+          break;
+        const chosen = options().filter((o) => o.getAttribute("aria-selected") === "true");
+        const last = chosen[chosen.length - 1];
+        if (!last)
+          break;
+        e.preventDefault();
+        dfDollar4(last).attr("aria-selected", "false");
+        render();
+        filter();
+        break;
+      }
+      case "Escape":
+        e.preventDefault();
+        close();
+        break;
+      case "Tab":
+        close();
+        break;
+    }
+  });
+  listbox.addEventListener("mousedown", (e) => e.preventDefault());
+  listbox.addEventListener("click", (e) => {
+    const row = e.target.closest('[role="option"]');
+    if (row && !row.hidden)
+      commit(row);
+  });
+  listbox.addEventListener("mousemove", (e) => {
+    const row = e.target.closest('[role="option"]');
+    if (row && !row.hidden && row !== highlighted)
+      highlight(row);
+  });
+  wrapper.addEventListener("focusout", (e) => {
+    if (!wrapper.contains(e.relatedTarget) && !popover.contains(e.relatedTarget))
+      close();
+  });
+  popover.addEventListener("toggle", () => {
+    dfDollar4(input).attr("aria-expanded", String(isOpen()));
+  });
+}
+function init4() {
+  dfDollar4(".combobox:not([data-init])").toArray().forEach((wrapper) => {
+    wrapper.dataset.init = "";
+    if (wrapper.hasAttribute("data-tags")) {
+      initTags(wrapper);
+      return;
+    }
+    const $wrapper = dfDollar4(wrapper);
+    const $trigger = $wrapper.find(".combobox-trigger");
+    const $value = $wrapper.find(".combobox-value");
+    const $popover = $wrapper.find(".combobox-content");
+    const $search = $wrapper.find(".combobox-search-input");
+    const $listbox = $wrapper.find('[role="listbox"]');
+    const $empty = $wrapper.find(".combobox-empty");
+    const trigger = $trigger[0];
+    const popover = $popover[0];
+    const searchInput = $search[0];
+    const listbox = $listbox[0];
+    if (!trigger || !popover || !searchInput || !listbox)
+      return;
+    const allItems = $listbox.find('[role="option"]');
+    let highlighted = -1;
+    const anchorId = `--combobox-${popover.id}`;
+    $trigger.css("anchorName", anchorId);
+    $popover.css("positionAnchor", anchorId);
+    const placeholder = $value.data("placeholder") ?? "";
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "combobox-clear";
+    clearBtn.setAttribute("aria-label", "Clear selection");
+    dfDollar4(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+    dfDollar4(clearBtn).css("positionAnchor", anchorId);
+    $trigger.after(clearBtn);
+    const multiple = wrapper.hasAttribute("data-multiple");
+    const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+    let tags = null;
+    if (multiple) {
+      $listbox.attr("aria-multiselectable", "true");
+      tags = document.createElement("div");
+      tags.className = "combobox-tags";
+      tags.setAttribute("role", "list");
+      tags.setAttribute("aria-label", `Selected ${trigger.getAttribute("aria-label") || dfDollar4("#" + CSS.escape(trigger.getAttribute("aria-labelledby") || "")).get(0)?.textContent?.trim() || "options"}`);
+      dfDollar4(clearBtn).after(tags);
+      tags.addEventListener("click", (e) => {
+        const btn = e.target.closest(".combobox-tag-remove");
+        if (!btn)
+          return;
+        const option = Array.from(allItems).find((o) => (o.dataset.value ?? o.textContent.trim()) === btn.dataset.value);
+        const all = dfDollar4(tags).find(".combobox-tag-remove").toArray();
+        const at = all.indexOf(btn);
+        if (option)
+          dfDollar4(option).attr("aria-selected", "false");
+        renderSelection();
+        const rest = dfDollar4(tags).find(".combobox-tag-remove").toArray();
+        (rest[Math.min(at, rest.length - 1)] ?? trigger).focus();
+      });
+    }
+    const renderSelection = (announce = true) => {
+      const chosen = Array.from(allItems).filter((o) => o.getAttribute("aria-selected") === "true");
+      const labels = chosen.map((o) => o.textContent.trim());
+      const values = chosen.map((o) => o.dataset.value ?? o.textContent.trim());
+      const summary = multiple && labels.length > 1 ? ($value.data("selectedLabel") ?? "{n} selected").replace("{n}", String(labels.length)) : labels.join(", ");
+      if (labels.length)
+        $value.text(summary).attr("data-placeholder", null);
+      else
+        $value.text(placeholder).attr("data-placeholder", placeholder);
+      if (tags) {
+        const name = wrapper.dataset.name;
+        dfDollar4(tags).morph(labels.map((label, i) => `<span class="combobox-tag" role="listitem" id="${uid}-tag-${idPart(values[i])}">${esc3(label)}<button type="button" class="combobox-tag-remove" data-value="${esc3(values[i])}" aria-label="Remove ${esc3(label)}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc3(name)}" value="${esc3(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+      }
+      if (announce)
+        wrapper.dispatchEvent(new CustomEvent("combobox:change", { bubbles: true, detail: { values, labels } }));
+    };
+    if (multiple)
+      renderSelection(false);
+    clearBtn.addEventListener("click", () => {
+      allItems.attr("aria-selected", "false");
+      renderSelection();
+      trigger.focus();
+    });
+    const getVisibleItems = () => allItems.filter((item) => !item.hidden && item.getAttribute("aria-disabled") !== "true");
+    const open = () => {
+      safeShowPopover(popover);
+      $trigger.attr("aria-expanded", "true");
+      $search.val("");
+      filter("");
+      searchInput.focus();
+    };
+    const close = () => {
+      popover.hidePopover();
+      $trigger.attr("aria-expanded", "false");
+      $search.attr("aria-activedescendant", "");
+      clearHighlight();
+      trigger.focus();
+    };
+    popover._open = open;
+    popover._close = close;
+    bindComponent(popover, comboboxApi);
+    const isOpen = () => popover.matches(":popover-open");
+    const filter = (query) => {
+      const q = query.toLowerCase();
+      let hasVisible = false;
+      allItems.forEach((item) => {
+        const match = !q || item.textContent.trim().toLowerCase().includes(q);
+        dfDollar4(item).prop("hidden", !match);
+        if (match)
+          hasVisible = true;
+      });
+      if (listbox)
+        hideEmptyGroups(listbox);
+      if ($empty.length)
+        $empty.prop("hidden", hasVisible);
+    };
+    const clearHighlight = () => {
+      allItems.data("highlighted", null);
+      highlighted = -1;
+    };
+    const doHighlight = (index) => {
+      const items = getVisibleItems();
+      clearHighlight();
+      if (index < 0 || index >= items.length)
+        return;
+      highlighted = index;
+      dfDollar4(items[index]).data("highlighted", "");
+      items[index].scrollIntoView({ block: "nearest" });
+      $search.attr("aria-activedescendant", items[index].id);
+    };
+    const selectItem = (item) => {
+      if (item.getAttribute("aria-disabled") === "true")
+        return;
+      if (multiple) {
+        dfDollar4(item).attr("aria-selected", item.getAttribute("aria-selected") === "true" ? "false" : "true");
+        renderSelection();
+        searchInput.focus();
+        return;
+      }
+      allItems.attr("aria-selected", "false");
+      dfDollar4(item).attr("aria-selected", "true");
+      renderSelection();
+      close();
+    };
+    trigger.addEventListener("click", () => {
+      if (isOpen()) {
+        close();
+      } else {
+        open();
+      }
+    });
+    searchInput.addEventListener("input", () => {
+      filter(searchInput.value);
+      doHighlight(0);
+    });
+    searchInput.addEventListener("keydown", (e) => {
+      const items = getVisibleItems();
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          doHighlight(Math.min(highlighted + 1, items.length - 1));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          doHighlight(Math.max(highlighted - 1, 0));
+          break;
+        case "Home":
+          e.preventDefault();
+          doHighlight(0);
+          break;
+        case "End":
+          e.preventDefault();
+          doHighlight(items.length - 1);
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (highlighted >= 0 && items[highlighted])
+            selectItem(items[highlighted]);
+          break;
+        case "Escape":
+          e.preventDefault();
+          close();
+          break;
+        case "Tab":
+          close();
+          break;
+        case "Backspace": {
+          if (!multiple || searchInput.value !== "")
+            break;
+          const chosen = Array.from(allItems).filter((o) => o.getAttribute("aria-selected") === "true");
+          const last = chosen[chosen.length - 1];
+          if (!last)
+            break;
+          e.preventDefault();
+          dfDollar4(last).attr("aria-selected", "false");
+          renderSelection();
+          break;
+        }
+      }
+    });
+    listbox.addEventListener("click", (e) => {
+      const item = e.target.closest('[role="option"]');
+      if (item && !item.hidden && item.getAttribute("aria-disabled") !== "true")
+        selectItem(item);
+    });
+    listbox.addEventListener("mousemove", (e) => {
+      const item = e.target.closest('[role="option"]');
+      if (item && !item.hidden) {
+        const items = getVisibleItems();
+        doHighlight(items.indexOf(item));
+      }
+    });
+    popover.addEventListener("toggle", () => {
+      const nowOpen = popover.matches(":popover-open");
+      $trigger.attr("aria-expanded", String(nowOpen));
+      if (!nowOpen)
+        clearHighlight();
+    });
+  });
+}
+init4();
+new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+
+// src/components/overlays/context-menu/context-menu.ts
+var df$5 = defussGlobals();
+var dfDollar5 = defussQuery();
 var contextMenuStates = ["default", "open"];
 function keepInView(menu, x, y) {
   const fit = () => {
@@ -5876,8 +6381,8 @@ function keepInView(menu, x, y) {
         fit();
     }, { once: true });
 }
-function applyMarkup4(_el, _stateName) {}
-function triggerStateChange4(menu, stateName, config) {
+function applyMarkup5(_el, _stateName) {}
+function triggerStateChange5(menu, stateName, config) {
   switch (stateName) {
     case "default":
       menu.hidePopover();
@@ -5897,17 +6402,17 @@ function triggerStateChange4(menu, stateName, config) {
 var contextMenuApi = componentState({
   component: "context-menu",
   states: contextMenuStates,
-  apply: (menu, state) => triggerStateChange4(menu, state.name, state.config),
+  apply: (menu, state) => triggerStateChange5(menu, state.name, state.config),
   read: (menu, state) => {
     return {
       name: menu.matches(":popover-open") ? "open" : "default",
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup4(el, state.name)
+  markup: (el, state) => applyMarkup5(el, state.name)
 });
-df$4.contextMenuApi = contextMenuApi;
-df$4.contextMenuStates = contextMenuStates;
+df$5.contextMenuApi = contextMenuApi;
+df$5.contextMenuStates = contextMenuStates;
 var pendingOpen = null;
 var lastRightUp = 0;
 if (!document.__ctxMenuReleaseInit) {
@@ -5934,10 +6439,10 @@ function openMenuAt(menu, x, y) {
   keepInView(menu, x, y);
   menu.dataset.stateName = "open";
 }
-function init4() {
-  dfDollar4("[data-context-menu]:not([data-init])").toArray().forEach((trigger) => {
+function init5() {
+  dfDollar5("[data-context-menu]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const menu = dfDollar4("#" + CSS.escape(trigger.dataset.contextMenu)).get(0);
+    const menu = dfDollar5("#" + CSS.escape(trigger.dataset.contextMenu)).get(0);
     if (!menu)
       return;
     bindComponent(menu, contextMenuApi);
@@ -5965,17 +6470,17 @@ function init4() {
     });
   });
 }
-init4();
-new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+init5();
+new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/dialog/dialog.ts
-var df$5 = defussGlobals();
-var dfDollar5 = defussQuery();
+var df$6 = defussGlobals();
+var dfDollar6 = defussQuery();
 var dialogStates = ["default", "open"];
-function applyMarkup5(dialog, stateName) {
-  dfDollar5(dialog).attr("open", stateName === "open" ? "" : null);
+function applyMarkup6(dialog, stateName) {
+  dfDollar6(dialog).attr("open", stateName === "open" ? "" : null);
 }
-function triggerStateChange5(dialog, stateName, _config) {
+function triggerStateChange6(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -5991,16 +6496,16 @@ var shown2 = (dialog) => dialog.open ? "open" : "default";
 var dialogApi = componentState({
   component: "dialog",
   states: dialogStates,
-  apply: (dialog, state) => triggerStateChange5(dialog, state.name, state.config),
+  apply: (dialog, state) => triggerStateChange6(dialog, state.name, state.config),
   read: (dialog, state) => ({ name: shown2(dialog), config: state.config }),
-  markup: (el, state) => applyMarkup5(el, state.name)
+  markup: (el, state) => applyMarkup6(el, state.name)
 });
-df$5.dialogApi = dialogApi;
-df$5.dialogStates = dialogStates;
-function init5() {
-  dfDollar5("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
+df$6.dialogApi = dialogApi;
+df$6.dialogStates = dialogStates;
+function init6() {
+  dfDollar6("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const dialog = dfDollar5("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
+    const dialog = dfDollar6("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
     if (!dialog)
       return;
     trigger.addEventListener("click", () => {
@@ -6008,14 +6513,14 @@ function init5() {
       dialog.showModal();
     });
   });
-  dfDollar5("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
-    dfDollar5(dialog).data("init", "");
+  dfDollar6("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
+    dfDollar6(dialog).data("init", "");
     bindComponent(dialog, dialogApi, { name: shown2(dialog), config: {} });
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog)
         dialog.close();
     });
-    dfDollar5(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
+    dfDollar6(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         dialog.close();
       });
@@ -6028,17 +6533,17 @@ function init5() {
     });
   });
 }
-init5();
-new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/dropdown/dropdown.ts
-var df$6 = defussGlobals();
-var dfDollar6 = defussQuery();
+var df$7 = defussGlobals();
+var dfDollar7 = defussQuery();
 var dropdownStates = ["default", "open"];
 var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
-var itemsOf = (menu) => Array.from(dfDollar6(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
-var subOf = (trigger) => dfDollar6(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
+var itemsOf = (menu) => Array.from(dfDollar7(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+var subOf = (trigger) => dfDollar7(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
 var rootOf2 = (menu) => {
   let m = menu;
   while (m?.parentElement?.closest(".dropdown-content[popover]"))
@@ -6047,8 +6552,8 @@ var rootOf2 = (menu) => {
 };
 var HOVER_OPEN = 120;
 var HOVER_CLOSE = 220;
-function applyMarkup6(_el, _stateName) {}
-function triggerStateChange6(menu, stateName, _config) {
+function applyMarkup7(_el, _stateName) {}
+function triggerStateChange7(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6063,11 +6568,11 @@ function triggerStateChange6(menu, stateName, _config) {
 var dropdownApi = componentState({
   component: "dropdown",
   states: dropdownStates,
-  apply: (menu, state) => triggerStateChange6(menu, state.name, state.config),
-  markup: (el, state) => applyMarkup6(el, state.name)
+  apply: (menu, state) => triggerStateChange7(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup7(el, state.name)
 });
-df$6.dropdownApi = dropdownApi;
-df$6.dropdownStates = dropdownStates;
+df$7.dropdownApi = dropdownApi;
+df$7.dropdownStates = dropdownStates;
 var anchorSeq = 0;
 function highlight(menu, item, focus = true) {
   itemsOf(menu).forEach((i) => {
@@ -6099,7 +6604,7 @@ function activate(menu, item) {
   }
   if (role === "menuitemradio") {
     const group = item.closest('[role="group"]') ?? menu;
-    dfDollar6(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
+    dfDollar7(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
@@ -6142,7 +6647,7 @@ function wireMenu(menu) {
     return;
   menu._wired = true;
   const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
-  const openSubs = () => Array.from(dfDollar6(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
+  const openSubs = () => Array.from(dfDollar7(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
   menu.addEventListener("mousemove", (e) => {
     if (!own(e))
       return;
@@ -6260,8 +6765,8 @@ function wireMenu(menu) {
   });
 }
 function wireSub(wrap) {
-  const trigger = dfDollar6(wrap).find(":scope > .dropdown-sub-trigger").get(0);
-  const sub = dfDollar6(wrap).find(":scope > .dropdown-sub-content").get(0);
+  const trigger = dfDollar7(wrap).find(":scope > .dropdown-sub-trigger").get(0);
+  const sub = dfDollar7(wrap).find(":scope > .dropdown-sub-content").get(0);
   if (!trigger || !sub || sub._subWired)
     return;
   sub._subWired = true;
@@ -6299,10 +6804,10 @@ function wireSub(wrap) {
     highlight(parent, trigger, false);
   });
 }
-function init6() {
-  dfDollar6("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
+function init7() {
+  dfDollar7("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const menu = dfDollar6("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
+    const menu = dfDollar7("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
     if (!menu)
       return;
     const anchorId = `--dropdown-${menu.id}`;
@@ -6331,29 +6836,522 @@ function init6() {
         });
         const active = document.activeElement;
         const other = active instanceof Element && active !== trigger ? active.closest("[data-dropdown-trigger]") : null;
-        const otherOpen = other ? dfDollar6("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
+        const otherOpen = other ? dfDollar7("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
         if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
           trigger.focus({ preventScroll: true });
       }
     });
     wireMenu(menu);
-    dfDollar6(menu).find(".dropdown-sub").toArray().forEach(wireSub);
+    dfDollar7(menu).find(".dropdown-sub").toArray().forEach(wireSub);
   });
-  dfDollar6(".dropdown-sub").toArray().forEach(wireSub);
-  dfDollar6(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
+  dfDollar7(".dropdown-sub").toArray().forEach(wireSub);
+  dfDollar7(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
     menu.dataset.init = "";
     bindComponent(menu, dropdownApi);
   });
 }
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+
+// src/components/navigation/language-switcher/language-switcher.ts
+var df$8 = defussGlobals();
+var dfDollar8 = defussQuery();
+var languageSwitcherStates = ["default", "open"];
+var SEED = `af Afrikaans|Afrikaans|za
+am Amharic|አማርኛ|et
+ar Arabic|العربية|sa
+bg Bulgarian|български|bg
+bg-Latn Bulgarian (Latin)|bulgarski|bg
+bn Bangla|বাংলা|bd
+bs Bosnian|bosanski|ba
+ca Catalan|català|es-ct
+ceb Cebuano|Binisaya|ph
+co Corsican|corsu|fr
+cs Czech|čeština|cz
+cy Welsh|Cymraeg|gb-wls
+da Danish|dansk|dk
+de German|Deutsch|de
+el Greek|Ελληνικά|gr
+el-Latn Greek (Latin)|Ellinika|gr
+en English|English|gb
+eo Esperanto|Esperanto|
+es Spanish|español|es
+et Estonian|eesti|ee
+eu Basque|euskara|es-pv
+fa Persian|فارسی|ir
+fi Finnish|suomi|fi
+fil Filipino|Filipino|ph
+fr French|français|fr
+fy Western Frisian|Frysk|nl
+ga Irish|Gaeilge|ie
+gd Scottish Gaelic|Gàidhlig|gb-sct
+gl Galician|galego|es-ga
+gu Gujarati|ગુજરાતી|in
+ha Hausa|Hausa|ng
+haw Hawaiian|ʻŌlelo Hawaiʻi|us
+hi Hindi|हिन्दी|in
+hi-Latn Hindi (Latin)|Hindi|in
+hmn Hmong|Hmoob|la
+hr Croatian|hrvatski|hr
+ht Haitian Creole|Kreyòl ayisyen|ht
+hu Hungarian|magyar|hu
+hy Armenian|հայերեն|am
+id Indonesian|Bahasa Indonesia|id
+ig Igbo|Asụsụ Igbo|ng
+is Icelandic|íslenska|is
+it Italian|italiano|it
+iw Hebrew|עברית|il
+ja Japanese|日本語|jp
+ja-Latn Japanese (Latin)|Nihongo|jp
+jv Javanese|Basa Jawa|id
+ka Georgian|ქართული|ge
+kk Kazakh|қазақ тілі|kz
+km Khmer|ខ្មែរ|kh
+kn Kannada|ಕನ್ನಡ|in
+ko Korean|한국어|kr
+ku Kurdish|Kurdî|iq
+ky Kyrgyz|кыргызча|kg
+la Latin|Latina|va
+lb Luxembourgish|Lëtzebuergesch|lu
+lo Lao|ລາວ|la
+lt Lithuanian|lietuvių|lt
+lv Latvian|latviešu|lv
+mg Malagasy|Malagasy|mg
+mi Māori|Māori|nz
+mk Macedonian|македонски|mk
+ml Malayalam|മലയാളം|in
+mn Mongolian|монгол|mn
+mr Marathi|मराठी|in
+ms Malay|Bahasa Melayu|my
+mt Maltese|Malti|mt
+my Burmese|မြန်မာ|mm
+ne Nepali|नेपाली|np
+nl Dutch|Nederlands|nl
+no Norwegian|norsk|no
+ny Nyanja|Chichewa|mw
+pa Punjabi|ਪੰਜਾਬੀ|in
+pl Polish|polski|pl
+ps Pashto|پښتو|af
+pt Portuguese|português|pt
+ro Romanian|română|ro
+ru Russian|русский|ru
+ru-Latn Russian (Latin)|Russkiy|ru
+sd Sindhi|سنڌي|pk
+si Sinhala|සිංහල|lk
+sk Slovak|slovenčina|sk
+sl Slovenian|slovenščina|si
+sm Samoan|Gagana Sāmoa|ws
+sn Shona|chiShona|zw
+so Somali|Soomaali|so
+sq Albanian|shqip|al
+sr Serbian|српски|rs
+st Southern Sotho|Sesotho|ls
+su Sundanese|Basa Sunda|id
+sv Swedish|svenska|se
+sw Swahili|Kiswahili|tz
+ta Tamil|தமிழ்|in
+te Telugu|తెలుగు|in
+tg Tajik|тоҷикӣ|tj
+th Thai|ไทย|th
+tr Turkish|Türkçe|tr
+uk Ukrainian|українська|ua
+ur Urdu|اردو|pk
+uz Uzbek|oʻzbekcha|uz
+vi Vietnamese|Tiếng Việt|vn
+xh Xhosa|isiXhosa|za
+yi Yiddish|ייִדיש|il
+yo Yoruba|Èdè Yorùbá|ng
+zh Chinese|中文|cn
+zh-Latn Chinese (Pinyin)|Zhōngwén|cn
+zu Zulu|isiZulu|za`;
+var RTL = new Set(["ar", "fa", "iw", "he", "ps", "sd", "ur", "yi"]);
+var LANGUAGES = SEED.split(`
+`).map((line) => {
+  const sp = line.indexOf(" ");
+  const code = line.slice(0, sp);
+  const [english, native, region] = line.slice(sp + 1).split("|");
+  return { code, english, native, region, dir: RTL.has(code) ? "rtl" : "ltr" };
+});
+var BY_CODE = new Map(LANGUAGES.map((l) => [l.code.toLowerCase(), l]));
+var ALIAS = { he: "iw", nb: "no", tl: "fil" };
+var settings = {
+  flags: "https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/{shape}/{region}.svg"
+};
+var resolve = (t) => typeof t === "string" ? dfDollar8("#" + CSS.escape(t)).get(0) ?? dfDollar8(t).get(0) : t;
+var esc4 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+function partsOf(tag) {
+  try {
+    const l = new Intl.Locale(tag);
+    return { language: l.language, script: l.script ?? "", region: (l.region ?? "").toLowerCase() };
+  } catch {
+    const [language = "", ...rest] = tag.split(/[-_]/);
+    return {
+      language: language.toLowerCase(),
+      script: rest.find((p) => p.length === 4) ?? "",
+      region: (rest.find((p) => p.length === 2) ?? "").toLowerCase()
+    };
+  }
+}
+function seedOf(tag) {
+  const { language, script } = partsOf(tag);
+  const lang = ALIAS[language] ?? language;
+  return BY_CODE.get(tag.toLowerCase()) ?? (script ? BY_CODE.get(`${lang}-${script}`.toLowerCase()) : undefined) ?? BY_CODE.get(lang);
+}
+var capitalize = (name, locale) => {
+  if (!name)
+    return name;
+  let first;
+  try {
+    first = name.charAt(0).toLocaleUpperCase(locale);
+  } catch {
+    first = name.charAt(0).toUpperCase();
+  }
+  return first + name.slice(1);
+};
+var displayCache = new Map;
+function displayNames(locale, type) {
+  const key = `${type}:${locale}`;
+  if (!displayCache.has(key)) {
+    let d = null;
+    try {
+      d = new Intl.DisplayNames([locale], { type, fallback: "none" });
+      if (new Intl.Locale(d.resolvedOptions().locale).language !== partsOf(locale).language)
+        d = null;
+    } catch {
+      d = null;
+    }
+    displayCache.set(key, d);
+  }
+  return displayCache.get(key) ?? null;
+}
+function cldrName(locale, type, code) {
+  try {
+    return displayNames(locale, type)?.of(code);
+  } catch {
+    return;
+  }
+}
+function nameIn(tag, locale) {
+  const seed = seedOf(tag);
+  const { region } = partsOf(tag);
+  const self = partsOf(locale).language === partsOf(tag).language;
+  if (seed && !region && seed.code.toLowerCase() === tag.toLowerCase().replace(/^he$/, "iw")) {
+    if (self)
+      return capitalize(seed.native, tag);
+    if (partsOf(locale).language === "en")
+      return seed.english;
+  }
+  const n = cldrName(locale, "language", tag.replace(/^iw\b/, "he"));
+  if (n && n.toLowerCase() !== tag.toLowerCase())
+    return capitalize(n, locale);
+  const base = seed ? self ? capitalize(seed.native, tag) : seed.english : tag;
+  if (!region)
+    return base;
+  const regionName = cldrName(locale, "region", region.toUpperCase()) ?? region.toUpperCase();
+  return `${base} (${regionName})`;
+}
+function regionFor(el, tag) {
+  for (const pair of (el.dataset.flags || "").split(/\s+/).filter(Boolean)) {
+    const [t, r] = pair.split(":");
+    if (t && t.toLowerCase() === tag.toLowerCase())
+      return (r || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+  }
+  return (partsOf(tag).region || seedOf(tag)?.region || "").replace(/[^a-z0-9-]/g, "");
+}
+var languagesOf = (el) => {
+  const list = (el.dataset.languages || "en").split(/[\s,]+/).filter(Boolean);
+  return list.length ? list : ["en"];
+};
+var valueOf = (el, languages = languagesOf(el)) => {
+  const v = (el.dataset.value || "").toLowerCase();
+  return languages.find((l) => l.toLowerCase() === v) ?? languages[0];
+};
+var nextOf = (el, tag) => {
+  const languages = languagesOf(el);
+  return languages[(languages.indexOf(tag) + 1) % languages.length];
+};
+var codeLabel = (tag) => {
+  const { language, region } = partsOf(tag);
+  return (region ? `${language}-${region}` : language).toUpperCase();
+};
+var dirOf = (tag) => RTL.has(partsOf(tag).language) ? "rtl" : "ltr";
+var idPart2 = (tag) => tag.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+function flagHtml(el, tag) {
+  if (el.dataset.flag === "none")
+    return "";
+  const region = regionFor(el, tag);
+  const shape = ["square", "circle", "squircle"].includes(el.dataset.flagShape || "") ? "1x1" : "4x3";
+  const url = region ? settings.flags.replace("{shape}", shape).replace("{region}", region) : "";
+  const image = region ? ` data-region="${esc4(region)}" style="--language-switcher-flag: url('${esc4(url)}')"` : "";
+  return `<span class="language-switcher-flag" data-code="${esc4(partsOf(tag).language.toUpperCase())}"${image} aria-hidden="true"></span>`;
+}
+var GLOBE = '<svg class="language-switcher-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
+var CHEVRON = '<svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>';
+function faceHtml(el, tag) {
+  const display = el.dataset.display || "label";
+  const flag = flagHtml(el, tag) || (display === "icon" ? GLOBE : "");
+  const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf(el)) : nameIn(tag, tag);
+  return `${flag}${text ? `<span class="language-switcher-label" lang="${esc4(tag)}" dir="${dirOf(tag)}">${esc4(text)}</span>` : ""}`;
+}
+var labelOf = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
+var ariaOf = (el, tag) => `${labelOf(el)}: ${nameIn(tag, tag)}`;
+function namesOf(el, tag, ui) {
+  const own = nameIn(tag, tag), shown = nameIn(tag, ui);
+  if (el.dataset.names === "native")
+    return { name: own, lang: tag, alt: "", altLang: tag };
+  if (el.dataset.names === "ui")
+    return { name: shown, lang: ui, alt: shown === own ? "" : own, altLang: tag };
+  return { name: own, lang: tag, alt: shown === own ? "" : shown, altLang: ui };
+}
+var optionInner = (el, tag, ui) => {
+  const n = namesOf(el, tag, ui);
+  return `${flagHtml(el, tag)}<span class="language-switcher-name" lang="${esc4(n.lang)}" dir="${dirOf(n.lang)}">${esc4(n.name)}</span><span class="language-switcher-alt" lang="${esc4(n.altLang)}" dir="${dirOf(n.altLang)}"${n.alt ? "" : " hidden"}>${esc4(n.alt)}</span>`;
+};
+function comboboxHtml(el, uid) {
+  const languages = languagesOf(el);
+  const value = valueOf(el, languages);
+  const search = el.dataset.search || "Search languages...";
+  const options = languages.map((tag) => `<div role="option" id="${uid}-${idPart2(tag)}" class="combobox-item language-switcher-option" data-value="${esc4(tag)}" aria-selected="${tag === value}">${optionInner(el, tag, value)}</div>`).join("");
+  const icon = (el.dataset.display || "label") === "icon";
+  return `<div class="combobox language-switcher-combobox" data-ce-chrome${el.dataset.size ? ` data-size="${esc4(el.dataset.size)}"` : ""}>
+<button type="button" class="btn combobox-trigger" data-variant="${esc4(el.dataset.buttonVariant || "ghost")}"${icon ? ' data-size="icon"' : ""} aria-haspopup="listbox" aria-expanded="false" aria-label="${esc4(ariaOf(el, value))}" aria-controls="${uid}-popover"><span class="combobox-value">${faceHtml(el, value)}</span>${icon ? "" : CHEVRON}</button>
+<div id="${uid}-popover" class="combobox-content language-switcher-content" popover>
+<div class="combobox-search"${languages.length > 7 ? "" : " data-quiet"}><input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="${uid}-listbox" aria-activedescendant="" aria-autocomplete="list" placeholder="${esc4(search)}" aria-label="${esc4(search)}"></div>
+<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc4(labelOf(el))}"><div class="combobox-empty" hidden>${esc4(el.dataset.empty || "No language found.")}</div>${options}</div>
+</div>
+</div>`;
+}
+function swapHtml(el) {
+  const value = valueOf(el);
+  return `<label class="swap language-switcher-swap"${el.dataset.swap === "fade" ? "" : ` data-variant="${esc4(el.dataset.swap || "flip")}"`} data-ce-chrome${el.dataset.size ? ` data-size="${esc4(el.dataset.size)}"` : ""}>
+<input type="checkbox" role="button" aria-label="${esc4(swapLabel(el, value))}">
+<span class="swap-off">${faceHtml(el, value)}</span>
+<span class="swap-on">${faceHtml(el, nextOf(el, value))}</span>
+</label>`;
+}
+function menuHtml(el) {
+  const value = valueOf(el);
+  return `<div class="language-switcher-menu" data-ce-chrome>${languagesOf(el).map((tag) => `<button type="button" class="dropdown-item dropdown-radio language-switcher-item" role="menuitemradio" tabindex="-1" aria-checked="${tag === value}" data-value="${esc4(tag)}">${optionInner(el, tag, value)}</button>`).join("")}</div>`;
+}
+var swapLabel = (el, value) => {
+  const next = nextOf(el, value);
+  return `${ariaOf(el, value)} - ${el.dataset.next || "next"}: ${nameIn(next, next)}`;
+};
+var STRUCTURE = [
+  "languages",
+  "variant",
+  "display",
+  "names",
+  "flag",
+  "flags",
+  "flagShape",
+  "size",
+  "buttonVariant",
+  "search",
+  "empty",
+  "next",
+  "swap"
+];
+var structureOf = (el) => STRUCTURE.map((k) => el.dataset[k] ?? "").join("|");
+var chromeOf = (el) => dfDollar8(el).children("[data-ce-chrome]").get(0);
+function draw2(el) {
+  const uid = el.id ? `${el.id}-ls` : el._lsId ??= `language-switcher-${++sequence}`;
+  const focused = el.contains(document.activeElement);
+  dfDollar8(el).children("[data-ce-chrome]").remove();
+  const variant = el.dataset.variant;
+  dfDollar8(el).append(dfDollar8(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
+  el._lsStructure = structureOf(el);
+  el._lsValue = valueOf(el);
+  if (focused)
+    dfDollar8(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
+}
+var sequence = 0;
+function update(el) {
+  if (el._lsStructure !== structureOf(el) || !chromeOf(el))
+    return draw2(el);
+  const value = valueOf(el);
+  const changed = el._lsValue !== value;
+  el._lsValue = value;
+  const chrome = dfDollar8(chromeOf(el));
+  if (el.dataset.variant === "swap") {
+    const input = chrome.find(":scope > input").get(0);
+    if (changed) {
+      const [shown, hidden] = input.checked ? [".swap-on", ".swap-off"] : [".swap-off", ".swap-on"];
+      chrome.find(`:scope > ${shown}`).html(faceHtml(el, value));
+      chrome.find(`:scope > ${hidden}`).html(faceHtml(el, nextOf(el, value)));
+    }
+    dfDollar8(input).attr("aria-label", swapLabel(el, value));
+    return;
+  }
+  if (el.dataset.variant === "menu") {
+    if (!changed)
+      return;
+    chrome.find(".language-switcher-item").each((_i, item) => {
+      const tag = item.dataset.value || "";
+      dfDollar8(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
+    });
+    return;
+  }
+  chrome.find(".combobox-trigger").attr("aria-label", ariaOf(el, value));
+  chrome.find('[role="listbox"]').attr("aria-label", labelOf(el));
+  if (!changed)
+    return;
+  chrome.find(".combobox-value").html(faceHtml(el, value)).attr("data-placeholder", null);
+  chrome.find(".language-switcher-option").each((_i, option) => {
+    const tag = option.dataset.value || "";
+    dfDollar8(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
+  });
+}
+function choose(el, tag, announce = true) {
+  const languages = languagesOf(el);
+  const next = languages.find((l) => l.toLowerCase() === String(tag).toLowerCase());
+  if (!next)
+    return false;
+  const previous = valueOf(el, languages);
+  if (el.dataset.value !== next)
+    dfDollar8(el).attr("data-value", next);
+  update(el);
+  if (announce && next !== previous)
+    el.dispatchEvent(new CustomEvent("language-change", {
+      bubbles: true,
+      detail: { value: next, previous, name: nameIn(next, next), dir: dirOf(next) }
+    }));
+  return true;
+}
+var popoverOf = (el) => dfDollar8(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
+var isOpen = (el) => {
+  try {
+    return !!popoverOf(el)?.matches(":popover-open");
+  } catch {
+    return false;
+  }
+};
+function applyMarkup8(el, _name, config) {
+  const languages = languagesOf(el);
+  const value = languages.find((l) => l.toLowerCase() === String(config?.value ?? "").toLowerCase());
+  if (value)
+    dfDollar8(el).attr("data-value", value);
+}
+function triggerStateChange8(el, name, config) {
+  if (config?.value)
+    choose(el, config.value, false);
+  const popover = popoverOf(el);
+  if (!popover)
+    return;
+  if (name === "open" && !isOpen(el))
+    dfDollar8(el).find(".combobox-trigger").get(0)?.click();
+  else if (name !== "open" && isOpen(el))
+    popover.hidePopover();
+}
+var languageSwitcherApi = componentState({
+  component: "language-switcher",
+  states: languageSwitcherStates,
+  mergeConfig: true,
+  apply: (el, state) => triggerStateChange8(el, state.name, state.config),
+  read: (el) => ({ name: isOpen(el) ? "open" : "default", config: { value: valueOf(el) } }),
+  markup: (el, state) => applyMarkup8(el, state.name, state.config)
+});
+df$8.languageSwitcherApi = languageSwitcherApi;
+df$8.languageSwitcherStates = languageSwitcherStates;
+function init8() {
+  dfDollar8(".language-switcher:not([data-init])").each((_i, el) => {
+    el.dataset.init = "";
+    if (!el.dataset.value || valueOf(el) !== el.dataset.value)
+      dfDollar8(el).attr("data-value", valueOf(el));
+    draw2(el);
+    dfDollar8(el).on("combobox:change", (e) => {
+      const value = e.detail?.values?.[0];
+      el._lsValue = "";
+      if (!value || !choose(el, value))
+        update(el);
+      languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    });
+    dfDollar8(el).on("change", (e) => {
+      const input = e.target;
+      if (!input.matches(".language-switcher-swap > input") || input.closest(".language-switcher") !== el)
+        return;
+      choose(el, nextOf(el, valueOf(el)));
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    });
+    const pick = (item) => {
+      const it = item;
+      if (!it?.matches?.(".language-switcher-item") || it.closest(".language-switcher") !== el)
+        return;
+      el._lsValue = "";
+      if (!choose(el, it.dataset.value || ""))
+        update(el);
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    };
+    dfDollar8(el).on("dropdown:select", (e) => pick(e.detail?.item));
+    dfDollar8(el).on("click", (e) => {
+      const item = e.target?.closest?.(".language-switcher-item");
+      if (item && !item.closest('[role="menu"]'))
+        pick(item);
+    });
+    dfDollar8(el).on("keydown", (e) => {
+      const input = e.target;
+      if (e.key !== "Enter" || !input.matches?.(".language-switcher-swap > input"))
+        return;
+      e.preventDefault();
+      input.click();
+    });
+    el.addEventListener("toggle", () => languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) }), true);
+    new MutationObserver(() => update(el)).observe(el, { attributes: true, attributeFilter: OBSERVED });
+    bindComponent(el, languageSwitcherApi, { name: "default", config: { value: valueOf(el) } });
+  });
+}
+var OBSERVED = [
+  "data-value",
+  "data-label",
+  "aria-label",
+  ...STRUCTURE.map((k) => "data-" + k.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()))
+];
+df$8.languageSwitcher = {
+  languages: () => LANGUAGES.map((l) => ({ ...l })),
+  name: (tag, locale) => nameIn(tag, locale ?? tag),
+  region: (tag) => partsOf(tag).region || seedOf(tag)?.region || "",
+  choose: (target, tag) => {
+    const el = resolve(target);
+    if (!el || !choose(el, tag))
+      return false;
+    languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    return true;
+  },
+  bind: (target, i18n) => {
+    const el = resolve(target);
+    if (!el || !i18n)
+      return () => {};
+    const follow = (locale) => {
+      if (locale && locale.toLowerCase() !== valueOf(el).toLowerCase() && choose(el, locale, false))
+        languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    };
+    follow(i18n.locale);
+    const onChange = (e) => {
+      const value = e.detail.value;
+      if (value !== i18n.locale)
+        i18n.setLocale(value);
+    };
+    el.addEventListener("language-change", onChange);
+    const stop = i18n.subscribe?.((snapshot) => follow(snapshot.locale));
+    return () => {
+      el.removeEventListener("language-change", onChange);
+      stop?.();
+    };
+  },
+  configure: (options) => {
+    if (options?.flags)
+      settings.flags = options.flags;
+  }
+};
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/menubar/menubar.ts
-var df$7 = defussGlobals();
-var dfDollar7 = defussQuery();
+var df$9 = defussGlobals();
+var dfDollar9 = defussQuery();
 var menubarStates = ["default", "open"];
-var triggersOf = (bar) => Array.from(dfDollar7(bar).find(".menubar-trigger").toArray()).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
-var menuOf = (trigger) => dfDollar7("#" + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute("popovertarget") || "")).get(0);
+var triggersOf = (bar) => Array.from(dfDollar9(bar).find(".menubar-trigger").toArray()).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
+var menuOf = (trigger) => dfDollar9("#" + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute("popovertarget") || "")).get(0);
 var openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(":popover-open")) ?? null;
 function setRoving(bar, active) {
   triggersOf(bar).forEach((t) => t.setAttribute("tabindex", t === active ? "0" : "-1"));
@@ -6374,14 +7372,14 @@ function openMenu(bar, trigger, quiet = false) {
   safeShowPopover(menu);
 }
 function focusItem(menu, last = false) {
-  const own = Array.from(dfDollar7(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute("aria-disabled") !== "true");
+  const own = Array.from(dfDollar9(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute("aria-disabled") !== "true");
   own.forEach((x) => x.removeAttribute("data-highlighted"));
   const item = last ? own.at(-1) : own[0];
   item?.setAttribute("data-highlighted", "");
   item?.focus({ preventScroll: true });
 }
-function applyMarkup7(_el, _stateName) {}
-function triggerStateChange7(bar, stateName, config) {
+function applyMarkup9(_el, _stateName) {}
+function triggerStateChange9(bar, stateName, config) {
   switch (stateName) {
     case "default": {
       const open = openMenuOf(bar);
@@ -6406,18 +7404,18 @@ var menubarApi = componentState({
   states: menubarStates,
   apply: (bar, state) => {
     bar.dataset.stateName = state.name;
-    triggerStateChange7(bar, state.name, state.config);
+    triggerStateChange9(bar, state.name, state.config);
   },
   read: (bar, state) => {
     const open = openMenuOf(bar);
     return { name: open ? "open" : "default", config: { ...state.config, menu: open?.id ?? null } };
   },
-  markup: (el, state) => applyMarkup7(el, state.name)
+  markup: (el, state) => applyMarkup9(el, state.name)
 });
-df$7.menubarApi = menubarApi;
-df$7.menubarStates = menubarStates;
-function init7() {
-  dfDollar7(".menubar:not([data-init])").toArray().forEach((bar) => {
+df$9.menubarApi = menubarApi;
+df$9.menubarStates = menubarStates;
+function init9() {
+  dfDollar9(".menubar:not([data-init])").toArray().forEach((bar) => {
     bar.dataset.init = "";
     if (!bar.hasAttribute("role"))
       bar.setAttribute("role", "menubar");
@@ -6517,15 +7515,15 @@ function init7() {
     });
   });
 }
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/navigation-menu/navigation-menu.ts
-var df$8 = defussGlobals();
-var dfDollar8 = defussQuery();
+var df$10 = defussGlobals();
+var dfDollar10 = defussQuery();
 var navigationMenuStates = ["default", "open"];
-function applyMarkup8(_el, _stateName) {}
-function triggerStateChange8(content, stateName, _config) {
+function applyMarkup10(_el, _stateName) {}
+function triggerStateChange10(content, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6540,35 +7538,35 @@ function triggerStateChange8(content, stateName, _config) {
 var navigationMenuApi = componentState({
   component: "navigation-menu",
   states: navigationMenuStates,
-  apply: (content, state) => triggerStateChange8(content, state.name, state.config),
-  markup: (el, state) => applyMarkup8(el, state.name)
+  apply: (content, state) => triggerStateChange10(content, state.name, state.config),
+  markup: (el, state) => applyMarkup10(el, state.name)
 });
-df$8.navigationMenuApi = navigationMenuApi;
-df$8.navigationMenuStates = navigationMenuStates;
-function init8() {
-  dfDollar8(".nav-menu-trigger[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
+df$10.navigationMenuApi = navigationMenuApi;
+df$10.navigationMenuStates = navigationMenuStates;
+function init10() {
+  dfDollar10(".nav-menu-trigger[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const content = dfDollar8("#" + CSS.escape(trigger.getAttribute("popovertarget"))).get(0);
+    const content = dfDollar10("#" + CSS.escape(trigger.getAttribute("popovertarget"))).get(0);
     if (!content)
       return;
     const anchorId = `--nav-menu-${content.id}`;
     trigger.style.anchorName = anchorId;
     content.style.positionAnchor = anchorId;
   });
-  dfDollar8(".nav-menu-content[popover]:not([data-init])").toArray().forEach((content) => {
+  dfDollar10(".nav-menu-content[popover]:not([data-init])").toArray().forEach((content) => {
     content.dataset.init = "";
     bindComponent(content, navigationMenuApi);
   });
 }
-init8();
-new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+init10();
+new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/popover/popover.ts
-var df$9 = defussGlobals();
-var dfDollar9 = defussQuery();
+var df$11 = defussGlobals();
+var dfDollar11 = defussQuery();
 var popoverStates = ["default", "open"];
-function applyMarkup9(_el, _stateName) {}
-function triggerStateChange9(popover, stateName, _config) {
+function applyMarkup11(_el, _stateName) {}
+function triggerStateChange11(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6583,15 +7581,15 @@ function triggerStateChange9(popover, stateName, _config) {
 var popoverApi = componentState({
   component: "popover",
   states: popoverStates,
-  apply: (popover, state) => triggerStateChange9(popover, state.name, state.config),
-  markup: (el, state) => applyMarkup9(el, state.name)
+  apply: (popover, state) => triggerStateChange11(popover, state.name, state.config),
+  markup: (el, state) => applyMarkup11(el, state.name)
 });
-df$9.popoverApi = popoverApi;
-df$9.popoverStates = popoverStates;
-function init9() {
-  dfDollar9("[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
+df$11.popoverApi = popoverApi;
+df$11.popoverStates = popoverStates;
+function init11() {
+  dfDollar11("[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
     const id = trigger.getAttribute("popovertarget");
-    const popover = dfDollar9("#" + CSS.escape(id)).get(0);
+    const popover = dfDollar11("#" + CSS.escape(id)).get(0);
     if (!popover || !popover.classList.contains("popover"))
       return;
     trigger.dataset.init = "";
@@ -6599,22 +7597,22 @@ function init9() {
     trigger.style.anchorName = anchorId;
     popover.style.positionAnchor = anchorId;
   });
-  dfDollar9(".popover[popover]:not([data-init])").toArray().forEach((popover) => {
+  dfDollar11(".popover[popover]:not([data-init])").toArray().forEach((popover) => {
     popover.dataset.init = "";
     bindComponent(popover, popoverApi);
   });
 }
-init9();
-new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+init11();
+new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/sheet/sheet.ts
-var df$10 = defussGlobals();
-var dfDollar10 = defussQuery();
+var df$12 = defussGlobals();
+var dfDollar12 = defussQuery();
 var sheetStates = ["default", "open"];
-function applyMarkup10(el, stateName) {
-  dfDollar10(el).attr("open", stateName === "open" ? "" : null);
+function applyMarkup12(el, stateName) {
+  dfDollar12(el).attr("open", stateName === "open" ? "" : null);
 }
-function triggerStateChange10(sheet, stateName, _config) {
+function triggerStateChange12(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -6630,16 +7628,16 @@ var shown3 = (sheet) => sheet.open ? "open" : "default";
 var sheetApi = componentState({
   component: "sheet",
   states: sheetStates,
-  apply: (sheet, state) => triggerStateChange10(sheet, state.name, state.config),
+  apply: (sheet, state) => triggerStateChange12(sheet, state.name, state.config),
   read: (sheet, state) => ({ name: shown3(sheet), config: state.config }),
-  markup: (el, state) => applyMarkup10(el, state.name)
+  markup: (el, state) => applyMarkup12(el, state.name)
 });
-df$10.sheetApi = sheetApi;
-df$10.sheetStates = sheetStates;
-function init10() {
-  dfDollar10("[data-sheet-trigger]:not([data-init])").toArray().forEach((trigger) => {
+df$12.sheetApi = sheetApi;
+df$12.sheetStates = sheetStates;
+function init12() {
+  dfDollar12("[data-sheet-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const sheet = dfDollar10("#" + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
+    const sheet = dfDollar12("#" + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
     if (!sheet)
       return;
     trigger.addEventListener("click", () => {
@@ -6647,14 +7645,14 @@ function init10() {
       sheet.showModal();
     });
   });
-  dfDollar10("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
+  dfDollar12("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
     sheet.dataset.init = "";
     bindComponent(sheet, sheetApi, { name: shown3(sheet), config: {} });
     sheet.addEventListener("click", (e) => {
       if (e.target === sheet)
         sheet.close();
     });
-    dfDollar10(sheet).find("[data-sheet-close]").toArray().forEach((btn) => {
+    dfDollar12(sheet).find("[data-sheet-close]").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         sheet.close();
       });
@@ -6667,12 +7665,12 @@ function init10() {
     });
   });
 }
-init10();
-new MutationObserver(init10).observe(document, { childList: true, subtree: true });
+init12();
+new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
 // src/components/forms-inputs/slider/slider.ts
-var df$11 = defussGlobals();
-var dfDollar11 = defussQuery();
+var df$13 = defussGlobals();
+var dfDollar13 = defussQuery();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -6703,7 +7701,7 @@ var hasFormat = (el) => {
 function outputsOf(el) {
   if (!el.id)
     return [];
-  return [...dfDollar11("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
+  return [...dfDollar13("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
 }
 function emojiThumb(el) {
   const list = (el.dataset.thumbEmoji || "").trim().split(/\s+/).filter(Boolean);
@@ -6739,7 +7737,7 @@ function updateSliderValue(el) {
     }
   }
 }
-var rangeInputs = (range) => [...dfDollar11(range).find(":scope > .slider").toArray()].slice(0, 2);
+var rangeInputs = (range) => [...dfDollar13(range).find(":scope > .slider").toArray()].slice(0, 2);
 function paintRange(range) {
   const [lo, hi] = rangeInputs(range);
   if (!lo || !hi)
@@ -6775,11 +7773,11 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function applyMarkup11(el, stateName) {
+function applyMarkup13(el, stateName) {
   if (stateName === "disabled")
-    dfDollar11(el).attr("disabled", "");
+    dfDollar13(el).attr("disabled", "");
 }
-function triggerStateChange11(el, stateName, config) {
+function triggerStateChange13(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -6795,23 +7793,23 @@ function triggerStateChange11(el, stateName, config) {
 var sliderApi = componentState({
   component: "slider",
   states: sliderStates,
-  apply: (el, state) => triggerStateChange11(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange13(el, state.name, state.config),
   read: (el, state) => {
     return {
       name: el.disabled ? "disabled" : "default",
       config: { ...state.config, value: el.value }
     };
   },
-  markup: (el, state) => applyMarkup11(el, state.name)
+  markup: (el, state) => applyMarkup13(el, state.name)
 });
-df$11.sliderApi = sliderApi;
-df$11.sliderStates = sliderStates;
-function init11() {
-  dfDollar11(".slider-range:not([data-init])").toArray().forEach((range) => {
+df$13.sliderApi = sliderApi;
+df$13.sliderStates = sliderStates;
+function init13() {
+  dfDollar13(".slider-range:not([data-init])").toArray().forEach((range) => {
     range.dataset.init = "";
     initRange(range);
   });
-  dfDollar11(".slider:not([data-init])").toArray().forEach((el) => {
+  dfDollar13(".slider:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     el._defaultDisabled = el.disabled;
     bindComponent(el, sliderApi);
@@ -6821,29 +7819,29 @@ function init11() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init11();
-new MutationObserver(init11).observe(document, { childList: true, subtree: true });
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/tabs/tabs.ts
-var df$12 = defussGlobals();
-var dfDollar12 = defussQuery();
+var df$14 = defussGlobals();
+var dfDollar14 = defussQuery();
 var tabsStates = ["default", "active", "disabled"];
 var ICON = ":scope > :is(svg, img, i, .tab-icon)";
 var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
 var iconOf = (tab) => {
-  const icon = dfDollar12(tab).find(ICON).get(0);
+  const icon = dfDollar14(tab).find(ICON).get(0);
   if (!icon)
     return "";
   return icon.getAttribute("data-lucide") ?? icon.textContent.trim();
 };
-var labelOf = (tab) => {
-  const label = dfDollar12(tab).find(":scope > .tab-label").get(0);
+var labelOf2 = (tab) => {
+  const label = dfDollar14(tab).find(":scope > .tab-label").get(0);
   if (label)
     return label.textContent.trim();
   return Array.from(tab.childNodes).filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("").trim();
 };
 var setLabel = (tab, text) => {
-  const label = dfDollar12(tab).find(":scope > .tab-label").get(0);
+  const label = dfDollar14(tab).find(":scope > .tab-label").get(0);
   if (label) {
     label.textContent = text;
     return;
@@ -6855,7 +7853,7 @@ var setLabel = (tab, text) => {
   tab.append(document.createTextNode(text));
 };
 var setIcon = (tab, icon) => {
-  dfDollar12(tab).find(ICON).get(0)?.remove();
+  dfDollar14(tab).find(ICON).get(0)?.remove();
   if (!icon)
     return;
   const el = document.createElement(LUCIDE_NAME.test(icon) ? "i" : "span");
@@ -6870,28 +7868,28 @@ var setIcon = (tab, icon) => {
     globalThis.lucide?.createIcons?.();
 };
 var applyContent = (tab, config) => {
-  if (typeof config.label === "string" && config.label !== labelOf(tab))
+  if (typeof config.label === "string" && config.label !== labelOf2(tab))
     setLabel(tab, config.label);
   if (typeof config.icon === "string" && config.icon !== iconOf(tab))
     setIcon(tab, config.icon);
 };
 var triggersOf2 = (el) => {
   const list = el.getAttribute("role") === "tablist" ? el : el.closest('[role="tablist"]');
-  return Array.from(dfDollar12(list).find('[role="tab"]').toArray());
+  return Array.from(dfDollar14(list).find('[role="tab"]').toArray());
 };
 var activateTab = (tab, triggers) => {
   triggers.forEach((t) => {
     t.setAttribute("aria-selected", "false");
     t.setAttribute("tabindex", "-1");
     t.dataset.stateName = t.disabled ? "disabled" : "default";
-    const panel = dfDollar12("#" + CSS.escape(t.getAttribute("aria-controls"))).get(0);
+    const panel = dfDollar14("#" + CSS.escape(t.getAttribute("aria-controls"))).get(0);
     if (panel)
       panel.hidden = true;
   });
   tab.setAttribute("aria-selected", "true");
   tab.removeAttribute("tabindex");
   tab.dataset.stateName = "active";
-  const panel = dfDollar12("#" + CSS.escape(tab.getAttribute("aria-controls"))).get(0);
+  const panel = dfDollar14("#" + CSS.escape(tab.getAttribute("aria-controls"))).get(0);
   if (panel)
     panel.hidden = false;
 };
@@ -6907,14 +7905,14 @@ var nextEnabled = (from, triggers) => {
 var tabName = (tab) => tab.disabled ? "disabled" : tab.getAttribute("aria-selected") === "true" ? "active" : "default";
 var restoreTab = (tab) => {
   tab.disabled = tab._authored.disabled;
-  if (labelOf(tab) !== tab._authored.label)
+  if (labelOf2(tab) !== tab._authored.label)
     setLabel(tab, tab._authored.label);
   if (iconOf(tab) !== tab._authored.icon)
     setIcon(tab, tab._authored.icon);
   tab.dataset.stateName = tabName(tab);
 };
 var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
-function triggerStateChange12(el, stateName, config) {
+function triggerStateChange14(el, stateName, config) {
   const triggers = triggersOf2(el);
   const isList = el.getAttribute("role") === "tablist";
   const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
@@ -6986,34 +7984,34 @@ function triggerStateChange12(el, stateName, config) {
   applyContent(tab, config);
 }
 var selectMarkup = (tab, triggers) => {
-  triggers.forEach((t) => dfDollar12(t).attr("aria-selected", "false").attr("tabindex", "-1"));
-  dfDollar12(tab).attr("aria-selected", "true").attr("tabindex", null);
+  triggers.forEach((t) => dfDollar14(t).attr("aria-selected", "false").attr("tabindex", "-1"));
+  dfDollar14(tab).attr("aria-selected", "true").attr("tabindex", null);
 };
-var selectedOf = (t) => dfDollar12(t).attr("aria-selected") === "true";
-var disabledOf = (t) => dfDollar12(t).attr("disabled") != null;
+var selectedOf = (t) => dfDollar14(t).attr("aria-selected") === "true";
+var disabledOf = (t) => dfDollar14(t).attr("disabled") != null;
 function listMarkup(list, stateName, config) {
-  const triggers = dfDollar12(list).find('[role="tab"]').toArray();
+  const triggers = dfDollar14(list).find('[role="tab"]').toArray();
   if (stateName === "default") {
     const tab = triggers.find(selectedOf) || triggers.find((t) => !disabledOf(t));
     if (tab)
       selectMarkup(tab, triggers);
   } else if (stateName === "disabled")
-    triggers.forEach((t) => dfDollar12(t).attr("disabled", ""));
+    triggers.forEach((t) => dfDollar14(t).attr("disabled", ""));
   const pick = typeof config?.index === "number" ? triggers[config.index] : typeof config?.id === "string" ? triggers.find((t) => t.id === config.id) : null;
   if (pick && !disabledOf(pick))
     selectMarkup(pick, triggers);
 }
 function tabMarkup(tab, stateName, config) {
   if (stateName === "active")
-    dfDollar12(tab).attr("disabled", null).attr("aria-selected", "true").attr("tabindex", null);
+    dfDollar14(tab).attr("disabled", null).attr("aria-selected", "true").attr("tabindex", null);
   else
-    dfDollar12(tab).attr("disabled", stateName === "disabled" ? "" : null);
+    dfDollar14(tab).attr("disabled", stateName === "disabled" ? "" : null);
   applyContent(tab, config ?? {});
 }
 var tabsApi = componentState({
   component: "tabs",
   states: tabsStates,
-  apply: (el, state, _previous, incoming) => triggerStateChange12(el, state.name, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange14(el, state.name, incoming),
   read: (el, state) => {
     if (el.getAttribute("role") === "tablist") {
       const triggers = triggersOf2(el);
@@ -7024,23 +8022,23 @@ var tabsApi = componentState({
     }
     return {
       name: tabName(el),
-      config: { ...state.config, label: labelOf(el), icon: iconOf(el) }
+      config: { ...state.config, label: labelOf2(el), icon: iconOf(el) }
     };
   },
   markup: (el, state) => (el.getAttribute("role") === "tablist" ? listMarkup : tabMarkup)(el, state.name, state.config),
   mergeConfig: true
 });
-df$12.tabsApi = tabsApi;
-df$12.tabsStates = tabsStates;
-function init12() {
-  dfDollar12('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
+df$14.tabsApi = tabsApi;
+df$14.tabsStates = tabsStates;
+function init14() {
+  dfDollar14('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = "";
-    const triggers = Array.from(dfDollar12(tablist).find('[role="tab"]').toArray());
+    const triggers = Array.from(dfDollar14(tablist).find('[role="tab"]').toArray());
     triggers.forEach((t) => {
       t._authored = {
         selected: t.getAttribute("aria-selected") === "true",
         disabled: t.disabled,
-        label: labelOf(t),
+        label: labelOf2(t),
         icon: iconOf(t)
       };
       bindComponent(t, tabsApi);
@@ -7105,49 +8103,989 @@ function init12() {
     });
   });
 }
-init12();
-new MutationObserver(init12).observe(document, { childList: true, subtree: true });
+function revealFragment() {
+  let id = "";
+  try {
+    id = decodeURIComponent(location.hash.slice(1));
+  } catch {
+    return;
+  }
+  if (!id || id.startsWith("/"))
+    return;
+  const target = dfDollar14("#" + CSS.escape(id)).get(0);
+  if (!target)
+    return;
+  const hidden = [];
+  const panelOf = (el) => el ? dfDollar14(el).closest('[role="tabpanel"]').get(0) : undefined;
+  for (let panel = panelOf(target);panel; panel = panelOf(panel.parentElement))
+    if (panel.hidden)
+      hidden.unshift(panel);
+  if (!hidden.length)
+    return;
+  for (const panel of hidden) {
+    const tab = dfDollar14('[role="tab"][aria-controls="' + CSS.escape(panel.id) + '"]').get(0);
+    const tablist = tab && dfDollar14(tab).closest('[role="tablist"]').get(0);
+    if (!tab || tab.disabled || !tablist)
+      return;
+    activateTab(tab, dfDollar14(tablist).find('[role="tab"]').toArray());
+  }
+  target.scrollIntoView();
+}
+var fragmentsBound = false;
+function initAll() {
+  const before = dfDollar14('[role="tablist"][data-init]').length;
+  init14();
+  if (dfDollar14('[role="tablist"][data-init]').length !== before)
+    revealFragment();
+  if (!fragmentsBound) {
+    fragmentsBound = true;
+    addEventListener("hashchange", revealFragment);
+  }
+}
+initAll();
+new MutationObserver(initAll).observe(document, { childList: true, subtree: true });
+
+// src/components/mockup/terminal/terminal.ts
+var df$15 = defussGlobals();
+var dfDollar15 = defussQuery();
+var terminalStates = ["default", "running", "readonly"];
+var XTERM_URL = "https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/lib/xterm.mjs";
+var PINNED = {
+  xterm: XTERM_URL,
+  css: "https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/css/xterm.css",
+  fit: "https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.11.0/lib/addon-fit.mjs",
+  clipboard: "https://cdn.jsdelivr.net/npm/@xterm/addon-clipboard@0.2.0/lib/addon-clipboard.mjs",
+  serialize: "https://cdn.jsdelivr.net/npm/@xterm/addon-serialize@0.14.0/lib/addon-serialize.mjs",
+  webLinks: "https://cdn.jsdelivr.net/npm/@xterm/addon-web-links@0.12.0/lib/addon-web-links.mjs"
+};
+var urls = { ...PINNED };
+var vendorPromise = null;
+var loadedFrom = "";
+var LOAD_MS = 20000;
+var sheets = new Map;
+function sheet(url) {
+  const known = sheets.get(url);
+  if (known)
+    return known;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = url;
+  link.dataset.terminal = "";
+  const pending = new Promise((resolve, reject) => {
+    link.onload = () => resolve();
+    link.onerror = () => reject(new Error(`the xterm stylesheet could not be loaded from ${url}`));
+  });
+  pending.catch(() => {
+    if (sheets.get(url) === pending)
+      sheets.delete(url);
+    link.remove();
+  });
+  sheets.set(url, pending);
+  dfDollar15(document.head).append(link);
+  return pending;
+}
+function load() {
+  const key = JSON.stringify(urls);
+  if (vendorPromise && key === loadedFrom)
+    return vendorPromise;
+  loadedFrom = key;
+  const files = [urls.xterm, urls.fit, urls.clipboard, urls.serialize, urls.webLinks];
+  const modules = Promise.all(files.map((vendorUrl) => Promise.resolve().then(() => import(/* @vite-ignore */ vendorUrl))));
+  let timer = 0;
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`xterm.js did not load within ${LOAD_MS / 1000} s`)), LOAD_MS);
+  });
+  const pending = Promise.race([Promise.all([modules, sheet(urls.css)]), deadline]).then(([[xterm, fit, clipboard, serialize, links]]) => ({
+    Terminal: xterm.Terminal,
+    FitAddon: fit.FitAddon,
+    ClipboardAddon: clipboard.ClipboardAddon,
+    SerializeAddon: serialize.SerializeAddon,
+    WebLinksAddon: links.WebLinksAddon
+  })).finally(() => clearTimeout(timer));
+  pending.catch(() => {
+    if (vendorPromise === pending)
+      vendorPromise = null;
+  });
+  vendorPromise = pending;
+  return pending;
+}
+var COLORS = [
+  ["background", "background"],
+  ["foreground", "foreground"],
+  ["cursor", "cursor"],
+  ["cursorAccent", "cursor-accent"],
+  ["selectionBackground", "selection"],
+  ["black", "black"],
+  ["red", "red"],
+  ["green", "green"],
+  ["yellow", "yellow"],
+  ["blue", "blue"],
+  ["magenta", "magenta"],
+  ["cyan", "cyan"],
+  ["white", "white"],
+  ["brightBlack", "bright-black"],
+  ["brightRed", "bright-red"],
+  ["brightGreen", "bright-green"],
+  ["brightYellow", "bright-yellow"],
+  ["brightBlue", "bright-blue"],
+  ["brightMagenta", "bright-magenta"],
+  ["brightCyan", "bright-cyan"],
+  ["brightWhite", "bright-white"]
+];
+var probe = null;
+function rgba(css) {
+  if (!css)
+    return "";
+  probe ??= document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  if (!probe)
+    return "";
+  probe.clearRect(0, 0, 1, 1);
+  probe.fillStyle = "rgba(1, 2, 3, 0.5)";
+  probe.fillStyle = css;
+  if (probe.fillStyle === "rgba(1, 2, 3, 0.5)")
+    return "";
+  probe.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data;
+  return `rgba(${r}, ${g}, ${b}, ${Math.round(a / 255 * 100) / 100})`;
+}
+function themeOf(el) {
+  const cs = getComputedStyle(el);
+  const theme = {};
+  for (const [key, prop] of COLORS) {
+    const value = rgba(cs.getPropertyValue(`--terminal-${prop}`).trim());
+    if (value)
+      theme[key] = value;
+  }
+  if (theme.foreground) {
+    const fg = theme.foreground.replace(/[\d.]+\)$/, "");
+    theme.scrollbarSliderBackground = `${fg}0.2)`;
+    theme.scrollbarSliderHoverBackground = `${fg}0.35)`;
+    theme.scrollbarSliderActiveBackground = `${fg}0.5)`;
+  }
+  return theme;
+}
+var reducedMotion2 = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+function optionsOf(el, host) {
+  const cs = getComputedStyle(host);
+  const ecs = getComputedStyle(el);
+  const style = el.dataset.cursor || ecs.getPropertyValue("--terminal-cursor-style").trim() || "block";
+  return {
+    theme: themeOf(el),
+    fontFamily: cs.fontFamily,
+    fontSize: parseFloat(cs.fontSize) || 14,
+    lineHeight: parseFloat(ecs.getPropertyValue("--terminal-line-height")) || 1.2,
+    cursorStyle: ["block", "bar", "underline"].includes(style) ? style : "block",
+    cursorBlink: !reducedMotion2() && el.dataset.blink !== "false",
+    scrollback: Math.max(0, Number(el.dataset.scrollback) || 1000),
+    convertEol: true,
+    allowProposedApi: true,
+    screenReaderMode: el.hasAttribute("data-screen-reader"),
+    disableStdin: el.hasAttribute("data-readonly")
+  };
+}
+var SGR = {
+  success: "32",
+  warning: "33",
+  info: "34",
+  destructive: "31",
+  muted: "90",
+  bold: "1"
+};
+function tone(text, tone) {
+  const code = SGR[tone];
+  return code ? `\x1B[${code}m${text}\x1B[0m` : text;
+}
+var ESC = "\x1B";
+var CSI = new RegExp(`${ESC}\\[[0-9;]*[A-Za-z]`, "g");
+var KEY_SEQ = new RegExp(`^${ESC}(?:\\[[0-9;]*[A-Za-z~]|O[A-Za-z])`);
+var visible = (text) => text.replace(CSI, "").length;
+function words(line) {
+  const out = [];
+  for (const m of line.matchAll(/"([^"]*)"|'([^']*)'|(\S+)/g))
+    out.push(m[1] ?? m[2] ?? m[3] ?? "");
+  return out;
+}
+var resolve2 = (t) => typeof t === "string" ? dfDollar15("#" + CSS.escape(t)).get(0) ?? dfDollar15(t).get(0) ?? null : t;
+var live = new Set;
+function put2(s, data) {
+  s.chain = s.chain.then(() => new Promise((done) => s.term.write(data, done)));
+  return s.chain;
+}
+var promptOf = (s) => {
+  const text = s.el.dataset.prompt ?? "$ ";
+  const t = s.el.dataset.promptTone;
+  return t ? tone(text, t) : text;
+};
+function draw3(s) {
+  const cols = Math.max(1, s.term.cols);
+  const prompt = promptOf(s);
+  const p = visible(prompt);
+  const up = Math.floor((p + s.shown) / cols);
+  let out = (up ? `\x1B[${up}A` : "") + "\r\x1B[J" + prompt + s.line;
+  const end = p + s.line.length;
+  if (end > 0 && end % cols === 0)
+    out += " \b";
+  const target = p + s.cursor;
+  const back = Math.floor(end / cols) - Math.floor(target / cols);
+  out += (back ? `\x1B[${back}A` : "") + "\r" + (target % cols ? `\x1B[${target % cols}C` : "");
+  s.shown = s.cursor;
+  return put2(s, out);
+}
+function erase(s) {
+  const cols = Math.max(1, s.term.cols);
+  const up = Math.floor((visible(promptOf(s)) + s.shown) / cols);
+  s.shown = 0;
+  return put2(s, (up ? `\x1B[${up}A` : "") + "\r\x1B[J");
+}
+async function showPrompt(s) {
+  if (s.el.hasAttribute("data-readonly") || !s.el.isConnected)
+    return;
+  await s.chain;
+  if (s.term.buffer.active.cursorX !== 0)
+    await put2(s, `\r
+`);
+  s.line = "";
+  s.cursor = 0;
+  s.shown = 0;
+  s.at = s.history.length;
+  s.prompted = true;
+  await draw3(s);
+  drain(s);
+}
+function drain(s) {
+  if (!s.queue)
+    return;
+  const queued = s.queue;
+  s.queue = "";
+  feed(s, queued);
+}
+var asText = (value) => value == null ? "" : Array.isArray(value) ? value.join(`
+`) : String(value);
+async function output(s, text, newline = false) {
+  const data = text.replace(/\r?\n/g, `\r
+`) + (newline ? `\r
+` : "");
+  if (!s.prompted)
+    return put2(s, data);
+  await erase(s);
+  await put2(s, data);
+  if (s.term.buffer.active.cursorX !== 0)
+    await put2(s, `\r
+`);
+  await draw3(s);
+}
+var globalCommands = new Map;
+var asSpec = (c) => typeof c === "function" ? { run: c } : c;
+function commandsOf(s) {
+  const all = new Map(BUILTINS);
+  for (const [k, v] of globalCommands)
+    all.set(k, v);
+  for (const [k, v] of s.el._terminalCommands ?? [])
+    all.set(k, v);
+  return all;
+}
+function lookup(s, name) {
+  const all = commandsOf(s);
+  return all.get(name) ?? all.get(name.toLowerCase());
+}
+var BUILTINS = new Map([
+  [
+    "help",
+    {
+      description: "lists the commands (help <name>: one of them)",
+      run: (c) => {
+        const s = c.terminal._terminal;
+        const all = [...commandsOf(s)].filter(([, v]) => !v.hidden).sort(([a], [b]) => a.localeCompare(b));
+        if (c.args[0]) {
+          const one = lookup(s, c.args[0]);
+          return one ? `${c.args[0]} - ${one.description || "no description"}` : `help: no command ${c.args[0]}`;
+        }
+        const width = Math.max(...all.map(([k]) => k.length));
+        return all.map(([k, v]) => `${tone(k.padEnd(width), "bold")}  ${v.description ?? ""}`.trimEnd());
+      }
+    }
+  ],
+  [
+    "clear",
+    {
+      description: "clears the screen",
+      run: (c) => {
+        const s = c.terminal._terminal;
+        return put2(s, "\x1B[H\x1B[2J").then(() => s.term.clear());
+      }
+    }
+  ],
+  ["echo", { description: "writes its words", run: (c) => c.args.join(" ") }],
+  [
+    "history",
+    {
+      description: "lists the commands typed so far",
+      run: (c) => {
+        const s = c.terminal._terminal;
+        return s.history.map((h, i) => `${String(i + 1).padStart(4)}  ${h}`);
+      }
+    }
+  ]
+]);
+var settle = (s) => {
+  const name = s.el.hasAttribute("data-readonly") ? "readonly" : s.busy || s.playing ? "running" : "default";
+  dfDollar15(s.el).attr("aria-busy", name === "running" ? "true" : null);
+  const config = name === "running" && s.running ? { command: s.running } : { prompt: s.el.dataset.prompt ?? "$ " };
+  if (s.el.store)
+    terminalApi.commit(s.el, name, config);
+};
+async function execute(s, line, fixed) {
+  const [name = "", ...args] = words(line);
+  const el = s.el;
+  if (line.trim()) {
+    const go = el.dispatchEvent(new CustomEvent("terminal-command", {
+      bubbles: true,
+      cancelable: true,
+      detail: { line, name, args }
+    }));
+    if (go || fixed) {
+      const ac = new AbortController;
+      s.busy = ac;
+      s.running = line;
+      settle(s);
+      const ctx = {
+        name,
+        args,
+        line,
+        terminal: el,
+        write: (text) => void put2(s, String(text).replace(/\r?\n/g, `\r
+`)),
+        writeln: (text = "") => void put2(s, String(text).replace(/\r?\n/g, `\r
+`) + `\r
+`),
+        signal: ac.signal
+      };
+      try {
+        let result;
+        if (fixed && "output" in fixed) {
+          const text = asText(fixed.output);
+          result = fixed.tone ? text.split(`
+`).map((l) => tone(l, fixed.tone)) : text;
+        } else {
+          const spec = lookup(s, name);
+          if (!spec)
+            result = tone(notFound(el, name), "destructive");
+          else {
+            const aborted = new Promise((done) => ac.signal.addEventListener("abort", () => done(), { once: true }));
+            result = await Promise.race([Promise.resolve(spec.run(ctx)), aborted]);
+          }
+        }
+        if (!ac.signal.aborted) {
+          let text = asText(result);
+          if (text && fixed?.tone && !("output" in fixed))
+            text = text.split(`
+`).map((l) => tone(l, fixed.tone)).join(`
+`);
+          if (text)
+            await put2(s, text.replace(/\r?\n/g, `\r
+`) + `\r
+`);
+        }
+      } catch (err) {
+        await put2(s, tone(`${name}: ${err instanceof Error ? err.message : String(err)}`, "destructive") + `\r
+`);
+      } finally {
+        if (s.busy === ac) {
+          s.busy = null;
+          s.running = "";
+        }
+      }
+    }
+  }
+  if (!s.playing) {
+    await showPrompt(s);
+    settle(s);
+  }
+}
+var notFound = (el, name) => (el.dataset.notFound ?? "{name}: command not found").replace("{name}", name);
+async function complete(s) {
+  const before = s.line.slice(0, s.cursor);
+  if (/\s/.test(before))
+    return;
+  const names = [...commandsOf(s)].filter(([k, v]) => !v.hidden && k.startsWith(before)).map(([k]) => k);
+  if (!names.length)
+    return;
+  if (names.length === 1)
+    return insert(s, names[0].slice(before.length) + " ");
+  let common = names[0];
+  for (const n of names)
+    while (!n.startsWith(common))
+      common = common.slice(0, -1);
+  if (common.length > before.length)
+    return insert(s, common.slice(before.length));
+  await output(s, names.sort().join("  "));
+}
+function insert(s, text) {
+  s.line = s.line.slice(0, s.cursor) + text + s.line.slice(s.cursor);
+  s.cursor += text.length;
+  return draw3(s);
+}
+function feed(s, data) {
+  for (let i = 0;i < data.length; ) {
+    if (!s.prompted) {
+      s.queue += data.slice(i);
+      return;
+    }
+    const rest = data.slice(i);
+    const seq = KEY_SEQ.exec(rest)?.[0];
+    const key = seq ?? rest[0];
+    i += key.length;
+    switch (key) {
+      case "\r":
+      case `
+`: {
+        const line = s.line;
+        s.cursor = s.line.length;
+        draw3(s);
+        put2(s, `\r
+`);
+        s.prompted = false;
+        if (line.trim() && line !== s.history[s.history.length - 1])
+          s.history.push(line);
+        execute(s, line);
+        if (data[i - 1] === "\r" && data[i] === `
+`)
+          i++;
+        continue;
+      }
+      case "":
+      case "\b":
+        if (s.cursor > 0) {
+          s.line = s.line.slice(0, s.cursor - 1) + s.line.slice(s.cursor);
+          s.cursor--;
+          draw3(s);
+        }
+        continue;
+      case "\x1B[3~":
+        if (s.cursor < s.line.length) {
+          s.line = s.line.slice(0, s.cursor) + s.line.slice(s.cursor + 1);
+          draw3(s);
+        }
+        continue;
+      case "\x1B[D":
+        if (s.cursor > 0) {
+          s.cursor--;
+          draw3(s);
+        }
+        continue;
+      case "\x1B[C":
+        if (s.cursor < s.line.length) {
+          s.cursor++;
+          draw3(s);
+        }
+        continue;
+      case "\x1B[H":
+      case "\x1BOH":
+      case "\x01":
+        s.cursor = 0;
+        draw3(s);
+        continue;
+      case "\x1B[F":
+      case "\x1BOF":
+      case "\x05":
+        s.cursor = s.line.length;
+        draw3(s);
+        continue;
+      case "\x1B[A":
+      case "\x1B[B": {
+        if (!s.history.length)
+          continue;
+        if (s.at === s.history.length)
+          s.draft = s.line;
+        s.at = Math.max(0, Math.min(s.history.length, s.at + (key === "\x1B[A" ? -1 : 1)));
+        s.line = s.at === s.history.length ? s.draft : s.history[s.at];
+        s.cursor = s.line.length;
+        draw3(s);
+        continue;
+      }
+      case "\x15":
+        s.line = s.line.slice(s.cursor);
+        s.cursor = 0;
+        draw3(s);
+        continue;
+      case "\x03":
+        s.cursor = s.line.length;
+        draw3(s);
+        put2(s, "^C");
+        s.prompted = false;
+        showPrompt(s);
+        continue;
+      case "\f":
+        s.prompted = false;
+        put2(s, "\x1B[H\x1B[2J").then(() => {
+          s.term.clear();
+          s.prompted = true;
+          s.shown = 0;
+          return draw3(s);
+        }).then(() => drain(s));
+        continue;
+      case "\t":
+        complete(s);
+        continue;
+      default:
+        if (key.length === 1 && key >= " " && key !== "") {
+          let end = 0;
+          while (end < rest.length && rest.charCodeAt(end) >= 32 && rest.charCodeAt(end) !== 127)
+            end++;
+          const run = rest.slice(0, end) || key;
+          i += run.length - 1;
+          insert(s, run);
+        }
+    }
+  }
+}
+function onData(s, data) {
+  if (s.el.hasAttribute("data-readonly"))
+    return;
+  if (s.playing) {
+    s.skip = true;
+    return;
+  }
+  if (s.busy) {
+    if (data.includes("\x03")) {
+      s.busy.abort();
+      s.queue = "";
+      put2(s, `^C\r
+`);
+    } else
+      s.queue += data;
+    return;
+  }
+  feed(s, data);
+}
+var sleep = (s, ms) => s.skip || ms <= 0 ? Promise.resolve() : new Promise((done) => setTimeout(done, ms));
+function scriptOf(el) {
+  const script = dfDollar15(el).children("script.terminal-script").get(0);
+  if (!script)
+    return [];
+  try {
+    const steps = JSON.parse(script.textContent || "[]");
+    return Array.isArray(steps) ? steps : [];
+  } catch (err) {
+    console.error("[terminal] the script is not valid JSON:", err instanceof Error ? err.message : String(err));
+    return [];
+  }
+}
+async function typeCommand(s, text, typing) {
+  const delay = Math.max(0, Number(s.el.dataset.speed ?? 45));
+  if (s.el.hasAttribute("data-readonly")) {
+    await put2(s, (s.term.buffer.active.cursorX ? `\r
+` : "") + promptOf(s));
+    for (let i = 0;i < text.length; i++) {
+      await put2(s, text[i]);
+      if (typing && !s.skip && !reducedMotion2())
+        await sleep(s, delay * (0.6 + i * 7 % 5 / 10));
+    }
+    return put2(s, `\r
+`);
+  }
+  if (!s.prompted)
+    await showPrompt(s);
+  if (s.line) {
+    s.line = "";
+    s.cursor = 0;
+    await draw3(s);
+  }
+  for (let i = 0;i < text.length; i++) {
+    if (s.skip || !typing || reducedMotion2()) {
+      await insert(s, text.slice(i));
+      break;
+    }
+    await insert(s, text[i]);
+    await sleep(s, delay * (0.6 + i * 7 % 5 / 10));
+  }
+  s.cursor = s.line.length;
+  await draw3(s);
+  await put2(s, `\r
+`);
+  s.prompted = false;
+}
+async function play(s, steps) {
+  if (s.playing)
+    return s.playing;
+  s.playing = (async () => {
+    settle(s);
+    for (const step of steps) {
+      if (!s.el.isConnected)
+        break;
+      await sleep(s, Number(step.wait) || 0);
+      if (typeof step.command === "string") {
+        await typeCommand(s, step.command, step.typing !== false);
+        if (step.command.trim() && step.command !== s.history[s.history.length - 1])
+          s.history.push(step.command);
+        await execute(s, step.command, "output" in step ? { output: step.output, tone: step.tone } : step.tone ? { tone: step.tone } : undefined);
+      } else if (step.output != null) {
+        const text = asText(step.output);
+        await output(s, step.tone ? text.split(`
+`).map((l) => tone(l, step.tone)).join(`
+`) : text, true);
+      }
+    }
+  })().finally(() => {
+    s.playing = null;
+    s.skip = false;
+    showPrompt(s).then(() => settle(s));
+  });
+  return s.playing;
+}
+async function open(el) {
+  const host = document.createElement("div");
+  host.className = "terminal-screen";
+  host.setAttribute("data-ce-chrome", "");
+  dfDollar15(el).append(host);
+  let vendor;
+  try {
+    vendor = await load();
+  } catch (err) {
+    dfDollar15(el).attr("data-error", "");
+    const out = document.createElement("output");
+    out.className = "terminal-error";
+    out.setAttribute("role", "alert");
+    dfDollar15(out).text(`The terminal could not start: ${err instanceof Error ? err.message : String(err)}`);
+    dfDollar15(host).append(out);
+    throw err;
+  }
+  await document.fonts?.ready;
+  await sized(host);
+  const term = new vendor.Terminal(optionsOf(el, host));
+  const fit = new vendor.FitAddon;
+  const serialize = new vendor.SerializeAddon;
+  term.loadAddon(fit);
+  term.loadAddon(serialize);
+  term.loadAddon(new vendor.ClipboardAddon);
+  term.loadAddon(new vendor.WebLinksAddon);
+  term.open(host);
+  const s = {
+    el,
+    term,
+    fit,
+    serialize,
+    line: "",
+    cursor: 0,
+    shown: 0,
+    prompted: false,
+    history: [],
+    at: 0,
+    draft: "",
+    busy: null,
+    running: "",
+    playing: null,
+    skip: false,
+    queue: "",
+    chain: Promise.resolve(),
+    theme: "",
+    observer: new ResizeObserver(() => resize(s))
+  };
+  s.theme = JSON.stringify(term.options.theme);
+  el._terminal = s;
+  live.add(el);
+  resize(s, true);
+  s.observer.observe(host);
+  term.onData((data) => onData(s, data));
+  term.attachCustomKeyEventHandler((e) => !(e.key === "Tab" && (e.shiftKey || !s.prompted || !s.line || el.hasAttribute("data-readonly"))));
+  const label = el.getAttribute("aria-label");
+  const textarea = dfDollar15(host).find("textarea").get(0);
+  if (textarea && label)
+    textarea.setAttribute("aria-label", label);
+  el.dispatchEvent(new CustomEvent("terminal-ready", {
+    bubbles: true,
+    detail: { cols: term.cols, rows: term.rows }
+  }));
+  dfDollar15(el).attr("data-ready", "");
+  if (el.hasAttribute("data-autoplay") && scriptOf(el).length)
+    autoplay(el, s);
+  else
+    await showPrompt(s);
+  settle(s);
+  return s;
+}
+function sized(host) {
+  if (host.clientWidth > 0)
+    return Promise.resolve();
+  return new Promise((done) => {
+    const ro = new ResizeObserver(() => {
+      if (host.clientWidth <= 0)
+        return;
+      ro.disconnect();
+      done();
+    });
+    ro.observe(host);
+  });
+}
+function autoplay(el, s) {
+  const delay = Math.max(0, Number(el.getAttribute("data-autoplay")) || 0);
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.isIntersecting))
+      return;
+    io.disconnect();
+    s.playing = new Promise((done) => setTimeout(done, delay));
+    s.playing.then(() => {
+      s.playing = null;
+      return play(s, scriptOf(el));
+    });
+  }, { threshold: 0.35 });
+  io.observe(el);
+}
+function resize(s, first = false) {
+  if (!s.el.isConnected)
+    return;
+  const dims = s.fit.proposeDimensions();
+  if (!dims || !Number.isFinite(dims.cols) || dims.cols < 2)
+    return;
+  const rows = Number(s.el.dataset.rows) || dims.rows;
+  if (dims.cols === s.term.cols && rows === s.term.rows && !first)
+    return;
+  s.term.resize(dims.cols, Math.max(1, rows));
+  if (s.prompted)
+    draw3(s);
+}
+function session(target) {
+  const el = resolve2(target);
+  if (!el)
+    return Promise.reject(new Error("no terminal"));
+  init15();
+  return el._terminalReady ?? Promise.reject(new Error("not a .terminal"));
+}
+function applyMarkup14(el, name, config = {}) {
+  dfDollar15(el).attr("data-readonly", name === "readonly" ? "" : null);
+  dfDollar15(el).attr("aria-busy", name === "running" ? "true" : null);
+  if (name === "default" && typeof config.prompt === "string" && config.prompt !== (el.dataset.prompt ?? "$ "))
+    dfDollar15(el).attr("data-prompt", config.prompt);
+}
+async function triggerStateChange15(el, name, config = {}) {
+  if (!el.hasAttribute("data-ready")) {
+    if (name !== "running")
+      applyMarkup14(el, name, config);
+    else
+      el._terminalReady.then(() => triggerStateChange15(el, name, config), () => {});
+    return;
+  }
+  const s = await el._terminalReady;
+  if (name === "running") {
+    const command = typeof config.command === "string" ? config.command : "";
+    if (s.busy && s.running === command)
+      return;
+    if (!command)
+      return play(s, scriptOf(el));
+    if (el.hasAttribute("data-readonly"))
+      applyMarkup14(el, "default", {});
+    s.term.options.disableStdin = false;
+    await typeCommand(s, command, false);
+    s.history.push(command);
+    return execute(s, command);
+  }
+  s.busy?.abort();
+  if (s.playing)
+    s.skip = true;
+  const was = el.hasAttribute("data-readonly");
+  const prompt = el.dataset.prompt;
+  applyMarkup14(el, name, config);
+  s.term.options.disableStdin = name === "readonly";
+  if (name === "readonly") {
+    if (s.prompted)
+      await erase(s);
+    s.prompted = false;
+  } else if (was || !s.prompted) {
+    s.prompted = false;
+    if (!s.playing)
+      await showPrompt(s);
+  } else if (prompt !== el.dataset.prompt)
+    await draw3(s);
+  settle(s);
+}
+var terminalApi = componentState({
+  component: "terminal",
+  states: terminalStates,
+  apply: (el, state) => triggerStateChange15(el, state.name, state.config),
+  read: (el) => {
+    const s = el._terminal;
+    const name = el.hasAttribute("data-readonly") ? "readonly" : s?.busy || s?.playing ? "running" : "default";
+    const prompt = el.dataset.prompt ?? "$ ";
+    return { name, config: name === "running" && s?.running ? { command: s.running } : { prompt } };
+  },
+  markup: (el, state) => applyMarkup14(el, state.name, state.config)
+});
+df$15.terminalApi = terminalApi;
+df$15.terminalStates = terminalStates;
+df$15.terminal = {
+  load: () => load().then(() => {
+    return;
+  }),
+  configure: (options) => {
+    Object.assign(urls, options?.urls ?? {});
+  },
+  write: (target, text) => session(target).then((s) => output(s, String(text))),
+  writeln: (target, text = "") => session(target).then((s) => output(s, String(text), true)),
+  clear: (target) => session(target).then(async (s) => {
+    await put2(s, "\x1B[H\x1B[2J");
+    s.term.clear();
+    if (s.prompted) {
+      s.shown = 0;
+      await draw3(s);
+    }
+  }),
+  run: (target, line) => {
+    const el = resolve2(target);
+    if (!el?.api)
+      return Promise.reject(new Error("no terminal"));
+    el.api.setState("running", { command: String(line) });
+    return el.api.settled();
+  },
+  play: (target, steps) => session(target).then((s) => play(s, steps ?? scriptOf(s.el))),
+  commands: (target, commands) => {
+    const el = target === "global" ? null : resolve2(target);
+    if (target !== "global" && !el)
+      return () => {};
+    const map = el ? el._terminalCommands ??= new Map : globalCommands;
+    const added = Object.entries(commands ?? {}).map(([k, v]) => [k, asSpec(v)]);
+    for (const [k, v] of added)
+      map.set(k, v);
+    return () => {
+      for (const [k, v] of added)
+        if (map.get(k) === v)
+          map.delete(k);
+    };
+  },
+  prompt: (target, text) => {
+    const el = resolve2(target);
+    if (el?.api && el.api.getState().name === "default")
+      el.api.setState("default", { prompt: String(text) });
+    else if (el)
+      dfDollar15(el).attr("data-prompt", String(text));
+  },
+  text: (target) => {
+    const s = resolve2(target)?._terminal;
+    if (!s)
+      return "";
+    const buf = s.term.buffer.active;
+    const lines = [];
+    for (let y = 0;y < buf.length; y++)
+      lines.push((buf.getLine(y)?.translateToString(true) ?? "").trimEnd());
+    while (lines.length && !lines[lines.length - 1])
+      lines.pop();
+    return lines.join(`
+`);
+  },
+  serialize: (target, format = "html") => {
+    const s = resolve2(target)?._terminal;
+    if (!s)
+      return "";
+    return format === "vt" ? s.serialize.serialize() : s.serialize.serializeAsHTML({ includeGlobalBackground: true });
+  },
+  focus: (target) => {
+    session(target).then((s) => s.term.focus());
+  },
+  tone,
+  xterm: (target) => session(target).then((s) => s.term),
+  theme: (target) => {
+    const el = resolve2(target);
+    return el ? themeOf(el) : {};
+  },
+  url: XTERM_URL
+};
+var themeWatched = false;
+function watchTheme() {
+  if (themeWatched)
+    return;
+  themeWatched = true;
+  let timer = 0;
+  const schedule = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      for (const el of live) {
+        const s = el._terminal;
+        if (!s)
+          continue;
+        const theme = themeOf(el);
+        const json = JSON.stringify(theme);
+        if (json === s.theme)
+          continue;
+        s.theme = json;
+        s.term.options.theme = theme;
+      }
+    }, 60);
+  };
+  const mo = new MutationObserver(schedule);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style", "data-theme"] });
+  if (document.head)
+    mo.observe(document.head, { childList: true, subtree: true, characterData: true });
+  for (const q of ["(prefers-color-scheme: dark)", "(prefers-contrast: more)", "(forced-colors: active)"])
+    matchMedia(q).addEventListener("change", schedule);
+  document.addEventListener("defuss-theme-change", schedule);
+}
+function sweep() {
+  for (const el of live) {
+    if (el.isConnected)
+      continue;
+    const s = el._terminal;
+    live.delete(el);
+    s.busy?.abort();
+    s.observer.disconnect();
+    s.term.dispose();
+  }
+}
+function init15() {
+  sweep();
+  dfDollar15(".terminal:not([data-init]):not(.xterm)").toArray().forEach((el) => {
+    el.dataset.init = "";
+    bindComponent(el, terminalApi, {
+      name: el.hasAttribute("data-readonly") ? "readonly" : "default",
+      config: el.hasAttribute("data-readonly") ? {} : { prompt: el.dataset.prompt ?? "$ " }
+    });
+    watchTheme();
+    const ready = open(el);
+    ready.catch((err) => console.error("[terminal]", err instanceof Error ? err.message : String(err)));
+    el._terminalReady = ready;
+  });
+}
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/toast/toast.ts
-var df$13 = defussGlobals();
-var dfDollar13 = defussQuery();
+var df$16 = defussGlobals();
+var dfDollar16 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup12(_el, _stateName) {}
-function triggerStateChange13(container, stateName, _config) {
+function applyMarkup15(_el, _stateName) {}
+function triggerStateChange16(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar13(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar16(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange13(container, state.name, state.config);
+    triggerStateChange16(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar13(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar16(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup12(el, state.name)
+  markup: (el, state) => applyMarkup15(el, state.name)
 });
-df$13.toastApi = toastApi;
-df$13.toastStates = toastStates;
+df$16.toastApi = toastApi;
+df$16.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar13("#toast-container").get(0);
+var toastContainer = dfDollar16("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar13(document.body).append(toastContainer);
+  dfDollar16(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar13(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar16(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -7178,7 +9116,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar13(el).remove();
+      dfDollar16(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -7192,7 +9130,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar13(el).remove();
+    dfDollar16(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -7223,29 +9161,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar13(contentEl).append(dfDollar13(icons[variant]));
+    dfDollar16(contentEl).append(dfDollar16(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar13(p).text(title);
-    dfDollar13(textDiv).append(p);
+    dfDollar16(p).text(title);
+    dfDollar16(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar13(p).text(description);
-    dfDollar13(textDiv).append(p);
+    dfDollar16(p).text(description);
+    dfDollar16(textDiv).append(p);
   }
-  dfDollar13(contentEl).append(textDiv);
+  dfDollar16(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar13(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar13(contentEl).append(closeBtn);
+  dfDollar16(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar16(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -7255,9 +9193,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar13(el).append(host);
+    dfDollar16(el).append(host);
   }
-  dfDollar13(host).append(contentEl);
+  dfDollar16(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -7266,15 +9204,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar13(actionBtn).text(action.label);
-    dfDollar13(actionsDiv).append(actionBtn);
-    dfDollar13(host).append(actionsDiv);
+    dfDollar16(actionBtn).text(action.label);
+    dfDollar16(actionsDiv).append(actionBtn);
+    dfDollar16(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar13(toastContainer).append(el);
+  dfDollar16(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -7285,13 +9223,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar13(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar16(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init13() {
-  dfDollar13("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init16() {
+  dfDollar16("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -7340,8 +9278,8 @@ function init13() {
     });
   });
 }
-init13();
-new MutationObserver(init13).observe(document.body, { childList: true, subtree: true });
+init16();
+new MutationObserver(init16).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -7361,65 +9299,65 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar13(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar16(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$13.toast = toastActions;
+df$16.toast = toastActions;
 
 // src/components/actions/toggle/toggle.ts
-var df$14 = defussGlobals();
-var dfDollar14 = defussQuery();
+var df$17 = defussGlobals();
+var dfDollar17 = defussQuery();
 var toggleStates = ["default", "pressed"];
-function applyMarkup13(toggle, stateName, defaultPressed) {
-  dfDollar14(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
+function applyMarkup16(toggle, stateName, defaultPressed) {
+  dfDollar17(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
 }
-function triggerStateChange14(toggle, stateName, _config) {
-  applyMarkup13(toggle, stateName, toggle._defaultPressed ?? "false");
+function triggerStateChange17(toggle, stateName, _config) {
+  applyMarkup16(toggle, stateName, toggle._defaultPressed ?? "false");
 }
 var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
-  apply: (toggle, state) => triggerStateChange14(toggle, state.name, state.config),
+  apply: (toggle, state) => triggerStateChange17(toggle, state.name, state.config),
   read: (toggle, state) => ({
-    name: dfDollar14(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    name: dfDollar17(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
     config: state.config
   }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
-    applyMarkup13(toggle, state.name, authored ? authored[1] : "false");
+    applyMarkup16(toggle, state.name, authored ? authored[1] : "false");
   }
 });
-df$14.toggleApi = toggleApi;
-df$14.toggleStates = toggleStates;
-function init14() {
-  dfDollar14(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
-    dfDollar14(toggle).data("init", "");
-    toggle._defaultPressed = dfDollar14(toggle).attr("aria-pressed") || "false";
+df$17.toggleApi = toggleApi;
+df$17.toggleStates = toggleStates;
+function init17() {
+  dfDollar17(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
+    dfDollar17(toggle).data("init", "");
+    toggle._defaultPressed = dfDollar17(toggle).attr("aria-pressed") || "false";
     bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === "true" ? "pressed" : "default", config: {} });
-    dfDollar14(toggle).on("click", () => {
-      dfDollar14(toggle).attr("aria-pressed", String(dfDollar14(toggle).attr("aria-pressed") !== "true"));
+    dfDollar17(toggle).on("click", () => {
+      dfDollar17(toggle).attr("aria-pressed", String(dfDollar17(toggle).attr("aria-pressed") !== "true"));
     });
   });
 }
-init14();
-new MutationObserver(init14).observe(document, { childList: true, subtree: true });
+init17();
+new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
 // src/components/application/window/window.ts
-var df$15 = defussGlobals();
-var dfDollar15 = defussQuery();
+var df$18 = defussGlobals();
+var dfDollar18 = defussQuery();
 var windowStates = ["default", "maximized", "minimized", "closed"];
 var topZ = 10;
 var KEEP = 48;
-var resolve = (target) => typeof target === "string" ? dfDollar15("#" + CSS.escape(target)).get(0) ?? dfDollar15(target).get(0) : target;
-var titleOf = (w) => dfDollar15(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
+var resolve3 = (target) => typeof target === "string" ? dfDollar18("#" + CSS.escape(target)).get(0) ?? dfDollar18(target).get(0) : target;
+var titleOf = (w) => dfDollar18(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 function moveTo(w, x, y) {
   const parent = w.offsetParent;
-  const bar = dfDollar15(w).find(".window-titlebar").get(0);
+  const bar = dfDollar18(w).find(".window-titlebar").get(0);
   if (parent) {
-    const ctl = dfDollar15(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
+    const ctl = dfDollar18(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
     const maxX = parent.clientWidth - KEEP - ctl;
     const minX = KEEP + ctl - w.offsetWidth;
     const maxY = parent.clientHeight - (bar?.offsetHeight ?? KEEP);
@@ -7437,7 +9375,7 @@ function raise(w) {
     return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar15(".window[data-active]").toArray().forEach((o) => {
+  dfDollar18(".window[data-active]").toArray().forEach((o) => {
     if (o !== w)
       o.removeAttribute("data-active");
   });
@@ -7453,7 +9391,7 @@ function showQuietly(w) {
     document.activeElement.blur();
 }
 function activateTopmost() {
-  const open = Array.from(dfDollar15(".window[open]").toArray());
+  const open = Array.from(dfDollar18(".window[open]").toArray());
   if (!open.length)
     return;
   const top = open.reduce((a, b) => Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a);
@@ -7473,16 +9411,16 @@ function restoreSize(w) {
   w.style.height = w._stash.height;
   w._stash = null;
 }
-function applyMarkup14(el, stateName) {
+function applyMarkup17(el, stateName) {
   const open = stateName !== "closed";
-  dfDollar15(el).attr("open", open ? "" : null);
-  dfDollar15(el).attr("data-maximized", stateName === "maximized" ? "" : null);
-  dfDollar15(el).attr("data-minimized", stateName === "minimized" ? "" : null);
-  dfDollar15(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar15(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar18(el).attr("open", open ? "" : null);
+  dfDollar18(el).attr("data-maximized", stateName === "maximized" ? "" : null);
+  dfDollar18(el).attr("data-minimized", stateName === "minimized" ? "" : null);
+  dfDollar18(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
+  dfDollar18(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
-function triggerStateChange15(w, stateName, config) {
-  const maxBtn = dfDollar15(w).find(".window-maximize").get(0);
+function triggerStateChange18(w, stateName, config) {
+  const maxBtn = dfDollar18(w).find(".window-maximize").get(0);
   if (stateName !== "closed" && !w.open)
     showQuietly(w);
   switch (stateName) {
@@ -7514,23 +9452,23 @@ function triggerStateChange15(w, stateName, config) {
   }
   if (maxBtn)
     maxBtn.setAttribute("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar15(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar18(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
 var windowApi = componentState({
   component: "window",
   states: windowStates,
   apply: (w, state) => {
     w.dataset.stateName = state.name;
-    triggerStateChange15(w, state.name, state.config);
+    triggerStateChange18(w, state.name, state.config);
   },
   read: (w, state) => {
     const name = !w.open ? "closed" : w.dataset.stateName || "default";
     return { name, config: name === "closed" ? {} : state.config };
   },
-  markup: (el, state) => applyMarkup14(el, state.name)
+  markup: (el, state) => applyMarkup17(el, state.name)
 });
-df$15.windowApi = windowApi;
-df$15.windowStates = windowStates;
+df$18.windowApi = windowApi;
+df$18.windowStates = windowStates;
 function bindDrag(w, bar) {
   bar.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || e.target.closest("button, a, input, select, textarea"))
@@ -7571,17 +9509,17 @@ function bindDrag(w, bar) {
     w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
   });
 }
-function init15() {
-  dfDollar15("dialog.window:not([data-init])").toArray().forEach((w) => {
+function init18() {
+  dfDollar18("dialog.window:not([data-init])").toArray().forEach((w) => {
     w.dataset.init = "";
-    const bar = dfDollar15(w).find(":scope > .window-titlebar").get(0);
+    const bar = dfDollar18(w).find(":scope > .window-titlebar").get(0);
     if (bar) {
       if (!bar.hasAttribute("tabindex"))
         bar.tabIndex = 0;
       bindDrag(w, bar);
     }
     if (!w.hasAttribute("aria-labelledby") && !w.hasAttribute("aria-label")) {
-      const title = dfDollar15(w).find(".window-title").get(0);
+      const title = dfDollar18(w).find(".window-title").get(0);
       if (title) {
         if (!title.id)
           title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
@@ -7590,12 +9528,12 @@ function init15() {
     }
     w.addEventListener("pointerdown", () => raise(w), true);
     w.addEventListener("focusin", () => raise(w));
-    dfDollar15(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
-    dfDollar15(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
+    dfDollar18(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
+    dfDollar18(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
       e.preventDefault();
       windowApi.setState(w, "closed", {});
     });
-    dfDollar15(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
+    dfDollar18(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
     w.addEventListener("close", () => {
       if (w.open)
         return;
@@ -7608,11 +9546,11 @@ function init15() {
     bindComponent(w, windowApi);
     const initial = !w.open ? "closed" : w.hasAttribute("data-maximized") ? "maximized" : w.hasAttribute("data-minimized") ? "minimized" : "default";
     w.dataset.stateName = initial;
-    dfDollar15(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
-    dfDollar15(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
+    dfDollar18(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
+    dfDollar18(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
     if (w.open) {
       w.style.zIndex = String(++topZ);
-      dfDollar15(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
+      dfDollar18(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
       w.setAttribute("data-active", "");
     }
   });
@@ -7635,7 +9573,7 @@ function create(options = {}) {
     focus = true,
     flush = false
   } = options;
-  const host = resolve(parent) ?? dfDollar15(".window-desktop").get(0) ?? document.body;
+  const host = resolve3(parent) ?? dfDollar18(".window-desktop").get(0) ?? document.body;
   const w = document.createElement("dialog");
   w.className = "window";
   if (id)
@@ -7644,7 +9582,7 @@ function create(options = {}) {
     w.dataset.chrome = chrome;
   if (resizable)
     w.setAttribute("data-resizable", "");
-  const count = dfDollar15(host).find(":scope > .window").toArray().length;
+  const count = dfDollar18(host).find(":scope > .window").toArray().length;
   w.style.setProperty("--window-x", typeof x === "number" ? `${x}px` : x ?? `${24 + count % 8 * 28}px`);
   w.style.setProperty("--window-y", typeof y === "number" ? `${y}px` : y ?? `${24 + count % 8 * 28}px`);
   if (width !== undefined)
@@ -7695,7 +9633,7 @@ function create(options = {}) {
     w.append(s);
   }
   host.append(w);
-  init15();
+  init18();
   showQuietly(w);
   if (focus)
     windowApi.setState(w, "default", {});
@@ -7703,7 +9641,7 @@ function create(options = {}) {
     globalThis.lucide?.createIcons?.();
   return w;
 }
-var list = (scope, all = false) => dfDollar15(resolve(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
+var list = (scope, all = false) => dfDollar18(resolve3(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
 function cascade(scope, step = 28) {
   list(scope).sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)).forEach((w, i) => {
     windowApi.setState(w, "default", {});
@@ -7732,29 +9670,29 @@ function tile(scope) {
 var windowActions = {
   create,
   open: (target, config = {}) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (w)
       windowApi.setState(w, "default", config);
     return w;
   },
   close: (target) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (w)
       windowApi.setState(w, "closed", {});
     return w;
   },
   focus: (target) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (w?.open)
       raise(w);
     return w;
   },
   move: (target, x, y) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     return w ? moveTo(w, x, y) : null;
   },
   resize: (target, width, height) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (!w)
       return null;
     w.style.width = "";
@@ -7765,38 +9703,38 @@ var windowActions = {
     return w;
   },
   maximize: (target) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (w)
       windowApi.setState(w, "maximized", {});
     return w;
   },
   minimize: (target) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (w)
       windowApi.setState(w, "minimized", {});
     return w;
   },
   restore: (target) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (w)
       windowApi.setState(w, "default", {});
     return w;
   },
   toggleMaximize: (target) => {
-    const w = resolve(target);
+    const w = resolve3(target);
     if (w)
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
   },
-  active: () => dfDollar15(".window[open][data-active]").get(0),
+  active: () => dfDollar18(".window[open][data-active]").get(0),
   list,
   cascade,
   tile
 };
-df$15.win = windowActions;
-init15();
-new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+df$18.win = windowActions;
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
 
-//# debugId=258660671F1D944164756E2164756E21
+//# debugId=FB2AD76F730164CD64756E2164756E21
 /* defuss-shadcn v0.9.13 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

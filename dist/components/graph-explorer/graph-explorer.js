@@ -14,7 +14,7 @@
 // - Plugins: node, edge and detail renderers return html`` (SafeHtml, every interpolation escaped and sanitized);
 //   edge styles are declarative rules the worker evaluates (functions never cross into it). Every markup write goes
 //   through defuss-morph (pooled, keyless slots, morphed only when their markup changed).
-// - The page composes the rest: a breadcrumb, a search box, an outline, details, relations, a Node UI switch and
+// - The page composes the rest: a breadcrumb, a search box, an outline, details, relations, a layer switch and
 //   readouts are OUTLETS - any element with data-graph-explorer-for="<id>" and data-graph-explorer-outlet - filled by
 //   this runtime (their content is chrome, data-ce-chrome). The full application is a Border Layout of Panels on the
 //   page, not markup this component builds: Expand maximizes the Panel that holds the details outlet.
@@ -285,7 +285,12 @@ const TYPE_ICON = {
 const typeIcon = (n, opts = {}) => icon(TYPE_ICON[n.typeName] || 'circle', { cls: 'graph-explorer-type-icon', type: n.type, ...opts });
 const EDGE_ICON = { calls: 'zap', reads: 'eye', owns: 'key-round' };
 // -- the plugin registry ----------------------------------------------------------
-const globalRegistry = { node: [], edge: [], detail: [] };
+const globalRegistry = {
+    node: [],
+    edge: [],
+    detail: [],
+    update: [],
+};
 // edge labels: the tier is picked by the edge's visible length on screen (per zoom level), then by budget and
 // collision; `depths` limits a renderer to hierarchy levels (0 = the top)
 const DEFAULT_LABEL = {
@@ -306,16 +311,18 @@ function registryOf(scope) {
     return inst.registry;
 }
 /**
- * Registers a node, edge or detail plugin - for every explorer ('global') or one element (its plugins win).
+ * Registers a node, edge, detail or update plugin - for every explorer ('global') or one element (its plugins win).
  * Explorers on the page render again with it.
  * @param scope - 'global', or the .graph-explorer element (or its selector)
  * @param plugin - the plugin
  * @returns a function that removes the plugin again
  */
 function register(scope, plugin) {
-    const kinds = ['node', 'edge', 'detail'];
+    const kinds = ['node', 'edge', 'detail', 'update'];
     if (!plugin || !kinds.includes(plugin.kind))
-        throw new TypeError('graph-explorer: plugin.kind must be node, edge or detail');
+        throw new TypeError('graph-explorer: plugin.kind must be node, edge, detail or update');
+    if (plugin.kind === 'update' && typeof plugin.update?.render !== 'function')
+        throw new TypeError('graph-explorer: update plugins need update.render');
     if (plugin.kind === 'node' &&
         (typeof plugin.match !== 'function' || typeof plugin.render !== 'function' || !plugin.sizes))
         throw new TypeError('graph-explorer: node plugins need match, sizes and render');
@@ -327,8 +334,10 @@ function register(scope, plugin) {
         plugin.label &&
         (typeof plugin.label.render !== 'function' || typeof plugin.label.match !== 'function'))
         throw new TypeError('graph-explorer: edge label renderers need match and render');
-    if (plugin.kind === 'node' && plugin.variant != null && !/^[a-z0-9-]+$/.test(plugin.variant))
-        throw new TypeError('graph-explorer: a node variant is a lowercase word');
+    if (plugin.layer != null && !/^[a-z0-9-]+$/.test(plugin.layer))
+        throw new TypeError('graph-explorer: a layer is a lowercase word');
+    if (plugin.kind === 'node' && plugin.layer === 'nodes')
+        throw new TypeError('graph-explorer: a renderer of the nodes layer has no layer - it draws the node itself');
     if (plugin.kind === 'detail' && (typeof plugin.match !== 'function' || typeof plugin.render !== 'function'))
         throw new TypeError('graph-explorer: detail plugins need match and render');
     if (plugin.kind === 'edge')
@@ -424,12 +433,16 @@ function zoomPath(p0, p1) {
             return [ux0 + u * dx, uy0 + u * dy, (w0 * c0) / Math.cosh(rho * s + r0)];
         };
     }
-    return { at, ms: clamp(Math.abs(S) * 1000 * 0.9, 450, 1400) };
+    // brisk: a flight shows where the view goes, it does not hold the reader up (1.4 s once felt slow)
+    return { at, ms: clamp(Math.abs(S) * 1000 * 0.3, 160, 460) };
 }
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 // -- built-in plugins --------------------------------------------------------------------
-// Node renderers come in variants (the Node UI switch): a renderer without `variant` serves every Node UI; one with a
-// variant wins while that Node UI shows, so a plugin can re-skin some node types and the rest fall back.
+// The graph shows layers of information (the layer switch, data-layers): the nodes layer draws a node itself - a chip
+// with its name, a card with its actions -, every other layer adds a part to it (labels its counts, health its
+// breaker state, relations its links), each in the layer's colour. A node renderer without `layer` draws the node; one
+// with a layer draws that layer's part, so a plugin can add a layer of its own (an owner per entity) or re-skin a
+// node type while the parts still join it.
 const STATE_LABEL = { closed: 'closed', 'half-open': 'half-open', open: 'open', cut: 'cut' };
 const expandBtn = (c, label) => !c.expandable
     ? ''
@@ -446,26 +459,24 @@ const health = (n) => {
 };
 const healthBar = (c, h) => c.html `<span class="graph-explorer-health" role="img" aria-label="${h.open} open, ${h.half} half-open, ${h.cut} cut of ${h.total} links"><span data-tone="danger" style="flex:${h.open}"></span><span data-tone="warn" style="flex:${h.half}"></span><span data-tone="ink" style="flex:${h.cut}"></span><span data-tone="ok" style="flex:${h.closed}"></span></span>`;
 const breakerKey = (n) => n.breakers ? `${n.breakers.open}/${n.breakers.half}/${n.breakers.cut}` : '';
+const freshness = (n) => {
+    const f = n.attrs?.freshness ?? 0;
+    return { f, tone: f > 24 ? 'danger' : f > 12 ? 'warn' : 'ok' };
+};
+// the nodes layer: the node itself - its type, its name, Expand; a cluster card zooms in
 register('global', {
     kind: 'node',
     name: 'builtin-cluster',
     match: (n) => (n.kind === 'cluster' ? 0 : false),
-    sizes: { chip: [160, 28], card: [252, 108] },
-    key: breakerKey,
+    // a card's box: padding, border, the head and the button row (a part adds its own height and the gap)
+    sizes: { chip: [132, 28], card: [236, 74] },
     render: (n, c) => {
         if (c.tier === 'chip')
-            return c.html `<span class="graph-explorer-chip" data-kind="cluster">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${cycleMark(c, n)}<span class="graph-explorer-count">${fmt(n.members)}</span></span>`;
-        const b = n.breakers || { open: 0, half: 0, cut: 0 };
+            return c.html `<span class="graph-explorer-chip" data-kind="cluster">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${c.parts}</span>`;
         return c.html `<article class="graph-explorer-card" data-kind="cluster">
-        <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${cycleMark(c, n)}${expandBtn(c, n.label)}</header>
-        <p class="graph-explorer-card-meta">${n.typeName} · ${fmt(n.children)} children · ${fmt(n.members)} nodes</p>
-        <p class="graph-explorer-card-flags">
-          ${b.open ? c.html `<span class="badge" data-variant="destructive">${b.open} open</span>` : ''}
-          ${b.half ? c.html `<span class="badge graph-explorer-warn">${b.half} half-open</span>` : ''}
-          ${b.cut ? c.html `<span class="badge" data-variant="outline">${b.cut} cut</span>` : ''}
-          ${!b.open && !b.half && !b.cut ? c.html `<span class="badge" data-variant="secondary">all closed</span>` : ''}
-        </p>
-        <button type="button" class="btn graph-explorer-card-enter" data-variant="outline" data-size="xs" data-graph-explorer-action="${c.action('enter')}">Enter ⏎</button>
+        <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
+        ${c.parts}
+        <footer class="graph-explorer-card-actions"><button type="button" class="btn graph-explorer-card-enter" data-variant="outline" data-size="xs" data-graph-explorer-action="${c.action('enter')}" title="Zoom into ${n.label}: its ${fmt(n.children)} children (Enter)">Zoom in ⏎</button></footer>
       </article>`;
     },
 });
@@ -473,62 +484,67 @@ register('global', {
     kind: 'node',
     name: 'builtin-entity',
     match: (n) => (n.kind === 'entity' ? 0 : false),
-    sizes: { chip: [150, 26], card: [228, 92] },
+    sizes: { chip: [128, 26], card: [220, 42] },
     render: (n, c) => {
         if (c.tier === 'chip')
-            return c.html `<span class="graph-explorer-chip" data-kind="entity">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span></span>`;
+            return c.html `<span class="graph-explorer-chip" data-kind="entity">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${c.parts}</span>`;
         return c.html `<article class="graph-explorer-card" data-kind="entity">
         <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
-        <p class="graph-explorer-card-meta">${n.typeName} · ${n.attrs?.out} out · ${n.attrs?.in} in</p>
-        <p class="graph-explorer-card-meta">${c.icon('user', { size: 'xs' })} ${n.attrs?.owner}</p>
+        ${c.parts}
       </article>`;
     },
 });
+// the relations layer: how a node is linked - its links, a small cycle it is in
+register('global', {
+    kind: 'node',
+    name: 'builtin-relations',
+    layer: 'relations',
+    match: () => 0,
+    // a chip marks only a small cycle
+    sizes: (n) => (smallCycle(n) ? { chip: [22, 0], card: [0, 29] } : { card: [0, 29] }),
+    render: (n, c) => {
+        if (c.tier === 'chip')
+            return c.html `${cycleMark(c, n)}`;
+        return n.kind === 'cluster'
+            ? c.html `<p class="graph-explorer-card-meta">${cycleMark(c, n)}${fmt(n.degree)} links${smallCycle(n) ? c.html ` · in a cycle of ${n.scc}` : ''}</p>`
+            : c.html `<p class="graph-explorer-card-meta">${n.attrs?.out} out · ${n.attrs?.in} in</p>`;
+    },
+});
+// the labels layer: what a node is and how big
+register('global', {
+    kind: 'node',
+    name: 'builtin-labels',
+    layer: 'labels',
+    match: () => 0,
+    sizes: { chip: [56, 0], card: [0, 29] },
+    render: (n, c) => {
+        if (c.tier === 'chip')
+            return c.html `<span class="graph-explorer-count">${n.kind === 'cluster' ? fmt(n.members) : n.typeName}</span>`;
+        return n.kind === 'cluster'
+            ? c.html `<p class="graph-explorer-card-meta">${n.typeName} · ${fmt(n.children)} children · ${fmt(n.members)} nodes</p>`
+            : c.html `<p class="graph-explorer-card-meta">${n.typeName} · #${n.id.slice(1)}</p>`;
+    },
+});
+// the health layer: a cluster's links by breaker state, an entity's freshness
 register('global', {
     kind: 'node',
     name: 'builtin-health',
-    variant: 'health',
-    variantLabel: 'Health',
-    variantIcon: 'activity',
+    layer: 'health',
     match: () => 0,
-    sizes: { chip: [176, 30], card: [256, 116] },
+    sizes: (n) => ({ chip: [52, 0], card: [0, n.kind === 'cluster' ? 41 : 29] }),
     key: breakerKey,
     render: (n, c) => {
         if (n.kind === 'cluster') {
             const h = health(n);
             if (c.tier === 'chip')
-                return c.html `<span class="graph-explorer-chip" data-kind="cluster" data-health="${h.tone}">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${healthBar(c, h)}</span>`;
-            return c.html `<article class="graph-explorer-card" data-kind="cluster" data-health="${h.tone}">
-          <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
-          ${healthBar(c, h)}
-          <p class="graph-explorer-card-meta">${h.bad ? `${h.open} open · ${h.half} half-open · ${h.cut} cut` : 'all links closed'} · of ${fmt(h.total)}</p>
-          <p class="graph-explorer-card-meta">${fmt(n.members)} nodes · ${fmt(n.degree)} links</p>
-          <button type="button" class="btn graph-explorer-card-enter" data-variant="outline" data-size="xs" data-graph-explorer-action="${c.action('enter')}">Enter ⏎</button>
-        </article>`;
+                return c.html `<span data-health="${h.tone}">${healthBar(c, h)}</span>`;
+            return c.html `<div data-health="${h.tone}">${healthBar(c, h)}<p class="graph-explorer-card-meta">${h.bad ? `${h.open} open · ${h.half} half-open · ${h.cut} cut` : 'all links closed'} · of ${fmt(h.total)}</p></div>`;
         }
-        const f = n.attrs?.freshness ?? 0, tone = f > 24 ? 'danger' : f > 12 ? 'warn' : 'ok';
+        const { f, tone } = freshness(n);
         if (c.tier === 'chip')
-            return c.html `<span class="graph-explorer-chip" data-kind="entity" data-health="${tone}">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span><span class="graph-explorer-pill" data-tone="${tone}">${f} h</span></span>`;
-        const links = (n.attrs?.out ?? 0) + (n.attrs?.in ?? 0);
-        return c.html `<article class="graph-explorer-card" data-kind="entity" data-health="${tone}">
-        <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
-        <p class="graph-explorer-meter-row"><span>Freshness</span><span class="graph-explorer-meter" data-tone="${tone}"><span style="width:${Math.min(100, Math.round((f / 48) * 100))}%"></span></span><span>${f} h</span></p>
-        <p class="graph-explorer-meter-row"><span>Links</span><span class="graph-explorer-meter" data-tone="accent"><span style="width:${Math.min(100, links * 8)}%"></span></span><span>${n.attrs?.out}↗ ${n.attrs?.in}↙</span></p>
-      </article>`;
+            return c.html `<span class="graph-explorer-pill" data-tone="${tone}">${f} h</span>`;
+        return c.html `<p class="graph-explorer-meter-row" data-health="${tone}"><span>Freshness</span><span class="graph-explorer-meter" data-tone="${tone}"><span style="width:${Math.min(100, Math.round((f / 48) * 100))}%"></span></span><span>${f} h</span></p>`;
     },
-});
-register('global', {
-    kind: 'node',
-    name: 'builtin-compact',
-    variant: 'compact',
-    variantLabel: 'Compact',
-    variantIcon: 'rows-3',
-    match: () => 0,
-    sizes: { chip: [124, 22], card: [168, 44] },
-    render: (n, c) => c.tier === 'chip'
-        ? c.html `<span class="graph-explorer-chip" data-kind="${n.kind}" data-density="compact">${typeIcon(n, { size: 'xs' })}<span class="graph-explorer-label">${n.label}</span></span>`
-        : c.html `<article class="graph-explorer-card" data-kind="${n.kind}" data-density="compact"><header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong></header>
-          <p class="graph-explorer-card-meta">${n.typeName}${n.kind === 'cluster' ? ' · ' + fmt(n.members) : ''}</p></article>`,
 });
 register('global', {
     kind: 'edge',
@@ -606,6 +622,8 @@ const AGG = { field: 'breaker.aggregate', equals: true };
 register('global', {
     kind: 'edge',
     name: 'circuit-breaker',
+    // the breakers' colours and badges are the health layer's
+    layer: 'health',
     rules: [
         { when: [{ field: 'breaker.state', equals: 'closed' }], style: { tone: 'muted', width: 1.25, arrow: 'end' } },
         {
@@ -899,10 +917,10 @@ function composition(c, kids, keyOf, weight) {
 const healthBlock = (c, h) => c.html `${healthBar(c, h)}<ul class="graph-explorer-legend"><li data-tone="danger">${fmt(h.open)} open</li><li data-tone="warn">${fmt(h.half)} half-open</li><li data-tone="ink">${fmt(h.cut)} cut</li><li data-tone="ok">${fmt(h.closed)} closed</li></ul>`;
 /** the actions on a node */
 const nodeActions = (c, item) => c.html `<div class="graph-explorer-detail-actions">${item.kind === 'cluster'
-    ? c.html `<button type="button" class="btn" data-variant="default" data-size="sm" data-graph-explorer-action="${c.action('enter')}">${c.icon('arrow-right')} Enter</button>`
+    ? c.html `<button type="button" class="btn" data-variant="default" data-size="sm" data-graph-explorer-action="${c.action('enter')}" title="Zoom into ${item.label} and show its ${fmt(item.children)} children (Enter)">${c.icon('scan')} Zoom in</button>`
     : ''}${c.expanded
     ? ''
-    : c.html `<button type="button" class="btn" data-variant="outline" data-size="sm" data-graph-explorer-action="${c.action('bring')}" title="Bring &amp; Go (B)">${c.icon('crosshair')} Bring &amp; Go</button>`}${pageToggle(c)}</div>`;
+    : c.html `<button type="button" class="btn" data-variant="outline" data-size="sm" data-graph-explorer-action="${c.action('bring')}" title="Gather the busiest neighbours of ${item.label} around it and fly to the one you pick (B)">${c.icon('crosshair')} Jump to a neighbour</button>`}${pageToggle(c)}</div>`;
 register('global', {
     kind: 'detail',
     name: 'builtin-detail',
@@ -1111,7 +1129,28 @@ register('global', {
 // (data-graph-explorer-for) and what it shows (data-graph-explorer-outlet). Its content is the runtime's
 // (data-ce-chrome): the HTML Preview Editor never writes it back into a source.
 const FOR = 'data-graph-explorer-for';
-const OUTLETS = ['breadcrumb', 'search', 'outline', 'details', 'relations', 'node-ui'];
+const OUTLETS = ['breadcrumb', 'search', 'outline', 'details', 'relations', 'layers', 'updates'];
+// -- layers --------------------------------------------------------------------------------
+// What the graph shows is layers of information, each a filter of its own: the base layers nodes (the chips and cards)
+// and relations (the lines) are shown while data-layers is absent; with none the clusters' circles and dots remain.
+/** the built-in layers, in the switch's order (the plugins' come after them) */
+const BUILTIN_LAYERS = [
+    { name: 'nodes', label: 'Nodes', icon: 'circle', base: true },
+    { name: 'relations', label: 'Relations', icon: 'network', base: true },
+    { name: 'labels', label: 'Labels', icon: 'tag', base: false },
+    { name: 'health', label: 'Health', icon: 'activity', base: false },
+];
+const BASE_LAYERS = ['nodes', 'relations'];
+/** a layers value (a list or space separated words) as a list of names, each once */
+function layerList(value) {
+    const words = Array.isArray(value) ? value.map(String) : String(value ?? '').split(/\s+/);
+    return [...new Set(words.map((w) => w.trim()).filter((w) => /^[a-z0-9-]+$/.test(w)))];
+}
+/** the layers an element shows: data-layers, or the base layers while it is absent */
+function layersOf(el) {
+    return el.hasAttribute('data-layers') ? layerList(el.getAttribute('data-layers')) : [...BASE_LAYERS];
+}
+const sameLayers = (a, b) => a.length === b.length && [...a].sort().join(' ') === [...b].sort().join(' ');
 /** the elements bound to an explorer that match `sel`: the bound elements themselves and their descendants */
 function boundOf(el, sel) {
     if (!el.id)
@@ -1136,16 +1175,18 @@ function outletChrome(outlet, kind, make) {
 const resolveTarget = (target) => typeof target === 'string' ? dfDollar(target).get(0) : target;
 // -- the State API -------------------------------------------------------------------------
 /**
- * The markup of a state, on the live element and on render()'s detached copy: the focus, the selection, the Node UI
+ * The markup of a state, on the live element and on render()'s detached copy: the focus, the selection, the layers
  * and the expanded details as data-* attributes. Everything drawn (canvas, slots, labels, outlets) is the runtime's.
  */
 function applyMarkup(el, name, config) {
-    // the default Node UI is no attribute (an authored data-node-ui="default" goes too)
-    if (config.nodeUi !== undefined) {
-        const ui = config.nodeUi && config.nodeUi !== 'default' ? config.nodeUi : null;
-        if (el.getAttribute('data-node-ui') !== ui)
-            dfDollar(el).attr('data-node-ui', ui);
+    // the base layers are no attribute; any other set is written (an empty one too: only the circles)
+    if (config.layers !== undefined) {
+        const want = layerList(config.layers);
+        if (!sameLayers(want, layersOf(el)))
+            dfDollar(el).attr('data-layers', sameLayers(want, BASE_LAYERS) ? null : want.join(' '));
     }
+    if (config.compact !== undefined && el.hasAttribute('data-compact') !== !!config.compact)
+        dfDollar(el).attr('data-compact', config.compact ? '' : null);
     const selected = name === 'default' ? [] : keyList(config.selected ?? '');
     if (selected.join(' ') !== keyList(el.getAttribute('data-selected') ?? '').join(' '))
         dfDollar(el).attr('data-selected', selected.length ? selected.join(' ') : null);
@@ -1174,7 +1215,8 @@ function configOf(el) {
     return {
         focus: el.getAttribute('data-focus') || null,
         selected: keyList(el.getAttribute('data-selected') ?? ''),
-        nodeUi: el.getAttribute('data-node-ui') || 'default',
+        layers: layersOf(el),
+        compact: el.hasAttribute('data-compact'),
         expanded: el.hasAttribute('data-expanded'),
         edge: edgeKey(el.getAttribute('data-selected-edge')),
     };
@@ -1212,7 +1254,7 @@ export const graphExplorerApi = componentState({
     states: graphExplorerStates,
     mergeConfig: true,
     apply: (el, state, _previous, incoming) => triggerStateChange(el, state.name, state.config, incoming),
-    // the state the attributes show now - a click, a zoom into a cluster or the Node UI switch change them without setState
+    // the state the attributes show now - a click, a zoom into a cluster or the layer switch change them without setState
     read: (el) => {
         const config = configOf(el);
         return {
@@ -1224,18 +1266,40 @@ export const graphExplorerApi = componentState({
 });
 df$.graphExplorerApi = graphExplorerApi;
 df$.graphExplorerStates = graphExplorerStates;
+// -- updates: what changed, newest first ------------------------------------------------------
+// A change marks its node (a glowing dot at its top right) or its link (the line flashes in its layer's colour and
+// fades) for CHANGE_MS, and joins the Updates outlet: a Virtual List of every update the shown layers own, newest
+// first, each row a button that selects the node or the link. The list keeps the last UPDATE_LIMIT.
+const CHANGE_MS = 8000;
+const TIME_FMT = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+const UPDATE_LIMIT = 10_000;
+const UPDATE_ICONS = {
+    deploy: 'send',
+    breaker: 'zap',
+    traffic: 'activity',
+    count: 'hash',
+};
+// the built-in row: the layer's dot (or the tone's), the target, what happened, when
+register('global', {
+    kind: 'update',
+    name: 'builtin-update',
+    update: {
+        match: () => 0,
+        render: (u, c) => c.html `<span class="indicator-dot" data-size="sm" ${u.tone ? c.html `data-tone="${u.tone}"` : ''} aria-hidden="true"></span>${c.icon(UPDATE_ICONS[u.type] ?? 'circle', { size: 'sm' })}<span class="graph-explorer-update-label">${u.label}</span><span class="graph-explorer-update-text">${u.text}</span><time class="graph-explorer-update-time" datetime="${new Date(u.time).toISOString()}">${c.time(u.time)}</time>`,
+    },
+});
 // -- the explorer ---------------------------------------------------------------------------
 const HELP_ROWS = [
     ['←↑→↓', 'move the focus to the nearest node in that direction'],
     ['Shift + arrows, drag', 'pan (panning into a neighbour cluster moves you there)'],
     ['+ - / wheel, pinch', 'zoom (zooming into a cluster enters it)'],
-    ['Enter / double click', 'enter a cluster; expand an entity'],
+    ['Enter / double click', 'zoom into a cluster: its children show; expand an entity'],
     ['E', 'expand the focused node: its full page in the details outlet (Esc returns)'],
     ['Space / click', 'select and show details (Shift adds)'],
     ['click a link', 'select the link: its traffic, breakers and single links (E expands, Esc lets it go)'],
     ['] [', 'focus the next / previous neighbour'],
-    ['B / press and hold', 'Bring & Go: the neighbours come to you'],
-    ['V', 'the next Node UI (Labels, Health, Compact, ...)'],
+    ['B / press and hold', 'jump to a neighbour: the busiest ones gather around the node, pick one to fly there'],
+    ['1 - 9', 'show or hide a layer (Nodes, Relations, Labels, Health, ...)'],
     ['Esc', 'close the topmost overlay, then move out'],
     ['Backspace', 'move out'],
     ['0', 'fit the view'],
@@ -1245,7 +1309,7 @@ const HELP_ROWS = [
 class Explorer {
     constructor(el) {
         this.el = el;
-        this.registry = { node: [], edge: [], detail: [] };
+        this.registry = { node: [], edge: [], detail: [], update: [] };
         this.n = clamp(parseInt(el.dataset.nodes || '1000000', 10) || 1000000, 2000, 4000000);
         this.seed = parseInt(el.dataset.seed || '7', 10) || 7;
         this.uid = el.id || 'graph-explorer-' + Math.random().toString(36).slice(2, 8);
@@ -1273,10 +1337,18 @@ class Explorer {
         this.labelHosts = new Map(); // edge labels: pooled hosts keyed by edge
         this.labelPool = [];
         this.labelVer = 0;
-        this.variant = el.getAttribute('data-node-ui') || 'default';
+        this.shown = new Set(layersOf(el)); // the layers shown
+        this.compact = el.hasAttribute('data-compact');
+        this.layerColors = new Map(); // layer -> its CSS colour
+        this.monochrome = false; // the theme's chart colours are one hue: the layers turn chart-1 around the hue circle
         this.expanded = false;
         this.edge = null; // the selected link ('<source>><target>'), or null
         this.dotLabels = []; // the canvas labels' boxes of the last frame (the edge labels keep clear of them)
+        this.updates = []; // GraphUpdate[], newest first (UPDATE_LIMIT)
+        this.updatesShown = []; // the ones the shown layers own - the Updates outlet's rows
+        this.changes = new Map(); // target -> { u, at }: what changed in the last CHANGE_MS (the dots, the flashes)
+        this.changeDots = new Map(); // node id -> its dot
+        this.updateSeq = 0;
         this.flight = null;
         this.navigating = false;
         this.loading = true;
@@ -1316,6 +1388,7 @@ class Explorer {
       <div class="graph-explorer-edge-labels" aria-hidden="true" data-ce-chrome></div>
       <div class="graph-explorer-world" data-ce-chrome></div>
       <div class="graph-explorer-signs" data-ce-chrome></div>
+      <div class="graph-explorer-changes" aria-hidden="true" data-ce-chrome></div>
       <div class="graph-explorer-ring" hidden data-ce-chrome></div>
       <div class="graph-explorer-focus-ring" hidden aria-hidden="true" data-ce-chrome></div>
       <div class="graph-explorer-loading" data-ce-chrome>
@@ -1345,6 +1418,7 @@ class Explorer {
         this.labelsEl = $('.graph-explorer-edge-labels');
         this.world = $('.graph-explorer-world');
         this.signs = $('.graph-explorer-signs');
+        this.changesEl = $('.graph-explorer-changes');
         this.ring = $('.graph-explorer-ring');
         this.focusRing = $('.graph-explorer-focus-ring');
         this.loadingEl = $('.graph-explorer-loading');
@@ -1363,6 +1437,7 @@ class Explorer {
         this.worker.onmessage = (ev) => this.onWorker(ev.data);
         this.worker.onerror = (ev) => this.fail(ev.message || 'worker error');
         this.postRules();
+        this.postLayers();
         this.post({ t: 'init', n: this.n, seed: this.seed });
         this.t0 = performance.now();
     }
@@ -1402,6 +1477,9 @@ class Explorer {
             case 'rows':
                 this.resolve('rows:' + m.id, m);
                 break;
+            case 'subtree':
+                this.resolve('subtree:' + m.id + ':' + m.levels, m.rows);
+                break;
             case 'edge':
                 this.resolve('edge:' + m.id, m);
                 break;
@@ -1410,6 +1488,9 @@ class Explorer {
                 break;
             case 'patch':
                 this.onPatch(m);
+                break;
+            case 'updates':
+                this.addUpdates(m.items);
                 break;
             case 'error':
                 this.fail(String(m.message));
@@ -1441,19 +1522,23 @@ class Explorer {
     postRules() {
         const rules = [];
         for (const reg of [globalRegistry, this.registry])
-            for (const p of reg.edge)
+            for (const p of reg.edge) {
+                if (!this.shown.has(p.layer || 'relations'))
+                    continue;
                 for (const r of p.rules || [])
                     rules.push({
                         when: r.when || [],
                         style: r.style || {},
                         priority: (r.priority ?? 0) + (p._scoped ? 1000 : 0),
                     });
+            }
         this.post({ t: 'rules', rules });
     }
     onPluginsChanged() {
+        this.renderUpdates();
         this.postRules();
         this.labelVer++;
-        this.renderNodeUi();
+        this.renderLayers();
         if (this.view) {
             this.assignRenderers();
             for (const s of this.slots.values())
@@ -1495,8 +1580,55 @@ class Explorer {
         };
         for (const shift of [150, 210, 280])
             palette.cat.push(forced ? palette.ink : read(`oklch(from var(--chart-1) l c calc(h + ${shift}))`) || palette.ink);
+        // the layers' colours: the chart colours, unless the theme's are one hue
+        const mono = !forced && this.chartsMonochrome(palette.cat.slice(0, 5));
+        if (mono !== this.monochrome) {
+            this.monochrome = mono;
+            this.renderLayers();
+            if (this.view) {
+                for (const s of this.slots.values())
+                    s._key = '';
+                this.applyTiers(this.tiers, true);
+                this.refreshDecor(true);
+            }
+        }
+        else
+            this.renderLayers();
+        // a calm line is the relations layer's colour (its SVG twins read --graph-explorer-relations), a chip or a card
+        // has the nodes layer's
+        const relations = this.colorOf('relations');
+        this.el.style.setProperty('--graph-explorer-relations', relations);
+        this.el.style.setProperty('--graph-explorer-nodes', this.colorOf('nodes'));
+        if (!forced)
+            palette.tones.muted = read(relations) || palette.tones.muted;
         this.palette = palette;
         this.post({ t: 'colors', palette });
+    }
+    /** true when the theme's chart colours are one hue (the default theme's are five blues): no two of the coloured
+     *  ones are more than 40 degrees apart */
+    chartsMonochrome(colors) {
+        const canvas = dfDollar('<canvas width="1" height="1"></canvas>').get(0);
+        const g = canvas.getContext('2d', { willReadFrequently: true });
+        if (!g)
+            return false;
+        const hues = [];
+        for (const color of colors) {
+            g.clearRect(0, 0, 1, 1);
+            g.fillStyle = '#000';
+            g.fillStyle = color;
+            g.fillRect(0, 0, 1, 1);
+            const [r, gr, b] = [...g.getImageData(0, 0, 1, 1).data].map((v) => v / 255);
+            const max = Math.max(r, gr, b), min = Math.min(r, gr, b), d = max - min;
+            if (d < 0.12)
+                continue; // grey: no hue
+            const h = max === r ? ((gr - b) / d) % 6 : max === gr ? (b - r) / d + 2 : (r - gr) / d + 4;
+            hues.push((h * 60 + 360) % 360);
+        }
+        let spread = 0;
+        for (const a of hues)
+            for (const b of hues)
+                spread = Math.max(spread, Math.min(Math.abs(a - b), 360 - Math.abs(a - b)));
+        return spread < 40;
     }
     observeTheme() {
         const again = () => {
@@ -1579,9 +1711,13 @@ class Explorer {
             p.hit.remove();
             p.line.remove();
             p.head.remove();
+            p.flash?.remove();
         }
         this.edgePaths.clear();
         this.assignRenderers();
+        if (!this.updatesRendered)
+            this.renderUpdates();
+        this.renderLayers();
         this.renderCrumbs();
         this.renderOutline();
         this.renderPanel();
@@ -1602,13 +1738,69 @@ class Explorer {
     nodeOf(i) {
         return { ...this.view.children[i], depth: this.view.path.length - 1 };
     }
+    /** a renderer's boxes for a node (sizes may be a function of the node) */
+    sizesOf(r, node) {
+        try {
+            return (typeof r.sizes === 'function' ? r.sizes(node) : r.sizes) || {};
+        }
+        catch (err) {
+            console.error('[graph-explorer] sizes of "' + r.name + '" failed', err);
+            return {};
+        }
+    }
+    /** each child's renderer (the nodes layer), the parts of the other layers shown and its boxes - the worker places
+     *  the chips and cards by them; a node without either has no box (only its circle shows) */
     assignRenderers() {
         const m = this.view;
-        m.renderers = m.children.map((c) => this.pick('node', c));
+        const head = this.shown.has('nodes');
+        const partLayers = this.layerDefs()
+            .filter((l) => l.name !== 'nodes' && l.shown)
+            .map((l) => l.name);
+        m.renderers = m.children.map((c) => (head ? this.pick('node', c) : null));
+        m.boxes = [];
         const sizes = new Float32Array(m.children.length * 4);
         m.children.forEach((_c, i) => {
-            const r = m.renderers[i], chip = r.sizes.chip || [140, 26], card = r.sizes.card || chip;
-            sizes.set([chip[0], chip[1], card[0], card[1]], i * 4);
+            const node = this.nodeOf(i), r = m.renderers[i];
+            const hs = r ? this.sizesOf(r, node) : {};
+            const chip0 = hs.chip || [140, 26], card0 = hs.card || chip0;
+            let [chipW, chipH] = r ? chip0 : [0, 0], [cardW, cardH] = r ? card0 : [0, 0];
+            const chipParts = [], cardParts = [];
+            for (const layer of partLayers) {
+                const p = this.pickPart(layer, node);
+                if (!p)
+                    continue;
+                const ps = this.sizesOf(p, node);
+                if (ps.chip) {
+                    chipW += ps.chip[0];
+                    chipH = Math.max(chipH, ps.chip[1]);
+                    chipParts.push(p);
+                }
+                if (ps.card) {
+                    cardW = Math.max(cardW, ps.card[0]);
+                    cardH += ps.card[1];
+                    cardParts.push(p);
+                }
+            }
+            // the parts without their node: a bare box of them
+            if (!r && chipParts.length) {
+                chipW += 12;
+                chipH = Math.max(chipH, 22);
+            }
+            if (!r && cardParts.length) {
+                cardW = Math.max(cardW, 168);
+                cardH += 14;
+            }
+            if (this.compact) {
+                cardW = chipW;
+                cardH = chipH;
+            }
+            m.boxes[i] = {
+                chip: chipParts,
+                card: this.compact ? chipParts : cardParts,
+                chipSize: [chipW, chipH],
+                cardSize: [cardW, cardH],
+            };
+            sizes.set([chipW, chipH, cardW, cardH], i * 4);
         });
         this.post({ t: 'sizes', id: m.id, sizes });
     }
@@ -1616,13 +1808,11 @@ class Explorer {
         for (const reg of [this.registry, globalRegistry]) {
             let best = null, score = -Infinity;
             for (const p of reg[kind]) {
-                if (kind === 'node' && p.variant && p.variant !== this.variant)
-                    continue;
-                let s = p.match(item);
+                if (kind === 'node' && p.layer)
+                    continue; // a part, not the node
+                const s = p.match(item);
                 if (s === false || s == null)
                     continue;
-                if (kind === 'node' && p.variant)
-                    s += 100; // the active Node UI's renderer beats the generic ones
                 if (s > score || (s === score && p._order > best._order)) {
                     best = p;
                     score = s;
@@ -1633,54 +1823,167 @@ class Explorer {
         }
         return null;
     }
-    // ---------------------------------------------------- Node UIs
-    variants() {
-        const out = [{ name: 'default', label: 'Labels', icon: 'tag' }], seen = new Set(['default']);
-        for (const reg of [globalRegistry, this.registry])
+    /** the renderer of a layer's part for a node (the element's plugins first, the highest score wins) */
+    pickPart(layer, item) {
+        for (const reg of [this.registry, globalRegistry]) {
+            let best = null, score = -Infinity;
             for (const p of reg.node) {
-                if (!p.variant || seen.has(p.variant))
+                if (p.layer !== layer)
                     continue;
-                seen.add(p.variant);
-                out.push({ name: p.variant, label: p.variantLabel || p.variant, icon: p.variantIcon || 'circle' });
+                let s;
+                try {
+                    s = p.match(item);
+                }
+                catch (err) {
+                    console.error(err);
+                    s = false;
+                }
+                if (s === false || s == null)
+                    continue;
+                if (s > score || (s === score && p._order > best._order)) {
+                    best = p;
+                    score = s;
+                }
             }
-        return out;
+            if (best)
+                return best;
+        }
+        return null;
     }
-    renderNodeUi() {
-        const list = this.variants();
-        for (const outlet of this.outlets('node-ui')) {
-            const box = outletChrome(outlet, 'node-ui', () => dfDollar('<div class="graph-explorer-node-ui" role="group" aria-label="Node UI" data-ce-chrome></div>').get(0));
-            morph(box, html `${list.map((v) => html `<button
-              type="button"
-              class="btn"
-              data-variant="ghost"
-              data-size="sm"
-              key="${v.name}"
-              data-graph-explorer-node-ui="${v.name}"
-              aria-pressed="${v.name === this.variant ? 'true' : 'false'}"
-              title="Node UI: ${v.label} (V)"
-            >
-              ${icon(v.icon)}<span class="graph-explorer-node-ui-label">${v.label}</span>
-            </button>`)}`);
+    // ---------------------------------------------------- layers
+    /** every layer the switch offers: the built-in ones, then the plugins' in the order they came */
+    layerDefs() {
+        const out = BUILTIN_LAYERS.map((l) => ({ ...l, color: '' }));
+        const seen = new Set(out.map((l) => l.name));
+        const plugins = [...globalRegistry.node, ...globalRegistry.edge, ...this.registry.node, ...this.registry.edge];
+        for (const p of plugins.sort((a, b) => a._order - b._order)) {
+            if (!p.layer || seen.has(p.layer))
+                continue;
+            seen.add(p.layer);
+            out.push({
+                name: p.layer,
+                label: p.layerLabel || p.layer,
+                icon: p.layerIcon || 'layers',
+                color: p.layerColor || '',
+                base: false,
+            });
+        }
+        return out.map((l, k) => ({ ...l, color: l.color || this.layerColor(k), shown: this.shown.has(l.name) }));
+    }
+    /** the k-th layer's colour: the theme's chart colours - or, when they are one hue (the default theme's five blues),
+     *  chart-1 turned around the hue circle, so every layer keeps a colour of its own */
+    layerColor(k) {
+        if (!this.monochrome && k < 5)
+            return `var(--chart-${k + 1})`;
+        return `oklch(from var(--chart-1) 0.66 max(c, 0.15) calc(h + ${(k * 72 + (k >= 5 ? 36 : 0)) % 360}))`;
+    }
+    /** a layer's colour by name */
+    colorOf(layer) {
+        return this.layerColors.get(layer) || 'var(--muted-foreground)';
+    }
+    renderLayers() {
+        const defs = this.layerDefs();
+        this.layerColors = new Map(defs.map((l) => [l.name, l.color]));
+        const sig = defs.map((l) => l.name + '=' + l.color + '=' + l.shown).join('|') + '|' + this.compact;
+        const first = Math.max(0, defs.findIndex((l) => l.shown));
+        for (const outlet of this.outlets('layers')) {
+            const box = outletChrome(outlet, 'layers', () => dfDollar('<div class="graph-explorer-layers" data-ce-chrome></div>').get(0));
+            if (box._sig === sig)
+                continue;
+            box._sig = sig;
+            // a Toggle Group of the layers, each with its colour as an Indicator dot; Compact after a Separator
+            morph(box, html `<div
+            class="toggle-group"
+            role="group"
+            aria-label="Layers"
+            data-type="multiple"
+            data-size="sm"
+            data-spacing
+          >
+            ${defs.map((l, k) => html `<button
+                  type="button"
+                  class="toggle graph-explorer-layer"
+                  key="${l.name}"
+                  data-graph-explorer-layer="${l.name}"
+                  aria-pressed="${l.shown ? 'true' : 'false'}"
+                  tabindex="${k === first ? '0' : '-1'}"
+                  style="--graph-explorer-layer: ${l.color}"
+                  title="${l.label}: ${l.shown ? 'shown' : 'hidden'}${k < 9 ? ` (${k + 1})` : ''}"
+                >
+                  <span class="indicator-dot" aria-hidden="true"></span>${icon(l.icon)}<span
+                    class="graph-explorer-layer-label"
+                    >${l.label}</span
+                  >
+                </button>`)}
+          </div>
+          <div class="separator" data-orientation="vertical" role="separator"></div>
+          <button
+            type="button"
+            class="toggle graph-explorer-compact"
+            data-size="sm"
+            data-graph-explorer-compact
+            aria-pressed="${this.compact ? 'true' : 'false'}"
+            title="Compact: every node as a one-line chip"
+          >
+            ${icon('rows-3')}<span class="graph-explorer-layer-label">Compact</span>
+          </button>`);
         }
     }
-    /** show another Node UI (an unknown name is ignored); `user` commits it as a change the user made */
-    setVariant(name, user = true) {
-        if (!this.variants().some((v) => v.name === name) || name === this.variant)
+    /** show these layers (unknown names are kept for a plugin that registers later); `user` commits it as a change
+     *  the user made */
+    setLayers(names, user = true) {
+        const next = new Set(layerList(names));
+        if (sameLayers([...next], [...this.shown]))
             return;
-        this.variant = name;
-        this.renderNodeUi();
+        this.shown = next;
+        this.layersChanged(user);
+    }
+    /** show or hide one layer */
+    toggleLayer(name) {
+        const next = new Set(this.shown);
+        if (next.has(name))
+            next.delete(name);
+        else
+            next.add(name);
+        this.setLayers([...next]);
+        const l = this.layerDefs().find((x) => x.name === name);
+        this.announce(`${l?.label ?? name}: ${this.shown.has(name) ? 'shown' : 'hidden'}`);
+    }
+    /** every node as a one-line chip, or back */
+    setCompact(on, user = true) {
+        if (this.compact === !!on)
+            return;
+        this.compact = !!on;
+        this.layersChanged(user);
+        this.announce(`Compact ${this.compact ? 'on' : 'off'}`);
+    }
+    /** the graph after a layer or Compact changed: the worker's lines and names, the boxes, the labels, the switch */
+    layersChanged(user) {
+        this.renderLayers();
+        this.postLayers();
+        this.postRules();
+        this.labelVer++;
+        this.signKeys = '';
         if (this.view) {
             this.assignRenderers();
             for (const s of this.slots.values())
                 s._key = '';
             this.applyTiers(this.tiers, true);
+            this.refreshDecor(true);
             this.camChanged();
         }
+        this.renderUpdates();
         if (user)
             this.commitState();
-        // another Node UI is shown
-        this.el.dispatchEvent(new CustomEvent('graph-explorer-node-ui', { detail: { nodeUi: name }, bubbles: true }));
-        this.announce(`Node UI: ${this.variants().find((v) => v.name === name)?.label}`);
+        // a layer was shown or hidden, or Compact switched
+        this.el.dispatchEvent(new CustomEvent('graph-explorer-layers', {
+            detail: { layers: [...this.shown], compact: this.compact },
+            bubbles: true,
+        }));
+    }
+    /** what the worker draws itself: the lines (relations) and the names beside small nodes (nodes) */
+    postLayers() {
+        this.post({ t: 'layers', nodes: this.shown.has('nodes'), relations: this.shown.has('relations') });
     }
     // ---------------------------------------------------- the camera loop
     requestTick() {
@@ -1821,9 +2124,12 @@ class Explorer {
             const n = m.children[i];
             const [sx, sy] = this.toScreen(n.x, n.y);
             const [x, y] = anchorBox(isCluster, s._tier, sx, sy, n.r * c.z, s._w, s._h);
-            s.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+            s._x = Math.round(x);
+            s._y = Math.round(y);
+            s.style.translate = `${s._x}px ${s._y}px`;
         }
         this.projectEdges();
+        this.projectChanges();
         this.projectDecor();
         this.projectSigns();
         this.projectFocusRing();
@@ -1836,8 +2142,13 @@ class Explorer {
             return;
         this.tiers = tiers;
         const m = this.view, jobs = [], slotsForJobs = [];
+        // a tier whose box holds nothing (the nodes layer hidden, no part at that tier) is no slot
+        const empty = (i) => {
+            const b = m.boxes?.[i];
+            return !b || (!m.renderers[i] && !(tiers[i] === 2 ? b.card : b.chip).length);
+        };
         for (const [i, s] of this.slots) {
-            if (tiers[i] < 1) {
+            if (tiers[i] < 1 || empty(i)) {
                 s.hidden = true;
                 s._key = '';
                 this.slots.delete(i);
@@ -1845,7 +2156,7 @@ class Explorer {
             }
         }
         for (let i = 0; i < tiers.length; i++) {
-            if (tiers[i] < 1)
+            if (tiers[i] < 1 || empty(i))
                 continue;
             let s = this.slots.get(i);
             if (!s) {
@@ -1858,20 +2169,31 @@ class Explorer {
                 s._key = '';
                 this.slots.set(i, s);
             }
-            const tier = tiers[i] === 2 ? 'card' : 'chip';
-            const node = this.nodeOf(i), r = m.renderers[i], ctx = this.ctxFor(node, tier, i);
-            const key = r.name +
+            // Compact draws every node as its chip
+            const tier = tiers[i] === 2 && !this.compact ? 'card' : 'chip';
+            const node = this.nodeOf(i), r = m.renderers[i], box = m.boxes[i], parts = tier === 'card' ? box.card : box.chip, ctx = this.ctxFor(node, tier, i);
+            const keyOf = (x) => {
+                try {
+                    return x.key ? x.key(node, ctx) : '';
+                }
+                catch {
+                    return '';
+                }
+            };
+            const key = (r ? r.name + ':' + keyOf(r) : '-') +
+                '|' +
+                parts.map((x) => x.name + ':' + keyOf(x)).join(',') +
                 '|' +
                 tier +
                 '|' +
                 (ctx.selected ? 1 : 0) +
                 '|' +
-                (this.dataRev.get(node.id) || 0) +
+                (ctx.expandable ? 1 : 0) +
                 '|' +
-                (r.key ? r.key(node, ctx) : '');
+                (this.dataRev.get(node.id) || 0);
             if (s._key === key && !force)
                 continue;
-            const [w, h] = r.sizes[tier] || r.sizes.chip;
+            const [w, h] = tiers[i] === 2 ? box.cardSize : box.chipSize;
             if (s._node !== node.id) {
                 s._node = node.id;
                 dfDollar(s).attr('data-node', node.id);
@@ -1888,11 +2210,11 @@ class Explorer {
             dfDollar(s).attr('data-kind', node.kind);
             s._key = key;
             try {
-                jobs.push(r.render(node, ctx));
+                jobs.push(this.composeNode(node, tier, ctx, r, parts));
                 slotsForJobs.push(s);
             }
             catch (err) {
-                console.error('[graph-explorer] renderer "' + r.name + '" failed', err);
+                console.error('[graph-explorer] renderer "' + (r?.name ?? 'parts') + '" failed', err);
             }
         }
         if (jobs.length) {
@@ -1914,6 +2236,46 @@ class Explorer {
         this.refreshDecor(false);
         this.camDirty = true;
         this.requestTick();
+    }
+    /** a node's markup at a tier: its renderer's with the shown layers' parts inside (or after it), or the parts
+     *  alone when the nodes layer is hidden */
+    composeNode(node, tier, ctx, r, parts) {
+        const tag = tier === 'chip' ? 'span' : 'div';
+        const drawn = [];
+        for (const p of parts) {
+            let out;
+            try {
+                out = p.render(node, { ...ctx, parts: html `` });
+            }
+            catch (err) {
+                console.error('[graph-explorer] part "' + p.name + '" failed', err);
+                continue;
+            }
+            if (!isSafe(out) || !out.html.trim())
+                continue;
+            const layer = p.layer;
+            drawn.push(tag === 'span'
+                ? html `<span
+              class="graph-explorer-part"
+              data-layer="${layer}"
+              style="--graph-explorer-layer: ${this.colorOf(layer)}"
+              >${out}</span
+            >`
+                : html `<div
+              class="graph-explorer-part"
+              data-layer="${layer}"
+              style="--graph-explorer-layer: ${this.colorOf(layer)}"
+            >
+              ${out}
+            </div>`);
+        }
+        const joined = html `${drawn}`;
+        if (!r)
+            return html `<div class="graph-explorer-parts-only" data-tier="${tier}" data-kind="${node.kind}">${joined}</div>`;
+        const out = r.render(node, { ...ctx, parts: joined });
+        if (!drawn.length || !isSafe(out) || out.html.includes('graph-explorer-part"'))
+            return out;
+        return html `${out}${joined}`; // a renderer that leaves the parts out: they follow its markup
     }
     isHighlighted(i) {
         const ends = this.edgeEnds();
@@ -1942,7 +2304,9 @@ class Explorer {
             html,
             icon,
             expanded: tier === 'detail' && this.expanded,
-            nodeUi: this.variant,
+            layers: [...this.shown],
+            compact: this.compact,
+            parts: html ``,
             action: (name) => String(name),
             edgeLabel: (e, t = 'label') => this.edgeLabelHtml(e, t),
             fetchView: (id) => this.fetchView(id),
@@ -1950,9 +2314,16 @@ class Explorer {
             expandable: tier === 'relations' ? false : this.expandableNode(node),
             request: (key, load) => {
                 const r = this.requests.get(key);
-                if (r)
-                    return r.done ? r.value : undefined;
-                const entry = { done: false, value: undefined };
+                if (r && !r.stale)
+                    return r.done ? r.value : r.prev;
+                // a first load, or a stale answer's successor: the stale answer stays shown until the new one arrives -
+                // a loading state between two answers made the details flicker on every Live mode update
+                const entry = {
+                    done: false,
+                    value: undefined,
+                    prev: r ? (r.done ? r.value : r.prev) : undefined,
+                    stale: false,
+                };
                 this.requests.set(key, entry);
                 Promise.resolve()
                     .then(load)
@@ -1964,10 +2335,10 @@ class Explorer {
                     this.renderPanel();
                 }, (err) => {
                     entry.done = true;
-                    entry.value = undefined;
+                    entry.value = entry.prev;
                     console.error(err);
                 });
-                return undefined;
+                return entry.prev;
             },
             fetchDetails: (id) => this.waitFor('details:' + id, () => this.post({ t: 'details', id })),
             fetchEdge: (id) => {
@@ -1984,6 +2355,20 @@ class Explorer {
         };
     }
     /** every row behind a node or a link, from the worker; the last two answers are kept */
+    /** a node's descendants down to `levels` levels (the node included) - from the worker, which owns the graph */
+    fetchSubtree(id, levels) {
+        return this.waitFor('subtree:' + id + ':' + levels, () => this.post({ t: 'subtree', id, levels }));
+    }
+    /** the worker's search as data: a newer search (here or in a search outlet) ends this one with what it found */
+    find(query, onPartial) {
+        this.finder?.resolve(this.finder.results);
+        this.searchSeq++;
+        const seq = this.searchSeq;
+        return new Promise((resolve) => {
+            this.finder = { seq, resolve, onPartial, results: [] };
+            this.post({ t: 'search', q: query, seq });
+        });
+    }
     fetchRows(id) {
         const hit = this.rowCache.get(id);
         if (hit) {
@@ -2014,6 +2399,16 @@ class Explorer {
     // ---------------------------------------------------- promoted edges (SVG)
     promotedEdges() {
         const m = this.view, out = new Set();
+        // a changed link flashes while its layer shows, the relations layer or not
+        for (const [target, ch] of this.changes) {
+            if (ch.u.kind !== 'edge' || !this.shown.has(ch.u.layer))
+                continue;
+            const k = this.edgeIndex(target);
+            if (k >= 0)
+                out.add(k);
+        }
+        if (!this.shown.has('relations'))
+            return out; // the relations layer draws every line
         const foci = [...this.selected].map((id) => m.byId.get(id)).filter((x) => x !== undefined);
         if (this.hover >= 0)
             foci.push(this.hover);
@@ -2037,9 +2432,12 @@ class Explorer {
                 p.hit.remove();
                 p.line.remove();
                 p.head.remove();
+                p.flash?.remove();
                 this.edgePaths.delete(k);
             }
         const picked = this.edgeIndex(this.edge);
+        // without the relations layer a link shows only while it flashes
+        const lines = this.shown.has('relations');
         const NS = 'http://www.w3.org/2000/svg';
         for (const k of want) {
             const e = m.edges[k], a = m.children[e.a], b = m.children[e.b];
@@ -2101,6 +2499,32 @@ class Explorer {
             p.hit.setAttribute('d', g ? g.d : '');
             p.head.setAttribute('d', g ? g.head : '');
             p.mid = g ? g.mid : null;
+            if (p.lines !== lines) {
+                p.lines = lines;
+                p.line.style.visibility = p.head.style.visibility = lines ? '' : 'hidden';
+            }
+            // a change: the line flashes in its layer's colour and fades (a new change starts it again)
+            const ch = this.changes.get(id);
+            const flash = ch && ch.u.kind === 'edge' && this.shown.has(ch.u.layer) ? ch : null;
+            if (flash && p.flashAt !== flash.at) {
+                p.flash?.remove();
+                p.flash = document.createElementNS(NS, 'path');
+                p.flash.setAttribute('class', 'graph-explorer-edge-flash');
+                p.flash.setAttribute('data-layer', flash.u.layer);
+                p.flash.style.setProperty('--graph-explorer-layer', this.colorOf(flash.u.layer));
+                p.flash.style.animationDuration = `${CHANGE_MS}ms`;
+                p.line.after(p.flash);
+                p.flashAt = flash.at;
+            }
+            else if (!flash && p.flash) {
+                p.flash.remove();
+                p.flash = null;
+                p.flashAt = null;
+            }
+            if (p.flash) {
+                p.flash.setAttribute('d', g ? g.d : '');
+                p.flash.setAttribute('stroke-width', (w + 3).toFixed(2));
+            }
         }
     }
     // ---------------------------------------------------- edge labels and icons (per zoom level)
@@ -2108,8 +2532,9 @@ class Explorer {
     // renderer matches this hierarchy depth; ranked (the selection first, then the renderer's priority), each takes the
     // richest tier its length, the tier budget and the free space allow. Hosts are pooled per edge; a host's content is
     // morphed only when its markup changed.
-    labelPlugins() {
-        return this.edgePlugins().filter((p) => p.label);
+    /** the label renderers - on the graph only the shown layers' (a plugin without a layer: labels) */
+    labelPlugins(graph = false) {
+        return this.edgePlugins().filter((p) => p.label && (!graph || this.shown.has(p.layer || 'labels')));
     }
     labelFor(e, ctx) {
         const sig = e.breaker ? e.breaker.state + (e.breaker.openShare || 0) : '';
@@ -2117,7 +2542,7 @@ class Explorer {
             e._lv = this.labelVer;
             e._ls = sig;
             let best = null, score = -Infinity;
-            for (const p of this.labelPlugins()) {
+            for (const p of this.labelPlugins(true)) {
                 const L = p.label;
                 if (L.depths && !L.depths.includes(ctx.depth))
                     continue;
@@ -2335,6 +2760,10 @@ class Explorer {
                 continue;
             hst._sig = sig;
             dfDollar(hst).attr('data-tier', tier);
+            // the label is drawn in its layer's colour
+            const layer = c.p.layer || 'labels';
+            dfDollar(hst).attr('data-layer', layer);
+            hst.style.setProperty('--graph-explorer-layer', this.colorOf(layer));
             dfDollar(hst).attr('data-edge', String(e.k));
             dfDollar(hst).attr('data-graph-explorer-edge', this.edgeId(e.k));
             jobs.push(out);
@@ -2382,7 +2811,9 @@ class Explorer {
         const m = this.view, list = [];
         const inset = 14, w = this.w, h = this.h;
         const offscreen = (sx, sy) => sx < inset || sx > w - inset || sy < inset || sy > h - inset;
-        if (m.parent)
+        // the signposts point along relations: hidden with them
+        const rel = this.shown.has('relations');
+        if (m.parent && rel)
             for (const ext of m.parent.external) {
                 const [sx, sy] = this.toScreen(ext.x, ext.y);
                 if (offscreen(sx, sy))
@@ -2398,7 +2829,7 @@ class Explorer {
                         ext: true,
                     });
             }
-        const sel = [...this.selected].map((id) => m.byId.get(id)).filter((x) => x !== undefined);
+        const sel = rel ? [...this.selected].map((id) => m.byId.get(id)).filter((x) => x !== undefined) : [];
         for (const f of sel)
             for (const k of m.adj[f]) {
                 const e = m.edges[k], j = e.a === f ? e.b : e.a, n = m.children[j];
@@ -2689,6 +3120,11 @@ class Explorer {
         this.afterSelection();
     }
     afterSelection() {
+        // the keyboard follows a single selection (a click, select(), setState): E, Enter and the arrows start from the
+        // node just picked - E once expanded the node a search had flown to while setState had selected another
+        const only = this.selected.size === 1 ? this.view?.byId.get([...this.selected][0]) : undefined;
+        if (only !== undefined)
+            this.kbd = only;
         this.applyTiers(this.tiers);
         this.renderPanel();
         this.renderOutline();
@@ -2745,7 +3181,7 @@ class Explorer {
         }
         return best;
     }
-    // ---------------------------------------------------- Bring & Go
+    // ---------------------------------------------------- jump to a neighbour (the Bring & Go ring)
     bringAndGo(i) {
         const m = this.view, n = m.children[i];
         if (!n)
@@ -2780,7 +3216,7 @@ class Explorer {
             this.ringStart = false;
             this.projectRing();
         });
-        this.announce(`Bring and Go: ${nbrs.length} neighbours of ${n.label}. Choose one to travel.`);
+        this.announce(`Jump to a neighbour: ${nbrs.length} neighbours of ${n.label} around it. Choose one to fly there.`);
         this.ringEls[0]?.focus({ preventScroll: true });
     }
     projectRing() {
@@ -2971,13 +3407,14 @@ class Explorer {
                 'data-focus',
                 'data-selected',
                 'data-selected-edge',
-                'data-node-ui',
+                'data-layers',
+                'data-compact',
                 'data-expanded',
                 'data-hud',
             ],
         });
     }
-    /** a click on an action, a goto, a crumb, a result, an outline row, a Node UI button, a signpost or a ring item */
+    /** a click on an action, a goto, a crumb, a result, an outline row, a layer switch, a signpost or a ring item */
     onClick(ev) {
         const t = ev.target;
         if (!t?.closest)
@@ -2989,9 +3426,18 @@ class Explorer {
             void this.act(act.getAttribute('data-graph-explorer-action') ?? '', id, act);
             return;
         }
-        const nui = t.closest('[data-graph-explorer-node-ui]');
-        if (nui) {
-            this.setVariant(nui.getAttribute('data-graph-explorer-node-ui') ?? 'default');
+        const upd = t.closest('[data-graph-explorer-update]');
+        if (upd) {
+            void this.openUpdate(upd.getAttribute('data-graph-explorer-update') ?? '');
+            return;
+        }
+        const layer = t.closest('[data-graph-explorer-layer]');
+        if (layer) {
+            this.toggleLayer(layer.getAttribute('data-graph-explorer-layer') ?? '');
+            return;
+        }
+        if (t.closest('[data-graph-explorer-compact]')) {
+            this.setCompact(!this.compact);
             return;
         }
         const ring = t.closest('[data-graph-explorer-ring]');
@@ -3170,10 +3616,13 @@ class Explorer {
                 this.expandNode(i);
             return;
         }
-        if (key === 'v' || key === 'V') {
-            ev.preventDefault();
-            const vs = this.variants(), k = vs.findIndex((v) => v.name === this.variant);
-            this.setVariant(vs[(k + (ev.shiftKey ? vs.length - 1 : 1)) % vs.length].name);
+        // 1 - 9: show or hide the k-th layer
+        if (/^[1-9]$/.test(key) && !ev.metaKey && !ev.ctrlKey && !ev.altKey) {
+            const l = this.layerDefs()[+key - 1];
+            if (l) {
+                ev.preventDefault();
+                this.toggleLayer(l.name);
+            }
             return;
         }
         if (key === 'Escape') {
@@ -3269,7 +3718,7 @@ class Explorer {
             dfDollar(s).attr('data-kbd', j === i ? '' : null);
         const [sx, sy] = this.toScreen(n.x, n.y);
         if (sx < 40 || sx > this.w - 40 || sy < 40 || sy > this.h - 40)
-            void this.flyTo({ cx: n.x, cy: n.y, z: this.cam.z }, { ms: 350 });
+            void this.flyTo({ cx: n.x, cy: n.y, z: this.cam.z }, { ms: 180 });
         this.announce(`${n.label} · ${n.typeName} · ${n.kind === 'cluster' ? fmt(n.members) + ' nodes' : n.degree + ' links'} · ${i + 1} of ${m.children.length} in ${m.path[m.path.length - 1].label}${n.scc > 1 ? ' · in a cycle of ' + n.scc : ''}`);
         this.camChanged();
     }
@@ -3372,6 +3821,17 @@ class Explorer {
     onSearch(m) {
         if (m.seq !== this.searchSeq)
             return;
+        const finder = this.finder;
+        if (finder && finder.seq === m.seq) {
+            finder.results = m.results;
+            if (m.partial)
+                finder.onPartial?.(m.results, m.scanned);
+            else {
+                this.finder = null;
+                finder.resolve(m.results);
+            }
+            return;
+        }
         this.results = m.results;
         this.activeResult = m.results.length ? 0 : -1;
         const id = this.uid;
@@ -3837,10 +4297,12 @@ class Explorer {
         for (const i of touched) {
             const id = v.children[i].id;
             this.dataRev.set(id, (this.dataRev.get(id) || 0) + 1);
-            this.requests.delete('details:' + id);
+            this.staleRequest('details:' + id);
         }
-        for (const id of this.selected)
-            this.requests.delete('details:' + id);
+        // breakers that moved change the selection's details; a restyle (another layer shown) changes no number
+        if (!m.restyle)
+            for (const id of this.selected)
+                this.staleRequest('details:' + id);
         this.signKeys = '';
         this.applyTiers(this.tiers);
         if (this.selected.size)
@@ -3848,6 +4310,219 @@ class Explorer {
         for (const p of this.edgePaths.values())
             p.tone = null;
         this.camChanged();
+    }
+    /** the data behind a request moved on: its next use loads it again, showing the last answer until then */
+    staleRequest(key) {
+        const r = this.requests.get(key);
+        if (r)
+            r.stale = true;
+    }
+    // ---------------------------------------------------- updates: what changed
+    /** a target's name in the view shown: a node's label, a link's 'A → B' */
+    labelOf(target) {
+        const m = this.view;
+        if (!m)
+            return target;
+        if (target.includes('>')) {
+            const k = this.edgeIndex(target);
+            if (k < 0)
+                return target.replace('>', ' → ');
+            const e = m.edges[k];
+            return `${m.children[e.a].label} → ${m.children[e.b].label}`;
+        }
+        const i = m.byId.get(target);
+        return i === undefined ? target : m.children[i].label;
+    }
+    /** adds changes: each marks its node or link and joins the Updates outlet (newest first) */
+    addUpdates(items) {
+        const now = Date.now(), at = performance.now();
+        const added = [];
+        for (const raw of items || []) {
+            if (!raw || !raw.target)
+                continue;
+            const target = String(raw.target);
+            const kind = raw.kind === 'edge' || (raw.kind !== 'node' && target.includes('>')) ? 'edge' : 'node';
+            const u = {
+                id: raw.id ? String(raw.id) : `u${++this.updateSeq}`,
+                time: Number(raw.time) || now,
+                kind,
+                target,
+                layer: raw.layer ? String(raw.layer) : kind === 'edge' ? 'relations' : 'nodes',
+                type: raw.type ? String(raw.type) : 'change',
+                text: raw.text ? String(raw.text) : '',
+                label: raw.label ? String(raw.label) : this.labelOf(target),
+            };
+            if (kind === 'edge')
+                u.view = raw.view ? String(raw.view) : (this.view?.id ?? 'c0');
+            if (raw.tone && TONES.includes(raw.tone))
+                u.tone = raw.tone;
+            added.push(u);
+            this.changes.set(target, { u, at });
+        }
+        if (!added.length)
+            return added;
+        this.updates.unshift(...added.slice().reverse());
+        if (this.updates.length > UPDATE_LIMIT)
+            this.updates.length = UPDATE_LIMIT;
+        for (const u of added)
+            // a node or a link changed - Live mode's simulation or update()
+            this.el.dispatchEvent(new CustomEvent('graph-explorer-update', { detail: { update: u }, bubbles: true }));
+        this.renderUpdates(added.filter((u) => this.shown.has(u.layer)).length);
+        clearTimeout(this.changeT);
+        this.changeT = setTimeout(() => this.pruneChanges(), CHANGE_MS + 50);
+        if (this.view) {
+            this.projectEdges();
+            this.projectChanges();
+        }
+        return added;
+    }
+    /** the marks of changes older than CHANGE_MS go */
+    pruneChanges() {
+        const old = performance.now() - CHANGE_MS;
+        for (const [t, ch] of this.changes)
+            if (ch.at <= old)
+                this.changes.delete(t);
+        if (this.changes.size)
+            this.changeT = setTimeout(() => this.pruneChanges(), 500);
+        if (this.view && !this.destroyed) {
+            this.projectEdges();
+            this.projectChanges();
+        }
+    }
+    /** a glowing dot at the top right of every changed node in view (its slot's corner, else its circle's) */
+    projectChanges() {
+        const m = this.view;
+        if (!m || !this.changesEl)
+            return;
+        const keep = new Set();
+        const z = this.cam.z, isCluster = !m.leafView;
+        for (const [target, ch] of this.changes) {
+            if (ch.u.kind !== 'node' || !this.shown.has(ch.u.layer))
+                continue;
+            const i = m.byId.get(target);
+            if (i === undefined)
+                continue;
+            const n = m.children[i], s = this.slots.get(i);
+            let x, y;
+            if (s && !s.hidden && s._x != null) {
+                x = s._x + s._w - 2;
+                y = s._y + 2;
+            }
+            else {
+                const [sx, sy] = this.toScreen(n.x, n.y), r = drawR(isCluster, n.r * z) * 0.72;
+                x = sx + r;
+                y = sy - r;
+            }
+            if (x < -8 || y < -8 || x > this.w + 8 || y > this.h + 8)
+                continue;
+            keep.add(target);
+            let dot = this.changeDots.get(target);
+            if (!dot || dot._at !== ch.at) {
+                dot?.remove();
+                dot = dfDollar(`<span class="indicator-dot graph-explorer-change-dot" data-animate="ping" data-layer="${esc(ch.u.layer)}"></span>`).get(0);
+                dot.style.setProperty('--graph-explorer-layer', this.colorOf(ch.u.layer));
+                dot.style.animationDuration = `${CHANGE_MS}ms`;
+                dot._at = ch.at;
+                dfDollar(this.changesEl).append(dot);
+                this.changeDots.set(target, dot);
+            }
+            dot.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+        }
+        for (const [t, dot] of this.changeDots)
+            if (!keep.has(t)) {
+                dot.remove();
+                this.changeDots.delete(t);
+            }
+    }
+    /** the update renderer for an update: the highest match, the element's own before the global ones */
+    pickUpdate(u) {
+        let best = null, bestScore = -Infinity;
+        for (const p of [...this.registry.update, ...globalRegistry.update]) {
+            const score = p.update.match ? p.update.match(u) : 0;
+            if (score === false || score == null)
+                continue;
+            const rank = score * 1e6 + (p._scoped ? 5e5 : 0) + p._order;
+            if (rank > bestScore) {
+                bestScore = rank;
+                best = p.update;
+            }
+        }
+        return best;
+    }
+    /** one row of the Updates outlet: the renderer's content in the button that selects the target */
+    updateRow(u) {
+        const r = this.pickUpdate(u);
+        let body = u.text;
+        try {
+            body = r.render(u, this.updateCtx);
+        }
+        catch (err) {
+            console.error('[graph-explorer] update renderer', err);
+        }
+        return html `<button
+      type="button"
+      class="graph-explorer-update"
+      data-graph-explorer-update="${u.id}"
+      data-layer="${u.layer}"
+      data-kind="${u.kind}"
+      style="--graph-explorer-layer: ${this.colorOf(u.layer)}"
+      title="${u.label}: ${u.text}"
+    >
+      ${body}
+    </button>`;
+    }
+    get updateCtx() {
+        return {
+            html,
+            icon,
+            color: (layer) => this.colorOf(layer),
+            time: (ms) => TIME_FMT.format(ms),
+        };
+    }
+    /** the Updates outlet: a Virtual List of the shown layers' updates, newest first (a plain list without one) */
+    renderUpdates(added = 0) {
+        const outs = this.outlets('updates');
+        if (!outs.length)
+            return;
+        this.updatesRendered = true;
+        this.updatesShown = this.updates.filter((u) => this.shown.has(u.layer));
+        // a soft dependency, like the Data Grid: without df$.shadcn.virtualList (an app bundle that left it out) a plain list
+        const vl = df$.virtualList;
+        for (const out of outs) {
+            const box = outletChrome(out, 'updates', () => dfDollar(`<div class="graph-explorer-updates${vl ? ' virtual-list' : ''}" aria-label="Updates" data-empty-text="No updates in the shown layers yet" data-ce-chrome></div>`).get(0));
+            if (vl) {
+                // a reader scrolled down keeps the rows they read: the new ones go in above them
+                if (added && box.scrollTop > 0)
+                    box.scrollTop += added * (box._rowHeight || 32);
+                vl.setData(box, this.updatesShown.length, (row, i) => {
+                    const u = this.updatesShown[i];
+                    if (u)
+                        morph(row, this.updateRow(u));
+                });
+            }
+            else
+                morph(box, this.updatesShown.length
+                    ? html `${this.updatesShown.slice(0, 200).map((u) => this.updateRow(u))}`
+                    : html `<p class="graph-explorer-muted graph-explorer-pad">No updates in the shown layers yet</p>`);
+        }
+    }
+    /** an update's target, selected: a node is flown to; a link's view is entered first */
+    async openUpdate(id) {
+        const u = this.updates.find((x) => x.id === id);
+        if (!u || !this.view)
+            return;
+        if (u.kind === 'node') {
+            await this.navigateTo(u.target);
+            return;
+        }
+        if (u.view && u.view !== this.view.id) {
+            if (u.view === 'c0')
+                await this.upTo('c0');
+            else
+                await this.navigateTo(u.view, { enter: true, select: false });
+        }
+        this.selectEdge(u.target);
+        this.showDetails(true);
     }
     // ---------------------------------------------------- the State API bridge
     /** what the explorer shows now, as a state */
@@ -3861,13 +4536,14 @@ class Explorer {
             config: {
                 focus,
                 selected,
-                nodeUi: this.variant,
+                layers: [...this.shown],
+                compact: this.compact,
                 expanded: this.expanded && (selected.length > 0 || !!edge),
                 edge,
             },
         };
     }
-    /** record what the user did (a pick, a dive, another Node UI) the way setState would have written it */
+    /** record what the user did (a pick, a dive, a layer shown or hidden) the way setState would have written it */
     commitState() {
         if (this.syncing || !this.view || this.loading)
             return;
@@ -3895,14 +4571,19 @@ class Explorer {
         const now = this.liveState().config;
         const same = want.focus === now.focus &&
             want.selected.join(' ') === now.selected.join(' ') &&
-            want.nodeUi === now.nodeUi &&
+            sameLayers(want.layers, now.layers) &&
+            want.compact === now.compact &&
             want.expanded === now.expanded &&
             want.edge === now.edge;
         if (same)
             return;
         this.syncing = true;
         try {
-            this.setVariant(want.nodeUi, false);
+            if (!sameLayers(want.layers, [...this.shown]) || want.compact !== this.compact) {
+                this.shown = new Set(want.layers);
+                this.compact = want.compact;
+                this.layersChanged(false);
+            }
             // the view: the focus, else the cluster of the first selected node that is not at the top, else the top
             const target = want.focus ?? 'c0';
             if (this.view.id !== target) {
@@ -3950,7 +4631,7 @@ class Explorer {
         live.delete(this);
         if (this.raf)
             cancelAnimationFrame(this.raf);
-        for (const t of [this.hudT, this.restTimer, this.announceT])
+        for (const t of [this.hudT, this.restTimer, this.announceT, this.changeT])
             clearTimeout(t);
         for (const mq of this.mediaQueries || [])
             mq.removeEventListener('change', this.onMedia);
@@ -4046,6 +4727,33 @@ df$.graphExplorer = {
      */
     flyTo: (target, camera) => need(target).flyTo(camera),
     /**
+     * The way from the top of the graph to a node: every cluster above it and the node itself - the worker answers.
+     * @param target - the .graph-explorer element or its selector
+     * @param id - the node's id (c<number> or n<number>)
+     * @returns id and name of every step, the top (c0) first, the node last
+     */
+    path: (target, id) => need(target).waitFor('path:' + id, () => need(target).post({ t: 'path', id })),
+    /**
+     * A node and its descendants down to a number of levels, as flat records linked by parent id - what a tree grid
+     * takes (data-parent-field="parent"). The worker answers: a domain of a million-node graph with two levels below it
+     * is its systems and all their entities.
+     * @param target - the .graph-explorer element or its selector
+     * @param id - the subtree's root (c0 is the whole graph)
+     * @param levels - how many levels to return, the root's included (default 3)
+     * @returns the rows, depth first, the root first
+     */
+    subtree: (target, id, levels = 3) => need(target).fetchSubtree(id, levels),
+    /**
+     * Searches the whole graph for names that hold the query (or #<number> for an entity) and answers with the hits -
+     * the clusters first, then up to twelve entities; the worker scans the entities in chunks. A newer search ends this
+     * one with what it found so far.
+     * @param target - the .graph-explorer element or its selector
+     * @param query - the text to find in names
+     * @param onPartial - called with the hits so far and the entities scanned while the scan runs
+     * @returns the hits
+     */
+    find: (target, query, onPartial) => need(target).find(query, onPartial),
+    /**
      * Searches the graph like the search outlet does (the results show in it).
      * @param target - the .graph-explorer element or its selector
      * @param query - the text to find in names (or #<number> for an entity)
@@ -4072,17 +4780,23 @@ df$.graphExplorer = {
      */
     selectEdge: (target, id) => need(target).selectEdge(id),
     /**
-     * Shows another Node UI: 'default' (Labels), 'health', 'compact' or a plugin's.
+     * Shows exactly these layers: nodes, relations, labels, health or a plugin's (an empty list leaves the circles).
      * @param target - the .graph-explorer element or its selector
-     * @param name - the Node UI's name
+     * @param layers - the layers' names
      */
-    setNodeUi: (target, name) => need(target).setVariant(name),
+    setLayers: (target, layers) => need(target).setLayers(layers),
     /**
-     * The Node UIs the switch offers - the built-in ones and those plugins add.
+     * The layers the switch offers - the built-in ones and those plugins add - with their colours and whether they show.
      * @param target - the .graph-explorer element or its selector
-     * @returns name, label and icon of each
+     * @returns name, label, icon, colour, base and shown of each
      */
-    nodeUis: (target) => need(target).variants(),
+    layers: (target) => need(target).layerDefs(),
+    /**
+     * Draws every node as a one-line chip (on) or by its size (off).
+     * @param target - the .graph-explorer element or its selector
+     * @param on - true for one-line chips
+     */
+    setCompact: (target, on) => need(target).setCompact(on),
     /**
      * Expands a node's full page: its detail renderer with ctx.expanded, the details outlet's Panel maximized (navigates
      * there first when the node is not in view).
@@ -4111,7 +4825,8 @@ df$.graphExplorer = {
      */
     collapse: (target) => need(target).collapseDetails(),
     /**
-     * Starts or stops the live circuit-breaker simulation (breakers trip, probe and close on their own).
+     * Starts or stops Live mode: a simulation in which breakers trip, probe and close, nodes deploy, traffic moves and
+     * counts change - each change an update (a dot on the node, a flash on the link, a row in the Updates outlet).
      * @param target - the .graph-explorer element or its selector
      * @param on - true to start, false to stop
      */
@@ -4120,6 +4835,21 @@ df$.graphExplorer = {
         if (!!inst.simulating !== on)
             void inst.act('live', null);
     },
+    /**
+     * Adds changes from the app: each marks its node or link for a while and joins the Updates outlet, newest first. A
+     * link's target is '<from>><to>' in the view its `view` names (default: the view shown); the id, the time, the layer
+     * (nodes for a node, relations for a link), the type and the label are filled in when left out.
+     * @param target - the .graph-explorer element or its selector
+     * @param updates - one change or several
+     * @returns the updates as recorded
+     */
+    update: (target, updates) => need(target).addUpdates(Array.isArray(updates) ? updates : [updates]),
+    /**
+     * Every update so far, newest first (the last 10,000).
+     * @param target - the .graph-explorer element or its selector
+     * @returns a copy of the list
+     */
+    updates: (target) => [...need(target).updates],
     /**
      * Diagnostics for tests and the HUD: the camera, the view, the budget's use, the worker's timing.
      * @param target - the .graph-explorer element or its selector
@@ -4175,7 +4905,7 @@ function init() {
             for (const kind of OUTLETS)
                 for (const o of inst.outlets(kind))
                     if (!dfDollar(o).children('[data-ce-chrome]').get(0)) {
-                        inst.renderNodeUi();
+                        inst.renderLayers();
                         inst.renderCrumbs();
                         inst.renderOutline();
                         inst.renderPanel();
@@ -4692,6 +5422,50 @@ function graphExplorerWorker(self) {
         }
         return chain.reverse();
     }
+    // ---------------------------------------------------------------- subtree
+    // a node and its descendants down to `levels` levels, depth first - the records of a tree grid. A domain of a
+    // million-node graph with two levels below it is its systems and their entities (tens of thousands of rows)
+    function subtreeOf(id, levels) {
+        const rows = [];
+        const entity = (g, parent) => rows.push({
+            id: 'n' + g,
+            parent,
+            label: leafLabel(g),
+            kind: 'entity',
+            type: ENTITY_TYPES[leafType[g]],
+            level: 3,
+            count: outStart[g + 1] - outStart[g] + inDeg[g],
+            children: 0,
+        });
+        const cluster = (c, parent, left) => {
+            rows.push({
+                id: 'c' + c,
+                parent,
+                label: cName[c],
+                kind: 'cluster',
+                type: cLevel[c] === 0 ? 'Graph' : cLevel[c] === 1 ? 'Domain' : SYSTEM_KINDS[cKind[c]],
+                level: cLevel[c],
+                count: membersOf(c),
+                children: cChildCount[c],
+            });
+            if (left <= 1)
+                return;
+            const first = cChildStart[c], end = first + cChildCount[c];
+            for (let k = first; k < end; k++)
+                if (cLevel[c] === 2)
+                    entity(k, 'c' + c);
+                else
+                    cluster(k, 'c' + c, left - 1);
+        };
+        const { leaf, idx } = parseId(id);
+        if (leaf)
+            entity(idx, '');
+        else if (idx >= 0 && idx < C)
+            cluster(idx, '', Math.max(1, levels | 0));
+        if (rows.length)
+            rows[0].parent = '';
+        return { t: 'subtree', id, levels, rows };
+    }
     // ---------------------------------------------------------------- views
     function membersOf(c) {
         return cLeafEnd[c] - cLeafStart[c];
@@ -5140,6 +5914,8 @@ function graphExplorerWorker(self) {
     }
     // ------------------------------------------------------------ edge rules
     let rules = [], ruleVersion = 1;
+    // the layers the worker draws itself: the lines (relations) and the names beside small nodes (nodes)
+    let showNodes = true, showRelations = true;
     const DEFAULT_STYLE = { tone: 'muted', width: 1, arrow: 'end' };
     function getField(o, path) {
         for (const k of path.split('.')) {
@@ -5390,7 +6166,7 @@ function graphExplorerWorker(self) {
                     }
                     backdropDots += dots - d0;
                 }
-                if (rs > 16 && labels < 80) {
+                if (showNodes && rs > 16 && labels < 80) {
                     ctx.globalAlpha = 0.55;
                     ctx.fillStyle = palette.muted;
                     ctx.font = '11px ' + palette.font;
@@ -5400,7 +6176,7 @@ function graphExplorerWorker(self) {
                 }
             }
             const picked = (cam.sel && cam.sel.length > 0) || !!cam.edge;
-            for (const e of pv.edges) {
+            for (const e of showRelations ? pv.edges : []) {
                 const incident = e.a === fi || e.b === fi;
                 const st = styleOf(e);
                 let ax = tx(pv.x[e.a]), ay = ty(pv.y[e.a]), bx = tx(pv.x[e.b]), by = ty(pv.y[e.b]);
@@ -5581,7 +6357,7 @@ function graphExplorerWorker(self) {
                 const dim = dimming && !hl.has(i);
                 farField(l, sx[i], sy[i], rs[i], dim ? 0.2 : cLevel[cc] < 2 ? 0.55 : 0.85);
                 // inner edges of a child that is big on screen and already laid out
-                if (rs[i] > 170 && l.laidOut && innerSegs < 6000) {
+                if (showRelations && rs[i] > 170 && l.laidOut && innerSegs < 6000) {
                     ctx.strokeStyle = alpha(palette.muted, dim ? 0.06 : 0.22);
                     ctx.lineWidth = 0.75;
                     ctx.beginPath();
@@ -5606,7 +6382,7 @@ function graphExplorerWorker(self) {
         }
         // bulk edges, batched by stroke style
         const buckets = new Map();
-        for (let ei = 0; ei < v.edges.length; ei++) {
+        for (let ei = 0; showRelations && ei < v.edges.length; ei++) {
             const e = v.edges[ei];
             const a = e.a, b = e.b;
             if (!vis[a] && !vis[b]) {
@@ -5660,7 +6436,7 @@ function graphExplorerWorker(self) {
         ctx.fillStyle = palette.muted;
         const dotLabels = [];
         for (const i of order) {
-            if (tiers[i] !== 0 || labels >= 160)
+            if (!showNodes || tiers[i] !== 0 || labels >= 160)
                 continue;
             if (dimming && !hl.has(i))
                 continue;
@@ -6075,16 +6851,20 @@ function graphExplorerWorker(self) {
             return;
         }
         const results = [];
-        const push = (id, label, kind, type) => results.push({
-            id,
-            label,
-            kind,
-            type,
-            path: pathOf(id)
-                .slice(1, -1)
-                .map((p) => p.label)
-                .join(' › '),
-        });
+        const push = (id, label, kind, type) => {
+            const chain = pathOf(id);
+            results.push({
+                id,
+                label,
+                kind,
+                type,
+                path: chain
+                    .slice(1, -1)
+                    .map((p) => p.label)
+                    .join(' › '),
+                parents: chain.slice(0, -1),
+            });
+        };
         const direct = /^#?(\d+)$/.exec(query);
         if (direct && +direct[1] < N)
             push('n' + direct[1], leafLabel(+direct[1]), 'entity', ENTITY_TYPES[leafType[+direct[1]]]);
@@ -6108,8 +6888,13 @@ function graphExplorerWorker(self) {
         };
         step();
     }
-    // ------------------------------------------------- live breaker simulation
+    // ------------------------------------------------- Live mode: the simulation
+    // Every step a few breakers between systems trip, probe or close (the health layer), and now and then a node deploys
+    // (nodes), a link's traffic moves (relations) or a count changes (labels) - each change an update for the main thread,
+    // named in the view it happened in.
     let simTimer = 0;
+    const BREAKER_WORDS = ['Closed', 'Half-open', 'Open'];
+    const BREAKER_TONES = ['ok', 'warn', 'danger'];
     function simulate(on) {
         clearInterval(simTimer);
         simTimer = 0;
@@ -6122,17 +6907,26 @@ function graphExplorerWorker(self) {
         const v = views.get(lastCam.view);
         if (!v)
             return;
-        let pool = [];
-        if (!v.leafView)
-            for (const e of v.edges)
-                pool.push(...e.pairs);
-        else
-            pool = domPairs.get(cParent[v.cid]) ?? [];
-        if (!pool.length)
-            return;
-        const t = Date.now() & 0xffff;
+        const t = Date.now() & 0xffff, now = Date.now(), viewId = 'c' + v.cid;
+        const childId = (i) => (v.leafView ? 'n' : 'c') + (v.start + i);
+        const childLabel = (i) => (v.leafView ? leafLabel(v.start + i) : cName[v.start + i]);
+        const items = [];
+        // a level of clusters: each breaker belongs to a link of the view; inside a system: to the system
+        const linked = v.leafView ? [] : v.edges.map((_e, k) => k).filter((k) => v.edges[k].pairs.length);
+        const pool = v.leafView ? (domPairs.get(cParent[v.cid]) ?? []) : null;
         for (let k = 0; k < 3; k++) {
-            const p = pool[h32(t, k) % pool.length];
+            let p, e;
+            if (pool) {
+                if (!pool.length)
+                    break;
+                p = pool[h32(t, k) % pool.length];
+            }
+            else {
+                if (!linked.length)
+                    break;
+                e = v.edges[linked[h32(t, k + 20) % linked.length]];
+                p = e.pairs[h32(t, k) % e.pairs.length];
+            }
             const st = pairState[p];
             if (st === 3)
                 continue;
@@ -6152,7 +6946,90 @@ function graphExplorerWorker(self) {
             for (const vv of views.values())
                 if (vv.cid === dom || vv.cid === 0)
                     vv.dirty = true;
+            const text = `${BREAKER_WORDS[pairState[p]]}: ${cName[pairA[p]]} → ${cName[pairB[p]]}`;
+            const tone = BREAKER_TONES[pairState[p]];
+            if (e)
+                items.push({
+                    kind: 'edge',
+                    target: childId(e.a) + '>' + childId(e.b),
+                    view: viewId,
+                    label: childLabel(e.a) + ' → ' + childLabel(e.b),
+                    layer: 'health',
+                    type: 'breaker',
+                    text,
+                    tone,
+                    time: now,
+                });
+            else
+                items.push({
+                    kind: 'node',
+                    target: viewId,
+                    label: cName[v.cid],
+                    layer: 'health',
+                    type: 'breaker',
+                    text,
+                    tone,
+                    time: now,
+                });
         }
+        // a node deploys
+        if (v.n && rnd(t, 31) < 0.6) {
+            const i = h32(t, 32) % v.n, g = v.start + i;
+            const text = v.leafView
+                ? `Updated · revision ${100 + (h32(t, 33) % 900)}`
+                : cLevel[g] === 1
+                    ? `${1 + (h32(t, 34) % 5)} systems deployed`
+                    : `Deployed v${1 + (h32(t, 35) % 4)}.${h32(t, 36) % 20}.${h32(t, 37) % 30}`;
+            items.push({
+                kind: 'node',
+                target: childId(i),
+                label: childLabel(i),
+                layer: 'nodes',
+                type: 'deploy',
+                text,
+                time: now,
+            });
+        }
+        // a link's traffic moves
+        if (v.edges.length && rnd(t, 41) < 0.4) {
+            const e = v.edges[h32(t, 42) % v.edges.length];
+            const up = rnd(t, 43) < 0.5;
+            items.push({
+                kind: 'edge',
+                target: childId(e.a) + '>' + childId(e.b),
+                view: viewId,
+                label: childLabel(e.a) + ' → ' + childLabel(e.b),
+                layer: 'relations',
+                type: 'traffic',
+                text: `Traffic ${up ? 'up' : 'down'} ${5 + (h32(t, 44) % 60)}%`,
+                tone: up ? 'accent' : 'muted',
+                time: now,
+            });
+        }
+        // a count changes
+        if (v.n && rnd(t, 51) < 0.3) {
+            const i = h32(t, 52) % v.n;
+            const d = 1 + (h32(t, 53) % 5000);
+            items.push({
+                kind: 'node',
+                target: childId(i),
+                label: childLabel(i),
+                layer: 'labels',
+                type: 'count',
+                text: `${rnd(t, 54) < 0.7 ? '+' : '-'}${d.toLocaleString('en-US')} records`,
+                time: now,
+            });
+        }
+        if (items.length)
+            self.postMessage({ t: 'updates', items });
+        postPatch();
+        scheduleFrame(lastCam);
+    }
+    /** the current view's links as they are now - their breakers and their styles - for the main thread (`restyle`:
+     *  only the styles changed, the breakers are as they were) */
+    function postPatch(restyle = false) {
+        if (!lastCam || !views.get(lastCam.view))
+            return;
         const cur = buildView(lastCam.view, false);
         const patch = cur.edges.map((e, k) => ({ k, breaker: e.breaker, style: styleOf(e), traffic: !!e.traffic }));
         let ext = null;
@@ -6162,8 +7039,7 @@ function graphExplorerWorker(self) {
                 .filter((e) => e.a === fi || e.b === fi)
                 .map((e) => ({ id: 'c' + (pv.start + (e.a === fi ? e.b : e.a)), breaker: e.breaker, style: styleOf(e) }));
         }
-        self.postMessage({ t: 'patch', view: 'c' + cur.cid, edges: patch, external: ext });
-        scheduleFrame(lastCam);
+        self.postMessage({ t: 'patch', view: 'c' + cur.cid, edges: patch, external: ext, restyle });
     }
     // ------------------------------------------------------------- messages
     self.onmessage = (ev) => {
@@ -6184,6 +7060,14 @@ function graphExplorerWorker(self) {
                         order,
                     }));
                     ruleVersion++;
+                    // the shown layers' rules restyle the links the main thread draws too
+                    postPatch(true);
+                    if (lastCam)
+                        scheduleFrame(lastCam);
+                    break;
+                case 'layers':
+                    showNodes = !!m.nodes;
+                    showRelations = !!m.relations;
                     if (lastCam)
                         scheduleFrame(lastCam);
                     break;
@@ -6221,6 +7105,9 @@ function graphExplorerWorker(self) {
                     break;
                 case 'rows':
                     self.postMessage(rowsOf(m.id));
+                    break;
+                case 'subtree':
+                    self.postMessage(subtreeOf(m.id, m.levels));
                     break;
                 case 'path':
                     self.postMessage({ t: 'path', id: m.id, path: pathOf(m.id), req: m.req });

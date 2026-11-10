@@ -5056,14 +5056,519 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-// src/components/overlays/dialog/dialog.ts
+// src/components/forms-inputs/combobox/combobox.ts
 var df$2 = defussGlobals();
 var dfDollar2 = defussQuery();
-var dialogStates = ["default", "open"];
-function applyMarkup2(dialog, stateName) {
-  dfDollar2(dialog).attr("open", stateName === "open" ? "" : null);
+var comboboxStates = ["default", "open"];
+function applyMarkup2(_el, _stateName) {}
+function triggerStateChange2(popover, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      popover._close?.();
+      break;
+    case "open":
+      popover._open?.();
+      break;
+  }
 }
-function triggerStateChange2(dialog, stateName, _config) {
+var comboboxApi = componentState({
+  component: "combobox",
+  states: comboboxStates,
+  apply: (popover, state) => triggerStateChange2(popover, state.name, state.config),
+  read: (popover, state) => {
+    const selected = Array.from(dfDollar2(popover).find('[role="option"][aria-selected="true"]').toArray());
+    const labels = selected.map((o) => o.textContent?.trim() ?? "");
+    return {
+      name: popover.matches(":popover-open") ? "open" : "default",
+      config: {
+        ...state.config,
+        value: labels.join(", "),
+        values: selected.map((o) => o.dataset.value ?? o.textContent?.trim() ?? ""),
+        labels
+      }
+    };
+  },
+  markup: (el, state) => applyMarkup2(el, state.name)
+});
+df$2.comboboxApi = comboboxApi;
+df$2.comboboxStates = comboboxStates;
+var esc2 = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+var idPart = (t) => t.replace(/[^\w-]/g, "_");
+var comboSeq = 0;
+function hideEmptyGroups(listbox) {
+  dfDollar2(listbox).find(".combobox-group-label").each((_i, label) => {
+    let next = label.nextElementSibling;
+    let groupHasVisible = false;
+    while (next && !next.classList.contains("combobox-group-label") && !next.classList.contains("combobox-separator")) {
+      if (next.getAttribute("role") === "option" && !next.hidden && !next.classList.contains("combobox-create"))
+        groupHasVisible = true;
+      next = next.nextElementSibling;
+    }
+    dfDollar2(label).prop("hidden", !groupHasVisible);
+  });
+  dfDollar2(listbox).find(".combobox-separator").each((_i, sep) => {
+    const prev = sep.previousElementSibling;
+    const next = sep.nextElementSibling;
+    dfDollar2(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
+  });
+}
+function initTags(wrapper) {
+  const field = dfDollar2(wrapper).find(".combobox-field").get(0);
+  const input = dfDollar2(wrapper).find(".combobox-field-input").get(0);
+  const popover = dfDollar2(wrapper).find(".combobox-content").get(0);
+  const listbox = dfDollar2(wrapper).find('[role="listbox"]').get(0);
+  if (!field || !input || !popover || !listbox)
+    return;
+  const empty = dfDollar2(wrapper).find(".combobox-empty").get(0);
+  const creatable = wrapper.hasAttribute("data-creatable");
+  const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+  const options = () => Array.from(dfDollar2(listbox).find('[role="option"]:not(.combobox-create)').toArray());
+  const valueOf = (o) => o.dataset.value ?? o.textContent.trim();
+  const labelOf = (o) => o.textContent.trim();
+  dfDollar2(listbox).attr("aria-multiselectable", "true");
+  const anchorId = `--combobox-${uid}`;
+  dfDollar2(field).css("anchorName", anchorId);
+  dfDollar2(popover).css("positionAnchor", anchorId);
+  const tags = document.createElement("span");
+  tags.className = "combobox-tags";
+  dfDollar2(input).before(tags);
+  let createRow = null;
+  if (creatable) {
+    createRow = document.createElement("div");
+    createRow.className = "combobox-item combobox-create";
+    createRow.id = `${uid}-create`;
+    createRow.setAttribute("role", "option");
+    createRow.setAttribute("aria-selected", "false");
+    createRow.hidden = true;
+    dfDollar2(listbox).prepend(createRow);
+  }
+  let highlighted = null;
+  const highlight = (el) => {
+    if (highlighted)
+      dfDollar2(highlighted).data("highlighted", null);
+    highlighted = el;
+    if (el) {
+      dfDollar2(el).data("highlighted", "");
+      el.scrollIntoView({ block: "nearest" });
+      dfDollar2(input).attr("aria-activedescendant", el.id);
+    } else
+      dfDollar2(input).attr("aria-activedescendant", null);
+  };
+  const visible = () => dfDollar2(listbox).find('[role="option"]').toArray().filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
+  const isOpen = () => popover.matches(":popover-open");
+  const open = () => {
+    if (!isOpen())
+      safeShowPopover(popover);
+    dfDollar2(input).attr("aria-expanded", "true");
+  };
+  const close = () => {
+    if (isOpen())
+      popover.hidePopover();
+    dfDollar2(input).attr("aria-expanded", "false");
+    highlight(null);
+  };
+  popover._open = () => {
+    open();
+    filter();
+  };
+  popover._close = close;
+  bindComponent(popover, comboboxApi);
+  const filter = () => {
+    const text = input.value.trim();
+    const q = text.toLowerCase();
+    let exact = null;
+    let any = false;
+    for (const o of options()) {
+      const match = !q || labelOf(o).toLowerCase().includes(q);
+      dfDollar2(o).prop("hidden", !match);
+      if (match)
+        any = true;
+      if (q && labelOf(o).toLowerCase() === q)
+        exact = o;
+    }
+    if (createRow) {
+      const showCreate = !!text && !exact;
+      dfDollar2(createRow).prop("hidden", !showCreate);
+      if (showCreate)
+        dfDollar2(createRow).text(`Create "${text}"`);
+    }
+    hideEmptyGroups(listbox);
+    if (empty)
+      dfDollar2(empty).prop("hidden", any || !!createRow && !createRow.hidden);
+    highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? visible()[0] ?? null : null));
+  };
+  const render = (announce = true, created = null) => {
+    const chosen = options().filter((o) => o.getAttribute("aria-selected") === "true");
+    const labels = chosen.map(labelOf);
+    const values = chosen.map(valueOf);
+    const name = wrapper.dataset.name;
+    dfDollar2(tags).morph(labels.map((label, i) => `<span class="combobox-tag" id="${uid}-tag-${idPart(values[i])}">${esc2(label)}<button type="button" class="combobox-tag-remove" data-value="${esc2(values[i])}" aria-label="Remove ${esc2(label)}" tabindex="-1"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc2(name)}" value="${esc2(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+    if (input.dataset.placeholder === undefined)
+      input.dataset.placeholder = input.placeholder;
+    input.placeholder = labels.length ? "" : input.dataset.placeholder;
+    if (announce)
+      wrapper.dispatchEvent(new CustomEvent("combobox:change", {
+        bubbles: true,
+        detail: { values, labels, created }
+      }));
+  };
+  const commit = (row) => {
+    const text = input.value.trim();
+    let created = null;
+    if (createRow && row === createRow || !row && creatable && text) {
+      if (!text)
+        return;
+      const exact = options().find((o) => labelOf(o).toLowerCase() === text.toLowerCase());
+      if (exact)
+        row = exact;
+      else {
+        const option = document.createElement("div");
+        option.className = "combobox-item";
+        option.setAttribute("role", "option");
+        option.dataset.value = text;
+        option.dataset.created = "";
+        option.id = `${uid}-opt-${idPart(text)}-${options().length}`;
+        dfDollar2(option).text(text);
+        const firstGroup = dfDollar2(listbox).find(".combobox-group-label").get(0);
+        if (firstGroup)
+          dfDollar2(firstGroup).before(option);
+        else
+          dfDollar2(listbox).append(option);
+        row = option;
+        created = text;
+      }
+      dfDollar2(row).attr("aria-selected", "true");
+    } else if (row) {
+      if (row.getAttribute("aria-disabled") === "true")
+        return;
+      const on = row.getAttribute("aria-selected") === "true";
+      dfDollar2(row).attr("aria-selected", on && !text ? "false" : "true");
+    } else
+      return;
+    dfDollar2(input).val("");
+    render(true, created);
+    filter();
+    input.focus();
+  };
+  render(false);
+  filter();
+  field.addEventListener("mousedown", (e) => {
+    if (!e.target.closest("button, input")) {
+      e.preventDefault();
+      input.focus();
+    }
+  });
+  tags.addEventListener("click", (e) => {
+    const btn = e.target.closest(".combobox-tag-remove");
+    if (!btn)
+      return;
+    const option = options().find((o) => valueOf(o) === btn.dataset.value);
+    if (option)
+      dfDollar2(option).attr("aria-selected", "false");
+    render();
+    filter();
+    input.focus();
+  });
+  input.addEventListener("focus", () => {
+    open();
+    filter();
+  });
+  input.addEventListener("input", () => {
+    open();
+    filter();
+  });
+  input.addEventListener("keydown", (e) => {
+    const rows = visible();
+    const at = highlighted ? rows.indexOf(highlighted) : -1;
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        open();
+        highlight(rows[Math.min(at + 1, rows.length - 1)] ?? null);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        highlight(rows[Math.max(at - 1, 0)] ?? null);
+        break;
+      case "Enter":
+        e.preventDefault();
+        commit(highlighted);
+        break;
+      case ",":
+        if (input.value.trim()) {
+          e.preventDefault();
+          commit(highlighted);
+        }
+        break;
+      case "Backspace": {
+        if (input.value !== "")
+          break;
+        const chosen = options().filter((o) => o.getAttribute("aria-selected") === "true");
+        const last = chosen[chosen.length - 1];
+        if (!last)
+          break;
+        e.preventDefault();
+        dfDollar2(last).attr("aria-selected", "false");
+        render();
+        filter();
+        break;
+      }
+      case "Escape":
+        e.preventDefault();
+        close();
+        break;
+      case "Tab":
+        close();
+        break;
+    }
+  });
+  listbox.addEventListener("mousedown", (e) => e.preventDefault());
+  listbox.addEventListener("click", (e) => {
+    const row = e.target.closest('[role="option"]');
+    if (row && !row.hidden)
+      commit(row);
+  });
+  listbox.addEventListener("mousemove", (e) => {
+    const row = e.target.closest('[role="option"]');
+    if (row && !row.hidden && row !== highlighted)
+      highlight(row);
+  });
+  wrapper.addEventListener("focusout", (e) => {
+    if (!wrapper.contains(e.relatedTarget) && !popover.contains(e.relatedTarget))
+      close();
+  });
+  popover.addEventListener("toggle", () => {
+    dfDollar2(input).attr("aria-expanded", String(isOpen()));
+  });
+}
+function init2() {
+  dfDollar2(".combobox:not([data-init])").toArray().forEach((wrapper) => {
+    wrapper.dataset.init = "";
+    if (wrapper.hasAttribute("data-tags")) {
+      initTags(wrapper);
+      return;
+    }
+    const $wrapper = dfDollar2(wrapper);
+    const $trigger = $wrapper.find(".combobox-trigger");
+    const $value = $wrapper.find(".combobox-value");
+    const $popover = $wrapper.find(".combobox-content");
+    const $search = $wrapper.find(".combobox-search-input");
+    const $listbox = $wrapper.find('[role="listbox"]');
+    const $empty = $wrapper.find(".combobox-empty");
+    const trigger = $trigger[0];
+    const popover = $popover[0];
+    const searchInput = $search[0];
+    const listbox = $listbox[0];
+    if (!trigger || !popover || !searchInput || !listbox)
+      return;
+    const allItems = $listbox.find('[role="option"]');
+    let highlighted = -1;
+    const anchorId = `--combobox-${popover.id}`;
+    $trigger.css("anchorName", anchorId);
+    $popover.css("positionAnchor", anchorId);
+    const placeholder = $value.data("placeholder") ?? "";
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "combobox-clear";
+    clearBtn.setAttribute("aria-label", "Clear selection");
+    dfDollar2(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+    dfDollar2(clearBtn).css("positionAnchor", anchorId);
+    $trigger.after(clearBtn);
+    const multiple = wrapper.hasAttribute("data-multiple");
+    const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+    let tags = null;
+    if (multiple) {
+      $listbox.attr("aria-multiselectable", "true");
+      tags = document.createElement("div");
+      tags.className = "combobox-tags";
+      tags.setAttribute("role", "list");
+      tags.setAttribute("aria-label", `Selected ${trigger.getAttribute("aria-label") || dfDollar2("#" + CSS.escape(trigger.getAttribute("aria-labelledby") || "")).get(0)?.textContent?.trim() || "options"}`);
+      dfDollar2(clearBtn).after(tags);
+      tags.addEventListener("click", (e) => {
+        const btn = e.target.closest(".combobox-tag-remove");
+        if (!btn)
+          return;
+        const option = Array.from(allItems).find((o) => (o.dataset.value ?? o.textContent.trim()) === btn.dataset.value);
+        const all = dfDollar2(tags).find(".combobox-tag-remove").toArray();
+        const at = all.indexOf(btn);
+        if (option)
+          dfDollar2(option).attr("aria-selected", "false");
+        renderSelection();
+        const rest = dfDollar2(tags).find(".combobox-tag-remove").toArray();
+        (rest[Math.min(at, rest.length - 1)] ?? trigger).focus();
+      });
+    }
+    const renderSelection = (announce = true) => {
+      const chosen = Array.from(allItems).filter((o) => o.getAttribute("aria-selected") === "true");
+      const labels = chosen.map((o) => o.textContent.trim());
+      const values = chosen.map((o) => o.dataset.value ?? o.textContent.trim());
+      const summary = multiple && labels.length > 1 ? ($value.data("selectedLabel") ?? "{n} selected").replace("{n}", String(labels.length)) : labels.join(", ");
+      if (labels.length)
+        $value.text(summary).attr("data-placeholder", null);
+      else
+        $value.text(placeholder).attr("data-placeholder", placeholder);
+      if (tags) {
+        const name = wrapper.dataset.name;
+        dfDollar2(tags).morph(labels.map((label, i) => `<span class="combobox-tag" role="listitem" id="${uid}-tag-${idPart(values[i])}">${esc2(label)}<button type="button" class="combobox-tag-remove" data-value="${esc2(values[i])}" aria-label="Remove ${esc2(label)}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc2(name)}" value="${esc2(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+      }
+      if (announce)
+        wrapper.dispatchEvent(new CustomEvent("combobox:change", { bubbles: true, detail: { values, labels } }));
+    };
+    if (multiple)
+      renderSelection(false);
+    clearBtn.addEventListener("click", () => {
+      allItems.attr("aria-selected", "false");
+      renderSelection();
+      trigger.focus();
+    });
+    const getVisibleItems = () => allItems.filter((item) => !item.hidden && item.getAttribute("aria-disabled") !== "true");
+    const open = () => {
+      safeShowPopover(popover);
+      $trigger.attr("aria-expanded", "true");
+      $search.val("");
+      filter("");
+      searchInput.focus();
+    };
+    const close = () => {
+      popover.hidePopover();
+      $trigger.attr("aria-expanded", "false");
+      $search.attr("aria-activedescendant", "");
+      clearHighlight();
+      trigger.focus();
+    };
+    popover._open = open;
+    popover._close = close;
+    bindComponent(popover, comboboxApi);
+    const isOpen = () => popover.matches(":popover-open");
+    const filter = (query) => {
+      const q = query.toLowerCase();
+      let hasVisible = false;
+      allItems.forEach((item) => {
+        const match = !q || item.textContent.trim().toLowerCase().includes(q);
+        dfDollar2(item).prop("hidden", !match);
+        if (match)
+          hasVisible = true;
+      });
+      if (listbox)
+        hideEmptyGroups(listbox);
+      if ($empty.length)
+        $empty.prop("hidden", hasVisible);
+    };
+    const clearHighlight = () => {
+      allItems.data("highlighted", null);
+      highlighted = -1;
+    };
+    const doHighlight = (index) => {
+      const items = getVisibleItems();
+      clearHighlight();
+      if (index < 0 || index >= items.length)
+        return;
+      highlighted = index;
+      dfDollar2(items[index]).data("highlighted", "");
+      items[index].scrollIntoView({ block: "nearest" });
+      $search.attr("aria-activedescendant", items[index].id);
+    };
+    const selectItem = (item) => {
+      if (item.getAttribute("aria-disabled") === "true")
+        return;
+      if (multiple) {
+        dfDollar2(item).attr("aria-selected", item.getAttribute("aria-selected") === "true" ? "false" : "true");
+        renderSelection();
+        searchInput.focus();
+        return;
+      }
+      allItems.attr("aria-selected", "false");
+      dfDollar2(item).attr("aria-selected", "true");
+      renderSelection();
+      close();
+    };
+    trigger.addEventListener("click", () => {
+      if (isOpen()) {
+        close();
+      } else {
+        open();
+      }
+    });
+    searchInput.addEventListener("input", () => {
+      filter(searchInput.value);
+      doHighlight(0);
+    });
+    searchInput.addEventListener("keydown", (e) => {
+      const items = getVisibleItems();
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          doHighlight(Math.min(highlighted + 1, items.length - 1));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          doHighlight(Math.max(highlighted - 1, 0));
+          break;
+        case "Home":
+          e.preventDefault();
+          doHighlight(0);
+          break;
+        case "End":
+          e.preventDefault();
+          doHighlight(items.length - 1);
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (highlighted >= 0 && items[highlighted])
+            selectItem(items[highlighted]);
+          break;
+        case "Escape":
+          e.preventDefault();
+          close();
+          break;
+        case "Tab":
+          close();
+          break;
+        case "Backspace": {
+          if (!multiple || searchInput.value !== "")
+            break;
+          const chosen = Array.from(allItems).filter((o) => o.getAttribute("aria-selected") === "true");
+          const last = chosen[chosen.length - 1];
+          if (!last)
+            break;
+          e.preventDefault();
+          dfDollar2(last).attr("aria-selected", "false");
+          renderSelection();
+          break;
+        }
+      }
+    });
+    listbox.addEventListener("click", (e) => {
+      const item = e.target.closest('[role="option"]');
+      if (item && !item.hidden && item.getAttribute("aria-disabled") !== "true")
+        selectItem(item);
+    });
+    listbox.addEventListener("mousemove", (e) => {
+      const item = e.target.closest('[role="option"]');
+      if (item && !item.hidden) {
+        const items = getVisibleItems();
+        doHighlight(items.indexOf(item));
+      }
+    });
+    popover.addEventListener("toggle", () => {
+      const nowOpen = popover.matches(":popover-open");
+      $trigger.attr("aria-expanded", String(nowOpen));
+      if (!nowOpen)
+        clearHighlight();
+    });
+  });
+}
+init2();
+new MutationObserver(init2).observe(document, { childList: true, subtree: true });
+
+// src/components/overlays/dialog/dialog.ts
+var df$3 = defussGlobals();
+var dfDollar3 = defussQuery();
+var dialogStates = ["default", "open"];
+function applyMarkup3(dialog, stateName) {
+  dfDollar3(dialog).attr("open", stateName === "open" ? "" : null);
+}
+function triggerStateChange3(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -5079,16 +5584,16 @@ var shown = (dialog) => dialog.open ? "open" : "default";
 var dialogApi = componentState({
   component: "dialog",
   states: dialogStates,
-  apply: (dialog, state) => triggerStateChange2(dialog, state.name, state.config),
+  apply: (dialog, state) => triggerStateChange3(dialog, state.name, state.config),
   read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
-  markup: (el, state) => applyMarkup2(el, state.name)
+  markup: (el, state) => applyMarkup3(el, state.name)
 });
-df$2.dialogApi = dialogApi;
-df$2.dialogStates = dialogStates;
-function init2() {
-  dfDollar2("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
+df$3.dialogApi = dialogApi;
+df$3.dialogStates = dialogStates;
+function init3() {
+  dfDollar3("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const dialog = dfDollar2("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
+    const dialog = dfDollar3("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
     if (!dialog)
       return;
     trigger.addEventListener("click", () => {
@@ -5096,14 +5601,14 @@ function init2() {
       dialog.showModal();
     });
   });
-  dfDollar2("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
-    dfDollar2(dialog).data("init", "");
+  dfDollar3("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
+    dfDollar3(dialog).data("init", "");
     bindComponent(dialog, dialogApi, { name: shown(dialog), config: {} });
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog)
         dialog.close();
     });
-    dfDollar2(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
+    dfDollar3(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         dialog.close();
       });
@@ -5116,17 +5621,17 @@ function init2() {
     });
   });
 }
-init2();
-new MutationObserver(init2).observe(document, { childList: true, subtree: true });
+init3();
+new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/dropdown/dropdown.ts
-var df$3 = defussGlobals();
-var dfDollar3 = defussQuery();
+var df$4 = defussGlobals();
+var dfDollar4 = defussQuery();
 var dropdownStates = ["default", "open"];
 var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
-var itemsOf = (menu) => Array.from(dfDollar3(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
-var subOf = (trigger) => dfDollar3(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
+var itemsOf = (menu) => Array.from(dfDollar4(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+var subOf = (trigger) => dfDollar4(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
 var rootOf2 = (menu) => {
   let m = menu;
   while (m?.parentElement?.closest(".dropdown-content[popover]"))
@@ -5135,8 +5640,8 @@ var rootOf2 = (menu) => {
 };
 var HOVER_OPEN = 120;
 var HOVER_CLOSE = 220;
-function applyMarkup3(_el, _stateName) {}
-function triggerStateChange3(menu, stateName, _config) {
+function applyMarkup4(_el, _stateName) {}
+function triggerStateChange4(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -5151,11 +5656,11 @@ function triggerStateChange3(menu, stateName, _config) {
 var dropdownApi = componentState({
   component: "dropdown",
   states: dropdownStates,
-  apply: (menu, state) => triggerStateChange3(menu, state.name, state.config),
-  markup: (el, state) => applyMarkup3(el, state.name)
+  apply: (menu, state) => triggerStateChange4(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup4(el, state.name)
 });
-df$3.dropdownApi = dropdownApi;
-df$3.dropdownStates = dropdownStates;
+df$4.dropdownApi = dropdownApi;
+df$4.dropdownStates = dropdownStates;
 var anchorSeq = 0;
 function highlight(menu, item, focus = true) {
   itemsOf(menu).forEach((i) => {
@@ -5187,7 +5692,7 @@ function activate(menu, item) {
   }
   if (role === "menuitemradio") {
     const group = item.closest('[role="group"]') ?? menu;
-    dfDollar3(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
+    dfDollar4(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
@@ -5230,7 +5735,7 @@ function wireMenu(menu) {
     return;
   menu._wired = true;
   const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
-  const openSubs = () => Array.from(dfDollar3(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
+  const openSubs = () => Array.from(dfDollar4(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
   menu.addEventListener("mousemove", (e) => {
     if (!own(e))
       return;
@@ -5348,8 +5853,8 @@ function wireMenu(menu) {
   });
 }
 function wireSub(wrap) {
-  const trigger = dfDollar3(wrap).find(":scope > .dropdown-sub-trigger").get(0);
-  const sub = dfDollar3(wrap).find(":scope > .dropdown-sub-content").get(0);
+  const trigger = dfDollar4(wrap).find(":scope > .dropdown-sub-trigger").get(0);
+  const sub = dfDollar4(wrap).find(":scope > .dropdown-sub-content").get(0);
   if (!trigger || !sub || sub._subWired)
     return;
   sub._subWired = true;
@@ -5387,10 +5892,10 @@ function wireSub(wrap) {
     highlight(parent, trigger, false);
   });
 }
-function init3() {
-  dfDollar3("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
+function init4() {
+  dfDollar4("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const menu = dfDollar3("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
+    const menu = dfDollar4("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
     if (!menu)
       return;
     const anchorId = `--dropdown-${menu.id}`;
@@ -5419,29 +5924,522 @@ function init3() {
         });
         const active = document.activeElement;
         const other = active instanceof Element && active !== trigger ? active.closest("[data-dropdown-trigger]") : null;
-        const otherOpen = other ? dfDollar3("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
+        const otherOpen = other ? dfDollar4("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
         if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
           trigger.focus({ preventScroll: true });
       }
     });
     wireMenu(menu);
-    dfDollar3(menu).find(".dropdown-sub").toArray().forEach(wireSub);
+    dfDollar4(menu).find(".dropdown-sub").toArray().forEach(wireSub);
   });
-  dfDollar3(".dropdown-sub").toArray().forEach(wireSub);
-  dfDollar3(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
+  dfDollar4(".dropdown-sub").toArray().forEach(wireSub);
+  dfDollar4(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
     menu.dataset.init = "";
     bindComponent(menu, dropdownApi);
   });
 }
-init3();
-new MutationObserver(init3).observe(document, { childList: true, subtree: true });
+init4();
+new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+
+// src/components/navigation/language-switcher/language-switcher.ts
+var df$5 = defussGlobals();
+var dfDollar5 = defussQuery();
+var languageSwitcherStates = ["default", "open"];
+var SEED = `af Afrikaans|Afrikaans|za
+am Amharic|አማርኛ|et
+ar Arabic|العربية|sa
+bg Bulgarian|български|bg
+bg-Latn Bulgarian (Latin)|bulgarski|bg
+bn Bangla|বাংলা|bd
+bs Bosnian|bosanski|ba
+ca Catalan|català|es-ct
+ceb Cebuano|Binisaya|ph
+co Corsican|corsu|fr
+cs Czech|čeština|cz
+cy Welsh|Cymraeg|gb-wls
+da Danish|dansk|dk
+de German|Deutsch|de
+el Greek|Ελληνικά|gr
+el-Latn Greek (Latin)|Ellinika|gr
+en English|English|gb
+eo Esperanto|Esperanto|
+es Spanish|español|es
+et Estonian|eesti|ee
+eu Basque|euskara|es-pv
+fa Persian|فارسی|ir
+fi Finnish|suomi|fi
+fil Filipino|Filipino|ph
+fr French|français|fr
+fy Western Frisian|Frysk|nl
+ga Irish|Gaeilge|ie
+gd Scottish Gaelic|Gàidhlig|gb-sct
+gl Galician|galego|es-ga
+gu Gujarati|ગુજરાતી|in
+ha Hausa|Hausa|ng
+haw Hawaiian|ʻŌlelo Hawaiʻi|us
+hi Hindi|हिन्दी|in
+hi-Latn Hindi (Latin)|Hindi|in
+hmn Hmong|Hmoob|la
+hr Croatian|hrvatski|hr
+ht Haitian Creole|Kreyòl ayisyen|ht
+hu Hungarian|magyar|hu
+hy Armenian|հայերեն|am
+id Indonesian|Bahasa Indonesia|id
+ig Igbo|Asụsụ Igbo|ng
+is Icelandic|íslenska|is
+it Italian|italiano|it
+iw Hebrew|עברית|il
+ja Japanese|日本語|jp
+ja-Latn Japanese (Latin)|Nihongo|jp
+jv Javanese|Basa Jawa|id
+ka Georgian|ქართული|ge
+kk Kazakh|қазақ тілі|kz
+km Khmer|ខ្មែរ|kh
+kn Kannada|ಕನ್ನಡ|in
+ko Korean|한국어|kr
+ku Kurdish|Kurdî|iq
+ky Kyrgyz|кыргызча|kg
+la Latin|Latina|va
+lb Luxembourgish|Lëtzebuergesch|lu
+lo Lao|ລາວ|la
+lt Lithuanian|lietuvių|lt
+lv Latvian|latviešu|lv
+mg Malagasy|Malagasy|mg
+mi Māori|Māori|nz
+mk Macedonian|македонски|mk
+ml Malayalam|മലയാളം|in
+mn Mongolian|монгол|mn
+mr Marathi|मराठी|in
+ms Malay|Bahasa Melayu|my
+mt Maltese|Malti|mt
+my Burmese|မြန်မာ|mm
+ne Nepali|नेपाली|np
+nl Dutch|Nederlands|nl
+no Norwegian|norsk|no
+ny Nyanja|Chichewa|mw
+pa Punjabi|ਪੰਜਾਬੀ|in
+pl Polish|polski|pl
+ps Pashto|پښتو|af
+pt Portuguese|português|pt
+ro Romanian|română|ro
+ru Russian|русский|ru
+ru-Latn Russian (Latin)|Russkiy|ru
+sd Sindhi|سنڌي|pk
+si Sinhala|සිංහල|lk
+sk Slovak|slovenčina|sk
+sl Slovenian|slovenščina|si
+sm Samoan|Gagana Sāmoa|ws
+sn Shona|chiShona|zw
+so Somali|Soomaali|so
+sq Albanian|shqip|al
+sr Serbian|српски|rs
+st Southern Sotho|Sesotho|ls
+su Sundanese|Basa Sunda|id
+sv Swedish|svenska|se
+sw Swahili|Kiswahili|tz
+ta Tamil|தமிழ்|in
+te Telugu|తెలుగు|in
+tg Tajik|тоҷикӣ|tj
+th Thai|ไทย|th
+tr Turkish|Türkçe|tr
+uk Ukrainian|українська|ua
+ur Urdu|اردو|pk
+uz Uzbek|oʻzbekcha|uz
+vi Vietnamese|Tiếng Việt|vn
+xh Xhosa|isiXhosa|za
+yi Yiddish|ייִדיש|il
+yo Yoruba|Èdè Yorùbá|ng
+zh Chinese|中文|cn
+zh-Latn Chinese (Pinyin)|Zhōngwén|cn
+zu Zulu|isiZulu|za`;
+var RTL = new Set(["ar", "fa", "iw", "he", "ps", "sd", "ur", "yi"]);
+var LANGUAGES = SEED.split(`
+`).map((line) => {
+  const sp = line.indexOf(" ");
+  const code = line.slice(0, sp);
+  const [english, native, region] = line.slice(sp + 1).split("|");
+  return { code, english, native, region, dir: RTL.has(code) ? "rtl" : "ltr" };
+});
+var BY_CODE = new Map(LANGUAGES.map((l) => [l.code.toLowerCase(), l]));
+var ALIAS = { he: "iw", nb: "no", tl: "fil" };
+var settings = {
+  flags: "https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/{shape}/{region}.svg"
+};
+var resolve = (t) => typeof t === "string" ? dfDollar5("#" + CSS.escape(t)).get(0) ?? dfDollar5(t).get(0) : t;
+var esc3 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+function partsOf(tag) {
+  try {
+    const l = new Intl.Locale(tag);
+    return { language: l.language, script: l.script ?? "", region: (l.region ?? "").toLowerCase() };
+  } catch {
+    const [language = "", ...rest] = tag.split(/[-_]/);
+    return {
+      language: language.toLowerCase(),
+      script: rest.find((p) => p.length === 4) ?? "",
+      region: (rest.find((p) => p.length === 2) ?? "").toLowerCase()
+    };
+  }
+}
+function seedOf(tag) {
+  const { language, script } = partsOf(tag);
+  const lang = ALIAS[language] ?? language;
+  return BY_CODE.get(tag.toLowerCase()) ?? (script ? BY_CODE.get(`${lang}-${script}`.toLowerCase()) : undefined) ?? BY_CODE.get(lang);
+}
+var capitalize = (name, locale) => {
+  if (!name)
+    return name;
+  let first;
+  try {
+    first = name.charAt(0).toLocaleUpperCase(locale);
+  } catch {
+    first = name.charAt(0).toUpperCase();
+  }
+  return first + name.slice(1);
+};
+var displayCache = new Map;
+function displayNames(locale, type) {
+  const key = `${type}:${locale}`;
+  if (!displayCache.has(key)) {
+    let d = null;
+    try {
+      d = new Intl.DisplayNames([locale], { type, fallback: "none" });
+      if (new Intl.Locale(d.resolvedOptions().locale).language !== partsOf(locale).language)
+        d = null;
+    } catch {
+      d = null;
+    }
+    displayCache.set(key, d);
+  }
+  return displayCache.get(key) ?? null;
+}
+function cldrName(locale, type, code) {
+  try {
+    return displayNames(locale, type)?.of(code);
+  } catch {
+    return;
+  }
+}
+function nameIn(tag, locale) {
+  const seed = seedOf(tag);
+  const { region } = partsOf(tag);
+  const self = partsOf(locale).language === partsOf(tag).language;
+  if (seed && !region && seed.code.toLowerCase() === tag.toLowerCase().replace(/^he$/, "iw")) {
+    if (self)
+      return capitalize(seed.native, tag);
+    if (partsOf(locale).language === "en")
+      return seed.english;
+  }
+  const n = cldrName(locale, "language", tag.replace(/^iw\b/, "he"));
+  if (n && n.toLowerCase() !== tag.toLowerCase())
+    return capitalize(n, locale);
+  const base = seed ? self ? capitalize(seed.native, tag) : seed.english : tag;
+  if (!region)
+    return base;
+  const regionName = cldrName(locale, "region", region.toUpperCase()) ?? region.toUpperCase();
+  return `${base} (${regionName})`;
+}
+function regionFor(el, tag) {
+  for (const pair of (el.dataset.flags || "").split(/\s+/).filter(Boolean)) {
+    const [t, r] = pair.split(":");
+    if (t && t.toLowerCase() === tag.toLowerCase())
+      return (r || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+  }
+  return (partsOf(tag).region || seedOf(tag)?.region || "").replace(/[^a-z0-9-]/g, "");
+}
+var languagesOf = (el) => {
+  const list = (el.dataset.languages || "en").split(/[\s,]+/).filter(Boolean);
+  return list.length ? list : ["en"];
+};
+var valueOf = (el, languages = languagesOf(el)) => {
+  const v = (el.dataset.value || "").toLowerCase();
+  return languages.find((l) => l.toLowerCase() === v) ?? languages[0];
+};
+var nextOf = (el, tag) => {
+  const languages = languagesOf(el);
+  return languages[(languages.indexOf(tag) + 1) % languages.length];
+};
+var codeLabel = (tag) => {
+  const { language, region } = partsOf(tag);
+  return (region ? `${language}-${region}` : language).toUpperCase();
+};
+var dirOf = (tag) => RTL.has(partsOf(tag).language) ? "rtl" : "ltr";
+var idPart2 = (tag) => tag.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+function flagHtml(el, tag) {
+  if (el.dataset.flag === "none")
+    return "";
+  const region = regionFor(el, tag);
+  const shape = ["square", "circle", "squircle"].includes(el.dataset.flagShape || "") ? "1x1" : "4x3";
+  const url = region ? settings.flags.replace("{shape}", shape).replace("{region}", region) : "";
+  const image = region ? ` data-region="${esc3(region)}" style="--language-switcher-flag: url('${esc3(url)}')"` : "";
+  return `<span class="language-switcher-flag" data-code="${esc3(partsOf(tag).language.toUpperCase())}"${image} aria-hidden="true"></span>`;
+}
+var GLOBE = '<svg class="language-switcher-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
+var CHEVRON = '<svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>';
+function faceHtml(el, tag) {
+  const display = el.dataset.display || "label";
+  const flag = flagHtml(el, tag) || (display === "icon" ? GLOBE : "");
+  const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf(el)) : nameIn(tag, tag);
+  return `${flag}${text ? `<span class="language-switcher-label" lang="${esc3(tag)}" dir="${dirOf(tag)}">${esc3(text)}</span>` : ""}`;
+}
+var labelOf = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
+var ariaOf = (el, tag) => `${labelOf(el)}: ${nameIn(tag, tag)}`;
+function namesOf(el, tag, ui) {
+  const own = nameIn(tag, tag), shown = nameIn(tag, ui);
+  if (el.dataset.names === "native")
+    return { name: own, lang: tag, alt: "", altLang: tag };
+  if (el.dataset.names === "ui")
+    return { name: shown, lang: ui, alt: shown === own ? "" : own, altLang: tag };
+  return { name: own, lang: tag, alt: shown === own ? "" : shown, altLang: ui };
+}
+var optionInner = (el, tag, ui) => {
+  const n = namesOf(el, tag, ui);
+  return `${flagHtml(el, tag)}<span class="language-switcher-name" lang="${esc3(n.lang)}" dir="${dirOf(n.lang)}">${esc3(n.name)}</span><span class="language-switcher-alt" lang="${esc3(n.altLang)}" dir="${dirOf(n.altLang)}"${n.alt ? "" : " hidden"}>${esc3(n.alt)}</span>`;
+};
+function comboboxHtml(el, uid) {
+  const languages = languagesOf(el);
+  const value = valueOf(el, languages);
+  const search = el.dataset.search || "Search languages...";
+  const options = languages.map((tag) => `<div role="option" id="${uid}-${idPart2(tag)}" class="combobox-item language-switcher-option" data-value="${esc3(tag)}" aria-selected="${tag === value}">${optionInner(el, tag, value)}</div>`).join("");
+  const icon = (el.dataset.display || "label") === "icon";
+  return `<div class="combobox language-switcher-combobox" data-ce-chrome${el.dataset.size ? ` data-size="${esc3(el.dataset.size)}"` : ""}>
+<button type="button" class="btn combobox-trigger" data-variant="${esc3(el.dataset.buttonVariant || "ghost")}"${icon ? ' data-size="icon"' : ""} aria-haspopup="listbox" aria-expanded="false" aria-label="${esc3(ariaOf(el, value))}" aria-controls="${uid}-popover"><span class="combobox-value">${faceHtml(el, value)}</span>${icon ? "" : CHEVRON}</button>
+<div id="${uid}-popover" class="combobox-content language-switcher-content" popover>
+<div class="combobox-search"${languages.length > 7 ? "" : " data-quiet"}><input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="${uid}-listbox" aria-activedescendant="" aria-autocomplete="list" placeholder="${esc3(search)}" aria-label="${esc3(search)}"></div>
+<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc3(labelOf(el))}"><div class="combobox-empty" hidden>${esc3(el.dataset.empty || "No language found.")}</div>${options}</div>
+</div>
+</div>`;
+}
+function swapHtml(el) {
+  const value = valueOf(el);
+  return `<label class="swap language-switcher-swap"${el.dataset.swap === "fade" ? "" : ` data-variant="${esc3(el.dataset.swap || "flip")}"`} data-ce-chrome${el.dataset.size ? ` data-size="${esc3(el.dataset.size)}"` : ""}>
+<input type="checkbox" role="button" aria-label="${esc3(swapLabel(el, value))}">
+<span class="swap-off">${faceHtml(el, value)}</span>
+<span class="swap-on">${faceHtml(el, nextOf(el, value))}</span>
+</label>`;
+}
+function menuHtml(el) {
+  const value = valueOf(el);
+  return `<div class="language-switcher-menu" data-ce-chrome>${languagesOf(el).map((tag) => `<button type="button" class="dropdown-item dropdown-radio language-switcher-item" role="menuitemradio" tabindex="-1" aria-checked="${tag === value}" data-value="${esc3(tag)}">${optionInner(el, tag, value)}</button>`).join("")}</div>`;
+}
+var swapLabel = (el, value) => {
+  const next = nextOf(el, value);
+  return `${ariaOf(el, value)} - ${el.dataset.next || "next"}: ${nameIn(next, next)}`;
+};
+var STRUCTURE = [
+  "languages",
+  "variant",
+  "display",
+  "names",
+  "flag",
+  "flags",
+  "flagShape",
+  "size",
+  "buttonVariant",
+  "search",
+  "empty",
+  "next",
+  "swap"
+];
+var structureOf = (el) => STRUCTURE.map((k) => el.dataset[k] ?? "").join("|");
+var chromeOf = (el) => dfDollar5(el).children("[data-ce-chrome]").get(0);
+function draw2(el) {
+  const uid = el.id ? `${el.id}-ls` : el._lsId ??= `language-switcher-${++sequence}`;
+  const focused = el.contains(document.activeElement);
+  dfDollar5(el).children("[data-ce-chrome]").remove();
+  const variant = el.dataset.variant;
+  dfDollar5(el).append(dfDollar5(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
+  el._lsStructure = structureOf(el);
+  el._lsValue = valueOf(el);
+  if (focused)
+    dfDollar5(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
+}
+var sequence = 0;
+function update(el) {
+  if (el._lsStructure !== structureOf(el) || !chromeOf(el))
+    return draw2(el);
+  const value = valueOf(el);
+  const changed = el._lsValue !== value;
+  el._lsValue = value;
+  const chrome = dfDollar5(chromeOf(el));
+  if (el.dataset.variant === "swap") {
+    const input = chrome.find(":scope > input").get(0);
+    if (changed) {
+      const [shown, hidden] = input.checked ? [".swap-on", ".swap-off"] : [".swap-off", ".swap-on"];
+      chrome.find(`:scope > ${shown}`).html(faceHtml(el, value));
+      chrome.find(`:scope > ${hidden}`).html(faceHtml(el, nextOf(el, value)));
+    }
+    dfDollar5(input).attr("aria-label", swapLabel(el, value));
+    return;
+  }
+  if (el.dataset.variant === "menu") {
+    if (!changed)
+      return;
+    chrome.find(".language-switcher-item").each((_i, item) => {
+      const tag = item.dataset.value || "";
+      dfDollar5(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
+    });
+    return;
+  }
+  chrome.find(".combobox-trigger").attr("aria-label", ariaOf(el, value));
+  chrome.find('[role="listbox"]').attr("aria-label", labelOf(el));
+  if (!changed)
+    return;
+  chrome.find(".combobox-value").html(faceHtml(el, value)).attr("data-placeholder", null);
+  chrome.find(".language-switcher-option").each((_i, option) => {
+    const tag = option.dataset.value || "";
+    dfDollar5(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
+  });
+}
+function choose(el, tag, announce = true) {
+  const languages = languagesOf(el);
+  const next = languages.find((l) => l.toLowerCase() === String(tag).toLowerCase());
+  if (!next)
+    return false;
+  const previous = valueOf(el, languages);
+  if (el.dataset.value !== next)
+    dfDollar5(el).attr("data-value", next);
+  update(el);
+  if (announce && next !== previous)
+    el.dispatchEvent(new CustomEvent("language-change", {
+      bubbles: true,
+      detail: { value: next, previous, name: nameIn(next, next), dir: dirOf(next) }
+    }));
+  return true;
+}
+var popoverOf = (el) => dfDollar5(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
+var isOpen = (el) => {
+  try {
+    return !!popoverOf(el)?.matches(":popover-open");
+  } catch {
+    return false;
+  }
+};
+function applyMarkup5(el, _name, config) {
+  const languages = languagesOf(el);
+  const value = languages.find((l) => l.toLowerCase() === String(config?.value ?? "").toLowerCase());
+  if (value)
+    dfDollar5(el).attr("data-value", value);
+}
+function triggerStateChange5(el, name, config) {
+  if (config?.value)
+    choose(el, config.value, false);
+  const popover = popoverOf(el);
+  if (!popover)
+    return;
+  if (name === "open" && !isOpen(el))
+    dfDollar5(el).find(".combobox-trigger").get(0)?.click();
+  else if (name !== "open" && isOpen(el))
+    popover.hidePopover();
+}
+var languageSwitcherApi = componentState({
+  component: "language-switcher",
+  states: languageSwitcherStates,
+  mergeConfig: true,
+  apply: (el, state) => triggerStateChange5(el, state.name, state.config),
+  read: (el) => ({ name: isOpen(el) ? "open" : "default", config: { value: valueOf(el) } }),
+  markup: (el, state) => applyMarkup5(el, state.name, state.config)
+});
+df$5.languageSwitcherApi = languageSwitcherApi;
+df$5.languageSwitcherStates = languageSwitcherStates;
+function init5() {
+  dfDollar5(".language-switcher:not([data-init])").each((_i, el) => {
+    el.dataset.init = "";
+    if (!el.dataset.value || valueOf(el) !== el.dataset.value)
+      dfDollar5(el).attr("data-value", valueOf(el));
+    draw2(el);
+    dfDollar5(el).on("combobox:change", (e) => {
+      const value = e.detail?.values?.[0];
+      el._lsValue = "";
+      if (!value || !choose(el, value))
+        update(el);
+      languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    });
+    dfDollar5(el).on("change", (e) => {
+      const input = e.target;
+      if (!input.matches(".language-switcher-swap > input") || input.closest(".language-switcher") !== el)
+        return;
+      choose(el, nextOf(el, valueOf(el)));
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    });
+    const pick = (item) => {
+      const it = item;
+      if (!it?.matches?.(".language-switcher-item") || it.closest(".language-switcher") !== el)
+        return;
+      el._lsValue = "";
+      if (!choose(el, it.dataset.value || ""))
+        update(el);
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    };
+    dfDollar5(el).on("dropdown:select", (e) => pick(e.detail?.item));
+    dfDollar5(el).on("click", (e) => {
+      const item = e.target?.closest?.(".language-switcher-item");
+      if (item && !item.closest('[role="menu"]'))
+        pick(item);
+    });
+    dfDollar5(el).on("keydown", (e) => {
+      const input = e.target;
+      if (e.key !== "Enter" || !input.matches?.(".language-switcher-swap > input"))
+        return;
+      e.preventDefault();
+      input.click();
+    });
+    el.addEventListener("toggle", () => languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) }), true);
+    new MutationObserver(() => update(el)).observe(el, { attributes: true, attributeFilter: OBSERVED });
+    bindComponent(el, languageSwitcherApi, { name: "default", config: { value: valueOf(el) } });
+  });
+}
+var OBSERVED = [
+  "data-value",
+  "data-label",
+  "aria-label",
+  ...STRUCTURE.map((k) => "data-" + k.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()))
+];
+df$5.languageSwitcher = {
+  languages: () => LANGUAGES.map((l) => ({ ...l })),
+  name: (tag, locale) => nameIn(tag, locale ?? tag),
+  region: (tag) => partsOf(tag).region || seedOf(tag)?.region || "",
+  choose: (target, tag) => {
+    const el = resolve(target);
+    if (!el || !choose(el, tag))
+      return false;
+    languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    return true;
+  },
+  bind: (target, i18n) => {
+    const el = resolve(target);
+    if (!el || !i18n)
+      return () => {};
+    const follow = (locale) => {
+      if (locale && locale.toLowerCase() !== valueOf(el).toLowerCase() && choose(el, locale, false))
+        languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    };
+    follow(i18n.locale);
+    const onChange = (e) => {
+      const value = e.detail.value;
+      if (value !== i18n.locale)
+        i18n.setLocale(value);
+    };
+    el.addEventListener("language-change", onChange);
+    const stop = i18n.subscribe?.((snapshot) => follow(snapshot.locale));
+    return () => {
+      el.removeEventListener("language-change", onChange);
+      stop?.();
+    };
+  },
+  configure: (options) => {
+    if (options?.flags)
+      settings.flags = options.flags;
+  }
+};
+init5();
+new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/popover/popover.ts
-var df$4 = defussGlobals();
-var dfDollar4 = defussQuery();
+var df$6 = defussGlobals();
+var dfDollar6 = defussQuery();
 var popoverStates = ["default", "open"];
-function applyMarkup4(_el, _stateName) {}
-function triggerStateChange4(popover, stateName, _config) {
+function applyMarkup6(_el, _stateName) {}
+function triggerStateChange6(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -5456,15 +6454,15 @@ function triggerStateChange4(popover, stateName, _config) {
 var popoverApi = componentState({
   component: "popover",
   states: popoverStates,
-  apply: (popover, state) => triggerStateChange4(popover, state.name, state.config),
-  markup: (el, state) => applyMarkup4(el, state.name)
+  apply: (popover, state) => triggerStateChange6(popover, state.name, state.config),
+  markup: (el, state) => applyMarkup6(el, state.name)
 });
-df$4.popoverApi = popoverApi;
-df$4.popoverStates = popoverStates;
-function init4() {
-  dfDollar4("[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
+df$6.popoverApi = popoverApi;
+df$6.popoverStates = popoverStates;
+function init6() {
+  dfDollar6("[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
     const id = trigger.getAttribute("popovertarget");
-    const popover = dfDollar4("#" + CSS.escape(id)).get(0);
+    const popover = dfDollar6("#" + CSS.escape(id)).get(0);
     if (!popover || !popover.classList.contains("popover"))
       return;
     trigger.dataset.init = "";
@@ -5472,17 +6470,17 @@ function init4() {
     trigger.style.anchorName = anchorId;
     popover.style.positionAnchor = anchorId;
   });
-  dfDollar4(".popover[popover]:not([data-init])").toArray().forEach((popover) => {
+  dfDollar6(".popover[popover]:not([data-init])").toArray().forEach((popover) => {
     popover.dataset.init = "";
     bindComponent(popover, popoverApi);
   });
 }
-init4();
-new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
 // src/components/application/resizer/resizer.ts
-var df$5 = defussGlobals();
-var dfDollar5 = defussQuery();
+var df$7 = defussGlobals();
+var dfDollar7 = defussQuery();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
@@ -5606,8 +6604,8 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function applyMarkup5(_el, _stateName) {}
-function triggerStateChange5(wrapper, stateName, config = {}) {
+function applyMarkup7(_el, _stateName) {}
+function triggerStateChange7(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -5618,7 +6616,7 @@ function triggerStateChange5(wrapper, stateName, config = {}) {
 var resizerApi = componentState({
   component: "resizer",
   states: resizerStates,
-  apply: (wrapper, state) => triggerStateChange5(wrapper, state.name, state.config),
+  apply: (wrapper, state) => triggerStateChange7(wrapper, state.name, state.config),
   read: (wrapper, state) => {
     return {
       name: wrapper.dataset.stateName || "default",
@@ -5630,10 +6628,10 @@ var resizerApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup5(el, state.name)
+  markup: (el, state) => applyMarkup7(el, state.name)
 });
-df$5.resizerApi = resizerApi;
-df$5.resizerStates = resizerStates;
+df$7.resizerApi = resizerApi;
+df$7.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -5664,13 +6662,13 @@ function makeHandle(wrapper, h) {
 }
 function syncHandles(wrapper) {
   const want = handleSet(wrapper);
-  for (const el of Array.from(dfDollar5(wrapper).find(":scope > .resizer-handle").toArray())) {
+  for (const el of Array.from(dfDollar7(wrapper).find(":scope > .resizer-handle").toArray())) {
     if (!want.includes(el.dataset.handle))
       el.remove();
   }
   for (const h of want) {
-    if (!dfDollar5(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
-      dfDollar5(wrapper).append(makeHandle(wrapper, h));
+    if (!dfDollar7(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
+      dfDollar7(wrapper).append(makeHandle(wrapper, h));
   }
 }
 function handleKeys(wrapper, handle, ev) {
@@ -5734,8 +6732,8 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init5() {
-  const fresh = dfDollar5(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
+function init7() {
+  const fresh = dfDollar7(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
     wrapper.dataset.init = "";
     return !!targetOf(wrapper);
   });
@@ -5764,22 +6762,22 @@ function init5() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init5();
-new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
 // src/components/chat/session/session.ts
-var df$6 = defussGlobals();
-var dfDollar6 = defussQuery();
+var df$8 = defussGlobals();
+var dfDollar8 = defussQuery();
 var sessionStates = ["default", "detached", "streaming"];
 var num2 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
   return Number.isFinite(v) ? v : fallback;
 };
 var reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-var resolve = (t) => typeof t === "string" ? dfDollar6("#" + CSS.escape(t)).get(0) ?? dfDollar6(t).get(0) : t;
+var resolve2 = (t) => typeof t === "string" ? dfDollar8("#" + CSS.escape(t)).get(0) ?? dfDollar8(t).get(0) : t;
 var parts = (s) => ({
-  viewport: dfDollar6(s).find(":scope > .session-viewport").get(0),
-  content: dfDollar6(s).find(":scope > .session-viewport > .session-content").get(0)
+  viewport: dfDollar8(s).find(":scope > .session-viewport").get(0),
+  content: dfDollar8(s).find(":scope > .session-viewport > .session-content").get(0)
 });
 var fromEnd = (v) => v.scrollHeight - v.scrollTop - v.clientHeight;
 function scrollViewport(s, top, smooth) {
@@ -5806,7 +6804,7 @@ function measure(s) {
     s.setAttribute("data-scrollable", tokens);
   else
     s.removeAttribute("data-scrollable");
-  dfDollar6(s).find(".session-scroll-button").toArray().forEach((b) => {
+  dfDollar8(s).find(".session-scroll-button").toArray().forEach((b) => {
     const active = b.dataset.to === "start" ? start : end;
     b.dataset.active = String(active);
     b.inert = !active;
@@ -5866,7 +6864,7 @@ function scrollToStart(s, { smooth = true } = {}) {
   scrollViewport(s, 0, smooth);
 }
 function scrollToMessage(s, id, { smooth = true } = {}) {
-  const item = dfDollar6(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
+  const item = dfDollar8(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
   if (!item)
     return false;
   s.removeAttribute("data-stick");
@@ -5874,12 +6872,12 @@ function scrollToMessage(s, id, { smooth = true } = {}) {
   hold(s, () => anchorTop(s, item), smooth ? 900 : 400);
   return true;
 }
-function applyMarkup6(el, stateName) {
+function applyMarkup8(el, stateName) {
   const { content } = parts(el);
   if (content)
-    dfDollar6(content).attr("aria-busy", stateName === "streaming" ? "true" : null);
+    dfDollar8(content).attr("aria-busy", stateName === "streaming" ? "true" : null);
 }
-function triggerStateChange6(s, stateName, config) {
+function triggerStateChange8(s, stateName, config) {
   const { content } = s._parts;
   if (stateName === "streaming")
     content.setAttribute("aria-busy", "true");
@@ -5907,12 +6905,12 @@ var sessionApi = componentState({
   states: sessionStates,
   apply: (s, state) => {
     s.dataset.stateName = state.name;
-    triggerStateChange6(s, state.name, state.config);
+    triggerStateChange8(s, state.name, state.config);
   },
-  markup: (el, state) => applyMarkup6(el, state.name)
+  markup: (el, state) => applyMarkup8(el, state.name)
 });
-df$6.sessionApi = sessionApi;
-df$6.sessionStates = sessionStates;
+df$8.sessionApi = sessionApi;
+df$8.sessionStates = sessionStates;
 function onItems(s, records) {
   const { viewport } = s._parts;
   const before = s._height ?? viewport.scrollHeight;
@@ -5980,7 +6978,7 @@ function track(s) {
   const { viewport, content } = s._parts;
   const top = viewport.getBoundingClientRect().top;
   const bottom = top + viewport.clientHeight;
-  const items = Array.from(dfDollar6(content).find(":scope > .session-item").toArray());
+  const items = Array.from(dfDollar8(content).find(":scope > .session-item").toArray());
   const visible = items.filter((it) => {
     const r = it.getBoundingClientRect();
     return r.bottom > top && r.top < bottom;
@@ -6046,8 +7044,8 @@ function follow(s, options = {}) {
   else
     sessionApi.setState(s, "default", options);
 }
-function init6() {
-  dfDollar6(".session:not([data-init])").toArray().forEach((s) => {
+function init8() {
+  dfDollar8(".session:not([data-init])").toArray().forEach((s) => {
     const p = parts(s);
     if (!p.viewport || !p.content)
       return;
@@ -6077,7 +7075,7 @@ function init6() {
     new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
     new ResizeObserver(() => onResize(s)).observe(content);
     new ResizeObserver(() => measure(s)).observe(viewport);
-    dfDollar6(s).find(".session-scroll-button").toArray().forEach((b) => {
+    dfDollar8(s).find(".session-scroll-button").toArray().forEach((b) => {
       b.addEventListener("click", () => b.dataset.to === "start" ? scrollToStart(s) : follow(s));
     });
     if (s.hasAttribute("data-drop"))
@@ -6086,7 +7084,7 @@ function init6() {
     s.setAttribute("data-pending-scroll", "");
     s.dataset.stateName = "default";
     const where = s.dataset.defaultPosition || "end";
-    const last = [...dfDollar6(content).find(":scope > .session-item[data-anchor]").toArray()].pop();
+    const last = [...dfDollar8(content).find(":scope > .session-item[data-anchor]").toArray()].pop();
     if (where === "start")
       s._opening = () => 0;
     else if (where === "last-anchor" && last)
@@ -6117,81 +7115,81 @@ function toItem(content, { id, anchor } = {}) {
     item.setAttribute("data-anchor", "");
   return item;
 }
-df$6.session = {
+df$8.session = {
   append(target, content, options) {
-    const s = resolve(target);
+    const s = resolve2(target);
     const item = toItem(content, options);
     s?._parts?.content.append(item);
     return item;
   },
   prepend(target, content, options) {
-    const s = resolve(target);
+    const s = resolve2(target);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
     return items;
   },
   scrollToEnd: (target, options) => {
-    const s = resolve(target);
+    const s = resolve2(target);
     if (s)
       follow(s, options);
   },
   scrollToStart: (target, options) => {
-    const s = resolve(target);
+    const s = resolve2(target);
     if (s)
       scrollToStart(s, options);
   },
   scrollToMessage: (target, id, options) => {
-    const s = resolve(target);
+    const s = resolve2(target);
     return s ? scrollToMessage(s, id, options) : false;
   },
   isAtEnd: (target) => {
-    const s = resolve(target);
+    const s = resolve2(target);
     return !!s && fromEnd(s._parts.viewport) <= num2(s, "threshold", 48);
   }
 };
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/toast/toast.ts
-var df$7 = defussGlobals();
-var dfDollar7 = defussQuery();
+var df$9 = defussGlobals();
+var dfDollar9 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup7(_el, _stateName) {}
-function triggerStateChange7(container, stateName, _config) {
+function applyMarkup9(_el, _stateName) {}
+function triggerStateChange9(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar7(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar9(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange7(container, state.name, state.config);
+    triggerStateChange9(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar7(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar9(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup7(el, state.name)
+  markup: (el, state) => applyMarkup9(el, state.name)
 });
-df$7.toastApi = toastApi;
-df$7.toastStates = toastStates;
+df$9.toastApi = toastApi;
+df$9.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar7("#toast-container").get(0);
+var toastContainer = dfDollar9("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar7(document.body).append(toastContainer);
+  dfDollar9(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar7(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar9(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -6222,7 +7220,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar7(el).remove();
+      dfDollar9(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -6236,7 +7234,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar7(el).remove();
+    dfDollar9(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -6267,29 +7265,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar7(contentEl).append(dfDollar7(icons[variant]));
+    dfDollar9(contentEl).append(dfDollar9(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar7(p).text(title);
-    dfDollar7(textDiv).append(p);
+    dfDollar9(p).text(title);
+    dfDollar9(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar7(p).text(description);
-    dfDollar7(textDiv).append(p);
+    dfDollar9(p).text(description);
+    dfDollar9(textDiv).append(p);
   }
-  dfDollar7(contentEl).append(textDiv);
+  dfDollar9(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar7(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar7(contentEl).append(closeBtn);
+  dfDollar9(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar9(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -6299,9 +7297,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar7(el).append(host);
+    dfDollar9(el).append(host);
   }
-  dfDollar7(host).append(contentEl);
+  dfDollar9(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -6310,15 +7308,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar7(actionBtn).text(action.label);
-    dfDollar7(actionsDiv).append(actionBtn);
-    dfDollar7(host).append(actionsDiv);
+    dfDollar9(actionBtn).text(action.label);
+    dfDollar9(actionsDiv).append(actionBtn);
+    dfDollar9(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar7(toastContainer).append(el);
+  dfDollar9(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -6329,13 +7327,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar7(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar9(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init7() {
-  dfDollar7("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init9() {
+  dfDollar9("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -6384,8 +7382,8 @@ function init7() {
     });
   });
 }
-init7();
-new MutationObserver(init7).observe(document.body, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -6405,13 +7403,13 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar7(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar9(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$7.toast = toastActions;
+df$9.toast = toastActions;
 
-//# debugId=A1779F66E446A46364756E2164756E21
+//# debugId=003B1EAE3088281664756E2164756E21
 /* defuss-shadcn v0.9.13 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=messenger.js.map

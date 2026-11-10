@@ -63,12 +63,12 @@
       400 1rem/1.55 'Figtree',
       var(--font-sans);
   }
-  #site-blog > * {
+  #site-blog > :not(dialog) {
     box-sizing: border-box;
     width: 100%;
     padding-inline: clamp(1rem, 4vw, 2.5rem);
   }
-  #site-blog > * > :not(.shader, .surface) {
+  #site-blog > :not(dialog) > :not(.shader, .surface) {
     max-width: 74rem;
     margin-inline: auto;
   }
@@ -135,8 +135,12 @@
   #site-blog[data-look='ink'] .blog-look-only[data-for='ink'] {
     display: block;
   }
-  /* the site bar: the name, then the look and the language */
-  #site-blog .blog-bar {
+  #site-blog [hidden] {
+    display: none !important;
+  }
+  /* the site bar (Site Header): the name, the journal's links, then the look, the language, the mode and Subscribe */
+  #site-blog .mk-header.blog-bar {
+    background: transparent;
     border-block-end: 1px solid var(--border);
   }
   #site-blog .blog-bar-inner {
@@ -146,8 +150,44 @@
     justify-content: space-between;
     gap: 0.75rem 1.5rem;
     min-height: 4.5rem;
+    padding: 0.75rem 0;
+  }
+  #site-blog .blog-bar .mk-header-nav {
+    margin-inline-end: auto;
+  }
+  /* narrow: the menu button sits at the end of the brand's row, the controls wrap below */
+  #site-blog .blog-bar .site-menu {
+    margin-inline-start: auto;
+  }
+  #site-blog .sheet .mk-header-sheet-actions {
+    display: grid;
+    justify-content: stretch;
+  }
+  #site-blog .blog-bar .nav-menu-list {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #site-blog .blog-bar .nav-menu-link {
+    padding: 0.25rem 0;
+    border: 0;
+    background: none;
+    color: var(--muted-foreground);
+    font:
+      600 0.9375rem/1.2 'Figtree',
+      var(--font-sans);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  #site-blog .blog-bar .nav-menu-link:hover,
+  #site-blog .blog-bar .nav-menu-link[aria-current] {
+    background: none;
+    color: var(--foreground);
   }
   #site-blog .blog-brand {
+    display: block;
     color: var(--foreground);
     text-decoration: none;
     font: 600 1.375rem/1 var(--blog-head);
@@ -160,7 +200,9 @@
   #site-blog .blog-bar-controls {
     display: flex;
     flex-wrap: wrap;
+    flex-shrink: 1;
     gap: 0.5rem;
+    min-width: 0;
   }
   #site-blog .blog-bar .select {
     min-width: 8.5rem;
@@ -444,6 +486,234 @@
       transition: none;
     }
   }
+  #site-blog .blog-letter-done {
+    margin: 0.5rem 0 0;
+    font-weight: 600;
+  }
+  /* a post: the headline over a wide photo, the essay in one serif column, then the author and the way on */
+  #site-blog .blog-post {
+    padding-block: clamp(2.5rem, 6vw, 4rem) clamp(3rem, 7vw, 5rem);
+  }
+  #site-blog .blog-post > * + * {
+    margin-block-start: 2.5rem;
+  }
+  #site-blog .blog-post .blog-post-back {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    max-width: 42rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  #site-blog .blog-post-back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+  #site-blog .blog-post-back a:hover {
+    color: var(--primary);
+  }
+  #site-blog .blog-post-back svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  #site-blog .blog-post .mk-article-header {
+    max-width: none;
+    padding: 0;
+    align-items: stretch;
+    gap: 1.125rem;
+  }
+  #site-blog .blog-post .mk-article-header > :not(figure) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 42rem;
+    margin-inline: auto;
+  }
+  #site-blog .blog-post .mk-article-header-category {
+    color: var(--primary);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #site-blog .blog-post .mk-article-header-title {
+    font: 600 clamp(2.25rem, 5.5vw, 3.75rem)/1.05 var(--blog-head);
+    letter-spacing: -0.03em;
+  }
+  #site-blog[data-look='ink'] .blog-post .mk-article-header-title {
+    font-weight: 800;
+    letter-spacing: -0.045em;
+  }
+  #site-blog .blog-post .mk-article-header-subtitle {
+    font-size: clamp(1.125rem, 1.8vw, 1.3125rem);
+  }
+  #site-blog .blog-post .mk-article-header-media {
+    width: 100%;
+    max-width: 64rem;
+    margin: 1rem auto 0;
+  }
+  #site-blog .blog-post .mk-article-header-media img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-radius: var(--radius-xl);
+  }
+  #site-blog[data-look='ink'] .blog-post .mk-article-header-media img {
+    filter: grayscale(1) contrast(1.08);
+  }
+  #site-blog .blog-post .mk-article-body {
+    --_measure: 42rem;
+    max-width: var(--_measure);
+    padding: 0;
+    font:
+      400 clamp(1.0625rem, 1.5vw, 1.1875rem)/1.75 'Fraunces',
+      Georgia,
+      serif;
+  }
+  #site-blog[data-look='ink'] .blog-post .mk-article-body {
+    font-family: 'Figtree', var(--font-sans);
+  }
+  #site-blog .blog-post .mk-article-body > blockquote {
+    margin: 2.25rem 0;
+    padding: 0 0 0 1.5rem;
+    border: 0;
+    border-inline-start: 3px solid var(--primary);
+    background: none;
+    font-style: normal;
+  }
+  #site-blog .blog-post .mk-article-body > blockquote p {
+    margin: 0;
+    font: 400 italic clamp(1.375rem, 2.4vw, 1.75rem)/1.3 var(--blog-head);
+  }
+  #site-blog .blog-post .mk-article-body > blockquote cite {
+    display: block;
+    margin-block-start: 0.75rem;
+    color: var(--muted-foreground);
+    font:
+      600 0.875rem/1.3 'Figtree',
+      sans-serif;
+    font-style: normal;
+  }
+  #site-blog .blog-post .blog-post-after {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+    max-width: 42rem;
+  }
+  #site-blog .blog-post .mk-author-bio {
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #site-blog .blog-post .mk-author-bio-label {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #site-blog .blog-post .mk-author-bio-name {
+    font: 600 1.375rem/1.2 var(--blog-head);
+  }
+  #site-blog .blog-post .mk-article-nav-title {
+    font: 600 1.0625rem/1.3 var(--blog-head);
+  }
+  #site-blog .blog-more {
+    display: grid;
+    gap: 1.5rem;
+    padding-block-start: 2.5rem;
+    border-block-start: 1px solid var(--border);
+  }
+  #site-blog .blog-more h2 {
+    margin: 0;
+    font: 600 1.75rem/1.15 var(--blog-head);
+    letter-spacing: -0.02em;
+  }
+  #site-blog .blog-more .blog-posts {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    padding: 0;
+    border: 0;
+  }
+  /* the dialogs: the Sunday letter and About */
+  #site-blog .blog-dialog .dialog-title {
+    font: 600 1.625rem/1.15 var(--blog-head);
+    letter-spacing: -0.02em;
+  }
+  #site-blog .blog-dialog .dialog-body {
+    display: grid;
+    gap: 0.75rem;
+  }
+  #site-blog .blog-dialog .dialog-body p {
+    margin: 0;
+    line-height: 1.6;
+  }
+  #site-blog .blog-field {
+    display: grid;
+    gap: 0.375rem;
+  }
+  #site-blog .blog-note-small {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  /* the footer (Site Footer): the journal in a line, the way round it, the archive */
+  #site-blog .mk-footer.blog-footer {
+    background: var(--blog-band);
+    border-block-start: 1px solid var(--border);
+  }
+  #site-blog .blog-footer .mk-footer-inner {
+    padding: clamp(2.5rem, 6vw, 4rem) 0 2rem;
+    gap: 2rem;
+  }
+  #site-blog .blog-footer .mk-footer-about p {
+    margin: 0;
+    max-width: 22rem;
+    color: var(--muted-foreground);
+  }
+  #site-blog .blog-footer .mk-footer-brand {
+    color: var(--foreground);
+    font: 600 1.5rem/1 var(--blog-head);
+    letter-spacing: -0.02em;
+  }
+  #site-blog .blog-footer .mk-footer-brand i {
+    color: var(--primary);
+    font-weight: 400;
+  }
+  #site-blog .blog-footer .mk-footer-heading {
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #site-blog .blog-footer .mk-footer-list {
+    gap: 0.625rem;
+    font-size: 0.9375rem;
+  }
+  #site-blog .blog-footer .mk-footer-list :is(a, button) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--muted-foreground);
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  #site-blog .blog-footer .mk-footer-list :is(a, button):hover {
+    color: var(--primary);
+  }
+  @container mk-footer (min-width: 52rem) {
+    #site-blog .blog-footer .mk-footer-nav {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  #site-blog .blog-footer .mk-footer-social a:hover {
+    color: var(--primary);
+  }
   /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
   #site-blog .site-mode {
     flex: none;
@@ -521,10 +791,54 @@
   /* -- modes: end -- */
 </style>
 <div id="site-blog" data-look="journal" data-i18n-component>
-  <div class="blog-bar">
-    <div class="blog-bar-inner">
-      <a class="blog-brand" href="#/">Acme <i>Journal</i></a>
-      <div class="blog-bar-controls">
+  <header class="mk-header blog-bar">
+    <div class="mk-header-inner blog-bar-inner">
+      <a class="mk-header-brand blog-brand" href="#/" data-router-link>Acme <i>Journal</i></a>
+      <button
+        type="button"
+        class="btn mk-header-menu site-menu"
+        data-variant="ghost"
+        data-size="icon"
+        data-sheet-trigger="blog-menu"
+        aria-haspopup="dialog"
+        aria-label="Open menu"
+        data-i18n-aria-label-en="Open menu"
+        data-i18n-aria-label-de="Menü öffnen"
+        ><svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" /></svg
+      ></button>
+      <nav
+        class="mk-header-nav"
+        aria-label="Journal"
+        data-i18n-aria-label-en="Journal"
+        data-i18n-aria-label-de="Journal"
+      >
+        <ul class="nav-menu-list">
+          <li class="nav-menu-item"
+            ><a class="nav-menu-link" href="#/" data-router-link data-i18n-target="nav-essays">Essays</a></li
+          >
+          <li class="nav-menu-item"
+            ><button
+              type="button"
+              class="nav-menu-link"
+              commandfor="blog-about"
+              command="show-modal"
+              data-i18n-target="nav-about"
+              >About</button
+            ></li
+          >
+        </ul>
+      </nav>
+      <div class="mk-header-actions blog-bar-controls">
         <select
           class="select"
           data-size="sm"
@@ -538,18 +852,21 @@
           <option value="night" data-i18n-target="look-night">Night shift</option>
           <option value="ink" data-i18n-target="look-ink">Ink</option>
         </select>
-        <select
-          class="select"
-          data-size="sm"
+        <div
+          class="language-switcher"
           data-app-locale
+          role="group"
           aria-label="Language"
           data-i18n-aria-label-en="Language"
           data-i18n-aria-label-de="Sprache"
-          style="width: auto"
-        >
-          <option value="en" lang="en">English</option>
-          <option value="de" lang="de">Deutsch</option>
-        </select>
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-display="icon"
+          data-flag-shape="circle"
+          data-flag-style="ring"
+          data-align="end"
+        ></div>
         <label class="swap site-mode" data-variant="rotate" data-size="sm">
           <input
             type="checkbox"
@@ -561,10 +878,90 @@
           <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
           <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
         </label>
+        <button
+          type="button"
+          class="btn"
+          data-size="sm"
+          commandfor="blog-letter-dialog"
+          command="show-modal"
+          data-i18n-target="subscribe"
+          >Subscribe</button
+        >
       </div>
     </div>
-  </div>
-  <div class="blog-band">
+    <!-- narrow: the navigation in a Sheet behind the menu button -->
+    <dialog
+      id="blog-menu"
+      class="sheet"
+      data-side="right"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="blog-menu-title"
+    >
+      <div class="sheet-content">
+        <div class="sheet-header">
+          <h2 class="sheet-title" id="blog-menu-title">Acme Journal</h2>
+        </div>
+        <div class="sheet-body">
+          <ul class="mk-header-sheet-nav">
+            <li><a href="#/" data-router-link data-sheet-close data-i18n-target="sh-essays">All essays</a></li>
+            <li
+              ><a href="#/category/engineering" data-router-link data-sheet-close data-i18n-target="sh-engineering"
+                >Engineering</a
+              ></li
+            >
+            <li><a href="#/category/design" data-router-link data-sheet-close>Design</a></li>
+            <li
+              ><a href="#/category/company" data-router-link data-sheet-close data-i18n-target="sh-company"
+                >Company</a
+              ></li
+            >
+          </ul>
+        </div>
+        <div class="sheet-footer mk-header-sheet-actions">
+          <button
+            type="button"
+            class="btn"
+            data-variant="outline"
+            data-sheet-close
+            commandfor="blog-about"
+            command="show-modal"
+            data-i18n-target="sh-about"
+            >About</button
+          >
+          <button
+            type="button"
+            class="btn"
+            data-sheet-close
+            commandfor="blog-letter-dialog"
+            command="show-modal"
+            data-i18n-target="sh-subscribe"
+            >Subscribe</button
+          >
+        </div>
+      </div>
+      <button
+        type="button"
+        class="sheet-close-x"
+        data-sheet-close
+        aria-label="Close"
+        data-i18n-aria-label-en="Close"
+        data-i18n-aria-label-de="Schließen"
+        ><svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18M6 6l12 12" /></svg
+      ></button>
+    </dialog>
+  </header>
+  <div class="blog-band" data-blog-view="home">
     <div
       class="surface blog-grain blog-look-only"
       data-for="journal"
@@ -615,7 +1012,7 @@
       </nav>
     </header>
   </div>
-  <div class="blog-main">
+  <div class="blog-main" data-blog-view="home">
     <div class="blog-columns">
       <div class="blog-stream">
         <div class="blog-lead">
@@ -630,8 +1027,14 @@
                 ><span class="badge" data-variant="secondary" data-i18n-target="post-0-cat">Company</span
                 ><span data-i18n-target="post-0-read">12 min read</span></div
               >
-              <h3 class="mk-blog-item-title"><a href="#">Ten years of Acme: what we got right</a></h3>
-              <p class="mk-blog-item-excerpt">A long look back at a decade of building calm software.</p>
+              <h3 class="mk-blog-item-title"
+                ><a href="#/post/ten-years" data-router-link data-post-title="ten-years"
+                  >Ten years of Acme: what we got right</a
+                ></h3
+              >
+              <p class="mk-blog-item-excerpt" data-post-excerpt="ten-years"
+                >A long look back at a decade of building calm software.</p
+              >
               <div class="mk-blog-item-byline">
                 <span class="avatar" data-size="sm"><span class="avatar-fallback">AH</span></span>
                 <span class="mk-blog-item-author">Aron Homberg</span>
@@ -658,8 +1061,14 @@
                 ><span class="badge" data-variant="secondary" data-i18n-target="post-1-cat">Engineering</span
                 ><span data-i18n-target="post-1-read">8 min read</span></div
               >
-              <h3 class="mk-blog-item-title"><a href="#">How offline sync works in Acme 4.0</a></h3>
-              <p class="mk-blog-item-excerpt">CRDTs, a write-ahead log and a lot of patience.</p>
+              <h3 class="mk-blog-item-title"
+                ><a href="#/post/offline-sync" data-router-link data-post-title="offline-sync"
+                  >How offline sync works in Acme 4.0</a
+                ></h3
+              >
+              <p class="mk-blog-item-excerpt" data-post-excerpt="offline-sync"
+                >CRDTs, a write-ahead log and a lot of patience.</p
+              >
               <div class="mk-blog-item-byline">
                 <span class="avatar" data-size="sm"
                   ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""
@@ -680,8 +1089,14 @@
                 ><span class="badge" data-variant="secondary" data-i18n-target="post-2-cat">Design</span
                 ><span data-i18n-target="post-2-read">5 min read</span></div
               >
-              <h3 class="mk-blog-item-title"><a href="#">Designing for calm</a></h3>
-              <p class="mk-blog-item-excerpt">Fewer badges, quieter colors, one primary action per screen.</p>
+              <h3 class="mk-blog-item-title"
+                ><a href="#/post/designing-for-calm" data-router-link data-post-title="designing-for-calm"
+                  >Designing for calm</a
+                ></h3
+              >
+              <p class="mk-blog-item-excerpt" data-post-excerpt="designing-for-calm"
+                >Fewer badges, quieter colors, one primary action per screen.</p
+              >
               <div class="mk-blog-item-byline">
                 <span class="avatar" data-size="sm"
                   ><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""
@@ -702,8 +1117,14 @@
                 ><span class="badge" data-variant="secondary" data-i18n-target="post-3-cat">Design</span
                 ><span data-i18n-target="post-3-read">6 min read</span></div
               >
-              <h3 class="mk-blog-item-title"><a href="#">Type that still reads at 2 a.m.</a></h3>
-              <p class="mk-blog-item-excerpt">Line height, contrast and the font size nobody argues about.</p>
+              <h3 class="mk-blog-item-title"
+                ><a href="#/post/type-at-2am" data-router-link data-post-title="type-at-2am"
+                  >Type that still reads at 2 a.m.</a
+                ></h3
+              >
+              <p class="mk-blog-item-excerpt" data-post-excerpt="type-at-2am"
+                >Line height, contrast and the font size nobody argues about.</p
+              >
               <div class="mk-blog-item-byline">
                 <span class="avatar" data-size="sm"
                   ><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt=""
@@ -724,8 +1145,14 @@
                 ><span class="badge" data-variant="secondary" data-i18n-target="post-4-cat">Engineering</span
                 ><span data-i18n-target="post-4-read">10 min read</span></div
               >
-              <h3 class="mk-blog-item-title"><a href="#">The case for boring databases</a></h3>
-              <p class="mk-blog-item-excerpt">Why the newest store is rarely the one you want at 3 a.m.</p>
+              <h3 class="mk-blog-item-title"
+                ><a href="#/post/boring-databases" data-router-link data-post-title="boring-databases"
+                  >The case for boring databases</a
+                ></h3
+              >
+              <p class="mk-blog-item-excerpt" data-post-excerpt="boring-databases"
+                >Why the newest store is rarely the one you want at 3 a.m.</p
+              >
               <div class="mk-blog-item-byline">
                 <span class="avatar" data-size="sm"
                   ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt=""
@@ -746,8 +1173,14 @@
                 ><span class="badge" data-variant="secondary" data-i18n-target="post-5-cat">Company</span
                 ><span data-i18n-target="post-5-read">4 min read</span></div
               >
-              <h3 class="mk-blog-item-title"><a href="#">Why we close on Fridays</a></h3>
-              <p class="mk-blog-item-excerpt">Two years of a four-day week, and what it did to the roadmap.</p>
+              <h3 class="mk-blog-item-title"
+                ><a href="#/post/closed-fridays" data-router-link data-post-title="closed-fridays"
+                  >Why we close on Fridays</a
+                ></h3
+              >
+              <p class="mk-blog-item-excerpt" data-post-excerpt="closed-fridays"
+                >Two years of a four-day week, and what it did to the roadmap.</p
+              >
               <div class="mk-blog-item-byline">
                 <span class="avatar" data-size="sm"><span class="avatar-fallback">AH</span></span>
                 <span class="mk-blog-item-author">Aron Homberg</span>
@@ -760,11 +1193,15 @@
           <aside class="blog-letter" aria-labelledby="blog-letter-title">
             <h3 id="blog-letter-title" data-i18n-target="letter-title">The Sunday letter</h3>
             <p data-i18n-target="letter-text">One essay a week in your inbox. Nothing else, ever.</p>
-            <form onsubmit="event.preventDefault()">
+            <p class="blog-letter-done" data-blog-letter-done data-i18n-target="letter-done" hidden
+              >Thank you - see you on Sunday.</p
+            >
+            <form data-blog-letter>
               <input
                 class="input"
                 type="email"
                 autocomplete="email"
+                required
                 placeholder="you@example.com"
                 aria-label="Email"
                 data-i18n-aria-label-en="Email"
@@ -811,7 +1248,654 @@
       </nav>
     </div>
   </div>
+  <!-- a post: one view, filled from the data block by the route (#/post/:slug) -->
+  <article class="blog-post" data-blog-view="post" aria-labelledby="blog-post-title" hidden>
+    <p class="blog-post-back"
+      ><a href="#/" data-router-link
+        ><i data-lucide="arrow-left" aria-hidden="true"></i> <span data-i18n-target="post-back">All posts</span></a
+      ></p
+    >
+    <header class="mk-article-header">
+      <a class="mk-article-header-category" href="#/category/company" data-router-link data-post-category>Company</a>
+      <h1 class="mk-article-header-title" id="blog-post-title" data-post-field="title"
+        >Ten years of Acme: what we got right</h1
+      >
+      <p class="mk-article-header-subtitle" data-post-field="excerpt"></p>
+      <div class="mk-article-header-byline">
+        <span class="avatar"
+          ><img
+            class="avatar-image"
+            src="https://i.pravatar.cc/160?img=47"
+            alt=""
+            data-post-face
+            data-error
+            hidden
+          /><span class="avatar-fallback" data-post-initials>AH</span></span
+        >
+        <div>
+          <a class="mk-article-header-author" href="#/post/ten-years#blog-post-author" data-router-link data-post-author
+            >Aron Homberg</a
+          >
+          <div class="mk-article-header-meta"
+            ><time datetime="2026-10-01" data-post-date
+              ><span data-i18n-target="post-date"><span data-i18n-value="postDate"></span></span></time
+            ><span data-i18n-target="post-read"><span data-i18n-value="postMinutes"></span> min read</span></div
+          >
+        </div>
+      </div>
+      <figure class="mk-article-header-media"
+        ><img src="https://picsum.photos/id/2/1600/800" alt="" data-post-photo
+      /></figure>
+    </header>
+    <div class="mk-article-body" data-post-body></div>
+    <div class="blog-post-after">
+      <section class="mk-author-bio" id="blog-post-author" aria-labelledby="blog-post-author-name">
+        <span class="avatar" data-size="lg"
+          ><img
+            class="avatar-image"
+            src="https://i.pravatar.cc/160?img=47"
+            alt=""
+            data-post-face
+            data-error
+            hidden
+          /><span class="avatar-fallback" data-post-initials>AH</span></span
+        >
+        <div class="mk-author-bio-body">
+          <span class="mk-author-bio-label" data-i18n-target="post-written">Written by</span>
+          <h2 class="mk-author-bio-name" id="blog-post-author-name" data-post-author-name>Aron Homberg</h2>
+          <p class="mk-author-bio-role" data-post-author-role></p>
+          <p class="mk-author-bio-text" data-post-author-bio></p>
+          <ul class="mk-author-bio-links">
+            <li
+              ><a
+                class="btn"
+                data-variant="ghost"
+                data-size="icon-sm"
+                href="mailto:aron@acme.example"
+                aria-label="Write to the author"
+                data-i18n-aria-label-en="Write to the author"
+                data-i18n-aria-label-de="Dem Autor schreiben"
+                data-post-mail
+                ><i data-lucide="mail"></i></a
+            ></li>
+          </ul>
+        </div>
+      </section>
+      <nav
+        class="mk-article-nav"
+        aria-label="More posts"
+        data-i18n-aria-label-en="More posts"
+        data-i18n-aria-label-de="Weitere Beiträge"
+      >
+        <a class="mk-article-nav-link" href="#/post/closed-fridays" data-router-link rel="prev" data-post-near="-1">
+          <span class="mk-article-nav-dir"
+            ><i data-lucide="arrow-left" aria-hidden="true"></i>
+            <span data-i18n-target="post-prev">Previous post</span></span
+          >
+          <span class="mk-article-nav-title" data-post-near-title></span>
+        </a>
+        <a class="mk-article-nav-link" href="#/post/offline-sync" data-router-link rel="next" data-post-near="1">
+          <span class="mk-article-nav-dir"
+            ><span data-i18n-target="post-next">Next post</span> <i data-lucide="arrow-right" aria-hidden="true"></i
+          ></span>
+          <span class="mk-article-nav-title" data-post-near-title></span>
+        </a>
+      </nav>
+    </div>
+    <section class="blog-more" aria-labelledby="blog-more-title">
+      <h2 id="blog-more-title" data-i18n-target="post-more">Keep reading</h2>
+      <div class="blog-posts">
+        <article class="mk-blog-item" data-post-related>
+          <figure class="mk-blog-item-media"
+            ><img src="https://picsum.photos/id/26/900/600" alt="" data-related-photo
+          /></figure>
+          <div class="mk-blog-item-body">
+            <div class="mk-blog-item-meta"
+              ><span class="badge" data-variant="secondary" data-related-category></span><span data-related-read></span
+            ></div>
+            <h3 class="mk-blog-item-title"><a href="#/post/offline-sync" data-router-link data-related-link></a></h3>
+            <p class="mk-blog-item-excerpt" data-related-excerpt></p>
+          </div>
+        </article>
+        <article class="mk-blog-item" data-post-related>
+          <figure class="mk-blog-item-media"
+            ><img src="https://picsum.photos/id/225/900/600" alt="" data-related-photo
+          /></figure>
+          <div class="mk-blog-item-body">
+            <div class="mk-blog-item-meta"
+              ><span class="badge" data-variant="secondary" data-related-category></span><span data-related-read></span
+            ></div>
+            <h3 class="mk-blog-item-title"
+              ><a href="#/post/designing-for-calm" data-router-link data-related-link></a
+            ></h3>
+            <p class="mk-blog-item-excerpt" data-related-excerpt></p>
+          </div>
+        </article>
+        <article class="mk-blog-item" data-post-related>
+          <figure class="mk-blog-item-media"
+            ><img src="https://picsum.photos/id/4/900/600" alt="" data-related-photo
+          /></figure>
+          <div class="mk-blog-item-body">
+            <div class="mk-blog-item-meta"
+              ><span class="badge" data-variant="secondary" data-related-category></span><span data-related-read></span
+            ></div>
+            <h3 class="mk-blog-item-title"><a href="#/post/type-at-2am" data-router-link data-related-link></a></h3>
+            <p class="mk-blog-item-excerpt" data-related-excerpt></p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </article>
+  <footer class="mk-footer blog-footer">
+    <div class="mk-footer-inner">
+      <div class="mk-footer-top">
+        <div class="mk-footer-about">
+          <a class="mk-footer-brand blog-brand" href="#/" data-router-link>Acme <i>Journal</i></a>
+          <p data-i18n-target="ft-about">Essays on product, engineering and design by the people who build Acme.</p>
+          <div class="mk-footer-social">
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme Journal on X"
+              data-i18n-aria-label-en="Acme Journal on X"
+              data-i18n-aria-label-de="Acme Journal auf X"
+              ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
+                /></svg
+            ></a>
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme Journal on LinkedIn"
+              data-i18n-aria-label-en="Acme Journal on LinkedIn"
+              data-i18n-aria-label-de="Acme Journal auf LinkedIn"
+              ><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"
+                /></svg
+            ></a>
+          </div>
+        </div>
+        <nav
+          class="mk-footer-nav"
+          aria-label="Footer"
+          data-i18n-aria-label-en="Footer"
+          data-i18n-aria-label-de="Fußzeile"
+        >
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-read">Read</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/" data-router-link data-i18n-target="ft-all">All posts</a></li>
+              <li
+                ><a href="#/category/engineering" data-router-link data-i18n-target="ft-engineering">Engineering</a></li
+              >
+              <li><a href="#/category/design" data-router-link>Design</a></li>
+              <li><a href="#/category/company" data-router-link data-i18n-target="ft-company">Company</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-archive">Archive</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/archive/2026/10" data-router-link data-i18n-target="ft-oct">October 2026</a></li>
+              <li><a href="#/archive/2026/09" data-router-link data-i18n-target="ft-sep">September 2026</a></li>
+              <li><a href="#/archive/2026/08" data-router-link>August 2026</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="ft-more">More</h3>
+            <ul class="mk-footer-list">
+              <li
+                ><button type="button" commandfor="blog-letter-dialog" command="show-modal" data-i18n-target="ft-letter"
+                  >The Sunday letter</button
+                ></li
+              >
+              <li
+                ><button type="button" commandfor="blog-about" command="show-modal" data-i18n-target="ft-about-link"
+                  >About the journal</button
+                ></li
+              >
+              <li><a href="full-website-news.html">The Acme Times</a></li>
+              <li><a href="full-website-article.html">Acme Engineering</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <hr class="separator mk-footer-rule" />
+      <p class="mk-footer-copy" data-i18n-target="ft-copy"
+        >© 2026 Acme Inc. A demo blog - the posts and the people in it are invented.</p
+      >
+    </div>
+  </footer>
+  <!-- the Sunday letter and About: native dialogs, opened by commandfor; a demo - nothing leaves the page -->
+  <dialog class="dialog blog-dialog" id="blog-letter-dialog" aria-labelledby="blog-letter-dialog-title">
+    <form class="dialog-content" data-blog-form>
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="blog-letter-dialog-title" data-i18n-target="dl-title">The Sunday letter</h2>
+        <p class="dialog-description" data-i18n-target="dl-desc"
+          >One essay a week in your inbox, on Sunday morning. Nothing else, ever.</p
+        >
+      </div>
+      <div class="dialog-body">
+        <div class="blog-field">
+          <label class="label" for="blog-letter-mail" data-i18n-target="dl-mail">Email</label>
+          <input class="input" id="blog-letter-mail" name="email" type="email" autocomplete="email" required />
+        </div>
+        <p class="blog-note-small" data-i18n-target="dl-note">A demo: nothing is sent.</p>
+      </div>
+      <div class="dialog-footer">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          commandfor="blog-letter-dialog"
+          command="close"
+          data-i18n-target="dl-cancel"
+          >Cancel</button
+        >
+        <button type="submit" class="btn" data-i18n-target="dl-go">Subscribe</button>
+      </div>
+    </form>
+    <div class="dialog-content" data-blog-done tabindex="-1" hidden>
+      <div class="dialog-header">
+        <h2 class="dialog-title" data-i18n-target="dl-done">You are on the list</h2>
+        <p class="dialog-description" data-i18n-target="dl-done-text">The first letter arrives on Sunday morning.</p>
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn" commandfor="blog-letter-dialog" command="close" data-i18n-target="dl-close"
+          >Close</button
+        >
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog blog-dialog" id="blog-about" aria-labelledby="blog-about-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="blog-about-title" data-i18n-target="about-title">About the journal</h2>
+      </div>
+      <div class="dialog-body">
+        <p data-i18n-target="about-1"
+          >The Acme Journal is where the people who build Acme write about their work - the engineers, the designers and
+          the founders themselves, one essay a week.</p
+        >
+        <p data-i18n-target="about-2"
+          >Nobody here writes for clicks. A post goes out when it is finished, and it stays the way it was published;
+          corrections are added at the end.</p
+        >
+        <p class="blog-note-small" data-i18n-target="about-3">Edited by Hannah Lee. Write to journal@acme.example.</p>
+      </div>
+      <div class="dialog-footer">
+        <a class="btn" data-variant="outline" href="mailto:journal@acme.example" data-i18n-target="about-write"
+          >Write to the editors</a
+        >
+        <button type="button" class="btn" commandfor="blog-about" command="close" data-i18n-target="about-close"
+          >Close</button
+        >
+      </div>
+    </div>
+  </dialog>
+  <!-- the posts, newest first - each in English and German; a post page and every title on the front read from here -->
+  <script type="application/json" id="blog-data">
+    {
+      "read": { "en": "{n} min read", "de": "{n} Min. Lesezeit" },
+      "categories": {
+        "engineering": { "en": "Engineering", "de": "Technik" },
+        "design": { "en": "Design", "de": "Design" },
+        "company": { "en": "Company", "de": "Unternehmen" }
+      },
+      "authors": {
+        "aron": {
+          "name": "Aron Homberg",
+          "initials": "AH",
+          "img": null,
+          "mail": "aron@acme.example",
+          "en": {
+            "role": "Co-founder and CEO",
+            "bio": "Aron started Acme to stop losing decisions in chat. He writes about running a small company slowly."
+          },
+          "de": {
+            "role": "Mitgründer und CEO",
+            "bio": "Aron hat Acme gegründet, um keine Entscheidungen mehr im Chat zu verlieren. Er schreibt darüber, wie man eine kleine Firma langsam führt."
+          }
+        },
+        "sophie": {
+          "name": "Sophie Tan",
+          "initials": "ST",
+          "img": 47,
+          "mail": "sophie@acme.example",
+          "en": {
+            "role": "Staff engineer, Sync team",
+            "bio": "Sophie leads the sync team. Before Acme she built storage engines, and she still reads database changelogs for fun."
+          },
+          "de": {
+            "role": "Staff Engineer im Sync-Team",
+            "bio": "Sophie leitet das Sync-Team. Vor Acme hat sie Speicher-Engines gebaut, und sie liest noch immer Datenbank-Changelogs zum Vergnügen."
+          }
+        },
+        "hannah": {
+          "name": "Hannah Lee",
+          "initials": "HL",
+          "img": 32,
+          "mail": "hannah@acme.example",
+          "en": {
+            "role": "Design lead",
+            "bio": "Hannah leads design at Acme and removes more than she adds. She writes about type, color and quiet interfaces."
+          },
+          "de": {
+            "role": "Designleiterin",
+            "bio": "Hannah leitet das Design bei Acme und entfernt mehr, als sie hinzufügt. Sie schreibt über Schrift, Farbe und leise Oberflächen."
+          }
+        }
+      },
+      "posts": {
+        "ten-years": {
+          "category": "company",
+          "author": "aron",
+          "date": "2026-10-01",
+          "minutes": 12,
+          "photo": 2,
+          "en": {
+            "title": "Ten years of Acme: what we got right",
+            "excerpt": "A long look back at a decade of building calm software.",
+            "alt": "A laptop, a notebook and a cup of coffee on a wooden desk",
+            "body": [
+              "Acme started as a notes app for one team that was tired of losing decisions in chat. Ten years later a million people open it every week, and the team that builds it still fits around two long tables.",
+              "We got a few things right early. We charged money from the first day, so we never had to sell anyone's attention. We kept the product small enough that every engineer could hold all of it in their head. And we wrote down why we decided things - the reason mattered more than the decision.",
+              "We also got things wrong. For two years we shipped a feature every week and called it momentum; mostly it was noise. The release that ended it removed more than it added, and our support queue halved within a month.",
+              "The next ten years will look like the last few: fewer features, better ones, and a team that goes home on time. That is not modesty. It is the only way we know to build something people trust with their work."
+            ],
+            "quote": [
+              "Calm is not the absence of work. It is work that does not shout.",
+              "From the first Acme handbook"
+            ]
+          },
+          "de": {
+            "title": "Zehn Jahre Acme: was wir richtig gemacht haben",
+            "excerpt": "Ein langer Blick zurück auf ein Jahrzehnt ruhiger Software.",
+            "alt": "Ein Laptop, ein Notizbuch und eine Tasse Kaffee auf einem Holztisch",
+            "body": [
+              "Acme begann als Notiz-App für ein Team, das es leid war, Entscheidungen im Chat zu verlieren. Zehn Jahre später öffnen es eine Million Menschen pro Woche, und das Team dahinter passt immer noch an zwei lange Tische.",
+              "Ein paar Dinge haben wir früh richtig gemacht. Wir haben vom ersten Tag an Geld verlangt und mussten deshalb nie die Aufmerksamkeit anderer verkaufen. Wir haben das Produkt so klein gehalten, dass jede Entwicklerin es ganz im Kopf behalten konnte. Und wir haben aufgeschrieben, warum wir etwas entschieden haben - der Grund zählte mehr als die Entscheidung.",
+              "Manches haben wir auch falsch gemacht. Zwei Jahre lang haben wir jede Woche eine Funktion ausgeliefert und das Schwung genannt; meistens war es Lärm. Das Release, das damit aufhörte, hat mehr entfernt als hinzugefügt, und unsere Support-Warteschlange halbierte sich innerhalb eines Monats.",
+              "Die nächsten zehn Jahre werden aussehen wie die letzten paar: weniger Funktionen, bessere, und ein Team, das pünktlich nach Hause geht. Das ist keine Bescheidenheit. Es ist der einzige Weg, den wir kennen, um etwas zu bauen, dem Menschen ihre Arbeit anvertrauen."
+            ],
+            "quote": [
+              "Ruhe ist nicht die Abwesenheit von Arbeit. Es ist Arbeit, die nicht schreit.",
+              "Aus dem ersten Acme-Handbuch"
+            ]
+          }
+        },
+        "offline-sync": {
+          "category": "engineering",
+          "author": "sophie",
+          "date": "2026-10-01",
+          "minutes": 8,
+          "photo": 26,
+          "en": {
+            "title": "How offline sync works in Acme 4.0",
+            "excerpt": "CRDTs, a write-ahead log and a lot of patience.",
+            "alt": "A phone, a watch, headphones and a notebook laid out on a desk",
+            "body": [
+              "Sync is the feature nobody notices until it fails. Our goal for 4.0 was simple to state and hard to build: never lose a keystroke, online or off.",
+              "Every document is a conflict-free replicated data type. Two devices can edit the same paragraph without a server deciding who wins, because every operation commutes - merging two histories is a set union, in any order.",
+              "On the device, each change goes into a write-ahead log before it touches the document. If the app crashes, the log replays; if the network drops, the log waits. When the connection returns, the log is sent in order and acknowledged operation by operation.",
+              "The hard part was not the data structure. It was the tests: we ran every merge behind a proxy that drops, delays and reorders packets, and let it run for a week before each release."
+            ],
+            "quote": ["The best sync is the one you forget is there.", "Hannah Lee, design lead"]
+          },
+          "de": {
+            "title": "So funktioniert die Offline-Synchronisierung in Acme 4.0",
+            "excerpt": "CRDTs, ein Write-Ahead-Log und viel Geduld.",
+            "alt": "Ein Smartphone, eine Uhr, Kopfhörer und ein Notizbuch auf einem Schreibtisch",
+            "body": [
+              "Synchronisierung ist die Funktion, die niemand bemerkt, bis sie versagt. Unser Ziel für 4.0 war leicht gesagt und schwer gebaut: nie einen Tastendruck verlieren, online oder offline.",
+              "Jedes Dokument ist ein konfliktfreier replizierter Datentyp. Zwei Geräte können denselben Absatz bearbeiten, ohne dass ein Server entscheidet, wer gewinnt, denn jede Operation ist kommutativ - zwei Verläufe zusammenzuführen ist eine Vereinigungsmenge, in beliebiger Reihenfolge.",
+              "Auf dem Gerät landet jede Änderung zuerst im Write-Ahead-Log, bevor sie das Dokument berührt. Stürzt die App ab, wird das Log wieder abgespielt; reißt die Verbindung ab, wartet das Log. Kommt die Verbindung zurück, wird es der Reihe nach gesendet und Operation für Operation bestätigt.",
+              "Das Schwierige war nicht die Datenstruktur, sondern die Tests: Jede Zusammenführung lief hinter einem Proxy, der Pakete verwirft, verzögert und vertauscht - vor jedem Release eine Woche lang."
+            ],
+            "quote": ["Die beste Synchronisierung ist die, die man vergisst.", "Hannah Lee, Designleiterin"]
+          }
+        },
+        "designing-for-calm": {
+          "category": "design",
+          "author": "hannah",
+          "date": "2026-09-24",
+          "minutes": 5,
+          "photo": 225,
+          "en": {
+            "title": "Designing for calm",
+            "excerpt": "Fewer badges, quieter colors, one primary action per screen.",
+            "alt": "A glass teapot and cups on a quiet table",
+            "body": [
+              "Calm software asks for attention only when it has something to say. In 4.0 we removed half of the badges in the app, and in three months not one person asked for them back.",
+              "Every screen now has one primary action. If a screen seems to need two, it is usually two screens. The rule is easy to break and hard to argue with, which is exactly why we like it.",
+              "Color means state, never decoration: red is an error, green is done, and everything else is a shade of the background. A screenshot of Acme should look a little boring. That is the point."
+            ],
+            "quote": ["If everything is highlighted, nothing is.", "Hannah Lee"]
+          },
+          "de": {
+            "title": "Gestalten für Ruhe",
+            "excerpt": "Weniger Badges, leisere Farben, eine Hauptaktion pro Bildschirm.",
+            "alt": "Eine gläserne Teekanne und Tassen auf einem ruhigen Tisch",
+            "body": [
+              "Ruhige Software bittet nur dann um Aufmerksamkeit, wenn sie etwas zu sagen hat. In 4.0 haben wir die Hälfte der Badges entfernt, und in drei Monaten hat niemand nach ihnen gefragt.",
+              "Jeder Bildschirm hat jetzt eine Hauptaktion. Scheint ein Bildschirm zwei zu brauchen, sind es meistens zwei Bildschirme. Die Regel ist leicht zu brechen und schwer zu widerlegen - genau deshalb mögen wir sie.",
+              "Farbe bedeutet Zustand, nie Dekoration: Rot ist ein Fehler, Grün ist erledigt, und alles andere ist ein Ton des Hintergrunds. Ein Screenshot von Acme soll ein bisschen langweilig aussehen. Darum geht es."
+            ],
+            "quote": ["Wenn alles hervorgehoben ist, ist nichts hervorgehoben.", "Hannah Lee"]
+          }
+        },
+        "type-at-2am": {
+          "category": "design",
+          "author": "hannah",
+          "date": "2026-09-17",
+          "minutes": 6,
+          "photo": 4,
+          "en": {
+            "title": "Type that still reads at 2 a.m.",
+            "excerpt": "Line height, contrast and the font size nobody argues about.",
+            "alt": "Hands writing in a notebook beside a laptop",
+            "body": [
+              "Most of Acme is read by tired people: at the end of a long day, on call, or on a train with bad light. We set the type for them, not for the screenshot.",
+              "Body text is 16 pixels with a line height of 1.55, and lines stop at about 70 characters. Every pair of text and background reaches a contrast of 4.5 to 1, in the light theme and in the dark one.",
+              "We tested two fonts for six weeks with the support team, who read more Acme than anyone. They chose the plainer one. Nobody has argued about the font size since."
+            ],
+            "quote": ["Good type disappears. You only notice it when it is missing.", "Hannah Lee"]
+          },
+          "de": {
+            "title": "Schrift, die auch um zwei Uhr nachts lesbar ist",
+            "excerpt": "Zeilenhöhe, Kontrast und die Schriftgröße, über die niemand streitet.",
+            "alt": "Hände, die neben einem Laptop in ein Notizbuch schreiben",
+            "body": [
+              "Das meiste in Acme lesen müde Menschen: am Ende eines langen Tages, in der Rufbereitschaft oder im Zug bei schlechtem Licht. Wir setzen die Schrift für sie, nicht für den Screenshot.",
+              "Fließtext hat 16 Pixel bei einer Zeilenhöhe von 1,55, und Zeilen enden nach etwa 70 Zeichen. Jedes Paar aus Text und Hintergrund erreicht einen Kontrast von 4,5 zu 1, im hellen wie im dunklen Theme.",
+              "Wir haben zwei Schriften sechs Wochen lang mit dem Support-Team getestet, das mehr Acme liest als alle anderen. Es hat die schlichtere gewählt. Über die Schriftgröße hat seitdem niemand mehr gestritten."
+            ],
+            "quote": ["Gute Schrift verschwindet. Man bemerkt sie erst, wenn sie fehlt.", "Hannah Lee"]
+          }
+        },
+        "boring-databases": {
+          "category": "engineering",
+          "author": "sophie",
+          "date": "2026-08-28",
+          "minutes": 10,
+          "photo": 252,
+          "en": {
+            "title": "The case for boring databases",
+            "excerpt": "Why the newest store is rarely the one you want at 3 a.m.",
+            "alt": "Hand tools laid out in rows on a white table",
+            "body": [
+              "Every year someone on the team proposes a new database, and every year we stay with the one we have. It is not loyalty. It is knowing how it fails.",
+              "We know which queries get slow, which settings matter and what the logs say before an outage. That knowledge took six years to collect, and a migration would throw most of it away.",
+              "New stores are good at the problems their authors had. Our problem is staying up at 3 a.m. with one engineer on call - and for that, nothing beats a database whose every failure someone has already written about."
+            ],
+            "quote": ["Choose the database whose failures you can already explain.", "Sophie Tan"]
+          },
+          "de": {
+            "title": "Ein Plädoyer für langweilige Datenbanken",
+            "excerpt": "Warum die neueste Datenbank selten die ist, die man um drei Uhr nachts will.",
+            "alt": "Handwerkzeuge in Reihen auf einem weißen Tisch",
+            "body": [
+              "Jedes Jahr schlägt jemand im Team eine neue Datenbank vor, und jedes Jahr bleiben wir bei der, die wir haben. Das ist keine Treue. Es ist das Wissen, wie sie ausfällt.",
+              "Wir wissen, welche Abfragen langsam werden, welche Einstellungen zählen und was die Logs vor einem Ausfall sagen. Dieses Wissen hat sechs Jahre gebraucht, und eine Migration würde das meiste davon wegwerfen.",
+              "Neue Datenbanken sind gut in den Problemen, die ihre Autoren hatten. Unser Problem ist, um drei Uhr nachts mit einer einzigen Person in Rufbereitschaft online zu bleiben - und dafür gibt es nichts Besseres als eine Datenbank, über deren Ausfälle schon jemand geschrieben hat."
+            ],
+            "quote": ["Wähle die Datenbank, deren Ausfälle du schon erklären kannst.", "Sophie Tan"]
+          }
+        },
+        "closed-fridays": {
+          "category": "company",
+          "author": "aron",
+          "date": "2026-08-14",
+          "minutes": 4,
+          "photo": 77,
+          "en": {
+            "title": "Why we close on Fridays",
+            "excerpt": "Two years of a four-day week, and what it did to the roadmap.",
+            "alt": "A wooden pier running out into a calm sea",
+            "body": [
+              "Two years ago we stopped working on Fridays. Same pay, same goals, one day less. We expected to ship less. We shipped about the same.",
+              "The roadmap got shorter, because a four-day week leaves no room for things nobody really wanted. Meetings moved to Tuesday and Wednesday afternoons, and Monday mornings stayed quiet.",
+              "Support still answers on Fridays - two people take turns and get another day off instead. Nobody has asked to go back."
+            ],
+            "quote": ["We did not get less done. We did fewer things.", "Aron Homberg, CEO"]
+          },
+          "de": {
+            "title": "Warum wir freitags geschlossen haben",
+            "excerpt": "Zwei Jahre Vier-Tage-Woche, und was sie mit der Roadmap gemacht hat.",
+            "alt": "Ein Holzsteg, der in ein ruhiges Meer hinausführt",
+            "body": [
+              "Vor zwei Jahren haben wir aufgehört, freitags zu arbeiten. Gleiches Gehalt, gleiche Ziele, ein Tag weniger. Wir dachten, wir würden weniger ausliefern. Es war ungefähr gleich viel.",
+              "Die Roadmap wurde kürzer, denn eine Vier-Tage-Woche lässt keinen Platz für Dinge, die eigentlich niemand wollte. Die Meetings sind auf Dienstag- und Mittwochnachmittag gewandert, und die Montagmorgen blieben ruhig.",
+              "Der Support antwortet auch freitags - zwei Leute wechseln sich ab und bekommen dafür einen anderen Tag frei. Niemand wollte zurück."
+            ],
+            "quote": ["Wir haben nicht weniger geschafft. Wir haben weniger Dinge gemacht.", "Aron Homberg, CEO"]
+          }
+        }
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="nav-essays" data-i18n-locale="en">Essays</template>
+  <template data-i18n-for="nav-essays" data-i18n-locale="de">Essays</template>
+  <template data-i18n-for="nav-about" data-i18n-locale="en">About</template>
+  <template data-i18n-for="nav-about" data-i18n-locale="de">Über uns</template>
+  <template data-i18n-for="subscribe" data-i18n-locale="en">Subscribe</template>
+  <template data-i18n-for="subscribe" data-i18n-locale="de">Abonnieren</template>
+  <template data-i18n-for="sh-essays" data-i18n-locale="en">All essays</template>
+  <template data-i18n-for="sh-essays" data-i18n-locale="de">Alle Essays</template>
+  <template data-i18n-for="sh-engineering" data-i18n-locale="en">Engineering</template>
+  <template data-i18n-for="sh-engineering" data-i18n-locale="de">Technik</template>
+  <template data-i18n-for="sh-company" data-i18n-locale="en">Company</template>
+  <template data-i18n-for="sh-company" data-i18n-locale="de">Unternehmen</template>
+  <template data-i18n-for="sh-about" data-i18n-locale="en">About</template>
+  <template data-i18n-for="sh-about" data-i18n-locale="de">Über uns</template>
+  <template data-i18n-for="sh-subscribe" data-i18n-locale="en">Subscribe</template>
+  <template data-i18n-for="sh-subscribe" data-i18n-locale="de">Abonnieren</template>
+  <template data-i18n-for="letter-done" data-i18n-locale="en">Thank you - see you on Sunday.</template>
+  <template data-i18n-for="letter-done" data-i18n-locale="de">Danke - bis Sonntag.</template>
+  <template data-i18n-for="post-back" data-i18n-locale="en">All posts</template>
+  <template data-i18n-for="post-back" data-i18n-locale="de">Alle Beiträge</template>
+  <template data-i18n-for="post-date" data-i18n-locale="en"><span data-i18n-value="postDate"></span></template>
+  <template data-i18n-for="post-date" data-i18n-locale="de"><span data-i18n-value="postDate"></span></template>
+  <template data-i18n-for="post-read" data-i18n-locale="en"
+    ><span data-i18n-value="postMinutes"></span> min read</template
+  >
+  <template data-i18n-for="post-read" data-i18n-locale="de"
+    ><span data-i18n-value="postMinutes"></span> Min. Lesezeit</template
+  >
+  <template data-i18n-for="post-written" data-i18n-locale="en">Written by</template>
+  <template data-i18n-for="post-written" data-i18n-locale="de">Geschrieben von</template>
+  <template data-i18n-for="post-prev" data-i18n-locale="en">Previous post</template>
+  <template data-i18n-for="post-prev" data-i18n-locale="de">Vorheriger Beitrag</template>
+  <template data-i18n-for="post-next" data-i18n-locale="en">Next post</template>
+  <template data-i18n-for="post-next" data-i18n-locale="de">Nächster Beitrag</template>
+  <template data-i18n-for="post-more" data-i18n-locale="en">Keep reading</template>
+  <template data-i18n-for="post-more" data-i18n-locale="de">Weiterlesen</template>
+  <template data-i18n-for="ft-about" data-i18n-locale="en"
+    >Essays on product, engineering and design by the people who build Acme.</template
+  >
+  <template data-i18n-for="ft-about" data-i18n-locale="de"
+    >Essays über Produkt, Technik und Design von den Menschen, die Acme bauen.</template
+  >
+  <template data-i18n-for="ft-read" data-i18n-locale="en">Read</template>
+  <template data-i18n-for="ft-read" data-i18n-locale="de">Lesen</template>
+  <template data-i18n-for="ft-all" data-i18n-locale="en">All posts</template>
+  <template data-i18n-for="ft-all" data-i18n-locale="de">Alle Beiträge</template>
+  <template data-i18n-for="ft-engineering" data-i18n-locale="en">Engineering</template>
+  <template data-i18n-for="ft-engineering" data-i18n-locale="de">Technik</template>
+  <template data-i18n-for="ft-company" data-i18n-locale="en">Company</template>
+  <template data-i18n-for="ft-company" data-i18n-locale="de">Unternehmen</template>
+  <template data-i18n-for="ft-archive" data-i18n-locale="en">Archive</template>
+  <template data-i18n-for="ft-archive" data-i18n-locale="de">Archiv</template>
+  <template data-i18n-for="ft-oct" data-i18n-locale="en">October 2026</template>
+  <template data-i18n-for="ft-oct" data-i18n-locale="de">Oktober 2026</template>
+  <template data-i18n-for="ft-sep" data-i18n-locale="en">September 2026</template>
+  <template data-i18n-for="ft-sep" data-i18n-locale="de">September 2026</template>
+  <template data-i18n-for="ft-more" data-i18n-locale="en">More</template>
+  <template data-i18n-for="ft-more" data-i18n-locale="de">Mehr</template>
+  <template data-i18n-for="ft-letter" data-i18n-locale="en">The Sunday letter</template>
+  <template data-i18n-for="ft-letter" data-i18n-locale="de">Der Sonntagsbrief</template>
+  <template data-i18n-for="ft-about-link" data-i18n-locale="en">About the journal</template>
+  <template data-i18n-for="ft-about-link" data-i18n-locale="de">Über das Journal</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="en"
+    >© 2026 Acme Inc. A demo blog - the posts and the people in it are invented.</template
+  >
+  <template data-i18n-for="ft-copy" data-i18n-locale="de"
+    >© 2026 Acme Inc. Ein Demo-Blog - die Beiträge und die Menschen darin sind erfunden.</template
+  >
+  <template data-i18n-for="dl-title" data-i18n-locale="en">The Sunday letter</template>
+  <template data-i18n-for="dl-title" data-i18n-locale="de">Der Sonntagsbrief</template>
+  <template data-i18n-for="dl-desc" data-i18n-locale="en"
+    >One essay a week in your inbox, on Sunday morning. Nothing else, ever.</template
+  >
+  <template data-i18n-for="dl-desc" data-i18n-locale="de"
+    >Ein Essay pro Woche im Postfach, am Sonntagmorgen. Sonst nichts, nie.</template
+  >
+  <template data-i18n-for="dl-mail" data-i18n-locale="en">Email</template>
+  <template data-i18n-for="dl-mail" data-i18n-locale="de">E-Mail</template>
+  <template data-i18n-for="dl-note" data-i18n-locale="en">A demo: nothing is sent.</template>
+  <template data-i18n-for="dl-note" data-i18n-locale="de">Eine Demo: Es wird nichts verschickt.</template>
+  <template data-i18n-for="dl-cancel" data-i18n-locale="en">Cancel</template>
+  <template data-i18n-for="dl-cancel" data-i18n-locale="de">Abbrechen</template>
+  <template data-i18n-for="dl-go" data-i18n-locale="en">Subscribe</template>
+  <template data-i18n-for="dl-go" data-i18n-locale="de">Abonnieren</template>
+  <template data-i18n-for="dl-done" data-i18n-locale="en">You are on the list</template>
+  <template data-i18n-for="dl-done" data-i18n-locale="de">Du stehst auf der Liste</template>
+  <template data-i18n-for="dl-done-text" data-i18n-locale="en">The first letter arrives on Sunday morning.</template>
+  <template data-i18n-for="dl-done-text" data-i18n-locale="de">Der erste Brief kommt am Sonntagmorgen.</template>
+  <template data-i18n-for="dl-close" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="dl-close" data-i18n-locale="de">Schließen</template>
+  <template data-i18n-for="about-title" data-i18n-locale="en">About the journal</template>
+  <template data-i18n-for="about-title" data-i18n-locale="de">Über das Journal</template>
+  <template data-i18n-for="about-1" data-i18n-locale="en"
+    >The Acme Journal is where the people who build Acme write about their work - the engineers, the designers and the
+    founders themselves, one essay a week.</template
+  >
+  <template data-i18n-for="about-1" data-i18n-locale="de"
+    >Im Acme Journal schreiben die Menschen, die Acme bauen, über ihre Arbeit - die Entwicklerinnen, die Designer und
+    die Gründer selbst, ein Essay pro Woche.</template
+  >
+  <template data-i18n-for="about-2" data-i18n-locale="en"
+    >Nobody here writes for clicks. A post goes out when it is finished, and it stays the way it was published;
+    corrections are added at the end.</template
+  >
+  <template data-i18n-for="about-2" data-i18n-locale="de"
+    >Hier schreibt niemand für Klicks. Ein Beitrag erscheint, wenn er fertig ist, und bleibt, wie er veröffentlicht
+    wurde; Korrekturen stehen am Ende.</template
+  >
+  <template data-i18n-for="about-3" data-i18n-locale="en"
+    >Edited by Hannah Lee. Write to journal@acme.example.</template
+  >
+  <template data-i18n-for="about-3" data-i18n-locale="de"
+    >Redaktion: Hannah Lee. Schreib an journal@acme.example.</template
+  >
+  <template data-i18n-for="about-write" data-i18n-locale="en">Write to the editors</template>
+  <template data-i18n-for="about-write" data-i18n-locale="de">Der Redaktion schreiben</template>
+  <template data-i18n-for="about-close" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="about-close" data-i18n-locale="de">Schließen</template>
   <template data-i18n-for="eyebrow" data-i18n-locale="en">The Acme Blog</template>
   <template data-i18n-for="eyebrow" data-i18n-locale="de">Der Acme-Blog</template>
   <template data-i18n-for="title" data-i18n-locale="en"
@@ -914,22 +1998,144 @@
     syncMode();
 
     const site = df$('#site-blog').get(0);
+    // the posts, their authors and the categories, each in English and German
+    const DATA = JSON.parse(df$('#blog-data').text());
+    const { posts: POSTS, authors: AUTHORS, categories: CATEGORIES } = DATA;
+    const ORDER = Object.keys(POSTS);
+    // the post the route shows (its slug), or null on the front
+    let current = null;
 
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
       locale: 'en', // the demos start in English; the language select offers German
     });
-    createDomI18n(df$).bind(site, locale, {
-      values: () => ({
+    const day = (iso, dateStyle) => locale.formatDate(Date.parse(iso), { dateStyle, timeZone: 'UTC' });
+    const texts = createDomI18n(df$).bind(site, locale, {
+      getState: () => current,
+      values: (slug) => ({
         d1001: locale.formatDate(Date.UTC(2026, 9, 1), { dateStyle: 'medium', timeZone: 'UTC' }),
         d0924: locale.formatDate(Date.UTC(2026, 8, 24), { dateStyle: 'medium', timeZone: 'UTC' }),
         d0917: locale.formatDate(Date.UTC(2026, 8, 17), { dateStyle: 'medium', timeZone: 'UTC' }),
         d0828: locale.formatDate(Date.UTC(2026, 7, 28), { dateStyle: 'medium', timeZone: 'UTC' }),
         d0814: locale.formatDate(Date.UTC(2026, 7, 14), { dateStyle: 'medium', timeZone: 'UTC' }),
+        postDate: slug ? day(POSTS[slug].date, 'long') : '',
+        postMinutes: slug ? locale.formatNumber(POSTS[slug].minutes) : '',
       }),
     });
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    const lang = (entry) => entry[locale.locale] ?? entry.en;
+    const said = (slug) => lang(POSTS[slug]);
+
+    // the titles and excerpts on the front follow the language
+    const renderFront = () => {
+      for (const field of ['title', 'excerpt']) {
+        df$('#site-blog [data-post-' + field + ']').each((_i, el) => {
+          df$(el).text(said(el.getAttribute('data-post-' + field))[field]);
+        });
+      }
+    };
+    // an avatar shows the author's photo, else the initials
+    const face = (avatar, author) => {
+      avatar
+        .find('[data-post-face]')
+        .attr('src', author.img ? 'https://i.pravatar.cc/160?img=' + author.img : null)
+        .attr('data-error', author.img ? null : '')
+        .prop('hidden', !author.img);
+      avatar.find('[data-post-initials]').text(author.initials);
+    };
+    // the post page: every field from the data block, the text paragraph by paragraph, the quote after the second
+    const renderPost = () => {
+      if (!current) return;
+      const post = POSTS[current];
+      const text = said(current);
+      const author = AUTHORS[post.author];
+      const view = df$('#site-blog [data-blog-view="post"]');
+      view
+        .find('[data-post-category]')
+        .text(lang(CATEGORIES[post.category]))
+        .attr('href', '#/category/' + post.category);
+      view.find('[data-post-field]').each((_i, el) => {
+        df$(el).text(text[el.dataset.postField]);
+      });
+      view
+        .find('[data-post-photo]')
+        .attr('src', 'https://picsum.photos/id/' + post.photo + '/1600/800')
+        .attr('alt', text.alt);
+      view.find('.avatar').each((_i, avatar) => {
+        face(df$(avatar), author);
+      });
+      view
+        .find('[data-post-author]')
+        .text(author.name)
+        .attr('href', '#/post/' + current + '#blog-post-author');
+      view.find('[data-post-date]').attr('datetime', post.date);
+      const body = view.find('[data-post-body]').html('');
+      text.body.forEach((paragraph, i) => {
+        body.append(df$('<p></p>').text(paragraph));
+        if (i === 1 && text.quote) {
+          body.append(
+            df$('<blockquote></blockquote>')
+              .append(df$('<p></p>').text(text.quote[0]))
+              .append(df$('<cite></cite>').text(text.quote[1])),
+          );
+        }
+      });
+      view.find('[data-post-author-name]').text(author.name);
+      view.find('[data-post-author-role]').text(lang(author).role);
+      view.find('[data-post-author-bio]').text(lang(author).bio);
+      view.find('[data-post-mail]').attr('href', 'mailto:' + author.mail);
+      // previous and next, newest first, around the end
+      view.find('[data-post-near]').each((_i, link) => {
+        const index = ORDER.indexOf(current) + Number(link.dataset.postNear);
+        const near = ORDER[(index + ORDER.length) % ORDER.length];
+        df$(link).attr('href', '#/post/' + near);
+        df$(link).find('[data-post-near-title]').text(said(near).title);
+      });
+      // keep reading: the category's other posts first, then the newest
+      const others = ORDER.filter((slug) => slug !== current);
+      const more = [
+        ...others.filter((slug) => POSTS[slug].category === post.category),
+        ...others.filter((slug) => POSTS[slug].category !== post.category),
+      ];
+      view.find('[data-post-related]').each((i, item) => {
+        const slug = more[i];
+        const card = df$(item);
+        card.find('[data-related-category]').text(lang(CATEGORIES[POSTS[slug].category]));
+        card.find('[data-related-read]').text(lang(DATA.read).replace('{n}', locale.formatNumber(POSTS[slug].minutes)));
+        card
+          .find('[data-related-link]')
+          .attr('href', '#/post/' + slug)
+          .text(said(slug).title);
+        card.find('[data-related-excerpt]').text(said(slug).excerpt);
+        card
+          .find('[data-related-photo]')
+          .attr('src', 'https://picsum.photos/id/' + POSTS[slug].photo + '/900/600')
+          .attr('alt', said(slug).alt);
+      });
+    };
+    renderFront();
+    locale.subscribe(() => {
+      renderFront();
+      renderPost();
+    });
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
+
+    // -- the Sunday letter, inline and in its dialog: sending thanks the reader (a demo - nothing leaves the page)
+    df$('#site-blog [data-blog-letter]').on('submit', (event) => {
+      event.preventDefault();
+      df$(event.currentTarget).prop('hidden', true);
+      df$('#site-blog [data-blog-letter-done]').prop('hidden', false);
+    });
+    df$('#site-blog [data-blog-form]').on('submit', (event) => {
+      event.preventDefault();
+      const dialog = df$(event.currentTarget).closest('dialog');
+      df$(event.currentTarget).prop('hidden', true);
+      dialog.find('[data-blog-done]').prop('hidden', false).get(0).focus();
+    });
+    df$('#blog-letter-dialog').on('close', () => {
+      df$('#blog-letter-dialog [data-blog-done]').prop('hidden', true);
+      df$('#blog-letter-dialog [data-blog-form]').prop('hidden', false).get(0).reset();
+    });
 
     // -- the look: one of the site's designs; a shader reads its colors again on defuss-theme-change
     const look = df$('#site-blog [data-site-look]');
@@ -943,10 +2149,17 @@
       { id: 'all', path: '/' },
       { id: 'category', path: '/category/:category' },
       { id: 'month', path: '/archive/:year/:month' },
+      { id: 'post', path: '/post/:slug' },
       { id: 'missing', path: '*' },
     ];
-    // a category or a month filters the posts; its link is the current one
+    // a category or a month filters the posts, its link the current one; a post shows its page (an unknown one the front)
     const show = (to) => {
+      current = to.routeId === 'post' && POSTS[to.params.slug] ? to.params.slug : null;
+      df$('#site-blog [data-blog-view]').each((_i, view) => {
+        view.hidden = (view.dataset.blogView === 'post') !== !!current;
+      });
+      renderPost();
+      texts.refresh();
       const month = to.routeId === 'month' ? to.params.year + '-' + to.params.month : null;
       const category = to.routeId === 'category' ? to.params.category : null;
       let shown = 0;
@@ -955,20 +2168,29 @@
         if (!post.hidden) shown++;
       });
       df$('#site-blog [data-blog-empty]').get(0).hidden = shown > 0;
-      df$('#site-blog nav [data-router-link]').each((_i, link) => {
-        if (link.getAttribute('href') === '#' + (to.routeId === 'missing' ? '/' : to.path))
-          link.setAttribute('aria-current', 'page');
-        else link.removeAttribute('aria-current');
+      const here = current ? null : '#' + (to.routeId === 'missing' ? '/' : to.path);
+      df$('#site-blog nav:not(.mk-footer-nav) [data-router-link]').each((_i, link) => {
+        df$(link).attr('aria-current', link.getAttribute('href') === here ? 'page' : null);
       });
       // the archive opens the month's year
       if (month) df$('#site-blog [data-blog-archive] a[aria-current]').closest('details').prop('open', true);
     };
-    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    // a new page opens at its start, the way a page load would - the first view stays where the reader is
+    let shownPath = null;
+    const showAt = (to) => {
+      show(to);
+      if (shownPath !== null && shownPath !== to.path)
+        df$('#site-blog [data-blog-view]:not([hidden])')
+          .get(0)
+          ?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      shownPath = to.path;
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => showAt(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      const follow = () => showAt(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
       addEventListener('hashchange', follow);
       follow();
     }

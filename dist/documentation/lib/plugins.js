@@ -4,6 +4,8 @@ import { bundlesUsedIn } from './extra-bundles';
 import { flattenNav, listed, NAV } from './nav';
 import { pageRel, resolvePageRefs } from './page-dirs';
 import { readSkillMeta } from './repo';
+import { tocId } from './toc-id';
+import { whatsNewExampleMarks } from './whats-new-data';
 import { capturePageWindowPlugin, releasePagesPlugin } from './release-pages';
 /**
  * The docs build plugins. They replace what used to be runtime DOM injection
@@ -73,8 +75,6 @@ export const pageRefsPlugin = {
     mode: 'build',
     fn: (html, relativeOutputHtmlFilePath) => resolvePageRefs(String(html), String(relativeOutputHtmlFilePath)),
 };
-/** TOC-compatible id, same slug rule as the old runtime buildToc. */
-const tocId = (text) => 'toc-' + text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 /** Mirrors the old getHeadingText(): anchors, badge spans and svgs are chrome,
  * not heading text. */
 function headingText(el) {
@@ -112,6 +112,11 @@ export const tocPlugin = {
             const headings = candidates
                 .map((el) => ({ el, text: headingText(el) }))
                 .filter(({ text }) => text.length > 0);
+            // every section and example label has its id, also on a page too short for a TOC: the "What's new" record
+            // links examples by it (lib/toc-id.ts)
+            for (const { el, text } of headings)
+                if (!el.getAttribute('id'))
+                    el.setAttribute('id', tocId(text));
             if (headings.length < 2) {
                 tocAside.setAttribute('style', 'display:none');
             }
@@ -170,6 +175,28 @@ export const tocPlugin = {
             sections.push({ text, id: h2.getAttribute('id') || tocId(text) });
         }
         collected.set(page, sections);
+        return dom;
+    },
+};
+/**
+ * The "What's new" marks of the examples: every example label the record names for this page (an example a release
+ * added or changed) carries its marks as `data-whats-new-example` ("<version>:created", newest first), the tokens
+ * the sidebar links carry for pages. runtime/whats-new.ts shows them to a reader who has not opened the page since.
+ * Runs after the toc plugin (the labels have their ids); a label the record names but the page lacks fails the build.
+ */
+export const whatsNewExamplesPlugin = {
+    name: 'whats-new-examples',
+    phase: 'page-dom',
+    mode: 'build',
+    fn: (dom, relativeOutputHtmlFilePath) => {
+        const id = String(relativeOutputHtmlFilePath).replace(/\\/g, '/').replace(/^.*\//, '').replace(/\.html$/, '');
+        const main = dom.querySelector('main');
+        for (const [label, marks] of whatsNewExampleMarks(id)) {
+            const el = main?.querySelector(`#${tocId(label)}`);
+            if (!el)
+                throw new Error(`whats-new: ${id} has no example "${label}" (#${tocId(label)}) - rebuild the record (bun scripts/whats-new.ts --write)`);
+            el.setAttribute('data-whats-new-example', marks);
+        }
         return dom;
     },
 };
@@ -242,6 +269,7 @@ export const docsPlugins = [
     extraBundlesPlugin,
     doctypePlugin,
     tocPlugin,
+    whatsNewExamplesPlugin,
     searchIndexPlugin,
     cleanHydrationRuntimePlugin,
     // last of their phases: the page's window, then (HTML final) close it and

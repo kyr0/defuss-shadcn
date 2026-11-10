@@ -115,6 +115,8 @@ fixed region itself):
 | `west` / `east` | The title bar turns vertical (icon, title, restore tool) and the region shrinks to its width; maximize hides |
 | `center` / outside a layout | The panel is its title bar - the space below is released |
 
+Several panels on one side sit in a Border Layout stack (`.border-layout-stack` as the region's pane): there a minimized panel stays a horizontal title bar and the others take its room; the region folds only when every panel in it is minimized (west / east: a column of vertical tabs).
+
 The divider rests (`inert`) while its panel is minimized; the region gets
 `data-panel-minimized` (a styling hook). Restoring brings the authored or
 dragged size back. Inside a layout the panel drops its own border and
@@ -262,8 +264,8 @@ panel.api.setState('default');
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| `.panel` | `aria-labelledby` → the title | A named region (`<section>`) |
-| tool checkboxes | `aria-label` ("Minimize Files", "Maximize Files") | Checked = minimized / maximized; the minimize tool gets `aria-controls` → the body |
+| `.panel` | `aria-labelledby` naming the title | A named region (`<section>`) |
+| tool checkboxes | `aria-label` ("Minimize Files", "Maximize Files") | Checked = minimized / maximized; the minimize tool gets `aria-controls` naming the body |
 | `.panel-body` | `inert` while minimized | Set by the runtime |
 | `.panel-icon` | `aria-hidden="true"` | Decorative |
 

@@ -115,6 +115,10 @@ Set `flex-basis` on `.carousel-slide` to control per-slide width:
 <div class="carousel-slide" style="flex: 0 0 calc(50% - 0.5rem);" role="group" aria-roledescription="slide" aria-label="1 of 6">…</div>
 ```
 
+With several slides in view, Prev / Next (and the arrow keys) move by the number of slides in view, the current
+slide (`getState().config.index`, the active dot) is the first one shown, Next disables once the last slide shows,
+and `.carousel-counter` reads "Slides 1-3 of 9".
+
 ## Variants
 
 | Attribute | Value | Behavior |

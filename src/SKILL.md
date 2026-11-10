@@ -1103,8 +1103,8 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Heading Anchor
 
 **Type:** ATM
-**Why:** A quiet § permalink on any heading - a visible, copyable deep link with zero JavaScript.
-**When:** Section permalinks in docs/blogs/specs - before or after the heading text.
+**Why:** A quiet § or # permalink on any heading - a copyable deep link with zero JavaScript, hanging in front of the heading by default.
+**When:** Section permalinks in docs/blogs/specs - in front of the heading (shown on hover), before or after its text.
 **Files:** dist/components/heading-anchor/heading-anchor.css
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/heading-anchor.png
@@ -1259,6 +1259,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/label.png
 **Skill:** [components/forms-inputs/label/component-skill.md](components/forms-inputs/label/component-skill.md)
+
+## Language Switcher
+
+**Type:** MOL
+**Why:** The shipped Combobox (searchable listbox, keys, light dismiss), Swap (one checkbox, CSS faces) or a Dropdown Menu's radio items written by the runtime from one element - the 107 CLD3 languages are preseeded, Intl.DisplayNames names any other pair, flags are cached SVG files.
+**When:** Switching the page's language in a site header, a footer, a toolbar or an app's settings - the page lists the languages it supports; for a free choice among many values that are not languages, use a Combobox.
+**Files:** dist/components/language-switcher/language-switcher.css + dist/components/language-switcher/language-switcher.js
+**Supported states:** default, open
+**Screenshots:** screenshots/{light,dark}/language-switcher.png, screenshots/{light,dark}/language-switcher-open.png
+**Skill:** [components/navigation/language-switcher/component-skill.md](components/navigation/language-switcher/component-skill.md)
 
 ## Letter
 
@@ -2419,6 +2429,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, played
 **Screenshots:** screenshots/{light,dark}/teaser.png, screenshots/{light,dark}/teaser-played.png
 **Skill:** [components/data-display/teaser/component-skill.md](components/data-display/teaser/component-skill.md)
+
+## Terminal
+
+**Type:** ATM
+**Why:** The official xterm.js renders and edits the cells (selection, scrollback, links, the clipboard, screen-reader mode); the component adds a shell to it - a prompt, a line editor with history and completion, commands from a registry - a replayed session, the system's tokens as its colours and a State API, from one element.
+**When:** An interactive command line - a shell on a developer's site, a mock DOS or Unix app in a desktop, a REPL or a log that streams into a live terminal. A transcript that only has to be read (install steps, CLI docs, a diff) takes the Code Mockup - no script, copyable text.
+**Files:** dist/components/terminal/terminal.css + dist/components/terminal/terminal.js (the extra bundle terminal.css / terminal.js)
+**Supported states:** default, running, readonly
+**Screenshots:** screenshots/{light,dark}/terminal.png, screenshots/{light,dark}/terminal-running.png, screenshots/{light,dark}/terminal-readonly.png
+**Skill:** [components/mockup/terminal/component-skill.md](components/mockup/terminal/component-skill.md)
 
 ## Testimonials
 

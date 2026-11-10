@@ -111,8 +111,10 @@ supportedStates: default, collapsed
 - `.sidebar-dot` - an activity / "new" marker at the end of a link, submenu
   summary or group summary (a dot on a group tells a collapsed section has
   news). It takes the right edge (before the chevron); next to a
-  `.sidebar-badge` they share it. On the collapsed rail it moves onto the
-  icon's top-right corner. Always name it (`role="img"` + `aria-label`).
+  `.sidebar-badge` they share it. A dot kept in the markup with `hidden` (news
+  the reader has seen) leaves the right edge to the chevron or the badge. On
+  the collapsed rail it moves onto the icon's top-right corner. Always name it
+  (`role="img"` + `aria-label`).
 
 ## Activity dot (`.sidebar-dot`)
 

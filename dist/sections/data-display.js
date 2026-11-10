@@ -3211,6 +3211,8 @@ function init11() {
     const behavior = reducedMotion ? "auto" : "smooth";
     let currentIndex = 0;
     let autoplayTimer = null;
+    const inView = new Set;
+    const perView = () => Math.max(1, inView.size);
     if (!carousel.hasAttribute("role"))
       carousel.setAttribute("role", "region");
     carousel.setAttribute("aria-roledescription", "carousel");
@@ -3250,30 +3252,49 @@ function init11() {
         if (prevBtn)
           dfDollar11(prevBtn).prop("disabled", currentIndex <= 0);
         if (nextBtn)
-          dfDollar11(nextBtn).prop("disabled", currentIndex >= allSlides.length - 1);
+          dfDollar11(nextBtn).prop("disabled", currentIndex + perView() >= allSlides.length);
       }
       if (dotsContainer)
         dfDollar11(dotsContainer).find(".carousel-dot").each(function(i) {
           dfDollar11(this).attr("aria-current", i === currentIndex ? "true" : "false");
         });
+      const last = Math.min(allSlides.length, currentIndex + perView());
       if (counter)
-        dfDollar11(counter).text(`Slide ${currentIndex + 1} of ${allSlides.length}`);
+        dfDollar11(counter).text(last > currentIndex + 1 ? `Slides ${currentIndex + 1}-${last} of ${allSlides.length}` : `Slide ${currentIndex + 1} of ${allSlides.length}`);
       allSlides.forEach((slide, i) => {
         dfDollar11(slide).attr("aria-label", `${i + 1} of ${allSlides.length}`);
       });
     };
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          const idx = slides().indexOf(entry.target);
-          if (idx !== -1)
-            updateState(idx);
-        }
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5)
+          inView.add(entry.target);
+        else
+          inView.delete(entry.target);
       }
+      const all = slides();
+      for (const slide of inView)
+        if (!all.includes(slide))
+          inView.delete(slide);
+      const first = all.findIndex((slide) => inView.has(slide));
+      if (first !== -1)
+        updateState(first);
     }, { root: viewport, threshold: 0.5 });
     slides().forEach((slide) => observer.observe(slide));
-    const goNext = () => scrollToIndex(currentIndex + 1);
-    const goPrev = () => scrollToIndex(currentIndex - 1);
+    const goNext = () => {
+      const n = slides().length, k = perView();
+      if (isLoop && currentIndex + k >= n)
+        scrollToIndex(0);
+      else
+        scrollToIndex(Math.min(currentIndex + k, n - k));
+    };
+    const goPrev = () => {
+      const n = slides().length, k = perView();
+      if (isLoop && currentIndex <= 0)
+        scrollToIndex(n - k);
+      else
+        scrollToIndex(Math.max(0, currentIndex - k));
+    };
     if (prevBtn)
       prevBtn.addEventListener("click", goPrev);
     if (nextBtn)
@@ -3693,5 +3714,5 @@ function init12() {
 init12();
 new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
-//# debugId=4EEE1DFFF76DE5C964756E2164756E21
+//# debugId=2E456C9C7382A5BC64756E2164756E21
 //# sourceMappingURL=data-display.js.map

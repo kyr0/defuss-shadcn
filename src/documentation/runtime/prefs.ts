@@ -7,6 +7,7 @@
 // themes.ts, theme-switcher.ts and layout.ts - one instance per key; the
 // deferred scripts (site.js, theme-designer.js) reach the same stores as
 // df$.shadcn.docs.prefs.
+// VERIFIED: (documentation.e2e "What's new") whatsNew outlives a full page load: a page opened stays opened.
 import { persisted, storageAvailable } from '../../shared/store.js';
 
 let refused = false;
@@ -36,6 +37,12 @@ export const prefs = {
   navCollapsed: persisted<Record<string, string>>('defuss-shadcn-nav-collapsed', {}),
   /** the GitHub star count, fetched once per session */
   ghStars: persisted('gh-stars', '', { area: 'session', migrate: (old) => String(old) }),
+  /** What's new: the release the last visit showed, the one before it, the pages opened since (whats-new-core.ts) */
+  whatsNew: persisted<{ visited: string; baseline: string; seen: string[] }>('defuss-shadcn-whats-new', {
+    visited: '',
+    baseline: '',
+    seen: [],
+  }),
   /** the sidebar's scroll offset across a full page load (-1: none) */
   navScroll: persisted('shadcn-nav-scroll', -1, { area: 'session', migrate: (old) => Number(old) || 0 }),
 };

@@ -5157,6 +5157,168 @@ function syncState(layout) {
   else
     layout.dataset.stateName = name;
 }
+var stackOf = (region) => {
+  const pane = region && paneOf(region);
+  return pane?.classList.contains("border-layout-stack") ? pane : null;
+};
+var panelsOf = (stack) => Array.from(stack.children).filter((c) => c.classList.contains("panel"));
+var isRow = (stack, side) => stack.dataset.direction === "row" || stack.dataset.direction !== "column" && (side === "north" || side === "south");
+var extent = (panel, row) => {
+  const box = panel.getBoundingClientRect();
+  return row ? box.width : box.height;
+};
+var minOf = (panel) => {
+  const bar = dfDollar2(panel).children(".panel-header").get(0)?.getBoundingClientRect().height ?? 40;
+  return num2(panel.dataset.min, Math.round(bar + 32));
+};
+var open = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
+var titleOf = (panel) => dfDollar2(panel).find(":scope > .panel-header .panel-title").text().trim() || panel.getAttribute("aria-label") || "";
+function exclusive(stack, again) {
+  if (!stack.hasAttribute("data-exclusive"))
+    return;
+  const opened = panelsOf(stack).filter(open);
+  const fresh = opened.filter((p) => p !== stack._open);
+  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
+  stack._open = keep;
+  for (const p of opened) {
+    if (p === keep)
+      continue;
+    if (p.api)
+      p.api.setState("minimized");
+    else if ((stack._waits = (stack._waits ?? 0) + 1) < 50)
+      setTimeout(again);
+  }
+}
+function syncStack(layout, side, region, stack) {
+  exclusive(stack, () => syncStack(layout, side, region, stack));
+  const row = isRow(stack, side);
+  const panels = panelsOf(stack);
+  for (const panel of panels.slice(1)) {
+    const prev = panel.previousElementSibling;
+    if (prev?.classList.contains("border-layout-stack-divider"))
+      continue;
+    dfDollar2(panel).before(dfDollar2(`<div class="border-layout-stack-divider" role="separator" aria-orientation="${row ? "vertical" : "horizontal"}" data-ce-chrome></div>`));
+  }
+  let last = null, pending = null;
+  for (const child of Array.from(stack.children)) {
+    if (child.classList.contains("border-layout-stack-divider")) {
+      child._prev = child._next = null;
+      if (last && !pending)
+        pending = child;
+      else if (!child.hidden)
+        child.hidden = true;
+    } else if (child.classList.contains("panel") && !child.hidden) {
+      if (pending) {
+        if (pending.hidden)
+          pending.hidden = false;
+        pending._prev = last;
+        pending._next = child;
+        pending = null;
+      }
+      last = child;
+    }
+  }
+  if (pending && !pending.hidden)
+    pending.hidden = true;
+  for (const d of dfDollar2(stack).children(".border-layout-stack-divider").toArray()) {
+    const live = !d.hidden && open(d._prev) && open(d._next);
+    d.setAttribute("aria-disabled", String(!live));
+    d.tabIndex = live ? 0 : -1;
+    if (!d._prev)
+      continue;
+    if (!d._prev.id)
+      d._prev.id = `${stack.id || layout.id || "stack"}-${Math.random().toString(36).slice(2, 7)}`;
+    d.setAttribute("aria-controls", d._prev.id);
+    d.setAttribute("aria-label", `Resize ${titleOf(d._prev) || "panel"}`);
+    if (live) {
+      const both = extent(d._prev, row) + extent(d._next, row);
+      d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
+      d.setAttribute("aria-valuemin", String(minOf(d._prev)));
+      d.setAttribute("aria-valuemax", String(Math.round(both - minOf(d._next))));
+    }
+  }
+  const shown = panels.filter((p) => !p.hidden);
+  const folded = shown.length > 0 && shown.every((p) => p.hasAttribute("data-minimized"));
+  region.toggleAttribute("data-panel-minimized", folded);
+  region.toggleAttribute("data-stack-closed", panels.length > 0 && !shown.length);
+  const handle = region.classList.contains("resizer") ? dfDollar2(region).children(".resizer-handle").get(0) : null;
+  if (handle)
+    handle.inert = folded || !shown.length;
+}
+function moveDivider(layout, side, divider, delta) {
+  const { _prev: a, _next: b } = divider;
+  if (!a || !b || !open(a) || !open(b))
+    return;
+  const stack = divider.parentElement;
+  const sizes = new Map(panelsOf(stack).filter(open).map((p) => [p, extent(p, isRow(stack, side))]));
+  const both = sizes.get(a) + sizes.get(b);
+  const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
+  sizes.set(a, next);
+  sizes.set(b, both - next);
+  for (const [p, px] of sizes)
+    p.style.setProperty("--border-layout-share", String(Math.round(px)));
+}
+function initStacks(layout) {
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    const stack = stackOf(region);
+    if (!stack || stack._stackInit)
+      continue;
+    stack._stackInit = true;
+    const sync = () => syncStack(layout, side, region, stack);
+    sync();
+    new MutationObserver((records) => {
+      const panel = (r) => r.target.parentElement === stack && r.target.classList.contains("panel");
+      if (records.some((r) => r.type === "childList" && r.target === stack || r.type === "attributes" && panel(r)))
+        sync();
+    }).observe(stack, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-minimized", "hidden"]
+    });
+    queueMicrotask(sync);
+    stack.addEventListener("pointerdown", (e) => {
+      const divider = e.target.closest?.(".border-layout-stack-divider");
+      if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
+        return;
+      e.preventDefault();
+      divider.setPointerCapture(e.pointerId);
+      divider.setAttribute("data-resizing", "");
+      let at = isRow(stack, side) ? e.clientX : e.clientY;
+      const move = (ev) => {
+        const pos = isRow(stack, side) ? ev.clientX : ev.clientY;
+        moveDivider(layout, side, divider, pos - at);
+        at = pos;
+        sync();
+      };
+      const end = () => {
+        divider.removeAttribute("data-resizing");
+        divider.removeEventListener("pointermove", move);
+        divider.removeEventListener("pointerup", end);
+        divider.removeEventListener("pointercancel", end);
+        save(layout);
+      };
+      divider.addEventListener("pointermove", move);
+      divider.addEventListener("pointerup", end);
+      divider.addEventListener("pointercancel", end);
+    });
+    stack.addEventListener("keydown", (e) => {
+      const divider = e.target.closest?.(".border-layout-stack-divider");
+      if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
+        return;
+      const step = e.shiftKey ? 100 : 10;
+      const back = isRow(stack, side) ? "ArrowLeft" : "ArrowUp", fwd = isRow(stack, side) ? "ArrowRight" : "ArrowDown";
+      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
+      if (!delta)
+        return;
+      e.preventDefault();
+      moveDivider(layout, side, divider, delta);
+      sync();
+      save(layout);
+    });
+  }
+}
 var saved = new Map;
 var savedFor = (layout) => {
   const key = `defuss-shadcn:border-layout:${layout.dataset.save}`;
@@ -5173,11 +5335,18 @@ function save(layout) {
   const data = {};
   for (const side of REGIONS) {
     const region = regionOf(layout, side);
-    if (!region?.classList.contains("resizer"))
+    const stack = stackOf(region);
+    const weights = stack ? panelsOf(stack).map((p) => num2(p.style.getPropertyValue("--border-layout-share"), 0) || null) : null;
+    if (!region?.classList.contains("resizer")) {
+      if (weights)
+        data[side] = { stack: weights };
       continue;
+    }
     const pane = paneOf(region);
     const px = Math.round(num2(pane?.style[SIDES[side].size], NaN));
     data[side] = { size: Number.isFinite(px) ? px : null, collapsed: region.hasAttribute("data-collapsed") };
+    if (weights)
+      data[side].stack = weights;
   }
   savedFor(layout).set(data);
 }
@@ -5195,7 +5364,14 @@ function restore(layout) {
       continue;
     if (saved.size)
       setSize(region, side, saved.size);
-    region.toggleAttribute("data-collapsed", !!saved.collapsed);
+    if (region.classList.contains("resizer"))
+      region.toggleAttribute("data-collapsed", !!saved.collapsed);
+    const stack = stackOf(region);
+    if (stack && Array.isArray(saved.stack))
+      panelsOf(stack).forEach((p, i) => {
+        if (saved.stack[i])
+          p.style.setProperty("--border-layout-share", String(saved.stack[i]));
+      });
   }
   layout._restoring = false;
 }
@@ -5266,6 +5442,7 @@ function init2() {
       region._authored = sizeOf(region, side) || null;
     }
     restore(layout);
+    initStacks(layout);
     const before = (e) => {
       const handle = e.target.closest?.(".resizer-handle");
       if (!handle || handle.parentElement?.parentElement !== layout)
@@ -5974,9 +6151,668 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/big-data/data-grid/data-grid.ts
+// src/components/forms-inputs/combobox/combobox.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
+var comboboxStates = ["default", "open"];
+function applyMarkup4(_el, _stateName) {}
+function triggerStateChange4(popover, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      popover._close?.();
+      break;
+    case "open":
+      popover._open?.();
+      break;
+  }
+}
+var comboboxApi = componentState({
+  component: "combobox",
+  states: comboboxStates,
+  apply: (popover, state) => triggerStateChange4(popover, state.name, state.config),
+  read: (popover, state) => {
+    const selected = Array.from(dfDollar4(popover).find('[role="option"][aria-selected="true"]').toArray());
+    const labels = selected.map((o) => o.textContent?.trim() ?? "");
+    return {
+      name: popover.matches(":popover-open") ? "open" : "default",
+      config: {
+        ...state.config,
+        value: labels.join(", "),
+        values: selected.map((o) => o.dataset.value ?? o.textContent?.trim() ?? ""),
+        labels
+      }
+    };
+  },
+  markup: (el, state) => applyMarkup4(el, state.name)
+});
+df$4.comboboxApi = comboboxApi;
+df$4.comboboxStates = comboboxStates;
+var esc2 = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+var idPart = (t) => t.replace(/[^\w-]/g, "_");
+var comboSeq = 0;
+function hideEmptyGroups(listbox) {
+  dfDollar4(listbox).find(".combobox-group-label").each((_i, label) => {
+    let next = label.nextElementSibling;
+    let groupHasVisible = false;
+    while (next && !next.classList.contains("combobox-group-label") && !next.classList.contains("combobox-separator")) {
+      if (next.getAttribute("role") === "option" && !next.hidden && !next.classList.contains("combobox-create"))
+        groupHasVisible = true;
+      next = next.nextElementSibling;
+    }
+    dfDollar4(label).prop("hidden", !groupHasVisible);
+  });
+  dfDollar4(listbox).find(".combobox-separator").each((_i, sep) => {
+    const prev = sep.previousElementSibling;
+    const next = sep.nextElementSibling;
+    dfDollar4(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
+  });
+}
+function initTags(wrapper) {
+  const field = dfDollar4(wrapper).find(".combobox-field").get(0);
+  const input = dfDollar4(wrapper).find(".combobox-field-input").get(0);
+  const popover = dfDollar4(wrapper).find(".combobox-content").get(0);
+  const listbox = dfDollar4(wrapper).find('[role="listbox"]').get(0);
+  if (!field || !input || !popover || !listbox)
+    return;
+  const empty = dfDollar4(wrapper).find(".combobox-empty").get(0);
+  const creatable = wrapper.hasAttribute("data-creatable");
+  const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+  const options = () => Array.from(dfDollar4(listbox).find('[role="option"]:not(.combobox-create)').toArray());
+  const valueOf = (o) => o.dataset.value ?? o.textContent.trim();
+  const labelOf = (o) => o.textContent.trim();
+  dfDollar4(listbox).attr("aria-multiselectable", "true");
+  const anchorId = `--combobox-${uid}`;
+  dfDollar4(field).css("anchorName", anchorId);
+  dfDollar4(popover).css("positionAnchor", anchorId);
+  const tags = document.createElement("span");
+  tags.className = "combobox-tags";
+  dfDollar4(input).before(tags);
+  let createRow = null;
+  if (creatable) {
+    createRow = document.createElement("div");
+    createRow.className = "combobox-item combobox-create";
+    createRow.id = `${uid}-create`;
+    createRow.setAttribute("role", "option");
+    createRow.setAttribute("aria-selected", "false");
+    createRow.hidden = true;
+    dfDollar4(listbox).prepend(createRow);
+  }
+  let highlighted = null;
+  const highlight = (el) => {
+    if (highlighted)
+      dfDollar4(highlighted).data("highlighted", null);
+    highlighted = el;
+    if (el) {
+      dfDollar4(el).data("highlighted", "");
+      el.scrollIntoView({ block: "nearest" });
+      dfDollar4(input).attr("aria-activedescendant", el.id);
+    } else
+      dfDollar4(input).attr("aria-activedescendant", null);
+  };
+  const visible = () => dfDollar4(listbox).find('[role="option"]').toArray().filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
+  const isOpen = () => popover.matches(":popover-open");
+  const open = () => {
+    if (!isOpen())
+      safeShowPopover(popover);
+    dfDollar4(input).attr("aria-expanded", "true");
+  };
+  const close = () => {
+    if (isOpen())
+      popover.hidePopover();
+    dfDollar4(input).attr("aria-expanded", "false");
+    highlight(null);
+  };
+  popover._open = () => {
+    open();
+    filter();
+  };
+  popover._close = close;
+  bindComponent(popover, comboboxApi);
+  const filter = () => {
+    const text = input.value.trim();
+    const q = text.toLowerCase();
+    let exact = null;
+    let any = false;
+    for (const o of options()) {
+      const match = !q || labelOf(o).toLowerCase().includes(q);
+      dfDollar4(o).prop("hidden", !match);
+      if (match)
+        any = true;
+      if (q && labelOf(o).toLowerCase() === q)
+        exact = o;
+    }
+    if (createRow) {
+      const showCreate = !!text && !exact;
+      dfDollar4(createRow).prop("hidden", !showCreate);
+      if (showCreate)
+        dfDollar4(createRow).text(`Create "${text}"`);
+    }
+    hideEmptyGroups(listbox);
+    if (empty)
+      dfDollar4(empty).prop("hidden", any || !!createRow && !createRow.hidden);
+    highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? visible()[0] ?? null : null));
+  };
+  const render = (announce = true, created = null) => {
+    const chosen = options().filter((o) => o.getAttribute("aria-selected") === "true");
+    const labels = chosen.map(labelOf);
+    const values = chosen.map(valueOf);
+    const name = wrapper.dataset.name;
+    dfDollar4(tags).morph(labels.map((label, i) => `<span class="combobox-tag" id="${uid}-tag-${idPart(values[i])}">${esc2(label)}<button type="button" class="combobox-tag-remove" data-value="${esc2(values[i])}" aria-label="Remove ${esc2(label)}" tabindex="-1"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc2(name)}" value="${esc2(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+    if (input.dataset.placeholder === undefined)
+      input.dataset.placeholder = input.placeholder;
+    input.placeholder = labels.length ? "" : input.dataset.placeholder;
+    if (announce)
+      wrapper.dispatchEvent(new CustomEvent("combobox:change", {
+        bubbles: true,
+        detail: { values, labels, created }
+      }));
+  };
+  const commit = (row) => {
+    const text = input.value.trim();
+    let created = null;
+    if (createRow && row === createRow || !row && creatable && text) {
+      if (!text)
+        return;
+      const exact = options().find((o) => labelOf(o).toLowerCase() === text.toLowerCase());
+      if (exact)
+        row = exact;
+      else {
+        const option = document.createElement("div");
+        option.className = "combobox-item";
+        option.setAttribute("role", "option");
+        option.dataset.value = text;
+        option.dataset.created = "";
+        option.id = `${uid}-opt-${idPart(text)}-${options().length}`;
+        dfDollar4(option).text(text);
+        const firstGroup = dfDollar4(listbox).find(".combobox-group-label").get(0);
+        if (firstGroup)
+          dfDollar4(firstGroup).before(option);
+        else
+          dfDollar4(listbox).append(option);
+        row = option;
+        created = text;
+      }
+      dfDollar4(row).attr("aria-selected", "true");
+    } else if (row) {
+      if (row.getAttribute("aria-disabled") === "true")
+        return;
+      const on = row.getAttribute("aria-selected") === "true";
+      dfDollar4(row).attr("aria-selected", on && !text ? "false" : "true");
+    } else
+      return;
+    dfDollar4(input).val("");
+    render(true, created);
+    filter();
+    input.focus();
+  };
+  render(false);
+  filter();
+  field.addEventListener("mousedown", (e) => {
+    if (!e.target.closest("button, input")) {
+      e.preventDefault();
+      input.focus();
+    }
+  });
+  tags.addEventListener("click", (e) => {
+    const btn = e.target.closest(".combobox-tag-remove");
+    if (!btn)
+      return;
+    const option = options().find((o) => valueOf(o) === btn.dataset.value);
+    if (option)
+      dfDollar4(option).attr("aria-selected", "false");
+    render();
+    filter();
+    input.focus();
+  });
+  input.addEventListener("focus", () => {
+    open();
+    filter();
+  });
+  input.addEventListener("input", () => {
+    open();
+    filter();
+  });
+  input.addEventListener("keydown", (e) => {
+    const rows = visible();
+    const at = highlighted ? rows.indexOf(highlighted) : -1;
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        open();
+        highlight(rows[Math.min(at + 1, rows.length - 1)] ?? null);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        highlight(rows[Math.max(at - 1, 0)] ?? null);
+        break;
+      case "Enter":
+        e.preventDefault();
+        commit(highlighted);
+        break;
+      case ",":
+        if (input.value.trim()) {
+          e.preventDefault();
+          commit(highlighted);
+        }
+        break;
+      case "Backspace": {
+        if (input.value !== "")
+          break;
+        const chosen = options().filter((o) => o.getAttribute("aria-selected") === "true");
+        const last = chosen[chosen.length - 1];
+        if (!last)
+          break;
+        e.preventDefault();
+        dfDollar4(last).attr("aria-selected", "false");
+        render();
+        filter();
+        break;
+      }
+      case "Escape":
+        e.preventDefault();
+        close();
+        break;
+      case "Tab":
+        close();
+        break;
+    }
+  });
+  listbox.addEventListener("mousedown", (e) => e.preventDefault());
+  listbox.addEventListener("click", (e) => {
+    const row = e.target.closest('[role="option"]');
+    if (row && !row.hidden)
+      commit(row);
+  });
+  listbox.addEventListener("mousemove", (e) => {
+    const row = e.target.closest('[role="option"]');
+    if (row && !row.hidden && row !== highlighted)
+      highlight(row);
+  });
+  wrapper.addEventListener("focusout", (e) => {
+    if (!wrapper.contains(e.relatedTarget) && !popover.contains(e.relatedTarget))
+      close();
+  });
+  popover.addEventListener("toggle", () => {
+    dfDollar4(input).attr("aria-expanded", String(isOpen()));
+  });
+}
+function init4() {
+  dfDollar4(".combobox:not([data-init])").toArray().forEach((wrapper) => {
+    wrapper.dataset.init = "";
+    if (wrapper.hasAttribute("data-tags")) {
+      initTags(wrapper);
+      return;
+    }
+    const $wrapper = dfDollar4(wrapper);
+    const $trigger = $wrapper.find(".combobox-trigger");
+    const $value = $wrapper.find(".combobox-value");
+    const $popover = $wrapper.find(".combobox-content");
+    const $search = $wrapper.find(".combobox-search-input");
+    const $listbox = $wrapper.find('[role="listbox"]');
+    const $empty = $wrapper.find(".combobox-empty");
+    const trigger = $trigger[0];
+    const popover = $popover[0];
+    const searchInput = $search[0];
+    const listbox = $listbox[0];
+    if (!trigger || !popover || !searchInput || !listbox)
+      return;
+    const allItems = $listbox.find('[role="option"]');
+    let highlighted = -1;
+    const anchorId = `--combobox-${popover.id}`;
+    $trigger.css("anchorName", anchorId);
+    $popover.css("positionAnchor", anchorId);
+    const placeholder = $value.data("placeholder") ?? "";
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "combobox-clear";
+    clearBtn.setAttribute("aria-label", "Clear selection");
+    dfDollar4(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+    dfDollar4(clearBtn).css("positionAnchor", anchorId);
+    $trigger.after(clearBtn);
+    const multiple = wrapper.hasAttribute("data-multiple");
+    const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
+    let tags = null;
+    if (multiple) {
+      $listbox.attr("aria-multiselectable", "true");
+      tags = document.createElement("div");
+      tags.className = "combobox-tags";
+      tags.setAttribute("role", "list");
+      tags.setAttribute("aria-label", `Selected ${trigger.getAttribute("aria-label") || dfDollar4("#" + CSS.escape(trigger.getAttribute("aria-labelledby") || "")).get(0)?.textContent?.trim() || "options"}`);
+      dfDollar4(clearBtn).after(tags);
+      tags.addEventListener("click", (e) => {
+        const btn = e.target.closest(".combobox-tag-remove");
+        if (!btn)
+          return;
+        const option = Array.from(allItems).find((o) => (o.dataset.value ?? o.textContent.trim()) === btn.dataset.value);
+        const all = dfDollar4(tags).find(".combobox-tag-remove").toArray();
+        const at = all.indexOf(btn);
+        if (option)
+          dfDollar4(option).attr("aria-selected", "false");
+        renderSelection();
+        const rest = dfDollar4(tags).find(".combobox-tag-remove").toArray();
+        (rest[Math.min(at, rest.length - 1)] ?? trigger).focus();
+      });
+    }
+    const renderSelection = (announce = true) => {
+      const chosen = Array.from(allItems).filter((o) => o.getAttribute("aria-selected") === "true");
+      const labels = chosen.map((o) => o.textContent.trim());
+      const values = chosen.map((o) => o.dataset.value ?? o.textContent.trim());
+      const summary = multiple && labels.length > 1 ? ($value.data("selectedLabel") ?? "{n} selected").replace("{n}", String(labels.length)) : labels.join(", ");
+      if (labels.length)
+        $value.text(summary).attr("data-placeholder", null);
+      else
+        $value.text(placeholder).attr("data-placeholder", placeholder);
+      if (tags) {
+        const name = wrapper.dataset.name;
+        dfDollar4(tags).morph(labels.map((label, i) => `<span class="combobox-tag" role="listitem" id="${uid}-tag-${idPart(values[i])}">${esc2(label)}<button type="button" class="combobox-tag-remove" data-value="${esc2(values[i])}" aria-label="Remove ${esc2(label)}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc2(name)}" value="${esc2(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+      }
+      if (announce)
+        wrapper.dispatchEvent(new CustomEvent("combobox:change", { bubbles: true, detail: { values, labels } }));
+    };
+    if (multiple)
+      renderSelection(false);
+    clearBtn.addEventListener("click", () => {
+      allItems.attr("aria-selected", "false");
+      renderSelection();
+      trigger.focus();
+    });
+    const getVisibleItems = () => allItems.filter((item) => !item.hidden && item.getAttribute("aria-disabled") !== "true");
+    const open = () => {
+      safeShowPopover(popover);
+      $trigger.attr("aria-expanded", "true");
+      $search.val("");
+      filter("");
+      searchInput.focus();
+    };
+    const close = () => {
+      popover.hidePopover();
+      $trigger.attr("aria-expanded", "false");
+      $search.attr("aria-activedescendant", "");
+      clearHighlight();
+      trigger.focus();
+    };
+    popover._open = open;
+    popover._close = close;
+    bindComponent(popover, comboboxApi);
+    const isOpen = () => popover.matches(":popover-open");
+    const filter = (query) => {
+      const q = query.toLowerCase();
+      let hasVisible = false;
+      allItems.forEach((item) => {
+        const match = !q || item.textContent.trim().toLowerCase().includes(q);
+        dfDollar4(item).prop("hidden", !match);
+        if (match)
+          hasVisible = true;
+      });
+      if (listbox)
+        hideEmptyGroups(listbox);
+      if ($empty.length)
+        $empty.prop("hidden", hasVisible);
+    };
+    const clearHighlight = () => {
+      allItems.data("highlighted", null);
+      highlighted = -1;
+    };
+    const doHighlight = (index) => {
+      const items = getVisibleItems();
+      clearHighlight();
+      if (index < 0 || index >= items.length)
+        return;
+      highlighted = index;
+      dfDollar4(items[index]).data("highlighted", "");
+      items[index].scrollIntoView({ block: "nearest" });
+      $search.attr("aria-activedescendant", items[index].id);
+    };
+    const selectItem = (item) => {
+      if (item.getAttribute("aria-disabled") === "true")
+        return;
+      if (multiple) {
+        dfDollar4(item).attr("aria-selected", item.getAttribute("aria-selected") === "true" ? "false" : "true");
+        renderSelection();
+        searchInput.focus();
+        return;
+      }
+      allItems.attr("aria-selected", "false");
+      dfDollar4(item).attr("aria-selected", "true");
+      renderSelection();
+      close();
+    };
+    trigger.addEventListener("click", () => {
+      if (isOpen()) {
+        close();
+      } else {
+        open();
+      }
+    });
+    searchInput.addEventListener("input", () => {
+      filter(searchInput.value);
+      doHighlight(0);
+    });
+    searchInput.addEventListener("keydown", (e) => {
+      const items = getVisibleItems();
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          doHighlight(Math.min(highlighted + 1, items.length - 1));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          doHighlight(Math.max(highlighted - 1, 0));
+          break;
+        case "Home":
+          e.preventDefault();
+          doHighlight(0);
+          break;
+        case "End":
+          e.preventDefault();
+          doHighlight(items.length - 1);
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (highlighted >= 0 && items[highlighted])
+            selectItem(items[highlighted]);
+          break;
+        case "Escape":
+          e.preventDefault();
+          close();
+          break;
+        case "Tab":
+          close();
+          break;
+        case "Backspace": {
+          if (!multiple || searchInput.value !== "")
+            break;
+          const chosen = Array.from(allItems).filter((o) => o.getAttribute("aria-selected") === "true");
+          const last = chosen[chosen.length - 1];
+          if (!last)
+            break;
+          e.preventDefault();
+          dfDollar4(last).attr("aria-selected", "false");
+          renderSelection();
+          break;
+        }
+      }
+    });
+    listbox.addEventListener("click", (e) => {
+      const item = e.target.closest('[role="option"]');
+      if (item && !item.hidden && item.getAttribute("aria-disabled") !== "true")
+        selectItem(item);
+    });
+    listbox.addEventListener("mousemove", (e) => {
+      const item = e.target.closest('[role="option"]');
+      if (item && !item.hidden) {
+        const items = getVisibleItems();
+        doHighlight(items.indexOf(item));
+      }
+    });
+    popover.addEventListener("toggle", () => {
+      const nowOpen = popover.matches(":popover-open");
+      $trigger.attr("aria-expanded", String(nowOpen));
+      if (!nowOpen)
+        clearHighlight();
+    });
+  });
+}
+init4();
+new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+
+// src/components/overlays/command/command.ts
+var df$5 = defussGlobals();
+var dfDollar5 = defussQuery();
+var commandStates = ["default", "open"];
+function applyMarkup5(el, stateName) {
+  dfDollar5(el).attr("open", stateName === "open" ? "" : null);
+}
+function triggerStateChange5(dialog, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      if (dialog.open)
+        dialog.close();
+      break;
+    case "open":
+      if (!dialog.open)
+        dialog.showModal();
+      {
+        const input = dfDollar5(dialog).find(".command-input").get(0);
+        if (input)
+          input.focus();
+      }
+      break;
+  }
+}
+var shown = (dialog) => dialog.open ? "open" : "default";
+var commandApi = componentState({
+  component: "command",
+  states: commandStates,
+  apply: (dialog, state) => triggerStateChange5(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown(dialog), config: state.config }),
+  markup: (el, state) => applyMarkup5(el, state.name)
+});
+df$5.commandApi = commandApi;
+df$5.commandStates = commandStates;
+bindGlobalKeys((e) => {
+  if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== "k")
+    return;
+  const dialog = dfDollar5("dialog.command").get(0);
+  if (!dialog)
+    return;
+  e.preventDefault();
+  if (dialog.open)
+    dialog.close();
+  else {
+    dialog.showModal();
+    const input = dfDollar5(dialog).find(".command-input").get(0);
+    if (input)
+      input.focus();
+  }
+  return true;
+}, { editable: true });
+function getVisibleItems(list) {
+  return Array.from(dfDollar5(list).find('.command-item:not([hidden]):not([aria-disabled="true"])'));
+}
+function highlightItem(list, index) {
+  const visible = getVisibleItems(list);
+  dfDollar5(list).find(".command-item[data-highlighted]").data("highlighted", null);
+  if (visible.length === 0)
+    return -1;
+  const clamped = (index % visible.length + visible.length) % visible.length;
+  dfDollar5(visible[clamped]).data("highlighted", "");
+  visible[clamped].scrollIntoView({ block: "nearest" });
+  return clamped;
+}
+function init5() {
+  dfDollar5("dialog.command:not([data-init])").toArray().forEach((dialog) => {
+    dialog.dataset.init = "";
+    bindComponent(dialog, commandApi, { name: shown(dialog), config: {} });
+    const input = dfDollar5(dialog).find(".command-input").get(0);
+    const list = dfDollar5(dialog).find(".command-list").get(0);
+    const empty = dfDollar5(dialog).find(".command-empty").get(0);
+    if (!input || !list)
+      return;
+    let highlightIndex = -1;
+    const filter = (q) => {
+      const query = q.toLowerCase();
+      const external = dialog.dataset.filter === "none";
+      let hasVisible = false;
+      const $items = dfDollar5(list).find(".command-item");
+      $items.each(function() {
+        const match = external ? !this.hidden : !query || this.textContent.toLowerCase().includes(query);
+        if (!external)
+          dfDollar5(this).prop("hidden", !match);
+        if (match)
+          hasVisible = true;
+      });
+      dfDollar5(list).find(".command-group").each(function() {
+        dfDollar5(this).prop("hidden", dfDollar5(this).find(".command-item:not([hidden])").length === 0);
+      });
+      dfDollar5(list).find(".command-separator").prop("hidden", !!query);
+      if (empty)
+        dfDollar5(empty).prop("hidden", hasVisible);
+      highlightIndex = highlightItem(list, 0);
+    };
+    input.addEventListener("input", () => {
+      filter(input.value);
+    });
+    new MutationObserver(() => filter(input.value)).observe(list, { childList: true, subtree: true });
+    new MutationObserver(() => filter(input.value)).observe(dialog, {
+      attributes: true,
+      attributeFilter: ["data-filter"]
+    });
+    input.addEventListener("keydown", (e) => {
+      const visible = getVisibleItems(list);
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        highlightIndex = highlightItem(list, highlightIndex + 1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        highlightIndex = highlightItem(list, highlightIndex - 1);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (visible[highlightIndex]) {
+          visible[highlightIndex].click();
+        }
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        highlightIndex = highlightItem(list, 0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        highlightIndex = highlightItem(list, visible.length - 1);
+      }
+    });
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog)
+        dialog.close();
+      if (e.target.closest(".command-item"))
+        dialog.close();
+    });
+    dialog.addEventListener("close", () => {
+      if (dialog.open)
+        return;
+      dfDollar5(input).val("");
+      filter("");
+      dfDollar5(list).find(".command-item[data-highlighted]").data("highlighted", null);
+      highlightIndex = -1;
+    });
+  });
+  dfDollar5("[data-command-trigger]:not([data-init])").toArray().forEach((trigger) => {
+    trigger.dataset.init = "";
+    const dialog = dfDollar5("#" + CSS.escape(trigger.dataset.commandTrigger)).get(0);
+    if (!dialog)
+      return;
+    trigger.addEventListener("click", () => {
+      dialog.showModal();
+      const input = dfDollar5(dialog).find(".command-input")[0];
+      if (input)
+        input.focus();
+    });
+  });
+}
+init5();
+new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+
+// src/components/big-data/data-grid/data-grid.ts
+var df$6 = defussGlobals();
+var dfDollar6 = defussQuery();
 var dataGridStates = ["default", "loading", "empty"];
 var SAVED_KEYS = ["filters", "sorters", "locked", "expanded"];
 var numberFormat = new Map;
@@ -5997,10 +6833,10 @@ function format2(value, spec, el) {
   }
   return typeof value === "number" ? numberFormat.get(key).format(value) : String(value);
 }
-var headerRowOf = (root) => dfDollar4(root).find(".data-grid-head > .data-grid-row").get(0);
+var headerRowOf = (root) => dfDollar6(root).find(".data-grid-head > .data-grid-row").get(0);
 var headersOf = (root) => {
   const row = headerRowOf(root);
-  return row ? dfDollar4(row).children(".data-grid-header").toArray() : [];
+  return row ? dfDollar6(row).children(".data-grid-header").toArray() : [];
 };
 function readColumns(grid) {
   return headersOf(grid).map((el) => ({
@@ -6018,7 +6854,7 @@ function readColumns(grid) {
 }
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
-  const where = viewPersistence(grid, "data-grid", String(dfDollar4(".data-grid").toArray().indexOf(grid)), config || {});
+  const where = viewPersistence(grid, "data-grid", String(dfDollar6(".data-grid").toArray().indexOf(grid)), config || {});
   grid._saved = where ? persisted(where.key, {}, {
     area: where.area,
     validate: (v) => typeof v === "object" && v !== null && !Array.isArray(v)
@@ -6034,22 +6870,22 @@ function ordered(items, locked, fieldOf) {
   const set = new Set(locked || []);
   return [...items.filter((i) => set.has(fieldOf(i))), ...items.filter((i) => !set.has(fieldOf(i)))];
 }
-function applyMarkup4(root, state) {
+function applyMarkup6(root, state) {
   const config = state.config || {};
   const headers = root._columns ? root._columns.map((c) => c.el) : headersOf(root);
   const row = headerRowOf(root);
   const locked = new Set(config.locked || []);
   const sorters = config.sorters || [];
   const order = ordered(headers, config.locked, (el) => el.dataset.field);
-  if (row && order.some((el, i) => dfDollar4(row).children(".data-grid-header").get(i) !== el)) {
-    order.forEach((el) => dfDollar4(row).append(el));
+  if (row && order.some((el, i) => dfDollar6(row).children(".data-grid-header").get(i) !== el)) {
+    order.forEach((el) => dfDollar6(row).append(el));
   }
   for (const el of headers) {
     const at = sorters.findIndex((s) => s.field === (el.dataset.sortField || el.dataset.field));
     const dir = at < 0 ? null : sorters[at].direction || sorters[at].dir || "asc";
-    dfDollar4(el).attr("data-locked", locked.has(el.dataset.field) ? "" : null).attr("aria-sort", dir ? dir === "asc" ? "ascending" : "descending" : null).attr("data-sort-index", dir && sorters.length > 1 ? String(at + 1) : null);
+    dfDollar6(el).attr("data-locked", locked.has(el.dataset.field) ? "" : null).attr("aria-sort", dir ? dir === "asc" ? "ascending" : "descending" : null).attr("data-sort-index", dir && sorters.length > 1 ? String(at + 1) : null);
   }
-  dfDollar4(root).attr("data-state", state.name).attr("aria-busy", state.name === "loading" ? "true" : null);
+  dfDollar6(root).attr("data-state", state.name).attr("aria-busy", state.name === "loading" ? "true" : null);
 }
 var configOf = (grid) => grid._config ?? grid.store?.value.config ?? {};
 var isTree = (grid) => !!grid._source?.tree;
@@ -6065,7 +6901,7 @@ function evaluate(grid, config) {
     collapsed: config.collapsed
   });
 }
-function shown(grid, config) {
+function shown2(grid, config) {
   const entries = grid._result?.entries ?? [];
   const mode = paging(grid);
   if (mode === "virtual")
@@ -6102,7 +6938,7 @@ function buildFilters(grid) {
   row.className = "data-grid-row data-grid-filters";
   row.setAttribute("role", "row");
   grid._parts.filters = row;
-  dfDollar4(grid._parts.head).append(row);
+  dfDollar6(grid._parts.head).append(row);
 }
 function syncFilters(grid, config) {
   const row = grid._parts.filters;
@@ -6145,7 +6981,7 @@ function syncFilters(grid, config) {
       row.append(cell);
     }
   }
-  for (const cell of dfDollar4(row).children(".data-grid-filter-cell").toArray()) {
+  for (const cell of dfDollar6(row).children(".data-grid-filter-cell").toArray()) {
     const field = cell.dataset.field;
     if (locked.has(field))
       cell.style.insetInlineStart = `${grid._lockLeft[field] ?? 0}px`;
@@ -6169,7 +7005,7 @@ function distinct(grid, field) {
 }
 function buildPins(grid) {
   for (const column of grid._columns) {
-    if (column.el.dataset.lockable === "false" || dfDollar4(column.el).children(".data-grid-pin").get(0))
+    if (column.el.dataset.lockable === "false" || dfDollar6(column.el).children(".data-grid-pin").get(0))
       continue;
     const pin = document.createElement("button");
     pin.type = "button";
@@ -6177,7 +7013,7 @@ function buildPins(grid) {
     pin.tabIndex = -1;
     pin.dataset.field = column.field;
     pin.setAttribute("aria-label", `Lock ${column.el.textContent.trim()}`);
-    dfDollar4(column.el).append(pin);
+    dfDollar6(column.el).append(pin);
   }
 }
 function fillCell(grid, cell, column, entry, first) {
@@ -6344,8 +7180,8 @@ function renderFooter(grid, config) {
   }
   const page = Math.max(0, config.page || 0);
   const pages = pageCount(grid);
-  dfDollar4(grid._parts.pager).find(".data-grid-page-label").get(0).textContent = `Page ${count(page + 1)} of ${count(pages)}`;
-  for (const button of dfDollar4(grid._parts.pager).find("[data-page]").toArray()) {
+  dfDollar6(grid._parts.pager).find(".data-grid-page-label").get(0).textContent = `Page ${count(page + 1)} of ${count(pages)}`;
+  for (const button of dfDollar6(grid._parts.pager).find("[data-page]").toArray()) {
     const back = button.dataset.page === "first" || button.dataset.page === "prev";
     button.disabled = back ? page <= 0 : page >= pages - 1;
   }
@@ -6354,7 +7190,7 @@ function refresh(grid, config, previous) {
   grid._config = config;
   evaluate(grid, config);
   grid._selected = new Set(config.selected || []);
-  grid._shown = shown(grid, config);
+  grid._shown = shown2(grid, config);
   layoutColumns(grid, config);
   syncFilters(grid, config);
   grid._gen = (grid._gen || 0) + 1;
@@ -6370,7 +7206,7 @@ function refresh(grid, config, previous) {
   renderFooter(grid, config);
   return grid._result.entries.length;
 }
-function triggerStateChange4(grid, state, previous) {
+function triggerStateChange6(grid, state, previous) {
   grid._config = state.config;
   let name = state.name;
   if (name !== "loading" && grid._parts) {
@@ -6378,7 +7214,7 @@ function triggerStateChange4(grid, state, previous) {
     if (name === "default" && !rows)
       name = "empty";
   }
-  applyMarkup4(grid, { name, config: state.config });
+  applyMarkup6(grid, { name, config: state.config });
   grid.dataset.stateName = name;
   if (grid._saved) {
     const keep = {};
@@ -6392,11 +7228,11 @@ var dataGridApi = componentState({
   component: "data-grid",
   states: dataGridStates,
   mergeConfig: true,
-  apply: (grid, state, previous) => triggerStateChange4(grid, state, previous),
-  markup: (el, state) => applyMarkup4(el, state)
+  apply: (grid, state, previous) => triggerStateChange6(grid, state, previous),
+  markup: (el, state) => applyMarkup6(el, state)
 });
-df$4.dataGridApi = dataGridApi;
-df$4.dataGridStates = dataGridStates;
+df$6.dataGridApi = dataGridApi;
+df$6.dataGridStates = dataGridStates;
 var query = (grid, patch) => dataGridApi.setState(grid, grid.store.value.name === "loading" ? "loading" : "default", patch);
 function toggleRow(grid, index, mode) {
   const entry = grid._shown[index];
@@ -6461,7 +7297,7 @@ function focusCell(grid, row, col) {
   renderRows(grid);
   for (const [c, header] of grid._order.entries())
     header.el.tabIndex = row === -1 && c === col ? 0 : -1;
-  const target = row === -1 ? grid._order[col].el : dfDollar4(grid._parts.pool).children(".data-grid-row").toArray().find((r) => r._index === row)?.children[col];
+  const target = row === -1 ? grid._order[col].el : dfDollar6(grid._parts.pool).children(".data-grid-row").toArray().find((r) => r._index === row)?.children[col];
   target?.focus({ preventScroll: row === -1 });
 }
 function onKeydown2(grid, e) {
@@ -6591,7 +7427,7 @@ function onFilterInput(grid, e) {
     return;
   clearTimeout(grid._filterTimer);
   grid._filterTimer = setTimeout(() => {
-    const filters = dfDollar4(grid._parts.filters).find(".data-grid-filter").toArray().map((el) => parseFilter(el.dataset.field, el.value, el.dataset.kind)).filter(Boolean);
+    const filters = dfDollar6(grid._parts.filters).find(".data-grid-filter").toArray().map((el) => parseFilter(el.dataset.field, el.value, el.dataset.kind)).filter(Boolean);
     query(grid, { filters, page: 0, collapsed: [] });
   }, e.type === "change" ? 0 : 200);
 }
@@ -6626,8 +7462,8 @@ async function onNearEnd(grid, force = false) {
   if (!grid._exhausted && grid._parts.viewport.scrollHeight <= grid._parts.viewport.clientHeight)
     onNearEnd(grid, true);
 }
-var resolve2 = (target) => typeof target === "string" ? dfDollar4(target).get(0) : target;
-df$4.dataGrid = {
+var resolve2 = (target) => typeof target === "string" ? dfDollar6(target).get(0) : target;
+df$6.dataGrid = {
   setSource(target, rows, options = {}) {
     const grid = resolve2(target);
     grid._sourceOptions = options;
@@ -6674,25 +7510,25 @@ df$4.dataGrid = {
     query(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });
   }
 };
-function init4() {
-  dfDollar4(".data-grid:not([data-init])").toArray().forEach((grid) => {
+function init6() {
+  dfDollar6(".data-grid:not([data-init])").toArray().forEach((grid) => {
     grid.dataset.init = "";
-    const viewport = dfDollar4(grid).children(".data-grid-viewport").get(0);
-    const head = viewport && dfDollar4(viewport).children(".data-grid-head").get(0);
-    const body = viewport && dfDollar4(viewport).children(".data-grid-body").get(0);
+    const viewport = dfDollar6(grid).children(".data-grid-viewport").get(0);
+    const head = viewport && dfDollar6(viewport).children(".data-grid-head").get(0);
+    const body = viewport && dfDollar6(viewport).children(".data-grid-body").get(0);
     if (!viewport || !head || !body)
       return;
-    let footer = dfDollar4(grid).children(".data-grid-footer").get(0);
+    let footer = dfDollar6(grid).children(".data-grid-footer").get(0);
     if (!footer) {
       footer = document.createElement("div");
       footer.className = "data-grid-footer";
-      dfDollar4(grid).append(footer);
+      dfDollar6(grid).append(footer);
     }
     body.dataset.emptyText = grid.dataset.emptyText || "No rows match.";
     const pool = document.createElement("div");
     pool.className = "data-grid-rows";
     pool.setAttribute("role", "presentation");
-    dfDollar4(body).append(pool);
+    dfDollar6(body).append(pool);
     grid._parts = { viewport, head, body, pool, footer };
     grid._columns = readColumns(grid);
     grid._order = grid._columns;
@@ -6754,12 +7590,392 @@ function init4() {
       onNearEnd(grid, true);
   });
 }
-init4();
-new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+
+// src/components/overlays/dialog/dialog.ts
+var df$7 = defussGlobals();
+var dfDollar7 = defussQuery();
+var dialogStates = ["default", "open"];
+function applyMarkup7(dialog, stateName) {
+  dfDollar7(dialog).attr("open", stateName === "open" ? "" : null);
+}
+function triggerStateChange7(dialog, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      if (dialog.open)
+        dialog.close();
+      break;
+    case "open":
+      if (!dialog.open)
+        dialog.showModal();
+      break;
+  }
+}
+var shown3 = (dialog) => dialog.open ? "open" : "default";
+var dialogApi = componentState({
+  component: "dialog",
+  states: dialogStates,
+  apply: (dialog, state) => triggerStateChange7(dialog, state.name, state.config),
+  read: (dialog, state) => ({ name: shown3(dialog), config: state.config }),
+  markup: (el, state) => applyMarkup7(el, state.name)
+});
+df$7.dialogApi = dialogApi;
+df$7.dialogStates = dialogStates;
+function init7() {
+  dfDollar7("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
+    trigger.dataset.init = "";
+    const dialog = dfDollar7("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
+    if (!dialog)
+      return;
+    trigger.addEventListener("click", () => {
+      dialog._trigger = trigger;
+      dialog.showModal();
+    });
+  });
+  dfDollar7("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
+    dfDollar7(dialog).data("init", "");
+    bindComponent(dialog, dialogApi, { name: shown3(dialog), config: {} });
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog)
+        dialog.close();
+    });
+    dfDollar7(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
+      btn.addEventListener("click", () => {
+        dialog.close();
+      });
+    });
+    dialog.addEventListener("close", () => {
+      if (dialog.open)
+        return;
+      if (dialog._trigger)
+        dialog._trigger.focus();
+    });
+  });
+}
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+
+// src/components/navigation/dropdown/dropdown.ts
+var df$8 = defussGlobals();
+var dfDollar8 = defussQuery();
+var dropdownStates = ["default", "open"];
+var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
+var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
+var itemsOf = (menu) => Array.from(dfDollar8(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+var subOf = (trigger) => dfDollar8(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
+var rootOf2 = (menu) => {
+  let m = menu;
+  while (m?.parentElement?.closest(".dropdown-content[popover]"))
+    m = m.parentElement.closest(".dropdown-content[popover]");
+  return m;
+};
+var HOVER_OPEN = 120;
+var HOVER_CLOSE = 220;
+function applyMarkup8(_el, _stateName) {}
+function triggerStateChange8(menu, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      try {
+        menu.hidePopover();
+      } catch {}
+      break;
+    case "open":
+      safeShowPopover(menu);
+      break;
+  }
+}
+var dropdownApi = componentState({
+  component: "dropdown",
+  states: dropdownStates,
+  apply: (menu, state) => triggerStateChange8(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup8(el, state.name)
+});
+df$8.dropdownApi = dropdownApi;
+df$8.dropdownStates = dropdownStates;
+var anchorSeq = 0;
+function highlight(menu, item, focus = true) {
+  itemsOf(menu).forEach((i) => {
+    if (i !== item)
+      i.removeAttribute("data-highlighted");
+  });
+  if (item) {
+    item.setAttribute("data-highlighted", "");
+    if (focus)
+      item.focus({ preventScroll: true });
+  }
+}
+function activate(menu, item) {
+  if (isDisabled(item))
+    return;
+  const role = item.getAttribute("role");
+  if (item.classList.contains("dropdown-sub-trigger")) {
+    openSub(item, true);
+    return;
+  }
+  if (role === "menuitemcheckbox") {
+    const checked = item.getAttribute("aria-checked") !== "true";
+    item.setAttribute("aria-checked", String(checked));
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked }
+    }));
+    return;
+  }
+  if (role === "menuitemradio") {
+    const group = item.closest('[role="group"]') ?? menu;
+    dfDollar8(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
+      if (r.closest('[role="menu"]') === menu)
+        r.setAttribute("aria-checked", String(r === item));
+    });
+    item.dispatchEvent(new CustomEvent("dropdown:select", {
+      bubbles: true,
+      detail: { item, value: item.dataset.value ?? item.textContent.trim(), checked: true }
+    }));
+    return;
+  }
+  item.dispatchEvent(new CustomEvent("dropdown:select", {
+    bubbles: true,
+    detail: { item, value: item.dataset.value ?? item.textContent.trim() }
+  }));
+  try {
+    rootOf2(menu).hidePopover();
+  } catch {}
+}
+function openSub(trigger, focusFirst) {
+  const sub = subOf(trigger);
+  if (!sub || isDisabled(trigger))
+    return;
+  clearTimeout(sub._closeTimer);
+  sub._focusFirst = focusFirst;
+  if (!sub.matches(":popover-open")) {
+    try {
+      sub.showPopover();
+    } catch {}
+  } else if (focusFirst)
+    highlight(sub, itemsOf(sub)[0]);
+}
+function closeSub(sub) {
+  if (sub?.matches(":popover-open")) {
+    try {
+      sub.hidePopover();
+    } catch {}
+  }
+}
+function wireMenu(menu) {
+  if (menu._wired)
+    return;
+  menu._wired = true;
+  const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
+  const openSubs = () => Array.from(dfDollar8(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
+  menu.addEventListener("mousemove", (e) => {
+    if (!own(e))
+      return;
+    const item = e.target.closest(ITEM);
+    if (!item || isDisabled(item))
+      return;
+    if (!(item.hasAttribute("data-highlighted") && item === document.activeElement))
+      highlight(menu, item);
+    if (menu._hoverItem === item)
+      return;
+    menu._hoverItem = item;
+    clearTimeout(menu._hoverTimer);
+    const sub = item.classList.contains("dropdown-sub-trigger") ? subOf(item) : null;
+    menu._hoverTimer = setTimeout(() => {
+      openSubs().forEach((s) => {
+        if (s !== sub)
+          closeSub(s);
+      });
+      if (sub)
+        openSub(item, false);
+    }, sub ? HOVER_OPEN : HOVER_CLOSE);
+  });
+  menu.addEventListener("mouseleave", (e) => {
+    clearTimeout(menu._hoverTimer);
+    menu._hoverItem = null;
+    const to = e.relatedTarget;
+    if (to instanceof Element && to.closest(".dropdown-sub-content") && menu.contains(to))
+      return;
+    itemsOf(menu).forEach((i) => {
+      if (!(i.classList.contains("dropdown-sub-trigger") && subOf(i)?.matches(":popover-open")))
+        i.removeAttribute("data-highlighted");
+    });
+  });
+  menu.addEventListener("mousedown", (e) => {
+    if (!own(e))
+      return;
+    const hit = e.target instanceof Element ? e.target.closest(`${ITEM}, input, textarea, select`) : null;
+    if (!hit || isDisabled(hit))
+      e.preventDefault();
+  });
+  menu.addEventListener("click", (e) => {
+    if (!own(e))
+      return;
+    const item = e.target.closest(ITEM);
+    if (!item)
+      return;
+    activate(menu, item);
+  });
+  menu.addEventListener("keydown", (e) => {
+    if (!own(e))
+      return;
+    const items = itemsOf(menu);
+    const current = items.indexOf(document.activeElement);
+    const isSub = menu.classList.contains("dropdown-sub-content");
+    const rtl = getComputedStyle(menu).direction === "rtl";
+    const inward = rtl ? "ArrowLeft" : "ArrowRight";
+    const outward = rtl ? "ArrowRight" : "ArrowLeft";
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        highlight(menu, items[(current + 1) % items.length]);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        highlight(menu, items[(current - 1 + items.length) % items.length]);
+        break;
+      case "Home":
+        e.preventDefault();
+        highlight(menu, items[0]);
+        break;
+      case "End":
+        e.preventDefault();
+        highlight(menu, items[items.length - 1]);
+        break;
+      case inward:
+        if (document.activeElement?.classList.contains("dropdown-sub-trigger")) {
+          e.preventDefault();
+          openSub(document.activeElement, true);
+        }
+        break;
+      case outward:
+        if (isSub) {
+          e.preventDefault();
+          closeSub(menu);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        e.stopPropagation();
+        if (isSub)
+          closeSub(menu);
+        else
+          menu.hidePopover();
+        break;
+      case "Tab":
+        try {
+          rootOf2(menu).hidePopover();
+        } catch {}
+        break;
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        if (document.activeElement?.matches(ITEM) && !isDisabled(document.activeElement))
+          document.activeElement.click();
+        break;
+      default:
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          const k = e.key.toLowerCase();
+          const rest = items.slice(current + 1).concat(items.slice(0, current + 1));
+          const match = rest.find((item) => item.textContent.trim().toLowerCase().startsWith(k));
+          if (match)
+            highlight(menu, match);
+        }
+    }
+  });
+}
+function wireSub(wrap) {
+  const trigger = dfDollar8(wrap).find(":scope > .dropdown-sub-trigger").get(0);
+  const sub = dfDollar8(wrap).find(":scope > .dropdown-sub-content").get(0);
+  if (!trigger || !sub || sub._subWired)
+    return;
+  sub._subWired = true;
+  sub.dataset.init = "";
+  if (!sub.hasAttribute("popover"))
+    sub.setAttribute("popover", "auto");
+  if (!sub.id)
+    sub.id = `dropdown-sub-${++anchorSeq}`;
+  const anchor = `--dropdown-sub-${anchorSeq}-${sub.id}`;
+  trigger.style.anchorName = anchor;
+  sub.style.positionAnchor = anchor;
+  trigger.setAttribute("aria-haspopup", "menu");
+  trigger.setAttribute("aria-expanded", "false");
+  trigger.setAttribute("aria-controls", sub.id);
+  wireMenu(sub);
+  sub.addEventListener("toggle", (e) => {
+    const open = e.newState === "open";
+    trigger.setAttribute("aria-expanded", String(open));
+    if (open) {
+      trigger.setAttribute("data-highlighted", "");
+      if (sub._focusFirst)
+        highlight(sub, itemsOf(sub)[0]);
+    } else {
+      itemsOf(sub).forEach((i) => {
+        i.removeAttribute("data-highlighted");
+      });
+      if (sub.contains(document.activeElement) || document.activeElement === document.body)
+        trigger.focus({ preventScroll: true });
+    }
+  });
+  sub.addEventListener("mouseenter", () => {
+    const parent = trigger.closest('[role="menu"]');
+    if (parent)
+      clearTimeout(parent._hoverTimer);
+    highlight(parent, trigger, false);
+  });
+}
+function init8() {
+  dfDollar8("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
+    trigger.dataset.init = "";
+    const menu = dfDollar8("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
+    if (!menu)
+      return;
+    const anchorId = `--dropdown-${menu.id}`;
+    trigger.style.anchorName = anchorId;
+    menu.style.positionAnchor = anchorId;
+    if (!trigger.hasAttribute("aria-haspopup"))
+      trigger.setAttribute("aria-haspopup", "menu");
+    if (!trigger.hasAttribute("aria-controls"))
+      trigger.setAttribute("aria-controls", menu.id);
+    if (!trigger.hasAttribute("popovertarget"))
+      trigger.setAttribute("popovertarget", menu.id);
+    menu._trigger = trigger;
+    menu.addEventListener("toggle", (e) => {
+      if (e.target !== menu)
+        return;
+      const open = e.newState === "open";
+      trigger.setAttribute("aria-expanded", String(open));
+      if (open) {
+        const first = itemsOf(menu)[0];
+        if (first && !menu._noFocus)
+          highlight(menu, first);
+        menu._noFocus = false;
+      } else {
+        itemsOf(menu).forEach((i) => {
+          i.removeAttribute("data-highlighted");
+        });
+        const active = document.activeElement;
+        const other = active instanceof Element && active !== trigger ? active.closest("[data-dropdown-trigger]") : null;
+        const otherOpen = other ? dfDollar8("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
+        if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
+          trigger.focus({ preventScroll: true });
+      }
+    });
+    wireMenu(menu);
+    dfDollar8(menu).find(".dropdown-sub").toArray().forEach(wireSub);
+  });
+  dfDollar8(".dropdown-sub").toArray().forEach(wireSub);
+  dfDollar8(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
+    menu.dataset.init = "";
+    bindComponent(menu, dropdownApi);
+  });
+}
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
 // src/components/geography/geo-map/geo-map.ts
-var df$5 = defussGlobals();
-var dfDollar5 = defussQuery();
+var df$9 = defussGlobals();
+var dfDollar9 = defussQuery();
 var geoMapStates = ["default", "selected", "focused"];
 var GEO_VENDOR_URLS = {
   d3Array: "https://cdn.jsdelivr.net/npm/d3-array@3.2.4/dist/d3-array.min.js",
@@ -6767,7 +7983,7 @@ var GEO_VENDOR_URLS = {
   geodesic: "https://cdn.jsdelivr.net/npm/geographiclib-geodesic@2.2.0/geographiclib-geodesic.min.js",
   dson: "https://cdn.jsdelivr.net/npm/defuss-dson@1.1.2/dist/index.mjs"
 };
-var releaseData = () => `https://cdn.jsdelivr.net/npm/defuss-shadcn@${df$5.shared?.abi ?? "0.0.0"}/dist/components/geo-map/data/manifest.json`;
+var releaseData = () => `https://cdn.jsdelivr.net/npm/defuss-shadcn@${df$9.shared?.abi ?? "0.0.0"}/dist/components/geo-map/data/manifest.json`;
 var engines = null;
 var enginesPromise = null;
 var settings = {
@@ -6776,7 +7992,7 @@ var settings = {
   views: {}
 };
 var LOAD_MS = 20000;
-var metaContent = (name) => (dfDollar5(`meta[name="${name}"]`).get(0) ?? null)?.content ?? "";
+var metaContent = (name) => (dfDollar9(`meta[name="${name}"]`).get(0) ?? null)?.content ?? "";
 function vendor(vendorUrl) {
   return Promise.resolve().then(() => import(/* @vite-ignore */ vendorUrl));
 }
@@ -7937,13 +9153,13 @@ function svgEl(tag, attrs = {}) {
   return el;
 }
 function setChildren(parent, nodes) {
-  dfDollar5(parent).empty().append(nodes);
+  dfDollar9(parent).empty().append(nodes);
 }
 function layerPath(layer, d) {
   let p = layer.firstElementChild;
   if (!p) {
     p = svgEl("path");
-    dfDollar5(layer).append(p);
+    dfDollar9(layer).append(p);
   }
   if (p.getAttribute("d") !== d)
     p.setAttribute("d", d);
@@ -8319,7 +9535,7 @@ function renderMap(el) {
     loading: [...geo.wanted].filter((p) => !geo.ds.chunks.has(p) && !geo.ds.failed.has(p)).length
   };
   if (el.hasAttribute("aria-busy") !== geo.stats.loading > 0)
-    dfDollar5(el).attr("aria-busy", geo.stats.loading ? "true" : null);
+    dfDollar9(el).attr("aria-busy", geo.stats.loading ? "true" : null);
   if (geo.pendingFit && geo.ds.byKey.has(geo.pendingFit) && !geo.flight) {
     const key = geo.pendingFit;
     geo.pendingFit = null;
@@ -8400,7 +9616,7 @@ function drawCallouts(el, geo, W, H, gutter, path) {
   return groups.length;
 }
 function drawLift(geo) {
-  const el = dfDollar5(geo.svg).closest(".geo-map").get(0);
+  const el = dfDollar9(geo.svg).closest(".geo-map").get(0);
   const keys = new Set;
   if (el?.dataset.highlight === "lift")
     for (const k of geo.view.selected)
@@ -8412,7 +9628,7 @@ function drawLift(geo) {
     existing.set(c.getAttribute("data-key") ?? "", c);
   const keep = [];
   for (const key of keys) {
-    const source = dfDollar5(geo.svg).find(`.geo-map-regions [data-key="${CSS.escape(key)}"], .geo-map-cells [data-key="${CSS.escape(key)}"]`).get(0) ?? null;
+    const source = dfDollar9(geo.svg).find(`.geo-map-regions [data-key="${CSS.escape(key)}"], .geo-map-cells [data-key="${CSS.escape(key)}"]`).get(0) ?? null;
     if (!source)
       continue;
     let copy = existing.get(key);
@@ -8516,9 +9732,9 @@ function reflect(el, name, value, fallback) {
   const current = el.getAttribute(name);
   if ((current ?? fallback) === (value ?? fallback))
     return;
-  dfDollar5(el).attr(name, value === fallback && current === null ? null : value);
+  dfDollar9(el).attr(name, value === fallback && current === null ? null : value);
 }
-function applyMarkup5(el, name, config) {
+function applyMarkup9(el, name, config) {
   if (config.projection !== undefined)
     reflect(el, "data-projection", config.projection, "equalEarth");
   if (config.level !== undefined)
@@ -8534,10 +9750,10 @@ function applyMarkup5(el, name, config) {
   const selected = name === "default" ? [] : keyList(config.selected ?? "");
   const now = keyList(el.getAttribute("data-selected") ?? "");
   if (selected.join(" ") !== now.join(" "))
-    dfDollar5(el).attr("data-selected", selected.length ? selected.join(" ") : null);
+    dfDollar9(el).attr("data-selected", selected.length ? selected.join(" ") : null);
   const focus = name === "focused" ? config.focus || null : null;
   if ((el.getAttribute("data-focus") || null) !== focus)
-    dfDollar5(el).attr("data-focus", focus);
+    dfDollar9(el).attr("data-focus", focus);
 }
 function checkConfig(config) {
   if (config.projection !== undefined && !PROJECTIONS.includes(config.projection))
@@ -8553,7 +9769,7 @@ function checkConfig(config) {
   if (config.zoom !== undefined && (!Number.isFinite(Number(config.zoom)) || Number(config.zoom) < 1 || Number(config.zoom) > 1024))
     throw new RangeError("geo-map: zoom is 1 to 1024");
 }
-function triggerStateChange5(el, name, config, incoming) {
+function triggerStateChange9(el, name, config, incoming) {
   const geo = el._geo;
   checkConfig(config);
   if (incoming.focus?.startsWith("s2:"))
@@ -8567,7 +9783,7 @@ function triggerStateChange5(el, name, config, incoming) {
     landed = keyList(config.selected ?? "").length ? "selected" : "default";
   if (name === "selected" && !keyList(config.selected ?? "").length)
     landed = "default";
-  applyMarkup5(el, landed, config);
+  applyMarkup9(el, landed, config);
   if (landed !== name)
     el.dataset.stateName = landed;
   return geo.ready.then(() => {
@@ -8626,7 +9842,7 @@ var geoMapApi = componentState({
   component: "geo-map",
   states: geoMapStates,
   mergeConfig: true,
-  apply: (el, state, _previous, incoming) => triggerStateChange5(el, state.name, state.config, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange9(el, state.name, state.config, incoming),
   read: (el) => {
     const geo = el._geo;
     if (!geo)
@@ -8635,7 +9851,7 @@ var geoMapApi = componentState({
     const config = configOf2({ ...geo, view: { ...view, center: geo.view.center, zoom: geo.view.zoom } });
     return { name: stateNameOf(view), config };
   },
-  markup: (el, state) => applyMarkup5(el, state.name, state.config)
+  markup: (el, state) => applyMarkup9(el, state.name, state.config)
 });
 function userChange(el, patch) {
   const geo = el._geo;
@@ -8645,7 +9861,7 @@ function userChange(el, patch) {
     act(el, Promise.resolve(geoMapApi.setState(el, name, { selected: config.selected, focus: config.focus ?? null })));
     return;
   }
-  applyMarkup5(el, name, config);
+  applyMarkup9(el, name, config);
   syncView(el, true);
   geoMapApi.commit(el, name, configOf2(geo));
 }
@@ -8704,8 +9920,8 @@ function settleSoon(el) {
 var keyAt = (target) => {
   if (!(target instanceof Element))
     return null;
-  const hit = dfDollar5(target).closest("[data-key]").get(0);
-  return hit && !dfDollar5(hit).closest(".geo-map-context").get(0) ? hit.getAttribute("data-key") : null;
+  const hit = dfDollar9(target).closest("[data-key]").get(0);
+  return hit && !dfDollar9(hit).closest(".geo-map-context").get(0) ? hit.getAttribute("data-key") : null;
 };
 function pick(el, key, additive) {
   const geo = el._geo;
@@ -8731,7 +9947,7 @@ function showTooltip(geo, key, pixel) {
   if (!region)
     return;
   const parent = region.properties.parent ? geo.ds?.byKey.get(`country:${region.properties.parent}`)?.properties.name : "";
-  dfDollar5(t).text(parent ? `${region.properties.name}, ${parent}` : region.properties.name);
+  dfDollar9(t).text(parent ? `${region.properties.name}, ${parent}` : region.properties.name);
   t.hidden = false;
   if (pixel) {
     t.style.left = `${Math.min(pixel[0] + 14, geo.width - 8)}px`;
@@ -8743,7 +9959,7 @@ function setHover(el, key) {
   if (geo.hover === key)
     return;
   geo.hover = key;
-  for (const c of dfDollar5(geo.svg).find(".geo-map-callout").toArray())
+  for (const c of dfDollar9(geo.svg).find(".geo-map-callout").toArray())
     c.toggleAttribute("data-hover", c.getAttribute("data-key") === key);
   drawLift(geo);
   writeOutputs(el);
@@ -8774,7 +9990,7 @@ function moveRoving(el, key, dir) {
     return;
   geo.roving = best;
   renderMap(el);
-  const target = dfDollar5(geo.svg).find(`[data-key="${CSS.escape(best)}"][role="button"]`).get(0);
+  const target = dfDollar9(geo.svg).find(`[data-key="${CSS.escape(best)}"][role="button"]`).get(0);
   target?.focus();
 }
 function bindInteractions(el) {
@@ -8901,18 +10117,18 @@ function writeOutputs(el) {
   if (!el.id)
     return;
   const geo = el._geo;
-  for (const out of dfDollar5(`output[data-geo-for="${CSS.escape(el.id)}"]`).toArray()) {
+  for (const out of dfDollar9(`output[data-geo-for="${CSS.escape(el.id)}"]`).toArray()) {
     const kind = out.dataset.geoOutput ?? "selection";
     const v = geo.view;
     const cell = cellFocus(v);
     const text = kind === "focus" ? v.focus ? nameOfKey(geo, v.focus) : "World" : kind === "zoom" ? `${v.zoom < 10 ? v.zoom.toFixed(1) : Math.round(v.zoom)}x` : kind === "level" ? v.focus ? v.focus.startsWith("s2:") ? cell ? `S2 level ${s2Level(cell) + 1}` : "" : v.focus.startsWith("continent:") ? "country" : "state" : levelFor(v) : kind === "hover" ? geo.hover ? nameOfKey(geo, geo.hover) : "" : kind === "center" ? `${v.center[1].toFixed(2)}°, ${v.center[0].toFixed(2)}°` : kind === "regions" ? String(geo.stats.visibleRegions) : v.selected.map((k) => nameOfKey(geo, k)).join(", ");
     if (out.textContent !== text)
-      dfDollar5(out).text(text);
+      dfDollar9(out).text(text);
   }
 }
 var mapFor = (control) => {
   const id = control.getAttribute("data-geo-for") ?? "";
-  const el = id ? dfDollar5(`#${CSS.escape(id)}`).get(0) : null;
+  const el = id ? dfDollar9(`#${CSS.escape(id)}`).get(0) : null;
   return el?.matches(".geo-map") && el._geo ? el : null;
 };
 async function suggest(input, el) {
@@ -8922,7 +10138,7 @@ async function suggest(input, el) {
     list = document.createElement("datalist");
     list.id = `${el.id}-geo-names-${nextId++}`;
     list.setAttribute("data-ce-chrome", "");
-    dfDollar5(input).after(list);
+    dfDollar9(input).after(list);
     input.setAttribute("list", list.id);
   }
   setChildren(list, hits.map((h) => {
@@ -8953,8 +10169,8 @@ function bindControls() {
   if (document.__geoMapInit)
     return;
   document.__geoMapInit = true;
-  dfDollar5(document).on("click", (e) => {
-    const control = e.target instanceof Element ? dfDollar5(e.target).closest("[data-geo-for][data-geo-action]").get(0) : undefined;
+  dfDollar9(document).on("click", (e) => {
+    const control = e.target instanceof Element ? dfDollar9(e.target).closest("[data-geo-for][data-geo-action]").get(0) : undefined;
     if (!control || control.tagName === "INPUT")
       return;
     const el = mapFor(control);
@@ -8988,7 +10204,7 @@ function bindControls() {
         break;
     }
   });
-  dfDollar5(document).on("change", (e) => {
+  dfDollar9(document).on("change", (e) => {
     const control = e.target instanceof HTMLElement ? e.target : null;
     if (!control?.matches("[data-geo-for]"))
       return;
@@ -9006,7 +10222,7 @@ function bindControls() {
     const current = el.api.getState();
     act(el, Promise.resolve(geoMapApi.setState(el, current.name, { [param]: value })));
   });
-  dfDollar5(document).on("input", (e) => {
+  dfDollar9(document).on("input", (e) => {
     const input = e.target instanceof HTMLInputElement ? e.target : null;
     if (!input?.matches('[data-geo-for][data-geo-action="search"]'))
       return;
@@ -9017,7 +10233,7 @@ function bindControls() {
     input.removeAttribute("aria-invalid");
     act(el, suggest(input, el));
   });
-  dfDollar5(document).on("keydown", (e) => {
+  dfDollar9(document).on("keydown", (e) => {
     const ev = e;
     const input = ev.target instanceof HTMLInputElement ? ev.target : null;
     if (ev.key !== "Enter" || !input?.matches('[data-geo-for][data-geo-action="search"]'))
@@ -9030,7 +10246,7 @@ function bindControls() {
   });
 }
 var mapOf = (el) => {
-  const node = typeof el === "string" ? dfDollar5(el).get(0) : el;
+  const node = typeof el === "string" ? dfDollar9(el).get(0) : el;
   if (!node?.matches?.(".geo-map") || !node._geo)
     throw new Error("not an initialized .geo-map");
   return node;
@@ -9159,9 +10375,9 @@ function stats(el) {
 function hatch(el) {
   return mapOf(el)._geo.hatch;
 }
-df$5.geoMapApi = geoMapApi;
-df$5.geoMapStates = geoMapStates;
-df$5.geoMap = {
+df$9.geoMapApi = geoMapApi;
+df$9.geoMapStates = geoMapStates;
+df$9.geoMap = {
   select,
   focus: focusRegion,
   up: focusUp,
@@ -9177,7 +10393,7 @@ df$5.geoMap = {
   stats,
   hatch
 };
-df$5.geo = {
+df$9.geo = {
   load,
   configure,
   urls: GEO_VENDOR_URLS,
@@ -9209,7 +10425,7 @@ df$5.geo = {
   rewind
 };
 function layersFrom(el) {
-  const script = dfDollar5(el).children("script.geo-map-layers").get(0);
+  const script = dfDollar9(el).children("script.geo-map-layers").get(0);
   const empty = { markers: [], lines: [], cells: [], styles: {} };
   if (!script)
     return empty;
@@ -9315,9 +10531,9 @@ function mount2(el) {
     restTimer: 0
   };
   el._geo = geo;
-  dfDollar5(el).append(svg).append(tooltip);
+  dfDollar9(el).append(svg).append(tooltip);
   el.dataset.geoStatus = "loading";
-  dfDollar5(el).attr("aria-busy", "true");
+  dfDollar9(el).attr("aria-busy", "true");
   geo.ready = (async () => {
     try {
       await load();
@@ -9351,16 +10567,16 @@ function mount2(el) {
       renderMap(el);
       announceView(el);
       if (layerError) {
-        dfDollar5(el).append(dfDollar5('<output class="geo-map-error" role="alert" data-ce-chrome></output>').text(layerError));
+        dfDollar9(el).append(dfDollar9('<output class="geo-map-error" role="alert" data-ce-chrome></output>').text(layerError));
         reportError2(el, new Error(layerError), "");
       }
     } catch (err) {
       geo.status = "error";
       el.dataset.geoStatus = "error";
-      dfDollar5(el).attr("aria-busy", null);
+      dfDollar9(el).attr("aria-busy", null);
       const message = err instanceof Error ? err.message : String(err);
-      dfDollar5(el).children(".geo-map-error").remove();
-      dfDollar5(el).append(dfDollar5('<output class="geo-map-error" role="alert" data-ce-chrome></output>').text(`The map could not be loaded. ${message}`));
+      dfDollar9(el).children(".geo-map-error").remove();
+      dfDollar9(el).append(dfDollar9('<output class="geo-map-error" role="alert" data-ce-chrome></output>').text(`The map could not be loaded. ${message}`));
       reportError2(el, err, "");
     }
   })();
@@ -9381,8 +10597,8 @@ function mount2(el) {
   });
   bindInteractions(el);
 }
-function init5() {
-  dfDollar5(".geo-map:not([data-init])").toArray().forEach((el) => {
+function init9() {
+  dfDollar9(".geo-map:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     bindControls();
     mount2(el);
@@ -9392,13 +10608,13 @@ function init5() {
     geoMapApi.setState(el, name, {});
   });
 }
-init5();
-new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document, { childList: true, subtree: true });
 
 // src/components/graphs/graph-explorer/graph-explorer.ts
-var df$6 = defussGlobals();
-var dfDollar6 = defussQuery();
-var morphRuntime = dfDollar6;
+var df$10 = defussGlobals();
+var dfDollar10 = defussQuery();
+var morphRuntime = dfDollar10;
 var parseVNodes = (markup) => [...new DOMParser().parseFromString(`<body>${markup}</body>`, "text/html").body.childNodes].map((n) => morphRuntime.domNodeToVNode(n));
 var graphExplorerStates = ["default", "selected", "focused"];
 var TONES = ["muted", "ink", "accent", "link", "ok", "warn", "danger"];
@@ -9413,9 +10629,9 @@ function keyList2(value) {
 }
 var SAFE = new WeakSet;
 var ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
-var esc2 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
+var esc3 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
 var isSafe = (v) => !!v && typeof v === "object" && SAFE.has(v);
-var part = (v) => isSafe(v) ? v.html : Array.isArray(v) ? v.map(part).join("") : esc2(v);
+var part = (v) => isSafe(v) ? v.html : Array.isArray(v) ? v.map(part).join("") : esc3(v);
 function html(strings, ...values) {
   let out = strings[0];
   for (let i = 0;i < values.length; i++)
@@ -9497,12 +10713,12 @@ function morphKeeping(el, content, mounts) {
   });
   const tree = slots(vnodesOf(content));
   const kept = new Map;
-  for (const isl of dfDollar6(el).find(`[${ISLAND}]`).toArray()) {
+  for (const isl of dfDollar10(el).find(`[${ISLAND}]`).toArray()) {
     const key = isl.getAttribute(ISLAND) ?? "";
     if (kept.has(key))
       continue;
     kept.set(key, isl);
-    dfDollar6(isl).replaceWith(dfDollar6(`<div ${SLOT}="${esc2(key)}"></div>`).get(0));
+    dfDollar10(isl).replaceWith(dfDollar10(`<div ${SLOT}="${esc3(key)}"></div>`).get(0));
   }
   const drop = (isl) => {
     try {
@@ -9514,7 +10730,7 @@ function morphKeeping(el, content, mounts) {
       isl._islandCleanup = null;
   };
   morphRuntime.morph(el, tree);
-  for (const slot of dfDollar6(el).find(`[${SLOT}]`).toArray()) {
+  for (const slot of dfDollar10(el).find(`[${SLOT}]`).toArray()) {
     const key = slot.getAttribute(SLOT) ?? "", vnode = want.get(key), sig = JSON.stringify(vnode ?? null);
     let node = kept.get(key);
     let made = false;
@@ -9525,14 +10741,14 @@ function morphKeeping(el, content, mounts) {
       node = box.firstElementChild;
       if (!node) {
         kept.delete(key);
-        dfDollar6(slot).remove();
+        dfDollar10(slot).remove();
         continue;
       }
       node._islandSig = sig;
       made = true;
     }
     kept.delete(key);
-    dfDollar6(slot).replaceWith(node);
+    dfDollar10(slot).replaceWith(node);
     const mount = made ? mounts?.get(key) : undefined;
     if (mount)
       try {
@@ -9547,7 +10763,7 @@ function morphKeeping(el, content, mounts) {
     drop(isl);
 }
 function dropIslands(el) {
-  for (const isl of dfDollar6(el).find(`[${ISLAND}]`).toArray()) {
+  for (const isl of dfDollar10(el).find(`[${ISLAND}]`).toArray()) {
     try {
       isl._islandCleanup?.();
     } catch (err) {
@@ -9577,8 +10793,8 @@ function registerIcon(name, svg) {
     throw new TypeError("graph-explorer: icon markup may only hold shapes");
   const doc = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>${String(svg).replace(/"/g, "'")}</svg>`;
   if (!iconSheet) {
-    iconSheet = dfDollar6("<style data-graph-explorer-icons></style>").get(0);
-    dfDollar6(document.head).append(iconSheet);
+    iconSheet = dfDollar10("<style data-graph-explorer-icons></style>").get(0);
+    dfDollar10(document.head).append(iconSheet);
   }
   iconSheet.append(`.graph-explorer-icon[data-icon="${name}"]{--graph-explorer-icon:url("data:image/svg+xml,${encodeURIComponent(doc)}")}
 `);
@@ -9598,7 +10814,12 @@ var TYPE_ICON = {
 };
 var typeIcon = (n, opts = {}) => icon(TYPE_ICON[n.typeName] || "circle", { cls: "graph-explorer-type-icon", type: n.type, ...opts });
 var EDGE_ICON = { calls: "zap", reads: "eye", owns: "key-round" };
-var globalRegistry = { node: [], edge: [], detail: [] };
+var globalRegistry = {
+  node: [],
+  edge: [],
+  detail: [],
+  update: []
+};
 var DEFAULT_LABEL = {
   levels: { icon: 36, label: 110, full: 220 },
   sizes: { icon: [20, 20], label: [104, 22], full: [196, 24] },
@@ -9617,9 +10838,11 @@ function registryOf(scope) {
   return inst.registry;
 }
 function register(scope, plugin) {
-  const kinds = ["node", "edge", "detail"];
+  const kinds = ["node", "edge", "detail", "update"];
   if (!plugin || !kinds.includes(plugin.kind))
-    throw new TypeError("graph-explorer: plugin.kind must be node, edge or detail");
+    throw new TypeError("graph-explorer: plugin.kind must be node, edge, detail or update");
+  if (plugin.kind === "update" && typeof plugin.update?.render !== "function")
+    throw new TypeError("graph-explorer: update plugins need update.render");
   if (plugin.kind === "node" && (typeof plugin.match !== "function" || typeof plugin.render !== "function" || !plugin.sizes))
     throw new TypeError("graph-explorer: node plugins need match, sizes and render");
   if (plugin.kind === "edge" && !Array.isArray(plugin.rules) && !plugin.label && !plugin.detail)
@@ -9628,8 +10851,10 @@ function register(scope, plugin) {
     throw new TypeError("graph-explorer: an edge detail renderer needs render");
   if (plugin.kind === "edge" && plugin.label && (typeof plugin.label.render !== "function" || typeof plugin.label.match !== "function"))
     throw new TypeError("graph-explorer: edge label renderers need match and render");
-  if (plugin.kind === "node" && plugin.variant != null && !/^[a-z0-9-]+$/.test(plugin.variant))
-    throw new TypeError("graph-explorer: a node variant is a lowercase word");
+  if (plugin.layer != null && !/^[a-z0-9-]+$/.test(plugin.layer))
+    throw new TypeError("graph-explorer: a layer is a lowercase word");
+  if (plugin.kind === "node" && plugin.layer === "nodes")
+    throw new TypeError("graph-explorer: a renderer of the nodes layer has no layer - it draws the node itself");
   if (plugin.kind === "detail" && (typeof plugin.match !== "function" || typeof plugin.render !== "function"))
     throw new TypeError("graph-explorer: detail plugins need match and render");
   if (plugin.kind === "edge")
@@ -9718,7 +10943,7 @@ function zoomPath(p0, p1) {
       return [ux0 + u * dx, uy0 + u * dy, w0 * c0 / Math.cosh(rho * s + r0)];
     };
   }
-  return { at, ms: clamp3(Math.abs(S) * 1000 * 0.9, 450, 1400) };
+  return { at, ms: clamp3(Math.abs(S) * 1000 * 0.3, 160, 460) };
 }
 var ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 var STATE_LABEL = { closed: "closed", "half-open": "half-open", open: "open", cut: "cut" };
@@ -9732,26 +10957,22 @@ var health = (n) => {
 };
 var healthBar = (c, h) => c.html`<span class="graph-explorer-health" role="img" aria-label="${h.open} open, ${h.half} half-open, ${h.cut} cut of ${h.total} links"><span data-tone="danger" style="flex:${h.open}"></span><span data-tone="warn" style="flex:${h.half}"></span><span data-tone="ink" style="flex:${h.cut}"></span><span data-tone="ok" style="flex:${h.closed}"></span></span>`;
 var breakerKey = (n) => n.breakers ? `${n.breakers.open}/${n.breakers.half}/${n.breakers.cut}` : "";
+var freshness = (n) => {
+  const f = n.attrs?.freshness ?? 0;
+  return { f, tone: f > 24 ? "danger" : f > 12 ? "warn" : "ok" };
+};
 register("global", {
   kind: "node",
   name: "builtin-cluster",
   match: (n) => n.kind === "cluster" ? 0 : false,
-  sizes: { chip: [160, 28], card: [252, 108] },
-  key: breakerKey,
+  sizes: { chip: [132, 28], card: [236, 74] },
   render: (n, c) => {
     if (c.tier === "chip")
-      return c.html`<span class="graph-explorer-chip" data-kind="cluster">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${cycleMark(c, n)}<span class="graph-explorer-count">${fmt(n.members)}</span></span>`;
-    const b = n.breakers || { open: 0, half: 0, cut: 0 };
+      return c.html`<span class="graph-explorer-chip" data-kind="cluster">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${c.parts}</span>`;
     return c.html`<article class="graph-explorer-card" data-kind="cluster">
-        <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${cycleMark(c, n)}${expandBtn(c, n.label)}</header>
-        <p class="graph-explorer-card-meta">${n.typeName} · ${fmt(n.children)} children · ${fmt(n.members)} nodes</p>
-        <p class="graph-explorer-card-flags">
-          ${b.open ? c.html`<span class="badge" data-variant="destructive">${b.open} open</span>` : ""}
-          ${b.half ? c.html`<span class="badge graph-explorer-warn">${b.half} half-open</span>` : ""}
-          ${b.cut ? c.html`<span class="badge" data-variant="outline">${b.cut} cut</span>` : ""}
-          ${!b.open && !b.half && !b.cut ? c.html`<span class="badge" data-variant="secondary">all closed</span>` : ""}
-        </p>
-        <button type="button" class="btn graph-explorer-card-enter" data-variant="outline" data-size="xs" data-graph-explorer-action="${c.action("enter")}">Enter ⏎</button>
+        <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
+        ${c.parts}
+        <footer class="graph-explorer-card-actions"><button type="button" class="btn graph-explorer-card-enter" data-variant="outline" data-size="xs" data-graph-explorer-action="${c.action("enter")}" title="Zoom into ${n.label}: its ${fmt(n.children)} children (Enter)">Zoom in ⏎</button></footer>
       </article>`;
   }
 });
@@ -9759,60 +10980,59 @@ register("global", {
   kind: "node",
   name: "builtin-entity",
   match: (n) => n.kind === "entity" ? 0 : false,
-  sizes: { chip: [150, 26], card: [228, 92] },
+  sizes: { chip: [128, 26], card: [220, 42] },
   render: (n, c) => {
     if (c.tier === "chip")
-      return c.html`<span class="graph-explorer-chip" data-kind="entity">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span></span>`;
+      return c.html`<span class="graph-explorer-chip" data-kind="entity">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${c.parts}</span>`;
     return c.html`<article class="graph-explorer-card" data-kind="entity">
         <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
-        <p class="graph-explorer-card-meta">${n.typeName} · ${n.attrs?.out} out · ${n.attrs?.in} in</p>
-        <p class="graph-explorer-card-meta">${c.icon("user", { size: "xs" })} ${n.attrs?.owner}</p>
+        ${c.parts}
       </article>`;
+  }
+});
+register("global", {
+  kind: "node",
+  name: "builtin-relations",
+  layer: "relations",
+  match: () => 0,
+  sizes: (n) => smallCycle(n) ? { chip: [22, 0], card: [0, 29] } : { card: [0, 29] },
+  render: (n, c) => {
+    if (c.tier === "chip")
+      return c.html`${cycleMark(c, n)}`;
+    return n.kind === "cluster" ? c.html`<p class="graph-explorer-card-meta">${cycleMark(c, n)}${fmt(n.degree)} links${smallCycle(n) ? c.html` · in a cycle of ${n.scc}` : ""}</p>` : c.html`<p class="graph-explorer-card-meta">${n.attrs?.out} out · ${n.attrs?.in} in</p>`;
+  }
+});
+register("global", {
+  kind: "node",
+  name: "builtin-labels",
+  layer: "labels",
+  match: () => 0,
+  sizes: { chip: [56, 0], card: [0, 29] },
+  render: (n, c) => {
+    if (c.tier === "chip")
+      return c.html`<span class="graph-explorer-count">${n.kind === "cluster" ? fmt(n.members) : n.typeName}</span>`;
+    return n.kind === "cluster" ? c.html`<p class="graph-explorer-card-meta">${n.typeName} · ${fmt(n.children)} children · ${fmt(n.members)} nodes</p>` : c.html`<p class="graph-explorer-card-meta">${n.typeName} · #${n.id.slice(1)}</p>`;
   }
 });
 register("global", {
   kind: "node",
   name: "builtin-health",
-  variant: "health",
-  variantLabel: "Health",
-  variantIcon: "activity",
+  layer: "health",
   match: () => 0,
-  sizes: { chip: [176, 30], card: [256, 116] },
+  sizes: (n) => ({ chip: [52, 0], card: [0, n.kind === "cluster" ? 41 : 29] }),
   key: breakerKey,
   render: (n, c) => {
     if (n.kind === "cluster") {
       const h = health(n);
       if (c.tier === "chip")
-        return c.html`<span class="graph-explorer-chip" data-kind="cluster" data-health="${h.tone}">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span>${healthBar(c, h)}</span>`;
-      return c.html`<article class="graph-explorer-card" data-kind="cluster" data-health="${h.tone}">
-          <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
-          ${healthBar(c, h)}
-          <p class="graph-explorer-card-meta">${h.bad ? `${h.open} open · ${h.half} half-open · ${h.cut} cut` : "all links closed"} · of ${fmt(h.total)}</p>
-          <p class="graph-explorer-card-meta">${fmt(n.members)} nodes · ${fmt(n.degree)} links</p>
-          <button type="button" class="btn graph-explorer-card-enter" data-variant="outline" data-size="xs" data-graph-explorer-action="${c.action("enter")}">Enter ⏎</button>
-        </article>`;
+        return c.html`<span data-health="${h.tone}">${healthBar(c, h)}</span>`;
+      return c.html`<div data-health="${h.tone}">${healthBar(c, h)}<p class="graph-explorer-card-meta">${h.bad ? `${h.open} open · ${h.half} half-open · ${h.cut} cut` : "all links closed"} · of ${fmt(h.total)}</p></div>`;
     }
-    const f = n.attrs?.freshness ?? 0, tone = f > 24 ? "danger" : f > 12 ? "warn" : "ok";
+    const { f, tone } = freshness(n);
     if (c.tier === "chip")
-      return c.html`<span class="graph-explorer-chip" data-kind="entity" data-health="${tone}">${typeIcon(n)}<span class="graph-explorer-label">${n.label}</span><span class="graph-explorer-pill" data-tone="${tone}">${f} h</span></span>`;
-    const links = (n.attrs?.out ?? 0) + (n.attrs?.in ?? 0);
-    return c.html`<article class="graph-explorer-card" data-kind="entity" data-health="${tone}">
-        <header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong>${expandBtn(c, n.label)}</header>
-        <p class="graph-explorer-meter-row"><span>Freshness</span><span class="graph-explorer-meter" data-tone="${tone}"><span style="width:${Math.min(100, Math.round(f / 48 * 100))}%"></span></span><span>${f} h</span></p>
-        <p class="graph-explorer-meter-row"><span>Links</span><span class="graph-explorer-meter" data-tone="accent"><span style="width:${Math.min(100, links * 8)}%"></span></span><span>${n.attrs?.out}↗ ${n.attrs?.in}↙</span></p>
-      </article>`;
+      return c.html`<span class="graph-explorer-pill" data-tone="${tone}">${f} h</span>`;
+    return c.html`<p class="graph-explorer-meter-row" data-health="${tone}"><span>Freshness</span><span class="graph-explorer-meter" data-tone="${tone}"><span style="width:${Math.min(100, Math.round(f / 48 * 100))}%"></span></span><span>${f} h</span></p>`;
   }
-});
-register("global", {
-  kind: "node",
-  name: "builtin-compact",
-  variant: "compact",
-  variantLabel: "Compact",
-  variantIcon: "rows-3",
-  match: () => 0,
-  sizes: { chip: [124, 22], card: [168, 44] },
-  render: (n, c) => c.tier === "chip" ? c.html`<span class="graph-explorer-chip" data-kind="${n.kind}" data-density="compact">${typeIcon(n, { size: "xs" })}<span class="graph-explorer-label">${n.label}</span></span>` : c.html`<article class="graph-explorer-card" data-kind="${n.kind}" data-density="compact"><header class="graph-explorer-card-head">${typeIcon(n)}<strong class="graph-explorer-label">${n.label}</strong></header>
-          <p class="graph-explorer-card-meta">${n.typeName}${n.kind === "cluster" ? " · " + fmt(n.members) : ""}</p></article>`
 });
 register("global", {
   kind: "edge",
@@ -9875,6 +11095,7 @@ var AGG = { field: "breaker.aggregate", equals: true };
 register("global", {
   kind: "edge",
   name: "circuit-breaker",
+  layer: "health",
   rules: [
     { when: [{ field: "breaker.state", equals: "closed" }], style: { tone: "muted", width: 1.25, arrow: "end" } },
     {
@@ -10054,7 +11275,7 @@ var gotoCell = (idField, labelField) => (el, record) => {
   el.append(b);
 };
 function rowsView(c, id, kind, label, fallback) {
-  const grids = df$6.dataGrid;
+  const grids = df$10.dataGrid;
   if (!grids?.source)
     return fallback();
   const cols = kind === "entities" ? ENTITY_COLUMNS : LINK_COLUMNS;
@@ -10071,9 +11292,9 @@ function rowsView(c, id, kind, label, fallback) {
     c.fetchRows(id).then((data) => {
       if (!alive)
         return;
-      const grid = dfDollar6(el).find(".data-grid").get(0);
-      const count = dfDollar6(el).find(".graph-explorer-records-count").get(0);
-      const strip = dfDollar6(el).find(".graph-explorer-records-shares").get(0);
+      const grid = dfDollar10(el).find(".data-grid").get(0);
+      const count = dfDollar10(el).find(".graph-explorer-records-count").get(0);
+      const strip = dfDollar10(el).find(".graph-explorer-records-shares").get(0);
       grids.setSource(grid, data.rows, {
         cells: kind === "entities" ? { label: gotoCell("id", "label") } : { fromLabel: gotoCell("from", "fromLabel"), toLabel: gotoCell("to", "toLabel") }
       });
@@ -10120,7 +11341,7 @@ function composition(c, kids, keyOf, weight) {
   return c.html`<ul class="graph-explorer-shares">${list.map(([k, n]) => c.html`<li><span class="graph-explorer-share-name">${k}</span><span class="graph-explorer-share-value">${fmt(n)} · ${Math.round(n / Math.max(1, total) * 100)} %</span>${shareBar(c, n, total)}</li>`)}</ul>`;
 }
 var healthBlock = (c, h) => c.html`${healthBar(c, h)}<ul class="graph-explorer-legend"><li data-tone="danger">${fmt(h.open)} open</li><li data-tone="warn">${fmt(h.half)} half-open</li><li data-tone="ink">${fmt(h.cut)} cut</li><li data-tone="ok">${fmt(h.closed)} closed</li></ul>`;
-var nodeActions = (c, item) => c.html`<div class="graph-explorer-detail-actions">${item.kind === "cluster" ? c.html`<button type="button" class="btn" data-variant="default" data-size="sm" data-graph-explorer-action="${c.action("enter")}">${c.icon("arrow-right")} Enter</button>` : ""}${c.expanded ? "" : c.html`<button type="button" class="btn" data-variant="outline" data-size="sm" data-graph-explorer-action="${c.action("bring")}" title="Bring &amp; Go (B)">${c.icon("crosshair")} Bring &amp; Go</button>`}${pageToggle(c)}</div>`;
+var nodeActions = (c, item) => c.html`<div class="graph-explorer-detail-actions">${item.kind === "cluster" ? c.html`<button type="button" class="btn" data-variant="default" data-size="sm" data-graph-explorer-action="${c.action("enter")}" title="Zoom into ${item.label} and show its ${fmt(item.children)} children (Enter)">${c.icon("scan")} Zoom in</button>` : ""}${c.expanded ? "" : c.html`<button type="button" class="btn" data-variant="outline" data-size="sm" data-graph-explorer-action="${c.action("bring")}" title="Gather the busiest neighbours of ${item.label} around it and fly to the one you pick (B)">${c.icon("crosshair")} Jump to a neighbour</button>`}${pageToggle(c)}</div>`;
 register("global", {
   kind: "detail",
   name: "builtin-detail",
@@ -10302,45 +11523,62 @@ register("global", {
   }
 });
 var FOR = "data-graph-explorer-for";
-var OUTLETS = ["breadcrumb", "search", "outline", "details", "relations", "node-ui"];
+var OUTLETS = ["breadcrumb", "search", "outline", "details", "relations", "layers", "updates"];
+var BUILTIN_LAYERS = [
+  { name: "nodes", label: "Nodes", icon: "circle", base: true },
+  { name: "relations", label: "Relations", icon: "network", base: true },
+  { name: "labels", label: "Labels", icon: "tag", base: false },
+  { name: "health", label: "Health", icon: "activity", base: false }
+];
+var BASE_LAYERS = ["nodes", "relations"];
+function layerList(value) {
+  const words = Array.isArray(value) ? value.map(String) : String(value ?? "").split(/\s+/);
+  return [...new Set(words.map((w) => w.trim()).filter((w) => /^[a-z0-9-]+$/.test(w)))];
+}
+function layersOf(el) {
+  return el.hasAttribute("data-layers") ? layerList(el.getAttribute("data-layers")) : [...BASE_LAYERS];
+}
+var sameLayers = (a, b) => a.length === b.length && [...a].sort().join(" ") === [...b].sort().join(" ");
 function boundOf(el, sel) {
   if (!el.id)
     return [];
   const out = [];
-  for (const bound of dfDollar6(`[${FOR}="${CSS.escape(el.id)}"]`).toArray()) {
+  for (const bound of dfDollar10(`[${FOR}="${CSS.escape(el.id)}"]`).toArray()) {
     if (bound.matches(sel))
       out.push(bound);
-    out.push(...dfDollar6(bound).find(sel).toArray());
+    out.push(...dfDollar10(bound).find(sel).toArray());
   }
   return [...new Set(out)];
 }
 function outletChrome(outlet, kind, make) {
-  let chrome = dfDollar6(outlet).children(`.graph-explorer-${kind}[data-ce-chrome]`).get(0);
+  let chrome = dfDollar10(outlet).children(`.graph-explorer-${kind}[data-ce-chrome]`).get(0);
   if (!chrome) {
     chrome = make();
-    dfDollar6(outlet).append(chrome);
+    dfDollar10(outlet).append(chrome);
   }
   return chrome;
 }
-var resolveTarget = (target) => typeof target === "string" ? dfDollar6(target).get(0) : target;
-function applyMarkup6(el, name, config) {
-  if (config.nodeUi !== undefined) {
-    const ui = config.nodeUi && config.nodeUi !== "default" ? config.nodeUi : null;
-    if (el.getAttribute("data-node-ui") !== ui)
-      dfDollar6(el).attr("data-node-ui", ui);
+var resolveTarget = (target) => typeof target === "string" ? dfDollar10(target).get(0) : target;
+function applyMarkup10(el, name, config) {
+  if (config.layers !== undefined) {
+    const want = layerList(config.layers);
+    if (!sameLayers(want, layersOf(el)))
+      dfDollar10(el).attr("data-layers", sameLayers(want, BASE_LAYERS) ? null : want.join(" "));
   }
+  if (config.compact !== undefined && el.hasAttribute("data-compact") !== !!config.compact)
+    dfDollar10(el).attr("data-compact", config.compact ? "" : null);
   const selected = name === "default" ? [] : keyList2(config.selected ?? "");
   if (selected.join(" ") !== keyList2(el.getAttribute("data-selected") ?? "").join(" "))
-    dfDollar6(el).attr("data-selected", selected.length ? selected.join(" ") : null);
+    dfDollar10(el).attr("data-selected", selected.length ? selected.join(" ") : null);
   const edge = name === "default" || selected.length ? null : edgeKey(config.edge);
   if ((el.getAttribute("data-selected-edge") || null) !== edge)
-    dfDollar6(el).attr("data-selected-edge", edge);
+    dfDollar10(el).attr("data-selected-edge", edge);
   const focus = name === "focused" ? config.focus || null : null;
   if ((el.getAttribute("data-focus") || null) !== focus)
-    dfDollar6(el).attr("data-focus", focus);
+    dfDollar10(el).attr("data-focus", focus);
   const expanded = (selected.length > 0 || !!edge) && !!config.expanded;
   if (el.hasAttribute("data-expanded") !== expanded)
-    dfDollar6(el).attr("data-expanded", expanded ? "" : null);
+    dfDollar10(el).attr("data-expanded", expanded ? "" : null);
 }
 function edgeKey(value) {
   const v = typeof value === "string" ? value.trim() : "";
@@ -10353,12 +11591,13 @@ function configOf3(el) {
   return {
     focus: el.getAttribute("data-focus") || null,
     selected: keyList2(el.getAttribute("data-selected") ?? ""),
-    nodeUi: el.getAttribute("data-node-ui") || "default",
+    layers: layersOf(el),
+    compact: el.hasAttribute("data-compact"),
     expanded: el.hasAttribute("data-expanded"),
     edge: edgeKey(el.getAttribute("data-selected-edge"))
   };
 }
-function triggerStateChange6(el, name, config, incoming) {
+function triggerStateChange10(el, name, config, incoming) {
   const inst = el._graphExplorer;
   const asked = name;
   if (incoming.focus && name !== "focused")
@@ -10376,7 +11615,7 @@ function triggerStateChange6(el, name, config, incoming) {
     landed = selected.length || edge ? "selected" : "default";
   if (name === "selected" && !selected.length && !edge)
     landed = "default";
-  applyMarkup6(el, landed, config);
+  applyMarkup10(el, landed, config);
   if (landed !== asked)
     el.dataset.stateName = landed;
   return inst ? inst.sync() : Promise.resolve();
@@ -10385,7 +11624,7 @@ var graphExplorerApi = componentState({
   component: "graph-explorer",
   states: graphExplorerStates,
   mergeConfig: true,
-  apply: (el, state, _previous, incoming) => triggerStateChange6(el, state.name, state.config, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange10(el, state.name, state.config, incoming),
   read: (el) => {
     const config = configOf3(el);
     return {
@@ -10393,21 +11632,38 @@ var graphExplorerApi = componentState({
       config
     };
   },
-  markup: (el, state) => applyMarkup6(el, state.name, state.config)
+  markup: (el, state) => applyMarkup10(el, state.name, state.config)
 });
-df$6.graphExplorerApi = graphExplorerApi;
-df$6.graphExplorerStates = graphExplorerStates;
+df$10.graphExplorerApi = graphExplorerApi;
+df$10.graphExplorerStates = graphExplorerStates;
+var CHANGE_MS = 8000;
+var TIME_FMT = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+var UPDATE_LIMIT = 1e4;
+var UPDATE_ICONS = {
+  deploy: "send",
+  breaker: "zap",
+  traffic: "activity",
+  count: "hash"
+};
+register("global", {
+  kind: "update",
+  name: "builtin-update",
+  update: {
+    match: () => 0,
+    render: (u, c) => c.html`<span class="indicator-dot" data-size="sm" ${u.tone ? c.html`data-tone="${u.tone}"` : ""} aria-hidden="true"></span>${c.icon(UPDATE_ICONS[u.type] ?? "circle", { size: "sm" })}<span class="graph-explorer-update-label">${u.label}</span><span class="graph-explorer-update-text">${u.text}</span><time class="graph-explorer-update-time" datetime="${new Date(u.time).toISOString()}">${c.time(u.time)}</time>`
+  }
+});
 var HELP_ROWS = [
   ["←↑→↓", "move the focus to the nearest node in that direction"],
   ["Shift + arrows, drag", "pan (panning into a neighbour cluster moves you there)"],
   ["+ - / wheel, pinch", "zoom (zooming into a cluster enters it)"],
-  ["Enter / double click", "enter a cluster; expand an entity"],
+  ["Enter / double click", "zoom into a cluster: its children show; expand an entity"],
   ["E", "expand the focused node: its full page in the details outlet (Esc returns)"],
   ["Space / click", "select and show details (Shift adds)"],
   ["click a link", "select the link: its traffic, breakers and single links (E expands, Esc lets it go)"],
   ["] [", "focus the next / previous neighbour"],
-  ["B / press and hold", "Bring & Go: the neighbours come to you"],
-  ["V", "the next Node UI (Labels, Health, Compact, ...)"],
+  ["B / press and hold", "jump to a neighbour: the busiest ones gather around the node, pick one to fly there"],
+  ["1 - 9", "show or hide a layer (Nodes, Relations, Labels, Health, ...)"],
   ["Esc", "close the topmost overlay, then move out"],
   ["Backspace", "move out"],
   ["0", "fit the view"],
@@ -10418,7 +11674,7 @@ var HELP_ROWS = [
 class Explorer {
   constructor(el) {
     this.el = el;
-    this.registry = { node: [], edge: [], detail: [] };
+    this.registry = { node: [], edge: [], detail: [], update: [] };
     this.n = clamp3(parseInt(el.dataset.nodes || "1000000", 10) || 1e6, 2000, 4000000);
     this.seed = parseInt(el.dataset.seed || "7", 10) || 7;
     this.uid = el.id || "graph-explorer-" + Math.random().toString(36).slice(2, 8);
@@ -10446,10 +11702,18 @@ class Explorer {
     this.labelHosts = new Map;
     this.labelPool = [];
     this.labelVer = 0;
-    this.variant = el.getAttribute("data-node-ui") || "default";
+    this.shown = new Set(layersOf(el));
+    this.compact = el.hasAttribute("data-compact");
+    this.layerColors = new Map;
+    this.monochrome = false;
     this.expanded = false;
     this.edge = null;
     this.dotLabels = [];
+    this.updates = [];
+    this.updatesShown = [];
+    this.changes = new Map;
+    this.changeDots = new Map;
+    this.updateSeq = 0;
     this.flight = null;
     this.navigating = false;
     this.loading = true;
@@ -10488,6 +11752,7 @@ class Explorer {
       <div class="graph-explorer-edge-labels" aria-hidden="true" data-ce-chrome></div>
       <div class="graph-explorer-world" data-ce-chrome></div>
       <div class="graph-explorer-signs" data-ce-chrome></div>
+      <div class="graph-explorer-changes" aria-hidden="true" data-ce-chrome></div>
       <div class="graph-explorer-ring" hidden data-ce-chrome></div>
       <div class="graph-explorer-focus-ring" hidden aria-hidden="true" data-ce-chrome></div>
       <div class="graph-explorer-loading" data-ce-chrome>
@@ -10499,21 +11764,22 @@ class Explorer {
       ${help}`;
     const doc = new DOMParser().parseFromString(`<body>${chrome.html}</body>`, "text/html");
     for (const node of Array.from(doc.body.children))
-      dfDollar6(el).append(document.adoptNode(node));
+      dfDollar10(el).append(document.adoptNode(node));
     if (!el.hasAttribute("tabindex"))
       el.tabIndex = 0;
     if (!el.hasAttribute("role"))
-      dfDollar6(el).attr("role", "application");
-    dfDollar6(el).attr("aria-roledescription", "graph");
-    dfDollar6(el).attr("aria-describedby", `${id}-help`);
-    dfDollar6(el).attr("aria-busy", "true");
-    dfDollar6(el).attr("data-graph-status", "loading");
-    const $ = (sel) => dfDollar6(el).children(sel).get(0);
+      dfDollar10(el).attr("role", "application");
+    dfDollar10(el).attr("aria-roledescription", "graph");
+    dfDollar10(el).attr("aria-describedby", `${id}-help`);
+    dfDollar10(el).attr("aria-busy", "true");
+    dfDollar10(el).attr("data-graph-status", "loading");
+    const $ = (sel) => dfDollar10(el).children(sel).get(0);
     this.canvas = $(".graph-explorer-canvas");
-    this.svgG = dfDollar6(el).find(".graph-explorer-edge-group").get(0);
+    this.svgG = dfDollar10(el).find(".graph-explorer-edge-group").get(0);
     this.labelsEl = $(".graph-explorer-edge-labels");
     this.world = $(".graph-explorer-world");
     this.signs = $(".graph-explorer-signs");
+    this.changesEl = $(".graph-explorer-changes");
     this.ring = $(".graph-explorer-ring");
     this.focusRing = $(".graph-explorer-focus-ring");
     this.loadingEl = $(".graph-explorer-loading");
@@ -10531,6 +11797,7 @@ class Explorer {
     this.worker.onmessage = (ev) => this.onWorker(ev.data);
     this.worker.onerror = (ev) => this.fail(ev.message || "worker error");
     this.postRules();
+    this.postLayers();
     this.post({ t: "init", n: this.n, seed: this.seed });
     this.t0 = performance.now();
   }
@@ -10539,9 +11806,9 @@ class Explorer {
       this.worker.postMessage(m, transfer || []);
   }
   fail(message) {
-    dfDollar6(this.el).attr("data-graph-status", "error");
-    dfDollar6(this.el).attr("aria-busy", null);
-    dfDollar6(this.loadingEl).find(".graph-explorer-loading-text").text(`The graph could not be built: ${message.split(`
+    dfDollar10(this.el).attr("data-graph-status", "error");
+    dfDollar10(this.el).attr("aria-busy", null);
+    dfDollar10(this.loadingEl).find(".graph-explorer-loading-text").text(`The graph could not be built: ${message.split(`
 `)[0]}`);
     this.el.dispatchEvent(new CustomEvent("graph-explorer-error", { detail: { message }, bubbles: true }));
   }
@@ -10568,6 +11835,9 @@ class Explorer {
       case "rows":
         this.resolve("rows:" + m.id, m);
         break;
+      case "subtree":
+        this.resolve("subtree:" + m.id + ":" + m.levels, m.rows);
+        break;
       case "edge":
         this.resolve("edge:" + m.id, m);
         break;
@@ -10576,6 +11846,9 @@ class Explorer {
         break;
       case "patch":
         this.onPatch(m);
+        break;
+      case "updates":
+        this.addUpdates(m.items);
         break;
       case "error":
         this.fail(String(m.message));
@@ -10607,19 +11880,23 @@ class Explorer {
   postRules() {
     const rules = [];
     for (const reg of [globalRegistry, this.registry])
-      for (const p of reg.edge)
+      for (const p of reg.edge) {
+        if (!this.shown.has(p.layer || "relations"))
+          continue;
         for (const r of p.rules || [])
           rules.push({
             when: r.when || [],
             style: r.style || {},
             priority: (r.priority ?? 0) + (p._scoped ? 1000 : 0)
           });
+      }
     this.post({ t: "rules", rules });
   }
   onPluginsChanged() {
+    this.renderUpdates();
     this.postRules();
     this.labelVer++;
-    this.renderNodeUi();
+    this.renderLayers();
     if (this.view) {
       this.assignRenderers();
       for (const s of this.slots.values())
@@ -10659,8 +11936,49 @@ class Explorer {
     };
     for (const shift of [150, 210, 280])
       palette.cat.push(forced ? palette.ink : read(`oklch(from var(--chart-1) l c calc(h + ${shift}))`) || palette.ink);
+    const mono = !forced && this.chartsMonochrome(palette.cat.slice(0, 5));
+    if (mono !== this.monochrome) {
+      this.monochrome = mono;
+      this.renderLayers();
+      if (this.view) {
+        for (const s of this.slots.values())
+          s._key = "";
+        this.applyTiers(this.tiers, true);
+        this.refreshDecor(true);
+      }
+    } else
+      this.renderLayers();
+    const relations = this.colorOf("relations");
+    this.el.style.setProperty("--graph-explorer-relations", relations);
+    this.el.style.setProperty("--graph-explorer-nodes", this.colorOf("nodes"));
+    if (!forced)
+      palette.tones.muted = read(relations) || palette.tones.muted;
     this.palette = palette;
     this.post({ t: "colors", palette });
+  }
+  chartsMonochrome(colors) {
+    const canvas = dfDollar10('<canvas width="1" height="1"></canvas>').get(0);
+    const g = canvas.getContext("2d", { willReadFrequently: true });
+    if (!g)
+      return false;
+    const hues = [];
+    for (const color of colors) {
+      g.clearRect(0, 0, 1, 1);
+      g.fillStyle = "#000";
+      g.fillStyle = color;
+      g.fillRect(0, 0, 1, 1);
+      const [r, gr, b] = [...g.getImageData(0, 0, 1, 1).data].map((v) => v / 255);
+      const max = Math.max(r, gr, b), min = Math.min(r, gr, b), d = max - min;
+      if (d < 0.12)
+        continue;
+      const h = max === r ? (gr - b) / d % 6 : max === gr ? (b - r) / d + 2 : (r - gr) / d + 4;
+      hues.push((h * 60 + 360) % 360);
+    }
+    let spread = 0;
+    for (const a of hues)
+      for (const b of hues)
+        spread = Math.max(spread, Math.min(Math.abs(a - b), 360 - Math.abs(a - b)));
+    return spread < 40;
   }
   observeTheme() {
     const again = () => {
@@ -10699,8 +12017,8 @@ class Explorer {
       this.fit(false);
       this.loading = false;
       this.loadingEl.hidden = true;
-      dfDollar6(this.el).attr("aria-busy", null);
-      dfDollar6(this.el).attr("data-graph-status", "ready");
+      dfDollar10(this.el).attr("aria-busy", null);
+      dfDollar10(this.el).attr("data-graph-status", "ready");
       this.resolveReady();
     }
   }
@@ -10739,9 +12057,13 @@ class Explorer {
       p.hit.remove();
       p.line.remove();
       p.head.remove();
+      p.flash?.remove();
     }
     this.edgePaths.clear();
     this.assignRenderers();
+    if (!this.updatesRendered)
+      this.renderUpdates();
+    this.renderLayers();
     this.renderCrumbs();
     this.renderOutline();
     this.renderPanel();
@@ -10761,13 +12083,62 @@ class Explorer {
   nodeOf(i) {
     return { ...this.view.children[i], depth: this.view.path.length - 1 };
   }
+  sizesOf(r, node) {
+    try {
+      return (typeof r.sizes === "function" ? r.sizes(node) : r.sizes) || {};
+    } catch (err) {
+      console.error('[graph-explorer] sizes of "' + r.name + '" failed', err);
+      return {};
+    }
+  }
   assignRenderers() {
     const m = this.view;
-    m.renderers = m.children.map((c) => this.pick("node", c));
+    const head = this.shown.has("nodes");
+    const partLayers = this.layerDefs().filter((l) => l.name !== "nodes" && l.shown).map((l) => l.name);
+    m.renderers = m.children.map((c) => head ? this.pick("node", c) : null);
+    m.boxes = [];
     const sizes = new Float32Array(m.children.length * 4);
     m.children.forEach((_c, i) => {
-      const r = m.renderers[i], chip = r.sizes.chip || [140, 26], card = r.sizes.card || chip;
-      sizes.set([chip[0], chip[1], card[0], card[1]], i * 4);
+      const node = this.nodeOf(i), r = m.renderers[i];
+      const hs = r ? this.sizesOf(r, node) : {};
+      const chip0 = hs.chip || [140, 26], card0 = hs.card || chip0;
+      let [chipW, chipH] = r ? chip0 : [0, 0], [cardW, cardH] = r ? card0 : [0, 0];
+      const chipParts = [], cardParts = [];
+      for (const layer of partLayers) {
+        const p = this.pickPart(layer, node);
+        if (!p)
+          continue;
+        const ps = this.sizesOf(p, node);
+        if (ps.chip) {
+          chipW += ps.chip[0];
+          chipH = Math.max(chipH, ps.chip[1]);
+          chipParts.push(p);
+        }
+        if (ps.card) {
+          cardW = Math.max(cardW, ps.card[0]);
+          cardH += ps.card[1];
+          cardParts.push(p);
+        }
+      }
+      if (!r && chipParts.length) {
+        chipW += 12;
+        chipH = Math.max(chipH, 22);
+      }
+      if (!r && cardParts.length) {
+        cardW = Math.max(cardW, 168);
+        cardH += 14;
+      }
+      if (this.compact) {
+        cardW = chipW;
+        cardH = chipH;
+      }
+      m.boxes[i] = {
+        chip: chipParts,
+        card: this.compact ? chipParts : cardParts,
+        chipSize: [chipW, chipH],
+        cardSize: [cardW, cardH]
+      };
+      sizes.set([chipW, chipH, cardW, cardH], i * 4);
     });
     this.post({ t: "sizes", id: m.id, sizes });
   }
@@ -10775,13 +12146,11 @@ class Explorer {
     for (const reg of [this.registry, globalRegistry]) {
       let best = null, score = -Infinity;
       for (const p of reg[kind]) {
-        if (kind === "node" && p.variant && p.variant !== this.variant)
+        if (kind === "node" && p.layer)
           continue;
-        let s = p.match(item);
+        const s = p.match(item);
         if (s === false || s == null)
           continue;
-        if (kind === "node" && p.variant)
-          s += 100;
         if (s > score || s === score && p._order > best._order) {
           best = p;
           score = s;
@@ -10792,51 +12161,152 @@ class Explorer {
     }
     return null;
   }
-  variants() {
-    const out = [{ name: "default", label: "Labels", icon: "tag" }], seen = new Set(["default"]);
-    for (const reg of [globalRegistry, this.registry])
+  pickPart(layer, item) {
+    for (const reg of [this.registry, globalRegistry]) {
+      let best = null, score = -Infinity;
       for (const p of reg.node) {
-        if (!p.variant || seen.has(p.variant))
+        if (p.layer !== layer)
           continue;
-        seen.add(p.variant);
-        out.push({ name: p.variant, label: p.variantLabel || p.variant, icon: p.variantIcon || "circle" });
+        let s;
+        try {
+          s = p.match(item);
+        } catch (err) {
+          console.error(err);
+          s = false;
+        }
+        if (s === false || s == null)
+          continue;
+        if (s > score || s === score && p._order > best._order) {
+          best = p;
+          score = s;
+        }
       }
-    return out;
+      if (best)
+        return best;
+    }
+    return null;
   }
-  renderNodeUi() {
-    const list = this.variants();
-    for (const outlet of this.outlets("node-ui")) {
-      const box = outletChrome(outlet, "node-ui", () => dfDollar6('<div class="graph-explorer-node-ui" role="group" aria-label="Node UI" data-ce-chrome></div>').get(0));
-      morph2(box, html`${list.map((v) => html`<button
-              type="button"
-              class="btn"
-              data-variant="ghost"
-              data-size="sm"
-              key="${v.name}"
-              data-graph-explorer-node-ui="${v.name}"
-              aria-pressed="${v.name === this.variant ? "true" : "false"}"
-              title="Node UI: ${v.label} (V)"
-            >
-              ${icon(v.icon)}<span class="graph-explorer-node-ui-label">${v.label}</span>
-            </button>`)}`);
+  layerDefs() {
+    const out = BUILTIN_LAYERS.map((l) => ({ ...l, color: "" }));
+    const seen = new Set(out.map((l) => l.name));
+    const plugins = [...globalRegistry.node, ...globalRegistry.edge, ...this.registry.node, ...this.registry.edge];
+    for (const p of plugins.sort((a, b) => a._order - b._order)) {
+      if (!p.layer || seen.has(p.layer))
+        continue;
+      seen.add(p.layer);
+      out.push({
+        name: p.layer,
+        label: p.layerLabel || p.layer,
+        icon: p.layerIcon || "layers",
+        color: p.layerColor || "",
+        base: false
+      });
+    }
+    return out.map((l, k) => ({ ...l, color: l.color || this.layerColor(k), shown: this.shown.has(l.name) }));
+  }
+  layerColor(k) {
+    if (!this.monochrome && k < 5)
+      return `var(--chart-${k + 1})`;
+    return `oklch(from var(--chart-1) 0.66 max(c, 0.15) calc(h + ${(k * 72 + (k >= 5 ? 36 : 0)) % 360}))`;
+  }
+  colorOf(layer) {
+    return this.layerColors.get(layer) || "var(--muted-foreground)";
+  }
+  renderLayers() {
+    const defs = this.layerDefs();
+    this.layerColors = new Map(defs.map((l) => [l.name, l.color]));
+    const sig = defs.map((l) => l.name + "=" + l.color + "=" + l.shown).join("|") + "|" + this.compact;
+    const first = Math.max(0, defs.findIndex((l) => l.shown));
+    for (const outlet of this.outlets("layers")) {
+      const box = outletChrome(outlet, "layers", () => dfDollar10('<div class="graph-explorer-layers" data-ce-chrome></div>').get(0));
+      if (box._sig === sig)
+        continue;
+      box._sig = sig;
+      morph2(box, html`<div
+            class="toggle-group"
+            role="group"
+            aria-label="Layers"
+            data-type="multiple"
+            data-size="sm"
+            data-spacing
+          >
+            ${defs.map((l, k) => html`<button
+                  type="button"
+                  class="toggle graph-explorer-layer"
+                  key="${l.name}"
+                  data-graph-explorer-layer="${l.name}"
+                  aria-pressed="${l.shown ? "true" : "false"}"
+                  tabindex="${k === first ? "0" : "-1"}"
+                  style="--graph-explorer-layer: ${l.color}"
+                  title="${l.label}: ${l.shown ? "shown" : "hidden"}${k < 9 ? ` (${k + 1})` : ""}"
+                >
+                  <span class="indicator-dot" aria-hidden="true"></span>${icon(l.icon)}<span
+                    class="graph-explorer-layer-label"
+                    >${l.label}</span
+                  >
+                </button>`)}
+          </div>
+          <div class="separator" data-orientation="vertical" role="separator"></div>
+          <button
+            type="button"
+            class="toggle graph-explorer-compact"
+            data-size="sm"
+            data-graph-explorer-compact
+            aria-pressed="${this.compact ? "true" : "false"}"
+            title="Compact: every node as a one-line chip"
+          >
+            ${icon("rows-3")}<span class="graph-explorer-layer-label">Compact</span>
+          </button>`);
     }
   }
-  setVariant(name, user = true) {
-    if (!this.variants().some((v) => v.name === name) || name === this.variant)
+  setLayers(names, user = true) {
+    const next = new Set(layerList(names));
+    if (sameLayers([...next], [...this.shown]))
       return;
-    this.variant = name;
-    this.renderNodeUi();
+    this.shown = next;
+    this.layersChanged(user);
+  }
+  toggleLayer(name) {
+    const next = new Set(this.shown);
+    if (next.has(name))
+      next.delete(name);
+    else
+      next.add(name);
+    this.setLayers([...next]);
+    const l = this.layerDefs().find((x) => x.name === name);
+    this.announce(`${l?.label ?? name}: ${this.shown.has(name) ? "shown" : "hidden"}`);
+  }
+  setCompact(on, user = true) {
+    if (this.compact === !!on)
+      return;
+    this.compact = !!on;
+    this.layersChanged(user);
+    this.announce(`Compact ${this.compact ? "on" : "off"}`);
+  }
+  layersChanged(user) {
+    this.renderLayers();
+    this.postLayers();
+    this.postRules();
+    this.labelVer++;
+    this.signKeys = "";
     if (this.view) {
       this.assignRenderers();
       for (const s of this.slots.values())
         s._key = "";
       this.applyTiers(this.tiers, true);
+      this.refreshDecor(true);
       this.camChanged();
     }
+    this.renderUpdates();
     if (user)
       this.commitState();
-    this.el.dispatchEvent(new CustomEvent("graph-explorer-node-ui", { detail: { nodeUi: name }, bubbles: true }));
-    this.announce(`Node UI: ${this.variants().find((v) => v.name === name)?.label}`);
+    this.el.dispatchEvent(new CustomEvent("graph-explorer-layers", {
+      detail: { layers: [...this.shown], compact: this.compact },
+      bubbles: true
+    }));
+  }
+  postLayers() {
+    this.post({ t: "layers", nodes: this.shown.has("nodes"), relations: this.shown.has("relations") });
   }
   requestTick() {
     if (!this.raf && !this.destroyed)
@@ -10972,9 +12442,12 @@ class Explorer {
       const n = m.children[i];
       const [sx, sy] = this.toScreen(n.x, n.y);
       const [x, y] = anchorBox(isCluster, s._tier, sx, sy, n.r * c.z, s._w, s._h);
-      s.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+      s._x = Math.round(x);
+      s._y = Math.round(y);
+      s.style.translate = `${s._x}px ${s._y}px`;
     }
     this.projectEdges();
+    this.projectChanges();
     this.projectDecor();
     this.projectSigns();
     this.projectFocusRing();
@@ -10986,8 +12459,12 @@ class Explorer {
       return;
     this.tiers = tiers;
     const m = this.view, jobs = [], slotsForJobs = [];
+    const empty = (i) => {
+      const b = m.boxes?.[i];
+      return !b || !m.renderers[i] && !(tiers[i] === 2 ? b.card : b.chip).length;
+    };
     for (const [i, s] of this.slots) {
-      if (tiers[i] < 1) {
+      if (tiers[i] < 1 || empty(i)) {
         s.hidden = true;
         s._key = "";
         this.slots.delete(i);
@@ -10995,45 +12472,52 @@ class Explorer {
       }
     }
     for (let i = 0;i < tiers.length; i++) {
-      if (tiers[i] < 1)
+      if (tiers[i] < 1 || empty(i))
         continue;
       let s = this.slots.get(i);
       if (!s) {
         s = this.free.pop();
         if (!s) {
-          s = dfDollar6('<div class="graph-explorer-node"></div>').get(0);
-          dfDollar6(this.world).append(s);
+          s = dfDollar10('<div class="graph-explorer-node"></div>').get(0);
+          dfDollar10(this.world).append(s);
         }
         s.hidden = false;
         s._key = "";
         this.slots.set(i, s);
       }
-      const tier = tiers[i] === 2 ? "card" : "chip";
-      const node = this.nodeOf(i), r = m.renderers[i], ctx = this.ctxFor(node, tier, i);
-      const key = r.name + "|" + tier + "|" + (ctx.selected ? 1 : 0) + "|" + (this.dataRev.get(node.id) || 0) + "|" + (r.key ? r.key(node, ctx) : "");
+      const tier = tiers[i] === 2 && !this.compact ? "card" : "chip";
+      const node = this.nodeOf(i), r = m.renderers[i], box = m.boxes[i], parts = tier === "card" ? box.card : box.chip, ctx = this.ctxFor(node, tier, i);
+      const keyOf = (x) => {
+        try {
+          return x.key ? x.key(node, ctx) : "";
+        } catch {
+          return "";
+        }
+      };
+      const key = (r ? r.name + ":" + keyOf(r) : "-") + "|" + parts.map((x) => x.name + ":" + keyOf(x)).join(",") + "|" + tier + "|" + (ctx.selected ? 1 : 0) + "|" + (ctx.expandable ? 1 : 0) + "|" + (this.dataRev.get(node.id) || 0);
       if (s._key === key && !force)
         continue;
-      const [w, h] = r.sizes[tier] || r.sizes.chip;
+      const [w, h] = tiers[i] === 2 ? box.cardSize : box.chipSize;
       if (s._node !== node.id) {
         s._node = node.id;
-        dfDollar6(s).attr("data-node", node.id);
+        dfDollar10(s).attr("data-node", node.id);
       }
       if (s._tier !== tiers[i]) {
         s._tier = tiers[i];
-        dfDollar6(s).attr("data-tier", tier);
+        dfDollar10(s).attr("data-tier", tier);
       }
       s._w = w;
       s._h = h;
       s.style.width = w + "px";
       s.style.height = h + "px";
-      dfDollar6(s).attr("data-selected", ctx.selected ? "" : null);
-      dfDollar6(s).attr("data-kind", node.kind);
+      dfDollar10(s).attr("data-selected", ctx.selected ? "" : null);
+      dfDollar10(s).attr("data-kind", node.kind);
       s._key = key;
       try {
-        jobs.push(r.render(node, ctx));
+        jobs.push(this.composeNode(node, tier, ctx, r, parts));
         slotsForJobs.push(s);
       } catch (err) {
-        console.error('[graph-explorer] renderer "' + r.name + '" failed', err);
+        console.error('[graph-explorer] renderer "' + (r?.name ?? "parts") + '" failed', err);
       }
     }
     if (jobs.length) {
@@ -11047,13 +12531,48 @@ class Explorer {
       lists.forEach((list, k) => morphRuntime.morph(slotsForJobs[k], list));
     }
     for (const [i, s] of this.slots)
-      dfDollar6(s).attr("data-kbd", i === this.kbd ? "" : null);
+      dfDollar10(s).attr("data-kbd", i === this.kbd ? "" : null);
     this.el.toggleAttribute("data-dim", this.hover >= 0 || this.selected.size > 0 || !!this.edge);
     for (const [i, s] of this.slots)
       s.toggleAttribute("data-hl", this.isHighlighted(i));
     this.refreshDecor(false);
     this.camDirty = true;
     this.requestTick();
+  }
+  composeNode(node, tier, ctx, r, parts) {
+    const tag = tier === "chip" ? "span" : "div";
+    const drawn = [];
+    for (const p of parts) {
+      let out;
+      try {
+        out = p.render(node, { ...ctx, parts: html`` });
+      } catch (err) {
+        console.error('[graph-explorer] part "' + p.name + '" failed', err);
+        continue;
+      }
+      if (!isSafe(out) || !out.html.trim())
+        continue;
+      const layer = p.layer;
+      drawn.push(tag === "span" ? html`<span
+              class="graph-explorer-part"
+              data-layer="${layer}"
+              style="--graph-explorer-layer: ${this.colorOf(layer)}"
+              >${out}</span
+            >` : html`<div
+              class="graph-explorer-part"
+              data-layer="${layer}"
+              style="--graph-explorer-layer: ${this.colorOf(layer)}"
+            >
+              ${out}
+            </div>`);
+    }
+    const joined = html`${drawn}`;
+    if (!r)
+      return html`<div class="graph-explorer-parts-only" data-tier="${tier}" data-kind="${node.kind}">${joined}</div>`;
+    const out = r.render(node, { ...ctx, parts: joined });
+    if (!drawn.length || !isSafe(out) || out.html.includes('graph-explorer-part"'))
+      return out;
+    return html`${out}${joined}`;
   }
   isHighlighted(i) {
     const ends = this.edgeEnds();
@@ -11082,7 +12601,9 @@ class Explorer {
       html,
       icon,
       expanded: tier === "detail" && this.expanded,
-      nodeUi: this.variant,
+      layers: [...this.shown],
+      compact: this.compact,
+      parts: html``,
       action: (name) => String(name),
       edgeLabel: (e, t = "label") => this.edgeLabelHtml(e, t),
       fetchView: (id) => this.fetchView(id),
@@ -11090,9 +12611,14 @@ class Explorer {
       expandable: tier === "relations" ? false : this.expandableNode(node),
       request: (key, load) => {
         const r = this.requests.get(key);
-        if (r)
-          return r.done ? r.value : undefined;
-        const entry = { done: false, value: undefined };
+        if (r && !r.stale)
+          return r.done ? r.value : r.prev;
+        const entry = {
+          done: false,
+          value: undefined,
+          prev: r ? r.done ? r.value : r.prev : undefined,
+          stale: false
+        };
         this.requests.set(key, entry);
         Promise.resolve().then(load).then((value) => {
           entry.done = true;
@@ -11102,10 +12628,10 @@ class Explorer {
           this.renderPanel();
         }, (err) => {
           entry.done = true;
-          entry.value = undefined;
+          entry.value = entry.prev;
           console.error(err);
         });
-        return;
+        return entry.prev;
       },
       fetchDetails: (id) => this.waitFor("details:" + id, () => this.post({ t: "details", id })),
       fetchEdge: (id) => {
@@ -11120,6 +12646,18 @@ class Explorer {
         return island(key, content);
       }
     };
+  }
+  fetchSubtree(id, levels) {
+    return this.waitFor("subtree:" + id + ":" + levels, () => this.post({ t: "subtree", id, levels }));
+  }
+  find(query, onPartial) {
+    this.finder?.resolve(this.finder.results);
+    this.searchSeq++;
+    const seq = this.searchSeq;
+    return new Promise((resolve) => {
+      this.finder = { seq, resolve, onPartial, results: [] };
+      this.post({ t: "search", q: query, seq });
+    });
   }
   fetchRows(id) {
     const hit = this.rowCache.get(id);
@@ -11148,6 +12686,15 @@ class Explorer {
   }
   promotedEdges() {
     const m = this.view, out = new Set;
+    for (const [target, ch] of this.changes) {
+      if (ch.u.kind !== "edge" || !this.shown.has(ch.u.layer))
+        continue;
+      const k = this.edgeIndex(target);
+      if (k >= 0)
+        out.add(k);
+    }
+    if (!this.shown.has("relations"))
+      return out;
     const foci = [...this.selected].map((id) => m.byId.get(id)).filter((x) => x !== undefined);
     if (this.hover >= 0)
       foci.push(this.hover);
@@ -11171,9 +12718,11 @@ class Explorer {
         p.hit.remove();
         p.line.remove();
         p.head.remove();
+        p.flash?.remove();
         this.edgePaths.delete(k);
       }
     const picked = this.edgeIndex(this.edge);
+    const lines = this.shown.has("relations");
     const NS = "http://www.w3.org/2000/svg";
     for (const k of want) {
       const e = m.edges[k], a = m.children[e.a], b = m.children[e.b];
@@ -11234,10 +12783,34 @@ class Explorer {
       p.hit.setAttribute("d", g ? g.d : "");
       p.head.setAttribute("d", g ? g.head : "");
       p.mid = g ? g.mid : null;
+      if (p.lines !== lines) {
+        p.lines = lines;
+        p.line.style.visibility = p.head.style.visibility = lines ? "" : "hidden";
+      }
+      const ch = this.changes.get(id);
+      const flash = ch && ch.u.kind === "edge" && this.shown.has(ch.u.layer) ? ch : null;
+      if (flash && p.flashAt !== flash.at) {
+        p.flash?.remove();
+        p.flash = document.createElementNS(NS, "path");
+        p.flash.setAttribute("class", "graph-explorer-edge-flash");
+        p.flash.setAttribute("data-layer", flash.u.layer);
+        p.flash.style.setProperty("--graph-explorer-layer", this.colorOf(flash.u.layer));
+        p.flash.style.animationDuration = `${CHANGE_MS}ms`;
+        p.line.after(p.flash);
+        p.flashAt = flash.at;
+      } else if (!flash && p.flash) {
+        p.flash.remove();
+        p.flash = null;
+        p.flashAt = null;
+      }
+      if (p.flash) {
+        p.flash.setAttribute("d", g ? g.d : "");
+        p.flash.setAttribute("stroke-width", (w + 3).toFixed(2));
+      }
     }
   }
-  labelPlugins() {
-    return this.edgePlugins().filter((p) => p.label);
+  labelPlugins(graph = false) {
+    return this.edgePlugins().filter((p) => p.label && (!graph || this.shown.has(p.layer || "labels")));
   }
   labelFor(e, ctx) {
     const sig = e.breaker ? e.breaker.state + (e.breaker.openShare || 0) : "";
@@ -11245,7 +12818,7 @@ class Explorer {
       e._lv = this.labelVer;
       e._ls = sig;
       let best = null, score = -Infinity;
-      for (const p of this.labelPlugins()) {
+      for (const p of this.labelPlugins(true)) {
         const L = p.label;
         if (L.depths && !L.depths.includes(ctx.depth))
           continue;
@@ -11422,8 +12995,8 @@ class Explorer {
       if (!hst) {
         hst = this.labelPool.pop();
         if (!hst) {
-          hst = dfDollar6('<div class="graph-explorer-edge-label"></div>').get(0);
-          dfDollar6(this.labelsEl).append(hst);
+          hst = dfDollar10('<div class="graph-explorer-edge-label"></div>').get(0);
+          dfDollar10(this.labelsEl).append(hst);
         }
         hst._sig = "";
       }
@@ -11433,7 +13006,7 @@ class Explorer {
       hst._f = f;
       hst._k = e.k;
       if (hst.hasAttribute("data-selected") !== (e.k === picked))
-        dfDollar6(hst).attr("data-selected", e.k === picked ? "" : null);
+        dfDollar10(hst).attr("data-selected", e.k === picked ? "" : null);
       let out;
       try {
         out = c.p.label.render(e, {
@@ -11452,9 +13025,12 @@ class Explorer {
       if (hst._sig === sig)
         continue;
       hst._sig = sig;
-      dfDollar6(hst).attr("data-tier", tier);
-      dfDollar6(hst).attr("data-edge", String(e.k));
-      dfDollar6(hst).attr("data-graph-explorer-edge", this.edgeId(e.k));
+      dfDollar10(hst).attr("data-tier", tier);
+      const layer = c.p.layer || "labels";
+      dfDollar10(hst).attr("data-layer", layer);
+      hst.style.setProperty("--graph-explorer-layer", this.colorOf(layer));
+      dfDollar10(hst).attr("data-edge", String(e.k));
+      dfDollar10(hst).attr("data-graph-explorer-edge", this.edgeId(e.k));
       jobs.push(out);
       jobHosts.push(hst);
     }
@@ -11498,7 +13074,8 @@ class Explorer {
     const m = this.view, list = [];
     const inset = 14, w = this.w, h = this.h;
     const offscreen = (sx, sy) => sx < inset || sx > w - inset || sy < inset || sy > h - inset;
-    if (m.parent)
+    const rel = this.shown.has("relations");
+    if (m.parent && rel)
       for (const ext of m.parent.external) {
         const [sx, sy] = this.toScreen(ext.x, ext.y);
         if (offscreen(sx, sy))
@@ -11514,7 +13091,7 @@ class Explorer {
             ext: true
           });
       }
-    const sel = [...this.selected].map((id) => m.byId.get(id)).filter((x) => x !== undefined);
+    const sel = rel ? [...this.selected].map((id) => m.byId.get(id)).filter((x) => x !== undefined) : [];
     for (const f of sel)
       for (const k of m.adj[f]) {
         const e = m.edges[k], j = e.a === f ? e.b : e.a, n = m.children[j];
@@ -11549,7 +13126,7 @@ class Explorer {
               ${s.dir} ${s.label} · ${fmt(s.count)}
             </button>`)}`);
     }
-    const els = dfDollar6(this.signs).children().toArray();
+    const els = dfDollar10(this.signs).children().toArray();
     const cx = w / 2, cy = h / 2;
     top.forEach((s, j) => {
       const el = els[j];
@@ -11790,6 +13367,9 @@ class Explorer {
     this.afterSelection();
   }
   afterSelection() {
+    const only = this.selected.size === 1 ? this.view?.byId.get([...this.selected][0]) : undefined;
+    if (only !== undefined)
+      this.kbd = only;
     this.applyTiers(this.tiers);
     this.renderPanel();
     this.renderOutline();
@@ -11867,14 +13447,14 @@ class Explorer {
               ${m.children[b.j].label}<span class="graph-explorer-count">${fmt(b.count)}</span>
             </button>`)}`);
     this.ring.hidden = false;
-    this.ringEls = dfDollar6(this.ring).find(".graph-explorer-ring-item").toArray();
+    this.ringEls = dfDollar10(this.ring).find(".graph-explorer-ring-item").toArray();
     this.ringStart = true;
     this.projectRing();
     requestAnimationFrame(() => {
       this.ringStart = false;
       this.projectRing();
     });
-    this.announce(`Bring and Go: ${nbrs.length} neighbours of ${n.label}. Choose one to travel.`);
+    this.announce(`Jump to a neighbour: ${nbrs.length} neighbours of ${n.label} around it. Choose one to fly there.`);
     this.ringEls[0]?.focus({ preventScroll: true });
   }
   projectRing() {
@@ -11882,7 +13462,7 @@ class Explorer {
     if (!r)
       return;
     const n = this.view.children[r.i], [cx, cy] = this.toScreen(n.x, n.y);
-    const center = dfDollar6(this.ring).find(".graph-explorer-ring-center").get(0);
+    const center = dfDollar10(this.ring).find(".graph-explorer-ring-center").get(0);
     if (center)
       center.style.translate = `${Math.round(cx)}px ${Math.round(cy)}px`;
     const R = 120 + Math.max(0, r.nbrs.length - 8) * 8;
@@ -11926,7 +13506,7 @@ class Explorer {
     const vp = this.el, pointers = new Map;
     let drag = null, lastTap = { i: -2, t: 0 }, pinch = null, press = 0;
     const inChrome = (t) => !!t.closest(".graph-explorer-sign, .graph-explorer-ring-item, .graph-explorer-help, [data-graph-explorer-action], button, a, input");
-    dfDollar6(vp).on("pointerdown", (ev) => {
+    dfDollar10(vp).on("pointerdown", (ev) => {
       if (inChrome(ev.target) || !this.view)
         return;
       vp.focus({ preventScroll: true });
@@ -11961,7 +13541,7 @@ class Explorer {
           }
         }, 550);
     });
-    dfDollar6(vp).on("pointermove", (ev) => {
+    dfDollar10(vp).on("pointermove", (ev) => {
       if (pointers.has(ev.pointerId))
         pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
       if (pinch && pointers.size === 2) {
@@ -12030,9 +13610,9 @@ class Explorer {
       } else if (this.selected.size)
         this.select([]);
     };
-    dfDollar6(vp).on("pointerup", end);
-    dfDollar6(vp).on("pointercancel", end);
-    dfDollar6(vp).on("pointerleave", (ev) => {
+    dfDollar10(vp).on("pointerup", end);
+    dfDollar10(vp).on("pointercancel", end);
+    dfDollar10(vp).on("pointerleave", (ev) => {
       if (ev.pointerType === "mouse" && !drag)
         this.setHover(-1);
     });
@@ -12044,8 +13624,8 @@ class Explorer {
       const r = vp.getBoundingClientRect(), k = ev.ctrlKey ? 0.012 : 0.0016;
       this.zoomAt(ev.clientX - r.left, ev.clientY - r.top, Math.exp(-ev.deltaY * (ev.deltaMode === 1 ? 16 : 1) * k));
     }, { passive: false });
-    dfDollar6(vp).on("keydown", (ev) => this.onKey(ev));
-    dfDollar6(vp).on("click", (ev) => this.onClick(ev));
+    dfDollar10(vp).on("keydown", (ev) => this.onKey(ev));
+    dfDollar10(vp).on("click", (ev) => this.onClick(ev));
     this.resizeObserver = new ResizeObserver(() => {
       this.size();
       this.camChanged();
@@ -12058,7 +13638,8 @@ class Explorer {
         "data-focus",
         "data-selected",
         "data-selected-edge",
-        "data-node-ui",
+        "data-layers",
+        "data-compact",
         "data-expanded",
         "data-hud"
       ]
@@ -12075,9 +13656,18 @@ class Explorer {
       this.act(act.getAttribute("data-graph-explorer-action") ?? "", id, act);
       return;
     }
-    const nui = t.closest("[data-graph-explorer-node-ui]");
-    if (nui) {
-      this.setVariant(nui.getAttribute("data-graph-explorer-node-ui") ?? "default");
+    const upd = t.closest("[data-graph-explorer-update]");
+    if (upd) {
+      this.openUpdate(upd.getAttribute("data-graph-explorer-update") ?? "");
+      return;
+    }
+    const layer = t.closest("[data-graph-explorer-layer]");
+    if (layer) {
+      this.toggleLayer(layer.getAttribute("data-graph-explorer-layer") ?? "");
+      return;
+    }
+    if (t.closest("[data-graph-explorer-compact]")) {
+      this.setCompact(!this.compact);
       return;
     }
     const ring = t.closest("[data-graph-explorer-ring]");
@@ -12148,9 +13738,9 @@ class Explorer {
       this.simulating = on;
       this.post({ t: "simulate", on });
       for (const b of boundOf(this.el, '[data-graph-explorer-action="live"]'))
-        dfDollar6(b).attr("aria-pressed", String(on));
+        dfDollar10(b).attr("aria-pressed", String(on));
       if (button && !button.closest(`[${FOR}]`))
-        dfDollar6(button).attr("aria-pressed", String(on));
+        dfDollar10(button).attr("aria-pressed", String(on));
     } else if (action === "collapse")
       this.collapseDetails();
     else if (i === undefined) {
@@ -12250,10 +13840,12 @@ class Explorer {
         this.expandNode(i);
       return;
     }
-    if (key === "v" || key === "V") {
-      ev.preventDefault();
-      const vs = this.variants(), k = vs.findIndex((v) => v.name === this.variant);
-      this.setVariant(vs[(k + (ev.shiftKey ? vs.length - 1 : 1)) % vs.length].name);
+    if (/^[1-9]$/.test(key) && !ev.metaKey && !ev.ctrlKey && !ev.altKey) {
+      const l = this.layerDefs()[+key - 1];
+      if (l) {
+        ev.preventDefault();
+        this.toggleLayer(l.name);
+      }
       return;
     }
     if (key === "Escape") {
@@ -12346,10 +13938,10 @@ class Explorer {
     this.kbd = i;
     const m = this.view, n = m.children[i];
     for (const [j, s] of this.slots)
-      dfDollar6(s).attr("data-kbd", j === i ? "" : null);
+      dfDollar10(s).attr("data-kbd", j === i ? "" : null);
     const [sx, sy] = this.toScreen(n.x, n.y);
     if (sx < 40 || sx > this.w - 40 || sy < 40 || sy > this.h - 40)
-      this.flyTo({ cx: n.x, cy: n.y, z: this.cam.z }, { ms: 350 });
+      this.flyTo({ cx: n.x, cy: n.y, z: this.cam.z }, { ms: 180 });
     this.announce(`${n.label} · ${n.typeName} · ${n.kind === "cluster" ? fmt(n.members) + " nodes" : n.degree + " links"} · ${i + 1} of ${m.children.length} in ${m.path[m.path.length - 1].label}${n.scc > 1 ? " · in a cycle of " + n.scc : ""}`);
     this.camChanged();
   }
@@ -12382,7 +13974,7 @@ class Explorer {
   searchBox(outlet) {
     const id = this.uid;
     const box = outletChrome(outlet, "search", () => {
-      const made = dfDollar6(`<div class="graph-explorer-search" role="search" data-ce-chrome></div>`).get(0);
+      const made = dfDollar10(`<div class="graph-explorer-search" role="search" data-ce-chrome></div>`).get(0);
       morph2(made, html`${icon("search", { cls: "graph-explorer-search-icon" })}<input
             class="input graph-explorer-search-input"
             data-size="sm"
@@ -12404,16 +13996,16 @@ class Explorer {
             aria-label="Search results"
             hidden
           ></ul>`);
-      const input = dfDollar6(made).find("input").get(0);
+      const input = dfDollar10(made).find("input").get(0);
       let deb = 0;
-      dfDollar6(input).on("input", () => {
+      dfDollar10(input).on("input", () => {
         clearTimeout(deb);
         deb = setTimeout(() => {
           this.searchSeq++;
           this.post({ t: "search", q: input.value, seq: this.searchSeq });
         }, 140);
       });
-      dfDollar6(input).on("keydown", (ev) => {
+      dfDollar10(input).on("keydown", (ev) => {
         if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
           ev.preventDefault();
           this.moveResult(ev.key === "ArrowDown" ? 1 : -1);
@@ -12426,24 +14018,35 @@ class Explorer {
             this.el.focus();
         }
       });
-      dfDollar6(input).on("blur", () => setTimeout(() => {
+      dfDollar10(input).on("blur", () => setTimeout(() => {
         if (document.activeElement !== input)
           this.closeResults();
       }, 150));
-      dfDollar6(made).on("pointerdown", (ev) => {
+      dfDollar10(made).on("pointerdown", (ev) => {
         if (ev.target.closest("[data-graph-explorer-result]"))
           ev.preventDefault();
       });
       return made;
     });
     return {
-      input: dfDollar6(box).find("input").get(0),
-      list: dfDollar6(box).find("ul").get(0)
+      input: dfDollar10(box).find("input").get(0),
+      list: dfDollar10(box).find("ul").get(0)
     };
   }
   onSearch(m) {
     if (m.seq !== this.searchSeq)
       return;
+    const finder = this.finder;
+    if (finder && finder.seq === m.seq) {
+      finder.results = m.results;
+      if (m.partial)
+        finder.onPartial?.(m.results, m.scanned);
+      else {
+        this.finder = null;
+        finder.resolve(m.results);
+      }
+      return;
+    }
     this.results = m.results;
     this.activeResult = m.results.length ? 0 : -1;
     const id = this.uid;
@@ -12463,8 +14066,8 @@ class Explorer {
         ${!m.partial && !m.results.length && m.q ? html`<li class="graph-explorer-result-more">No matches</li>` : ""}`);
       const open = !!m.q && document.activeElement === input;
       list.hidden = !open;
-      dfDollar6(input).attr("aria-expanded", open ? "true" : "false");
-      dfDollar6(input).attr("aria-activedescendant", open && this.activeResult >= 0 ? `${id}-r${this.activeResult}` : null);
+      dfDollar10(input).attr("aria-expanded", open ? "true" : "false");
+      dfDollar10(input).attr("aria-activedescendant", open && this.activeResult >= 0 ? `${id}-r${this.activeResult}` : null);
     }
   }
   moveResult(d) {
@@ -12473,10 +14076,10 @@ class Explorer {
     this.activeResult = (this.activeResult + d + this.results.length) % this.results.length;
     for (const outlet of this.outlets("search")) {
       const { input, list } = this.searchBox(outlet);
-      dfDollar6(list).find('[role="option"]').each((k, el) => {
-        dfDollar6(el).attr("aria-selected", k === this.activeResult ? "true" : "false");
+      dfDollar10(list).find('[role="option"]').each((k, el) => {
+        dfDollar10(el).attr("aria-selected", k === this.activeResult ? "true" : "false");
       });
-      dfDollar6(input).attr("aria-activedescendant", `${this.uid}-r${this.activeResult}`);
+      dfDollar10(input).attr("aria-activedescendant", `${this.uid}-r${this.activeResult}`);
     }
   }
   chooseResult(k) {
@@ -12494,8 +14097,8 @@ class Explorer {
       if (list.hidden)
         continue;
       list.hidden = true;
-      dfDollar6(input).attr("aria-expanded", "false");
-      dfDollar6(input).attr("aria-activedescendant", null);
+      dfDollar10(input).attr("aria-expanded", "false");
+      dfDollar10(input).attr("aria-activedescendant", null);
       closed = true;
     }
     return closed;
@@ -12547,7 +14150,7 @@ class Explorer {
     if (!on)
       this.el.focus({ preventScroll: true });
     else
-      dfDollar6(this.detailsPanel() ?? document).find(".panel-maximize input").get(0)?.focus({ preventScroll: true });
+      dfDollar10(this.detailsPanel() ?? document).find(".panel-maximize input").get(0)?.focus({ preventScroll: true });
   }
   onPanelChange(ev) {
     const panel = ev.target;
@@ -12712,15 +14315,15 @@ class Explorer {
     }
   }
   chrome(outlet, kind) {
-    return outletChrome(outlet, kind, () => dfDollar6(`<div class="graph-explorer-${kind}" data-ce-chrome></div>`).get(0));
+    return outletChrome(outlet, kind, () => dfDollar10(`<div class="graph-explorer-${kind}" data-ce-chrome></div>`).get(0));
   }
   writeOutput(kind, text) {
     for (const out of this.outputs(kind)) {
       if (out._graphExplorerText === undefined)
-        out._graphExplorerText = dfDollar6(out).text();
+        out._graphExplorerText = dfDollar10(out).text();
       const next = text ?? out._graphExplorerText;
-      if (dfDollar6(out).text() !== next)
-        dfDollar6(out).text(next);
+      if (dfDollar10(out).text() !== next)
+        dfDollar10(out).text(next);
     }
   }
   renderOutline() {
@@ -12729,7 +14332,7 @@ class Explorer {
       return;
     for (const outlet of this.outlets("outline")) {
       const box = outletChrome(outlet, "outline", () => {
-        const made = dfDollar6('<div class="graph-explorer-outline" data-ce-chrome></div>').get(0);
+        const made = dfDollar10('<div class="graph-explorer-outline" data-ce-chrome></div>').get(0);
         morph2(made, html`<div class="graph-explorer-outline-head">
               <input
                 class="input graph-explorer-outline-filter"
@@ -12740,10 +14343,10 @@ class Explorer {
               />
             </div>
             <ul class="graph-explorer-outline-list" role="tree" aria-label="Current cluster"></ul>`);
-        const list = dfDollar6(made).find("ul").get(0);
-        dfDollar6(made).find("input").on("input", () => this.renderOutline());
-        dfDollar6(list).on("keydown", (ev) => {
-          const items = dfDollar6(list).find("[data-graph-explorer-outline]").toArray(), at = items.indexOf(document.activeElement);
+        const list = dfDollar10(made).find("ul").get(0);
+        dfDollar10(made).find("input").on("input", () => this.renderOutline());
+        dfDollar10(list).on("keydown", (ev) => {
+          const items = dfDollar10(list).find("[data-graph-explorer-outline]").toArray(), at = items.indexOf(document.activeElement);
           if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
             ev.preventDefault();
             items[clamp3(at + (ev.key === "ArrowDown" ? 1 : -1), 0, items.length - 1)]?.focus();
@@ -12757,7 +14360,7 @@ class Explorer {
               this.upTo(items[at].getAttribute("data-graph-explorer-crumb") ?? "c0");
           }
         });
-        dfDollar6(list).on("dblclick", (ev) => {
+        dfDollar10(list).on("dblclick", (ev) => {
           const oi = ev.target.closest("[data-graph-explorer-outline]");
           const i = +(oi?.getAttribute("data-graph-explorer-outline") ?? -1);
           if (i >= 0)
@@ -12765,8 +14368,8 @@ class Explorer {
         });
         return made;
       });
-      const filter = dfDollar6(box).find("input").get(0);
-      const list = dfDollar6(box).find("ul").get(0);
+      const filter = dfDollar10(box).find("input").get(0);
+      const list = dfDollar10(box).find("ul").get(0);
       const q = (filter.value || "").trim().toLowerCase();
       const kids = m.children.filter((c) => !q || c.label.toLowerCase().includes(q)).sort((a, b) => b.degree + b.members - (a.degree + a.members));
       const shown = kids.slice(0, 300);
@@ -12810,7 +14413,7 @@ class Explorer {
             </li>`)}
         ${kids.length > shown.length ? html`<li class="graph-explorer-outline-more">${fmt(kids.length - shown.length)} more - refine the filter</li>` : ""}
         ${!kids.length ? html`<li class="graph-explorer-outline-more">No match at this level</li>` : ""}`);
-      const items = dfDollar6(list).find(".graph-explorer-outline-item").toArray();
+      const items = dfDollar10(list).find(".graph-explorer-outline-item").toArray();
       const first = items[m.path.length] || items[0];
       if (first)
         first.tabIndex = 0;
@@ -12820,11 +14423,11 @@ class Explorer {
     const m = this.view, last = m.path.length - 1;
     for (const outlet of this.outlets("breadcrumb")) {
       const nav = outletChrome(outlet, "path", () => {
-        const made = dfDollar6('<nav class="breadcrumb graph-explorer-path" aria-label="Graph path" data-ce-chrome></nav>').get(0);
+        const made = dfDollar10('<nav class="breadcrumb graph-explorer-path" aria-label="Graph path" data-ce-chrome></nav>').get(0);
         morph2(made, html`<ol class="breadcrumb-list"></ol>`);
         return made;
       });
-      morph2(dfDollar6(nav).find("ol").get(0), html`${m.path.map((p, k) => k === last ? html`<li class="breadcrumb-item" key="${p.id}">
+      morph2(dfDollar10(nav).find("ol").get(0), html`${m.path.map((p, k) => k === last ? html`<li class="breadcrumb-item" key="${p.id}">
                 <span class="breadcrumb-page" aria-current="page">${p.label}</span>
               </li>` : html`<li class="breadcrumb-item" key="${p.id}">
                   <a class="breadcrumb-link" href="#${p.id}" data-graph-explorer-crumb="${p.id}">${p.label}</a>
@@ -12838,12 +14441,12 @@ class Explorer {
     this.announceT = setTimeout(() => {
       const outs = this.outputs("status");
       for (const out of outs.length ? outs : [this.liveEl])
-        dfDollar6(out).text(text);
+        dfDollar10(out).text(text);
     }, 120);
   }
   renderHud() {
-    const s = this.stats, w = s.worker || {}, dom = dfDollar6(this.el).find("*").toArray().length;
-    dfDollar6(this.hud).text(`graph   ${fmt(this.genStats.nodes)} nodes · ${fmt(this.genStats.edges)} edges · gen ${fmt(this.genStats.ms)} ms
+    const s = this.stats, w = s.worker || {}, dom = dfDollar10(this.el).find("*").toArray().length;
+    dfDollar10(this.hud).text(`graph   ${fmt(this.genStats.nodes)} nodes · ${fmt(this.genStats.edges)} edges · gen ${fmt(this.genStats.ms)} ms
 ` + `view    ${this.view.path[this.view.path.length - 1].label} · ${this.view.children.length} children
 ` + `DOM     ${w.cards ?? 0} cards · ${w.chips ?? 0} chips · ${dom} elements in the explorer
 ` + `canvas  ${fmt(w.dots ?? 0)} dots · ${fmt(w.edges ?? 0)} edges · ${w.labels ?? 0} labels
@@ -12881,10 +14484,11 @@ class Explorer {
     for (const i of touched) {
       const id = v.children[i].id;
       this.dataRev.set(id, (this.dataRev.get(id) || 0) + 1);
-      this.requests.delete("details:" + id);
+      this.staleRequest("details:" + id);
     }
-    for (const id of this.selected)
-      this.requests.delete("details:" + id);
+    if (!m.restyle)
+      for (const id of this.selected)
+        this.staleRequest("details:" + id);
     this.signKeys = "";
     this.applyTiers(this.tiers);
     if (this.selected.size)
@@ -12892,6 +14496,201 @@ class Explorer {
     for (const p of this.edgePaths.values())
       p.tone = null;
     this.camChanged();
+  }
+  staleRequest(key) {
+    const r = this.requests.get(key);
+    if (r)
+      r.stale = true;
+  }
+  labelOf(target) {
+    const m = this.view;
+    if (!m)
+      return target;
+    if (target.includes(">")) {
+      const k = this.edgeIndex(target);
+      if (k < 0)
+        return target.replace(">", " → ");
+      const e = m.edges[k];
+      return `${m.children[e.a].label} → ${m.children[e.b].label}`;
+    }
+    const i = m.byId.get(target);
+    return i === undefined ? target : m.children[i].label;
+  }
+  addUpdates(items) {
+    const now = Date.now(), at = performance.now();
+    const added = [];
+    for (const raw of items || []) {
+      if (!raw || !raw.target)
+        continue;
+      const target = String(raw.target);
+      const kind = raw.kind === "edge" || raw.kind !== "node" && target.includes(">") ? "edge" : "node";
+      const u = {
+        id: raw.id ? String(raw.id) : `u${++this.updateSeq}`,
+        time: Number(raw.time) || now,
+        kind,
+        target,
+        layer: raw.layer ? String(raw.layer) : kind === "edge" ? "relations" : "nodes",
+        type: raw.type ? String(raw.type) : "change",
+        text: raw.text ? String(raw.text) : "",
+        label: raw.label ? String(raw.label) : this.labelOf(target)
+      };
+      if (kind === "edge")
+        u.view = raw.view ? String(raw.view) : this.view?.id ?? "c0";
+      if (raw.tone && TONES.includes(raw.tone))
+        u.tone = raw.tone;
+      added.push(u);
+      this.changes.set(target, { u, at });
+    }
+    if (!added.length)
+      return added;
+    this.updates.unshift(...added.slice().reverse());
+    if (this.updates.length > UPDATE_LIMIT)
+      this.updates.length = UPDATE_LIMIT;
+    for (const u of added)
+      this.el.dispatchEvent(new CustomEvent("graph-explorer-update", { detail: { update: u }, bubbles: true }));
+    this.renderUpdates(added.filter((u) => this.shown.has(u.layer)).length);
+    clearTimeout(this.changeT);
+    this.changeT = setTimeout(() => this.pruneChanges(), CHANGE_MS + 50);
+    if (this.view) {
+      this.projectEdges();
+      this.projectChanges();
+    }
+    return added;
+  }
+  pruneChanges() {
+    const old = performance.now() - CHANGE_MS;
+    for (const [t, ch] of this.changes)
+      if (ch.at <= old)
+        this.changes.delete(t);
+    if (this.changes.size)
+      this.changeT = setTimeout(() => this.pruneChanges(), 500);
+    if (this.view && !this.destroyed) {
+      this.projectEdges();
+      this.projectChanges();
+    }
+  }
+  projectChanges() {
+    const m = this.view;
+    if (!m || !this.changesEl)
+      return;
+    const keep = new Set;
+    const z = this.cam.z, isCluster = !m.leafView;
+    for (const [target, ch] of this.changes) {
+      if (ch.u.kind !== "node" || !this.shown.has(ch.u.layer))
+        continue;
+      const i = m.byId.get(target);
+      if (i === undefined)
+        continue;
+      const n = m.children[i], s = this.slots.get(i);
+      let x, y;
+      if (s && !s.hidden && s._x != null) {
+        x = s._x + s._w - 2;
+        y = s._y + 2;
+      } else {
+        const [sx, sy] = this.toScreen(n.x, n.y), r = drawR(isCluster, n.r * z) * 0.72;
+        x = sx + r;
+        y = sy - r;
+      }
+      if (x < -8 || y < -8 || x > this.w + 8 || y > this.h + 8)
+        continue;
+      keep.add(target);
+      let dot = this.changeDots.get(target);
+      if (!dot || dot._at !== ch.at) {
+        dot?.remove();
+        dot = dfDollar10(`<span class="indicator-dot graph-explorer-change-dot" data-animate="ping" data-layer="${esc3(ch.u.layer)}"></span>`).get(0);
+        dot.style.setProperty("--graph-explorer-layer", this.colorOf(ch.u.layer));
+        dot.style.animationDuration = `${CHANGE_MS}ms`;
+        dot._at = ch.at;
+        dfDollar10(this.changesEl).append(dot);
+        this.changeDots.set(target, dot);
+      }
+      dot.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+    }
+    for (const [t, dot] of this.changeDots)
+      if (!keep.has(t)) {
+        dot.remove();
+        this.changeDots.delete(t);
+      }
+  }
+  pickUpdate(u) {
+    let best = null, bestScore = -Infinity;
+    for (const p of [...this.registry.update, ...globalRegistry.update]) {
+      const score = p.update.match ? p.update.match(u) : 0;
+      if (score === false || score == null)
+        continue;
+      const rank = score * 1e6 + (p._scoped ? 500000 : 0) + p._order;
+      if (rank > bestScore) {
+        bestScore = rank;
+        best = p.update;
+      }
+    }
+    return best;
+  }
+  updateRow(u) {
+    const r = this.pickUpdate(u);
+    let body = u.text;
+    try {
+      body = r.render(u, this.updateCtx);
+    } catch (err) {
+      console.error("[graph-explorer] update renderer", err);
+    }
+    return html`<button
+      type="button"
+      class="graph-explorer-update"
+      data-graph-explorer-update="${u.id}"
+      data-layer="${u.layer}"
+      data-kind="${u.kind}"
+      style="--graph-explorer-layer: ${this.colorOf(u.layer)}"
+      title="${u.label}: ${u.text}"
+    >
+      ${body}
+    </button>`;
+  }
+  get updateCtx() {
+    return {
+      html,
+      icon,
+      color: (layer) => this.colorOf(layer),
+      time: (ms) => TIME_FMT.format(ms)
+    };
+  }
+  renderUpdates(added = 0) {
+    const outs = this.outlets("updates");
+    if (!outs.length)
+      return;
+    this.updatesRendered = true;
+    this.updatesShown = this.updates.filter((u) => this.shown.has(u.layer));
+    const vl = df$10.virtualList;
+    for (const out of outs) {
+      const box = outletChrome(out, "updates", () => dfDollar10(`<div class="graph-explorer-updates${vl ? " virtual-list" : ""}" aria-label="Updates" data-empty-text="No updates in the shown layers yet" data-ce-chrome></div>`).get(0));
+      if (vl) {
+        if (added && box.scrollTop > 0)
+          box.scrollTop += added * (box._rowHeight || 32);
+        vl.setData(box, this.updatesShown.length, (row, i) => {
+          const u = this.updatesShown[i];
+          if (u)
+            morph2(row, this.updateRow(u));
+        });
+      } else
+        morph2(box, this.updatesShown.length ? html`${this.updatesShown.slice(0, 200).map((u) => this.updateRow(u))}` : html`<p class="graph-explorer-muted graph-explorer-pad">No updates in the shown layers yet</p>`);
+    }
+  }
+  async openUpdate(id) {
+    const u = this.updates.find((x) => x.id === id);
+    if (!u || !this.view)
+      return;
+    if (u.kind === "node") {
+      await this.navigateTo(u.target);
+      return;
+    }
+    if (u.view && u.view !== this.view.id) {
+      if (u.view === "c0")
+        await this.upTo("c0");
+      else
+        await this.navigateTo(u.view, { enter: true, select: false });
+    }
+    this.selectEdge(u.target);
+    this.showDetails(true);
   }
   liveState() {
     const v = this.view;
@@ -12903,7 +14702,8 @@ class Explorer {
       config: {
         focus,
         selected,
-        nodeUi: this.variant,
+        layers: [...this.shown],
+        compact: this.compact,
         expanded: this.expanded && (selected.length > 0 || !!edge),
         edge
       }
@@ -12915,7 +14715,7 @@ class Explorer {
     if (this.navigating && this.expanded)
       return;
     const s = this.liveState();
-    applyMarkup6(this.el, s.name, s.config);
+    applyMarkup10(this.el, s.name, s.config);
     graphExplorerApi.commit(this.el, s.name, configOf3(this.el));
   }
   sync() {
@@ -12931,12 +14731,16 @@ class Explorer {
     this.hud.hidden = !this.el.hasAttribute("data-hud");
     const want = configOf3(this.el);
     const now = this.liveState().config;
-    const same = want.focus === now.focus && want.selected.join(" ") === now.selected.join(" ") && want.nodeUi === now.nodeUi && want.expanded === now.expanded && want.edge === now.edge;
+    const same = want.focus === now.focus && want.selected.join(" ") === now.selected.join(" ") && sameLayers(want.layers, now.layers) && want.compact === now.compact && want.expanded === now.expanded && want.edge === now.edge;
     if (same)
       return;
     this.syncing = true;
     try {
-      this.setVariant(want.nodeUi, false);
+      if (!sameLayers(want.layers, [...this.shown]) || want.compact !== this.compact) {
+        this.shown = new Set(want.layers);
+        this.compact = want.compact;
+        this.layersChanged(false);
+      }
       const target = want.focus ?? "c0";
       if (this.view.id !== target) {
         if (target === "c0")
@@ -12980,7 +14784,7 @@ class Explorer {
     live2.delete(this);
     if (this.raf)
       cancelAnimationFrame(this.raf);
-    for (const t of [this.hudT, this.restTimer, this.announceT])
+    for (const t of [this.hudT, this.restTimer, this.announceT, this.changeT])
       clearTimeout(t);
     for (const mq of this.mediaQueries || [])
       mq.removeEventListener("change", this.onMedia);
@@ -12993,11 +14797,11 @@ class Explorer {
     this.attrObserver.disconnect();
     unbindComponent(this.el);
     delete this.el.api;
-    dfDollar6(this.el).children("[data-ce-chrome]").remove();
+    dfDollar10(this.el).children("[data-ce-chrome]").remove();
     for (const kind of OUTLETS)
       for (const o of this.outlets(kind)) {
         dropIslands(o);
-        dfDollar6(o).children("[data-ce-chrome]").remove();
+        dfDollar10(o).children("[data-ce-chrome]").remove();
       }
     this.el._graphExplorer = undefined;
   }
@@ -13009,7 +14813,7 @@ if (!document.__graphExplorerInit) {
       return;
     const bound = t.closest(`[${FOR}]`);
     const id = bound?.getAttribute(FOR);
-    return id ? dfDollar6("#" + CSS.escape(id)).get(0)?._graphExplorer : undefined;
+    return id ? dfDollar10("#" + CSS.escape(id)).get(0)?._graphExplorer : undefined;
   };
   document.addEventListener("click", (ev) => {
     const inst = owner(ev.target);
@@ -13033,7 +14837,7 @@ var need = (target) => {
     throw new Error("graph-explorer: the element is not initialized");
   return inst;
 };
-df$6.graphExplorer = {
+df$10.graphExplorer = {
   html,
   register,
   icon,
@@ -13043,6 +14847,9 @@ df$6.graphExplorer = {
   up: (target) => need(target).up(true),
   fit: (target) => need(target).fit(true),
   flyTo: (target, camera) => need(target).flyTo(camera),
+  path: (target, id) => need(target).waitFor("path:" + id, () => need(target).post({ t: "path", id })),
+  subtree: (target, id, levels = 3) => need(target).fetchSubtree(id, levels),
+  find: (target, query, onPartial) => need(target).find(query, onPartial),
   search: (target, query) => {
     const inst = need(target);
     for (const input of inst.searchInputs()) {
@@ -13054,8 +14861,9 @@ df$6.graphExplorer = {
   },
   select: (target, ids) => need(target).select(ids.filter((id) => need(target).view?.byId.has(id))),
   selectEdge: (target, id) => need(target).selectEdge(id),
-  setNodeUi: (target, name) => need(target).setVariant(name),
-  nodeUis: (target) => need(target).variants(),
+  setLayers: (target, layers) => need(target).setLayers(layers),
+  layers: (target) => need(target).layerDefs(),
+  setCompact: (target, on) => need(target).setCompact(on),
   expand: async (target, id) => {
     const inst = need(target);
     if (edgeKey(id)) {
@@ -13077,6 +14885,8 @@ df$6.graphExplorer = {
     if (!!inst.simulating !== on)
       inst.act("live", null);
   },
+  update: (target, updates) => need(target).addUpdates(Array.isArray(updates) ? updates : [updates]),
+  updates: (target) => [...need(target).updates],
   inspect: (target, opts = {}) => {
     const inst = need(target);
     const out = {
@@ -13086,7 +14896,7 @@ df$6.graphExplorer = {
       flight: !!inst.flight,
       navigating: inst.navigating,
       lag: inst.stats.lag ?? 0,
-      elements: dfDollar6(inst.el).find("*").toArray().length,
+      elements: dfDollar10(inst.el).find("*").toArray().length,
       worker: { ...inst.stats.worker },
       graph: inst.genStats ? { ...inst.genStats } : null
     };
@@ -13104,8 +14914,8 @@ df$6.graphExplorer = {
   },
   destroy: (target) => need(target).destroy()
 };
-function init6() {
-  dfDollar6(".graph-explorer:not([data-init])").toArray().forEach((el) => {
+function init10() {
+  dfDollar10(".graph-explorer:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     const inst = new Explorer(el);
     el._graphExplorer = inst;
@@ -13118,8 +14928,8 @@ function init6() {
     if (inst.view) {
       for (const kind of OUTLETS)
         for (const o of inst.outlets(kind))
-          if (!dfDollar6(o).children("[data-ce-chrome]").get(0)) {
-            inst.renderNodeUi();
+          if (!dfDollar10(o).children("[data-ce-chrome]").get(0)) {
+            inst.renderLayers();
             inst.renderCrumbs();
             inst.renderOutline();
             inst.renderPanel();
@@ -13128,8 +14938,8 @@ function init6() {
           }
     }
 }
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+init10();
+new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 function graphExplorerWorker(self) {
   let SEED = 1540483477;
   const h32 = (a, b) => {
@@ -13620,6 +15430,47 @@ function graphExplorerWorker(self) {
     }
     return chain.reverse();
   }
+  function subtreeOf(id, levels) {
+    const rows = [];
+    const entity = (g, parent) => rows.push({
+      id: "n" + g,
+      parent,
+      label: leafLabel(g),
+      kind: "entity",
+      type: ENTITY_TYPES[leafType[g]],
+      level: 3,
+      count: outStart[g + 1] - outStart[g] + inDeg[g],
+      children: 0
+    });
+    const cluster = (c, parent, left) => {
+      rows.push({
+        id: "c" + c,
+        parent,
+        label: cName[c],
+        kind: "cluster",
+        type: cLevel[c] === 0 ? "Graph" : cLevel[c] === 1 ? "Domain" : SYSTEM_KINDS[cKind[c]],
+        level: cLevel[c],
+        count: membersOf(c),
+        children: cChildCount[c]
+      });
+      if (left <= 1)
+        return;
+      const first = cChildStart[c], end = first + cChildCount[c];
+      for (let k = first;k < end; k++)
+        if (cLevel[c] === 2)
+          entity(k, "c" + c);
+        else
+          cluster(k, "c" + c, left - 1);
+    };
+    const { leaf, idx } = parseId(id);
+    if (leaf)
+      entity(idx, "");
+    else if (idx >= 0 && idx < C)
+      cluster(idx, "", Math.max(1, levels | 0));
+    if (rows.length)
+      rows[0].parent = "";
+    return { t: "subtree", id, levels, rows };
+  }
   function membersOf(c) {
     return cLeafEnd[c] - cLeafStart[c];
   }
@@ -14052,6 +15903,7 @@ function graphExplorerWorker(self) {
       scheduleFrame(lastCam);
   }
   let rules = [], ruleVersion = 1;
+  let showNodes = true, showRelations = true;
   const DEFAULT_STYLE = { tone: "muted", width: 1, arrow: "end" };
   function getField(o, path) {
     for (const k of path.split(".")) {
@@ -14290,7 +16142,7 @@ function graphExplorerWorker(self) {
           }
           backdropDots += dots - d0;
         }
-        if (rs > 16 && labels < 80) {
+        if (showNodes && rs > 16 && labels < 80) {
           ctx.globalAlpha = 0.55;
           ctx.fillStyle = palette.muted;
           ctx.font = "11px " + palette.font;
@@ -14300,7 +16152,7 @@ function graphExplorerWorker(self) {
         }
       }
       const picked = cam.sel && cam.sel.length > 0 || !!cam.edge;
-      for (const e of pv.edges) {
+      for (const e of showRelations ? pv.edges : []) {
         const incident = e.a === fi || e.b === fi;
         const st = styleOf(e);
         let ax = tx(pv.x[e.a]), ay = ty(pv.y[e.a]), bx = tx(pv.x[e.b]), by = ty(pv.y[e.b]);
@@ -14473,7 +16325,7 @@ function graphExplorerWorker(self) {
           requestLayout(cc, rs[i]);
         const dim = dimming && !hl.has(i);
         farField(l, sx[i], sy[i], rs[i], dim ? 0.2 : cLevel[cc] < 2 ? 0.55 : 0.85);
-        if (rs[i] > 170 && l.laidOut && innerSegs < 6000) {
+        if (showRelations && rs[i] > 170 && l.laidOut && innerSegs < 6000) {
           ctx.strokeStyle = alpha(palette.muted, dim ? 0.06 : 0.22);
           ctx.lineWidth = 0.75;
           ctx.beginPath();
@@ -14497,7 +16349,7 @@ function graphExplorerWorker(self) {
       ctx.restore();
     }
     const buckets = new Map;
-    for (let ei = 0;ei < v.edges.length; ei++) {
+    for (let ei = 0;showRelations && ei < v.edges.length; ei++) {
       const e = v.edges[ei];
       const { a, b } = e;
       if (!vis[a] && !vis[b]) {
@@ -14547,7 +16399,7 @@ function graphExplorerWorker(self) {
     ctx.fillStyle = palette.muted;
     const dotLabels = [];
     for (const i of order) {
-      if (tiers[i] !== 0 || labels >= 160)
+      if (!showNodes || tiers[i] !== 0 || labels >= 160)
         continue;
       if (dimming && !hl.has(i))
         continue;
@@ -14939,13 +16791,17 @@ function graphExplorerWorker(self) {
       return;
     }
     const results = [];
-    const push = (id, label, kind, type) => results.push({
-      id,
-      label,
-      kind,
-      type,
-      path: pathOf(id).slice(1, -1).map((p) => p.label).join(" › ")
-    });
+    const push = (id, label, kind, type) => {
+      const chain = pathOf(id);
+      results.push({
+        id,
+        label,
+        kind,
+        type,
+        path: chain.slice(1, -1).map((p) => p.label).join(" › "),
+        parents: chain.slice(0, -1)
+      });
+    };
     const direct = /^#?(\d+)$/.exec(query);
     if (direct && +direct[1] < N)
       push("n" + direct[1], leafLabel(+direct[1]), "entity", ENTITY_TYPES[leafType[+direct[1]]]);
@@ -14969,6 +16825,8 @@ function graphExplorerWorker(self) {
     step();
   }
   let simTimer = 0;
+  const BREAKER_WORDS = ["Closed", "Half-open", "Open"];
+  const BREAKER_TONES = ["ok", "warn", "danger"];
   function simulate(on) {
     clearInterval(simTimer);
     simTimer = 0;
@@ -14981,17 +16839,24 @@ function graphExplorerWorker(self) {
     const v = views.get(lastCam.view);
     if (!v)
       return;
-    let pool = [];
-    if (!v.leafView)
-      for (const e of v.edges)
-        pool.push(...e.pairs);
-    else
-      pool = domPairs.get(cParent[v.cid]) ?? [];
-    if (!pool.length)
-      return;
-    const t = Date.now() & 65535;
+    const t = Date.now() & 65535, now = Date.now(), viewId = "c" + v.cid;
+    const childId = (i) => (v.leafView ? "n" : "c") + (v.start + i);
+    const childLabel = (i) => v.leafView ? leafLabel(v.start + i) : cName[v.start + i];
+    const items = [];
+    const linked = v.leafView ? [] : v.edges.map((_e, k) => k).filter((k) => v.edges[k].pairs.length);
+    const pool = v.leafView ? domPairs.get(cParent[v.cid]) ?? [] : null;
     for (let k = 0;k < 3; k++) {
-      const p = pool[h32(t, k) % pool.length];
+      let p, e;
+      if (pool) {
+        if (!pool.length)
+          break;
+        p = pool[h32(t, k) % pool.length];
+      } else {
+        if (!linked.length)
+          break;
+        e = v.edges[linked[h32(t, k + 20) % linked.length]];
+        p = e.pairs[h32(t, k) % e.pairs.length];
+      }
       const st = pairState[p];
       if (st === 3)
         continue;
@@ -15011,7 +16876,81 @@ function graphExplorerWorker(self) {
       for (const vv of views.values())
         if (vv.cid === dom || vv.cid === 0)
           vv.dirty = true;
+      const text = `${BREAKER_WORDS[pairState[p]]}: ${cName[pairA[p]]} → ${cName[pairB[p]]}`;
+      const tone = BREAKER_TONES[pairState[p]];
+      if (e)
+        items.push({
+          kind: "edge",
+          target: childId(e.a) + ">" + childId(e.b),
+          view: viewId,
+          label: childLabel(e.a) + " → " + childLabel(e.b),
+          layer: "health",
+          type: "breaker",
+          text,
+          tone,
+          time: now
+        });
+      else
+        items.push({
+          kind: "node",
+          target: viewId,
+          label: cName[v.cid],
+          layer: "health",
+          type: "breaker",
+          text,
+          tone,
+          time: now
+        });
     }
+    if (v.n && rnd(t, 31) < 0.6) {
+      const i = h32(t, 32) % v.n, g = v.start + i;
+      const text = v.leafView ? `Updated · revision ${100 + h32(t, 33) % 900}` : cLevel[g] === 1 ? `${1 + h32(t, 34) % 5} systems deployed` : `Deployed v${1 + h32(t, 35) % 4}.${h32(t, 36) % 20}.${h32(t, 37) % 30}`;
+      items.push({
+        kind: "node",
+        target: childId(i),
+        label: childLabel(i),
+        layer: "nodes",
+        type: "deploy",
+        text,
+        time: now
+      });
+    }
+    if (v.edges.length && rnd(t, 41) < 0.4) {
+      const e = v.edges[h32(t, 42) % v.edges.length];
+      const up = rnd(t, 43) < 0.5;
+      items.push({
+        kind: "edge",
+        target: childId(e.a) + ">" + childId(e.b),
+        view: viewId,
+        label: childLabel(e.a) + " → " + childLabel(e.b),
+        layer: "relations",
+        type: "traffic",
+        text: `Traffic ${up ? "up" : "down"} ${5 + h32(t, 44) % 60}%`,
+        tone: up ? "accent" : "muted",
+        time: now
+      });
+    }
+    if (v.n && rnd(t, 51) < 0.3) {
+      const i = h32(t, 52) % v.n;
+      const d = 1 + h32(t, 53) % 5000;
+      items.push({
+        kind: "node",
+        target: childId(i),
+        label: childLabel(i),
+        layer: "labels",
+        type: "count",
+        text: `${rnd(t, 54) < 0.7 ? "+" : "-"}${d.toLocaleString("en-US")} records`,
+        time: now
+      });
+    }
+    if (items.length)
+      self.postMessage({ t: "updates", items });
+    postPatch();
+    scheduleFrame(lastCam);
+  }
+  function postPatch(restyle = false) {
+    if (!lastCam || !views.get(lastCam.view))
+      return;
     const cur = buildView(lastCam.view, false);
     const patch = cur.edges.map((e, k) => ({ k, breaker: e.breaker, style: styleOf(e), traffic: !!e.traffic }));
     let ext = null;
@@ -15019,8 +16958,7 @@ function graphExplorerWorker(self) {
       const pv = buildView(cParent[cur.cid], false), fi = cur.cid - pv.start;
       ext = pv.edges.filter((e) => e.a === fi || e.b === fi).map((e) => ({ id: "c" + (pv.start + (e.a === fi ? e.b : e.a)), breaker: e.breaker, style: styleOf(e) }));
     }
-    self.postMessage({ t: "patch", view: "c" + cur.cid, edges: patch, external: ext });
-    scheduleFrame(lastCam);
+    self.postMessage({ t: "patch", view: "c" + cur.cid, edges: patch, external: ext, restyle });
   }
   self.onmessage = (ev) => {
     const m = ev.data;
@@ -15040,6 +16978,13 @@ function graphExplorerWorker(self) {
             order
           }));
           ruleVersion++;
+          postPatch(true);
+          if (lastCam)
+            scheduleFrame(lastCam);
+          break;
+        case "layers":
+          showNodes = !!m.nodes;
+          showRelations = !!m.relations;
           if (lastCam)
             scheduleFrame(lastCam);
           break;
@@ -15078,6 +17023,9 @@ function graphExplorerWorker(self) {
         case "rows":
           self.postMessage(rowsOf(m.id));
           break;
+        case "subtree":
+          self.postMessage(subtreeOf(m.id, m.levels));
+          break;
         case "path":
           self.postMessage({ t: "path", id: m.id, path: pathOf(m.id), req: m.req });
           break;
@@ -15091,13 +17039,506 @@ function graphExplorerWorker(self) {
   };
 }
 
+// src/components/navigation/language-switcher/language-switcher.ts
+var df$11 = defussGlobals();
+var dfDollar11 = defussQuery();
+var languageSwitcherStates = ["default", "open"];
+var SEED = `af Afrikaans|Afrikaans|za
+am Amharic|አማርኛ|et
+ar Arabic|العربية|sa
+bg Bulgarian|български|bg
+bg-Latn Bulgarian (Latin)|bulgarski|bg
+bn Bangla|বাংলা|bd
+bs Bosnian|bosanski|ba
+ca Catalan|català|es-ct
+ceb Cebuano|Binisaya|ph
+co Corsican|corsu|fr
+cs Czech|čeština|cz
+cy Welsh|Cymraeg|gb-wls
+da Danish|dansk|dk
+de German|Deutsch|de
+el Greek|Ελληνικά|gr
+el-Latn Greek (Latin)|Ellinika|gr
+en English|English|gb
+eo Esperanto|Esperanto|
+es Spanish|español|es
+et Estonian|eesti|ee
+eu Basque|euskara|es-pv
+fa Persian|فارسی|ir
+fi Finnish|suomi|fi
+fil Filipino|Filipino|ph
+fr French|français|fr
+fy Western Frisian|Frysk|nl
+ga Irish|Gaeilge|ie
+gd Scottish Gaelic|Gàidhlig|gb-sct
+gl Galician|galego|es-ga
+gu Gujarati|ગુજરાતી|in
+ha Hausa|Hausa|ng
+haw Hawaiian|ʻŌlelo Hawaiʻi|us
+hi Hindi|हिन्दी|in
+hi-Latn Hindi (Latin)|Hindi|in
+hmn Hmong|Hmoob|la
+hr Croatian|hrvatski|hr
+ht Haitian Creole|Kreyòl ayisyen|ht
+hu Hungarian|magyar|hu
+hy Armenian|հայերեն|am
+id Indonesian|Bahasa Indonesia|id
+ig Igbo|Asụsụ Igbo|ng
+is Icelandic|íslenska|is
+it Italian|italiano|it
+iw Hebrew|עברית|il
+ja Japanese|日本語|jp
+ja-Latn Japanese (Latin)|Nihongo|jp
+jv Javanese|Basa Jawa|id
+ka Georgian|ქართული|ge
+kk Kazakh|қазақ тілі|kz
+km Khmer|ខ្មែរ|kh
+kn Kannada|ಕನ್ನಡ|in
+ko Korean|한국어|kr
+ku Kurdish|Kurdî|iq
+ky Kyrgyz|кыргызча|kg
+la Latin|Latina|va
+lb Luxembourgish|Lëtzebuergesch|lu
+lo Lao|ລາວ|la
+lt Lithuanian|lietuvių|lt
+lv Latvian|latviešu|lv
+mg Malagasy|Malagasy|mg
+mi Māori|Māori|nz
+mk Macedonian|македонски|mk
+ml Malayalam|മലയാളം|in
+mn Mongolian|монгол|mn
+mr Marathi|मराठी|in
+ms Malay|Bahasa Melayu|my
+mt Maltese|Malti|mt
+my Burmese|မြန်မာ|mm
+ne Nepali|नेपाली|np
+nl Dutch|Nederlands|nl
+no Norwegian|norsk|no
+ny Nyanja|Chichewa|mw
+pa Punjabi|ਪੰਜਾਬੀ|in
+pl Polish|polski|pl
+ps Pashto|پښتو|af
+pt Portuguese|português|pt
+ro Romanian|română|ro
+ru Russian|русский|ru
+ru-Latn Russian (Latin)|Russkiy|ru
+sd Sindhi|سنڌي|pk
+si Sinhala|සිංහල|lk
+sk Slovak|slovenčina|sk
+sl Slovenian|slovenščina|si
+sm Samoan|Gagana Sāmoa|ws
+sn Shona|chiShona|zw
+so Somali|Soomaali|so
+sq Albanian|shqip|al
+sr Serbian|српски|rs
+st Southern Sotho|Sesotho|ls
+su Sundanese|Basa Sunda|id
+sv Swedish|svenska|se
+sw Swahili|Kiswahili|tz
+ta Tamil|தமிழ்|in
+te Telugu|తెలుగు|in
+tg Tajik|тоҷикӣ|tj
+th Thai|ไทย|th
+tr Turkish|Türkçe|tr
+uk Ukrainian|українська|ua
+ur Urdu|اردو|pk
+uz Uzbek|oʻzbekcha|uz
+vi Vietnamese|Tiếng Việt|vn
+xh Xhosa|isiXhosa|za
+yi Yiddish|ייִדיש|il
+yo Yoruba|Èdè Yorùbá|ng
+zh Chinese|中文|cn
+zh-Latn Chinese (Pinyin)|Zhōngwén|cn
+zu Zulu|isiZulu|za`;
+var RTL = new Set(["ar", "fa", "iw", "he", "ps", "sd", "ur", "yi"]);
+var LANGUAGES = SEED.split(`
+`).map((line) => {
+  const sp = line.indexOf(" ");
+  const code = line.slice(0, sp);
+  const [english, native, region] = line.slice(sp + 1).split("|");
+  return { code, english, native, region, dir: RTL.has(code) ? "rtl" : "ltr" };
+});
+var BY_CODE = new Map(LANGUAGES.map((l) => [l.code.toLowerCase(), l]));
+var ALIAS = { he: "iw", nb: "no", tl: "fil" };
+var settings2 = {
+  flags: "https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/{shape}/{region}.svg"
+};
+var resolve3 = (t) => typeof t === "string" ? dfDollar11("#" + CSS.escape(t)).get(0) ?? dfDollar11(t).get(0) : t;
+var esc4 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+function partsOf(tag) {
+  try {
+    const l = new Intl.Locale(tag);
+    return { language: l.language, script: l.script ?? "", region: (l.region ?? "").toLowerCase() };
+  } catch {
+    const [language = "", ...rest] = tag.split(/[-_]/);
+    return {
+      language: language.toLowerCase(),
+      script: rest.find((p) => p.length === 4) ?? "",
+      region: (rest.find((p) => p.length === 2) ?? "").toLowerCase()
+    };
+  }
+}
+function seedOf(tag) {
+  const { language, script } = partsOf(tag);
+  const lang = ALIAS[language] ?? language;
+  return BY_CODE.get(tag.toLowerCase()) ?? (script ? BY_CODE.get(`${lang}-${script}`.toLowerCase()) : undefined) ?? BY_CODE.get(lang);
+}
+var capitalize = (name, locale) => {
+  if (!name)
+    return name;
+  let first;
+  try {
+    first = name.charAt(0).toLocaleUpperCase(locale);
+  } catch {
+    first = name.charAt(0).toUpperCase();
+  }
+  return first + name.slice(1);
+};
+var displayCache = new Map;
+function displayNames(locale, type) {
+  const key = `${type}:${locale}`;
+  if (!displayCache.has(key)) {
+    let d = null;
+    try {
+      d = new Intl.DisplayNames([locale], { type, fallback: "none" });
+      if (new Intl.Locale(d.resolvedOptions().locale).language !== partsOf(locale).language)
+        d = null;
+    } catch {
+      d = null;
+    }
+    displayCache.set(key, d);
+  }
+  return displayCache.get(key) ?? null;
+}
+function cldrName(locale, type, code) {
+  try {
+    return displayNames(locale, type)?.of(code);
+  } catch {
+    return;
+  }
+}
+function nameIn(tag, locale) {
+  const seed = seedOf(tag);
+  const { region } = partsOf(tag);
+  const self = partsOf(locale).language === partsOf(tag).language;
+  if (seed && !region && seed.code.toLowerCase() === tag.toLowerCase().replace(/^he$/, "iw")) {
+    if (self)
+      return capitalize(seed.native, tag);
+    if (partsOf(locale).language === "en")
+      return seed.english;
+  }
+  const n = cldrName(locale, "language", tag.replace(/^iw\b/, "he"));
+  if (n && n.toLowerCase() !== tag.toLowerCase())
+    return capitalize(n, locale);
+  const base = seed ? self ? capitalize(seed.native, tag) : seed.english : tag;
+  if (!region)
+    return base;
+  const regionName = cldrName(locale, "region", region.toUpperCase()) ?? region.toUpperCase();
+  return `${base} (${regionName})`;
+}
+function regionFor(el, tag) {
+  for (const pair of (el.dataset.flags || "").split(/\s+/).filter(Boolean)) {
+    const [t, r] = pair.split(":");
+    if (t && t.toLowerCase() === tag.toLowerCase())
+      return (r || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+  }
+  return (partsOf(tag).region || seedOf(tag)?.region || "").replace(/[^a-z0-9-]/g, "");
+}
+var languagesOf = (el) => {
+  const list = (el.dataset.languages || "en").split(/[\s,]+/).filter(Boolean);
+  return list.length ? list : ["en"];
+};
+var valueOf = (el, languages = languagesOf(el)) => {
+  const v = (el.dataset.value || "").toLowerCase();
+  return languages.find((l) => l.toLowerCase() === v) ?? languages[0];
+};
+var nextOf = (el, tag) => {
+  const languages = languagesOf(el);
+  return languages[(languages.indexOf(tag) + 1) % languages.length];
+};
+var codeLabel = (tag) => {
+  const { language, region } = partsOf(tag);
+  return (region ? `${language}-${region}` : language).toUpperCase();
+};
+var dirOf = (tag) => RTL.has(partsOf(tag).language) ? "rtl" : "ltr";
+var idPart2 = (tag) => tag.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+function flagHtml(el, tag) {
+  if (el.dataset.flag === "none")
+    return "";
+  const region = regionFor(el, tag);
+  const shape = ["square", "circle", "squircle"].includes(el.dataset.flagShape || "") ? "1x1" : "4x3";
+  const url = region ? settings2.flags.replace("{shape}", shape).replace("{region}", region) : "";
+  const image = region ? ` data-region="${esc4(region)}" style="--language-switcher-flag: url('${esc4(url)}')"` : "";
+  return `<span class="language-switcher-flag" data-code="${esc4(partsOf(tag).language.toUpperCase())}"${image} aria-hidden="true"></span>`;
+}
+var GLOBE = '<svg class="language-switcher-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
+var CHEVRON = '<svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>';
+function faceHtml(el, tag) {
+  const display = el.dataset.display || "label";
+  const flag = flagHtml(el, tag) || (display === "icon" ? GLOBE : "");
+  const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf(el)) : nameIn(tag, tag);
+  return `${flag}${text ? `<span class="language-switcher-label" lang="${esc4(tag)}" dir="${dirOf(tag)}">${esc4(text)}</span>` : ""}`;
+}
+var labelOf = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
+var ariaOf = (el, tag) => `${labelOf(el)}: ${nameIn(tag, tag)}`;
+function namesOf(el, tag, ui) {
+  const own = nameIn(tag, tag), shown = nameIn(tag, ui);
+  if (el.dataset.names === "native")
+    return { name: own, lang: tag, alt: "", altLang: tag };
+  if (el.dataset.names === "ui")
+    return { name: shown, lang: ui, alt: shown === own ? "" : own, altLang: tag };
+  return { name: own, lang: tag, alt: shown === own ? "" : shown, altLang: ui };
+}
+var optionInner = (el, tag, ui) => {
+  const n = namesOf(el, tag, ui);
+  return `${flagHtml(el, tag)}<span class="language-switcher-name" lang="${esc4(n.lang)}" dir="${dirOf(n.lang)}">${esc4(n.name)}</span><span class="language-switcher-alt" lang="${esc4(n.altLang)}" dir="${dirOf(n.altLang)}"${n.alt ? "" : " hidden"}>${esc4(n.alt)}</span>`;
+};
+function comboboxHtml(el, uid) {
+  const languages = languagesOf(el);
+  const value = valueOf(el, languages);
+  const search = el.dataset.search || "Search languages...";
+  const options = languages.map((tag) => `<div role="option" id="${uid}-${idPart2(tag)}" class="combobox-item language-switcher-option" data-value="${esc4(tag)}" aria-selected="${tag === value}">${optionInner(el, tag, value)}</div>`).join("");
+  const icon = (el.dataset.display || "label") === "icon";
+  return `<div class="combobox language-switcher-combobox" data-ce-chrome${el.dataset.size ? ` data-size="${esc4(el.dataset.size)}"` : ""}>
+<button type="button" class="btn combobox-trigger" data-variant="${esc4(el.dataset.buttonVariant || "ghost")}"${icon ? ' data-size="icon"' : ""} aria-haspopup="listbox" aria-expanded="false" aria-label="${esc4(ariaOf(el, value))}" aria-controls="${uid}-popover"><span class="combobox-value">${faceHtml(el, value)}</span>${icon ? "" : CHEVRON}</button>
+<div id="${uid}-popover" class="combobox-content language-switcher-content" popover>
+<div class="combobox-search"${languages.length > 7 ? "" : " data-quiet"}><input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="${uid}-listbox" aria-activedescendant="" aria-autocomplete="list" placeholder="${esc4(search)}" aria-label="${esc4(search)}"></div>
+<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc4(labelOf(el))}"><div class="combobox-empty" hidden>${esc4(el.dataset.empty || "No language found.")}</div>${options}</div>
+</div>
+</div>`;
+}
+function swapHtml(el) {
+  const value = valueOf(el);
+  return `<label class="swap language-switcher-swap"${el.dataset.swap === "fade" ? "" : ` data-variant="${esc4(el.dataset.swap || "flip")}"`} data-ce-chrome${el.dataset.size ? ` data-size="${esc4(el.dataset.size)}"` : ""}>
+<input type="checkbox" role="button" aria-label="${esc4(swapLabel(el, value))}">
+<span class="swap-off">${faceHtml(el, value)}</span>
+<span class="swap-on">${faceHtml(el, nextOf(el, value))}</span>
+</label>`;
+}
+function menuHtml(el) {
+  const value = valueOf(el);
+  return `<div class="language-switcher-menu" data-ce-chrome>${languagesOf(el).map((tag) => `<button type="button" class="dropdown-item dropdown-radio language-switcher-item" role="menuitemradio" tabindex="-1" aria-checked="${tag === value}" data-value="${esc4(tag)}">${optionInner(el, tag, value)}</button>`).join("")}</div>`;
+}
+var swapLabel = (el, value) => {
+  const next = nextOf(el, value);
+  return `${ariaOf(el, value)} - ${el.dataset.next || "next"}: ${nameIn(next, next)}`;
+};
+var STRUCTURE = [
+  "languages",
+  "variant",
+  "display",
+  "names",
+  "flag",
+  "flags",
+  "flagShape",
+  "size",
+  "buttonVariant",
+  "search",
+  "empty",
+  "next",
+  "swap"
+];
+var structureOf = (el) => STRUCTURE.map((k) => el.dataset[k] ?? "").join("|");
+var chromeOf = (el) => dfDollar11(el).children("[data-ce-chrome]").get(0);
+function draw2(el) {
+  const uid = el.id ? `${el.id}-ls` : el._lsId ??= `language-switcher-${++sequence}`;
+  const focused = el.contains(document.activeElement);
+  dfDollar11(el).children("[data-ce-chrome]").remove();
+  const variant = el.dataset.variant;
+  dfDollar11(el).append(dfDollar11(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
+  el._lsStructure = structureOf(el);
+  el._lsValue = valueOf(el);
+  if (focused)
+    dfDollar11(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
+}
+var sequence = 0;
+function update(el) {
+  if (el._lsStructure !== structureOf(el) || !chromeOf(el))
+    return draw2(el);
+  const value = valueOf(el);
+  const changed = el._lsValue !== value;
+  el._lsValue = value;
+  const chrome = dfDollar11(chromeOf(el));
+  if (el.dataset.variant === "swap") {
+    const input = chrome.find(":scope > input").get(0);
+    if (changed) {
+      const [shown, hidden] = input.checked ? [".swap-on", ".swap-off"] : [".swap-off", ".swap-on"];
+      chrome.find(`:scope > ${shown}`).html(faceHtml(el, value));
+      chrome.find(`:scope > ${hidden}`).html(faceHtml(el, nextOf(el, value)));
+    }
+    dfDollar11(input).attr("aria-label", swapLabel(el, value));
+    return;
+  }
+  if (el.dataset.variant === "menu") {
+    if (!changed)
+      return;
+    chrome.find(".language-switcher-item").each((_i, item) => {
+      const tag = item.dataset.value || "";
+      dfDollar11(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
+    });
+    return;
+  }
+  chrome.find(".combobox-trigger").attr("aria-label", ariaOf(el, value));
+  chrome.find('[role="listbox"]').attr("aria-label", labelOf(el));
+  if (!changed)
+    return;
+  chrome.find(".combobox-value").html(faceHtml(el, value)).attr("data-placeholder", null);
+  chrome.find(".language-switcher-option").each((_i, option) => {
+    const tag = option.dataset.value || "";
+    dfDollar11(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
+  });
+}
+function choose(el, tag, announce = true) {
+  const languages = languagesOf(el);
+  const next = languages.find((l) => l.toLowerCase() === String(tag).toLowerCase());
+  if (!next)
+    return false;
+  const previous = valueOf(el, languages);
+  if (el.dataset.value !== next)
+    dfDollar11(el).attr("data-value", next);
+  update(el);
+  if (announce && next !== previous)
+    el.dispatchEvent(new CustomEvent("language-change", {
+      bubbles: true,
+      detail: { value: next, previous, name: nameIn(next, next), dir: dirOf(next) }
+    }));
+  return true;
+}
+var popoverOf = (el) => dfDollar11(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
+var isOpen = (el) => {
+  try {
+    return !!popoverOf(el)?.matches(":popover-open");
+  } catch {
+    return false;
+  }
+};
+function applyMarkup11(el, _name, config) {
+  const languages = languagesOf(el);
+  const value = languages.find((l) => l.toLowerCase() === String(config?.value ?? "").toLowerCase());
+  if (value)
+    dfDollar11(el).attr("data-value", value);
+}
+function triggerStateChange11(el, name, config) {
+  if (config?.value)
+    choose(el, config.value, false);
+  const popover = popoverOf(el);
+  if (!popover)
+    return;
+  if (name === "open" && !isOpen(el))
+    dfDollar11(el).find(".combobox-trigger").get(0)?.click();
+  else if (name !== "open" && isOpen(el))
+    popover.hidePopover();
+}
+var languageSwitcherApi = componentState({
+  component: "language-switcher",
+  states: languageSwitcherStates,
+  mergeConfig: true,
+  apply: (el, state) => triggerStateChange11(el, state.name, state.config),
+  read: (el) => ({ name: isOpen(el) ? "open" : "default", config: { value: valueOf(el) } }),
+  markup: (el, state) => applyMarkup11(el, state.name, state.config)
+});
+df$11.languageSwitcherApi = languageSwitcherApi;
+df$11.languageSwitcherStates = languageSwitcherStates;
+function init11() {
+  dfDollar11(".language-switcher:not([data-init])").each((_i, el) => {
+    el.dataset.init = "";
+    if (!el.dataset.value || valueOf(el) !== el.dataset.value)
+      dfDollar11(el).attr("data-value", valueOf(el));
+    draw2(el);
+    dfDollar11(el).on("combobox:change", (e) => {
+      const value = e.detail?.values?.[0];
+      el._lsValue = "";
+      if (!value || !choose(el, value))
+        update(el);
+      languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    });
+    dfDollar11(el).on("change", (e) => {
+      const input = e.target;
+      if (!input.matches(".language-switcher-swap > input") || input.closest(".language-switcher") !== el)
+        return;
+      choose(el, nextOf(el, valueOf(el)));
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    });
+    const pick = (item) => {
+      const it = item;
+      if (!it?.matches?.(".language-switcher-item") || it.closest(".language-switcher") !== el)
+        return;
+      el._lsValue = "";
+      if (!choose(el, it.dataset.value || ""))
+        update(el);
+      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+    };
+    dfDollar11(el).on("dropdown:select", (e) => pick(e.detail?.item));
+    dfDollar11(el).on("click", (e) => {
+      const item = e.target?.closest?.(".language-switcher-item");
+      if (item && !item.closest('[role="menu"]'))
+        pick(item);
+    });
+    dfDollar11(el).on("keydown", (e) => {
+      const input = e.target;
+      if (e.key !== "Enter" || !input.matches?.(".language-switcher-swap > input"))
+        return;
+      e.preventDefault();
+      input.click();
+    });
+    el.addEventListener("toggle", () => languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) }), true);
+    new MutationObserver(() => update(el)).observe(el, { attributes: true, attributeFilter: OBSERVED });
+    bindComponent(el, languageSwitcherApi, { name: "default", config: { value: valueOf(el) } });
+  });
+}
+var OBSERVED = [
+  "data-value",
+  "data-label",
+  "aria-label",
+  ...STRUCTURE.map((k) => "data-" + k.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()))
+];
+df$11.languageSwitcher = {
+  languages: () => LANGUAGES.map((l) => ({ ...l })),
+  name: (tag, locale) => nameIn(tag, locale ?? tag),
+  region: (tag) => partsOf(tag).region || seedOf(tag)?.region || "",
+  choose: (target, tag) => {
+    const el = resolve3(target);
+    if (!el || !choose(el, tag))
+      return false;
+    languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    return true;
+  },
+  bind: (target, i18n) => {
+    const el = resolve3(target);
+    if (!el || !i18n)
+      return () => {};
+    const follow = (locale) => {
+      if (locale && locale.toLowerCase() !== valueOf(el).toLowerCase() && choose(el, locale, false))
+        languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    };
+    follow(i18n.locale);
+    const onChange = (e) => {
+      const value = e.detail.value;
+      if (value !== i18n.locale)
+        i18n.setLocale(value);
+    };
+    el.addEventListener("language-change", onChange);
+    const stop = i18n.subscribe?.((snapshot) => follow(snapshot.locale));
+    return () => {
+      el.removeEventListener("language-change", onChange);
+      stop?.();
+    };
+  },
+  configure: (options) => {
+    if (options?.flags)
+      settings2.flags = options.flags;
+  }
+};
+init11();
+new MutationObserver(init11).observe(document, { childList: true, subtree: true });
+
 // src/components/application/panel/panel.ts
-var df$7 = defussGlobals();
-var dfDollar7 = defussQuery();
+var df$12 = defussGlobals();
+var dfDollar12 = defussQuery();
 var panelStates = ["default", "minimized", "maximized", "closed"];
 var SIDES2 = ["north", "south", "west", "east", "center"];
-var resolve3 = (t) => typeof t === "string" ? dfDollar7("#" + CSS.escape(t)).get(0) ?? dfDollar7(t).get(0) : t;
-var toolInput = (panel, tool) => dfDollar7(panel).find(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
+var resolve4 = (t) => typeof t === "string" ? dfDollar12("#" + CSS.escape(t)).get(0) ?? dfDollar12(t).get(0) : t;
+var toolInput = (panel, tool) => dfDollar12(panel).find(`:scope > .panel-header .panel-${tool} > input[type="checkbox"]`).get(0);
 function regionOf2(panel) {
   const parent = panel.parentElement;
   if (!parent)
@@ -15112,12 +17553,12 @@ function regionOf2(panel) {
 }
 var sideOf = (region) => region ? SIDES2.find((s) => region.classList.contains(`border-layout-${s}`)) ?? null : null;
 var hostOf = (panel) => panel.parentElement?.closest(".border-layout, [data-panel-host]") ?? null;
-function applyMarkup7(el, stateName) {
-  dfDollar7(el).attr("data-minimized", stateName === "minimized" ? "" : null).attr("data-maximized", stateName === "maximized" ? "" : null);
-  dfDollar7(el).attr("hidden", stateName === "closed" ? "" : null);
-  dfDollar7(el).children(".panel-body").attr("inert", stateName === "minimized" ? "" : null);
+function applyMarkup12(el, stateName) {
+  dfDollar12(el).attr("data-minimized", stateName === "minimized" ? "" : null).attr("data-maximized", stateName === "maximized" ? "" : null);
+  dfDollar12(el).attr("hidden", stateName === "closed" ? "" : null);
+  dfDollar12(el).children(".panel-body").attr("inert", stateName === "minimized" ? "" : null);
 }
-function triggerStateChange7(panel, stateName) {
+function triggerStateChange12(panel, stateName) {
   const minimized = stateName === "minimized";
   const maximized = stateName === "maximized";
   const closed = stateName === "closed";
@@ -15130,14 +17571,14 @@ function triggerStateChange7(panel, stateName) {
     min.checked = minimized;
   if (max)
     max.checked = maximized;
-  const body = dfDollar7(panel).find(":scope > .panel-body").get(0);
+  const body = dfDollar12(panel).find(":scope > .panel-body").get(0);
   if (body)
     body.toggleAttribute("inert", minimized);
   const region = regionOf2(panel);
   if (region && region !== panel) {
     region.toggleAttribute("data-panel-minimized", minimized);
     region.toggleAttribute("data-panel-closed", closed);
-    const handle = dfDollar7(region).find(":scope > .resizer-handle").get(0);
+    const handle = dfDollar12(region).find(":scope > .resizer-handle").get(0);
     if (handle)
       handle.inert = minimized || maximized || closed;
   }
@@ -15146,7 +17587,7 @@ function triggerStateChange7(panel, stateName) {
     panel._host = host;
     host.setAttribute("data-panel-maximized", "");
   } else if (panel._host) {
-    if (!dfDollar7(panel._host).find(".panel[data-maximized]").get(0))
+    if (!dfDollar12(panel._host).find(".panel[data-maximized]").get(0))
       panel._host.removeAttribute("data-panel-maximized");
     panel._host = null;
   }
@@ -15156,7 +17597,7 @@ var panelApi = componentState({
   states: panelStates,
   apply: (panel, state) => {
     const from = panel.dataset.stateName || "default";
-    triggerStateChange7(panel, state.name);
+    triggerStateChange12(panel, state.name);
     queueMicrotask(() => syncToggles(panel));
     if (from !== state.name) {
       panel.dispatchEvent(new CustomEvent("panel-change", {
@@ -15169,18 +17610,18 @@ var panelApi = componentState({
       }));
     }
   },
-  markup: (el, state) => applyMarkup7(el, state.name)
+  markup: (el, state) => applyMarkup12(el, state.name)
 });
-df$7.panelApi = panelApi;
-df$7.panelStates = panelStates;
-function init7() {
-  dfDollar7(".panel:not([data-init])").toArray().forEach((panel) => {
+df$12.panelApi = panelApi;
+df$12.panelStates = panelStates;
+function init12() {
+  dfDollar12(".panel:not([data-init])").toArray().forEach((panel) => {
     panel.dataset.init = "";
     const side = sideOf(regionOf2(panel));
     if (side)
       panel.dataset.region = side;
-    const header = dfDollar7(panel).find(":scope > .panel-header").get(0);
-    const body = dfDollar7(panel).find(":scope > .panel-body").get(0);
+    const header = dfDollar12(panel).find(":scope > .panel-header").get(0);
+    const body = dfDollar12(panel).find(":scope > .panel-body").get(0);
     if (body) {
       if (!body.id)
         body.id = `panel-${Math.random().toString(36).slice(2, 8)}-body`;
@@ -15201,13 +17642,13 @@ function init7() {
       document.getSelection()?.removeAllRanges();
       panelApi.setState(panel, panel.hasAttribute("data-minimized") ? "default" : "minimized");
     });
-    dfDollar7(panel).on("click", (e) => {
+    dfDollar12(panel).on("click", (e) => {
       const close = e.target?.closest?.(".panel-close");
       if (!close || close.closest(".panel") !== panel)
         return;
       panelApi.setState(panel, "closed");
       if (panel.id)
-        dfDollar7(`[data-panel-open="${CSS.escape(panel.id)}"], [data-panel-toggle="${CSS.escape(panel.id)}"]`).get(0)?.focus();
+        dfDollar12(`[data-panel-open="${CSS.escape(panel.id)}"], [data-panel-toggle="${CSS.escape(panel.id)}"]`).get(0)?.focus();
     });
     panel.addEventListener("keydown", (e) => {
       if (e.key !== "Escape" || !panel.hasAttribute("data-maximized"))
@@ -15218,13 +17659,13 @@ function init7() {
     });
     bindComponent(panel, panelApi);
     const start = panel.hasAttribute("hidden") ? "closed" : panel.hasAttribute("data-maximized") || toolInput(panel, "maximize")?.checked ? "maximized" : panel.hasAttribute("data-minimized") || toolInput(panel, "minimize")?.checked ? "minimized" : "default";
-    triggerStateChange7(panel, start);
+    triggerStateChange12(panel, start);
     panel.dataset.stateName = start;
     syncToggles(panel);
   });
 }
 var act2 = (t, state) => {
-  const panel = resolve3(t);
+  const panel = resolve4(t);
   if (panel?.api)
     panel.api.setState(state);
   return panel ?? null;
@@ -15236,25 +17677,25 @@ var panelActions = {
   close: (target) => act2(target, "closed"),
   open: (target) => act2(target, "default"),
   toggle: (target) => {
-    const panel = resolve3(target);
+    const panel = resolve4(target);
     if (!panel?.api)
       return false;
     panel.api.setState(panel.hasAttribute("data-minimized") ? "default" : "minimized");
     return panel.hasAttribute("data-minimized");
   }
 };
-df$7.panel = panelActions;
+df$12.panel = panelActions;
 var openersBound = false;
 function bindOpeners() {
   if (openersBound)
     return;
   openersBound = true;
-  dfDollar7(document).on("click", (e) => {
+  dfDollar12(document).on("click", (e) => {
     const trigger = e.target?.closest?.("[data-panel-open], [data-panel-toggle]");
     if (!trigger)
       return;
     const id = trigger.dataset.panelOpen ?? trigger.dataset.panelToggle;
-    const panel = dfDollar7(`#${CSS.escape(id)}`).get(0);
+    const panel = dfDollar12(`#${CSS.escape(id)}`).get(0);
     if (!panel?.api)
       return;
     if (trigger.hasAttribute("data-panel-toggle") && panel.dataset.stateName !== "closed") {
@@ -15262,24 +17703,24 @@ function bindOpeners() {
       return;
     }
     panel.api.setState("default");
-    dfDollar7(panel).find(":scope > .panel-header .panel-tools :is(input, button)").get(0)?.focus();
+    dfDollar12(panel).find(":scope > .panel-header .panel-tools :is(input, button)").get(0)?.focus();
   });
 }
 function syncToggles(panel) {
   if (!panel.id)
     return;
-  for (const t of dfDollar7(`[data-panel-toggle="${CSS.escape(panel.id)}"]`).toArray()) {
+  for (const t of dfDollar12(`[data-panel-toggle="${CSS.escape(panel.id)}"]`).toArray()) {
     t.setAttribute("aria-expanded", String(panel.dataset.stateName !== "closed" && !panel.hidden));
     t.setAttribute("aria-controls", panel.id);
   }
 }
 bindOpeners();
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init12();
+new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/progress/progress.ts
-var df$8 = defussGlobals();
-var dfDollar8 = defussQuery();
+var df$13 = defussGlobals();
+var dfDollar13 = defussQuery();
 var progressStates = ["default", "indeterminate", "complete"];
 var SELECTOR = "progress.progress";
 var reducedMotion5 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -15320,8 +17761,8 @@ function text(out, el) {
 function outputsOf(el) {
   const outs = new Set;
   if (el.id)
-    dfDollar8(`output.progress-value[for~="${CSS.escape(el.id)}"]`).toArray().forEach((o) => outs.add(o));
-  dfDollar8(el).closest(".progress-field").find(".progress-value").toArray().forEach((o) => {
+    dfDollar13(`output.progress-value[for~="${CSS.escape(el.id)}"]`).toArray().forEach((o) => outs.add(o));
+  dfDollar13(el).closest(".progress-field").find(".progress-value").toArray().forEach((o) => {
     if (!o.htmlFor?.value || el.id && o.htmlFor.contains(el.id))
       outs.add(o);
   });
@@ -15389,23 +17830,23 @@ function tween(el, to, duration) {
 }
 var stepOf = (el) => parseFloat(el.dataset.step || "") || maxOf(el) / 10;
 var durationOf = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function applyMarkup8(el, stateName, config) {
+function applyMarkup13(el, stateName, config) {
   const authored = el.position < 0 ? null : el.value;
   if (config?.max != null && Number(config.max) !== el.max)
     el.max = Number(config.max);
   if (stateName === "indeterminate")
-    dfDollar8(el).attr("value", null);
+    dfDollar13(el).attr("value", null);
   else
     el.value = stateName === "complete" ? maxOf(el) : clamp4(el, config?.value != null ? config.value : authored ?? 0);
   const indeterminate = el.position < 0;
   const pct = indeterminate ? 0 : el.value / maxOf(el);
-  dfDollar8(el).attr("data-level", pct < 0.34 ? "low" : pct < 0.67 ? "mid" : "high");
-  dfDollar8(el).attr("data-complete", !indeterminate && el.value >= maxOf(el) ? "" : null);
-  const live = el.id ? dfDollar8("#" + CSS.escape(el.id)).get(0) : null;
+  dfDollar13(el).attr("data-level", pct < 0.34 ? "low" : pct < 0.67 ? "mid" : "high");
+  dfDollar13(el).attr("data-complete", !indeterminate && el.value >= maxOf(el) ? "" : null);
+  const live = el.id ? dfDollar13("#" + CSS.escape(el.id)).get(0) : null;
   const spoken = (live ? outputsOf(live) : []).filter((out) => out.dataset.format === "fraction" || out.dataset.template).map((out) => text(out, el))[0];
-  dfDollar8(el).attr("aria-valuetext", spoken || null);
+  dfDollar13(el).attr("aria-valuetext", spoken || null);
 }
-function triggerStateChange8(el, stateName, config) {
+function triggerStateChange13(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null && Number(config.max) !== el.max)
@@ -15441,7 +17882,7 @@ function triggerStateChange8(el, stateName, config) {
 var progressApi = componentState({
   component: "progress",
   states: progressStates,
-  apply: (el, state) => triggerStateChange8(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange13(el, state.name, state.config),
   read: (el, state) => {
     const indeterminate = el.position < 0;
     return {
@@ -15454,10 +17895,10 @@ var progressApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup8(el, state.name, state.config)
+  markup: (el, state) => applyMarkup13(el, state.name, state.config)
 });
-df$8.progressApi = progressApi;
-df$8.progressStates = progressStates;
+df$13.progressApi = progressApi;
+df$13.progressStates = progressStates;
 function run(el, command) {
   const now = el.position < 0 ? 0 : el.value;
   switch (command) {
@@ -15494,8 +17935,8 @@ function run(el, command) {
   return true;
 }
 var COMMANDS = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init8() {
-  dfDollar8(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
+function init13() {
+  dfDollar13(`${SELECTOR}:not([data-init])`).toArray().forEach((el) => {
     el.dataset.init = "";
     bindComponent(el, progressApi);
     el._authored = el.position < 0 ? null : el.value;
@@ -15514,7 +17955,7 @@ if (!("commandForElement" in HTMLButtonElement.prototype) && !document.__progres
   document.__progressCommandInit = true;
   document.addEventListener("click", (e) => {
     const btn = e.target instanceof Element ? e.target.closest('button[commandfor][command^="--"]') : null;
-    const el = btn && dfDollar8("#" + CSS.escape(btn.getAttribute("commandfor"))).get(0);
+    const el = btn && dfDollar13("#" + CSS.escape(btn.getAttribute("commandfor"))).get(0);
     if (el?.matches(`${SELECTOR}[data-init]`))
       run(el, btn.getAttribute("command").slice(2));
   });
@@ -15528,12 +17969,12 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["value", "max"] });
-init8();
-new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
 // src/components/application/resizer/resizer.ts
-var df$9 = defussGlobals();
-var dfDollar9 = defussQuery();
+var df$14 = defussGlobals();
+var dfDollar14 = defussQuery();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
@@ -15657,8 +18098,8 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function applyMarkup9(_el, _stateName) {}
-function triggerStateChange9(wrapper, stateName, config = {}) {
+function applyMarkup14(_el, _stateName) {}
+function triggerStateChange14(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -15669,7 +18110,7 @@ function triggerStateChange9(wrapper, stateName, config = {}) {
 var resizerApi = componentState({
   component: "resizer",
   states: resizerStates,
-  apply: (wrapper, state) => triggerStateChange9(wrapper, state.name, state.config),
+  apply: (wrapper, state) => triggerStateChange14(wrapper, state.name, state.config),
   read: (wrapper, state) => {
     return {
       name: wrapper.dataset.stateName || "default",
@@ -15681,10 +18122,10 @@ var resizerApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup9(el, state.name)
+  markup: (el, state) => applyMarkup14(el, state.name)
 });
-df$9.resizerApi = resizerApi;
-df$9.resizerStates = resizerStates;
+df$14.resizerApi = resizerApi;
+df$14.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -15715,13 +18156,13 @@ function makeHandle(wrapper, h) {
 }
 function syncHandles(wrapper) {
   const want = handleSet(wrapper);
-  for (const el of Array.from(dfDollar9(wrapper).find(":scope > .resizer-handle").toArray())) {
+  for (const el of Array.from(dfDollar14(wrapper).find(":scope > .resizer-handle").toArray())) {
     if (!want.includes(el.dataset.handle))
       el.remove();
   }
   for (const h of want) {
-    if (!dfDollar9(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
-      dfDollar9(wrapper).append(makeHandle(wrapper, h));
+    if (!dfDollar14(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
+      dfDollar14(wrapper).append(makeHandle(wrapper, h));
   }
 }
 function handleKeys(wrapper, handle, ev) {
@@ -15785,8 +18226,8 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init9() {
-  const fresh = dfDollar9(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
+function init14() {
+  const fresh = dfDollar14(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
     wrapper.dataset.init = "";
     return !!targetOf(wrapper);
   });
@@ -15815,19 +18256,19 @@ function init9() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init9();
-new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+init14();
+new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 
 // src/components/data-display/table/table.ts
-var df$10 = defussGlobals();
-var dfDollar10 = defussQuery();
+var df$15 = defussGlobals();
+var dfDollar15 = defussQuery();
 var tableStates = ["default", "sorted", "selected"];
 var bodyOf = (table) => table.tBodies[0];
 var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
-var rowBox = (row) => dfDollar10(row).find(':scope > .table-select input[type="checkbox"]').get(0);
-var headBox = (table) => dfDollar10(table.tHead).find('.table-select input[type="checkbox"]').get(0);
+var rowBox = (row) => dfDollar15(row).find(':scope > .table-select input[type="checkbox"]').get(0);
+var headBox = (table) => dfDollar15(table.tHead).find('.table-select input[type="checkbox"]').get(0);
 function enhanceHead(table) {
-  dfDollar10(table.tHead).find(".table-sort").each((_i, btn) => {
+  dfDollar15(table.tHead).find(".table-sort").each((_i, btn) => {
     const th = btn.closest("th");
     if (th && !th.hasAttribute("aria-sort"))
       th.setAttribute("aria-sort", "none");
@@ -15857,7 +18298,7 @@ function sortBy(table, col, direction) {
   });
   body.append(...rows);
   [...table.tHead?.rows[0]?.cells ?? []].forEach((th, i) => {
-    if (dfDollar10(th).find(".table-sort").get(0))
+    if (dfDollar15(th).find(".table-sort").get(0))
       th.setAttribute("aria-sort", i === col ? direction : "none");
   });
   table._sort = { column: col, direction };
@@ -15866,7 +18307,7 @@ function unsort(table) {
   const body = bodyOf(table);
   if (body && table._original)
     body.append(...table._original.filter((r) => r.parentElement === body));
-  dfDollar10(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
+  dfDollar15(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
   table._sort = null;
 }
 function syncSelection(table, announce = true) {
@@ -15910,13 +18351,13 @@ function announceMove(table, row) {
   }));
 }
 function moved(table, row) {
-  dfDollar10(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
+  dfDollar15(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
   table._sort = null;
   announceMove(table, row);
 }
 function initReorder(table) {
   let dragged = null;
-  const clear = () => dfDollar10(table).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
+  const clear = () => dfDollar15(table).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
   table.addEventListener("pointerdown", (e) => {
     const handle = e.target.closest?.(".table-handle");
     if (handle)
@@ -15945,15 +18386,15 @@ function initReorder(table) {
     }
   });
   table.addEventListener("drop", (e) => {
-    const row = dfDollar10(table).find("tbody > tr[data-drop]").get(0);
+    const row = dfDollar15(table).find("tbody > tr[data-drop]").get(0);
     if (!dragged || !row)
       return;
     e.preventDefault();
     const ref = row.dataset.drop === "before" ? row : row.nextSibling;
     if (ref)
-      dfDollar10(ref).before(dragged);
+      dfDollar15(ref).before(dragged);
     else
-      dfDollar10(row.parentElement).append(dragged);
+      dfDollar15(row.parentElement).append(dragged);
     clear();
     moved(table, dragged);
   });
@@ -15977,9 +18418,9 @@ function initReorder(table) {
       return;
     const ref = e.key === "ArrowUp" ? sib : sib.nextSibling;
     if (ref)
-      dfDollar10(ref).before(row);
+      dfDollar15(ref).before(row);
     else
-      dfDollar10(row.parentElement).append(row);
+      dfDollar15(row.parentElement).append(row);
     e.target.focus();
     moved(table, row);
   });
@@ -15994,7 +18435,7 @@ function measureLocks(table) {
   for (let i = 1;i < n; i++)
     table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
 }
-function triggerStateChange10(table, stateName, config) {
+function triggerStateChange15(table, stateName, config) {
   switch (stateName) {
     case "default":
       unsort(table);
@@ -16022,7 +18463,7 @@ function triggerStateChange10(table, stateName, config) {
 var tableApi = componentState({
   component: "table",
   states: tableStates,
-  apply: (table, state) => triggerStateChange10(table, state.name, state.config),
+  apply: (table, state) => triggerStateChange15(table, state.name, state.config),
   read: (table, state) => {
     const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
     return {
@@ -16032,20 +18473,20 @@ var tableApi = componentState({
   },
   markup: (el, state) => {
     enhanceHead(el);
-    triggerStateChange10(el, state.name, state.config);
+    triggerStateChange15(el, state.name, state.config);
   }
 });
-df$10.tableApi = tableApi;
-df$10.tableStates = tableStates;
-function init10() {
-  dfDollar10("table.table:not([data-init])").toArray().forEach((table) => {
+df$15.tableApi = tableApi;
+df$15.tableStates = tableStates;
+function init15() {
+  dfDollar15("table.table:not([data-init])").toArray().forEach((table) => {
     table.dataset.init = "";
     table.dataset.stateName = "default";
     table._original = bodyRows(table);
     table._sort = null;
     bindComponent(table, tableApi);
     enhanceHead(table);
-    dfDollar10(table.tHead).find(".table-sort").toArray().forEach((btn) => {
+    dfDollar15(table.tHead).find(".table-sort").toArray().forEach((btn) => {
       const th = btn.closest("th");
       btn.addEventListener("click", () => {
         const col = th.cellIndex;
@@ -16062,10 +18503,10 @@ function init10() {
         }));
       });
     });
-    const pre = dfDollar10(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
+    const pre = dfDollar15(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
     if (pre)
       sortBy(table, pre.cellIndex, pre.getAttribute("aria-sort"));
-    if (dfDollar10(table).find('.table-select input[type="checkbox"]').get(0)) {
+    if (dfDollar15(table).find('.table-select input[type="checkbox"]').get(0)) {
       let last = null;
       table.addEventListener("click", (e) => {
         const box = e.target.closest?.('.table-select input[type="checkbox"]');
@@ -16096,7 +18537,7 @@ function init10() {
       });
       syncSelection(table, false);
     }
-    if (dfDollar10(table).find(".table-handle").get(0))
+    if (dfDollar15(table).find(".table-handle").get(0))
       initReorder(table);
     if (table.dataset.lockStart) {
       measureLocks(table);
@@ -16108,9 +18549,146 @@ function init10() {
     }
   });
 }
-init10();
-new MutationObserver(init10).observe(document, { childList: true, subtree: true });
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
-//# debugId=72BBEC44360762C464756E2164756E21
+// src/components/actions/toggle/toggle.ts
+var df$16 = defussGlobals();
+var dfDollar16 = defussQuery();
+var toggleStates = ["default", "pressed"];
+function applyMarkup15(toggle, stateName, defaultPressed) {
+  dfDollar16(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
+}
+function triggerStateChange16(toggle, stateName, _config) {
+  applyMarkup15(toggle, stateName, toggle._defaultPressed ?? "false");
+}
+var toggleApi = componentState({
+  component: "toggle",
+  states: toggleStates,
+  apply: (toggle, state) => triggerStateChange16(toggle, state.name, state.config),
+  read: (toggle, state) => ({
+    name: dfDollar16(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    config: state.config
+  }),
+  markup: (toggle, state) => {
+    const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
+    applyMarkup15(toggle, state.name, authored ? authored[1] : "false");
+  }
+});
+df$16.toggleApi = toggleApi;
+df$16.toggleStates = toggleStates;
+function init16() {
+  dfDollar16(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
+    dfDollar16(toggle).data("init", "");
+    toggle._defaultPressed = dfDollar16(toggle).attr("aria-pressed") || "false";
+    bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === "true" ? "pressed" : "default", config: {} });
+    dfDollar16(toggle).on("click", () => {
+      dfDollar16(toggle).attr("aria-pressed", String(dfDollar16(toggle).attr("aria-pressed") !== "true"));
+    });
+  });
+}
+init16();
+new MutationObserver(init16).observe(document, { childList: true, subtree: true });
+
+// src/components/actions/toggle-group/toggle-group.ts
+var df$17 = defussGlobals();
+var dfDollar17 = defussQuery();
+var toggleGroupStates = ["default", "disabled"];
+function applyMarkup16(el, stateName) {
+  dfDollar17(el).attr("data-disabled", stateName === "disabled" ? "" : null);
+}
+function triggerStateChange17(group, stateName, _config) {
+  switch (stateName) {
+    case "default":
+      group.removeAttribute("data-disabled");
+      break;
+    case "disabled":
+      group.setAttribute("data-disabled", "");
+      break;
+  }
+}
+var toggleGroupApi = componentState({
+  component: "toggle-group",
+  states: toggleGroupStates,
+  apply: (group, state) => triggerStateChange17(group, state.name, state.config),
+  read: (group, state) => {
+    return {
+      name: group.hasAttribute("data-disabled") ? "disabled" : "default",
+      config: state.config
+    };
+  },
+  markup: (el, state) => applyMarkup16(el, state.name)
+});
+df$17.toggleGroupApi = toggleGroupApi;
+df$17.toggleGroupStates = toggleGroupStates;
+function init17() {
+  dfDollar17(".toggle-group:not([data-init])").toArray().forEach((group) => {
+    group.dataset.init = "";
+    bindComponent(group, toggleGroupApi);
+    const type = group.getAttribute("data-type") || "single";
+    const getToggles = () => Array.from(dfDollar17(group).find(".toggle:not(:disabled)").toArray());
+    const initTabindex = () => {
+      const toggles = getToggles();
+      if (toggles.length === 0)
+        return;
+      const pressed = toggles.find((t) => t.getAttribute("aria-pressed") === "true");
+      const active = pressed || toggles[0];
+      toggles.forEach((t) => {
+        t.setAttribute("tabindex", t === active ? "0" : "-1");
+      });
+    };
+    initTabindex();
+    group.addEventListener("click", (e) => {
+      const toggle = e.target.closest(".toggle");
+      if (!toggle || toggle.disabled || group.hasAttribute("data-disabled"))
+        return;
+      const toggles = getToggles();
+      const pressed = toggle.getAttribute("aria-pressed") === "true";
+      if (type === "single") {
+        toggles.forEach((t) => t.setAttribute("aria-pressed", "false"));
+        if (!pressed)
+          toggle.setAttribute("aria-pressed", "true");
+      } else {
+        toggle.setAttribute("aria-pressed", String(!pressed));
+      }
+      toggles.forEach((t) => t.setAttribute("tabindex", t === toggle ? "0" : "-1"));
+    });
+    group.addEventListener("keydown", (e) => {
+      const toggle = e.target.closest(".toggle");
+      if (!toggle || group.hasAttribute("data-disabled"))
+        return;
+      const toggles = getToggles();
+      const idx = toggles.indexOf(toggle);
+      if (idx === -1)
+        return;
+      const vertical = group.getAttribute("data-orientation") === "vertical";
+      const fwd = vertical ? "ArrowDown" : "ArrowRight";
+      const bwd = vertical ? "ArrowUp" : "ArrowLeft";
+      let next;
+      if (e.key === fwd) {
+        e.preventDefault();
+        next = (idx + 1) % toggles.length;
+      } else if (e.key === bwd) {
+        e.preventDefault();
+        next = (idx - 1 + toggles.length) % toggles.length;
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        next = 0;
+      } else if (e.key === "End") {
+        e.preventDefault();
+        next = toggles.length - 1;
+      }
+      if (next !== undefined) {
+        toggles[idx].setAttribute("tabindex", "-1");
+        toggles[next].setAttribute("tabindex", "0");
+        toggles[next].focus();
+      }
+    });
+  });
+}
+init17();
+new MutationObserver(init17).observe(document, { childList: true, subtree: true });
+
+//# debugId=B122B419ACA01F9064756E2164756E21
 /* defuss-shadcn v0.9.13 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=knowledge-graph.js.map

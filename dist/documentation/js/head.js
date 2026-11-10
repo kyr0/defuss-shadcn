@@ -3983,6 +3983,11 @@
     navDocked: persisted("defuss-shadcn-nav-docked", false, { migrate: (old) => old === 1 || old === "1" || old === true }),
     navCollapsed: persisted("defuss-shadcn-nav-collapsed", {}),
     ghStars: persisted("gh-stars", "", { area: "session", migrate: (old) => String(old) }),
+    whatsNew: persisted("defuss-shadcn-whats-new", {
+      visited: "",
+      baseline: "",
+      seen: []
+    }),
     navScroll: persisted("shadcn-nav-scroll", -1, { area: "session", migrate: (old) => Number(old) || 0 })
   };
   var prefsPersist = () => storageAvailable("local");
@@ -4378,6 +4383,8 @@
     docs.prefs = prefs;
     var rootEl = document.documentElement;
     rootEl.toggleAttribute("data-nav-docked", prefs.navDocked.value);
+    var ua = navigator.userAgentData;
+    rootEl.dataset.platform = /mac|iphone|ipad|ipod/i.test(ua && ua.platform || navigator.platform || navigator.userAgent) ? "apple" : "other";
     var closedSections = Object.keys(prefs.navCollapsed.value).filter(function(k) {
       return prefs.navCollapsed.value[k] === "0";
     });
@@ -4971,6 +4978,171 @@
       if (location.hash.length > 1 && docs.realignWhenSettled) {
         docs.realignWhenSettled(decodeURIComponent(location.hash.slice(1)));
       }
+    });
+  })();
+
+  // src/documentation/runtime/whats-new-core.ts
+  var SEEN_LIMIT = 500;
+  function visit(prev, versions) {
+    const current = versions[0] ?? "";
+    if (!prev || !prev.visited)
+      return { visited: current, baseline: versions[1] ?? "", seen: [] };
+    if (prev.visited === current)
+      return prev;
+    return { visited: current, baseline: prev.visited, seen: [] };
+  }
+  function freshVersions(versions, baseline) {
+    const i = baseline ? versions.indexOf(baseline) : -1;
+    return new Set(i < 0 ? versions : versions.slice(0, i));
+  }
+  function markOf(marks, fresh, seen, id) {
+    if (!marks || seen.includes(id))
+      return null;
+    let out = null;
+    for (const token of marks.split(/\s+/)) {
+      const [version, kind] = token.split(":");
+      if (!fresh.has(version))
+        continue;
+      if (kind === "created")
+        return "created";
+      if (kind === "updated")
+        out = "updated";
+    }
+    return out;
+  }
+  var opened = (state, id) => state.seen.includes(id) ? state : { ...state, seen: [...state.seen, id].slice(-SEEN_LIMIT) };
+
+  // src/documentation/runtime/whats-new.ts
+  (function() {
+    const root = document.documentElement;
+    const versions = (root.getAttribute("data-whats-new") || "").split(/\s+/).filter(Boolean);
+    if (!versions.length)
+      return;
+    let state = visit(prefs.whatsNew.value, versions);
+    if (state !== prefs.whatsNew.value)
+      prefs.whatsNew.set(state);
+    const idOf = (path) => (path || "index.html").replace(/^.*\//, "").replace(/\.html$/, "");
+    const esc = (v) => v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    const LABEL = { created: "New", updated: "Updated" };
+    const VARIANT = { created: "info", updated: "success" };
+    const textOf = ($, el) => String($(el).text() || "").replace(String($(el).find(".heading-anchor").text() || "\x00"), "").trim();
+    function pageNews($, arrival, fresh) {
+      $("main [data-whats-new-mark]").remove();
+      $("main [data-whats-new-here]").remove();
+      if (!arrival)
+        return;
+      const items = [];
+      for (const el of $("main [data-whats-new-example]").toArray()) {
+        const kind = markOf(el.getAttribute("data-whats-new-example") || "", fresh, [], "");
+        if (!kind || !el.id)
+          continue;
+        items.push({ id: el.id, text: textOf($, el), kind });
+        $(el).append($(`<span class="indicator-dot whats-new-mark" data-whats-new-mark data-variant="${VARIANT[kind]}" role="img" aria-label="${LABEL[kind]}" title="${LABEL[kind]}"></span>`));
+      }
+      const changelog = $('a.sidebar-link[data-page$="/changelog.html"]').attr("data-page");
+      const docsRoot = new URL(root.getAttribute("data-docs-root") || "", location.href);
+      const log = changelog ? ` - the <a class="link" href="${esc(new URL(changelog, docsRoot).href)}">changelog</a> says what` : "";
+      const body = arrival === "created" ? `<p class="alert-description">This page is new since your last visit.</p>` : items.length ? `<ul class="alert-description whats-new-here-list">${items.map((i) => `<li><a class="link" href="#${esc(i.id)}">${esc(i.text)}</a> <span class="whats-new-kind-tag">${i.kind === "created" ? "new" : "changed"}</span></li>`).join("")}</ul>` : `<p class="alert-description">This page changed since your last visit${log}.</p>`;
+      const note = $(`<div class="alert whats-new-here" data-whats-new-here role="note" aria-label="What's new on this page"><div class="alert-content"><h5 class="alert-title">What's new on this page</h5>${body}</div></div>`);
+      const after = $("main .page-toc").get(0) ?? $("main .page-header").get(0);
+      if (after)
+        $(after).after(note);
+    }
+    function forYou($, marks, fresh) {
+      const box = $("[data-whats-new-for-you]").get(0);
+      if (!box)
+        return;
+      const rows = new Map;
+      for (const block of $("[data-whats-new-pages]").toArray()) {
+        if (!fresh.has(block.getAttribute("data-whats-new-pages") || ""))
+          continue;
+        for (const li of $(block).find("[data-whats-new-page]").toArray()) {
+          const id = li.getAttribute("data-whats-new-page") || "";
+          if (marks.has(id) && !rows.has(id))
+            rows.set(id, `<li data-whats-new-page="${esc(id)}">${$(li).html() || ""}</li>`);
+        }
+      }
+      box.hidden = !rows.size;
+      $(box).html(rows.size ? `<h2 class="whats-new-for-you-title">New for you</h2><p class="text-sm text-muted-foreground mt-0">The pages and examples changed since your last visit that you have not opened yet.</p><ul class="whats-new-list whats-new-tree">${[...rows.values()].join("")}</ul>` : "");
+    }
+    function apply() {
+      const $ = globalThis.df$;
+      if (!$)
+        return;
+      const fresh = freshVersions(versions, state.baseline);
+      const links = $("a.sidebar-link[data-whats-new]").toArray();
+      const here = idOf(root.getAttribute("data-page"));
+      const own = links.find((a) => idOf(a.getAttribute("data-page")) === here);
+      const arrival = own ? markOf(own.getAttribute("data-whats-new") || "", fresh, state.seen, here) : null;
+      if (arrival) {
+        state = opened(state, here);
+        prefs.whatsNew.set(state);
+      }
+      pageNews($, arrival, fresh);
+      const marks = new Map;
+      for (const a of links) {
+        const id = idOf(a.getAttribute("data-page"));
+        const mark = markOf(a.getAttribute("data-whats-new") || "", fresh, state.seen, id);
+        if (mark) {
+          a.setAttribute("data-unseen", mark);
+          marks.set(id, mark);
+        } else
+          a.removeAttribute("data-unseen");
+      }
+      for (const dot of $("[data-whats-new-dot]").toArray()) {
+        const summary = dot.closest("summary");
+        const host = summary ? summary.parentElement : dot.closest("a");
+        const mark = host?.matches("a") ? host.getAttribute("data-unseen") : $(host).find('a[data-unseen="created"]').get(0) ? "created" : $(host).find("a[data-unseen]").get(0) ? "updated" : null;
+        dot.hidden = !mark;
+        if (!mark)
+          continue;
+        dot.setAttribute("data-variant", VARIANT[mark]);
+        dot.setAttribute("aria-label", LABEL[mark]);
+        dot.setAttribute("title", LABEL[mark]);
+      }
+      for (const el of $("[data-whats-new-release]").toArray()) {
+        const isFresh = fresh.has(el.getAttribute("data-whats-new-release") || "");
+        el.toggleAttribute("data-fresh", isFresh);
+        const badge = $(el).find("[data-whats-new-fresh]").get(0);
+        if (badge)
+          badge.hidden = !isFresh;
+      }
+      for (const el of $("[data-whats-new-item]").toArray()) {
+        const mark = marks.get(el.getAttribute("data-whats-new-item") || "");
+        if (mark)
+          el.setAttribute("data-unseen", mark);
+        else
+          el.removeAttribute("data-unseen");
+      }
+      for (const el of $("[data-whats-new-example-link]").toArray()) {
+        const release = el.closest("[data-whats-new-pages]")?.getAttribute("data-whats-new-pages") || "";
+        if (marks.has(el.getAttribute("data-whats-new-example-link") || "") && fresh.has(release))
+          el.setAttribute("data-unseen", el.getAttribute("data-kind") || "updated");
+        else
+          el.removeAttribute("data-unseen");
+      }
+      forYou($, marks, fresh);
+      for (const el of $("[data-whats-new-count]").toArray()) {
+        $(el).text(String(marks.size));
+        el.hidden = !marks.size;
+      }
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+      const docs = globalThis.df$?.shadcn?.docs;
+      if (docs) {
+        docs.whatsNew = {
+          state: () => state,
+          seeAll: () => {
+            state = { visited: versions[0], baseline: versions[0], seen: [] };
+            prefs.whatsNew.set(state);
+            apply();
+          }
+        };
+      }
+      if (docs?.onPageReady)
+        docs.onPageReady(apply);
+      else
+        apply();
     });
   })();
 })();

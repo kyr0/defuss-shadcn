@@ -78,7 +78,8 @@ var EXTRA_BUNDLES = {
   "visual-editor": ["visual-editor"],
   geo: ["geo-map"],
   shaders: ["shader"],
-  graphs: ["graph-explorer"]
+  graphs: ["graph-explorer"],
+  terminal: ["terminal"]
 };
 var BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join("|")})(?:\\.min)?\\.js(?:[?#]|$)`);
 var neededBundles = (source) => Object.keys(EXTRA_BUNDLES).filter((b) => EXTRA_BUNDLES[b].some((m) => new RegExp(`\\b${m}\\b`).test(source || "")));
@@ -2498,5 +2499,5 @@ df$3.visualEditor = {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-//# debugId=7C0E5BA613B4A01464756E2164756E21
+//# debugId=9F4512395CD38AE264756E2164756E21
 //# sourceMappingURL=wysiwyg-editors.js.map

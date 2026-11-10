@@ -40,7 +40,7 @@
     isolation: isolate;
     box-sizing: border-box;
     width: 100%;
-    padding: clamp(3rem, 9vw, 7rem) 1.25rem 5rem;
+    padding: 1rem 1.25rem 3rem;
     overflow: clip;
     background: var(--background);
     color: var(--foreground);
@@ -74,7 +74,7 @@
   #pf-minimal .pf-watermark {
     position: absolute;
     z-index: -1;
-    top: clamp(1rem, 4vw, 3rem);
+    top: clamp(5.5rem, 9vw, 7.5rem);
     right: max(-2rem, calc(50% - 30rem));
     margin: 0;
     color: transparent;
@@ -85,6 +85,12 @@
       serif;
     pointer-events: none;
     user-select: none;
+  }
+  /* on a phone the sections wrap below the name: the watermark starts under them */
+  @media (max-width: 40rem) {
+    #pf-minimal .pf-watermark {
+      top: 8rem;
+    }
   }
   #pf-minimal .pf-column {
     counter-reset: pf-section;
@@ -262,16 +268,185 @@
     font-family: var(--pf-mono);
     font-size: 0.8125rem;
   }
-  #pf-minimal .pf-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 1.125rem;
+  #pf-minimal [hidden] {
+    display: none !important;
   }
-  #pf-minimal .pf-fine {
+  /* the Site Header: the name in italic with its accent stop, three sections in small caps - nothing else */
+  #pf-minimal .mk-header {
+    max-width: 38rem;
+    margin: 0 auto clamp(2.5rem, 8vw, 5.5rem);
+    background: none;
+    color: inherit;
+  }
+  #pf-minimal .mk-header-inner {
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    min-height: 4.5rem;
+    padding: 0;
+  }
+  #pf-minimal .mk-header a {
+    text-decoration: none;
+  }
+  #pf-minimal .mk-header-brand {
+    color: inherit;
+  }
+  #pf-minimal :is(.mk-header-name, .mk-footer-brand-name) {
+    color: inherit;
+    font:
+      italic 500 1.375rem/1 'Newsreader',
+      Georgia,
+      serif;
+    letter-spacing: -0.01em;
+  }
+  #pf-minimal :is(.mk-header-name, .mk-footer-brand-name) span {
+    color: var(--primary);
+  }
+  #pf-minimal .mk-header-nav {
+    display: flex;
+    margin-inline-start: auto;
+  }
+  #pf-minimal .nav-menu-list {
+    gap: 1.25rem;
+  }
+  #pf-minimal .nav-menu-link {
+    padding: 0.15rem 0;
+    border-radius: 0;
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+  }
+  #pf-minimal .nav-menu-link:is(:hover, :focus-visible) {
+    background: linear-gradient(var(--pf-mark), var(--pf-mark)) 0 100% / 100% 45% no-repeat;
+    color: var(--foreground);
+  }
+  #pf-minimal .nav-menu-link[aria-current] {
+    background: none;
+    color: var(--primary);
+    text-decoration: underline 1.5px var(--primary);
+    text-underline-offset: 0.3em;
+  }
+  /* a project or an essay: the same column, the title in the name's big italic, the text set like a book */
+  #pf-minimal .pf-back {
+    margin: 0;
+    font: 400 0.8125rem/1.4 var(--pf-mono);
+  }
+  #pf-minimal .pf-back a {
+    text-decoration: none;
+    color: var(--muted-foreground);
+  }
+  #pf-minimal .pf-meta {
+    margin: 0 0 0.75rem;
+    color: var(--muted-foreground);
+    font: 400 0.8125rem/1.4 var(--pf-mono);
+  }
+  #pf-minimal .pf-page-title {
+    margin: 0 0 1.25rem;
+    font:
+      italic 500 clamp(2.25rem, 5.5vw, 3.25rem) / 1.05 'Newsreader',
+      Georgia,
+      serif;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  #pf-minimal .pf-figure {
+    margin: 0;
+  }
+  #pf-minimal .pf-figure img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    filter: grayscale(1) sepia(0.25);
+  }
+  #pf-minimal .pf-facts {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.35rem 1.5rem;
+    margin: 0;
+    padding-block: 0.85rem;
+    border-block: 1px solid var(--border);
+  }
+  #pf-minimal .pf-facts dt {
+    color: var(--primary);
+    font-size: 1rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+  }
+  #pf-minimal .pf-facts dd {
+    margin: 0;
+  }
+  #pf-minimal .pf-essay p {
+    margin: 0 0 1.25rem;
+  }
+  #pf-minimal .pf-essay p:first-child {
+    font-size: 1.3125rem;
+    line-height: 1.6;
+  }
+  #pf-minimal .pf-essay p:first-child::first-letter {
+    float: inline-start;
+    margin: 0.32rem 0.6rem 0 0;
+    color: var(--primary);
+    font:
+      500 4.6rem/0.72 'Newsreader',
+      Georgia,
+      serif;
+  }
+  #pf-minimal .pf-signoff {
+    margin: -1rem 0 0;
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+  #pf-minimal .pf-pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--border);
+  }
+  #pf-minimal .pf-pager a {
+    display: grid;
+    align-content: start;
+    gap: 0.2rem;
+    text-decoration: none;
+  }
+  #pf-minimal .pf-pager a + a {
+    text-align: end;
+  }
+  #pf-minimal .pf-pager small {
+    color: var(--primary);
+    font-size: 1rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+  }
+  #pf-minimal .pf-pager span {
+    font-size: 1.1875rem;
+    font-style: italic;
+  }
+  /* the Site Footer, simple: one quiet line under the column */
+  #pf-minimal .mk-footer {
+    max-width: 38rem;
+    margin: 4rem auto 0;
+    background: none;
+    color: inherit;
+  }
+  #pf-minimal .mk-footer[data-variant='simple'] .mk-footer-inner {
+    padding: 1.5rem 0 0;
+    border-block-start: 1px solid var(--border);
+  }
+  #pf-minimal .mk-footer-brand {
+    color: inherit;
+    text-decoration: none;
+  }
+  #pf-minimal .mk-footer-links {
+    font-size: 1.0625rem;
+  }
+  #pf-minimal .mk-footer-links a {
+    color: inherit;
+  }
+  #pf-minimal .mk-footer-copy {
+    flex-basis: 100%;
     color: var(--muted-foreground);
     font: 400 0.75rem/1.5 var(--pf-mono);
   }
@@ -292,14 +467,6 @@
     background: var(--accent);
     color: var(--accent-foreground);
   }
-  #pf-minimal {
-    position: relative;
-  }
-  #pf-minimal > .site-mode {
-    position: absolute;
-    z-index: 20;
-    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
-  }
   /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
   :root:not(.dark) #pf-minimal {
     --accent: oklch(0.93 0 85);
@@ -312,11 +479,6 @@
   /* -- modes: end -- */
 </style>
 <div id="pf-minimal">
-  <label class="swap site-mode" data-variant="rotate" data-size="sm">
-    <input type="checkbox" data-site-mode aria-label="Dark mode" />
-    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-  </label>
   <div
     class="surface pf-paper"
     data-variant="background"
@@ -325,7 +487,28 @@
     aria-hidden="true"
   ></div>
   <p class="pf-watermark" aria-hidden="true">N.</p>
-  <div class="pf-column" data-df-stagger style="--df-motion-stagger-step: 120ms">
+  <header class="mk-header">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand" href="#/" data-router-link
+        ><span class="mk-header-name">Noor Haddad<span>.</span></span></a
+      >
+      <nav class="mk-header-nav" aria-label="Main">
+        <ul class="nav-menu-list">
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#/projects" data-router-link>Projects</a></li>
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#/writing" data-router-link>Writing</a></li>
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#/work" data-router-link>Work</a></li>
+        </ul>
+      </nav>
+      <div class="mk-header-actions">
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input type="checkbox" data-site-mode aria-label="Dark mode" />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+      </div>
+    </div>
+  </header>
+  <div class="pf-column" data-pf-view="home" data-df-stagger style="--df-motion-stagger-step: 120ms">
     <div data-df-entrance="fade">
       <header class="mk-resume-header" data-variant="compact">
         <img
@@ -346,11 +529,13 @@
     <section aria-label="About" data-df-entrance="fade">
       <p class="pf-dropcap pf-lede"
         >I build tools for people who write - editors, version history, the boring parts of publishing. Right now at
-        <a href="#">Ink &amp; Paper</a>, before that at <a href="#">Ghostline</a>.</p
+        <a href="#/work" data-router-link>Ink &amp; Paper</a>, before that at
+        <a href="#/work" data-router-link>Ghostline</a>.</p
       >
       <p
         >I also write about software that respects your attention, in English and Arabic. The
-        <a href="#writing">essays</a> are below; the code is <a href="#">on GitHub</a>.</p
+        <a href="#/writing" data-router-link>essays</a> are below; the code is
+        <a href="https://github.com/" target="_blank" rel="noopener">on GitHub</a>.</p
       >
     </section>
     <section aria-labelledby="pf-min-now" data-df-entrance="fade">
@@ -361,46 +546,58 @@
         <li>Learning to bake ka'ak properly.</li>
       </ul>
     </section>
-    <section aria-labelledby="pf-min-projects" data-df-entrance="fade">
+    <section aria-labelledby="pf-min-projects" data-df-entrance="fade" data-pf-section="projects">
       <h2 id="pf-min-projects">Projects</h2>
       <ul class="pf-list">
         <li>
-          <a href="#">Quill</a>
+          <a href="#/projects/quill" data-router-link>Quill</a>
           <span>2026</span>
           <p>A Markdown editor that keeps every version, offline.</p>
         </li>
         <li>
-          <a href="#">rtl-kit</a>
+          <a href="#/projects/rtl-kit" data-router-link>rtl-kit</a>
           <span>2024</span>
           <p>Bidirectional text, done right, for web components.</p>
         </li>
         <li>
-          <a href="#">Margins</a>
+          <a href="#/projects/margins" data-router-link>Margins</a>
           <span>2022</span>
           <p>Comments beside any web page, stored in your browser.</p>
         </li>
       </ul>
     </section>
-    <section id="writing" aria-labelledby="pf-min-writing" data-df-entrance="fade">
+    <section id="writing" aria-labelledby="pf-min-writing" data-df-entrance="fade" data-pf-section="writing">
       <h2 id="pf-min-writing">Writing</h2>
       <ul class="pf-list pf-writing">
-        <li><a href="#">Undo is a feature, not a stack</a><time datetime="2026-10-02">Oct 2026</time></li>
-        <li><a href="#">Right to left is not a mirror</a><time datetime="2026-03-18">Mar 2026</time></li>
-        <li><a href="#">The quiet notification</a><time datetime="2025-08-30">Aug 2025</time></li>
-        <li><a href="#">Ten years of text editors</a><time datetime="2025-01-12">Jan 2025</time></li>
+        <li
+          ><a href="#/writing/undo" data-router-link>Undo is a feature, not a stack</a
+          ><time datetime="2026-10-02">Oct 2026</time></li
+        >
+        <li
+          ><a href="#/writing/right-to-left" data-router-link>Right to left is not a mirror</a
+          ><time datetime="2026-03-18">Mar 2026</time></li
+        >
+        <li
+          ><a href="#/writing/quiet-notification" data-router-link>The quiet notification</a
+          ><time datetime="2025-08-30">Aug 2025</time></li
+        >
+        <li
+          ><a href="#/writing/ten-years" data-router-link>Ten years of text editors</a
+          ><time datetime="2025-01-12">Jan 2025</time></li
+        >
       </ul>
     </section>
     <blockquote class="pf-quote" data-df-entrance="fade"
       >Software should wait for you, not the other way round.</blockquote
     >
-    <section aria-labelledby="pf-min-work" data-df-entrance="fade">
+    <section aria-labelledby="pf-min-work" data-df-entrance="fade" data-pf-section="work">
       <h2 id="pf-min-work">Work</h2>
       <ol class="mk-resume-entries">
         <li class="mk-resume-entry">
           <div class="mk-resume-entry-body">
             <div class="mk-resume-entry-head">
               <h3 class="mk-resume-entry-title">Senior engineer, editor</h3>
-              <p class="mk-resume-entry-org"><a href="#">Ink &amp; Paper</a></p>
+              <p class="mk-resume-entry-org"><span>Ink &amp; Paper, Berlin</span></p>
               <p class="mk-resume-entry-when"><time datetime="2023">2023</time> - today</p>
             </div>
           </div>
@@ -409,23 +606,194 @@
           <div class="mk-resume-entry-body">
             <div class="mk-resume-entry-head">
               <h3 class="mk-resume-entry-title">Engineer</h3>
-              <p class="mk-resume-entry-org"><a href="#">Ghostline</a></p>
+              <p class="mk-resume-entry-org"><span>Ghostline, Amman</span></p>
               <p class="mk-resume-entry-when"><time datetime="2019">2019</time> - <time datetime="2023">2023</time></p>
             </div>
           </div>
         </li>
       </ol>
     </section>
-    <footer data-df-entrance="fade">
-      <ul class="pf-links">
-        <li><a href="mailto:noor@example.com">noor@example.com</a></li>
-        <li><a href="#">GitHub</a></li>
-        <li><a href="#">Mastodon</a></li>
-        <li><a href="#">RSS</a></li>
-      </ul>
-      <p class="pf-fine" style="margin-block-start: 1.5rem">Last updated November 2026.</p>
-    </footer>
   </div>
+  <article class="pf-column pf-page" data-pf-view="projects" aria-labelledby="pf-min-project-title" hidden>
+    <p class="pf-back"><a href="#/projects" data-router-link>← All projects</a></p>
+    <header class="pf-page-head">
+      <p class="pf-meta"><span data-case="kind">Markdown editor</span> · <span data-case="year">2026</span></p>
+      <h1 class="pf-page-title" id="pf-min-project-title" data-case="title">Quill</h1>
+      <p class="pf-lede" data-case="summary">A Markdown editor that keeps every version, offline.</p>
+    </header>
+    <figure class="pf-figure">
+      <img
+        data-case-img="0"
+        data-w="1200"
+        data-h="750"
+        src="https://picsum.photos/id/180/1200/750"
+        alt="A laptop beside an open notebook with wireframe sketches"
+      />
+    </figure>
+    <dl class="pf-facts">
+      <dt>Built with</dt>
+      <dd data-case="stack">TypeScript, a CRDT, IndexedDB</dd>
+      <dt>Status</dt>
+      <dd data-case="status">Open source, about 2,400 people use it daily</dd>
+    </dl>
+    <section aria-labelledby="pf-min-what">
+      <h2 id="pf-min-what">What it is</h2>
+      <p data-case="brief"
+        >Quill is a plain Markdown editor for people who write long things - theses, books, documentation. It saves
+        every keystroke as history, so there is no Save button and no file you can lose.</p
+      >
+    </section>
+    <section aria-labelledby="pf-min-how">
+      <h2 id="pf-min-how">How it works</h2>
+      <p data-case="work"
+        >The document is a CRDT stored in IndexedDB; the history is the CRDT's own log, so scrolling back through a
+        month of edits is reading, not reconstructing. Sync between devices is optional and goes through a relay that
+        only ever sees encrypted changes.</p
+      >
+    </section>
+    <section aria-labelledby="pf-min-now-project">
+      <h2 id="pf-min-now-project">Where it stands</h2>
+      <p data-case="result"
+        >Version 2 shipped in September. The undo described in my October essay started here, before it moved to
+        work.</p
+      >
+    </section>
+    <nav class="pf-pager" aria-label="More projects">
+      <a href="#/projects/margins" data-router-link data-case-link="prev"
+        ><small>Previous</small><span data-case-title="prev">Margins</span></a
+      >
+      <a href="#/projects/rtl-kit" data-router-link data-case-link="next"
+        ><small>Next</small><span data-case-title="next">rtl-kit</span></a
+      >
+    </nav>
+  </article>
+  <article class="pf-column pf-page" data-pf-view="writing" aria-labelledby="pf-min-essay-title" hidden>
+    <p class="pf-back"><a href="#/writing" data-router-link>← All writing</a></p>
+    <header class="pf-page-head">
+      <p class="pf-meta"><time data-case="date">2 October 2026</time> · <span data-case="minutes">5 min read</span></p>
+      <h1 class="pf-page-title" id="pf-min-essay-title" data-case="title">Undo is a feature, not a stack</h1>
+    </header>
+    <div class="pf-essay" data-case-paras="body">
+      <p
+        >Every editor I have worked on started with the same undo: a stack of the last hundred changes, popped one at a
+        time. It works until two people edit the same document, or one person edits it on two devices - then the stack
+        is a lie about whose change comes next.</p
+      >
+    </div>
+    <p class="pf-signoff">- Noor</p>
+    <nav class="pf-pager" aria-label="More writing">
+      <a href="#/writing/ten-years" data-router-link data-case-link="prev"
+        ><small>Previous</small><span data-case-title="prev">Ten years of text editors</span></a
+      >
+      <a href="#/writing/right-to-left" data-router-link data-case-link="next"
+        ><small>Next</small><span data-case-title="next">Right to left is not a mirror</span></a
+      >
+    </nav>
+  </article>
+  <footer class="mk-footer" data-variant="simple">
+    <div class="mk-footer-inner">
+      <a class="mk-footer-brand" href="#/" data-router-link
+        ><span class="mk-footer-brand-name">Noor Haddad<span>.</span></span></a
+      >
+      <ul class="mk-footer-links">
+        <li><a href="#/projects" data-router-link>Projects</a></li>
+        <li><a href="#/writing" data-router-link>Writing</a></li>
+        <li><a href="mailto:noor@example.com">noor@example.com</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://mastodon.social/" target="_blank" rel="noopener">Mastodon</a></li>
+      </ul>
+      <p class="mk-footer-copy">Last updated November 2026.</p>
+    </div>
+  </footer>
+  <!-- the projects and essays the routes name, in order -->
+  <script type="application/json" id="pf-minimal-pages">
+    {
+      "projects": {
+        "quill": {
+          "title": "Quill",
+          "kind": "Markdown editor",
+          "year": "2026",
+          "stack": "TypeScript, a CRDT, IndexedDB",
+          "status": "Open source, about 2,400 people use it daily",
+          "summary": "A Markdown editor that keeps every version, offline.",
+          "brief": "Quill is a plain Markdown editor for people who write long things - theses, books, documentation. It saves every keystroke as history, so there is no Save button and no file you can lose.",
+          "work": "The document is a CRDT stored in IndexedDB; the history is the CRDT's own log, so scrolling back through a month of edits is reading, not reconstructing. Sync between devices is optional and goes through a relay that only ever sees encrypted changes.",
+          "result": "Version 2 shipped in September. The undo described in my October essay started here, before it moved to work.",
+          "images": [[180, "A laptop beside an open notebook with wireframe sketches"]]
+        },
+        "rtl-kit": {
+          "title": "rtl-kit",
+          "kind": "Web components",
+          "year": "2024",
+          "stack": "TypeScript, CSS logical properties",
+          "status": "Maintained, used by three newsrooms",
+          "summary": "Bidirectional text, done right, for web components.",
+          "brief": "rtl-kit is a small set of web components and CSS rules for pages that mix Arabic or Hebrew with English: inputs, lists, breadcrumbs, a date picker and the icons that should and should not turn around.",
+          "work": "Everything is written with logical properties, every user-typed string is isolated, and each component ships a test page that shows the wrong version beside the right one. There is no JavaScript where a CSS rule will do.",
+          "result": "Three newsrooms use it for their Arabic editions, and two of its rules are now in a browser vendor's own guide to bidirectional layouts.",
+          "images": [[4, "Hands writing in a notebook beside a laptop"]]
+        },
+        "margins": {
+          "title": "Margins",
+          "kind": "Browser extension",
+          "year": "2022",
+          "stack": "WebExtensions, IndexedDB",
+          "status": "Retired in 2025, the code stays online",
+          "summary": "Comments beside any web page, stored in your browser.",
+          "brief": "Margins let you write notes beside any paragraph of any web page, the way you would in the margin of a book - and kept them on your own computer, not on a server.",
+          "work": "Each note is anchored to a quote and its surrounding words, so it finds its place again after the page changes. Notes live in IndexedDB and can be exported as Markdown, one file per page.",
+          "result": "It reached 9,000 readers before browsers changed their extension rules. I retired it rather than rebuild it on worse terms; the anchoring code lives on in Quill.",
+          "images": [[201, "Glasses resting on a closed laptop on a wooden desk"]]
+        }
+      },
+      "writing": {
+        "undo": {
+          "title": "Undo is a feature, not a stack",
+          "date": "2 October 2026",
+          "minutes": "5 min read",
+          "body": [
+            "Every editor I have worked on started with the same undo: a stack of the last hundred changes, popped one at a time. It works until two people edit the same document, or one person edits it on two devices - then the stack is a lie about whose change comes next.",
+            "In a shared document, undo has to mean: take back what I did. Not: take back the last thing that happened. That sounds like a small difference. It is the difference between a colleague's paragraph surviving your Ctrl+Z and quietly disappearing.",
+            "At Ink & Paper we rebuilt undo on top of the CRDT that already merges our edits. Each change records who made it and what it replaced; undo writes a new change that restores the old value, and it travels to everyone else like any other edit. Nothing is popped, nothing is rewritten.",
+            "The surprise was how much else got simpler. Version history, restoring one paragraph and offline merges are now the same feature seen from three sides - which is what they always were."
+          ]
+        },
+        "right-to-left": {
+          "title": "Right to left is not a mirror",
+          "date": "18 March 2026",
+          "minutes": "6 min read",
+          "body": [
+            "When a product adds Arabic, someone usually flips the whole layout with one attribute and calls it done. Half of it works. The other half - the arrows, the progress bars, the numbers, the code - turns into a puzzle for the people it was meant for.",
+            "Not everything should turn around. A play button points the way time runs, not the way the text runs. Phone numbers, code and most charts stay left to right inside a right-to-left sentence. A back arrow mirrors; a clock does not.",
+            "The fix is mostly CSS: logical properties instead of left and right, a direction on the parts that hold text in another script, and isolation around anything a user typed. rtl-kit is that list turned into components, with a page that shows each rule wrong and right.",
+            "The best review I ever got came from a reader in Amman: it feels like it was written in Arabic first. That is the bar - not a mirror of the English page, but a page that never needed one."
+          ]
+        },
+        "quiet-notification": {
+          "title": "The quiet notification",
+          "date": "30 August 2025",
+          "minutes": "4 min read",
+          "body": [
+            "Most notifications are written for the product's numbers, not for the person who gets them. They arrive at the wrong time, say too little to act on and too much to ignore, and each one teaches people to turn the next one off.",
+            "We started counting how often a notification led to the thing it asked for. For our message about someone viewing your document, the answer was one in two hundred. We deleted it the same week, and nobody wrote in to ask where it went.",
+            "The ones that survived share three rules: they name what changed, they can be answered without opening the app, and they wait. A comment on your paragraph can wait until you open the document; a request to approve a deadline cannot.",
+            "Quiet is not the same as rare. It means the reader decides when the interruption happens, and the product earns the next one by being right about the last."
+          ]
+        },
+        "ten-years": {
+          "title": "Ten years of text editors",
+          "date": "12 January 2025",
+          "minutes": "7 min read",
+          "body": [
+            "I wrote my first editor in 2015: a textarea with a preview beside it. Since then I have worked on five more, and the textarea is still the hardest part to beat.",
+            "The browser gives you selection, input methods for every script, spell checking, accessibility and undo for free - and all of them break the moment you replace the textarea with something cleverer. Most of my career has been putting those things back.",
+            "What changed in ten years is not the hard parts but the expectations. People now assume an editor works offline, syncs between devices and never loses a word. Those are database problems wearing a text cursor.",
+            "If I could tell the 2015 version of me one thing, it would be to read the input events specification before writing a line of code. It would have saved me about four years."
+          ]
+        }
+      }
+    }
+  </script>
 </div>
 <script type="module">
   // df$ comes with the component bundle - a full-screen page loads it after this module
@@ -440,6 +808,96 @@
     });
     new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     syncMode();
+  });
+</script>
+<script type="module">
+  // routing: defuss-dom-router owns the address - the home page, its sections, a page per project and per essay
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+
+  addEventListener('DOMContentLoaded', async () => {
+    const ROOT = '#pf-minimal';
+    const site = df$(ROOT).get(0);
+    // each kind of page is a view filled from the data block, at #/<kind>/<slug>
+    const PAGES = JSON.parse(df$('#pf-minimal-pages').text());
+    const SECTIONS = ['projects', 'writing', 'work'];
+    const routes = [
+      { id: 'home', path: '/' },
+      { id: 'page', path: '/:kind/:slug' },
+      { id: 'section', path: '/:section' },
+      { id: 'missing', path: '*' },
+    ];
+    // a page from the data block: its texts, its paragraphs, its pictures, the pages before and after it
+    const fill = (kind, slug) => {
+      const items = PAGES[kind];
+      const order = Object.keys(items);
+      const item = items[slug];
+      const at = order.indexOf(slug);
+      const near = { prev: order[(at + order.length - 1) % order.length], next: order[(at + 1) % order.length] };
+      const view = df$(ROOT + ' [data-pf-view="' + kind + '"]');
+      view.find('[data-case]').each((_i, el) => {
+        df$(el).text(item[el.dataset.case]);
+      });
+      view.find('[data-case-paras]').each((_i, box) => {
+        const body = df$(box).html('');
+        for (const text of item[box.dataset.caseParas]) body.append(df$('<p></p>').text(text));
+      });
+      view.find('[data-case-img]').each((_i, img) => {
+        const [id, alt] = item.images[Number(img.dataset.caseImg)];
+        df$(img)
+          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('alt', alt);
+      });
+      for (const [rel, to] of Object.entries(near)) {
+        view.find('[data-case-link="' + rel + '"]').attr('href', '#/' + kind + '/' + to);
+        view.find('[data-case-title="' + rel + '"]').text(items[to].title);
+      }
+    };
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let shown = null;
+    let last = null;
+    // one view shown, the header marks where the reader is; a section route scrolls there, a new page opens at its top
+    const show = (to) => {
+      const { kind, slug, section } = to.params;
+      const page = to.routeId === 'page' && Object.hasOwn(PAGES, kind) && Object.hasOwn(PAGES[kind], slug);
+      const at = to.routeId === 'section' && SECTIONS.includes(section) ? section : null;
+      const name = page ? kind : 'home';
+      if (page) fill(kind, slug);
+      df$(ROOT + ' [data-pf-view]').each((_i, view) => {
+        view.hidden = view.dataset.pfView !== name;
+      });
+      const here = page ? '#/' + kind : at ? '#/' + at : null;
+      df$(ROOT + ' .mk-header-nav a').each((_i, link) => {
+        df$(link).attr('aria-current', link.getAttribute('href') === here ? 'page' : null);
+      });
+      // the page opens where its address says - at once, once its pictures have laid it out; a click glides there
+      const target = at ? df$(ROOT + ' [data-pf-section="' + at + '"]').get(0) : shown ? site : null;
+      const behavior = shown === name && !still ? 'smooth' : 'instant';
+      const go = () => target?.scrollIntoView({ behavior, block: 'start' });
+      if (!shown && document.readyState !== 'complete') addEventListener('load', go, { once: true });
+      else go();
+      shown = name;
+      last = to;
+    };
+    // a link to where the reader already is leaves the address as it is - it still scrolls there
+    df$(site).on('click', (event) => {
+      const link = event.target.closest('a[data-router-link]');
+      if (link && last && link.getAttribute('href') === (location.hash || '#/')) show(last);
+    });
+    // the page scrolls itself (to a section) - the router's own scroll would stop that glide
+    const router = createRouter({
+      mode: 'hash',
+      scroll: 'manual',
+      routes,
+      prepare: ({ to }) => ({ commit: () => show(to) }),
+    });
+    router.attachLinks(site);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
   });
 </script>
 <script type="module" src="../../components/all.js"></script>

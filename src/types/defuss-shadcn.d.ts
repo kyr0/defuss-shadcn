@@ -185,6 +185,22 @@ interface DefussShadcnRegistry {
     setDrafts(target: string | HTMLElement, drafts: Record<string, string>): void;
     refresh(target: string | HTMLElement): void;
   };
+  /** Language Switcher (src/components/navigation/language-switcher/language-switcher.ts). Inline, not typeof import(). */
+  languageSwitcher?: {
+    languages(): { code: string; english: string; native: string; region: string; dir: 'ltr' | 'rtl' }[];
+    name(tag: string, locale?: string): string;
+    region(tag: string): string;
+    choose(target: string | HTMLElement, tag: string): boolean;
+    bind(
+      target: string | HTMLElement,
+      i18n: {
+        readonly locale: string;
+        setLocale(locale: string): unknown;
+        subscribe?(listener: (snapshot: { locale: string }) => void): () => void;
+      },
+    ): () => void;
+    configure(options: { flags?: string }): void;
+  };
   /** Video (src/components/multimedia/video/video.ts) - members match df$.video there. */
   video?: {
     play(target: string | HTMLElement): Promise<void>;
@@ -423,6 +439,28 @@ interface DefussShadcnRegistry {
     deck: typeof import('../components/chart/chart.js').chartDeck;
     bind: typeof import('../components/chart/chart.js').bind;
   };
+  /** Terminal (src/components/mockup/terminal/terminal.ts): xterm.js loader, output, commands, replay, buffer - inline types */
+  terminal?: {
+    load: () => Promise<void>;
+    configure: (options: { urls?: Partial<Record<'xterm' | 'css' | 'fit' | 'clipboard' | 'serialize' | 'webLinks', string>> }) => void;
+    write: (target: string | HTMLElement, text: string) => Promise<void>;
+    writeln: (target: string | HTMLElement, text?: string) => Promise<void>;
+    clear: (target: string | HTMLElement) => Promise<void>;
+    run: (target: string | HTMLElement, line: string) => Promise<void>;
+    play: (
+      target: string | HTMLElement,
+      steps?: { command?: string; output?: string | string[]; tone?: string; wait?: number; typing?: boolean }[],
+    ) => Promise<void>;
+    commands: (target: 'global' | string | HTMLElement, commands: Record<string, unknown>) => () => void;
+    prompt: (target: string | HTMLElement, text: string) => void;
+    text: (target: string | HTMLElement) => string;
+    serialize: (target: string | HTMLElement, format?: 'html' | 'vt') => string;
+    focus: (target: string | HTMLElement) => void;
+    tone: (text: string, tone: 'success' | 'warning' | 'info' | 'destructive' | 'muted' | 'bold') => string;
+    xterm: (target: string | HTMLElement) => Promise<unknown>;
+    theme: (target: string | HTMLElement) => Record<string, string>;
+    url: string;
+  };
   /** mermaid imperative API (src/components/mermaid/mermaid.ts): lazy loader, renders, token theme */
   mermaid?: {
     load: (url?: string) => Promise<unknown>;
@@ -482,17 +520,37 @@ interface DefussShadcnRegistry {
     configure: (options: { data?: string; urls?: Record<string, string>; views?: Record<string, [number, number, number, number]> }) => void;
     [member: string]: unknown;
   };
-  /** Graph Explorer (src/components/graphs/graph-explorer/graph-explorer.ts): navigation, selection, Node UIs, plugins, diagnostics */
+  /** Graph Explorer (src/components/graphs/graph-explorer/graph-explorer.ts): navigation, selection, layers, plugins, diagnostics */
   graphExplorer?: {
     navigate: (target: HTMLElement | string, id: string) => Promise<void>;
     dive: (target: HTMLElement | string, id: string) => Promise<void>;
     up: (target: HTMLElement | string) => Promise<boolean>;
     fit: (target: HTMLElement | string) => Promise<string>;
     select: (target: HTMLElement | string, ids: string[]) => void;
-    setNodeUi: (target: HTMLElement | string, name: string) => void;
+    setLayers: (target: HTMLElement | string, layers: string[]) => void;
+    setCompact: (target: HTMLElement | string, on: boolean) => void;
+    simulate: (target: HTMLElement | string, on: boolean) => void;
+    update: (
+      target: HTMLElement | string,
+      updates: Record<string, unknown> | Record<string, unknown>[],
+    ) => { id: string; time: number; kind: 'node' | 'edge'; target: string; view?: string; layer: string; type: string; text: string; label: string; tone?: string }[];
+    updates: (
+      target: HTMLElement | string,
+    ) => { id: string; time: number; kind: 'node' | 'edge'; target: string; view?: string; layer: string; type: string; text: string; label: string; tone?: string }[];
     expand: (target: HTMLElement | string, id: string) => Promise<void>;
     collapse: (target: HTMLElement | string) => void;
     destroy: (target: HTMLElement | string) => void;
+    path: (target: HTMLElement | string, id: string) => Promise<{ id: string; label: string }[]>;
+    subtree: (
+      target: HTMLElement | string,
+      id: string,
+      levels?: number,
+    ) => Promise<{ id: string; parent: string; label: string; kind: 'cluster' | 'entity'; type: string; level: number; count: number; children: number }[]>;
+    find: (
+      target: HTMLElement | string,
+      query: string,
+      onPartial?: (results: { id: string; label: string; kind: 'cluster' | 'entity'; type: string; path: string; parents: { id: string; label: string }[] }[], scanned: number) => void,
+    ) => Promise<{ id: string; label: string; kind: 'cluster' | 'entity'; type: string; path: string; parents: { id: string; label: string }[] }[]>;
     [member: string]: unknown;
   };
   /** Shader (src/components/shaders/shader/shader.ts): the effects, registration, the engine's counts, one redraw */

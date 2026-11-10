@@ -9,7 +9,7 @@ disable-model-invocation: true
 # defuss-shadcn / shadcn-plan
 
 Precondition: a person asked for this plan. Do not implement unless they ask for the plan and the implementation.
-Scope: what to build with defuss-shadcn 0.9.13 (259 components: 79 ATM, 35 MOL, 6 ORG, 135 BLK, 4 TPL). The process around it - evidence, tests, gates - stays with the project's own method (defuss-vae `plan`, for example); this skill adds the defuss-shadcn specifics.
+Scope: what to build with defuss-shadcn 0.9.13 (261 components: 80 ATM, 36 MOL, 6 ORG, 135 BLK, 4 TPL). The process around it - evidence, tests, gates - stays with the project's own method (defuss-vae `plan`, for example); this skill adds the defuss-shadcn specifics.
 
 ## Where things are
 

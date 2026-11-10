@@ -565,11 +565,13 @@ function init7() {
     let highlightIndex = -1;
     const filter = (q) => {
       const query = q.toLowerCase();
+      const external = dialog.dataset.filter === "none";
       let hasVisible = false;
       const $items = dfDollar7(list).find(".command-item");
       $items.each(function() {
-        const match = !query || this.textContent.toLowerCase().includes(query);
-        dfDollar7(this).prop("hidden", !match);
+        const match = external ? !this.hidden : !query || this.textContent.toLowerCase().includes(query);
+        if (!external)
+          dfDollar7(this).prop("hidden", !match);
         if (match)
           hasVisible = true;
       });
@@ -583,6 +585,11 @@ function init7() {
     };
     input.addEventListener("input", () => {
       filter(input.value);
+    });
+    new MutationObserver(() => filter(input.value)).observe(list, { childList: true, subtree: true });
+    new MutationObserver(() => filter(input.value)).observe(dialog, {
+      attributes: true,
+      attributeFilter: ["data-filter"]
     });
     input.addEventListener("keydown", (e) => {
       const visible = getVisibleItems(list);
@@ -636,5 +643,5 @@ function init7() {
 init7();
 new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
-//# debugId=96BA7276EACBD30B64756E2164756E21
+//# debugId=2093CD65FD270FE764756E2164756E21
 //# sourceMappingURL=overlays.js.map

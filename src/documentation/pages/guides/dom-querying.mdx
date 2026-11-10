@@ -9,8 +9,13 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <DocPage meta={meta}>
 
 <PageHeader slug="dom-querying" title="DOM Querying & Morphing" introStyle="max-width:38rem;">
-  Every interactive component runs on one runtime: the callable <code>df$</code>, installed once by <code>core.js</code> (or embedded first inside <code>all.js</code>). It is <strong>defuss-query</strong> - a small jQuery-shaped, native-DOM facade - over <strong>defuss-morph</strong>, a key/id-aware DOM reconciler. Select and mutate through it; keep native browser protocols native.
+  Every interactive component runs on one runtime: the callable <code>df$</code>, installed once by <code>core.js</code> (or embedded first inside <code>all.js</code>). It is <a href="https://query.defuss.org" target="_blank" rel="noopener"><strong>defuss-query</strong></a> - a small jQuery-shaped, native-DOM facade - over <a href="https://morph.defuss.org" target="_blank" rel="noopener"><strong>defuss-morph</strong></a>, a key/id-aware DOM reconciler. Select and mutate through it; keep native browser protocols native.
 </PageHeader>
+
+<div class="flex gap-3 mb-8 flex-wrap items-center">
+  <a href="https://query.defuss.org" target="_blank" rel="noopener" class="btn" data-variant="outline">defuss-query at query.defuss.org<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-start:0.375rem"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+  <a href="https://morph.defuss.org" target="_blank" rel="noopener" class="btn" data-variant="outline">defuss-morph at morph.defuss.org<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-start:0.375rem"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></a>
+</div>
 
 <H2>The one runtime</H2>
 
@@ -57,6 +62,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm text-muted-foreground mb-5"> Inside this system all DOM work goes through df$: <code>getElementById</code>, <code>querySelector</code>/<code>querySelectorAll</code> and <code>getElementsBy*</code> are penalized, and the HTML string sinks - <code>innerHTML</code>, <code>outerHTML</code>, <code>innerText</code>, <code>insertAdjacentHTML</code> - are banned outright in components. The build's verifier counts the native queries left in every file; a file may only ever lose them, never gain new ones, and every JS component adopts df$ and gains a <code>render()</code> that reproduces its markup from state (see the <a class="link" href="state-api.html" style="text-decoration:underline;text-underline-offset:3px;">State API</a>). Non-bubbling events (<code>toggle</code>, <code>focus</code>) reach a delegated <code>.on()</code> only with <code>{"{ capture: true }"}</code>. </p>
 
-<CodeWindow lang="javascript" title="native → df$" mb="1.5rem" code={"// select\ndocument.querySelectorAll('.toggle')   →  df$('.toggle').each((i, el) => { ... })\nel.querySelector('.accordion-item')     →  df$(el).find('.accordion-item')\ndocument.getElementById('x')            →  df$('#x').get(0)\n\n// write markup / text\nel.innerHTML = markup                   →  df$(el).html(markup)   // morph - reconciles\nel.textContent = label                  →  df$(el).text(label)\nconst html = el.innerHTML               →  const html = df$(el).html()\n\n// listen (non-bubbling events: capture)\ndetails.addEventListener('toggle', fn)  →  df$(details).on('toggle', fn, { capture: true })"} />
+<CodeWindow lang="javascript" title="df$, with the native call it replaces" mb="1.5rem" code={"// select\ndf$('.toggle').each((i, el) => { ... })        // document.querySelectorAll('.toggle')\ndf$(el).find('.accordion-item')                // el.querySelector('.accordion-item')\ndf$('#x').get(0)                               // document.getElementById('x')\n\n// write markup / text\ndf$(el).html(markup)   // morph - reconciles   // el.innerHTML = markup\ndf$(el).text(label)                            // el.textContent = label\nconst html = df$(el).html()                    // const html = el.innerHTML\n\n// listen (non-bubbling events: capture)\ndf$(details).on('toggle', fn, { capture: true })   // details.addEventListener('toggle', fn)"} />
 
 </DocPage>

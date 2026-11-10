@@ -120,6 +120,9 @@
     --sr-mark: oklch(0.93 0.17 105);
     --sr-mark-ink: oklch(0.16 0 0);
   }
+  #site-search [hidden] {
+    display: none !important;
+  }
   #site-search > :not(template) {
     box-sizing: border-box;
     width: 100%;
@@ -179,15 +182,18 @@
     isolation: isolate;
     max-width: 48rem;
     margin: 0;
+    /* the form's corner: the glow's ring follows its parent's radius */
+    border-radius: var(--radius-xl);
   }
   #site-search .mk-search-box form {
     border-radius: var(--radius-xl);
     background: var(--card);
     box-shadow: 0 10px 30px -12px oklch(0.2 0.05 275 / 0.25);
   }
+  /* the glow takes the border variant's reach (--shader-glow past the box) - a box cut to 0.5rem clipped its fade;
+     on a phone the reach stays inside the 16px gutter, else the page scrolls sideways */
   #site-search .search-glow {
-    inset: -0.5rem;
-    border-radius: 1.1rem;
+    --shader-glow: clamp(0.75rem, 3vw, 1.25rem);
     opacity: 0;
     transition: opacity 300ms;
   }
@@ -239,6 +245,11 @@
   #site-search .sr-sort {
     display: flex;
     justify-content: flex-end;
+  }
+  #site-search .sr-empty {
+    margin: 0;
+    padding-block: 2rem;
+    color: var(--muted-foreground);
   }
   #site-search .sr-list {
     display: grid;
@@ -300,6 +311,86 @@
   #site-search .pagination-list {
     flex-wrap: wrap;
     justify-content: center;
+  }
+  /* the help centre: the popular articles under the band */
+  #site-search .sr-help {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+  }
+  #site-search .sr-help h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+  }
+  #site-search .sr-popular {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #site-search .sr-popular a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--foreground);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  #site-search .sr-popular a:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  #site-search .sr-popular svg {
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--primary);
+  }
+  /* an article: the trail back to the search, the page in the snippets' serif */
+  #site-search .sr-article {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+    background: var(--sr-band);
+    border-block-end: 1px solid var(--border);
+  }
+  #site-search .sr-article > * {
+    max-width: 46rem;
+  }
+  #site-search .sr-article .mk-breadcrumbs-title {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+  }
+  #site-search .sr-article-path,
+  #site-search .sr-article-meta {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  #site-search .sr-article-body {
+    display: grid;
+    gap: 1rem;
+    font:
+      400 1.1875rem/1.65 'Newsreader',
+      Georgia,
+      serif;
+  }
+  #site-search .sr-article-body p {
+    margin: 0;
+  }
+  #site-search .sr-article > .btn {
+    justify-self: start;
+  }
+  #site-search:has(> .sr-article:not([hidden])) > .mk-tag-cloud {
+    padding-block-start: clamp(2rem, 5vw, 3rem);
   }
   #site-search > :is(.mk-tag-cloud, .mk-quick-links) {
     padding-block: 0 clamp(2.5rem, 5vw, 4rem);
@@ -397,18 +488,18 @@
         <option value="owl" data-i18n-target="look-owl">Night owl</option>
         <option value="marker" data-i18n-target="look-marker">Highlighter</option>
       </select>
-      <select
-        class="select"
-        data-size="sm"
+      <div
+        class="language-switcher"
         data-app-locale
+        role="group"
         aria-label="Language"
         data-i18n-aria-label-en="Language"
         data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
+        data-languages="en de"
+        data-value="en"
+        data-size="sm"
+        data-align="end"
+      ></div>
       <label class="swap site-mode" data-variant="rotate" data-size="sm">
         <input
           type="checkbox"
@@ -422,14 +513,20 @@
       </label>
     </div>
   </div>
-  <div class="sr-hero">
+  <div class="sr-hero" data-search-view="results help">
     <div class="mk-breadcrumbs">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
+      <nav
+        class="breadcrumb"
+        aria-label="Breadcrumb"
+        data-i18n-aria-label-en="Breadcrumb"
+        data-i18n-aria-label-de="Brotkrümelnavigation"
+      >
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item"
             ><a
               class="breadcrumb-link"
-              href="#"
+              href="#/help"
+              data-router-link
               aria-label="Home"
               data-i18n-aria-label-en="Home"
               data-i18n-aria-label-de="Start"
@@ -437,20 +534,25 @@
           ></li>
           <li class="breadcrumb-separator" aria-hidden="true">/</li>
           <li class="breadcrumb-item"
-            ><a class="breadcrumb-link" href="#"><span data-i18n-target="crumb-help">Help centre</span></a></li
+            ><a class="breadcrumb-link" href="#/help" data-router-link data-search-help
+              ><span data-i18n-target="crumb-help">Help centre</span></a
+            ></li
           >
-          <li class="breadcrumb-separator" aria-hidden="true">/</li>
-          <li class="breadcrumb-item"
+          <li class="breadcrumb-separator" aria-hidden="true" data-search-view="results">/</li>
+          <li class="breadcrumb-item" data-search-view="results"
             ><span class="breadcrumb-page" aria-current="page"
               ><span data-i18n-target="crumb-search">Search</span></span
             ></li
           >
         </ol>
       </nav>
-      <a class="mk-breadcrumbs-back" href="#"
+      <a class="mk-breadcrumbs-back" href="#/help" data-router-link
         ><i data-lucide="chevron-left"></i> <span data-i18n-target="crumb-back">Help centre</span></a
       >
-      <h1 class="mk-breadcrumbs-title" data-i18n-target="page-title">Search the help centre</h1>
+      <h1 class="mk-breadcrumbs-title"
+        ><span data-i18n-target="page-title" data-search-view="results">Search the help centre</span
+        ><span data-i18n-target="help-title" data-search-view="help" hidden>How can we help?</span></h1
+      >
     </div>
     <search class="mk-search-box" data-variant="large">
       <div
@@ -469,10 +571,11 @@
           aria-label="Search in"
           data-i18n-aria-label-en="Search in"
           data-i18n-aria-label-de="Suchen in"
-          ><option data-i18n-target="sn-2-1">Everything</option
-          ><option data-i18n-target="sn-3-1">Docs</option
-          ><option data-i18n-target="sn-4-1">Tasks</option
-          ><option data-i18n-target="sn-5-1">People</option></select
+          ><option value="" data-i18n-target="sn-2-1">Everything</option
+          ><option value="guide" data-i18n-target="sn-3-1">Guides</option
+          ><option value="help" data-i18n-target="sn-4-1">Help articles</option
+          ><option value="release" data-i18n-target="sn-5-1">Release notes</option
+          ><option value="video" data-i18n-target="sn-5-3">Videos</option></select
         >
         <span class="mk-search-box-field"
           ><i data-lucide="search"></i
@@ -481,9 +584,9 @@
             id="sb-2"
             type="search"
             name="q"
-            placeholder="Search docs, tasks and people"
-            data-i18n-placeholder-en="Search docs, tasks and people"
-            data-i18n-placeholder-de="Doku, Aufgaben und Personen suchen"
+            placeholder="Search guides, help and release notes"
+            data-i18n-placeholder-en="Search guides, help and release notes"
+            data-i18n-placeholder-de="Anleitungen, Hilfe und Release-Notizen suchen"
             autocomplete="off"
             enterkeyhint="search"
           /><kbd class="kbd">⌘K</kbd></span
@@ -531,12 +634,18 @@
       </ul>
     </nav>
   </div>
-  <div class="sr-layout">
+  <div class="sr-layout" data-search-view="results">
     <aside class="mk-filter-sidebar" aria-labelledby="fs-title">
-      <form action="#" method="get">
+      <form action="#" method="get" data-search-filters>
         <div class="mk-filter-sidebar-head"
           ><h2 id="fs-title" data-i18n-target="sn-11-1">Filters</h2
-          ><a href="#" data-i18n-target="sn-12-1">Clear all</a></div
+          ><a
+            href="#/?type=&amp;area=&amp;updated=&amp;official="
+            data-router-link
+            data-search-clear
+            data-i18n-target="sn-12-1"
+            >Clear all</a
+          ></div
         >
         <details class="mk-filter-sidebar-group" open
           ><summary data-i18n-target="sn-13-1">Type</summary
@@ -544,8 +653,7 @@
             ><fieldset
               ><legend data-i18n-target="sn-13-2">Type</legend>
               <label class="mk-filter-sidebar-option"
-                ><input class="checkbox" type="checkbox" name="type" value="guide" checked /><span
-                  data-i18n-target="sn-14-1"
+                ><input class="checkbox" type="checkbox" name="type" value="guide" /><span data-i18n-target="sn-14-1"
                   >Guides</span
                 ><small>81</small></label
               >
@@ -573,8 +681,7 @@
             ><fieldset
               ><legend data-i18n-target="sn-21-2">Product area</legend>
               <label class="mk-filter-sidebar-option"
-                ><input class="checkbox" type="checkbox" name="area" value="sync" checked /><span
-                  data-i18n-target="sn-19-1"
+                ><input class="checkbox" type="checkbox" name="area" value="sync" /><span data-i18n-target="sn-19-1"
                   >Sync and offline</span
                 ><small>38</small></label
               >
@@ -597,7 +704,7 @@
             ><fieldset
               ><legend data-i18n-target="sn-23-1">Updated</legend>
               <label class="mk-filter-sidebar-option"
-                ><input class="radio" type="radio" name="updated" value="30" checked /><span data-i18n-target="sn-24-1"
+                ><input class="radio" type="radio" name="updated" value="30" /><span data-i18n-target="sn-24-1"
                   >In the last 30 days</span
                 ></label
               >
@@ -607,7 +714,7 @@
                 ></label
               >
               <label class="mk-filter-sidebar-option"
-                ><input class="radio" type="radio" name="updated" value="any" /><span data-i18n-target="sn-24-2"
+                ><input class="radio" type="radio" name="updated" value="" checked /><span data-i18n-target="sn-24-2"
                   >Any time</span
                 ></label
               >
@@ -623,65 +730,47 @@
               role="switch"
               id="fs-stock"
               name="official"
-              style="margin-inline-start: auto"
-              checked /></label
+              value="1"
+              style="margin-inline-start: auto" /></label
         ></div>
-        <button class="btn mk-filter-sidebar-apply" type="submit" data-i18n-target="sn-27-1">Show 81 results</button>
+        <button class="btn mk-filter-sidebar-apply" type="submit" data-i18n-target="sn-27-1"
+          >Show <span data-i18n-value="pending">255</span> results</button
+        >
       </form>
     </aside>
     <div class="sr-results">
       <div class="mk-search-summary" role="status">
-        <p data-i18n-target="results"
-          ><strong><span data-i18n-value="total">248</span> results</strong> for
-          <q><span data-i18n-value="q">calm sofware</span></q></p
+        <p data-i18n-target="results" data-search-summary="q" hidden
+          ><strong><span data-i18n-value="total">0</span> results</strong> for <q><span data-i18n-value="q"></span></q
+        ></p>
+        <p data-i18n-target="results-all" data-search-summary="all"
+          ><strong><span data-i18n-value="total">255</span> results</strong></p
         >
         <span class="mk-search-summary-time">0.04 s</span>
         <a class="mk-search-summary-clear" href="#/?q=" data-router-link data-query="q=" data-i18n-target="sn-28-1"
           >Clear search</a
         >
-        <p class="mk-search-summary-suggest" data-search-suggest data-i18n-target="suggest"
-          >Did you mean <a href="#/?q=calm+software" data-router-link data-query="q=calm software">calm software</a>?</p
+        <p class="mk-search-summary-suggest" data-search-suggest hidden
+          ><span data-i18n-target="suggest">Did you mean</span>
+          <a href="#/" data-router-link data-search-suggestion></a>?</p
         >
       </div>
       <nav
         class="mk-active-filters"
+        hidden
         aria-label="Active filters"
         data-i18n-aria-label-en="Active filters"
         data-i18n-aria-label-de="Aktive Filter"
       >
-        <ul>
-          <li
-            ><a
-              class="mk-active-filters-chip"
-              href="#"
-              aria-label="Remove filter Type: Guides"
-              data-i18n-aria-label-en="Remove filter Type: Guides"
-              data-i18n-aria-label-de="Filter Typ: Anleitungen entfernen"
-              ><span data-i18n-target="sn-29-1">Type:</span> <span data-i18n-target="sn-14-2">Guides</span>
-              <i data-lucide="x"></i></a
-          ></li>
-          <li
-            ><a
-              class="mk-active-filters-chip"
-              href="#"
-              aria-label="Remove filter Area: Sync and offline"
-              data-i18n-aria-label-en="Remove filter Area: Sync and offline"
-              data-i18n-aria-label-de="Filter Bereich: Sync und offline entfernen"
-              ><span data-i18n-target="sn-30-1">Area:</span> <span data-i18n-target="sn-19-2">Sync and offline</span>
-              <i data-lucide="x"></i></a
-          ></li>
-          <li
-            ><a
-              class="mk-active-filters-chip"
-              href="#"
-              aria-label="Remove filter Updated: in the last 30 days"
-              data-i18n-aria-label-en="Remove filter Updated: in the last 30 days"
-              data-i18n-aria-label-de="Filter Aktualisiert: in den letzten 30 Tagen entfernen"
-              ><span data-i18n-target="sn-31-1">Updated:</span>
-              <span data-i18n-target="sn-24-3">in the last 30 days</span> <i data-lucide="x"></i></a
-          ></li>
-        </ul>
-        <a class="mk-active-filters-clear" href="#" data-i18n-target="sn-12-2">Clear all</a>
+        <ul data-search-chips></ul>
+        <a
+          class="mk-active-filters-clear"
+          href="#/?type=&amp;area=&amp;updated=&amp;official="
+          data-router-link
+          data-search-clear
+          data-i18n-target="sn-12-2"
+          >Clear all</a
+        >
       </nav>
       <div class="sr-sort"
         ><div class="mk-sort-control"
@@ -694,44 +783,16 @@
           ></div
         ></div
       >
-      <div class="sr-list">
-        <article class="mk-search-result">
-          <div class="mk-search-result-body">
-            <p class="mk-search-result-path"
-              ><span data-i18n-target="sn-3-2">Docs</span> <span aria-hidden="true">›</span>
-              <span data-i18n-target="sn-10-2">Guides</span></p
-            >
-            <h3 class="mk-search-result-title"><a href="#">Offline sync</a></h3>
-            <p class="mk-search-result-snippet"
-              >Every change is written to your device first. When you are back online, Acme sends the changes -
-              <mark>sync</mark> never waits for the network, and conflicts resolve themselves.</p
-            >
-            <p class="mk-search-result-meta">Guide · updated 28 Sep 2026</p>
-          </div>
-        </article>
-        <article class="mk-search-result">
-          <div class="mk-search-result-body">
-            <p class="mk-search-result-path">Help <span aria-hidden="true">›</span> Sync &amp; offline</p>
-            <h3 class="mk-search-result-title"
-              ><a href="#"><mark>Sync</mark> is stuck on one device</a></h3
-            >
-            <p class="mk-search-result-snippet"
-              >If one device stops syncing, sign out and back in. Your unsynced changes are kept on the device until the
-              <mark>sync</mark> completes.</p
-            >
-            <p class="mk-search-result-meta">Help article · 3 min read</p>
-          </div>
-        </article>
-      </div>
+      <div class="sr-list"></div>
       <div class="mk-collection-pagination">
         <output class="mk-collection-pagination-range" data-i18n-target="range"
-          >Showing <strong><span data-i18n-value="from">13</span>–<span data-i18n-value="to">24</span></strong> of
+          >Showing <strong><span data-i18n-value="from">1</span>–<span data-i18n-value="to">12</span></strong> of
           <strong><span data-i18n-value="total">248</span></strong></output
         >
         <nav
           class="pagination"
           data-search-pager
-          data-active-page="2"
+          data-active-page="1"
           data-min-page="1"
           data-max-page="21"
           aria-label="Pagination"
@@ -742,22 +803,22 @@
             <li
               ><a
                 class="pagination-prev"
-                href="#"
+                href="#/"
                 aria-label="Go to previous page"
                 data-i18n-aria-label-en="Go to previous page"
                 data-i18n-aria-label-de="Zur vorherigen Seite"
                 ><i data-lucide="chevron-left"></i> <span data-i18n-target="sn-37-1">Previous</span></a
               ></li
             >
-            <li><a class="pagination-link" href="#" data-page="1">1</a></li>
-            <li><a class="pagination-link pagination-active" href="#" data-page="2" aria-current="page">2</a></li>
-            <li><a class="pagination-link" href="#" data-page="3">3</a></li>
+            <li><a class="pagination-link pagination-active" href="#/" data-page="1" aria-current="page">1</a></li>
+            <li><a class="pagination-link" href="#/?page=2" data-page="2">2</a></li>
+            <li><a class="pagination-link" href="#/?page=3" data-page="3">3</a></li>
             <li><span class="pagination-ellipsis" aria-hidden="true">…</span></li>
-            <li><a class="pagination-link" href="#" data-page="21">21</a></li>
+            <li><a class="pagination-link" href="#/?page=21" data-page="21">21</a></li>
             <li
               ><a
                 class="pagination-next"
-                href="#"
+                href="#/?page=2"
                 aria-label="Go to next page"
                 data-i18n-aria-label-en="Go to next page"
                 data-i18n-aria-label-de="Zur nächsten Seite"
@@ -767,7 +828,7 @@
         </nav>
         <form class="mk-collection-pagination-size" action="#" method="get"
           ><label for="cp-size" data-i18n-target="sn-39-1">Per page</label
-          ><select class="select" id="cp-size" name="per"
+          ><select class="select" id="cp-size" name="per" data-search-per
             ><option>12</option
             ><option>24</option
             ><option>48</option></select
@@ -776,65 +837,185 @@
       </div>
     </div>
   </div>
+  <section class="sr-help" aria-labelledby="hp-title" data-search-view="help" hidden>
+    <h2 id="hp-title" data-i18n-target="hp-title">Popular articles</h2>
+    <ul class="sr-popular">
+      <li
+        ><a href="#/articles/get-started" data-router-link
+          ><i data-lucide="file-text"></i><span data-article-link="get-started">Get started with Acme</span></a
+        ></li
+      >
+      <li
+        ><a href="#/articles/offline-sync" data-router-link
+          ><i data-lucide="file-text"></i><span data-article-link="offline-sync">Offline sync</span></a
+        ></li
+      >
+      <li
+        ><a href="#/articles/sync-stuck" data-router-link
+          ><i data-lucide="file-text"></i><span data-article-link="sync-stuck">Sync is stuck on one device</span></a
+        ></li
+      >
+      <li
+        ><a href="#/articles/security" data-router-link
+          ><i data-lucide="file-text"></i><span data-article-link="security">Two-factor sign-in and SSO</span></a
+        ></li
+      >
+      <li
+        ><a href="#/articles/billing" data-router-link
+          ><i data-lucide="file-text"></i><span data-article-link="billing">Plans, invoices and seats</span></a
+        ></li
+      >
+      <li
+        ><a href="#/articles/integrations" data-router-link
+          ><i data-lucide="file-text"></i><span data-article-link="integrations">Connect your tools</span></a
+        ></li
+      >
+    </ul>
+  </section>
+  <article class="sr-article" aria-labelledby="ar-title" data-search-view="article" hidden>
+    <div class="mk-breadcrumbs">
+      <nav
+        class="breadcrumb"
+        aria-label="Breadcrumb"
+        data-i18n-aria-label-en="Breadcrumb"
+        data-i18n-aria-label-de="Brotkrümelnavigation"
+      >
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"
+            ><a
+              class="breadcrumb-link"
+              href="#/help"
+              data-router-link
+              aria-label="Home"
+              data-i18n-aria-label-en="Home"
+              data-i18n-aria-label-de="Start"
+              ><i data-lucide="house"></i></a
+          ></li>
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"
+            ><a class="breadcrumb-link" href="#/help" data-router-link
+              ><span data-i18n-target="ar-crumb-help">Help centre</span></a
+            ></li
+          >
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"
+            ><a class="breadcrumb-link" href="#/" data-router-link data-search-back
+              ><span data-i18n-target="ar-crumb-search">Search</span></a
+            ></li
+          >
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"
+            ><span class="breadcrumb-page" aria-current="page" data-article-field="title">Offline sync</span></li
+          >
+        </ol>
+      </nav>
+      <a class="mk-breadcrumbs-back" href="#/" data-router-link data-search-back
+        ><i data-lucide="chevron-left"></i> <span data-i18n-target="ar-back">Back to the results</span></a
+      >
+      <p class="sr-article-path" data-article-field="path">Docs › Guides</p>
+      <h1 class="mk-breadcrumbs-title" id="ar-title" data-article-field="title">Offline sync</h1>
+    </div>
+    <p class="sr-article-meta" data-article-field="meta">Guide · updated 28 Sep 2026</p>
+    <div class="sr-article-body" data-article-body></div>
+    <a class="btn" data-variant="outline" href="#/" data-router-link data-search-back
+      ><i data-lucide="arrow-left"></i> <span data-i18n-target="ar-back-2">Back to the results</span></a
+    >
+  </article>
   <ul class="mk-tag-cloud" aria-label="Topics" data-i18n-aria-label-en="Topics" data-i18n-aria-label-de="Themen">
     <li
       ><a href="#/?tag=design" data-router-link data-query="tag=design" data-weight="5"
-        >design<span class="sr-only"> (128 posts)</span></a
+        >design
+        <span class="sr-only" data-i18n-target="tag-design"
+          >(<span data-i18n-value="tag-design">128</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=engineering" data-router-link data-query="tag=engineering" data-weight="4"
-        >engineering<span class="sr-only"> (96 posts)</span></a
+        >engineering
+        <span class="sr-only" data-i18n-target="tag-engineering"
+          >(<span data-i18n-value="tag-engineering">96</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=product" data-router-link data-query="tag=product" data-weight="4"
-        >product<span class="sr-only"> (88 posts)</span></a
+        >product
+        <span class="sr-only" data-i18n-target="tag-product"
+          >(<span data-i18n-value="tag-product">88</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=async" data-router-link data-query="tag=async" data-weight="3"
-        >async<span class="sr-only"> (54 posts)</span></a
+        >async
+        <span class="sr-only" data-i18n-target="tag-async"
+          >(<span data-i18n-value="tag-async">54</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=offline" data-router-link data-query="tag=offline" data-weight="3"
-        >offline<span class="sr-only"> (47 posts)</span></a
+        >offline
+        <span class="sr-only" data-i18n-target="tag-offline"
+          >(<span data-i18n-value="tag-offline">47</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=accessibility" data-router-link data-query="tag=accessibility" data-weight="2"
-        >accessibility<span class="sr-only"> (31 posts)</span></a
+        >accessibility
+        <span class="sr-only" data-i18n-target="tag-accessibility"
+          >(<span data-i18n-value="tag-accessibility">31</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=hiring" data-router-link data-query="tag=hiring" data-weight="2"
-        >hiring<span class="sr-only"> (22 posts)</span></a
+        >hiring
+        <span class="sr-only" data-i18n-target="tag-hiring"
+          >(<span data-i18n-value="tag-hiring">22</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=typography" data-router-link data-query="tag=typography" data-weight="1"
-        >typography<span class="sr-only"> (12 posts)</span></a
+        >typography
+        <span class="sr-only" data-i18n-target="tag-typography"
+          >(<span data-i18n-value="tag-typography">12</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=culture" data-router-link data-query="tag=culture" data-weight="2"
-        >culture<span class="sr-only"> (26 posts)</span></a
+        >culture
+        <span class="sr-only" data-i18n-target="tag-culture"
+          >(<span data-i18n-value="tag-culture">26</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=security" data-router-link data-query="tag=security" data-weight="1"
-        >security<span class="sr-only"> (9 posts)</span></a
+        >security
+        <span class="sr-only" data-i18n-target="tag-security"
+          >(<span data-i18n-value="tag-security">9</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=research" data-router-link data-query="tag=research" data-weight="3"
-        >research<span class="sr-only"> (40 posts)</span></a
+        >research
+        <span class="sr-only" data-i18n-target="tag-research"
+          >(<span data-i18n-value="tag-research">40</span> articles)</span
+        ></a
       ></li
     >
     <li
       ><a href="#/?tag=remote" data-router-link data-query="tag=remote" data-weight="2"
-        >remote<span class="sr-only"> (19 posts)</span></a
+        >remote
+        <span class="sr-only" data-i18n-target="tag-remote"
+          >(<span data-i18n-value="tag-remote">19</span> articles)</span
+        ></a
       ></li
     >
   </ul>
@@ -846,7 +1027,7 @@
   >
     <ul>
       <li
-        ><a href="#"
+        ><a href="#/articles/get-started" data-router-link
           ><i data-lucide="rocket"></i
           ><span
             ><strong data-i18n-target="sn-40-1">Get started</strong
@@ -854,7 +1035,7 @@
           ><i data-lucide="arrow-right"></i></a
       ></li>
       <li
-        ><a href="#"
+        ><a href="#/articles/billing" data-router-link
           ><i data-lucide="credit-card"></i
           ><span
             ><strong data-i18n-target="sn-42-1">Billing</strong
@@ -862,7 +1043,7 @@
           ><i data-lucide="arrow-right"></i></a
       ></li>
       <li
-        ><a href="#"
+        ><a href="#/articles/security" data-router-link
           ><i data-lucide="shield-check"></i
           ><span
             ><strong data-i18n-target="sn-44-1">Security</strong
@@ -870,7 +1051,7 @@
           ><i data-lucide="arrow-right"></i></a
       ></li>
       <li
-        ><a href="#"
+        ><a href="#/articles/integrations" data-router-link
           ><i data-lucide="plug"></i
           ><span
             ><strong data-i18n-target="sn-46-1">Integrations</strong
@@ -878,13 +1059,15 @@
           ><i data-lucide="arrow-right"></i></a
       ></li>
       <li
-        ><a href="#"
+        ><a href="#/articles/status" data-router-link
           ><i data-lucide="activity"></i
-          ><span><strong>Status</strong><small data-i18n-target="sn-48-1">All systems normal</small></span
+          ><span
+            ><strong data-i18n-target="sn-48-0">Status</strong
+            ><small data-i18n-target="sn-48-1">All systems normal</small></span
           ><i data-lucide="arrow-right"></i></a
       ></li>
       <li
-        ><a href="#"
+        ><a href="mailto:support@acme.example"
           ><i data-lucide="message-circle"></i
           ><span
             ><strong data-i18n-target="sn-49-1">Contact</strong
@@ -893,6 +1076,269 @@
       ></li>
     </ul>
   </nav>
+  <!-- the pages the routes name, in English and German -->
+  <script type="application/json" id="search-data">
+    {
+      "labels": {
+        "category": {
+          "en": "Category",
+          "de": "Kategorie"
+        },
+        "tag": {
+          "en": "Topic",
+          "de": "Thema"
+        },
+        "type": {
+          "en": "Type",
+          "de": "Typ"
+        },
+        "area": {
+          "en": "Area",
+          "de": "Bereich"
+        },
+        "updated": {
+          "en": "Updated",
+          "de": "Aktualisiert"
+        },
+        "official": {
+          "en": "Docs",
+          "de": "Doku"
+        },
+        "remove": {
+          "en": "Remove filter {filter}",
+          "de": "Filter {filter} entfernen"
+        }
+      },
+      "values": {
+        "category": {
+          "product": {
+            "en": "Product",
+            "de": "Produkt"
+          },
+          "engineering": {
+            "en": "Engineering",
+            "de": "Technik"
+          },
+          "design": {
+            "en": "Design",
+            "de": "Design"
+          },
+          "company": {
+            "en": "Company",
+            "de": "Unternehmen"
+          },
+          "guides": {
+            "en": "Guides",
+            "de": "Anleitungen"
+          }
+        },
+        "type": {
+          "guide": {
+            "en": "Guides",
+            "de": "Anleitungen"
+          },
+          "help": {
+            "en": "Help articles",
+            "de": "Hilfeartikel"
+          },
+          "release": {
+            "en": "Release notes",
+            "de": "Versionshinweise"
+          },
+          "video": {
+            "en": "Videos",
+            "de": "Videos"
+          }
+        },
+        "area": {
+          "sync": {
+            "en": "Sync and offline",
+            "de": "Sync und offline"
+          },
+          "billing": {
+            "en": "Billing",
+            "de": "Abrechnung"
+          },
+          "teams": {
+            "en": "Teams and roles",
+            "de": "Teams und Rollen"
+          }
+        },
+        "updated": {
+          "30": {
+            "en": "in the last 30 days",
+            "de": "in den letzten 30 Tagen"
+          },
+          "365": {
+            "en": "in the last year",
+            "de": "im letzten Jahr"
+          }
+        },
+        "official": {
+          "1": {
+            "en": "official only",
+            "de": "nur offizielle"
+          }
+        }
+      },
+      "articles": {
+        "offline-sync": {
+          "en": {
+            "path": "Docs › Guides",
+            "title": "Offline sync",
+            "meta": "Guide · updated 28 Sep 2026 · 6 min read",
+            "body": [
+              "Every change you make in Acme is written to your device first. The page never waits for the network: you can keep typing on a train, in a tunnel or on a plane.",
+              "When the connection comes back, Acme sends your changes in the order you made them and fetches what your team changed meanwhile. Two edits of the same paragraph are merged sentence by sentence; only when two people rewrite the same sentence does Acme keep both and mark the paragraph for you.",
+              "The dot next to your avatar shows the state: green is in sync, grey means changes are waiting on this device. Nothing that waits is ever lost - it stays on the device until the sync completes."
+            ]
+          },
+          "de": {
+            "path": "Doku › Anleitungen",
+            "title": "Offline-Sync",
+            "meta": "Anleitung · aktualisiert am 28. Sept. 2026 · 6 Min. Lesezeit",
+            "body": [
+              "Jede Änderung in Acme wird zuerst auf deinem Gerät gespeichert. Die Seite wartet nie auf das Netz: Du kannst im Zug, im Tunnel oder im Flugzeug weiterschreiben.",
+              "Sobald die Verbindung zurück ist, sendet Acme deine Änderungen in der Reihenfolge, in der du sie gemacht hast, und holt, was dein Team inzwischen geändert hat. Zwei Änderungen am selben Absatz werden Satz für Satz zusammengeführt; nur wenn zwei Personen denselben Satz umschreiben, behält Acme beide und markiert den Absatz für dich.",
+              "Der Punkt neben deinem Avatar zeigt den Stand: grün heißt synchron, grau heißt, dass Änderungen auf diesem Gerät warten. Was wartet, geht nie verloren - es bleibt auf dem Gerät, bis der Sync fertig ist."
+            ]
+          }
+        },
+        "sync-stuck": {
+          "en": {
+            "path": "Help › Sync & offline",
+            "title": "Sync is stuck on one device",
+            "meta": "Help article · 3 min read",
+            "body": [
+              "If one device stops syncing while the others are fine, the device usually holds an expired sign-in. Sign out and back in - your unsynced changes are kept on the device until the sync completes.",
+              "Still stuck? Open Settings › Sync and choose Check now. Acme lists every change that is waiting and the reason it waits, for example a document that was deleted on another device.",
+              "If a change cannot be sent at all, Acme offers to save it as a copy, so nothing you wrote is lost. Our support team answers at support@acme.example."
+            ]
+          },
+          "de": {
+            "path": "Hilfe › Sync & offline",
+            "title": "Sync hängt auf einem Gerät",
+            "meta": "Hilfeartikel · 3 Min. Lesezeit",
+            "body": [
+              "Wenn ein Gerät nicht mehr synchronisiert, die anderen aber schon, ist meist die Anmeldung auf diesem Gerät abgelaufen. Melde dich ab und wieder an - deine noch nicht synchronisierten Änderungen bleiben auf dem Gerät, bis der Sync fertig ist.",
+              "Hängt es noch? Öffne Einstellungen › Sync und wähle Jetzt prüfen. Acme zeigt jede wartende Änderung und den Grund, warum sie wartet, etwa ein Dokument, das auf einem anderen Gerät gelöscht wurde.",
+              "Lässt sich eine Änderung gar nicht senden, bietet Acme an, sie als Kopie zu speichern - nichts, was du geschrieben hast, geht verloren. Unser Support-Team antwortet unter support@acme.example."
+            ]
+          }
+        },
+        "get-started": {
+          "en": {
+            "path": "Docs › Get started",
+            "title": "Get started with Acme",
+            "meta": "Guide · 5 min read",
+            "body": [
+              "Create a workspace, give it your team's name and invite the people you work with - an email address is all Acme needs.",
+              "Start with one plan: write down what the team is doing this month, add the tasks under it and assign them. Everyone sees the same page and changes it together.",
+              "Install Acme on your phone and laptop when you are ready; both keep working offline and catch up on their own."
+            ]
+          },
+          "de": {
+            "path": "Doku › Loslegen",
+            "title": "Loslegen mit Acme",
+            "meta": "Anleitung · 5 Min. Lesezeit",
+            "body": [
+              "Lege einen Arbeitsbereich an, gib ihm den Namen deines Teams und lade die Menschen ein, mit denen du arbeitest - Acme braucht nur eine E-Mail-Adresse.",
+              "Fang mit einem Plan an: Schreib auf, was das Team diesen Monat vorhat, füge die Aufgaben darunter hinzu und verteile sie. Alle sehen dieselbe Seite und ändern sie gemeinsam.",
+              "Installiere Acme auf Telefon und Laptop, wenn du so weit bist; beide arbeiten offline weiter und holen von selbst auf."
+            ]
+          }
+        },
+        "billing": {
+          "en": {
+            "path": "Help › Billing",
+            "title": "Plans, invoices and seats",
+            "meta": "Help article · 4 min read",
+            "body": [
+              "Acme bills per seat and month. A seat is a person who can edit; guests who only read and comment are free.",
+              "Invoices arrive by email on the first of the month and are listed under Settings › Billing, where you can also change the card or add a VAT number.",
+              "Adding a seat in the middle of the month costs the remaining days only; removing one takes effect at the end of the month."
+            ]
+          },
+          "de": {
+            "path": "Hilfe › Abrechnung",
+            "title": "Tarife, Rechnungen und Plätze",
+            "meta": "Hilfeartikel · 4 Min. Lesezeit",
+            "body": [
+              "Acme rechnet pro Platz und Monat ab. Ein Platz ist eine Person, die bearbeiten darf; Gäste, die nur lesen und kommentieren, sind kostenlos.",
+              "Rechnungen kommen am Monatsersten per E-Mail und stehen unter Einstellungen › Abrechnung, wo du auch die Karte ändern oder eine USt-IdNr. hinterlegen kannst.",
+              "Ein Platz, der mitten im Monat dazukommt, kostet nur die restlichen Tage; ein entfernter Platz endet zum Monatsende."
+            ]
+          }
+        },
+        "security": {
+          "en": {
+            "path": "Help › Security",
+            "title": "Two-factor sign-in and SSO",
+            "meta": "Help article · 5 min read",
+            "body": [
+              "Turn on two-factor sign-in under Settings › Security: Acme asks for a code from an authenticator app or for a passkey when you sign in on a new device.",
+              "Workspace owners can require it for everyone and connect single sign-on through SAML or OpenID Connect - people then sign in with their company account.",
+              "Your documents are encrypted in transit and at rest, in data centres in the European Union."
+            ]
+          },
+          "de": {
+            "path": "Hilfe › Sicherheit",
+            "title": "Zwei-Faktor-Anmeldung und SSO",
+            "meta": "Hilfeartikel · 5 Min. Lesezeit",
+            "body": [
+              "Schalte die Zwei-Faktor-Anmeldung unter Einstellungen › Sicherheit ein: Acme fragt nach einem Code aus einer Authenticator-App oder nach einem Passkey, wenn du dich auf einem neuen Gerät anmeldest.",
+              "Inhaber eines Arbeitsbereichs können sie für alle verlangen und Single Sign-on über SAML oder OpenID Connect verbinden - dann melden sich alle mit ihrem Firmenkonto an.",
+              "Deine Dokumente sind bei der Übertragung und im Speicher verschlüsselt, in Rechenzentren in der Europäischen Union."
+            ]
+          }
+        },
+        "integrations": {
+          "en": {
+            "path": "Docs › Integrations",
+            "title": "Connect your tools",
+            "meta": "Guide · 4 min read",
+            "body": [
+              "Acme connects to the calendar, chat and code hosting your team already uses. Open Settings › Integrations and pick one; Acme asks only for the access it needs.",
+              "A connected calendar shows deadlines next to your meetings, chat gets a message when a task you follow changes, and a merged pull request can close its task.",
+              "Every integration can be paused or removed at any time; its history stays in the tasks it touched."
+            ]
+          },
+          "de": {
+            "path": "Doku › Integrationen",
+            "title": "Verbinde deine Werkzeuge",
+            "meta": "Anleitung · 4 Min. Lesezeit",
+            "body": [
+              "Acme verbindet sich mit Kalender, Chat und Code-Hosting, die dein Team schon nutzt. Öffne Einstellungen › Integrationen und wähle eine aus; Acme fragt nur nach dem Zugriff, den es braucht.",
+              "Ein verbundener Kalender zeigt Fristen neben deinen Terminen, der Chat bekommt eine Nachricht, wenn sich eine Aufgabe ändert, der du folgst, und ein gemergter Pull-Request kann seine Aufgabe schließen.",
+              "Jede Integration lässt sich jederzeit pausieren oder entfernen; ihr Verlauf bleibt in den Aufgaben, die sie berührt hat."
+            ]
+          }
+        },
+        "status": {
+          "en": {
+            "path": "Help › Status",
+            "title": "All systems normal",
+            "meta": "Status · checked every minute",
+            "body": [
+              "Sync, sign-in, search and the API are working normally in every region.",
+              "The last incident was on 14 Sep 2026: search answered slowly for 22 minutes in Europe after a deploy. We rolled it back and added a check that stops such a deploy before it reaches you.",
+              "Planned maintenance is announced here a week ahead; Acme keeps working offline while it runs."
+            ]
+          },
+          "de": {
+            "path": "Hilfe › Status",
+            "title": "Alle Systeme normal",
+            "meta": "Status · jede Minute geprüft",
+            "body": [
+              "Sync, Anmeldung, Suche und API arbeiten in allen Regionen normal.",
+              "Die letzte Störung war am 14. Sept. 2026: Nach einem Deploy antwortete die Suche in Europa 22 Minuten lang langsam. Wir haben ihn zurückgenommen und eine Prüfung ergänzt, die einen solchen Deploy stoppt, bevor er dich erreicht.",
+              "Geplante Wartungen kündigen wir hier eine Woche vorher an; Acme arbeitet währenddessen offline weiter."
+            ]
+          }
+        }
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
   <template data-i18n-for="look-catalogue" data-i18n-locale="en">Catalogue</template>
   <template data-i18n-for="look-catalogue" data-i18n-locale="de">Katalog</template>
@@ -900,12 +1346,13 @@
   <template data-i18n-for="look-owl" data-i18n-locale="de">Nachteule</template>
   <template data-i18n-for="look-marker" data-i18n-locale="en">Highlighter</template>
   <template data-i18n-for="look-marker" data-i18n-locale="de">Textmarker</template>
-  <template data-i18n-for="suggest" data-i18n-locale="en"
-    >Did you mean
-    <a href="#/?q=calm+software" data-router-link data-query="q=calm software">calm software</a>?</template
+  <template data-i18n-for="suggest" data-i18n-locale="en">Did you mean</template>
+  <template data-i18n-for="suggest" data-i18n-locale="de">Meintest du</template>
+  <template data-i18n-for="results-all" data-i18n-locale="en"
+    ><strong><span data-i18n-value="total"></span> results</strong></template
   >
-  <template data-i18n-for="suggest" data-i18n-locale="de"
-    >Meintest du <a href="#/?q=calm+software" data-router-link data-query="q=calm software">calm software</a>?</template
+  <template data-i18n-for="results-all" data-i18n-locale="de"
+    ><strong><span data-i18n-value="total"></span> Ergebnisse</strong></template
   >
   <template data-i18n-for="results" data-i18n-locale="en"
     ><strong><span data-i18n-value="total"></span> results</strong> for <q><span data-i18n-value="q"></span></q
@@ -927,8 +1374,6 @@
   <template data-i18n-for="sn-13-2" data-i18n-locale="de">Typ</template>
   <template data-i18n-for="sn-14-1" data-i18n-locale="en">Guides</template>
   <template data-i18n-for="sn-14-1" data-i18n-locale="de">Anleitungen</template>
-  <template data-i18n-for="sn-14-2" data-i18n-locale="en">Guides</template>
-  <template data-i18n-for="sn-14-2" data-i18n-locale="de">Anleitungen</template>
   <template data-i18n-for="sn-15-1" data-i18n-locale="en">Help articles</template>
   <template data-i18n-for="sn-15-1" data-i18n-locale="de">Hilfeartikel</template>
   <template data-i18n-for="sn-16-1" data-i18n-locale="en">Release notes</template>
@@ -941,8 +1386,6 @@
   <template data-i18n-for="sn-21-2" data-i18n-locale="de">Produktbereich</template>
   <template data-i18n-for="sn-19-1" data-i18n-locale="en">Sync and offline</template>
   <template data-i18n-for="sn-19-1" data-i18n-locale="de">Sync und offline</template>
-  <template data-i18n-for="sn-19-2" data-i18n-locale="en">Sync and offline</template>
-  <template data-i18n-for="sn-19-2" data-i18n-locale="de">Sync und offline</template>
   <template data-i18n-for="sn-20-1" data-i18n-locale="en">Billing</template>
   <template data-i18n-for="sn-20-1" data-i18n-locale="de">Abrechnung</template>
   <template data-i18n-for="sn-21-1" data-i18n-locale="en">Teams and roles</template>
@@ -955,20 +1398,16 @@
   <template data-i18n-for="sn-24-1" data-i18n-locale="de">In den letzten 30 Tagen</template>
   <template data-i18n-for="sn-24-2" data-i18n-locale="en">Any time</template>
   <template data-i18n-for="sn-24-2" data-i18n-locale="de">Jederzeit</template>
-  <template data-i18n-for="sn-24-3" data-i18n-locale="en">in the last 30 days</template>
-  <template data-i18n-for="sn-24-3" data-i18n-locale="de">in den letzten 30 Tagen</template>
   <template data-i18n-for="sn-25-1" data-i18n-locale="en">In the last year</template>
   <template data-i18n-for="sn-25-1" data-i18n-locale="de">Im letzten Jahr</template>
   <template data-i18n-for="sn-26-1" data-i18n-locale="en">Official docs only</template>
   <template data-i18n-for="sn-26-1" data-i18n-locale="de">Nur offizielle Doku</template>
-  <template data-i18n-for="sn-27-1" data-i18n-locale="en">Show 81 results</template>
-  <template data-i18n-for="sn-27-1" data-i18n-locale="de">81 Ergebnisse zeigen</template>
-  <template data-i18n-for="sn-29-1" data-i18n-locale="en">Type:</template>
-  <template data-i18n-for="sn-29-1" data-i18n-locale="de">Typ:</template>
-  <template data-i18n-for="sn-30-1" data-i18n-locale="en">Area:</template>
-  <template data-i18n-for="sn-30-1" data-i18n-locale="de">Bereich:</template>
-  <template data-i18n-for="sn-31-1" data-i18n-locale="en">Updated:</template>
-  <template data-i18n-for="sn-31-1" data-i18n-locale="de">Aktualisiert:</template>
+  <template data-i18n-for="sn-27-1" data-i18n-locale="en"
+    >Show <span data-i18n-value="pending"></span> results</template
+  >
+  <template data-i18n-for="sn-27-1" data-i18n-locale="de"
+    ><span data-i18n-value="pending"></span> Ergebnisse zeigen</template
+  >
   <template data-i18n-for="sn-35-1" data-i18n-locale="en">Most read</template>
   <template data-i18n-for="sn-35-1" data-i18n-locale="de">Meistgelesen</template>
   <template data-i18n-for="sn-36-1" data-i18n-locale="en">Oldest</template>
@@ -987,14 +1426,14 @@
   <template data-i18n-for="sn-1-2" data-i18n-locale="de">Suchen</template>
   <template data-i18n-for="sn-2-1" data-i18n-locale="en">Everything</template>
   <template data-i18n-for="sn-2-1" data-i18n-locale="de">Alles</template>
-  <template data-i18n-for="sn-3-1" data-i18n-locale="en">Docs</template>
-  <template data-i18n-for="sn-3-1" data-i18n-locale="de">Doku</template>
-  <template data-i18n-for="sn-3-2" data-i18n-locale="en">Docs</template>
-  <template data-i18n-for="sn-3-2" data-i18n-locale="de">Doku</template>
-  <template data-i18n-for="sn-4-1" data-i18n-locale="en">Tasks</template>
-  <template data-i18n-for="sn-4-1" data-i18n-locale="de">Aufgaben</template>
-  <template data-i18n-for="sn-5-1" data-i18n-locale="en">People</template>
-  <template data-i18n-for="sn-5-1" data-i18n-locale="de">Personen</template>
+  <template data-i18n-for="sn-3-1" data-i18n-locale="en">Guides</template>
+  <template data-i18n-for="sn-3-1" data-i18n-locale="de">Anleitungen</template>
+  <template data-i18n-for="sn-4-1" data-i18n-locale="en">Help articles</template>
+  <template data-i18n-for="sn-4-1" data-i18n-locale="de">Hilfeartikel</template>
+  <template data-i18n-for="sn-5-1" data-i18n-locale="en">Release notes</template>
+  <template data-i18n-for="sn-5-1" data-i18n-locale="de">Release-Notizen</template>
+  <template data-i18n-for="sn-5-3" data-i18n-locale="en">Videos</template>
+  <template data-i18n-for="sn-5-3" data-i18n-locale="de">Videos</template>
   <template data-i18n-for="sn-6-1" data-i18n-locale="en">All</template>
   <template data-i18n-for="sn-6-1" data-i18n-locale="de">Alle</template>
   <template data-i18n-for="sn-7-1" data-i18n-locale="en">Product</template>
@@ -1005,8 +1444,6 @@
   <template data-i18n-for="sn-9-1" data-i18n-locale="de">Unternehmen</template>
   <template data-i18n-for="sn-10-1" data-i18n-locale="en">Guides</template>
   <template data-i18n-for="sn-10-1" data-i18n-locale="de">Anleitungen</template>
-  <template data-i18n-for="sn-10-2" data-i18n-locale="en">Guides</template>
-  <template data-i18n-for="sn-10-2" data-i18n-locale="de">Anleitungen</template>
   <template data-i18n-for="sn-11-1" data-i18n-locale="en">Filters</template>
   <template data-i18n-for="sn-11-1" data-i18n-locale="de">Filter</template>
   <template data-i18n-for="sn-12-1" data-i18n-locale="en">Clear all</template>
@@ -1049,6 +1486,92 @@
   <template data-i18n-for="sn-49-1" data-i18n-locale="de">Kontakt</template>
   <template data-i18n-for="sn-50-1" data-i18n-locale="en">Talk to a human</template>
   <template data-i18n-for="sn-50-1" data-i18n-locale="de">Sprich mit einem Menschen</template>
+  <template data-i18n-for="help-title" data-i18n-locale="en">How can we help?</template>
+  <template data-i18n-for="help-title" data-i18n-locale="de">Wie können wir helfen?</template>
+  <template data-i18n-for="hp-title" data-i18n-locale="en">Popular articles</template>
+  <template data-i18n-for="hp-title" data-i18n-locale="de">Beliebte Artikel</template>
+  <template data-i18n-for="ar-crumb-help" data-i18n-locale="en">Help centre</template>
+  <template data-i18n-for="ar-crumb-help" data-i18n-locale="de">Hilfe-Center</template>
+  <template data-i18n-for="ar-crumb-search" data-i18n-locale="en">Search</template>
+  <template data-i18n-for="ar-crumb-search" data-i18n-locale="de">Suche</template>
+  <template data-i18n-for="ar-back" data-i18n-locale="en">Back to the results</template>
+  <template data-i18n-for="ar-back" data-i18n-locale="de">Zurück zu den Ergebnissen</template>
+  <template data-i18n-for="ar-back-2" data-i18n-locale="en">Back to the results</template>
+  <template data-i18n-for="ar-back-2" data-i18n-locale="de">Zurück zu den Ergebnissen</template>
+  <template data-i18n-for="sn-48-0" data-i18n-locale="en">Status</template>
+  <template data-i18n-for="sn-48-0" data-i18n-locale="de">Status</template>
+  <template data-i18n-for="tag-design" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-design"></span> articles)</template
+  >
+  <template data-i18n-for="tag-design" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-design"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-engineering" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-engineering"></span> articles)</template
+  >
+  <template data-i18n-for="tag-engineering" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-engineering"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-product" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-product"></span> articles)</template
+  >
+  <template data-i18n-for="tag-product" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-product"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-async" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-async"></span> articles)</template
+  >
+  <template data-i18n-for="tag-async" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-async"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-offline" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-offline"></span> articles)</template
+  >
+  <template data-i18n-for="tag-offline" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-offline"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-accessibility" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-accessibility"></span> articles)</template
+  >
+  <template data-i18n-for="tag-accessibility" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-accessibility"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-hiring" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-hiring"></span> articles)</template
+  >
+  <template data-i18n-for="tag-hiring" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-hiring"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-typography" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-typography"></span> articles)</template
+  >
+  <template data-i18n-for="tag-typography" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-typography"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-culture" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-culture"></span> articles)</template
+  >
+  <template data-i18n-for="tag-culture" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-culture"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-security" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-security"></span> articles)</template
+  >
+  <template data-i18n-for="tag-security" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-security"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-research" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-research"></span> articles)</template
+  >
+  <template data-i18n-for="tag-research" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-research"></span> Artikel)</template
+  >
+  <template data-i18n-for="tag-remote" data-i18n-locale="en"
+    >(<span data-i18n-value="tag-remote"></span> articles)</template
+  >
+  <template data-i18n-for="tag-remote" data-i18n-locale="de"
+    >(<span data-i18n-value="tag-remote"></span> Artikel)</template
+  >
 </div>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
@@ -1070,12 +1593,319 @@
 
     const site = df$('#site-search').get(0);
 
-    // the search the address names - what the page shows when a parameter is missing
-    const DEFAULTS = { q: 'calm sofware', category: '', sort: '', page: '2', tag: '' };
-    const TOTAL = 248;
-    const PER_PAGE = 12;
+    // the search the address names - what the page shows when a parameter is missing: no query and no filter, every
+    // entry of the index, the most read first
+    const DEFAULTS = {
+      q: '',
+      category: '',
+      sort: '',
+      page: '1',
+      per: '12',
+      tag: '',
+      type: '',
+      area: '',
+      updated: '',
+      official: '',
+    };
+    const FILTERS = ['category', 'tag', 'type', 'area', 'updated', 'official'];
     let query = new URLSearchParams();
     const get = (key) => query.get(key) ?? DEFAULTS[key];
+    const listed = (key) => get(key).split(',').filter(Boolean);
+    const per = () => Number(get('per')) || 12;
+    const lastPage = () => Math.max(1, Math.ceil(found.total / per()));
+    const page = () => Math.min(lastPage(), Math.max(1, Number(get('page')) || 1));
+    // the filter names, the articles and their titles come from one data block in English and German
+    const DATA = JSON.parse(df$('#search-data').text());
+    const tr = (item) => item[locale.locale] ?? item.en;
+    const tr2 = (item, lang) => item[lang] ?? item.en;
+    // -- the index: the help centre's own articles (the data block) and 248 more made from subjects x kinds, each with
+    // its fields, its text in English and German and its article page - deterministic, entry i always reads the same
+    const SUBJECTS = [
+      ['shared plans', 'Gemeinsame Pläne', 'product', '', 'product async'],
+      ['task lists', 'Aufgabenlisten', 'product', '', 'product'],
+      ['calendar sharing', 'Kalenderfreigaben', 'product', 'teams', 'product remote'],
+      ['notifications', 'Benachrichtigungen', 'product', '', 'product async'],
+      ['invoices and seats', 'Rechnungen und Plätze', 'product', 'billing', 'product'],
+      ['plan changes', 'Tarifwechsel', 'product', 'billing', 'product'],
+      ['guest access', 'Gastzugänge', 'product', 'teams', 'product security'],
+      ['offline sync', 'Offline-Sync', 'engineering', 'sync', 'engineering offline'],
+      ['conflict resolution', 'Konfliktlösung', 'engineering', 'sync', 'engineering offline'],
+      ['sync speed', 'Sync-Tempo', 'engineering', 'sync', 'engineering offline'],
+      ['API tokens', 'API-Tokens', 'engineering', '', 'engineering security'],
+      ['webhooks', 'Webhooks', 'engineering', '', 'engineering async'],
+      ['single sign-on', 'Single Sign-on', 'engineering', 'teams', 'engineering security'],
+      ['audit logs', 'Audit-Logs', 'engineering', 'teams', 'engineering security'],
+      ['dark mode', 'Dunkelmodus', 'design', '', 'design'],
+      ['keyboard shortcuts', 'Tastenkürzel', 'design', '', 'design accessibility'],
+      ['accessible colours', 'Barrierefreie Farben', 'design', '', 'design accessibility'],
+      ['typography', 'Typografie', 'design', '', 'design typography'],
+      ['design tokens', 'Design-Tokens', 'design', '', 'design engineering'],
+      ['motion and focus', 'Bewegung und Fokus', 'design', '', 'design accessibility'],
+      ['empty states', 'Leere Zustände', 'design', '', 'design typography'],
+      ['calm software', 'Ruhige Software', 'company', '', 'culture async'],
+      ['remote work', 'Remote-Arbeit', 'company', '', 'remote culture'],
+      ['hiring', 'Bewerbungen', 'company', '', 'hiring culture'],
+      ['async meetings', 'Asynchrone Meetings', 'company', '', 'async remote'],
+      ['user research', 'Nutzerforschung', 'company', '', 'research design'],
+      ['team onboarding', 'Team-Onboarding', 'guides', 'teams', 'product remote'],
+      ['roles and permissions', 'Rollen und Rechte', 'guides', 'teams', 'security'],
+      ['data import', 'Datenimport', 'guides', 'sync', 'engineering offline'],
+      ['billing for agencies', 'Abrechnung für Agenturen', 'guides', 'billing', 'product'],
+      ['working offline', 'Offline arbeiten', 'guides', 'sync', 'offline remote'],
+    ];
+    // a kind: its type, title and snippet ({s} the subject as written, {S} capitalized, {D} German)
+    const KINDS = [
+      [
+        'guide',
+        'Getting started with {s}',
+        'Einstieg: {D}',
+        'Step by step: what to switch on first for {s}, what your team sees and how to undo it.',
+        '{D}: Schritt für Schritt - was du zuerst einschaltest, was dein Team sieht und wie du es zurücknimmst.',
+      ],
+      [
+        'guide',
+        '{S} in practice',
+        '{D} in der Praxis',
+        'What the teams that use {s} every day do differently - and what they stopped doing.',
+        '{D}: was Teams anders machen, die jeden Tag damit arbeiten - und womit sie aufgehört haben.',
+      ],
+      [
+        'help',
+        'When {s} gets stuck',
+        'Wenn es hakt: {D}',
+        'The five causes we see most when something goes wrong with {s}, and how to check each one.',
+        '{D}: die fünf häufigsten Ursachen, wenn etwas nicht klappt, und wie du jede prüfst.',
+      ],
+      [
+        'help',
+        '{S}: questions and answers',
+        '{D}: Fragen und Antworten',
+        'The questions our support team hears most about {s}, answered in a sentence or two.',
+        '{D}: die häufigsten Fragen an unseren Support, in ein, zwei Sätzen beantwortet.',
+      ],
+      [
+        'release',
+        'Release notes: {s}',
+        'Release-Notizen: {D}',
+        'This release makes {s} faster and quieter - the changes in the order you will notice them.',
+        '{D}: dieses Release macht alles schneller und leiser - die Änderungen in der Reihenfolge, in der du sie bemerkst.',
+      ],
+      [
+        'release',
+        '{S}: what changed this year',
+        '{D}: was sich dieses Jahr geändert hat',
+        'Twelve months of {s} on one page - what we added, what we removed and why.',
+        '{D}: zwölf Monate auf einer Seite - was wir ergänzt und was wir gestrichen haben, und warum.',
+      ],
+      [
+        'video',
+        '{S} in five minutes',
+        '{D} in fünf Minuten',
+        'A short video walk-through of {s}, with the keyboard shortcuts on screen.',
+        '{D}: ein kurzes Video zum Mitmachen, mit den Tastenkürzeln im Bild.',
+      ],
+      [
+        'video',
+        'Live session: {s}',
+        'Live-Session: {D}',
+        'A recorded hour with the team behind {s} - questions from customers, answered live.',
+        '{D}: eine aufgezeichnete Stunde mit dem Team dahinter - Fragen von Kundinnen und Kunden, live beantwortet.',
+      ],
+    ];
+    // what an article page of a kind says after its snippet, and the words of its line of facts
+    const CLOSING = {
+      guide: {
+        en: 'Every step can be undone from Settings › History, so try it on a small project first.',
+        de: 'Jeder Schritt lässt sich unter Einstellungen › Verlauf zurücknehmen - probier es zuerst an einem kleinen Projekt aus.',
+      },
+      help: {
+        en: 'Still stuck? Write to support@acme.example - a person answers within one working day.',
+        de: 'Kommst du nicht weiter? Schreib an support@acme.example - ein Mensch antwortet innerhalb eines Werktags.',
+      },
+      release: {
+        en: 'Every workspace gets the release automatically: nothing to install, nothing to switch on.',
+        de: 'Jeder Workspace bekommt das Release automatisch - nichts zu installieren, nichts einzuschalten.',
+      },
+      video: {
+        en: 'The video has captions in English and German, and a transcript below it.',
+        de: 'Das Video hat Untertitel auf Englisch und Deutsch und darunter ein Transkript.',
+      },
+    };
+    const ONE = {
+      guide: { en: 'Guide', de: 'Anleitung' },
+      help: { en: 'Help article', de: 'Hilfeartikel' },
+      release: { en: 'Release note', de: 'Release-Notiz' },
+      video: { en: 'Video', de: 'Video' },
+    };
+    const WORDS = {
+      updated: { en: 'updated', de: 'aktualisiert am' },
+      none: { en: 'Nothing matches "{q}" with these filters.', de: 'Nichts passt zu „{q}“ mit diesen Filtern.' },
+      noneAll: { en: 'Nothing matches these filters.', de: 'Nichts passt zu diesen Filtern.' },
+    };
+    // the data block's articles: where they sit in the index
+    const OWN = {
+      'offline-sync': ['guides', 'guide', 'sync', 'offline engineering', 12, 4210],
+      'sync-stuck': ['guides', 'help', 'sync', 'offline', 40, 3120],
+      'get-started': ['product', 'guide', '', 'product', 5, 4980],
+      billing: ['product', 'help', 'billing', 'product', 90, 2210],
+      security: ['engineering', 'guide', 'teams', 'security', 28, 2650],
+      integrations: ['product', 'guide', '', 'product async', 150, 1830],
+      status: ['engineering', 'help', '', 'engineering', 2, 960],
+    };
+    const wordsOf = (text) => text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
+    const INDEX = [];
+    for (const [id, [category, type, area, tags, age, reads]] of Object.entries(OWN)) {
+      const a = DATA.articles[id];
+      const text = { en: { ...a.en, snippet: a.en.body[0] }, de: { ...a.de, snippet: a.de.body[0] } };
+      INDEX.push({ id, category, type, area, tags: tags.split(' '), age, reads, official: true, text });
+    }
+    SUBJECTS.forEach(([s, d, category, area, tags], n) => {
+      KINDS.forEach(([type, titleEn, titleDe, snipEn, snipDe], k) => {
+        const i = n * KINDS.length + k;
+        const fill = (t) =>
+          t
+            .replaceAll('{s}', s)
+            .replaceAll('{S}', s[0].toUpperCase() + s.slice(1))
+            .replaceAll('{D}', d);
+        const path = (lang) => tr2(DATA.values.type[type], lang) + ' › ' + tr2(DATA.values.category[category], lang);
+        const text = {
+          en: { path: path('en'), title: fill(titleEn), snippet: fill(snipEn), body: [fill(snipEn), CLOSING[type].en] },
+          de: { path: path('de'), title: fill(titleDe), snippet: fill(snipDe), body: [fill(snipDe), CLOSING[type].de] },
+        };
+        const official = type !== 'video' && i % 6 !== 5;
+        INDEX.push({
+          id: `${s.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${k + 1}`,
+          category,
+          type,
+          area,
+          tags: tags.split(' '),
+          age: (i * 53 + 11) % 720,
+          reads: 200 + ((i * 7919) % 4800),
+          official,
+          text,
+        });
+      });
+    });
+    for (const entry of INDEX) {
+      entry.words = new Set(
+        wordsOf(
+          Object.values(entry.text)
+            .map((t) => t.title + ' ' + t.snippet)
+            .join(' '),
+        ),
+      );
+      entry.titleWords = new Set(wordsOf(entry.text.en.title + ' ' + entry.text.de.title));
+    }
+    const byId = new Map(INDEX.map((entry) => [entry.id, entry]));
+    // a line of facts in the page's language: the kind and the day it was updated
+    const metaOf = (entry, lang) => {
+      const day = new Date(Date.now() - entry.age * 864e5);
+      const date = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'short', year: 'numeric' }).format(day);
+      return `${ONE[entry.type][lang]} · ${WORDS.updated[lang]} ${date}`;
+    };
+    // two words one edit apart (one letter added, dropped or changed) - "sofware" finds software
+    const oneEdit = (a, b) => {
+      const [s, t] = a.length <= b.length ? [a, b] : [b, a];
+      if (t.length - s.length > 1) return false;
+      let i = 0;
+      while (i < s.length && s[i] === t[i]) i++;
+      return s.length === t.length ? s.slice(i + 1) === t.slice(i + 1) : s.slice(i) === t.slice(i + 1);
+    };
+    const hits = (term, word) => word.startsWith(term) || (term.length >= 4 && oneEdit(term, word));
+    const TAGS = [
+      'design',
+      'engineering',
+      'product',
+      'async',
+      'offline',
+      'accessibility',
+      'hiring',
+      'typography',
+      'culture',
+      'security',
+      'research',
+      'remote',
+    ];
+    const TAG_COUNTS = Object.fromEntries(TAGS.map((t) => [t, INDEX.filter((entry) => entry.tags.includes(t)).length]));
+    // the search an address names: every term matches a word (its start, or one edit away), every filter holds; the
+    // counts beside each filter value hold the other filters; a term that only matched one edit away is the suggestion
+    const search = (params = query) => {
+      const started = performance.now();
+      const val = (key) => params.get(key) ?? DEFAULTS[key];
+      const list = (key) => val(key).split(',').filter(Boolean);
+      const terms = wordsOf(val('q'));
+      const holds = (entry, key) => {
+        const want = list(key);
+        if (!want.length) return true;
+        if (key === 'tag') return want.some((t) => entry.tags.includes(t));
+        if (key === 'updated') return entry.age <= Number(want[0]);
+        if (key === 'official') return entry.official;
+        return want.includes(entry[key]);
+      };
+      const exact = new Set();
+      const near = new Map();
+      const matched = [];
+      for (const entry of INDEX) {
+        let score = 0;
+        for (const term of terms) {
+          const words = [...entry.words];
+          const start = words.find((w) => w.startsWith(term));
+          const edit = start ? null : term.length >= 4 && words.find((w) => oneEdit(term, w));
+          if (!start && !edit) {
+            score = -1;
+            break;
+          }
+          if (start) exact.add(term);
+          else near.set(term, edit);
+          score += (entry.titleWords.has(start ?? edit) ? 3 : 1) / (start ? 1 : 2);
+        }
+        if (score >= 0) matched.push({ entry, score });
+      }
+      const counts = { all: 0, category: {}, type: {}, area: {}, tag: {} };
+      const add = (key, value) => (counts[key][value] = (counts[key][value] ?? 0) + 1);
+      for (const { entry } of matched) {
+        const rest = (skip) => FILTERS.every((key) => key === skip || holds(entry, key));
+        if (rest('category')) {
+          counts.all++;
+          add('category', entry.category);
+        }
+        if (rest('type')) add('type', entry.type);
+        if (rest('area') && entry.area) add('area', entry.area);
+      }
+      const order =
+        {
+          newest: (a, b) => a.entry.age - b.entry.age,
+          oldest: (a, b) => b.entry.age - a.entry.age,
+          popular: (a, b) => b.entry.reads - a.entry.reads,
+        }[val('sort')] ?? ((a, b) => b.score - a.score || b.entry.reads - a.entry.reads);
+      const items = matched
+        .filter(({ entry }) => FILTERS.every((key) => holds(entry, key)))
+        .sort(order)
+        .map(({ entry }) => entry);
+      const fixed = terms.map((term) => (exact.has(term) || !near.has(term) ? term : near.get(term)));
+      const suggestion = fixed.join(' ') !== terms.join(' ') ? fixed.join(' ') : '';
+      return { items, total: items.length, counts, terms, suggestion, ms: performance.now() - started };
+    };
+    let found = {
+      items: [],
+      total: 0,
+      counts: { all: 0, category: {}, type: {}, area: {}, tag: {} },
+      terms: [],
+      suggestion: '',
+      ms: 0,
+    };
+    // the number the sidebar's button offers: the search with the filters as they are ticked, before they are applied
+    const pending = () => {
+      const form = df$('#site-search [data-search-filters]').get(0);
+      const next = new URLSearchParams(query);
+      const data = new FormData(form);
+      for (const key of ['type', 'area', 'updated', 'official']) {
+        const value = data.getAll(key).join(',');
+        if (value) next.set(key, value);
+        else next.delete(key);
+      }
+      return search(next).total;
+    };
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
       locale: 'en', // the demos start in English; the language select offers German
@@ -1084,13 +1914,15 @@
       getState: () => query,
       values: (state) => ({
         q: get('q'),
-        total: locale.formatNumber(TOTAL),
-        from: locale.formatNumber((Number(get('page')) - 1) * PER_PAGE + 1),
-        to: locale.formatNumber(Math.min(TOTAL, Number(get('page')) * PER_PAGE)),
+        total: locale.formatNumber(found.total),
+        from: locale.formatNumber(found.total ? (page() - 1) * per() + 1 : 0),
+        to: locale.formatNumber(Math.min(found.total, page() * per())),
+        pending: locale.formatNumber(pending()),
+        ...Object.fromEntries(TAGS.map((t) => ['tag-' + t, locale.formatNumber(TAG_COUNTS[t])])),
       }),
     });
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -1109,24 +1941,153 @@
     // -- routing
     const routes = [
       { id: 'search', path: '/' },
+      { id: 'help', path: '/help' },
+      { id: 'article', path: '/articles/:id' },
       { id: 'missing', path: '*' },
     ];
-    // one parameter changed, the rest kept (a new search, category or sort starts at page 1); an empty q is a
-    // cleared search, not the default one
+    // one parameter changed, the rest kept (a new search, filter or sort starts at page 1); a parameter at its
+    // default leaves the address, an emptied one stays (an empty q is a cleared search, not the default one)
+    const address = (next) => '#/' + (next.size ? '?' + next : '');
     const hrefWith = (key, value) => {
       const next = new URLSearchParams(query);
-      if (value || key === 'q') next.set(key, value);
-      else next.delete(key);
+      if (value === DEFAULTS[key]) next.delete(key);
+      else next.set(key, value);
       if (key !== 'page') next.delete('page');
-      return '#/' + (next.size ? '?' + next : '');
+      return address(next);
     };
+    // Clear all: every filter removed, the search kept
+    const clearHref = () => {
+      const next = new URLSearchParams(query);
+      for (const key of FILTERS) {
+        if (DEFAULTS[key]) next.set(key, '');
+        else next.delete(key);
+      }
+      next.delete('page');
+      return address(next);
+    };
+
+    // -- the Active Filters are the filters of the address: one chip each, and the chip's link removes it
+    const drawChips = () => {
+      const list = df$('#site-search [data-search-chips]').html('');
+      let count = 0;
+      for (const key of FILTERS) {
+        for (const value of listed(key)) {
+          const label = tr(DATA.labels[key]);
+          const name = DATA.values[key]?.[value] ? tr(DATA.values[key][value]) : value;
+          const rest = listed(key)
+            .filter((other) => other !== value)
+            .join(',');
+          const chip = df$('<a class="mk-active-filters-chip" data-router-link></a>')
+            .attr('href', hrefWith(key, rest))
+            .attr('aria-label', tr(DATA.labels.remove).replace('{filter}', label + ': ' + name));
+          chip.append(df$('<span></span>').text(label + ':'));
+          chip.append(df$('<span></span>').text(name));
+          chip.append(df$('<i data-lucide="x"></i>'));
+          list.append(df$('<li></li>').append(chip));
+          count++;
+        }
+      }
+      df$('#site-search .mk-active-filters').get(0).hidden = !count;
+      globalThis.lucide?.createIcons();
+    };
+    // -- an article: its trail, title and text in the page's language
+    let article = null;
+    const drawArticle = (id) => {
+      const entry = byId.get(id);
+      const t = { ...tr(entry.text), meta: metaOf(entry, locale.locale) };
+      const part = df$('#site-search .sr-article');
+      part.find('[data-article-field]').each((_i, el) => {
+        df$(el).text(t[el.dataset.articleField]);
+      });
+      const body = part.find('[data-article-body]').html('');
+      for (const text of t.body) body.append(df$('<p></p>').text(text));
+    };
+    // the results of the page the address names: path, title, snippet with the matching words marked, the facts
+    const marked = (el, text) => {
+      for (const part of text.split(/([\p{L}\p{N}]+)/u)) {
+        if (!part) continue;
+        const word = part.toLowerCase();
+        if (found.terms.some((term) => hits(term, word))) el.append(df$('<mark></mark>').text(part));
+        else el.append(document.createTextNode(part));
+      }
+      return el;
+    };
+    const drawResults = () => {
+      const lang = locale.locale;
+      const list = df$('#site-search .sr-list').html('');
+      const from = (page() - 1) * per();
+      for (const entry of found.items.slice(from, from + per())) {
+        const t = entry.text[lang] ?? entry.text.en;
+        const body = df$('<div class="mk-search-result-body"></div>');
+        body.append(df$('<p class="mk-search-result-path"></p>').text(t.path));
+        const link = df$('<a data-router-link></a>').attr('href', '#/articles/' + entry.id);
+        body.append(df$('<h3 class="mk-search-result-title"></h3>').append(marked(link, t.title)));
+        body.append(marked(df$('<p class="mk-search-result-snippet"></p>'), t.snippet));
+        body.append(df$('<p class="mk-search-result-meta"></p>').text(metaOf(entry, lang)));
+        list.append(df$('<article class="mk-search-result"></article>').append(body));
+      }
+      if (!found.total) {
+        const q = get('q');
+        list.append(df$('<p class="sr-empty"></p>').text(q ? WORDS.none[lang].replace('{q}', q) : WORDS.noneAll[lang]));
+      }
+      const seconds = new Intl.NumberFormat(lang, { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(
+        found.ms / 1000,
+      );
+      df$('#site-search .mk-search-summary-time').text(seconds + ' s');
+    };
+    // the numbers beside the categories and the filters: what each would show with the other filters kept
+    const drawCounts = () => {
+      df$('#site-search .mk-category-menu a[data-query]').each((_i, a) => {
+        const value = a.dataset.query.split('=')[1];
+        df$(a)
+          .find('small')
+          .text(locale.formatNumber(value ? (found.counts.category[value] ?? 0) : found.counts.all));
+      });
+      df$(
+        '#site-search [data-search-filters] input[name="type"], #site-search [data-search-filters] input[name="area"]',
+      ).each((_i, input) => {
+        df$(input)
+          .closest('label')
+          .find('small')
+          .text(locale.formatNumber(found.counts[input.name][input.value] ?? 0));
+      });
+      const most = Math.max(...Object.values(TAG_COUNTS));
+      df$('#site-search .mk-tag-cloud a[data-query]').each((_i, a) => {
+        const tag = a.dataset.query.split('=')[1];
+        a.dataset.weight = String(1 + Math.round((4 * (TAG_COUNTS[tag] ?? 0)) / most));
+      });
+    };
+    const draw = () => {
+      drawChips();
+      drawResults();
+      drawCounts();
+      df$('#site-search [data-article-link]').each((_i, el) => {
+        df$(el).text(tr(DATA.articles[el.dataset.articleLink]).title);
+      });
+      if (article) drawArticle(article);
+    };
+    locale.subscribe(draw);
     const go = (href) => {
       if (router.getSnapshot().current) router.navigate(href);
       else location.hash = href.slice(1);
     };
-    // the address is the search: every link shows where it goes from here, the controls show the parameters
+    // the address is the search: every link shows where it goes from here, the controls show the parameters. The
+    // help centre's start and an article are views of their own; their way back is the last search
+    let lastSearch = '#/';
     const show = (to) => {
-      query = new URLSearchParams(to.search);
+      article = to.routeId === 'article' && byId.has(to.params.id) ? to.params.id : null;
+      const view = article ? 'article' : to.routeId === 'help' ? 'help' : 'results';
+      df$('#site-search [data-search-view]').each((_i, part) => {
+        part.hidden = !part.dataset.searchView.split(' ').includes(view);
+      });
+      if (view === 'results') {
+        query = new URLSearchParams(to.search);
+        lastSearch = '#/' + to.search;
+        found = search();
+      }
+      df$('#site-search [data-search-back]').attr('href', lastSearch);
+      df$('#site-search [data-search-help]').attr('aria-current', view === 'help' ? 'page' : null);
+      df$('#site-search [data-search-clear]').attr('href', clearHref());
       df$('#site-search [data-query]').each((_i, link) => {
         const [key, value] = link.dataset.query.split('=');
         link.setAttribute('href', hrefWith(key, value));
@@ -1134,29 +2095,103 @@
         else link.removeAttribute('aria-current');
       });
       // the Pagination component shows the page (its State API)
-      if (pager.api.getState().config.activePage !== Number(get('page')))
-        pager.api.setState('default', { activePage: Number(get('page')) });
+      const { config } = pager.api.getState();
+      if (config.activePage !== page() || config.maxPage !== lastPage())
+        pager.api.setState('default', { activePage: page(), maxPage: lastPage() });
+      pagerHrefs();
       df$('[data-search-sort]').val(get('sort'));
+      df$('[data-search-per]').val(String(per()));
       df$('#sb-2').val(query.get('q') ?? '');
-      df$('[data-search-suggest]').get(0).hidden = get('q') !== 'calm sofware';
+      // a term that only matched one edit away offers the spelling the index knows
+      df$('[data-search-suggest]').get(0).hidden = !found.suggestion;
+      df$('[data-search-suggestion]').text(found.suggestion).attr('href', hrefWith('q', found.suggestion));
+      df$('#site-search [data-search-summary="q"]').get(0).hidden = !get('q');
+      df$('#site-search [data-search-summary="all"]').get(0).hidden = !!get('q');
+      // the scope shows a single type filter
+      const types = listed('type');
+      df$('[data-search-form] select[name="scope"]').val(types.length === 1 ? types[0] : '');
+      // the sidebar shows the filters of the address
+      df$('#site-search [data-search-filters] input').each((_i, input) => {
+        input.checked =
+          input.type === 'radio' ? get(input.name) === input.value : listed(input.name).includes(input.value);
+      });
+      draw();
       texts.refresh();
     };
     df$('[data-search-sort]').on('change', (event) => go(hrefWith('sort', event.currentTarget.value)));
+    df$('[data-search-per]').on('change', (event) => go(hrefWith('per', event.currentTarget.value)));
+    // the sidebar's form writes its filters into the address
+    df$('#site-search [data-search-filters]').on('submit', (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const next = new URLSearchParams(query);
+      for (const key of ['type', 'area', 'updated', 'official']) {
+        const value = form.getAll(key).join(',');
+        if (value === DEFAULTS[key]) next.delete(key);
+        else next.set(key, value);
+      }
+      next.delete('page');
+      go(address(next));
+    });
     // the Pagination component owns its links (it claims their clicks): the page it lands on goes into the address
     const pager = df$('[data-search-pager]').get(0);
     pager.store.subscribe(({ config }) => {
       if (String(config.activePage) !== get('page')) go(hrefWith('page', String(config.activePage)));
     });
+    // it writes the links of the pages it shows; each one names the address of its page
+    const pagerHrefs = () => {
+      const at = Number(pager.dataset.activePage) || 1;
+      df$(pager)
+        .find('.pagination-link[data-page]')
+        .each((_i, link) => {
+          df$(link).attr('href', hrefWith('page', link.dataset.page));
+        });
+      df$(pager)
+        .find('.pagination-prev')
+        .attr('href', hrefWith('page', String(Math.max(1, at - 1))));
+      df$(pager)
+        .find('.pagination-next')
+        .attr('href', hrefWith('page', String(Math.min(lastPage(), at + 1))));
+    };
+    new MutationObserver(pagerHrefs).observe(pager, { childList: true, subtree: true });
+    // a search: the query and its scope (a type) into the address, from the first page
     df$('[data-search-form]').on('submit', (event) => {
       event.preventDefault();
-      go(hrefWith('q', df$('#sb-2').val().trim()));
+      const next = new URLSearchParams(query);
+      const q = df$('#sb-2').val().trim();
+      const scope = df$('[data-search-form] select[name="scope"]').val();
+      if (q) next.set('q', q);
+      else next.delete('q');
+      if (scope) next.set('type', scope);
+      else next.delete('type');
+      next.delete('page');
+      go(address(next));
     });
-    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    // the sidebar's button counts what its ticked filters would show
+    df$('#site-search [data-search-filters]').on('change', () => texts.refresh());
+    // ⌘K / Ctrl+K: to the search field
+    df$(document).on('keydown', (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        df$('#sb-2').get(0).focus();
+      }
+    });
+    // a new page opens at its start, the way a page load would - the first view stays where the reader is
+    let shownPath = null;
+    const showAt = (to) => {
+      show(to);
+      if (shownPath !== null && shownPath !== to.path)
+        df$('#site-search [data-search-view]:not([hidden])')
+          .get(0)
+          ?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      shownPath = to.path;
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => showAt(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      const follow = () => showAt(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
       addEventListener('hashchange', follow);
       follow();
     }

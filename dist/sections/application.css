@@ -261,10 +261,11 @@
       opacity: 0;
     }
   }
-  /* dot + badge / dot + chevron share the pushed-right slot */
+  /* dot + badge / dot + chevron share the pushed-right slot - a hidden dot (news this reader has seen) leaves
+     the slot to the badge or the chevron */
   .sidebar-badge + .sidebar-dot,
-  .sidebar-dot + .sidebar-badge,
-  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot ~ svg:last-child {
+  .sidebar-dot:not([hidden]) + .sidebar-badge,
+  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot:not([hidden]) ~ svg:last-child {
     margin-left: 0;
   }
   .app-sidebar[data-state="collapsed"] {
@@ -1167,9 +1168,153 @@
     }
   }
 
+  /* -- Stacks: several Panels on one side -----------------------------
+     A region's pane may be a .border-layout-stack of Panels: top to bottom in
+     west / east, side by side in north / south. The panels share the region
+     by weight (--border-layout-share, a flex-grow the runtime writes as px when a
+     divider moves);
+     a minimized one shrinks to its title bar and the others take its room.
+     When every panel is minimized the region folds like a single panel:
+     north / south to the bars, west / east to vertical tabs.
+     data-direction="row" | "column" lays them side by side or top to bottom on
+     any side; in a row on west / east a minimized panel is a vertical tab. */
+  .border-layout-stack {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    & > .panel {
+      flex: var(--border-layout-share, 1) 1 0px;
+      min-width: 0;
+      min-height: 0;
+      border: 0;
+      border-radius: 0;
+    }
+    & > .panel[data-minimized] {
+      flex: none;
+    }
+  }
+  .border-layout
+    > :is(.border-layout-north, .border-layout-south)
+    > .border-layout-stack:not([data-direction="column"]),
+  .border-layout > .border-layout-stack:is(.border-layout-north, .border-layout-south):not([data-direction="column"]),
+  .border-layout-stack[data-direction="row"] {
+    flex-direction: row;
+  }
+  /* north / south: a minimized panel keeps its bar at the start of its column */
+  :is(.border-layout-north, .border-layout-south)
+    > .border-layout-stack:not([data-direction="column"])
+    > .panel[data-minimized],
+  .border-layout-stack:is(.border-layout-north, .border-layout-south):not([data-direction="column"])
+    > .panel[data-minimized] {
+    align-self: flex-start;
+  }
+  /* west / east in a row (and every west / east stack folded): a minimized
+     panel turns into a vertical tab - the Panel's own west / east tab, for
+     panels a stack holds */
+  :is(.border-layout-west, .border-layout-east) > .border-layout-stack[data-direction="row"] > .panel[data-minimized],
+  .border-layout-stack[data-direction="row"]:is(.border-layout-west, .border-layout-east) > .panel[data-minimized],
+  .border-layout > :is(.border-layout-west, .border-layout-east)[data-panel-minimized] > .border-layout-stack > .panel,
+  .border-layout > .border-layout-stack:is(.border-layout-west, .border-layout-east)[data-panel-minimized] > .panel {
+    inline-size: auto !important;
+    min-inline-size: 0;
+    container-type: normal;
+
+    & > .panel-header {
+      flex: 1;
+      writing-mode: vertical-rl;
+      padding-block: 0.25rem;
+      padding-inline: 0.375rem 0.75rem;
+      border-block-end: 0;
+    }
+    & .panel-tools {
+      order: -1;
+      margin-inline: 0 0.25rem;
+    }
+    & .panel-maximize {
+      display: none;
+    }
+  }
+
+  /* the divider between two panels: a line with a wider hit area */
+  .border-layout-stack-divider {
+    position: relative;
+    z-index: 4;
+    flex: none;
+    block-size: var(--_line-width);
+    margin-block: calc((var(--_hit) - var(--_line-width)) / -2);
+    padding-block: calc((var(--_hit) - var(--_line-width)) / 2);
+    background: var(--_line-color) content-box;
+    cursor: row-resize;
+    touch-action: none;
+    transition: background-color 120ms;
+
+    &:is(:hover, :focus-visible, [data-resizing]) {
+      background-color: var(--_accent);
+      outline: none;
+    }
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--_accent);
+    }
+    /* next to a minimized panel there is nothing to share */
+    &[aria-disabled="true"] {
+      cursor: default;
+      background-color: var(--_line-color);
+    }
+  }
+  :is(.border-layout-north, .border-layout-south)
+    > .border-layout-stack:not([data-direction="column"])
+    > .border-layout-stack-divider,
+  .border-layout-stack:is(.border-layout-north, .border-layout-south):not([data-direction="column"])
+    > .border-layout-stack-divider,
+  .border-layout-stack[data-direction="row"] > .border-layout-stack-divider {
+    block-size: auto;
+    inline-size: var(--_line-width);
+    margin-block: 0;
+    padding-block: 0;
+    margin-inline: calc((var(--_hit) - var(--_line-width)) / -2);
+    padding-inline: calc((var(--_hit) - var(--_line-width)) / 2);
+    cursor: col-resize;
+  }
+
+  /* every panel minimized: the region folds with them */
+  .border-layout > .resizer[data-panel-minimized] > .border-layout-stack {
+    overflow: hidden;
+  }
+  .border-layout > :is(.border-layout-north, .border-layout-south)[data-panel-minimized] > .border-layout-stack,
+  .border-layout > .border-layout-stack:is(.border-layout-north, .border-layout-south)[data-panel-minimized] {
+    block-size: auto !important;
+  }
+  .border-layout > :is(.border-layout-west, .border-layout-east)[data-panel-minimized] > .border-layout-stack,
+  .border-layout > .border-layout-stack:is(.border-layout-west, .border-layout-east)[data-panel-minimized] {
+    inline-size: auto !important;
+    min-inline-size: 0;
+
+    & > .border-layout-stack-divider {
+      display: none;
+    }
+    /* the tabs share the height - side by side in a row */
+    &:not([data-direction="row"]) > .panel[data-minimized] {
+      flex: 1 1 0px;
+    }
+    &:not([data-direction="row"]) > .panel ~ .panel {
+      border-block-start: var(--_line-width) var(--_line-style) var(--_line-color);
+    }
+    &[data-direction="row"] > .panel ~ .panel {
+      border-inline-start: var(--_line-width) var(--_line-style) var(--_line-color);
+    }
+  }
+  /* every panel closed: the region leaves with them */
+  .border-layout > [data-stack-closed] {
+    display: none;
+  }
+
   /* -- Accessibility -------------------------------------------- */
   @media (prefers-reduced-motion: reduce) {
-    .border-layout > .resizer > .resizer-handle::before {
+    .border-layout > .resizer > .resizer-handle::before,
+    .border-layout-stack-divider {
       transition: none;
     }
   }
@@ -1188,6 +1333,13 @@
     }
     .border-layout > .resizer > .resizer-handle::before {
       forced-color-adjust: none;
+    }
+    .border-layout-stack-divider {
+      forced-color-adjust: none;
+      background-color: CanvasText;
+      &:is(:hover, :focus-visible, [data-resizing]) {
+        background-color: Highlight;
+      }
     }
   }
 }

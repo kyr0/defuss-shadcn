@@ -4,6 +4,7 @@
 
 Each page is MDX with live examples: `../../../src/documentation/pages/<page>.mdx` from this file (plugin or npm install), else `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.13/src/documentation/pages/<page>.mdx`.
 
+- **[Design Language](../../../src/documentation/pages/guides/design-language.mdx)** - Which component for which use case: small or big data, lists, trees, linked data, time series, associative data, read-only or editable - a decision tree and a use-case index with links to every page, skill and section folder.
 - **[Theming](../../../src/documentation/pages/guides/theming.mdx)** - Customize defuss-shadcn with CSS custom properties. Design your own theme in the built-in Theme Designer, or drop in any tweakcn.com theme.
   - [Theme Designer](../../../src/documentation/pages/guides/theme-designer.mdx)
 - **[Dark Mode](../../../src/documentation/pages/guides/dark-mode.mdx)** - How dark mode works in defuss-shadcn: token pairs, system preference detection, persistence, and implementation.

@@ -36,6 +36,9 @@ export const EXTRA_BUNDLES = {
     // the Graphs section: the Graph Explorer - its worker (the graph, the layouts, the far field) rides along as one
     // stringified function, and its icon set as CSS masks, so it stays out of all.* like the other engines
     graphs: ['graph-explorer'],
+    // the Terminal - xterm.js with its addons and stylesheet loads from its pinned builds with the first terminal; a
+    // part of the Mockup section (the Code Mockup, CSS only, stays in all.*)
+    terminal: ['terminal'],
 };
 /** The extra bundle a component ships in, or null when it rides in all.*. */
 export function extraBundleOf(component) {

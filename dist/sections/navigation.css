@@ -3628,3 +3628,274 @@
     }
   }
 }
+
+/* ── components/language-switcher/language-switcher.css ── */
+/* -- Language Switcher component -------------------------------------
+   The runtime writes a shipped Combobox (a Swap, or radio items for a
+   Dropdown Menu) into the element; these
+   rules size it to its content and draw the flags. A flag is the language's
+   code (::before) under its SVG (::after): a flag that fails to load leaves
+   the code readable. Shape, scale and finish are attributes on the root. */
+
+@layer components {
+  .language-switcher {
+    --language-switcher-flag-height: 1rem;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+
+    /* -- Flag scale ----------------------------------------------- */
+    &[data-flag-size="xs"] {
+      --language-switcher-flag-height: 0.75rem;
+    }
+    &[data-flag-size="sm"] {
+      --language-switcher-flag-height: 0.875rem;
+    }
+    &[data-flag-size="lg"] {
+      --language-switcher-flag-height: 1.25rem;
+    }
+    &[data-flag-size="xl"] {
+      --language-switcher-flag-height: 1.75rem;
+    }
+
+    /* -- Flag shapes ---------------------------------------------- */
+    &[data-flag-shape="rounded"] .language-switcher-flag {
+      border-radius: calc(var(--language-switcher-flag-height) * 0.25);
+    }
+    &[data-flag-shape="square"] .language-switcher-flag {
+      inline-size: var(--language-switcher-flag-height);
+    }
+    &[data-flag-shape="squircle"] .language-switcher-flag {
+      inline-size: var(--language-switcher-flag-height);
+      border-radius: 32%;
+    }
+    &[data-flag-shape="circle"] .language-switcher-flag {
+      inline-size: var(--language-switcher-flag-height);
+      border-radius: 50%;
+    }
+
+    /* -- Flag finishes -------------------------------------------- */
+    &[data-flag-style="ring"] .language-switcher-flag {
+      outline: 1px solid color-mix(in oklch, var(--foreground) 22%, transparent);
+      outline-offset: -1px;
+    }
+    &[data-flag-style="shadow"] .language-switcher-flag {
+      box-shadow:
+        0 0 0 1px var(--border),
+        var(--shadow-sm);
+    }
+    &[data-flag-style="glossy"] .language-switcher-flag {
+      --language-switcher-gloss: linear-gradient(
+        160deg,
+        oklch(1 0 0 / 0.55),
+        oklch(1 0 0 / 0) 42%,
+        oklch(0 0 0 / 0) 58%,
+        oklch(0 0 0 / 0.2)
+      );
+      outline: 1px solid oklch(0 0 0 / 0.12);
+      outline-offset: -1px;
+    }
+
+    /* the code shown instead of a name (a condensed footer, a toolbar) */
+    &[data-display="code"] .language-switcher-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .language-switcher-flag {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    inline-size: calc(var(--language-switcher-flag-height) * 4 / 3);
+    block-size: var(--language-switcher-flag-height);
+    border-radius: 2px;
+    overflow: hidden;
+    background-color: var(--muted);
+    transition: scale 150ms ease;
+
+    &::before {
+      content: attr(data-code);
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-size: calc(var(--language-switcher-flag-height) * 0.5);
+      font-weight: 600;
+      line-height: 1;
+      color: var(--muted-foreground);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--language-switcher-gloss, none), var(--language-switcher-flag, none);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    /* a flag in the dark is a little dimmer, so it does not glare beside the text */
+    :where(.dark) &::after {
+      filter: brightness(0.92) saturate(0.95);
+    }
+  }
+
+  .language-switcher-icon {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .language-switcher-label {
+    white-space: nowrap;
+  }
+
+  /* -- The Combobox face ------------------------------------------ */
+  .language-switcher-combobox {
+    display: inline-block;
+
+    & .combobox-trigger {
+      width: auto;
+      justify-content: flex-start;
+      gap: 0.5rem;
+    }
+
+    & .combobox-value {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: none;
+      font-weight: 500;
+    }
+
+    /* a language is always chosen: no clear button, the chevron stays */
+    & .combobox-clear {
+      display: none !important;
+    }
+    &.combobox:has(.combobox-value) .combobox-trigger > .combobox-chevron {
+      display: block;
+    }
+
+    & .combobox-content {
+      width: max-content;
+      min-width: max(anchor-size(width), 13rem);
+      max-width: min(22rem, calc(100vw - 1rem));
+      position-try-fallbacks:
+        flip-inline,
+        flip-block,
+        flip-block flip-inline;
+    }
+
+    /* a short list needs no search box; it stays for the keys (arrows, Enter) */
+    & .combobox-search[data-quiet] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      border: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /* the list opens toward the start edge where the switcher sits at the end (a header's right side) */
+  .language-switcher[data-align="end"] .combobox-content {
+    left: auto;
+    right: anchor(right);
+  }
+
+  .language-switcher-option {
+    gap: 0.625rem;
+
+    &[data-highlighted] .language-switcher-flag,
+    &:hover .language-switcher-flag {
+      scale: 1.08;
+    }
+  }
+
+  .language-switcher-name {
+    white-space: nowrap;
+  }
+
+  .language-switcher-alt {
+    margin-inline-start: auto;
+    padding-inline-start: 1rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    white-space: nowrap;
+
+    &[hidden] {
+      display: none;
+    }
+    .language-switcher-option[data-highlighted] &,
+    .language-switcher-option:hover & {
+      color: inherit;
+      opacity: 0.75;
+    }
+  }
+
+  /* -- The Menu face: radio items in a Dropdown Menu ----------------- */
+  .language-switcher[data-variant="menu"] {
+    display: block;
+  }
+  .language-switcher-menu {
+    display: contents;
+  }
+  .language-switcher-item {
+    gap: 0.625rem;
+
+    &[data-highlighted] .language-switcher-flag,
+    &:hover .language-switcher-flag {
+      scale: 1.08;
+    }
+    & .language-switcher-alt {
+      color: var(--muted-foreground);
+    }
+  }
+
+  /* -- The Swap face ---------------------------------------------- */
+  .language-switcher-swap {
+    & .swap-on,
+    & .swap-off {
+      gap: 0.375rem;
+      padding-inline: 0.375rem;
+    }
+    & .language-switcher-label {
+      font-weight: 500;
+    }
+  }
+
+  /* -- Accessibility ---------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .language-switcher-flag {
+      transition: none;
+    }
+    :is(.language-switcher-option, .language-switcher-item) .language-switcher-flag {
+      scale: none !important;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .language-switcher-flag {
+      outline: 1px solid var(--foreground);
+      outline-offset: -1px;
+    }
+    .language-switcher-alt {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    /* the flag keeps its own colors; a system-color frame marks its edge */
+    .language-switcher-flag {
+      forced-color-adjust: none;
+      outline: 1px solid CanvasText;
+      outline-offset: -1px;
+    }
+  }
+}

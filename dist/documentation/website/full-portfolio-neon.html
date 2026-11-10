@@ -104,25 +104,255 @@
     margin-inline: auto;
     padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 4vw, 2.5rem) 3rem;
   }
-  #pf-neon .pf-nav {
+  #pf-neon [hidden] {
+    display: none !important;
+  }
+  /* the views: the home page and a page per piece share the page's column and its rhythm */
+  #pf-neon .pf-home {
     display: flex;
+    flex-direction: column;
+    gap: clamp(3.5rem, 8vw, 6rem);
+  }
+  /* the Site Header: the handle with a glowing dot, the sections in Unbounded, the mode */
+  #pf-neon .mk-header {
+    background: none;
+    color: inherit;
+  }
+  #pf-neon .mk-header-inner {
     flex-wrap: wrap;
-    align-items: center;
+    max-width: none;
+    min-height: 4.5rem;
+    padding: 0;
+  }
+  #pf-neon .mk-header-brand {
+    gap: 0.6rem;
+    color: var(--foreground);
+  }
+  #pf-neon .mk-header-name,
+  #pf-neon .mk-footer-brand-name {
+    color: inherit;
+    font-family: 'Unbounded', var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  #pf-neon .pf-brand-dot {
+    width: 0.7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--pf-glow);
+    box-shadow: 0 0 14px color-mix(in oklch, var(--chart-2) 70%, transparent);
+  }
+  #pf-neon .mk-header-nav {
+    display: flex;
+    margin-inline-start: auto;
+  }
+  #pf-neon .nav-menu-list {
+    gap: 0.25rem;
+  }
+  #pf-neon .nav-menu-link {
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    color: var(--foreground);
+    font-family: 'Unbounded', var(--font-sans);
+    font-size: 0.875rem;
+  }
+  #pf-neon .nav-menu-link:is(:hover, :focus-visible) {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  #pf-neon .nav-menu-link[aria-current] {
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  #pf-neon .mk-header-actions {
+    margin-inline-start: 0.5rem;
+  }
+  /* a piece's page: the title in the glow, the cover with its halo, the facts and the story in glass */
+  #pf-neon .pf-case {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 5vw, 3.5rem);
+  }
+  #pf-neon .pf-case-back {
+    display: flex;
     justify-content: space-between;
     gap: 1rem;
-    font-family: 'Unbounded', var(--font-sans);
-    font-size: 0.8125rem;
-  }
-  #pf-neon .pf-nav nav {
-    display: flex;
-    gap: 1.25rem;
-  }
-  #pf-neon .pf-nav a {
+    margin: 0;
     color: var(--muted-foreground);
+    font-family: 'Unbounded', var(--font-sans);
+    font-size: 0.875rem;
+  }
+  #pf-neon .pf-case-back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--foreground);
     text-decoration: none;
   }
-  #pf-neon .pf-nav a:is(:hover, :focus-visible) {
+  #pf-neon .pf-case-back a:is(:hover, :focus-visible) {
+    color: var(--chart-1);
+  }
+  #pf-neon .pf-case-back svg,
+  #pf-neon .pf-case-pager svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  #pf-neon .pf-case-title {
+    margin: 0;
+    background: var(--pf-glow);
+    background-clip: text;
+    color: transparent;
+    font-family: 'Unbounded', var(--font-sans);
+    font-size: clamp(2.75rem, 1rem + 7cqi, 6rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+  #pf-neon .pf-case-lede {
+    max-width: 46rem;
+    margin: 1.5rem 0 0;
+    font-size: clamp(1.15rem, 1rem + 0.8cqi, 1.5rem);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+  #pf-neon .pf-case-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: calc(var(--radius) * 1.75);
+    object-fit: cover;
+    box-shadow: 0 0 80px color-mix(in oklch, var(--chart-4) 45%, transparent);
+  }
+  #pf-neon .pf-case-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(1.5rem, 4vw, 3rem);
+  }
+  #pf-neon .pf-case-facts {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 1.5rem;
+  }
+  #pf-neon .pf-case-facts dt {
+    margin-block-start: 0.75rem;
+    color: var(--chart-1);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  #pf-neon .pf-case-facts dt:first-child {
+    margin-block-start: 0;
+  }
+  #pf-neon .pf-case-facts dd {
+    margin: 0;
+  }
+  #pf-neon .pf-case-text {
+    display: grid;
+    gap: 2rem;
+  }
+  #pf-neon .pf-case-text h2 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.15rem, 1rem + 0.8cqi, 1.5rem);
+  }
+  #pf-neon .pf-case-text p {
+    max-width: 42rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+  #pf-neon .pf-case-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  #pf-neon .pf-case-pair img {
+    width: 100%;
+    aspect-ratio: 9 / 7;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.5);
+    object-fit: cover;
+  }
+  #pf-neon .pf-case-pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  #pf-neon .pf-case-pager a {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    color: inherit;
+    text-decoration: none;
+    transition: box-shadow 0.2s;
+  }
+  #pf-neon .pf-case-pager a + a {
+    text-align: end;
+  }
+  #pf-neon .pf-case-pager a:is(:hover, :focus-visible) {
+    box-shadow: 0 0 32px color-mix(in oklch, var(--chart-2) 45%, transparent);
+  }
+  #pf-neon .pf-case-pager small {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--chart-1);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  #pf-neon .pf-case-pager a + a small {
+    justify-content: end;
+  }
+  #pf-neon .pf-case-pager strong {
+    font-family: 'Unbounded', var(--font-sans);
+    font-size: clamp(1.1rem, 1rem + 1cqi, 1.6rem);
+    font-weight: 600;
+  }
+  /* the Site Footer: a glass band - the pieces, the site, where to listen, the bookings */
+  #pf-neon .mk-footer {
     color: var(--foreground);
+  }
+  #pf-neon .mk-footer-inner {
+    max-width: none;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  #pf-neon .mk-footer-heading {
+    color: var(--chart-1);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  #pf-neon .mk-footer-list {
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+  }
+  #pf-neon .mk-footer-list a:is(:hover, :focus-visible) {
+    color: var(--chart-2);
+    text-decoration: none;
+  }
+  #pf-neon .pf-foot-note {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  #pf-neon .mk-footer-rule {
+    margin: 0;
+    border: 0;
+    height: 1px;
+    background: var(--border);
+  }
+  #pf-neon .mk-footer-brand {
+    gap: 0.6rem;
+    color: var(--foreground);
+  }
+  #pf-neon .mk-footer-copy {
+    color: var(--muted-foreground);
   }
   #pf-neon .pf-glass {
     border: 1px solid var(--border);
@@ -142,6 +372,10 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--chart-1);
+  }
+  /* on the light ground the small kicker takes a deeper teal (the chart colour read faintly over the glow) */
+  :root:not(.dark) #pf-neon .pf-kicker {
+    color: oklch(from var(--chart-1) min(l, 0.44) c h);
   }
   #pf-neon .pf-name {
     margin: 0;
@@ -269,6 +503,17 @@
       grid-row: 1;
       width: min(70%, 16rem);
     }
+    #pf-neon .mk-header-nav {
+      order: 3;
+      width: 100%;
+      margin-inline-start: -0.9rem;
+    }
+    #pf-neon .mk-header-actions {
+      margin-inline-start: auto;
+    }
+    #pf-neon :is(.pf-case-grid, .pf-case-pager) {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     #pf-neon .pf-aurora span {
@@ -286,14 +531,6 @@
   #pf-neon .site-mode:hover {
     background: var(--accent);
     color: var(--accent-foreground);
-  }
-  #pf-neon {
-    position: relative;
-  }
-  #pf-neon > .site-mode {
-    position: absolute;
-    z-index: 20;
-    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
   }
   /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
   .dark #pf-neon {
@@ -327,143 +564,362 @@
   /* -- modes: end -- */
 </style>
 <div id="pf-neon">
-  <label class="swap site-mode" data-variant="rotate" data-size="sm">
-    <input type="checkbox" data-site-mode aria-label="Dark mode" />
-    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-  </label>
   <div class="pf-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
   <div class="pf-page">
-    <header class="pf-nav">
-      <span>rio/vega</span>
-      <nav aria-label="Sections">
-        <a href="#pf-neon-work">Work</a>
-        <a href="#pf-neon-live">Live</a>
-        <a href="#pf-neon-contact">Contact</a>
-      </nav>
-    </header>
-    <section class="pf-hero" aria-labelledby="pf-neon-name">
-      <div>
-        <p class="pf-kicker" data-df-entrance="fade">Creative technologist · Mexico City / Berlin</p>
-        <h1 class="pf-name" id="pf-neon-name" data-df-entrance="blur">Rio Vega</h1>
-        <p class="pf-makes" data-df-entrance="up" style="--df-motion-delay: 200ms">
-          I build
-          <span class="typewriter" data-loop
-            ><span style="color: var(--chart-1)">generative visuals.</span
-            ><span style="color: var(--chart-2)">sound toys for the browser.</span
-            ><span style="color: var(--chart-3)">light for live shows.</span></span
-          >
-        </p>
-        <div class="flex flex-wrap gap-3" data-df-entrance="up" style="--df-motion-delay: 300ms">
-          <a class="btn pf-cta" data-size="lg" href="#pf-neon-work">See the work</a>
-          <a class="btn" data-size="lg" data-variant="outline" href="mailto:rio@example.com">Book a show</a>
+    <header class="mk-header">
+      <div class="mk-header-inner">
+        <a class="mk-header-brand" href="#/" data-router-link
+          ><span class="pf-brand-dot" aria-hidden="true"></span><span class="mk-header-name">rio/vega</span></a
+        >
+        <nav class="mk-header-nav" aria-label="Main">
+          <ul class="nav-menu-list">
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#/work" data-router-link>Work</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#/live" data-router-link>Live</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#/contact" data-router-link>Contact</a></li>
+          </ul>
+        </nav>
+        <div class="mk-header-actions">
+          <label class="swap site-mode" data-variant="rotate" data-size="sm">
+            <input type="checkbox" data-site-mode aria-label="Dark mode" />
+            <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+            <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+          </label>
         </div>
       </div>
-      <div class="pf-portrait shape-circle frame-conic" data-df-entrance="zoom" style="--df-motion-delay: 150ms">
-        <img src="https://picsum.photos/id/660/700/700" alt="Rio Vega holding a sparkler" />
-      </div>
-    </section>
-    <section id="pf-neon-work" aria-labelledby="pf-neon-work-title">
-      <h2 id="pf-neon-work-title">Recent pieces</h2>
-      <ul class="mk-portfolio-grid" data-variant="strip">
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1079/640/800" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Halo</strong>
-              <span class="mk-portfolio-grid-meta">Light installation · 2026</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1042/640/800" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Long Exposure</strong>
-              <span class="mk-portfolio-grid-meta">WebGL · 2025</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/959/640/800" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Fiesta Engine</strong>
-              <span class="mk-portfolio-grid-meta">Live visuals · 2025</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1022/640/800" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Aurora Synth</strong>
-              <span class="mk-portfolio-grid-meta">Web Audio · 2024</span>
-            </span>
-          </a>
-        </li>
-      </ul>
-    </section>
-    <div class="pf-two">
-      <section class="pf-glass" aria-labelledby="pf-neon-release">
-        <h2 id="pf-neon-release">Latest release</h2>
-        <article class="mk-audio-player" data-variant="compact" aria-labelledby="pf-neon-track">
-          <img class="mk-audio-player-cover" src="https://picsum.photos/id/974/300/300" alt="" />
-          <div class="mk-audio-player-body">
-            <span class="mk-audio-player-show">Rio Vega · Single</span>
-            <h3 class="mk-audio-player-title" id="pf-neon-track">Night Bus to Coyoacán</h3>
-            <span class="mk-audio-player-meta">14 sec preview · <time datetime="2026-10-02">2 Oct 2026</time></span>
+    </header>
+    <div class="pf-home" data-pf-view="home">
+      <section class="pf-hero" aria-labelledby="pf-neon-name">
+        <div>
+          <p class="pf-kicker" data-df-entrance="fade">Creative technologist · Mexico City / Berlin</p>
+          <h1 class="pf-name" id="pf-neon-name" data-df-entrance="blur">Rio Vega</h1>
+          <p class="pf-makes" data-df-entrance="up" style="--df-motion-delay: 200ms">
+            I build
+            <span class="typewriter" data-loop
+              ><span style="color: var(--chart-1)">generative visuals.</span
+              ><span style="color: var(--chart-2)">sound toys for the browser.</span
+              ><span style="color: var(--chart-3)">light for live shows.</span></span
+            >
+          </p>
+          <div class="flex flex-wrap gap-3" data-df-entrance="up" style="--df-motion-delay: 300ms">
+            <a class="btn pf-cta" data-size="lg" href="#/work" data-router-link>See the work</a>
+            <a class="btn" data-size="lg" data-variant="outline" href="mailto:rio@example.com">Book a show</a>
           </div>
-          <div class="mk-audio-player-controls">
-            <audio controls preload="none" src="../videos/demo-audio.mp3">Your browser does not support audio.</audio>
-          </div>
-        </article>
+        </div>
+        <div class="pf-portrait shape-circle frame-conic" data-df-entrance="zoom" style="--df-motion-delay: 150ms">
+          <img src="https://picsum.photos/id/660/700/700" alt="Rio Vega holding a sparkler" />
+        </div>
       </section>
-      <section class="pf-glass" aria-labelledby="pf-neon-skills">
-        <h2 id="pf-neon-skills">Toolbox</h2>
-        <div class="mk-skill-matrix">
-          <section class="mk-skill-matrix-group" aria-label="Tools">
-            <ul class="mk-skill-matrix-list">
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-neon-td">TouchDesigner</label>
-                <meter class="mk-skill-matrix-level" id="pf-neon-td" min="0" max="5" value="5">5 of 5</meter>
-              </li>
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-neon-glsl">GLSL</label>
-                <meter class="mk-skill-matrix-level" id="pf-neon-glsl" min="0" max="5" value="4">4 of 5</meter>
-              </li>
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-neon-able">Ableton Live</label>
-                <meter class="mk-skill-matrix-level" id="pf-neon-able" min="0" max="5" value="4">4 of 5</meter>
-              </li>
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-neon-dmx">DMX lighting</label>
-                <meter class="mk-skill-matrix-level" id="pf-neon-dmx" min="0" max="5" value="3">3 of 5</meter>
-              </li>
-            </ul>
+      <section id="pf-neon-work" data-pf-section="work" aria-labelledby="pf-neon-work-title">
+        <h2 id="pf-neon-work-title">Recent pieces</h2>
+        <ul class="mk-portfolio-grid" data-variant="strip">
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/halo" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1079/640/800" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Halo</strong>
+                <span class="mk-portfolio-grid-meta">Light installation · 2026</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/long-exposure" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1042/640/800" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Long Exposure</strong>
+                <span class="mk-portfolio-grid-meta">WebGL · 2025</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/fiesta-engine" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/959/640/800" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Fiesta Engine</strong>
+                <span class="mk-portfolio-grid-meta">Live visuals · 2025</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/aurora-synth" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1022/640/800" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Aurora Synth</strong>
+                <span class="mk-portfolio-grid-meta">Web Audio · 2024</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </section>
+      <div class="pf-two">
+        <section class="pf-glass" aria-labelledby="pf-neon-release">
+          <h2 id="pf-neon-release">Latest release</h2>
+          <article class="mk-audio-player" data-variant="compact" aria-labelledby="pf-neon-track">
+            <img class="mk-audio-player-cover" src="https://picsum.photos/id/974/300/300" alt="" />
+            <div class="mk-audio-player-body">
+              <span class="mk-audio-player-show">Rio Vega · Single</span>
+              <h3 class="mk-audio-player-title" id="pf-neon-track">Night Bus to Coyoacán</h3>
+              <span class="mk-audio-player-meta">14 sec preview · <time datetime="2026-10-02">2 Oct 2026</time></span>
+            </div>
+            <div class="mk-audio-player-controls">
+              <audio controls preload="none" src="../videos/demo-audio.mp3">Your browser does not support audio.</audio>
+            </div>
+          </article>
+        </section>
+        <section class="pf-glass" aria-labelledby="pf-neon-skills">
+          <h2 id="pf-neon-skills">Toolbox</h2>
+          <div class="mk-skill-matrix">
+            <section class="mk-skill-matrix-group" aria-label="Tools">
+              <ul class="mk-skill-matrix-list">
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-neon-td">TouchDesigner</label>
+                  <meter class="mk-skill-matrix-level" id="pf-neon-td" min="0" max="5" value="5">5 of 5</meter>
+                </li>
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-neon-glsl">GLSL</label>
+                  <meter class="mk-skill-matrix-level" id="pf-neon-glsl" min="0" max="5" value="4">4 of 5</meter>
+                </li>
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-neon-able">Ableton Live</label>
+                  <meter class="mk-skill-matrix-level" id="pf-neon-able" min="0" max="5" value="4">4 of 5</meter>
+                </li>
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-neon-dmx">DMX lighting</label>
+                  <meter class="mk-skill-matrix-level" id="pf-neon-dmx" min="0" max="5" value="3">3 of 5</meter>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </section>
+      </div>
+      <section id="pf-neon-live" data-pf-section="live" class="mk-stats" aria-label="Live">
+        <div class="mk-stats-band">
+          <div class="mk-stat"><span class="mk-stat-value">86</span><span class="mk-stat-label">live shows</span></div>
+          <div class="mk-stat"><span class="mk-stat-value">14</span><span class="mk-stat-label">countries</span></div>
+          <div class="mk-stat"
+            ><span class="mk-stat-value">9</span><span class="mk-stat-label">installations</span></div
+          >
+          <div class="mk-stat"><span class="mk-stat-value">1</span><span class="mk-stat-label">fog machine</span></div>
+        </div>
+      </section>
+      <aside
+        id="pf-neon-contact"
+        data-pf-section="contact"
+        class="mk-availability"
+        data-variant="spotlight"
+        aria-labelledby="pf-neon-hire"
+      >
+        <p class="mk-availability-status"
+          ><span class="indicator-dot" data-variant="success" data-animate="ping" aria-hidden="true"></span> Touring
+          spring 2027</p
+        >
+        <h2 class="mk-availability-title" id="pf-neon-hire">Your stage needs more light</h2>
+        <div class="mk-availability-actions">
+          <a class="btn" data-size="lg" href="mailto:rio@example.com">rio@example.com</a>
+        </div>
+      </aside>
+    </div>
+    <article class="pf-case" data-pf-view="work" aria-labelledby="pf-neon-case-title" hidden>
+      <p class="pf-case-back">
+        <a href="#/work" data-router-link><i data-lucide="arrow-left"></i> All pieces</a>
+        <span><span data-case="no">01</span> / 04</span>
+      </p>
+      <header class="pf-case-head">
+        <p class="pf-kicker"><span data-case="kind">Light installation</span> · <span data-case="year">2026</span></p>
+        <h1 class="pf-case-title" id="pf-neon-case-title" data-case="title">Halo</h1>
+        <p class="pf-case-lede" data-case="summary"
+          >A ring of 240 light bars that breathes with the crowd below it - the louder the square, the faster it
+          turns.</p
+        >
+      </header>
+      <img
+        class="pf-case-cover"
+        data-case-img="0"
+        data-w="1600"
+        data-h="900"
+        src="https://picsum.photos/id/1079/1600/900"
+        alt="A ring of sparks from light painting at night"
+      />
+      <div class="pf-case-grid">
+        <dl class="pf-glass pf-case-facts">
+          <dt>Client</dt>
+          <dd data-case="client">Festival Luz Norte, Monterrey</dd>
+          <dt>Role</dt>
+          <dd data-case="role">Concept, light design, code</dd>
+          <dt>Tools</dt>
+          <dd data-case="tools">TouchDesigner, DMX, 240 LED bars</dd>
+        </dl>
+        <div class="pf-case-text">
+          <section aria-labelledby="pf-neon-brief">
+            <h2 id="pf-neon-brief">The brief</h2>
+            <p data-case="brief"
+              >The festival wanted one piece for its main square that people would walk towards from three streets away
+              - and that would not look like a stage when no band was playing.</p
+            >
+          </section>
+          <section aria-labelledby="pf-neon-build">
+            <h2 id="pf-neon-build">The build</h2>
+            <p data-case="work"
+              >Eight microphones around the square feed a TouchDesigner patch that turns the noise of the crowd into
+              speed, colour and breath. The ring hangs twelve metres up on two cranes; every bar is addressed on its
+              own, so a wave can run once around it in exactly one bar of the music.</p
+            >
+          </section>
+          <section aria-labelledby="pf-neon-result">
+            <h2 id="pf-neon-result">What happened</h2>
+            <p data-case="result"
+              >Ninety thousand visitors over four nights, and a square that kept filling after the last concert. The
+              festival bought the ring and brings it back every year.</p
+            >
           </section>
         </div>
-      </section>
-    </div>
-    <section id="pf-neon-live" class="mk-stats" aria-label="Live">
-      <div class="mk-stats-band">
-        <div class="mk-stat"><span class="mk-stat-value">86</span><span class="mk-stat-label">live shows</span></div>
-        <div class="mk-stat"><span class="mk-stat-value">14</span><span class="mk-stat-label">countries</span></div>
-        <div class="mk-stat"><span class="mk-stat-value">9</span><span class="mk-stat-label">installations</span></div>
-        <div class="mk-stat"><span class="mk-stat-value">1</span><span class="mk-stat-label">fog machine</span></div>
       </div>
-    </section>
-    <aside id="pf-neon-contact" class="mk-availability" data-variant="spotlight" aria-labelledby="pf-neon-hire">
-      <p class="mk-availability-status"
-        ><span class="indicator-dot" data-variant="success" data-animate="ping" aria-hidden="true"></span> Touring
-        spring 2027</p
-      >
-      <h2 class="mk-availability-title" id="pf-neon-hire">Your stage needs more light</h2>
-      <div class="mk-availability-actions">
-        <a class="btn" data-size="lg" href="mailto:rio@example.com">rio@example.com</a>
+      <div class="pf-case-pair">
+        <img
+          data-case-img="1"
+          data-w="900"
+          data-h="700"
+          src="https://picsum.photos/id/117/900/700"
+          alt="Raised hands in front of a lit stage in a dark hall"
+        />
+        <img
+          data-case-img="2"
+          data-w="900"
+          data-h="700"
+          src="https://picsum.photos/id/195/900/700"
+          alt="An alley strung with lights at night"
+        />
       </div>
-    </aside>
+      <nav class="pf-case-pager" aria-label="More pieces">
+        <a class="pf-glass" href="#/work/aurora-synth" data-router-link data-case-link="prev"
+          ><small><i data-lucide="arrow-left"></i> Previous</small
+          ><strong data-case-title="prev">Aurora Synth</strong></a
+        >
+        <a class="pf-glass" href="#/work/long-exposure" data-router-link data-case-link="next"
+          ><small>Next <i data-lucide="arrow-right"></i></small><strong data-case-title="next">Long Exposure</strong></a
+        >
+      </nav>
+    </article>
+    <footer class="mk-footer pf-glass">
+      <div class="mk-footer-inner">
+        <nav class="mk-footer-nav" aria-label="Footer">
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Pieces</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/work/halo" data-router-link>Halo</a></li>
+              <li><a href="#/work/long-exposure" data-router-link>Long Exposure</a></li>
+              <li><a href="#/work/fiesta-engine" data-router-link>Fiesta Engine</a></li>
+              <li><a href="#/work/aurora-synth" data-router-link>Aurora Synth</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Site</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/work" data-router-link>Recent pieces</a></li>
+              <li><a href="#/live" data-router-link>Live in numbers</a></li>
+              <li><a href="#/contact" data-router-link>Book a show</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Listen &amp; watch</h3>
+            <ul class="mk-footer-list">
+              <li><a href="https://soundcloud.com/" target="_blank" rel="noopener">SoundCloud</a></li>
+              <li><a href="https://vimeo.com/" target="_blank" rel="noopener">Vimeo</a></li>
+              <li><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Bookings</h3>
+            <ul class="mk-footer-list">
+              <li><a href="mailto:rio@example.com">rio@example.com</a></li>
+            </ul>
+            <p class="pf-foot-note">Mexico City until March, Berlin from April. Rider and stage plan on request.</p>
+          </div>
+        </nav>
+        <hr class="separator mk-footer-rule" />
+        <div class="mk-footer-bottom">
+          <a class="mk-footer-brand" href="#/" data-router-link
+            ><span class="pf-brand-dot" aria-hidden="true"></span><span class="mk-footer-brand-name">rio/vega</span></a
+          >
+          <div class="mk-footer-meta">
+            <p class="mk-footer-copy">© 2026 Rio Vega · Light, sound and code</p>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
+  <!-- the pieces the routes name, in order -->
+  <script type="application/json" id="pf-neon-pieces">
+    {
+      "halo": {
+        "title": "Halo",
+        "kind": "Light installation",
+        "year": "2026",
+        "client": "Festival Luz Norte, Monterrey",
+        "role": "Concept, light design, code",
+        "tools": "TouchDesigner, DMX, 240 LED bars",
+        "summary": "A ring of 240 light bars that breathes with the crowd below it - the louder the square, the faster it turns.",
+        "brief": "The festival wanted one piece for its main square that people would walk towards from three streets away - and that would not look like a stage when no band was playing.",
+        "work": "Eight microphones around the square feed a TouchDesigner patch that turns the noise of the crowd into speed, colour and breath. The ring hangs twelve metres up on two cranes; every bar is addressed on its own, so a wave can run once around it in exactly one bar of the music.",
+        "result": "Ninety thousand visitors over four nights, and a square that kept filling after the last concert. The festival bought the ring and brings it back every year.",
+        "images": [
+          [1079, "A ring of sparks from light painting at night"],
+          [117, "Raised hands in front of a lit stage in a dark hall"],
+          [195, "An alley strung with lights at night"]
+        ]
+      },
+      "long-exposure": {
+        "title": "Long Exposure",
+        "kind": "WebGL",
+        "year": "2025",
+        "client": "Self-initiated, online",
+        "role": "Code, sound",
+        "tools": "GLSL, Web Audio, a phone's gyroscope",
+        "summary": "A night sky in the browser that you paint by holding still - every second you wait leaves a longer trail of stars.",
+        "brief": "I wanted the feeling of a long-exposure photograph without the tripod: a piece that rewards patience on a device built for scrolling.",
+        "work": "The sky is a single fragment shader that accumulates light into a feedback texture. Moving the phone smears the trails; holding it still lets them grow into circles around the pole star. A drone in Web Audio rises as the picture fills.",
+        "result": "Shared from a single post to 400,000 visits in a month, picked as a site of the day by two design galleries, and the average visit lasted four minutes - on a page with one button.",
+        "images": [
+          [1042, "Star trails circling over a silhouette"],
+          [974, "The Milky Way over a lone figure on a hill"],
+          [249, "A suspension bridge over a river at night, lit in purple"]
+        ]
+      },
+      "fiesta-engine": {
+        "title": "Fiesta Engine",
+        "kind": "Live visuals",
+        "year": "2025",
+        "client": "Club Marea tour, 14 cities",
+        "role": "VJ, software",
+        "tools": "TouchDesigner, Ableton Link, MIDI",
+        "summary": "Visuals that play along - a rig that follows the band's tempo and lets the drummer fire the fireworks.",
+        "brief": "A twelve-piece cumbia band wanted visuals that felt like a thirteenth player: no pre-rendered loops, nothing that drifts out of time when the band speeds up.",
+        "work": "The rig listens to the band's clock over Ableton Link, so every cut lands on the beat even when the tempo moves. Pads on the drum kit trigger bursts of particles, the bass player's pedal changes the palette, and I play the rest live from the side of the stage.",
+        "result": "Fourteen cities, forty shows, not one lost sync. The band now plays its records with the same rig at home, and two other bands rent it between tours.",
+        "images": [
+          [959, "Fireworks bursting in many colours"],
+          [158, "Stage lights fanning out over a concert crowd"],
+          [274, "A square of lit billboards at night"]
+        ]
+      },
+      "aurora-synth": {
+        "title": "Aurora Synth",
+        "kind": "Web Audio",
+        "year": "2024",
+        "client": "Self-initiated, open source",
+        "role": "Code, sound design",
+        "tools": "Web Audio, WebGL, MIDI",
+        "summary": "A synthesizer you play by drawing northern lights - the curtain's height is the pitch, its colour the filter.",
+        "brief": "Most browser synths look like hardware. I wanted one that a child could play in ten seconds and a sound designer would still keep open for an hour.",
+        "work": "Each stroke you draw becomes a curtain of light and a voice of a wavetable synth. The height of the curtain sets the pitch, its colour the filter cutoff, its sway the vibrato. A MIDI keyboard plays it too; the lights follow the keys.",
+        "result": "Used in two school music programmes and a museum installation. The code is open, and the community has added thirty wavetables and a looper.",
+        "images": [
+          [1022, "Green northern lights over a pine tree"],
+          [304, "A hand on the faders of a mixing desk"],
+          [145, "The headstock and tuning pegs of a guitar"]
+        ]
+      }
+    }
+  </script>
 </div>
 <script type="module">
   // df$ comes with the component bundle - a full-screen page loads it after this module
@@ -478,6 +934,92 @@
     });
     new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     syncMode();
+  });
+</script>
+<script type="module">
+  // routing: defuss-dom-router owns the address - the home page, its sections and a page per piece
+  import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
+
+  addEventListener('DOMContentLoaded', async () => {
+    const ROOT = '#pf-neon';
+    const site = df$(ROOT).get(0);
+    // each kind of page is a view filled from its data block, at #/<kind>/<slug>
+    const PAGES = { work: JSON.parse(df$('#pf-neon-pieces').text()) };
+    const SECTIONS = ['work', 'live', 'contact'];
+    const routes = [
+      { id: 'home', path: '/' },
+      { id: 'page', path: '/:kind/:slug' },
+      { id: 'section', path: '/:section' },
+      { id: 'missing', path: '*' },
+    ];
+    // a page from the data block: its texts, its pictures, the pages before and after it
+    const fill = (kind, slug) => {
+      const items = PAGES[kind];
+      const order = Object.keys(items);
+      const item = items[slug];
+      const at = order.indexOf(slug);
+      const near = { prev: order[(at + order.length - 1) % order.length], next: order[(at + 1) % order.length] };
+      const view = df$(ROOT + ' [data-pf-view="' + kind + '"]');
+      view.find('[data-case]').each((_i, el) => {
+        df$(el).text(el.dataset.case === 'no' ? String(at + 1).padStart(2, '0') : item[el.dataset.case]);
+      });
+      view.find('[data-case-img]').each((_i, img) => {
+        const [id, alt] = item.images[Number(img.dataset.caseImg)];
+        df$(img)
+          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('alt', alt);
+      });
+      for (const [rel, to] of Object.entries(near)) {
+        view.find('[data-case-link="' + rel + '"]').attr('href', '#/' + kind + '/' + to);
+        view.find('[data-case-title="' + rel + '"]').text(items[to].title);
+      }
+    };
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let shown = null;
+    let last = null;
+    // one view shown, the header marks where the reader is; a section route scrolls there, a new page opens at its top
+    const show = (to) => {
+      const { kind, slug, section } = to.params;
+      const page = to.routeId === 'page' && Object.hasOwn(PAGES, kind) && Object.hasOwn(PAGES[kind], slug);
+      const at = to.routeId === 'section' && SECTIONS.includes(section) ? section : null;
+      const name = page ? kind : 'home';
+      if (page) fill(kind, slug);
+      df$(ROOT + ' [data-pf-view]').each((_i, view) => {
+        view.hidden = view.dataset.pfView !== name;
+      });
+      const here = page ? '#/' + kind : at ? '#/' + at : null;
+      df$(ROOT + ' .mk-header-nav a').each((_i, link) => {
+        df$(link).attr('aria-current', link.getAttribute('href') === here ? 'page' : null);
+      });
+      // the page opens where its address says - at once, once its pictures have laid it out; a click glides there
+      const target = at ? df$(ROOT + ' [data-pf-section="' + at + '"]').get(0) : shown ? site : null;
+      const behavior = shown === name && !still ? 'smooth' : 'instant';
+      const go = () => target?.scrollIntoView({ behavior, block: 'start' });
+      if (!shown && document.readyState !== 'complete') addEventListener('load', go, { once: true });
+      else go();
+      shown = name;
+      last = to;
+    };
+    // a link to where the reader already is leaves the address as it is - it still scrolls there
+    df$(site).on('click', (event) => {
+      const link = event.target.closest('a[data-router-link]');
+      if (link && last && link.getAttribute('href') === (location.hash || '#/')) show(last);
+    });
+    // the page scrolls itself (to a section) - the router's own scroll would stop that glide
+    const router = createRouter({
+      mode: 'hash',
+      scroll: 'manual',
+      routes,
+      prepare: ({ to }) => ({ commit: () => show(to) }),
+    });
+    router.attachLinks(site);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
   });
 </script>
 <script type="module" src="../../components/all.js"></script>

@@ -99,27 +99,58 @@
     max-width: 72rem;
     margin-inline: auto;
   }
-  #sc-records .lt-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
+  #sc-records [hidden] {
+    display: none !important;
   }
-  #sc-records .lt-brand {
-    margin: 0;
+  /* the Site Header: a small record and the name in Righteous, the sections - a price sticker under the one you
+     point at -, the look and the mode */
+  #sc-records .lt-bar {
+    background: none;
+    color: inherit;
+  }
+  #sc-records .mk-header-inner {
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    max-width: none;
+    min-height: 4.5rem;
+    padding: 0;
+  }
+  #sc-records :is(.mk-header-brand, .mk-footer-brand) {
+    gap: 0.55rem;
+    color: inherit;
+  }
+  #sc-records .lt-logo {
+    flex: none;
+    width: 1.6rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--background) 0 8%, var(--lt-label) 9% 34%, oklch(0.15 0.01 45) 35%);
+  }
+  #sc-records :is(.mk-header-name, .mk-footer-brand-name) {
+    color: inherit;
     font:
       400 1.6rem/1 'Righteous',
       sans-serif;
   }
-  #sc-records .lt-bar nav {
+  #sc-records .mk-header-nav {
     display: flex;
-    gap: 1.25rem;
     margin-inline-start: auto;
-    font-weight: 500;
   }
-  #sc-records .lt-bar nav a {
+  #sc-records .nav-menu-list {
+    flex-wrap: wrap;
+  }
+  #sc-records .nav-menu-link {
     color: inherit;
-    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  #sc-records .nav-menu-link:is(:hover, :focus-visible) {
+    background: var(--lt-sticker);
+    color: oklch(0.27 0.05 45);
+  }
+  #sc-records .mk-header-actions {
+    gap: 0.5rem;
   }
   /* the release: the record over moving light, the tracklist beside it */
   #sc-records .lt-release {
@@ -323,19 +354,148 @@
     font-weight: 400;
     font-size: 1.6rem;
   }
-  #sc-records .lt-foot {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-block-start: 1.5rem;
-    border-block-start: 1px solid var(--border);
+  /* the Site Footer: the shop by the fish market, the hours, the records, the post and the legal notes */
+  #sc-records .mk-footer {
+    background: none;
+    color: inherit;
+  }
+  #sc-records .mk-footer-inner {
+    max-width: none;
+    padding: 2rem 0 0;
+    border-block-start: 2px solid var(--foreground);
+  }
+  #sc-records .mk-footer-heading {
+    color: inherit;
+    font:
+      600 0.75rem/1.3 'Overpass Mono',
+      monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #sc-records .mk-footer address {
+    font-style: normal;
+    line-height: 1.5;
+  }
+  #sc-records .lt-note {
+    margin: 0;
     color: var(--muted-foreground);
     font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  #sc-records .lt-open {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 1rem;
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+  #sc-records .lt-open dt {
+    font-family: 'Overpass Mono', monospace;
+    font-size: 0.875rem;
+  }
+  #sc-records .lt-open dd {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  #sc-records .mk-footer-list :is(a, button) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  #sc-records .mk-footer-list :is(a, button):is(:hover, :focus-visible) {
+    text-decoration: underline;
+    text-decoration-color: var(--primary);
+    text-decoration-thickness: 0.15em;
+    text-underline-offset: 0.25em;
+  }
+  #sc-records .mk-footer-rule {
+    margin: 0;
+    background: var(--border);
+  }
+  #sc-records .mk-footer-copy {
+    color: var(--muted-foreground);
+  }
+  /* the dialogs: the pre-order and the legal notes, on the look's card */
+  #sc-records .sc-dialog {
+    border: 2px solid var(--foreground);
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: 0.4rem 0.4rem 0 var(--primary);
+  }
+  #sc-records .sc-dialog .dialog-title {
+    font:
+      400 1.6rem/1.1 'Righteous',
+      sans-serif;
+  }
+  #sc-records .sc-dialog .dialog-description {
+    color: var(--muted-foreground);
+  }
+  #sc-records :is(.sc-form, .sc-done) {
+    display: grid;
+    gap: 1rem;
+  }
+  #sc-records .sc-row {
+    display: grid;
+    gap: 0.4rem;
+  }
+  #sc-records .sc-choice {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  #sc-records .sc-choice legend {
+    margin-block-end: 0.5rem;
+  }
+  #sc-records .sc-choice label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+  #sc-records .sc-choice label:has(:checked) {
+    border-color: var(--primary);
+    box-shadow: inset 0 0 0 1px var(--primary);
+  }
+  #sc-records .sc-choice input {
+    accent-color: var(--primary);
+  }
+  #sc-records .sc-dialog:not([data-sent]) .sc-done,
+  #sc-records .sc-dialog[data-sent] .sc-form {
+    display: none;
+  }
+  #sc-records .sc-legal {
+    display: grid;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+  #sc-records .sc-legal :is(p, address) {
+    margin: 0;
+    font-style: normal;
+  }
+  #sc-records .sc-legal a {
+    color: inherit;
   }
   @media (max-width: 48rem) {
     #sc-records :is(.lt-release, .lt-booth) {
       grid-template-columns: 1fr;
+    }
+    #sc-records .mk-header-nav {
+      order: 3;
+      width: 100%;
+      margin-inline-start: -0.75rem;
+    }
+    #sc-records .mk-header-actions {
+      margin-inline-start: auto;
     }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -439,24 +599,33 @@
 </style>
 <div id="sc-records" data-look="tape">
   <div class="lt-page">
-    <div class="lt-bar">
-      <p class="lt-brand">Lowtide</p>
-      <nav aria-label="Site">
-        <a href="#lt-release">New release</a>
-        <a href="#lt-crate">Arrivals</a>
-        <a href="#lt-booth">Booth</a>
-      </nav>
-      <select class="select" data-size="sm" data-site-look aria-label="Look" style="width: auto">
-        <option value="tape">Tape</option>
-        <option value="vapor">Vapor</option>
-        <option value="mono">Mono</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input type="checkbox" data-site-mode aria-label="Dark mode" />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
-    </div>
+    <header class="mk-header lt-bar">
+      <div class="mk-header-inner">
+        <a class="mk-header-brand" href="#sc-records"
+          ><span class="lt-logo" aria-hidden="true"></span><span class="mk-header-name">Lowtide</span></a
+        >
+        <nav class="mk-header-nav" aria-label="Site">
+          <ul class="nav-menu-list">
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#lt-release">New release</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#lt-crate">Arrivals</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#lt-booth">Booth</a></li>
+            <li class="nav-menu-item"><a class="nav-menu-link" href="#lt-shop">The shop</a></li>
+          </ul>
+        </nav>
+        <div class="mk-header-actions">
+          <select class="select" data-size="sm" data-site-look aria-label="Look" style="width: auto">
+            <option value="tape">Tape</option>
+            <option value="vapor">Vapor</option>
+            <option value="mono">Mono</option>
+          </select>
+          <label class="swap site-mode" data-variant="rotate" data-size="sm">
+            <input type="checkbox" data-site-mode aria-label="Dark mode" />
+            <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+            <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+          </label>
+        </div>
+      </div>
+    </header>
     <section id="lt-release" class="lt-release" aria-labelledby="lt-title">
       <div class="lt-stage">
         <div
@@ -482,7 +651,9 @@
           <li><b>B2</b><span>Low tide</span><time datetime="PT7M20S">7:20</time></li>
         </ol>
         <div class="lt-actions">
-          <a class="btn" data-size="lg" href="#lt-release">Pre-order · €24</a>
+          <button class="btn" data-size="lg" type="button" commandfor="lt-preorder" command="show-modal"
+            >Pre-order · €24</button
+          >
           <a class="btn" data-variant="outline" data-size="lg" href="#lt-booth">Listen in the booth</a>
         </div>
       </div>
@@ -526,11 +697,139 @@
       >
       <p style="font-family: 'Overpass Mono', monospace">Tue - Sat · 12:00 - 20:00</p>
     </section>
-    <footer class="lt-foot">
-      <span>Lowtide Records · Fischmarkt 4, Hamburg</span>
-      <span>We buy collections - bring them in, we listen first.</span>
+    <footer id="lt-shop" class="mk-footer">
+      <div class="mk-footer-inner">
+        <nav class="mk-footer-nav" aria-label="Footer">
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">The shop</h3>
+            <address>Lowtide Records<br />Fischmarkt 4<br />Hamburg</address>
+            <p class="lt-note">By the fish market, two minutes from the ferry pier.</p>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Open</h3>
+            <dl class="lt-open">
+              <dt>Tue - Sat</dt>
+              <dd>12:00 - 20:00</dd>
+              <dt>The booth</dt>
+              <dd>as long as the shop</dd>
+              <dt>Sun, Mon</dt>
+              <dd>closed - we dig</dd>
+            </dl>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Records</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#lt-release">Harbour Lights, LT-014</a></li>
+              <li><a href="#lt-crate">New in the crates</a></li>
+              <li><a href="#lt-booth">The listening booth</a></li>
+              <li
+                ><button type="button" commandfor="lt-preorder" command="show-modal"
+                  >Pre-order the new release</button
+                ></li
+              >
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Get in touch</h3>
+            <ul class="mk-footer-list">
+              <li><a href="mailto:crates@example.com">crates@example.com</a></li>
+              <li><a href="https://bandcamp.com/" target="_blank" rel="noopener">Bandcamp</a></li>
+              <li><button type="button" commandfor="lt-imprint" command="show-modal">Imprint</button></li>
+              <li><button type="button" commandfor="lt-privacy" command="show-modal">Privacy</button></li>
+            </ul>
+          </div>
+        </nav>
+        <hr class="separator mk-footer-rule" />
+        <div class="mk-footer-bottom">
+          <a class="mk-footer-brand" href="#sc-records"
+            ><span class="lt-logo" aria-hidden="true"></span><span class="mk-footer-brand-name">Lowtide</span></a
+          >
+          <div class="mk-footer-meta">
+            <p class="mk-footer-copy">We buy collections - bring them in, we listen first.</p>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
+  <dialog class="dialog sc-dialog" id="lt-preorder" aria-labelledby="lt-preorder-title">
+    <div class="dialog-content">
+      <form class="sc-form" data-sc-form>
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="lt-preorder-title">Pre-order Harbour Lights</h2>
+          <p class="dialog-description">Mira Halden · LT-014 · 12" LP, out 21 November. You pay when it arrives.</p>
+        </div>
+        <fieldset class="sc-choice">
+          <legend class="label">Pressing</legend>
+          <label><input type="radio" name="pressing" value="black" checked /> Black vinyl · €24</label>
+          <label><input type="radio" name="pressing" value="sea-glass" /> Sea-glass vinyl, 300 copies · €28</label>
+        </fieldset>
+        <fieldset class="sc-choice">
+          <legend class="label">Delivery</legend>
+          <label><input type="radio" name="delivery" value="collect" checked /> Collect at the shop</label>
+          <label><input type="radio" name="delivery" value="post" /> Post it to me · €6</label>
+        </fieldset>
+        <div class="sc-row">
+          <label class="label" for="lt-pre-name">Name</label>
+          <input class="input" id="lt-pre-name" name="name" autocomplete="name" required />
+        </div>
+        <div class="sc-row">
+          <label class="label" for="lt-pre-mail">Email</label>
+          <input class="input" id="lt-pre-mail" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div class="dialog-footer">
+          <button class="btn" data-variant="outline" type="button" commandfor="lt-preorder" command="close"
+            >Cancel</button
+          >
+          <button class="btn" type="submit">Put one aside</button>
+        </div>
+      </form>
+      <div class="sc-done" tabindex="-1">
+        <h2 class="dialog-title">One is put aside</h2>
+        <p class="dialog-description"
+          >We email the day the boxes arrive from the pressing plant. Collect yours from 21 November - or it goes in the
+          post that week.</p
+        >
+        <div class="dialog-footer">
+          <button class="btn" type="button" commandfor="lt-preorder" command="close">Close</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog sc-dialog" id="lt-imprint" aria-labelledby="lt-imprint-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="lt-imprint-title">Imprint</h2>
+        <p class="dialog-description">Who runs this site</p>
+      </div>
+      <div class="sc-legal">
+        <address>Lowtide Records, Ines Faber<br />Fischmarkt 4<br />Hamburg, Germany</address>
+        <p>Sole trader: Ines Faber<br />VAT ID: DE 000 000 000</p>
+        <p>Contact: <a href="mailto:crates@example.com">crates@example.com</a></p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" type="button" commandfor="lt-imprint" command="close">Close</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog sc-dialog" id="lt-privacy" aria-labelledby="lt-privacy-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="lt-privacy-title">Privacy</h2>
+        <p class="dialog-description">What we keep, and why</p>
+      </div>
+      <div class="sc-legal">
+        <p>This site sets no cookies and runs no trackers. The fonts come from Google Fonts, the photos from Picsum.</p>
+        <p
+          >For a pre-order we keep your name and email - and your address if we post the record - until it has reached
+          you. Then they go, except what the tax office asks us to keep.</p
+        >
+        <p>Questions or a request to delete: <a href="mailto:privacy@example.com">privacy@example.com</a></p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" type="button" commandfor="lt-privacy" command="close">Close</button>
+      </div>
+    </div>
+  </dialog>
 </div>
 <script type="module">
   // the look: one of the site's designs; the shader reads its token colors again on defuss-theme-change
@@ -545,6 +844,20 @@
     });
     new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     syncMode();
+
+    // the pre-order form: sending shows the confirmation (a demo - nothing leaves the page); closing resets it
+    df$('#sc-records [data-sc-form]').each((_i, form) => {
+      const dialog = df$(form).closest('dialog');
+      df$(form).on('submit', (event) => {
+        event.preventDefault();
+        dialog.attr('data-sent', '');
+        dialog.find('.sc-done').get(0).focus();
+      });
+      dialog.on('close', () => {
+        dialog.attr('data-sent', null);
+        form.reset();
+      });
+    });
 
     const root = df$('#sc-records').get(0);
     const look = df$('#sc-records [data-site-look]');

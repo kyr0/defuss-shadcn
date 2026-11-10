@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
+import { brotliCompressSync } from 'node:zlib';
 import type { Page } from 'playwright';
 
 /**
@@ -9,7 +10,8 @@ import type { Page } from 'playwright';
  * (module + its chunks, inside a worker) and the Visual Editor GrapesJS (its UMD build + stylesheet) the same
  * way, the scaffolds and Website templates import defuss-i18n and defuss-dom-router (their routing and
  * translation, the Translation and Client-side Routing guides), and the Geo Map d3-array, d3-geo, GeographicLib and
- * defuss-dson. The e2e files serve those builds
+ * defuss-dson, the Terminal xterm.js with its addons (modules + stylesheet), and the docs search worker ONNX Runtime
+ * Web's WASM, defuss-brotli's decoder and defuss-lid's CLD3 pack and core. The e2e files serve those builds
  * OFFLINE from the devDependencies (node_modules/<package>/<path>) - the
  * exact files the pinned URLs name - so a test never waits on the network
  * and a URL whose version is not the installed one answers 404 (the pin and
@@ -17,13 +19,43 @@ import type { Page } from 'playwright';
  */
 const MODULES = resolve(import.meta.dirname, '../../../node_modules/');
 /** the content types of the vendor files that are no script (a stylesheet, its fonts) */
-const TYPES: Record<string, string> = { '.css': 'text/css', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf', '.json': 'application/json' };
+const TYPES: Record<string, string> = {
+  '.css': 'text/css',
+  '.woff2': 'font/woff2',
+  '.woff': 'font/woff',
+  '.ttf': 'font/ttf',
+  '.json': 'application/json',
+  '.wasm': 'application/wasm',
+  '.gz': 'application/gzip',
+  '.cld3q': 'application/octet-stream',
+};
+
+/** a flag of flag-icons (the Language Switcher's pinned URL) drawn on the spot: two bands, the region's letters as the
+ *  colour - a test asks for the URL, not for the artwork */
+const FLAG_URL = /^https:\/\/cdn\.jsdelivr\.net\/npm\/flag-icons@7\.2\.3\/flags\/(4x3|1x1)\/([a-z-]+)\.svg$/;
+export async function offlineFlags(page: Page): Promise<string[]> {
+  const requests: string[] = [];
+  await page.context().route((u) => FLAG_URL.test(u.href), async (route) => {
+    const url = route.request().url();
+    requests.push(url);
+    const [, shape, region] = FLAG_URL.exec(url)!;
+    const hue = [...region].reduce((h, c) => h + c.charCodeAt(0) * 37, 0) % 360;
+    const [w, h] = shape === '1x1' ? [3, 3] : [4, 3];
+    await route.fulfill({
+      status: 200,
+      contentType: 'image/svg+xml',
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="hsl(${hue} 70% 45%)"/><rect width="${w}" height="1" fill="#fff"/></svg>`,
+    });
+  });
+  return requests;
+}
 
 export async function offlineJsdelivr(page: Page): Promise<string[]> {
-  const requests: string[] = [];
+  const requests: string[] = await offlineFlags(page);
   // only the packages this repo pins as devDependencies - other jsDelivr files (echarts) stay the page's own business.
   // On the context: the Compute Engine is imported inside a worker, which page routes do not see
-  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@)/.test(u.href), async (route) => {
+  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@|@xterm\/|onnxruntime-web@|defuss-brotli@|defuss-lid@)/.test(u.href), async (route) => {
     const url = route.request().url();
     requests.push(url);
     // @scope/name@version/path → node_modules/@scope/name/path
@@ -50,4 +82,26 @@ export async function waitEditorsSettled(page: Page, runClock?: (ms: number) => 
     await new Promise((r) => setTimeout(r, 250));
   }
   throw new Error('editors did not settle');
+}
+
+/** the model files a docs build downloaded (scripts/search-index.ts, defuss-vectorsearch's cacheDir) */
+const MODELS = resolve(import.meta.dirname, '../../../.cache/models/');
+const HF_URL = /^https:\/\/huggingface\.co\/([^/]+\/[^/]+)\/resolve\/([0-9a-f]+)\/(.+)\.br$/;
+/**
+ * The docs search's model OFFLINE: `https://huggingface.co/<id>/resolve/<revision>/<file>.br` answered with the file
+ * the docs build downloaded into .cache/models/ (the same pinned revision, SHA-256 checked when it arrived), Brotli
+ * compressed here as Hugging Face stores it. A file the cache lacks answers 404 - the build fetches the model only
+ * when it encodes, so an e2e run after a build with a cold cache still has it. Returns the request log.
+ */
+export async function offlineModels(page: Page): Promise<string[]> {
+  const requests: string[] = [];
+  await page.context().route((u) => HF_URL.test(u.href), async (route) => {
+    const url = route.request().url();
+    requests.push(url);
+    const [, id, revision, file] = HF_URL.exec(url)!;
+    const path = resolve(MODELS, id!, revision!, file!);
+    if (!existsSync(path)) return route.fulfill({ status: 404, body: `not in .cache/models - run a docs build with an empty .cache/search/` });
+    await route.fulfill({ status: 200, contentType: 'application/octet-stream', headers: { 'Access-Control-Allow-Origin': '*' }, body: brotliCompressSync(readFileSync(path)) });
+  });
+  return requests;
 }

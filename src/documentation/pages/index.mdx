@@ -9,7 +9,7 @@ slug: "index"
 fullTitle: "defuss-shadcn - Semantic HTML · Shadcn Tokens · Plain CSS"
 ---
 
-import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, ArchBody, StatsClaim, StatsCards, CssOnlyStat, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, DeckRail } from "../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, ExampleCode, SourceFiles, SourceNote, StatesSection, CodeBlock, Demo, DemoCode, ChangelogEntries, WhatsNewDialog, ArchBody, StatsClaim, StatsCards, CssOnlyStat, PageOverlay, DocText, DocLink, H2, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, Dim, CodeCard, TableCard, DeckRail } from "../lib/components/index";
 
 <DocPage meta={meta} mainStyle="flex: 0 1 44rem; min-width: 0; max-width: 44rem; padding: 3rem 3.5rem 8rem;" aside={<DeckRail slug="system-in-numbers" title="The System in Numbers - defuss-shadcn presented as a slide deck"><p class="deck-rail-eyebrow">Statistics</p><StatsCards /></DeckRail>}>
 
@@ -23,11 +23,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <div class="flex gap-3 mb-6 flex-wrap items-center">
   <a href="installation.html" class="btn" data-variant="default">Get Started</a>
+  <button class="btn" data-variant="outline" type="button" data-dialog-trigger="whats-new" aria-haspopup="dialog"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.375rem;"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>What's new<span class="badge whats-new-count" data-variant="default" data-whats-new-count hidden></span></button>
   <a href="vibe-coding.html#install-as-an-ai-agent-skill" class="btn" data-variant="secondary"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.375rem;"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>Install SKILL.md</a>
   <a href="https://github.com/kyr0/defuss-shadcn" target="_blank" rel="noopener" class="btn" data-variant="outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="margin-right:0.375rem;"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z" /></svg> GitHub </a>
   <a href="files/verified-agentic-engineering.pdf" target="_blank" rel="noopener" class="btn" data-variant="outline" title="Verified Agentic Engineering in Practice - the technical report on how this system was built, A4 PDF"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.375rem;"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>Paper (PDF)</a>
   <a href="https://github.com/kyr0/defuss-shadcn/archive/refs/heads/main.zip" class="btn" data-variant="dashed" download><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.375rem;"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Download ZIP</a>
 </div>
+
+<WhatsNewDialog />
 
 <p class="text-xs text-muted-foreground mb-8" style="max-width:36rem;">Every demo on this site runs on the shipped <code>all.css</code> / <code>all.js</code> from the jsDelivr CDN, pinned to this release (v0.9.13) - if a demo renders, the CDN install will also work for you.</p>
 
@@ -43,6 +46,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 <StatsCards />
 
 </div>
+
+<div class="tabs home-views" data-side="left" id="views">
+  <div class="tab-list" role="tablist" aria-label="Views">
+    <button class="tab-trigger" role="tab" aria-selected="true" aria-controls="view-features" id="tab-features"><i data-lucide="sparkles"></i> Features</button>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="view-scaffolds" id="tab-scaffolds" tabindex="-1"><i data-lucide="app-window"></i> Application Scaffolds</button>
+    <button class="tab-trigger" role="tab" aria-selected="false" aria-controls="view-websites" id="tab-websites" tabindex="-1"><i data-lucide="globe"></i> Website Templates</button>
+  </div>
+  <div class="tab-content" role="tabpanel" id="view-features" aria-labelledby="tab-features" tabindex="0">
 
 <div class="grid gap-4 mb-12" style="grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));">
   <div class="card">
@@ -65,14 +76,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
             <tr class="table-row"><th class="table-head">App</th><th class="table-head" style="text-align:right;">Bundle (gzip)</th></tr>
           </thead>
           <tbody>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-admin-dashboard.html" target="_blank" rel="noopener">Admin <span class="whitespace-nowrap">Dashboard<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">82.1</span> KiB</td></tr>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-messenger.html" target="_blank" rel="noopener"><span class="whitespace-nowrap">Messenger<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">62.0</span> KiB</td></tr>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-issue-tracker.html" target="_blank" rel="noopener">Issue <span class="whitespace-nowrap">Tracker<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">73.7</span> KiB</td></tr>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-notes.html" target="_blank" rel="noopener">Notes &amp; <span class="whitespace-nowrap">Docs<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">65.9</span> KiB</td></tr>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-status-page.html" target="_blank" rel="noopener">Status <span class="whitespace-nowrap">Page<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">64.4</span> KiB</td></tr>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-desktop.html" target="_blank" rel="noopener"><span class="whitespace-nowrap">Desktop<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">79.8</span> KiB</td></tr>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-document-editor.html" target="_blank" rel="noopener">Document <span class="whitespace-nowrap">Editor<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.document-editor.totalSizeGzMinified" data-stat-format="kib">69.6</span> KiB</td></tr>
-            <tr class="table-row"><td class="table-cell"><a class="link" href="app-knowledge-graph.html" target="_blank" rel="noopener">Knowledge <span class="whitespace-nowrap">Graph<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.knowledge-graph.totalSizeGzMinified" data-stat-format="kib">146.4</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-admin-dashboard.html" target="_blank" rel="noopener">Admin <span class="whitespace-nowrap">Dashboard<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">93.2</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-messenger.html" target="_blank" rel="noopener"><span class="whitespace-nowrap">Messenger<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">72.2</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-issue-tracker.html" target="_blank" rel="noopener">Issue <span class="whitespace-nowrap">Tracker<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">84.5</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-notes.html" target="_blank" rel="noopener">Notes &amp; <span class="whitespace-nowrap">Docs<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">76.3</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-status-page.html" target="_blank" rel="noopener">Status <span class="whitespace-nowrap">Page<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">77.4</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-desktop.html" target="_blank" rel="noopener"><span class="whitespace-nowrap">Desktop<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">97.6</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-document-editor.html" target="_blank" rel="noopener">Document <span class="whitespace-nowrap">Editor<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.document-editor.totalSizeGzMinified" data-stat-format="kib">79.7</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-knowledge-graph.html" target="_blank" rel="noopener">Knowledge <span class="whitespace-nowrap">Graph<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.knowledge-graph.totalSizeGzMinified" data-stat-format="kib">170.7</span> KiB</td></tr>
           </tbody>
         </table>
       </div>
@@ -91,7 +102,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         </div>
         <h3 class="card-title card-title-sm">Websites</h3>
       </div>
-      <p class="card-description card-desc-sm">Whole websites made of the components and the website blocks, each with a full-screen page: routed and translated templates in three looks, portfolio styles and showcase sites with their own palettes, typefaces and shaders.</p>
+      <p class="card-description card-desc-sm">Whole websites made of the components and the website blocks, each with a full-screen page: routed and translated templates in three looks, portfolio styles, showcase sites and eight industry sites with their own palettes, typefaces and shaders.</p>
     </div>
     <div class="card-footer">
       <a class="btn card-link" data-variant="link" data-size="sm" href="#websites">All websites →</a>
@@ -189,6 +200,84 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </div>
 </div>
 
+  </div>
+  <div class="tab-content" role="tabpanel" id="view-scaffolds" aria-labelledby="tab-scaffolds" tabindex="0" hidden>
+
+<h2 id="scaffolds" style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.5rem;">Application Scaffolds</h2>
+
+<p class="text-muted-foreground mt-0 mb-4" style="max-width:40rem;">Whole applications made only of the shipped components - each one opens full screen on a bundle of just the components its markup uses.</p>
+
+<div class="grid gap-3 mb-4" style="grid-template-columns:repeat(auto-fill,minmax(12.5rem,1fr))">
+  <a class="card" data-size="sm" href="app-admin-dashboard.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="layout-dashboard"></i></span>
+      <h4 class="card-title card-title-sm">Admin <span class="whitespace-nowrap">Dashboard<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Sidebar, command palette, KPIs with live charts, orders with bulk actions, customers and settings.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.admin-dashboard.totalSizeGzMinified" data-stat-format="kib">93.2</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-messenger.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="message-circle"></i></span>
+      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Messenger<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Chats with filters, voice notes, photos, replies and reactions, live sending with read receipts.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.messenger.totalSizeGzMinified" data-stat-format="kib">72.2</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-issue-tracker.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="square-kanban"></i></span>
+      <h4 class="card-title card-title-sm">Issue <span class="whitespace-nowrap">Tracker<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Issues by status as a list or a drag-and-drop board, issue pages with editable properties.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.issue-tracker.totalSizeGzMinified" data-stat-format="kib">84.5</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-notes.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="notebook-pen"></i></span>
+      <h4 class="card-title card-title-sm">Notes &amp; <span class="whitespace-nowrap">Docs<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">A page tree and a block editor with a slash menu, markdown shortcuts and drag to move.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.notes.totalSizeGzMinified" data-stat-format="kib">76.3</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-status-page.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="activity"></i></span>
+      <h4 class="card-title card-title-sm">Status <span class="whitespace-nowrap">Page<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">The overall status, incidents with their timeline, maintenance with a countdown, 90 days of uptime.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.status-page.totalSizeGzMinified" data-stat-format="kib">77.4</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-desktop.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="monitor"></i></span>
+      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Desktop<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Wallpaper and icons, windows to move, a taskbar with a start menu, quick settings and a clock.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.desktop.totalSizeGzMinified" data-stat-format="kib">97.6</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-document-editor.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="file-text"></i></span>
+      <h4 class="card-title card-title-sm">Document <span class="whitespace-nowrap">Editor<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Markdown documents in Editor.js with a formatting toolbar and a comment column of their own.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.document-editor.totalSizeGzMinified" data-stat-format="kib">79.7</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-knowledge-graph.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="waypoints"></i></span>
+      <h4 class="card-title card-title-sm">Knowledge <span class="whitespace-nowrap">Graph<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">A million nodes: semantic zoom, a tree three levels at a time, a search palette and pages to drill into.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.knowledge-graph.totalSizeGzMinified" data-stat-format="kib">170.7</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+</div>
+
+<p class="text-sm mt-0"><a class="link" href="application-scaffolds.html">All application scaffolds and how they are built →</a></p>
+
+  </div>
+  <div class="tab-content" role="tabpanel" id="view-websites" aria-labelledby="tab-websites" tabindex="0" hidden>
 
 <h2 id="websites" style="font-family:var(--font-display);font-size:1.5rem;font-weight:400;letter-spacing:-0.025em;margin:0 0 0.5rem;">Websites</h2>
 
@@ -196,7 +285,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <h3 id="websites-templates" style="font-size:1.0625rem;font-weight:600;margin:1.75rem 0 0.25rem;">Templates</h3>
 
-<p class="text-sm text-muted-foreground mt-0 mb-3">Routed (defuss-dom-router), in English and German (defuss-i18n), three looks each. <a class="link" href="website-landing-page.html">The website blocks →</a></p>
+<p class="text-sm text-muted-foreground mt-0 mb-3">Whole sites, routed (defuss-dom-router), in English and German (defuss-i18n), three looks each. <a class="link" href="website-landing-page.html">The website blocks →</a></p>
 
 <div class="grid gap-3 mb-4" style="grid-template-columns:repeat(auto-fill,minmax(12.5rem,1fr))">
   <a class="card" data-size="sm" href="full-website-landing-page.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
@@ -218,20 +307,6 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     <div class="card-header">
       <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Blog<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
       <p class="card-description">The front of a blog: categories, post previews and the archive. Journal, Night shift, Ink.</p>
-    </div>
-  </a>
-  <a class="card" data-size="sm" href="full-website-article.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
-    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.99 0.003 85) 0% 25%, oklch(0.2 0.012 260) 25% 50%, oklch(0.47 0.13 258) 50% 75%, oklch(0.95 0.025 258) 75% 100%)"></div>
-    <div class="card-header">
-      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Article<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
-      <p class="card-description">One long read: its header, the body, the author and what to read next. Longform, Blueprint, E-ink.</p>
-    </div>
-  </a>
-  <a class="card" data-size="sm" href="full-website-comments.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
-    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.99 0.002 260) 0% 25%, oklch(0.21 0.02 265) 25% 50%, oklch(0.5 0.19 272) 50% 75%, oklch(0.955 0.02 272) 75% 100%)"></div>
-    <div class="card-header">
-      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Comments<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
-      <p class="card-description">A discussion under a post: the count, the sort order, replies and the form. Thread, Late night, Paper.</p>
     </div>
   </a>
   <a class="card" data-size="sm" href="full-website-company.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
@@ -269,25 +344,11 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <p class="card-description">A store front and its checkout: collections, products, the cart and the order. Autumn, Monochrome, Coast.</p>
     </div>
   </a>
-  <a class="card" data-size="sm" href="full-website-account-states.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
-    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.99 0.002 280) 0% 25%, oklch(0.2 0.02 280) 25% 50%, oklch(0.47 0.2 285) 50% 75%, oklch(0.96 0.015 285) 75% 100%)"></div>
-    <div class="card-header">
-      <h4 class="card-title card-title-sm">Account &amp; <span class="whitespace-nowrap">States<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
-      <p class="card-description">Sign in, sign up and a password reset, and the page you land on after. Calm, Midnight, Paper.</p>
-    </div>
-  </a>
   <a class="card" data-size="sm" href="full-website-docs-help.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
     <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.995 0.002 250) 0% 25%, oklch(0.22 0.02 255) 25% 50%, oklch(0.52 0.19 258) 50% 75%, oklch(0.955 0.025 258) 75% 100%)"></div>
     <div class="card-header">
       <h4 class="card-title card-title-sm">Docs &amp; <span class="whitespace-nowrap">Help<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
       <p class="card-description">Product documentation: the navigation, the page, its code and the pager. Manual, Console, Field guide.</p>
-    </div>
-  </a>
-  <a class="card" data-size="sm" href="full-website-search-navigation.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
-    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.99 0.003 270) 0% 25%, oklch(0.21 0.02 270) 25% 50%, oklch(0.48 0.19 275) 50% 75%, oklch(0.955 0.018 275) 75% 100%)"></div>
-    <div class="card-header">
-      <h4 class="card-title card-title-sm">Search &amp; <span class="whitespace-nowrap">Navigation<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
-      <p class="card-description">Finding things: the search box, suggestions, filters, sorting and the results. Catalogue, Night owl, Highlighter.</p>
     </div>
   </a>
 </div>
@@ -402,6 +463,72 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <p class="card-description">Lowtide Records: a record turning on a moving light, a tracklist with run times, new arrivals pinned askew. Tape, Vapor, Mono.</p>
     </div>
   </a>
+</div>
+
+<h3 id="websites-industries" style="font-size:1.0625rem;font-weight:600;margin:1.75rem 0 0.25rem;">Industry sites</h3>
+
+<p class="text-sm text-muted-foreground mt-0 mb-3">Eight businesses, each with the task its visitors come for working - bookings, filters, calculators. <a class="link" href="website-industries.html">Industries →</a></p>
+
+<div class="grid gap-3 mb-4" style="grid-template-columns:repeat(auto-fill,minmax(12.5rem,1fr))">
+  <a class="card" data-size="sm" href="full-industry-restaurant.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.972 0.014 75) 0% 25%, oklch(0.52 0.15 38) 25% 50%, oklch(0.29 0.035 165) 50% 75%, oklch(0.25 0.03 40) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Restaurant<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Taula Llarga: a Catalan restaurant round one long table - a menu you filter by allergen, tonight on a slanted chalkboard, a booking form that knows the kitchen's hours. Terracotta, Candlelight, Terrace.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="full-industry-salon.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.975 0.012 75) 0% 25%, oklch(0.22 0.03 20) 25% 50%, oklch(0.5 0.13 25) 50% 75%, oklch(0.72 0.1 75) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm">Hair <span class="whitespace-nowrap">Salon<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Juniper &amp; Shear: prices that change with your hair length and the stylist's level, colour processing times, free slots per stylist, a balayage before and after. Salon, Neon, Botanical.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="full-industry-hotel.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.985 0.006 230) 0% 25%, oklch(0.24 0.045 250) 25% 50%, oklch(0.42 0.1 245) 50% 75%, oklch(0.55 0.19 28) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Hotel<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Hotel Ebbstein: fourteen rooms in a net loft on a Baltic quay - a search that prices every room for your nights with the city tax, rooms in m² with a photo viewer. Harbour, Linen, Night.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="full-industry-practice.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.99 0.003 200) 0% 25%, oklch(0.23 0.03 230) 25% 50%, oklch(0.47 0.09 215) 50% 75%, oklch(0.96 0.07 98) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Doctor<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Praxis am Kastanienhof: a family practice - open or closed now from its hours and holidays, appointments beside the emergency numbers, repeat prescriptions, step-free access. Clinic, Warm, High contrast.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="full-industry-spa.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.965 0.006 80) 0% 25%, oklch(0.36 0.03 55) 25% 50%, oklch(0.8 0.055 70) 50% 75%, oklch(0.68 0.06 208) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Spa<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Salt &amp; Cedar: a day spa in a 1912 bathhouse - treatments in minutes behind a filter, booking with a therapist, a voucher that fills in as you type, every room from 12 to 90 °C. Stone, Eucalyptus, Night bath.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="full-industry-law.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.975 0.008 95) 0% 25%, oklch(0.38 0.07 165) 25% 50%, oklch(0.47 0.15 25) 50% 75%, oklch(0.22 0.02 160) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm">Legal <span class="whitespace-nowrap">Advisor<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Lindholm &amp; Kaya: employment and tenancy law - a deadline check that counts the three weeks, each lawyer's profile, the fees stated plainly. Chambers, Modern, Paper.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="full-industry-agency.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.975 0.004 90) 0% 25%, oklch(0.17 0.01 270) 25% 50%, oklch(0.55 0.21 30) 50% 75%, oklch(0.93 0.12 98) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Agency<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Loud/Quiet: a brand and digital studio - cases that open with the number they moved, a 16-week project week by week, open jobs, a brief that estimates as you tick. Studio, Brutal, Pastel.</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="full-industry-ai.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;overflow:hidden;padding-block-start:0">
+    <div aria-hidden="true" style="height:0.75rem;background:linear-gradient(90deg, oklch(0.985 0.004 270) 0% 25%, oklch(0.19 0.02 275) 25% 50%, oklch(0.5 0.22 278) 50% 75%, oklch(0.68 0.14 210) 75% 100%)"></div>
+    <div class="card-header">
+      <h4 class="card-title card-title-sm">AI <span class="whitespace-nowrap">Startup<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Quillon: an API that turns meetings into decisions and action items - a replayed demo, p50 / p95 latency, a 400k-token context, prices per 1M tokens. Launch, Terminal, Research.</p>
+    </div>
+  </a>
+</div>
+
+  </div>
 </div>
 
 </DocPage>
