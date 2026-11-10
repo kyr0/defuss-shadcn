@@ -1986,8 +1986,17 @@ function canvasesOf(root) {
   return dfDollar(root).children('.diagram-canvas').toArray();
 }
 
+/** the state shown and the one asked for are the same: name + JSON-equal config */
+function sameShown(a, b): boolean {
+  if (!a || !b || a.name !== b.name) return false;
+  return JSON.stringify(a.config ?? {}) === JSON.stringify(b.config ?? {});
+}
+
 /** UI side of setState (AGENTS.md "State API"): the state's markup, then the playback clock */
 function triggerStateChange(root, state) {
+  // the state already shown: its markup and its wires stand - a redraw places every wire label again, one forced
+  // layout each (VERIFIED: the flagship deck reset its three diagrams on every slide change, ~600 ms a change)
+  const unchanged = sameShown(root._shown, state);
   applyMarkup(root, state);
   clearTimeout(root._timer);
   const { max } = stepPlan(root);
@@ -2004,7 +2013,7 @@ function triggerStateChange(root, state) {
   }
   const wasActive = root._shown?.name === 'active' ? (root._shown.config?.ref ?? null) : null;
   root._shown = state;
-  sync(root);
+  if (!unchanged) sync(root);
   const ref = state.name === 'active' ? (state.config?.ref ?? null) : null;
   const about = describe(root, ref);
   updateOutputs(root, about);
@@ -2343,6 +2352,8 @@ df$.diagram = {
     dfDollar(root).children('.diagram-delta').remove();
     dfDollar(root).html(markupOf(merged));
     setup(root);
+    // new markup: draw whatever state it shows
+    root._shown = null;
     if (root.api) triggerStateChange(root, root.store?.value ?? { name: 'default', config: {} });
     return root;
   },
