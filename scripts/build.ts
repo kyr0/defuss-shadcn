@@ -136,6 +136,9 @@ cpSync(SRC, DIST, {
   recursive: true,
   filter: (s) => {
     const rel = relative(SRC, s).replace(/\\/g, '/');
+    // Finder's folder metadata (gitignored) is no source - VERIFIED: a .DS_Store in src/components/graphs/ was copied
+    // into the section folder and 2b read it as a component folder (ENOTDIR, the v0.9.14 release, 2026-11-10)
+    if (rel === '.DS_Store' || rel.endsWith('/.DS_Store')) return false;
     if (rel === 'documentation' || rel.startsWith('documentation/')) return false;
     // the task skills' templates: scripts/lib/agent-skills.ts renders them into skills/, never dist/
     if (rel === 'skills' || rel.startsWith('skills/')) return false;
@@ -156,7 +159,8 @@ cpSync(SRC, DIST, {
   for (const section of sectionDirs) {
     const from = join(distComponents, section);
     if (!existsSync(from)) continue;
-    for (const name of readdirSync(from)) {
+    // component folders only: a stray file in a section folder is no component to move up
+    for (const name of readdirSync(from, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name)) {
       const target = join(distComponents, name);
       if (existsSync(target) && name !== section) throw new Error(`build: dist/components/${name} exists twice`);
       const dir = join(from, name);
