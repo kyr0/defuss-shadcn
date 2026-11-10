@@ -1,6 +1,6 @@
 import type { Props } from 'defuss';
 import { whatsNewReleases } from '../whats-new-data';
-import { loadChangelog } from './changelog-entries';
+import { loadChangelog, releaseKey } from './changelog-entries';
 import { WhatsNewPages } from './whats-new-pages';
 
 /**
@@ -11,7 +11,7 @@ import { WhatsNewPages } from './whats-new-pages';
  * VERIFIED: (documentation.e2e "What's new") the trigger opens it and its unseen pages carry data-unseen.
  */
 export function WhatsNewDialog(_props: Props) {
-  const changelog = new Map(loadChangelog().map((e) => [e.version, e]));
+  const changelog = new Map(loadChangelog().map((e) => [releaseKey(e.version), e]));
   return (
     <dialog id="whats-new" class="dialog whats-new" role="dialog" aria-modal="true" aria-labelledby="whats-new-title">
       <div class="dialog-content">

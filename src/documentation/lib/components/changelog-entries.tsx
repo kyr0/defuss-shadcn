@@ -33,6 +33,11 @@ export interface ChangelogEntry {
   commits: string[];
 }
 
+/** a changelog entry's version as the What's new record keys it: the changelog writes "v0.9.14", the record the
+ *  package version "0.9.14" (VERIFIED: the v0.9.14 release - its entry and the front page's dialog listed nothing
+ *  of each other until both matched) */
+export const releaseKey = (version: string): string => version.replace(/^v/, '');
+
 export function loadChangelog(): ChangelogEntry[] {
   const file = repoFile('src', 'documentation', 'data', 'changelog.json');
   return (JSON.parse(readFileSync(file, 'utf8')) as { entries: ChangelogEntry[] }).entries;
@@ -81,9 +86,9 @@ export function ChangelogEntries(_props: Props) {
               ),
             )}
           </div>
-          {releases.has(e.version) ? (
+          {releases.has(releaseKey(e.version)) ? (
             <>
-              <WhatsNewPages release={releases.get(e.version)!} />
+              <WhatsNewPages release={releases.get(releaseKey(e.version))!} />
               <h4 class="whats-new-kind changelog-commits-title">Commits</h4>
             </>
           ) : null}

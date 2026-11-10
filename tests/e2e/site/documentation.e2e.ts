@@ -611,6 +611,29 @@ try {
     }
   });
 
+  // VERIFIED: (the v0.9.14 release, its make build) the record keys a release by the package version ("0.9.14"), the
+  // changelog by its tag ("v0.9.14"): a released entry listed no pages and the dialog no commit messages until both
+  // matched - while a version is "unreleased" (every run between releases) the check above passes either way
+  await check("What's new, released: each released version the record keeps lists its pages under its changelog entry and its commit messages in the front page's dialog", async () => {
+    const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as { releases: { version: string }[] };
+    const log = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/changelog.json'), 'utf8')) as { entries: { version: string }[] };
+    const released = record.releases
+      .slice(0, 6) // the dialog shows the newest six (WHATS_NEW_RELEASES)
+      .map((r) => r.version)
+      .filter((v) => v !== 'unreleased' && log.entries.some((e) => e.version === `v${v}`));
+    const p = await browser.newPage();
+    try {
+      await p.goto(`${server.url}${PAGE}`);
+      for (const v of released)
+        assert.ok(await p.$(`dialog#whats-new [data-whats-new-release="${v}"] .whats-new-commits li`), `the dialog lists v${v}'s commit messages`);
+      const rel = await p.getAttribute('a.sidebar-link[data-page$="/changelog.html"]', 'data-page');
+      await p.goto(`${server.url}/dist/documentation/${rel}`);
+      for (const v of released) assert.ok(await p.$(`[data-whats-new-pages="${v}"]`), `v${v}'s changelog entry lists its pages`);
+    } finally {
+      await p.close();
+    }
+  });
+
   await check('no first-party page errors during the whole run', async () => {
     assert.deepEqual(pageErrors, [], `uncaught page errors: ${pageErrors.join(' | ')}`);
   });
