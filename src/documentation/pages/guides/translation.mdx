@@ -53,20 +53,21 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
   </div>
   <div class="card-footer flex items-center gap-2">
     <button class="btn" type="button" id="ws-reserve" data-i18n-target="reserve">Reserve a seat</button>
-    <select
-      class="select"
-      data-size="sm"
+    <div
+      class="language-switcher"
       id="ws-lang"
+      role="group"
       aria-label="Language"
       data-i18n-aria-label-en="Language"
       data-i18n-aria-label-de="Sprache"
       data-i18n-aria-label-ar="اللغة"
-      style="width: auto; margin-inline-start: auto"
-    >
-      <option value="en" lang="en">English</option>
-      <option value="de" lang="de">Deutsch</option>
-      <option value="ar" lang="ar">العربية</option>
-    </select>
+      data-languages="en de ar"
+      data-value="en"
+      data-size="sm"
+      data-align="end"
+      data-flag-shape="rounded"
+      style="margin-inline-start: auto"
+    ></div>
   </div>
   <template data-i18n-for="title" data-i18n-locale="en">Workshop: native web components</template>
   <template data-i18n-for="title" data-i18n-locale="de">Workshop: native Web Components</template>
@@ -123,7 +124,7 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
       price: locale.formatNumber(49, { style: 'currency', currency: 'EUR' }),
     }),
   });
-  df$('#ws-lang').on('change', (event) => locale.setLocale(event.currentTarget.value));
+  df$.shadcn.languageSwitcher.bind('ws-lang', locale); // a pick sets the locale
   df$('#ws-reserve').on('click', () => {
     seats = Math.max(0, seats - 1);
     card.refresh();
@@ -167,9 +168,9 @@ import { DocPage, PageHeader, DocText, DocLink, H2, CodeWindow, TableCard } from
 
 <H2>Choosing the language</H2>
 
-<p class="text-sm text-muted-foreground mb-5"> Start in the visitor's language: <code>resolveLocale</code> matches <code>navigator.languages</code> against the languages you ship, walking parent tags (<code>de-CH</code> finds <code>de</code>) without guessing siblings. A Select (or a Settings row, as in the Messenger and the Desktop) switches; <code>subscribe</code> keeps every switch in step and is the place to keep the choice - a <code>df$.store.persisted</code> store - or to set <code>&lt;html lang dir&gt;</code> when the app is the whole page. The demos on this site skip that first step: they open in English, the language of the documentation, and their select switches to German. </p>
+<p class="text-sm text-muted-foreground mb-5"> Start in the visitor's language: <code>resolveLocale</code> matches <code>navigator.languages</code> against the languages you ship, walking parent tags (<code>de-CH</code> finds <code>de</code>) without guessing siblings. A <DocLink href="language-switcher.html">Language Switcher</DocLink> switches - <code>df$.shadcn.languageSwitcher.bind(el, locale)</code> sets the locale on a pick and follows it when anything else sets it; <code>subscribe</code> keeps everything else in step and is the place to keep the choice - a <code>df$.store.persisted</code> store - or to set <code>&lt;html lang dir&gt;</code> when the app is the whole page. The demos on this site skip that first step: they open in English, the language of the documentation, and their Language Switcher offers German. </p>
 
-<CodeWindow lang="javascript" title="the visitor's language, a switch, a remembered choice" mb="2.5rem" code={"import { createI18n, resolveLocale } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';\n\nconst kept = df$.store.persisted('app:language', '');\nconst preferred = navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean);\nconst locale = createI18n({ locale: kept.value || preferred || 'en' });\n\nconst select = df$('[data-app-locale]');\nselect.val(locale.locale).on('change', () => locale.setLocale(select.val()));\nlocale.subscribe(({ locale: tag, direction }) => {\n  kept.set(tag);\n  select.val(tag);\n  document.documentElement.lang = tag;\n  document.documentElement.dir = direction;\n});"} />
+<CodeWindow lang="javascript" title="the visitor's language, a switch, a remembered choice" mb="2.5rem" code={"import { createI18n, resolveLocale } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';\n\nconst kept = df$.store.persisted('app:language', '');\nconst preferred = navigator.languages.map((tag) => resolveLocale(['en', 'de'], tag, [])).find(Boolean);\nconst locale = createI18n({ locale: kept.value || preferred || 'en' });\n\ndf$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale); // a pick sets it, setLocale moves it\nlocale.subscribe(({ locale: tag, direction }) => {\n  kept.set(tag);\n  document.documentElement.lang = tag;\n  document.documentElement.dir = direction;\n});"} />
 
 <H2>Loading languages on demand</H2>
 

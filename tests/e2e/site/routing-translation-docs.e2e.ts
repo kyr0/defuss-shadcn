@@ -32,15 +32,18 @@ async function card(page: Page, path: string, ready: string): Promise<Frame> {
   return frame;
 }
 const text = (f: Frame, sel: string) => f.$eval(sel, (e) => e.textContent!.replace(/\s+/g, ' ').trim());
-const pick = (f: Frame, sel: string, value: string) =>
-  f.evaluate(
+/** picks a language in the card's Language Switcher as a click does (language-change, which bind() turns into the locale) */
+const pick = async (f: Frame, sel: string, value: string) => {
+  await f.waitForFunction((sel) => document.querySelector(sel)?.hasAttribute('data-init'), sel);
+  const chosen = await f.evaluate(
     ({ sel, value }) => {
-      const s = document.querySelector(sel) as HTMLSelectElement;
-      s.value = value;
-      s.dispatchEvent(new Event('change', { bubbles: true }));
+      const el = document.querySelector(sel) as HTMLElement;
+      return (globalThis as any).df$.shadcn.languageSwitcher.choose(el, value) || el.getAttribute('data-value') === value;
     },
     { sel, value },
   );
+  if (!chosen) throw new Error(`${sel} does not offer ${value}`);
+};
 
 try {
   const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });

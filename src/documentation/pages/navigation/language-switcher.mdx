@@ -1,0 +1,420 @@
+---
+title: "Language Switcher"
+description: "Language Switcher component - picks the page's language from the ones it supports: a Combobox or a one-click Swap, the 107 CLD3 languages and their dialects named, flags in four shapes and four finishes, wired to defuss-i18n."
+slug: "language-switcher"
+---
+
+import { DocPage, PageHeader, SkillPanel, SkillField, SkillText, SkillRow, ApiPill, StatesSection, ApiSection, SourceFiles, SourceNote, CodeWindow, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="language-switcher" title="Language Switcher" component="language-switcher">
+  One element that names the languages a page supports; the runtime writes a <DocLink href="combobox.html">Combobox</DocLink>
+  or a <DocLink href="swap.html">Swap</DocLink> into it. It knows every language CLD3 detects - its name in itself, in
+  English and, through the browser, in any other language - and a flag for each, so a page lists only the tags it
+  translates. <code>bind()</code> ties it to <a class="link" href="https://i18n.defuss.org">defuss-i18n</a>.
+</PageHeader>
+
+<SkillPanel component="language-switcher">
+  <SkillField label="Native basis">
+<SkillText>A <code>{"<div class=\"language-switcher\">"}</code> with <code>data-languages</code> - the runtime writes a shipped Combobox (Popover API listbox) or a Swap (checkbox faces) into it; names from a preseeded table and <code>Intl.DisplayNames</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DisplayNames" title="a language's or a dialect's name in any other language"><code>Intl.DisplayNames</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale" title="language, script and region of a tag"><code>Intl.Locale</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="the Combobox's list"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="the list under the trigger, flipped at the edges"><code>CSS Anchor Positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang" title="every name marked up in its own language"><code>lang</code> / <code>dir</code></ApiPill>
+    <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" title="listbox popup, arrows, Enter, Escape"><code>WAI-ARIA Combobox</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.language-switcher</code>
+    <code>.language-switcher-flag</code>
+    <code>.language-switcher-label</code>
+    <code>.language-switcher-option</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>• <code>data-languages</code> - the supported tags (<code>en de</code>, dialects <code>de-AT</code>, scripts <code>zh-Latn</code>) · <code>data-value</code> - the one shown</SkillText>
+  <SkillText>• <code>data-variant="swap"</code> · <code>data-display="label|code|icon"</code> · <code>data-names="both|native|ui"</code></SkillText>
+  <SkillText>• <code>data-flag-shape="rect|rounded|square|squircle|circle"</code> · <code>data-flag-style="flat|ring|shadow|glossy"</code> · <code>data-flag-size="xs..xl"</code> · <code>data-flags="en:us"</code> · <code>data-flag="none"</code></SkillText>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• A flag stands for a region, not a language: name the dialect (<code>en-US</code>) or override it (<code>data-flags="en:us"</code>)</SkillText>
+  <SkillText dense>• The switcher never translates - <code>bind(el, i18n)</code> sets the defuss-i18n locale and follows it back</SkillText>
+  </SkillField>
+</SkillPanel>
+
+## A list to pick from
+
+```html example label="Eight languages" hint="Each language in itself, and in the language shown when that differs. Eight languages and more bring the search field." height="20"
+<div
+  class="language-switcher"
+  id="ls-basic"
+  data-languages="en de fr es it nl pl pt"
+  data-value="en"
+  data-state-demo
+></div>
+```
+
+```html example label="Icon only" hint="The flag alone - the accessible name still says the language: Language: English." height="20"
+<div class="language-switcher" id="ls-icon" data-languages="en de fr es" data-value="de" data-display="icon"></div>
+```
+
+```html example label="Code" hint="The code in place of the name, beside a round flag - the condensed form for footers and dense bars." height="20"
+<div
+  class="language-switcher"
+  id="ls-code"
+  data-languages="en de fr"
+  data-value="fr"
+  data-display="code"
+  data-flag-shape="circle"
+></div>
+```
+
+## Swap: one click per language
+
+```html example label="Swap" hint="Every click turns the Swap over to the next language - for two to four of them."
+<div class="language-switcher" id="ls-swap" data-languages="en de fr" data-value="en" data-variant="swap"></div>
+```
+
+```html example label="Swap, icon only" hint="Round flags that flip; the code under each flag shows while it loads."
+<div
+  class="language-switcher"
+  id="ls-swap-icon"
+  data-languages="en de es it"
+  data-value="en"
+  data-variant="swap"
+  data-display="icon"
+  data-flag-shape="circle"
+  data-flag-size="lg"
+></div>
+```
+
+## Dialects
+
+```html example label="Eleven dialects" hint="A tag with a region is a language of its own: its CLDR name and its region's flag." height="22"
+<div
+  class="language-switcher"
+  id="ls-dialects"
+  data-languages="en-GB en-US de-DE de-AT de-CH pt-PT pt-BR es-ES es-MX fr-FR fr-CA"
+  data-value="de-AT"
+></div>
+```
+
+```html example label="Names in the language shown" hint="data-names=&quot;ui&quot; names every language in the one shown - pick Deutsch and the list reads Englisch, Französisch, Japanisch." height="20"
+<div class="language-switcher" id="ls-ui" data-languages="en de fr ja ar" data-value="de" data-names="ui"></div>
+```
+
+```html example label="Every CLD3 language" hint="All 107 codes CLD3 detects, script variants included - type to search in any of the names." height="22"
+<div
+  class="language-switcher"
+  id="ls-all"
+  data-value="en"
+  data-languages="af am ar bg bg-Latn bn bs ca ceb co cs cy da de el el-Latn en eo es et eu fa fi fil fr fy ga gd gl gu ha haw hi hi-Latn hmn hr ht hu hy id ig is it iw ja ja-Latn jv ka kk km kn ko ku ky la lb lo lt lv mg mi mk ml mn mr ms mt my ne nl no ny pa pl ps pt ro ru ru-Latn sd si sk sl sm sn so sq sr st su sv sw ta te tg th tr uk ur uz vi xh yi yo zh zh-Latn zu"
+></div>
+```
+
+## Flags: shapes, scales and finishes
+
+```html example label="Shapes and scales" hint="Five outlines, five heights - square, squircle and circle load the 1:1 drawings."
+<div class="flex flex-wrap items-center gap-4">
+  <div class="language-switcher" data-languages="de en" data-value="de" data-display="icon" data-flag-size="xs"></div>
+  <div
+    class="language-switcher"
+    data-languages="de en"
+    data-value="de"
+    data-display="icon"
+    data-flag-size="sm"
+    data-flag-shape="rounded"
+  ></div>
+  <div
+    class="language-switcher"
+    data-languages="de en"
+    data-value="de"
+    data-display="icon"
+    data-flag-shape="square"
+  ></div>
+  <div
+    class="language-switcher"
+    data-languages="de en"
+    data-value="de"
+    data-display="icon"
+    data-flag-size="lg"
+    data-flag-shape="squircle"
+  ></div>
+  <div
+    class="language-switcher"
+    data-languages="de en"
+    data-value="de"
+    data-display="icon"
+    data-flag-size="xl"
+    data-flag-shape="circle"
+  ></div>
+</div>
+```
+
+```html example label="Finishes, light and dark" hint="Flat, ring, shadow and glossy on the page's ground and on the dark palette - the ring takes the text color, flags dim a little in the dark."
+<div class="grid gap-3">
+  <div class="flex flex-wrap items-center gap-4 p-4 rounded-lg" style="border: 1px solid var(--border)">
+    <div class="language-switcher" data-languages="fr en" data-value="fr" data-flag-shape="rounded"></div>
+    <div class="language-switcher" data-languages="ja en" data-value="ja" data-flag-style="ring"></div>
+    <div
+      class="language-switcher"
+      data-languages="it en"
+      data-value="it"
+      data-flag-style="shadow"
+      data-flag-shape="squircle"
+    ></div>
+    <div
+      class="language-switcher"
+      data-languages="sv en"
+      data-value="sv"
+      data-flag-style="glossy"
+      data-flag-shape="circle"
+    ></div>
+  </div>
+  <div
+    class="dark flex flex-wrap items-center gap-4 p-4 rounded-lg"
+    style="background: var(--background); color: var(--foreground)"
+  >
+    <div class="language-switcher" data-languages="fr en" data-value="fr" data-flag-shape="rounded"></div>
+    <div class="language-switcher" data-languages="ja en" data-value="ja" data-flag-style="ring"></div>
+    <div
+      class="language-switcher"
+      data-languages="it en"
+      data-value="it"
+      data-flag-style="shadow"
+      data-flag-shape="squircle"
+    ></div>
+    <div
+      class="language-switcher"
+      data-languages="sv en"
+      data-value="sv"
+      data-flag-style="glossy"
+      data-flag-shape="circle"
+    ></div>
+  </div>
+</div>
+```
+
+## In a website header
+
+```html example label="Website header" hint="The full switcher at the end of the bar, its list opening toward the page; the compact header below keeps only the flag." height="24"
+<div class="grid gap-4">
+  <nav class="navbar" aria-label="Main">
+    <div class="navbar-start"><a class="navbar-brand" href="#">Northwind</a></div>
+    <div class="navbar-center">
+      <ul class="navbar-menu">
+        <li><a href="#" aria-current="page">Product</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Journal</a></li>
+      </ul>
+    </div>
+    <div class="navbar-end">
+      <div
+        class="language-switcher"
+        data-languages="en de fr es"
+        data-value="en"
+        data-align="end"
+        data-flag-shape="rounded"
+      ></div>
+    </div>
+  </nav>
+  <nav class="navbar" aria-label="Compact">
+    <div class="navbar-start"><a class="navbar-brand" href="#">Northwind</a></div>
+    <div class="navbar-end">
+      <div
+        class="language-switcher"
+        data-languages="en de fr es"
+        data-value="en"
+        data-align="end"
+        data-display="icon"
+        data-flag-shape="circle"
+        data-flag-style="ring"
+      ></div>
+    </div>
+  </nav>
+</div>
+```
+
+## Condensed in a footer
+
+```html example label="Footer" hint="Small and quiet: the code and a round flag, or the flag alone. The list opens upward when there is no room below." height="22"
+<footer class="grid gap-3 p-4 rounded-lg text-sm text-muted-foreground" style="border: 1px solid var(--border)">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <span>© 2026 Northwind Ltd.</span>
+    <div
+      class="language-switcher"
+      data-languages="en de fr es it"
+      data-value="en"
+      data-display="code"
+      data-size="xs"
+      data-flag-shape="circle"
+      data-flag-size="xs"
+    ></div>
+  </div>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <span>Imprint · Privacy</span>
+    <div
+      class="language-switcher"
+      data-languages="en de fr es it"
+      data-value="en"
+      data-display="icon"
+      data-size="xs"
+      data-flag-size="sm"
+      data-flag-shape="rounded"
+    ></div>
+  </div>
+</footer>
+```
+
+## In a toolbar
+
+```html example label="Toolbar" hint="Beside the editing tools: the code for an editor that writes several languages, or a one-click Swap with the flag alone." height="20"
+<div class="grid gap-3">
+  <div class="toolbar" role="toolbar" aria-label="Document">
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Undo"><i data-lucide="undo-2"></i></button>
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Redo"><i data-lucide="redo-2"></i></button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <div
+      class="language-switcher"
+      data-languages="en de fr"
+      data-value="de"
+      data-display="code"
+      data-flag-style="ring"
+    ></div>
+  </div>
+  <div class="toolbar" role="toolbar" aria-label="Preview">
+    <button class="btn" data-variant="ghost" data-size="icon" aria-label="Refresh"
+      ><i data-lucide="refresh-cw"></i
+    ></button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <div
+      class="language-switcher"
+      data-languages="en de fr"
+      data-value="en"
+      data-variant="swap"
+      data-display="icon"
+      data-flag-shape="circle"
+    ></div>
+  </div>
+</div>
+```
+
+## In a user menu
+
+```html example label="User menu" hint="data-variant='menu': the languages as radio items of a Dropdown Menu - the arrows reach them, Enter or a click picks one, the check moves and the menu stays open. The root is the menu's radio group (role='group' and a name)." height="24"
+<div class="flex justify-end">
+  <button
+    class="btn"
+    data-variant="ghost"
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="ls-me-menu"
+    data-dropdown-trigger="ls-me-menu"
+  >
+    <span class="avatar" data-size="sm"><span class="avatar-fallback">AH</span></span>
+    Aron Homberg
+  </button>
+  <div id="ls-me-menu" role="menu" popover class="dropdown-content" aria-label="Account">
+    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="user"></i> Profile</button>
+    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="settings"></i> Settings</button>
+    <div class="dropdown-separator" role="separator"></div>
+    <div class="dropdown-label">Language</div>
+    <div
+      class="language-switcher"
+      id="ls-menu"
+      role="group"
+      aria-label="Language"
+      data-variant="menu"
+      data-languages="en de fr"
+      data-value="en"
+    ></div>
+    <div class="dropdown-separator" role="separator"></div>
+    <button role="menuitem" class="dropdown-item" tabindex="-1"><i data-lucide="log-out"></i> Sign out</button>
+  </div>
+</div>
+```
+
+## With defuss-i18n
+
+```html example label="Bound to defuss-i18n" hint="bind() sets the locale on a pick and follows it back: the buttons below set the locale, the switcher moves along." height="22"
+<div class="card p-4 grid gap-3" id="ls-card" data-i18n-component="ls-card">
+  <div class="flex items-center justify-between gap-3">
+    <strong data-i18n-target="title">Welcome back</strong>
+    <div
+      class="language-switcher"
+      id="ls-bound"
+      role="group"
+      aria-label="Language"
+      data-i18n-aria-label-en="Language"
+      data-i18n-aria-label-de="Sprache"
+      data-i18n-aria-label-ar="اللغة"
+      data-languages="en de ar"
+      data-value="en"
+      data-align="end"
+    ></div>
+  </div>
+  <p class="text-sm text-muted-foreground m-0" data-i18n-target="body">Pick a language - the card follows.</p>
+  <div class="flex gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" data-locale="en">en</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-locale="de">de</button>
+    <button class="btn" data-variant="outline" data-size="sm" data-locale="ar">ar</button>
+  </div>
+  <template data-i18n-for="title" data-i18n-locale="en">Welcome back</template>
+  <template data-i18n-for="title" data-i18n-locale="de">Willkommen zurück</template>
+  <template data-i18n-for="title" data-i18n-locale="ar">مرحبًا بعودتك</template>
+  <template data-i18n-for="body" data-i18n-locale="en">Pick a language - the card follows.</template>
+  <template data-i18n-for="body" data-i18n-locale="de">Wähle eine Sprache - die Karte folgt.</template>
+  <template data-i18n-for="body" data-i18n-locale="ar">اختر لغة - تتبعها البطاقة.</template>
+</div>
+<script type="module">
+  import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  const locale = createI18n({ locale: 'en', fallback: ['en'] });
+  createDomI18n(df$).bind(df$('#ls-card').get(0), locale);
+  df$.shadcn.languageSwitcher.bind('ls-bound', locale);
+  df$('#ls-card [data-locale]').on('click', (event) => locale.setLocale(event.currentTarget.dataset.locale));
+</script>
+```
+
+<p class="text-sm text-muted-foreground mt-5 mb-5">The table behind the names holds the 107 language codes CLD3 detects (<code>df$.shadcn.languageSwitcher.languages()</code>): the English name, the name in the language itself and the region whose flag stands for it. Every other pair - Japanese named in German, a dialect such as <code>de-CH</code> - comes from the browser's <code>Intl.DisplayNames</code>. The flags are <a class="link" href="https://github.com/lipis/flag-icons">flag-icons</a> 7.2.3 (MIT) from jsDelivr; <code>configure({'{'} flags {'}'})</code> points them at your own copy.</p>
+
+<CodeWindow lang="javascript" title="the imperative surface" mb="2.5rem" code={"df$.shadcn.languageSwitcher.name('de-AT');        // 'Österreichisches Deutsch'\ndf$.shadcn.languageSwitcher.name('ja', 'de');     // 'Japanisch'\ndf$.shadcn.languageSwitcher.region('pt-BR');      // 'br'\ndf$.shadcn.languageSwitcher.choose('lang', 'fr'); // as a click: language-change fires\nconst unbind = df$.shadcn.languageSwitcher.bind('lang', locale); // defuss-i18n, both ways\ndf$.shadcn.languageSwitcher.configure({ flags: '/flags/{shape}/{region}.svg' });"} />
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per switcher through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the language shown (<code>{"{ value }"}</code>); setState changes it quietly, without <code>language-change</code></li>
+    <li><code>open</code> - the Combobox's list shown</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first demo carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/language-switcher-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/language-switcher.schema.json"><code>language-switcher.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `value` | `string` | — | — | The language shown - one of `data-languages`, mirrored on `data-value`. |
+| `open` | `boolean` | `true`, `false` | `false` | The Combobox's list shown - driven through the component's own State API. |
+```
+
+</StatesSection>
+
+<ApiSection component="language-switcher" />
+
+<SourceFiles component="language-switcher" section="css" />
+
+<SourceFiles component="language-switcher" section="js">
+  <SourceNote for="js">The preseeded languages, the names (Intl.DisplayNames), the Combobox and Swap faces it writes, the State API and bind() for defuss-i18n.</SourceNote>
+</SourceFiles>
+
+</DocPage>

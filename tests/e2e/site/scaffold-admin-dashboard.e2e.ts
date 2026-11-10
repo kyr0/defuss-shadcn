@@ -186,7 +186,7 @@ try {
     await offlineJsdelivr(de);
     await de.goto(`${server.url}${PAGE}`);
     await de.waitForFunction(() => document.querySelector('[data-dash]')?.getAttribute('lang') === 'en', undefined, { timeout: 15_000 });
-    assert.equal(await de.$eval('[data-app-locale]', (s) => (s as HTMLSelectElement).value), 'en');
+    assert.equal(await de.$eval('[data-app-locale]', (s) => s.getAttribute('data-value')), 'en');
     await de.close();
   });
 

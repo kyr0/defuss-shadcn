@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>language-switcher e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/core.css" />
+    <link rel="stylesheet" href="/dist/components/button/button.css" />
+    <link rel="stylesheet" href="/dist/components/combobox/combobox.css" />
+    <link rel="stylesheet" href="/dist/components/swap/swap.css" />
+    <link rel="stylesheet" href="/dist/components/dropdown/dropdown.css" />
+    <link rel="stylesheet" href="/dist/components/language-switcher/language-switcher.css" />
+  </head>
+  <body style="padding: 2rem; display: grid; gap: 1rem; justify-items: start">
+    <!-- the Combobox: eight languages bring the search field -->
+    <div class="language-switcher" id="ls1" data-languages="en de fr es it nl pl pt" data-value="en"></div>
+    <!-- icon only, a short list (the search field is quiet) -->
+    <div class="language-switcher" id="ls2" data-languages="en de fr es" data-value="de" data-display="icon"></div>
+    <!-- the code beside a round flag -->
+    <div class="language-switcher" id="ls3" data-languages="en de fr" data-value="fr" data-display="code" data-flag-shape="circle"></div>
+    <!-- the Swap: one click per language -->
+    <div class="language-switcher" id="ls4" data-languages="en de fr" data-value="en" data-variant="swap"></div>
+    <!-- the Swap, icon only -->
+    <div class="language-switcher" id="ls5" data-languages="en de es it" data-value="en" data-variant="swap" data-display="icon" data-flag-shape="circle" data-flag-size="lg"></div>
+    <!-- dialects -->
+    <div class="language-switcher" id="ls6" data-languages="en-GB en-US de-DE de-AT de-CH pt-PT pt-BR es-ES es-MX fr-FR fr-CA" data-value="de-AT"></div>
+    <!-- names in the language shown -->
+    <div class="language-switcher" id="ls7" data-languages="en de fr ja ar" data-value="de" data-names="ui"></div>
+    <!-- flags: shapes, scales, finishes, overrides, none -->
+    <div class="language-switcher" id="ls8" data-languages="en de" data-value="en" data-flags="en:us" data-flag-shape="square" data-flag-style="ring" data-flag-size="xl"></div>
+    <div class="language-switcher" id="ls9" data-languages="de en" data-value="de" data-flag-shape="squircle" data-flag-style="glossy"></div>
+    <div class="language-switcher" id="ls10" data-languages="de en" data-value="de" data-flag-shape="rounded" data-flag-style="shadow" data-flag-size="sm"></div>
+    <div class="language-switcher" id="ls11" data-languages="de en" data-value="de" data-flag="none"></div>
+    <div class="language-switcher" id="ls12" data-languages="eo en" data-value="eo" data-flag-size="xs"></div>
+    <div class="dark" id="dark" style="background: var(--background); color: var(--foreground); padding: 1rem">
+      <div class="language-switcher" id="ls13" data-languages="sv en" data-value="sv" data-flag-style="ring"></div>
+    </div>
+    <!-- a footer: condensed, aligned to the end, the swap's plain variant -->
+    <footer style="display: flex; gap: 1rem; align-items: center; justify-self: stretch; justify-content: flex-end">
+      <div class="language-switcher" id="ls14" data-languages="en de fr es it" data-value="en" data-display="code" data-size="xs" data-align="end" data-flag-size="xs"></div>
+      <div class="language-switcher" id="ls15" data-languages="en de" data-value="en" data-variant="swap" data-swap="fade" data-display="code" data-size="sm"></div>
+    </footer>
+    <!-- the Menu: radio items of a Dropdown Menu (a user menu) -->
+    <button class="btn" id="me" aria-haspopup="menu" aria-expanded="false" aria-controls="me-menu" data-dropdown-trigger="me-menu">Account</button>
+    <div id="me-menu" role="menu" popover class="dropdown-content" aria-label="Account">
+      <button role="menuitem" class="dropdown-item" tabindex="-1" id="me-profile">Profile</button>
+      <div class="dropdown-separator" role="separator"></div>
+      <div class="dropdown-label">Language</div>
+      <div class="language-switcher" id="ls17" role="group" aria-label="Language" data-variant="menu" data-languages="en de fr" data-value="en"></div>
+    </div>
+    <!-- a malformed tag (an underscore) still draws, and the switchers after it initialize -->
+    <div class="language-switcher" id="ls0" data-languages="en_US de" data-value="en_US"></div>
+    <!-- bound to defuss-i18n; the label is the root's translatable aria-label -->
+    <div id="card" data-i18n-component="card">
+      <strong id="card-title" data-i18n-target="title">Welcome back</strong>
+      <div class="language-switcher" id="ls16" role="group" aria-label="Language" data-i18n-aria-label-en="Language" data-i18n-aria-label-de="Sprache" data-i18n-aria-label-ar="اللغة" data-languages="en de ar" data-value="en"></div>
+      <button type="button" id="set-de">de</button>
+      <template data-i18n-for="title" data-i18n-locale="en">Welcome back</template>
+      <template data-i18n-for="title" data-i18n-locale="de">Willkommen zurück</template>
+      <template data-i18n-for="title" data-i18n-locale="ar">مرحبًا بعودتك</template>
+    </div>
+    <script type="module" src="/dist/components/core.js"></script>
+    <script type="module" src="/dist/components/combobox/combobox.js"></script>
+    <script type="module" src="/dist/components/dropdown/dropdown.js"></script>
+    <script type="module" src="/dist/components/language-switcher/language-switcher.js"></script>
+    <script type="module">
+      import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+      addEventListener('DOMContentLoaded', () => {
+        const locale = createI18n({ locale: 'en', fallback: ['en'] });
+        createDomI18n(df$).bind(df$('#card').get(0), locale);
+        df$.shadcn.languageSwitcher.bind('ls16', locale);
+        df$('#set-de').on('click', () => locale.setLocale('de'));
+        globalThis.fixtureLocale = locale;
+      });
+    </script>
+  </body>
+</html>

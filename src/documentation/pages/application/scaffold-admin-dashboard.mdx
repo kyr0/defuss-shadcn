@@ -1175,17 +1175,19 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >
         </ul>
       </div>
-      <select
-        class="select dash-locale"
-        data-size="sm"
+      <div
+        class="language-switcher dash-locale"
         data-app-locale
+        role="group"
         aria-label="Language"
         data-i18n-aria-label-en="Language"
         data-i18n-aria-label-de="Sprache"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
+        data-languages="en de"
+        data-value="en"
+        data-size="sm"
+        data-flag-shape="rounded"
+        data-align="end"
+      ></div>
       <button
         class="btn"
         data-variant="ghost"
@@ -2761,8 +2763,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       counted = config.selected.length;
       texts.refresh();
     });
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- routing: one route per view, in the fragment - GitHub Pages has no fallback for deep paths
     const routes = [

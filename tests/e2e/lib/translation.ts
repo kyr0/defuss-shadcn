@@ -21,14 +21,20 @@ export function translationGaps(page: Page | Frame, root: string): Promise<strin
   );
 }
 
-/** picks a language in the app's switch (`[data-app-locale]`, the first one) the way a user does */
+/** picks a language in the app's Language Switcher (`[data-app-locale]`, the first one) the way a click does: its
+ *  value changes and language-change fires, which the page's bind() turns into the defuss-i18n locale */
 export async function chooseLanguage(page: Page | Frame, tag: string): Promise<void> {
-  await page.evaluate((tag) => {
-    const select = document.querySelector('[data-app-locale]') as HTMLSelectElement;
-    select.value = tag;
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+  await page.waitForFunction(() => document.querySelector('[data-app-locale]')?.hasAttribute('data-init'));
+  const chosen = await page.evaluate((tag) => {
+    const el = document.querySelector('[data-app-locale]') as HTMLElement;
+    return (globalThis as any).df$.shadcn.languageSwitcher.choose(el, tag) || el.getAttribute('data-value') === tag;
   }, tag);
+  if (!chosen) throw new Error(`the language switcher does not offer ${tag}`);
 }
+
+/** the language the app's Language Switcher shows (its data-value) */
+export const shownLanguage = (page: Page | Frame): Promise<string | null> =>
+  page.evaluate(() => document.querySelector('[data-app-locale]')?.getAttribute('data-value') ?? null);
 
 /** the language a bound root renders (defuss-i18n writes `lang` on it) */
 export const renderedLanguage = (page: Page | Frame, root: string): Promise<string | null> =>

@@ -1763,11 +1763,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               ><label for="wa-lang"
                 ><strong data-i18n-target="set-lang">App language</strong
                 ><small data-i18n-target="set-lang-d">Menus, labels and buttons</small></label
-              ><select class="select wa-locale" data-size="sm" id="wa-lang" data-app-locale>
-                <option value="en" lang="en">English</option>
-                <option value="de" lang="de">Deutsch</option>
-              </select></li
-            >
+              ><div
+                class="language-switcher wa-locale"
+                id="wa-lang"
+                data-app-locale
+                role="group"
+                aria-label="Language"
+                data-i18n-aria-label-en="Language"
+                data-i18n-aria-label-de="Sprache"
+                data-languages="en de"
+                data-value="en"
+                data-size="sm"
+                data-variant="swap"
+              ></div
+            ></li>
             <li
               ><i data-lucide="circle-question-mark"></i
               ><span
@@ -3871,8 +3880,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(app, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- routing: the list, and one route per chat (#/chats/anna)
     const routes = [
