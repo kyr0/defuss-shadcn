@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-dominant</code> (<code>ns</code>, <code>we</code>), <code>data-center-min</code>, <code>data-collapsible</code>, <code>data-save</code>, <code>data-frame="none"</code>, <code>data-divider</code> (<code>dashed</code>, <code>dotted</code>, <code>double</code>, <code>thick</code>, <code>none</code>, <code>gap</code>), <code>data-grip</code> (<code>dots</code>, <code>bar</code>, <code>none</code>); on a region's resizer: <code>data-min</code> / <code>data-max</code>, <code>data-collapsible</code>, <code>data-divider</code>, <code>data-grip</code>; on a fixed region: <code>data-fit</code> with <code>--border-layout-fit-min</code> / <code>-max</code>; <code>--border-layout-divider-color</code> / <code>-width</code>, <code>--border-layout-accent</code>; events <code>resizer-resize</code>, <code>border-layout-collapse</code>; API <code>df$.shadcn.borderLayout</code>.</SkillText>
+<SkillText><code>data-dominant</code> (<code>ns</code>, <code>we</code>), <code>data-center-min</code>, <code>data-collapsible</code>, <code>data-save</code>, <code>data-frame="none"</code>, <code>data-divider</code> (<code>dashed</code>, <code>dotted</code>, <code>double</code>, <code>thick</code>, <code>none</code>, <code>gap</code>), <code>data-grip</code> (<code>dots</code>, <code>bar</code>, <code>none</code>); on a region's resizer: <code>data-min</code> / <code>data-max</code>, <code>data-collapsible</code>, <code>data-divider</code>, <code>data-grip</code>; on a fixed region: <code>data-fit</code> with <code>--border-layout-fit-min</code> / <code>-max</code>; several Panels on one side: a <code>.border-layout-stack</code> as the pane (dividers between them, a panel's <code>data-min</code>; <code>data-direction</code> <code>row</code> / <code>column</code>, <code>data-exclusive</code> - one panel open); <code>--border-layout-divider-color</code> / <code>-width</code>, <code>--border-layout-accent</code>; events <code>resizer-resize</code>, <code>border-layout-collapse</code>; API <code>df$.shadcn.borderLayout</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -186,11 +186,229 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
   </footer>
 </div>
 <script>
-  df$('#fit-add').on('click', () => {
-    const steps = df$('#fit-steps');
-    steps.append(df$(`<li>Step ${steps.children().toArray().length + 1}</li>`));
+  document.addEventListener('DOMContentLoaded', () => {
+    df$('#fit-add').on('click', () => {
+      const steps = df$('#fit-steps');
+      steps.append(df$(`<li>Step ${steps.children().toArray().length + 1}</li>`));
+    });
   });
 </script>
+```
+
+```html example label="Several panels on one side" schema="none" hint="A .border-layout-stack as the region's pane holds several Panels - top to bottom in west / east, side by side in north / south. Drag the line between two panels (or Tab to it and use the arrows) to share the room; minimize one and the others take its room; minimize all and the region folds to vertical tabs, like a single Panel. Maximize fills the layout."
+<div class="border-layout" style="height: 26rem">
+  <div class="resizer border-layout-west">
+    <div class="border-layout-stack" style="width: 15rem" aria-label="Explorer">
+      <section class="card panel" aria-labelledby="stk-files">
+        <header class="panel-header">
+          <i data-lucide="folder" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="stk-files">Files</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Files" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Files" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">src/, tests/, README.md</p></div>
+      </section>
+      <section class="card panel" aria-labelledby="stk-outline">
+        <header class="panel-header">
+          <i data-lucide="list-tree" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="stk-outline">Outline</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Outline" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Outline" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">init(), render(), save()</p></div>
+      </section>
+      <section class="card panel" aria-labelledby="stk-updates">
+        <header class="panel-header">
+          <i data-lucide="activity" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="stk-updates">Updates</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Updates" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Updates" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">Three files changed</p></div>
+      </section>
+    </div>
+  </div>
+  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Editor</span></main>
+  <div class="resizer border-layout-south">
+    <div class="border-layout-stack" style="height: 7rem">
+      <section class="card panel" aria-labelledby="stk-terminal">
+        <header class="panel-header">
+          <i data-lucide="terminal" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="stk-terminal">Terminal</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Terminal" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Terminal" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">bun run build</p></div>
+      </section>
+      <section class="card panel" aria-labelledby="stk-problems">
+        <header class="panel-header">
+          <i data-lucide="triangle-alert" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="stk-problems">Problems</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Problems" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Problems" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">No problems</p></div>
+      </section>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="One panel open at a time" schema="none" hint="data-exclusive on the stack keeps one panel open, like an accordion: open one (its chevron, or a double-click on its tab) and the open one minimizes. Both start minimized here, so the east side starts as two vertical tabs; minimize the open one and it folds back."
+<div class="border-layout" style="height: 20rem">
+  <main class="border-layout-center border-layout-pane"
+    ><p class="text-sm text-muted-foreground m-0">The center takes what the east side leaves.</p></main
+  >
+  <div class="resizer border-layout-east">
+    <div class="border-layout-stack" style="width: 15rem" data-exclusive aria-label="Inspector and outline">
+      <section class="card panel" aria-labelledby="one-inspector" data-minimized>
+        <header class="panel-header">
+          <i data-lucide="info" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="one-inspector">Inspector</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Inspector" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">width 240, height 120, fill: card</p></div>
+      </section>
+      <section class="card panel" aria-labelledby="one-outline" data-minimized>
+        <header class="panel-header">
+          <i data-lucide="list-tree" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="one-outline">Outline</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Outline" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">Header, Hero, Pricing, Footer</p></div>
+      </section>
+    </div>
+  </div>
+</div>
+```
+
+```html example label="Side by side in one region" schema="none" hint="data-direction='row' lays the stack's panels side by side on any side - here on the east, as columns. With data-exclusive one is open and the others are vertical tabs beside it; open a tab and the open column folds to its tab. data-direction='column' stacks them top to bottom in north / south."
+<div class="border-layout" style="height: 20rem">
+  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Document</span></main>
+  <div class="resizer border-layout-east">
+    <div class="border-layout-stack" style="width: 24rem" data-direction="row" data-exclusive aria-label="Side tools">
+      <section class="card panel" aria-labelledby="row-comments">
+        <header class="panel-header">
+          <i data-lucide="message-square" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="row-comments">Comments</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Comments" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Comments" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">Three open threads</p></div>
+      </section>
+      <section class="card panel" aria-labelledby="row-history" data-minimized>
+        <header class="panel-header">
+          <i data-lucide="history" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="row-history">History</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize History" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize History" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">Edited 2 minutes ago</p></div>
+      </section>
+      <section class="card panel" aria-labelledby="row-share" data-minimized>
+        <header class="panel-header">
+          <i data-lucide="users" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="row-share">Sharing</h3>
+          <div class="panel-tools">
+            <label class="swap panel-maximize">
+              <input type="checkbox" aria-label="Maximize Sharing" />
+              <span class="swap-off"><i data-lucide="maximize-2"></i></span>
+              <span class="swap-on"><i data-lucide="minimize-2"></i></span>
+            </label>
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Sharing" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">Four people can edit</p></div>
+      </section>
+    </div>
+  </div>
+</div>
 ```
 
 ```html example label="Custom handle" schema="none" hint="The divider is a .resizer-handle: --border-layout-divider-color / -width / --border-layout-accent retheme it, and plain CSS on its ::before (the line) and ::after (the grip) makes any handle - here a bold primary rail with a round knob."

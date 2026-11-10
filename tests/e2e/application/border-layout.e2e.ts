@@ -9,7 +9,9 @@ import { assertRenderContract } from '../lib/render-contract.ts';
  * west/east dominant, left-out regions take no room), each divider is a window
  * splitter that drags and moves with the arrows, the center keeps its minimum
  * even while the frame shrinks, regions fold and come back, sizes survive a
- * reload, and the divider styles, grips and gap render.
+ * reload, and the divider styles, grips and gap render. A stack holds several
+ * Panels on one side: dividers share the room, a minimized panel keeps its bar,
+ * all minimized fold the region, all closed take it away.
  */
 
 const server = startServer();
@@ -180,6 +182,100 @@ try {
     assert.ok(r.c > 0, 'the center keeps the rest');
   });
 
+  await check('stacks: a divider between every two panels shares the room; arrows and a drag move it, within each panel\'s minimum', async () => {
+    await page.waitForFunction(() => document.querySelectorAll('#stk-w-stack > .border-layout-stack-divider').length === 2);
+    const kids = await page.$$eval('#stk-w-stack > *', (els) => els.map((e) => e.className.split(' ').pop()));
+    assert.deepEqual(kids, ['panel', 'border-layout-stack-divider', 'panel', 'border-layout-stack-divider', 'panel']);
+    const d = await page.$eval('#stk-w-stack > .border-layout-stack-divider', (e) => ({ role: e.getAttribute('role'), o: e.getAttribute('aria-orientation'), label: e.getAttribute('aria-label'), ctl: e.getAttribute('aria-controls'), tab: (e as HTMLElement).tabIndex }));
+    assert.deepEqual(d, { role: 'separator', o: 'horizontal', label: 'Resize Tree', ctl: 'sp1', tab: 0 });
+    const [a0, b0, c0] = [await rect('#sp1'), await rect('#sp2'), await rect('#sp3')];
+    assert.ok(Math.abs(a0.h - b0.h) <= 1 && Math.abs(b0.h - c0.h) <= 1, `equal shares at first: ${a0.h} ${b0.h} ${c0.h}`);
+    await page.focus('#stk-w-stack > .border-layout-stack-divider');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowDown');
+    const [a1, b1, c1] = [await rect('#sp1'), await rect('#sp2'), await rect('#sp3')];
+    assert.equal(a1.h - a0.h, 20, 'ArrowDown moves 10 px');
+    assert.equal(b0.h - b1.h, 20, 'the next panel gives the room');
+    assert.equal(c1.h, c0.h, 'the third keeps its share');
+    await page.keyboard.press('End');
+    const b2 = await rect('#sp2');
+    const min = await page.$eval('#sp2 > .panel-header', (h) => Math.round(h.getBoundingClientRect().height + 32));
+    assert.ok(Math.abs(b2.h - min) <= 1, `End stops at the next panel's minimum (${b2.h} vs ${min})`);
+    await page.keyboard.press('Home');
+    await drag('#stk-w-stack > .border-layout-stack-divider:nth-of-type(1)', 0, 40);
+    assert.equal(await page.$eval('#stk-w-stack > .border-layout-stack-divider', (e) => e.getAttribute('aria-valuenow')), String((await rect('#sp1')).h));
+    // the south stack runs side by side, its divider a vertical line
+    const s = await page.$eval('#stk-s-stack > .border-layout-stack-divider', (e) => e.getAttribute('aria-orientation'));
+    assert.equal(s, 'vertical');
+    const [q1, q2] = [await rect('#sq1'), await rect('#sq2')];
+    assert.ok(q1.y === q2.y && q2.x > q1.r - 8, 'south panels side by side');
+  });
+
+  await check('stacks: a minimized panel keeps its bar and leaves its room; all minimized fold the region; all closed take it away', async () => {
+    const total = (await rect('#stk-w-stack')).h;
+    await page.evaluate(() => (document.getElementById('sp2') as any).api.setState('minimized'));
+    await page.waitForTimeout(50);
+    const bar = await page.$eval('#sp2 > .panel-header', (h) => Math.round(h.getBoundingClientRect().height));
+    assert.ok(Math.abs((await rect('#sp2')).h - bar) <= 1, 'the minimized panel is its title bar');
+    const [a, c] = [await rect('#sp1'), await rect('#sp3')];
+    assert.ok(Math.abs(a.h + c.h + bar - total) <= 3, `the others take the room: ${a.h} + ${c.h} + ${bar} vs ${total}`);
+    const dis = await page.$$eval('#stk-w-stack > .border-layout-stack-divider', (ds) => ds.map((x) => x.getAttribute('aria-disabled')));
+    assert.deepEqual(dis, ['true', 'true'], 'both dividers touch the minimized panel');
+    assert.equal(await page.$eval('#stk-w', (r) => r.hasAttribute('data-panel-minimized')), false);
+    await page.evaluate(() => ['sp1', 'sp3'].forEach((id) => (document.getElementById(id) as any).api.setState('minimized')));
+    await page.waitForTimeout(50);
+    assert.equal(await page.$eval('#stk-w', (r) => r.hasAttribute('data-panel-minimized')), true, 'all minimized fold the region');
+    assert.equal(await page.$eval('#stk-w > .resizer-handle', (h) => (h as HTMLElement).inert), true, 'its divider rests');
+    assert.ok((await rect('#stk-w-stack')).w < 60, 'west folds to a column of vertical tabs');
+    assert.equal(await page.$eval('#sp1 > .panel-header', (h) => getComputedStyle(h).writingMode), 'vertical-rl');
+    await page.evaluate(() => ['sp1', 'sp2', 'sp3'].forEach((id) => (document.getElementById(id) as any).api.setState('default')));
+    await page.waitForTimeout(50);
+    assert.equal(await page.$eval('#stk-w', (r) => r.hasAttribute('data-panel-minimized')), false);
+    assert.equal((await rect('#stk-w-stack')).w, 220, 'the region comes back at its width');
+    // closing the middle panel: one divider joins the other two
+    await page.evaluate(() => (document.getElementById('sp2') as any).api.setState('closed'));
+    await page.waitForTimeout(50);
+    const shown = await page.$$eval('#stk-w-stack > .border-layout-stack-divider', (ds) => ds.map((x) => !(x as HTMLElement).hidden));
+    assert.deepEqual(shown, [true, false]);
+    assert.equal(await page.$eval('#stk-w-stack > .border-layout-stack-divider', (e) => e.getAttribute('aria-disabled')), 'false', 'Tree and Notes share it');
+    await page.evaluate(() => ['sp1', 'sp3'].forEach((id) => (document.getElementById(id) as any).api.setState('closed')));
+    await page.waitForTimeout(50);
+    assert.equal(await page.$eval('#stk-w', (r) => getComputedStyle(r).display), 'none', 'all closed take the region away');
+    await page.evaluate(() => ['sp1', 'sp2', 'sp3'].forEach((id) => (document.getElementById(id) as any).api.setState('default')));
+    await page.waitForTimeout(50);
+    assert.notEqual(await page.$eval('#stk-w', (r) => getComputedStyle(r).display), 'none');
+  });
+
+  await check('stacks: data-exclusive keeps one panel open; data-direction="row" lays them side by side, a minimized one a vertical tab', async () => {
+    const minimized = (ids: string[]) =>
+      page.evaluate((list) => list.map((id) => document.getElementById(id)!.hasAttribute('data-minimized')), ids);
+    // both authored minimized: the region is folded to its tabs
+    assert.equal(await page.$eval('#exc-e', (r) => r.hasAttribute('data-panel-minimized')), true, 'starts folded');
+    await page.evaluate(() => (document.getElementById('ex1') as any).api.setState('default'));
+    await page.waitForTimeout(80);
+    assert.deepEqual(await minimized(['ex1', 'ex2']), [false, true], 'one opened, the other stays minimized');
+    assert.equal(await page.$eval('#exc-e', (r) => r.hasAttribute('data-panel-minimized')), false, 'the region unfolds');
+    // opening the other through its own swap minimizes the first
+    await page.click('#ex2 .panel-minimize');
+    await page.waitForTimeout(80);
+    assert.deepEqual(await minimized(['ex1', 'ex2']), [true, false], 'opening one minimizes the open one');
+    await page.click('#ex2 .panel-minimize');
+    await page.waitForTimeout(80);
+    assert.equal(await page.$eval('#exc-e', (r) => r.hasAttribute('data-panel-minimized')), true, 'none open: folded again');
+
+    // a row: of the two authored open, the last stays; the others are vertical tabs beside it
+    assert.deepEqual(await minimized(['rw1', 'rw2', 'rw3']), [true, false, true], 'the last authored open stays open');
+    const [r1, r2, r3] = [await rect('#rw1'), await rect('#rw2'), await rect('#rw3')];
+    assert.ok(r1.x < r2.x && r2.x < r3.x, 'side by side');
+    assert.ok(Math.abs(r1.h - r2.h) <= 1 && Math.abs(r3.h - r2.h) <= 1, 'the tabs run the full height');
+    assert.ok(r1.w < 60 && r3.w < 60 && r2.w > 200, `the open one takes the room: ${r1.w} / ${r2.w} / ${r3.w}`);
+    assert.equal(await page.$eval('#rw1 > .panel-header', (h) => getComputedStyle(h).writingMode), 'vertical-rl');
+    assert.equal(await page.$eval('#row-stack > .border-layout-stack-divider', (d) => d.getAttribute('aria-orientation')), 'vertical');
+    await page.click('#rw3 .panel-minimize');
+    await page.waitForTimeout(80);
+    assert.deepEqual(await minimized(['rw1', 'rw2', 'rw3']), [true, true, false], 'opening the third minimizes the second');
+  });
+
   await check('data-save: sizes and folded regions survive a reload', async () => {
     await page.focus('#sv-w > .resizer-handle');
     await page.keyboard.press('ArrowRight');
@@ -197,7 +293,7 @@ try {
     await page.evaluate(() => localStorage.clear());
   });
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
-    await assertRenderContract(page, '.border-layout[id]', ['default','collapsed'], { runtimeAttrs: ['style','data-max-w','data-max-h','data-width','data-height'], runtimeOwned: '.resizer-handle' });
+    await assertRenderContract(page, '.border-layout[id]', ['default','collapsed'], { runtimeAttrs: ['style','data-max-w','data-max-h','data-width','data-height'], runtimeOwned: '.resizer-handle, .border-layout-stack-divider' });
   });
 
 } finally {

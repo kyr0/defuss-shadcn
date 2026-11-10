@@ -167,6 +167,199 @@ function syncState(layout) {
   else layout.dataset.stateName = name;
 }
 
+// -- Stacks: several Panels on one side --------------------------------------------
+// A region's pane may be a .border-layout-stack of Panels (top to bottom in west / east, side by side in north /
+// south). The runtime puts a divider between every two panels - a window splitter that moves the room between its
+// two neighbours (drag, arrows) - and follows the panels' states: a minimized panel keeps its title bar and leaves
+// its room to the others, all minimized fold the region (data-panel-minimized, as a single Panel folds its region),
+// all closed take it away (data-stack-closed). The Panel owns its own states; the stack only reads them, so a panel
+// in a stack is a plain Panel (no data-region: its bar stays horizontal until the whole region folds).
+// data-direction="row" | "column" on the stack lays the panels side by side or top to bottom on any side (a
+// minimized panel in a row on west / east is a vertical tab); data-exclusive keeps one panel open, like <details
+// name>: opening one minimizes the others - through the Panel's own State API, the only writer of its states.
+
+/** The stack a region holds (its pane, or the region itself when fixed), or null. */
+const stackOf = (region) => {
+  const pane = region && paneOf(region);
+  return pane?.classList.contains('border-layout-stack') ? pane : null;
+};
+const panelsOf = (stack): HTMLElement[] =>
+  Array.from(stack.children as HTMLCollectionOf<HTMLElement>).filter((c) => c.classList.contains('panel'));
+/** side by side: data-direction="row", else (no data-direction="column") on the north / south side */
+const isRow = (stack, side) =>
+  stack.dataset.direction === 'row' || (stack.dataset.direction !== 'column' && (side === 'north' || side === 'south'));
+/** a panel's extent along the stack (px) */
+const extent = (panel, row: boolean) => {
+  const box = panel.getBoundingClientRect();
+  return row ? box.width : box.height;
+};
+/** the least room a panel keeps: its own data-min, else its title bar and a little of its body */
+const minOf = (panel) => {
+  const bar = dfDollar(panel).children('.panel-header').get(0)?.getBoundingClientRect().height ?? 40;
+  return num(panel.dataset.min, Math.round(bar + 32));
+};
+const open = (panel) => !panel.hidden && !panel.hasAttribute('data-minimized');
+const titleOf = (panel) =>
+  dfDollar(panel).find(':scope > .panel-header .panel-title').text().trim() || panel.getAttribute('aria-label') || '';
+
+/** data-exclusive: one open panel - the one opened last (of several authored open: the last); the others minimize */
+function exclusive(stack, again: () => void) {
+  if (!stack.hasAttribute('data-exclusive')) return;
+  const opened = panelsOf(stack).filter(open);
+  const fresh = opened.filter((p) => p !== stack._open);
+  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
+  stack._open = keep;
+  for (const p of opened) {
+    if (p === keep) continue;
+    // a panel whose script has not run yet (a module loaded after this one) is asked again a task later - a while
+    if (p.api) p.api.setState('minimized');
+    else if ((stack._waits = (stack._waits ?? 0) + 1) < 50) setTimeout(again);
+  }
+}
+
+/** dividers between the panels, shown where two visible panels meet; the region follows the panels' states */
+function syncStack(layout, side, region, stack) {
+  exclusive(stack, () => syncStack(layout, side, region, stack));
+  const row = isRow(stack, side);
+  const panels = panelsOf(stack);
+  // a divider between every two adjacent panels (authored markup has none)
+  for (const panel of panels.slice(1)) {
+    const prev = panel.previousElementSibling;
+    if (prev?.classList.contains('border-layout-stack-divider')) continue;
+    // runtime chrome (data-ce-chrome): the HTML Preview Editor never writes it into a source
+    dfDollar(panel).before(
+      dfDollar(
+        `<div class="border-layout-stack-divider" role="separator" aria-orientation="${row ? 'vertical' : 'horizontal'}" data-ce-chrome></div>`,
+      ),
+    );
+  }
+  // which divider joins which two visible panels (a closed panel between them is skipped)
+  let last = null,
+    pending = null;
+  for (const child of Array.from(stack.children as HTMLCollectionOf<HTMLElement>)) {
+    if (child.classList.contains('border-layout-stack-divider')) {
+      child._prev = child._next = null;
+      if (last && !pending) pending = child;
+      else if (!child.hidden) child.hidden = true;
+    } else if (child.classList.contains('panel') && !child.hidden) {
+      if (pending) {
+        if (pending.hidden) pending.hidden = false;
+        pending._prev = last;
+        pending._next = child;
+        pending = null;
+      }
+      last = child;
+    }
+  }
+  if (pending && !pending.hidden) pending.hidden = true;
+  for (const d of dfDollar(stack).children('.border-layout-stack-divider').toArray()) {
+    const live = !d.hidden && open(d._prev) && open(d._next);
+    d.setAttribute('aria-disabled', String(!live));
+    d.tabIndex = live ? 0 : -1;
+    if (!d._prev) continue;
+    if (!d._prev.id) d._prev.id = `${stack.id || layout.id || 'stack'}-${Math.random().toString(36).slice(2, 7)}`;
+    d.setAttribute('aria-controls', d._prev.id);
+    d.setAttribute('aria-label', `Resize ${titleOf(d._prev) || 'panel'}`);
+    if (live) {
+      const both = extent(d._prev, row) + extent(d._next, row);
+      d.setAttribute('aria-valuenow', String(Math.round(extent(d._prev, row))));
+      d.setAttribute('aria-valuemin', String(minOf(d._prev)));
+      d.setAttribute('aria-valuemax', String(Math.round(both - minOf(d._next))));
+    }
+  }
+  const shown = panels.filter((p) => !p.hidden);
+  const folded = shown.length > 0 && shown.every((p) => p.hasAttribute('data-minimized'));
+  region.toggleAttribute('data-panel-minimized', folded);
+  region.toggleAttribute('data-stack-closed', panels.length > 0 && !shown.length);
+  const handle = region.classList.contains('resizer') ? dfDollar(region).children('.resizer-handle').get(0) : null;
+  if (handle) handle.inert = folded || !shown.length;
+}
+
+/** moves a divider by delta px: the room passes between its two panels; every open panel keeps its px as its share
+ *  (--border-layout-share, a flex-grow weight - a custom property, so a minimized panel's flex: none still wins) */
+function moveDivider(layout, side, divider, delta) {
+  const a = divider._prev,
+    b = divider._next;
+  if (!a || !b || !open(a) || !open(b)) return;
+  const stack = divider.parentElement;
+  const sizes = new Map(
+    panelsOf(stack)
+      .filter(open)
+      .map((p): [HTMLElement, number] => [p, extent(p, isRow(stack, side))]),
+  );
+  const both = sizes.get(a) + sizes.get(b);
+  const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
+  sizes.set(a, next);
+  sizes.set(b, both - next);
+  for (const [p, px] of sizes) p.style.setProperty('--border-layout-share', String(Math.round(px)));
+}
+
+function initStacks(layout) {
+  for (const side of REGIONS) {
+    const region = regionOf(layout, side);
+    const stack = stackOf(region);
+    if (!stack || stack._stackInit) continue;
+    stack._stackInit = true;
+    const sync = () => syncStack(layout, side, region, stack);
+    sync();
+    // the panels' states (minimized, closed) and panels added later re-arrange the dividers
+    new MutationObserver((records) => {
+      // a panel's own attributes only - the dividers' hidden flags are this module's writes (reacting to them looped)
+      const panel = (r: MutationRecord) =>
+        (r.target as Element).parentElement === stack && (r.target as Element).classList.contains('panel');
+      if (records.some((r) => (r.type === 'childList' && r.target === stack) || (r.type === 'attributes' && panel(r))))
+        sync();
+    }).observe(stack, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-minimized', 'hidden'],
+    });
+    // panels initialize after this module on some pages: their authored states land a task later
+    queueMicrotask(sync);
+
+    // drag: the pointer's travel moves the room between the divider's two panels
+    stack.addEventListener('pointerdown', (e: PointerEvent) => {
+      const divider = (e.target as HTMLElement).closest?.<HTMLElement>('.border-layout-stack-divider');
+      if (!divider || divider.parentElement !== stack || divider.getAttribute('aria-disabled') === 'true') return;
+      e.preventDefault();
+      divider.setPointerCapture(e.pointerId);
+      divider.setAttribute('data-resizing', '');
+      let at = isRow(stack, side) ? e.clientX : e.clientY;
+      const move = (ev: PointerEvent) => {
+        const pos = isRow(stack, side) ? ev.clientX : ev.clientY;
+        moveDivider(layout, side, divider, pos - at);
+        at = pos;
+        sync();
+      };
+      const end = () => {
+        divider.removeAttribute('data-resizing');
+        divider.removeEventListener('pointermove', move);
+        divider.removeEventListener('pointerup', end);
+        divider.removeEventListener('pointercancel', end);
+        save(layout);
+      };
+      divider.addEventListener('pointermove', move);
+      divider.addEventListener('pointerup', end);
+      divider.addEventListener('pointercancel', end);
+    });
+    // keys: the window-splitter pattern, like the region dividers - arrows move 10 px (Shift 100), Home / End to either limit
+    stack.addEventListener('keydown', (e: KeyboardEvent) => {
+      const divider = (e.target as HTMLElement).closest?.<HTMLElement>('.border-layout-stack-divider');
+      if (!divider || divider.parentElement !== stack || divider.getAttribute('aria-disabled') === 'true') return;
+      const step = e.shiftKey ? 100 : 10;
+      const back = isRow(stack, side) ? 'ArrowLeft' : 'ArrowUp',
+        fwd = isRow(stack, side) ? 'ArrowRight' : 'ArrowDown';
+      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === 'Home' ? -1e6 : e.key === 'End' ? 1e6 : 0;
+      if (!delta) return;
+      e.preventDefault();
+      moveDivider(layout, side, divider, delta);
+      sync();
+      save(layout);
+    });
+  }
+}
+
 // -- Persistence (data-save="key") ---------------------------------------------
 
 // one persisted store per data-save key (AGENTS.md "State through stores"):
@@ -194,10 +387,19 @@ function save(layout) {
   const data = {};
   for (const side of REGIONS) {
     const region = regionOf(layout, side);
-    if (!region?.classList.contains('resizer')) continue;
+    const stack = stackOf(region);
+    // a stack's panels: their weights, in order
+    const weights = stack
+      ? panelsOf(stack).map((p) => num(p.style.getPropertyValue('--border-layout-share'), 0) || null)
+      : null;
+    if (!region?.classList.contains('resizer')) {
+      if (weights) data[side] = { stack: weights };
+      continue;
+    }
     const pane = paneOf(region);
     const px = Math.round(num(pane?.style[SIDES[side].size], NaN));
     data[side] = { size: Number.isFinite(px) ? px : null, collapsed: region.hasAttribute('data-collapsed') };
+    if (weights) data[side].stack = weights;
   }
   savedFor(layout).set(data);
 }
@@ -211,7 +413,12 @@ function restore(layout) {
     const saved = data[side];
     if (!region || !saved) continue;
     if (saved.size) setSize(region, side, saved.size);
-    region.toggleAttribute('data-collapsed', !!saved.collapsed);
+    if (region.classList.contains('resizer')) region.toggleAttribute('data-collapsed', !!saved.collapsed);
+    const stack = stackOf(region);
+    if (stack && Array.isArray(saved.stack))
+      panelsOf(stack).forEach((p, i) => {
+        if (saved.stack[i]) p.style.setProperty('--border-layout-share', String(saved.stack[i]));
+      });
   }
   layout._restoring = false;
 }
@@ -305,6 +512,7 @@ function init() {
         region._authored = sizeOf(region, side) || null;
       }
       restore(layout);
+      initStacks(layout);
 
       // before any drag or key: recompute the room every side may take; a drag
       // on a folded region unfolds it first

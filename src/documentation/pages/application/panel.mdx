@@ -343,6 +343,46 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
 </div>
 ```
 
+```html example label="Two minimized, one open at a time" schema="none" height="22" hint="Two Panels in one Border Layout region (a .border-layout-stack) that both start minimized: data-exclusive on the stack opens one at a time - open the second and the first minimizes, like an accordion."
+<div class="border-layout" style="height: 16rem">
+  <main class="border-layout-center border-layout-pane"
+    ><p class="text-sm text-muted-foreground m-0">The center takes the room the folded panels leave.</p></main
+  >
+  <div class="resizer border-layout-east">
+    <div class="border-layout-stack" style="width: 12rem" data-exclusive aria-label="Inspector and layers">
+      <section class="card panel" aria-labelledby="excl-inspector" data-minimized>
+        <header class="panel-header">
+          <i data-lucide="info" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="excl-inspector">Inspector</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Inspector" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">Opened from its tab.</p></div>
+      </section>
+      <section class="card panel" aria-labelledby="excl-layers" data-minimized>
+        <header class="panel-header">
+          <i data-lucide="layers" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="excl-layers">Layers</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize">
+              <input type="checkbox" aria-label="Minimize Layers" />
+              <span class="swap-off"><i data-lucide="chevron-up"></i></span>
+              <span class="swap-on"><i data-lucide="chevron-down"></i></span>
+            </label>
+          </div>
+        </header>
+        <div class="panel-body"><p class="text-sm m-0">Background, Text, Image</p></div>
+      </section>
+    </div>
+  </div>
+</div>
+```
+
 ```html example label="More tools, flush body" schema="none" height="24" hint="Extra tools are buttons in .panel-tools next to the swaps; data-flush drops the body padding for a list or a table. Without .panel-maximize there is no maximize - every tool is optional."
 <div class="max-w-96">
   <section class="card panel" id="tasks" aria-labelledby="tasks-title">

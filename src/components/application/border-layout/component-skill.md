@@ -97,6 +97,43 @@ Nest a border layout in a center (with `data-frame="none"`) for more.
 - A Panel as the region minimizes to its title bar and maximizes over the
   layout as usual; the bounds stop applying while it does.
 
+### Several panels on one side
+
+```html
+<div class="border-layout" style="height: 28rem">
+  <div class="resizer border-layout-west">
+    <div class="border-layout-stack" style="width: 16rem" aria-label="Explorer">
+      <section class="card panel" aria-labelledby="t-tree">…</section>
+      <section class="card panel" aria-labelledby="t-updates" data-min="96">…</section>
+    </div>
+  </div>
+  <main class="border-layout-center">…</main>
+</div>
+```
+
+- `.border-layout-stack` as a region's pane (or as a fixed region itself)
+  holds several Panels: top to bottom in west / east, side by side in north /
+  south. They share the region equally at first.
+- The runtime puts a divider (`.border-layout-stack-divider`, a window
+  splitter) between every two panels: dragging it or the arrow keys move the
+  room between its two neighbours; each keeps its `data-min` (px), else its
+  title bar and 32px of body.
+- A minimized panel keeps its title bar and leaves its room to the others;
+  the dividers next to it rest (`aria-disabled`). Every panel minimized folds
+  the region like a single Panel does: north / south to the bars, west / east
+  to a column of vertical tabs. Every panel closed takes the region away
+  (`data-stack-closed`).
+- `data-save` on the layout remembers the panels' shares with the region
+  sizes.
+- `data-direction="row"` / `"column"` on the stack lays the panels side by
+  side / top to bottom on any side (without it: top to bottom in west / east,
+  side by side in north / south). In a row on west / east a minimized panel is
+  a vertical tab beside the others.
+- `data-exclusive` keeps one panel open, like `<details name>` in an
+  accordion: opening one minimizes the open one (through each Panel's State
+  API); of several authored open, the last stays open. With every panel
+  minimized the region folds as usual.
+
 ---
 
 ## Layout (on `.border-layout`)
@@ -132,9 +169,12 @@ A custom handle is plain CSS on top: the divider is
 
 | Key (divider focused) | Does |
 |-----------------------|------|
-| ← → / ↑ ↓ | Move the divider 10px the way the arrow points (Shift: 100px) |
+| Arrow keys | Move the divider 10px in the arrow's direction (Shift: 100px) |
 | Home / End | Region to its minimum / maximum |
 | Enter | Fold / unfold (collapsible regions) |
+
+The dividers inside a stack take the same arrows (10px, Shift 100px) and
+Home / End (the panel before it to its minimum / maximum).
 
 ## Events
 
@@ -232,8 +272,9 @@ layout.api.setState('default');
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| divider | `role="separator"`, `aria-label="Resize {region}"`, `aria-controls` → the pane, `aria-valuenow` / `-min` / `-max` | The window-splitter pattern; set by the runtime (the name comes from the region's `aria-label`) |
+| divider | `role="separator"`, `aria-label="Resize {region}"`, `aria-controls` naming the pane, `aria-valuenow` / `-min` / `-max` | The window-splitter pattern; set by the runtime (the name comes from the region's `aria-label`) |
 | panes | landmarks (`<nav>`, `<main>`, `<aside>`...) with `aria-label` | Name side panes - the divider labels reuse the name |
+| stack divider | `role="separator"`, `aria-orientation`, `aria-label="Resize {panel title}"`, `aria-controls` naming the panel before it, `aria-valuenow` / `-min` / `-max`, `aria-disabled` next to a minimized panel | Set by the runtime |
 
 ## Notes
 

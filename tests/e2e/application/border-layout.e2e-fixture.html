@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
   <link rel="stylesheet" href="/dist/components/resizer/resizer.css">
   <link rel="stylesheet" href="/dist/components/border-layout/border-layout.css">
+  <link rel="stylesheet" href="/dist/components/card/card.css">
+  <link rel="stylesheet" href="/dist/components/swap/swap.css">
+  <link rel="stylesheet" href="/dist/components/panel/panel.css">
   <style>
     /* spacing only - never properties the checks assert */
     body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; }
@@ -16,7 +19,7 @@
 <body>
   <!-- mirrors the doc page: five regions (ns and we dominant), splits,
        percent starts, a fixed region, grips, divider styles, gap,
-       collapsible + saved -->
+       collapsible + saved, stacks of panels on one side -->
   <div class="border-layout" id="bl" data-collapsible style="height:400px;">
     <div class="resizer border-layout-north" id="n"><header id="n-pane" style="height:50px" aria-label="North">N</header></div>
     <div class="resizer border-layout-west" id="w"><nav id="w-pane" style="width:160px" aria-label="Files">W</nav></div>
@@ -56,8 +59,131 @@
     <div class="border-layout-center">C</div>
   </div>
 
+  <div class="border-layout" id="stk" style="height:480px;">
+    <div class="resizer border-layout-west" id="stk-w">
+      <div class="border-layout-stack" id="stk-w-stack" style="width:220px" aria-label="Side panels">
+      <section class="card panel" id="sp1" aria-labelledby="sp1-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="sp1-t">Tree</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Tree"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">branches</div>
+      </section>
+      <section class="card panel" id="sp2" aria-labelledby="sp2-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="sp2-t">Updates</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Updates"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">newest first</div>
+      </section>
+      <section class="card panel" id="sp3" aria-labelledby="sp3-t" data-min="60">
+        <header class="panel-header">
+          <h3 class="panel-title" id="sp3-t">Notes</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Notes"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">a note</div>
+      </section>
+      </div>
+    </div>
+    <div class="border-layout-center" id="stk-c">C</div>
+    <div class="resizer border-layout-south" id="stk-s">
+      <div class="border-layout-stack" id="stk-s-stack" style="height:110px">
+      <section class="card panel" id="sq1" aria-labelledby="sq1-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="sq1-t">Console</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Console"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">output</div>
+      </section>
+      <section class="card panel" id="sq2" aria-labelledby="sq2-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="sq2-t">Problems</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Problems"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">none</div>
+      </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- data-exclusive: one panel open at a time - both start minimized, the region folded to vertical tabs -->
+  <div class="border-layout" id="exc" style="height:300px;">
+    <div class="border-layout-center">C</div>
+    <div class="resizer border-layout-east" id="exc-e">
+      <div class="border-layout-stack" id="exc-stack" style="width:200px" data-exclusive>
+      <section class="card panel" id="ex1" aria-labelledby="ex1-t" data-minimized>
+        <header class="panel-header">
+          <h3 class="panel-title" id="ex1-t">Inspector</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Inspector"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">props</div>
+      </section>
+      <section class="card panel" id="ex2" aria-labelledby="ex2-t" data-minimized>
+        <header class="panel-header">
+          <h3 class="panel-title" id="ex2-t">Outline</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Outline"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">headings</div>
+      </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- data-direction="row": side by side on the east side, a minimized panel a vertical tab; exclusive: of the two
+       authored open the last stays open -->
+  <div class="border-layout" id="row" style="height:240px;">
+    <div class="border-layout-center">C</div>
+    <div class="resizer border-layout-east" id="row-e">
+      <div class="border-layout-stack" id="row-stack" style="width:340px" data-direction="row" data-exclusive>
+      <section class="card panel" id="rw1" aria-labelledby="rw1-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="rw1-t">Chat</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Chat"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">messages</div>
+      </section>
+      <section class="card panel" id="rw2" aria-labelledby="rw2-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="rw2-t">Notes</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Notes"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">a note</div>
+      </section>
+      <section class="card panel" id="rw3" aria-labelledby="rw3-t" data-minimized>
+        <header class="panel-header">
+          <h3 class="panel-title" id="rw3-t">History</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize History"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">yesterday</div>
+      </section>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/resizer/resizer.js"></script>
+  <script type="module" src="/dist/components/swap/swap.js"></script>
+  <script type="module" src="/dist/components/panel/panel.js"></script>
   <script type="module" src="/dist/components/border-layout/border-layout.js"></script>
 </body>
 </html>
