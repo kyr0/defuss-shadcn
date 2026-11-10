@@ -260,10 +260,11 @@
       opacity: 0;
     }
   }
-  /* dot + badge / dot + chevron share the pushed-right slot */
+  /* dot + badge / dot + chevron share the pushed-right slot - a hidden dot (news this reader has seen) leaves
+     the slot to the badge or the chevron */
   .sidebar-badge + .sidebar-dot,
-  .sidebar-dot + .sidebar-badge,
-  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot ~ svg:last-child {
+  .sidebar-dot:not([hidden]) + .sidebar-badge,
+  :is(.sidebar-group, .sidebar-submenu) > summary > .sidebar-dot:not([hidden]) ~ svg:last-child {
     margin-left: 0;
   }
   .app-sidebar[data-state="collapsed"] {

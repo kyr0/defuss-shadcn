@@ -296,6 +296,24 @@ try {
     assert.equal(r.chevMl, '0px', 'dot takes the pushed-right slot, the chevron follows it');
   });
 
+  await check('a hidden dot (news already seen) leaves the pushed-right slot to the chevron and the badge', async () => {
+    const r = await page.evaluate(() => {
+      const right = (el: Element) => el.getBoundingClientRect().right;
+      const summary = document.querySelector('#group-seen > summary')!;
+      const chevron = summary.querySelector('svg:last-child')!;
+      const link = document.getElementById('link-seen')!;
+      return {
+        chevron: Math.round(right(summary) - right(chevron)),
+        chevronMl: getComputedStyle(chevron).marginLeft,
+        badge: Math.round(right(link) - right(document.getElementById('badge-seen')!)),
+      };
+    });
+    // the row's end, inside the 12px padding - as without a dot
+    assert.equal(r.chevron, 12);
+    assert.notEqual(r.chevronMl, '0px');
+    assert.equal(r.badge, 12);
+  });
+
   await check('dots: 8px circles, pushed right, five distinct colors, ping ring', async () => {
     const r = await page.evaluate(() => {
       const ids = ['dot-plain', 'dot-info', 'dot-success', 'dot-warning', 'dot-destructive'];
