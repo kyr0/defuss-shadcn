@@ -111,3 +111,31 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-08T20:38:33Z s=5187d371 FINDING 27 site pages + AGENTS.md: the modes marker learn=none: prose
 2026-11-08T20:38:33Z s=5187d371 FINDING src/components/shaders/shader/shader.parts.md: Shader (background, 18) learn=none: verify passes either way; a size limit on parts is not established as a rule
 2026-11-08T20:38:33Z s=5187d371 FINDING tests/e2e/site/studio.e2e.ts: WebKit drag learn=none: flake in the alpha Studio test
+2026-11-09T06:08:51Z s=5187d371 FINDING scaffold-knowledge-graph.mdx: #kg-tree count column learn=none: visual; no measurement of column clipping exists in the e2e
+2026-11-09T06:08:51Z s=5187d371 FINDING tests/e2e/site/website-templates.e2e.ts SUBPAGES: language learn=none: test-order fix
+2026-11-09T06:08:51Z s=5187d371 FINDING portfolio-neon.mdx: light-mode kicker learn=none: assertBothModes measures the root text pairs, not a decorative kicker over a gradient
+2026-11-09T06:08:51Z s=5187d371 FINDING showcase-observatory.mdx: Day visit in dark mode learn=none: text over a shader is not measurable by the token check
+2026-11-09T06:08:51Z s=5187d371 FINDING showcase-bouldering.mdx: Granite grain learn=none: visual
+2026-11-09T06:08:51Z s=5187d371 FINDING tests/e2e/site/website-templates.e2e.ts: range waits learn=none: test fix
+2026-11-09T09:18:15Z s=5187d371 FINDING tests/e2e/site/scaffold-knowledge-graph.e2e.ts: cleanup learn=none: HYPOTHESIS: a setState issued while an unseen navigation lands is overridden by the landing; falsifier: a probe issuing setState mid-flight that keeps its confi
+2026-11-09T13:01:40Z s=5187d371 FINDING graph-explorer.ts layerColor: the default theme's chart colours learn=none: a visual property of the default theme; the e2e checks a part carries its layer colour, not which hue it is
+2026-11-09T13:39:14Z s=5187d371 FINDING graph-explorer.ts zoomPath: flight duration learn=none: a felt speed the maintainer asked for, not a contract to pin
+2026-11-09T13:39:14Z s=5187d371 FINDING graph-explorer.ts nodeActions + the KG detail renderer: Bring & Go learn=none: wording
+2026-11-09T15:03:39Z s=5187d371 FINDING tests/e2e/site/charts-big-data-docs.e2e.ts: the largest groups and the rest learn=none: a timing failure under load, not reproduced
+2026-11-09T17:03:22Z s=5187d371 FINDING tmp edit scripts: String.replace with $$ in the replacement learn=none: already a MEMORY lesson (use split/join); a one-off script, not a project file
+2026-11-09T18:13:40Z s=5187d371 FINDING src/documentation/pages/application/border-layout.mdx "Regions that fit their content": df$ before the bundle learn=none: a static check cannot tell a parse-time df$ call from one inside a handler without parsing the script (the regex scan flagged three correct scripts); the docs e
+2026-11-09T21:05:30Z s=5187d371 FINDING src/documentation/pages/guides/design-language.mdx: the stacked-rows diagram was cut learn=none: diagram.e2e covers the component's layout; a spec that cuts its own canvas shows only in a picture of the page (tmp/probe-sites3.ts)
+2026-11-09T22:27:37Z s=5187d371 FINDING src/documentation/pages/shaders/shaders.mdx: the carousel widened the gallery column learn=none: a docs gallery layout; the Carousel component itself is pinned by carousel.e2e
+2026-11-10T01:36:31Z s=5187d371 FINDING src/components/website/article-body/article-body.css .mk-article-body-layout > .toc learn=none: a one-property layout slip; the screenshot gate shows the page
+2026-11-10T01:36:31Z s=5187d371 FINDING src/components/diagrams/diagram/diagram.ts triggerStateChange: a setState of the state shown redrew everything learn=none: a cost, not a behavior: diagram.e2e passes unchanged; a timing assertion would pin a machine
+2026-11-10T01:36:31Z s=5187d371 FINDING the deck "width changes and wobbles" learn=none: reported to the maintainer as not reproduced beyond the stalls
+2026-11-10T01:36:31Z s=5187d371 FINDING src/components/graphs/graph-explorer/graph-explorer.css page head learn=none: placement; graph-explorer.e2e and the screenshots cover the page
+2026-11-10T01:36:31Z s=5187d371 FINDING tests/e2e/site/site-links.e2e.ts website-media #/photos/4 learn=none: not reproduced alone
+2026-11-10T04:49:34Z s=5187d371 FINDING the docs card: Tab completion through the Chrome extension learn=none: not a component behavior; reproduced only through the extension
+2026-11-10T04:49:34Z s=5187d371 FINDING screenshots/{light,dark}/terminal-readonly.png learn=none: a capture timing of off-screen sandboxes, not the state
+2026-11-10T04:49:34Z s=5187d371 FINDING unit suite (tests/*.test.ts) - no Terminal unit test learn=none: a unit test would need the live CDN
+2026-11-10T04:49:34Z s=5187d371 FINDING tests/e2e/site/section-bundles.e2e.ts wysiwyg-editors learn=none: not reproduced alone
+2026-11-10T07:44:47Z s=5187d371 FINDING src/documentation/runtime/docs-search.ts showStatus re-asked the query on every status event learn=none: found in review by reading; the visible result was identical, so no test observes it
+2026-11-10T07:44:47Z s=5187d371 FINDING src/documentation/runtime/search-worker.ts cachedFile and a .br sent with Content-Encoding learn=none: the e2e server sends no Content-Encoding; the dev-server path was observed in the browser probe (both lanes ready on localhost:3000)
+2026-11-10T07:44:47Z s=5187d371 FINDING src/documentation/runtime/search-worker.ts FUSION byLanguage (lexical 1, vector 2 for non-English) learn=none: docs-search.e2e shows a German question ranks the Dialog page first; no measurement of alternatives
+2026-11-10T07:44:47Z s=5187d371 FINDING unit suite - the search worker learn=none: a unit test would need the vendors served to Vitest
