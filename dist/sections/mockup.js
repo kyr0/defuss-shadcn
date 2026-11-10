@@ -54,7 +54,8 @@ function load() {
   const deadline = new Promise((_, reject) => {
     timer = setTimeout(() => reject(new Error(`xterm.js did not load within ${LOAD_MS / 1000} s`)), LOAD_MS);
   });
-  const pending = Promise.race([Promise.all([modules, sheet(urls.css)]), deadline]).then(([[xterm, fit, clipboard, serialize, links]]) => ({
+  const css = sheet(urls.css);
+  const pending = Promise.race([modules.then((loaded) => css.then(() => loaded)), deadline]).then(([xterm, fit, clipboard, serialize, links]) => ({
     Terminal: xterm.Terminal,
     FitAddon: fit.FitAddon,
     ClipboardAddon: clipboard.ClipboardAddon,
@@ -905,5 +906,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=EA5EB9E03159FCEF64756E2164756E21
+//# debugId=089C48A39D46FB3A64756E2164756E21
 //# sourceMappingURL=mockup.js.map

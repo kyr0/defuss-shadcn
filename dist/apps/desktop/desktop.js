@@ -8195,7 +8195,8 @@ function load() {
   const deadline = new Promise((_, reject) => {
     timer = setTimeout(() => reject(new Error(`xterm.js did not load within ${LOAD_MS / 1000} s`)), LOAD_MS);
   });
-  const pending = Promise.race([Promise.all([modules, sheet(urls.css)]), deadline]).then(([[xterm, fit, clipboard, serialize, links]]) => ({
+  const css = sheet(urls.css);
+  const pending = Promise.race([modules.then((loaded) => css.then(() => loaded)), deadline]).then(([xterm, fit, clipboard, serialize, links]) => ({
     Terminal: xterm.Terminal,
     FitAddon: fit.FitAddon,
     ClipboardAddon: clipboard.ClipboardAddon,
@@ -9735,6 +9736,6 @@ df$18.win = windowActions;
 init18();
 new MutationObserver(init18).observe(document, { childList: true, subtree: true });
 
-//# debugId=FB2AD76F730164CD64756E2164756E21
+//# debugId=A6232A5167C5D5D564756E2164756E21
 /* defuss-shadcn v0.9.13 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

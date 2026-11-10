@@ -21,9 +21,9 @@
   "unitTestFiles": 49,
   "withJs": 83,
   "withoutJs": 178,
-  "totalSize": 4211396,
-  "totalSizeMinified": 2109295,
-  "totalSizeGz": 1201057,
+  "totalSize": 4211741,
+  "totalSizeMinified": 2109303,
+  "totalSizeGz": 1201200,
   "totalSizeGzMinified": 689575,
   "bundle": {
     "jsSize": 1139601,
@@ -117,13 +117,13 @@
       "cssSizeGzMinified": 9943
     },
     "terminal": {
-      "jsSize": 28213,
-      "jsSizeMinified": 17370,
+      "jsSize": 28251,
+      "jsSizeMinified": 17378,
       "cssSize": 9165,
       "cssSizeMinified": 5595,
-      "totalSizeGz": 10872,
-      "totalSizeGzMinified": 8175,
-      "jsSizeGzMinified": 6663,
+      "totalSizeGz": 10881,
+      "totalSizeGzMinified": 8176,
+      "jsSizeGzMinified": 6664,
       "cssSizeGzMinified": 1512
     }
   },
@@ -731,13 +731,13 @@
         "sections/mockup.css",
         "sections/mockup.js"
       ],
-      "jsSize": 28211,
-      "jsSizeMinified": 17368,
+      "jsSize": 28249,
+      "jsSizeMinified": 17376,
       "cssSize": 22223,
       "cssSizeMinified": 12691,
-      "totalSizeGz": 13495,
-      "totalSizeGzMinified": 9598,
-      "jsSizeGzMinified": 6666,
+      "totalSizeGz": 13506,
+      "totalSizeGzMinified": 9599,
+      "jsSizeGzMinified": 6667,
       "cssSizeGzMinified": 2932
     },
     "presentations": {
@@ -4026,14 +4026,14 @@
       "name": "terminal",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 44699,
-      "jsSizeMinified": 17489,
+      "jsSize": 45044,
+      "jsSizeMinified": 17497,
       "cssSize": 9112,
       "cssSizeMinified": 5551,
-      "totalSizeGz": 15442,
+      "totalSizeGz": 15585,
       "totalSizeGzMinified": 8164,
-      "totalSize": 53811,
-      "totalSizeMinified": 23040
+      "totalSize": 54156,
+      "totalSizeMinified": 23048
     },
     "testimonials": {
       "name": "testimonials",
@@ -4616,13 +4616,13 @@
         "typography",
         "window"
       ],
-      "jsSize": 344722,
-      "jsSizeMinified": 193023,
+      "jsSize": 344760,
+      "jsSizeMinified": 193031,
       "cssSize": 431683,
       "cssSizeMinified": 268714,
-      "totalSizeGz": 156913,
-      "totalSizeGzMinified": 99949,
-      "jsSizeGzMinified": 62192,
+      "totalSizeGz": 156925,
+      "totalSizeGzMinified": 99951,
+      "jsSizeGzMinified": 62194,
       "cssSizeGzMinified": 37757
     },
     "document-editor": {

@@ -94,8 +94,12 @@ function load() {
     const deadline = new Promise((_, reject) => {
         timer = setTimeout(() => reject(new Error(`xterm.js did not load within ${LOAD_MS / 1000} s`)), LOAD_MS);
     });
-    const pending = Promise.race([Promise.all([modules, sheet(urls.css)]), deadline])
-        .then(([[xterm, fit, clipboard, serialize, links]]) => ({
+    // the stylesheet loads beside the modules, but a failing module names the failure: with Promise.all whichever
+    // failed first did - VERIFIED: (section-bundles.e2e, the v0.9.14 release run) offline, one run reported the
+    // stylesheet, the next the module, and the two bundles' errors differed
+    const css = sheet(urls.css);
+    const pending = Promise.race([modules.then((loaded) => css.then(() => loaded)), deadline])
+        .then(([xterm, fit, clipboard, serialize, links]) => ({
         Terminal: xterm.Terminal,
         FitAddon: fit.FitAddon,
         ClipboardAddon: clipboard.ClipboardAddon,
