@@ -1,6 +1,35 @@
 {
   "entries": [
     {
+      "version": "v0.9.14",
+      "date": "November 10, 2026",
+      "commits": [
+        "chore: dist rebuilt for the terminal fix",
+        "fix(terminal): a failing xterm module names the load failure - the stylesheet's error raced it",
+        "chore(agents): updated agent memory after self-reflection",
+        "fix(build): Finder's .DS_Store stays out of dist/ - the section flatten read one as a component folder (ENOTDIR)",
+        "chore(build): screenshots are taken by hand - make build, deploy.sh and verify no longer take or check them; dist 1:1 skips Finder's .DS_Store",
+        "fix(whats-new): a released version lists its pages in the changelog and its commits in the dialog - the record keys 0.9.14, the changelog v0.9.14",
+        "chore(agents): the docs search, What's new, the Terminal and the Language Switcher in AGENTS.md",
+        "chore: docs, nav, generated skills and dist for the new components, the docs search and What's new",
+        "docs(guides): Design Language - which component for which use case, a decision tree and a use-case index",
+        "fix(diagram): a setState naming the state already shown draws nothing - the flagship deck stalled ~600 ms on every slide change",
+        "feat(tabs): a link to something inside a hidden panel selects that panel's tab",
+        "fix(shader): no more wobble - the quality scale holds once it fell back after a raise; only shaders in view draw, the gallery is a carousel",
+        "feat(carousel): several slides in view - Prev / Next move by a page, a counter reads the slides shown",
+        "feat(heading-anchor): the anchor in front of, before or after the heading text, with # instead of §",
+        "feat(border-layout): several Panels in one region - a stack with dividers, side by side or top to bottom, one open at a time with data-exclusive",
+        "feat(graph-explorer): layers of information as filters, Live mode with an updates outlet, a neighbour ring; the Knowledge Graph's Hierarchy Explorer, Updates and Back / Out, without the flicker",
+        "fix(sidebar): the section headers' chevrons sit at the right edge again - a hidden What's new dot took their slot",
+        "feat(docs): What's new - the pages each release created or updated, derived from git; dots in the sidebar, a dialog on the front page and a note on each changed page until it is opened",
+        "feat(website): eight industry sites, and every site works end to end - each listed item opens a page of its own, every link has a destination, a Language Switcher on every template, the Developer portfolio's hero a live terminal",
+        "feat(language-switcher): Language Switcher - a Combobox, Swap or menu of languages with flags and names from Intl; every Application Scaffold switches its language through one",
+        "feat(terminal): Terminal - a live command line on xterm.js 6 with a shell of its own (prompt, history, completion, commands, replayed sessions); the Desktop's Command Prompt runs on it",
+        "feat(command): data-filter=&quot;none&quot; - the page writes the items from its own search, the palette keeps its keys, highlight and Enter",
+        "feat(docs): the palette searches with defuss-search - BM25 fused with Winzling-reranker's ColBERT scan over an index built from the rendered pages; the model loads after the page and is cached, defuss-lid reads the query's language"
+      ]
+    },
+    {
       "version": "v0.9.13",
       "date": "November 08, 2026",
       "commits": [
