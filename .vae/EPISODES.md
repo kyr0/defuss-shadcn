@@ -139,3 +139,5 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-10T07:44:47Z s=5187d371 FINDING src/documentation/runtime/search-worker.ts cachedFile and a .br sent with Content-Encoding learn=none: the e2e server sends no Content-Encoding; the dev-server path was observed in the browser probe (both lanes ready on localhost:3000)
 2026-11-10T07:44:47Z s=5187d371 FINDING src/documentation/runtime/search-worker.ts FUSION byLanguage (lexical 1, vector 2 for non-English) learn=none: docs-search.e2e shows a German question ranks the Dialog page first; no measurement of alternatives
 2026-11-10T07:44:47Z s=5187d371 FINDING unit suite - the search worker learn=none: a unit test would need the vendors served to Vitest
+2026-11-10T11:35:24Z s=5187d371 FINDING Makefile build / scripts/deploy.sh 4b / scripts/verify.ts gates 12, 12b (PNG part), 24 learn=none: a removal by decision; verify OK and 297/297 e2e without it
+2026-11-10T11:35:24Z s=5187d371 FINDING AGENTS.md, README.md + index.mdx, ARCH.md, the flagship deck, state-api / architecture pages, SKILL_tpl.md learn=none: docs; documentation.e2e renders the architecture page from ARCH.md and passed
