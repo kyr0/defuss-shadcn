@@ -1,6 +1,6 @@
 ---
 title: "Heading Anchor"
-description: "Heading Anchor component - a quiet § permalink before or after any heading, no JavaScript."
+description: "Heading Anchor component - a quiet § or # permalink hanging in front of any heading, or before or after its text, no JavaScript."
 slug: "heading-anchor"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 <DocPage meta={meta}>
 
 <PageHeader slug="heading-anchor" title="Heading Anchor" component="heading-anchor">
-  A quiet § permalink on any heading - visible on hover, copyable as a deep link. Placed before or after the heading text. No JavaScript required.
+  A quiet § (or #) permalink on any heading - hanging in front of it and shown on hover by default, or inline before or after its text. A copyable deep link with no JavaScript.
 </PageHeader>
 
 <SkillPanel component="heading-anchor">
@@ -30,8 +30,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
   <SkillField label="Placements (data-placement)">
     <SkillGrid>
-      <Variant name="before" description="margin-right - the default slot" />
-      <Variant name="after" description="margin-left - trailing the text" />
+      <Variant name="front" description="the default - hangs in front of the heading, shown on hover, focus and target" />
+      <Variant name="before" description="inline in front of the text, always shown" />
+      <Variant name="after" description="trailing the text, always shown" />
     </SkillGrid>
   </SkillField>
   <SkillField label="Sizes (data-size)">
@@ -46,20 +47,34 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </SkillPanel>
 
 ```html example label="Sizes" hint="data-size pins the glyph size explicitly; without it the glyph inherits the heading's own font size (recommended - it then tracks the heading automatically). The glyph always inherits the heading's font family - var(--font-sans), var(--font-serif) and var(--font-mono) all work."
-<a class="heading-anchor" data-size="sm" href="#intro" aria-label="Link to section: Intro">§</a>
+<a class="heading-anchor" data-size="sm" data-placement="before" href="#intro" aria-label="Link to section: Intro">§</a>
 ```
 
-```html example label="Before the heading (default)" hint="The anchor rides the heading's baseline, quiet until hovered."
-<h3 id="tokens">
+```html example label="In front of the heading (default)" hint="Hover the heading: the glyph hangs in the gutter, so the heading's text keeps its own start edge. It also shows on keyboard focus and when the section is the address's target; on a touch screen it sits in front of the text instead. Leave about 1.5em of room at the heading's start."
+<h3 id="tokens" style="padding-inline-start: 2rem">
   <a class="heading-anchor" href="#tokens" aria-label="Link to section: Tokens">§</a>
   Tokens
 </h3>
 ```
 
-```html example label="After the heading" hint="data-placement='after' swaps the margin side."
-<h3 id="tokens">
-  Tokens
-  <a class="heading-anchor" href="#tokens" data-placement="after" aria-label="Link to section: Tokens">§</a>
+```html example label="With # instead of §" hint="The glyph is the link's text - a hash reads as a permalink to readers who know it from GitHub and Markdown."
+<h3 id="spacing" style="padding-inline-start: 2rem">
+  <a class="heading-anchor" href="#spacing" aria-label="Link to section: Spacing">#</a>
+  Spacing
+</h3>
+```
+
+```html example label="Before the heading text" hint="data-placement=&quot;before&quot; puts the glyph inline in front of the text, always shown."
+<h3 id="colors">
+  <a class="heading-anchor" href="#colors" data-placement="before" aria-label="Link to section: Colors">§</a>
+  Colors
+</h3>
+```
+
+```html example label="After the heading text" hint="data-placement=&quot;after&quot; trails the text, always shown."
+<h3 id="motion">
+  Motion
+  <a class="heading-anchor" href="#motion" data-placement="after" aria-label="Link to section: Motion">§</a>
 </h3>
 ```
 
