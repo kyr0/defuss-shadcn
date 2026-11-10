@@ -14,7 +14,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Article blocks composed into one page - the source is the page. Previous, Next and Read next are routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/articles/testing-sync</code>): <code>prepare()</code> builds the routed article from the page's data block and <code>commit()</code> swaps it in. The language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink> - the date and the reading time are values of the routed article; the articles stay as written.</DocText>
+<DocText>The Article blocks composed into one page - the source is the page. Previous, Next and Read next are routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/articles/testing-sync</code>): <code>prepare()</code> builds the routed article from the page's data block and <code>commit()</code> swaps it in - its photo, its text, its author's bio and the two other articles to read next. The byline's name leads to the bio below; the bar and the footer lead to the sister sites. The language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink> - the date, the reading time and the author's role are values of the routed article; the articles stay as written.</DocText>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-website-article.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
@@ -117,20 +117,93 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   #site-article[data-look='eink'] .article-look-only[data-for='eink'] {
     display: block;
   }
-  /* the site bar */
-  #site-article .article-bar {
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 1.5rem;
-    width: 100%;
-    min-height: 4.5rem;
-    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+  #site-article [hidden] {
+    display: none !important;
+  }
+  /* the site bar (Site Header): the publication, its sister sites, the look, the language and the mode */
+  #site-article .mk-header.article-bar {
+    background: transparent;
     border-block-end: 1px solid var(--border);
   }
+  #site-article .article-bar .mk-header-inner {
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    width: 100%;
+    max-width: none;
+    min-height: 4.5rem;
+    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+  }
+  #site-article .article-bar .mk-header-nav {
+    margin-inline-end: auto;
+  }
+  /* narrow: the menu button sits at the end of the brand's row, the controls wrap below */
+  #site-article .article-bar .site-menu {
+    margin-inline-start: auto;
+  }
+  #site-article .sheet .mk-header-sheet-actions {
+    display: grid;
+    justify-content: stretch;
+  }
+  #site-article .article-bar .nav-menu-list {
+    display: flex;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #site-article .article-bar .nav-menu-link {
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  #site-article .article-bar .nav-menu-link:hover {
+    color: var(--foreground);
+  }
+  /* the category is a label, not a link */
+  #site-article .mk-article-header-category:hover {
+    text-decoration: none;
+  }
+  #site-article span.mk-author-list-name:hover {
+    text-decoration: none;
+  }
+  #site-article .article-copied {
+    align-self: center;
+    color: var(--primary);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  /* the footer (Site Footer, simple): the publication, its sister sites, the small print */
+  #site-article .mk-footer.article-footer {
+    box-sizing: border-box;
+    margin-block-start: clamp(3rem, 7vw, 5rem);
+    margin-block-end: calc(-1 * clamp(3rem, 7vw, 5.5rem));
+    border-block-start: 1px solid var(--border);
+    background: var(--card);
+  }
+  #site-article .article-footer .mk-footer-inner {
+    max-width: none;
+    padding: 2rem clamp(1rem, 4vw, 2.5rem);
+  }
+  #site-article .article-footer .mk-footer-brand {
+    color: var(--foreground);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #site-article .article-footer .mk-footer-brand span {
+    color: var(--muted-foreground);
+    font-weight: 600;
+  }
+  #site-article .article-footer .mk-footer-links a {
+    color: var(--muted-foreground);
+    font-weight: 600;
+  }
+  #site-article .article-footer .mk-footer-links a:hover {
+    color: var(--foreground);
+  }
   #site-article .article-brand {
+    display: block;
     color: var(--foreground);
     text-decoration: none;
     font-weight: 800;
@@ -144,7 +217,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   #site-article .article-bar-controls {
     display: flex;
     flex-wrap: wrap;
+    flex-shrink: 1;
     gap: 0.5rem;
+    min-width: 0;
   }
   #site-article .article-bar .select {
     min-width: 8.5rem;
@@ -198,7 +273,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     --surface-ink: oklch(0.16 0 0 / 0.06);
     --surface-bg: transparent;
   }
-  #site-article .mk-article-header > :is(a, h1, p, div):not(.surface) {
+  #site-article .mk-article-header > :is(a, span, h1, p, div):not(.surface) {
     box-sizing: border-box;
     width: 100%;
     max-width: 41rem;
@@ -483,47 +558,128 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   /* -- modes: end -- */
 </style>
 <article id="site-article" data-look="longform" data-i18n-component>
-  <div class="article-bar">
-    <a class="article-brand" href="#/">Acme <span>Engineering</span></a>
-    <div class="article-bar-controls">
-      <select
-        class="select"
-        data-size="sm"
-        data-site-look
-        aria-label="Look"
-        data-i18n-aria-label-en="Look"
-        data-i18n-aria-label-de="Stil"
-        style="width: auto"
+  <header class="mk-header article-bar">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand article-brand" href="#/" data-router-link>Acme <span>Engineering</span></a>
+      <button
+        type="button"
+        class="btn mk-header-menu site-menu"
+        data-variant="ghost"
+        data-size="icon"
+        data-sheet-trigger="article-menu"
+        aria-haspopup="dialog"
+        aria-label="Open menu"
+        data-i18n-aria-label-en="Open menu"
+        data-i18n-aria-label-de="Menü öffnen"
+        ><svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" /></svg
+      ></button>
+      <nav
+        class="mk-header-nav"
+        aria-label="More from Acme"
+        data-i18n-aria-label-en="More from Acme"
+        data-i18n-aria-label-de="Mehr von Acme"
       >
-        <option value="longform" data-i18n-target="look-longform">Longform</option>
-        <option value="blueprint" data-i18n-target="look-blueprint">Blueprint</option>
-        <option value="eink" data-i18n-target="look-eink">E-ink</option>
-      </select>
-      <select
-        class="select"
-        data-size="sm"
-        data-app-locale
-        aria-label="Language"
-        data-i18n-aria-label-en="Language"
-        data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input
-          type="checkbox"
-          data-site-mode
-          aria-label="Dark mode"
-          data-i18n-aria-label-en="Dark mode"
-          data-i18n-aria-label-de="Dunkler Modus"
-        />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
+        <ul class="nav-menu-list">
+          <li class="nav-menu-item"><a class="nav-menu-link" href="full-website-blog.html">Journal</a></li>
+          <li class="nav-menu-item"
+            ><a class="nav-menu-link" href="full-website-news.html" data-i18n-target="nav-news">Newsroom</a></li
+          >
+        </ul>
+      </nav>
+      <div class="mk-header-actions article-bar-controls">
+        <select
+          class="select"
+          data-size="sm"
+          data-site-look
+          aria-label="Look"
+          data-i18n-aria-label-en="Look"
+          data-i18n-aria-label-de="Stil"
+          style="width: auto"
+        >
+          <option value="longform" data-i18n-target="look-longform">Longform</option>
+          <option value="blueprint" data-i18n-target="look-blueprint">Blueprint</option>
+          <option value="eink" data-i18n-target="look-eink">E-ink</option>
+        </select>
+        <div
+          class="language-switcher"
+          data-app-locale
+          role="group"
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-variant="swap"
+          data-display="icon"
+          data-flag-shape="circle"
+        ></div>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+      </div>
     </div>
-  </div>
+    <!-- narrow: the navigation in a Sheet behind the menu button -->
+    <dialog
+      id="article-menu"
+      class="sheet"
+      data-side="right"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="article-menu-title"
+    >
+      <div class="sheet-content">
+        <div class="sheet-header">
+          <h2 class="sheet-title" id="article-menu-title">Acme Engineering</h2>
+        </div>
+        <div class="sheet-body">
+          <ul class="mk-header-sheet-nav">
+            <li><a href="full-website-blog.html">Journal</a></li>
+            <li><a href="full-website-news.html" data-i18n-target="sh-news">Newsroom</a></li>
+            <li><a href="full-website-comments.html" data-i18n-target="sh-comments">Reader discussions</a></li>
+            <li><a href="mailto:engineering@acme.example" data-i18n-target="sh-write">Write to the editors</a></li>
+          </ul>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="sheet-close-x"
+        data-sheet-close
+        aria-label="Close"
+        data-i18n-aria-label-en="Close"
+        data-i18n-aria-label-de="Schließen"
+        ><svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18M6 6l12 12" /></svg
+      ></button>
+    </dialog>
+  </header>
   <div class="article-progress" aria-hidden="true"></div>
   <header class="mk-article-header">
     <div
@@ -540,7 +696,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       data-pattern="grain"
       aria-hidden="true"
     ></div>
-    <a class="mk-article-header-category" href="#">Engineering</a>
+    <span class="mk-article-header-category">Engineering</span>
     <h1 class="mk-article-header-title">How offline sync works in Acme 4.0</h1>
     <p class="mk-article-header-subtitle">CRDTs, a write-ahead log and a lot of patience.</p>
     <div class="mk-article-header-byline">
@@ -548,7 +704,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" data-article-face
       /></span>
       <div>
-        <a class="mk-article-header-author" href="#">Sophie Tan</a>
+        <a class="mk-article-header-author" href="#article-bio">Sophie Tan</a>
         <div class="mk-article-header-meta"
           ><time datetime="2026-10-01" data-article-date
             ><span data-i18n-target="date"><span data-i18n-value="date">1 October 2026</span></span></time
@@ -557,8 +713,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </div>
     </div>
     <figure class="mk-article-header-media">
-      <img src="https://picsum.photos/id/60/1400/700" alt="A desk with a keyboard, a tablet and a notebook" />
-      <figcaption>The first sketch of the sync pipeline, March 2026.</figcaption>
+      <img
+        src="https://picsum.photos/id/60/1400/700"
+        alt="A desk with a keyboard, a tablet and a notebook"
+        data-article-photo
+      />
+      <figcaption data-article-caption>The first sketch of the sync pipeline, March 2026.</figcaption>
     </figure>
   </header>
   <div class="article-column">
@@ -627,6 +787,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><i data-lucide="link"></i></button
         ></li>
       </ul>
+      <span class="article-copied" role="status" data-article-copied hidden
+        ><span data-i18n-target="copied">Link copied</span></span
+      >
     </div>
   </div>
   <div class="mk-article-body" data-article-body>
@@ -637,20 +800,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <h2>Why CRDTs</h2>
     <p
       >A conflict-free replicated data type lets two devices edit the same document without a server deciding who wins.
-      Every operation <a href="#">commutes</a> - merging becomes a set union.</p
+      Every operation
+      <a href="https://en.wikipedia.org/wiki/Commutative_property" target="_blank" rel="noopener">commutes</a> - merging
+      becomes a set union.</p
     >
     <blockquote><p>The best sync is the one you forget is there.</p><cite>Hannah Lee, Design</cite></blockquote>
   </div>
   <div class="article-column article-after">
     <section class="mk-author-bio" aria-labelledby="article-bio">
       <span class="avatar" data-size="lg"
-        ><img class="avatar-image" src="https://i.pravatar.cc/160?img=47" alt=""
+        ><img class="avatar-image" src="https://i.pravatar.cc/160?img=47" alt="" data-article-bio-face
       /></span>
       <div class="mk-author-bio-body">
         <span class="mk-author-bio-label" data-i18n-target="written">Written by</span>
-        <h2 class="mk-author-bio-name" id="article-bio"><a href="#">Sophie Tan</a></h2>
-        <p class="mk-author-bio-role" data-i18n-target="bio-role">Staff engineer, Sync team</p>
-        <p class="mk-author-bio-text"
+        <h2 class="mk-author-bio-name" id="article-bio" data-article-bio-name>Sophie Tan</h2>
+        <p class="mk-author-bio-role" data-i18n-target="bio-role"
+          ><span data-i18n-value="role">Staff engineer, Sync team</span></p
+        >
+        <p class="mk-author-bio-text" data-article-bio-text
           >Sophie leads the sync team at Acme. Before that she built storage engines at two databases you have heard of.
           She writes about distributed systems, testing, and calm engineering.</p
         >
@@ -660,35 +827,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               class="btn"
               data-variant="ghost"
               data-size="icon-sm"
-              href="#"
-              rel="me"
-              aria-label="Website"
-              data-i18n-aria-label-en="Website"
-              data-i18n-aria-label-de="Website"
-              ><i data-lucide="globe"></i></a
-          ></li>
-          <li
-            ><a
-              class="btn"
-              data-variant="ghost"
-              data-size="icon-sm"
-              href="#"
-              rel="me"
-              aria-label="Email Sophie"
-              data-i18n-aria-label-en="Email Sophie"
-              data-i18n-aria-label-de="Sophie eine E-Mail schreiben"
+              href="mailto:sophie@acme.example"
+              aria-label="Write to the author"
+              data-i18n-aria-label-en="Write to the author"
+              data-i18n-aria-label-de="Der Autorin schreiben"
+              data-article-bio-mail
               ><i data-lucide="mail"></i></a
-          ></li>
-          <li
-            ><a
-              class="btn"
-              data-variant="ghost"
-              data-size="icon-sm"
-              href="#"
-              aria-label="RSS feed of Sophie's posts"
-              data-i18n-aria-label-en="RSS feed of Sophie's posts"
-              data-i18n-aria-label-de="RSS-Feed von Sophies Beiträgen"
-              ><i data-lucide="rss"></i></a
           ></li>
         </ul>
       </div>
@@ -715,32 +859,52 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <section class="article-next" aria-labelledby="read-next">
       <h2 id="read-next" data-i18n-target="read-next">Read next</h2>
       <div class="article-next-grid">
-        <article class="mk-related-item" data-variant="card">
-          <figure class="mk-related-item-media"><img src="https://picsum.photos/id/225/600/400" alt="" /></figure>
+        <article class="mk-related-item" data-variant="card" data-related-slot="0">
+          <figure class="mk-related-item-media"
+            ><img src="https://picsum.photos/id/225/600/400" alt="" data-related-photo
+          /></figure>
           <div class="mk-related-item-body">
-            <span class="mk-related-item-kind" data-i18n-target="kind-article">Article</span>
-            <h3 class="mk-related-item-title"
-              ><a href="#/articles/designing-for-calm" data-router-link>Designing for calm</a></h3
+            <span class="mk-related-item-kind" data-i18n-target="kind-1"
+              ><span data-i18n-value="rel0Kind">Article</span></span
             >
-            <p class="mk-related-item-meta" data-i18n-target="meta-calm">24 Sep 2026 · 5 min read</p>
+            <h3 class="mk-related-item-title"
+              ><a href="#/articles/designing-for-calm" data-router-link data-related-link>Designing for calm</a></h3
+            >
+            <p class="mk-related-item-meta" data-i18n-target="meta-1"
+              ><span data-i18n-value="rel0Date">24 Sep 2026</span> · <span data-i18n-value="rel0Minutes">5</span> min
+              read</p
+            >
           </div>
         </article>
-        <article class="mk-related-item" data-variant="card">
-          <figure class="mk-related-item-media"><img src="https://picsum.photos/id/160/600/600" alt="" /></figure>
+        <article class="mk-related-item" data-variant="card" data-related-slot="1">
+          <figure class="mk-related-item-media"
+            ><img src="https://picsum.photos/id/160/600/600" alt="" data-related-photo
+          /></figure>
           <div class="mk-related-item-body">
-            <span class="mk-related-item-kind" data-i18n-target="kind-guide">Guide</span>
-            <h3 class="mk-related-item-title"
-              ><a href="#/articles/testing-sync" data-router-link>Testing sync with a lossy network</a></h3
+            <span class="mk-related-item-kind" data-i18n-target="kind-2"
+              ><span data-i18n-value="rel1Kind">Guide</span></span
             >
-            <p class="mk-related-item-meta" data-i18n-target="meta-testing">12 Sep 2026 · 11 min read</p>
+            <h3 class="mk-related-item-title"
+              ><a href="#/articles/testing-sync" data-router-link data-related-link
+                >Testing sync with a lossy network</a
+              ></h3
+            >
+            <p class="mk-related-item-meta" data-i18n-target="meta-2"
+              ><span data-i18n-value="rel1Date">12 Sep 2026</span> · <span data-i18n-value="rel1Minutes">11</span> min
+              read</p
+            >
           </div>
         </article>
         <article class="mk-related-item" data-variant="card">
           <figure class="mk-related-item-media"><img src="https://picsum.photos/id/119/600/400" alt="" /></figure>
           <div class="mk-related-item-body">
-            <span class="mk-related-item-kind">Video</span>
-            <h3 class="mk-related-item-title"><a href="#">Offline sync in four minutes</a></h3>
-            <p class="mk-related-item-meta">4:12</p>
+            <span class="mk-related-item-kind" data-i18n-target="kind-discussion">Discussion</span>
+            <h3 class="mk-related-item-title"
+              ><a href="full-website-comments.html" data-i18n-target="rel-discussion"
+                >Your questions about offline sync</a
+              ></h3
+            >
+            <p class="mk-related-item-meta" data-i18n-target="meta-discussion">4 comments</p>
           </div>
         </article>
       </div>
@@ -751,31 +915,64 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <li class="mk-author-list-item">
           <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" /></span>
           <div class="mk-author-list-who"
-            ><a class="mk-author-list-name" href="#">Sophie Tan</a
+            ><span class="mk-author-list-name">Sophie Tan</span
             ><span class="mk-author-list-role">Staff engineer</span></div
           >
         </li>
         <li class="mk-author-list-item">
           <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /></span>
           <div class="mk-author-list-who"
-            ><a class="mk-author-list-name" href="#">Hannah Lee</a
+            ><span class="mk-author-list-name">Hannah Lee</span
             ><span class="mk-author-list-role" data-i18n-target="role-hannah">Design lead</span></div
           >
         </li>
         <li class="mk-author-list-item">
           <span class="avatar"><span class="avatar-fallback">AH</span></span>
           <div class="mk-author-list-who"
-            ><a class="mk-author-list-name" href="#">Aron Homberg</a><span class="mk-author-list-role">CEO</span></div
+            ><span class="mk-author-list-name">Aron Homberg</span><span class="mk-author-list-role">CEO</span></div
           >
         </li>
       </ul>
       <p class="mk-author-list-summary" data-i18n-target="help">With help from Hannah Lee and Aron Homberg</p>
     </section>
   </div>
+  <footer class="mk-footer article-footer" data-variant="simple">
+    <div class="mk-footer-inner">
+      <a class="mk-footer-brand" href="#/" data-router-link>Acme <span>Engineering</span></a>
+      <ul class="mk-footer-links">
+        <li><a href="full-website-blog.html">The Acme Journal</a></li>
+        <li><a href="full-website-news.html">The Acme Times</a></li>
+        <li><a href="full-website-comments.html" data-i18n-target="ft-discussions">Reader discussions</a></li>
+        <li><a href="mailto:engineering@acme.example" data-i18n-target="ft-write">Write to the editors</a></li>
+      </ul>
+      <p class="mk-footer-copy" data-i18n-target="ft-copy">© 2026 Acme Inc. Engineering notes from the team.</p>
+    </div>
+  </footer>
+  <!-- the authors the articles name: the bio under an article follows its author -->
+  <script type="application/json" id="article-authors">
+    {
+      "Sophie Tan": {
+        "img": 47,
+        "mail": "sophie@acme.example",
+        "role": { "en": "Staff engineer, Sync team", "de": "Staff Engineer im Sync-Team" },
+        "bio": "Sophie leads the sync team at Acme. Before that she built storage engines at two databases you have heard of. She writes about distributed systems, testing, and calm engineering."
+      },
+      "Hannah Lee": {
+        "img": 32,
+        "mail": "hannah@acme.example",
+        "role": { "en": "Design lead", "de": "Designleiterin" },
+        "bio": "Hannah leads design at Acme and removes more than she adds. She writes about type, color and interfaces that stay quiet."
+      }
+    }
+  </script>
   <script type="application/json" id="article-data">
     {
       "designing-for-calm": {
         "category": "Design",
+        "kind": "article",
+        "photo": 225,
+        "alt": "A glass teapot and cups on a quiet table",
+        "caption": "Tea, not alerts: the design team's Friday table.",
         "title": "Designing for calm",
         "subtitle": "Fewer badges, quieter colors, one primary action per screen.",
         "author": "Hannah Lee",
@@ -788,6 +985,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       },
       "offline-sync": {
         "category": "Engineering",
+        "kind": "article",
+        "photo": 60,
+        "alt": "A desk with a keyboard, a tablet and a notebook",
+        "caption": "The first sketch of the sync pipeline, March 2026.",
         "title": "How offline sync works in Acme 4.0",
         "subtitle": "CRDTs, a write-ahead log and a lot of patience.",
         "author": "Sophie Tan",
@@ -797,6 +998,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       },
       "testing-sync": {
         "category": "Guide",
+        "kind": "guide",
+        "photo": 160,
+        "alt": "A smartphone, close up",
+        "caption": "The test phone behind the proxy, which drops one packet in five.",
         "title": "Testing sync with a lossy network",
         "subtitle": "Packet loss, clock skew and a proxy that lies on purpose.",
         "author": "Sophie Tan",
@@ -824,22 +1029,52 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="share" data-i18n-locale="de">Teilen</template>
   <template data-i18n-for="written" data-i18n-locale="en">Written by</template>
   <template data-i18n-for="written" data-i18n-locale="de">Geschrieben von</template>
-  <template data-i18n-for="bio-role" data-i18n-locale="en">Staff engineer, Sync team</template>
-  <template data-i18n-for="bio-role" data-i18n-locale="de">Staff Engineer im Sync-Team</template>
+  <template data-i18n-for="bio-role" data-i18n-locale="en"><span data-i18n-value="role"></span></template>
+  <template data-i18n-for="bio-role" data-i18n-locale="de"><span data-i18n-value="role"></span></template>
   <template data-i18n-for="prev" data-i18n-locale="en">Previous</template>
   <template data-i18n-for="prev" data-i18n-locale="de">Vorheriger</template>
   <template data-i18n-for="next" data-i18n-locale="en">Next</template>
   <template data-i18n-for="next" data-i18n-locale="de">Nächster</template>
   <template data-i18n-for="read-next" data-i18n-locale="en">Read next</template>
   <template data-i18n-for="read-next" data-i18n-locale="de">Weiterlesen</template>
-  <template data-i18n-for="kind-article" data-i18n-locale="en">Article</template>
-  <template data-i18n-for="kind-article" data-i18n-locale="de">Artikel</template>
-  <template data-i18n-for="kind-guide" data-i18n-locale="en">Guide</template>
-  <template data-i18n-for="kind-guide" data-i18n-locale="de">Anleitung</template>
-  <template data-i18n-for="meta-calm" data-i18n-locale="en">24 Sep 2026 · 5 min read</template>
-  <template data-i18n-for="meta-calm" data-i18n-locale="de">24. Sep. 2026 · 5 Min. Lesezeit</template>
-  <template data-i18n-for="meta-testing" data-i18n-locale="en">12 Sep 2026 · 11 min read</template>
-  <template data-i18n-for="meta-testing" data-i18n-locale="de">12. Sep. 2026 · 11 Min. Lesezeit</template>
+  <template data-i18n-for="kind-1" data-i18n-locale="en"><span data-i18n-value="rel0Kind"></span></template>
+  <template data-i18n-for="kind-1" data-i18n-locale="de"><span data-i18n-value="rel0Kind"></span></template>
+  <template data-i18n-for="kind-2" data-i18n-locale="en"><span data-i18n-value="rel1Kind"></span></template>
+  <template data-i18n-for="kind-2" data-i18n-locale="de"><span data-i18n-value="rel1Kind"></span></template>
+  <template data-i18n-for="meta-1" data-i18n-locale="en"
+    ><span data-i18n-value="rel0Date"></span> · <span data-i18n-value="rel0Minutes"></span> min read</template
+  >
+  <template data-i18n-for="meta-1" data-i18n-locale="de"
+    ><span data-i18n-value="rel0Date"></span> · <span data-i18n-value="rel0Minutes"></span> Min. Lesezeit</template
+  >
+  <template data-i18n-for="meta-2" data-i18n-locale="en"
+    ><span data-i18n-value="rel1Date"></span> · <span data-i18n-value="rel1Minutes"></span> min read</template
+  >
+  <template data-i18n-for="meta-2" data-i18n-locale="de"
+    ><span data-i18n-value="rel1Date"></span> · <span data-i18n-value="rel1Minutes"></span> Min. Lesezeit</template
+  >
+  <template data-i18n-for="kind-discussion" data-i18n-locale="en">Discussion</template>
+  <template data-i18n-for="kind-discussion" data-i18n-locale="de">Diskussion</template>
+  <template data-i18n-for="rel-discussion" data-i18n-locale="en">Your questions about offline sync</template>
+  <template data-i18n-for="rel-discussion" data-i18n-locale="de">Eure Fragen zum Offline-Sync</template>
+  <template data-i18n-for="meta-discussion" data-i18n-locale="en">4 comments</template>
+  <template data-i18n-for="meta-discussion" data-i18n-locale="de">4 Kommentare</template>
+  <template data-i18n-for="copied" data-i18n-locale="en">Link copied</template>
+  <template data-i18n-for="copied" data-i18n-locale="de">Link kopiert</template>
+  <template data-i18n-for="nav-news" data-i18n-locale="en">Newsroom</template>
+  <template data-i18n-for="nav-news" data-i18n-locale="de">Newsroom</template>
+  <template data-i18n-for="sh-news" data-i18n-locale="en">Newsroom</template>
+  <template data-i18n-for="sh-news" data-i18n-locale="de">Newsroom</template>
+  <template data-i18n-for="sh-comments" data-i18n-locale="en">Reader discussions</template>
+  <template data-i18n-for="sh-comments" data-i18n-locale="de">Diskussionen der Leser</template>
+  <template data-i18n-for="sh-write" data-i18n-locale="en">Write to the editors</template>
+  <template data-i18n-for="sh-write" data-i18n-locale="de">Der Redaktion schreiben</template>
+  <template data-i18n-for="ft-discussions" data-i18n-locale="en">Reader discussions</template>
+  <template data-i18n-for="ft-discussions" data-i18n-locale="de">Leserdiskussionen</template>
+  <template data-i18n-for="ft-write" data-i18n-locale="en">Write to the editors</template>
+  <template data-i18n-for="ft-write" data-i18n-locale="de">Der Redaktion schreiben</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="en">© 2026 Acme Inc. Engineering notes from the team.</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="de">© 2026 Acme Inc. Technik-Notizen aus dem Team.</template>
   <template data-i18n-for="contributors" data-i18n-locale="en">Contributors</template>
   <template data-i18n-for="contributors" data-i18n-locale="de">Mitwirkende</template>
   <template data-i18n-for="role-hannah" data-i18n-locale="en">Design lead</template>
@@ -869,22 +1104,49 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
     // the articles the routes name, in reading order; the one on the page keeps its authored body
     const ARTICLES = JSON.parse(df$('#article-data').text());
+    const AUTHORS = JSON.parse(df$('#article-authors').text());
     const ORDER = ['designing-for-calm', 'offline-sync', 'testing-sync'];
     const authored = df$('[data-article-body]').html();
     let current = ARTICLES['offline-sync'];
+    // read next: the two articles that are not the one shown
+    const others = () => ORDER.filter((slug) => ARTICLES[slug] !== current);
+    const KINDS = { article: { en: 'Article', de: 'Artikel' }, guide: { en: 'Guide', de: 'Anleitung' } };
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
       locale: 'en', // the demos start in English; the language select offers German
     });
+    const lang = (entry) => entry[locale.locale] ?? entry.en;
     const texts = createDomI18n(df$).bind(site, locale, {
       getState: () => current,
       values: (state) => ({
         date: locale.formatDate(Date.parse(state.date), { dateStyle: 'long', timeZone: 'UTC' }),
         minutes: locale.formatNumber(state.minutes),
+        role: lang(AUTHORS[state.author].role),
+        ...Object.fromEntries(
+          others().flatMap((slug, i) => [
+            ['rel' + i + 'Kind', lang(KINDS[ARTICLES[slug].kind])],
+            [
+              'rel' + i + 'Date',
+              locale.formatDate(Date.parse(ARTICLES[slug].date), { dateStyle: 'medium', timeZone: 'UTC' }),
+            ],
+            ['rel' + i + 'Minutes', locale.formatNumber(ARTICLES[slug].minutes)],
+          ]),
+        ),
       }),
     });
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+
+    // -- Copy link: the address on the clipboard, a word that says so (a sandboxed preview may refuse the clipboard)
+    df$('#site-article [data-share="copy"]').on('click', async () => {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        df$('#site-article [data-article-copied]').prop('hidden', false);
+        setTimeout(() => df$('#site-article [data-article-copied]').prop('hidden', true), 2500);
+      } catch {
+        df$('#site-article [data-article-copied]').prop('hidden', true);
+      }
+    });
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -910,11 +1172,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     const view = (to) => {
       const slug = ARTICLES[to.params.slug] ? to.params.slug : 'offline-sync';
       const article = ARTICLES[slug];
-      const body = article.body
-        ? article.body
-            .map((text) => Object.assign(document.createElement('p'), { textContent: text }).outerHTML)
-            .join('')
-        : authored;
+      const author = AUTHORS[article.author];
       const near = (step) => ORDER[(ORDER.indexOf(slug) + step + ORDER.length) % ORDER.length];
       return {
         commit() {
@@ -923,12 +1181,34 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           df$('.mk-article-header-title').text(article.title);
           df$('.mk-article-header-subtitle').text(article.subtitle);
           df$('.mk-article-header-author').text(article.author);
-          df$('[data-article-face]').attr(
-            'src',
-            'https://i.pravatar.cc/96?img=' + (article.author === 'Hannah Lee' ? 32 : 47),
-          );
+          df$('[data-article-face]').attr('src', 'https://i.pravatar.cc/96?img=' + author.img);
           df$('[data-article-date]').attr('datetime', article.date);
-          df$('[data-article-body]').html(body);
+          df$('[data-article-photo]')
+            .attr('src', 'https://picsum.photos/id/' + article.photo + '/1400/700')
+            .attr('alt', article.alt);
+          df$('[data-article-caption]').text(article.caption);
+          // the routed article's paragraphs, or the authored body of the one on the page
+          const body = df$('[data-article-body]');
+          if (article.body) {
+            body.html('');
+            for (const text of article.body) body.append(df$('<p></p>').text(text));
+          } else body.html(authored);
+          // the author under the article
+          df$('[data-article-bio-face]').attr('src', 'https://i.pravatar.cc/160?img=' + author.img);
+          df$('[data-article-bio-name]').text(article.author);
+          df$('[data-article-bio-text]').text(author.bio);
+          df$('[data-article-bio-mail]').attr('href', 'mailto:' + author.mail);
+          // read next: the other two articles
+          others().forEach((other, i) => {
+            const card = df$('[data-related-slot="' + i + '"]');
+            card
+              .find('[data-related-link]')
+              .attr('href', '#/articles/' + other)
+              .text(ARTICLES[other].title);
+            card
+              .find('[data-related-photo]')
+              .attr('src', 'https://picsum.photos/id/' + ARTICLES[other].photo + '/600/400');
+          });
           for (const [rel, step] of [
             ['prev', -1],
             ['next', 1],
@@ -942,13 +1222,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       };
     };
     const show = (to) => view(to).commit();
-    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => view(to) });
+    // a new page opens at its start, the way a page load would - the first view stays where the reader is
+    let shownPath = null;
+    const showAt = (to) => {
+      show(to);
+      if (shownPath !== null && shownPath !== to.path)
+        df$('#site-article .mk-article-header').get(0)?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      shownPath = to.path;
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => showAt(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
-      addEventListener('hashchange', follow);
+      const follow = () => showAt(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      // a section link (#article-bio) only scrolls - the article stays
+      addEventListener('hashchange', () => {
+        if (location.hash.length < 2 || location.hash.startsWith('#/')) follow();
+      });
       follow();
     }
   });

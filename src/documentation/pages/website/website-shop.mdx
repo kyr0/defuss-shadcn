@@ -14,7 +14,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Shop blocks composed into one page - the source is the page. The store, the cart, the checkout and the order are routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/cart</code>, <code>#/checkout</code>, <code>#/order/A-20481</code>) - Add to cart, Checkout and Pay move through them; the language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink>, and every price is a currency value formatted for the language (€88.90, 88,90 €).</DocText>
+<DocText>The Shop blocks composed into one page - the source is the page. The store, the cart, the checkout and the order are routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/cart</code>, <code>#/checkout</code>, <code>#/order/A-20481</code>) - Add to cart, Checkout and Pay move through them. Every product has a page of its own (<code>#/product/glass-teapot</code>), filled from one data block in English and German; the cart is drawn from what was added, and its quantities, the discount code and the delivery choice change every total. The language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink>, and every price is a currency value formatted for the language (€88.90, 88,90 €).</DocText>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-website-shop.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
@@ -169,7 +169,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   }
   #site-shop .shop-brand span {
     font-style: italic;
-    color: var(--accent);
+    color: var(--shop-brand);
   }
   #site-shop .shop-head-controls {
     display: flex;
@@ -249,7 +249,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     font-weight: 700;
   }
   #site-shop .mk-product-item:has(del) .mk-product-item-price strong {
-    color: var(--accent);
+    color: var(--shop-brand);
   }
   #site-shop .mk-product-item-badge[data-sale] {
     border: 0;
@@ -422,55 +422,378 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     --popover-foreground: oklch(0.94 0 0);
   }
   /* -- modes: end -- */
+  /* the brand's ink for text - the wordmark's mark, a sale price (--accent is the hover surface, a tint too faint for
+     text): 4.5:1 on each look's ground in both modes */
+  :root:not(.dark) #site-shop {
+    --shop-brand: oklch(0.5 0.15 40);
+  }
+  .dark #site-shop {
+    --shop-brand: oklch(0.75 0.13 45);
+  }
+  :root:not(.dark) #site-shop[data-look='mono'] {
+    --shop-brand: oklch(0.13 0 0);
+  }
+  .dark #site-shop[data-look='mono'] {
+    --shop-brand: oklch(0.95 0 0);
+  }
+  :root:not(.dark) #site-shop[data-look='coast'] {
+    --shop-brand: oklch(0.48 0.13 235);
+  }
+  .dark #site-shop[data-look='coast'] {
+    --shop-brand: oklch(0.78 0.12 235);
+  }
+  /* the Site Header on the store's grid: brand, the store's pages, the look, the language, the mode and the cart */
+  #site-shop .shop-head {
+    display: block;
+    padding-block: 0;
+  }
+  #site-shop .shop-brand span,
+  #site-shop .mk-footer-brand span {
+    color: var(--ring);
+  }
+  #site-shop .mk-header-inner {
+    flex-wrap: wrap;
+    max-width: none;
+    margin: 0;
+    min-height: 4.5rem;
+    padding: 0.75rem 0;
+    gap: 0.75rem 1.5rem;
+  }
+  #site-shop .mk-header-brand {
+    margin-inline-end: 0;
+  }
+  #site-shop .shop-nav {
+    gap: 0.25rem;
+    margin-inline-end: auto;
+  }
+  #site-shop .shop-nav a {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  #site-shop .shop-nav a:hover,
+  #site-shop .shop-nav a[aria-current] {
+    color: var(--foreground);
+  }
+  #site-shop .shop-nav a[aria-current] {
+    box-shadow: inset 0 -2px var(--foreground);
+    border-radius: 0;
+  }
+  #site-shop .mk-header-actions {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  #site-shop .mk-product-item-media a {
+    display: contents;
+  }
+  /* a product's own page: the photo beside what you choose */
+  #site-shop .shop-product {
+    padding-block: clamp(1.5rem, 3vw, 2.5rem) clamp(3.5rem, 7vw, 5.5rem);
+  }
+  #site-shop .shop-product .breadcrumb {
+    margin-block-end: 1.5rem;
+  }
+  #site-shop .shop-product-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+  @container (width > 52rem) {
+    #site-shop .shop-product-grid {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 4rem;
+    }
+  }
+  #site-shop .shop-product-media {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--shop-ground);
+  }
+  #site-shop .shop-product-media img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  #site-shop .shop-product-info {
+    display: grid;
+    gap: 1rem;
+  }
+  #site-shop .shop-product-kicker {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  #site-shop .shop-product-name {
+    margin: 0;
+    font: 500 clamp(2.25rem, 5vw, 3.25rem)/1 var(--shop-voice);
+    letter-spacing: -0.02em;
+  }
+  #site-shop .shop-product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  #site-shop .shop-product-price del {
+    color: var(--muted-foreground);
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+  #site-shop .shop-product-lead {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  #site-shop .shop-product-form {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: 1.25rem;
+    border-block: 1px solid var(--border);
+  }
+  #site-shop .shop-product-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  #site-shop .shop-product-options legend {
+    margin-block-end: 0.5rem;
+    font-weight: 700;
+  }
+  #site-shop .shop-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--input);
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #site-shop .shop-option:has(:checked) {
+    border-color: var(--foreground);
+    box-shadow: inset 0 0 0 1px var(--foreground);
+  }
+  #site-shop .shop-option:has(:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  #site-shop .shop-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #site-shop .shop-option i {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--mk-swatch);
+  }
+  #site-shop .shop-option i:not([style]) {
+    display: none;
+  }
+  #site-shop .shop-product-buy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.75rem;
+  }
+  #site-shop .shop-product-buy .number-input {
+    width: 8rem;
+  }
+  #site-shop .shop-product-buy .btn {
+    flex: 1 1 12rem;
+    height: 2.75rem;
+    font-weight: 700;
+  }
+  #site-shop .shop-product-qty {
+    display: grid;
+    gap: 0.375rem;
+  }
+  #site-shop .shop-product-facts {
+    margin: 0;
+  }
+  #site-shop .shop-product-facts summary {
+    padding-block: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #site-shop .shop-product-facts p {
+    margin: 0 0 0.75rem;
+    color: var(--muted-foreground);
+  }
+  #site-shop .shop-product-facts + .shop-product-facts {
+    border-block-start: 1px solid var(--border);
+  }
+  #site-shop .shop-more {
+    display: grid;
+    gap: 1.25rem;
+    margin-block-start: clamp(3rem, 6vw, 4.5rem);
+  }
+  #site-shop .shop-more h2 {
+    margin: 0;
+    font: 500 italic 2rem/1 var(--shop-voice);
+  }
+  #site-shop .shop-more-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #site-shop .shop-more-list li {
+    display: grid;
+    gap: 0.5rem;
+  }
+  #site-shop .shop-more-list img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-xl);
+    background: var(--shop-ground);
+  }
+  #site-shop .shop-more-list a {
+    color: var(--foreground);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  #site-shop .shop-more-list a:hover {
+    text-decoration: underline;
+  }
+  /* the cart's lines on a phone: the quantity under the name, the total beside both */
+  #site-shop .shop-cart-lines {
+    container-type: inline-size;
+  }
+  @container (width < 34rem) {
+    #site-shop .mk-cart-item {
+      grid-template-columns: 4rem minmax(0, 1fr) auto;
+      grid-template-areas: 'img info total' 'img qty total';
+      gap: 0.5rem 0.875rem;
+    }
+  }
+  /* the cart with nothing in it */
+  #site-shop .shop-empty {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+    padding: 2.5rem;
+    border: 1px dashed var(--input);
+    border-radius: var(--radius-xl);
+  }
+  #site-shop .shop-empty p {
+    margin: 0;
+    font: 500 italic 1.75rem/1.1 var(--shop-voice);
+  }
+  /* the Site Footer: the store's last band */
+  #site-shop .mk-footer {
+    margin-block-start: auto;
+    background: var(--shop-ground);
+  }
+  #site-shop .mk-footer-inner {
+    max-width: none;
+    padding-inline: 0;
+  }
+  #site-shop .mk-footer-heading {
+    color: var(--foreground);
+    font-weight: 700;
+  }
+  #site-shop .mk-footer-list a {
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+  }
+  #site-shop .mk-footer-list a:hover {
+    color: var(--foreground);
+  }
+  #site-shop .mk-footer-brand {
+    color: var(--foreground);
+    font: 500 1.375rem/1 var(--shop-voice);
+  }
+  #site-shop .mk-footer-brand span {
+    font-style: italic;
+  }
 </style>
 <div id="site-shop" data-look="autumn" data-i18n-component>
   <p class="shop-strip"
-    ><span data-i18n-target="strip">Free shipping from €80 · 30 days to return · Made in small workshops</span></p
+    ><span data-i18n-target="strip">Free shipping from €100 · 30 days to return · Made in small workshops</span></p
   >
-  <div class="shop-head">
-    <a class="shop-brand" href="#/" data-router-link>Acme <span>Goods</span></a>
-    <div class="shop-head-controls">
-      <select
-        class="select"
-        data-size="sm"
-        data-site-look
-        aria-label="Look"
-        data-i18n-aria-label-en="Look"
-        data-i18n-aria-label-de="Stil"
-        style="width: auto"
+  <header class="mk-header shop-head">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand shop-brand" href="#/" data-router-link>Acme <span>Goods</span></a>
+      <nav
+        class="mk-header-nav shop-nav"
+        aria-label="Shop"
+        data-i18n-aria-label-en="Shop"
+        data-i18n-aria-label-de="Laden"
       >
-        <option value="autumn" data-i18n-target="look-autumn">Autumn</option>
-        <option value="mono" data-i18n-target="look-mono">Monochrome</option>
-        <option value="coast" data-i18n-target="look-coast">Coast</option>
-      </select>
-      <select
-        class="select"
-        data-size="sm"
-        data-app-locale
-        aria-label="Language"
-        data-i18n-aria-label-en="Language"
-        data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input
-          type="checkbox"
-          data-site-mode
-          aria-label="Dark mode"
-          data-i18n-aria-label-en="Dark mode"
-          data-i18n-aria-label-de="Dunkler Modus"
-        />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
+        <a href="#/" data-router-link data-shop-nav="shop" data-i18n-target="nav-shop">The autumn edit</a>
+        <a href="#/product/gift-card" data-router-link data-shop-nav="gift-card" data-i18n-target="nav-gift"
+          >Gift cards</a
+        >
+        <a href="#/order/A-20481" data-router-link data-shop-nav="order" data-i18n-target="nav-track">Track an order</a>
+      </nav>
+      <div class="mk-header-actions shop-head-controls">
+        <select
+          class="select"
+          data-size="sm"
+          data-site-look
+          aria-label="Look"
+          data-i18n-aria-label-en="Look"
+          data-i18n-aria-label-de="Stil"
+          style="width: auto"
+        >
+          <option value="autumn" data-i18n-target="look-autumn">Autumn</option>
+          <option value="mono" data-i18n-target="look-mono">Monochrome</option>
+          <option value="coast" data-i18n-target="look-coast">Coast</option>
+        </select>
+        <div
+          class="language-switcher"
+          data-app-locale
+          role="group"
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-flag-shape="rounded"
+          data-flag-style="ring"
+          data-align="end"
+        ></div>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+        <a class="btn shop-cart" data-variant="outline" href="#/cart" data-router-link
+          ><i data-lucide="shopping-bag"></i> <span data-i18n-target="cart-link">Cart</span>
+          <span class="badge" data-cart-count>3</span></a
+        >
+      </div>
     </div>
-    <a class="btn shop-cart" data-variant="outline" href="#/cart" data-router-link
-      ><i data-lucide="shopping-bag"></i> <span data-i18n-target="cart-link">Cart</span> <span class="badge">3</span></a
-    >
-  </div>
+  </header>
   <article class="mk-collection-item" data-variant="banner" data-shop-view="shop">
     <img class="mk-collection-item-media" src="https://picsum.photos/id/167/1600/690" alt="" />
     <div class="mk-collection-item-body">
@@ -495,7 +818,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         >
       </div>
       <div class="mk-product-item-body">
-        <h3 class="mk-product-item-name"><a href="#">Glass teapot</a></h3>
+        <h3 class="mk-product-item-name"><a href="#/product/glass-teapot" data-router-link>Glass teapot</a></h3>
         <p class="mk-product-item-desc">1 litre · Clear</p>
         <p class="mk-product-item-rating"
           ><span
@@ -509,9 +832,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >(128)</p
         >
         <p class="mk-product-item-price"
-          ><strong data-i18n-target="price-shirt"><span data-i18n-value="w64">€64</span></strong>
+          ><strong data-i18n-target="price-shirt"><span data-i18n-value="pTeapot">€76</span></strong>
           <del data-i18n-target="was-shirt"
-            ><span class="sr-only">was </span><span data-i18n-value="w80">€80</span></del
+            ><span class="sr-only">was </span><span data-i18n-value="pTeapotWas">€95</span></del
           ></p
         >
         <ul
@@ -531,7 +854,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         aria-label="Add Glass teapot to cart"
         data-i18n-aria-label-en="Add Glass teapot to cart"
         data-i18n-aria-label-de="Glass teapot in den Warenkorb legen"
-        data-go="/cart"
+        data-add="glass-teapot"
         ><i data-lucide="shopping-bag"></i> <span data-i18n-target="add-1">Add to cart</span></button
       >
     </article>
@@ -546,7 +869,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         >
       </div>
       <div class="mk-product-item-body">
-        <h3 class="mk-product-item-name"><a href="#">Stoneware mug</a></h3>
+        <h3 class="mk-product-item-name"><a href="#/product/stoneware-mug" data-router-link>Stoneware mug</a></h3>
         <p class="mk-product-item-desc">Handmade · 350 ml</p>
         <p class="mk-product-item-rating"
           ><span
@@ -560,7 +883,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >(412)</p
         >
         <p class="mk-product-item-price" data-i18n-target="price-1"
-          ><strong><span data-i18n-value="w22">€22</span></strong></p
+          ><strong><span data-i18n-value="pMug">€22</span></strong></p
         >
         <ul
           class="mk-product-item-swatches"
@@ -578,7 +901,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         aria-label="Add Stoneware mug to cart"
         data-i18n-aria-label-en="Add Stoneware mug to cart"
         data-i18n-aria-label-de="Stoneware mug in den Warenkorb legen"
-        data-go="/cart"
+        data-add="stoneware-mug"
         ><i data-lucide="shopping-bag"></i> <span data-i18n-target="add-2">Add to cart</span></button
       >
     </article>
@@ -592,7 +915,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         >
       </div>
       <div class="mk-product-item-body">
-        <h3 class="mk-product-item-name"><a href="#">Wildflower honey</a></h3>
+        <h3 class="mk-product-item-name"><a href="#/product/wildflower-honey" data-router-link>Wildflower honey</a></h3>
         <p class="mk-product-item-desc">Three jars · 250 g</p>
         <p class="mk-product-item-rating"
           ><span
@@ -606,7 +929,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >(57)</p
         >
         <p class="mk-product-item-price" data-i18n-target="price-2"
-          ><strong><span data-i18n-value="w38">€38</span></strong></p
+          ><strong><span data-i18n-value="pHoney">€38</span></strong></p
         >
       </div>
       <button
@@ -616,11 +939,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         aria-label="Add Wildflower honey to cart"
         data-i18n-aria-label-en="Add Wildflower honey to cart"
         data-i18n-aria-label-de="Wildflower honey in den Warenkorb legen"
-        data-go="/cart"
+        data-add="wildflower-honey"
         ><i data-lucide="shopping-bag"></i> <span data-i18n-target="add-3">Add to cart</span></button
       >
     </article>
-    <a class="shop-gift" href="#/">
+    <a class="shop-gift" href="#/product/gift-card" data-router-link>
       <span class="shop-burst" aria-hidden="true" data-i18n-target="gift-from">from €25</span>
       <b data-i18n-target="gift-title">Gift cards</b>
       <span data-i18n-target="gift-text"
@@ -628,120 +951,144 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       >
     </a>
   </div>
-  <div class="shop-split" data-shop-view="cart" hidden>
-    <ul
-      class="mk-cart-list"
-      aria-label="Cart, 2 items"
-      data-i18n-aria-label-en="Cart, 2 items"
-      data-i18n-aria-label-de="Warenkorb, 2 Artikel"
+  <!-- a product's page: filled from the data block #shop-products -->
+  <article class="shop-product" data-shop-view="product" aria-labelledby="sp-name" hidden>
+    <nav class="breadcrumb" aria-label="Breadcrumb" data-i18n-aria-label-en="Breadcrumb" data-i18n-aria-label-de="Pfad"
+      ><ol class="breadcrumb-list"
+        ><li class="breadcrumb-item"
+          ><a class="breadcrumb-link" href="#/" data-router-link data-i18n-target="crumb-shop">Shop</a></li
+        ><li class="breadcrumb-separator" aria-hidden="true">/</li
+        ><li class="breadcrumb-item"
+          ><span class="breadcrumb-page" aria-current="page" data-product-field="name">Glass teapot</span></li
+        ></ol
+      ></nav
     >
-      <li class="mk-cart-item">
-        <img class="mk-cart-item-image" src="https://picsum.photos/id/225/240/300" alt="" />
-        <div class="mk-cart-item-info">
-          <h3 class="mk-cart-item-name"><a href="#">Glass teapot</a></h3>
-          <p class="mk-cart-item-options">Clear · 1 litre</p>
-          <p class="mk-cart-item-unit" data-i18n-target="unit-c64"><span data-i18n-value="c64">€64.00</span> each</p>
-        </div>
-        <div class="mk-cart-item-qty">
-          <label class="sr-only" for="ci-1-qty" data-i18n-target="qty-1">Quantity of Glass teapot</label>
-          <div class="number-input"
-            ><button
-              type="button"
-              data-action="decrement"
-              aria-label="Decrease quantity of Glass teapot"
-              data-i18n-aria-label-en="Decrease quantity of Glass teapot"
-              data-i18n-aria-label-de="Menge von Glass teapot verringern"
-              >−</button
-            ><input type="number" id="ci-1-qty" name="qty" min="0" max="10" value="1" inputmode="numeric" /><button
-              type="button"
-              data-action="increment"
-              aria-label="Increase quantity of Glass teapot"
-              data-i18n-aria-label-en="Increase quantity of Glass teapot"
-              data-i18n-aria-label-de="Menge von Glass teapot erhöhen"
-              >+</button
-            ></div
-          >
-        </div>
-        <output class="mk-cart-item-total" for="ci-1-qty" data-i18n-target="price-3"
-          ><span data-i18n-value="c64">€64.00</span></output
+    <div class="shop-product-grid">
+      <figure class="shop-product-media"
+        ><img data-product-image src="https://picsum.photos/id/225/900/1125" alt=""
+      /></figure>
+      <div class="shop-product-info">
+        <p class="shop-product-kicker" data-product-field="desc">1 litre · Clear</p>
+        <h1 class="shop-product-name" id="sp-name" data-product-field="name">Glass teapot</h1>
+        <p class="mk-product-item-rating"
+          ><span class="mk-product-item-stars" style="--mk-rating: 4.5" role="img" data-product-stars>★★★★★</span
+          ><span data-product-reviews>(128)</span></p
         >
-        <button
-          class="mk-cart-item-remove"
-          type="button"
-          aria-label="Remove Glass teapot from cart"
-          data-i18n-aria-label-en="Remove Glass teapot from cart"
-          data-i18n-aria-label-de="Glass teapot aus dem Warenkorb entfernen"
-          ><i data-lucide="x"></i
-        ></button>
-      </li>
-      <li class="mk-cart-item">
-        <img class="mk-cart-item-image" src="https://picsum.photos/id/30/240/300" alt="" />
-        <div class="mk-cart-item-info">
-          <h3 class="mk-cart-item-name"><a href="#">Stoneware mug</a></h3>
-          <p class="mk-cart-item-options">Oat · 350 ml</p>
-          <p class="mk-cart-item-unit" data-i18n-target="unit-c22"><span data-i18n-value="c22">€22.00</span> each</p>
-        </div>
-        <div class="mk-cart-item-qty">
-          <label class="sr-only" for="ci-2-qty" data-i18n-target="qty-2">Quantity of Stoneware mug</label>
-          <div class="number-input"
-            ><button
-              type="button"
-              data-action="decrement"
-              aria-label="Decrease quantity of Stoneware mug"
-              data-i18n-aria-label-en="Decrease quantity of Stoneware mug"
-              data-i18n-aria-label-de="Menge von Stoneware mug verringern"
-              >−</button
-            ><input type="number" id="ci-2-qty" name="qty" min="0" max="10" value="2" inputmode="numeric" /><button
-              type="button"
-              data-action="increment"
-              aria-label="Increase quantity of Stoneware mug"
-              data-i18n-aria-label-en="Increase quantity of Stoneware mug"
-              data-i18n-aria-label-de="Menge von Stoneware mug erhöhen"
-              >+</button
-            ></div
+        <p class="shop-product-price"><strong data-product-price>€76</strong> <del data-product-was>€95</del></p>
+        <p class="shop-product-lead" data-product-field="lead"></p>
+        <form class="shop-product-form" data-product-form>
+          <fieldset class="shop-product-options">
+            <legend data-product-field="choose">Colour</legend>
+            <div class="flex flex-wrap gap-2" data-product-options></div>
+          </fieldset>
+          <div class="shop-product-buy">
+            <div class="shop-product-qty"
+              ><label class="label" for="sp-qty" data-i18n-target="sp-qty">Quantity</label
+              ><div class="number-input"
+                ><button
+                  type="button"
+                  data-action="decrement"
+                  aria-label="Fewer"
+                  data-i18n-aria-label-en="Fewer"
+                  data-i18n-aria-label-de="Weniger"
+                  >−</button
+                ><input type="number" id="sp-qty" name="qty" min="1" max="10" value="1" inputmode="numeric" /><button
+                  type="button"
+                  data-action="increment"
+                  aria-label="More"
+                  data-i18n-aria-label-en="More"
+                  data-i18n-aria-label-de="Mehr"
+                  >+</button
+                ></div
+              ></div
+            >
+            <button class="btn" type="submit"
+              ><i data-lucide="shopping-bag"></i> <span data-i18n-target="sp-add">Add to cart</span></button
+            >
+          </div>
+        </form>
+        <details class="shop-product-facts" open>
+          <summary data-i18n-target="sp-details">Details</summary>
+          <p data-product-field="details"></p>
+        </details>
+        <details class="shop-product-facts">
+          <summary data-i18n-target="sp-care">Care</summary>
+          <p data-product-field="care"></p>
+        </details>
+        <details class="shop-product-facts">
+          <summary data-i18n-target="sp-delivery">Delivery and returns</summary>
+          <p data-i18n-target="sp-delivery-text"
+            >Free shipping from €100 after discounts, otherwise €4.90. Sent within a day, returns are free for 30
+            days.</p
           >
-        </div>
-        <output class="mk-cart-item-total" for="ci-2-qty" data-i18n-target="price-4"
-          ><span data-i18n-value="c44">€44.00</span></output
-        >
-        <button
-          class="mk-cart-item-remove"
-          type="button"
-          aria-label="Remove Stoneware mug from cart"
-          data-i18n-aria-label-en="Remove Stoneware mug from cart"
-          data-i18n-aria-label-de="Stoneware mug aus dem Warenkorb entfernen"
-          ><i data-lucide="x"></i
-        ></button>
-      </li>
-    </ul>
-    <aside class="mk-cart-summary" aria-labelledby="cs-title">
+        </details>
+      </div>
+    </div>
+    <section class="shop-more" aria-labelledby="sp-more">
+      <h2 id="sp-more" data-i18n-target="sp-more">You may also like</h2>
+      <ul class="shop-more-list">
+        <li data-product-more
+          ><img src="https://picsum.photos/id/30/480/600" alt="" /><a href="#/product/stoneware-mug" data-router-link
+            >Stoneware mug</a
+          ><span></span
+        ></li>
+        <li data-product-more
+          ><img src="https://picsum.photos/id/312/480/600" alt="" /><a
+            href="#/product/wildflower-honey"
+            data-router-link
+            >Wildflower honey</a
+          ><span></span
+        ></li>
+        <li data-product-more
+          ><img src="https://picsum.photos/id/167/480/600" alt="" /><a href="#/product/gift-card" data-router-link
+            >Gift card</a
+          ><span></span
+        ></li>
+      </ul>
+    </section>
+  </article>
+  <div class="shop-split" data-shop-view="cart" hidden>
+    <div class="shop-cart-lines">
+      <ul
+        class="mk-cart-list"
+        aria-label="Cart"
+        data-i18n-aria-label-en="Cart"
+        data-i18n-aria-label-de="Warenkorb"
+        data-cart-list
+      ></ul>
+      <div class="shop-empty" data-cart-empty hidden>
+        <p data-i18n-target="empty">Your cart is empty.</p>
+        <a class="btn" href="#/" data-router-link data-i18n-target="empty-shop">Find something you like</a>
+      </div>
+    </div>
+    <aside class="mk-cart-summary" aria-labelledby="cs-title" data-cart-summary>
       <h2 class="mk-cart-summary-title" id="cs-title" data-i18n-target="cs-title">Order summary</h2>
       <div class="mk-cart-summary-shipping"
         ><label for="cs-free" data-i18n-target="cs-free"
-          >Add <strong><span data-i18n-value="c16">€16.00</span></strong> more for free shipping</label
-        ><progress class="progress" id="cs-free" value="84" max="100">84%</progress></div
+          >Add <strong><span data-i18n-value="toFree">€16.00</span></strong> more for free shipping</label
+        ><progress class="progress" id="cs-free" value="84" max="100" data-cart-free>84%</progress></div
       >
       <dl class="mk-cart-summary-lines">
         <div
-          ><dt data-i18n-target="cs-line-0">Subtotal (3 items)</dt
-          ><dd data-i18n-target="cs-amount-0"><span data-i18n-value="c108">€108.00</span></dd></div
+          ><dt data-i18n-target="cs-line-0">Subtotal (<span data-i18n-value="items">3 items</span>)</dt
+          ><dd data-i18n-target="cs-amount-0"><span data-i18n-value="subtotal">€108.00</span></dd></div
         >
         <div data-discount
           ><dt data-i18n-target="cs-line-1">Discount · AUTUMN30</dt
-          ><dd data-i18n-target="cs-amount-1">−<span data-i18n-value="c24">€24.00</span></dd></div
+          ><dd data-i18n-target="cs-amount-1">−<span data-i18n-value="discount">€24.00</span></dd></div
         >
         <div
           ><dt data-i18n-target="cs-line-2">Shipping</dt
-          ><dd data-i18n-target="cs-amount-2"><span data-i18n-value="c490">€4.90</span></dd></div
+          ><dd data-i18n-target="cs-amount-2"><span data-i18n-value="shipping">€4.90</span></dd></div
         >
         <div
           ><dt data-i18n-target="cs-line-3">VAT (included)</dt
-          ><dd data-i18n-target="cs-amount-3"><span data-i18n-value="c1662">€16.62</span></dd></div
+          ><dd data-i18n-target="cs-amount-3"><span data-i18n-value="vat">€16.62</span></dd></div
         >
       </dl>
       <div class="mk-cart-summary-total"
         ><span><span data-i18n-target="cs-total">Total</span><small data-i18n-target="cs-incl">incl. VAT</small></span
-        ><output aria-live="polite" data-i18n-target="price-5"><span data-i18n-value="c8890">€88.90</span></output></div
+        ><output aria-live="polite" data-i18n-target="price-5"><span data-i18n-value="total">€88.90</span></output></div
       >
       <a class="btn mk-cart-summary-checkout" data-size="lg" href="#/checkout" data-router-link
         ><span data-i18n-target="checkout">Checkout</span> <i data-lucide="arrow-right"></i
@@ -829,7 +1176,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               >Arrives <time datetime="2026-10-07">Tue 7 – Thu 9 Oct</time></small
             ></span
           >
-          <b class="mk-delivery-options-price" data-i18n-target="free-1">Free</b>
+          <b class="mk-delivery-options-price" data-i18n-target="free-1"
+            ><span data-i18n-value="standard">€4.90</span></b
+          >
         </label>
         <label class="mk-delivery-options-option" for="dl-exp">
           <input class="radio" type="radio" name="delivery" id="dl-exp" value="dl-exp" required />
@@ -840,7 +1189,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               >Arrives <time datetime="2026-10-03">tomorrow, Fri 3 Oct</time></small
             ></span
           >
-          <b class="mk-delivery-options-price" data-i18n-target="price-6"><span data-i18n-value="c990">€9.90</span></b>
+          <b class="mk-delivery-options-price" data-i18n-target="price-6"
+            ><span data-i18n-value="express">€9.90</span></b
+          >
         </label>
         <label class="mk-delivery-options-option" for="dl-pick">
           <input class="radio" type="radio" name="delivery" id="dl-pick" value="dl-pick" required />
@@ -932,7 +1283,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             >
           </div>
           <button class="btn" data-size="lg" type="submit" data-i18n-target="pay"
-            >Pay <span data-i18n-value="c8890">€88.90</span></button
+            >Pay <span data-i18n-value="total">€88.90</span></button
           >
           <p class="mk-payment-form-note"
             ><i data-lucide="lock"></i> Payments are encrypted and processed by our payment provider.</p
@@ -942,41 +1293,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     </div>
     <aside class="mk-order-summary" aria-labelledby="os-title">
       <h2 class="mk-order-summary-title" id="os-title" data-i18n-target="os-title">Your order</h2>
-      <ul class="mk-order-summary-items">
-        <li
-          ><span class="mk-order-summary-thumb"
-            ><img src="https://picsum.photos/id/225/160/200" alt="" /><b aria-label="Quantity 1">1</b></span
-          ><span class="mk-order-summary-name">Glass teapot<small>Clear · 1 l</small></span
-          ><span class="mk-order-summary-price" data-i18n-target="price-7"
-            ><span data-i18n-value="c64">€64.00</span></span
-          ></li
-        >
-        <li
-          ><span class="mk-order-summary-thumb"
-            ><img src="https://picsum.photos/id/30/160/200" alt="" /><b aria-label="Quantity 2">2</b></span
-          ><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span
-          ><span class="mk-order-summary-price" data-i18n-target="price-8"
-            ><span data-i18n-value="c44">€44.00</span></span
-          ></li
-        >
-      </ul>
+      <ul class="mk-order-summary-items" data-order-list></ul>
       <dl class="mk-order-summary-totals">
         <div
           ><dt data-i18n-target="os-line-0">Subtotal</dt
-          ><dd data-i18n-target="os-amount-0"><span data-i18n-value="c108">€108.00</span></dd></div
+          ><dd data-i18n-target="os-amount-0"><span data-i18n-value="subtotal">€108.00</span></dd></div
         >
         <div data-discount
           ><dt data-i18n-target="os-line-1">Discount (AUTUMN30)</dt
-          ><dd data-i18n-target="os-amount-1">−<span data-i18n-value="c24">€24.00</span></dd></div
+          ><dd data-i18n-target="os-amount-1">−<span data-i18n-value="discount">€24.00</span></dd></div
         >
         <div
-          ><dt data-i18n-target="os-line-2">Shipping · Standard</dt
-          ><dd data-i18n-target="os-amount-2"><span data-i18n-value="c490">€4.90</span></dd></div
+          ><dt data-i18n-target="os-line-2">Shipping · <span data-i18n-value="method">Standard</span></dt
+          ><dd data-i18n-target="os-amount-2"><span data-i18n-value="shipping">€4.90</span></dd></div
         >
         <div data-total
           ><dt data-i18n-target="os-total"
-            >Total <small>incl. <span data-i18n-value="c1662">€16.62</span> VAT</small></dt
-          ><dd data-i18n-target="os-total-amount"><span data-i18n-value="c8890">€88.90</span></dd></div
+            >Total <small>incl. <span data-i18n-value="vat">€16.62</span> VAT</small></dt
+          ><dd data-i18n-target="os-total-amount"><span data-i18n-value="total">€88.90</span></dd></div
         >
       </dl>
     </aside>
@@ -997,7 +1331,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       >
       <div
         ><dt data-i18n-target="oc-payment">Payment</dt
-        ><dd data-i18n-target="oc-paid">Visa •••• 4242 · <span data-i18n-value="c8890">€88.90</span></dd></div
+        ><dd data-i18n-target="oc-paid">Visa •••• 4242 · <span data-i18n-value="total">€88.90</span></dd></div
       >
       <div
         ><dt data-i18n-target="oc-to">Delivery to</dt
@@ -1034,7 +1368,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       >
       <div class="mk-tracking-status-carrier"
         ><span>DHL Express</span
-        ><a href="#" target="_blank" rel="noopener"
+        ><a href="https://www.dhl.com/" target="_blank" rel="noopener"
           >JD0146 0012 3456<span class="sr-only"> (opens the carrier site)</span></a
         ></div
       >
@@ -1073,14 +1407,324 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </ol>
     </details>
   </section>
+  <footer class="mk-footer">
+    <div class="mk-footer-inner">
+      <nav
+        class="mk-footer-nav"
+        aria-label="Footer"
+        data-i18n-aria-label-en="Footer"
+        data-i18n-aria-label-de="Fußzeile"
+      >
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading" data-i18n-target="foot-shop">Shop</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#/" data-router-link data-i18n-target="foot-edit">The autumn edit</a></li>
+            <li><a href="#/product/glass-teapot" data-router-link>Glass teapot</a></li>
+            <li><a href="#/product/stoneware-mug" data-router-link>Stoneware mug</a></li>
+            <li><a href="#/product/wildflower-honey" data-router-link>Wildflower honey</a></li>
+            <li><a href="#/product/gift-card" data-router-link data-i18n-target="foot-gift">Gift cards</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading" data-i18n-target="foot-order">Your order</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#/cart" data-router-link data-i18n-target="foot-cart">Cart</a></li>
+            <li><a href="#/checkout" data-router-link data-i18n-target="foot-checkout">Checkout</a></li>
+            <li><a href="#/order/A-20481" data-router-link data-i18n-target="foot-track">Track an order</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Acme</h3>
+          <ul class="mk-footer-list">
+            <li><a href="full-website-blog.html" data-i18n-target="foot-journal">Journal</a></li>
+            <li><a href="full-website-company.html" data-i18n-target="foot-about">About us</a></li>
+            <li><a href="full-website-account-states.html" data-i18n-target="foot-sign-in">Sign in</a></li>
+          </ul>
+        </div>
+      </nav>
+      <hr class="separator mk-footer-rule" />
+      <div class="mk-footer-bottom">
+        <a class="mk-footer-brand" href="#/" data-router-link>Acme <span>Goods</span></a>
+        <div class="mk-footer-meta">
+          <div class="mk-footer-social">
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"
+              ><svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" /></svg
+            ></a>
+            <a
+              href="mailto:hello@acme.example"
+              aria-label="Email"
+              data-i18n-aria-label-en="Email"
+              data-i18n-aria-label-de="E-Mail"
+              ><i data-lucide="mail"></i
+            ></a>
+          </div>
+          <p class="mk-footer-copy" data-i18n-target="foot-copy">© 2026 Acme Goods · Made in small workshops</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- a line of the cart and of the order summary, stamped per item (no translation targets inside: the script
+       writes their words in the language shown) -->
+  <template data-cart-line>
+    <li class="mk-cart-item">
+      <img class="mk-cart-item-image" src="https://picsum.photos/id/225/240/300" alt="" />
+      <div class="mk-cart-item-info">
+        <h3 class="mk-cart-item-name"><a href="#/cart" data-router-link data-line-name>Glass teapot</a></h3>
+        <p class="mk-cart-item-options" data-line-option></p>
+        <p class="mk-cart-item-unit" data-line-unit></p>
+      </div>
+      <div class="mk-cart-item-qty">
+        <label class="sr-only" data-line-qty-label></label>
+        <div class="number-input"
+          ><button type="button" data-action="decrement" data-line-less>−</button
+          ><input type="number" name="qty" min="0" max="10" value="1" inputmode="numeric" data-line-qty /><button
+            type="button"
+            data-action="increment"
+            data-line-more
+            >+</button
+          ></div
+        >
+      </div>
+      <output class="mk-cart-item-total" data-line-total></output>
+      <button class="mk-cart-item-remove" type="button" data-line-remove
+        ><svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18M6 6l12 12" /></svg
+      ></button>
+    </li>
+  </template>
+  <template data-order-line>
+    <li
+      ><span class="mk-order-summary-thumb"
+        ><img src="https://picsum.photos/id/225/160/200" alt="" /><b data-line-count>1</b></span
+      ><span class="mk-order-summary-name"
+        ><span data-line-name>Glass teapot</span><small data-line-option></small></span
+      ><span class="mk-order-summary-price" data-line-total></span
+    ></li>
+  </template>
+  <!-- the products the routes name, and the words the script writes, in English and German -->
+  <script type="application/json" id="shop-products">
+    {
+      "products": {
+        "glass-teapot": {
+          "name": "Glass teapot",
+          "price": 76,
+          "was": 95,
+          "image": 225,
+          "rating": 4.5,
+          "reviews": 128,
+          "options": [
+            ["Clear", "#e6ebee"],
+            ["Smoke", "#5b6168"],
+            ["Amber", "#c98a3c"]
+          ],
+          "en": {
+            "desc": "1 litre · Clear",
+            "choose": "Colour",
+            "lead": "Borosilicate glass, blown by hand in a small workshop in Bohemia. You watch the leaves open while the tea steeps.",
+            "details": "1 litre, enough for four cups. Removable stainless-steel infuser, a lid that stays on when you pour, a handle that stays cool.",
+            "care": "Dishwasher safe. Safe on a gas flame with a heat diffuser, never on an electric hob."
+          },
+          "de": {
+            "desc": "1 Liter · Klar",
+            "choose": "Farbe",
+            "lead": "Borosilikatglas, von Hand geblasen in einer kleinen Werkstatt in Böhmen. Du siehst, wie sich die Blätter öffnen, während der Tee zieht.",
+            "details": "1 Liter, genug für vier Tassen. Herausnehmbares Sieb aus Edelstahl, ein Deckel, der beim Einschenken hält, ein Griff, der kühl bleibt.",
+            "care": "Spülmaschinenfest. Auf der Gasflamme mit Wärmeleitplatte, nie auf einer Elektroplatte."
+          }
+        },
+        "stoneware-mug": {
+          "name": "Stoneware mug",
+          "price": 22,
+          "image": 30,
+          "rating": 4.9,
+          "reviews": 412,
+          "options": [
+            ["Oat", "#c9b49a"],
+            ["Moss", "#5a6b5d"]
+          ],
+          "en": {
+            "desc": "Handmade · 350 ml",
+            "choose": "Glaze",
+            "lead": "Thrown on the wheel in Porto, so no two are quite the same. A thick wall keeps your coffee warm for the first page of the paper.",
+            "details": "350 ml. Stoneware with a food-safe glaze, the foot left bare to show the clay.",
+            "care": "Dishwasher and microwave safe. The glaze darkens a little with use - that is the clay, not a stain."
+          },
+          "de": {
+            "desc": "Handgemacht · 350 ml",
+            "choose": "Glasur",
+            "lead": "Auf der Scheibe gedreht in Porto, darum gleicht keine der anderen ganz. Die dicke Wand hält deinen Kaffee warm für die erste Seite der Zeitung.",
+            "details": "350 ml. Steinzeug mit lebensmittelechter Glasur, der Fuß bleibt unglasiert und zeigt den Ton.",
+            "care": "Spülmaschinen- und mikrowellenfest. Die Glasur dunkelt mit der Zeit etwas nach - das ist der Ton, kein Fleck."
+          }
+        },
+        "wildflower-honey": {
+          "name": "Wildflower honey",
+          "price": 38,
+          "image": 312,
+          "rating": 4.2,
+          "reviews": 57,
+          "options": [["Three jars", ""]],
+          "en": {
+            "desc": "Three jars · 250 g",
+            "choose": "Pack",
+            "lead": "Raw honey from meadows above the Douro valley - spring, summer and late-summer harvests, one jar of each.",
+            "details": "3 × 250 g in glass jars with a metal lid. Cold-extracted and never heated, so it crystallises in the winter.",
+            "care": "Keep it dry and below 25 °C. Crystallised honey turns clear again in a warm water bath."
+          },
+          "de": {
+            "desc": "Drei Gläser · 250 g",
+            "choose": "Packung",
+            "lead": "Roher Honig von Wiesen über dem Douro-Tal - Frühlings-, Sommer- und Spätsommerernte, je ein Glas.",
+            "details": "3 × 250 g im Glas mit Metalldeckel. Kalt geschleudert und nie erhitzt, darum kristallisiert er im Winter.",
+            "care": "Trocken und unter 25 °C lagern. Kristallisierter Honig wird im warmen Wasserbad wieder klar."
+          }
+        },
+        "gift-card": {
+          "name": "Gift card",
+          "price": 25,
+          "image": 167,
+          "rating": 5,
+          "reviews": 96,
+          "options": [
+            ["25", ""],
+            ["50", ""],
+            ["100", ""]
+          ],
+          "amounts": true,
+          "en": {
+            "desc": "Sent by email",
+            "choose": "Amount",
+            "lead": "For people who are hard to buy for. We send it by email on the day you choose, with a note from you.",
+            "details": "Valid for three years on everything in the store, also in part - what is left stays on the card.",
+            "care": "Lost the email? Write to us with your order number and we send it again."
+          },
+          "de": {
+            "desc": "Per E-Mail",
+            "choose": "Betrag",
+            "lead": "Für Menschen, für die man schwer etwas findet. Wir schicken ihn am Tag deiner Wahl per E-Mail, mit einer Nachricht von dir.",
+            "details": "Drei Jahre gültig für alles im Laden, auch in Teilen - der Rest bleibt auf der Karte.",
+            "care": "E-Mail verloren? Schreib uns mit deiner Bestellnummer, und wir schicken sie noch einmal."
+          }
+        }
+      },
+      "words": {
+        "en": {
+          "item": "item",
+          "items": "items",
+          "each": "each",
+          "qty": "Quantity of",
+          "less": "Decrease quantity of",
+          "more": "Increase quantity of",
+          "remove": "Remove from cart:",
+          "free": "Free",
+          "standard": "Standard",
+          "express": "Express",
+          "pickup": "Pick up in store",
+          "stars": "out of 5 stars",
+          "gift": "Gift card"
+        },
+        "de": {
+          "item": "Artikel",
+          "items": "Artikel",
+          "each": "pro Stück",
+          "qty": "Menge von",
+          "less": "Menge verringern:",
+          "more": "Menge erhöhen:",
+          "remove": "Aus dem Warenkorb entfernen:",
+          "free": "Kostenlos",
+          "standard": "Standard",
+          "express": "Express",
+          "pickup": "Abholung im Geschäft",
+          "stars": "von 5 Sternen",
+          "gift": "Gutschein"
+        }
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="nav-shop" data-i18n-locale="en">The autumn edit</template>
+  <template data-i18n-for="nav-shop" data-i18n-locale="de">Herbstauswahl</template>
+  <template data-i18n-for="nav-gift" data-i18n-locale="en">Gift cards</template>
+  <template data-i18n-for="nav-gift" data-i18n-locale="de">Gutscheine</template>
+  <template data-i18n-for="nav-track" data-i18n-locale="en">Track an order</template>
+  <template data-i18n-for="nav-track" data-i18n-locale="de">Bestellung verfolgen</template>
+  <template data-i18n-for="empty" data-i18n-locale="en">Your cart is empty.</template>
+  <template data-i18n-for="empty" data-i18n-locale="de">Dein Warenkorb ist leer.</template>
+  <template data-i18n-for="empty-shop" data-i18n-locale="en">Find something you like</template>
+  <template data-i18n-for="empty-shop" data-i18n-locale="de">Etwas Schönes finden</template>
+  <template data-i18n-for="crumb-shop" data-i18n-locale="en">Shop</template>
+  <template data-i18n-for="crumb-shop" data-i18n-locale="de">Laden</template>
+  <template data-i18n-for="sp-qty" data-i18n-locale="en">Quantity</template>
+  <template data-i18n-for="sp-qty" data-i18n-locale="de">Menge</template>
+  <template data-i18n-for="sp-add" data-i18n-locale="en">Add to cart</template>
+  <template data-i18n-for="sp-add" data-i18n-locale="de">In den Warenkorb</template>
+  <template data-i18n-for="sp-details" data-i18n-locale="en">Details</template>
+  <template data-i18n-for="sp-details" data-i18n-locale="de">Details</template>
+  <template data-i18n-for="sp-care" data-i18n-locale="en">Care</template>
+  <template data-i18n-for="sp-care" data-i18n-locale="de">Pflege</template>
+  <template data-i18n-for="sp-delivery" data-i18n-locale="en">Delivery and returns</template>
+  <template data-i18n-for="sp-delivery" data-i18n-locale="de">Lieferung und Rückgabe</template>
+  <template data-i18n-for="sp-delivery-text" data-i18n-locale="en"
+    >Free shipping from €100 after discounts, otherwise €4.90. Sent within a day, returns are free for 30
+    days.</template
+  >
+  <template data-i18n-for="sp-delivery-text" data-i18n-locale="de"
+    >Versandkostenfrei ab 100 € nach Rabatten, sonst 4,90 €. Versand innerhalb eines Tages, Rückgabe 30 Tage
+    kostenlos.</template
+  >
+  <template data-i18n-for="sp-more" data-i18n-locale="en">You may also like</template>
+  <template data-i18n-for="sp-more" data-i18n-locale="de">Das könnte dir auch gefallen</template>
+  <template data-i18n-for="foot-shop" data-i18n-locale="en">Shop</template>
+  <template data-i18n-for="foot-shop" data-i18n-locale="de">Laden</template>
+  <template data-i18n-for="foot-edit" data-i18n-locale="en">The autumn edit</template>
+  <template data-i18n-for="foot-edit" data-i18n-locale="de">Herbstauswahl</template>
+  <template data-i18n-for="foot-gift" data-i18n-locale="en">Gift cards</template>
+  <template data-i18n-for="foot-gift" data-i18n-locale="de">Gutscheine</template>
+  <template data-i18n-for="foot-order" data-i18n-locale="en">Your order</template>
+  <template data-i18n-for="foot-order" data-i18n-locale="de">Deine Bestellung</template>
+  <template data-i18n-for="foot-cart" data-i18n-locale="en">Cart</template>
+  <template data-i18n-for="foot-cart" data-i18n-locale="de">Warenkorb</template>
+  <template data-i18n-for="foot-checkout" data-i18n-locale="en">Checkout</template>
+  <template data-i18n-for="foot-checkout" data-i18n-locale="de">Kasse</template>
+  <template data-i18n-for="foot-track" data-i18n-locale="en">Track an order</template>
+  <template data-i18n-for="foot-track" data-i18n-locale="de">Bestellung verfolgen</template>
+  <template data-i18n-for="foot-journal" data-i18n-locale="en">Journal</template>
+  <template data-i18n-for="foot-journal" data-i18n-locale="de">Journal</template>
+  <template data-i18n-for="foot-about" data-i18n-locale="en">About us</template>
+  <template data-i18n-for="foot-about" data-i18n-locale="de">Über uns</template>
+  <template data-i18n-for="foot-sign-in" data-i18n-locale="en">Sign in</template>
+  <template data-i18n-for="foot-sign-in" data-i18n-locale="de">Anmelden</template>
+  <template data-i18n-for="foot-copy" data-i18n-locale="en">© 2026 Acme Goods · Made in small workshops</template>
+  <template data-i18n-for="foot-copy" data-i18n-locale="de"
+    >© 2026 Acme Goods · In kleinen Werkstätten gemacht</template
+  >
   <template data-i18n-for="cart-link" data-i18n-locale="en">Cart</template>
   <template data-i18n-for="cart-link" data-i18n-locale="de">Warenkorb</template>
   <template data-i18n-for="strip" data-i18n-locale="en"
-    >Free shipping from €80 · 30 days to return · Made in small workshops</template
+    >Free shipping from €100 · 30 days to return · Made in small workshops</template
   >
   <template data-i18n-for="strip" data-i18n-locale="de"
-    >Versandkostenfrei ab 80 € · 30 Tage Rückgabe · In kleinen Werkstätten gemacht</template
+    >Versandkostenfrei ab 100 € · 30 Tage Rückgabe · In kleinen Werkstätten gemacht</template
   >
   <template data-i18n-for="gift-from" data-i18n-locale="en">from €25</template>
   <template data-i18n-for="gift-from" data-i18n-locale="de">ab 25 €</template>
@@ -1126,68 +1770,58 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="wish-2" data-i18n-locale="de">Stoneware mug auf die Wunschliste setzen</template>
   <template data-i18n-for="wish-3" data-i18n-locale="en">Save Wildflower honey to your wishlist</template>
   <template data-i18n-for="wish-3" data-i18n-locale="de">Wildflower honey auf die Wunschliste setzen</template>
-  <template data-i18n-for="price-shirt" data-i18n-locale="en"><span data-i18n-value="w64"></span></template>
-  <template data-i18n-for="price-shirt" data-i18n-locale="de"><span data-i18n-value="w64"></span></template>
+  <template data-i18n-for="price-shirt" data-i18n-locale="en"><span data-i18n-value="pTeapot"></span></template>
+  <template data-i18n-for="price-shirt" data-i18n-locale="de"><span data-i18n-value="pTeapot"></span></template>
   <template data-i18n-for="was-shirt" data-i18n-locale="en"
-    ><span class="sr-only">was </span><span data-i18n-value="w80"></span
+    ><span class="sr-only">was </span><span data-i18n-value="pTeapotWas"></span
   ></template>
   <template data-i18n-for="was-shirt" data-i18n-locale="de"
-    ><span class="sr-only">statt </span><span data-i18n-value="w80"></span
+    ><span class="sr-only">statt </span><span data-i18n-value="pTeapotWas"></span
   ></template>
   <template data-i18n-for="price-1" data-i18n-locale="en"
-    ><strong><span data-i18n-value="w22"></span></strong
+    ><strong><span data-i18n-value="pMug"></span></strong
   ></template>
   <template data-i18n-for="price-1" data-i18n-locale="de"
-    ><strong><span data-i18n-value="w22"></span></strong
+    ><strong><span data-i18n-value="pMug"></span></strong
   ></template>
   <template data-i18n-for="price-2" data-i18n-locale="en"
-    ><strong><span data-i18n-value="w38"></span></strong
+    ><strong><span data-i18n-value="pHoney"></span></strong
   ></template>
   <template data-i18n-for="price-2" data-i18n-locale="de"
-    ><strong><span data-i18n-value="w38"></span></strong
+    ><strong><span data-i18n-value="pHoney"></span></strong
   ></template>
-  <template data-i18n-for="unit-c64" data-i18n-locale="en"><span data-i18n-value="c64"></span> each</template>
-  <template data-i18n-for="unit-c64" data-i18n-locale="de"><span data-i18n-value="c64"></span> pro Stück</template>
-  <template data-i18n-for="unit-c22" data-i18n-locale="en"><span data-i18n-value="c22"></span> each</template>
-  <template data-i18n-for="unit-c22" data-i18n-locale="de"><span data-i18n-value="c22"></span> pro Stück</template>
-  <template data-i18n-for="qty-1" data-i18n-locale="en">Quantity of Glass teapot</template>
-  <template data-i18n-for="qty-1" data-i18n-locale="de">Menge von Glass teapot</template>
-  <template data-i18n-for="qty-2" data-i18n-locale="en">Quantity of Stoneware mug</template>
-  <template data-i18n-for="qty-2" data-i18n-locale="de">Menge von Stoneware mug</template>
-  <template data-i18n-for="price-3" data-i18n-locale="en"><span data-i18n-value="c64"></span></template>
-  <template data-i18n-for="price-3" data-i18n-locale="de"><span data-i18n-value="c64"></span></template>
-  <template data-i18n-for="price-4" data-i18n-locale="en"><span data-i18n-value="c44"></span></template>
-  <template data-i18n-for="price-4" data-i18n-locale="de"><span data-i18n-value="c44"></span></template>
   <template data-i18n-for="cs-title" data-i18n-locale="en">Order summary</template>
   <template data-i18n-for="cs-title" data-i18n-locale="de">Bestellübersicht</template>
   <template data-i18n-for="cs-free" data-i18n-locale="en"
-    >Add <strong><span data-i18n-value="c16"></span></strong> more for free shipping</template
+    >Add <strong><span data-i18n-value="toFree"></span></strong> more for free shipping</template
   >
   <template data-i18n-for="cs-free" data-i18n-locale="de"
-    >Noch <strong><span data-i18n-value="c16"></span></strong> bis zum kostenlosen Versand</template
+    >Noch <strong><span data-i18n-value="toFree"></span></strong> bis zum kostenlosen Versand</template
   >
-  <template data-i18n-for="cs-line-0" data-i18n-locale="en">Subtotal (3 items)</template>
-  <template data-i18n-for="cs-line-0" data-i18n-locale="de">Zwischensumme (3 Artikel)</template>
-  <template data-i18n-for="cs-amount-0" data-i18n-locale="en"><span data-i18n-value="c108"></span></template>
-  <template data-i18n-for="cs-amount-0" data-i18n-locale="de"><span data-i18n-value="c108"></span></template>
+  <template data-i18n-for="cs-line-0" data-i18n-locale="en">Subtotal (<span data-i18n-value="items"></span>)</template>
+  <template data-i18n-for="cs-line-0" data-i18n-locale="de"
+    >Zwischensumme (<span data-i18n-value="items"></span>)</template
+  >
+  <template data-i18n-for="cs-amount-0" data-i18n-locale="en"><span data-i18n-value="subtotal"></span></template>
+  <template data-i18n-for="cs-amount-0" data-i18n-locale="de"><span data-i18n-value="subtotal"></span></template>
   <template data-i18n-for="cs-line-1" data-i18n-locale="en">Discount · AUTUMN30</template>
   <template data-i18n-for="cs-line-1" data-i18n-locale="de">Rabatt · AUTUMN30</template>
-  <template data-i18n-for="cs-amount-1" data-i18n-locale="en">−<span data-i18n-value="c24"></span></template>
-  <template data-i18n-for="cs-amount-1" data-i18n-locale="de">−<span data-i18n-value="c24"></span></template>
+  <template data-i18n-for="cs-amount-1" data-i18n-locale="en">−<span data-i18n-value="discount"></span></template>
+  <template data-i18n-for="cs-amount-1" data-i18n-locale="de">−<span data-i18n-value="discount"></span></template>
   <template data-i18n-for="cs-line-2" data-i18n-locale="en">Shipping</template>
   <template data-i18n-for="cs-line-2" data-i18n-locale="de">Versand</template>
-  <template data-i18n-for="cs-amount-2" data-i18n-locale="en"><span data-i18n-value="c490"></span></template>
-  <template data-i18n-for="cs-amount-2" data-i18n-locale="de"><span data-i18n-value="c490"></span></template>
+  <template data-i18n-for="cs-amount-2" data-i18n-locale="en"><span data-i18n-value="shipping"></span></template>
+  <template data-i18n-for="cs-amount-2" data-i18n-locale="de"><span data-i18n-value="shipping"></span></template>
   <template data-i18n-for="cs-line-3" data-i18n-locale="en">VAT (included)</template>
   <template data-i18n-for="cs-line-3" data-i18n-locale="de">MwSt. (enthalten)</template>
-  <template data-i18n-for="cs-amount-3" data-i18n-locale="en"><span data-i18n-value="c1662"></span></template>
-  <template data-i18n-for="cs-amount-3" data-i18n-locale="de"><span data-i18n-value="c1662"></span></template>
+  <template data-i18n-for="cs-amount-3" data-i18n-locale="en"><span data-i18n-value="vat"></span></template>
+  <template data-i18n-for="cs-amount-3" data-i18n-locale="de"><span data-i18n-value="vat"></span></template>
   <template data-i18n-for="cs-total" data-i18n-locale="en">Total</template>
   <template data-i18n-for="cs-total" data-i18n-locale="de">Gesamt</template>
   <template data-i18n-for="cs-incl" data-i18n-locale="en">incl. VAT</template>
   <template data-i18n-for="cs-incl" data-i18n-locale="de">inkl. MwSt.</template>
-  <template data-i18n-for="price-5" data-i18n-locale="en"><span data-i18n-value="c8890"></span></template>
-  <template data-i18n-for="price-5" data-i18n-locale="de"><span data-i18n-value="c8890"></span></template>
+  <template data-i18n-for="price-5" data-i18n-locale="en"><span data-i18n-value="total"></span></template>
+  <template data-i18n-for="price-5" data-i18n-locale="de"><span data-i18n-value="total"></span></template>
   <template data-i18n-for="cs-note" data-i18n-locale="en">Secure checkout · 30-day returns</template>
   <template data-i18n-for="cs-note" data-i18n-locale="de">Sichere Bezahlung · 30 Tage Rückgabe</template>
   <template data-i18n-for="legend-shipping" data-i18n-locale="en">Shipping address</template>
@@ -1244,46 +1878,42 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   >
   <template data-i18n-for="pick" data-i18n-locale="en">Pick up in store</template>
   <template data-i18n-for="pick" data-i18n-locale="de">Abholung im Geschäft</template>
-  <template data-i18n-for="free-1" data-i18n-locale="en">Free</template>
-  <template data-i18n-for="free-1" data-i18n-locale="de">Kostenlos</template>
+  <template data-i18n-for="free-1" data-i18n-locale="en"><span data-i18n-value="standard"></span></template>
+  <template data-i18n-for="free-1" data-i18n-locale="de"><span data-i18n-value="standard"></span></template>
   <template data-i18n-for="free-2" data-i18n-locale="en">Free</template>
   <template data-i18n-for="free-2" data-i18n-locale="de">Kostenlos</template>
-  <template data-i18n-for="price-6" data-i18n-locale="en"><span data-i18n-value="c990"></span></template>
-  <template data-i18n-for="price-6" data-i18n-locale="de"><span data-i18n-value="c990"></span></template>
+  <template data-i18n-for="price-6" data-i18n-locale="en"><span data-i18n-value="express"></span></template>
+  <template data-i18n-for="price-6" data-i18n-locale="de"><span data-i18n-value="express"></span></template>
   <template data-i18n-for="method-card" data-i18n-locale="en">Card</template>
   <template data-i18n-for="method-card" data-i18n-locale="de">Karte</template>
   <template data-i18n-for="method-bank" data-i18n-locale="en">Bank transfer</template>
   <template data-i18n-for="method-bank" data-i18n-locale="de">Banküberweisung</template>
   <template data-i18n-for="save-card" data-i18n-locale="en">Save this card for next time</template>
   <template data-i18n-for="save-card" data-i18n-locale="de">Diese Karte für das nächste Mal speichern</template>
-  <template data-i18n-for="pay" data-i18n-locale="en">Pay <span data-i18n-value="c8890"></span></template>
-  <template data-i18n-for="pay" data-i18n-locale="de"><span data-i18n-value="c8890"></span> bezahlen</template>
+  <template data-i18n-for="pay" data-i18n-locale="en">Pay <span data-i18n-value="total"></span></template>
+  <template data-i18n-for="pay" data-i18n-locale="de"><span data-i18n-value="total"></span> bezahlen</template>
   <template data-i18n-for="os-title" data-i18n-locale="en">Your order</template>
   <template data-i18n-for="os-title" data-i18n-locale="de">Deine Bestellung</template>
-  <template data-i18n-for="price-7" data-i18n-locale="en"><span data-i18n-value="c64"></span></template>
-  <template data-i18n-for="price-7" data-i18n-locale="de"><span data-i18n-value="c64"></span></template>
-  <template data-i18n-for="price-8" data-i18n-locale="en"><span data-i18n-value="c44"></span></template>
-  <template data-i18n-for="price-8" data-i18n-locale="de"><span data-i18n-value="c44"></span></template>
   <template data-i18n-for="os-line-0" data-i18n-locale="en">Subtotal</template>
   <template data-i18n-for="os-line-0" data-i18n-locale="de">Zwischensumme</template>
-  <template data-i18n-for="os-amount-0" data-i18n-locale="en"><span data-i18n-value="c108"></span></template>
-  <template data-i18n-for="os-amount-0" data-i18n-locale="de"><span data-i18n-value="c108"></span></template>
+  <template data-i18n-for="os-amount-0" data-i18n-locale="en"><span data-i18n-value="subtotal"></span></template>
+  <template data-i18n-for="os-amount-0" data-i18n-locale="de"><span data-i18n-value="subtotal"></span></template>
   <template data-i18n-for="os-line-1" data-i18n-locale="en">Discount (AUTUMN30)</template>
   <template data-i18n-for="os-line-1" data-i18n-locale="de">Rabatt (AUTUMN30)</template>
-  <template data-i18n-for="os-amount-1" data-i18n-locale="en">−<span data-i18n-value="c24"></span></template>
-  <template data-i18n-for="os-amount-1" data-i18n-locale="de">−<span data-i18n-value="c24"></span></template>
-  <template data-i18n-for="os-line-2" data-i18n-locale="en">Shipping · Standard</template>
-  <template data-i18n-for="os-line-2" data-i18n-locale="de">Versand · Standard</template>
-  <template data-i18n-for="os-amount-2" data-i18n-locale="en"><span data-i18n-value="c490"></span></template>
-  <template data-i18n-for="os-amount-2" data-i18n-locale="de"><span data-i18n-value="c490"></span></template>
+  <template data-i18n-for="os-amount-1" data-i18n-locale="en">−<span data-i18n-value="discount"></span></template>
+  <template data-i18n-for="os-amount-1" data-i18n-locale="de">−<span data-i18n-value="discount"></span></template>
+  <template data-i18n-for="os-line-2" data-i18n-locale="en">Shipping · <span data-i18n-value="method"></span></template>
+  <template data-i18n-for="os-line-2" data-i18n-locale="de">Versand · <span data-i18n-value="method"></span></template>
+  <template data-i18n-for="os-amount-2" data-i18n-locale="en"><span data-i18n-value="shipping"></span></template>
+  <template data-i18n-for="os-amount-2" data-i18n-locale="de"><span data-i18n-value="shipping"></span></template>
   <template data-i18n-for="os-total" data-i18n-locale="en"
-    >Total <small>incl. <span data-i18n-value="c1662"></span> VAT</small></template
+    >Total <small>incl. <span data-i18n-value="vat"></span> VAT</small></template
   >
   <template data-i18n-for="os-total" data-i18n-locale="de"
-    >Gesamt <small>inkl. <span data-i18n-value="c1662"></span> MwSt.</small></template
+    >Gesamt <small>inkl. <span data-i18n-value="vat"></span> MwSt.</small></template
   >
-  <template data-i18n-for="os-total-amount" data-i18n-locale="en"><span data-i18n-value="c8890"></span></template>
-  <template data-i18n-for="os-total-amount" data-i18n-locale="de"><span data-i18n-value="c8890"></span></template>
+  <template data-i18n-for="os-total-amount" data-i18n-locale="en"><span data-i18n-value="total"></span></template>
+  <template data-i18n-for="os-total-amount" data-i18n-locale="de"><span data-i18n-value="total"></span></template>
   <template data-i18n-for="oc-title" data-i18n-locale="en">Thank you, Anna!</template>
   <template data-i18n-for="oc-title" data-i18n-locale="de">Danke, Anna!</template>
   <template data-i18n-for="oc-text" data-i18n-locale="en"
@@ -1297,10 +1927,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="oc-payment" data-i18n-locale="en">Payment</template>
   <template data-i18n-for="oc-payment" data-i18n-locale="de">Zahlung</template>
   <template data-i18n-for="oc-paid" data-i18n-locale="en"
-    >Visa •••• 4242 · <span data-i18n-value="c8890"></span
+    >Visa •••• 4242 · <span data-i18n-value="total"></span
   ></template>
   <template data-i18n-for="oc-paid" data-i18n-locale="de"
-    >Visa •••• 4242 · <span data-i18n-value="c8890"></span
+    >Visa •••• 4242 · <span data-i18n-value="total"></span
   ></template>
   <template data-i18n-for="oc-to" data-i18n-locale="en">Delivery to</template>
   <template data-i18n-for="oc-to" data-i18n-locale="de">Lieferung an</template>
@@ -1339,44 +1969,256 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
     const site = df$('#site-shop').get(0);
 
-    // every price, in euros: formatted for the language on every render
-    const AMOUNTS = {
-      w64: [64, 0],
-      w80: [80, 0],
-      w22: [22, 0],
-      w38: [38, 0],
-      c64: [64, 2],
-      c22: [22, 2],
-      c44: [44, 2],
-      c16: [16, 2],
-      c108: [108, 2],
-      c24: [24, 2],
-      c490: [4.9, 2],
-      c1662: [16.62, 2],
-      c8890: [88.9, 2],
-      c990: [9.9, 2],
+    // -- the store: its products and the words the script writes (one data block), the cart in memory
+    const DATA = JSON.parse(df$('#shop-products').text());
+    const PRODUCTS = DATA.products;
+    const ORDER = Object.keys(PRODUCTS);
+    // the cart a returning shopper left: a teapot and two mugs
+    let cart = [
+      { id: 'glass-teapot', option: 'Clear', qty: 1 },
+      { id: 'stoneware-mug', option: 'Oat', qty: 2 },
+    ];
+    const DELIVERY = { 'dl-std': 'standard', 'dl-exp': 'express', 'dl-pick': 'pickup' };
+    // the store's rules: AUTUMN30 takes 30 %, standard shipping is free from €100 after it, VAT (23 %) is included
+    const cents = (n) => Math.round(n * 100) / 100;
+    const unitPrice = (line) => (PRODUCTS[line.id].amounts ? Number(line.option) : PRODUCTS[line.id].price);
+    const totals = () => {
+      const count = cart.reduce((n, line) => n + line.qty, 0);
+      const subtotal = cents(cart.reduce((n, line) => n + unitPrice(line) * line.qty, 0));
+      const discount = cents(subtotal * 0.3);
+      const after = cents(subtotal - discount);
+      const standard = after >= 100 || !count ? 0 : 4.9;
+      const method = DELIVERY[df$('#site-shop [name="delivery"]:checked').attr('id')] ?? 'standard';
+      const shipping = { standard, express: 9.9, pickup: 0 }[method];
+      const total = cents(after + shipping);
+      return { count, subtotal, discount, after, standard, method, shipping, total, vat: cents(total - total / 1.23) };
     };
     // -- translation: the markup is the catalog (the templates at the end of the page)
     const locale = createI18n({
       locale: 'en', // the demos start in English; the language select offers German
     });
-    createDomI18n(df$).bind(site, locale, {
-      values: () => ({
-        ...Object.fromEntries(
-          Object.entries(AMOUNTS).map(([key, [n, digits]]) => [
-            key,
-            locale.formatNumber(n, {
-              style: 'currency',
-              currency: 'EUR',
-              minimumFractionDigits: digits,
-              maximumFractionDigits: digits,
-            }),
-          ]),
-        ),
-      }),
+    const words = () => DATA.words[locale.locale] ?? DATA.words.en;
+    const money = (n, digits = 2) =>
+      locale.formatNumber(n, {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      });
+    const texts = createDomI18n(df$).bind(site, locale, {
+      values: () => {
+        const t = totals();
+        const w = words();
+        return {
+          pTeapot: money(PRODUCTS['glass-teapot'].price, 0),
+          pTeapotWas: money(PRODUCTS['glass-teapot'].was, 0),
+          pMug: money(PRODUCTS['stoneware-mug'].price, 0),
+          pHoney: money(PRODUCTS['wildflower-honey'].price, 0),
+          items: t.count + ' ' + (t.count === 1 ? w.item : w.items),
+          subtotal: money(t.subtotal),
+          discount: money(t.discount),
+          shipping: t.shipping ? money(t.shipping) : w.free,
+          standard: t.standard ? money(t.standard) : w.free,
+          express: money(9.9),
+          method: w[t.method],
+          vat: money(t.vat),
+          total: money(t.total),
+          toFree: money(Math.max(0, cents(100 - t.after))),
+        };
+      },
     });
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
+
+    // -- the cart and the order summary: drawn from the cart, its totals are the values above
+    const option = (line) => (PRODUCTS[line.id].amounts ? money(Number(line.option), 0) : line.option);
+    const drawCart = () => {
+      const w = words();
+      const t = totals();
+      const list = df$('[data-cart-list]').html('');
+      const orders = df$('[data-order-list]').html('');
+      for (const line of cart) {
+        const product = PRODUCTS[line.id];
+        const name = product.name;
+        const row = df$(df$('template[data-cart-line]').get(0).content.firstElementChild.cloneNode(true));
+        row.find('img').attr('src', 'https://picsum.photos/id/' + product.image + '/240/300');
+        row
+          .find('[data-line-name]')
+          .attr('href', '#/product/' + line.id)
+          .text(name);
+        row.find('[data-line-option]').text(option(line));
+        row.find('[data-line-unit]').text(money(unitPrice(line)) + ' ' + w.each);
+        const qtyId = 'cart-' + line.id + '-qty';
+        row
+          .find('[data-line-qty-label]')
+          .attr('for', qtyId)
+          .text(w.qty + ' ' + name);
+        row
+          .find('[data-line-qty]')
+          .attr('id', qtyId)
+          .val(String(line.qty))
+          .data('line', line.id + '|' + line.option);
+        row.find('[data-line-less]').attr('aria-label', w.less + ' ' + name);
+        row.find('[data-line-more]').attr('aria-label', w.more + ' ' + name);
+        row
+          .find('[data-line-total]')
+          .attr('for', qtyId)
+          .text(money(unitPrice(line) * line.qty));
+        row
+          .find('[data-line-remove]')
+          .attr('aria-label', w.remove + ' ' + name)
+          .data('line', line.id + '|' + line.option);
+        list.append(row);
+        const item = df$(df$('template[data-order-line]').get(0).content.firstElementChild.cloneNode(true));
+        item.find('img').attr('src', 'https://picsum.photos/id/' + product.image + '/160/200');
+        item.find('[data-line-count]').text(String(line.qty));
+        item.find('[data-line-name]').text(name);
+        item.find('[data-line-option]').text(option(line));
+        item.find('[data-line-total]').text(money(unitPrice(line) * line.qty));
+        orders.append(item);
+      }
+      df$('[data-cart-empty]').prop('hidden', cart.length > 0);
+      df$('[data-cart-summary]').prop('hidden', cart.length === 0);
+      df$('[data-cart-count]').text(String(t.count));
+      df$('[data-cart-free]')
+        .attr('value', String(Math.min(100, Math.round(t.after))))
+        .text(Math.round(t.after) + '%');
+      texts.refresh();
+    };
+    const lineOf = (el) => {
+      const [id, opt] = df$(el).data('line').split('|');
+      return cart.find((line) => line.id === id && line.option === opt);
+    };
+    // a quantity changes the line and the totals; 0 or the remove button takes the line out
+    site.addEventListener('change', (event) => {
+      if (event.target.matches('[data-line-qty]')) {
+        const line = lineOf(event.target);
+        const qty = Math.max(0, Math.min(10, Math.round(Number(event.target.value) || 0)));
+        if (!line) return;
+        if (qty === 0) cart = cart.filter((l) => l !== line);
+        else line.qty = qty;
+        if (qty === 0) drawCart();
+        else {
+          df$(event.target)
+            .closest('.mk-cart-item')
+            .find('[data-line-total]')
+            .text(money(unitPrice(line) * qty));
+          drawSummary();
+        }
+      } else if (event.target.matches('[name="delivery"]')) texts.refresh();
+    });
+    // the summary alone (a line's own field keeps its focus while the totals follow)
+    const drawSummary = () => {
+      const t = totals();
+      df$('[data-cart-count]').text(String(t.count));
+      df$('[data-cart-free]')
+        .attr('value', String(Math.min(100, Math.round(t.after))))
+        .text(Math.round(t.after) + '%');
+      df$('[data-order-list] li').each((i, li) => {
+        const line = cart[i];
+        if (!line) return;
+        df$(li).find('[data-line-count]').text(String(line.qty));
+        df$(li)
+          .find('[data-line-total]')
+          .text(money(unitPrice(line) * line.qty));
+      });
+      texts.refresh();
+    };
+    site.addEventListener('click', (event) => {
+      const remove = event.target.closest('[data-line-remove]');
+      if (remove) {
+        const line = lineOf(remove);
+        cart = cart.filter((l) => l !== line);
+        drawCart();
+      }
+    });
+    const add = (id, opt, qty) => {
+      const line = cart.find((l) => l.id === id && l.option === opt);
+      if (line) line.qty = Math.min(10, line.qty + qty);
+      else cart.push({ id, option: opt, qty });
+      drawCart();
+    };
+
+    // -- a product's page, from the data block, in the language shown
+    let product = null;
+    const drawProduct = () => {
+      if (!product) return;
+      const item = PRODUCTS[product];
+      const text = item[locale.locale] ?? item.en;
+      const w = words();
+      const view = df$('[data-shop-view="product"]');
+      view.find('[data-product-field]').each((_i, field) => {
+        df$(field).text(
+          field.dataset.productField === 'name'
+            ? item.amounts
+              ? w.gift
+              : item.name
+            : text[field.dataset.productField],
+        );
+      });
+      view
+        .find('[data-product-image]')
+        .attr('src', 'https://picsum.photos/id/' + item.image + '/900/1125')
+        .attr('alt', '');
+      view
+        .find('[data-product-stars]')
+        .attr('style', '--mk-rating: ' + item.rating)
+        .attr('aria-label', locale.formatNumber(item.rating) + ' ' + w.stars);
+      view.find('[data-product-reviews]').text('(' + item.reviews + ')');
+      const chosen = view.find('[data-product-options] input:checked').val();
+      const price = item.amounts && chosen ? Number(chosen) : item.price;
+      view.find('[data-product-price]').text(money(price, 0));
+      view
+        .find('[data-product-was]')
+        .text(item.was ? money(item.was, 0) : '')
+        .prop('hidden', !item.was);
+      // the others, to look at next
+      const others = ORDER.filter((id) => id !== product);
+      view.find('[data-product-more]').each((i, li) => {
+        const other = PRODUCTS[others[i]];
+        df$(li)
+          .find('img')
+          .attr('src', 'https://picsum.photos/id/' + other.image + '/480/600');
+        df$(li)
+          .find('a')
+          .attr('href', '#/product/' + others[i])
+          .text(other.amounts ? w.gift : other.name);
+        df$(li)
+          .find('span')
+          .text((other.amounts ? (locale.locale === 'de' ? 'ab ' : 'from ') : '') + money(other.price, 0));
+      });
+    };
+    const openProduct = (id) => {
+      product = id;
+      const item = PRODUCTS[id];
+      // the options as radios: a colour, a glaze, a pack or an amount
+      const box = df$('[data-product-options]').html('');
+      item.options.forEach(([name, swatch], i) => {
+        const input = df$('<input type="radio" name="option" />')
+          .attr('value', name)
+          .prop('checked', i === 0);
+        const dot = df$('<i aria-hidden="true"></i>');
+        if (swatch) dot.attr('style', '--mk-swatch: ' + swatch);
+        const label = df$('<label class="shop-option"></label>').append(input).append(dot);
+        label.append(df$('<span></span>').text(item.amounts ? money(Number(name), 0) : name));
+        box.append(label);
+      });
+      df$('#sp-qty').val('1');
+      drawProduct();
+    };
+    df$('[data-product-options]').on('change', drawProduct);
+    df$('[data-product-form]').on('submit', (event) => {
+      event.preventDefault();
+      const opt = df$('[data-product-options] input:checked').val();
+      add(product, opt, Math.max(1, Math.min(10, Number(df$('#sp-qty').val()) || 1)));
+      go('#/cart');
+    });
+    // a language change writes the script's words again
+    locale.subscribe(() => {
+      drawCart();
+      drawProduct();
+    });
+    drawCart();
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -1395,19 +2237,34 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     // -- routing
     const routes = [
       { id: 'shop', path: '/' },
+      { id: 'product', path: '/product/:id' },
       { id: 'cart', path: '/cart' },
       { id: 'checkout', path: '/checkout' },
       { id: 'order', path: '/order/:id' },
       { id: 'missing', path: '*' },
     ];
-    // one step of the purchase at a time; an order the shop does not know is the store again
+    // one step of the purchase at a time; an order or a product the shop does not know is the store again; a
+    // checkout with an empty cart is the empty cart
     const show = (to) => {
-      const view =
-        to.routeId === 'order' && to.params.id !== 'A-20481' ? 'shop' : to.routeId === 'missing' ? 'shop' : to.routeId;
+      let view =
+        to.routeId === 'order' && to.params.id !== 'A-20481'
+          ? 'shop'
+          : to.routeId === 'product' && !PRODUCTS[to.params.id]
+            ? 'shop'
+            : to.routeId === 'missing'
+              ? 'shop'
+              : to.routeId;
+      if (view === 'checkout' && !cart.length) view = 'cart';
+      if (view === 'product') openProduct(to.params.id);
       df$('#site-shop [data-shop-view]').each((_i, block) => {
         block.hidden = block.dataset.shopView !== view;
       });
-      // a step starts at the top of the page (a docs preview has no scroll of its own - nothing moves)
+      const here = view === 'product' && to.params.id === 'gift-card' ? 'gift-card' : view;
+      df$('#site-shop [data-shop-nav]').each((_i, link) => {
+        if (link.dataset.shopNav === here) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      // a step starts at the top of the page (in a docs card the preview frame scrolls itself)
       scrollTo(0, 0);
     };
     // Add to cart and Pay navigate too
@@ -1415,9 +2272,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       if (router.getSnapshot().current) router.navigate(href);
       else location.hash = href.slice(1);
     };
+    // a card's Add to cart puts one of its first option in the cart and shows the cart
     site.addEventListener('click', (event) => {
-      const path = event.target.closest('[data-go]')?.dataset.go;
-      if (path) go('#' + path);
+      const id = event.target.closest('[data-add]')?.dataset.add;
+      if (!id) return;
+      add(id, PRODUCTS[id].options[0][0], 1);
+      go('#/cart');
     });
     df$('[data-shop-pay]').on('submit', (event) => {
       event.preventDefault();

@@ -50,6 +50,13 @@ export async function cssSmoke(component: string, checks: Check[]): Promise<void
     await page.goto(`${server.url}${fixtureUrl(component)}`);
     // fixture files carry ids per variant/size - make sure they all rendered
     await page.waitForFunction(() => document.body.childElementCount > 0);
+    // the first style can be computed before the sheets apply, and every transitioned property then runs from its
+    // initial value: read nothing until the transitions have settled
+    // VERIFIED: (booking-form.e2e, 2026-11-09) a check read both option borders as oklab(0 0 0) with 70 transitions
+    // running and failed two runs in three
+    await page
+      .waitForFunction(() => !document.getAnimations().some((a) => a instanceof CSSTransition), null, { timeout: 3_000 })
+      .catch(() => {});
 
     for (const c of checks) {
       if ('css' in c) {

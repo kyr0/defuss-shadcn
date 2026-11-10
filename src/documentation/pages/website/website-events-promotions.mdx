@@ -14,13 +14,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Events & Promotions blocks composed into one page - the source is the page. A track filters the schedule and a speaker's talk opens its session - routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/track/design</code>, <code>#/sessions/ss-2</code>); the language switch translates the page with <DocLink href="translation.html">defuss-i18n</DocLink>.</DocText>
+<DocText>The Events & Promotions blocks composed into one page - the source is the page. A track filters the schedule, a talk opens its session and a speaker's name their page - a bio and every talk they give - routes of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/track/design</code>, <code>#/sessions/ss-2</code>, <code>#/speakers/hannah-lee</code>); the language switch translates the page with <DocLink href="translation.html">defuss-i18n</DocLink>.</DocText>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-website-events-promotions.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
 </div>
 
-```html example label="An event page" schema="none" hint="A track filters the schedule (#/track/engineering), a talk opens its session (#/sessions/ss-2); the switch translates the page. An announcement, the Event Header, the Summit Night scene - seven parallax planes, scroll slowly -, a Countdown bar, the Event Description, the agenda (Session Items), the speakers, the venue (Location Map + Opening Hours) and a final CTA - only Events & Promotions blocks." previewStyle="align-items:stretch;"
+```html example label="An event page" schema="none" hint="A track filters the schedule (#/track/engineering), a talk opens its session (#/sessions/ss-2), a speaker's name their page (#/speakers/hannah-lee); the switch translates the page. An announcement, the Event Header, the Summit Night scene - seven parallax planes, scroll slowly -, a Countdown bar, the Event Description, the agenda (Session Items), the speakers, the venue (Location Map + Opening Hours) and a final CTA - only Events & Promotions blocks." previewStyle="align-items:stretch;"
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Figtree:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
   /* A conference in Lisbon on a 76rem page: the announcement, a header bar, a full-width hero where the evening light
@@ -133,17 +133,41 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     margin: 0;
     border-radius: 0;
   }
-  /* the header bar */
+  /* the header bar: the Site Header block - the name, the sections, the look, the language and the tickets */
   #site-events .ev-bar {
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #site-events .ev-bar .mk-header-inner {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.75rem 1.5rem;
+    max-width: none;
+    min-height: 4.5rem;
+    margin: 0;
+    padding: 0.75rem 0;
+  }
+  #site-events .ev-nav {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1.5rem;
-    min-height: 4.5rem;
-    padding-block: 0.75rem;
+    gap: 0.25rem 1.5rem;
+    margin-inline-end: auto;
+  }
+  #site-events .ev-nav a {
+    padding-block: 0.375rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  #site-events .ev-nav a:hover,
+  #site-events .ev-nav a[aria-current] {
+    color: var(--foreground);
+  }
+  #site-events .ev-nav a[aria-current] {
+    box-shadow: inset 0 -2px 0 var(--primary);
   }
   #site-events .ev-brand {
-    margin-inline-end: auto;
     color: var(--foreground);
     text-decoration: none;
     font: 900 1.5rem/1 var(--ev-display);
@@ -311,8 +335,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   #site-events > .parallax {
     border-radius: 0;
   }
+  /* the closing band keeps the ground between it and the footer, as every page does */
   #site-events > .mk-cta {
-    margin: 0;
+    margin: 0 0 clamp(3rem, 6vw, 4.5rem);
     border-radius: 0;
   }
   #site-events[data-look='aurora'] .mk-session-item {
@@ -331,6 +356,335 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   #site-events .site-mode:hover {
     background: var(--accent);
     color: var(--accent-foreground);
+  }
+  #site-events [hidden] {
+    display: none !important;
+  }
+  /* the agenda's titles open their sessions */
+  #site-events .mk-session-item-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #site-events .mk-session-item-title a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  #site-events .parallax a.badge {
+    text-decoration: none;
+  }
+  /* around the summit: three Event Items on cards */
+  #site-events > .ev-around {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+  }
+  #site-events .mk-event-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #site-events[data-look='poster'] .mk-event-item {
+    border: 2px solid var(--foreground);
+  }
+  #site-events .mk-event-item-title a {
+    color: var(--foreground);
+  }
+  /* the pages: a session, a speaker, an event, the registration - a display title, the text beside a card of facts */
+  #site-events
+    > :is(
+      [data-events-view='session'],
+      [data-events-view='speaker'],
+      [data-events-view='event'],
+      [data-events-view='register']
+    ) {
+    padding-block: clamp(2.5rem, 5vw, 4rem) clamp(3.5rem, 7vw, 5.5rem);
+  }
+  #site-events .ev-page {
+    display: grid;
+    gap: 1.25rem;
+  }
+  #site-events .ev-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: fit-content;
+    color: var(--muted-foreground);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  #site-events .ev-back:hover {
+    color: var(--foreground);
+  }
+  #site-events .ev-back svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  #site-events .ev-kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font:
+      700 0.875rem/1.4 'Space Mono',
+      var(--font-mono);
+    text-transform: uppercase;
+  }
+  #site-events .ev-page-title {
+    max-width: 52rem;
+    margin: 0;
+    font: 900 clamp(2.5rem, 6vw, 4.5rem)/0.95 var(--ev-display);
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  #site-events .ev-lead {
+    max-width: 44rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+  #site-events .ev-page-layout {
+    display: grid;
+    gap: 2.5rem;
+    margin-block-start: 1rem;
+  }
+  @container (width > 52rem) {
+    #site-events .ev-page-layout {
+      grid-template-columns: minmax(0, 1fr) 20rem;
+      align-items: start;
+    }
+  }
+  #site-events .ev-prose {
+    display: grid;
+    gap: 1rem;
+    max-width: 44rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+  #site-events .ev-prose p {
+    margin: 0;
+  }
+  #site-events :is(.ev-prose, .ev-aside) h2 {
+    margin: 0.5rem 0 0;
+    font: 900 1.625rem/1 var(--ev-display);
+    text-transform: uppercase;
+  }
+  #site-events .ev-prose ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding-inline-start: 1.25rem;
+  }
+  #site-events .ev-aside {
+    display: grid;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #site-events[data-look='poster'] .ev-aside {
+    border: 2px solid var(--foreground);
+  }
+  #site-events .ev-aside .btn {
+    width: 100%;
+  }
+  /* a speaker's page: the portrait beside the name, the talks as links in the aside */
+  #site-events .ev-speaker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem 2rem;
+  }
+  #site-events .ev-speaker-photo {
+    width: clamp(7rem, 18vw, 10rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  #site-events .ev-speaker-head {
+    display: grid;
+    flex: 1 1 20rem;
+    gap: 0.75rem;
+  }
+  #site-events .ev-talks {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #site-events .ev-talks a {
+    display: grid;
+    gap: 0.125rem;
+    color: inherit;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  #site-events .ev-talks a:hover {
+    text-decoration: underline;
+  }
+  #site-events .ev-talks small {
+    color: var(--muted-foreground);
+    font-weight: 400;
+  }
+  #site-events .ev-people a {
+    color: inherit;
+    font-weight: 600;
+  }
+  #site-events .mk-speaker-item-name a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #site-events .mk-speaker-item-name a:hover {
+    text-decoration: underline;
+  }
+  #site-events .ev-people {
+    display: grid;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #site-events .ev-people li {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: center;
+  }
+  #site-events .ev-people img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  #site-events .ev-people small {
+    display: block;
+    color: var(--muted-foreground);
+  }
+  #site-events .ev-facts {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+  }
+  #site-events .ev-facts dt {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  #site-events .ev-facts dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  #site-events .ev-photo {
+    margin: 0;
+  }
+  #site-events .ev-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 21 / 8;
+    object-fit: cover;
+    border-radius: var(--radius-xl);
+  }
+  #site-events .ev-pager {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem;
+    margin-block-start: 2.5rem;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--border);
+  }
+  #site-events .ev-pager a {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  #site-events .ev-pager a:hover {
+    border-color: var(--primary);
+  }
+  #site-events .ev-pager a + a {
+    text-align: end;
+  }
+  #site-events .ev-pager span {
+    color: var(--muted-foreground);
+    font:
+      700 0.8125rem/1.4 'Space Mono',
+      var(--font-mono);
+    text-transform: uppercase;
+  }
+  #site-events .ev-pager strong {
+    font: 900 1.375rem/1.05 var(--ev-display);
+    text-transform: uppercase;
+  }
+  #site-events .ev-register {
+    max-width: 56rem;
+  }
+  #site-events .ev-done {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+    padding: 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  #site-events .ev-done > svg {
+    width: 3rem;
+    height: 3rem;
+    padding: 0.625rem;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  #site-events .ev-done h2 {
+    margin: 0;
+    font: 900 2.25rem/1 var(--ev-display);
+    text-transform: uppercase;
+  }
+  #site-events .ev-done p {
+    margin: 0;
+  }
+  /* the footer: the Site Footer block on the muted band */
+  #site-events .ev-footer {
+    border-block-start: 1px solid var(--border);
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  #site-events .ev-footer .mk-footer-inner {
+    max-width: none;
+    margin: 0;
+    padding: clamp(3rem, 6vw, 4.5rem) 0 2rem;
+  }
+  @container (width > 48rem) {
+    #site-events .ev-footer .mk-footer-top {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+      gap: 4rem;
+    }
+  }
+  #site-events .ev-footer .mk-footer-brand-name {
+    color: var(--foreground);
+    font: 900 1.75rem/1 var(--ev-display);
+    text-transform: uppercase;
+  }
+  #site-events .ev-footer .mk-footer-heading {
+    color: var(--foreground);
+    font:
+      700 0.8125rem/1.4 'Space Mono',
+      var(--font-mono);
+    text-transform: uppercase;
+  }
+  #site-events .ev-footer :is(.mk-footer-list a, .mk-footer-social a) {
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+  #site-events .ev-footer :is(.mk-footer-list a, .mk-footer-social a):hover {
+    color: var(--foreground);
   }
   /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
   :root:not(.dark) #site-events[data-look='sunset'] {
@@ -401,7 +755,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <div class="mk-announcement-inner">
       <i data-lucide="calendar"></i>
       <p id="ann-2" data-i18n-target="ev-1-1">Acme Summit · 12–13 November, Lisbon. Early-bird ends Friday.</p>
-      <a href="#"><span data-i18n-target="ev-2-1">Get tickets</span> <i data-lucide="arrow-right"></i></a>
+      <a href="#/register" data-router-link
+        ><span data-i18n-target="ev-2-1">Get tickets</span> <i data-lucide="arrow-right"></i
+      ></a>
       <form method="dialog"
         ><button
           class="mk-announcement-close"
@@ -412,49 +768,64 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       ></form>
     </div>
   </dialog>
-  <div class="ev-bar">
-    <a class="ev-brand" href="#/">Acme Summit</a>
-    <div class="ev-bar-controls">
-      <select
-        class="select"
-        data-size="sm"
-        data-site-look
-        aria-label="Look"
-        data-i18n-aria-label-en="Look"
-        data-i18n-aria-label-de="Stil"
-        style="width: auto"
+  <header class="mk-header ev-bar">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand ev-brand" href="#/" data-router-link>Acme Summit</a>
+      <nav
+        class="mk-header-nav ev-nav"
+        data-events-nav
+        aria-label="Summit"
+        data-i18n-aria-label-en="Summit"
+        data-i18n-aria-label-de="Summit"
       >
-        <option value="sunset" data-i18n-target="look-sunset">Sunset</option>
-        <option value="aurora" data-i18n-target="look-aurora">Aurora</option>
-        <option value="poster" data-i18n-target="look-poster">Poster</option>
-      </select>
-      <select
-        class="select"
-        data-size="sm"
-        data-app-locale
-        aria-label="Language"
-        data-i18n-aria-label-en="Language"
-        data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input
-          type="checkbox"
-          data-site-mode
-          aria-label="Dark mode"
-          data-i18n-aria-label-en="Dark mode"
-          data-i18n-aria-label-de="Dunkler Modus"
-        />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
+        <a href="#ev-programme" data-i18n-target="nav-programme">Programme</a>
+        <a href="#ev-speakers" data-i18n-target="nav-speakers">Speakers</a>
+        <a href="#ev-around" data-i18n-target="nav-around">Around the summit</a>
+        <a href="#ev-venue" data-i18n-target="nav-venue">Venue</a>
+      </nav>
+      <div class="mk-header-actions ev-bar-controls">
+        <select
+          class="select"
+          data-size="sm"
+          data-site-look
+          aria-label="Look"
+          data-i18n-aria-label-en="Look"
+          data-i18n-aria-label-de="Stil"
+          style="width: auto"
+        >
+          <option value="sunset" data-i18n-target="look-sunset">Sunset</option>
+          <option value="aurora" data-i18n-target="look-aurora">Aurora</option>
+          <option value="poster" data-i18n-target="look-poster">Poster</option>
+        </select>
+        <div
+          class="language-switcher"
+          data-app-locale
+          role="group"
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-flag-shape="rounded"
+          data-align="end"
+        ></div>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+      </div>
+      <a class="btn" href="#/register" data-router-link><span data-i18n-target="bar-tickets">Get tickets</span></a>
     </div>
-    <a class="btn" href="#"><span data-i18n-target="bar-tickets">Get tickets</span></a>
-  </div>
-  <header class="mk-event-header">
+  </header>
+  <header class="mk-event-header" data-events-view="home">
     <div
       class="shader ev-look-only"
       data-for="sunset"
@@ -490,8 +861,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <div class="mk-event-header-inner">
       <div class="mk-event-header-copy">
         <div class="mk-event-header-badges"
-          ><span class="badge" data-variant="default">Conference</span
-          ><span class="badge" data-variant="outline">3rd edition</span></div
+          ><span class="badge" data-variant="default" data-i18n-target="e2-conf">Conference</span
+          ><span class="badge" data-variant="outline" data-i18n-target="e2-ed">3rd edition</span></div
         >
         <h1 class="mk-event-header-title">Acme Summit 2026</h1>
         <p class="mk-event-header-tagline" data-i18n-target="ev-3-1"
@@ -502,12 +873,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             ><i data-lucide="calendar"></i
             ><span><time datetime="2026-11-12">12</time>–<time datetime="2026-11-13">13 November 2026</time></span></li
           >
-          <li><i data-lucide="map-pin"></i><address>Lisbon Congress Centre, Portugal</address></li>
+          <li
+            ><i data-lucide="map-pin"></i
+            ><address data-i18n-target="e2-where">Lisbon Congress Centre, Portugal</address></li
+          >
           <li><i data-lucide="ticket"></i><span data-i18n-target="ev-4-1">From €290</span></li>
         </ul>
         <div class="mk-event-header-actions">
-          <a class="btn" data-size="lg" href="#">Register now</a>
-          <a class="btn" data-variant="outline" data-size="lg" href="#" download="acme-summit-2026.ics"
+          <a class="btn" data-size="lg" href="#/register" data-router-link data-i18n-target="e2-register"
+            >Register now</a
+          >
+          <a
+            class="btn"
+            data-variant="outline"
+            data-size="lg"
+            href="data:text/calendar;charset=utf-8,BEGIN%3AVCALENDAR%0D%0AVERSION%3A2.0%0D%0APRODID%3A-%2F%2FAcme%2F%2FSummit%2F%2FEN%0D%0ABEGIN%3AVEVENT%0D%0AUID%3Aacme-summit-2026%40acme.example%0D%0ADTSTAMP%3A20261101T000000Z%0D%0ADTSTART%3BVALUE%3DDATE%3A20261112%0D%0ADTEND%3BVALUE%3DDATE%3A20261114%0D%0ASUMMARY%3AAcme%20Summit%202026%0D%0ALOCATION%3ALisbon%20Congress%20Centre%2C%20Portugal%0D%0AEND%3AVEVENT%0D%0AEND%3AVCALENDAR%0D%0A"
+            download="acme-summit-2026.ics"
             ><i data-lucide="calendar-plus"></i> <span data-i18n-target="ev-5-1">Add to calendar</span></a
           >
         </div>
@@ -527,6 +908,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <!-- the evening party: seven planes at their own speeds (the Parallax page's scene) -->
   <section
     class="parallax"
+    data-events-view="home"
     style="height: 34rem; background: #0b1026"
     aria-label="Summit Night - the evening party"
     data-i18n-aria-label-en="Summit Night - the evening party"
@@ -685,7 +1067,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           padding-inline: 1.5rem;
         "
       >
-        <span class="badge" data-variant="secondary">Nov 12 · 20:00 · Harbour terrace</span>
+        <a class="badge" data-variant="secondary" href="#/events/night" data-router-link data-i18n-target="e2-night"
+          >Nov 12 · 20:00 · Harbour terrace</a
+        >
         <p
           style="
             margin: 0;
@@ -700,7 +1084,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </div>
     </div>
   </section>
-  <section class="mk-event-countdown" data-variant="inline" aria-labelledby="ec-3">
+  <section class="mk-event-countdown" data-variant="inline" aria-labelledby="ec-3" data-events-view="home">
     <div class="mk-event-countdown-inner">
       <h2 class="mk-event-countdown-title" id="ec-3" data-i18n-target="ev-8-1">Early-bird ends in</h2>
       <div class="countdown-group mk-event-countdown-timer" data-duration="475200">
@@ -724,11 +1108,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ><span class="countdown-label" data-i18n-target="ev-11-1">sec</span></div
         >
       </div>
-      <a class="btn" href="#">Save 30%</a>
+      <a class="btn" href="#/register" data-router-link data-i18n-target="e2-save">Save 30%</a>
     </div>
   </section>
   <section
     class="mk-event-description"
+    data-events-view="home"
     aria-label="About the event"
     data-i18n-aria-label-en="About the event"
     data-i18n-aria-label-de="Über die Veranstaltung"
@@ -737,7 +1122,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <div class="mk-event-description-body">
         <section aria-labelledby="ed-about"
           ><h2 id="ed-about" data-i18n-target="ev-12-1">About</h2
-          ><p
+          ><p data-i18n-target="e2-about"
             >Acme Summit brings together the people who build the tools teams use every day. Two days, one track, no
             sponsor pitches - just honest talks on making software calmer, and workshops where you leave with something
             built.</p
@@ -768,22 +1153,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <aside class="mk-event-description-facts" aria-label="Event facts">
         <dl>
           <div><dt data-i18n-target="ev-23-1">Date</dt><dd>12–13 Nov 2026</dd></div>
-          <div><dt>Format</dt><dd data-i18n-target="ev-27-1">In person + stream</dd></div>
+          <div><dt data-i18n-target="e2-format">Format</dt><dd data-i18n-target="ev-27-1">In person + stream</dd></div>
           <div><dt data-i18n-target="ev-24-1">Language</dt><dd data-i18n-target="ev-28-1">English</dd></div>
           <div><dt data-i18n-target="ev-25-1">Price</dt><dd data-i18n-target="ev-4-2">From €290</dd></div>
           <div><dt data-i18n-target="ev-26-1">Recordings</dt><dd data-i18n-target="ev-29-1">For all attendees</dd></div>
         </dl>
         <div class="mk-event-description-capacity"
-          ><label for="ed-seats"><strong>320 of 400</strong> seats taken</label
+          ><label for="ed-seats"
+            ><strong data-i18n-target="e2-seats-n">320 of 400</strong>
+            <span data-i18n-target="e2-seats">seats taken</span></label
           ><meter id="ed-seats" min="0" max="400" low="300" high="380" optimum="0" value="320">320 of 400</meter></div
         >
-        <a class="btn" href="#" data-i18n-target="ev-30-1">Register</a>
+        <a class="btn" href="#/register" data-router-link data-i18n-target="ev-30-1">Register</a>
       </aside>
     </div>
   </section>
-  <div class="ev-programme">
+  <section class="ev-programme" id="ev-programme" data-events-view="home">
     <nav
       class="flex flex-wrap gap-1"
+      data-events-tracks
       aria-label="Tracks"
       data-i18n-aria-label-en="Tracks"
       data-i18n-aria-label-de="Themen"
@@ -809,11 +1197,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       >
       <div class="mk-session-item-body">
         <span class="mk-session-item-track">Keynote</span>
-        <h3 class="mk-session-item-title" id="ss-1">The quiet product: building for attention, not engagement</h3>
+        <h3 class="mk-session-item-title" id="ss-1"
+          ><a href="#/sessions/ss-1" data-router-link>The quiet product: building for attention, not engagement</a></h3
+        >
         <ul class="mk-session-item-speakers"
           ><li
             ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=59" alt="" /></span
+              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt="" /></span
             >Priya Natarajan</li
           ></ul
         >
@@ -847,9 +1237,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         ><time datetime="2026-11-12T10:45">10:45</time><span>11:30</span><small>45 min</small></div
       >
       <div class="mk-session-item-body">
-        <span class="mk-session-item-track">Engineering</span>
-        <h3 class="mk-session-item-title" id="ss-2">Sync that never fails</h3>
-        <p class="mk-session-item-desc">How a CRDT engine survives trains, tunnels and transatlantic flights.</p>
+        <span class="mk-session-item-track" data-i18n-target="e2-t2">Engineering</span>
+        <h3 class="mk-session-item-title" id="ss-2"
+          ><a href="#/sessions/ss-2" data-router-link>Sync that never fails</a></h3
+        >
+        <p class="mk-session-item-desc" data-i18n-target="e2-d2"
+          >How a CRDT engine survives trains, tunnels and transatlantic flights.</p
+        >
         <ul class="mk-session-item-speakers"
           ><li
             ><span class="avatar" data-size="sm"
@@ -880,16 +1274,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       >
       <div class="mk-session-item-body">
         <span class="mk-session-item-track">Design</span>
-        <h3 class="mk-session-item-title" id="ss-3">Every badge must earn its place</h3>
-        <p class="mk-session-item-desc">A field guide to quieter interfaces - with before and after.</p>
+        <h3 class="mk-session-item-title" id="ss-3"
+          ><a href="#/sessions/ss-3" data-router-link>Every badge must earn its place</a></h3
+        >
+        <p class="mk-session-item-desc" data-i18n-target="e2-d3"
+          >A field guide to quieter interfaces - with before and after.</p
+        >
         <ul class="mk-session-item-speakers"
           ><li
             ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=53" alt="" /></span
+              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /></span
             >Hannah Lee</li
           ><li
             ><span class="avatar" data-size="sm"
-              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=44" alt="" /></span
+              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=12" alt="" /></span
             >Alex Moreau</li
           ></ul
         >
@@ -905,13 +1303,85 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         ><span class="sr-only"> Every badge must earn its place to my schedule</span></label
       >
     </article>
-  </div>
-  <div class="ev-speakers">
+    <article
+      class="mk-session-item"
+      data-track="engineering"
+      aria-labelledby="ss-4"
+      style="--mk-session-color: oklch(0.62 0.17 240)"
+    >
+      <div class="mk-session-item-time"
+        ><time datetime="2026-11-12T11:45">11:45</time><span>12:30</span><small>45 min</small></div
+      >
+      <div class="mk-session-item-body">
+        <span class="mk-session-item-track" data-i18n-target="e2-t-ss-4">Engineering</span>
+        <h3 class="mk-session-item-title" id="ss-4"
+          ><a href="#/sessions/ss-4" data-router-link>Async teams at 400 people</a></h3
+        >
+        <p class="mk-session-item-desc" data-i18n-target="e2-d-ss-4"
+          >How Globex runs engineering across nine time zones without a standing meeting.</p
+        >
+        <ul class="mk-session-item-speakers"
+          ><li
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=60" alt="" /></span
+            >Marco Rossi</li
+          ></ul
+        >
+        <span class="mk-session-item-room"
+          ><i data-lucide="map-pin"></i><span data-i18n-target="e2-room-ss-4">Room A</span></span
+        >
+      </div>
+      <label class="mk-session-item-save"
+        ><input type="checkbox" name="schedule" value="ss-4" /><span class="mk-session-item-save-off"
+          ><i data-lucide="plus"></i> <span data-i18n-target="e2-add-ss-4">Add</span></span
+        ><span class="mk-session-item-save-on"
+          ><i data-lucide="check"></i> <span data-i18n-target="e2-added-ss-4">Added</span></span
+        ><span class="sr-only"> Async teams at 400 people to my schedule</span></label
+      >
+    </article>
+    <article
+      class="mk-session-item"
+      data-track="design"
+      aria-labelledby="ss-5"
+      style="--mk-session-color: oklch(0.65 0.17 30)"
+    >
+      <div class="mk-session-item-time"
+        ><time datetime="2026-11-12T11:45">11:45</time><span>12:30</span><small>45 min</small></div
+      >
+      <div class="mk-session-item-body">
+        <span class="mk-session-item-track">Design</span>
+        <h3 class="mk-session-item-title" id="ss-5"
+          ><a href="#/sessions/ss-5" data-router-link>Research without a research team</a></h3
+        >
+        <p class="mk-session-item-desc" data-i18n-target="e2-d-ss-5"
+          >Talking to customers every week when nobody's job title says research.</p
+        >
+        <ul class="mk-session-item-speakers"
+          ><li
+            ><span class="avatar" data-size="sm"
+              ><img class="avatar-image" src="https://i.pravatar.cc/96?img=16" alt="" /></span
+            >Priya Natarajan</li
+          ></ul
+        >
+        <span class="mk-session-item-room"
+          ><i data-lucide="map-pin"></i><span data-i18n-target="e2-room-ss-5">Room B</span></span
+        >
+      </div>
+      <label class="mk-session-item-save"
+        ><input type="checkbox" name="schedule" value="ss-5" /><span class="mk-session-item-save-off"
+          ><i data-lucide="plus"></i> <span data-i18n-target="e2-add-ss-5">Add</span></span
+        ><span class="mk-session-item-save-on"
+          ><i data-lucide="check"></i> <span data-i18n-target="e2-added-ss-5">Added</span></span
+        ><span class="sr-only"> Research without a research team to my schedule</span></label
+      >
+    </article>
+  </section>
+  <div class="ev-speakers" id="ev-speakers" data-events-view="home">
     <article class="mk-speaker-item" aria-labelledby="sp-1">
-      <img class="mk-speaker-item-photo" src="https://i.pravatar.cc/96?img=13" alt="Portrait of Sophie Tan" />
+      <img class="mk-speaker-item-photo" src="https://i.pravatar.cc/96?img=25" alt="Portrait of Sophie Tan" />
       <div class="mk-speaker-item-body">
-        <h3 class="mk-speaker-item-name" id="sp-1">Sophie Tan</h3>
-        <p class="mk-speaker-item-role">Head of Engineering, Acme</p>
+        <h3 class="mk-speaker-item-name" id="sp-1"><a href="#/speakers/sophie-tan" data-router-link>Sophie Tan</a></h3>
+        <p class="mk-speaker-item-role" data-i18n-target="e2-r1">Head of Engineering, Acme</p>
         <a class="mk-speaker-item-talk" href="#/sessions/ss-2" data-router-link
           ><i data-lucide="mic"></i>Sync that never fails</a
         >
@@ -920,7 +1390,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <article class="mk-speaker-item" aria-labelledby="sp-2">
       <img class="mk-speaker-item-photo" src="https://i.pravatar.cc/96?img=32" alt="Portrait of Hannah Lee" />
       <div class="mk-speaker-item-body">
-        <h3 class="mk-speaker-item-name" id="sp-2">Hannah Lee</h3>
+        <h3 class="mk-speaker-item-name" id="sp-2"><a href="#/speakers/hannah-lee" data-router-link>Hannah Lee</a></h3>
         <p class="mk-speaker-item-role">Design Lead, Northwind</p>
         <a class="mk-speaker-item-talk" href="#/sessions/ss-3" data-router-link
           ><i data-lucide="mic"></i>Every badge must earn its place</a
@@ -930,23 +1400,128 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <article class="mk-speaker-item" aria-labelledby="sp-3">
       <img class="mk-speaker-item-photo" src="https://i.pravatar.cc/96?img=60" alt="Portrait of Marco Rossi" />
       <div class="mk-speaker-item-body">
-        <h3 class="mk-speaker-item-name" id="sp-3">Marco Rossi</h3>
+        <h3 class="mk-speaker-item-name" id="sp-3"
+          ><a href="#/speakers/marco-rossi" data-router-link>Marco Rossi</a></h3
+        >
         <p class="mk-speaker-item-role">CTO, Globex</p>
-        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Async teams at 400 people</a>
+        <a class="mk-speaker-item-talk" href="#/sessions/ss-4" data-router-link
+          ><i data-lucide="mic"></i>Async teams at 400 people</a
+        >
       </div>
     </article>
     <article class="mk-speaker-item" aria-labelledby="sp-4">
       <img class="mk-speaker-item-photo" src="https://i.pravatar.cc/96?img=16" alt="Portrait of Priya Natarajan" />
       <div class="mk-speaker-item-body">
-        <h3 class="mk-speaker-item-name" id="sp-4">Priya Natarajan</h3>
+        <h3 class="mk-speaker-item-name" id="sp-4"
+          ><a href="#/speakers/priya-natarajan" data-router-link>Priya Natarajan</a></h3
+        >
         <p class="mk-speaker-item-role">CPO, Orbit</p>
-        <a class="mk-speaker-item-talk" href="#"><i data-lucide="mic"></i>Research without a research team</a>
+        <a class="mk-speaker-item-talk" href="#/sessions/ss-5" data-router-link
+          ><i data-lucide="mic"></i>Research without a research team</a
+        >
       </div>
     </article>
   </div>
-  <div class="ev-venue">
+  <section class="ev-around" id="ev-around" aria-labelledby="ev-around-title" data-events-view="home">
+    <h2 class="ev-section-title" id="ev-around-title" data-i18n-target="e2-around">Around the summit</h2>
+    <article class="mk-event-item">
+      <time class="mk-event-item-date" datetime="2026-11-12T20:00"
+        ><span data-i18n-target="e2-night-mon">Nov</span><b>12</b></time
+      >
+      <div class="mk-event-item-body">
+        <h3 class="mk-event-item-title"><a href="#/events/night" data-router-link>Summit Night</a></h3>
+        <ul class="mk-event-item-meta"
+          ><li><i data-lucide="clock"></i><span data-i18n-target="e2-night-time">Thu 20:00 - 23:30</span></li
+          ><li
+            ><i data-lucide="map-pin"></i><span data-i18n-target="e2-night-place">Harbour terrace, Lisbon</span></li
+          ></ul
+        >
+        <div class="mk-event-item-tags"
+          ><span class="badge" data-variant="secondary" data-size="sm" data-i18n-target="e2-night-tag0">Party</span
+          ><span class="badge" data-variant="secondary" data-size="sm" data-i18n-target="e2-night-tag1"
+            >Included</span
+          ></div
+        >
+      </div>
+      <a
+        class="btn"
+        data-variant="outline"
+        data-size="sm"
+        href="#/events/night"
+        data-router-link
+        aria-label="Details: Summit Night"
+        data-i18n-aria-label-en="Details: Summit Night"
+        data-i18n-aria-label-de="Details: Summit Night"
+        ><span data-i18n-target="e2-night-more">Details</span></a
+      >
+    </article>
+    <article class="mk-event-item">
+      <time class="mk-event-item-date" datetime="2026-11-14T09:00"
+        ><span data-i18n-target="e2-workshops-mon">Nov</span><b>14</b></time
+      >
+      <div class="mk-event-item-body">
+        <h3 class="mk-event-item-title"
+          ><a href="#/events/workshops" data-router-link data-i18n-target="e2-workshops-title">Workshop day</a></h3
+        >
+        <ul class="mk-event-item-meta"
+          ><li><i data-lucide="clock"></i><span data-i18n-target="e2-workshops-time">Sat 09:00 - 17:00</span></li
+          ><li
+            ><i data-lucide="map-pin"></i><span data-i18n-target="e2-workshops-place">LX Factory, Lisbon</span></li
+          ></ul
+        >
+        <div class="mk-event-item-tags"
+          ><span class="badge" data-variant="secondary" data-size="sm" data-i18n-target="e2-workshops-tag0"
+            >Workshops</span
+          ><span class="badge" data-variant="secondary" data-size="sm" data-i18n-target="e2-workshops-tag1"
+            >From €150</span
+          ></div
+        >
+      </div>
+      <a
+        class="btn"
+        data-variant="outline"
+        data-size="sm"
+        href="#/events/workshops"
+        data-router-link
+        aria-label="Details: Workshop day"
+        data-i18n-aria-label-en="Details: Workshop day"
+        data-i18n-aria-label-de="Details: Workshop day"
+        ><span data-i18n-target="e2-workshops-more">Details</span></a
+      >
+    </article>
+    <article class="mk-event-item">
+      <time class="mk-event-item-date" datetime="2027-01-21T18:30"
+        ><span data-i18n-target="e2-berlin-mon">Jan</span><b>21</b></time
+      >
+      <div class="mk-event-item-body">
+        <h3 class="mk-event-item-title"><a href="#/events/berlin" data-router-link>Calm Product Meetup Berlin</a></h3>
+        <ul class="mk-event-item-meta"
+          ><li><i data-lucide="clock"></i><span data-i18n-target="e2-berlin-time">Thu 18:30 - 21:00</span></li
+          ><li><i data-lucide="map-pin"></i><span data-i18n-target="e2-berlin-place">Acme office, Berlin</span></li></ul
+        >
+        <div class="mk-event-item-tags"
+          ><span class="badge" data-variant="secondary" data-size="sm" data-i18n-target="e2-berlin-tag0">Meetup</span
+          ><span class="badge" data-variant="secondary" data-size="sm" data-i18n-target="e2-berlin-tag1"
+            >Free</span
+          ></div
+        >
+      </div>
+      <a
+        class="btn"
+        data-variant="outline"
+        data-size="sm"
+        href="#/events/berlin"
+        data-router-link
+        aria-label="Details: Calm Product Meetup Berlin"
+        data-i18n-aria-label-en="Details: Calm Product Meetup Berlin"
+        data-i18n-aria-label-de="Details: Calm Product Meetup Berlin"
+        ><span data-i18n-target="e2-berlin-more">Details</span></a
+      >
+    </article>
+  </section>
+  <div class="ev-venue" id="ev-venue" data-events-view="home">
     <section class="mk-location-map" aria-labelledby="lm-title">
-      <h2 id="lm-title" class="sr-only" data-i18n-target="ev-37-1">Our cafés in Lisbon</h2>
+      <h2 id="lm-title" class="sr-only" data-i18n-target="ev-37-1">Coffee near the venue</h2>
       <div class="mk-location-map-layout">
         <div class="mk-location-map-canvas">
           <svg
@@ -987,7 +1562,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ></button>
           <div class="mk-location-map-popup" id="lm-1" popover style="position-anchor: --lm-1">
             <strong>Café Baixa</strong><address>Rua da Prata 120</address
-            ><a href="#"><span data-i18n-target="ev-38-1">Directions</span> <i data-lucide="arrow-up-right"></i></a>
+            ><a
+              href="https://www.openstreetmap.org/search?query=Rua%20da%20Prata%20120%2C%20Lisbon"
+              target="_blank"
+              rel="noopener"
+              ><span data-i18n-target="ev-38-1">Directions</span> <i data-lucide="arrow-up-right"></i
+            ></a>
           </div>
           <button
             class="mk-location-map-pin"
@@ -999,7 +1579,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ></button>
           <div class="mk-location-map-popup" id="lm-2" popover style="position-anchor: --lm-2">
             <strong>Café Príncipe Real</strong><address>Praça do Príncipe Real 5</address
-            ><a href="#"><span data-i18n-target="ev-38-2">Directions</span> <i data-lucide="arrow-up-right"></i></a>
+            ><a
+              href="https://www.openstreetmap.org/search?query=Pra%C3%A7a%20do%20Pr%C3%ADncipe%20Real%205%2C%20Lisbon"
+              target="_blank"
+              rel="noopener"
+              ><span data-i18n-target="ev-38-2">Directions</span> <i data-lucide="arrow-up-right"></i
+            ></a>
           </div>
           <button
             class="mk-location-map-pin"
@@ -1011,19 +1596,35 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           ></button>
           <div class="mk-location-map-popup" id="lm-3" popover style="position-anchor: --lm-3">
             <strong>Café Alfama</strong><address>Rua de São Miguel 18</address
-            ><a href="#"><span data-i18n-target="ev-38-3">Directions</span> <i data-lucide="arrow-up-right"></i></a>
+            ><a
+              href="https://www.openstreetmap.org/search?query=Rua%20de%20S%C3%A3o%20Miguel%2018%2C%20Lisbon"
+              target="_blank"
+              rel="noopener"
+              ><span data-i18n-target="ev-38-3">Directions</span> <i data-lucide="arrow-up-right"></i
+            ></a>
           </div>
         </div>
         <ol class="mk-location-map-list">
-          <li><b>1</b><strong>Café Baixa</strong><span>Rua da Prata 120 · open until 19:00</span></li>
-          <li><b>2</b><strong>Café Príncipe Real</strong><span>Praça do Príncipe Real 5 · open until 20:00</span></li>
-          <li><b>3</b><strong>Café Alfama</strong><span>Rua de São Miguel 18 · closed today</span></li>
+          <li
+            ><b>1</b><strong>Café Baixa</strong
+            ><span data-i18n-target="e2-c1">Rua da Prata 120 · open until 19:00</span></li
+          >
+          <li
+            ><b>2</b><strong>Café Príncipe Real</strong
+            ><span data-i18n-target="e2-c2">Praça do Príncipe Real 5 · open until 20:00</span></li
+          >
+          <li
+            ><b>3</b><strong>Café Alfama</strong
+            ><span data-i18n-target="e2-c3">Rua de São Miguel 18 · closed today</span></li
+          >
         </ol>
       </div>
     </section>
     <section class="mk-opening-hours" aria-labelledby="oh-title">
       <h3 class="mk-opening-hours-title" id="oh-title" data-i18n-target="ev-39-1">Opening hours</h3>
-      <p class="mk-opening-hours-status"><span data-i18n-target="ev-40-1">Open now</span> <span>· until 20:00</span></p>
+      <p class="mk-opening-hours-status"
+        ><span data-i18n-target="ev-40-1">Open now</span> <span data-i18n-target="e2-until">· until 20:00</span></p
+      >
       <dl class="mk-opening-hours-days">
         <div><dt data-i18n-target="ev-41-1">Monday</dt><dd>09:00 – 18:00</dd></div>
         <div><dt data-i18n-target="ev-42-1">Tuesday</dt><dd>09:00 – 18:00</dd></div>
@@ -1040,7 +1641,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </ul>
     </section>
   </div>
-  <section class="mk-cta" data-variant="dark" aria-labelledby="cta-3">
+  <section class="mk-cta" data-variant="dark" aria-labelledby="cta-3" data-events-view="home">
     <div class="mk-cta-inner">
       <div class="mk-cta-copy">
         <h2 class="mk-cta-title" id="cta-3" data-i18n-target="ev-49-1">Get early access to Spaces</h2>
@@ -1048,7 +1649,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >Shared spaces for every project. Invites go out this month.</p
         >
       </div>
-      <form class="mk-cta-form" action="#" method="post">
+      <form class="mk-cta-form" data-events-invite>
         <label class="sr-only" for="cta-email" data-i18n-target="ev-51-1">Email address</label>
         <input
           class="input"
@@ -1061,9 +1662,777 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         />
         <button class="btn" data-variant="secondary" type="submit" data-i18n-target="ev-52-1">Request invite</button>
       </form>
-      <p class="mk-cta-note" data-i18n-target="ev-53-1">2,400 people joined this week.</p>
+      <p class="mk-cta-note" data-events-invite-note data-i18n-target="ev-53-1">2,400 people joined this week.</p>
+      <p class="mk-cta-note" data-events-invite-done hidden data-i18n-target="e2-invited"
+        >Thank you - your invite is on its way.</p
+      >
     </div>
   </section>
+  <!-- a session: its page, filled from the data block -->
+  <div data-events-view="session" hidden>
+    <article class="ev-page" aria-labelledby="se-title">
+      <a class="ev-back" href="#/" data-router-link
+        ><i data-lucide="arrow-left"></i> <span data-i18n-target="e2-back-programme">The programme</span></a
+      >
+      <p class="ev-kicker"
+        ><span class="badge" data-variant="default" data-session-field="track"></span
+        ><span data-session-field="when"></span><span data-session-field="room"></span
+      ></p>
+      <h1 class="ev-page-title" id="se-title" data-session-field="title"></h1>
+      <p class="ev-lead" data-session-field="lead"></p>
+      <div class="ev-page-layout">
+        <div class="ev-prose">
+          <div class="ev-prose" data-session-body></div>
+          <h2 data-i18n-target="e2-learn">You will take away</h2>
+          <ul data-session-learn></ul>
+        </div>
+        <aside
+          class="ev-aside"
+          aria-label="Speakers"
+          data-i18n-aria-label-en="Speakers"
+          data-i18n-aria-label-de="Vortragende"
+        >
+          <h2 data-i18n-target="e2-speakers">Speakers</h2>
+          <ul class="ev-people" data-session-speakers></ul>
+          <a class="btn" href="#/register" data-router-link><span data-i18n-target="e2-tickets-s">Get tickets</span></a>
+          <a
+            class="btn"
+            data-variant="outline"
+            href="data:text/calendar;charset=utf-8,BEGIN%3AVCALENDAR%0D%0AVERSION%3A2.0%0D%0APRODID%3A-%2F%2FAcme%2F%2FSummit%2F%2FEN%0D%0ABEGIN%3AVEVENT%0D%0AUID%3Aacme-summit-2026%40acme.example%0D%0ADTSTAMP%3A20261101T000000Z%0D%0ADTSTART%3BVALUE%3DDATE%3A20261112%0D%0ADTEND%3BVALUE%3DDATE%3A20261114%0D%0ASUMMARY%3AAcme%20Summit%202026%0D%0ALOCATION%3ALisbon%20Congress%20Centre%2C%20Portugal%0D%0AEND%3AVEVENT%0D%0AEND%3AVCALENDAR%0D%0A"
+            download="acme-summit-session.ics"
+            data-session-ics
+            ><i data-lucide="calendar-plus"></i> <span data-i18n-target="e2-cal-s">Add to calendar</span></a
+          >
+        </aside>
+      </div>
+      <nav
+        class="ev-pager"
+        aria-label="More sessions"
+        data-i18n-aria-label-en="More sessions"
+        data-i18n-aria-label-de="Weitere Vorträge"
+      >
+        <a href="#/sessions/ss-5" data-router-link data-session-pager="prev"
+          ><span data-i18n-target="e2-prev-s">Previous</span><strong data-pager-title></strong
+        ></a>
+        <a href="#/sessions/ss-2" data-router-link data-session-pager="next"
+          ><span data-i18n-target="e2-next-s">Next</span><strong data-pager-title></strong
+        ></a>
+      </nav>
+    </article>
+  </div>
+  <!-- a speaker: their page, filled from the data block -->
+  <div data-events-view="speaker" hidden>
+    <article class="ev-page" aria-labelledby="sk-name">
+      <a class="ev-back" href="#ev-speakers"
+        ><i data-lucide="arrow-left"></i> <span data-i18n-target="e2-back-speakers">All speakers</span></a
+      >
+      <div class="ev-speaker">
+        <img class="ev-speaker-photo" src="https://i.pravatar.cc/240?img=25" alt="" data-speaker-photo />
+        <div class="ev-speaker-head">
+          <p class="ev-kicker"
+            ><span class="badge" data-variant="default" data-i18n-target="e2-speaker-kicker">Speaker</span></p
+          >
+          <h1 class="ev-page-title" id="sk-name" data-speaker-field="name"></h1>
+          <p class="ev-lead" data-speaker-field="role"></p>
+        </div>
+      </div>
+      <div class="ev-page-layout">
+        <div class="ev-prose" data-speaker-body></div>
+        <aside class="ev-aside" aria-label="Talks" data-i18n-aria-label-en="Talks" data-i18n-aria-label-de="Vorträge">
+          <h2 data-i18n-target="e2-talks">Talks</h2>
+          <ul class="ev-talks" data-speaker-talks></ul>
+          <a class="btn" href="#/register" data-router-link><span data-i18n-target="e2-tickets-k">Get tickets</span></a>
+        </aside>
+      </div>
+      <nav
+        class="ev-pager"
+        aria-label="More speakers"
+        data-i18n-aria-label-en="More speakers"
+        data-i18n-aria-label-de="Weitere Vortragende"
+      >
+        <a href="#/speakers/marco-rossi" data-router-link data-speaker-pager="prev"
+          ><span data-i18n-target="e2-prev-k">Previous</span><strong data-pager-title></strong
+        ></a>
+        <a href="#/speakers/sophie-tan" data-router-link data-speaker-pager="next"
+          ><span data-i18n-target="e2-next-k">Next</span><strong data-pager-title></strong
+        ></a>
+      </nav>
+    </article>
+  </div>
+  <!-- an event around the summit: its page, filled from the data block -->
+  <div data-events-view="event" hidden>
+    <article class="ev-page" aria-labelledby="ee-title">
+      <a class="ev-back" href="#/" data-router-link
+        ><i data-lucide="arrow-left"></i> <span data-i18n-target="e2-back-summit">Acme Summit 2026</span></a
+      >
+      <figure class="ev-photo"><img src="https://picsum.photos/id/158/1600/700" alt="" data-event-photo /></figure>
+      <p class="ev-kicker"
+        ><span class="badge" data-variant="default" data-event-field="kind"></span><span data-event-field="when"></span
+      ></p>
+      <h1 class="ev-page-title" id="ee-title" data-event-field="title"></h1>
+      <p class="ev-lead" data-event-field="lead"></p>
+      <div class="ev-page-layout">
+        <div class="ev-prose" data-event-body></div>
+        <aside
+          class="ev-aside"
+          aria-label="Details"
+          data-i18n-aria-label-en="Details"
+          data-i18n-aria-label-de="Details"
+        >
+          <dl class="ev-facts">
+            <div><dt data-i18n-target="e2-f-when">When</dt><dd data-event-field="when"></dd></div>
+            <div><dt data-i18n-target="e2-f-where">Where</dt><dd data-event-field="place"></dd></div>
+            <div><dt data-i18n-target="e2-f-price">Price</dt><dd data-event-field="price"></dd></div>
+          </dl>
+          <a class="btn" href="#/register" data-router-link data-event-action
+            ><span data-event-field="action">Get tickets</span></a
+          >
+          <a
+            class="btn"
+            data-variant="outline"
+            href="data:text/calendar;charset=utf-8,BEGIN%3AVCALENDAR%0D%0AVERSION%3A2.0%0D%0APRODID%3A-%2F%2FAcme%2F%2FSummit%2F%2FEN%0D%0ABEGIN%3AVEVENT%0D%0AUID%3Aacme-summit-2026%40acme.example%0D%0ADTSTAMP%3A20261101T000000Z%0D%0ADTSTART%3BVALUE%3DDATE%3A20261112%0D%0ADTEND%3BVALUE%3DDATE%3A20261114%0D%0ASUMMARY%3AAcme%20Summit%202026%0D%0ALOCATION%3ALisbon%20Congress%20Centre%2C%20Portugal%0D%0AEND%3AVEVENT%0D%0AEND%3AVCALENDAR%0D%0A"
+            download="acme-summit-event.ics"
+            data-event-ics
+            ><i data-lucide="calendar-plus"></i> <span data-i18n-target="e2-cal-e">Add to calendar</span></a
+          >
+        </aside>
+      </div>
+      <nav
+        class="ev-pager"
+        aria-label="More events"
+        data-i18n-aria-label-en="More events"
+        data-i18n-aria-label-de="Weitere Termine"
+      >
+        <a href="#/events/berlin" data-router-link data-event-pager="prev"
+          ><span data-i18n-target="e2-prev-e">Previous</span><strong data-pager-title></strong
+        ></a>
+        <a href="#/events/workshops" data-router-link data-event-pager="next"
+          ><span data-i18n-target="e2-next-e">Next</span><strong data-pager-title></strong
+        ></a>
+      </nav>
+    </article>
+  </div>
+  <!-- the registration: the Registration Form; the total follows the ticket, sending it thanks the attendee -->
+  <div data-events-view="register" hidden>
+    <div class="ev-page ev-register">
+      <a class="ev-back" href="#/" data-router-link
+        ><i data-lucide="arrow-left"></i> <span data-i18n-target="e2-back-reg">Acme Summit 2026</span></a
+      >
+      <h1 class="ev-page-title" id="reg-title" data-i18n-target="rg-title">Register for Acme Summit 2026</h1>
+      <p class="ev-lead" data-i18n-target="rg-lead"
+        >12-13 November, Lisbon Congress Centre. Early-bird prices until Friday - every ticket includes the
+        recordings.</p
+      >
+      <section class="mk-registration-form" aria-labelledby="reg-title" data-events-form>
+        <form data-events-register>
+          <fieldset class="mk-registration-form-group">
+            <legend data-i18n-target="rg-ticket">Ticket</legend>
+            <div class="mk-registration-form-tickets">
+              <label class="mk-registration-form-ticket" for="rg-standard"
+                ><input
+                  class="radio"
+                  type="radio"
+                  name="ticket"
+                  id="rg-standard"
+                  value="standard"
+                  checked
+                  required
+                /><span class="mk-registration-form-ticket-name" data-i18n-target="rg-standard">Standard</span
+                ><b data-events-price="290"></b
+                ><small data-i18n-target="rg-standard-d">Both days, lunch, Summit Night and recordings.</small></label
+              >
+              <label class="mk-registration-form-ticket" for="rg-workshop"
+                ><input class="radio" type="radio" name="ticket" id="rg-workshop" value="workshop" required /><span
+                  class="mk-registration-form-ticket-name"
+                  ><span data-i18n-target="rg-workshop">Standard + Workshops</span>
+                  <span class="badge" data-variant="secondary" data-size="sm" data-i18n-target="rg-few"
+                    >Few left</span
+                  ></span
+                ><b data-events-price="440"></b
+                ><small data-i18n-target="rg-workshop-d">Everything in Standard plus the workshop day.</small></label
+              >
+              <label class="mk-registration-form-ticket" for="rg-stream"
+                ><input class="radio" type="radio" name="ticket" id="rg-stream" value="stream" required /><span
+                  class="mk-registration-form-ticket-name"
+                  >Online</span
+                ><b data-events-price="90"></b
+                ><small data-i18n-target="rg-stream-d">Live stream, Q&amp;A and recordings.</small></label
+              >
+            </div>
+          </fieldset>
+          <fieldset class="mk-registration-form-group">
+            <legend data-i18n-target="rg-attendee">Attendee</legend>
+            <div class="mk-registration-form-fields">
+              <div class="mk-registration-form-field"
+                ><label class="label" for="rg-name" data-i18n-target="rg-name">Full name</label
+                ><input class="input" id="rg-name" name="name" autocomplete="name" required
+              /></div>
+              <div class="mk-registration-form-field"
+                ><label class="label" for="rg-email" data-i18n-target="rg-email">Email</label
+                ><input class="input" id="rg-email" type="email" name="email" autocomplete="email" required
+              /></div>
+              <div class="mk-registration-form-field"
+                ><label class="label" for="rg-org" data-i18n-target="rg-org">Company</label
+                ><input class="input" id="rg-org" name="organization" autocomplete="organization"
+              /></div>
+              <div class="mk-registration-form-field"
+                ><label class="label" for="rg-role" data-i18n-target="rg-role">Role</label
+                ><input class="input" id="rg-role" name="role" autocomplete="organization-title"
+              /></div>
+            </div>
+          </fieldset>
+          <fieldset class="mk-registration-form-group">
+            <legend
+              ><span data-i18n-target="rg-ws">Workshops</span>
+              <small style="font-weight: 400; color: var(--muted-foreground)" data-i18n-target="rg-ws-note"
+                >(with the workshop ticket)</small
+              ></legend
+            >
+            <div class="mk-registration-form-choices">
+              <div class="checkbox-item"
+                ><input class="checkbox" type="checkbox" id="rg-w1" name="workshops" value="sync" /><label
+                  for="rg-w1"
+                  data-i18n-target="rg-w1"
+                  >Offline-first sync, hands on</label
+                ><small data-i18n-target="rg-w1-n">12 seats left</small></div
+              >
+              <div class="checkbox-item"
+                ><input class="checkbox" type="checkbox" id="rg-w2" name="workshops" value="a11y" /><label
+                  for="rg-w2"
+                  data-i18n-target="rg-w2"
+                  >Accessible components from scratch</label
+                ><small data-i18n-target="rg-w2-n">4 seats left</small></div
+              >
+            </div>
+          </fieldset>
+          <fieldset class="mk-registration-form-group">
+            <legend data-i18n-target="rg-needs">Your needs</legend>
+            <div class="mk-registration-form-fields">
+              <div class="mk-registration-form-field"
+                ><label class="label" for="rg-diet" data-i18n-target="rg-diet">Dietary preference</label
+                ><select class="select" id="rg-diet" name="diet"
+                  ><option value="none" data-i18n-target="rg-diet-0">No preference</option
+                  ><option value="vegetarian" data-i18n-target="rg-diet-1">Vegetarian</option
+                  ><option value="vegan" data-i18n-target="rg-diet-2">Vegan</option
+                  ><option value="gluten-free" data-i18n-target="rg-diet-3">Gluten-free</option></select
+                ></div
+              >
+              <div class="mk-registration-form-field" data-span="full"
+                ><label class="label" for="rg-a11y" data-i18n-target="rg-a11y">Accessibility needs</label
+                ><textarea
+                  class="textarea"
+                  id="rg-a11y"
+                  name="access"
+                  rows="2"
+                  placeholder="Step-free access, captions, a quiet room..."
+                  data-i18n-placeholder-en="Step-free access, captions, a quiet room..."
+                  data-i18n-placeholder-de="Stufenloser Zugang, Untertitel, ein ruhiger Raum..."
+                ></textarea
+              ></div
+              >
+            </div>
+          </fieldset>
+          <div class="mk-registration-form-total">
+            <div
+              ><span data-i18n-target="rg-total">Total incl. VAT</span
+              ><output name="total" for="rg-standard rg-workshop rg-stream" data-events-total></output
+            ></div>
+            <button class="btn" data-size="lg" type="submit"><span data-i18n-target="rg-submit">Register</span></button>
+          </div>
+        </form>
+      </section>
+      <div class="ev-done" data-events-done hidden tabindex="-1">
+        <i data-lucide="party-popper"></i>
+        <h2><span data-i18n-target="rg-thanks">See you in Lisbon</span><span data-events-done-name></span></h2>
+        <p
+          ><span data-i18n-target="rg-your">Your ticket:</span> <strong data-events-done-ticket></strong>
+          <span data-events-done-total></span
+        ></p>
+        <p data-i18n-target="rg-mail">The confirmation and the invoice are on their way to your inbox.</p>
+        <div class="flex flex-wrap gap-2">
+          <a
+            class="btn"
+            href="data:text/calendar;charset=utf-8,BEGIN%3AVCALENDAR%0D%0AVERSION%3A2.0%0D%0APRODID%3A-%2F%2FAcme%2F%2FSummit%2F%2FEN%0D%0ABEGIN%3AVEVENT%0D%0AUID%3Aacme-summit-2026%40acme.example%0D%0ADTSTAMP%3A20261101T000000Z%0D%0ADTSTART%3BVALUE%3DDATE%3A20261112%0D%0ADTEND%3BVALUE%3DDATE%3A20261114%0D%0ASUMMARY%3AAcme%20Summit%202026%0D%0ALOCATION%3ALisbon%20Congress%20Centre%2C%20Portugal%0D%0AEND%3AVEVENT%0D%0AEND%3AVCALENDAR%0D%0A"
+            download="acme-summit-2026.ics"
+            ><i data-lucide="calendar-plus"></i> <span data-i18n-target="rg-cal">Add to calendar</span></a
+          >
+          <a class="btn" data-variant="outline" href="#ev-programme"
+            ><span data-i18n-target="rg-programme">See the programme</span></a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- the footer: the Site Footer block -->
+  <footer class="mk-footer ev-footer">
+    <div class="mk-footer-inner">
+      <div class="mk-footer-top">
+        <div class="mk-footer-about">
+          <a class="mk-footer-brand ev-brand" href="#/" data-router-link
+            ><span class="mk-footer-brand-name">Acme Summit</span></a
+          >
+          <p data-i18n-target="f2-line">Two days on calm software - 12-13 November 2026, Lisbon Congress Centre.</p>
+          <div class="mk-footer-social">
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme Summit on LinkedIn"
+              data-i18n-aria-label-en="Acme Summit on LinkedIn"
+              data-i18n-aria-label-de="Acme Summit auf LinkedIn"
+              ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"
+                /></svg
+            ></a>
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Acme Summit on X"
+              data-i18n-aria-label-en="Acme Summit on X"
+              data-i18n-aria-label-de="Acme Summit auf X"
+              ><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.3L.8 2h6.4l4.4 5.9L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"
+                /></svg
+            ></a>
+          </div>
+        </div>
+        <nav
+          class="mk-footer-nav"
+          aria-label="Footer"
+          data-i18n-aria-label-en="Footer"
+          data-i18n-aria-label-de="Fußzeile"
+        >
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading">Summit</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#ev-programme" data-i18n-target="f2-programme">Programme</a></li>
+              <li><a href="#ev-speakers" data-i18n-target="f2-speakers">Speakers</a></li>
+              <li><a href="#ev-venue" data-i18n-target="f2-venue">Venue</a></li>
+              <li><a href="#/register" data-router-link data-i18n-target="f2-tickets">Tickets</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="f2-around">Around the summit</h3>
+            <ul class="mk-footer-list">
+              <li><a href="#/events/night" data-router-link>Summit Night</a></li>
+              <li><a href="#/events/workshops" data-router-link data-i18n-target="f2-workshops">Workshop day</a></li>
+              <li><a href="#/events/berlin" data-router-link>Meetup Berlin</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h3 class="mk-footer-heading" data-i18n-target="f2-contact">Contact</h3>
+            <ul class="mk-footer-list">
+              <li><a href="mailto:summit@acme.example">summit@acme.example</a></li>
+              <li><a href="mailto:press@acme.example">press@acme.example</a></li>
+              <li><a href="tel:+351210000000">+351 21 000 0000</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <hr class="separator mk-footer-rule" />
+      <div class="mk-footer-bottom">
+        <p class="mk-footer-copy" data-i18n-target="f2-copy"
+          >© 2026 Acme, Lda. · Organised in Lisbon by the Acme team.</p
+        >
+      </div>
+    </div>
+  </footer>
+  <!-- the pages the routes name, in English and German -->
+  <script type="application/json" id="events-data">
+    {
+      "ui": {
+        "en": {
+          "tracks": {
+            "keynote": "Keynote",
+            "engineering": "Engineering",
+            "design": "Design"
+          },
+          "tickets": {
+            "standard": "Standard",
+            "workshop": "Standard + Workshops",
+            "stream": "Online"
+          }
+        },
+        "de": {
+          "tracks": {
+            "keynote": "Keynote",
+            "engineering": "Technik",
+            "design": "Design"
+          },
+          "tickets": {
+            "standard": "Standard",
+            "workshop": "Standard + Workshops",
+            "stream": "Online"
+          }
+        }
+      },
+      "sessions": {
+        "ss-1": {
+          "title": "The quiet product: building for attention, not engagement",
+          "track": "keynote",
+          "start": "2026-11-12T09:30:00Z",
+          "end": "2026-11-12T10:15:00Z",
+          "speakers": [["Priya Natarajan", 16, "CPO, Orbit"]],
+          "en": {
+            "room": "Main hall",
+            "lead": "Why the best tools of the next decade will ask for less of our attention - and how to measure that they do.",
+            "body": [
+              "Engagement metrics reward products that interrupt. Priya shows what changed at Orbit when the team stopped counting daily active minutes and started counting finished tasks.",
+              "Expect real dashboards, two failed experiments and the one question her team now asks before every new notification."
+            ],
+            "learn": [
+              "A metric for attention you can ship this quarter",
+              "How to argue for fewer notifications with numbers",
+              "Two experiments that failed, and why"
+            ]
+          },
+          "de": {
+            "room": "Großer Saal",
+            "lead": "Warum die besten Werkzeuge des nächsten Jahrzehnts weniger Aufmerksamkeit verlangen - und wie man misst, dass sie es tun.",
+            "body": [
+              "Engagement-Kennzahlen belohnen Produkte, die unterbrechen. Priya zeigt, was sich bei Orbit änderte, als das Team aufhörte, tägliche aktive Minuten zu zählen, und begann, erledigte Aufgaben zu zählen.",
+              "Es gibt echte Dashboards, zwei gescheiterte Experimente und die eine Frage, die ihr Team heute vor jeder neuen Benachrichtigung stellt."
+            ],
+            "learn": [
+              "Eine Kennzahl für Aufmerksamkeit, die noch dieses Quartal live gehen kann",
+              "Wie man mit Zahlen für weniger Benachrichtigungen argumentiert",
+              "Zwei gescheiterte Experimente und warum"
+            ]
+          }
+        },
+        "ss-2": {
+          "title": "Sync that never fails",
+          "track": "engineering",
+          "start": "2026-11-12T10:45:00Z",
+          "end": "2026-11-12T11:30:00Z",
+          "speakers": [["Sophie Tan", 25, "Head of Engineering, Acme"]],
+          "en": {
+            "room": "Room A",
+            "lead": "How a CRDT engine survives trains, tunnels and transatlantic flights.",
+            "body": [
+              "Offline-first sounds simple until two people edit the same sentence on two continents. Sophie walks through the sync engine behind Acme 4.0, from the data model to the conflict nobody sees.",
+              "The talk ends with the test rig that replays a year of real edits every night - and the bug it found the week before launch."
+            ],
+            "learn": [
+              "When a CRDT is the right tool, and when it is not",
+              "How to test sync with recorded real-world edits",
+              "What to show people when a conflict does happen"
+            ]
+          },
+          "de": {
+            "room": "Raum A",
+            "lead": "Wie eine CRDT-Engine Züge, Tunnel und Transatlantikflüge übersteht.",
+            "body": [
+              "Offline-first klingt einfach, bis zwei Menschen auf zwei Kontinenten denselben Satz bearbeiten. Sophie zeigt die Sync-Engine hinter Acme 4.0 - vom Datenmodell bis zum Konflikt, den niemand sieht.",
+              "Zum Schluss geht es um den Prüfstand, der jede Nacht ein Jahr echter Änderungen abspielt - und um den Fehler, den er eine Woche vor dem Launch fand."
+            ],
+            "learn": [
+              "Wann ein CRDT das richtige Werkzeug ist und wann nicht",
+              "Wie man Sync mit aufgezeichneten echten Änderungen testet",
+              "Was Menschen sehen sollten, wenn doch ein Konflikt entsteht"
+            ]
+          }
+        },
+        "ss-3": {
+          "title": "Every badge must earn its place",
+          "track": "design",
+          "start": "2026-11-12T10:45:00Z",
+          "end": "2026-11-12T11:30:00Z",
+          "speakers": [
+            ["Hannah Lee", 32, "Design Lead, Northwind"],
+            ["Alex Moreau", 12, "Co-founder, Acme"]
+          ],
+          "en": {
+            "room": "Room B",
+            "lead": "A field guide to quieter interfaces - with before and after.",
+            "body": [
+              "Red dots, counters and banners compete for the same few seconds of attention. Hannah and Alex take three real screens apart and rebuild them with half the signals and none of the urgency.",
+              "Every change comes with the numbers from a two-week test, so you can take the arguments back to your own team."
+            ],
+            "learn": [
+              "A checklist for every badge, dot and banner",
+              "Three redesigns, before and after",
+              "How to test a quieter interface without risking the numbers"
+            ]
+          },
+          "de": {
+            "room": "Raum B",
+            "lead": "Ein Leitfaden für ruhigere Oberflächen - mit Vorher und Nachher.",
+            "body": [
+              "Rote Punkte, Zähler und Banner konkurrieren um dieselben wenigen Sekunden Aufmerksamkeit. Hannah und Alex nehmen drei echte Ansichten auseinander und bauen sie mit der Hälfte der Signale und ohne jede Dringlichkeit neu.",
+              "Zu jeder Änderung gibt es die Zahlen aus einem zweiwöchigen Test - Argumente, die du in dein eigenes Team mitnehmen kannst."
+            ],
+            "learn": [
+              "Eine Checkliste für jeden Zähler, Punkt und Banner",
+              "Drei Neugestaltungen, vorher und nachher",
+              "Wie man eine ruhigere Oberfläche testet, ohne die Zahlen zu riskieren"
+            ]
+          }
+        },
+        "ss-4": {
+          "title": "Async teams at 400 people",
+          "track": "engineering",
+          "start": "2026-11-12T11:45:00Z",
+          "end": "2026-11-12T12:30:00Z",
+          "speakers": [["Marco Rossi", 60, "CTO, Globex"]],
+          "en": {
+            "room": "Room A",
+            "lead": "How Globex runs engineering across nine time zones without a standing meeting.",
+            "body": [
+              "Globex grew from forty to four hundred engineers in three years and dropped every recurring status meeting on the way. Marco explains what replaced them: written proposals, a weekly digest and one rule for when a call is allowed.",
+              "He also shares what went wrong - the month decisions stalled - and the small change in review rights that fixed it."
+            ],
+            "learn": [
+              "A template for proposals people actually read",
+              "When a call beats a document, and when it does not",
+              "How to keep decisions moving across nine time zones"
+            ]
+          },
+          "de": {
+            "room": "Raum A",
+            "lead": "Wie Globex Engineering über neun Zeitzonen ohne feste Meetings organisiert.",
+            "body": [
+              "Globex wuchs in drei Jahren von vierzig auf vierhundert Engineers und schaffte dabei jedes wiederkehrende Status-Meeting ab. Marco erklärt, was sie ersetzt hat: schriftliche Vorschläge, ein wöchentlicher Überblick und eine Regel dafür, wann ein Call erlaubt ist.",
+              "Er erzählt auch, was schiefging - der Monat, in dem Entscheidungen stockten - und die kleine Änderung bei den Freigaberechten, die es löste."
+            ],
+            "learn": [
+              "Eine Vorlage für Vorschläge, die wirklich gelesen werden",
+              "Wann ein Call ein Dokument schlägt und wann nicht",
+              "Wie Entscheidungen über neun Zeitzonen in Bewegung bleiben"
+            ]
+          }
+        },
+        "ss-5": {
+          "title": "Research without a research team",
+          "track": "design",
+          "start": "2026-11-12T11:45:00Z",
+          "end": "2026-11-12T12:30:00Z",
+          "speakers": [["Priya Natarajan", 16, "CPO, Orbit"]],
+          "en": {
+            "room": "Room B",
+            "lead": "Talking to customers every week when nobody's job title says research.",
+            "body": [
+              "Orbit has no research department, yet every product team speaks to two customers a week. Priya shows the rota, the interview guide and the shared notes that make it possible.",
+              "The second half is a live synthesis: twelve interview snippets from the audience, sorted into findings in fifteen minutes."
+            ],
+            "learn": [
+              "A weekly interview rota for teams without researchers",
+              "An interview guide you can copy",
+              "How to turn notes into findings in fifteen minutes"
+            ]
+          },
+          "de": {
+            "room": "Raum B",
+            "lead": "Jede Woche mit Kunden sprechen, auch wenn niemand Research im Jobtitel hat.",
+            "body": [
+              "Orbit hat keine Research-Abteilung, und doch spricht jedes Produktteam zwei Kunden pro Woche. Priya zeigt den Dienstplan, den Interviewleitfaden und die gemeinsamen Notizen, die das möglich machen.",
+              "Die zweite Hälfte ist eine Live-Synthese: zwölf Interviewausschnitte aus dem Publikum, in fünfzehn Minuten zu Erkenntnissen sortiert."
+            ],
+            "learn": [
+              "Ein wöchentlicher Interviewplan für Teams ohne Research",
+              "Ein Interviewleitfaden zum Kopieren",
+              "Wie man Notizen in fünfzehn Minuten zu Erkenntnissen macht"
+            ]
+          }
+        }
+      },
+      "events": {
+        "night": {
+          "title": "Summit Night",
+          "start": "2026-11-12T20:00:00Z",
+          "end": "2026-11-12T23:30:00Z",
+          "zone": "Europe/Lisbon",
+          "photo": 158,
+          "href": "#/register",
+          "en": {
+            "kind": "Party",
+            "place": "Harbour terrace, Lisbon Congress Centre",
+            "price": "Included with every in-person ticket",
+            "action": "Get tickets",
+            "lead": "Music, food and the people you met all day - under the stars, above the harbour.",
+            "body": [
+              "After the first day's last talk, the terrace above the harbour opens for the summit's evening. A local trio plays from eight, the kitchen serves petiscos until late, and the speakers stay for the questions that did not fit into the Q&A.",
+              "Every in-person ticket includes the evening. Bring a jacket - November nights by the water are cool."
+            ],
+            "alt": "Stage lights over a crowd at a concert"
+          },
+          "de": {
+            "kind": "Party",
+            "place": "Hafenterrasse, Kongresszentrum Lissabon",
+            "price": "In jedem Präsenzticket enthalten",
+            "action": "Tickets sichern",
+            "lead": "Musik, Essen und die Menschen, die du den ganzen Tag getroffen hast - unter den Sternen, über dem Hafen.",
+            "body": [
+              "Nach dem letzten Vortrag des ersten Tages öffnet die Terrasse über dem Hafen für den Abend des Summits. Ab acht spielt ein Trio aus der Stadt, die Küche serviert Petiscos bis spät, und die Vortragenden bleiben für die Fragen, die nicht mehr in die Fragerunde passten.",
+              "Der Abend ist in jedem Präsenzticket enthalten. Bring eine Jacke mit - Novembernächte am Wasser sind kühl."
+            ],
+            "alt": "Bühnenlicht über dem Publikum eines Konzerts"
+          }
+        },
+        "workshops": {
+          "title": "Workshop day",
+          "start": "2026-11-14T09:00:00Z",
+          "end": "2026-11-14T17:00:00Z",
+          "zone": "Europe/Lisbon",
+          "photo": 180,
+          "href": "#/register",
+          "en": {
+            "title": "Workshop day",
+            "kind": "Workshops",
+            "place": "LX Factory, Lisbon",
+            "price": "€150, or with the workshop ticket",
+            "action": "Book a workshop",
+            "lead": "Two hands-on workshops the day after the summit - you leave with something built.",
+            "body": [
+              "In the morning, Sophie Tan's team builds an offline-first to-do app with you, sync and conflicts included. In the afternoon, Hannah Lee leads a workshop on accessible components, from a bare button to a full dialog.",
+              "Bring a laptop with a recent browser and a code editor. Each workshop has room for forty people."
+            ],
+            "alt": "A laptop and an open notebook on a wooden desk"
+          },
+          "de": {
+            "title": "Workshop-Tag",
+            "kind": "Workshops",
+            "place": "LX Factory, Lissabon",
+            "price": "150 €, oder mit dem Workshop-Ticket",
+            "action": "Workshop buchen",
+            "lead": "Zwei Workshops zum Mitmachen am Tag nach dem Summit - du gehst mit etwas Gebautem nach Hause.",
+            "body": [
+              "Am Vormittag baut das Team von Sophie Tan mit dir eine Offline-first-Aufgaben-App, Sync und Konflikte inklusive. Am Nachmittag leitet Hannah Lee einen Workshop zu barrierefreien Komponenten, vom einfachen Button bis zum fertigen Dialog.",
+              "Bring einen Laptop mit aktuellem Browser und Code-Editor mit. Jeder Workshop hat Platz für vierzig Menschen."
+            ],
+            "alt": "Ein Laptop und ein offenes Notizbuch auf einem Holztisch"
+          }
+        },
+        "berlin": {
+          "title": "Calm Product Meetup Berlin",
+          "start": "2027-01-21T17:30:00Z",
+          "end": "2027-01-21T20:00:00Z",
+          "zone": "Europe/Berlin",
+          "photo": 195,
+          "href": "mailto:meetups@acme.example?subject=Calm%20Product%20Meetup%20Berlin",
+          "en": {
+            "kind": "Meetup",
+            "place": "Acme office, Berlin-Kreuzberg",
+            "price": "Free",
+            "action": "Reserve a seat",
+            "lead": "The summit's best talks again, in a smaller room - with pizza and time to talk.",
+            "body": [
+              "Two talks from the summit, given live for everyone who could not come to Lisbon, then an open round with the speakers.",
+              "The meetup is free. There is room for sixty people - reserve a seat by email and we will send you the details."
+            ],
+            "alt": "String lights over a narrow alley at night"
+          },
+          "de": {
+            "kind": "Meetup",
+            "place": "Acme-Büro, Berlin-Kreuzberg",
+            "price": "Kostenlos",
+            "action": "Platz reservieren",
+            "lead": "Die besten Vorträge des Summits noch einmal, in kleinerer Runde - mit Pizza und Zeit zum Reden.",
+            "body": [
+              "Zwei Vorträge vom Summit, live für alle, die nicht nach Lissabon kommen konnten, danach eine offene Runde mit den Vortragenden.",
+              "Das Meetup ist kostenlos. Es gibt Platz für sechzig Menschen - reserviere einen Platz per E-Mail, und wir schicken dir die Details."
+            ],
+            "alt": "Lichterketten über einer schmalen Gasse bei Nacht"
+          }
+        }
+      },
+      "speakers": {
+        "priya-natarajan": {
+          "name": "Priya Natarajan",
+          "img": 16,
+          "en": {
+            "role": "CPO, Orbit",
+            "bio": [
+              "Priya leads product at Orbit, where a team of thirty builds the planning tool that two million people open every morning. Before Orbit she ran research at a public broadcaster and taught interaction design in Chennai.",
+              "She writes about products that ask for less attention, and about measuring it: time to done, not time on site."
+            ]
+          },
+          "de": {
+            "role": "CPO, Orbit",
+            "bio": [
+              "Priya leitet das Produkt bei Orbit, wo ein Team von dreißig Leuten das Planungswerkzeug baut, das zwei Millionen Menschen jeden Morgen öffnen. Vorher leitete sie die Forschung bei einem öffentlich-rechtlichen Sender und lehrte Interaktionsdesign in Chennai.",
+              "Sie schreibt über Produkte, die weniger Aufmerksamkeit verlangen, und darüber, wie man das misst: die Zeit bis zum Ziel, nicht die Zeit auf der Seite."
+            ]
+          }
+        },
+        "sophie-tan": {
+          "name": "Sophie Tan",
+          "img": 25,
+          "en": {
+            "role": "Head of Engineering, Acme",
+            "bio": [
+              "Sophie built the sync engine behind Acme 4.0: every change saved on the device first, merged without a conflict dialog. She has worked on replicated databases for twelve years, first at a bank, then on her own.",
+              "Her talk walks through the three failures that shaped the engine - and the test that now replays each of them every night."
+            ]
+          },
+          "de": {
+            "role": "Leiterin der Entwicklung, Acme",
+            "bio": [
+              "Sophie hat die Sync-Engine hinter Acme 4.0 gebaut: Jede Änderung wird zuerst auf dem Gerät gespeichert und ohne Konfliktdialog zusammengeführt. Sie arbeitet seit zwölf Jahren an replizierten Datenbanken, zuerst bei einer Bank, dann auf eigene Rechnung.",
+              "Ihr Vortrag zeigt die drei Ausfälle, die die Engine geprägt haben - und den Test, der jeden von ihnen heute jede Nacht wiederholt."
+            ]
+          }
+        },
+        "hannah-lee": {
+          "name": "Hannah Lee",
+          "img": 32,
+          "en": {
+            "role": "Design Lead, Northwind",
+            "bio": [
+              "Hannah leads design at Northwind, a logistics company whose dispatchers watch one screen for eight hours a day. She removed more badges, banners and counters there than anyone thought possible.",
+              "She shares the rule her team now uses before anything gets a colour of its own."
+            ]
+          },
+          "de": {
+            "role": "Design-Leiterin, Northwind",
+            "bio": [
+              "Hannah leitet das Design bei Northwind, einem Logistikunternehmen, dessen Disponenten acht Stunden am Tag auf einen Bildschirm schauen. Sie hat dort mehr Abzeichen, Banner und Zähler entfernt, als irgendjemand für möglich hielt.",
+              "Sie stellt die Regel vor, die ihr Team heute anwendet, bevor etwas eine eigene Farbe bekommt."
+            ]
+          }
+        },
+        "alex-moreau": {
+          "name": "Alex Moreau",
+          "img": 12,
+          "en": {
+            "role": "Co-founder, Acme",
+            "bio": [
+              "Alex co-founded Acme in a Lisbon flat in 2019 and still answers support mail on Fridays. Before that, a decade of design work for newspapers and public services.",
+              "On stage with Hannah Lee, Alex argues for interfaces that stay quiet until they have something to say."
+            ]
+          },
+          "de": {
+            "role": "Mitgründer, Acme",
+            "bio": [
+              "Alex hat Acme 2019 in einer Lissabonner Wohnung mitgegründet und beantwortet freitags noch immer Support-Mails. Davor lagen zehn Jahre Gestaltung für Zeitungen und öffentliche Dienste.",
+              "Gemeinsam mit Hannah Lee wirbt Alex für Oberflächen, die schweigen, bis sie etwas zu sagen haben."
+            ]
+          }
+        },
+        "marco-rossi": {
+          "name": "Marco Rossi",
+          "img": 60,
+          "en": {
+            "role": "CTO, Globex",
+            "bio": [
+              "Marco is CTO of Globex, where four hundred people in eleven time zones ship without a daily stand-up. He moved the company to written decisions in 2023 and measured what it did to release speed.",
+              "His talk brings the numbers: meetings per engineer, review times and the incidents before and after."
+            ]
+          },
+          "de": {
+            "role": "CTO, Globex",
+            "bio": [
+              "Marco ist CTO von Globex, wo vierhundert Menschen in elf Zeitzonen ohne tägliches Stand-up ausliefern. Er hat das Unternehmen 2023 auf schriftliche Entscheidungen umgestellt und gemessen, was das für die Release-Geschwindigkeit bedeutet hat.",
+              "Sein Vortrag bringt die Zahlen mit: Meetings pro Entwickler, Review-Zeiten und die Störungen vorher und nachher."
+            ]
+          }
+        }
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
   <template data-i18n-for="bar-tickets" data-i18n-locale="en">Get tickets</template>
   <template data-i18n-for="bar-tickets" data-i18n-locale="de">Tickets sichern</template>
@@ -1176,8 +2545,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="ev-35-1" data-i18n-locale="de">Raum A</template>
   <template data-i18n-for="ev-36-1" data-i18n-locale="en">Room B</template>
   <template data-i18n-for="ev-36-1" data-i18n-locale="de">Raum B</template>
-  <template data-i18n-for="ev-37-1" data-i18n-locale="en">Our cafés in Lisbon</template>
-  <template data-i18n-for="ev-37-1" data-i18n-locale="de">Unsere Cafés in Lissabon</template>
+  <template data-i18n-for="ev-37-1" data-i18n-locale="en">Coffee near the venue</template>
+  <template data-i18n-for="ev-37-1" data-i18n-locale="de">Kaffee in der Nähe</template>
   <template data-i18n-for="ev-38-1" data-i18n-locale="en">Directions</template>
   <template data-i18n-for="ev-38-1" data-i18n-locale="de">Route</template>
   <template data-i18n-for="ev-38-2" data-i18n-locale="en">Directions</template>
@@ -1222,6 +2591,283 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="ev-52-1" data-i18n-locale="de">Einladung anfordern</template>
   <template data-i18n-for="ev-53-1" data-i18n-locale="en">2,400 people joined this week.</template>
   <template data-i18n-for="ev-53-1" data-i18n-locale="de">2.400 Menschen sind diese Woche dazugekommen.</template>
+  <template data-i18n-for="nav-programme" data-i18n-locale="en">Programme</template>
+  <template data-i18n-for="nav-programme" data-i18n-locale="de">Programm</template>
+  <template data-i18n-for="nav-speakers" data-i18n-locale="en">Speakers</template>
+  <template data-i18n-for="nav-speakers" data-i18n-locale="de">Vortragende</template>
+  <template data-i18n-for="nav-around" data-i18n-locale="en">Around the summit</template>
+  <template data-i18n-for="nav-around" data-i18n-locale="de">Rund um den Summit</template>
+  <template data-i18n-for="nav-venue" data-i18n-locale="en">Venue</template>
+  <template data-i18n-for="nav-venue" data-i18n-locale="de">Ort</template>
+  <template data-i18n-for="e2-conf" data-i18n-locale="en">Conference</template>
+  <template data-i18n-for="e2-conf" data-i18n-locale="de">Konferenz</template>
+  <template data-i18n-for="e2-ed" data-i18n-locale="en">3rd edition</template>
+  <template data-i18n-for="e2-ed" data-i18n-locale="de">3. Ausgabe</template>
+  <template data-i18n-for="e2-where" data-i18n-locale="en">Lisbon Congress Centre, Portugal</template>
+  <template data-i18n-for="e2-where" data-i18n-locale="de">Kongresszentrum Lissabon, Portugal</template>
+  <template data-i18n-for="e2-register" data-i18n-locale="en">Register now</template>
+  <template data-i18n-for="e2-register" data-i18n-locale="de">Jetzt anmelden</template>
+  <template data-i18n-for="e2-night" data-i18n-locale="en">Nov 12 · 20:00 · Harbour terrace</template>
+  <template data-i18n-for="e2-night" data-i18n-locale="de">12. Nov · 20:00 · Hafenterrasse</template>
+  <template data-i18n-for="e2-save" data-i18n-locale="en">Save 30%</template>
+  <template data-i18n-for="e2-save" data-i18n-locale="de">30 % sparen</template>
+  <template data-i18n-for="e2-about" data-i18n-locale="en"
+    >Acme Summit brings together the people who build the tools teams use every day. Two days, three tracks, no sponsor
+    pitches - just honest talks on making software calmer, and workshops where you leave with something built.</template
+  >
+  <template data-i18n-for="e2-about" data-i18n-locale="de"
+    >Der Acme Summit bringt die Menschen zusammen, die die Werkzeuge bauen, mit denen Teams jeden Tag arbeiten. Zwei
+    Tage, drei Themen, keine Sponsorenauftritte - nur ehrliche Vorträge darüber, wie Software ruhiger wird, und
+    Workshops, aus denen du mit etwas Gebautem gehst.</template
+  >
+  <template data-i18n-for="e2-format" data-i18n-locale="en">Format</template>
+  <template data-i18n-for="e2-format" data-i18n-locale="de">Format</template>
+  <template data-i18n-for="e2-seats-n" data-i18n-locale="en">320 of 400</template>
+  <template data-i18n-for="e2-seats-n" data-i18n-locale="de">320 von 400</template>
+  <template data-i18n-for="e2-seats" data-i18n-locale="en">seats taken</template>
+  <template data-i18n-for="e2-seats" data-i18n-locale="de">Plätzen vergeben</template>
+  <template data-i18n-for="e2-d2" data-i18n-locale="en"
+    >How a CRDT engine survives trains, tunnels and transatlantic flights.</template
+  >
+  <template data-i18n-for="e2-d2" data-i18n-locale="de"
+    >Wie eine CRDT-Engine Züge, Tunnel und Transatlantikflüge übersteht.</template
+  >
+  <template data-i18n-for="e2-d3" data-i18n-locale="en"
+    >A field guide to quieter interfaces - with before and after.</template
+  >
+  <template data-i18n-for="e2-d3" data-i18n-locale="de"
+    >Ein Leitfaden für ruhigere Oberflächen - mit Vorher und Nachher.</template
+  >
+  <template data-i18n-for="e2-t2" data-i18n-locale="en">Engineering</template>
+  <template data-i18n-for="e2-t2" data-i18n-locale="de">Technik</template>
+  <template data-i18n-for="e2-r1" data-i18n-locale="en">Head of Engineering, Acme</template>
+  <template data-i18n-for="e2-r1" data-i18n-locale="de">Leiterin Technik, Acme</template>
+  <template data-i18n-for="e2-c1" data-i18n-locale="en">Rua da Prata 120 · open until 19:00</template>
+  <template data-i18n-for="e2-c1" data-i18n-locale="de">Rua da Prata 120 · geöffnet bis 19:00</template>
+  <template data-i18n-for="e2-c2" data-i18n-locale="en">Praça do Príncipe Real 5 · open until 20:00</template>
+  <template data-i18n-for="e2-c2" data-i18n-locale="de">Praça do Príncipe Real 5 · geöffnet bis 20:00</template>
+  <template data-i18n-for="e2-c3" data-i18n-locale="en">Rua de São Miguel 18 · closed today</template>
+  <template data-i18n-for="e2-c3" data-i18n-locale="de">Rua de São Miguel 18 · heute geschlossen</template>
+  <template data-i18n-for="e2-until" data-i18n-locale="en">· until 20:00</template>
+  <template data-i18n-for="e2-until" data-i18n-locale="de">· bis 20:00</template>
+  <template data-i18n-for="e2-invited" data-i18n-locale="en">Thank you - your invite is on its way.</template>
+  <template data-i18n-for="e2-invited" data-i18n-locale="de">Danke - deine Einladung ist unterwegs.</template>
+  <template data-i18n-for="e2-t-ss-4" data-i18n-locale="en">Engineering</template>
+  <template data-i18n-for="e2-t-ss-4" data-i18n-locale="de">Technik</template>
+  <template data-i18n-for="e2-d-ss-4" data-i18n-locale="en"
+    >How Globex runs engineering across nine time zones without a standing meeting.</template
+  >
+  <template data-i18n-for="e2-d-ss-4" data-i18n-locale="de"
+    >Wie Globex Engineering über neun Zeitzonen ohne feste Meetings organisiert.</template
+  >
+  <template data-i18n-for="e2-room-ss-4" data-i18n-locale="en">Room A</template>
+  <template data-i18n-for="e2-room-ss-4" data-i18n-locale="de">Raum A</template>
+  <template data-i18n-for="e2-add-ss-4" data-i18n-locale="en">Add</template>
+  <template data-i18n-for="e2-add-ss-4" data-i18n-locale="de">Merken</template>
+  <template data-i18n-for="e2-added-ss-4" data-i18n-locale="en">Added</template>
+  <template data-i18n-for="e2-added-ss-4" data-i18n-locale="de">Gemerkt</template>
+  <template data-i18n-for="e2-d-ss-5" data-i18n-locale="en"
+    >Talking to customers every week when nobody's job title says research.</template
+  >
+  <template data-i18n-for="e2-d-ss-5" data-i18n-locale="de"
+    >Jede Woche mit Kunden sprechen, auch wenn niemand Research im Jobtitel hat.</template
+  >
+  <template data-i18n-for="e2-room-ss-5" data-i18n-locale="en">Room B</template>
+  <template data-i18n-for="e2-room-ss-5" data-i18n-locale="de">Raum B</template>
+  <template data-i18n-for="e2-add-ss-5" data-i18n-locale="en">Add</template>
+  <template data-i18n-for="e2-add-ss-5" data-i18n-locale="de">Merken</template>
+  <template data-i18n-for="e2-added-ss-5" data-i18n-locale="en">Added</template>
+  <template data-i18n-for="e2-added-ss-5" data-i18n-locale="de">Gemerkt</template>
+  <template data-i18n-for="e2-around" data-i18n-locale="en">Around the summit</template>
+  <template data-i18n-for="e2-around" data-i18n-locale="de">Rund um den Summit</template>
+  <template data-i18n-for="e2-night-mon" data-i18n-locale="en">Nov</template>
+  <template data-i18n-for="e2-night-mon" data-i18n-locale="de">Nov</template>
+  <template data-i18n-for="e2-night-time" data-i18n-locale="en">Thu 20:00 - 23:30</template>
+  <template data-i18n-for="e2-night-time" data-i18n-locale="de">Do 20:00 - 23:30</template>
+  <template data-i18n-for="e2-night-place" data-i18n-locale="en">Harbour terrace, Lisbon</template>
+  <template data-i18n-for="e2-night-place" data-i18n-locale="de">Hafenterrasse, Lissabon</template>
+  <template data-i18n-for="e2-night-tag0" data-i18n-locale="en">Party</template>
+  <template data-i18n-for="e2-night-tag0" data-i18n-locale="de">Party</template>
+  <template data-i18n-for="e2-night-tag1" data-i18n-locale="en">Included</template>
+  <template data-i18n-for="e2-night-tag1" data-i18n-locale="de">Inklusive</template>
+  <template data-i18n-for="e2-night-more" data-i18n-locale="en">Details</template>
+  <template data-i18n-for="e2-night-more" data-i18n-locale="de">Details</template>
+  <template data-i18n-for="e2-workshops-mon" data-i18n-locale="en">Nov</template>
+  <template data-i18n-for="e2-workshops-mon" data-i18n-locale="de">Nov</template>
+  <template data-i18n-for="e2-workshops-title" data-i18n-locale="en">Workshop day</template>
+  <template data-i18n-for="e2-workshops-title" data-i18n-locale="de">Workshop-Tag</template>
+  <template data-i18n-for="e2-workshops-time" data-i18n-locale="en">Sat 09:00 - 17:00</template>
+  <template data-i18n-for="e2-workshops-time" data-i18n-locale="de">Sa 09:00 - 17:00</template>
+  <template data-i18n-for="e2-workshops-place" data-i18n-locale="en">LX Factory, Lisbon</template>
+  <template data-i18n-for="e2-workshops-place" data-i18n-locale="de">LX Factory, Lissabon</template>
+  <template data-i18n-for="e2-workshops-tag0" data-i18n-locale="en">Workshops</template>
+  <template data-i18n-for="e2-workshops-tag0" data-i18n-locale="de">Workshops</template>
+  <template data-i18n-for="e2-workshops-tag1" data-i18n-locale="en">From €150</template>
+  <template data-i18n-for="e2-workshops-tag1" data-i18n-locale="de">Ab 150 €</template>
+  <template data-i18n-for="e2-workshops-more" data-i18n-locale="en">Details</template>
+  <template data-i18n-for="e2-workshops-more" data-i18n-locale="de">Details</template>
+  <template data-i18n-for="e2-berlin-mon" data-i18n-locale="en">Jan</template>
+  <template data-i18n-for="e2-berlin-mon" data-i18n-locale="de">Jan</template>
+  <template data-i18n-for="e2-berlin-time" data-i18n-locale="en">Thu 18:30 - 21:00</template>
+  <template data-i18n-for="e2-berlin-time" data-i18n-locale="de">Do 18:30 - 21:00</template>
+  <template data-i18n-for="e2-berlin-place" data-i18n-locale="en">Acme office, Berlin</template>
+  <template data-i18n-for="e2-berlin-place" data-i18n-locale="de">Acme-Büro, Berlin</template>
+  <template data-i18n-for="e2-berlin-tag0" data-i18n-locale="en">Meetup</template>
+  <template data-i18n-for="e2-berlin-tag0" data-i18n-locale="de">Meetup</template>
+  <template data-i18n-for="e2-berlin-tag1" data-i18n-locale="en">Free</template>
+  <template data-i18n-for="e2-berlin-tag1" data-i18n-locale="de">Kostenlos</template>
+  <template data-i18n-for="e2-berlin-more" data-i18n-locale="en">Details</template>
+  <template data-i18n-for="e2-berlin-more" data-i18n-locale="de">Details</template>
+  <template data-i18n-for="e2-back-speakers" data-i18n-locale="en">All speakers</template>
+  <template data-i18n-for="e2-back-speakers" data-i18n-locale="de">Alle Vortragenden</template>
+  <template data-i18n-for="e2-speaker-kicker" data-i18n-locale="en">Speaker</template>
+  <template data-i18n-for="e2-speaker-kicker" data-i18n-locale="de">Vortragende</template>
+  <template data-i18n-for="e2-talks" data-i18n-locale="en">Talks</template>
+  <template data-i18n-for="e2-talks" data-i18n-locale="de">Vorträge</template>
+  <template data-i18n-for="e2-tickets-k" data-i18n-locale="en">Get tickets</template>
+  <template data-i18n-for="e2-tickets-k" data-i18n-locale="de">Tickets sichern</template>
+  <template data-i18n-for="e2-prev-k" data-i18n-locale="en">Previous</template>
+  <template data-i18n-for="e2-prev-k" data-i18n-locale="de">Zurück</template>
+  <template data-i18n-for="e2-next-k" data-i18n-locale="en">Next</template>
+  <template data-i18n-for="e2-next-k" data-i18n-locale="de">Weiter</template>
+  <template data-i18n-for="e2-back-programme" data-i18n-locale="en">The programme</template>
+  <template data-i18n-for="e2-back-programme" data-i18n-locale="de">Zum Programm</template>
+  <template data-i18n-for="e2-learn" data-i18n-locale="en">You will take away</template>
+  <template data-i18n-for="e2-learn" data-i18n-locale="de">Das nimmst du mit</template>
+  <template data-i18n-for="e2-speakers" data-i18n-locale="en">Speakers</template>
+  <template data-i18n-for="e2-speakers" data-i18n-locale="de">Vortragende</template>
+  <template data-i18n-for="e2-tickets-s" data-i18n-locale="en">Get tickets</template>
+  <template data-i18n-for="e2-tickets-s" data-i18n-locale="de">Tickets sichern</template>
+  <template data-i18n-for="e2-cal-s" data-i18n-locale="en">Add to calendar</template>
+  <template data-i18n-for="e2-cal-s" data-i18n-locale="de">In den Kalender</template>
+  <template data-i18n-for="e2-prev-s" data-i18n-locale="en">Previous session</template>
+  <template data-i18n-for="e2-prev-s" data-i18n-locale="de">Voriger Vortrag</template>
+  <template data-i18n-for="e2-next-s" data-i18n-locale="en">Next session</template>
+  <template data-i18n-for="e2-next-s" data-i18n-locale="de">Nächster Vortrag</template>
+  <template data-i18n-for="e2-back-summit" data-i18n-locale="en">Acme Summit 2026</template>
+  <template data-i18n-for="e2-back-summit" data-i18n-locale="de">Acme Summit 2026</template>
+  <template data-i18n-for="e2-f-when" data-i18n-locale="en">When</template>
+  <template data-i18n-for="e2-f-when" data-i18n-locale="de">Wann</template>
+  <template data-i18n-for="e2-f-where" data-i18n-locale="en">Where</template>
+  <template data-i18n-for="e2-f-where" data-i18n-locale="de">Wo</template>
+  <template data-i18n-for="e2-f-price" data-i18n-locale="en">Price</template>
+  <template data-i18n-for="e2-f-price" data-i18n-locale="de">Preis</template>
+  <template data-i18n-for="e2-cal-e" data-i18n-locale="en">Add to calendar</template>
+  <template data-i18n-for="e2-cal-e" data-i18n-locale="de">In den Kalender</template>
+  <template data-i18n-for="e2-prev-e" data-i18n-locale="en">Previous event</template>
+  <template data-i18n-for="e2-prev-e" data-i18n-locale="de">Voriger Termin</template>
+  <template data-i18n-for="e2-next-e" data-i18n-locale="en">Next event</template>
+  <template data-i18n-for="e2-next-e" data-i18n-locale="de">Nächster Termin</template>
+  <template data-i18n-for="e2-back-reg" data-i18n-locale="en">Acme Summit 2026</template>
+  <template data-i18n-for="e2-back-reg" data-i18n-locale="de">Acme Summit 2026</template>
+  <template data-i18n-for="rg-title" data-i18n-locale="en">Register for Acme Summit 2026</template>
+  <template data-i18n-for="rg-title" data-i18n-locale="de">Anmeldung zum Acme Summit 2026</template>
+  <template data-i18n-for="rg-lead" data-i18n-locale="en"
+    >12-13 November, Lisbon Congress Centre. Early-bird prices until Friday - every ticket includes the
+    recordings.</template
+  >
+  <template data-i18n-for="rg-lead" data-i18n-locale="de"
+    >12.-13. November, Kongresszentrum Lissabon. Frühbucherpreise bis Freitag - jedes Ticket enthält die
+    Aufzeichnungen.</template
+  >
+  <template data-i18n-for="rg-ticket" data-i18n-locale="en">Ticket</template>
+  <template data-i18n-for="rg-ticket" data-i18n-locale="de">Ticket</template>
+  <template data-i18n-for="rg-standard" data-i18n-locale="en">Standard</template>
+  <template data-i18n-for="rg-standard" data-i18n-locale="de">Standard</template>
+  <template data-i18n-for="rg-standard-d" data-i18n-locale="en"
+    >Both days, lunch, Summit Night and recordings.</template
+  >
+  <template data-i18n-for="rg-standard-d" data-i18n-locale="de"
+    >Beide Tage, Mittagessen, Summit Night und Aufzeichnungen.</template
+  >
+  <template data-i18n-for="rg-workshop" data-i18n-locale="en">Standard + Workshops</template>
+  <template data-i18n-for="rg-workshop" data-i18n-locale="de">Standard + Workshops</template>
+  <template data-i18n-for="rg-few" data-i18n-locale="en">Few left</template>
+  <template data-i18n-for="rg-few" data-i18n-locale="de">Nur noch wenige</template>
+  <template data-i18n-for="rg-workshop-d" data-i18n-locale="en">Everything in Standard plus the workshop day.</template>
+  <template data-i18n-for="rg-workshop-d" data-i18n-locale="de">Alles aus Standard plus der Workshop-Tag.</template>
+  <template data-i18n-for="rg-stream-d" data-i18n-locale="en">Live stream, Q&amp;A and recordings.</template>
+  <template data-i18n-for="rg-stream-d" data-i18n-locale="de">Livestream, Fragerunde und Aufzeichnungen.</template>
+  <template data-i18n-for="rg-attendee" data-i18n-locale="en">Attendee</template>
+  <template data-i18n-for="rg-attendee" data-i18n-locale="de">Teilnahme</template>
+  <template data-i18n-for="rg-name" data-i18n-locale="en">Full name</template>
+  <template data-i18n-for="rg-name" data-i18n-locale="de">Vollständiger Name</template>
+  <template data-i18n-for="rg-email" data-i18n-locale="en">Email</template>
+  <template data-i18n-for="rg-email" data-i18n-locale="de">E-Mail</template>
+  <template data-i18n-for="rg-org" data-i18n-locale="en">Company</template>
+  <template data-i18n-for="rg-org" data-i18n-locale="de">Unternehmen</template>
+  <template data-i18n-for="rg-role" data-i18n-locale="en">Role</template>
+  <template data-i18n-for="rg-role" data-i18n-locale="de">Rolle</template>
+  <template data-i18n-for="rg-ws" data-i18n-locale="en">Workshops</template>
+  <template data-i18n-for="rg-ws" data-i18n-locale="de">Workshops</template>
+  <template data-i18n-for="rg-ws-note" data-i18n-locale="en">(with the workshop ticket)</template>
+  <template data-i18n-for="rg-ws-note" data-i18n-locale="de">(mit dem Workshop-Ticket)</template>
+  <template data-i18n-for="rg-w1" data-i18n-locale="en">Offline-first sync, hands on</template>
+  <template data-i18n-for="rg-w1" data-i18n-locale="de">Offline-first-Sync zum Mitmachen</template>
+  <template data-i18n-for="rg-w1-n" data-i18n-locale="en">12 seats left</template>
+  <template data-i18n-for="rg-w1-n" data-i18n-locale="de">noch 12 Plätze</template>
+  <template data-i18n-for="rg-w2" data-i18n-locale="en">Accessible components from scratch</template>
+  <template data-i18n-for="rg-w2" data-i18n-locale="de">Barrierefreie Komponenten von Grund auf</template>
+  <template data-i18n-for="rg-w2-n" data-i18n-locale="en">4 seats left</template>
+  <template data-i18n-for="rg-w2-n" data-i18n-locale="de">noch 4 Plätze</template>
+  <template data-i18n-for="rg-needs" data-i18n-locale="en">Your needs</template>
+  <template data-i18n-for="rg-needs" data-i18n-locale="de">Deine Bedürfnisse</template>
+  <template data-i18n-for="rg-diet" data-i18n-locale="en">Dietary preference</template>
+  <template data-i18n-for="rg-diet" data-i18n-locale="de">Ernährung</template>
+  <template data-i18n-for="rg-diet-0" data-i18n-locale="en">No preference</template>
+  <template data-i18n-for="rg-diet-0" data-i18n-locale="de">Keine Vorgabe</template>
+  <template data-i18n-for="rg-diet-1" data-i18n-locale="en">Vegetarian</template>
+  <template data-i18n-for="rg-diet-1" data-i18n-locale="de">Vegetarisch</template>
+  <template data-i18n-for="rg-diet-2" data-i18n-locale="en">Vegan</template>
+  <template data-i18n-for="rg-diet-2" data-i18n-locale="de">Vegan</template>
+  <template data-i18n-for="rg-diet-3" data-i18n-locale="en">Gluten-free</template>
+  <template data-i18n-for="rg-diet-3" data-i18n-locale="de">Glutenfrei</template>
+  <template data-i18n-for="rg-a11y" data-i18n-locale="en">Accessibility needs</template>
+  <template data-i18n-for="rg-a11y" data-i18n-locale="de">Barrierefreiheit</template>
+  <template data-i18n-for="rg-total" data-i18n-locale="en">Total incl. VAT</template>
+  <template data-i18n-for="rg-total" data-i18n-locale="de">Gesamt inkl. MwSt.</template>
+  <template data-i18n-for="rg-submit" data-i18n-locale="en">Register</template>
+  <template data-i18n-for="rg-submit" data-i18n-locale="de">Anmelden</template>
+  <template data-i18n-for="rg-thanks" data-i18n-locale="en">See you in Lisbon</template>
+  <template data-i18n-for="rg-thanks" data-i18n-locale="de">Bis bald in Lissabon</template>
+  <template data-i18n-for="rg-your" data-i18n-locale="en">Your ticket:</template>
+  <template data-i18n-for="rg-your" data-i18n-locale="de">Dein Ticket:</template>
+  <template data-i18n-for="rg-mail" data-i18n-locale="en"
+    >The confirmation and the invoice are on their way to your inbox.</template
+  >
+  <template data-i18n-for="rg-mail" data-i18n-locale="de"
+    >Die Bestätigung und die Rechnung sind auf dem Weg in dein Postfach.</template
+  >
+  <template data-i18n-for="rg-cal" data-i18n-locale="en">Add to calendar</template>
+  <template data-i18n-for="rg-cal" data-i18n-locale="de">In den Kalender</template>
+  <template data-i18n-for="rg-programme" data-i18n-locale="en">See the programme</template>
+  <template data-i18n-for="rg-programme" data-i18n-locale="de">Zum Programm</template>
+  <template data-i18n-for="f2-line" data-i18n-locale="en"
+    >Two days on calm software - 12-13 November 2026, Lisbon Congress Centre.</template
+  >
+  <template data-i18n-for="f2-line" data-i18n-locale="de"
+    >Zwei Tage über ruhige Software - 12.-13. November 2026, Kongresszentrum Lissabon.</template
+  >
+  <template data-i18n-for="f2-programme" data-i18n-locale="en">Programme</template>
+  <template data-i18n-for="f2-programme" data-i18n-locale="de">Programm</template>
+  <template data-i18n-for="f2-speakers" data-i18n-locale="en">Speakers</template>
+  <template data-i18n-for="f2-speakers" data-i18n-locale="de">Vortragende</template>
+  <template data-i18n-for="f2-venue" data-i18n-locale="en">Venue</template>
+  <template data-i18n-for="f2-venue" data-i18n-locale="de">Ort</template>
+  <template data-i18n-for="f2-tickets" data-i18n-locale="en">Tickets</template>
+  <template data-i18n-for="f2-tickets" data-i18n-locale="de">Tickets</template>
+  <template data-i18n-for="f2-around" data-i18n-locale="en">Around the summit</template>
+  <template data-i18n-for="f2-around" data-i18n-locale="de">Rund um den Summit</template>
+  <template data-i18n-for="f2-workshops" data-i18n-locale="en">Workshop day</template>
+  <template data-i18n-for="f2-workshops" data-i18n-locale="de">Workshop-Tag</template>
+  <template data-i18n-for="f2-contact" data-i18n-locale="en">Contact</template>
+  <template data-i18n-for="f2-contact" data-i18n-locale="de">Kontakt</template>
+  <template data-i18n-for="f2-copy" data-i18n-locale="en"
+    >© 2026 Acme, Lda. · Organised in Lisbon by the Acme team.</template
+  >
+  <template data-i18n-for="f2-copy" data-i18n-locale="de"
+    >© 2026 Acme, Lda. · Organisiert in Lissabon vom Acme-Team.</template
+  >
 </div>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
@@ -1248,8 +2894,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       locale: 'en', // the demos start in English; the language select offers German
     });
     createDomI18n(df$).bind(site, locale);
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -1265,38 +2911,262 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     };
     look.val(lookRoot.dataset.look).on('change', () => applyLook(look.val()));
 
+    // -- the pages: sessions and the events around the summit come from one data block in English and German, drawn
+    // again when the language changes
+    const DATA = JSON.parse(df$('#events-data').text());
+    const SESSIONS = Object.keys(DATA.sessions);
+    const EVENTS = Object.keys(DATA.events);
+    const SPEAKERS = Object.keys(DATA.speakers);
+    const speakerId = (name) => SPEAKERS.find((id) => DATA.speakers[id].name === name);
+    const tr = (item) => item[locale.locale] ?? item.en;
+    const fill = (scope, attr, values) =>
+      scope.find('[' + attr + ']').each((_i, el) => {
+        const key = el.getAttribute(attr);
+        if (key in values) df$(el).text(values[key]);
+      });
+    const pager = (scope, attr, base, keys, key, title) => {
+      const i = keys.indexOf(key);
+      const around = { prev: keys[(i - 1 + keys.length) % keys.length], next: keys[(i + 1) % keys.length] };
+      for (const [dir, to] of Object.entries(around)) {
+        const link = scope.find('[' + attr + '="' + dir + '"]');
+        link.attr('href', base + to);
+        link.find('[data-pager-title]').text(title(to));
+      }
+    };
+    const paragraphs = (host, texts) => {
+      host.html('');
+      for (const text of texts) host.append(df$('<p></p>').text(text));
+    };
+    // a day and a time span in the page's language, in the event's own time zone
+    const when = (start, end, zone = 'Europe/Lisbon') => {
+      const day = locale.formatDate(Date.parse(start), {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        timeZone: zone,
+      });
+      const time = (iso) =>
+        locale.formatDate(Date.parse(iso), { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: zone });
+      return day + ' · ' + time(start) + ' - ' + time(end);
+    };
+    // a calendar file for one entry, as a data: link
+    const ics = (uid, title, start, end, where) => {
+      const stamp = (iso) => iso.replace(/[-:]/g, '').replace(/\.\d+/, '');
+      const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Acme//Summit//EN',
+        'BEGIN:VEVENT',
+        'UID:' + uid + '@acme.example',
+      ];
+      lines.push('DTSTAMP:20261101T000000Z', 'DTSTART:' + stamp(start), 'DTEND:' + stamp(end), 'SUMMARY:' + title);
+      lines.push('LOCATION:' + where, 'END:VEVENT', 'END:VCALENDAR');
+      return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(lines.join('\r\n') + '\r\n');
+    };
+    const drawSession = (key) => {
+      const item = DATA.sessions[key];
+      const t = tr(item);
+      const page = df$('#site-events [data-events-view="session"]');
+      fill(page, 'data-session-field', {
+        ...t,
+        title: item.title,
+        track: tr(DATA.ui).tracks[item.track],
+        when: when(item.start, item.end),
+      });
+      paragraphs(page.find('[data-session-body]'), t.body);
+      const learn = page.find('[data-session-learn]').html('');
+      for (const line of t.learn) learn.append(df$('<li></li>').text(line));
+      const people = page.find('[data-session-speakers]').html('');
+      for (const [name, img, role] of item.speakers) {
+        people.append(
+          df$('<li></li>')
+            .append(
+              df$('<img />')
+                .attr('src', 'https://i.pravatar.cc/96?img=' + img)
+                .attr('alt', ''),
+            )
+            .append(
+              df$('<span></span>')
+                .append(
+                  df$('<a data-router-link></a>')
+                    .attr('href', '#/speakers/' + speakerId(name))
+                    .text(name),
+                )
+                .append(df$('<small></small>').text(tr(DATA.speakers[speakerId(name)]).role ?? role)),
+            ),
+        );
+      }
+      page
+        .find('[data-session-ics]')
+        .attr('href', ics(key, item.title, item.start, item.end, 'Lisbon Congress Centre'));
+      pager(page, 'data-session-pager', '#/sessions/', SESSIONS, key, (k) => DATA.sessions[k].title);
+    };
+    // a speaker's page: the portrait, the role and the bio in the page's language, and every talk they give
+    const drawSpeaker = (key) => {
+      const person = DATA.speakers[key];
+      const t = tr(person);
+      const page = df$('#site-events [data-events-view="speaker"]');
+      fill(page, 'data-speaker-field', { name: person.name, role: t.role });
+      page
+        .find('[data-speaker-photo]')
+        .attr('src', 'https://i.pravatar.cc/240?img=' + person.img)
+        .attr('alt', person.name);
+      paragraphs(page.find('[data-speaker-body]'), t.bio);
+      const talks = page.find('[data-speaker-talks]').html('');
+      for (const id of SESSIONS.filter((s) => DATA.sessions[s].speakers.some(([name]) => name === person.name))) {
+        const item = DATA.sessions[id];
+        talks.append(
+          df$('<li></li>').append(
+            df$('<a data-router-link></a>')
+              .attr('href', '#/sessions/' + id)
+              .text(item.title)
+              .append(df$('<small></small>').text(when(item.start, item.end))),
+          ),
+        );
+      }
+      pager(page, 'data-speaker-pager', '#/speakers/', SPEAKERS, key, (k) => DATA.speakers[k].name);
+    };
+    const drawEvent = (key) => {
+      const item = DATA.events[key];
+      const t = tr(item);
+      const title = t.title ?? item.title;
+      const page = df$('#site-events [data-events-view="event"]');
+      fill(page, 'data-event-field', { ...t, title, when: when(item.start, item.end, item.zone) });
+      page
+        .find('[data-event-photo]')
+        .attr('src', 'https://picsum.photos/id/' + item.photo + '/1600/700')
+        .attr('alt', t.alt);
+      paragraphs(page.find('[data-event-body]'), t.body);
+      page.find('[data-event-action]').attr('href', item.href);
+      page.find('[data-event-ics]').attr('href', ics(key, title, item.start, item.end, t.place));
+      pager(
+        page,
+        'data-event-pager',
+        '#/events/',
+        EVENTS,
+        key,
+        (k) => tr(DATA.events[k]).title ?? DATA.events[k].title,
+      );
+    };
+
+    // -- the registration: prices and the total in the page's language; sending it thanks the attendee
+    const form = df$('#site-events [data-events-register]');
+    const PRICES = { standard: 290, workshop: 440, stream: 90 };
+    const euro = (n) => locale.formatNumber(n, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    const ticket = () => form.find('input[name="ticket"]:checked').val() || 'standard';
+    const drawPrices = () => {
+      df$('#site-events [data-events-price]').each((_i, el) => {
+        df$(el).text(euro(Number(el.dataset.eventsPrice)));
+      });
+      df$('#site-events [data-events-total]').text(euro(PRICES[ticket()]));
+      df$('#site-events [data-events-done-ticket]').text(tr(DATA.ui).tickets[ticket()]);
+      df$('#site-events [data-events-done-total]').text('(' + euro(PRICES[ticket()]) + ')');
+    };
+    form.on('change', drawPrices);
+    form.on('submit', (event) => {
+      event.preventDefault();
+      const name = String(form.find('[name="name"]').val() || '')
+        .trim()
+        .split(/\s+/)[0];
+      df$('#site-events [data-events-done-name]').text(name ? ', ' + name : '');
+      drawPrices();
+      df$('#site-events [data-events-form]').prop('hidden', true);
+      df$('#site-events [data-events-done]').prop('hidden', false);
+      df$('#site-events [data-events-done]').get(0).focus();
+    });
+    // the invite form at the end: a thank-you in place of the count
+    df$('#site-events [data-events-invite]').on('submit', (event) => {
+      event.preventDefault();
+      df$('#site-events [data-events-invite-note]').prop('hidden', true);
+      df$('#site-events [data-events-invite-done]').prop('hidden', false);
+    });
+
     // -- routing
     const routes = [
       { id: 'all', path: '/' },
       { id: 'track', path: '/track/:track' },
       { id: 'session', path: '/sessions/:id' },
+      { id: 'event', path: '/events/:id' },
+      { id: 'speaker', path: '/speakers/:id' },
+      { id: 'register', path: '/register' },
       { id: 'missing', path: '*' },
     ];
-    // a track shows its sessions, a session route only that session; the track nav marks the track
+    let current = { view: 'home', key: null };
+    // the path shown last (null before the first): a change of it scrolls to the new page's start
+    let shownPath = null;
+    const draw = () => {
+      drawPrices();
+      if (current.view === 'session') drawSession(current.key);
+      if (current.view === 'event') drawEvent(current.key);
+      if (current.view === 'speaker') drawSpeaker(current.key);
+    };
+    locale.subscribe(draw);
+    const showView = (view) => {
+      df$('#site-events [data-events-view]').each((_i, part) => {
+        part.hidden = part.dataset.eventsView !== view;
+      });
+    };
+    // a track shows its sessions on the front page; a session opens its page (the agenda keeps only that session, so
+    // the track it belongs to stays marked), an event around the summit its page, the registration its form
     const show = (to) => {
       const track = to.routeId === 'track' ? to.params.track : null;
-      const session = to.routeId === 'session' ? to.params.id : null;
+      const session = to.routeId === 'session' && DATA.sessions[to.params.id] ? to.params.id : null;
+      const eventKey = to.routeId === 'event' && DATA.events[to.params.id] ? to.params.id : null;
+      const speaker = to.routeId === 'speaker' && DATA.speakers[to.params.id] ? to.params.id : null;
+      const view = session
+        ? 'session'
+        : eventKey
+          ? 'event'
+          : speaker
+            ? 'speaker'
+            : to.routeId === 'register'
+              ? 'register'
+              : 'home';
+      current = { view, key: session ?? eventKey ?? speaker };
+      draw();
+      showView(view);
       df$('#site-events [data-track]').each((_i, item) => {
         const id = item.getAttribute('aria-labelledby');
         item.hidden = (!!track && item.dataset.track !== track) || (!!session && id !== session);
       });
-      df$('#site-events nav [data-router-link]').each((_i, link) => {
+      df$('#site-events [data-events-tracks] [data-router-link]').each((_i, link) => {
         if (link.getAttribute('href') === '#' + (track ? to.path : '/') && !session)
           link.setAttribute('aria-current', 'page');
         else link.removeAttribute('aria-current');
       });
-      if (session)
-        df$('#' + session)
-          .get(0)
-          ?.closest('article')
-          .scrollIntoView({ block: 'nearest' });
+      // a new page opens at its start, a track at the programme it filters - the first view stays where the reader is
+      if (shownPath !== null && shownPath !== to.path) {
+        const start =
+          view === 'home'
+            ? df$(track ? '#ev-programme' : '#site-events').get(0)
+            : df$('#site-events [data-events-view="' + view + '"]').get(0);
+        start?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      }
+      shownPath = to.path;
     };
+    // the header's and the footer's section links are in-page anchors of the front page: from another page they bring
+    // the front page back first
+    addEventListener('hashchange', () => {
+      const id = location.hash.slice(1);
+      if (!id || id.startsWith('/')) return;
+      const target = df$('#site-events [id="' + id + '"]').get(0);
+      if (!target || !target.closest('[hidden]')) return;
+      current = { view: 'home', key: null };
+      showView('home');
+      df$('#site-events [data-track]').each((_i, item) => {
+        item.hidden = false;
+      });
+      target.scrollIntoView({ behavior: 'instant' });
+    });
     const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      const follow = () => {
+        if (location.hash && !location.hash.startsWith('#/')) return;
+        show(preview.resolve(location.hash || '#/'));
+      };
       addEventListener('hashchange', follow);
       follow();
     }

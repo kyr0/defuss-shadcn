@@ -8,6 +8,9 @@ import type { Page } from 'playwright';
  * menu once read at 1.9:1 in dark mode). Per mode this reads the root's tokens AS PAINTED (a 1x1 canvas resolves any
  * colour syntax and composites a translucent one over the ground): the ground, the text on it, and the hover pair
  * (`--accent` / `--accent-foreground`, the surface the navigation menu and the selects light up with).
+ * `--accent` is a surface, a soft tint of the ground - text painted in it reads at about 1.2:1 (the Media template's
+ * eyebrows and section numbers once did, after the modes pass turned its vermilion accent into a tint), so the shown
+ * elements whose own text has the --accent colour are listed too.
  */
 export interface ModeReading {
   dark: boolean;
@@ -17,6 +20,8 @@ export interface ModeReading {
   text: number;
   /** WCAG contrast of --accent-foreground on --accent */
   accent: number;
+  /** shown elements whose own text is painted in --accent (tag.class: text), at most five */
+  accentText: string[];
 }
 
 export async function readMode(p: Page, root: string): Promise<ModeReading> {
@@ -55,11 +60,21 @@ export async function readMode(p: Page, root: string): Promise<ModeReading> {
     const bg = token('--background');
     const ground = paint(bg);
     const accent = paint(bg, token('--accent'));
+    const tint = token('--accent');
+    const accentText: string[] = [];
+    for (const node of el.querySelectorAll<HTMLElement>('*')) {
+      if (accentText.length >= 5) break;
+      const own = [...node.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim());
+      if (!own || getComputedStyle(node).color !== tint || !node.checkVisibility({ visibilityProperty: true }))
+        continue;
+      accentText.push(`${node.tagName.toLowerCase()}.${node.className}: ${node.textContent!.trim().slice(0, 30)}`);
+    }
     return {
       dark: document.documentElement.classList.contains('dark'),
       ground,
       text: ratio(paint(bg, token('--foreground')), ground),
       accent: ratio(paint(bg, token('--accent'), token('--accent-foreground')), accent),
+      accentText,
     };
   });
 }
@@ -82,9 +97,16 @@ export async function assertBothModes(p: Page, root: string, label: string): Pro
   const second = await readMode(p, root);
   await toggleMode(p, root);
   const [light, dark] = first.dark ? [second, first] : [first, second];
-  assert.ok(lightness(dark.ground) < lightness(light.ground), `${label}: the dark mode's ground is darker (${dark.ground} vs ${light.ground})`);
-  for (const [mode, r] of [['light', light], ['dark', dark]] as const) {
+  assert.ok(
+    lightness(dark.ground) < lightness(light.ground),
+    `${label}: the dark mode's ground is darker (${dark.ground} vs ${light.ground})`,
+  );
+  for (const [mode, r] of [
+    ['light', light],
+    ['dark', dark],
+  ] as const) {
     assert.ok(r.text >= 4.5, `${label} ${mode}: text on the ground ${r.text.toFixed(2)}:1`);
     assert.ok(r.accent >= 4.5, `${label} ${mode}: the hover pair ${r.accent.toFixed(2)}:1`);
+    assert.deepEqual(r.accentText, [], `${label} ${mode}: text painted in --accent (a hover surface, not an ink)`);
   }
 }

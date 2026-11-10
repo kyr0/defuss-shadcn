@@ -14,13 +14,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Comments blocks composed into one page - the source is the page. A comment's time is its permalink, a route of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/comments/d-3</code>) that highlights it, and the sort order is a query parameter (<code>#/?sort=oldest</code>); the language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink> - the times come from <code>Intl.RelativeTimeFormat</code>, the comments stay as written.</DocText>
+<DocText>The Comments blocks composed into one discussion - the source is the page. A comment's time is its permalink, a route of <DocLink href="routing.html">defuss-dom-router</DocLink> (<code>#/comments/d-3</code>) that highlights it and names its author above the thread, and the sort order is a query parameter (<code>#/?sort=oldest</code>). The actions work: Like counts, Reply opens the reply form under that comment and adds the reply to its thread line, a new comment joins the top, and Report and the guidelines are native dialogs. The language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink> - the times come from <code>Intl.RelativeTimeFormat</code>, what the script writes from one JSON block in both languages, the comments stay as written.</DocText>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-website-comments.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
 </div>
 
-```html example label="A discussion" schema="none" hint="A time is a permalink route (#/comments/d-2), the sort a query (#/?sort=oldest); the switch translates the frame. Comment Header, Comment Form and a thread of Comment Items with nested replies and a reply form - the Comments blocks composed. Click a timestamp: :target highlights that comment." previewStyle="align-items:stretch;"
+```html example label="A discussion" schema="none" hint="A time is a permalink route (#/comments/d-2), the sort a query (#/?sort=oldest); the switch translates the frame. Comment Header, Comment Form and a thread of Comment Items with nested replies and a reply form - the Comments blocks composed. Click a timestamp to highlight that comment; Like, Reply, Report and Post comment work." previewStyle="align-items:stretch;"
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap');
   /* The discussion under an engineering article: the site bar, the article it belongs to, then a 46rem column -
@@ -64,7 +64,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       400 1rem/1.55 'Manrope',
       var(--font-sans);
   }
-  #site-comments > :not(.surface, .comments-bar) {
+  #site-comments > :not(.surface, .comments-bar, dialog) {
     box-sizing: border-box;
     width: 100%;
     max-width: 46rem;
@@ -132,20 +132,172 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     --surface-ink: oklch(0.3 0.03 50 / 0.03);
     --surface-bg: transparent;
   }
-  /* the site bar - the same publication as the article */
-  #site-comments .comments-bar {
+  #site-comments [hidden] {
+    display: none !important;
+  }
+  /* the site bar (Site Header) - the same publication as the article */
+  #site-comments .mk-header.comments-bar {
     box-sizing: border-box;
+    width: 100%;
+    background: transparent;
+    border-block-end: 1px solid var(--border);
+  }
+  #site-comments .comments-bar .mk-header-inner {
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    max-width: none;
+    min-height: 4.5rem;
+    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+  }
+  #site-comments .comments-bar .mk-header-nav {
+    margin-inline-end: auto;
+  }
+  /* narrow: the menu button sits at the end of the brand's row, the controls wrap below */
+  #site-comments .comments-bar .site-menu {
+    margin-inline-start: auto;
+  }
+  #site-comments .sheet .mk-header-sheet-actions {
+    display: grid;
+    justify-content: stretch;
+  }
+  #site-comments .comments-bar .nav-menu-list {
+    display: flex;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #site-comments .comments-bar .nav-menu-link {
+    padding: 0.25rem 0;
+    border: 0;
+    background: none;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  #site-comments .comments-bar .nav-menu-link:hover {
+    background: none;
+    color: var(--foreground);
+  }
+  #site-comments span.mk-comment-item-author:hover {
+    text-decoration: none;
+  }
+  /* a permalink names the comment it lights, with the way back to the whole thread */
+  #site-comments .comments-permalink {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 1.5rem;
-    width: 100%;
-    min-height: 4.5rem;
-    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
-    border-block-end: 1px solid var(--border);
+    gap: 0.25rem 1rem;
+    margin-block: 1.5rem 0;
+    padding-block: 0.75rem;
+    border-radius: var(--radius-lg);
+    background: var(--accent);
+    box-shadow: inset 3px 0 0 var(--primary);
+    color: var(--accent-foreground);
+    font-size: 0.875rem;
+  }
+  #site-comments .comments-permalink b {
+    color: inherit;
+  }
+  #site-comments .comments-permalink a {
+    margin-inline-start: auto;
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  #site-comments .comments-permalink a:hover {
+    text-decoration: underline;
+  }
+  #site-comments .mk-comment-item-actions .btn[aria-pressed='true'] {
+    color: var(--primary);
+  }
+  #site-comments .mk-comment-item-actions .btn[aria-pressed='true'] svg {
+    fill: currentColor;
+  }
+  #site-comments .comments-rules-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+  /* the dialogs: report a comment, the guidelines */
+  #site-comments .comments-dialog .dialog-body {
+    display: grid;
+    gap: 0.75rem;
+  }
+  #site-comments .comments-reasons {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  #site-comments .comments-reason {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+  #site-comments .comments-reason:has(:checked) {
+    border-color: var(--primary);
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  #site-comments .comments-rules {
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding-inline-start: 1.25rem;
+    line-height: 1.5;
+  }
+  /* the footer (Site Footer, simple) */
+  #site-comments > .mk-footer.comments-footer {
+    max-width: none;
+    margin-block-start: 1rem;
+    margin-block-end: calc(-1 * clamp(3rem, 7vw, 5rem));
+    padding: 0;
+    border-block-start: 1px solid var(--border);
+    background: var(--card);
+  }
+  #site-comments .comments-footer .mk-footer-inner {
+    max-width: none;
+    padding: 1.75rem clamp(1rem, 4vw, 2.5rem);
+  }
+  #site-comments .comments-footer .mk-footer-brand {
+    color: var(--foreground);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  #site-comments .comments-footer .mk-footer-brand span {
+    color: var(--muted-foreground);
+    font-weight: 600;
+  }
+  #site-comments .comments-footer .mk-footer-links :is(a, button) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  #site-comments .comments-footer .mk-footer-links :is(a, button):hover {
+    color: var(--foreground);
   }
   #site-comments .comments-brand {
+    display: block;
     color: var(--foreground);
     text-decoration: none;
     font-weight: 800;
@@ -159,7 +311,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   #site-comments .comments-bar-controls {
     display: flex;
     flex-wrap: wrap;
+    flex-shrink: 1;
     gap: 0.5rem;
+    min-width: 0;
   }
   #site-comments .comments-bar .select {
     min-width: 8.5rem;
@@ -300,6 +454,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   #site-comments .mk-comment-item-replies .mk-comment-item {
     padding-inline: 0.75rem;
   }
+  /* the reply form opens under the comment it answers */
+  #site-comments .mk-comment-item > .mk-comment-form {
+    grid-column: 2;
+    margin-block-start: 0.25rem;
+  }
   /* the article's author: a badge in the accent */
   #site-comments .badge[data-i18n-target='author'] {
     height: 1.25rem;
@@ -399,53 +558,171 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     data-pattern="grain"
     aria-hidden="true"
   ></div>
-  <div class="comments-bar">
-    <a class="comments-brand" href="#/">Acme <span>Engineering</span></a>
-    <div class="comments-bar-controls">
-      <select
-        class="select"
-        data-size="sm"
-        data-site-look
-        aria-label="Look"
-        data-i18n-aria-label-en="Look"
-        data-i18n-aria-label-de="Stil"
-        style="width: auto"
+  <header class="mk-header comments-bar">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand comments-brand" href="#/" data-router-link>Acme <span>Engineering</span></a>
+      <button
+        type="button"
+        class="btn mk-header-menu site-menu"
+        data-variant="ghost"
+        data-size="icon"
+        data-sheet-trigger="comments-menu"
+        aria-haspopup="dialog"
+        aria-label="Open menu"
+        data-i18n-aria-label-en="Open menu"
+        data-i18n-aria-label-de="Menü öffnen"
+        ><svg
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" /></svg
+      ></button>
+      <nav
+        class="mk-header-nav"
+        aria-label="Discussion"
+        data-i18n-aria-label-en="Discussion"
+        data-i18n-aria-label-de="Diskussion"
       >
-        <option value="thread" data-i18n-target="look-thread">Thread</option>
-        <option value="night" data-i18n-target="look-night">Late night</option>
-        <option value="paper" data-i18n-target="look-paper">Paper</option>
-      </select>
-      <select
-        class="select"
-        data-size="sm"
-        data-app-locale
-        aria-label="Language"
-        data-i18n-aria-label-en="Language"
-        data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
-      <label class="swap site-mode" data-variant="rotate" data-size="sm">
-        <input
-          type="checkbox"
-          data-site-mode
-          aria-label="Dark mode"
-          data-i18n-aria-label-en="Dark mode"
-          data-i18n-aria-label-de="Dunkler Modus"
-        />
-        <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-        <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-      </label>
+        <ul class="nav-menu-list">
+          <li class="nav-menu-item"
+            ><a
+              class="nav-menu-link"
+              href="full-website-article.html#/articles/offline-sync"
+              data-i18n-target="nav-article"
+              >The article</a
+            ></li
+          >
+          <li class="nav-menu-item"
+            ><button
+              type="button"
+              class="nav-menu-link"
+              commandfor="comments-rules"
+              command="show-modal"
+              data-i18n-target="nav-rules"
+              >Guidelines</button
+            ></li
+          >
+        </ul>
+      </nav>
+      <div class="mk-header-actions comments-bar-controls">
+        <select
+          class="select"
+          data-size="sm"
+          data-site-look
+          aria-label="Look"
+          data-i18n-aria-label-en="Look"
+          data-i18n-aria-label-de="Stil"
+          style="width: auto"
+        >
+          <option value="thread" data-i18n-target="look-thread">Thread</option>
+          <option value="night" data-i18n-target="look-night">Late night</option>
+          <option value="paper" data-i18n-target="look-paper">Paper</option>
+        </select>
+        <div
+          class="language-switcher"
+          data-app-locale
+          role="group"
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-display="code"
+          data-flag-shape="circle"
+          data-align="end"
+        ></div>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+      </div>
     </div>
-  </div>
+    <!-- narrow: the navigation in a Sheet behind the menu button -->
+    <dialog
+      id="comments-menu"
+      class="sheet"
+      data-side="right"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="comments-menu-title"
+    >
+      <div class="sheet-content">
+        <div class="sheet-header">
+          <h2 class="sheet-title" id="comments-menu-title">Acme Engineering</h2>
+        </div>
+        <div class="sheet-body">
+          <ul class="mk-header-sheet-nav">
+            <li
+              ><a href="full-website-article.html#/articles/offline-sync" data-sheet-close data-i18n-target="sh-article"
+                >The article</a
+              ></li
+            >
+            <li
+              ><a href="#/" data-router-link data-sheet-close data-i18n-target="sh-thread">The whole discussion</a></li
+            >
+            <li><a href="mailto:community@acme.example" data-i18n-target="sh-write">Write to the moderators</a></li>
+          </ul>
+        </div>
+        <div class="sheet-footer mk-header-sheet-actions">
+          <button
+            type="button"
+            class="btn"
+            data-variant="outline"
+            data-sheet-close
+            commandfor="comments-rules"
+            command="show-modal"
+            data-i18n-target="sh-rules"
+            >Community guidelines</button
+          >
+        </div>
+      </div>
+      <button
+        type="button"
+        class="sheet-close-x"
+        data-sheet-close
+        aria-label="Close"
+        data-i18n-aria-label-en="Close"
+        data-i18n-aria-label-de="Schließen"
+        ><svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M18 6 6 18M6 6l12 12" /></svg
+      ></button>
+    </dialog>
+  </header>
   <p class="comments-context"
-    ><span data-i18n-target="on">The discussion of</span> <a href="#">How offline sync works in Acme 4.0</a></p
+    ><span data-i18n-target="on">The discussion of</span>
+    <a href="full-website-article.html#/articles/offline-sync">How offline sync works in Acme 4.0</a></p
+  >
+  <p class="comments-permalink" data-comments-permalink hidden
+    ><span><span data-i18n-target="linked">A linked comment by</span> <b data-comments-permalink-author></b></span>
+    <a href="#/" data-router-link data-i18n-target="show-all">Show the whole discussion</a></p
   >
   <header class="mk-comment-header">
     <h2 class="mk-comment-header-title" id="discussion-title"
-      ><span data-i18n-target="title">Comments</span> <span class="badge" data-variant="secondary">3</span></h2
+      ><span data-i18n-target="title">Comments</span>
+      <span class="badge" data-variant="secondary" data-comments-count>4</span></h2
     >
     <div class="mk-comment-header-actions">
       <label class="mk-comment-header-sort"
@@ -463,6 +740,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     aria-label="Add a comment"
     data-i18n-aria-label-en="Add a comment"
     data-i18n-aria-label-de="Einen Kommentar schreiben"
+    data-comments-new
   >
     <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=12" alt="" /></span>
     <div class="mk-comment-form-main">
@@ -472,7 +750,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         rows="2"
         required
         minlength="2"
-        placeholder="Join the discussion…" data-i18n-placeholder-en="Join the discussion…" data-i18n-placeholder-de="Diskutiere mit…"
+        placeholder="Join the discussion..." data-i18n-placeholder-en="Join the discussion..." data-i18n-placeholder-de="Diskutiere mit..."
         aria-label="Comment" data-i18n-aria-label-en="Comment" data-i18n-aria-label-de="Kommentar"
       ></textarea>
       <div class="mk-comment-form-footer">
@@ -486,7 +764,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /></span>
       <div class="mk-comment-item-main">
         <header class="mk-comment-item-head">
-          <a class="mk-comment-item-author" href="#">Hannah Lee</a>
+          <span class="mk-comment-item-author">Hannah Lee</span>
           <a class="mk-comment-item-time" href="#/comments/d-1" data-router-link
             ><time datetime="2026-10-01T08:12" data-i18n-target="time-d-1"
               ><span data-i18n-value="ago1">2 hours ago</span></time
@@ -506,12 +784,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             data-variant="ghost"
             data-size="xs"
             aria-label="Like (24)"
+            aria-pressed="false"
             data-i18n-aria-label-en="Like (24)"
             data-i18n-aria-label-de="Gefällt mir (24)"
-            ><i data-lucide="thumbs-up"></i> 24</button
+            data-comment-like
+            ><i data-lucide="thumbs-up"></i> <span data-like-count>24</span></button
           >
-          <button type="button" class="btn" data-variant="ghost" data-size="xs"
+          <button type="button" class="btn" data-variant="ghost" data-size="xs" data-comment-reply
             ><i data-lucide="reply"></i> <span data-i18n-target="reply-1">Reply</span></button
+          >
+          <button
+            type="button"
+            class="btn"
+            data-variant="ghost"
+            data-size="xs"
+            commandfor="comments-report"
+            command="show-modal"
+            data-comment-report
+            ><i data-lucide="flag"></i> <span data-i18n-target="report-1">Report</span></button
           >
         </footer>
       </div>
@@ -521,7 +811,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" /></span>
             <div class="mk-comment-item-main">
               <header class="mk-comment-item-head">
-                <a class="mk-comment-item-author" href="#">Sophie Tan</a
+                <span class="mk-comment-item-author">Sophie Tan</span
                 ><span class="badge" data-variant="outline" data-i18n-target="author">Author</span>
                 <a class="mk-comment-item-time" href="#/comments/d-2" data-router-link
                   ><time datetime="2026-10-01T09:03" data-i18n-target="time-d-2"
@@ -542,12 +832,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   data-variant="ghost"
                   data-size="xs"
                   aria-label="Like (11)"
+                  aria-pressed="false"
                   data-i18n-aria-label-en="Like (11)"
                   data-i18n-aria-label-de="Gefällt mir (11)"
-                  ><i data-lucide="thumbs-up"></i> 11</button
+                  data-comment-like
+                  ><i data-lucide="thumbs-up"></i> <span data-like-count>11</span></button
                 >
-                <button type="button" class="btn" data-variant="ghost" data-size="xs"
+                <button type="button" class="btn" data-variant="ghost" data-size="xs" data-comment-reply
                   ><i data-lucide="reply"></i> <span data-i18n-target="reply-2">Reply</span></button
+                >
+                <button
+                  type="button"
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="xs"
+                  commandfor="comments-report"
+                  command="show-modal"
+                  data-comment-report
+                  ><i data-lucide="flag"></i> <span data-i18n-target="report-2">Report</span></button
                 >
               </footer>
             </div>
@@ -558,7 +860,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <span class="avatar"><span class="avatar-fallback">AH</span></span>
             <div class="mk-comment-item-main">
               <header class="mk-comment-item-head">
-                <a class="mk-comment-item-author" href="#">Aron Homberg</a>
+                <span class="mk-comment-item-author">Aron Homberg</span>
                 <a class="mk-comment-item-time" href="#/comments/d-3" data-router-link
                   ><time datetime="2026-10-01T09:30" data-i18n-target="time-d-3"
                     ><span data-i18n-value="ago3">40 minutes ago</span></time
@@ -573,12 +875,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
                   data-variant="ghost"
                   data-size="xs"
                   aria-label="Like (3)"
+                  aria-pressed="false"
                   data-i18n-aria-label-en="Like (3)"
                   data-i18n-aria-label-de="Gefällt mir (3)"
-                  ><i data-lucide="thumbs-up"></i> 3</button
+                  data-comment-like
+                  ><i data-lucide="thumbs-up"></i> <span data-like-count>3</span></button
                 >
-                <button type="button" class="btn" data-variant="ghost" data-size="xs"
+                <button type="button" class="btn" data-variant="ghost" data-size="xs" data-comment-reply
                   ><i data-lucide="reply"></i> <span data-i18n-target="reply-3">Reply</span></button
+                >
+                <button
+                  type="button"
+                  class="btn"
+                  data-variant="ghost"
+                  data-size="xs"
+                  commandfor="comments-report"
+                  command="show-modal"
+                  data-comment-report
+                  ><i data-lucide="flag"></i> <span data-i18n-target="report-3">Report</span></button
                 >
               </footer>
             </div>
@@ -590,7 +904,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=45" alt="" /></span>
       <div class="mk-comment-item-main">
         <header class="mk-comment-item-head">
-          <a class="mk-comment-item-author" href="#">Priya Natarajan</a>
+          <span class="mk-comment-item-author">Priya Natarajan</span>
           <a class="mk-comment-item-time" href="#/comments/d-4" data-router-link
             ><time datetime="2026-10-01T07:02" data-i18n-target="time-d-4"
               ><span data-i18n-value="ago4">3 hours ago</span></time
@@ -605,43 +919,172 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             data-variant="ghost"
             data-size="xs"
             aria-label="Like (5)"
+            aria-pressed="false"
             data-i18n-aria-label-en="Like (5)"
             data-i18n-aria-label-de="Gefällt mir (5)"
-            ><i data-lucide="thumbs-up"></i> 5</button
+            data-comment-like
+            ><i data-lucide="thumbs-up"></i> <span data-like-count>5</span></button
           >
-          <button type="button" class="btn" data-variant="ghost" data-size="xs"
+          <button type="button" class="btn" data-variant="ghost" data-size="xs" data-comment-reply
             ><i data-lucide="reply"></i> <span data-i18n-target="reply-4">Reply</span></button
+          >
+          <button
+            type="button"
+            class="btn"
+            data-variant="ghost"
+            data-size="xs"
+            commandfor="comments-report"
+            command="show-modal"
+            data-comment-report
+            ><i data-lucide="flag"></i> <span data-i18n-target="report-4">Report</span></button
           >
         </footer>
       </div>
-    </article>
-    <form
-      class="mk-comment-form"
-      data-variant="reply"
-      aria-label="Reply to Priya Natarajan"
-      data-i18n-aria-label-en="Reply to Priya Natarajan"
-      data-i18n-aria-label-de="Priya Natarajan antworten"
-      style="padding-inline-start: 3.25rem"
-    >
-      <span class="avatar" data-size="sm"
-        ><img class="avatar-image" src="https://i.pravatar.cc/96?img=12" alt=""
-      /></span>
-      <div class="mk-comment-form-main">
-        <textarea
+      <form
+        class="mk-comment-form"
+        data-variant="reply"
+        aria-label="Reply to Priya Natarajan"
+        data-i18n-aria-label-en="Reply to Priya Natarajan"
+        data-i18n-aria-label-de="Priya Natarajan antworten"
+        data-comments-reply="d-4"
+      >
+        <span class="avatar" data-size="sm"
+          ><img class="avatar-image" src="https://i.pravatar.cc/96?img=12" alt=""
+        /></span>
+        <div class="mk-comment-form-main">
+          <textarea
           class="textarea"
           name="reply"
           rows="1"
           required
-          placeholder="Reply to Priya…" data-i18n-placeholder-en="Reply to Priya…" data-i18n-placeholder-de="Priya antworten…"
+          placeholder="Reply to Priya..." data-i18n-placeholder-en="Reply to Priya..." data-i18n-placeholder-de="Priya antworten..."
           aria-label="Reply to Priya Natarajan" data-i18n-aria-label-en="Reply to Priya Natarajan" data-i18n-aria-label-de="Priya Natarajan antworten"
         ></textarea>
-        <div class="mk-comment-form-footer">
-          <button type="reset" class="btn" data-variant="ghost" data-size="sm" data-i18n-target="cancel">Cancel</button>
-          <button type="submit" class="btn" data-size="sm" data-i18n-target="reply-submit">Reply</button>
+          <div class="mk-comment-form-footer">
+            <button type="reset" class="btn" data-variant="ghost" data-size="sm" data-i18n-target="cancel"
+              >Cancel</button
+            >
+            <button type="submit" class="btn" data-size="sm" data-i18n-target="reply-submit">Reply</button>
+          </div>
         </div>
+      </form>
+    </article>
+  </div>
+  <footer class="mk-footer comments-footer" data-variant="simple">
+    <div class="mk-footer-inner">
+      <a class="mk-footer-brand" href="#/" data-router-link>Acme <span>Engineering</span></a>
+      <ul class="mk-footer-links">
+        <li
+          ><a href="full-website-article.html#/articles/offline-sync" data-i18n-target="ft-article"
+            >Read the article</a
+          ></li
+        >
+        <li
+          ><button type="button" commandfor="comments-rules" command="show-modal" data-i18n-target="ft-rules"
+            >Community guidelines</button
+          ></li
+        >
+        <li><a href="mailto:community@acme.example" data-i18n-target="ft-write">Write to the moderators</a></li>
+      </ul>
+      <p class="mk-footer-copy" data-i18n-target="ft-copy">© 2026 Acme Inc. A demo discussion.</p>
+    </div>
+  </footer>
+  <!-- Report and the guidelines: native dialogs, opened by commandfor; a demo - nothing leaves the page -->
+  <dialog class="dialog comments-dialog" id="comments-report" aria-labelledby="comments-report-title">
+    <form class="dialog-content" data-comments-report-form>
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="comments-report-title" data-i18n-target="rp-title">Report this comment</h2>
+        <p class="dialog-description" data-i18n-target="rp-desc"
+          >A moderator reads every report within a day. Nobody learns who sent it.</p
+        >
+      </div>
+      <div class="dialog-body">
+        <fieldset class="comments-reasons">
+          <legend class="sr-only" data-i18n-target="rp-reason">Reason</legend>
+          <label class="comments-reason"
+            ><input class="radio" type="radio" name="reason" value="spam" required />
+            <span data-i18n-target="rp-spam">Spam or advertising</span></label
+          >
+          <label class="comments-reason"
+            ><input class="radio" type="radio" name="reason" value="rude" />
+            <span data-i18n-target="rp-rude">Rude or abusive</span></label
+          >
+          <label class="comments-reason"
+            ><input class="radio" type="radio" name="reason" value="off-topic" />
+            <span data-i18n-target="rp-topic">Off topic</span></label
+          >
+          <label class="comments-reason"
+            ><input class="radio" type="radio" name="reason" value="other" />
+            <span data-i18n-target="rp-other">Something else</span></label
+          >
+        </fieldset>
+      </div>
+      <div class="dialog-footer">
+        <button
+          type="button"
+          class="btn"
+          data-variant="outline"
+          commandfor="comments-report"
+          command="close"
+          data-i18n-target="rp-cancel"
+          >Cancel</button
+        >
+        <button type="submit" class="btn" data-variant="destructive" data-i18n-target="rp-go">Report</button>
       </div>
     </form>
-  </div>
+    <div class="dialog-content" data-comments-report-done tabindex="-1" hidden>
+      <div class="dialog-header">
+        <h2 class="dialog-title" data-i18n-target="rp-done">Thank you</h2>
+        <p class="dialog-description" data-i18n-target="rp-done-text"
+          >A moderator will look at the comment today. You will not see a report button on it again.</p
+        >
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn" commandfor="comments-report" command="close" data-i18n-target="rp-close"
+          >Close</button
+        >
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog comments-dialog" id="comments-rules" aria-labelledby="comments-rules-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="comments-rules-title" data-i18n-target="rules-title">Community guidelines</h2>
+      </div>
+      <div class="dialog-body">
+        <ol class="comments-rules">
+          <li data-i18n-target="rule-1">Be kind. Argue with ideas, never with people.</li>
+          <li data-i18n-target="rule-2">Stay on the article - its subject is the discussion's.</li>
+          <li data-i18n-target="rule-3">No advertising and no links someone pays you for.</li>
+          <li data-i18n-target="rule-4">Report what breaks these rules; a moderator decides within a day.</li>
+        </ol>
+      </div>
+      <div class="dialog-footer">
+        <button type="button" class="btn" commandfor="comments-rules" command="close" data-i18n-target="rules-close"
+          >Close</button
+        >
+      </div>
+    </div>
+  </dialog>
+  <!-- what the script writes into a new comment, in English and German (re-written on a language change) -->
+  <script type="application/json" id="comments-ui">
+    {
+      "en": {
+        "you": "You",
+        "byYou": "you",
+        "like": "Like ({n})",
+        "replyTo": "Reply to {name}",
+        "replyHint": "Reply to {first}..."
+      },
+      "de": {
+        "you": "Du",
+        "byYou": "dir",
+        "like": "Gefällt mir ({n})",
+        "replyTo": "{name} antworten",
+        "replyHint": "{first} antworten..."
+      }
+    }
+  </script>
   <!-- the translations: one template per target and language (defuss-i18n) -->
   <template data-i18n-for="look-thread" data-i18n-locale="en">Thread</template>
   <template data-i18n-for="look-thread" data-i18n-locale="de">Thread</template>
@@ -687,6 +1130,92 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="cancel" data-i18n-locale="de">Abbrechen</template>
   <template data-i18n-for="reply-submit" data-i18n-locale="en">Reply</template>
   <template data-i18n-for="reply-submit" data-i18n-locale="de">Antworten</template>
+  <template data-i18n-for="report-1" data-i18n-locale="en">Report</template>
+  <template data-i18n-for="report-1" data-i18n-locale="de">Melden</template>
+  <template data-i18n-for="report-2" data-i18n-locale="en">Report</template>
+  <template data-i18n-for="report-2" data-i18n-locale="de">Melden</template>
+  <template data-i18n-for="report-3" data-i18n-locale="en">Report</template>
+  <template data-i18n-for="report-3" data-i18n-locale="de">Melden</template>
+  <template data-i18n-for="report-4" data-i18n-locale="en">Report</template>
+  <template data-i18n-for="report-4" data-i18n-locale="de">Melden</template>
+  <template data-i18n-for="nav-article" data-i18n-locale="en">The article</template>
+  <template data-i18n-for="nav-article" data-i18n-locale="de">Der Artikel</template>
+  <template data-i18n-for="nav-rules" data-i18n-locale="en">Guidelines</template>
+  <template data-i18n-for="nav-rules" data-i18n-locale="de">Regeln</template>
+  <template data-i18n-for="linked" data-i18n-locale="en">A linked comment by</template>
+  <template data-i18n-for="linked" data-i18n-locale="de">Ein verlinkter Kommentar von</template>
+  <template data-i18n-for="show-all" data-i18n-locale="en">Show the whole discussion</template>
+  <template data-i18n-for="show-all" data-i18n-locale="de">Die ganze Diskussion zeigen</template>
+  <template data-i18n-for="ft-article" data-i18n-locale="en">Read the article</template>
+  <template data-i18n-for="ft-article" data-i18n-locale="de">Den Artikel lesen</template>
+  <template data-i18n-for="ft-rules" data-i18n-locale="en">Community guidelines</template>
+  <template data-i18n-for="ft-rules" data-i18n-locale="de">Regeln für die Diskussion</template>
+  <template data-i18n-for="ft-write" data-i18n-locale="en">Write to the moderators</template>
+  <template data-i18n-for="ft-write" data-i18n-locale="de">Der Moderation schreiben</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="en">© 2026 Acme Inc. A demo discussion.</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="de">© 2026 Acme Inc. Eine Demo-Diskussion.</template>
+  <template data-i18n-for="rp-title" data-i18n-locale="en">Report this comment</template>
+  <template data-i18n-for="rp-title" data-i18n-locale="de">Diesen Kommentar melden</template>
+  <template data-i18n-for="rp-desc" data-i18n-locale="en"
+    >A moderator reads every report within a day. Nobody learns who sent it.</template
+  >
+  <template data-i18n-for="rp-desc" data-i18n-locale="de"
+    >Die Moderation liest jede Meldung innerhalb eines Tages. Niemand erfährt, wer sie geschickt hat.</template
+  >
+  <template data-i18n-for="rp-reason" data-i18n-locale="en">Reason</template>
+  <template data-i18n-for="rp-reason" data-i18n-locale="de">Grund</template>
+  <template data-i18n-for="rp-spam" data-i18n-locale="en">Spam or advertising</template>
+  <template data-i18n-for="rp-spam" data-i18n-locale="de">Spam oder Werbung</template>
+  <template data-i18n-for="rp-rude" data-i18n-locale="en">Rude or abusive</template>
+  <template data-i18n-for="rp-rude" data-i18n-locale="de">Unhöflich oder beleidigend</template>
+  <template data-i18n-for="rp-topic" data-i18n-locale="en">Off topic</template>
+  <template data-i18n-for="rp-topic" data-i18n-locale="de">Am Thema vorbei</template>
+  <template data-i18n-for="rp-other" data-i18n-locale="en">Something else</template>
+  <template data-i18n-for="rp-other" data-i18n-locale="de">Etwas anderes</template>
+  <template data-i18n-for="rp-cancel" data-i18n-locale="en">Cancel</template>
+  <template data-i18n-for="rp-cancel" data-i18n-locale="de">Abbrechen</template>
+  <template data-i18n-for="rp-go" data-i18n-locale="en">Report</template>
+  <template data-i18n-for="rp-go" data-i18n-locale="de">Melden</template>
+  <template data-i18n-for="rp-done" data-i18n-locale="en">Thank you</template>
+  <template data-i18n-for="rp-done" data-i18n-locale="de">Danke</template>
+  <template data-i18n-for="rp-done-text" data-i18n-locale="en"
+    >A moderator will look at the comment today. You will not see a report button on it again.</template
+  >
+  <template data-i18n-for="rp-done-text" data-i18n-locale="de"
+    >Die Moderation sieht sich den Kommentar noch heute an. Du kannst ihn kein zweites Mal melden.</template
+  >
+  <template data-i18n-for="rp-close" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="rp-close" data-i18n-locale="de">Schließen</template>
+  <template data-i18n-for="rules-title" data-i18n-locale="en">Community guidelines</template>
+  <template data-i18n-for="rules-title" data-i18n-locale="de">Regeln für die Diskussion</template>
+  <template data-i18n-for="rule-1" data-i18n-locale="en">Be kind. Argue with ideas, never with people.</template>
+  <template data-i18n-for="rule-1" data-i18n-locale="de">Sei freundlich. Streite mit Ideen, nie mit Menschen.</template>
+  <template data-i18n-for="rule-2" data-i18n-locale="en"
+    >Stay on the article - its subject is the discussion's.</template
+  >
+  <template data-i18n-for="rule-2" data-i18n-locale="de"
+    >Bleib beim Artikel - sein Thema ist das der Diskussion.</template
+  >
+  <template data-i18n-for="rule-3" data-i18n-locale="en">No advertising and no links someone pays you for.</template>
+  <template data-i18n-for="rule-3" data-i18n-locale="de"
+    >Keine Werbung und keine Links, für die dich jemand bezahlt.</template
+  >
+  <template data-i18n-for="rule-4" data-i18n-locale="en"
+    >Report what breaks these rules; a moderator decides within a day.</template
+  >
+  <template data-i18n-for="rule-4" data-i18n-locale="de"
+    >Melde, was gegen diese Regeln verstößt; die Moderation entscheidet innerhalb eines Tages.</template
+  >
+  <template data-i18n-for="rules-close" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="rules-close" data-i18n-locale="de">Schließen</template>
+  <template data-i18n-for="sh-article" data-i18n-locale="en">The article</template>
+  <template data-i18n-for="sh-article" data-i18n-locale="de">Der Artikel</template>
+  <template data-i18n-for="sh-thread" data-i18n-locale="en">The whole discussion</template>
+  <template data-i18n-for="sh-thread" data-i18n-locale="de">Die ganze Diskussion</template>
+  <template data-i18n-for="sh-write" data-i18n-locale="en">Write to the moderators</template>
+  <template data-i18n-for="sh-write" data-i18n-locale="de">Der Moderation schreiben</template>
+  <template data-i18n-for="sh-rules" data-i18n-locale="en">Community guidelines</template>
+  <template data-i18n-for="sh-rules" data-i18n-locale="de">Regeln für die Diskussion</template>
 </section>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
@@ -728,8 +1257,163 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         ),
       }),
     });
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
+
+    // -- what the script writes (a like's label, a reply's prompt, a new comment) comes from #comments-ui in both
+    // languages: an attribute gets its data-i18n-{attr}-{lang} variants, a text its data-ui key - re-written on a change
+    const UI = JSON.parse(df$('#comments-ui').text());
+    const say = (lang, key, vars = {}) => UI[lang][key].replace(/\{(\w+)\}/g, (_m, name) => vars[name]);
+    const langs = Object.keys(UI);
+    const label = (el, attr, key, vars) => {
+      for (const lang of langs) df$(el).attr(`data-i18n-${attr}-${lang}`, say(lang, key, vars));
+      df$(el).attr(attr, say(locale.locale, key, vars));
+    };
+    const now = (lang) => new Intl.RelativeTimeFormat(lang, { numeric: 'auto' }).format(0, 'second');
+    const thread = df$('[data-comments-thread]');
+    const authorOf = (item) => df$(item).find('.mk-comment-item-author').first().text().trim();
+    const count = () => df$('[data-comments-count]').text(String([...thread.find('.mk-comment-item')].length));
+
+    // like: a toggle (aria-pressed) that counts; a top-level comment's data-likes orders the "Top" sort
+    const likeLabel = (button) =>
+      label(button, 'aria-label', 'like', { n: df$(button).find('[data-like-count]').text() });
+    const like = (button) => {
+      const on = df$(button).attr('aria-pressed') !== 'true';
+      const shown = df$(button).find('[data-like-count]');
+      const n = Number(shown.text()) + (on ? 1 : -1);
+      df$(button).attr('aria-pressed', String(on));
+      shown.text(String(n));
+      const item = df$(button).closest('.mk-comment-item');
+      if (item.attr('data-likes') != null) item.attr('data-likes', String(n));
+      likeLabel(button);
+    };
+
+    // reply: one reply form, moved under the comment it answers; a reply to a reply joins the same thread line
+    const replyForm = df$('[data-comments-reply]');
+    const replyField = replyForm.find('textarea');
+    let answering = df$('#d-4').get(0);
+    const replyLabels = () => {
+      const name = authorOf(answering);
+      label(replyForm.get(0), 'aria-label', 'replyTo', { name });
+      label(replyField.get(0), 'aria-label', 'replyTo', { name });
+      label(replyField.get(0), 'placeholder', 'replyHint', { first: name.split(' ')[0] });
+    };
+    const replyTo = (item) => {
+      answering = item;
+      replyForm.attr('data-comments-reply', item.id).prop('hidden', false);
+      df$(item).append(replyForm.get(0));
+      replyLabels();
+      replyField.get(0).focus();
+    };
+    replyForm.on('reset', () => replyForm.prop('hidden', true));
+
+    // a new comment takes the shape of an authored one (its drawn icons included) without its translation targets:
+    // the writer's name, "now" and the text, a like button - no reply to or report of oneself
+    let made = [...thread.find('.mk-comment-item')].length;
+    const comment = (text, top) => {
+      const el = df$('#d-4').get(0).cloneNode(true);
+      const c = df$(el);
+      c.children('ol, form').each((_i, part) => {
+        part.remove();
+      });
+      c.find('[data-comment-reply], [data-comment-report]').each((_i, button) => {
+        button.remove();
+      });
+      c.find('[data-i18n-target]').each((_i, part) => {
+        part.removeAttribute('data-i18n-target');
+      });
+      made += 1;
+      c.attr('id', 'd-' + made)
+        .attr('data-highlighted', null)
+        .attr('data-likes', top ? '0' : null);
+      c.find('.avatar-image').attr('src', df$('[data-comments-new] .avatar-image').attr('src'));
+      c.find('.mk-comment-item-author').attr('data-ui', 'you').text(say(locale.locale, 'you'));
+      c.find('.mk-comment-item-time').attr('href', '#/comments/d-' + made);
+      c.find('time').attr('datetime', '2026-10-01T10:12').attr('data-ui-now', '').text(now(locale.locale));
+      const body = c.find('.mk-comment-item-body');
+      body.html('');
+      for (const paragraph of text.split(/\n\s*\n/)) body.append(df$('<p></p>').text(paragraph.trim()).get(0));
+      const button = c.find('[data-comment-like]').attr('aria-pressed', 'false');
+      button.find('[data-like-count]').text('0');
+      likeLabel(button.get(0));
+      return el;
+    };
+    df$('[data-comments-new]').on('submit', (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const text = df$(form).find('textarea').val().trim();
+      if (!text) return;
+      thread.prepend(comment(text, true));
+      form.reset();
+      count();
+    });
+    replyForm.on('submit', (event) => {
+      event.preventDefault();
+      const text = replyField.val().trim();
+      if (!text) return;
+      const top = df$(answering).parent().closest('.mk-comment-item').get(0) ?? answering;
+      let list = df$(top).children('.mk-comment-item-replies');
+      if (!list.get(0)) {
+        list = df$('<ol class="mk-comment-item-replies"></ol>');
+        df$(top).children('.mk-comment-item-main').after(list.get(0));
+      }
+      const entry = df$('<li></li>');
+      entry.append(comment(text, false));
+      list.append(entry.get(0));
+      replyForm.get(0).reset();
+      count();
+    });
+
+    // report: the button opens the dialog (commandfor); a sent report hides that comment's report button
+    const reportForm = df$('[data-comments-report-form]');
+    const reportDone = df$('[data-comments-report-done]');
+    let reporting = null;
+    reportForm.on('submit', (event) => {
+      event.preventDefault();
+      reportForm.prop('hidden', true);
+      reportDone.prop('hidden', false);
+      if (reporting) df$(reporting).prop('hidden', true);
+      reportDone.find('.btn').get(0).focus();
+    });
+    df$('#comments-report').on('close', () => {
+      reportForm.get(0).reset();
+      reportForm.prop('hidden', false);
+      reportDone.prop('hidden', true);
+    });
+
+    thread.on('click', (event) => {
+      const hit = (selector) => df$(event.target).closest(selector).get(0);
+      const liked = hit('[data-comment-like]');
+      if (liked) like(liked);
+      const reply = hit('[data-comment-reply]');
+      if (reply) replyTo(df$(reply).closest('.mk-comment-item').get(0));
+      const report = hit('[data-comment-report]');
+      if (report) reporting = report;
+    });
+
+    // a linked comment names its author above the thread ("you" for one's own)
+    let linked = null;
+    const notice = () => {
+      df$('[data-comments-permalink]').prop('hidden', !linked);
+      if (!linked) return;
+      const own = df$(linked).find('.mk-comment-item-author').first().attr('data-ui') === 'you';
+      df$('[data-comments-permalink-author]').text(own ? say(locale.locale, 'byYou') : authorOf(linked));
+    };
+    // a language change re-writes what the script wrote
+    locale.subscribe(() => {
+      const lang = locale.locale;
+      df$('#site-comments [data-ui]').each((_i, el) => {
+        df$(el).text(say(lang, el.dataset.ui));
+      });
+      df$('#site-comments [data-ui-now]').each((_i, el) => {
+        df$(el).text(now(lang));
+      });
+      df$('#site-comments [data-comment-like]').each((_i, el) => {
+        likeLabel(el);
+      });
+      replyLabels();
+      notice();
+    });
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -752,10 +1436,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       { id: 'missing', path: '*' },
     ];
     // ?sort= orders the thread (top: likes, newest / oldest: time); a permalink highlights its comment
+    let shownPath = null;
     const show = (to) => {
       const sort = new URLSearchParams(to.search).get('sort') ?? 'top';
       df$('[data-comments-sort]').val(sort);
-      const thread = df$('[data-comments-thread]');
       const items = [...thread.children('.mk-comment-item')];
       const at = (c) => Date.parse(c.querySelector('time').getAttribute('datetime'));
       items.sort((a, b) =>
@@ -763,9 +1447,17 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       );
       // moved to the front in reverse, so they read in order; the reply form stays last
       for (const item of items.reverse()) thread.prepend(item);
+      linked = null;
       df$('#site-comments .mk-comment-item').each((_i, c) => {
-        c.toggleAttribute('data-highlighted', to.routeId === 'comment' && c.id === to.params.id);
+        const on = to.routeId === 'comment' && c.id === to.params.id;
+        c.toggleAttribute('data-highlighted', on);
+        if (on) linked = c;
       });
+      notice();
+      // a link to a comment brings it into view - the first view stays where the reader is
+      if (linked && shownPath !== null && shownPath !== to.path)
+        linked.scrollIntoView({ block: 'center', behavior: 'instant' });
+      shownPath = to.path;
     };
     // the sort select navigates: the order is part of the address
     df$('[data-comments-sort]').on('change', (event) => {

@@ -14,13 +14,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 <h2 id="template" class="h2-display">The template</h2>
 
-<DocText>The Resume &amp; Portfolio blocks composed into one personal site, with the <DocLink href="project-item.html">Project Item</DocLink>, <DocLink href="project-details.html">Project Details</DocLink> and <DocLink href="section-header.html">Section Header</DocLink> blocks - the source is the page. About, Work and Résumé are routes of <DocLink href="routing.html">defuss-dom-router</DocLink>; a project is a route (<code>#/work/museo-digital</code>) whose page <code>prepare()</code> fills from a data block, and a discipline filters the work (<code>#/work?discipline=design</code>). The language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink> - durations come from <code>Intl.DurationFormat</code>, the start date and the rate from the locale's date and currency formats; the person's own words stay as written. The Résumé prints as a CV: the site's chrome and the buttons leave the page.</DocText>
+<DocText>The Resume &amp; Portfolio blocks composed into one personal site, with the <DocLink href="project-item.html">Project Item</DocLink>, <DocLink href="project-details.html">Project Details</DocLink> and <DocLink href="section-header.html">Section Header</DocLink> blocks - the source is the page. About, Work and Résumé are routes of <DocLink href="routing.html">defuss-dom-router</DocLink>; a project is a route (<code>#/work/museo-digital</code>) whose page <code>prepare()</code> fills from a data block, and a discipline filters the work (<code>#/work?discipline=design</code>). Her writing is listed on About and under Writing (<code>#/writing</code>), and each note is a page of its own (<code>#/writing/eleven-date-pickers</code>) with the project it comes from - written from a second data block, in English and German. The language switch translates the frame with <DocLink href="translation.html">defuss-i18n</DocLink> - durations come from <code>Intl.DurationFormat</code>, the start date and the rate from the locale's date and currency formats; the projects and the résumé stay in her words as written. The Résumé prints as a CV: the site's chrome, the Site Footer and the buttons leave the page.</DocText>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-website-resume-portfolio.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
 </div>
 
-```html example label="A personal site" schema="none" hint="About, Work and Résumé are routes; a project is #/work/museo-digital, filled from a data block; #/work?discipline=design filters. The switch translates the frame. Resume Header, Availability, Project Items, Repository Items, Project Details, Resume Entries and Skill Matrices - print the Résumé from the full-screen page." previewStyle="align-items:stretch;"
+```html example label="A personal site" schema="none" hint="About, Work, Writing and Résumé are routes; a project is #/work/museo-digital, a note #/writing/eleven-date-pickers, both filled from a data block; #/work?discipline=design filters. The switch translates the frame. Site Header, Resume Header, Availability, Project Items, Repository Items, Blog Items, Project Details, Article Header and Body, Author Bio, Resume Entries, Skill Matrices and Site Footer - print the Résumé from the full-screen page." previewStyle="align-items:stretch;"
 <style>
   /* the page the site is on, and the link to it */
   #site-resume nav [aria-current] {
@@ -389,6 +389,121 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     border-radius: calc(var(--radius) * 1.25);
     box-shadow: 0 1px 2px oklch(0 0 0 / 0.05);
   }
+  #site-resume [hidden] {
+    display: none !important;
+  }
+  /* the Site Header: the bar keeps its own layout, the block gives it its landmark */
+  #site-resume .rs-bar.mk-header {
+    background: transparent;
+  }
+  /* the notes: a typographic list, the date in its own column */
+  #site-resume .rs-posts {
+    display: grid;
+    max-width: 52rem;
+  }
+  #site-resume .rs-posts .mk-blog-item-title {
+    font-family: 'Syne', var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+  #site-resume .rs-posts .mk-blog-item-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  #site-resume .rs-posts .mk-blog-item-title a:hover {
+    color: var(--primary);
+  }
+  @media (width < 36rem) {
+    #site-resume .rs-posts .mk-blog-item[data-variant='minimal'] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    #site-resume .rs-posts .mk-blog-item[data-variant='minimal'] .mk-blog-item-byline {
+      grid-row: auto;
+      grid-column: 1;
+    }
+    #site-resume
+      .rs-posts
+      .mk-blog-item[data-variant='minimal']
+      :is(.mk-blog-item-meta, .mk-blog-item-title, .mk-blog-item-excerpt) {
+      grid-column: 1;
+    }
+  }
+  /* a note: the reading measure, the headline in the site's display face, the project it comes from */
+  #site-resume .rs-post {
+    width: 100%;
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+  #site-resume .rs-post .mk-article-header,
+  #site-resume .rs-post .mk-article-body {
+    max-width: none;
+    margin: 0;
+    padding-inline: 0;
+  }
+  #site-resume .rs-post .mk-article-header-title {
+    font-family: 'Syne', var(--font-sans);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+  #site-resume .rs-post .mk-article-body h2 {
+    font-family: 'Syne', var(--font-sans);
+    font-weight: 700;
+  }
+  #site-resume[data-look='sketch'] .rs-post .mk-article-header-title {
+    background: linear-gradient(transparent 62%, var(--accent) 62% 86%, transparent 86%);
+  }
+  #site-resume .rs-post-project {
+    display: grid;
+    gap: 0.75rem;
+  }
+  #site-resume .rs-post-project h2 {
+    margin: 0;
+    font:
+      600 1.35rem/1 'Caveat',
+      cursive;
+    color: var(--rs-hand);
+    rotate: -2deg;
+    width: fit-content;
+  }
+  #site-resume .rs-post-project .mk-related-item {
+    padding: 0.75rem;
+    border-radius: calc(var(--radius) * 1.25);
+    background: var(--rs-band);
+  }
+  /* the Site Footer: a band of its own, wall to wall, never on the printed CV */
+  #site-resume .rs-foot {
+    margin-block: auto -1.5rem;
+    background: var(--rs-band);
+    box-shadow: 0 0 0 100vmax var(--rs-band);
+    clip-path: inset(0 -100vmax);
+  }
+  #site-resume .rs-foot .mk-footer-inner {
+    max-width: none;
+    padding-inline: 0;
+  }
+  #site-resume .rs-foot .mk-footer-heading {
+    color: var(--foreground);
+    font-family: 'Syne', var(--font-sans);
+    font-weight: 700;
+  }
+  #site-resume .rs-foot .mk-footer-list a {
+    color: var(--muted-foreground);
+  }
+  #site-resume .rs-foot .mk-footer-list a:hover {
+    color: var(--foreground);
+  }
+  #site-resume .rs-foot .mk-footer-brand {
+    color: var(--foreground);
+    font:
+      800 1.125rem/1 'Syne',
+      var(--font-sans);
+    text-decoration: none;
+  }
+  @media print {
+    #site-resume .rs-foot {
+      display: none !important;
+    }
+  }
 </style>
 <div
   id="site-resume"
@@ -403,14 +518,17 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     padding: 1.5rem max(1.5rem, calc((100% - 69rem) / 2));
   "
 >
-  <div class="rs-bar" data-resume-noprint>
-    <a class="rs-brand" href="#/">Mara Okafor</a>
+  <header class="mk-header rs-bar" data-resume-noprint>
+    <a class="rs-brand" href="#/" data-router-link>Mara Okafor</a>
     <nav data-resume-nav aria-label="Site" data-i18n-aria-label-en="Site" data-i18n-aria-label-de="Website">
       <a class="btn" data-variant="ghost" href="#/" data-router-link aria-current="page"
         ><span data-i18n-target="nav-about">About</span></a
       >
       <a class="btn" data-variant="ghost" href="#/work" data-router-link
         ><span data-i18n-target="nav-work">Work</span></a
+      >
+      <a class="btn" data-variant="ghost" href="#/writing" data-router-link
+        ><span data-i18n-target="nav-writing">Writing</span></a
       >
       <a class="btn" data-variant="ghost" href="#/resume" data-router-link
         ><span data-i18n-target="nav-resume">Résumé</span></a
@@ -430,18 +548,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <option value="darkroom" data-i18n-target="look-darkroom">Darkroom</option>
         <option value="sketch" data-i18n-target="look-sketch">Sketchbook</option>
       </select>
-      <select
-        class="select"
-        data-size="sm"
+      <div
+        class="language-switcher"
         data-app-locale
+        role="group"
         aria-label="Language"
         data-i18n-aria-label-en="Language"
         data-i18n-aria-label-de="Sprache"
-        style="width: auto"
-      >
-        <option value="en" lang="en">English</option>
-        <option value="de" lang="de">Deutsch</option>
-      </select>
+        data-languages="en de"
+        data-value="en"
+        data-size="sm"
+        data-variant="swap"
+        data-display="code"
+        data-flag-shape="rounded"
+      ></div>
       <label class="swap site-mode" data-variant="rotate" data-size="sm">
         <input
           type="checkbox"
@@ -454,7 +574,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
       </label>
     </div>
-  </div>
+  </header>
 
   <!-- About -->
   <div class="flex flex-col gap-12" data-resume-view="about">
@@ -682,6 +802,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </article>
       </div>
     </section>
+    <section class="flex flex-col gap-2" aria-labelledby="rs-writing">
+      <header class="mk-section-header" data-variant="split" style="padding-inline: 0">
+        <div class="mk-section-header-copy">
+          <span class="mk-section-header-eyebrow" data-i18n-target="wr-eyebrow">Notes</span>
+          <h2 class="mk-section-header-title" id="rs-writing" data-i18n-target="wr-title">Writing</h2>
+        </div>
+        <div class="mk-section-header-actions">
+          <a class="btn" data-variant="ghost" href="#/writing" data-router-link
+            ><span data-i18n-target="wr-all">All writing</span> <i data-lucide="arrow-right"></i
+          ></a>
+        </div>
+      </header>
+      <div class="rs-posts" data-resume-posts="3"></div>
+    </section>
   </div>
 
   <!-- Work: every project, a discipline filters -->
@@ -839,6 +973,90 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     </article>
   </div>
 
+  <!-- Writing: every note, newest first -->
+  <div class="flex flex-col gap-4" data-resume-view="writing" hidden>
+    <header class="mk-section-header" style="padding-inline: 0">
+      <div class="mk-section-header-copy">
+        <h2 class="mk-section-header-title" data-i18n-target="wr-page-title">Writing</h2>
+        <p class="mk-section-header-desc" data-i18n-target="wr-page-desc"
+          >Notes on design systems, accessibility and the work in between.</p
+        >
+      </div>
+    </header>
+    <div class="rs-posts" data-resume-posts="all"></div>
+  </div>
+
+  <!-- A note: filled from the data block, in the language shown -->
+  <article class="flex flex-col gap-8 rs-post" data-resume-view="post" aria-labelledby="rs-post-title" hidden>
+    <a class="btn" data-variant="ghost" href="#/writing" data-router-link style="align-self: flex-start"
+      ><i data-lucide="arrow-left"></i> <span data-i18n-target="wr-back">All writing</span></a
+    >
+    <header class="mk-article-header">
+      <a class="mk-article-header-category" href="#/writing" data-router-link data-post-field="topic">Design systems</a>
+      <h1 class="mk-article-header-title" id="rs-post-title" data-post-field="title">Eleven date pickers</h1>
+      <p class="mk-article-header-subtitle" data-post-field="dek"></p>
+      <div class="mk-article-header-byline">
+        <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/160?img=16" alt="" /></span>
+        <div>
+          <span class="mk-article-header-author">Mara Okafor</span>
+          <div class="mk-article-header-meta"
+            ><time data-post-date datetime="2026-06-03">3 June 2026</time><span data-post-minutes>7 min read</span></div
+          >
+        </div>
+      </div>
+    </header>
+    <div class="mk-article-body" data-post-body></div>
+    <section class="rs-post-project" aria-labelledby="rs-post-project">
+      <h2 id="rs-post-project" data-i18n-target="wr-project">The project behind it</h2>
+      <article class="mk-related-item">
+        <figure class="mk-related-item-media"
+          ><img data-post-project-image src="https://picsum.photos/seed/rp-northwind/480/320" alt=""
+        /></figure>
+        <div class="mk-related-item-body">
+          <span class="mk-related-item-kind" data-post-project-kind>Design system · 2025</span>
+          <h3 class="mk-related-item-title"
+            ><a href="#/work/northwind-system" data-router-link data-post-project-link>Northwind design system</a></h3
+          >
+          <p class="mk-related-item-meta" data-post-project-summary></p>
+        </div>
+      </article>
+    </section>
+    <section class="mk-author-bio" aria-labelledby="rs-bio-name">
+      <span class="avatar" data-size="lg"
+        ><img class="avatar-image" src="https://i.pravatar.cc/160?img=16" alt=""
+      /></span>
+      <div class="mk-author-bio-body">
+        <span class="mk-author-bio-label" data-i18n-target="wr-written-by">Written by</span>
+        <h2 class="mk-author-bio-name" id="rs-bio-name">Mara Okafor</h2>
+        <p class="mk-author-bio-text" data-i18n-target="wr-bio"
+          >Design engineer in Berlin. I build design systems and write about the parts that are hard to see.</p
+        >
+        <div class="mk-author-bio-actions"
+          ><a class="btn" data-variant="outline" data-size="sm" href="#/resume" data-router-link
+            ><span data-i18n-target="wr-bio-cv">Read the CV</span></a
+          ><a class="btn" data-variant="ghost" data-size="sm" href="mailto:mara@example.com"
+            ><span data-i18n-target="wr-bio-mail">Write to me</span></a
+          ></div
+        >
+      </div>
+    </section>
+    <nav
+      class="mk-article-nav"
+      aria-label="More notes"
+      data-i18n-aria-label-en="More notes"
+      data-i18n-aria-label-de="Weitere Notizen"
+    >
+      <a class="mk-article-nav-link" href="#/writing" data-router-link rel="prev" data-post-near="prev"
+        ><span class="mk-article-nav-dir"><span data-i18n-target="wr-newer">Newer</span></span
+        ><span class="mk-article-nav-title" data-post-near-title>Writing</span></a
+      >
+      <a class="mk-article-nav-link" href="#/writing" data-router-link rel="next" data-post-near="next"
+        ><span class="mk-article-nav-dir"><span data-i18n-target="wr-older">Older</span></span
+        ><span class="mk-article-nav-title" data-post-near-title>Writing</span></a
+      >
+    </nav>
+  </article>
+
   <!-- Résumé: the CV - it prints -->
   <div class="flex flex-col gap-10" data-resume-view="resume" hidden>
     <div class="flex flex-wrap items-center gap-2" data-resume-noprint data-resume-print-slot>
@@ -871,7 +1089,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-resume-entry-body">
             <div class="mk-resume-entry-head">
               <h3 class="mk-resume-entry-title">Staff design engineer</h3>
-              <p class="mk-resume-entry-org"><a href="#">Northwind</a><span>Full-time</span></p>
+              <p class="mk-resume-entry-org"
+                ><a href="#/work/northwind-system" data-router-link>Northwind</a><span>Full-time</span></p
+              >
               <p class="mk-resume-entry-when"
                 ><time datetime="2023-04">04/2023</time> - <span data-i18n-target="today-1">today</span> ·
                 <span data-i18n-target="dur-nw"><span data-i18n-value="durNw">3 yrs, 8 mths</span></span></p
@@ -931,7 +1151,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-resume-entry-body">
             <div class="mk-resume-entry-head">
               <h3 class="mk-resume-entry-title">Interaction designer</h3>
-              <p class="mk-resume-entry-org"><a href="#">Studio Kollektiv</a><span>Freelance</span></p>
+              <p class="mk-resume-entry-org"><span>Studio Kollektiv</span><span>Freelance</span></p>
               <p class="mk-resume-entry-when"
                 ><time datetime="2015-05">05/2015</time> - <time datetime="2018-01">01/2018</time> ·
                 <span data-i18n-target="dur-sk"><span data-i18n-value="durSk">2 yrs, 9 mths</span></span></p
@@ -956,7 +1176,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-resume-entry-body">
             <div class="mk-resume-entry-head">
               <h3 class="mk-resume-entry-title">M.Sc. Human-Computer Interaction</h3>
-              <p class="mk-resume-entry-org"><a href="#">TU Berlin</a></p>
+              <p class="mk-resume-entry-org"><span>TU Berlin</span></p>
               <p class="mk-resume-entry-when"
                 ><time datetime="2013-10">2013</time> - <time datetime="2015-09">2015</time></p
               >
@@ -968,7 +1188,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           <div class="mk-resume-entry-body">
             <div class="mk-resume-entry-head">
               <h3 class="mk-resume-entry-title">B.A. Communication Design</h3>
-              <p class="mk-resume-entry-org"><a href="#">HTW Berlin</a></p>
+              <p class="mk-resume-entry-org"><span>HTW Berlin</span></p>
               <p class="mk-resume-entry-when"
                 ><time datetime="2010-10">2010</time> - <time datetime="2013-09">2013</time></p
               >
@@ -1083,6 +1303,205 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </div>
     </aside>
   </div>
+
+  <!-- the Site Footer: the site's pages, recent projects and the ways to reach her - on screen only -->
+  <footer class="mk-footer rs-foot">
+    <div class="mk-footer-inner">
+      <nav
+        class="mk-footer-nav"
+        aria-label="Footer"
+        data-i18n-aria-label-en="Footer"
+        data-i18n-aria-label-de="Fußzeile"
+      >
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading" data-i18n-target="ft-site">This site</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#/" data-router-link data-i18n-target="ft-about">About</a></li>
+            <li><a href="#/work" data-router-link data-i18n-target="ft-work">Work</a></li>
+            <li><a href="#/writing" data-router-link data-i18n-target="ft-writing">Writing</a></li>
+            <li><a href="#/resume" data-router-link data-i18n-target="ft-resume">Résumé</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading" data-i18n-target="ft-recent">Recent projects</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#/work/quiet-tokens" data-router-link>quiet-tokens</a></li>
+            <li><a href="#/work/northwind-system" data-router-link>Northwind design system</a></li>
+            <li><a href="#/work/museo-digital" data-router-link>Museo Digital</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading" data-i18n-target="ft-hello">Say hello</h3>
+          <ul class="mk-footer-list">
+            <li><a href="mailto:mara@example.com">mara@example.com</a></li>
+            <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a></li>
+          </ul>
+        </div>
+      </nav>
+      <hr class="separator mk-footer-rule" />
+      <div class="mk-footer-bottom">
+        <a class="mk-footer-brand" href="#/" data-router-link>Mara Okafor</a>
+        <div class="mk-footer-meta">
+          <p class="mk-footer-copy" data-i18n-target="ft-copy"
+            >© 2026 Mara Okafor · Made in Berlin, tested by keyboard</p
+          >
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- one note in a list (About, Writing), filled from the data block -->
+  <template data-resume-post-item>
+    <article class="mk-blog-item" data-variant="minimal">
+      <div class="mk-blog-item-body">
+        <div class="mk-blog-item-meta"
+          ><span class="badge" data-variant="secondary" data-post-topic></span><span data-post-minutes></span
+        ></div>
+        <h3 class="mk-blog-item-title"><a href="#/writing" data-router-link data-post-link></a></h3>
+        <p class="mk-blog-item-excerpt" data-post-dek></p>
+        <div class="mk-blog-item-byline"><time class="mk-blog-item-date" data-post-date></time></div>
+      </div>
+    </article>
+  </template>
+
+  <!-- the notes the routes name, newest first, in English and German. A body line is a paragraph, "## " a heading -->
+  <script type="application/json" id="resume-posts">
+    {
+      "words": {
+        "en": { "read": "min read" },
+        "de": { "read": "Min. Lesezeit" }
+      },
+      "posts": {
+        "dark-mode-palette": {
+          "date": "2026-10-14",
+          "minutes": 6,
+          "project": "quiet-tokens",
+          "en": {
+            "topic": "Design systems",
+            "title": "Dark mode is a second palette, not a filter",
+            "dek": "Why quiet-tokens ships every theme twice - and what inverting the colours gets wrong.",
+            "body": [
+              "Every few months someone shows me a dark mode made by inverting the light one. It looks fine for a minute. Then the shadows glow, the brand colour turns muddy and the focus ring disappears.",
+              "## Two palettes, one set of names",
+              "In quiet-tokens a theme is a file with two blocks: the light palette and the dark one. They share the same token names, so a component never knows which one it gets. What changes is every value - and each value is chosen, not computed.",
+              "## What to check by hand",
+              "Contrast first: text needs 4.5:1 against its surface in both modes. Then elevation - in the dark, a raised card is lighter, not darker. Last, the accent: a saturated colour that works on white often vibrates on black, so it gets a softer twin.",
+              "The checker in quiet-tokens fails a theme when a pair drops below 4.5:1 in either mode. It has caught more mistakes than any review I have done."
+            ]
+          },
+          "de": {
+            "topic": "Designsysteme",
+            "title": "Der dunkle Modus ist eine zweite Palette, kein Filter",
+            "dek": "Warum quiet-tokens jedes Theme zweimal liefert - und was beim Invertieren der Farben schiefgeht.",
+            "body": [
+              "Alle paar Monate zeigt mir jemand einen dunklen Modus, der durch Invertieren des hellen entstanden ist. Eine Minute lang sieht das gut aus. Dann leuchten die Schatten, die Markenfarbe wird trüb und der Fokusrahmen verschwindet.",
+              "## Zwei Paletten, ein Satz Namen",
+              "In quiet-tokens ist ein Theme eine Datei mit zwei Blöcken: der hellen Palette und der dunklen. Beide tragen dieselben Token-Namen, eine Komponente weiß also nie, welche sie bekommt. Was sich ändert, ist jeder Wert - und jeder Wert ist gewählt, nicht berechnet.",
+              "## Was man von Hand prüft",
+              "Zuerst der Kontrast: Text braucht in beiden Modi 4,5:1 gegen seine Fläche. Dann die Höhe - im Dunkeln ist eine erhöhte Karte heller, nicht dunkler. Zuletzt der Akzent: Eine satte Farbe, die auf Weiß funktioniert, flimmert auf Schwarz oft und bekommt deshalb einen sanfteren Zwilling.",
+              "Der Prüfer in quiet-tokens lässt ein Theme durchfallen, sobald ein Paar in einem der Modi unter 4,5:1 fällt. Er hat mehr Fehler gefunden als jedes Review, das ich gemacht habe."
+            ]
+          }
+        },
+        "focus-order-review": {
+          "date": "2026-08-27",
+          "minutes": 5,
+          "project": "focus-trail",
+          "en": {
+            "topic": "Accessibility",
+            "title": "Reviewing focus order in ten minutes",
+            "dek": "A routine for keyboard reviews that fits between two meetings.",
+            "body": [
+              "Most focus bugs are not exotic. A dialog that leaves focus behind, a menu that traps it, a card whose link comes after its button. They are easy to fix and easy to miss.",
+              "## The routine",
+              "Open the page, put the mouse away and press Tab until you are back at the top. Write down every stop that surprised you. With focus-trail running, the stops are numbered on the page and the jumps are marked in red.",
+              "## What counts as a jump",
+              "A jump is a stop that moves against the reading order - up the page, or across columns and back. Not every jump is a bug, but every one needs a reason.",
+              "Ten minutes per page is enough for a first pass. The bugs you find there are the ones your keyboard users meet every day."
+            ]
+          },
+          "de": {
+            "topic": "Barrierefreiheit",
+            "title": "Die Fokusreihenfolge in zehn Minuten prüfen",
+            "dek": "Eine Routine für Tastatur-Reviews, die zwischen zwei Meetings passt.",
+            "body": [
+              "Die meisten Fokusfehler sind nicht exotisch. Ein Dialog, der den Fokus zurücklässt, ein Menü, das ihn festhält, eine Karte, deren Link nach ihrem Knopf kommt. Sie sind leicht zu beheben und leicht zu übersehen.",
+              "## Die Routine",
+              "Öffne die Seite, leg die Maus weg und drücke Tab, bis du wieder oben bist. Notiere jeden Halt, der dich überrascht hat. Mit focus-trail sind die Halte auf der Seite nummeriert und die Sprünge rot markiert.",
+              "## Was als Sprung zählt",
+              "Ein Sprung ist ein Halt gegen die Leserichtung - die Seite hinauf oder über Spalten hinweg und zurück. Nicht jeder Sprung ist ein Fehler, aber jeder braucht einen Grund.",
+              "Zehn Minuten pro Seite reichen für einen ersten Durchgang. Die Fehler, die du dabei findest, sind die, denen deine Tastatur-Nutzer jeden Tag begegnen."
+            ]
+          }
+        },
+        "eleven-date-pickers": {
+          "date": "2026-06-03",
+          "minutes": 7,
+          "project": "northwind-system",
+          "en": {
+            "topic": "Design systems",
+            "title": "Eleven date pickers",
+            "dek": "What a component inventory at Northwind taught me about adoption.",
+            "body": [
+              "When I joined Northwind, we counted the date pickers in the product. There were eleven. Each was written by a team that needed one on a Friday.",
+              "## Inventory first",
+              "We took screenshots of every control in every product and laid them out on one wall. Nobody argued about consistency after that - the wall argued for us.",
+              "## Adoption is a feature",
+              "A design system succeeds when teams choose it, not when it is mandatory. We measured how long a new team took to ship its first screen with the system, and worked on that number like on any other feature.",
+              "## What changed",
+              "Fourteen teams build with the system today. There is one date picker. Agreeing on its keyboard behaviour took longer than writing it."
+            ]
+          },
+          "de": {
+            "topic": "Designsysteme",
+            "title": "Elf Datumsauswahlen",
+            "dek": "Was mir eine Komponenten-Inventur bei Northwind über Akzeptanz beigebracht hat.",
+            "body": [
+              "Als ich bei Northwind anfing, zählten wir die Datumsauswahlen im Produkt. Es waren elf. Jede hatte ein Team geschrieben, das an einem Freitag eine brauchte.",
+              "## Zuerst die Inventur",
+              "Wir machten Screenshots von jedem Bedienelement in jedem Produkt und legten sie an einer Wand aus. Danach stritt niemand mehr über Einheitlichkeit - die Wand stritt für uns.",
+              "## Akzeptanz ist eine Funktion",
+              "Ein Designsystem hat Erfolg, wenn Teams es wählen, nicht wenn es Pflicht ist. Wir haben gemessen, wie lange ein neues Team für seinen ersten Screen mit dem System brauchte, und an dieser Zahl gearbeitet wie an jeder anderen Funktion.",
+              "## Was sich geändert hat",
+              "Heute bauen vierzehn Teams mit dem System. Es gibt eine Datumsauswahl. Uns auf ihr Tastaturverhalten zu einigen, hat länger gedauert, als sie zu schreiben."
+            ]
+          }
+        },
+        "one-hand-in-the-rain": {
+          "date": "2026-03-19",
+          "minutes": 4,
+          "project": "atlas-transit",
+          "en": {
+            "topic": "Interaction design",
+            "title": "Designing for one hand in the rain",
+            "dek": "Notes from the Atlas Transit study: the ticket flow nobody had to learn.",
+            "body": [
+              "We tested the Atlas ticket flow at real stations, in February. Half the people held a bag, a child or an umbrella in the other hand.",
+              "## Three taps, one thumb",
+              "Every action in the flow sits in the bottom half of the screen, where a thumb reaches. The price is on the button, so nobody has to look up to check it.",
+              "## What we removed",
+              "An account, a confirmation screen and a choice of payment methods on the first ride. Each one cost seconds at the edge of the platform, and seconds were what people did not have.",
+              "The final version sold a ticket in a median of 14 seconds. The queue at the machine took four minutes."
+            ]
+          },
+          "de": {
+            "topic": "Interaktionsdesign",
+            "title": "Gestalten für eine Hand im Regen",
+            "dek": "Notizen aus der Studie für Atlas Transit: der Ticketkauf, den niemand lernen musste.",
+            "body": [
+              "Wir haben den Ticketkauf von Atlas an echten Bahnhöfen getestet, im Februar. Die Hälfte der Leute hielt in der anderen Hand eine Tasche, ein Kind oder einen Schirm.",
+              "## Drei Berührungen, ein Daumen",
+              "Jede Aktion liegt in der unteren Hälfte des Bildschirms, wo ein Daumen hinkommt. Der Preis steht auf dem Knopf, niemand muss nach oben schauen, um ihn zu prüfen.",
+              "## Was wir gestrichen haben",
+              "Ein Konto, einen Bestätigungsbildschirm und die Wahl der Zahlungsart bei der ersten Fahrt. Jedes davon kostete Sekunden an der Bahnsteigkante, und Sekunden hatten die Leute nicht.",
+              "Die fertige Version verkaufte ein Ticket im Median in 14 Sekunden. Die Schlange am Automaten dauerte vier Minuten."
+            ]
+          }
+        }
+      }
+    }
+  </script>
 
   <!-- the projects the routes name, in order -->
   <script type="application/json" id="resume-projects">
@@ -1315,6 +1734,62 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="av-rate-value" data-i18n-locale="de">ab <span data-i18n-value="rate"></span></template>
   <template data-i18n-for="av-email" data-i18n-locale="en">Email me</template>
   <template data-i18n-for="av-email" data-i18n-locale="de">E-Mail schreiben</template>
+  <template data-i18n-for="nav-writing" data-i18n-locale="en">Writing</template>
+  <template data-i18n-for="nav-writing" data-i18n-locale="de">Notizen</template>
+  <template data-i18n-for="wr-eyebrow" data-i18n-locale="en">Notes</template>
+  <template data-i18n-for="wr-eyebrow" data-i18n-locale="de">Notizbuch</template>
+  <template data-i18n-for="wr-title" data-i18n-locale="en">Writing</template>
+  <template data-i18n-for="wr-title" data-i18n-locale="de">Notizen</template>
+  <template data-i18n-for="wr-all" data-i18n-locale="en">All writing</template>
+  <template data-i18n-for="wr-all" data-i18n-locale="de">Alle Notizen</template>
+  <template data-i18n-for="wr-page-title" data-i18n-locale="en">Writing</template>
+  <template data-i18n-for="wr-page-title" data-i18n-locale="de">Notizen</template>
+  <template data-i18n-for="wr-page-desc" data-i18n-locale="en"
+    >Notes on design systems, accessibility and the work in between.</template
+  >
+  <template data-i18n-for="wr-page-desc" data-i18n-locale="de"
+    >Notizen über Designsysteme, Barrierefreiheit und die Arbeit dazwischen.</template
+  >
+  <template data-i18n-for="wr-back" data-i18n-locale="en">All writing</template>
+  <template data-i18n-for="wr-back" data-i18n-locale="de">Alle Notizen</template>
+  <template data-i18n-for="wr-project" data-i18n-locale="en">The project behind it</template>
+  <template data-i18n-for="wr-project" data-i18n-locale="de">Das Projekt dahinter</template>
+  <template data-i18n-for="wr-written-by" data-i18n-locale="en">Written by</template>
+  <template data-i18n-for="wr-written-by" data-i18n-locale="de">Geschrieben von</template>
+  <template data-i18n-for="wr-bio" data-i18n-locale="en"
+    >Design engineer in Berlin. I build design systems and write about the parts that are hard to see.</template
+  >
+  <template data-i18n-for="wr-bio" data-i18n-locale="de"
+    >Design Engineer in Berlin. Ich baue Designsysteme und schreibe über die Teile, die man schwer sieht.</template
+  >
+  <template data-i18n-for="wr-bio-cv" data-i18n-locale="en">Read the CV</template>
+  <template data-i18n-for="wr-bio-cv" data-i18n-locale="de">Zum Lebenslauf</template>
+  <template data-i18n-for="wr-bio-mail" data-i18n-locale="en">Write to me</template>
+  <template data-i18n-for="wr-bio-mail" data-i18n-locale="de">Schreib mir</template>
+  <template data-i18n-for="wr-newer" data-i18n-locale="en">Newer</template>
+  <template data-i18n-for="wr-newer" data-i18n-locale="de">Neuer</template>
+  <template data-i18n-for="wr-older" data-i18n-locale="en">Older</template>
+  <template data-i18n-for="wr-older" data-i18n-locale="de">Älter</template>
+  <template data-i18n-for="ft-site" data-i18n-locale="en">This site</template>
+  <template data-i18n-for="ft-site" data-i18n-locale="de">Diese Seite</template>
+  <template data-i18n-for="ft-about" data-i18n-locale="en">About</template>
+  <template data-i18n-for="ft-about" data-i18n-locale="de">Über mich</template>
+  <template data-i18n-for="ft-work" data-i18n-locale="en">Work</template>
+  <template data-i18n-for="ft-work" data-i18n-locale="de">Arbeiten</template>
+  <template data-i18n-for="ft-writing" data-i18n-locale="en">Writing</template>
+  <template data-i18n-for="ft-writing" data-i18n-locale="de">Notizen</template>
+  <template data-i18n-for="ft-resume" data-i18n-locale="en">Résumé</template>
+  <template data-i18n-for="ft-resume" data-i18n-locale="de">Lebenslauf</template>
+  <template data-i18n-for="ft-recent" data-i18n-locale="en">Recent projects</template>
+  <template data-i18n-for="ft-recent" data-i18n-locale="de">Neue Projekte</template>
+  <template data-i18n-for="ft-hello" data-i18n-locale="en">Say hello</template>
+  <template data-i18n-for="ft-hello" data-i18n-locale="de">Sag hallo</template>
+  <template data-i18n-for="ft-copy" data-i18n-locale="en"
+    >© 2026 Mara Okafor · Made in Berlin, tested by keyboard</template
+  >
+  <template data-i18n-for="ft-copy" data-i18n-locale="de"
+    >© 2026 Mara Okafor · Gemacht in Berlin, mit der Tastatur getestet</template
+  >
 </div>
 <script type="module">
   // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
@@ -1364,8 +1839,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         rate: locale.formatNumber(950, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }),
       }),
     });
-    const language = df$('[data-app-locale]');
-    language.val(locale.locale).on('change', () => locale.setLocale(language.val()));
+    // the Language Switcher sets the locale on a pick and follows it when something else sets it
+    df$.shadcn.languageSwitcher.bind(df$('[data-app-locale]').get(0), locale);
 
     // -- the look: one of the site's designs. An element with data-look-set takes that look's attributes (a shader's
     // effect, colors or contrast); a shader reads its colors again on defuss-theme-change
@@ -1385,11 +1860,84 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     if (globalThis.top !== globalThis.self) df$('[data-resume-print-slot]').prop('hidden', true);
     df$('[data-resume-print]').on('click', () => globalThis.print());
 
+    // -- the notes: the lists (About, Writing) and a note's page from one data block, in the language shown, written
+    // as text
+    const NOTES = JSON.parse(df$('#resume-posts').text());
+    const POSTS = Object.keys(NOTES.posts);
+    const noteText = (post) => post[locale.locale] ?? post.en;
+    const noteDate = (iso) => locale.formatDate(Date.parse(iso), { dateStyle: 'long', timeZone: 'UTC' });
+    const noteMinutes = (n) => n + ' ' + (NOTES.words[locale.locale] ?? NOTES.words.en).read;
+    const drawLists = () =>
+      df$('#site-resume [data-resume-posts]').each((_i, list) => {
+        const count = list.dataset.resumePosts === 'all' ? POSTS.length : Number(list.dataset.resumePosts);
+        df$(list).html('');
+        for (const slug of POSTS.slice(0, count)) {
+          const post = NOTES.posts[slug];
+          const text = noteText(post);
+          const item = df$(df$('template[data-resume-post-item]').get(0).content.firstElementChild.cloneNode(true));
+          item.find('[data-post-topic]').text(text.topic);
+          item.find('[data-post-minutes]').text(noteMinutes(post.minutes));
+          item
+            .find('[data-post-link]')
+            .attr('href', '#/writing/' + slug)
+            .text(text.title);
+          item.find('[data-post-dek]').text(text.dek);
+          item.find('[data-post-date]').attr('datetime', post.date).text(noteDate(post.date));
+          df$(list).append(item);
+        }
+      });
+    let openNote = null;
+    const drawNote = (slug) => {
+      openNote = slug;
+      const post = NOTES.posts[slug];
+      const text = noteText(post);
+      const page = df$('#site-resume [data-resume-view="post"]');
+      page.find('[data-post-field]').each((_i, field) => {
+        df$(field).text(text[field.dataset.postField]);
+      });
+      page.find('[data-post-date]').attr('datetime', post.date).text(noteDate(post.date));
+      page.find('[data-post-minutes]').text(noteMinutes(post.minutes));
+      const body = page.find('[data-post-body]').html('');
+      for (const line of text.body) {
+        body.append(line.startsWith('## ') ? df$('<h2></h2>').text(line.slice(3)) : df$('<p></p>').text(line));
+      }
+      // the project the note comes from
+      const project = PROJECTS[post.project];
+      page
+        .find('[data-post-project-image]')
+        .attr('src', 'https://picsum.photos/seed/' + project.seed + '/480/320')
+        .attr('alt', project.alt);
+      page.find('[data-post-project-kind]').text(project.client + ' · ' + project.year);
+      page
+        .find('[data-post-project-link]')
+        .attr('href', '#/work/' + post.project)
+        .text(project.title);
+      page.find('[data-post-project-summary]').text(project.summary);
+      // the newer and the older note
+      const at = POSTS.indexOf(slug);
+      page.find('[data-post-near]').each((_i, link) => {
+        const near = POSTS[at + (link.dataset.postNear === 'prev' ? -1 : 1)];
+        df$(link).prop('hidden', !near);
+        if (near) {
+          df$(link).attr('href', '#/writing/' + near);
+          df$(link).find('[data-post-near-title]').text(noteText(NOTES.posts[near]).title);
+        }
+      });
+    };
+    drawLists();
+    // a language change writes the lists and the open note again
+    locale.subscribe(() => {
+      drawLists();
+      if (openNote) drawNote(openNote);
+    });
+
     // -- routing
     const routes = [
       { id: 'about', path: '/' },
       { id: 'work', path: '/work' },
       { id: 'project', path: '/work/:project' },
+      { id: 'writing', path: '/writing' },
+      { id: 'post', path: '/writing/:post' },
       { id: 'resume', path: '/resume' },
       { id: 'missing', path: '*' },
     ];
@@ -1401,12 +1949,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     // prepare: the project page built from the data block; commit: one view shown, the navs marked
     const view = (to) => {
       const slug = to.routeId === 'project' && PROJECTS[to.params.project] ? to.params.project : null;
-      const name = to.routeId === 'missing' ? 'about' : to.routeId === 'project' && !slug ? 'work' : to.routeId;
+      const note = to.routeId === 'post' && NOTES.posts[to.params.post] ? to.params.post : null;
+      const name =
+        to.routeId === 'missing'
+          ? 'about'
+          : to.routeId === 'project' && !slug
+            ? 'work'
+            : to.routeId === 'post' && !note
+              ? 'writing'
+              : to.routeId;
       const discipline = name === 'work' ? new URLSearchParams(to.search).get('discipline') : null;
       const project = slug && PROJECTS[slug];
       const next = slug && ORDER[(ORDER.indexOf(slug) + 1) % ORDER.length];
+      // the nav link of the view's section
+      const section = { about: '#/', resume: '#/resume', writing: '#/writing', post: '#/writing' }[name] ?? '#/work';
       return {
         commit() {
+          openNote = null;
+          if (note) drawNote(note);
           if (project) {
             const page = df$('#site-resume .mk-project-details');
             page.find('[data-project-field]').each((_i, field) => {
@@ -1437,21 +1997,28 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           df$('#site-resume [data-discipline]').each((_i, item) => {
             item.hidden = !!discipline && item.dataset.discipline !== discipline;
           });
-          mark(
-            '[data-resume-nav] [data-router-link]',
-            name === 'about' ? '#/' : name === 'resume' ? '#/resume' : '#/work',
-          );
+          mark('[data-resume-nav] [data-router-link]', section);
           mark('[data-resume-filter] [data-router-link]', discipline ? '#/work?discipline=' + discipline : '#/work');
         },
       };
     };
     const show = (to) => view(to).commit();
-    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => view(to) });
+    // a new page opens at its start, the way a page load would - the first view stays where the reader is
+    let shownPath = null;
+    const showAt = (to) => {
+      show(to);
+      if (shownPath !== null && shownPath !== to.path)
+        df$('#site-resume [data-resume-view]:not([hidden])')
+          .get(0)
+          ?.scrollIntoView({ block: 'start', behavior: 'instant' });
+      shownPath = to.path;
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => showAt(to) }) });
     router.attachLinks(site);
     if ((await router.start()).status === 'rejected') {
       // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
       const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      const follow = () => showAt(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
       addEventListener('hashchange', follow);
       follow();
     }

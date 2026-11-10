@@ -1,6 +1,6 @@
 ---
 title: "Developer Portfolio"
-description: "A portfolio that boots like a terminal - a status line, matrix rain behind the shell, a shell that types who you are, a hexagon avatar, pinned repositories, a year of activity as a sparkline, a stack in dots, a career as a git log and writing in a plain list."
+description: "A portfolio that boots like a terminal - a shell's tab bar, matrix rain behind the shell, a shell that types who you are, a hexagon avatar, pinned repositories with a page each, a year of activity as a sparkline, a stack in dots, a career as a git log, writing you can read and a tmux status line at the foot."
 slug: "portfolio-developer"
 ---
 
@@ -9,14 +9,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <DocPage meta={meta}>
 
 <PageHeader slug="portfolio-developer" title="Developer Portfolio" introStyle="max-width:42rem;">
-  A portfolio that boots like a terminal - a status line, matrix rain behind the shell, a shell that types who you are, a hexagon avatar, pinned repositories, a year of activity as a sparkline, a stack in dots, a career as a git log and writing in a plain list. One of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> styles.
+  A portfolio that boots like a terminal - a shell's tab bar, matrix rain behind the shell, a shell that types who you are, a hexagon avatar, pinned repositories with a page each, a year of activity as a sparkline, a stack in dots, a career as a git log, writing you can read and a tmux status line at the foot. One of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> styles.
 </PageHeader>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-portfolio-developer.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
 </div>
 
-```html example label="Sam Lindqvist, infrastructure engineer" schema="none" hint="A terminal palette in light and dark (the switch top right); the hero is a screen that stays dark: the Shader's matrix rain behind a Code Mockup with a Typewriter on the prompt; everything below reads 15 % larger (zoom on the page column); Resume Header (compact) with a shape-hexagon avatar; Repository Items as Parallax reveals; an inline SVG sparkline with Stats (cards); Skill Matrix (dots); Resume Entry (timeline); Availability (banner)." previewStyle="align-items:stretch;padding:0;"
+```html example label="Sam Lindqvist, infrastructure engineer" schema="none" hint="A terminal palette in light and dark (the switch in the tab bar); a Site Header as a shell's tab bar whose sections are paths; the hero is a screen that stays dark: the Shader's matrix rain behind a live Terminal that replays a session and then takes commands (help, ls, repos, open tidewater); everything below reads 15 % larger (zoom on the page column); Resume Header (compact) with a shape-hexagon avatar; Repository Items as Parallax reveals - each opens its README page (#/repos/tidewater); an inline SVG sparkline with Stats (cards); Skill Matrix (dots); Resume Entry (timeline); writing whose posts open as Article Header + Article Body (#/writing/your-queue-needs-a-no); Availability (banner); a Site Footer ending in a tmux status line." previewStyle="align-items:stretch;padding:0;"
 <style>
   #pf-developer {
     --background: oklch(0.16 0.012 250);
@@ -42,10 +42,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     container: pf-developer / inline-size;
     box-sizing: border-box;
     width: 100%;
-    padding: 0 0 3rem;
+    padding: 0;
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
+  }
+  /* one view at a time: the home view, a repository or a post */
+  #pf-developer [hidden] {
+    display: none !important;
   }
   #pf-developer .pf-status {
     display: flex;
@@ -54,7 +58,6 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     gap: 0.25rem 1rem;
     margin: 0;
     padding: 0.5rem clamp(1rem, 4vw, 2.5rem);
-    padding-inline-end: 4rem;
     background: var(--primary);
     color: var(--primary-foreground);
     font-family: var(--font-mono);
@@ -74,8 +77,56 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2.5rem) 0;
     zoom: 1.15;
   }
-  #pf-developer {
-    --site-mode-top: 2.75rem;
+  /* the header: the Site Header as a shell's tab bar - a prompt for the brand, the sections as paths */
+  #pf-developer .pf-bar {
+    border-block-end: 1px solid var(--border);
+    background: var(--card);
+    font-family: var(--font-mono);
+  }
+  #pf-developer .pf-bar .mk-header-inner {
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    max-width: none;
+    padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
+  }
+  #pf-developer .mk-header-brand {
+    color: var(--primary);
+  }
+  #pf-developer .mk-header-name {
+    color: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  #pf-developer .mk-header-name::after {
+    content: ' $';
+    color: var(--muted-foreground);
+  }
+  #pf-developer .mk-header-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    margin-inline-end: auto;
+    font-size: 0.9375rem;
+  }
+  #pf-developer .mk-header-nav a {
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+  #pf-developer .mk-header-nav a::before {
+    content: './';
+    color: var(--primary);
+  }
+  #pf-developer .mk-header-nav a:is(:hover, :focus-visible, [aria-current]) {
+    color: var(--foreground);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  @container pf-developer (max-width: 40rem) {
+    #pf-developer .mk-header-nav {
+      order: 3;
+      width: 100%;
+    }
   }
   /* the hero: a terminal over matrix rain - a screen, dark in both modes */
   #pf-developer .pf-hero {
@@ -142,6 +193,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   }
   #pf-developer .mockup-code pre {
     white-space: pre-wrap;
+  }
+  /* the hero's shell: the screen's own dark, a touch of the rain through it */
+  #pf-developer .pf-shell {
+    --terminal-background: oklch(0.16 0.012 250);
+    --terminal-green: oklch(0.82 0.17 150);
+    box-shadow: 0 1.5rem 3rem -1rem oklch(0 0 0 / 0.6);
   }
   #pf-developer .mk-resume-header {
     flex-direction: column;
@@ -235,6 +292,139 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     font-size: 0.9375rem;
     color: var(--muted-foreground);
   }
+  /* a repository or a post: a path to come back by, then the page */
+  #pf-developer .pf-crumbs {
+    margin: 0 0 -1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+  #pf-developer .pf-crumbs a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+  #pf-developer .pf-crumbs a:is(:hover, :focus-visible) {
+    text-decoration: underline;
+  }
+  #pf-developer .mk-project-details-title {
+    font-family: var(--font-mono);
+    font-size: clamp(1.75rem, 1rem + 3cqi, 2.75rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+  }
+  #pf-developer .pf-owner {
+    color: var(--muted-foreground);
+    font-weight: 400;
+  }
+  #pf-developer .pf-repo-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #pf-developer .mk-project-details-facts {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
+  }
+  #pf-developer .mk-project-details-facts dd,
+  #pf-developer .mk-project-details-facts dt {
+    font-family: var(--font-mono);
+  }
+  #pf-developer .mk-project-details-brief p,
+  #pf-developer .pf-repo-result p {
+    margin: 0;
+    color: inherit;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+  #pf-developer .pf-repo-shot {
+    margin: 0;
+  }
+  #pf-developer .pf-repo-shot img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+  }
+  #pf-developer .pf-repo-shot figcaption {
+    margin-block-start: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+  #pf-developer .pf-post {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    max-width: 44rem;
+  }
+  #pf-developer .mk-article-header-title {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  #pf-developer .mk-article-header-category {
+    font-family: var(--font-mono);
+  }
+  #pf-developer .mk-article-header-category::before {
+    content: '~/';
+  }
+  #pf-developer .pf-post :is(.mk-article-header, .mk-article-body) {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+  #pf-developer .mk-article-body h2 {
+    margin: 2em 0 0.5em;
+  }
+  #pf-developer .pf-post .mockup-code pre,
+  #pf-developer .pf-repo-term pre {
+    white-space: pre;
+  }
+  #pf-developer .mk-article-body-pullquote {
+    font-family: var(--font-mono);
+    font-size: 1.25em;
+    font-weight: 500;
+  }
+  /* the footer: the Site Footer as a shell's last screen - folders of links, then the tmux status line */
+  #pf-developer .pf-tmux {
+    margin-block-start: clamp(3rem, 6vw, 4.5rem);
+    border-block-start: 1px solid var(--border);
+    background: var(--card);
+    font-family: var(--font-mono);
+  }
+  #pf-developer .pf-tmux .mk-footer-inner {
+    max-width: 72rem;
+    padding: 2rem clamp(1rem, 4vw, 2.5rem) 1.5rem;
+  }
+  #pf-developer .pf-tmux .mk-footer-nav {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 2rem;
+  }
+  #pf-developer .mk-footer-heading {
+    color: var(--primary);
+    font-size: 0.9375rem;
+  }
+  #pf-developer .mk-footer-heading::after {
+    content: '/';
+  }
+  #pf-developer .mk-footer-list {
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+  #pf-developer .mk-footer-list a {
+    color: var(--muted-foreground);
+  }
+  #pf-developer .mk-footer-list a:is(:hover, :focus-visible) {
+    color: var(--foreground);
+  }
+  #pf-developer .mk-footer-brand {
+    color: var(--primary);
+  }
+  #pf-developer .mk-footer-brand-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
   /* light or dark: the Swap writes the page's dark class - every look has a light and a dark palette */
   #pf-developer .site-mode {
     flex: none;
@@ -246,14 +436,6 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   #pf-developer .site-mode:hover {
     background: var(--accent);
     color: var(--accent-foreground);
-  }
-  #pf-developer {
-    position: relative;
-  }
-  #pf-developer > .site-mode {
-    position: absolute;
-    z-index: 20;
-    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
   }
   /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
   .dark #pf-developer {
@@ -282,281 +464,1048 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     --chart-2: oklch(0.53 0.13 220);
   }
   /* -- modes: end -- */
+  /* the brand and the paths on the light tab bar: the light primary is too pale for small text */
+  :root:not(.dark) #pf-developer :is(.mk-header-brand, .mk-footer-brand, .mk-footer-heading, .pf-crumbs a) {
+    color: oklch(0.45 0.15 152);
+  }
 </style>
-<div id="pf-developer">
-  <label class="swap site-mode" data-variant="rotate" data-size="sm">
-    <input type="checkbox" data-site-mode aria-label="Dark mode" />
-    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-  </label>
-  <p class="pf-status" aria-hidden="true">
-    <span>sam@stockholm: ~/portfolio</span>
-    <span>main ✓ · utf-8 · 14:02</span>
-  </p>
-  <section class="pf-hero" aria-label="Introduction">
-    <div
-      class="shader pf-rain"
-      data-variant="background"
-      data-effect="matrix"
-      data-size="18"
-      data-rain="0.7"
-      data-trail="0.7"
-      data-speed="0.5"
-      data-fps="30"
-      aria-hidden="true"
-    ></div>
-    <div class="pf-boot">
-      <div class="mockup-code" data-chrome="mac" data-title="~/sam - zsh" data-df-entrance="wipe">
-        <pre data-prefix="$"><code><span class="typewriter"><span>whoami</span></span></code></pre>
-        <pre data-prefix=">" data-tone="success"><code>Sam Lindqvist - infrastructure engineer, Stockholm</code></pre>
-        <pre data-prefix="$"><code>cat now.txt</code></pre>
-        <pre data-prefix=">"><code>Making build pipelines boring at Globex. Maintaining tidewater and sqlite-cdc.</code></pre>
-        <pre data-prefix="$"><code>uptime --career</code></pre>
-        <pre data-prefix=">" data-tone="warning"><code>9 years, 0 pages at 3 a.m. this quarter</code></pre>
+<div id="pf-developer" data-i18n-component>
+  <header class="mk-header pf-bar">
+    <div class="mk-header-inner">
+      <a class="mk-header-brand" href="#/" data-router-link><span class="mk-header-name">~/sam</span></a>
+      <nav
+        class="mk-header-nav"
+        aria-label="Sections"
+        data-i18n-aria-label-en="Sections"
+        data-i18n-aria-label-de="Abschnitte"
+      >
+        <a href="#pf-dev-repos">repos</a>
+        <a href="#pf-dev-posts" data-i18n-target="nav-writing">writing</a>
+        <a href="#pf-dev-log">log</a>
+        <a href="#pf-dev-contact" data-i18n-target="nav-contact">contact</a>
+      </nav>
+      <div class="mk-header-actions">
+        <div
+          class="language-switcher"
+          data-app-locale
+          role="group"
+          aria-label="Language"
+          data-i18n-aria-label-en="Language"
+          data-i18n-aria-label-de="Sprache"
+          data-languages="en de"
+          data-value="en"
+          data-size="sm"
+          data-display="code"
+          data-flag="none"
+          data-align="end"
+        ></div>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-site-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkler Modus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
       </div>
-      <header class="mk-resume-header" data-variant="compact">
-        <img
-          class="mk-resume-header-photo shape-hexagon"
-          src="https://picsum.photos/id/1005/400/400"
-          alt="Sam Lindqvist"
-          data-df-entrance="spin"
-        />
-        <div class="mk-resume-header-body">
-          <h1 class="mk-resume-header-name">sam.lindqvist</h1>
-          <p class="mk-resume-header-role">Infrastructure engineer. I make deploys dull.</p>
-          <ul class="mk-resume-header-facts">
-            <li><i data-lucide="map-pin"></i> Stockholm, UTC+1</li>
-            <li
-              ><i data-lucide="code-xml"></i>
-              <a href="https://github.com/" target="_blank" rel="noopener">github.com/samlq</a></li
-            >
-            <li><i data-lucide="mail"></i> <a href="mailto:sam@example.com">sam@example.com</a></li>
-          </ul>
-        </div>
-      </header>
     </div>
-  </section>
-  <div class="pf-page">
-    <section aria-labelledby="pf-dev-repos">
-      <h2 id="pf-dev-repos">pinned</h2>
-      <div class="grid grid-cols-auto gap-4">
-        <article class="mk-repository-item parallax-reveal">
-          <div class="mk-repository-item-head">
-            <i data-lucide="book-marked"></i>
-            <h3 class="mk-repository-item-name"
-              ><a href="#"><span class="mk-repository-item-owner">samlq/</span>tidewater</a></h3
-            >
-            <span class="badge" data-variant="outline">Public</span>
-          </div>
-          <p class="mk-repository-item-description"
-            >Back-pressure for job queues - a queue that says no before the database does.</p
-          >
-          <ul class="mk-repository-item-topics" aria-label="Topics">
-            <li>queues</li>
-            <li>postgres</li>
-          </ul>
-          <ul class="mk-repository-item-stats">
-            <li><span class="mk-repository-item-language" data-language="go"></span> Go</li>
-            <li><i data-lucide="star"></i> 5.1k<span class="sr-only"> stars</span></li>
-            <li><i data-lucide="git-fork"></i> 290<span class="sr-only"> forks</span></li>
-          </ul>
-        </article>
-        <article class="mk-repository-item parallax-reveal">
-          <div class="mk-repository-item-head">
-            <i data-lucide="book-marked"></i>
-            <h3 class="mk-repository-item-name"
-              ><a href="#"><span class="mk-repository-item-owner">samlq/</span>sqlite-cdc</a></h3
-            >
-            <span class="badge" data-variant="outline">Public</span>
-          </div>
-          <p class="mk-repository-item-description"
-            >Change data capture for SQLite - stream every write to Kafka, NATS or a file.</p
-          >
-          <ul class="mk-repository-item-topics" aria-label="Topics">
-            <li>sqlite</li>
-            <li>cdc</li>
-          </ul>
-          <ul class="mk-repository-item-stats">
-            <li><span class="mk-repository-item-language" data-language="rust"></span> Rust</li>
-            <li><i data-lucide="star"></i> 1.9k<span class="sr-only"> stars</span></li>
-            <li><i data-lucide="git-fork"></i> 77<span class="sr-only"> forks</span></li>
-          </ul>
-        </article>
-        <article class="mk-repository-item parallax-reveal">
-          <div class="mk-repository-item-head">
-            <i data-lucide="book-marked"></i>
-            <h3 class="mk-repository-item-name"
-              ><a href="#"><span class="mk-repository-item-owner">samlq/</span>dotfiles</a></h3
-            >
-            <span class="badge" data-variant="outline">Public</span>
-          </div>
-          <p class="mk-repository-item-description">zsh, tmux and neovim - set up in one command on a fresh machine.</p>
-          <ul class="mk-repository-item-topics" aria-label="Topics">
-            <li>neovim</li>
-            <li>tmux</li>
-          </ul>
-          <ul class="mk-repository-item-stats">
-            <li><span class="mk-repository-item-language" data-language="shell"></span> Shell</li>
-            <li><i data-lucide="star"></i> 412<span class="sr-only"> stars</span></li>
-          </ul>
-        </article>
-      </div>
-    </section>
-    <section aria-labelledby="pf-dev-activity">
-      <h2 id="pf-dev-activity">activity --last 12 months</h2>
-      <div class="pf-activity">
-        <svg
-          viewBox="0 0 520 100"
-          preserveAspectRatio="none"
-          role="img"
-          aria-label="Commits per month, rising from 40 to 140 over the year"
+  </header>
+
+  <!-- the home view: the whole portfolio -->
+  <div data-pf-view="home">
+    <section
+      class="pf-hero"
+      aria-label="Introduction"
+      data-i18n-aria-label-en="Introduction"
+      data-i18n-aria-label-de="Einführung"
+    >
+      <div
+        class="shader pf-rain"
+        data-variant="background"
+        data-effect="matrix"
+        data-size="18"
+        data-rain="0.7"
+        data-trail="0.7"
+        data-speed="0.5"
+        data-fps="30"
+        aria-hidden="true"
+      ></div>
+      <div class="pf-boot">
+        <div
+          class="terminal pf-shell"
+          id="pf-dev-shell"
+          aria-label="Sam's shell - type help"
+          data-chrome="mac"
+          data-title="~/sam - zsh"
+          data-prompt="~ % "
+          data-prompt-tone="success"
+          data-rows="11"
+          data-autoplay="500"
+          data-df-entrance="wipe"
         >
-          <defs>
-            <linearGradient id="pf-dev-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" style="stop-color: var(--chart-1); stop-opacity: 0.35" />
-              <stop offset="1" style="stop-color: var(--chart-1); stop-opacity: 0" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M0 80 L47 72 L94 76 L141 60 L188 64 L235 48 L282 52 L329 38 L376 42 L423 26 L470 30 L520 12 L520 100 L0 100 Z"
-            fill="url(#pf-dev-fill)"
+          <script type="application/json" class="terminal-script">
+            [
+              { "command": "whoami", "tone": "success" },
+              { "command": "cat now.txt" },
+              { "command": "uptime --career", "tone": "warning" },
+              { "output": "", "wait": 300 },
+              { "output": "Type help - or ls, repos, open tidewater.", "tone": "muted" }
+            ]
+          </script>
+        </div>
+        <header class="mk-resume-header" data-variant="compact">
+          <img
+            class="mk-resume-header-photo shape-hexagon"
+            src="https://picsum.photos/id/1005/400/400"
+            alt="Sam Lindqvist"
+            data-df-entrance="spin"
           />
-          <path
-            d="M0 80 L47 72 L94 76 L141 60 L188 64 L235 48 L282 52 L329 38 L376 42 L423 26 L470 30 L520 12"
-            fill="none"
-            style="stroke: var(--chart-1)"
-            stroke-width="2"
-            vector-effect="non-scaling-stroke"
-            stroke-linejoin="round"
-          />
-        </svg>
-        <div class="pf-activity-axis" aria-hidden="true"
-          ><span>Nov 2025</span><span>May 2026</span><span>Oct 2026</span></div
-        >
-        <section class="mk-stats" style="padding: 0">
-          <div class="mk-stats-grid" data-variant="cards">
-            <div class="mk-stat"
-              ><span class="mk-stat-value">1,284</span><span class="mk-stat-label">commits</span></div
-            >
-            <div class="mk-stat"
-              ><span class="mk-stat-value">312</span><span class="mk-stat-label">pull requests merged</span></div
-            >
-            <div class="mk-stat"
-              ><span class="mk-stat-value">7.4k</span><span class="mk-stat-label">stars across repos</span></div
-            >
-          </div>
-        </section>
-      </div>
-    </section>
-    <div class="pf-two">
-      <section aria-labelledby="pf-dev-stack">
-        <h2 id="pf-dev-stack">stack</h2>
-        <div class="mk-skill-matrix" data-variant="dots">
-          <section class="mk-skill-matrix-group" aria-label="Languages and systems">
-            <ul class="mk-skill-matrix-list">
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-dev-go">Go</label>
-                <meter class="mk-skill-matrix-level" id="pf-dev-go" min="0" max="5" value="5">5 of 5</meter>
-                <span class="mk-skill-matrix-note">8 yrs</span>
-              </li>
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-dev-pg">PostgreSQL</label>
-                <meter class="mk-skill-matrix-level" id="pf-dev-pg" min="0" max="5" value="5">5 of 5</meter>
-                <span class="mk-skill-matrix-note">9 yrs</span>
-              </li>
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-dev-k8s">Kubernetes</label>
-                <meter class="mk-skill-matrix-level" id="pf-dev-k8s" min="0" max="5" value="4">4 of 5</meter>
-                <span class="mk-skill-matrix-note">6 yrs</span>
-              </li>
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-dev-rust">Rust</label>
-                <meter class="mk-skill-matrix-level" id="pf-dev-rust" min="0" max="5" value="3">3 of 5</meter>
-                <span class="mk-skill-matrix-note">3 yrs</span>
-              </li>
-              <li class="mk-skill-matrix-skill">
-                <label class="mk-skill-matrix-name" for="pf-dev-nix">Nix</label>
-                <meter class="mk-skill-matrix-level" id="pf-dev-nix" min="0" max="5" value="2">2 of 5</meter>
-                <span class="mk-skill-matrix-note">1 yr</span>
-              </li>
+          <div class="mk-resume-header-body">
+            <h1 class="mk-resume-header-name">sam.lindqvist</h1>
+            <p class="mk-resume-header-role" data-i18n-target="role">Infrastructure engineer. I make deploys dull.</p>
+            <ul class="mk-resume-header-facts">
+              <li><i data-lucide="map-pin"></i> Stockholm, UTC+1</li>
+              <li
+                ><i data-lucide="code-xml"></i>
+                <a href="https://github.com/" target="_blank" rel="noopener">github.com/samlq</a></li
+              >
+              <li><i data-lucide="mail"></i> <a href="mailto:sam@example.com">sam@example.com</a></li>
             </ul>
+          </div>
+        </header>
+      </div>
+    </section>
+    <div class="pf-page">
+      <section id="pf-dev-repos" aria-labelledby="pf-dev-repos-title">
+        <h2 id="pf-dev-repos-title" data-i18n-target="pinned">pinned</h2>
+        <div class="grid grid-cols-auto gap-4">
+          <article class="mk-repository-item parallax-reveal">
+            <div class="mk-repository-item-head">
+              <i data-lucide="book-marked"></i>
+              <h3 class="mk-repository-item-name"
+                ><a href="#/repos/tidewater" data-router-link
+                  ><span class="mk-repository-item-owner">samlq/</span>tidewater</a
+                ></h3
+              >
+              <span class="badge" data-variant="outline" data-i18n-target="public-1">Public</span>
+            </div>
+            <p class="mk-repository-item-description" data-i18n-target="repo-1"
+              >Back-pressure for job queues - a queue that says no before the database does.</p
+            >
+            <ul
+              class="mk-repository-item-topics"
+              aria-label="Topics"
+              data-i18n-aria-label-en="Topics"
+              data-i18n-aria-label-de="Themen"
+            >
+              <li>queues</li>
+              <li>postgres</li>
+            </ul>
+            <ul class="mk-repository-item-stats">
+              <li><span class="mk-repository-item-language" data-language="go"></span> Go</li>
+              <li><i data-lucide="star"></i> 5.1k<span class="sr-only" data-i18n-target="sr-stars-1"> stars</span></li>
+              <li
+                ><i data-lucide="git-fork"></i> 290<span class="sr-only" data-i18n-target="sr-forks-1"> forks</span></li
+              >
+            </ul>
+          </article>
+          <article class="mk-repository-item parallax-reveal">
+            <div class="mk-repository-item-head">
+              <i data-lucide="book-marked"></i>
+              <h3 class="mk-repository-item-name"
+                ><a href="#/repos/sqlite-cdc" data-router-link
+                  ><span class="mk-repository-item-owner">samlq/</span>sqlite-cdc</a
+                ></h3
+              >
+              <span class="badge" data-variant="outline" data-i18n-target="public-2">Public</span>
+            </div>
+            <p class="mk-repository-item-description" data-i18n-target="repo-2"
+              >Change data capture for SQLite - stream every write to Kafka, NATS or a file.</p
+            >
+            <ul
+              class="mk-repository-item-topics"
+              aria-label="Topics"
+              data-i18n-aria-label-en="Topics"
+              data-i18n-aria-label-de="Themen"
+            >
+              <li>sqlite</li>
+              <li>cdc</li>
+            </ul>
+            <ul class="mk-repository-item-stats">
+              <li><span class="mk-repository-item-language" data-language="rust"></span> Rust</li>
+              <li><i data-lucide="star"></i> 1.9k<span class="sr-only" data-i18n-target="sr-stars-2"> stars</span></li>
+              <li
+                ><i data-lucide="git-fork"></i> 77<span class="sr-only" data-i18n-target="sr-forks-2"> forks</span></li
+              >
+            </ul>
+          </article>
+          <article class="mk-repository-item parallax-reveal">
+            <div class="mk-repository-item-head">
+              <i data-lucide="book-marked"></i>
+              <h3 class="mk-repository-item-name"
+                ><a href="#/repos/dotfiles" data-router-link
+                  ><span class="mk-repository-item-owner">samlq/</span>dotfiles</a
+                ></h3
+              >
+              <span class="badge" data-variant="outline" data-i18n-target="public-3">Public</span>
+            </div>
+            <p class="mk-repository-item-description" data-i18n-target="repo-3"
+              >zsh, tmux and neovim - set up in one command on a fresh machine.</p
+            >
+            <ul
+              class="mk-repository-item-topics"
+              aria-label="Topics"
+              data-i18n-aria-label-en="Topics"
+              data-i18n-aria-label-de="Themen"
+            >
+              <li>neovim</li>
+              <li>tmux</li>
+            </ul>
+            <ul class="mk-repository-item-stats">
+              <li><span class="mk-repository-item-language" data-language="shell"></span> Shell</li>
+              <li><i data-lucide="star"></i> 412<span class="sr-only" data-i18n-target="sr-stars-3"> stars</span></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+      <section aria-labelledby="pf-dev-activity">
+        <h2 id="pf-dev-activity" data-i18n-target="activity">activity --last 12 months</h2>
+        <div class="pf-activity">
+          <svg
+            viewBox="0 0 520 100"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label="Commits per month, rising from 40 to 140 over the year"
+            data-i18n-aria-label-en="Commits per month, rising from 40 to 140 over the year"
+            data-i18n-aria-label-de="Commits pro Monat, über das Jahr von 40 auf 140 steigend"
+          >
+            <defs>
+              <linearGradient id="pf-dev-fill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" style="stop-color: var(--chart-1); stop-opacity: 0.35" />
+                <stop offset="1" style="stop-color: var(--chart-1); stop-opacity: 0" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M0 80 L47 72 L94 76 L141 60 L188 64 L235 48 L282 52 L329 38 L376 42 L423 26 L470 30 L520 12 L520 100 L0 100 Z"
+              fill="url(#pf-dev-fill)"
+            />
+            <path
+              d="M0 80 L47 72 L94 76 L141 60 L188 64 L235 48 L282 52 L329 38 L376 42 L423 26 L470 30 L520 12"
+              fill="none"
+              style="stroke: var(--chart-1)"
+              stroke-width="2"
+              vector-effect="non-scaling-stroke"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div class="pf-activity-axis" aria-hidden="true"
+            ><span data-i18n-target="ax-1">Nov 2025</span><span data-i18n-target="ax-2">May 2026</span
+            ><span data-i18n-target="ax-3">Oct 2026</span></div
+          >
+          <section class="mk-stats" style="padding: 0">
+            <div class="mk-stats-grid" data-variant="cards">
+              <div class="mk-stat"
+                ><span class="mk-stat-value" data-i18n-target="st-1v">1,284</span
+                ><span class="mk-stat-label" data-i18n-target="st-1">commits</span></div
+              >
+              <div class="mk-stat"
+                ><span class="mk-stat-value">312</span
+                ><span class="mk-stat-label" data-i18n-target="st-2">pull requests merged</span></div
+              >
+              <div class="mk-stat"
+                ><span class="mk-stat-value" data-i18n-target="st-3v">7.4k</span
+                ><span class="mk-stat-label" data-i18n-target="st-3">stars across repos</span></div
+              >
+            </div>
           </section>
         </div>
       </section>
-      <section aria-labelledby="pf-dev-log">
-        <h2 id="pf-dev-log">git log --career</h2>
-        <ol class="mk-resume-entries" data-variant="timeline">
-          <li class="mk-resume-entry">
-            <span class="mk-resume-entry-mark" aria-hidden="true"></span>
-            <div class="mk-resume-entry-body">
-              <div class="mk-resume-entry-head">
-                <h3 class="mk-resume-entry-title">Staff engineer, build and release</h3>
-                <p class="mk-resume-entry-org"><a href="#">Globex</a></p>
-                <p class="mk-resume-entry-when"><time datetime="2022-01">2022</time> - today</p>
+      <div class="pf-two">
+        <section aria-labelledby="pf-dev-stack">
+          <h2 id="pf-dev-stack">stack</h2>
+          <div class="mk-skill-matrix" data-variant="dots">
+            <section
+              class="mk-skill-matrix-group"
+              aria-label="Languages and systems"
+              data-i18n-aria-label-en="Languages and systems"
+              data-i18n-aria-label-de="Sprachen und Systeme"
+            >
+              <ul class="mk-skill-matrix-list">
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-dev-go">Go</label>
+                  <meter class="mk-skill-matrix-level" id="pf-dev-go" min="0" max="5" value="5" data-i18n-target="lv-go"
+                    >5 of 5</meter
+                  >
+                  <span class="mk-skill-matrix-note" data-i18n-target="yr-go">8 yrs</span>
+                </li>
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-dev-pg">PostgreSQL</label>
+                  <meter class="mk-skill-matrix-level" id="pf-dev-pg" min="0" max="5" value="5" data-i18n-target="lv-pg"
+                    >5 of 5</meter
+                  >
+                  <span class="mk-skill-matrix-note" data-i18n-target="yr-pg">9 yrs</span>
+                </li>
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-dev-k8s">Kubernetes</label>
+                  <meter
+                    class="mk-skill-matrix-level"
+                    id="pf-dev-k8s"
+                    min="0"
+                    max="5"
+                    value="4"
+                    data-i18n-target="lv-k8s"
+                    >4 of 5</meter
+                  >
+                  <span class="mk-skill-matrix-note" data-i18n-target="yr-k8s">6 yrs</span>
+                </li>
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-dev-rust">Rust</label>
+                  <meter
+                    class="mk-skill-matrix-level"
+                    id="pf-dev-rust"
+                    min="0"
+                    max="5"
+                    value="3"
+                    data-i18n-target="lv-rust"
+                    >3 of 5</meter
+                  >
+                  <span class="mk-skill-matrix-note" data-i18n-target="yr-rust">3 yrs</span>
+                </li>
+                <li class="mk-skill-matrix-skill">
+                  <label class="mk-skill-matrix-name" for="pf-dev-nix">Nix</label>
+                  <meter
+                    class="mk-skill-matrix-level"
+                    id="pf-dev-nix"
+                    min="0"
+                    max="5"
+                    value="2"
+                    data-i18n-target="lv-nix"
+                    >2 of 5</meter
+                  >
+                  <span class="mk-skill-matrix-note" data-i18n-target="yr-nix">1 yr</span>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </section>
+        <section id="pf-dev-log" aria-labelledby="pf-dev-log-title">
+          <h2 id="pf-dev-log-title" data-i18n-target="career">git log --career</h2>
+          <ol class="mk-resume-entries" data-variant="timeline">
+            <li class="mk-resume-entry">
+              <span class="mk-resume-entry-mark" aria-hidden="true"></span>
+              <div class="mk-resume-entry-body">
+                <div class="mk-resume-entry-head">
+                  <h3 class="mk-resume-entry-title" data-i18n-target="job-1">Staff engineer, build and release</h3>
+                  <p class="mk-resume-entry-org"><span>Globex</span></p>
+                  <p class="mk-resume-entry-when"
+                    ><time datetime="2022-01">2022</time> - <span data-i18n-target="today">today</span></p
+                  >
+                </div>
               </div>
-            </div>
-          </li>
-          <li class="mk-resume-entry">
-            <span class="mk-resume-entry-mark" aria-hidden="true"></span>
-            <div class="mk-resume-entry-body">
-              <div class="mk-resume-entry-head">
-                <h3 class="mk-resume-entry-title">Site reliability engineer</h3>
-                <p class="mk-resume-entry-org"><a href="#">Initech</a></p>
-                <p class="mk-resume-entry-when"
-                  ><time datetime="2017-03">2017</time> - <time datetime="2021-12">2021</time></p
-                >
+            </li>
+            <li class="mk-resume-entry">
+              <span class="mk-resume-entry-mark" aria-hidden="true"></span>
+              <div class="mk-resume-entry-body">
+                <div class="mk-resume-entry-head">
+                  <h3 class="mk-resume-entry-title">Site reliability engineer</h3>
+                  <p class="mk-resume-entry-org"><span>Initech</span></p>
+                  <p class="mk-resume-entry-when"
+                    ><time datetime="2017-03">2017</time> - <time datetime="2021-12">2021</time></p
+                  >
+                </div>
               </div>
-            </div>
-          </li>
-          <li class="mk-resume-entry">
-            <span class="mk-resume-entry-mark" aria-hidden="true"></span>
-            <div class="mk-resume-entry-body">
-              <div class="mk-resume-entry-head">
-                <h3 class="mk-resume-entry-title">B.Sc. Computer Science</h3>
-                <p class="mk-resume-entry-org"><a href="#">KTH Stockholm</a></p>
-                <p class="mk-resume-entry-when"
-                  ><time datetime="2014">2014</time> - <time datetime="2017">2017</time></p
-                >
+            </li>
+            <li class="mk-resume-entry">
+              <span class="mk-resume-entry-mark" aria-hidden="true"></span>
+              <div class="mk-resume-entry-body">
+                <div class="mk-resume-entry-head">
+                  <h3 class="mk-resume-entry-title" data-i18n-target="job-3">B.Sc. Computer Science</h3>
+                  <p class="mk-resume-entry-org"><span>KTH Stockholm</span></p>
+                  <p class="mk-resume-entry-when"
+                    ><time datetime="2014">2014</time> - <time datetime="2017">2017</time></p
+                  >
+                </div>
               </div>
-            </div>
-          </li>
-        </ol>
-      </section>
-    </div>
-    <section aria-labelledby="pf-dev-posts">
-      <h2 id="pf-dev-posts">writing</h2>
-      <ul class="pf-posts">
-        <li>
-          <time datetime="2026-09-14">2026-09-14</time>
-          <a href="#">Your queue needs a no</a>
-          <p>Back-pressure explained with a coffee shop and a very long line.</p>
-        </li>
-        <li>
-          <time datetime="2026-05-02">2026-05-02</time>
-          <a href="#">Twelve months without a 3 a.m. page</a>
-          <p>What we changed in on-call, and what we deleted.</p>
-        </li>
-        <li>
-          <time datetime="2025-11-20">2025-11-20</time>
-          <a href="#">SQLite is a fine message bus (until it is not)</a>
-          <p>Notes from building sqlite-cdc.</p>
-        </li>
-      </ul>
-    </section>
-    <aside class="mk-availability" data-variant="banner" aria-labelledby="pf-dev-hire">
-      <p class="mk-availability-status"
-        ><span class="indicator-dot" data-variant="neutral" aria-hidden="true"></span> Not looking</p
-      >
-      <p class="mk-availability-title" id="pf-dev-hire">Happy at Globex - but always up for a talk about queues.</p>
-      <div class="mk-availability-actions">
-        <a class="btn" data-size="sm" href="mailto:sam@example.com">Write me</a>
+            </li>
+          </ol>
+        </section>
       </div>
-    </aside>
+      <section id="pf-dev-posts" aria-labelledby="pf-dev-posts-title">
+        <h2 id="pf-dev-posts-title" data-i18n-target="writing">writing</h2>
+        <ul class="pf-posts">
+          <li>
+            <time datetime="2026-09-14">2026-09-14</time>
+            <a href="#/writing/your-queue-needs-a-no" data-router-link data-i18n-target="post-1"
+              >Your queue needs a no</a
+            >
+            <p data-i18n-target="post-1-sub">Back-pressure explained with a coffee shop and a very long line.</p>
+          </li>
+          <li>
+            <time datetime="2026-05-02">2026-05-02</time>
+            <a href="#/writing/twelve-months-without-a-page" data-router-link data-i18n-target="post-2"
+              >Twelve months without a 3 a.m. page</a
+            >
+            <p data-i18n-target="post-2-sub">What we changed in on-call, and what we deleted.</p>
+          </li>
+          <li>
+            <time datetime="2025-11-20">2025-11-20</time>
+            <a href="#/writing/sqlite-is-a-fine-message-bus" data-router-link data-i18n-target="post-3"
+              >SQLite is a fine message bus (until it is not)</a
+            >
+            <p data-i18n-target="post-3-sub">Notes from building sqlite-cdc.</p>
+          </li>
+        </ul>
+      </section>
+      <aside id="pf-dev-contact" class="mk-availability" data-variant="banner" aria-labelledby="pf-dev-hire">
+        <p class="mk-availability-status"
+          ><span class="indicator-dot" data-variant="neutral" aria-hidden="true"></span>
+          <span data-i18n-target="avail">Not looking</span></p
+        >
+        <p class="mk-availability-title" id="pf-dev-hire" data-i18n-target="hire"
+          >Happy at Globex - but always up for a talk about queues.</p
+        >
+        <div class="mk-availability-actions">
+          <a class="btn" data-size="sm" href="mailto:sam@example.com" data-i18n-target="write">Write me</a>
+        </div>
+      </aside>
+    </div>
   </div>
+
+  <!-- a repository: the route's name picks it from the data block below -->
+  <div class="pf-page" data-pf-view="repo" hidden>
+    <nav class="pf-crumbs" aria-label="Breadcrumb" data-i18n-aria-label-en="Breadcrumb" data-i18n-aria-label-de="Pfad">
+      <a href="#pf-dev-repos">~/repos</a> / <span data-repo="name">tidewater</span>
+    </nav>
+    <article class="mk-project-details" aria-labelledby="pf-dev-repo-title">
+      <header class="mk-project-details-head">
+        <h1 class="mk-project-details-title" id="pf-dev-repo-title"
+          ><span class="pf-owner">samlq/</span><span data-repo="name">tidewater</span></h1
+        >
+        <p class="mk-project-details-summary" data-repo="description"
+          >Back-pressure for job queues - a queue that says no before the database does.</p
+        >
+        <p class="pf-repo-tags">
+          <span class="badge" data-variant="outline" data-i18n-target="public-4">Public</span>
+          <span class="badge" data-variant="secondary" data-repo="topic-1">queues</span>
+          <span class="badge" data-variant="secondary" data-repo="topic-2">postgres</span>
+        </p>
+      </header>
+      <div class="mockup-code pf-repo-term" data-chrome="mac" data-title="~/src/tidewater - zsh" data-repo-term>
+        <pre data-prefix="$"><code>go get github.com/samlq/tidewater</code></pre>
+        <pre data-prefix=">"><code>go: added github.com/samlq/tidewater v2.4.0</code></pre>
+        <pre data-prefix="$"><code>tidewater bench --rps 5000</code></pre>
+        <pre data-prefix=">" data-tone="success"><code>accepted 4,812/s · refused 188/s · p99 41 ms</code></pre>
+      </div>
+      <dl class="mk-project-details-facts">
+        <div><dt data-i18n-target="f-lang">Language</dt><dd data-repo="language">Go</dd></div>
+        <div><dt data-i18n-target="f-stars">Stars</dt><dd data-repo="stars">5.1k</dd></div>
+        <div><dt>Forks</dt><dd data-repo="forks">290</dd></div>
+        <div><dt data-i18n-target="f-lic">Licence</dt><dd data-repo="licence">MIT</dd></div>
+        <div><dt data-i18n-target="f-since">Since</dt><dd data-repo="since">2021</dd></div>
+      </dl>
+      <div class="mk-project-details-brief">
+        <section aria-labelledby="pf-dev-repo-why">
+          <h2 id="pf-dev-repo-why" data-i18n-target="why">why it exists</h2>
+          <p data-repo="why"
+            >At Initech our job queue accepted everything, and the database paid for it: every spike became a backlog,
+            every backlog a page at 3 a.m. Retries made it worse.</p
+          >
+        </section>
+        <section aria-labelledby="pf-dev-repo-did">
+          <h2 id="pf-dev-repo-did" data-i18n-target="did">what I did</h2>
+          <p data-repo="did"
+            >I wrote it on weekends, then at work: a queue that measures how long the database takes to answer and stops
+            taking jobs before it drowns. Producers get a clear "not now" with a retry time instead of a timeout.</p
+          >
+        </section>
+      </div>
+      <figure class="pf-repo-shot">
+        <img data-repo-shot src="https://picsum.photos/id/1038/1400/600" alt="Dark, choppy water of the open sea" />
+        <figcaption data-repo="caption">The name: water that pushes back</figcaption>
+      </figure>
+      <section class="pf-repo-result" aria-labelledby="pf-dev-repo-result">
+        <h2 id="pf-dev-repo-result" data-i18n-target="result">what it changed</h2>
+        <p data-repo="result"
+          >Five years and 290 forks later it runs in front of Postgres at companies of every size. At Globex it took
+          queue incidents from eleven a quarter to none.</p
+        >
+      </section>
+      <nav
+        class="mk-article-nav"
+        aria-label="More repositories"
+        data-i18n-aria-label-en="More repositories"
+        data-i18n-aria-label-de="Weitere Repositories"
+      >
+        <a class="mk-article-nav-link" href="#/repos/dotfiles" rel="prev" data-router-link
+          ><span class="mk-article-nav-dir"
+            ><i data-lucide="arrow-left" aria-hidden="true"></i> <span data-i18n-target="prev-1">previous</span></span
+          ><span class="mk-article-nav-title" data-repo-prev>samlq/dotfiles</span></a
+        >
+        <a class="mk-article-nav-link" href="#/repos/sqlite-cdc" rel="next" data-router-link
+          ><span class="mk-article-nav-dir"
+            ><span data-i18n-target="next-1">next</span> <i data-lucide="arrow-right" aria-hidden="true"></i></span
+          ><span class="mk-article-nav-title" data-repo-next>samlq/sqlite-cdc</span></a
+        >
+      </nav>
+    </article>
+  </div>
+
+  <!-- a post: the route's slug picks it from the data block below -->
+  <div class="pf-page" data-pf-view="post" hidden>
+    <nav class="pf-crumbs" aria-label="Breadcrumb" data-i18n-aria-label-en="Breadcrumb" data-i18n-aria-label-de="Pfad">
+      <a href="#pf-dev-posts">~/writing</a> / <span data-post="file">your-queue-needs-a-no.md</span>
+    </nav>
+    <article class="pf-post" aria-labelledby="pf-dev-post-title">
+      <header class="mk-article-header">
+        <a class="mk-article-header-category" href="#pf-dev-posts" data-i18n-target="cat">writing</a>
+        <h1 class="mk-article-header-title" id="pf-dev-post-title" data-post="title">Your queue needs a no</h1>
+        <p class="mk-article-header-subtitle" data-post="subtitle"
+          >Back-pressure explained with a coffee shop and a very long line.</p
+        >
+        <div class="mk-article-header-byline">
+          <span class="avatar"
+            ><img class="avatar-image shape-hexagon" src="https://picsum.photos/id/1005/96/96" alt=""
+          /></span>
+          <div>
+            <a class="mk-article-header-author" href="#/" data-router-link>Sam Lindqvist</a>
+            <div class="mk-article-header-meta">
+              <time data-post-date datetime="2026-09-14">14 September 2026</time
+              ><span data-post="read">6 min read</span>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- the post's blocks (paragraphs, headings, a terminal, a pull quote) come from the data block -->
+      <div class="mk-article-body" data-post-body></div>
+      <nav
+        class="mk-article-nav"
+        aria-label="More writing"
+        data-i18n-aria-label-en="More writing"
+        data-i18n-aria-label-de="Weitere Texte"
+      >
+        <a class="mk-article-nav-link" href="#/writing/sqlite-is-a-fine-message-bus" rel="prev" data-router-link
+          ><span class="mk-article-nav-dir"
+            ><i data-lucide="arrow-left" aria-hidden="true"></i> <span data-i18n-target="prev-2">previous</span></span
+          ><span class="mk-article-nav-title" data-post-prev>SQLite is a fine message bus (until it is not)</span></a
+        >
+        <a class="mk-article-nav-link" href="#/writing/twelve-months-without-a-page" rel="next" data-router-link
+          ><span class="mk-article-nav-dir"
+            ><span data-i18n-target="next-2">next</span> <i data-lucide="arrow-right" aria-hidden="true"></i></span
+          ><span class="mk-article-nav-title" data-post-next>Twelve months without a 3 a.m. page</span></a
+        >
+      </nav>
+    </article>
+  </div>
+
+  <footer class="mk-footer pf-tmux">
+    <div class="mk-footer-inner">
+      <nav
+        class="mk-footer-nav"
+        aria-label="Footer"
+        data-i18n-aria-label-en="Footer"
+        data-i18n-aria-label-de="Fußzeile"
+      >
+        <div class="mk-footer-col">
+          <h2 class="mk-footer-heading">repos</h2>
+          <ul class="mk-footer-list">
+            <li><a href="#/repos/tidewater" data-router-link>tidewater</a></li>
+            <li><a href="#/repos/sqlite-cdc" data-router-link>sqlite-cdc</a></li>
+            <li><a href="#/repos/dotfiles" data-router-link>dotfiles</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h2 class="mk-footer-heading" data-i18n-target="ft-writing">writing</h2>
+          <ul class="mk-footer-list">
+            <li
+              ><a href="#/writing/your-queue-needs-a-no" data-router-link data-i18n-target="ft-p1"
+                >Your queue needs a no</a
+              ></li
+            >
+            <li
+              ><a href="#/writing/twelve-months-without-a-page" data-router-link data-i18n-target="ft-p2"
+                >Twelve months without a page</a
+              ></li
+            >
+            <li
+              ><a href="#/writing/sqlite-is-a-fine-message-bus" data-router-link data-i18n-target="ft-p3"
+                >SQLite is a fine message bus</a
+              ></li
+            >
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h2 class="mk-footer-heading" data-i18n-target="ft-else">elsewhere</h2>
+          <ul class="mk-footer-list">
+            <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="https://mastodon.social/" target="_blank" rel="noopener">Mastodon</a></li>
+            <li><a href="mailto:sam@example.com">sam@example.com</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="mk-footer-bottom">
+        <a class="mk-footer-brand" href="#/" data-router-link><span class="mk-footer-brand-name">~/sam</span></a>
+        <p class="mk-footer-copy" data-i18n-target="copy">exit 0 · built by hand in Stockholm · © 2026</p>
+      </div>
+    </div>
+    <p class="pf-status" aria-hidden="true">
+      <span>sam@stockholm: ~/portfolio</span>
+      <span>main ✓ · utf-8 · 14:02</span>
+    </p>
+  </footer>
+
+  <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="nav-writing" data-i18n-locale="en">writing</template>
+  <template data-i18n-for="nav-writing" data-i18n-locale="de">texte</template>
+  <template data-i18n-for="nav-contact" data-i18n-locale="en">contact</template>
+  <template data-i18n-for="nav-contact" data-i18n-locale="de">kontakt</template>
+  <template data-i18n-for="role" data-i18n-locale="en">Infrastructure engineer. I make deploys dull.</template>
+  <template data-i18n-for="role" data-i18n-locale="de"
+    >Infrastruktur-Ingenieur. Ich mache Deployments langweilig.</template
+  >
+  <template data-i18n-for="pinned" data-i18n-locale="en">pinned</template>
+  <template data-i18n-for="pinned" data-i18n-locale="de">angepinnt</template>
+  <template data-i18n-for="public-1" data-i18n-locale="en">Public</template>
+  <template data-i18n-for="public-1" data-i18n-locale="de">Öffentlich</template>
+  <template data-i18n-for="public-2" data-i18n-locale="en">Public</template>
+  <template data-i18n-for="public-2" data-i18n-locale="de">Öffentlich</template>
+  <template data-i18n-for="public-3" data-i18n-locale="en">Public</template>
+  <template data-i18n-for="public-3" data-i18n-locale="de">Öffentlich</template>
+  <template data-i18n-for="public-4" data-i18n-locale="en">Public</template>
+  <template data-i18n-for="public-4" data-i18n-locale="de">Öffentlich</template>
+  <template data-i18n-for="repo-1" data-i18n-locale="en"
+    >Back-pressure for job queues - a queue that says no before the database does.</template
+  >
+  <template data-i18n-for="repo-1" data-i18n-locale="de"
+    >Gegendruck für Job-Queues - eine Queue, die Nein sagt, bevor es die Datenbank tut.</template
+  >
+  <template data-i18n-for="repo-2" data-i18n-locale="en"
+    >Change data capture for SQLite - stream every write to Kafka, NATS or a file.</template
+  >
+  <template data-i18n-for="repo-2" data-i18n-locale="de"
+    >Change Data Capture für SQLite - jeder Schreibvorgang als Strom nach Kafka, NATS oder in eine Datei.</template
+  >
+  <template data-i18n-for="repo-3" data-i18n-locale="en"
+    >zsh, tmux and neovim - set up in one command on a fresh machine.</template
+  >
+  <template data-i18n-for="repo-3" data-i18n-locale="de"
+    >zsh, tmux und neovim - mit einem Befehl auf einem frischen Rechner eingerichtet.</template
+  >
+  <template data-i18n-for="sr-stars-1" data-i18n-locale="en"> stars</template>
+  <template data-i18n-for="sr-stars-1" data-i18n-locale="de"> Sterne</template>
+  <template data-i18n-for="sr-stars-2" data-i18n-locale="en"> stars</template>
+  <template data-i18n-for="sr-stars-2" data-i18n-locale="de"> Sterne</template>
+  <template data-i18n-for="sr-stars-3" data-i18n-locale="en"> stars</template>
+  <template data-i18n-for="sr-stars-3" data-i18n-locale="de"> Sterne</template>
+  <template data-i18n-for="sr-forks-1" data-i18n-locale="en"> forks</template>
+  <template data-i18n-for="sr-forks-1" data-i18n-locale="de"> Forks</template>
+  <template data-i18n-for="sr-forks-2" data-i18n-locale="en"> forks</template>
+  <template data-i18n-for="sr-forks-2" data-i18n-locale="de"> Forks</template>
+  <template data-i18n-for="activity" data-i18n-locale="en">activity --last 12 months</template>
+  <template data-i18n-for="activity" data-i18n-locale="de">aktivität --letzte 12 monate</template>
+  <template data-i18n-for="ax-1" data-i18n-locale="en">Nov 2025</template>
+  <template data-i18n-for="ax-1" data-i18n-locale="de">Nov. 2025</template>
+  <template data-i18n-for="ax-2" data-i18n-locale="en">May 2026</template>
+  <template data-i18n-for="ax-2" data-i18n-locale="de">Mai 2026</template>
+  <template data-i18n-for="ax-3" data-i18n-locale="en">Oct 2026</template>
+  <template data-i18n-for="ax-3" data-i18n-locale="de">Okt. 2026</template>
+  <template data-i18n-for="st-1v" data-i18n-locale="en">1,284</template>
+  <template data-i18n-for="st-1v" data-i18n-locale="de">1.284</template>
+  <template data-i18n-for="st-3v" data-i18n-locale="en">7.4k</template>
+  <template data-i18n-for="st-3v" data-i18n-locale="de">7,4k</template>
+  <template data-i18n-for="st-1" data-i18n-locale="en">commits</template>
+  <template data-i18n-for="st-1" data-i18n-locale="de">Commits</template>
+  <template data-i18n-for="st-2" data-i18n-locale="en">pull requests merged</template>
+  <template data-i18n-for="st-2" data-i18n-locale="de">Pull-Requests gemergt</template>
+  <template data-i18n-for="st-3" data-i18n-locale="en">stars across repos</template>
+  <template data-i18n-for="st-3" data-i18n-locale="de">Sterne über alle Repos</template>
+  <template data-i18n-for="lv-go" data-i18n-locale="en">5 of 5</template>
+  <template data-i18n-for="lv-go" data-i18n-locale="de">5 von 5</template>
+  <template data-i18n-for="yr-go" data-i18n-locale="en">8 yrs</template>
+  <template data-i18n-for="yr-go" data-i18n-locale="de">8 J.</template>
+  <template data-i18n-for="lv-pg" data-i18n-locale="en">5 of 5</template>
+  <template data-i18n-for="lv-pg" data-i18n-locale="de">5 von 5</template>
+  <template data-i18n-for="yr-pg" data-i18n-locale="en">9 yrs</template>
+  <template data-i18n-for="yr-pg" data-i18n-locale="de">9 J.</template>
+  <template data-i18n-for="lv-k8s" data-i18n-locale="en">4 of 5</template>
+  <template data-i18n-for="lv-k8s" data-i18n-locale="de">4 von 5</template>
+  <template data-i18n-for="yr-k8s" data-i18n-locale="en">6 yrs</template>
+  <template data-i18n-for="yr-k8s" data-i18n-locale="de">6 J.</template>
+  <template data-i18n-for="lv-rust" data-i18n-locale="en">3 of 5</template>
+  <template data-i18n-for="lv-rust" data-i18n-locale="de">3 von 5</template>
+  <template data-i18n-for="yr-rust" data-i18n-locale="en">3 yrs</template>
+  <template data-i18n-for="yr-rust" data-i18n-locale="de">3 J.</template>
+  <template data-i18n-for="lv-nix" data-i18n-locale="en">2 of 5</template>
+  <template data-i18n-for="lv-nix" data-i18n-locale="de">2 von 5</template>
+  <template data-i18n-for="yr-nix" data-i18n-locale="en">1 yr</template>
+  <template data-i18n-for="yr-nix" data-i18n-locale="de">1 J.</template>
+  <template data-i18n-for="career" data-i18n-locale="en">git log --career</template>
+  <template data-i18n-for="career" data-i18n-locale="de">git log --karriere</template>
+  <template data-i18n-for="job-1" data-i18n-locale="en">Staff engineer, build and release</template>
+  <template data-i18n-for="job-1" data-i18n-locale="de">Staff Engineer, Build und Release</template>
+  <template data-i18n-for="job-3" data-i18n-locale="en">B.Sc. Computer Science</template>
+  <template data-i18n-for="job-3" data-i18n-locale="de">B.Sc. Informatik</template>
+  <template data-i18n-for="today" data-i18n-locale="en">today</template>
+  <template data-i18n-for="today" data-i18n-locale="de">heute</template>
+  <template data-i18n-for="writing" data-i18n-locale="en">writing</template>
+  <template data-i18n-for="writing" data-i18n-locale="de">texte</template>
+  <template data-i18n-for="post-1" data-i18n-locale="en">Your queue needs a no</template>
+  <template data-i18n-for="post-1" data-i18n-locale="de">Deine Queue braucht ein Nein</template>
+  <template data-i18n-for="post-1-sub" data-i18n-locale="en"
+    >Back-pressure explained with a coffee shop and a very long line.</template
+  >
+  <template data-i18n-for="post-1-sub" data-i18n-locale="de"
+    >Gegendruck, erklärt mit einem Café und einer sehr langen Schlange.</template
+  >
+  <template data-i18n-for="post-2" data-i18n-locale="en">Twelve months without a 3 a.m. page</template>
+  <template data-i18n-for="post-2" data-i18n-locale="de">Zwölf Monate ohne Alarm um 3 Uhr nachts</template>
+  <template data-i18n-for="post-2-sub" data-i18n-locale="en">What we changed in on-call, and what we deleted.</template>
+  <template data-i18n-for="post-2-sub" data-i18n-locale="de"
+    >Was wir an der Rufbereitschaft geändert haben - und was wir gelöscht haben.</template
+  >
+  <template data-i18n-for="post-3" data-i18n-locale="en">SQLite is a fine message bus (until it is not)</template>
+  <template data-i18n-for="post-3" data-i18n-locale="de"
+    >SQLite ist ein guter Nachrichtenbus (bis es keiner mehr ist)</template
+  >
+  <template data-i18n-for="post-3-sub" data-i18n-locale="en">Notes from building sqlite-cdc.</template>
+  <template data-i18n-for="post-3-sub" data-i18n-locale="de">Notizen aus der Arbeit an sqlite-cdc.</template>
+  <template data-i18n-for="avail" data-i18n-locale="en">Not looking</template>
+  <template data-i18n-for="avail" data-i18n-locale="de">Nicht auf der Suche</template>
+  <template data-i18n-for="hire" data-i18n-locale="en"
+    >Happy at Globex - but always up for a talk about queues.</template
+  >
+  <template data-i18n-for="hire" data-i18n-locale="de"
+    >Glücklich bei Globex - aber immer zu haben für ein Gespräch über Queues.</template
+  >
+  <template data-i18n-for="write" data-i18n-locale="en">Write me</template>
+  <template data-i18n-for="write" data-i18n-locale="de">Schreib mir</template>
+  <template data-i18n-for="f-lang" data-i18n-locale="en">Language</template>
+  <template data-i18n-for="f-lang" data-i18n-locale="de">Sprache</template>
+  <template data-i18n-for="f-stars" data-i18n-locale="en">Stars</template>
+  <template data-i18n-for="f-stars" data-i18n-locale="de">Sterne</template>
+  <template data-i18n-for="f-lic" data-i18n-locale="en">Licence</template>
+  <template data-i18n-for="f-lic" data-i18n-locale="de">Lizenz</template>
+  <template data-i18n-for="f-since" data-i18n-locale="en">Since</template>
+  <template data-i18n-for="f-since" data-i18n-locale="de">Seit</template>
+  <template data-i18n-for="why" data-i18n-locale="en">why it exists</template>
+  <template data-i18n-for="why" data-i18n-locale="de">warum es das gibt</template>
+  <template data-i18n-for="did" data-i18n-locale="en">what I did</template>
+  <template data-i18n-for="did" data-i18n-locale="de">was ich gemacht habe</template>
+  <template data-i18n-for="result" data-i18n-locale="en">what it changed</template>
+  <template data-i18n-for="result" data-i18n-locale="de">was es verändert hat</template>
+  <template data-i18n-for="prev-1" data-i18n-locale="en">previous</template>
+  <template data-i18n-for="prev-1" data-i18n-locale="de">zurück</template>
+  <template data-i18n-for="prev-2" data-i18n-locale="en">previous</template>
+  <template data-i18n-for="prev-2" data-i18n-locale="de">zurück</template>
+  <template data-i18n-for="next-1" data-i18n-locale="en">next</template>
+  <template data-i18n-for="next-1" data-i18n-locale="de">weiter</template>
+  <template data-i18n-for="next-2" data-i18n-locale="en">next</template>
+  <template data-i18n-for="next-2" data-i18n-locale="de">weiter</template>
+  <template data-i18n-for="cat" data-i18n-locale="en">writing</template>
+  <template data-i18n-for="cat" data-i18n-locale="de">texte</template>
+  <template data-i18n-for="ft-writing" data-i18n-locale="en">writing</template>
+  <template data-i18n-for="ft-writing" data-i18n-locale="de">texte</template>
+  <template data-i18n-for="ft-else" data-i18n-locale="en">elsewhere</template>
+  <template data-i18n-for="ft-else" data-i18n-locale="de">anderswo</template>
+  <template data-i18n-for="ft-p1" data-i18n-locale="en">Your queue needs a no</template>
+  <template data-i18n-for="ft-p1" data-i18n-locale="de">Deine Queue braucht ein Nein</template>
+  <template data-i18n-for="ft-p2" data-i18n-locale="en">Twelve months without a page</template>
+  <template data-i18n-for="ft-p2" data-i18n-locale="de">Zwölf Monate ohne Alarm</template>
+  <template data-i18n-for="ft-p3" data-i18n-locale="en">SQLite is a fine message bus</template>
+  <template data-i18n-for="ft-p3" data-i18n-locale="de">SQLite als Nachrichtenbus</template>
+  <template data-i18n-for="copy" data-i18n-locale="en">exit 0 · built by hand in Stockholm · © 2026</template>
+  <template data-i18n-for="copy" data-i18n-locale="de">exit 0 · von Hand gebaut in Stockholm · © 2026</template>
+  <!-- the repositories and the posts the routes name, in order -->
+  <script type="application/json" id="pf-dev-data">
+    {
+      "repos": {
+        "tidewater": {
+          "description": "Back-pressure for job queues - a queue that says no before the database does.",
+          "topics": ["queues", "postgres"],
+          "language": "Go",
+          "stars": "5.1k",
+          "forks": "290",
+          "licence": "MIT",
+          "since": "2021",
+          "why": "At Initech our job queue accepted everything, and the database paid for it: every spike became a backlog, every backlog a page at 3 a.m. Retries made it worse.",
+          "did": "I wrote it on weekends, then at work: a queue that measures how long the database takes to answer and stops taking jobs before it drowns. Producers get a clear \"not now\" with a retry time instead of a timeout.",
+          "result": "Five years and 290 forks later it runs in front of Postgres at companies of every size. At Globex it took queue incidents from eleven a quarter to none.",
+          "shot": [1038, "Dark, choppy water of the open sea", "The name: water that pushes back"],
+          "term": [
+            ["$", "go get github.com/samlq/tidewater"],
+            [">", "go: added github.com/samlq/tidewater v2.4.0"],
+            ["$", "tidewater bench --rps 5000"],
+            [">", "accepted 4,812/s · refused 188/s · p99 41 ms", "success"]
+          ],
+          "de": {
+            "description": "Gegendruck für Job-Queues - eine Queue, die Nein sagt, bevor es die Datenbank tut.",
+            "why": "Bei Initech nahm unsere Job-Queue alles an, und die Datenbank zahlte dafür: Jede Spitze wurde zum Rückstau, jeder Rückstau zu einem Alarm um 3 Uhr nachts. Wiederholungen machten es schlimmer.",
+            "did": "Ich habe sie an Wochenenden geschrieben, dann bei der Arbeit: eine Queue, die misst, wie lange die Datenbank zum Antworten braucht, und keine Jobs mehr annimmt, bevor sie untergeht. Produzenten bekommen ein klares \"jetzt nicht\" mit einer Wartezeit statt eines Timeouts.",
+            "result": "Fünf Jahre und 290 Forks später läuft sie vor Postgres in Firmen jeder Größe. Bei Globex hat sie die Queue-Störungen von elf pro Quartal auf null gebracht.",
+            "alt": "Dunkles, aufgewühltes Wasser auf offener See",
+            "caption": "Der Name: Wasser, das zurückdrückt"
+          }
+        },
+        "sqlite-cdc": {
+          "description": "Change data capture for SQLite - stream every write to Kafka, NATS or a file.",
+          "topics": ["sqlite", "cdc"],
+          "language": "Rust",
+          "stars": "1.9k",
+          "forks": "77",
+          "licence": "Apache-2.0",
+          "since": "2024",
+          "why": "Small services keep their state in SQLite, and everything else wants to know when it changes. Polling a table every second is a cost you pay forever.",
+          "did": "sqlite-cdc reads the write-ahead log as SQLite writes it and turns every committed change into an event, with the row before and after. I wrote the log reader, the Kafka and NATS sinks and a test suite that kills the database on purpose.",
+          "result": "No change is lost when the process dies mid-write: the cursor only moves after a sink confirms. It streams 40,000 changes a second from a single file on a laptop.",
+          "shot": [1053, "Foaming green water seen from above", "Every write, as it happens"],
+          "term": [
+            ["$", "cargo install sqlite-cdc"],
+            ["$", "sqlite-cdc watch app.db --sink nats://localhost:4222"],
+            [">", "streaming app.db · cursor 0x3f2a · 0 behind", "success"],
+            [">", "orders: UPDATE id=1042 status pending → paid"]
+          ],
+          "de": {
+            "description": "Change Data Capture für SQLite - jeder Schreibvorgang als Strom nach Kafka, NATS oder in eine Datei.",
+            "why": "Kleine Dienste halten ihren Zustand in SQLite, und alles andere will wissen, wann er sich ändert. Eine Tabelle jede Sekunde abzufragen, ist ein Preis, den man für immer zahlt.",
+            "did": "sqlite-cdc liest das Write-Ahead-Log, während SQLite es schreibt, und macht aus jeder bestätigten Änderung ein Ereignis, mit der Zeile vorher und nachher. Ich habe den Log-Leser geschrieben, die Kafka- und NATS-Senken und eine Testsuite, die die Datenbank absichtlich abstürzen lässt.",
+            "result": "Keine Änderung geht verloren, wenn der Prozess mitten im Schreiben stirbt: Der Cursor rückt erst vor, wenn eine Senke bestätigt. Auf einem Laptop streamt es 40.000 Änderungen pro Sekunde aus einer einzigen Datei.",
+            "alt": "Schäumendes grünes Wasser, von oben gesehen",
+            "caption": "Jeder Schreibvorgang, sobald er passiert"
+          }
+        },
+        "dotfiles": {
+          "description": "zsh, tmux and neovim - set up in one command on a fresh machine.",
+          "topics": ["neovim", "tmux"],
+          "language": "Shell",
+          "stars": "412",
+          "forks": "31",
+          "licence": "Unlicense",
+          "since": "2016",
+          "why": "A new laptop used to cost me a day of copying settings and remembering plugins. A dead laptop once cost me two.",
+          "did": "One script that installs the tools, links the config and checks itself on macOS and Linux every week. The neovim setup starts in 40 ms and has one plugin per job.",
+          "result": "A fresh machine is ready in seven minutes. Four hundred people starred it, mostly for the tmux status line - the one at the foot of this page.",
+          "shot": [
+            366,
+            "A hand on a mouse beside a keyboard and a mug, in black and white",
+            "Seven minutes after the script"
+          ],
+          "term": [
+            ["$", "curl -fsSL dot.example.com/install | sh"],
+            [">", "linked 23 files · installed 14 tools · 7m02s", "success"],
+            ["$", "nvim --startuptime /dev/stdout | tail -1"],
+            [">", "041.882  --- NVIM STARTED ---"]
+          ],
+          "de": {
+            "description": "zsh, tmux und neovim - mit einem Befehl auf einem frischen Rechner eingerichtet.",
+            "why": "Ein neuer Laptop kostete mich früher einen Tag mit Einstellungen kopieren und Plugins zusammensuchen. Ein kaputter Laptop kostete mich einmal zwei.",
+            "did": "Ein Skript, das die Werkzeuge installiert, die Konfiguration verlinkt und sich jede Woche auf macOS und Linux selbst prüft. Das neovim-Setup startet in 40 ms und hat ein Plugin pro Aufgabe.",
+            "result": "Ein frischer Rechner ist in sieben Minuten bereit. Vierhundert Leute haben es mit einem Stern markiert, meist wegen der tmux-Statuszeile - der am Fuß dieser Seite.",
+            "alt": "Eine Hand auf einer Maus neben einer Tastatur und einem Becher, in Schwarzweiß",
+            "caption": "Sieben Minuten nach dem Skript"
+          }
+        }
+      },
+      "posts": {
+        "your-queue-needs-a-no": {
+          "title": "Your queue needs a no",
+          "subtitle": "Back-pressure explained with a coffee shop and a very long line.",
+          "date": "2026-09-14",
+          "read": "6 min read",
+          "body": [
+            [
+              "lead",
+              "Picture a coffee shop at eight in the morning. The barista makes one coffee a minute and two people a minute walk in. Nobody is turned away, so the line grows - and every coffee takes longer than the one before."
+            ],
+            [
+              "p",
+              "That is what most job queues do. They accept every job, because saying no feels like failing. But the database behind them can only make so many coffees a minute, and a queue that never refuses only moves the waiting to where you cannot see it."
+            ],
+            ["h2", "Saying no early"],
+            [
+              "p",
+              "Back-pressure means the slow part tells the fast part to wait. In tidewater the queue measures how long the database takes to answer. When the 99th percentile crosses a limit, it refuses new jobs and tells the producer when to try again."
+            ],
+            [
+              "code",
+              [
+                ["", "q := tidewater.New(db, tidewater.MaxLatency(200*time.Millisecond))"],
+                ["", "if err := q.Push(ctx, job); errors.Is(err, tidewater.ErrBackpressure) {"],
+                ["", "    retryIn(tidewater.After(err))"],
+                ["", "}"]
+              ]
+            ],
+            ["quote", "A fast no is kinder than a slow yes."],
+            [
+              "p",
+              "In the first week, producers were refused about two percent of the time - and the pages stopped. A refused job waits a few seconds on the sender; a drowned database wakes up a person."
+            ]
+          ],
+          "de": {
+            "title": "Deine Queue braucht ein Nein",
+            "subtitle": "Gegendruck, erklärt mit einem Café und einer sehr langen Schlange.",
+            "read": "6 Min. Lesezeit",
+            "body": [
+              [
+                "lead",
+                "Stell dir ein Café um acht Uhr morgens vor. Die Barista macht einen Kaffee pro Minute, und pro Minute kommen zwei Leute herein. Niemand wird weggeschickt, also wächst die Schlange - und jeder Kaffee dauert länger als der davor."
+              ],
+              [
+                "p",
+                "Genau das tun die meisten Job-Queues. Sie nehmen jeden Job an, weil Nein sagen sich wie Versagen anfühlt. Aber die Datenbank dahinter schafft nur so viele Kaffees pro Minute, und eine Queue, die nie ablehnt, verschiebt das Warten nur dorthin, wo man es nicht sieht."
+              ],
+              ["h2", "Früh Nein sagen"],
+              [
+                "p",
+                "Gegendruck heißt: Der langsame Teil sagt dem schnellen, dass er warten soll. In tidewater misst die Queue, wie lange die Datenbank zum Antworten braucht. Überschreitet das 99. Perzentil eine Grenze, lehnt sie neue Jobs ab und sagt dem Produzenten, wann er es wieder versuchen soll."
+              ],
+              [
+                "code",
+                [
+                  ["", "q := tidewater.New(db, tidewater.MaxLatency(200*time.Millisecond))"],
+                  ["", "if err := q.Push(ctx, job); errors.Is(err, tidewater.ErrBackpressure) {"],
+                  ["", "    retryIn(tidewater.After(err))"],
+                  ["", "}"]
+                ]
+              ],
+              ["quote", "Ein schnelles Nein ist freundlicher als ein langsames Ja."],
+              [
+                "p",
+                "In der ersten Woche wurden Produzenten etwa zwei Prozent der Zeit abgewiesen - und die Alarme hörten auf. Ein abgelehnter Job wartet ein paar Sekunden beim Absender; eine ertrinkende Datenbank weckt einen Menschen."
+              ]
+            ]
+          }
+        },
+        "twelve-months-without-a-page": {
+          "title": "Twelve months without a 3 a.m. page",
+          "subtitle": "What we changed in on-call, and what we deleted.",
+          "date": "2026-05-02",
+          "read": "8 min read",
+          "body": [
+            [
+              "lead",
+              "A year ago our build and release team was paged at night eleven times a quarter. This spring we passed twelve months without a single night page. We did not hire anyone, and we did not buy anything."
+            ],
+            ["h2", "We deleted alerts"],
+            [
+              "p",
+              "We went through every alert that had fired at night and asked one question: could it have waited until nine? Forty-one of fifty-three could. They became tickets with a deadline instead of pages."
+            ],
+            ["h2", "We made deploys boring"],
+            [
+              "p",
+              "Most of the remaining pages came from deploys that went out at five in the afternoon and broke at two in the morning. Deploys now roll out in small steps and roll back on their own when the error rate rises."
+            ],
+            [
+              "code",
+              [
+                ["$", "deploy status api"],
+                [">", "canary 5% · errors 0.02% · healthy"],
+                [">", "canary 25% · errors 0.03% · healthy"],
+                [">", "rollout complete in 18m", "success"]
+              ]
+            ],
+            ["p", "The last few pages came from the queue. That is another post."]
+          ],
+          "de": {
+            "title": "Zwölf Monate ohne Alarm um 3 Uhr nachts",
+            "subtitle": "Was wir an der Rufbereitschaft geändert haben - und was wir gelöscht haben.",
+            "read": "8 Min. Lesezeit",
+            "body": [
+              [
+                "lead",
+                "Vor einem Jahr wurde unser Build- und Release-Team elfmal pro Quartal nachts alarmiert. In diesem Frühjahr haben wir zwölf Monate ohne einen einzigen nächtlichen Alarm geschafft. Wir haben niemanden eingestellt und nichts gekauft."
+              ],
+              ["h2", "Wir haben Alarme gelöscht"],
+              [
+                "p",
+                "Wir sind jeden Alarm durchgegangen, der nachts ausgelöst hatte, und haben eine Frage gestellt: Hätte er bis neun Uhr warten können? Einundvierzig von dreiundfünfzig hätten es gekonnt. Sie wurden zu Tickets mit Frist statt zu Alarmen."
+              ],
+              ["h2", "Wir haben Deployments langweilig gemacht"],
+              [
+                "p",
+                "Die meisten übrigen Alarme kamen von Deployments, die um fünf Uhr nachmittags rausgingen und um zwei Uhr morgens kaputtgingen. Deployments rollen jetzt in kleinen Schritten aus und rollen sich selbst zurück, wenn die Fehlerrate steigt."
+              ],
+              [
+                "code",
+                [
+                  ["$", "deploy status api"],
+                  [">", "canary 5% · errors 0.02% · healthy"],
+                  [">", "canary 25% · errors 0.03% · healthy"],
+                  [">", "rollout complete in 18m", "success"]
+                ]
+              ],
+              ["p", "Die letzten Alarme kamen von der Queue. Das ist ein anderer Text."]
+            ]
+          }
+        },
+        "sqlite-is-a-fine-message-bus": {
+          "title": "SQLite is a fine message bus (until it is not)",
+          "subtitle": "Notes from building sqlite-cdc.",
+          "date": "2025-11-20",
+          "read": "7 min read",
+          "body": [
+            [
+              "lead",
+              "Every small service I built in the last five years kept its state in one SQLite file. Then another service needs to know when that state changes, and someone suggests a message bus."
+            ],
+            [
+              "p",
+              "You can often skip it. A table of events, written in the same transaction as the change, is a perfectly good bus for a few hundred messages a second - and it never disagrees with the data."
+            ],
+            ["h2", "Where it stops"],
+            [
+              "p",
+              "It stops when readers multiply. Every reader polls, every poll is a query, and the file that was quiet is now busy answering \"anything new?\" all day. That is where sqlite-cdc came from: read the write-ahead log once and push each change out."
+            ],
+            [
+              "code",
+              [
+                ["$", "sqlite-cdc watch app.db --sink file:changes.jsonl"],
+                [">", "{\"table\":\"orders\",\"op\":\"UPDATE\",\"id\":1042}"]
+              ]
+            ],
+            ["quote", "Start with a table. Move to a bus when the table tells you to."],
+            ["p", "If you have one reader, keep the table. If you have five, read the log."]
+          ],
+          "de": {
+            "title": "SQLite ist ein guter Nachrichtenbus (bis es keiner mehr ist)",
+            "subtitle": "Notizen aus der Arbeit an sqlite-cdc.",
+            "read": "7 Min. Lesezeit",
+            "body": [
+              [
+                "lead",
+                "Jeder kleine Dienst, den ich in den letzten fünf Jahren gebaut habe, hielt seinen Zustand in einer SQLite-Datei. Dann muss ein anderer Dienst wissen, wann sich dieser Zustand ändert, und jemand schlägt einen Nachrichtenbus vor."
+              ],
+              [
+                "p",
+                "Den kann man sich oft sparen. Eine Tabelle mit Ereignissen, in derselben Transaktion geschrieben wie die Änderung, ist ein völlig brauchbarer Bus für ein paar hundert Nachrichten pro Sekunde - und sie widerspricht den Daten nie."
+              ],
+              ["h2", "Wo es aufhört"],
+              [
+                "p",
+                "Es hört auf, wenn sich die Leser vervielfachen. Jeder Leser fragt ab, jede Abfrage ist eine Query, und die Datei, die ruhig war, beantwortet jetzt den ganzen Tag \"gibt es was Neues?\". Daher kommt sqlite-cdc: das Write-Ahead-Log einmal lesen und jede Änderung hinausschicken."
+              ],
+              [
+                "code",
+                [
+                  ["$", "sqlite-cdc watch app.db --sink file:changes.jsonl"],
+                  [">", "{\"table\":\"orders\",\"op\":\"UPDATE\",\"id\":1042}"]
+                ]
+              ],
+              ["quote", "Fang mit einer Tabelle an. Wechsle zu einem Bus, wenn die Tabelle es dir sagt."],
+              ["p", "Wenn du einen Leser hast, behalte die Tabelle. Wenn du fünf hast, lies das Log."]
+            ]
+          }
+        }
+      }
+    }
+  </script>
 </div>
 <script type="module">
   // df$ comes with the component bundle - a full-screen page loads it after this module
-  addEventListener('DOMContentLoaded', () => {
+  addEventListener('DOMContentLoaded', async () => {
     // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
     // something else sets it (the docs card follows the site's mode)
     const siteMode = df$('#pf-developer [data-site-mode]');
@@ -567,10 +1516,227 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     });
     new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     syncMode();
+
+    // -- the pages: the home view, a page per repository (#/repos/sqlite-cdc) and per post
+    // (#/writing/your-queue-needs-a-no), both filled from the data block; the tab bar's paths are anchors of the home
+    // view (#pf-dev-log)
+    const site = df$('#pf-developer').get(0);
+    const { repos: REPOS, posts: POSTS } = JSON.parse(df$('#pf-dev-data').text());
+
+    // -- translation: the markup is the catalog (the templates at the end of the root); the pages read the data block
+    // in the language shown. The terminals stay as a shell prints them.
+    // offline (the module did not load) the page stays in English, like the router's absence leaves the home view
+    let locale = { locale: 'en', subscribe: () => () => {} };
+
+    // -- the hero's shell (a Terminal): it replays whoami, cat now.txt and uptime, then takes input - its commands
+    // read the data block, open follows a route. The shell answers in English, as a shell does
+    // (registered before the i18n import resolves, so the replay finds them; inLocale reads the locale when one runs)
+    const inLocale = (item) => ({ ...item, ...(item[locale.locale] ?? {}) });
+    const FILES = {
+      'now.txt': 'Making build pipelines boring at Globex. Maintaining tidewater and sqlite-cdc.',
+      'contact.txt': 'sam@example.com - github.com/samlq - Stockholm, UTC+1',
+    };
+    const DIRS = { 'repos/': () => Object.keys(REPOS), 'writing/': () => Object.keys(POSTS) };
+    const listed = (rows) => {
+      const width = Math.max(...rows.map(([k]) => k.length)) + 2;
+      return rows.map(([k, v]) => df$.shadcn.terminal.tone(k.padEnd(width), 'bold') + v);
+    };
+    df$.shadcn.terminal.commands('pf-dev-shell', {
+      whoami: { description: 'who this is', run: () => 'Sam Lindqvist - infrastructure engineer, Stockholm' },
+      ls: {
+        description: 'lists the files (ls repos)',
+        run: ({ args }) => {
+          const dir = args[0] && (args[0].endsWith('/') ? args[0] : args[0] + '/');
+          if (!dir) return [...Object.keys(DIRS), ...Object.keys(FILES)].join('  ');
+          return DIRS[dir] ? DIRS[dir]().join('  ') : `ls: ${args[0]}: No such file or directory`;
+        },
+      },
+      cat: {
+        description: 'prints a file (cat contact.txt)',
+        run: ({ args }) => FILES[args[0]] ?? `cat: ${args[0] ?? ''}: No such file or directory`,
+      },
+      uptime: {
+        description: 'how long this has been running',
+        run: ({ args }) =>
+          args.includes('--career') ? '9 years, 0 pages at 3 a.m. this quarter' : 'up 3,287 days, load average: 0.42',
+      },
+      repos: {
+        description: 'the pinned repositories',
+        run: () => listed(Object.entries(REPOS).map(([name, repo]) => [name, inLocale(repo).description])),
+      },
+      posts: {
+        description: 'the writing',
+        run: () => listed(Object.entries(POSTS).map(([slug, post]) => [slug, inLocale(post).title])),
+      },
+      open: {
+        description: 'opens a repository or a post (open tidewater)',
+        run: ({ args }) => {
+          const name = (args[0] ?? '').replace(/^(repos|writing)\//, '');
+          const route = REPOS[name] ? '#/repos/' + name : POSTS[name] ? '#/writing/' + name : null;
+          if (!route) return `open: ${args[0] ?? ''}: not a repository or a post - try repos`;
+          location.hash = route;
+          return 'opening ' + route.slice(1);
+        },
+      },
+      contact: { description: 'how to reach Sam', run: () => FILES['contact.txt'] },
+    });
+    try {
+      const { createDomI18n, createI18n } = await import('https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js');
+      locale = createI18n({
+        locale: 'en', // the demos start in English; the switcher offers German
+      });
+      createDomI18n(df$).bind(site, locale);
+      // the Language Switcher sets the locale on a pick and follows it when something else sets it
+      df$.shadcn.languageSwitcher.bind(df$('#pf-developer [data-app-locale]').get(0), locale);
+    } catch {
+      df$('#pf-developer [data-app-locale]').prop('hidden', true);
+    }
+    const said = (item) => ({ ...item, ...(item[locale.locale] ?? {}) });
+    const SECTIONS = ['pf-dev-repos', 'pf-dev-posts', 'pf-dev-log', 'pf-dev-contact'];
+    const around = (list, key) => {
+      const keys = Object.keys(list);
+      const at = keys.indexOf(key);
+      return [keys[(at + keys.length - 1) % keys.length], keys[(at + 1) % keys.length]];
+    };
+    // a terminal's lines: [prompt, text, tone?]
+    const terminal = (box, lines) => {
+      box.html('');
+      for (const [prefix, text, tone] of lines) {
+        const line = df$('<pre></pre>').append(df$('<code></code>').text(text));
+        if (prefix) line.attr('data-prefix', prefix);
+        if (tone) line.attr('data-tone', tone);
+        box.append(line);
+      }
+    };
+    const fillRepo = (name) => {
+      const repo = said(REPOS[name]);
+      const page = df$('#pf-developer [data-pf-view="repo"]');
+      const fields = {
+        ...repo,
+        name,
+        'topic-1': repo.topics[0],
+        'topic-2': repo.topics[1],
+        caption: repo.caption ?? repo.shot[2],
+      };
+      page.find('[data-repo]').each((_i, el) => {
+        df$(el).text(fields[el.dataset.repo]);
+      });
+      page.find('[data-repo-term]').attr('data-title', '~/src/' + name + ' - zsh');
+      terminal(page.find('[data-repo-term]'), repo.term);
+      page
+        .find('[data-repo-shot]')
+        .attr('src', 'https://picsum.photos/id/' + repo.shot[0] + '/1400/600')
+        .attr('alt', repo.alt ?? repo.shot[1]);
+      const [prev, next] = around(REPOS, name);
+      page.find('[rel="prev"]').attr('href', '#/repos/' + prev);
+      page.find('[data-repo-prev]').text('samlq/' + prev);
+      page.find('[rel="next"]').attr('href', '#/repos/' + next);
+      page.find('[data-repo-next]').text('samlq/' + next);
+    };
+    const dateOf = (iso) =>
+      new Intl.DateTimeFormat(locale.locale === 'de' ? 'de-DE' : 'en-GB', {
+        dateStyle: 'long',
+        timeZone: 'UTC',
+      }).format(new Date(iso));
+    const fillPost = (slug) => {
+      const post = said(POSTS[slug]);
+      const page = df$('#pf-developer [data-pf-view="post"]');
+      const fields = { ...post, file: slug + '.md' };
+      page.find('[data-post]').each((_i, el) => {
+        df$(el).text(fields[el.dataset.post]);
+      });
+      page.find('[data-post-date]').attr('datetime', post.date).text(dateOf(post.date));
+      // the body: blocks of the data, each written as text
+      const body = page.find('[data-post-body]').html('');
+      for (const [kind, content] of post.body) {
+        if (kind === 'code') {
+          const box = df$('<div class="mockup-code" data-chrome="mac"></div>').attr('data-title', slug + '.md');
+          terminal(box, content);
+          body.append(box);
+        } else if (kind === 'quote')
+          body.append(df$('<blockquote class="mk-article-body-pullquote"></blockquote>').text(content));
+        else if (kind === 'lead') body.append(df$('<p class="mk-article-body-lead"></p>').text(content));
+        else body.append(df$('<' + kind + '></' + kind + '>').text(content));
+      }
+      const [prev, next] = around(POSTS, slug);
+      page.find('[rel="prev"]').attr('href', '#/writing/' + prev);
+      page.find('[data-post-prev]').text(said(POSTS[prev]).title);
+      page.find('[rel="next"]').attr('href', '#/writing/' + next);
+      page.find('[data-post-next]').text(said(POSTS[next]).title);
+    };
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // one view at a time; the tab bar marks where the reader is
+    const reveal = (name, current) => {
+      df$('#pf-developer [data-pf-view]').each((_i, part) => {
+        part.hidden = part.dataset.pfView !== name;
+      });
+      df$('#pf-developer .mk-header-nav a').each((_i, link) => {
+        df$(link).attr('aria-current', link.getAttribute('href') === current ? 'true' : null);
+      });
+    };
+    let first = true;
+    let shown = { repo: null, post: null };
+    locale.subscribe(() => {
+      if (shown.repo) fillRepo(shown.repo);
+      if (shown.post) fillPost(shown.post);
+    });
+    // a route: the home view (#/), a repository or a post - a page opens at its top
+    const show = (to) => {
+      const repo = to.routeId === 'repo' && REPOS[to.params.name] ? to.params.name : null;
+      const post = to.routeId === 'post' && POSTS[to.params.slug] ? to.params.slug : null;
+      shown = { repo, post };
+      if (repo) fillRepo(repo);
+      if (post) fillPost(post);
+      reveal(repo ? 'repo' : post ? 'post' : 'home', repo ? '#pf-dev-repos' : post ? '#pf-dev-posts' : '');
+      if (!first) site.scrollIntoView({ block: 'start', behavior: repo || post || still ? 'instant' : 'smooth' });
+      first = false;
+    };
+    // a section of the home view: the home view shows again (a page hides it) and the section scrolls into view - on
+    // a deep link once the page has laid out
+    const plain = () => location.hash.length > 1 && !location.hash.startsWith('#/');
+    const jump = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (!SECTIONS.includes(id)) return;
+      reveal('home', '#' + id);
+      const go = () =>
+        df$('#' + id)
+          .get(0)
+          .scrollIntoView({ block: 'start', behavior: still ? 'instant' : 'smooth' });
+      if (document.readyState !== 'complete') addEventListener('load', go, { once: true });
+      else go();
+      first = false;
+    };
+    addEventListener('hashchange', () => plain() && jump());
+    if (plain()) jump();
+    const routes = [
+      { id: 'home', path: '/' },
+      { id: 'repo', path: '/repos/:name' },
+      { id: 'post', path: '/writing/:slug' },
+      { id: 'missing', path: '*' },
+    ];
+    try {
+      const { createRouter } = await import('https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js');
+      const router = createRouter({
+        mode: 'hash',
+        scroll: 'manual',
+        routes,
+        prepare: ({ to }) => ({ commit: () => show(to) }),
+      });
+      router.attachLinks(site);
+      if ((await router.start()).status === 'rejected') {
+        // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+        const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+        const follow = () => plain() || show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+        addEventListener('hashchange', follow);
+        follow();
+      }
+    } catch {
+      // the router did not load (offline): the home view stays, and it holds every section
+    }
   });
 </script>
 ```
 
-<DocText>Built from <DocLink href="mockup-code.html">Code Mockup</DocLink> with a <DocLink href="typewriter.html">Typewriter</DocLink>, <DocLink href="resume-header.html">Resume Header</DocLink> (compact), <DocLink href="repository-item.html">Repository Item</DocLink>, <DocLink href="stats.html">Stats</DocLink> (cards), <DocLink href="skill-matrix.html">Skill Matrix</DocLink> (dots), <DocLink href="resume-entry.html">Resume Entry</DocLink> (timeline) and <DocLink href="availability.html">Availability</DocLink> (banner). The page has a light and a dark palette (the switch in the corner); the hero keeps the dark one in both modes - a screen with the <DocLink href="shader-patterns.html">Shader</DocLink>'s matrix rain behind the terminal. <code>shape-hexagon</code> is a <DocLink href="shapes.html">Shapes</DocLink> utility, the reveals are <DocLink href="parallax.html">Parallax</DocLink>'s.</DocText>
+<DocText>Built from <DocLink href="site-header.html">Site Header</DocLink> (a shell's tab bar), a live <DocLink href="terminal.html">Terminal</DocLink> (it replays a session, then takes commands: <code>ls</code>, <code>repos</code>, <code>open tidewater</code> follows a route), <DocLink href="resume-header.html">Resume Header</DocLink> (compact), <DocLink href="repository-item.html">Repository Item</DocLink>, <DocLink href="stats.html">Stats</DocLink> (cards), <DocLink href="skill-matrix.html">Skill Matrix</DocLink> (dots), <DocLink href="resume-entry.html">Resume Entry</DocLink> (timeline), <DocLink href="availability.html">Availability</DocLink> (banner) and <DocLink href="site-footer.html">Site Footer</DocLink> (ending in a tmux status line). Every repository and every post is a route of <DocLink href="routing.html">defuss-dom-router</DocLink>, filled from a data block: <code>#/repos/sqlite-cdc</code> is a README page on <DocLink href="project-details.html">Project Details</DocLink>, <code>#/writing/your-queue-needs-a-no</code> a post on <DocLink href="article-header.html">Article Header</DocLink> and <DocLink href="article-body.html">Article Body</DocLink>, each with <DocLink href="article-navigation.html">Article Navigation</DocLink>; the tab bar's paths are anchors of the home view. The page has a light and a dark palette (the switch in the tab bar); the hero keeps the dark one in both modes - a screen with the <DocLink href="shader-patterns.html">Shader</DocLink>'s matrix rain behind the terminal. <code>shape-hexagon</code> is a <DocLink href="shapes.html">Shapes</DocLink> utility, the reveals are <DocLink href="parallax.html">Parallax</DocLink>'s.</DocText>
 
 </DocPage>

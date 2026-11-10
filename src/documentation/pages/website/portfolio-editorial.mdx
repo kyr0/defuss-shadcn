@@ -1,6 +1,6 @@
 ---
 title: "Editorial Portfolio"
-description: "A portfolio set like a magazine - warm paper, a masthead, a serif name beside an arched portrait, a pull quote that rises into view, an index of work whose pictures appear on hover and focus, a feature with a drop cap."
+description: "A portfolio set like a magazine - warm paper, a masthead, a serif name beside an arched portrait, a pull quote that rises into view, an index of work whose pictures appear on hover and focus and open a case study each, a feature with a drop cap and a colophon."
 slug: "portfolio-editorial"
 ---
 
@@ -9,14 +9,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <DocPage meta={meta}>
 
 <PageHeader slug="portfolio-editorial" title="Editorial Portfolio" introStyle="max-width:42rem;">
-  A portfolio set like a magazine - warm paper, a masthead, a serif name beside an arched portrait, a pull quote that rises into view, an index of work whose pictures appear on hover and focus, a feature with a drop cap. One of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> styles.
+  A portfolio set like a magazine - warm paper, a masthead, a serif name beside an arched portrait, a pull quote that rises into view, an index of work whose pictures appear on hover and focus and open a case study each, a feature with a drop cap and a colophon. One of the <DocLink href="website-resume-portfolio.html">Resume &amp; Portfolio</DocLink> styles.
 </PageHeader>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
   <a class="btn" href="full-portfolio-editorial.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
 </div>
 
-```html example label="Clara Moreau, art director" schema="none" hint="The page sets its own palette on its root (warm paper, ink, terracotta) - every block inside takes it. Resume Header (split) with a corner-arch portrait that wipes up (Motion); a Parallax reveal pull quote; Portfolio Grid (index); a feature with a drop cap; Resume Entry (columns); Availability (banner)." previewStyle="align-items:stretch;padding:0;"
+```html example label="Clara Moreau, art director" schema="none" hint="The page sets its own palette on its root (warm paper, ink, terracotta) - every block inside takes it. A Site Header set as a masthead (its sections are anchors of the home view - a case study gives way to them); Resume Header (split) with a corner-arch portrait that wipes up (Motion); a Parallax reveal pull quote; Portfolio Grid (index) whose entries open a case study each (#/work/the-quiet-atlas - Project Details filled from a data block, with previous and next); a feature with a drop cap; Resume Entry (columns); Availability (banner); a Site Footer set as a colophon." previewStyle="align-items:stretch;padding:0;"
 <style>
   #pf-editorial {
     --background: oklch(0.972 0.012 80);
@@ -53,12 +53,19 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     --primary-foreground: oklch(0.18 0.02 40);
     --accent: oklch(0.28 0.03 50);
   }
+  /* one view at a time: the home view or a case study */
+  #pf-editorial [hidden] {
+    display: none !important;
+  }
   /* every type size a quarter larger: the page is zoomed by 1.25 and its measure divided by it, so the
      columns keep their width while the type, the rules and the spacing grow together */
-  #pf-editorial .pf-page {
+  #pf-editorial .pf-page,
+  #pf-editorial .pf-view {
     display: flex;
     flex-direction: column;
     gap: clamp(3rem, 7vw, 5.5rem);
+  }
+  #pf-editorial .pf-page {
     max-width: calc(72rem / 1.25);
     margin-inline: auto;
     zoom: 1.25;
@@ -72,30 +79,47 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     text-transform: uppercase;
     color: var(--muted-foreground);
   }
+  /* the masthead: the Site Header set like a magazine's - issue, name, sections over a double rule */
   #pf-editorial .pf-masthead {
+    background: none;
+    color: inherit;
+  }
+  #pf-editorial .pf-masthead .mk-header-inner {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: end;
     gap: 1rem;
-    padding-block-end: 0.75rem;
+    max-width: none;
+    min-height: 0;
+    padding: 0 0 0.75rem;
     border-block-end: 3px double var(--foreground);
   }
-  #pf-editorial .pf-wordmark {
+  #pf-editorial .mk-header-brand {
+    justify-self: center;
+    color: inherit;
+  }
+  #pf-editorial .mk-header-name {
+    color: var(--foreground);
     font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
     font-style: italic;
     font-weight: 400;
     letter-spacing: -0.01em;
   }
-  #pf-editorial .pf-masthead nav {
+  #pf-editorial .pf-masthead-end {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 1.25rem;
   }
-  #pf-editorial .pf-masthead a {
+  #pf-editorial .mk-header-nav {
+    display: flex;
+    gap: 1.25rem;
+  }
+  #pf-editorial .mk-header-nav a {
     color: inherit;
     text-decoration: none;
   }
-  #pf-editorial .pf-masthead a:is(:hover, :focus-visible) {
+  #pf-editorial .mk-header-nav a:is(:hover, :focus-visible, [aria-current]) {
     color: var(--primary);
   }
   #pf-editorial .mk-resume-header-name {
@@ -158,7 +182,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     aspect-ratio: 4 / 3;
     object-fit: cover;
   }
-  #pf-editorial .pf-feature figcaption {
+  #pf-editorial :is(.pf-feature, .pf-case) figcaption {
     margin-block-start: 0.5rem;
     font-family: var(--font-sans);
     font-size: 0.75rem;
@@ -175,6 +199,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     font-size: 1.0625rem;
     line-height: 1.65;
     text-wrap: pretty;
+  }
+  #pf-editorial .pf-feature .btn {
+    margin-block-start: 1.25rem;
   }
   #pf-editorial .pf-dropcap::first-letter {
     float: inline-start;
@@ -226,20 +253,151 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     font-size: 0.8125rem;
     color: var(--muted-foreground);
   }
-  #pf-editorial .pf-foot {
+  /* a case study: the Project Details block set as a feature - serif italics, square pictures, a drop cap */
+  #pf-editorial .pf-case-top {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    padding-block-start: 1rem;
+    gap: 0.5rem 1rem;
+    margin-block-end: -1.5rem;
+  }
+  #pf-editorial .pf-case-top a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: inherit;
+    text-decoration: none;
+  }
+  #pf-editorial .pf-case-top a:is(:hover, :focus-visible) {
+    color: var(--primary);
+  }
+  #pf-editorial .pf-case-top svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  #pf-editorial .mk-project-details-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.25rem, 1.25rem + 4cqi, 4rem);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  #pf-editorial .mk-project-details-summary {
+    font-size: 1.25rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  #pf-editorial .mk-project-details-cover {
+    border-radius: 0;
+  }
+  #pf-editorial .mk-project-details-cover img {
+    filter: sepia(0.12);
+  }
+  #pf-editorial .mk-project-details-facts {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+    border-block: 3px double var(--foreground);
+    font-family: var(--font-sans);
+  }
+  #pf-editorial .mk-project-details-brief h2,
+  #pf-editorial .pf-case-result h2 {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+  #pf-editorial .mk-project-details-brief p,
+  #pf-editorial .pf-case-result p {
+    margin: 0;
+    color: inherit;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+  #pf-editorial .pf-case-result {
+    max-width: 40rem;
+  }
+  #pf-editorial .pf-case-shots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1.5rem;
+  }
+  #pf-editorial .pf-case-shots figure {
+    margin: 0;
+  }
+  #pf-editorial .pf-case-shots img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  #pf-editorial .mk-article-nav-link {
+    border-radius: 0;
+  }
+  #pf-editorial .mk-article-nav-dir {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  #pf-editorial .mk-article-nav-title {
+    font-size: 1.25rem;
+    font-style: italic;
+    font-weight: 400;
+  }
+  /* the colophon: the Site Footer under a double rule, the index again in italics */
+  #pf-editorial .pf-colophon {
+    background: none;
+    color: inherit;
+  }
+  #pf-editorial .pf-colophon .mk-footer-inner {
+    max-width: none;
+    padding: 1.25rem 0 0;
     border-block-start: 3px double var(--foreground);
   }
+  #pf-editorial .pf-colophon .mk-footer-nav {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 2rem;
+  }
+  #pf-editorial .mk-footer-heading {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  #pf-editorial .mk-footer-list {
+    gap: 0.5rem;
+    font-style: italic;
+  }
+  #pf-editorial .mk-footer-list a:is(:hover, :focus-visible) {
+    color: var(--primary);
+  }
+  #pf-editorial .mk-footer-brand {
+    color: inherit;
+  }
+  #pf-editorial .mk-footer-brand-name {
+    font-size: 1.125rem;
+    font-style: italic;
+    font-weight: 400;
+  }
+  #pf-editorial .mk-footer-copy {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
   @container pf-editorial (max-width: 40rem) {
-    #pf-editorial .pf-masthead {
-      grid-template-columns: 1fr;
+    #pf-editorial .pf-masthead .mk-header-inner {
+      grid-template-columns: minmax(0, 1fr);
       justify-items: center;
     }
-    #pf-editorial .pf-masthead nav {
+    #pf-editorial .pf-masthead-end {
+      flex-wrap: wrap;
       justify-content: center;
     }
   }
@@ -255,14 +413,6 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     background: var(--accent);
     color: var(--accent-foreground);
   }
-  #pf-editorial {
-    position: relative;
-  }
-  #pf-editorial > .site-mode {
-    position: absolute;
-    z-index: 20;
-    inset: var(--site-mode-top, 0.75rem) clamp(0.75rem, 2vw, 1.25rem) auto auto;
-  }
   /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
   :root:not(.dark) #pf-editorial {
     --accent: oklch(0.927 0.035 60);
@@ -270,188 +420,431 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   /* -- modes: end -- */
 </style>
 <div id="pf-editorial">
-  <label class="swap site-mode" data-variant="rotate" data-size="sm">
-    <input type="checkbox" data-site-mode aria-label="Dark mode" />
-    <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
-    <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
-  </label>
   <div class="pf-page">
-    <header class="pf-masthead">
-      <p class="pf-label">No. 15 · Autumn 2026</p>
-      <span class="pf-wordmark">Clara Moreau</span>
-      <nav class="pf-label" aria-label="Sections">
-        <a href="#pf-ed-work">Work</a>
-        <a href="#pf-ed-about">About</a>
-        <a href="#pf-ed-contact">Contact</a>
-      </nav>
-    </header>
-    <header class="mk-resume-header" data-variant="split">
-      <img
-        class="mk-resume-header-photo corner-arch"
-        src="https://picsum.photos/id/1027/800/1000"
-        alt="Clara Moreau"
-        data-df-entrance="wipe-up"
-      />
-      <div class="mk-resume-header-body">
-        <p class="pf-label" data-df-entrance="fade">Art direction · Paris and Berlin</p>
-        <h1 class="mk-resume-header-name" data-df-entrance="up">Clara Moreau</h1>
-        <p class="mk-resume-header-role" data-df-entrance="up" style="--df-motion-delay: 150ms"
-          >Art director for magazines, books and the brands that read them</p
-        >
-        <p class="mk-resume-header-summary" data-df-entrance="up" style="--df-motion-delay: 300ms"
-          >Fifteen years of covers, grids and typefaces chosen with care. I believe a page should breathe before it
-          speaks.</p
-        >
-        <div class="mk-resume-header-actions" data-df-entrance="up" style="--df-motion-delay: 450ms">
-          <a class="btn" href="#pf-ed-work">Selected work</a>
-          <a class="btn" data-variant="ghost" href="mailto:clara@example.com">clara@example.com</a>
+    <header class="mk-header pf-masthead">
+      <div class="mk-header-inner">
+        <p class="pf-label">No. 15 · Autumn 2026</p>
+        <a class="mk-header-brand" href="#/" data-router-link><span class="mk-header-name">Clara Moreau</span></a>
+        <div class="pf-masthead-end">
+          <nav class="mk-header-nav pf-label" aria-label="Sections">
+            <a href="#pf-ed-work">Work</a>
+            <a href="#pf-ed-about">About</a>
+            <a href="#pf-ed-contact">Contact</a>
+          </nav>
+          <div class="mk-header-actions">
+            <label class="swap site-mode" data-variant="rotate" data-size="sm">
+              <input type="checkbox" data-site-mode aria-label="Dark mode" />
+              <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+              <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+            </label>
+          </div>
         </div>
       </div>
     </header>
-    <figure class="pf-quote parallax-reveal">
-      <blockquote>Clara treats white space like a co-author - it gets the best lines.</blockquote>
-      <figcaption class="pf-label">Hélène Marchand, editor in chief, Revue Lumière</figcaption>
-    </figure>
-    <section id="pf-ed-work" aria-labelledby="pf-ed-work-title">
-      <div class="pf-head">
-        <h2 class="pf-label" id="pf-ed-work-title">Selected work</h2>
-        <p class="pf-label">2016 - 2026</p>
-      </div>
-      <ul class="mk-portfolio-grid" data-variant="index">
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1073/800/600" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Revue Lumière, a redesign</strong>
-              <span class="mk-portfolio-grid-meta">Magazine · 2026</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/24/800/600" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">The Quiet Atlas</strong>
-              <span class="mk-portfolio-grid-meta">Book · 2024</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1068/800/600" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Maison Verre</strong>
-              <span class="mk-portfolio-grid-meta">Identity · 2023</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/800/600" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Festival du Livre</strong>
-              <span class="mk-portfolio-grid-meta">Campaign · 2021</span>
-            </span>
-          </a>
-        </li>
-        <li class="mk-portfolio-grid-item">
-          <a class="mk-portfolio-grid-link" href="#">
-            <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/82/800/600" alt="" />
-            <span class="mk-portfolio-grid-caption">
-              <strong class="mk-portfolio-grid-title">Eleven Gardens</strong>
-              <span class="mk-portfolio-grid-meta">Exhibition · 2019</span>
-            </span>
-          </a>
-        </li>
-      </ul>
-    </section>
-    <article class="pf-feature" aria-labelledby="pf-ed-feature">
-      <figure class="parallax-reveal">
-        <img src="https://picsum.photos/id/1073/1200/900" alt="Spreads of the redesigned Revue Lumière" />
-        <figcaption>Revue Lumière, issue 212 - the first on the new grid.</figcaption>
+
+    <!-- the home view: the whole portfolio -->
+    <div class="pf-view" data-pf-view="home">
+      <header class="mk-resume-header" data-variant="split">
+        <img
+          class="mk-resume-header-photo corner-arch"
+          src="https://picsum.photos/id/1027/800/1000"
+          alt="Clara Moreau"
+          data-df-entrance="wipe-up"
+        />
+        <div class="mk-resume-header-body">
+          <p class="pf-label" data-df-entrance="fade">Art direction · Paris and Berlin</p>
+          <h1 class="mk-resume-header-name" data-df-entrance="up">Clara Moreau</h1>
+          <p class="mk-resume-header-role" data-df-entrance="up" style="--df-motion-delay: 150ms"
+            >Art director for magazines, books and the brands that read them</p
+          >
+          <p class="mk-resume-header-summary" data-df-entrance="up" style="--df-motion-delay: 300ms"
+            >Fifteen years of covers, grids and typefaces chosen with care. I believe a page should breathe before it
+            speaks.</p
+          >
+          <div class="mk-resume-header-actions" data-df-entrance="up" style="--df-motion-delay: 450ms">
+            <a class="btn" href="#pf-ed-work">Selected work</a>
+            <a class="btn" data-variant="ghost" href="mailto:clara@example.com">clara@example.com</a>
+          </div>
+        </div>
+      </header>
+      <figure class="pf-quote parallax-reveal">
+        <blockquote>Clara treats white space like a co-author - it gets the best lines.</blockquote>
+        <figcaption class="pf-label">Hélène Marchand, editor in chief, Revue Lumière</figcaption>
       </figure>
-      <div>
-        <p class="pf-label">Feature</p>
-        <h2 id="pf-ed-feature">A monthly that reads slower on purpose</h2>
-        <p class="pf-dropcap"
-          >Revue Lumière had grown loud: six typefaces, a cover line on every inch. We cut it to two faces, one cover
-          image and a grid of nine columns that lets long reads run wide and short ones sit quietly in the margin.</p
+      <section id="pf-ed-work" aria-labelledby="pf-ed-work-title">
+        <div class="pf-head">
+          <h2 class="pf-label" id="pf-ed-work-title">Selected work</h2>
+          <p class="pf-label">2016 - 2026</p>
+        </div>
+        <ul class="mk-portfolio-grid" data-variant="index">
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/revue-lumiere" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1073/800/600" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Revue Lumière, a redesign</strong>
+                <span class="mk-portfolio-grid-meta">Magazine · 2026</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/the-quiet-atlas" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/24/800/600" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">The Quiet Atlas</strong>
+                <span class="mk-portfolio-grid-meta">Book · 2024</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/maison-verre" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1068/800/600" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Maison Verre</strong>
+                <span class="mk-portfolio-grid-meta">Identity · 2023</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/festival-du-livre" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/800/600" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Festival du Livre</strong>
+                <span class="mk-portfolio-grid-meta">Campaign · 2021</span>
+              </span>
+            </a>
+          </li>
+          <li class="mk-portfolio-grid-item">
+            <a class="mk-portfolio-grid-link" href="#/work/eleven-gardens" data-router-link>
+              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/82/800/600" alt="" />
+              <span class="mk-portfolio-grid-caption">
+                <strong class="mk-portfolio-grid-title">Eleven Gardens</strong>
+                <span class="mk-portfolio-grid-meta">Exhibition · 2019</span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </section>
+      <article class="pf-feature" aria-labelledby="pf-ed-feature">
+        <figure class="parallax-reveal">
+          <img src="https://picsum.photos/id/1073/1200/900" alt="Book pages laid out edge to edge on a table" />
+          <figcaption>Revue Lumière, issue 212 - the flat plan of the first issue on the new grid.</figcaption>
+        </figure>
+        <div>
+          <p class="pf-label">Feature</p>
+          <h2 id="pf-ed-feature">A monthly that reads slower on purpose</h2>
+          <p class="pf-dropcap"
+            >Revue Lumière had grown loud: six typefaces, a cover line on every inch. We cut it to two faces, one cover
+            image and a grid of nine columns that lets long reads run wide and short ones sit quietly in the margin.</p
+          >
+          <p
+            >Newsstand sales rose for the first time in a decade; the letters page asked us to never change it again.</p
+          >
+          <dl class="pf-facts">
+            <dt>Client</dt>
+            <dd>Revue Lumière</dd>
+            <dt>Role</dt>
+            <dd>Art direction</dd>
+            <dt>Year</dt>
+            <dd>2026</dd>
+          </dl>
+          <a class="btn" data-variant="outline" href="#/work/revue-lumiere" data-router-link>Read the case study</a>
+        </div>
+      </article>
+      <section id="pf-ed-about" class="pf-about" aria-labelledby="pf-ed-about-title">
+        <div>
+          <h2 class="pf-label" id="pf-ed-about-title">Recognition</h2>
+          <ul class="pf-awards">
+            <li>Type Directors Club, certificate <span>2025</span></li>
+            <li>Art Directors Club, silver <span>2023</span></li>
+            <li>European Design Awards, gold <span>2021</span></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="pf-label">Career</h2>
+          <ol class="mk-resume-entries" data-variant="columns">
+            <li class="mk-resume-entry">
+              <div class="mk-resume-entry-body">
+                <div class="mk-resume-entry-head">
+                  <h3 class="mk-resume-entry-title">Art director, own studio</h3>
+                  <p class="mk-resume-entry-org"><span>Paris and Berlin</span></p>
+                  <p class="mk-resume-entry-when"><time datetime="2018">2018</time> - today</p>
+                </div>
+              </div>
+            </li>
+            <li class="mk-resume-entry">
+              <div class="mk-resume-entry-body">
+                <div class="mk-resume-entry-head">
+                  <h3 class="mk-resume-entry-title">Design director</h3>
+                  <p class="mk-resume-entry-org"><a href="#/work/revue-lumiere" data-router-link>Revue Lumière</a></p>
+                  <p class="mk-resume-entry-when"
+                    ><time datetime="2013">2013</time> - <time datetime="2018">2018</time></p
+                  >
+                </div>
+              </div>
+            </li>
+            <li class="mk-resume-entry">
+              <div class="mk-resume-entry-body">
+                <div class="mk-resume-entry-head">
+                  <h3 class="mk-resume-entry-title">Graphic design, MA</h3>
+                  <p class="mk-resume-entry-org"><span>École Estienne, Paris</span></p>
+                  <p class="mk-resume-entry-when"
+                    ><time datetime="2009">2009</time> - <time datetime="2011">2011</time></p
+                  >
+                </div>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+      <aside id="pf-ed-contact" class="mk-availability" data-variant="banner" aria-labelledby="pf-ed-contact-title">
+        <p class="mk-availability-status"
+          ><span class="indicator-dot" data-variant="warning" aria-hidden="true"></span> Limited</p
         >
-        <p>Newsstand sales rose for the first time in a decade; the letters page asked us to never change it again.</p>
-        <dl class="pf-facts">
-          <dt>Client</dt>
-          <dd>Revue Lumière</dd>
-          <dt>Role</dt>
-          <dd>Art direction</dd>
-          <dt>Year</dt>
-          <dd>2026</dd>
+        <p class="mk-availability-title" id="pf-ed-contact-title">Taking two book projects for autumn 2027</p>
+        <div class="mk-availability-actions">
+          <a class="btn" data-variant="outline" href="mailto:clara@example.com">Write to the studio</a>
+        </div>
+      </aside>
+    </div>
+
+    <!-- a case study: the route's slug picks it from the data block below -->
+    <article class="pf-view pf-case" data-pf-view="case" aria-labelledby="pf-ed-case-title" hidden>
+      <nav class="pf-case-top pf-label" aria-label="Case study">
+        <a href="#pf-ed-work"><i data-lucide="arrow-left"></i> Back to the index</a>
+        <span data-case-count>Case 1 of 5</span>
+      </nav>
+      <div class="mk-project-details">
+        <header class="mk-project-details-head">
+          <p class="pf-label" data-case="kicker">Magazine · 2026</p>
+          <h1 class="mk-project-details-title" id="pf-ed-case-title" data-case="title">Revue Lumière, a redesign</h1>
+          <p class="mk-project-details-summary" data-case="summary"
+            >A cultural monthly that had grown loud, set again on nine columns and two typefaces - so that long reads
+            run wide and short ones sit quietly in the margin.</p
+          >
+        </header>
+        <figure class="mk-project-details-cover" data-case-shot="0" data-case-size="1600/800">
+          <img src="https://picsum.photos/id/1073/1600/800" alt="Book pages laid out edge to edge on a table" />
+          <figcaption>The flat plan of issue 212, laid out page by page</figcaption>
+        </figure>
+        <dl class="mk-project-details-facts">
+          <div><dt>Client</dt><dd data-case="client">Revue Lumière</dd></div>
+          <div><dt>Role</dt><dd data-case="role">Art direction, typography</dd></div>
+          <div><dt>Year</dt><dd data-case="year">2026</dd></div>
+          <div><dt>Format</dt><dd data-case="format">Monthly, 148 pages</dd></div>
         </dl>
+        <div class="mk-project-details-brief">
+          <section aria-labelledby="pf-ed-case-brief">
+            <h2 id="pf-ed-case-brief">The brief</h2>
+            <p class="pf-dropcap" data-case="brief"
+              >Revue Lumière had grown loud: six typefaces, a cover line on every inch and a new section every season.
+              The editors wanted readers to stay longer with each piece - without losing the newsstand.</p
+            >
+          </section>
+          <section aria-labelledby="pf-ed-case-part">
+            <h2 id="pf-ed-case-part">My part</h2>
+            <p data-case="part"
+              >I led two designers and the photo desk for nine months. We cut the magazine to two faces and one cover
+              image, drew a nine-column grid and wrote the style sheet the editors now use without us.</p
+            >
+          </section>
+        </div>
+        <figure class="pf-quote">
+          <blockquote data-case="quote">Clara treats white space like a co-author - it gets the best lines.</blockquote>
+          <figcaption class="pf-label" data-case="by">Hélène Marchand, editor in chief</figcaption>
+        </figure>
+        <section class="pf-case-result" aria-labelledby="pf-ed-case-result">
+          <h2 id="pf-ed-case-result">The result</h2>
+          <p data-case="result"
+            >Newsstand sales rose for the first time in a decade, and the time readers spend with an issue doubled in
+            the reader survey. The letters page asked us to never change it again.</p
+          >
+        </section>
+        <div class="pf-case-shots">
+          <figure data-case-shot="1" data-case-size="900/675">
+            <img
+              src="https://picsum.photos/id/20/900/675"
+              alt="A desk with a notebook, a pencil, a phone and printed logos"
+              loading="lazy"
+            />
+            <figcaption>The grid, first drawn by hand</figcaption>
+          </figure>
+          <figure data-case-shot="2" data-case-size="900/675">
+            <img
+              src="https://picsum.photos/id/403/900/675"
+              alt="The keys of an old typewriter, close up"
+              loading="lazy"
+            />
+            <figcaption>One cover line instead of nine</figcaption>
+          </figure>
+        </div>
+        <nav class="mk-article-nav" aria-label="More work">
+          <a class="mk-article-nav-link" href="#/work/eleven-gardens" rel="prev" data-router-link
+            ><span class="mk-article-nav-dir"><i data-lucide="arrow-left" aria-hidden="true"></i> Previous</span
+            ><span class="mk-article-nav-title" data-case-prev>Eleven Gardens</span></a
+          >
+          <a class="mk-article-nav-link" href="#/work/the-quiet-atlas" rel="next" data-router-link
+            ><span class="mk-article-nav-dir">Next <i data-lucide="arrow-right" aria-hidden="true"></i></span
+            ><span class="mk-article-nav-title" data-case-next>The Quiet Atlas</span></a
+          >
+        </nav>
       </div>
     </article>
-    <section id="pf-ed-about" class="pf-about" aria-labelledby="pf-ed-about-title">
-      <div>
-        <h2 class="pf-label" id="pf-ed-about-title">Recognition</h2>
-        <ul class="pf-awards">
-          <li>Type Directors Club, certificate <span>2025</span></li>
-          <li>Art Directors Club, silver <span>2023</span></li>
-          <li>European Design Awards, gold <span>2021</span></li>
-        </ul>
+
+    <footer class="mk-footer pf-colophon">
+      <div class="mk-footer-inner">
+        <nav class="mk-footer-nav" aria-label="Colophon">
+          <div class="mk-footer-col">
+            <h2 class="mk-footer-heading">The index</h2>
+            <ul class="mk-footer-list">
+              <li><a href="#/work/revue-lumiere" data-router-link>Revue Lumière</a></li>
+              <li><a href="#/work/the-quiet-atlas" data-router-link>The Quiet Atlas</a></li>
+              <li><a href="#/work/maison-verre" data-router-link>Maison Verre</a></li>
+              <li><a href="#/work/festival-du-livre" data-router-link>Festival du Livre</a></li>
+              <li><a href="#/work/eleven-gardens" data-router-link>Eleven Gardens</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h2 class="mk-footer-heading">The studio</h2>
+            <ul class="mk-footer-list">
+              <li><a href="#pf-ed-about">Recognition and career</a></li>
+              <li><a href="#pf-ed-contact">Availability</a></li>
+              <li><a href="mailto:clara@example.com">clara@example.com</a></li>
+            </ul>
+          </div>
+          <div class="mk-footer-col">
+            <h2 class="mk-footer-heading">Elsewhere</h2>
+            <ul class="mk-footer-list">
+              <li><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+              <li><a href="https://www.are.na/" target="_blank" rel="noopener">Are.na</a></li>
+              <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+          </div>
+        </nav>
+        <hr class="separator mk-footer-rule" />
+        <div class="mk-footer-bottom">
+          <a class="mk-footer-brand" href="#/" data-router-link
+            ><span class="mk-footer-brand-name">Clara Moreau Studio</span></a
+          >
+          <div class="mk-footer-meta">
+            <p class="mk-footer-copy">Set in Fraunces · Paris and Berlin · © 2026</p>
+          </div>
+        </div>
       </div>
-      <div>
-        <h2 class="pf-label">Career</h2>
-        <ol class="mk-resume-entries" data-variant="columns">
-          <li class="mk-resume-entry">
-            <div class="mk-resume-entry-body">
-              <div class="mk-resume-entry-head">
-                <h3 class="mk-resume-entry-title">Art director, own studio</h3>
-                <p class="mk-resume-entry-org"><span>Paris and Berlin</span></p>
-                <p class="mk-resume-entry-when"><time datetime="2018">2018</time> - today</p>
-              </div>
-            </div>
-          </li>
-          <li class="mk-resume-entry">
-            <div class="mk-resume-entry-body">
-              <div class="mk-resume-entry-head">
-                <h3 class="mk-resume-entry-title">Design director</h3>
-                <p class="mk-resume-entry-org"><a href="#">Revue Lumière</a></p>
-                <p class="mk-resume-entry-when"
-                  ><time datetime="2013">2013</time> - <time datetime="2018">2018</time></p
-                >
-              </div>
-            </div>
-          </li>
-          <li class="mk-resume-entry">
-            <div class="mk-resume-entry-body">
-              <div class="mk-resume-entry-head">
-                <h3 class="mk-resume-entry-title">Graphic design, MA</h3>
-                <p class="mk-resume-entry-org"><a href="#">École Estienne</a></p>
-                <p class="mk-resume-entry-when"
-                  ><time datetime="2009">2009</time> - <time datetime="2011">2011</time></p
-                >
-              </div>
-            </div>
-          </li>
-        </ol>
-      </div>
-    </section>
-    <aside id="pf-ed-contact" class="mk-availability" data-variant="banner" aria-labelledby="pf-ed-contact-title">
-      <p class="mk-availability-status"
-        ><span class="indicator-dot" data-variant="warning" aria-hidden="true"></span> Limited</p
-      >
-      <p class="mk-availability-title" id="pf-ed-contact-title">Taking two book projects for autumn 2027</p>
-      <div class="mk-availability-actions">
-        <a class="btn" data-variant="outline" href="mailto:clara@example.com">Write to the studio</a>
-      </div>
-    </aside>
-    <footer class="pf-foot pf-label">
-      <span>Clara Moreau Studio</span>
-      <span>Set in Fraunces</span>
     </footer>
   </div>
+
+  <!-- the case studies the routes name, in the order of the index -->
+  <script type="application/json" id="pf-ed-cases">
+    {
+      "revue-lumiere": {
+        "title": "Revue Lumière, a redesign",
+        "kicker": "Magazine · 2026",
+        "summary": "A cultural monthly that had grown loud, set again on nine columns and two typefaces - so that long reads run wide and short ones sit quietly in the margin.",
+        "client": "Revue Lumière",
+        "role": "Art direction, typography",
+        "year": "2026",
+        "format": "Monthly, 148 pages",
+        "brief": "Revue Lumière had grown loud: six typefaces, a cover line on every inch and a new section every season. The editors wanted readers to stay longer with each piece - without losing the newsstand.",
+        "part": "I led two designers and the photo desk for nine months. We cut the magazine to two faces and one cover image, drew a nine-column grid and wrote the style sheet the editors now use without us.",
+        "quote": "Clara treats white space like a co-author - it gets the best lines.",
+        "by": "Hélène Marchand, editor in chief",
+        "result": "Newsstand sales rose for the first time in a decade, and the time readers spend with an issue doubled in the reader survey. The letters page asked us to never change it again.",
+        "shots": [
+          [1073, "Book pages laid out edge to edge on a table", "The flat plan of issue 212, laid out page by page"],
+          [20, "A desk with a notebook, a pencil, a phone and printed logos", "The grid, first drawn by hand"],
+          [403, "The keys of an old typewriter, close up", "One cover line instead of nine"]
+        ]
+      },
+      "the-quiet-atlas": {
+        "title": "The Quiet Atlas",
+        "kicker": "Book · 2024",
+        "summary": "An atlas of sixty places where you hear almost nothing - maps without names, photographs without people and a cloth cover the colour of fog.",
+        "client": "Éditions Calmes",
+        "role": "Book design, cover",
+        "year": "2024",
+        "format": "312 pages, cloth",
+        "brief": "The publisher had sixty essays by sound recordists about places where the loudest thing is the wind. The book had to be as quiet as its places, and still sell from a front table.",
+        "part": "I designed the book from cover to colophon: one serif in three sizes, maps drawn without a single label and photographs printed in five colours, so the greys stay warm.",
+        "quote": "She took the words out of the maps, and the maps got louder.",
+        "by": "Paul Ferrand, publisher",
+        "result": "The first print run sold out in six weeks; the third is on press. The book was shortlisted for the most beautiful books of the year.",
+        "shots": [
+          [24, "An old book lying open on a wooden table", "The text pages - one serif in three sizes"],
+          [1015, "A deep blue fjord between grey cliffs, seen from above", "Plate 14, printed in five colours"],
+          [960, "Green land crossed by rivers and roads, seen from the air", "The endpapers - a map without names"]
+        ]
+      },
+      "maison-verre": {
+        "title": "Maison Verre",
+        "kicker": "Identity · 2023",
+        "summary": "An identity for a glassworks in Lyon that wanted to look as clear as its glass - one wordmark, one blue and a pattern taken from condensation.",
+        "client": "Maison Verre",
+        "role": "Identity, packaging",
+        "year": "2023",
+        "format": "Wordmark, 40 packs, signage",
+        "brief": "A family glassworks of four generations was selling to restaurants under three different logos. They needed one name on every box, van and invoice - and a shop that looks like their glass.",
+        "part": "I drew the wordmark and the system around it: a single blue from their oldest kiln tile, a typeface cut thin like a rim and a pattern of drops that wraps every pack.",
+        "quote": "Our glass finally looks on the box the way it looks on the table.",
+        "by": "Agnès Verrier, Maison Verre",
+        "result": "The new packs went out to forty restaurants and the first shop. Wholesale orders grew by a third in the first year.",
+        "shots": [
+          [
+            1068,
+            "A white side table with a small vase and a glass candle holder against a blue wall",
+            "The shop in Lyon, painted in the kiln-tile blue"
+          ],
+          [225, "A glass teapot of tea beside a vase of yellow flowers", "A pack shot for the tea glasses"],
+          [41, "Drops of water on a dark glass surface", "The pattern - condensation on glass"]
+        ]
+      },
+      "festival-du-livre": {
+        "title": "Festival du Livre",
+        "kicker": "Campaign · 2021",
+        "summary": "A campaign for a book festival that took over a city for a weekend - stripes in the colours of three hundred spines, on walls, trams and tote bags.",
+        "client": "Les Amis du Livre, Rouen",
+        "role": "Campaign, signage",
+        "year": "2021",
+        "format": "Posters, signage, 12,000 totes",
+        "brief": "After a year without festivals the organisers wanted the whole city to know the books were back. The budget covered posters, not billboards.",
+        "part": "I sampled the spines of three hundred books from the programme and turned their colours into stripes - one stripe per author. Painted walls, tram wraps and the signs on the ground all came from that one file.",
+        "quote": "People photographed the walls before they knew what they were for.",
+        "by": "Mathilde Roux, festival director",
+        "result": "Forty-two thousand visitors came, more than ever before. The striped totes sold out on the first morning.",
+        "shots": [
+          [951, "A building wall painted in red, yellow and white stripes", "A painted wall near the station"],
+          [1047, "A narrow street between old brick buildings", "The route from the station, signed in stripes"],
+          [
+            1059,
+            "A small shop with framed prints on the wall, a jacket and a workbench",
+            "The festival shop, open all weekend"
+          ]
+        ]
+      },
+      "eleven-gardens": {
+        "title": "Eleven Gardens",
+        "kicker": "Exhibition · 2019",
+        "summary": "An exhibition about eleven private gardens, laid out so the rooms open like a walk through a year - and a catalogue printed on seed paper.",
+        "client": "Musée des Jardins, Nantes",
+        "role": "Exhibition design, catalogue",
+        "year": "2019",
+        "format": "6 rooms, 96-page catalogue",
+        "brief": "The museum had borrowed drawings, letters and tools from eleven gardeners. The curators wanted visitors to feel the seasons change while they walked through six rooms.",
+        "part": "I set the rooms in the order of a year: the wall colours fade from blossom pink to bark grey, and the wall texts get shorter as the gardens go to sleep.",
+        "quote": "Visitors slowed down without being asked to.",
+        "by": "Odile Charpentier, curator",
+        "result": "Ninety thousand visitors in four months, and the exhibition travelled to two more museums. The seed-paper catalogue still grows in readers' window boxes.",
+        "shots": [
+          [82, "Pink blossom on a dark branch", "Room one - spring, in blossom pink"],
+          [17, "A gravel path through a green meadow lined with trees", "The walk between rooms three and four"],
+          [1039, "A waterfall falling into a green, wooded gorge", "The water garden, projected floor to ceiling"]
+        ]
+      }
+    }
+  </script>
 </div>
 <script type="module">
   // df$ comes with the component bundle - a full-screen page loads it after this module
-  addEventListener('DOMContentLoaded', () => {
+  addEventListener('DOMContentLoaded', async () => {
     // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
     // something else sets it (the docs card follows the site's mode)
     const siteMode = df$('#pf-editorial [data-site-mode]');
@@ -462,10 +855,100 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     });
     new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     syncMode();
+
+    // -- the pages: the home view, and a case study per project (#/work/maison-verre) filled from the data block; the
+    // masthead's sections are anchors of the home view (#pf-ed-about)
+    const site = df$('#pf-editorial').get(0);
+    const CASES = JSON.parse(df$('#pf-ed-cases').text());
+    const ORDER = Object.keys(CASES);
+    const SECTIONS = ['pf-ed-work', 'pf-ed-about', 'pf-ed-contact'];
+    const view = df$('#pf-editorial [data-pf-view="case"]');
+    const fill = (slug) => {
+      const item = CASES[slug];
+      const at = ORDER.indexOf(slug);
+      const prev = ORDER[(at + ORDER.length - 1) % ORDER.length];
+      const next = ORDER[(at + 1) % ORDER.length];
+      view.find('[data-case]').each((_i, el) => {
+        df$(el).text(item[el.dataset.case]);
+      });
+      view.find('[data-case-count]').text('Case ' + (at + 1) + ' of ' + ORDER.length);
+      view.find('[data-case-shot]').each((_i, figure) => {
+        const [id, alt, caption] = item.shots[Number(figure.dataset.caseShot)];
+        df$(figure)
+          .find('img')
+          .attr('src', 'https://picsum.photos/id/' + id + '/' + figure.dataset.caseSize)
+          .attr('alt', alt);
+        df$(figure).find('figcaption').text(caption);
+      });
+      view.find('[rel="prev"]').attr('href', '#/work/' + prev);
+      view.find('[data-case-prev]').text(CASES[prev].title);
+      view.find('[rel="next"]').attr('href', '#/work/' + next);
+      view.find('[data-case-next]').text(CASES[next].title);
+    };
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // one view at a time; the masthead marks where the reader is
+    const reveal = (name, current) => {
+      df$('#pf-editorial [data-pf-view]').each((_i, part) => {
+        part.hidden = part.dataset.pfView !== name;
+      });
+      df$('#pf-editorial .mk-header-nav a').each((_i, link) => {
+        df$(link).attr('aria-current', link.getAttribute('href') === current ? 'true' : null);
+      });
+    };
+    let first = true;
+    // a route: the home view (#/) or a case study, which opens at its top
+    const show = (to) => {
+      const slug = to.routeId === 'case' && CASES[to.params.slug] ? to.params.slug : null;
+      if (slug) fill(slug);
+      reveal(slug ? 'case' : 'home', slug ? '#pf-ed-work' : '');
+      if (!first) site.scrollIntoView({ block: 'start', behavior: slug || still ? 'instant' : 'smooth' });
+      first = false;
+    };
+    // a section of the home view: the home view shows again (a case study hides it) and the section scrolls into
+    // view - on a deep link once the pictures have laid the page out
+    const plain = () => location.hash.length > 1 && !location.hash.startsWith('#/');
+    const jump = () => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (!SECTIONS.includes(id)) return;
+      reveal('home', '#' + id);
+      const go = () =>
+        df$('#' + id)
+          .get(0)
+          .scrollIntoView({ block: 'start', behavior: still ? 'instant' : 'smooth' });
+      if (document.readyState !== 'complete') addEventListener('load', go, { once: true });
+      else go();
+      first = false;
+    };
+    addEventListener('hashchange', () => plain() && jump());
+    if (plain()) jump();
+    const routes = [
+      { id: 'home', path: '/' },
+      { id: 'case', path: '/work/:slug' },
+      { id: 'missing', path: '*' },
+    ];
+    try {
+      const { createRouter } = await import('https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js');
+      const router = createRouter({
+        mode: 'hash',
+        scroll: 'manual',
+        routes,
+        prepare: ({ to }) => ({ commit: () => show(to) }),
+      });
+      router.attachLinks(site);
+      if ((await router.start()).status === 'rejected') {
+        // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+        const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+        const follow = () => plain() || show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+        addEventListener('hashchange', follow);
+        follow();
+      }
+    } catch {
+      // the router did not load (offline): the home view stays, and it holds every section
+    }
   });
 </script>
 ```
 
-<DocText>Built from <DocLink href="resume-header.html">Resume Header</DocLink> (split), <DocLink href="portfolio-grid.html">Portfolio Grid</DocLink> (index), <DocLink href="resume-entry.html">Resume Entry</DocLink> (columns) and <DocLink href="availability.html">Availability</DocLink> (banner). The palette is the page's own: tokens set on its root, so every block inside follows it, in dark mode too. The arch is <code>corner-arch</code> from <DocLink href="shapes.html">Shapes</DocLink>, the entrances are <DocLink href="motion.html">Motion</DocLink>'s, the quote and the feature picture are <DocLink href="parallax.html">Parallax</DocLink> reveals.</DocText>
+<DocText>Built from <DocLink href="site-header.html">Site Header</DocLink> (set as the masthead), <DocLink href="resume-header.html">Resume Header</DocLink> (split), <DocLink href="portfolio-grid.html">Portfolio Grid</DocLink> (index), <DocLink href="resume-entry.html">Resume Entry</DocLink> (columns), <DocLink href="availability.html">Availability</DocLink> (banner), <DocLink href="project-details.html">Project Details</DocLink> with <DocLink href="article-navigation.html">Article Navigation</DocLink> for the case studies and <DocLink href="site-footer.html">Site Footer</DocLink> (set as the colophon). Every case study is a route of <DocLink href="routing.html">defuss-dom-router</DocLink>: <code>#/work/maison-verre</code> fills it from a data block, with the previous and the next case; the masthead's sections are anchors of the home view, which a case study gives way to. The palette is the page's own: tokens set on its root, so every block inside follows it, in dark mode too. The arch is <code>corner-arch</code> from <DocLink href="shapes.html">Shapes</DocLink>, the entrances are <DocLink href="motion.html">Motion</DocLink>'s, the quote and the feature picture are <DocLink href="parallax.html">Parallax</DocLink> reveals.</DocText>
 
 </DocPage>

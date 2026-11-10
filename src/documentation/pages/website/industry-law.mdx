@@ -1,0 +1,2313 @@
+---
+title: "Legal Advisor"
+description: "A one-page site for a small law firm in employment and tenancy law - a deadline check that counts the three weeks for an unfair-dismissal claim, the practice areas with their deadlines, the lawyers with their admissions in profile dialogs, how a mandate works, the fees stated plainly, a consultation request with a callback slot, the questions people ask and the imprint a law firm must publish. Three looks: Chambers, Modern and Paper."
+slug: "industry-law"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="industry-law" title="Legal Advisor" introStyle="max-width:42rem;">
+  A one-page site for a small law firm in employment and tenancy law - a deadline check that counts the three weeks for an unfair-dismissal claim, the practice areas with their deadlines, the lawyers with their admissions in profile dialogs, how a mandate works, the fees stated plainly, a consultation request with a callback slot, the questions people ask and the imprint a law firm must publish. Three looks: Chambers, Modern and Paper.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-industry-law.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example label="Lindholm & Kaya, employment and tenancy law" schema="none" hint="The Look select switches the palette, the headings and how the stamp and the margin notes are drawn: Chambers (ivory and bottle green, an oxblood stamp, pencil notes), Modern (white and indigo, a badge instead of a stamp, notes as callouts) and Paper (manila, ink and red pencil, typewriter labels). The deadline check counts from the day a letter arrived - weekends and the public holidays of North Rhine-Westphalia move the last day on. The callback slots are the firm's next office hours in Cologne time." previewStyle="align-items:stretch;padding:0;"
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  /* Lindholm & Kaya: two partners and two associates in Cologne who act for employees and tenants. Full-width bands
+     on a 76rem grid: the hero with the deadline check, the practice areas, the lawyers, how a mandate works, the fees,
+     the consultation request and the questions. Libre Caslon over IBM Plex Sans, labels in IBM Plex Mono. */
+  #in-law {
+    --background: oklch(0.975 0.008 95);
+    --foreground: oklch(0.22 0.02 160);
+    --card: oklch(0.99 0.005 95);
+    --card-foreground: var(--foreground);
+    --popover: oklch(0.99 0.005 95);
+    --popover-foreground: var(--foreground);
+    --muted: oklch(0.945 0.01 100);
+    --muted-foreground: oklch(0.45 0.02 160);
+    --border: oklch(0.22 0.02 160 / 0.14);
+    --input: oklch(0.22 0.02 160 / 0.3);
+    --primary: oklch(0.38 0.07 165);
+    --primary-foreground: oklch(0.98 0.008 95);
+    --secondary: oklch(0.93 0.02 150);
+    --secondary-foreground: oklch(0.3 0.05 165);
+    --accent: oklch(0.94 0.012 110);
+    --accent-foreground: var(--foreground);
+    --ring: var(--primary);
+    --radius: 0.375rem;
+    --radius-sm: max(0px, calc(var(--radius) - 4px));
+    --radius-md: max(0px, calc(var(--radius) - 2px));
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --lk-band: oklch(0.95 0.012 100);
+    --lk-stamp: oklch(0.47 0.15 25);
+    --lk-note: oklch(0.42 0.02 260);
+    --lk-head: 'Libre Caslon Text', Georgia, serif;
+    --lk-head-weight: 400;
+    --lk-label: 'IBM Plex Sans', var(--font-sans);
+    --lk-gutter: clamp(1rem, 4vw, 2.5rem);
+    color-scheme: light;
+    container: in-law / inline-size;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: clip;
+    background: var(--background);
+    color: var(--foreground);
+    font:
+      400 1rem/1.65 'IBM Plex Sans',
+      var(--font-sans);
+  }
+  #in-law[data-look='modern'] {
+    --background: oklch(0.99 0.002 260);
+    --foreground: oklch(0.2 0.02 265);
+    --card: oklch(1 0 0);
+    --popover: oklch(1 0 0);
+    --muted: oklch(0.96 0.006 260);
+    --muted-foreground: oklch(0.46 0.02 265);
+    --border: oklch(0.2 0.02 265 / 0.12);
+    --input: oklch(0.2 0.02 265 / 0.26);
+    --primary: oklch(0.45 0.14 265);
+    --primary-foreground: oklch(0.99 0.002 260);
+    --secondary: oklch(0.95 0.02 265);
+    --secondary-foreground: oklch(0.35 0.1 265);
+    --accent: oklch(0.955 0.01 265);
+    --radius: 0.75rem;
+    --lk-band: oklch(0.965 0.006 260);
+    --lk-stamp: oklch(0.45 0.14 265);
+    --lk-note: oklch(0.45 0.14 265);
+    --lk-head: 'IBM Plex Sans', var(--font-sans);
+    --lk-head-weight: 700;
+  }
+  #in-law[data-look='paper'] {
+    --background: oklch(0.955 0.025 85);
+    --foreground: oklch(0.2 0.01 60);
+    --card: oklch(0.985 0.012 90);
+    --popover: oklch(0.985 0.012 90);
+    --muted: oklch(0.93 0.025 85);
+    --muted-foreground: oklch(0.43 0.03 70);
+    --border: oklch(0.2 0.01 60 / 0.16);
+    --input: oklch(0.2 0.01 60 / 0.32);
+    --primary: oklch(0.24 0.01 60);
+    --primary-foreground: oklch(0.97 0.02 85);
+    --secondary: oklch(0.91 0.03 85);
+    --secondary-foreground: oklch(0.28 0.02 60);
+    --accent: oklch(0.925 0.03 85);
+    --radius: 0.125rem;
+    --lk-band: oklch(0.935 0.03 82);
+    --lk-stamp: oklch(0.52 0.19 28);
+    --lk-note: oklch(0.52 0.19 28);
+    --lk-label: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  #in-law [hidden] {
+    display: none !important;
+  }
+  #in-law :is(h1, h2, h3) {
+    font-family: var(--lk-head);
+    font-weight: var(--lk-head-weight);
+    text-wrap: balance;
+  }
+  #in-law :is(a, button, summary, input, select, textarea):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  /* the grid: full-width bands, the content on one 76rem column */
+  #in-law > .lk-band {
+    box-sizing: border-box;
+    width: 100%;
+    padding: clamp(3.5rem, 8vw, 6rem) max(var(--lk-gutter), calc((100% - 76rem) / 2));
+  }
+  #in-law > .lk-band[data-tone='alt'] {
+    background: var(--lk-band);
+  }
+  #in-law .lk-label {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-family: var(--lk-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #in-law .mk-section-header {
+    max-width: none;
+    margin-block-end: clamp(2rem, 4vw, 3rem);
+    padding-inline: 0;
+  }
+  #in-law .mk-section-header-eyebrow {
+    color: var(--primary);
+    font-family: var(--lk-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #in-law .mk-section-header-title {
+    font-size: clamp(1.85rem, 1.3rem + 1.8vw, 2.6rem);
+    font-weight: var(--lk-head-weight);
+    letter-spacing: -0.01em;
+  }
+  #in-law .mk-section-header-desc {
+    max-width: 42rem;
+  }
+  /* the header */
+  #in-law .lk-header {
+    box-sizing: border-box;
+    padding-inline: max(var(--lk-gutter), calc((100% - 76rem) / 2));
+    border-block-end: 1px solid var(--border);
+    background: color-mix(in oklch, var(--background) 92%, transparent);
+    backdrop-filter: blur(10px);
+  }
+  #in-law .lk-header .mk-header-inner {
+    max-width: none;
+    min-height: 4.75rem;
+    padding: 0.75rem 0;
+  }
+  #in-law .lk-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  #in-law .lk-monogram {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border: 1px solid currentColor;
+    border-radius: var(--radius-sm);
+    color: var(--primary);
+    font:
+      400 1rem/1 'Libre Caslon Text',
+      Georgia,
+      serif;
+    letter-spacing: -0.02em;
+  }
+  #in-law .lk-brand span:last-child {
+    display: grid;
+    gap: 0.2rem;
+    line-height: 1;
+  }
+  #in-law .lk-brand b {
+    font:
+      400 1.3rem/1 'Libre Caslon Text',
+      Georgia,
+      serif;
+  }
+  #in-law .lk-brand small {
+    color: var(--muted-foreground);
+    font-family: var(--lk-label);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #in-law .mk-header-nav .nav-menu-link {
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+  #in-law .mk-header-nav .nav-menu-link[aria-current] {
+    box-shadow: inset 0 -2px 0 var(--primary);
+    border-radius: 0;
+  }
+  #in-law .mk-header-actions .select {
+    width: auto;
+  }
+  #in-law .site-mode {
+    flex: none;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--foreground);
+  }
+  #in-law .site-mode:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  @container mk-header (max-width: 70rem) {
+    #in-law .mk-header-nav {
+      display: none;
+    }
+    #in-law .mk-header-menu {
+      display: inline-flex;
+    }
+  }
+  @container mk-header (max-width: 32rem) {
+    #in-law .lk-brand small,
+    #in-law .lk-monogram {
+      display: none;
+    }
+    #in-law .lk-brand b {
+      font-size: 1.125rem;
+      white-space: nowrap;
+    }
+  }
+  /* the hero: the promise beside the deadline check */
+  #in-law .lk-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+  #in-law .lk-hero h1 {
+    margin: 1rem 0 1.25rem;
+    font-size: clamp(2.4rem, 1.5rem + 3.2vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+  #in-law[data-look='modern'] .lk-hero h1 {
+    letter-spacing: -0.035em;
+  }
+  #in-law .lk-hero h1 em {
+    color: var(--primary);
+  }
+  #in-law .lk-lead {
+    max-width: 36rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 1.125rem;
+    text-wrap: pretty;
+  }
+  #in-law .lk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-start: 2rem;
+  }
+  #in-law .lk-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 2.25rem 0 0;
+    padding: 1.25rem 0 0;
+    border-block-start: 1px solid var(--border);
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+  #in-law .lk-facts li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  #in-law .lk-facts svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--primary);
+  }
+  /* the deadline check: a card with a stamp on it */
+  #in-law .lk-check {
+    display: grid;
+    overflow: visible;
+    position: relative;
+    gap: 1rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    box-shadow: 0 30px 60px -40px oklch(0.2 0.02 160 / 0.45);
+  }
+  #in-law .lk-check h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  #in-law .lk-check > p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+  }
+  #in-law .lk-field {
+    display: grid;
+    gap: 0.375rem;
+  }
+  #in-law .lk-result {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1rem 1.125rem;
+    border-inline-start: 3px solid var(--primary);
+    background: var(--muted);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+  #in-law .lk-result output {
+    font-family: var(--lk-head);
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+  #in-law .lk-result small {
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  #in-law .lk-fine {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  #in-law .lk-stamp {
+    position: absolute;
+    inset: -1.4rem -1rem auto auto;
+    display: grid;
+    place-items: center;
+    gap: 0.1rem;
+    padding: 0.5rem 0.9rem 0.45rem;
+    border: 3px double var(--lk-stamp);
+    border-radius: 0.3rem;
+    background: color-mix(in oklch, var(--card) 88%, transparent);
+    color: var(--lk-stamp);
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    line-height: 1;
+    text-transform: uppercase;
+    rotate: 7deg;
+  }
+  #in-law .lk-stamp b {
+    font-size: 1.35rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+  #in-law .lk-stamp small {
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+  }
+  #in-law[data-look='modern'] .lk-stamp {
+    inset: 1.25rem 1.25rem auto auto;
+    border: 0;
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    rotate: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  #in-law[data-look='modern'] .lk-stamp b {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  #in-law[data-look='paper'] .lk-stamp {
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 0;
+    rotate: -6deg;
+    mix-blend-mode: multiply;
+    background: transparent;
+  }
+  .dark #in-law[data-look='paper'] .lk-stamp {
+    mix-blend-mode: normal;
+  }
+  /* the margin note: a pencilled remark beside a block */
+  #in-law .lk-note {
+    position: relative;
+    margin: 0;
+    padding-inline-start: 1.6rem;
+    color: var(--lk-note);
+    font:
+      italic 400 1rem/1.4 'Libre Caslon Text',
+      Georgia,
+      serif;
+    rotate: -1.5deg;
+  }
+  #in-law .lk-note::before {
+    content: '';
+    position: absolute;
+    inset: 0.65rem auto auto 0;
+    width: 1.1rem;
+    height: 0;
+    border-block-start: 1.5px solid currentColor;
+  }
+  #in-law[data-look='modern'] .lk-note {
+    padding: 0.75rem 1rem;
+    border-inline-start: 3px solid var(--lk-note);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    font:
+      500 0.9375rem/1.5 'IBM Plex Sans',
+      sans-serif;
+    rotate: none;
+  }
+  #in-law[data-look='modern'] .lk-note::before {
+    display: none;
+  }
+  #in-law[data-look='paper'] .lk-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-style: normal;
+    font-size: 0.875rem;
+    text-decoration: underline 1px color-mix(in oklch, var(--lk-note) 45%, transparent);
+    text-underline-offset: 0.3em;
+    rotate: -2deg;
+  }
+  /* practice areas: two columns, each topic with its deadline */
+  #in-law .lk-areas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  #in-law .lk-area h3 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0 0 0.5rem;
+    padding-block-end: 0.75rem;
+    border-block-end: 2px solid var(--primary);
+    font-size: 1.5rem;
+  }
+  #in-law .lk-area h3 span {
+    color: var(--muted-foreground);
+    font-family: var(--lk-label);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #in-law .lk-area .mk-service-item {
+    padding-block: 1rem;
+    border-block-end: 1px solid var(--border);
+  }
+  #in-law .lk-area .mk-service-item-title {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  #in-law .lk-deadline {
+    display: block;
+    margin-block-start: 0.4rem;
+    color: var(--foreground);
+    font-family: var(--lk-label);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+  #in-law .lk-deadline::before {
+    content: 'Deadline · ';
+    color: var(--lk-stamp);
+    font-weight: 600;
+  }
+  #in-law .lk-deadline[data-kind='watch']::before {
+    content: 'Watch out · ';
+  }
+  /* the lawyers */
+  #in-law .lk-team {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  #in-law[data-look='chambers'] :is(.lk-team .mk-team-member-photo, .lk-profile-head img) {
+    filter: grayscale(1);
+  }
+  #in-law[data-look='paper'] :is(.lk-team .mk-team-member-photo, .lk-profile-head img) {
+    filter: grayscale(1) sepia(0.35);
+  }
+  #in-law .lk-team .mk-team-member-body {
+    display: grid;
+    gap: 0.35rem;
+  }
+  #in-law .lk-team .mk-team-member-name {
+    font-family: var(--lk-head);
+    font-size: 1.25rem;
+  }
+  #in-law .lk-team .mk-team-member-body .btn {
+    justify-self: start;
+    margin-block-start: 0.5rem;
+  }
+  #in-law .lk-team .mk-team-member-tag svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  /* how a mandate works */
+  #in-law .lk-how {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-items: start;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  #in-law .lk-how > figure {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+  }
+  #in-law .lk-how > figure img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  #in-law .lk-how figcaption {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  #in-law .mk-process-steps {
+    margin: 0;
+  }
+  #in-law .mk-process-step-title {
+    font-family: var(--lk-head);
+    font-size: 1.25rem;
+    font-weight: var(--lk-head-weight);
+  }
+  #in-law .mk-process-step-desc {
+    max-width: 38rem;
+  }
+  /* the fees: a table, a margin note, insurance and legal aid */
+  #in-law .lk-fees {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    align-items: start;
+    gap: 1.5rem clamp(2rem, 4vw, 3rem);
+  }
+  #in-law .lk-fees .table-container {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card);
+  }
+  #in-law .lk-fees .table-head {
+    font-family: var(--lk-label);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  #in-law .lk-fees .table-cell {
+    vertical-align: top;
+    padding-block: 1rem;
+  }
+  #in-law .lk-fees td:first-child {
+    font-weight: 600;
+  }
+  #in-law .lk-fees td:nth-child(2) {
+    white-space: nowrap;
+    font-family: var(--lk-head);
+    font-size: 1.0625rem;
+  }
+  #in-law .lk-fees td small {
+    display: block;
+    color: var(--muted-foreground);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.8125rem;
+  }
+  #in-law .lk-fees td:last-child {
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+  }
+  #in-law .lk-fees .lk-note {
+    margin-block-start: 1.5rem;
+  }
+  #in-law .lk-help {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  #in-law .lk-help .card {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.5rem;
+  }
+  #in-law .lk-help h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  #in-law .lk-help h3 svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--primary);
+  }
+  #in-law .lk-help p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  /* the consultation request */
+  #in-law .lk-contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+  #in-law .lk-form {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  #in-law .lk-form fieldset {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  #in-law .lk-form legend {
+    margin-block-end: 0.5rem;
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  #in-law .lk-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  #in-law .lk-urgency {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  #in-law .lk-urgency label,
+  #in-law .lk-slots label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    cursor: pointer;
+  }
+  #in-law .lk-urgency label:hover,
+  #in-law .lk-slots label:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  #in-law .lk-urgency label:has(:checked),
+  #in-law .lk-slots label:has(:checked) {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary);
+  }
+  #in-law .lk-urgency small {
+    display: block;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  #in-law .lk-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
+    gap: 0.5rem;
+  }
+  #in-law .lk-slots label {
+    align-items: center;
+  }
+  #in-law .lk-slots span {
+    display: grid;
+  }
+  #in-law .lk-slots b {
+    font-weight: 600;
+  }
+  #in-law .lk-slots small {
+    color: var(--muted-foreground);
+    font-family: var(--lk-label);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+  }
+  #in-law .lk-count {
+    justify-self: end;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  #in-law .lk-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  #in-law .lk-consent input {
+    margin-block-start: 0.2rem;
+  }
+  #in-law .lk-linkish {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--primary);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+  #in-law .lk-send {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  #in-law .lk-send p {
+    max-width: 30rem;
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+  }
+  #in-law .lk-request[data-sent] .lk-form,
+  #in-law .lk-request:not([data-sent]) .lk-done {
+    display: none;
+  }
+  #in-law .lk-done {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  #in-law .lk-done:focus-visible {
+    outline: 2px solid var(--ring);
+  }
+  #in-law .lk-done h3 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+  #in-law .lk-done p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  #in-law .lk-done dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 1.25rem;
+    margin: 0;
+  }
+  #in-law .lk-done dt {
+    color: var(--muted-foreground);
+    font-family: var(--lk-label);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-block-start: 0.2rem;
+  }
+  #in-law .lk-done dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  #in-law .lk-urgent {
+    padding: 0.75rem 1rem;
+    border-inline-start: 3px solid var(--lk-stamp);
+    background: var(--muted);
+    color: var(--foreground) !important;
+  }
+  #in-law .lk-office {
+    display: grid;
+    gap: 1rem;
+  }
+  #in-law .lk-office img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  #in-law .lk-office address {
+    font-style: normal;
+    line-height: 1.6;
+  }
+  #in-law .lk-office dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 1rem;
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+  #in-law .lk-office dt {
+    color: var(--muted-foreground);
+  }
+  #in-law .lk-office dd {
+    margin: 0;
+  }
+  /* questions */
+  #in-law .mk-faq {
+    padding: 0;
+  }
+  #in-law .mk-faq-head {
+    padding-inline: 0;
+  }
+  #in-law .mk-faq-title {
+    font-weight: var(--lk-head-weight);
+  }
+  #in-law .mk-faq-eyebrow {
+    color: var(--primary);
+    font-family: var(--lk-label);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #in-law .accordion-content p {
+    margin: 0;
+    color: var(--muted-foreground);
+  }
+  /* the footer */
+  #in-law .lk-footer {
+    box-sizing: border-box;
+    padding-inline: max(var(--lk-gutter), calc((100% - 76rem) / 2));
+    border-block-start: 1px solid var(--border);
+    background: var(--lk-band);
+  }
+  #in-law .lk-footer .mk-footer-inner {
+    max-width: none;
+    padding-inline: 0;
+  }
+  #in-law .lk-footer .mk-footer-heading {
+    font-family: var(--lk-label);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  #in-law .lk-footer .mk-footer-list :is(a, span, address, .lk-linkish) {
+    color: var(--muted-foreground);
+    font-style: normal;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    text-decoration: none;
+  }
+  #in-law .lk-footer .mk-footer-list :is(a, .lk-linkish):hover {
+    color: var(--foreground);
+    text-decoration: underline;
+  }
+  #in-law .lk-footer .mk-footer-brand {
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  /* the dialogs: profiles, imprint, privacy */
+  #in-law .dialog .dialog-body {
+    display: grid;
+    gap: 0.875rem;
+  }
+  #in-law .dialog .dialog-body > p,
+  #in-law .dialog dd {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+  #in-law .dialog h3 {
+    margin: 0.5rem 0 0;
+    font-size: 1.05rem;
+  }
+  #in-law .dialog dl {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) 1fr;
+    gap: 0.45rem 1rem;
+    margin: 0;
+  }
+  #in-law .dialog dt {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  #in-law .lk-profile-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  #in-law .lk-profile-head img {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  #in-law .lk-profile-head p {
+    margin: 0.2rem 0 0;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  /* narrow */
+  @container in-law (max-width: 64rem) {
+    #in-law .lk-team {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #in-law :is(.lk-fees, .lk-contact) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @container in-law (max-width: 50rem) {
+    #in-law :is(.lk-hero, .lk-areas, .lk-how) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    #in-law .lk-how > figure img {
+      aspect-ratio: 16 / 9;
+    }
+    #in-law :is(.lk-help, .lk-urgency) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    #in-law .lk-stamp {
+      inset-inline-end: 0.25rem;
+    }
+  }
+  @container in-law (max-width: 34rem) {
+    #in-law .lk-pair {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    #in-law .dialog dl {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    #in-law .dialog dd {
+      margin-block-end: 0.35rem;
+    }
+    #in-law .lk-fees td:nth-child(2) {
+      white-space: normal;
+    }
+  }
+  /* -- modes: each look in light and dark, derived from the palettes above (the other mode of each look) -- */
+  .dark #in-law[data-look='chambers'] {
+    color-scheme: dark;
+    --background: oklch(0.18 0.015 165);
+    --foreground: oklch(0.94 0.01 95);
+    --card: oklch(0.215 0.018 165);
+    --card-foreground: oklch(0.94 0.01 95);
+    --popover: oklch(0.215 0.018 165);
+    --popover-foreground: oklch(0.94 0.01 95);
+    --muted: oklch(0.25 0.02 165);
+    --muted-foreground: oklch(0.76 0.02 150);
+    --border: oklch(0.94 0.01 95 / 0.13);
+    --input: oklch(0.94 0.01 95 / 0.26);
+    --primary: oklch(0.78 0.09 160);
+    --primary-foreground: oklch(0.17 0.02 165);
+    --secondary: oklch(0.28 0.03 165);
+    --secondary-foreground: oklch(0.9 0.03 150);
+    --accent: oklch(0.26 0.02 165);
+    --accent-foreground: oklch(0.94 0.01 95);
+    --ring: oklch(0.78 0.09 160);
+    --lk-band: oklch(0.155 0.014 165);
+    --lk-stamp: oklch(0.72 0.14 25);
+    --lk-note: oklch(0.8 0.02 260);
+  }
+  .dark #in-law[data-look='modern'] {
+    color-scheme: dark;
+    --background: oklch(0.17 0.015 265);
+    --foreground: oklch(0.95 0.005 260);
+    --card: oklch(0.205 0.02 265);
+    --card-foreground: oklch(0.95 0.005 260);
+    --popover: oklch(0.205 0.02 265);
+    --popover-foreground: oklch(0.95 0.005 260);
+    --muted: oklch(0.24 0.02 265);
+    --muted-foreground: oklch(0.75 0.02 265);
+    --border: oklch(0.95 0.005 260 / 0.12);
+    --input: oklch(0.95 0.005 260 / 0.24);
+    --primary: oklch(0.74 0.12 265);
+    --primary-foreground: oklch(0.17 0.02 265);
+    --secondary: oklch(0.27 0.04 265);
+    --secondary-foreground: oklch(0.88 0.06 265);
+    --accent: oklch(0.25 0.02 265);
+    --accent-foreground: oklch(0.95 0.005 260);
+    --ring: oklch(0.74 0.12 265);
+    --lk-band: oklch(0.145 0.015 265);
+    --lk-stamp: oklch(0.74 0.12 265);
+    --lk-note: oklch(0.74 0.12 265);
+  }
+  .dark #in-law[data-look='paper'] {
+    color-scheme: dark;
+    --background: oklch(0.2 0.012 70);
+    --foreground: oklch(0.93 0.02 85);
+    --card: oklch(0.235 0.015 70);
+    --card-foreground: oklch(0.93 0.02 85);
+    --popover: oklch(0.235 0.015 70);
+    --popover-foreground: oklch(0.93 0.02 85);
+    --muted: oklch(0.27 0.015 70);
+    --muted-foreground: oklch(0.76 0.025 80);
+    --border: oklch(0.93 0.02 85 / 0.14);
+    --input: oklch(0.93 0.02 85 / 0.28);
+    --primary: oklch(0.92 0.025 85);
+    --primary-foreground: oklch(0.2 0.012 70);
+    --secondary: oklch(0.29 0.02 70);
+    --secondary-foreground: oklch(0.9 0.025 85);
+    --accent: oklch(0.28 0.018 70);
+    --accent-foreground: oklch(0.93 0.02 85);
+    --ring: oklch(0.92 0.025 85);
+    --lk-band: oklch(0.17 0.01 70);
+    --lk-stamp: oklch(0.7 0.16 28);
+    --lk-note: oklch(0.7 0.16 28);
+  }
+  /* -- modes: end -- */
+</style>
+<div id="in-law" data-look="chambers">
+  <header class="mk-header lk-header" data-variant="sticky">
+    <div class="mk-header-inner">
+      <a class="lk-brand" href="#lk-top"
+        ><span class="lk-monogram" aria-hidden="true">L&amp;K</span
+        ><span><b>Lindholm &amp; Kaya</b><small>Rechtsanwälte · Cologne</small></span></a
+      >
+      <nav class="mk-header-nav" aria-label="On this page">
+        <ul class="nav-menu-list">
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#lk-practice">Practice</a></li>
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#lk-lawyers">Lawyers</a></li>
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#lk-how">How it works</a></li>
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#lk-fees">Fees</a></li>
+          <li class="nav-menu-item"><a class="nav-menu-link" href="#lk-faq">Questions</a></li>
+        </ul>
+      </nav>
+      <div class="mk-header-actions">
+        <select class="select" data-size="sm" data-site-look aria-label="Look">
+          <option value="chambers">Chambers</option>
+          <option value="modern">Modern</option>
+          <option value="paper">Paper</option>
+        </select>
+        <label class="swap site-mode" data-variant="rotate" data-size="sm">
+          <input type="checkbox" data-site-mode aria-label="Dark mode" />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+        <a class="btn mk-header-wide" data-size="sm" href="#lk-contact">Request a consultation</a>
+        <button
+          type="button"
+          class="btn mk-header-menu"
+          data-variant="ghost"
+          data-size="icon"
+          data-sheet-trigger="lk-sheet"
+          aria-haspopup="dialog"
+          aria-label="Open menu"
+          ><i data-lucide="menu"></i
+        ></button>
+      </div>
+    </div>
+    <dialog
+      id="lk-sheet"
+      class="sheet"
+      data-side="right"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lk-sheet-title"
+    >
+      <div class="sheet-content">
+        <div class="sheet-header">
+          <h2 class="sheet-title" id="lk-sheet-title">Lindholm &amp; Kaya</h2>
+          <p class="sheet-description">Employment and tenancy law, Cologne</p>
+        </div>
+        <div class="sheet-body">
+          <ul class="mk-header-sheet-nav">
+            <li><a href="#lk-check" data-sheet-close>Deadline check</a></li>
+            <li
+              ><a href="#lk-practice" data-sheet-close>Practice <small>employment, tenancy</small></a></li
+            >
+            <li><a href="#lk-lawyers" data-sheet-close>Lawyers</a></li>
+            <li><a href="#lk-how" data-sheet-close>How a mandate works</a></li>
+            <li><a href="#lk-fees" data-sheet-close>Fees</a></li>
+            <li><a href="#lk-faq" data-sheet-close>Questions</a></li>
+          </ul>
+        </div>
+        <div class="sheet-footer mk-header-sheet-actions">
+          <a class="btn" href="#lk-contact" data-sheet-close>Request a consultation</a>
+        </div>
+      </div>
+      <button class="sheet-close-x" data-sheet-close aria-label="Close"><i data-lucide="x"></i></button>
+    </dialog>
+  </header>
+
+  <section class="lk-band lk-hero" id="lk-top" aria-labelledby="lk-title">
+    <div>
+      <p class="lk-label">Employment and tenancy law · Cologne</p>
+      <h1 id="lk-title">Dismissed, or facing a rent increase? <em>Most of it has a deadline.</em></h1>
+      <p class="lk-lead"
+        >We act for employees and tenants - never for employers or landlords - in English and German. In a first
+        consultation of 45 minutes we tell you your deadline, your chances and what it will cost.</p
+      >
+      <div class="lk-actions">
+        <a class="btn" data-size="lg" href="#lk-contact"><i data-lucide="phone-call"></i> Request a consultation</a>
+        <a class="btn" data-variant="outline" data-size="lg" href="#lk-fees">What it costs</a>
+      </div>
+      <ul class="lk-facts">
+        <li><i data-lucide="clock"></i>Callback within one working day</li>
+        <li><i data-lucide="languages"></i>German, English, Turkish, Swedish, French</li>
+        <li><i data-lucide="scale"></i>Admitted in Cologne since 2009</li>
+      </ul>
+    </div>
+    <section class="card lk-check" id="lk-check" aria-labelledby="lk-check-title">
+      <p class="lk-stamp" aria-hidden="true"><b data-lk-stamp>3 weeks</b><small data-lk-stamp-law>§ 4 KSchG</small></p>
+      <h2 id="lk-check-title">Deadline check</h2>
+      <p>Tell us what arrived and when. We count the days the way the court will.</p>
+      <div class="lk-field">
+        <label class="label" for="lk-kind">What did you receive?</label>
+        <select class="select" id="lk-kind">
+          <option value="dismissal">A dismissal from my employer</option>
+          <option value="fixed">My fixed-term contract is ending</option>
+          <option value="rent">A letter asking me to agree to a rent increase</option>
+        </select>
+      </div>
+      <div class="lk-field">
+        <label class="label" for="lk-when" data-lk-when-label>The day it arrived</label>
+        <input class="input" type="date" id="lk-when" />
+      </div>
+      <div class="lk-result">
+        <output for="lk-kind lk-when" data-lk-deadline aria-live="polite">Pick the day to see your deadline.</output>
+        <small data-lk-rule
+          >Three weeks from the day the letter reached you, to file a claim with the labour court (§ 4 KSchG). A weekend
+          or a public holiday moves the last day to the next working day.</small
+        >
+      </div>
+      <p class="lk-fine"
+        >A guide, not advice. A letter counts as received on the day it landed in your letterbox, opened or not.</p
+      >
+    </section>
+  </section>
+
+  <section class="lk-band" data-tone="alt" id="lk-practice" aria-labelledby="lk-practice-title">
+    <header class="mk-section-header">
+      <div class="mk-section-header-copy">
+        <span class="mk-section-header-eyebrow">Practice</span>
+        <h2 class="mk-section-header-title" id="lk-practice-title">Two fields, one side of the table</h2>
+        <p class="mk-section-header-desc"
+          >Because we never act for employers or landlords, we never meet a former client across the table. Every topic
+          below comes with the deadline that decides it.</p
+        >
+      </div>
+    </header>
+    <div class="lk-areas">
+      <div class="lk-area">
+        <h3>Employment law <span>for employees</span></h3>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="file-x"></i></span>
+          <h4 class="mk-service-item-title">Dismissal and unfair-dismissal claims</h4>
+          <p class="mk-service-item-desc"
+            >Most dismissals after six months in a company with more than ten staff need a reason. Whether yours has one
+            is decided by the labour court - if you ask it in time.<span class="lk-deadline"
+              >3 weeks from receipt (§ 4 KSchG)</span
+            ></p
+          >
+        </article>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="handshake"></i></span>
+          <h4 class="mk-service-item-title">Settlement and severance agreements</h4>
+          <p class="mk-service-item-desc"
+            >There is rarely a legal right to severance - it is negotiated. We read the offer, the numbers and the
+            wording with you.<span class="lk-deadline" data-kind="watch"
+              >signing can stop unemployment benefit for 12 weeks (§ 159 SGB III)</span
+            ></p
+          >
+        </article>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="calendar-clock"></i></span>
+          <h4 class="mk-service-item-title">Fixed-term contracts</h4>
+          <p class="mk-service-item-desc"
+            >A fixed term without a reason is allowed for two years at most, renewed no more than three times. After
+            that, the contract may already be permanent.<span class="lk-deadline"
+              >3 weeks after the agreed end (§ 17 TzBfG)</span
+            ></p
+          >
+        </article>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="file-text"></i></span>
+          <h4 class="mk-service-item-title">References, unpaid wages and overtime</h4>
+          <p class="mk-service-item-desc"
+            >Coded phrases in a reference, a bonus that never came, hours nobody paid for.<span
+              class="lk-deadline"
+              data-kind="watch"
+              >many contracts cut claims off after 3 months</span
+            ></p
+          >
+        </article>
+      </div>
+      <div class="lk-area">
+        <h3>Tenancy law <span>for tenants</span></h3>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="trending-up"></i></span>
+          <h4 class="mk-service-item-title">Rent increases and the rent brake</h4>
+          <p class="mk-service-item-desc"
+            >We check the increase against Cologne's rent index and the cap of 15 % in three years that applies in the
+            city.<span class="lk-deadline">to the end of the 2nd month after receipt (§ 558b BGB)</span></p
+          >
+        </article>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="receipt"></i></span>
+          <h4 class="mk-service-item-title">Service-charge statements</h4>
+          <p class="mk-service-item-desc"
+            >Heating, caretaker, insurance - what may be passed on, and what a statement that arrives too late can no
+            longer ask for.<span class="lk-deadline">12 months to object after receipt (§ 556 BGB)</span></p
+          >
+        </article>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="house"></i></span>
+          <h4 class="mk-service-item-title">Notice for the landlord's own use</h4>
+          <p class="mk-service-item-desc"
+            >Is the need real, is the notice long enough, and does your situation outweigh it? Age, illness and school
+            years count.<span class="lk-deadline">objection 2 months before the tenancy ends (§ 574b BGB)</span></p
+          >
+        </article>
+        <article class="mk-service-item" data-variant="inline">
+          <span class="mk-service-item-icon"><i data-lucide="wrench"></i></span>
+          <h4 class="mk-service-item-title">Defects, rent reduction and the deposit</h4>
+          <p class="mk-service-item-desc"
+            >Mould, a broken heating system, a deposit that does not come back.<span
+              class="lk-deadline"
+              data-kind="watch"
+              >a deposit may not exceed three months' net rent (§ 551 BGB)</span
+            ></p
+          >
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="lk-band" id="lk-lawyers" aria-labelledby="lk-lawyers-title">
+    <header class="mk-section-header">
+      <div class="mk-section-header-copy">
+        <span class="mk-section-header-eyebrow">The lawyers</span>
+        <h2 class="mk-section-header-title" id="lk-lawyers-title">Four lawyers, five languages</h2>
+        <p class="mk-section-header-desc"
+          >All four are admitted to the bar in Cologne. The partners hold the specialist titles in their field - a
+          Fachanwalt has passed extra exams and run at least a hundred cases in it.</p
+        >
+      </div>
+    </header>
+    <div class="lk-team">
+      <article class="mk-team-member" aria-labelledby="lk-tm-0">
+        <div class="mk-team-member-portrait">
+          <img
+            class="mk-team-member-photo"
+            src="https://i.pravatar.cc/480?img=26"
+            alt="Portrait of Dr. Johanna Lindholm, a woman with long brown hair in a blue top"
+          />
+          <span class="mk-team-member-tag"><i data-lucide="award"></i>Partner</span>
+        </div>
+        <div class="mk-team-member-body">
+          <h3 class="mk-team-member-name" id="lk-tm-0">Dr. Johanna Lindholm</h3>
+          <p class="mk-team-member-role">Specialist lawyer for employment law</p>
+          <p class="mk-team-member-bio">Dismissals of senior staff and the negotiations that follow them.</p>
+          <button
+            class="btn"
+            data-variant="outline"
+            data-size="sm"
+            type="button"
+            commandfor="lk-p-0"
+            command="show-modal"
+            >Profile</button
+          >
+        </div>
+      </article>
+      <article class="mk-team-member" aria-labelledby="lk-tm-1">
+        <div class="mk-team-member-portrait">
+          <img
+            class="mk-team-member-photo"
+            src="https://i.pravatar.cc/480?img=59"
+            alt="Portrait of Emre Kaya, a man with glasses and a beard in a dark suit and a blue tie"
+          />
+          <span class="mk-team-member-tag"><i data-lucide="award"></i>Partner</span>
+        </div>
+        <div class="mk-team-member-body">
+          <h3 class="mk-team-member-name" id="lk-tm-1">Emre Kaya</h3>
+          <p class="mk-team-member-role">Specialist lawyer for tenancy law</p>
+          <p class="mk-team-member-bio">Rent increases, notices for own use and eviction cases.</p>
+          <button
+            class="btn"
+            data-variant="outline"
+            data-size="sm"
+            type="button"
+            commandfor="lk-p-1"
+            command="show-modal"
+            >Profile</button
+          >
+        </div>
+      </article>
+      <article class="mk-team-member" aria-labelledby="lk-tm-2">
+        <div class="mk-team-member-portrait">
+          <img
+            class="mk-team-member-photo"
+            src="https://i.pravatar.cc/480?img=32"
+            alt="Portrait of Amelie Brandt, a woman with long brown hair and a white collar"
+          />
+          <span class="mk-team-member-tag"><i data-lucide="briefcase"></i>Associate</span>
+        </div>
+        <div class="mk-team-member-body">
+          <h3 class="mk-team-member-name" id="lk-tm-2">Amelie Brandt</h3>
+          <p class="mk-team-member-role">Lawyer, employment law</p>
+          <p class="mk-team-member-bio">Fixed-term contracts, references and unpaid overtime.</p>
+          <button
+            class="btn"
+            data-variant="outline"
+            data-size="sm"
+            type="button"
+            commandfor="lk-p-2"
+            command="show-modal"
+            >Profile</button
+          >
+        </div>
+      </article>
+      <article class="mk-team-member" aria-labelledby="lk-tm-3">
+        <div class="mk-team-member-portrait">
+          <img
+            class="mk-team-member-photo"
+            src="https://i.pravatar.cc/480?img=68"
+            alt="Portrait of Jonas Wiśniewski, a man with a short beard in a jacket and a jumper, in black and white"
+          />
+          <span class="mk-team-member-tag"><i data-lucide="briefcase"></i>Associate</span>
+        </div>
+        <div class="mk-team-member-body">
+          <h3 class="mk-team-member-name" id="lk-tm-3">Jonas Wiśniewski</h3>
+          <p class="mk-team-member-role">Lawyer, tenancy law</p>
+          <p class="mk-team-member-bio">Service charges, defects and deposits.</p>
+          <button
+            class="btn"
+            data-variant="outline"
+            data-size="sm"
+            type="button"
+            commandfor="lk-p-3"
+            command="show-modal"
+            >Profile</button
+          >
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="lk-band lk-how" data-tone="alt" id="lk-how" aria-labelledby="lk-how-title">
+    <figure>
+      <img
+        src="https://picsum.photos/id/834/800/1000"
+        alt="A waiting room: a dark leather bench along a panelled wall under three framed prints"
+      />
+      <figcaption>The waiting room at Am Römerturm. Most people never sit in it for long.</figcaption>
+    </figure>
+    <div>
+      <header class="mk-section-header">
+        <div class="mk-section-header-copy">
+          <span class="mk-section-header-eyebrow">How a mandate works</span>
+          <h2 class="mk-section-header-title" id="lk-how-title">From the first call to the hearing</h2>
+        </div>
+      </header>
+      <ol class="mk-process-steps">
+        <li class="mk-process-step">
+          <span class="mk-process-step-number" aria-hidden="true">01</span>
+          <div class="mk-process-step-body">
+            <h3 class="mk-process-step-title">You call or write</h3>
+            <p class="mk-process-step-desc"
+              >Tell us what you received and when. We call back within one working day - the same day when a deadline is
+              close.</p
+            >
+          </div>
+        </li>
+        <li class="mk-process-step">
+          <span class="mk-process-step-number" aria-hidden="true">02</span>
+          <div class="mk-process-step-body">
+            <h3 class="mk-process-step-title">The first consultation</h3>
+            <p class="mk-process-step-desc"
+              >45 minutes at the office, by phone or by video, for a fixed €190 plus VAT. You leave knowing your
+              deadline, your chances and the cost of each next step.</p
+            >
+          </div>
+        </li>
+        <li class="mk-process-step">
+          <span class="mk-process-step-number" aria-hidden="true">03</span>
+          <div class="mk-process-step-body">
+            <h3 class="mk-process-step-title">The mandate</h3>
+            <p class="mk-process-step-desc"
+              >If you instruct us, you sign a power of attorney and, where we charge by the hour, a written fee
+              agreement. We ask your legal expenses insurer for cover.</p
+            >
+          </div>
+        </li>
+        <li class="mk-process-step">
+          <span class="mk-process-step-number" aria-hidden="true">04</span>
+          <div class="mk-process-step-body">
+            <h3 class="mk-process-step-title">Letter, claim, settlement</h3>
+            <p class="mk-process-step-desc"
+              >We write to the other side or file the claim. In a dismissal case the labour court holds a first hearing
+              within weeks, and most cases settle there.</p
+            >
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="lk-band" id="lk-fees" aria-labelledby="lk-fees-title">
+    <header class="mk-section-header">
+      <div class="mk-section-header-copy">
+        <span class="mk-section-header-eyebrow">Fees</span>
+        <h2 class="mk-section-header-title" id="lk-fees-title">What it costs, before it costs anything</h2>
+        <p class="mk-section-header-desc"
+          >Prices include nothing hidden; VAT at 19 % comes on top for private clients, as it does on every lawyer's
+          bill in Germany.</p
+        >
+      </div>
+    </header>
+    <div class="lk-fees">
+      <div class="table-container">
+        <table class="table">
+          <caption class="sr-only">Our fees</caption>
+          <thead>
+            <tr class="table-row">
+              <th class="table-head" scope="col">Service</th>
+              <th class="table-head" scope="col">Fee</th>
+              <th class="table-head" scope="col">How it works</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="table-row">
+              <td class="table-cell">First consultation</td>
+              <td class="table-cell">€190 <small>€226.10 with VAT</small></td>
+              <td class="table-cell"
+                >Fixed, 45 minutes, for private clients - the statutory cap for a first consultation (§ 34 RVG). If you
+                instruct us, it is set against the later fee.</td
+              >
+            </tr>
+            <tr class="table-row">
+              <td class="table-cell">Advice and letters</td>
+              <td class="table-cell">€240 an hour <small>plus VAT</small></td>
+              <td class="table-cell"
+                >Outside court. Agreed in writing beforehand, recorded in six-minute steps, with an itemised statement
+                every month.</td
+              >
+            </tr>
+            <tr class="table-row">
+              <td class="table-cell">Court proceedings</td>
+              <td class="table-cell">Statutory fees <small>RVG scale</small></td>
+              <td class="table-cell"
+                >Set by law from the value in dispute - in a dismissal case a quarter's gross salary (§ 42 GKG). You get
+                the figure in the first consultation.</td
+              >
+            </tr>
+            <tr class="table-row">
+              <td class="table-cell">Labour court, first instance</td>
+              <td class="table-cell">Your own lawyer <small>win or lose</small></td>
+              <td class="table-cell"
+                >Each side pays its own lawyer, even the one who wins (§ 12a ArbGG). The court's own fee falls away when
+                the case settles.</td
+              >
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="lk-note"
+        >Nothing is billed that was not agreed in writing first - and we tell you before a cost rises.</p
+      >
+      <div class="lk-help">
+        <article class="card">
+          <h3><i data-lucide="shield-check"></i>Legal expenses insurance</h3>
+          <p
+            >If you have it, we ask the insurer for cover before anything costs you money. Employment cases are usually
+            covered once the three-month waiting period has passed.</p
+          >
+        </article>
+        <article class="card">
+          <h3><i data-lucide="hand-coins"></i>A low income</h3>
+          <p
+            >With an advice certificate (Beratungsschein) from your local court, our advice costs you €15. In court,
+            legal aid can cover your lawyer.</p
+          >
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="lk-band lk-request" data-tone="alt" id="lk-contact" aria-labelledby="lk-contact-title">
+    <header class="mk-section-header">
+      <div class="mk-section-header-copy">
+        <span class="mk-section-header-eyebrow">Consultation</span>
+        <h2 class="mk-section-header-title" id="lk-contact-title">Request a consultation</h2>
+        <p class="mk-section-header-desc"
+          >Pick a time for our call. A lawyer - not a call centre - rings you, asks what happened and books the first
+          consultation.</p
+        >
+      </div>
+    </header>
+    <div class="lk-contact">
+      <div class="card">
+        <form class="lk-form" data-lk-form>
+          <div class="lk-field">
+            <label class="label" for="lk-area">What is it about?</label>
+            <select class="select" id="lk-area" name="area" required>
+              <option value="">Choose an area</option>
+              <optgroup label="Employment">
+                <option value="employment-dismissal">I received a dismissal</option>
+                <option value="employment-settlement">I was offered a settlement</option>
+                <option value="employment-other">Another employment question</option>
+              </optgroup>
+              <optgroup label="Tenancy">
+                <option value="tenancy-rent">My rent is going up</option>
+                <option value="tenancy-notice">I received notice to leave</option>
+                <option value="tenancy-other">Another tenancy question</option>
+              </optgroup>
+            </select>
+          </div>
+          <fieldset>
+            <legend>How urgent is it?</legend>
+            <div class="lk-urgency">
+              <label
+                ><input class="radio" type="radio" name="urgency" value="week" required /><span
+                  >A deadline ends within 7 days<small>We call you today</small></span
+                ></label
+              >
+              <label
+                ><input class="radio" type="radio" name="urgency" value="month" required /><span
+                  >Within the next month<small>Call at a time below</small></span
+                ></label
+              >
+              <label
+                ><input class="radio" type="radio" name="urgency" value="none" required /><span
+                  >No deadline I know of<small>We check that too</small></span
+                ></label
+              >
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>When may we call? <span class="lk-fine" style="display: inline">(Cologne time)</span></legend>
+            <div class="lk-slots" data-lk-slots>
+              <label
+                ><input class="radio" type="radio" name="slot" value="Next working day, 09:00 - 12:00" required /><span
+                  data-lk-slot
+                  ><b>Next working day</b><small>09:00 - 12:00</small></span
+                ></label
+              >
+              <label
+                ><input class="radio" type="radio" name="slot" value="Next working day, 14:00 - 17:00" required /><span
+                  data-lk-slot
+                  ><b>Next working day</b><small>14:00 - 17:00</small></span
+                ></label
+              >
+              <label
+                ><input class="radio" type="radio" name="slot" value="The day after, 09:00 - 12:00" required /><span
+                  data-lk-slot
+                  ><b>The day after</b><small>09:00 - 12:00</small></span
+                ></label
+              >
+              <label
+                ><input class="radio" type="radio" name="slot" value="The day after, 14:00 - 17:00" required /><span
+                  data-lk-slot
+                  ><b>The day after</b><small>14:00 - 17:00</small></span
+                ></label
+              >
+            </div>
+          </fieldset>
+          <div class="lk-pair">
+            <div class="lk-field">
+              <label class="label" for="lk-name">Name</label>
+              <input class="input" id="lk-name" name="name" autocomplete="name" required />
+            </div>
+            <div class="lk-field">
+              <label class="label" for="lk-phone">Phone</label>
+              <input class="input" id="lk-phone" type="tel" name="phone" autocomplete="tel" minlength="6" required />
+            </div>
+          </div>
+          <div class="lk-field">
+            <label class="label" for="lk-email"
+              >Email <span class="lk-fine" style="display: inline">(for the confirmation)</span></label
+            >
+            <input class="input" id="lk-email" type="email" name="email" autocomplete="email" />
+          </div>
+          <div class="lk-field">
+            <label class="label" for="lk-text">What happened, in a few lines?</label>
+            <textarea
+              class="textarea"
+              id="lk-text"
+              name="message"
+              rows="4"
+              maxlength="600"
+              required
+              placeholder="For example: letter of dismissal dated 2 November, in my letterbox on 4 November. Eight years with the company."
+            ></textarea>
+            <output class="lk-count" for="lk-text" data-lk-count>0 / 600</output>
+          </div>
+          <div class="lk-consent">
+            <input class="checkbox" type="checkbox" id="lk-consent" name="consent" required />
+            <span
+              ><label for="lk-consent"
+                >I agree that Lindholm &amp; Kaya use these details to call me back about this request.</label
+              >
+              <button class="lk-linkish" type="button" commandfor="lk-privacy" command="show-modal"
+                >Privacy notice</button
+              ></span
+            >
+          </div>
+          <div class="lk-send">
+            <p
+              >Sending this form does not create a mandate. Whatever you write stays under our professional secrecy (§
+              43a BRAO).</p
+            >
+            <button class="btn" data-size="lg" type="submit"
+              ><i data-lucide="phone-call"></i> Request a callback</button
+            >
+          </div>
+        </form>
+        <div class="lk-done" tabindex="-1" data-lk-done aria-labelledby="lk-done-title">
+          <p class="lk-label">Request received · <span data-lk-ref>LK-26-0000</span></p>
+          <h3 id="lk-done-title">Thank you<span data-lk-who></span>.</h3>
+          <p class="lk-urgent" data-lk-urgent hidden
+            >A deadline ends within seven days, so a lawyer calls you today - have the letter and its envelope at
+            hand.</p
+          >
+          <dl>
+            <dt>About</dt>
+            <dd data-lk-d-area>-</dd>
+            <dt>We call</dt>
+            <dd data-lk-d-slot>-</dd>
+            <dt>On</dt>
+            <dd data-lk-d-phone>-</dd>
+          </dl>
+          <p
+            >This is a demo - nothing left this page. A real request would reach the firm's inbox with this
+            reference.</p
+          >
+          <button class="btn" data-variant="outline" type="button" data-lk-again
+            ><i data-lucide="rotate-ccw"></i> Send another request</button
+          >
+        </div>
+      </div>
+      <aside class="lk-office" aria-label="The office">
+        <img
+          src="https://picsum.photos/id/78/800/600"
+          alt="An old carved wooden double door in a weathered stone facade"
+        />
+        <address
+          ><b>Lindholm &amp; Kaya Rechtsanwälte</b><br />Am Römerturm 14, 50667 Köln<br />Second floor, lift at the
+          back</address
+        >
+        <dl>
+          <dt>Phone</dt>
+          <dd>0221 2716 4090</dd>
+          <dt>Email</dt>
+          <dd>kanzlei@lindholm-kaya.example</dd>
+          <dt>Office</dt>
+          <dd>Mon - Thu 9:00 - 18:00, Fri 9:00 - 15:00</dd>
+          <dt>Evenings</dt>
+          <dd>Consultations until 20:00 on Tuesdays, by appointment</dd>
+        </dl>
+        <p class="lk-note">Rosenmontag is not a public holiday - the court's letterbox stays open, and so do we.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="lk-band" id="lk-faq" aria-labelledby="lk-faq-title">
+    <div class="mk-faq" data-variant="accordion">
+      <div class="mk-faq-head">
+        <span class="mk-faq-eyebrow">Questions</span>
+        <h2 class="mk-faq-title" id="lk-faq-title">What people ask in the first call</h2>
+      </div>
+      <div class="mk-faq-accordion">
+        <div class="accordion">
+          <details class="accordion-item" name="lk-faq" open>
+            <summary class="accordion-trigger"
+              ><span>My employer dismissed me by email. Is that valid?</span
+              ><svg
+                class="accordion-chevron"
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="m6 9 6 6 6-6" /></svg
+            ></summary>
+            <div class="accordion-content"
+              ><p
+                >No. A dismissal must be a signed letter on paper (§ 623 BGB) - email, text message and WhatsApp are
+                void. Call us anyway: the employer often sends the letter a few days later, and that starts the three
+                weeks.</p
+              ></div
+            >
+          </details>
+          <details class="accordion-item" name="lk-faq">
+            <summary class="accordion-trigger"
+              ><span>Do I have a right to severance pay?</span
+              ><svg
+                class="accordion-chevron"
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="m6 9 6 6 6-6" /></svg
+            ></summary>
+            <div class="accordion-content"
+              ><p
+                >Usually not by law. Severance is what an employer pays to end a claim it might lose. A common starting
+                point is half a month's gross salary per year of service - what you get depends on how strong your claim
+                is.</p
+              ></div
+            >
+          </details>
+          <details class="accordion-item" name="lk-faq">
+            <summary class="accordion-trigger"
+              ><span>Should I sign the settlement agreement I was handed?</span
+              ><svg
+                class="accordion-chevron"
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="m6 9 6 6 6-6" /></svg
+            ></summary>
+            <div class="accordion-content"
+              ><p
+                >Not on the spot. Signing it can cost you twelve weeks of unemployment benefit, and it ends any claim.
+                Ask for a few days - an employer who refuses is telling you something.</p
+              ></div
+            >
+          </details>
+          <details class="accordion-item" name="lk-faq">
+            <summary class="accordion-trigger"
+              ><span>My landlord wants more rent. Do I have to agree?</span
+              ><svg
+                class="accordion-chevron"
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="m6 9 6 6 6-6" /></svg
+            ></summary>
+            <div class="accordion-content"
+              ><p
+                >Only to an increase that is justified - up to the local comparative rent, at most 15 % in three years
+                in Cologne. You have until the end of the second month after the letter arrived. Do not simply pay the
+                new amount: that can count as consent.</p
+              ></div
+            >
+          </details>
+          <details class="accordion-item" name="lk-faq">
+            <summary class="accordion-trigger"
+              ><span>What should I bring to the first consultation?</span
+              ><svg
+                class="accordion-chevron"
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="m6 9 6 6 6-6" /></svg
+            ></summary>
+            <div class="accordion-content"
+              ><p
+                >The letter and its envelope, your contract, your last three payslips - or your tenancy agreement and
+                the last two service-charge statements. And a note of the day the letter arrived.</p
+              ></div
+            >
+          </details>
+          <details class="accordion-item" name="lk-faq">
+            <summary class="accordion-trigger"
+              ><span>Do you take cases outside Cologne?</span
+              ><svg
+                class="accordion-chevron"
+                aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="m6 9 6 6 6-6" /></svg
+            ></summary>
+            <div class="accordion-content"
+              ><p
+                >Yes. We appear before every labour court in Germany, and most of the work runs by phone and video. A
+                tenancy case is heard by the local court where the flat is.</p
+              ></div
+            >
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="mk-footer lk-footer">
+    <div class="mk-footer-inner">
+      <nav class="mk-footer-nav" aria-label="Footer">
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Office</h3>
+          <ul class="mk-footer-list">
+            <li
+              ><address>Am Römerturm 14<br />50667 Köln</address></li
+            >
+            <li><span>Mon - Thu 9:00 - 18:00, Fri 9:00 - 15:00</span></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Contact</h3>
+          <ul class="mk-footer-list">
+            <li><span>0221 2716 4090</span></li>
+            <li><span>kanzlei@lindholm-kaya.example</span></li>
+            <li><a href="#lk-contact">Request a consultation</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">On this page</h3>
+          <ul class="mk-footer-list">
+            <li><a href="#lk-check">Deadline check</a></li>
+            <li><a href="#lk-practice">Practice areas</a></li>
+            <li><a href="#lk-fees">Fees</a></li>
+          </ul>
+        </div>
+        <div class="mk-footer-col">
+          <h3 class="mk-footer-heading">Legal</h3>
+          <ul class="mk-footer-list">
+            <li
+              ><button class="lk-linkish" type="button" commandfor="lk-imprint" command="show-modal"
+                >Imprint</button
+              ></li
+            >
+            <li
+              ><button class="lk-linkish" type="button" commandfor="lk-imprint" command="show-modal"
+                >Professional rules</button
+              ></li
+            >
+            <li
+              ><button class="lk-linkish" type="button" commandfor="lk-privacy" command="show-modal"
+                >Privacy</button
+              ></li
+            >
+          </ul>
+        </div>
+      </nav>
+      <hr class="separator mk-footer-rule" />
+      <div class="mk-footer-bottom">
+        <a class="mk-footer-brand lk-brand" href="#lk-top"
+          ><span class="lk-monogram" aria-hidden="true">L&amp;K</span><span><b>Lindholm &amp; Kaya</b></span></a
+        >
+        <div class="mk-footer-meta">
+          <p class="mk-footer-copy">© 2026 Lindholm &amp; Kaya Rechtsanwälte PartG mbB</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <dialog class="dialog" id="lk-p-0" data-size="lg" aria-labelledby="lk-p-0-title">
+    <div class="dialog-content">
+      <div class="dialog-header lk-profile-head">
+        <img src="https://i.pravatar.cc/240?img=26" alt="" />
+        <div>
+          <h2 class="dialog-title" id="lk-p-0-title">Dr. Johanna Lindholm</h2>
+          <p>Partner · Fachanwältin für Arbeitsrecht</p>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <dl>
+          <dt>Admitted</dt>
+          <dd>2009, Rechtsanwaltskammer Köln</dd>
+          <dt>Specialist title</dt>
+          <dd>Specialist lawyer for employment law since 2013</dd>
+          <dt>Languages</dt>
+          <dd>German, English, Swedish</dd>
+          <dt>Focus</dt>
+          <dd>Dismissals of senior staff and works council members, severance negotiations, settlement agreements</dd>
+          <dt>Education</dt>
+          <dd
+            >Law at the University of Cologne, doctorate on fixed-term employment; legal clerkship at the Higher
+            Regional Court of Cologne</dd
+          >
+          <dt>Memberships</dt>
+          <dd>Employment law working group of the German Bar Association (DAV)</dd>
+        </dl>
+        <p>"Most people call us in week two. I would rather hear from you on day one."</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="ghost" type="button" commandfor="lk-p-0" command="close">Close</button>
+        <a class="btn" href="#lk-contact" data-lk-ask="employment-dismissal">Request a consultation</a>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog" id="lk-p-1" data-size="lg" aria-labelledby="lk-p-1-title">
+    <div class="dialog-content">
+      <div class="dialog-header lk-profile-head">
+        <img src="https://i.pravatar.cc/240?img=59" alt="" />
+        <div>
+          <h2 class="dialog-title" id="lk-p-1-title">Emre Kaya</h2>
+          <p>Partner · Fachanwalt für Miet- und Wohnungseigentumsrecht</p>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <dl>
+          <dt>Admitted</dt>
+          <dd>2011, Rechtsanwaltskammer Köln</dd>
+          <dt>Specialist title</dt>
+          <dd>Specialist lawyer for tenancy and condominium law since 2015</dd>
+          <dt>Languages</dt>
+          <dd>German, Turkish, English</dd>
+          <dt>Focus</dt>
+          <dd>Rent increases and the rent brake, notices for the landlord's own use, eviction proceedings</dd>
+          <dt>Education</dt>
+          <dd>Law at the University of Bonn; legal clerkship at the Higher Regional Court of Cologne</dd>
+          <dt>Memberships</dt>
+          <dd>Tenancy law working group of the German Bar Association (DAV)</dd>
+        </dl>
+        <p>"A notice to leave is not an order to leave. Only a court can give that."</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="ghost" type="button" commandfor="lk-p-1" command="close">Close</button>
+        <a class="btn" href="#lk-contact" data-lk-ask="tenancy-notice">Request a consultation</a>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog" id="lk-p-2" data-size="lg" aria-labelledby="lk-p-2-title">
+    <div class="dialog-content">
+      <div class="dialog-header lk-profile-head">
+        <img src="https://i.pravatar.cc/240?img=32" alt="" />
+        <div>
+          <h2 class="dialog-title" id="lk-p-2-title">Amelie Brandt</h2>
+          <p>Associate · employment law</p>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <dl>
+          <dt>Admitted</dt>
+          <dd>2020, Rechtsanwaltskammer Köln</dd>
+          <dt>Languages</dt>
+          <dd>German, English, French</dd>
+          <dt>Focus</dt>
+          <dd>Fixed-term contracts, employment references, unpaid wages and overtime</dd>
+          <dt>Education</dt>
+          <dd>Law at the University of Münster, LL.M. in Edinburgh; legal clerkship in Düsseldorf</dd>
+          <dt>Next step</dt>
+          <dd>Working towards the specialist title in employment law</dd>
+        </dl>
+        <p>"Bring the reference. I read what the nice words mean."</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="ghost" type="button" commandfor="lk-p-2" command="close">Close</button>
+        <a class="btn" href="#lk-contact" data-lk-ask="employment-other">Request a consultation</a>
+      </div>
+    </div>
+  </dialog>
+  <dialog class="dialog" id="lk-p-3" data-size="lg" aria-labelledby="lk-p-3-title">
+    <div class="dialog-content">
+      <div class="dialog-header lk-profile-head">
+        <img src="https://i.pravatar.cc/240?img=68" alt="" />
+        <div>
+          <h2 class="dialog-title" id="lk-p-3-title">Jonas Wiśniewski</h2>
+          <p>Associate · tenancy law</p>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <dl>
+          <dt>Admitted</dt>
+          <dd>2022, Rechtsanwaltskammer Köln</dd>
+          <dt>Languages</dt>
+          <dd>German, Polish, English</dd>
+          <dt>Focus</dt>
+          <dd>Service-charge statements, defects and rent reduction, deposits</dd>
+          <dt>Education</dt>
+          <dd>Law at the University of Cologne; legal clerkship at the Regional Court of Cologne</dd>
+        </dl>
+        <p>"Send me the statement before you pay it. Two in three we see have an error."</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="ghost" type="button" commandfor="lk-p-3" command="close">Close</button>
+        <a class="btn" href="#lk-contact" data-lk-ask="tenancy-other">Request a consultation</a>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="dialog" id="lk-imprint" data-size="lg" aria-labelledby="lk-imprint-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="lk-imprint-title">Imprint and professional rules</h2>
+        <p class="dialog-description"
+          >Information under § 5 of the Digital Services Act (DDG) and § 2 of the Services Information Regulation
+          (DL-InfoV).</p
+        >
+      </div>
+      <div class="dialog-body">
+        <dl>
+          <dt>Firm</dt>
+          <dd>Lindholm &amp; Kaya Rechtsanwälte PartG mbB, Am Römerturm 14, 50667 Köln</dd>
+          <dt>Partners</dt>
+          <dd>Dr. Johanna Lindholm, Emre Kaya</dd>
+          <dt>Register</dt>
+          <dd>Partnership register of the Amtsgericht Essen, PR 4471</dd>
+          <dt>VAT ID</dt>
+          <dd>DE 297 315 640</dd>
+          <dt>Contact</dt>
+          <dd>Phone 0221 2716 4090 · kanzlei@lindholm-kaya.example</dd>
+        </dl>
+        <h3>Professional title and chamber</h3>
+        <p
+          >All lawyers hold the title Rechtsanwalt / Rechtsanwältin, conferred in the Federal Republic of Germany, and
+          are members of the Rechtsanwaltskammer Köln, Riehler Straße 30, 50668 Köln, which supervises them. The
+          specialist titles (Fachanwalt) were conferred by the same chamber.</p
+        >
+        <h3>Professional rules</h3>
+        <p
+          >The Federal Lawyers' Act (BRAO), the Professional Code for Lawyers (BORA), the Specialist Lawyers' Code
+          (FAO), the Lawyers' Remuneration Act (RVG), the Code of Conduct for European Lawyers (CCBE) and the Act on
+          European Lawyers in Germany (EuRAG). The Federal Bar publishes them at brak.de.</p
+        >
+        <h3>Professional liability insurance</h3>
+        <p
+          >Domstadt Versicherung AG, Kaiser-Wilhelm-Ring 9, 50672 Köln. Cover: the European Union, at least €2.5 million
+          per claim, as the law requires of a PartG mbB.</p
+        >
+        <h3>Disputes with consumers</h3>
+        <p
+          >A dispute about our fees can go to the conciliation board of the legal profession, Schlichtungsstelle der
+          Rechtsanwaltschaft, Neue Grünstraße 17, 10179 Berlin.</p
+        >
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" type="button" commandfor="lk-imprint" command="close">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="dialog" id="lk-privacy" data-size="lg" aria-labelledby="lk-privacy-title">
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="lk-privacy-title">Privacy notice</h2>
+        <p class="dialog-description"
+          >Controller: Lindholm &amp; Kaya Rechtsanwälte PartG mbB, address as in the imprint.</p
+        >
+      </div>
+      <div class="dialog-body">
+        <h3>The consultation request</h3>
+        <p
+          >We use your name, phone number, email and description to call you back (Art. 6 (1) (b) GDPR) and to check
+          that we have no conflict of interest, which the law requires of us before any advice (Art. 6 (1) (c) GDPR, §
+          43a (4) BRAO). Only the lawyers and the office manager see it.</p
+        >
+        <h3>How long we keep it</h3>
+        <p
+          >A request that does not lead to a mandate is deleted after six months. Mandate files are kept for six years
+          after the mandate ends (§ 50 BRAO).</p
+        >
+        <h3>Professional secrecy</h3>
+        <p
+          >Everything you tell us is confidential under § 43a (2) BRAO and § 203 of the Criminal Code - also when you do
+          not instruct us.</p
+        >
+        <h3>No cookies, no tracking</h3>
+        <p>This site sets no cookies and counts no visitors. The look and the dark mode you pick are not stored.</p>
+        <h3>Your rights</h3>
+        <p
+          >You may ask what we hold about you and have it corrected, restricted or deleted where the retention rules
+          allow, and you may complain to the State Commissioner for Data Protection of North Rhine-Westphalia (LDI
+          NRW).</p
+        >
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" type="button" commandfor="lk-privacy" command="close">Close</button>
+      </div>
+    </div>
+  </dialog>
+</div>
+<script type="module">
+  // df$ comes with the component bundle - a full-screen page loads it after this module
+  addEventListener('DOMContentLoaded', () => {
+    const ROOT = '#in-law';
+
+    // light or dark: the switch writes the page's dark class (every look has both palettes); it follows the class when
+    // something else sets it (the docs card follows the site's mode)
+    const siteMode = df$(`${ROOT} [data-site-mode]`);
+    const syncMode = () => siteMode.prop('checked', document.documentElement.classList.contains('dark'));
+    siteMode.on('change', () => {
+      document.documentElement.classList.toggle('dark', siteMode.prop('checked'));
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+    new MutationObserver(syncMode).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    syncMode();
+
+    // the look: one of the site's designs. An element with data-look-set takes that look's attributes
+    const root = df$(ROOT).get(0);
+    const look = df$(`${ROOT} [data-site-look]`);
+    look.val(root.dataset.look).on('change', () => {
+      root.dataset.look = look.val();
+      df$(`${ROOT} [data-look-set]`).each((_i, el) => {
+        const sets = JSON.parse(el.dataset.lookSet);
+        for (const [attr, value] of Object.entries({ ...sets.default, ...sets[root.dataset.look] }))
+          df$(el).attr(attr, value);
+      });
+      document.dispatchEvent(new CustomEvent('defuss-theme-change'));
+    });
+
+    // the header marks the section in view: the band that shows the most of itself
+    const links = df$(`${ROOT} .mk-header-nav a`);
+    const shown = new Map();
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) shown.set(e.target.id, e.isIntersecting ? e.intersectionRect.height : 0);
+        let best = '';
+        let most = 0;
+        for (const [id, h] of shown)
+          if (h > most) {
+            best = id;
+            most = h;
+          }
+        links.each((_i, a) => {
+          df$(a).attr('aria-current', a.getAttribute('href') === `#${best}` ? 'true' : null);
+        });
+      },
+      { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] },
+    );
+    df$(`${ROOT} > section[id]`).each((_i, section) => {
+      spy.observe(section);
+    });
+
+    // dates in Cologne: the deadline check counts like § 187 / § 188 / § 193 BGB - a period of weeks ends on the
+    // weekday it began, one of months at the month's end, and a Saturday, Sunday or public holiday in North
+    // Rhine-Westphalia moves the last day to the next working day
+    const TZ = 'Europe/Berlin';
+    const HOLIDAYS = new Set([
+      '2026-01-01',
+      '2026-04-03',
+      '2026-04-06',
+      '2026-05-01',
+      '2026-05-14',
+      '2026-05-25',
+      '2026-06-04',
+      '2026-10-03',
+      '2026-11-01',
+      '2026-12-25',
+      '2026-12-26',
+      '2027-01-01',
+      '2027-03-26',
+      '2027-03-29',
+      '2027-05-01',
+      '2027-05-06',
+      '2027-05-17',
+      '2027-05-27',
+      '2027-10-03',
+      '2027-11-01',
+      '2027-12-25',
+      '2027-12-26',
+    ]);
+    const iso = (d) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const parse = (v) => new Date(`${v}T12:00:00`);
+    const long = (d) =>
+      d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const working = (d) => d.getDay() !== 0 && d.getDay() !== 6 && !HOLIDAYS.has(iso(d));
+    const KINDS = {
+      dismissal: {
+        stamp: '3 weeks',
+        law: '§ 4 KSchG',
+        label: 'The day it arrived',
+        verb: 'File your claim with the labour court by',
+        rule: 'Three weeks from the day the letter reached you, to file a claim with the labour court (§ 4 KSchG). A weekend or a public holiday moves the last day to the next working day.',
+        end: (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 21, 12),
+      },
+      fixed: {
+        stamp: '3 weeks',
+        law: '§ 17 TzBfG',
+        label: 'The day the contract ends',
+        verb: 'File your claim with the labour court by',
+        rule: 'Three weeks after the agreed end of the contract, to claim that it has become permanent (§ 17 TzBfG).',
+        end: (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 21, 12),
+      },
+      rent: {
+        stamp: '2 months',
+        law: '§ 558b BGB',
+        label: 'The day the letter arrived',
+        verb: 'Agree or refuse by',
+        rule: 'Until the end of the second calendar month after the letter arrived (§ 558b BGB). If you agree, the new rent applies from the third month.',
+        end: (d) => new Date(d.getFullYear(), d.getMonth() + 3, 0, 12),
+      },
+    };
+    const kind = df$('#lk-kind');
+    const when = df$('#lk-when');
+    const todayIso = new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date());
+    when.val(todayIso);
+    const check = () => {
+      const k = KINDS[kind.val()];
+      when.attr('max', kind.val() === 'fixed' ? null : todayIso);
+      df$(`${ROOT} [data-lk-stamp]`).text(k.stamp);
+      df$(`${ROOT} [data-lk-stamp-law]`).text(k.law);
+      df$(`${ROOT} [data-lk-when-label]`).text(k.label);
+      df$(`${ROOT} [data-lk-rule]`).text(k.rule);
+      const out = df$(`${ROOT} [data-lk-deadline]`);
+      if (!when.val()) {
+        out.text('Pick the day to see your deadline.');
+        return;
+      }
+      const last = k.end(parse(when.val()));
+      const moved = !working(last);
+      while (!working(last)) last.setDate(last.getDate() + 1);
+      const today = parse(new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date()));
+      const days = Math.round((last - today) / 864e5);
+      const left =
+        days < 0
+          ? ' That day has passed - call us today, there may still be a way.'
+          : days === 0
+            ? ' That is today.'
+            : ` ${days} ${days === 1 ? 'day' : 'days'} from today.`;
+      out.text(`${k.verb} ${long(last)}.${moved ? ' (Moved past a weekend or holiday.)' : ''}${left}`);
+    };
+    kind.on('change', check);
+    when.on('change', check).on('input', check);
+    check();
+
+    // the callback slots: the next four office half-days, in Cologne time
+    const now = () => {
+      const p = Object.fromEntries(
+        new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hour: '2-digit', hourCycle: 'h23' })
+          .formatToParts(new Date())
+          .map((x) => [x.type, x.value]),
+      );
+      return Number(p.hour);
+    };
+    const slots = [];
+    const day = parse(new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date()));
+    for (let ahead = 0; slots.length < 4 && ahead < 14; ahead++) {
+      const d = new Date(day.getFullYear(), day.getMonth(), day.getDate() + ahead, 12);
+      if (!working(d)) continue;
+      const friday = d.getDay() === 5;
+      const halves = [['09:00', '12:00', 12], friday ? ['13:00', '15:00', 15] : ['14:00', '17:00', 17]];
+      for (const [from, to, ends] of halves) {
+        if (ahead === 0 && now() >= ends - 1) continue;
+        if (slots.length < 4) {
+          const name =
+            ahead === 0 ? 'Today' : ahead === 1 ? 'Tomorrow' : d.toLocaleDateString('en-GB', { weekday: 'long' });
+          slots.push({
+            day: `${name}, ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`,
+            time: `${from} - ${to}`,
+          });
+        }
+      }
+    }
+    df$(`${ROOT} [data-lk-slot]`).each((i, el) => {
+      df$(el).find('b').text(slots[i].day);
+      df$(el).find('small').text(slots[i].time);
+      df$(el).prev().val(`${slots[i].day}, ${slots[i].time}`);
+    });
+
+    // the description's length
+    const text = df$('#lk-text');
+    text.on('input', () => df$(`${ROOT} [data-lk-count]`).text(`${text.val().length} / 600`));
+
+    // a profile's button: close the dialog, pick the area, go to the form
+    df$(`${ROOT} [data-lk-ask]`).on('click', (event) => {
+      const link = event.currentTarget;
+      df$('#lk-area').val(link.dataset.lkAsk);
+      df$(link).closest('dialog').get(0).close();
+    });
+
+    // sending shows the thank-you (a demo - nothing leaves the page); another request resets the form
+    const request = df$('#lk-contact');
+    const form = df$(`${ROOT} [data-lk-form]`);
+    form.on('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const first = String(data.get('name')).trim().split(/\s+/)[0];
+      const area = df$('#lk-area').get(0);
+      const ref = `LK-26-${String(String(data.get('phone')).replace(/\D/g, '').slice(-4)).padStart(4, '0')}`;
+      df$(`${ROOT} [data-lk-ref]`).text(ref);
+      df$(`${ROOT} [data-lk-who]`).text(first ? `, ${first}` : '');
+      df$(`${ROOT} [data-lk-d-area]`).text(
+        `${area.selectedOptions[0].parentElement.label} - ${area.selectedOptions[0].textContent}`,
+      );
+      const urgent = data.get('urgency') === 'week';
+      df$(`${ROOT} [data-lk-d-slot]`).text(urgent ? 'Today, as soon as a lawyer is free' : String(data.get('slot')));
+      df$(`${ROOT} [data-lk-d-phone]`).text(String(data.get('phone')));
+      df$(`${ROOT} [data-lk-urgent]`).prop('hidden', !urgent);
+      request.attr('data-sent', '');
+      df$(`${ROOT} [data-lk-done]`).get(0).focus();
+    });
+    df$(`${ROOT} [data-lk-again]`).on('click', () => {
+      form.get(0).reset();
+      df$(`${ROOT} [data-lk-count]`).text('0 / 600');
+      request.attr('data-sent', null);
+      df$('#lk-area').get(0).focus();
+    });
+  });
+</script>
+```
+
+<DocText>Built from <DocLink href="site-header.html">Site Header</DocLink> (its <DocLink href="sheet.html">Sheet</DocLink> holds the navigation on a phone), <DocLink href="section-header.html">Section Header</DocLink>, a <DocLink href="card.html">Card</DocLink> holding the deadline check (<DocLink href="select.html">Select</DocLink>, <DocLink href="input.html">Input</DocLink> and an <code>&lt;output&gt;</code>), <DocLink href="service-item.html">Service Item</DocLink> (inline) for the practice areas, <DocLink href="team-member.html">Team Member</DocLink> with a profile <DocLink href="dialog.html">Dialog</DocLink> each, <DocLink href="process-step.html">Process Step</DocLink>, <DocLink href="table.html">Table</DocLink> for the fees, a form of <DocLink href="radio.html">Radio Group</DocLink>, <DocLink href="textarea.html">Textarea</DocLink> and <DocLink href="checkbox.html">Checkbox</DocLink>, <DocLink href="faq.html">FAQ</DocLink> (accordion) and <DocLink href="site-footer.html">Site Footer</DocLink> with the imprint and the privacy notice as dialogs. The stamp and the margin notes are the page's own CSS, drawn differently in each look.</DocText>
+
+</DocPage>
