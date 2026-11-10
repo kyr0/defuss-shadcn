@@ -172,6 +172,39 @@ try {
     await page.evaluate(() => window.scrollTo(0, 0)); // leave a clean viewport
   });
 
+  await check('data-filter="none": the page writes the items; groups, empty state and highlight follow them', async () => {
+    const ext = (sel: string) => `#cmd-external ${sel}`;
+    const shown = () => page.$$eval(ext('.command-item:not([hidden])'), (els) => els.map((el) => el.textContent!.trim()));
+    await page.click('[data-command-trigger="cmd-external"]');
+    await page.keyboard.type('zzz');
+    assert.deepEqual(await shown(), ['Apple', 'Cherry'], 'the component filters nothing - the items stay as the page wrote them');
+    assert.equal(await page.$eval(ext('.command-empty'), (el) => (el as HTMLElement).hidden), true, 'items are visible: no empty state');
+    // the page answers the query with its own ranked items
+    await page.$eval(ext('.command-list'), (list) => {
+      list.innerHTML = '<div class="command-group"><p class="command-group-heading">Best matches</p><button class="command-item">Lemon</button><button class="command-item">Banana</button></div>';
+    });
+    await page.waitForFunction(() => document.querySelector('#cmd-external .command-item[data-highlighted]')?.textContent === 'Lemon');
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await page.$eval(ext('[data-highlighted]'), (el) => el.textContent), 'Banana', 'the keys walk the new items');
+    // no result: the page writes nothing, the empty state shows
+    await page.$eval(ext('.command-list'), (list) => (list.innerHTML = ''));
+    await page.waitForFunction(() => !(document.querySelector('#cmd-external .command-empty') as HTMLElement).hidden);
+    // a written item the page hides stays hidden, its group with it
+    await page.$eval(ext('.command-list'), (list) => {
+      list.innerHTML = '<div class="command-group"><p class="command-group-heading">G</p><button class="command-item" hidden>Plum</button></div>';
+    });
+    await page.waitForFunction(() => (document.querySelector('#cmd-external .command-group') as HTMLElement).hidden);
+    // without data-filter the component's text filter is back
+    await page.$eval(ext('.command-list'), (list) => {
+      list.innerHTML = '<div class="command-group"><p class="command-group-heading">G</p><button class="command-item">Plum</button><button class="command-item">Pumpkin</button></div>';
+    });
+    await page.$eval('#cmd-external', (el) => el.removeAttribute('data-filter'));
+    await page.fill(ext('.command-input'), 'pum');
+    assert.deepEqual(await shown(), ['Pumpkin'], 'the text filter runs again');
+    await page.keyboard.press('Escape');
+    await page.$eval('#cmd-external', (el) => el.setAttribute('data-filter', 'none'));
+  });
+
   await check('command: density "compact" → padding-top 6px', async () => {
     const val = await page.$eval('#cmd-compact .command-item', (el) => getComputedStyle(el).paddingTop);
     assert.equal(val, '6px');

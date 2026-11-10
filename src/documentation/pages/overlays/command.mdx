@@ -45,6 +45,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
   <SkillField label="Data attributes">
 <SkillText>• <code>data-command-trigger</code></SkillText>
+<SkillText>• <code>data-filter="none"</code> on the dialog - the page writes the items (a search of its own)</SkillText>
   </SkillField>
 
   <SkillField label="State attributes (managed by JS)">
@@ -56,6 +57,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   </SkillField>
 
   <SkillField label="Notes">
+<p class="text-muted-foreground m-0">• With <code>data-filter="none"</code> the component filters nothing: the page writes the items it ranked (the docs search does), and the component keeps groups, the empty state, the highlight and the keys following them.</p>
 <p class="text-muted-foreground m-0">• While the palette is modal, <code>html:has(dialog.command:modal)</code> sets <code>overflow: hidden</code> + <code>scrollbar-gutter: stable</code> - the page behind cannot scroll and its position is preserved for when the palette closes (no JS scroll-lock).</p>
   </SkillField>
 </SkillPanel>
@@ -174,6 +176,59 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
     ></dialog
   >
 </div>
+```
+
+```html example label="Results from your own search" hint="data-filter=&quot;none&quot; leaves the items to the page: a search of its own writes its ranked results into the list, and the palette keeps the groups, the empty state, the highlight and the keys. Type a fruit, a colour or a season." height="28"
+<button class="btn" data-variant="outline" data-command-trigger="search-cmd">Search the market</button>
+<dialog
+  id="search-cmd"
+  class="command"
+  data-filter="none"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Search the market"
+>
+  <div class="command-content">
+    <div class="command-input-wrapper">
+      <input class="command-input" type="text" placeholder="A fruit, a colour or a season..." autocomplete="off" />
+    </div>
+    <div class="command-list"></div>
+    <div class="command-empty" hidden>No results found.</div>
+  </div>
+</dialog>
+<script>
+  const produce = [
+    { name: 'Apple', words: 'red green autumn' },
+    { name: 'Banana', words: 'yellow tropical' },
+    { name: 'Cherry', words: 'red summer' },
+    { name: 'Lemon', words: 'yellow winter citrus' },
+    { name: 'Plum', words: 'purple summer' },
+    { name: 'Pumpkin', words: 'orange autumn' },
+  ];
+  addEventListener('DOMContentLoaded', () => {
+    const list = df$('#search-cmd .command-list');
+    df$('#search-cmd .command-input').on('input', (event) => {
+      const terms = event.target.value.toLowerCase().split(/\s+/).filter(Boolean);
+      // the more words an item matches, the higher it ranks
+      const hits = produce
+        .map((item) => ({
+          item,
+          score: terms.filter((t) => `${item.name} ${item.words}`.toLowerCase().includes(t)).length,
+        }))
+        .filter((hit) => terms.length && hit.score > 0)
+        .sort((a, b) => b.score - a.score);
+      const items = hits.map(
+        ({ item }) =>
+          `<button class="command-item">${item.name} <span class="command-shortcut">${item.words}</span></button>`,
+      );
+      list.html(
+        items.length
+          ? `<div class="command-group"><p class="command-group-heading">Best matches</p>${items.join('')}</div>`
+          : '',
+      );
+    });
+  });
+</script>
 ```
 
 <StatesSection>

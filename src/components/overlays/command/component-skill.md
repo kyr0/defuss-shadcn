@@ -71,6 +71,25 @@ Set `data-density` on the `dialog.command` root; the palette rows, search wrappe
 | `comfortable` | 0.5rem - identical to the unsized default |
 | `spacious` | 0.625rem |
 
+## Results from your own search
+
+`data-filter="none"` on the dialog leaves the items to the page: a search of its own (ranked, fuzzy, semantic) writes its results into `.command-list`, and the component filters nothing. It still hides a group without visible items, shows `.command-empty` when no item is visible, highlights the first item whenever the items change and keeps the keys. Removing the attribute turns the text filter back on.
+
+```html
+<dialog id="search" class="command" data-filter="none" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="command-content">
+    <div class="command-input-wrapper">
+      <input class="command-input" type="text" placeholder="Search..." autocomplete="off">
+    </div>
+    <!-- the page writes its ranked results here, e.g. df$(list).html(markup) on every input event -->
+    <div class="command-list"></div>
+    <div class="command-empty" hidden>No results found.</div>
+  </div>
+</dialog>
+```
+
+---
+
 ## ARIA
 
 | Attribute | Element | Purpose |
@@ -148,7 +167,8 @@ The api is bound per palette dialog; the registry global is
 
 ## Notes
 
-- The search input filters items by text content - groups with no matching items are hidden automatically.
+- The search input filters items by text content - groups with no matching items are hidden automatically. With `data-filter="none"` the page filters (see "Results from your own search").
+- Items written into the list after init re-run the filter, so groups, the empty state and the highlight follow them.
 - When all items are filtered out, the `.command-empty` element is shown.
 - Separators are hidden during filtering to avoid visual orphans.
 - The `data-command-trigger` attribute on any element wires it as a trigger button via JS.

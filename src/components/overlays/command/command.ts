@@ -130,12 +130,15 @@ function init() {
       // a cached snapshot would silently keep filtering detached nodes
       const filter = (q) => {
         const query = q.toLowerCase();
+        // data-filter="none": the page filters (a search that writes its own
+        // ranked items) - the items stay as written, the rest follows them
+        const external = dialog.dataset.filter === 'none';
         let hasVisible = false;
         const $items = dfDollar(list).find('.command-item');
         // flag-based filtering through query scalars: nodes keep identity (§3)
         $items.each(function (this: HTMLElement) {
-          const match = !query || this.textContent.toLowerCase().includes(query);
-          dfDollar(this).prop('hidden', !match);
+          const match = external ? !this.hidden : !query || this.textContent.toLowerCase().includes(query);
+          if (!external) dfDollar(this).prop('hidden', !match);
           if (match) hasVisible = true;
         });
         dfDollar(list)
@@ -150,6 +153,15 @@ function init() {
 
       input.addEventListener('input', () => {
         filter(input.value);
+      });
+      // items written after init (a page's own results) and a switch of
+      // data-filter re-run the filter: groups, the empty state and the
+      // highlight follow the new items. filter() writes only attributes, which
+      // the list observer does not watch - no loop
+      new MutationObserver(() => filter(input.value)).observe(list, { childList: true, subtree: true });
+      new MutationObserver(() => filter(input.value)).observe(dialog, {
+        attributes: true,
+        attributeFilter: ['data-filter'],
       });
 
       input.addEventListener('keydown', (e) => {
