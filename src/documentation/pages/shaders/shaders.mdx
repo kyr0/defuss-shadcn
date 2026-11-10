@@ -12,225 +12,320 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   Forty-four animated surfaces and room for your own - click one to open it large with its controls. Each is one element - <code>&lt;div class="shader" data-effect="aurora"&gt;</code> - that the <DocLink href="shader.html">Shader</DocLink> component draws on the GPU: as a tile, behind a section, as a glow around a card or over a picture. The effects are grouped by what they do: <DocLink href="shader-gradients.html">gradients and noise</DocLink>, <DocLink href="shader-light.html">light and glow</DocLink>, <DocLink href="shader-liquid.html">liquid and glass</DocLink>, <DocLink href="shader-patterns.html">patterns and trails</DocLink>, <DocLink href="shader-nature.html">nature and space</DocLink>, <DocLink href="shader-3d.html">3D scenes</DocLink>, the tiled <DocLink href="surfaces.html">infinite surfaces</DocLink> - and <DocLink href="shader-custom.html">custom shaders</DocLink> in GLSL.
 </PageHeader>
 
-```html example label="Every effect" schema="none" previewStyle="align-items:stretch;" hint="44 shaders, one WebGL2 context. Click one to open it large with its controls - the arrows beside a list step through it."
-<div class="fx-gallery grid gap-3" id="fx-gallery">
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span
-      class="shader"
-      data-effect="mesh-gradient"
-      data-colors="#4900ff #00c9ff #fb52d4 #ffb86b"
-      aria-hidden="true"
-    ></span>
-    <span class="text-xs text-muted-foreground">mesh-gradient</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span
-      class="shader"
-      data-effect="grain-gradient"
-      data-colors="#120a2a #5b2bd6 #ff6b9a #ffd27a"
-      aria-hidden="true"
-    ></span>
-    <span class="text-xs text-muted-foreground">grain-gradient</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="warp" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">warp</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="neuro-noise" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">neuro-noise</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="dithering" data-colors="#1b1b3a #ff5d73 #ffe9a8" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">dithering</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="god-rays" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">god-rays</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="aurora" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">aurora</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span
-      class="shader"
-      data-effect="pulsing-border"
-      data-colors="#ff4d8d #7c5cff #2bd9ff"
-      data-background="#0d0f1a"
-      aria-hidden="true"
-    ></span>
-    <span class="text-xs text-muted-foreground">pulsing-border</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="hologram" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">hologram</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span
-      class="shader"
-      data-effect="metaballs"
-      data-colors="#22d3ee #a78bfa #f472b6"
-      data-background="#0b1020"
-      aria-hidden="true"
-    ></span>
-    <span class="text-xs text-muted-foreground">metaballs</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="liquid-metal" data-background="#15171c" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">liquid-metal</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="water" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">water</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="fluted-glass" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">fluted-glass</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="fluid" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">fluid</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span
-      class="shader"
-      data-effect="dot-orbit"
-      data-colors="#f97316 #ec4899 #8b5cf6"
-      data-background="#fff7ed"
-      aria-hidden="true"
-    ></span>
-    <span class="text-xs text-muted-foreground">dot-orbit</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span
-      class="shader"
-      data-effect="topography"
-      data-colors="#a3b18a #588157 #3a5a40"
-      data-background="#f4f1e8"
-      aria-hidden="true"
-    ></span>
-    <span class="text-xs text-muted-foreground">topography</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="trails" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">trails</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="orb" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">orb</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="galaxy" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">galaxy</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="waves" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">waves</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="plasma" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">plasma</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="bokeh" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">bokeh</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="ripple" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">ripple</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="voronoi" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">voronoi</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="halftone" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">halftone</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="kaleidoscope" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">kaleidoscope</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="clouds" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">clouds</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="fire" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">fire</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="starfield" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">starfield</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span
-      class="shader"
-      data-effect="surface"
-      data-pattern="cubes"
-      data-material="ceramic"
-      data-colors="#1d2433 #f2c14e #f78154 #4d9078"
-      aria-hidden="true"
-    ></span>
-    <span class="text-xs text-muted-foreground">surface</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="silk" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">silk</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="marble" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">marble</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="oil" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">oil</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="prism" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">prism</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="lightning" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">lightning</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="fireflies" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">fireflies</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="caustics" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">caustics</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="matrix" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">matrix</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="op-art" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">op-art</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="glitch" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">glitch</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="crt" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">crt</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="nebula" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">nebula</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="snow" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">snow</span>
-  </button>
-  <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
-    <span class="shader" data-effect="smoke" aria-hidden="true"></span>
-    <span class="text-xs text-muted-foreground">smoke</span>
-  </button>
+```html example label="Every effect" schema="none" previewStyle="align-items:stretch;" hint="44 shaders, four at a time (two on a phone) - the arrows (or the arrow keys) page through them; only the ones in view draw. Click one to open it large below with its controls."
+<div class="fx-gallery" id="fx-gallery">
+  <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Every effect" id="fx-carousel">
+    <div class="carousel-viewport" aria-live="polite">
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span
+            class="shader"
+            data-effect="mesh-gradient"
+            data-colors="#4900ff #00c9ff #fb52d4 #ffb86b"
+            aria-hidden="true"
+          ></span>
+          <span class="text-xs text-muted-foreground">mesh-gradient</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span
+            class="shader"
+            data-effect="grain-gradient"
+            data-colors="#120a2a #5b2bd6 #ff6b9a #ffd27a"
+            aria-hidden="true"
+          ></span>
+          <span class="text-xs text-muted-foreground">grain-gradient</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="warp" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">warp</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="neuro-noise" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">neuro-noise</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="dithering" data-colors="#1b1b3a #ff5d73 #ffe9a8" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">dithering</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="god-rays" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">god-rays</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="aurora" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">aurora</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span
+            class="shader"
+            data-effect="pulsing-border"
+            data-colors="#ff4d8d #7c5cff #2bd9ff"
+            data-background="#0d0f1a"
+            aria-hidden="true"
+          ></span>
+          <span class="text-xs text-muted-foreground">pulsing-border</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="hologram" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">hologram</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span
+            class="shader"
+            data-effect="metaballs"
+            data-colors="#22d3ee #a78bfa #f472b6"
+            data-background="#0b1020"
+            aria-hidden="true"
+          ></span>
+          <span class="text-xs text-muted-foreground">metaballs</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="liquid-metal" data-background="#15171c" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">liquid-metal</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="water" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">water</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="fluted-glass" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">fluted-glass</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="fluid" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">fluid</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span
+            class="shader"
+            data-effect="dot-orbit"
+            data-colors="#f97316 #ec4899 #8b5cf6"
+            data-background="#fff7ed"
+            aria-hidden="true"
+          ></span>
+          <span class="text-xs text-muted-foreground">dot-orbit</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span
+            class="shader"
+            data-effect="topography"
+            data-colors="#a3b18a #588157 #3a5a40"
+            data-background="#f4f1e8"
+            aria-hidden="true"
+          ></span>
+          <span class="text-xs text-muted-foreground">topography</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="trails" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">trails</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="orb" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">orb</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="galaxy" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">galaxy</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="waves" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">waves</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="plasma" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">plasma</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="bokeh" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">bokeh</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="ripple" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">ripple</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="voronoi" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">voronoi</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="halftone" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">halftone</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="kaleidoscope" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">kaleidoscope</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="clouds" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">clouds</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="fire" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">fire</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="starfield" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">starfield</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span
+            class="shader"
+            data-effect="surface"
+            data-pattern="cubes"
+            data-material="ceramic"
+            data-colors="#1d2433 #f2c14e #f78154 #4d9078"
+            aria-hidden="true"
+          ></span>
+          <span class="text-xs text-muted-foreground">surface</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="silk" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">silk</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="marble" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">marble</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="oil" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">oil</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="prism" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">prism</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="lightning" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">lightning</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="fireflies" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">fireflies</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="caustics" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">caustics</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="matrix" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">matrix</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="op-art" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">op-art</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="glitch" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">glitch</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="crt" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">crt</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="nebula" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">nebula</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="snow" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">snow</span>
+        </button>
+      </div>
+      <div class="carousel-slide fx-slide">
+        <button type="button" class="fx-tile" aria-expanded="false" aria-controls="fx-stage">
+          <span class="shader" data-effect="smoke" aria-hidden="true"></span>
+          <span class="text-xs text-muted-foreground">smoke</span>
+        </button>
+      </div>
+    </div>
+    <button class="carousel-prev" aria-label="Previous effects"><i data-lucide="chevron-left"></i></button>
+    <button class="carousel-next" aria-label="Next effects"><i data-lucide="chevron-right"></i></button>
+    <div class="carousel-counter" aria-live="polite">Slides 1-4 of 44</div>
+  </div>
   <section class="fx-stage card" id="fx-stage" aria-label="The picked effect" hidden>
     <div class="fx-stage-view">
       <div class="shader" id="fx-big" data-effect="mesh-gradient" aria-hidden="true"></div>
@@ -249,12 +344,25 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   </section>
 </div>
 <style>
+  /* four in view (two on a phone): a page of the carousel; the room beside it holds its round buttons */
   .fx-gallery {
-    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-    grid-auto-flow: row dense;
+    display: grid;
+    /* minmax(0, ...): the carousel's track of 44 slides must not widen the column */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding-inline: 1rem;
+  }
+  .fx-slide {
+    flex: 0 0 calc(25% - 0.75rem);
+  }
+  @media (max-width: 40rem) {
+    .fx-slide {
+      flex-basis: calc(50% - 0.5rem);
+    }
   }
   .fx-tile {
     display: grid;
+    width: 100%;
     gap: 0.25rem;
     padding: 0;
     border: 0;
@@ -283,7 +391,6 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     }
   }
   .fx-stage {
-    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr);
     gap: 1rem;
@@ -296,7 +403,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       border-radius: var(--radius);
     }
   }
-  @media (max-width: 48rem) {
+  @media (max-width: 40rem) {
     .fx-stage {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -324,8 +431,6 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       for (const a of [...shader.attributes])
         if (a.name.startsWith('data-') && !runtime.test(a.name)) df$(big).attr(a.name, a.value);
       df$('#fx-name').text(shader.dataset.effect);
-      // right after the clicked tile: the dense grid fills the rest of its row
-      df$(tile).after(stage);
       stage.hidden = false;
       df$(tile).attr('aria-expanded', 'true');
       stage.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -340,11 +445,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 ## One context for the page
 
-<DocText>Chromium keeps sixteen WebGL contexts alive per page and drops the oldest beyond that - a gallery with one context per tile goes blank from the top. Here every shader on the page shares ONE WebGL2 context: it renders an instance's frame, copies it into that instance's own 2D canvas and moves on. A program compiles once per page, each shader stays an ordinary element in the layout, and an instance draws only while it is near the viewport and the tab shows. With nothing in view for a while the context is released; every canvas keeps its last frame.</DocText>
+<DocText>Chromium keeps sixteen WebGL contexts alive per page and drops the oldest beyond that - a gallery with one context per tile goes blank from the top. Here every shader on the page shares ONE WebGL2 context: it renders an instance's frame, copies it into that instance's own 2D canvas and moves on. A program compiles once per page, each shader stays an ordinary element in the layout, and an instance draws only while it is in the viewport and the tab shows. With nothing in view for a while the context is released; every canvas keeps its last frame.</DocText>
 
-```mermaid label="One frame" caption="Fig 1. The frame loop: every instance near the viewport draws into the shared WebGL2 context, and its frame is copied into the instance's own canvas."
+```mermaid label="One frame" caption="Fig 1. The frame loop: every instance in the viewport draws into the shared WebGL2 context, and its frame is copied into the instance's own canvas."
 flowchart LR
-    Loop["requestAnimationFrame<br/>one loop for the page"] --> Pick["instances near the viewport,<br/>clock running or redraw asked"]
+    Loop["requestAnimationFrame<br/>one loop for the page"] --> Pick["instances in the viewport,<br/>clock running or redraw asked"]
     Pick --> GL["shared WebGL2 context<br/>the effect's program, one pass"]
     GL --> Copy["drawImage into the<br/>instance's 2D canvas"]
     Copy --> Pick

@@ -182,6 +182,8 @@ try {
   });
 
   await check('the pointer: an interactive effect follows it, even while paused', async () => {
+    // only what is in the viewport draws: the tile sits at the fold
+    await page.locator('#pointer').scrollIntoViewIfNeeded();
     await page.evaluate(() => (document.getElementById('pointer') as any).api.setState('paused', { time: 0 }));
     await page.mouse.move(5, 880);
     await page.waitForTimeout(600);
@@ -242,7 +244,7 @@ try {
       el.dataset.bands = '2';
       el.style.cssText = 'width: 100px; height: 40px; aspect-ratio: auto';
       document.getElementById('tiles')!.append(el);
-      // a shader draws only near the viewport: the 44 tiles push the new one below the fold
+      // a shader draws only in the viewport: the 44 tiles push the new one below the fold
       el.scrollIntoView({ block: 'center' });
       await new Promise((r, reject) => {
         el.addEventListener('shader-ready', r, { once: true });
@@ -407,6 +409,17 @@ try {
     assert.deepEqual(r.frame, [20, 12], 'the ring sits on the host: inset 20px, its 12px radius');
     const ring = await pixels(page, 'border');
     assert.ok(ring.amin === 0 && ring.amax > 0, 'clear inside, the glow on the edge');
+    // the glow fades out before the box ends: its outermost pixels are clear (exp alone left about a quarter there -
+    // a hard rectangle around the search box of the Search & Navigation template)
+    const edge = await page.evaluate(() => {
+      const c = document.getElementById('border')!.querySelector('canvas.shader-canvas') as HTMLCanvasElement;
+      const d = c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data;
+      let max = 0;
+      for (let x = 0; x < c.width; x++) for (const y of [0, c.height - 1]) max = Math.max(max, d[(y * c.width + x) * 4 + 3]!);
+      for (let y = 0; y < c.height; y++) for (const x of [0, c.width - 1]) max = Math.max(max, d[(y * c.width + x) * 4 + 3]!);
+      return max;
+    });
+    assert.ok(edge <= 8, `the canvas edge is clear (alpha ${edge})`);
   });
 
   await check('below the fold: no frame until it is scrolled to', async () => {
@@ -415,6 +428,23 @@ try {
     await page.waitForFunction(() => document.getElementById('below')!.hasAttribute('data-ready'), null, { timeout: 15_000 });
     assert.ok((await pixels(page, 'below')).spread > 3);
     assert.equal((await stats(page)).contexts, 1, 'still one context');
+  });
+
+  await check('only what is in the viewport draws: just below the fold a shader stops, in view it runs again', async () => {
+    // 40 px under the fold - inside the 20% margin the engine once drew ahead
+    await page.evaluate(() => {
+      const el = document.getElementById('below')!;
+      scrollTo(0, el.getBoundingClientRect().top + scrollY - innerHeight - 40);
+    });
+    await page.waitForTimeout(400);
+    const out = await frames(page, 'below');
+    await page.waitForTimeout(600);
+    assert.equal(await frames(page, 'below'), out, 'no frame out of view');
+    assert.equal(await page.evaluate(() => (document.getElementById('below') as any)._shader.visible), false);
+    await page.locator('#below').scrollIntoViewIfNeeded();
+    await page.waitForFunction((n) => (document.getElementById('below') as any)._shader.frames > n + 2, out, { timeout: 10_000 });
+    // the resolution steps between three levels - it never drifts (a drifting scale re-sampled every canvas)
+    assert.ok([1, 0.75, 0.5].includes((await stats(page)).scale), 'scale ' + (await stats(page)).scale);
   });
 
   await check('a resize renders at the new size (CSS size × the render scale)', async () => {

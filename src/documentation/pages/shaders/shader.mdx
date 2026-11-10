@@ -21,7 +21,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext" title="every effect is a GLSL ES 3.00 fragment pass"><code>WebGL2</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage" title="the shared frame copied into each instance"><code>drawImage()</code></ApiPill>
-    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="only instances near the viewport draw"><code>IntersectionObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver" title="only instances in the viewport draw"><code>IntersectionObserver</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver" title="the render size follows the box"><code>ResizeObserver</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="one still frame, no clock"><code>prefers-reduced-motion</code></ApiPill>
   </SkillRow>
@@ -188,7 +188,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
 
 ## Cost and quality
 
-<DocText>One context draws every shader on the page; an effect costs GPU time only while it is near the viewport, its clock runs and the tab shows - with nothing in view for a while the context is released, and each canvas keeps its last frame. <code>data-quality="auto"</code> renders at up to 1.5 device pixels within a pixel budget and lowers the resolution while frames run late; <code>low</code> renders at half a pixel per CSS pixel, <code>high</code> at up to 2 device pixels. <code>data-fps</code> caps the frame rate - 30 is plenty for a quiet background.</DocText>
+<DocText>One context draws every shader on the page; an effect costs GPU time only while it is in the viewport, its clock runs and the tab shows - with nothing in view for a while the context is released, and each canvas keeps its last frame. <code>data-quality="auto"</code> renders at up to 1.5 device pixels within a pixel budget and lowers the resolution a step (to three quarters, then half) while frames run late - and holds it there once a raise did not last; <code>low</code> renders at half a pixel per CSS pixel, <code>high</code> at up to 2 device pixels. <code>data-fps</code> caps the frame rate - 30 is plenty for a quiet background.</DocText>
 
 ```html example label="A background at half resolution and 30 frames a second" schema="none" previewStyle="align-items:stretch;"
 <section style="border-radius: var(--radius); padding: 3rem 2rem; color: white; overflow: hidden">
