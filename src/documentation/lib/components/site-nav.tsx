@@ -5,6 +5,7 @@ import { pageRel } from '../page-dirs';
 // VERIFIED: pages live in their sidebar section folders - page-dirs(-files).ts resolves every page path; verify's `page sections` gate fails a flat join
 import { readSkillMeta } from '../repo';
 import { NavTypeBadge } from './type-badge';
+import { whatsNewMarks } from '../whats-new-data';
 
 /**
  * Why: the docs sidebar dogfoods the shipped `sidebar` component (see
@@ -29,8 +30,15 @@ const CHEVRON = (
   </svg>
 );
 
-/** The component's .sidebar-dot activity marker - a "new page" flag. */
-const NewDot = () => <span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New"></span>;
+/** The component's .sidebar-dot activity marker, hidden until runtime/whats-new.ts finds something this browser
+ *  has not seen: on a link its page, on a section or a submenu any link inside (data/whats-new.json says which
+ *  releases added or changed a page - the link's data-whats-new). */
+const WhatsNewDot = () => (
+  <span class="sidebar-dot" data-variant="info" role="img" aria-label="New" title="New" data-whats-new-dot hidden></span>
+);
+const idOf = (item: NavItem) => item.href.replace(/\.html$/, '');
+/** whether a page, or one of its sub-pages, is in the record at all */
+const marked = (items: NavItem[]) => flattenNav(items).some((i) => whatsNewMarks(idOf(i)));
 
 /** A section's leading icon (inline lucide SVG, rendered at build time). */
 function SectionIcon({ name }: { name: string }) {
@@ -53,10 +61,11 @@ function NavItemLink({ item, active }: { item: NavItem; active: string }) {
       class={isActive ? 'nav-link sidebar-link active' : 'nav-link sidebar-link'}
       href={item.href}
       data-page={pageRel(item.href.replace(/\.html$/, ''))}
+      {...(whatsNewMarks(idOf(item)) ? { 'data-whats-new': whatsNewMarks(idOf(item)) } : {})}
       {...(isActive ? { 'aria-current': 'page' } : {})}
     >
       <span>{item.label}</span>
-      {item.isNew ? <NewDot /> : null}
+      {whatsNewMarks(idOf(item)) ? <WhatsNewDot /> : null}
       {type ? <NavTypeBadge type={type} /> : null}
     </a>
   );
@@ -77,10 +86,11 @@ function NavItemSubmenu({ item, active }: { item: NavItem; active: string }) {
           class={item.href === active ? 'nav-link sidebar-link active' : 'nav-link sidebar-link'}
           href={item.href}
           data-page={pageRel(item.href.replace(/\.html$/, ''))}
+          {...(whatsNewMarks(idOf(item)) ? { 'data-whats-new': whatsNewMarks(idOf(item)) } : {})}
           {...(item.href === active ? { 'aria-current': 'page' } : {})}
         >
           <span>{item.label}</span>
-          {item.isNew || kids.some((k) => k.isNew) ? <NewDot /> : null}
+          {marked([item]) ? <WhatsNewDot /> : null}
           {type ? <NavTypeBadge type={type} /> : null}
         </a>
         {CHEVRON}
@@ -112,7 +122,7 @@ export function SiteNav({ active }: Props & { active: string }) {
               <summary>
                 <SectionIcon name={section.icon} />
                 <span>{section.heading}</span>
-                {flattenNav(items).some((i) => i.isNew) ? <NewDot /> : null}
+                {marked(items) ? <WhatsNewDot /> : null}
                 {CHEVRON}
               </summary>
               <nav class="sidebar-nav">

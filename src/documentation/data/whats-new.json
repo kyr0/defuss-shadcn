@@ -1,0 +1,379 @@
+{
+  "version": 1,
+  "releases": [
+    {
+      "version": "unreleased",
+      "created": [
+        "design-language",
+        "industry-agency",
+        "industry-ai",
+        "industry-hotel",
+        "industry-law",
+        "industry-practice",
+        "industry-restaurant",
+        "industry-salon",
+        "industry-spa",
+        "language-switcher",
+        "terminal",
+        "website-industries"
+      ],
+      "updated": [
+        "article-body",
+        "border-layout",
+        "button",
+        "carousel",
+        "code-example",
+        "command",
+        "diagram",
+        "dom-querying",
+        "graph-details",
+        "graph-edges",
+        "graph-explorer",
+        "graph-navigation",
+        "graph-nodes",
+        "graphs",
+        "heading-anchor",
+        "index",
+        "panel",
+        "portfolio-bento",
+        "portfolio-brutalist",
+        "portfolio-developer",
+        "portfolio-editorial",
+        "portfolio-minimal",
+        "portfolio-neon",
+        "portfolio-photographer",
+        "portfolio-playful",
+        "portfolio-swiss",
+        "portfolio-zine",
+        "scaffold-admin-dashboard",
+        "scaffold-desktop",
+        "scaffold-document-editor",
+        "scaffold-issue-tracker",
+        "scaffold-knowledge-graph",
+        "scaffold-messenger",
+        "scaffold-notes",
+        "scaffold-status-page",
+        "shader",
+        "shaders",
+        "showcase-bouldering",
+        "showcase-observatory",
+        "showcase-records",
+        "showcase-roastery",
+        "sidebar",
+        "system-in-numbers",
+        "tabs",
+        "translation",
+        "website-account-states",
+        "website-article",
+        "website-blog",
+        "website-comments",
+        "website-company",
+        "website-docs-help",
+        "website-events-promotions",
+        "website-landing-page",
+        "website-media",
+        "website-news",
+        "website-resume-portfolio",
+        "website-search-navigation",
+        "website-shop"
+      ],
+      "examples": {
+        "border-layout": {
+          "created": [
+            "Several panels on one side",
+            "One panel open at a time",
+            "Side by side in one region"
+          ],
+          "updated": [
+            "Regions that fit their content"
+          ]
+        },
+        "command": {
+          "created": [
+            "Results from your own search"
+          ],
+          "updated": []
+        },
+        "graph-edges": {
+          "created": [
+            "Live mode"
+          ],
+          "updated": [
+            "A label of your own",
+            "A link's details",
+            "Traffic between domains"
+          ]
+        },
+        "graph-explorer": {
+          "created": [
+            "Updates in Live mode"
+          ],
+          "updated": []
+        },
+        "graph-navigation": {
+          "created": [
+            "Jump to a neighbour"
+          ],
+          "updated": []
+        },
+        "graph-nodes": {
+          "created": [
+            "Nodes, relations, labels, health",
+            "An Owners layer"
+          ],
+          "updated": [
+            "Datasets as cards of their own"
+          ]
+        },
+        "heading-anchor": {
+          "created": [
+            "In front of the heading (default)",
+            "With # instead of §",
+            "Before the heading text",
+            "After the heading text"
+          ],
+          "updated": [
+            "Sizes"
+          ]
+        },
+        "panel": {
+          "created": [
+            "Two minimized, one open at a time"
+          ],
+          "updated": []
+        },
+        "portfolio-bento": {
+          "created": [],
+          "updated": [
+            "Aiko Tanaka, product designer"
+          ]
+        },
+        "portfolio-brutalist": {
+          "created": [],
+          "updated": [
+            "Knut Berg, creative developer"
+          ]
+        },
+        "portfolio-developer": {
+          "created": [],
+          "updated": [
+            "Sam Lindqvist, infrastructure engineer"
+          ]
+        },
+        "portfolio-editorial": {
+          "created": [],
+          "updated": [
+            "Clara Moreau, art director"
+          ]
+        },
+        "portfolio-minimal": {
+          "created": [],
+          "updated": [
+            "Noor Haddad, writer and engineer"
+          ]
+        },
+        "portfolio-neon": {
+          "created": [],
+          "updated": [
+            "Rio Vega, creative technologist"
+          ]
+        },
+        "portfolio-photographer": {
+          "created": [],
+          "updated": [
+            "Ines Duarte, photographer"
+          ]
+        },
+        "portfolio-playful": {
+          "created": [],
+          "updated": [
+            "Juno Park, illustrator"
+          ]
+        },
+        "portfolio-swiss": {
+          "created": [],
+          "updated": [
+            "Lukas Graf, graphic designer"
+          ]
+        },
+        "portfolio-zine": {
+          "created": [],
+          "updated": [
+            "Ama Owusu, collage artist"
+          ]
+        },
+        "scaffold-admin-dashboard": {
+          "created": [],
+          "updated": [
+            "Admin dashboard"
+          ]
+        },
+        "scaffold-desktop": {
+          "created": [],
+          "updated": [
+            "Desktop"
+          ]
+        },
+        "scaffold-document-editor": {
+          "created": [],
+          "updated": [
+            "Document editor"
+          ]
+        },
+        "scaffold-issue-tracker": {
+          "created": [],
+          "updated": [
+            "Issue tracker"
+          ]
+        },
+        "scaffold-knowledge-graph": {
+          "created": [],
+          "updated": [
+            "Knowledge graph"
+          ]
+        },
+        "scaffold-messenger": {
+          "created": [],
+          "updated": [
+            "Messenger"
+          ]
+        },
+        "scaffold-notes": {
+          "created": [],
+          "updated": [
+            "Notes and docs"
+          ]
+        },
+        "scaffold-status-page": {
+          "created": [],
+          "updated": [
+            "Status page"
+          ]
+        },
+        "shaders": {
+          "created": [],
+          "updated": [
+            "Every effect"
+          ]
+        },
+        "showcase-bouldering": {
+          "created": [],
+          "updated": [
+            "Grip, bouldering in Bochum"
+          ]
+        },
+        "showcase-observatory": {
+          "created": [],
+          "updated": [
+            "Hill Observatory, public nights"
+          ]
+        },
+        "showcase-records": {
+          "created": [],
+          "updated": [
+            "Lowtide Records, Hamburg"
+          ]
+        },
+        "showcase-roastery": {
+          "created": [],
+          "updated": [
+            "Kiln & Bean, coffee roasters"
+          ]
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
+          ]
+        },
+        "translation": {
+          "created": [],
+          "updated": [
+            "A workshop card in three languages"
+          ]
+        },
+        "website-account-states": {
+          "created": [],
+          "updated": [
+            "Sign in",
+            "Account settings",
+            "Empty, success and error states"
+          ]
+        },
+        "website-article": {
+          "created": [],
+          "updated": [
+            "An article page"
+          ]
+        },
+        "website-blog": {
+          "created": [],
+          "updated": [
+            "A blog front"
+          ]
+        },
+        "website-comments": {
+          "created": [],
+          "updated": [
+            "A discussion"
+          ]
+        },
+        "website-company": {
+          "created": [],
+          "updated": [
+            "An about page"
+          ]
+        },
+        "website-docs-help": {
+          "created": [],
+          "updated": [
+            "A docs page",
+            "Downloads"
+          ]
+        },
+        "website-events-promotions": {
+          "created": [],
+          "updated": [
+            "An event page"
+          ]
+        },
+        "website-landing-page": {
+          "created": [],
+          "updated": [
+            "A landing page"
+          ]
+        },
+        "website-media": {
+          "created": [],
+          "updated": [
+            "A media page"
+          ]
+        },
+        "website-news": {
+          "created": [],
+          "updated": [
+            "A news front"
+          ]
+        },
+        "website-resume-portfolio": {
+          "created": [],
+          "updated": [
+            "A personal site"
+          ]
+        },
+        "website-search-navigation": {
+          "created": [],
+          "updated": [
+            "A search results page"
+          ]
+        },
+        "website-shop": {
+          "created": [],
+          "updated": [
+            "A store and its checkout"
+          ]
+        }
+      }
+    }
+  ]
+}

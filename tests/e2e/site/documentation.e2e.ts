@@ -524,6 +524,93 @@ try {
     }
   });
 
+  await check("What's new: a first visit marks the newest release's pages (sidebar, sections, the front page's dialog and count); opening one clears it; seeAll clears all", async () => {
+    const p = await browser.newPage();
+    try {
+      await p.goto(`${server.url}${PAGE}`);
+      await p.evaluate(() => localStorage.removeItem('defuss-shadcn-whats-new'));
+      await p.reload();
+      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+      const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as {
+        releases: { version: string; created: string[]; updated: string[] }[];
+      };
+      const versions = await p.evaluate(() => document.documentElement.getAttribute('data-whats-new'));
+      assert.equal(versions, record.releases.slice(0, 6).map((r) => r.version).join(' '), 'the pages carry the record');
+      const newest = record.releases[0];
+      // the page shown (index) counts as opened
+      const want = [...new Set([...newest.created, ...newest.updated])].filter((id) => id !== 'index').sort();
+      const unseen = async () =>
+        [...new Set(await p.$$eval('a.sidebar-link[data-unseen]', (as) => as.map((a) => a.getAttribute('data-page')!.replace(/^.*\//, '').replace(/\.html$/, ''))))].sort();
+      assert.deepEqual(await unseen(), want, 'the sidebar marks the newest release, minus the page shown');
+      const created = await p.$$eval('a.sidebar-link[data-unseen="created"] [data-whats-new-dot]', (ds) => ds.map((d) => [(d as HTMLElement).hidden, d.getAttribute('data-variant'), d.getAttribute('aria-label')]));
+      assert.ok(created.length === newest.created.length && created.every(([h, v, l]) => !h && v === 'info' && l === 'New'), 'a new page: a blue New dot');
+      assert.ok((await p.locator('summary [data-whats-new-dot]:not([hidden])').count()) > 0, 'the sections that hold them show a dot');
+      assert.equal(await p.textContent('[data-whats-new-count]'), String(want.length), 'the count on the trigger');
+      // the dialog
+      await p.click('[data-dialog-trigger="whats-new"]');
+      await p.waitForFunction(() => (document.getElementById('whats-new') as HTMLDialogElement).open);
+      assert.equal(await p.getAttribute(`[data-whats-new-release="${newest.version}"]`, 'data-fresh'), '');
+      assert.equal(await p.locator('#whats-new [data-whats-new-item][data-unseen]').count(), want.length, 'its pages carry the dot');
+      await p.keyboard.press('Escape');
+      // opening a marked page clears its mark (and keeps the others)
+      const target = want[0];
+      const rel = await p.getAttribute(`a.sidebar-link[data-page$="/${target}.html"]`, 'data-page');
+      await p.goto(`${server.url}/dist/documentation/${rel}`);
+      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+      assert.deepEqual(await unseen(), want.slice(1), 'the page opened lost its mark');
+      assert.ok((await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.state().seen)).includes(target));
+      await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.seeAll());
+      assert.deepEqual(await unseen(), [], 'seeAll clears every mark');
+      assert.equal(await p.locator('[data-whats-new-dot]:not([hidden])').count(), 0);
+    } finally {
+      await p.close();
+    }
+  });
+
+  await check("What's new, example by example: an unseen page marks its changed examples and lists them at its top - once; the changelog links every example and gathers what is unseen into New for you", async () => {
+    const p = await browser.newPage();
+    try {
+      await p.goto(`${server.url}${PAGE}`);
+      await p.evaluate(() => localStorage.removeItem('defuss-shadcn-whats-new'));
+      await p.reload();
+      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+      const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as {
+        releases: { version: string; examples?: Record<string, { created: string[]; updated: string[] }> }[];
+      };
+      const newest = record.releases[0];
+      const [pageId, ex] = Object.entries(newest.examples ?? {}).find(([id]) => id !== 'index' && id !== 'changelog') ?? [];
+      assert.ok(pageId && ex, 'the newest release names changed examples');
+      const labels = [...ex!.created, ...ex!.updated];
+      const rel = await p.getAttribute(`a.sidebar-link[data-page$="/${pageId}.html"]`, 'data-page');
+      await p.goto(`${server.url}/dist/documentation/${rel}`);
+      await p.waitForSelector('[data-whats-new-here]');
+      const listed = await p.$$eval('[data-whats-new-here] a[href^="#"]', (as) => as.map((a) => [a.getAttribute('href')!, a.textContent!.trim()]));
+      assert.deepEqual(listed.map(([, t]) => t).sort(), [...labels].sort(), 'the note lists every changed example');
+      const order = await p.$$eval('main [data-whats-new-example]', (els) => els.map((e) => '#' + e.id));
+      assert.deepEqual(listed.map(([h]) => h), order.filter((h) => listed.some(([l]) => l === h)), 'in page order');
+      for (const [href] of listed)
+        assert.ok(await p.$(`${href}[data-whats-new-example] [data-whats-new-mark]`), `${href} carries its mark and a dot`);
+      // the next visit: the page was opened - no note, no dots
+      await p.reload();
+      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+      assert.equal(await p.locator('[data-whats-new-here], [data-whats-new-mark]').count(), 0, 'shown once');
+      // the changelog links each example to its label; New for you lists the unseen pages, not the one opened
+      const log = await p.getAttribute('a.sidebar-link[data-page$="/changelog.html"]', 'data-page');
+      await p.goto(`${server.url}/dist/documentation/${log}`);
+      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+      const links = await p.$$eval(`[data-whats-new-pages="${newest.version}"] [data-whats-new-example-link="${pageId}"]`, (as) => as.map((a) => a.getAttribute('href')!));
+      assert.equal(links.length, labels.length, 'one link per changed example');
+      assert.deepEqual(links.map((h) => h.replace(/^.*#/, '#')).sort(), listed.map(([h]) => h).sort(), 'the same anchors as on the page');
+      assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), true, 'New for you shows');
+      const forYou = await p.$$eval('[data-whats-new-for-you] [data-whats-new-page]', (ls) => ls.map((l) => l.getAttribute('data-whats-new-page')));
+      assert.ok(forYou.length > 0 && !forYou.includes(pageId!), 'the unseen pages, without the one opened');
+      await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.seeAll());
+      assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), false, 'nothing unseen: hidden');
+    } finally {
+      await p.close();
+    }
+  });
+
   await check('no first-party page errors during the whole run', async () => {
     assert.deepEqual(pageErrors, [], `uncaught page errors: ${pageErrors.join(' | ')}`);
   });
