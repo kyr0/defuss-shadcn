@@ -114,6 +114,64 @@ try {
     );
   });
 
+  await check('several slides in view: the current slide is the first shown, Prev / Next move a page, Next stops at the end', async () => {
+    const shown = () =>
+      page.$eval('#car-multi', (car) => {
+        const vp = car.querySelector('.carousel-viewport')!.getBoundingClientRect();
+        return [...car.querySelectorAll('.carousel-slide')]
+          .filter((s) => {
+            const r = s.getBoundingClientRect();
+            return r.left >= vp.left - 1 && r.right <= vp.right + 1;
+          })
+          .map((s) => s.textContent!.trim())
+          .join(',');
+      });
+    const counter = () => page.$eval('#car-multi .carousel-counter', (el) => el.textContent);
+    // the smooth scroll ends where it snapped: the slides wholly in view
+    const settle = (want: string) =>
+      page.waitForFunction(
+        (want) => {
+          const car = document.getElementById('car-multi')!;
+          const vp = car.querySelector('.carousel-viewport')!.getBoundingClientRect();
+          return (
+            [...car.querySelectorAll('.carousel-slide')]
+              .filter((s) => {
+                const r = s.getBoundingClientRect();
+                return r.left >= vp.left - 1 && r.right <= vp.right + 1;
+              })
+              .map((s) => s.textContent!.trim())
+              .join(',') === want
+          );
+        },
+        want,
+        { timeout: 5000 },
+      );
+    const disabled = (b: string) => page.$eval(`#car-multi .carousel-${b}`, (el) => (el as HTMLButtonElement).disabled);
+    await waitForIndex(page, 'car-multi', 0);
+    assert.equal(await shown(), '1,2,3');
+    assert.equal(await counter(), 'Slides 1-3 of 9');
+    assert.equal(await disabled('prev'), true);
+    await page.click('#car-multi .carousel-next');
+    await waitForIndex(page, 'car-multi', 3);
+    await settle('4,5,6');
+    assert.equal(await counter(), 'Slides 4-6 of 9');
+    await page.click('#car-multi .carousel-next');
+    await waitForIndex(page, 'car-multi', 6);
+    await settle('7,8,9');
+    assert.equal(await disabled('next'), true, 'the last slide shows');
+    await page.click('#car-multi .carousel-prev');
+    await waitForIndex(page, 'car-multi', 3);
+    await settle('4,5,6'); // Prev goes back a page, not one slide
+    await page.click('#car-multi .carousel-prev');
+    await waitForIndex(page, 'car-multi', 0);
+    assert.equal(await disabled('prev'), true);
+    await page.$eval('#car-multi', (el) => (el as HTMLElement).api!.setState('default', { index: 4 }));
+    await waitForIndex(page, 'car-multi', 4);
+    await settle('5,6,7');
+    await page.$eval('#car-multi', (el) => (el as HTMLElement).api!.setState('default'));
+    await waitForIndex(page, 'car-multi', 0);
+  });
+
   // -- §3 Tier-1: dot structure morphs when slides change out of band -------
   await check('adding a slide morphs the dot structure (existing dots keep identity)', async () => {
     const res = await page.evaluate(async () => {

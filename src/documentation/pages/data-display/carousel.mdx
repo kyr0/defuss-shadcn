@@ -107,7 +107,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 
 <p class="text-sm font-medium mb-2 mt-8">Sizes</p>
 
-<p class="text-muted-foreground text-sm mb-4">Set <code>flex</code> on <code>.carousel-slide</code> to show multiple slides. Use <code>calc()</code> to account for the gap.</p>
+<p class="text-muted-foreground text-sm mb-4">Set <code>flex</code> on <code>.carousel-slide</code> to show multiple slides. Use <code>calc()</code> to account for the gap. Prev and Next then move by the slides in view, the current slide is the first one shown, and a counter names the range.</p>
 
 ```html example height="18"
 <div
@@ -197,6 +197,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
   <button class="carousel-next" aria-label="Next slide">
     <i data-lucide="chevron-right"></i>
   </button>
+  <div class="carousel-counter" aria-live="polite">Slides 1-3 of 9</div>
 </div>
 ```
 

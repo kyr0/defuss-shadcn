@@ -92,6 +92,10 @@ function init() {
 
       let currentIndex = 0;
       let autoplayTimer = null;
+      // the slides at least half in view: the first of them is the current slide, their count a step of Prev / Next
+      // - in a carousel showing three at once the index once named the last to scroll in, so Prev went back one
+      const inView = new Set<HTMLElement>();
+      const perView = () => Math.max(1, inView.size);
 
       // ── ARIA setup ───────────────────────────────
       if (!carousel.hasAttribute('role')) carousel.setAttribute('role', 'region');
@@ -135,10 +139,10 @@ function init() {
         // state must not live in module scope)
         carousel.dataset.currentIndex = String(index);
 
-        // Prev/next disabled states (non-loop) - native IDL flags via .prop()
+        // Prev/next disabled states (non-loop) - native IDL flags via .prop(); Next stops once the last slide shows
         if (!isLoop) {
           if (prevBtn) dfDollar(prevBtn).prop('disabled', currentIndex <= 0);
-          if (nextBtn) dfDollar(nextBtn).prop('disabled', currentIndex >= allSlides.length - 1);
+          if (nextBtn) dfDollar(nextBtn).prop('disabled', currentIndex + perView() >= allSlides.length);
         }
 
         // Dot indicators - scalar ARIA flag per dot through query (§3: attr, no re-render)
@@ -149,8 +153,14 @@ function init() {
               dfDollar(this).attr('aria-current', i === currentIndex ? 'true' : 'false');
             });
 
-        // Counter (literal template text, consumer-visible label)
-        if (counter) dfDollar(counter).text(`Slide ${currentIndex + 1} of ${allSlides.length}`);
+        // Counter (literal template text, consumer-visible label): the range when several slides show
+        const last = Math.min(allSlides.length, currentIndex + perView());
+        if (counter)
+          dfDollar(counter).text(
+            last > currentIndex + 1
+              ? `Slides ${currentIndex + 1}-${last} of ${allSlides.length}`
+              : `Slide ${currentIndex + 1} of ${allSlides.length}`,
+          );
 
         // ARIA labels on slides
         allSlides.forEach((slide, i) => {
@@ -162,11 +172,13 @@ function init() {
       const observer = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
-            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-              const idx = slides().indexOf(entry.target as HTMLElement);
-              if (idx !== -1) updateState(idx);
-            }
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) inView.add(entry.target as HTMLElement);
+            else inView.delete(entry.target as HTMLElement);
           }
+          const all = slides();
+          for (const slide of inView) if (!all.includes(slide)) inView.delete(slide);
+          const first = all.findIndex((slide) => inView.has(slide));
+          if (first !== -1) updateState(first);
         },
         { root: viewport, threshold: 0.5 },
       );
@@ -174,8 +186,20 @@ function init() {
       slides().forEach((slide) => observer.observe(slide));
 
       // ── Navigation ──────────────────────────────
-      const goNext = () => scrollToIndex(currentIndex + 1);
-      const goPrev = () => scrollToIndex(currentIndex - 1);
+      // a step is the slides in view (one in a one-up carousel): the next page starts after the last one shown, the
+      // last page ends with the last slide; a loop wraps from the last page to the first and back
+      const goNext = () => {
+        const n = slides().length,
+          k = perView();
+        if (isLoop && currentIndex + k >= n) scrollToIndex(0);
+        else scrollToIndex(Math.min(currentIndex + k, n - k));
+      };
+      const goPrev = () => {
+        const n = slides().length,
+          k = perView();
+        if (isLoop && currentIndex <= 0) scrollToIndex(n - k);
+        else scrollToIndex(Math.max(0, currentIndex - k));
+      };
 
       if (prevBtn) prevBtn.addEventListener('click', goPrev);
       if (nextBtn) nextBtn.addEventListener('click', goNext);
