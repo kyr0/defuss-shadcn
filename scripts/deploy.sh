@@ -132,7 +132,6 @@ bun scripts/changelog-entry.ts stamp-hash "${NEW_VERSION}" "${ENTRY_HASH}"
 # --force: docs/ already carries this version's stamp from make build, but
 # the changelog page just changed (the hash) - re-snapshot it
 bun scripts/build.ts && bun scripts/bundle.ts && bun scripts/minify.ts && bun scripts/stats.ts && bun run build:docs && bun scripts/sync-docs.ts --force
-PAGE_TIMEOUT_MS=60000 bun run screenshots
 bun scripts/verify.ts
 git add -A -- . "$AGENT_STATE"
 git commit -m "chore: bump version to ${TAG} (changelog ${ENTRY_HASH})"

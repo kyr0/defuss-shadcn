@@ -2295,7 +2295,7 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       <figure
         class="diagram"
         id="sys-vae-gate"
-        aria-label="The proof loop: AGENTS.md defers to the verifier; the agent edits and runs make build; lint, compile, screenshots, verify.ts and the tests gate it; a failing gate's output is the work order back to the agent; a passing one yields visual evidence a reviewer judges - provably done"
+        aria-label="The proof loop: AGENTS.md defers to the verifier; the agent edits and runs make build; lint, compile, verify.ts and the tests gate it; a failing gate's output is the work order back to the agent; a passing one leads to the screenshots of what changed, which a reviewer judges - provably done"
         style="--diagram-node-w: 8rem; --diagram-col-min: 6.5rem; --diagram-gap-x: 1.5rem; --diagram-gap-y: 1.1rem"
         ><script type="application/json" class="diagram-spec">
           {
@@ -2341,18 +2341,18 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
                 "eyebrow": "Gate"
               },
               {
-                "id": "shots",
-                "name": "Screenshots",
-                "meta": "every state × light/dark",
+                "id": "verify",
+                "name": "verify.ts",
+                "meta": "consistency gates · fix: lines",
                 "col": 3,
                 "row": 2,
                 "step": 6,
                 "eyebrow": "Gate"
               },
               {
-                "id": "verify",
-                "name": "verify.ts",
-                "meta": "consistency gates · fix: lines",
+                "id": "unit",
+                "name": "Vitest",
+                "meta": "real pages, real Chromium",
                 "col": 4,
                 "row": 2,
                 "step": 7,
@@ -2360,8 +2360,8 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
               },
               {
                 "id": "tests",
-                "name": "Vitest · e2e",
-                "meta": "real pages, real Chromium",
+                "name": "Playwright e2e",
+                "meta": "every component and page",
                 "col": 5,
                 "row": 2,
                 "step": 8,
@@ -2378,8 +2378,8 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
               },
               {
                 "id": "evidence",
-                "name": "Visual evidence",
-                "meta": "byte-verified PNG per state",
+                "name": "Screenshots",
+                "meta": "by hand · what changed",
                 "col": 4,
                 "row": 3,
                 "step": 11
@@ -2409,9 +2409,9 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
               { "from": "agent", "to": "build", "label": "runs" },
               { "from": "build", "to": "lint" },
               { "from": "lint", "to": "compile" },
-              { "from": "compile", "to": "shots" },
-              { "from": "shots", "to": "verify" },
-              { "from": "verify", "to": "tests" },
+              { "from": "compile", "to": "verify" },
+              { "from": "verify", "to": "unit" },
+              { "from": "unit", "to": "tests" },
               { "from": "tests", "to": "pass" },
               { "from": "pass", "to": "order", "label": "no" },
               { "from": "order", "to": "agent", "label": "fix", "line": "dashed", "tone": "accent" },
@@ -2429,7 +2429,7 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
       data-df-entrance="up"
       style="--df-motion-delay: 0.6s; left: 120px; top: 609px; width: 1360px"
       >Trapped in the loop until the work is actually good: a failing gate's output is the work order, a green gate plus
-      a screenshot per state is the evidence.</p
+      a look at what changed is the evidence.</p
     >
     <p
       class="abs sys-credit"
@@ -2440,10 +2440,10 @@ import { DocPage, PageHeader, SourceFiles } from "../../lib/components/index";
     >
     <p class="presentation-note"
       >Inside the gate, for this repository: AGENTS.md states the conventions and defers to the verifier; the agent
-      edits and runs the whole pipeline; lint and types, the 1:1 compile, a screenshot per state and mode, the
-      verifier's consistency gates with their fix lines, and the unit and end-to-end tests gate it. If a gate fails, its
-      output is the work order back to the agent. If all pass, the screenshots are the visual evidence a reviewer judges
-      - then the work is provably done.</p
+      edits and runs the whole pipeline; lint and types, the 1:1 compile, the verifier's consistency gates with their
+      fix lines, and the unit and end-to-end tests gate it. If a gate fails, its output is the work order back to the
+      agent. If all pass, screenshots of the states the change touched, taken by hand, are the visual evidence a
+      reviewer judges - then the work is provably done.</p
     >
   </section>
   <!-- 10 · Method - the verifier, timed: stopwatch + the recorded run -->

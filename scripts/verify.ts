@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { brotliDecompressSync } from 'node:zlib';
@@ -10,7 +9,6 @@ import { searchIndexProblems } from './lib/search-index-check.ts';
 import { MODEL_FINGERPRINT, searchPins } from './search-index.ts';
 import { auditUtilities, walk } from './lib/audit.ts';
 import { declaredStates } from './lib/inputs.ts';
-import { componentFingerprints } from './lib/inputs-files.ts';
 import { statFigureProblems } from './lib/stat-figures.ts';
 import { statSources } from './stat-figures.ts';
 import { BUNDLE_ARTIFACTS, isBundleDirArtifact, isDerivedArtifact, minifyArtifactProblems } from './lib/minify.ts';
@@ -115,8 +113,6 @@ function check(name: string, problems: string[], fix: string, warnOnly = false):
 const componentDirs = componentDirsOf(COMPS).map((c) => c.name);
 /** repo-relative path of a component file, as the problems name it (src/components/<section>/<name>/<file>) */
 const srcRel = (c: string, ...file: string[]): string => relative(ROOT, componentFile(COMPS, c, ...file)).split(sep).join('/');
-/** Both color schemes create-screenshots.ts captures; state PNGs need both. */
-const MODES = ['light', 'dark'];
 /** Doc pages are defuss-ssg output: dist/documentation/*.html, rendered from
  * src/documentation/pages/*.mdx (build:docs must run before verify - it does,
  * in every package.json chain). Gates that check the SHIPPED surface read the
@@ -443,12 +439,17 @@ const toDist = (rel: string): string => {
   const parts = rel.split(sep);
   return parts[0] === 'components' && parts.length >= 4 ? [parts[0], ...parts.slice(2)].join(sep) : rel;
 };
+/** a file the operating system writes into any folder (macOS Finder's .DS_Store), never part of the system */
+const osJunk = (rel: string): boolean => rel === '.DS_Store' || rel.endsWith(`${sep}.DS_Store`);
 const distProblems: string[] = [];
 if (!existsSync(DIST)) {
   distProblems.push('dist/ does not exist - run `bun run build`');
 } else {
   for (const f of walk(SRC, [''])) {
     const rel = relative(SRC, f);
+    // Finder's folder metadata (gitignored) is nobody's source - VERIFIED: one Finder writes into
+    // src/components/graphs/ while the folder is open failed this gate (2026-11-10)
+    if (osJunk(rel)) continue;
     // ambient type declarations compile nothing and ship nothing; src/shared
     // + src/core are build-time-only (bundled once into core.js, never
     // shipped as loose module trees)
@@ -480,6 +481,7 @@ if (!existsSync(DIST)) {
   const srcSet = new Set(walk(SRC, ['']).map((f) => toDist(relative(SRC, f)).replace(/\.ts$/, '.js')));
   for (const f of walk(DIST, [''])) {
     const rel = relative(DIST, f);
+    if (osJunk(rel)) continue;
     // scripts/minify.ts + tsc sourceMap write derived twins, scripts/stats.ts
     // writes the generated stats document, scripts/bundle.ts writes the
     // single-file bundle - none of them are orphans
@@ -1044,42 +1046,11 @@ check(
   'wrap the default demo in <div class="preview">…</div> (see pages/badge.mdx)',
 );
 
-// 12. every component has light + dark screenshots whose manifest fingerprint
-// matches the CURRENT dist/ inputs (same content-hash contract as
-// create-screenshots.ts). Content-based, so a no-change rebuild stays green
-// and any component edit invalidates exactly its own shots. Screenshots are a
-// LOCAL artifact (gitignored, kept for agent inspection - never generated in
-// CI): the gate applies only where a manifest exists, i.e. `bun run
-// screenshots` has run on this machine.
-const shotsManifestPath = join(ROOT, 'screenshots', 'manifest.json');
-/** every component's input fingerprint (a walk of dist/) - read by `screenshots` and `render drift`, computed once */
-let fingerprintsNow: Record<string, string> | undefined;
-const currentFingerprints = (): Record<string, string> => (fingerprintsNow ??= componentFingerprints(DIST));
-const hasShots = existsSync(shotsManifestPath);
-const shotProblems: string[] = [];
-if (existsSync(DIST) && hasShots) {
-  const manifest: { fingerprints?: Record<string, string> } = JSON.parse(readFileSync(shotsManifestPath, 'utf8'));
-  const current = currentFingerprints();
-  for (const c of componentDirs) {
-    for (const mode of ['light', 'dark']) {
-      if (!existsSync(join(ROOT, 'screenshots', mode, `${c}.png`))) {
-        shotProblems.push(`screenshots/${mode}/${c}.png missing`);
-      }
-    }
-    if (manifest.fingerprints?.[c] !== current[c]) {
-      shotProblems.push(`screenshots of ${c} are stale vs dist/ (manifest mismatch)`);
-    }
-  }
-}
-check(
-  'screenshots',
-  shotProblems,
-  'run `bun run screenshots` (incremental - re-shoots only components changed since the manifest)',
-);
-
 // 12b. every declared state of every JS component must be covered by ALL
-// four artifacts (AGENTS.md "State API" rule 7): screenshot per mode, doc
-// page (States section + data-state-demo anchor), component skill, e2e test.
+// three artifacts (AGENTS.md "State API" rule 7): doc page (States section +
+// data-state-demo anchor), component skill, e2e test. Screenshots are taken by
+// hand when a change needs a look (`bun run screenshots`) - no gate reads them
+// (the maintainer, 2026-11-10: the pipeline re-shot every component per release).
 const coverageProblems: string[] = [];
 for (const c of componentDirs) {
   const tsFile = componentFile(COMPS, c, `${c}.ts`);
@@ -1096,10 +1067,6 @@ for (const c of componentDirs) {
   const e2e = existsSync(e2eFile(c)) ? readFileSync(e2eFile(c), 'utf8') : '';
 
   for (const s of states) {
-    // PNG existence is local-only (see #12): a clean checkout - CI - has no screenshots/
-    if (hasShots && s !== 'default' && MODES.some((m) => !existsSync(join(ROOT, 'screenshots', m, `${c}-${s}.png`)))) {
-      coverageProblems.push(`${c}: no screenshot for state "${s}" (both modes) - add [data-state-demo] + run \`bun run screenshots\``);
-    }
     if (!doc.includes(`<code>${s}</code>`)) coverageProblems.push(`${c}: state "${s}" not documented in ${c}.html (<code>${s}</code>)`);
     if (!skill.includes(s)) coverageProblems.push(`${c}: state "${s}" not listed in component-skill.md`);
     if (!e2e.includes(`'${s}'`)) coverageProblems.push(`${c}: state "${s}" not asserted in ${c}.e2e.ts`);
@@ -1108,7 +1075,7 @@ for (const c of componentDirs) {
 check(
   'state coverage',
   coverageProblems,
-  'each declared state needs screenshots (both modes), doc page, skill and e2e coverage (AGENTS.md "State API" rule 7)',
+  'each declared state needs doc page, skill and e2e coverage (AGENTS.md "State API" rule 7)',
 );
 
 // 13. version is consistent: package.json ↔ the header badge stamped into
@@ -1589,37 +1556,6 @@ check(
   'portable paths',
   pathProblems,
   'use paths relative to the repo root (import.meta.dirname / relative joins)',
-);
-
-// 24. render drift (warn): a PNG whose bytes changed since capture while its
-// component's inputs did NOT means something outside the repo altered the
-// render (CDN asset, font, browser version) - worth a human/agent look.
-const driftProblems: string[] = [];
-const driftManifestPath = join(ROOT, 'screenshots', 'manifest.json');
-if (existsSync(driftManifestPath) && existsSync(DIST)) {
-  const dm = JSON.parse(readFileSync(driftManifestPath, 'utf8')) as {
-    fingerprints?: Record<string, string>;
-    renders?: Record<string, string>;
-  };
-  const nowFp = currentFingerprints();
-  for (const [c, fp] of Object.entries(dm.fingerprints ?? {})) {
-    if (nowFp[c] !== fp) continue; // inputs changed → the diff is expected
-    for (const [key, hash] of Object.entries(dm.renders ?? {})) {
-      // keys look like "light/button.png" or "dark/accordion-all-open.png"
-      const file = key.slice(key.indexOf('/') + 1).replace(/\.png$/, '');
-      if (file !== c && !file.startsWith(`${c}-`)) continue;
-      const png = join(ROOT, 'screenshots', key);
-      if (!existsSync(png)) continue;
-      const actual = createHash('sha256').update(readFileSync(png)).digest('hex').slice(0, 16);
-      if (actual !== hash) driftProblems.push(`screenshots/${key} changed pixels without any input changing`);
-    }
-  }
-}
-check(
-  'render drift',
-  driftProblems,
-  'inspect the PNG against the component (external asset/browser change?) - or recapture with `bun run screenshots --force` once intentional',
-  true,
 );
 
 // 25. no window globals (AGENTS.md "No window globals"): application globals

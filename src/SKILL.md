@@ -78,7 +78,7 @@ dist/
     └── css|js                        ← doc-site assets (not part of the system)
 ```
 
-In the **source repository** additionally: `screenshots/{light,dark}/{name}.png` and `screenshots/{light,dark}/{name}-{state}.png` - one PNG per declared state per color mode (generated via `bun run screenshots`), so a state name listed below maps directly to a visual reference (e.g. `screenshots/dark/dialog-open.png` shows the open modal).
+In the **source repository** additionally: `screenshots/{light,dark}/{name}.png` and `screenshots/{light,dark}/{name}-{state}.png` - one PNG per declared state per color mode (taken by hand with `bun run screenshots` - no build makes them, so they may be missing or older than the source), so a state name listed below maps directly to a visual reference (e.g. `screenshots/dark/dialog-open.png` shows the open modal).
 
 ## How to work with this library
 

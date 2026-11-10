@@ -51,11 +51,10 @@ purge-cdn: ## Purge jsDelivr @latest cache for all dist assets (run after deploy
 	bun run purge-cdn
 
 # Full pipeline: fast checks first, compile + bundle + minify, then the docs
-# SSG build (defuss-ssg renders dist/documentation - before screenshots: the
-# docs pages are part of every component's fingerprint), screenshots, docs
-# mirror, gate + tests. Calls scripts/build.ts directly because `bun run build`
-# would run verify BEFORE the screenshots could be refreshed.
-build: ## Full pipeline: lint → compile → bundle → minify → stats → figures → docs SSG → screenshots → docs → verify → tests → e2e
+# SSG build, docs mirror, gate + tests. No screenshots: they are taken by hand
+# when a change needs a look (`make screenshots`), and no gate reads them (the
+# maintainer, 2026-11-10 - every release re-shot all ~460 PNGs twice).
+build: ## Full pipeline: lint → compile → bundle → minify → stats → figures → docs SSG → docs → verify → tests → e2e
 	bun run lint
 	bun scripts/build.ts
 	bun scripts/bundle.ts
@@ -63,7 +62,6 @@ build: ## Full pipeline: lint → compile → bundle → minify → stats → fi
 	bun run stats
 	bun run figures
 	bun run build:docs
-	bun run screenshots
 	bun run docs
 	bun run verify
 	bun run test:run
@@ -81,7 +79,7 @@ stats: ## Post-minify: dist/stats.json (component counts + byte sizes)
 verify: ## Static consistency gate (runs automatically after build)
 	bun run verify
 
-screenshots: ## Default-state screenshot of every component (agent inspection)
+screenshots: ## Every component and state as PNGs, light + dark (by hand, for a look - no gate reads them)
 	bun run screenshots
 
 metrics: ## Print the current build metrics (dist/stats.json; regenerate with `make stats`)

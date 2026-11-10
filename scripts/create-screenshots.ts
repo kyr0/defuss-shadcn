@@ -23,8 +23,9 @@ import { componentFingerprints } from './lib/inputs-files.ts';
  * components keep their PNGs; only changed ones are re-shot - rebuilding the
  * all.* and wysiwyg.* bundles (any single component edit does) invalidates
  * NOTHING, because they are not fingerprinted. `--force` re-shoots
- * everything. verify.ts checks freshness with the SAME fingerprints, so a
- * build that changed nothing costs ~0 s here and stays green there.
+ * everything, so a run after a build that changed nothing costs ~0 s. Taken by
+ * hand when a change needs a look (`bun run screenshots`): since 2026-11-10 no
+ * pipeline step runs this and no verify gate reads its manifest.
  */
 
 const ROOT = join(import.meta.dirname, '..');

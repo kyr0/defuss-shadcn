@@ -18,6 +18,7 @@
         "website-industries"
       ],
       "updated": [
+        "architecture",
         "article-body",
         "border-layout",
         "button",
@@ -60,6 +61,7 @@
         "showcase-records",
         "showcase-roastery",
         "sidebar",
+        "state-api",
         "system-in-numbers",
         "tabs",
         "translation",

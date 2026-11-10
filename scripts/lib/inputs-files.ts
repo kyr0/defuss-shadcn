@@ -26,8 +26,7 @@ function collect(dir: string): string[] {
 /**
  * Per-component input fingerprints of a real dist/ tree: the global shell
  * (theme tokens, doc css/js/fonts, core runtime) + each component's shipped
- * files + its doc page. Read by create-screenshots.ts (what to re-shoot) and
- * verify.ts (the freshness gate) - ONE contract, two consumers.
+ * files + its doc page. Read by create-screenshots.ts (what to re-shoot).
  */
 export function componentFingerprints(dist: string): Record<string, string> {
   const tree: FileTree = {};

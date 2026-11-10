@@ -26,8 +26,7 @@ export interface Proof {
 export const PROOFS: Record<string, Proof> = {
   unit: { outputs: ['src/documentation/data/unit-tests.json'], ignoredInputs: [], proves: {} },
   coverage: { outputs: ['src/documentation/data/unit-tests.json'], ignoredInputs: [], proves: { unit: 'vitest run' } },
-  // verify checks the screenshots manifest and that every component has its PNGs (screenshots/ is ignored)
-  verify: { outputs: [], ignoredInputs: ['screenshots/manifest.json', 'screenshots/light/', 'screenshots/dark/'], proves: {} },
+  verify: { outputs: [], ignoredInputs: [], proves: {} },
 };
 
 /**

@@ -15,8 +15,8 @@ browser tooling with a **timeout** (execute_command's `timeout` parameter, or
 `--timeout`/`PAGE_TIMEOUT_MS` inside the scripts). A stalled Chromium session
 must surface as a failure with output, never as an agent hanging forever.
 
-Machine load: the regular pipeline (build, docs, screenshots, verify, tests,
-e2e) must never load the machine to the point of freezing it - a full verify
+Machine load: the regular pipeline (build, docs, verify, tests, e2e) and the
+screenshots taken by hand must never load the machine to the point of freezing it - a full verify
 run once froze a 24 GB laptop (build-docs leaked every page's happy-dom window
 into a 14 GB heap; screenshots ran 8 pages × one sandbox per example).
 Measurements and anything that stresses the machine on purpose belong to
@@ -133,7 +133,7 @@ defuss-shadcn/
 │   └── prompts/                       ← reusable prompt files
 │       └── component-review.prompt.md
 │
-├── screenshots/                       ← generated PNGs per component AND per declared state, light/ + dark/ (`bun run screenshots`, gitignored, LOCAL agent-inspection artifact - never generated in CI) - SKILL.md maps state names to these files
+├── screenshots/                       ← generated PNGs per component AND per declared state, light/ + dark/ (`bun run screenshots`, gitignored, LOCAL agent-inspection artifact taken BY HAND when a change needs a look - no pipeline step makes them and no gate reads them, the maintainer 2026-11-10) - SKILL.md maps state names to these files
 ├── scripts/                           ← build & maintenance scripts (no one-shot migrations)
 │   ├── build.ts                       ← src/ → dist/ components+theme (tsc type-strip + sourceMap + copy 1:1; the docs tree is NOT copied - defuss-ssg renders it)
 │   ├── build-docs.ts                  ← dist/documentation producer: compiles runtime → public/js, then defuss-ssg build (runs under node)
@@ -206,12 +206,13 @@ full rationale lives in [ARCH.md](ARCH.md).
 
 ### Work packages before a verify run (REQUIRED)
 
-`verify`, the screenshots, the unit suite and the e2e runs together cost
+`verify`, the unit suite and the e2e runs together cost
 minutes of machine time and the tokens to read their output. Do not run them
 after every edit. Organize the work into **packages** - every edit a request
 needs across components, docs, fixtures and tests, including the rebuild -
-and run the pipeline **once per package**, in the order build → screenshots →
-verify → tests → e2e. The architecture carries this: one owner per concern and
+and run the pipeline **once per package**, in the order build →
+verify → tests → e2e. Screenshots are no step of it: take them (`bun run screenshots`,
+incremental) when a change needs a look, and look at the changed states. The architecture carries this: one owner per concern and
 explicit, checked contracts mean a package of edits fails by name at the end,
 not in a tangle, so there is nothing to gain from checking after each file.
 Run a single targeted check mid-package only when a fact decides the next edit
@@ -228,8 +229,8 @@ after the pipeline; its unit step is the coverage run (`.vae/VERIFY.py`), so
 one full suite run proves both its test and coverage steps, and the pipeline's
 `bun run test:coverage` lets the gate replay them. `.vae/` is no input:
 the gate appends to `.vae/EPISODES.md` on every failure, which re-ran every
-suite after any failed gate run. The e2e runner and the screenshots skip
-unchanged inputs the same way.
+suite after any failed gate run. The e2e runner (and the screenshots, when
+taken) skip unchanged inputs the same way.
 
 ### One owner per concern, explicit contracts (STRONGLY RECOMMENDED)
 
@@ -755,18 +756,20 @@ document.querySelector('#x').api.getState(); // → { name: 'open', config: { �
    ```
 6. **Document the states** in the component skill (`component-skill.md` →
    `## States` section): state names, meaning, and one `api.setState(...)` example.
-7. **Every state must be visually verifiable** - four artifacts cover each
-   declared state (verify.ts parses `{name}States = [...]` and checks all four):
+7. **Every state must be visually verifiable** - three artifacts cover each
+   declared state (verify.ts parses `{name}States = [...]` and checks all three),
+   and `bun run screenshots` can capture it:
    - **Doc page**: `pages/{name}.mdx` has a `<StatesSection>` listing
      `<code>{state}</code>` per state, AND the state-bearing demo element
      carries `data-state-demo` (the anchor `create-screenshots.ts` drives via
      `api.setState()` to capture `screenshots/{mode}/{name}-{state}.png`)
-   - **Screenshots**: one PNG per state per mode (light + dark), default state
-     as `{name}.png` from the first `.preview`
    - **Skill**: the state name appears in the `## States` section
    - **E2E**: the state name string appears in `{name}.e2e.ts` (a
      `setState(name)` assertion)
-   Adding a state without all four fails the build.
+   Adding a state without all three fails the build. Screenshots (one PNG per
+   state per mode, the default state as `{name}.png` from the first `.preview`)
+   are taken by hand when a change needs a look; no gate reads them since
+   2026-11-10 (the maintainer: a release re-shot every PNG twice).
 8. **`render(state)` - the markup of a state, 1:1** (`toggle.ts` /
    `accordion.ts` are the references; shared helpers in
    `src/shared/render.ts`, emitted once in core):
@@ -1683,8 +1686,8 @@ of removing it).
 `make help` lists the shortcuts (`setup`, `dev`, `test`, `test-run`, `coverage`, `e2e`, `lint`,
 `verify`, `screenshots`, `minify`, `stats`, `build`) - they wrap the equivalent `bun run <script>` commands;
 package.json stays the single source of truth. `make build` is the full pipeline:
-lint → compile → bundle → minify → stats → figures (the data-stat figures and README's stats claim) → screenshots → docs-mirror → verify → tests → e2e (it calls `scripts/build.ts` +
-`scripts/bundle.ts` directly, since `bun run build` runs `verify` before screenshots could be refreshed).
+lint → compile → bundle → minify → stats → figures (the data-stat figures and README's stats claim) → docs SSG → docs-mirror → verify → tests → e2e (it calls `scripts/build.ts` +
+`scripts/bundle.ts` directly). `make screenshots` is not part of it.
 `make minify` alone re-runs just the minify post-pass over `dist/components/` (every shipped `.css` gains a
 `.min.css`, every `.js` a `.min.js` + `.min.js.map`; tsc already emits the readable `.js.map`). verify's
 `minified artifacts` gate fails when a component ships without its twins.
@@ -1780,7 +1783,8 @@ Every component now ships the State API (interactive ones) and an e2e pair;
 the `STATE_API_LEGACY` / e2e warn-ratchets in `scripts/verify.ts` are empty and
 the checks are hard gates. New components must land compliant from day one:
 source → skill `## States` + doc page (`<code>` per state + `data-state-demo`
-anchor) → `bun run screenshots` → e2e fixture + test, ideally in one commit.
+anchor) → e2e fixture + test, ideally in one commit; `bun run screenshots` to look at the
+states.
 
 ### Individual examples (REQUIRED)
 

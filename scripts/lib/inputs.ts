@@ -1,6 +1,7 @@
 /**
- * Why: the screenshot freshness contract, shared by create-screenshots.ts
- * (skip unchanged components) and verify.ts (the gate). Content hashes, not
+ * Why: the screenshot freshness contract of create-screenshots.ts (skip
+ * unchanged components; no gate reads the screenshots since 2026-11-10 - they
+ * are taken by hand when a change needs a look). Content hashes, not
  * mtimes - rebuilding dist/ with identical files must NOT invalidate
  * screenshots, and editing a component must invalidate exactly its own shots.
  *

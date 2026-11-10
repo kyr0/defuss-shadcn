@@ -123,7 +123,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Vibe Coding / Agentic Engineering](../../src/documentation/pages/introduction/vibe-coding.mdx) - Build with defuss-shadcn through an AI coding agent - install the Agent Skill into Claude Code, Codex, Cursor, Gemini CLI, Copilot or Windsurf, then describe the UI and let the agent write the HTML.
 - [Anatomy of a Component](../../src/documentation/pages/introduction/anatomy.mdx) - How one component's parts meet: the tokens it reads, its markup, its stylesheet, its script, the named states it exposes, and the skill and schema that describe it - each a plain file you copy or link.
 - [Component Skills](../../src/documentation/pages/introduction/component-skills.mdx) - Component skill files are structured references that teach AI assistants and humans how to build each component's HTML correctly.
-- [Verified Agentic Engineering (VAE)](../../src/documentation/pages/introduction/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces and instructs, the agent extends its checks, screenshots record every state, humans review before release.
+- [Verified Agentic Engineering (VAE)](../../src/documentation/pages/introduction/architecture.mdx) - How defuss-shadcn scales with AI: AGENTS.md teaches, a deterministic verifier enforces and instructs, the agent extends its checks, screenshots show what changed, humans review before release.
 - [Changelog](../../src/documentation/pages/introduction/changelog.mdx) - Release history and changelog for defuss-shadcn.
 
 ### Guides
