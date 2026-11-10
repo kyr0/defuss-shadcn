@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
 <DocPage meta={meta}>
 
 <PageHeader slug="graph-explorer" title="Graph Explorer" component="graph-explorer">
-  A graph as one element: a <code>&lt;div class="graph-explorer"&gt;</code> becomes a focusable viewport over a graph of up to four million nodes. A Web Worker builds the graph and draws the far field into a canvas; only the nodes worth reading get DOM - chips, cards, labels along the edges - from renderers you can replace. What it shows is attributes: the cluster you are in (<code>data-focus</code>), the selection (<code>data-selected</code>), the Node UI (<code>data-node-ui</code>), the expanded page (<code>data-expanded</code>). Everything around it - breadcrumb, search, outline, details, relations - is an outlet the page places.
+  A graph as one element: a <code>&lt;div class="graph-explorer"&gt;</code> becomes a focusable viewport over a graph of up to four million nodes. A Web Worker builds the graph and draws the far field into a canvas; only the nodes worth reading get DOM - chips, cards, labels along the edges - from renderers you can replace. What it shows is attributes: the cluster you are in (<code>data-focus</code>), the selection (<code>data-selected</code>), the layers shown (<code>data-layers</code>), the expanded page (<code>data-expanded</code>). Everything around it - breadcrumb, search, outline, details, relations - is an outlet the page places.
 </PageHeader>
 
 <SkillPanel component="graph-explorer">
@@ -53,7 +53,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
 
   <SkillField label="Accessibility">
 <SkillText dense>• One tab stop: arrows move the focus to the nearest node in that direction, Enter enters a cluster, Space selects, Backspace moves up, ? opens the keyboard map</SkillText>
-  <SkillText dense>• The view, the focused node and Bring & Go are announced in a live region (a bound status output, else the explorer's own)</SkillText>
+  <SkillText dense>• The view, the focused node and the neighbour ring (Jump to a neighbour) are announced in a live region (a bound status output, else the explorer's own)</SkillText>
   <SkillText dense>• Reduced motion: jumps instead of flights, no animated edges; forced colors: system colors on the canvas and in the DOM</SkillText>
   </SkillField>
 </SkillPanel>
@@ -72,7 +72,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
 
 <H2 id="outlets">Outlets</H2>
 
-<DocText>An outlet is any element the page binds with <code>data-graph-explorer-for="&lt;id&gt;"</code>: <code>data-graph-explorer-outlet</code> names what the runtime puts in it - <code>breadcrumb</code>, <code>search</code>, <code>outline</code>, <code>details</code>, <code>relations</code>, <code>node-ui</code> - and <code>data-graph-explorer-output</code> a readout - <code>details-title</code>, <code>relations-title</code>, <code>view</code>, <code>status</code>. <code>data-graph-explorer-action</code> buttons move up, fit, run the breaker simulation or open the keyboard map. The <DocLink href="scaffold-knowledge-graph.html">Knowledge Graph</DocLink> scaffold places them in Panels.</DocText>
+<DocText>An outlet is any element the page binds with <code>data-graph-explorer-for="&lt;id&gt;"</code>: <code>data-graph-explorer-outlet</code> names what the runtime puts in it - <code>breadcrumb</code>, <code>search</code>, <code>outline</code>, <code>details</code>, <code>relations</code>, <code>layers</code>, <code>updates</code> - and <code>data-graph-explorer-output</code> a readout - <code>details-title</code>, <code>relations-title</code>, <code>view</code>, <code>status</code>. <code>data-graph-explorer-action</code> buttons move up, fit, switch Live mode or open the keyboard map. The <DocLink href="scaffold-knowledge-graph.html">Knowledge Graph</DocLink> scaffold places them in Panels.</DocText>
 
 ```html example label="Breadcrumb, search, outline and details" schema="none" hint="Pick a node in the outline or the graph: the details show it. The breadcrumb's crumbs move up; the search flies anywhere." previewStyle="align-items:stretch;"
 <div class="grid gap-2">
@@ -108,6 +108,62 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
 </div>
 ```
 
+<H2 id="live-mode">Live mode and updates</H2>
+
+<DocText>An update is one change in the graph - a node or a link, the layer it belongs to, a line of text. For eight seconds a changed node carries a glowing dot at its top right and a changed link lights up in its layer's colour and fades. The <code>updates</code> outlet lists every update of the shown layers, newest first, one compact row each in a <DocLink href="virtual-list.html">Virtual List</DocLink>; a row selects its node or its link (the link's view is entered first). The <code>live</code> action starts Live mode, the explorer's simulation: breakers trip and close (Health), nodes deploy (Nodes), traffic moves (Relations), counts change (Labels). An app adds its own with <code>df$.shadcn.graphExplorer.update(el, change)</code>, and an <code>update</code> plugin renders the rows its way.</DocText>
+
+```html example label="Updates in Live mode" schema="none" hint="Press Live mode: changed nodes get a glowing dot, changed links light up in their layer's colour, and every change lands in Updates, newest first. Hide Health in the layer switch and its changes leave the list; click a row to select its node or link. Add a change adds one of the page's own, with its own row renderer." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      aria-pressed="false"
+      data-graph-explorer-for="live"
+      data-graph-explorer-action="live"
+    >
+      Live mode
+    </button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" id="live-add">Add a change</button>
+    <div class="ml-auto" data-graph-explorer-for="live" data-graph-explorer-outlet="layers"></div>
+  </div>
+  <div class="grid gap-2" style="grid-template-columns: minmax(0, 1fr) 20rem; block-size: 26rem">
+    <div
+      class="graph-explorer"
+      id="live"
+      data-nodes="100000"
+      data-seed="13"
+      data-frame
+      data-layers="nodes relations health"
+      aria-label="A service graph in Live mode"
+    ></div>
+    <div class="card overflow-hidden" data-graph-explorer-for="live" data-graph-explorer-outlet="updates"></div>
+  </div>
+</div>
+<script>
+  addEventListener('DOMContentLoaded', () => {
+    const ge = df$.shadcn.graphExplorer;
+    // the page's own rows: a release names its version as a Badge
+    ge.register('global', {
+      kind: 'update',
+      name: 'releases',
+      update: {
+        match: (u) => (u.type === 'release' ? 1 : false),
+        render: (u, c) =>
+          c.html`<span class="indicator-dot" data-size="sm" aria-hidden="true"></span><span class="graph-explorer-update-label">${u.label}</span><span class="badge" data-variant="secondary">${u.text}</span><time class="graph-explorer-update-time">${c.time(u.time)}</time>`,
+      },
+    });
+    let release = 0;
+    df$('#live-add').on('click', () => {
+      const domain = 'c' + (1 + (release % 6));
+      ge.update('#live', { target: domain, type: 'release', text: 'v2.' + release++, layer: 'nodes' });
+    });
+  });
+</script>
+```
+
 <H2 id="icons">Icons</H2>
 
 <DocText>Renderers draw icons with <code>ctx.icon(name, \{ size, tone, label \})</code>: a Lucide subset as CSS masks - one empty element each, cheap to morph, painted in the current color. Sizes <code>xs</code>, <code>sm</code>, <code>lg</code> and <code>xl</code> go around the 1rem default; a <code>tone</code> takes the graph's colour role; with a <code>label</code> the icon is an image, else decorative. <code>df$.shadcn.graphExplorer.registerIcon(name, shapes)</code> adds one.</DocText>
@@ -139,13 +195,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, D
 ```
 
 <StatesSection>
-  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>. The state is the element's attributes - a click, a zoom into a cluster, the Node UI switch or an attribute written from outside changes it without <code>setState</code>, and <code>getState()</code> reports it:</p>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>. The state is the element's attributes - a click, a zoom into a cluster, the layer switch or an attribute written from outside changes it without <code>setState</code>, and <code>getState()</code> reports it:</p>
   <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
     <li><code>default</code> - the top level, nothing selected (<code>data-focus</code> and <code>data-selected</code> removed)</li>
     <li><code>selected</code> - <code>config.selected</code> nodes picked at the top level; an id deeper down flies there, and the state lands in <code>focused</code></li>
     <li><code>focused</code> - inside the cluster <code>config.focus</code> (the view dives there), with or without a selection</li>
   </ul>
-  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes <code>nodeUi</code> (<code>data-node-ui</code>) and <code>expanded</code> (<code>data-expanded</code>: the first selected node's page, the details Panel maximized). A config that names a focus or a selection asks for the state that shows it. Events: <code>graph-explorer-select</code>, <code>graph-explorer-focus</code>, <code>graph-explorer-view</code> (the camera came to rest), <code>graph-explorer-node-ui</code>, <code>graph-explorer-action</code>, <code>graph-explorer-error</code>.</p>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Every state takes <code>layers</code> (<code>data-layers</code>), <code>compact</code> (<code>data-compact</code>) and <code>expanded</code> (<code>data-expanded</code>: the first selected node's page, the details Panel maximized). A config that names a focus or a selection asks for the state that shows it. Events: <code>graph-explorer-select</code>, <code>graph-explorer-focus</code>, <code>graph-explorer-view</code> (the camera came to rest), <code>graph-explorer-layers</code>, <code>graph-explorer-action</code>, <code>graph-explorer-error</code>.</p>
   <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/graph-explorer-\{state\}.png</code>.</p>
 
 Machine contract - verified against <a class="link" href="../schemas/graph-explorer.schema.json"><code>graph-explorer.schema.json</code></a> by <code>bun run verify</code>:
@@ -153,7 +209,8 @@ Machine contract - verified against <a class="link" href="../schemas/graph-explo
 ```states
 | State | Type | Values | Default | Description |
 | --- | --- | --- | --- | --- |
-| `nodeUi` | `enum` | `default`, `health`, `compact` | `"default"` | How nodes are drawn: Labels, health bars, compact (`data-node-ui`; plugins add more). |
+| `layers` | `string` | `—` | `"nodes relations"` | The layers shown, space separated: nodes, relations, labels, health or a plugin's (`data-layers`, absent for the base layers; empty: only the circles). |
+| `compact` | `boolean` | `true`, `false` | `false` | Every node as its one-line chip, never a card (`data-compact`). |
 | `focused` | `string` | `—` | `""` | The cluster the view is in (`setState('focused', { focus })`, observed from `data-focus`). |
 | `selected` | `string` | `—` | `""` | The selected node ids, space separated (observed from `data-selected`). |
 | `edge` | `string` | `—` | `""` | The selected link, `<source id>><target id>` (observed from `data-selected-edge`); nodes and a link are never selected together. |

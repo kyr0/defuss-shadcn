@@ -1,6 +1,6 @@
 ---
 title: "Graph Explorer: Zoom & Navigation"
-description: "Moving through a million-node graph: semantic zoom that enters and leaves clusters, smooth flights between any two nodes, the keyboard, search, the breadcrumb and the outline, signposts to relations off screen, and Bring & Go."
+description: "Moving through a million-node graph: semantic zoom that enters and leaves clusters, smooth flights between any two nodes, the keyboard, search, the breadcrumb and the outline, signposts to relations off screen, and jumping to a neighbour."
 slug: "graph-navigation"
 ---
 
@@ -86,11 +86,11 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
 </div>
 ```
 
-<H2 id="bring-and-go">Signposts and Bring & Go</H2>
+<H2 id="bring-and-go">Signposts and Jump to a neighbour</H2>
 
-<DocText>Relations that leave the screen become signposts at its edge: the neighbours of the selection, and inside a cluster the clusters its links lead to. Press and hold a node (or press <code>B</code>) and its busiest neighbours line up in a ring around it; choosing one travels there and selects it.</DocText>
+<DocText>Relations that leave the screen become signposts at its edge: the neighbours of the selection, and inside a cluster the clusters its links lead to. Press and hold a node (or press <code>B</code>) and its busiest neighbours line up in a ring around it (the details call it Jump to a neighbour); choosing one flies there and selects it.</DocText>
 
-```html example label="Bring & Go" schema="none" hint="Press and hold a domain, or focus the graph, move to a node with the arrows and press B. Choose a neighbour in the ring." previewStyle="align-items:stretch;"
+```html example label="Jump to a neighbour" schema="none" hint="Press and hold a domain, or focus the graph, move to a node with the arrows and press B. Choose a neighbour in the ring." previewStyle="align-items:stretch;"
 <div
   class="graph-explorer"
   id="bring"
@@ -98,7 +98,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
   data-seed="5"
   data-frame
   data-selected="c2"
-  aria-label="Bring and Go"
+  aria-label="Jump to a neighbour"
   style="block-size: 26rem"
 ></div>
 ```

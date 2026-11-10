@@ -27,9 +27,9 @@
 
     <div class="graph-explorer" id="ge-basic" data-nodes="20000" data-seed="7" data-frame aria-label="A service graph"></div>
 
-    <div class="graph-explorer" id="ge-health" data-nodes="20000" data-seed="3" data-frame data-hud data-node-ui="health" aria-label="Health"></div>
+    <div class="graph-explorer" id="ge-health" data-nodes="20000" data-seed="3" data-frame data-hud data-layers="nodes relations health" aria-label="Health"></div>
 
-    <div class="graph-explorer" id="ge-compact" data-nodes="20000" data-seed="5" data-frame data-node-ui="compact" aria-label="Compact"></div>
+    <div class="graph-explorer" id="ge-compact" data-nodes="20000" data-seed="5" data-frame data-compact aria-label="Compact"></div>
 
     <div class="graph-explorer" id="ge-focused" data-nodes="20000" data-seed="7" data-frame data-focus="c3" aria-label="Inside a domain"></div>
 
@@ -43,11 +43,12 @@
         <div class="w-full max-w-80" data-graph-explorer-for="ge-app" data-graph-explorer-outlet="search"></div>
         <button class="btn" data-variant="outline" data-size="sm" type="button" data-graph-explorer-for="ge-app" data-graph-explorer-action="up">Out</button>
         <button class="btn" data-variant="outline" data-size="sm" type="button" data-graph-explorer-for="ge-app" data-graph-explorer-action="fit">Fit</button>
-        <button class="btn" data-variant="outline" data-size="sm" type="button" aria-pressed="false" data-graph-explorer-for="ge-app" data-graph-explorer-action="live">Live breakers</button>
+        <button class="btn" data-variant="outline" data-size="sm" type="button" aria-pressed="false" data-graph-explorer-for="ge-app" data-graph-explorer-action="live">Live mode</button>
         <button class="btn" data-variant="ghost" data-size="sm" type="button" data-graph-explorer-for="ge-app" data-graph-explorer-action="help">Keys</button>
       </header>
       <div class="resizer border-layout-west" data-min="160" data-max="420">
-        <section class="card panel" id="ge-outline" style="width: 15rem" aria-labelledby="ge-outline-t" data-density="compact">
+        <div class="border-layout-stack" style="width: 15rem">
+        <section class="card panel" id="ge-outline" aria-labelledby="ge-outline-t" data-density="compact">
           <header class="panel-header">
             <h3 class="panel-title" id="ge-outline-t">Outline</h3>
             <div class="panel-tools">
@@ -56,14 +57,24 @@
           </header>
           <div class="panel-body" data-flush data-graph-explorer-for="ge-app" data-graph-explorer-outlet="outline"></div>
         </section>
+        <section class="card panel" id="ge-updates" aria-labelledby="ge-updates-t" data-density="compact">
+          <header class="panel-header">
+            <h3 class="panel-title" id="ge-updates-t">Updates</h3>
+            <div class="panel-tools">
+              <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Updates" /><span class="swap-off">-</span><span class="swap-on">+</span></label>
+            </div>
+          </header>
+          <div class="panel-body" id="ge-updates-body" data-flush data-graph-explorer-for="ge-app" data-graph-explorer-outlet="updates"></div>
+        </section>
+        </div>
       </div>
       <section class="card panel border-layout-center" id="ge-graph" aria-labelledby="ge-graph-t" data-density="compact">
         <header class="panel-header">
           <h3 class="panel-title" id="ge-graph-t" data-graph-explorer-for="ge-app" data-graph-explorer-output="view">Graph</h3>
-          <div class="panel-tools" data-graph-explorer-for="ge-app" data-graph-explorer-outlet="node-ui"></div>
+          <div class="panel-tools" data-graph-explorer-for="ge-app" data-graph-explorer-outlet="layers"></div>
         </header>
         <div class="panel-body" data-flush>
-          <div class="graph-explorer" id="ge-app" data-nodes="20000" data-seed="7" aria-label="The application"></div>
+          <div class="graph-explorer" id="ge-app" data-nodes="20000" data-seed="7" data-layers="nodes relations labels health" aria-label="The application"></div>
         </div>
       </section>
       <div class="resizer border-layout-east" data-min="240" data-max="640">

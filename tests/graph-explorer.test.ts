@@ -146,7 +146,11 @@ describe('Graph Explorer: links, pages and the drill-down', () => {
     const { doc } = await openApp();
     const bare = doc.getElementById('ge-focused') as HTMLElement & { api: Api };
     await waitFor(() => bare.getAttribute('data-graph-status') === 'ready', 'the bare explorer', 30000);
-    const child = (bare as unknown as { _graphExplorer: { view: { children: { id: string }[] } } })._graphExplorer.view.children[0].id;
+    // the declared focus is jumped to after the worker is ready: under load a read right at "ready" took the top
+    // level's first cluster (c1), which the focused view (c3) does not hold - the selection then came back empty
+    const inst = (bare as unknown as { _graphExplorer: { view: { id: string; children: { id: string }[] } } })._graphExplorer;
+    await waitFor(() => inst.view.id === bare.getAttribute('data-focus'), 'the declared focus shown', 30000);
+    const child = inst.view.children[0].id;
     bare.api.setState('focused', { focus: bare.getAttribute('data-focus'), selected: [child], expanded: true });
     await bare.api.settled();
     expect(bare.api.getState().config).toMatchObject({ selected: [child], expanded: false });

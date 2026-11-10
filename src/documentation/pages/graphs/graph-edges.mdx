@@ -1,6 +1,6 @@
 ---
 title: "Graph Explorer: Edge Rules & Labels"
-description: "How the Graph Explorer draws links: declarative style rules the worker evaluates for every edge, aggregated links between clusters, cycles, labels and icons that add words as you zoom in, circuit breakers with health by share, a live breaker simulation - and a selected link's details, built in or of your own."
+description: "How the Graph Explorer draws links: declarative style rules the worker evaluates for every edge, aggregated links between clusters, cycles, labels and icons that add words as you zoom in, circuit breakers with health by share, Live mode - and a selected link's details, built in or of your own."
 slug: "graph-edges"
 ---
 
@@ -14,7 +14,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
 
 <H2 id="rules">Rules</H2>
 
-<DocText>An edge plugin's <code>rules</code> are a list of <code>\{ when, style, priority \}</code>: every condition in <code>when</code> must hold - <code>equals</code>, <code>in</code>, <code>exists</code>, <code>gte</code>, <code>lte</code> on an edge field such as <code>kind</code>, <code>type</code>, <code>traffic</code> or <code>breaker.openShare</code> - and the highest priority that matches wins. The style picks a <code>tone</code> (muted, ink, accent, link, ok, warn, danger - the theme's colors), a <code>width</code>, an <code>arrow</code>, a <code>dash</code>, <code>flow</code> along a link with traffic, a <code>pulse</code> or a <code>gap</code>. The back-edges of small cycles curve around and take the accent.</DocText>
+<DocText>An edge plugin's <code>rules</code> are a list of <code>\{ when, style, priority \}</code>: every condition in <code>when</code> must hold - <code>equals</code>, <code>in</code>, <code>exists</code>, <code>gte</code>, <code>lte</code> on an edge field such as <code>kind</code>, <code>type</code>, <code>traffic</code> or <code>breaker.openShare</code> - and the highest priority that matches wins. The style picks a <code>tone</code> (muted, ink, accent, link, ok, warn, danger - the theme's colors), a <code>width</code>, an <code>arrow</code>, a <code>dash</code>, <code>flow</code> along a link with traffic, a <code>pulse</code> or a <code>gap</code>. The back-edges of small cycles curve around and take the accent. A plugin's rules belong to its <code>layer</code> - <code>relations</code> unless it names another, the breakers' to <code>health</code> - and apply while that layer is shown; a calm (<code>muted</code>) line takes the relations layer's colour.</DocText>
 
 ```html example label="Reads in the accent color" schema="none" hint="Inside a system, links of the type reads now draw thick and dashed in the accent color - the rule is plain data, evaluated in the worker for every link it draws." previewStyle="align-items:stretch;"
 <div
@@ -44,12 +44,13 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
 
 <H2 id="labels">Labels per zoom level</H2>
 
-<DocText>A label renderer offers three tiers - <code>icon</code>, <code>label</code>, <code>full</code> - each from a length on screen (<code>levels</code>), with a box for collision (<code>sizes</code>) and an optional cap of its own (<code>budget</code>). Every frame the explorer ranks the candidates - the selection's links first, then the renderer's <code>priority</code> - and gives each the richest tier its length, the budget (160 icons, 48 labels, 16 full) and the free space allow. <code>depths</code> limits a renderer to some levels of the hierarchy.</DocText>
+<DocText>A label renderer offers three tiers - <code>icon</code>, <code>label</code>, <code>full</code> - each from a length on screen (<code>levels</code>), with a box for collision (<code>sizes</code>) and an optional cap of its own (<code>budget</code>). Every frame the explorer ranks the candidates - the selection's links first, then the renderer's <code>priority</code> - and gives each the richest tier its length, the budget (160 icons, 48 labels, 16 full) and the free space allow. <code>depths</code> limits a renderer to some levels of the hierarchy. Labels belong to their plugin's <code>layer</code> - <code>labels</code> unless it names another - and are drawn in its colour while it is shown; the examples here show it (<code>data-layers="nodes relations labels"</code>).</DocText>
 
 ```html example label="A label of your own" schema="none" hint="Links between domains say which way most calls go; zoom in and the label adds the counts both ways and marks a cycle's back-edge." previewStyle="align-items:stretch;"
 <div
   class="graph-explorer"
   id="labels"
+  data-layers="nodes relations labels"
   data-nodes="100000"
   data-seed="9"
   data-frame
@@ -82,9 +83,9 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
 
 <H2 id="breakers">Circuit breakers</H2>
 
-<DocText>Every link between two entities has a breaker: closed, half-open (probing), open (tripped) or cut. A link between clusters bundles many and reports health by share, so one open breaker among 80 does not paint the overview red: at least 30 % open is critical, at least 15 % not closed is degraded. The built-in breaker plugin draws them - an icon far away, the state closer, trips and minutes up close - and the Health Node UI sums them per cluster. The live simulation trips, probes and closes breakers on its own.</DocText>
+<DocText>Every link between two entities has a breaker: closed, half-open (probing), open (tripped) or cut. A link between clusters bundles many and reports health by share, so one open breaker among 80 does not paint the overview red: at least 30 % open is critical, at least 15 % not closed is degraded. The built-in breaker plugin draws them - an icon far away, the state closer, trips and minutes up close - and the Health layer sums them per cluster - the breakers are the Health layer's: their colours on the lines and their badges show while it is shown. The live simulation trips, probes and closes breakers on its own.</DocText>
 
-```html example label="Live breakers" schema="none" hint="Press Live breakers: breakers trip and recover every few hundred milliseconds; the badges, bars and edge labels follow. The Health Node UI shows each domain's share." previewStyle="align-items:stretch;"
+```html example label="Live mode" schema="none" hint="Press Live mode: every second or so breakers trip and recover, nodes deploy and traffic moves; the badges, bars and edge labels follow. Health is shown: each domain's share as a bar; hide it in the layer switch and the lines go calm." previewStyle="align-items:stretch;"
 <div class="grid gap-2">
   <div class="flex flex-wrap items-center gap-2">
     <button
@@ -96,15 +97,15 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
       data-graph-explorer-for="breakers"
       data-graph-explorer-action="live"
     >
-      Live breakers
+      Live mode
     </button>
-    <div data-graph-explorer-for="breakers" data-graph-explorer-outlet="node-ui"></div>
+    <div data-graph-explorer-for="breakers" data-graph-explorer-outlet="layers"></div>
   </div>
   <div
     class="graph-explorer"
     id="breakers"
     data-nodes="100000"
-    data-node-ui="health"
+    data-layers="nodes relations labels health"
     data-frame
     aria-label="Circuit breakers"
     style="block-size: 26rem"
@@ -123,6 +124,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
       <div
         class="graph-explorer"
         id="links"
+        data-layers="nodes relations labels"
         data-nodes="100000"
         data-selected-edge="c2>c1"
         aria-label="A service graph"
@@ -166,6 +168,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
       <div
         class="graph-explorer"
         id="traffic"
+        data-layers="nodes relations labels"
         data-nodes="100000"
         data-selected-edge="c2>c1"
         aria-label="A service graph"

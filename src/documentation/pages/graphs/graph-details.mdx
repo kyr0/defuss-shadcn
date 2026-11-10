@@ -9,7 +9,7 @@ import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } fr
 <DocPage meta={meta}>
 
 <PageHeader slug="graph-details" title="Details & Pages" component="graph-explorer">
-  The first selected node - or the selected link - shows in the <code>details</code> outlet, drawn by a detail renderer: its kind and path, its numbers, actions (Enter, Bring & Go, Expand) and its relations. The <code>relations</code> outlet lists the same relations as a Table whose link column is drawn by the edge label renderers. Expand turns the details into a full page: the <DocLink href="panel.html">Panel</DocLink> holding the outlet is maximized and the renderer gets <code>ctx.expanded</code>. On a page every name opens the next page down.
+  The first selected node - or the selected link - shows in the <code>details</code> outlet, drawn by a detail renderer: its kind and path, its numbers, actions (Zoom in, Jump to a neighbour, Expand) and its relations. The <code>relations</code> outlet lists the same relations as a Table whose link column is drawn by the edge label renderers. Expand turns the details into a full page: the <DocLink href="panel.html">Panel</DocLink> holding the outlet is maximized and the renderer gets <code>ctx.expanded</code>. On a page every name opens the next page down.
 </PageHeader>
 
 <H2 id="details">Details, relations and Expand</H2>

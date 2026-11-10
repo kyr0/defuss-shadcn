@@ -2,14 +2,21 @@
   "schemaVersion": 1,
   "name": "graph-explorer",
   "states": {
-    "nodeUi": {
-      "type": "enum",
-      "values": ["default", "health", "compact"],
-      "default": "default",
+    "layers": {
+      "type": "string",
+      "default": "nodes relations",
       "target": { "kind": "selector", "selector": ".graph-explorer" },
-      "mutation": { "kind": "api", "name": "@current", "args": { "nodeUi": "@value" } },
-      "observation": { "kind": "api", "name": "nodeUi" },
-      "editor": { "component": "select" }
+      "mutation": { "kind": "api", "name": "@current", "args": { "layers": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-layers" },
+      "editor": { "component": "text" }
+    },
+    "compact": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "selector", "selector": ".graph-explorer" },
+      "mutation": { "kind": "api", "name": "@current", "args": { "compact": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-compact" },
+      "editor": { "component": "checkbox" }
     },
     "focused": {
       "type": "string",
