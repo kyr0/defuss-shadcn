@@ -3,7 +3,7 @@
 ```html example part label="Team Member"
 <article class="mk-team-member" aria-labelledby="tm-0">
   <div class="mk-team-member-portrait">
-    <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=25" alt="Portrait of Sophie Tan" />
+    <img class="mk-team-member-photo" src="images/avatars/25-480.webp" alt="Portrait of Sophie Tan" />
     <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Lisbon</span>
     <ul class="mk-team-member-links">
       <li
@@ -43,7 +43,7 @@
 ```html example part label="Team Member (horizontal)"
 <article class="mk-team-member" data-variant="horizontal" aria-labelledby="tm-h0">
   <div class="mk-team-member-portrait">
-    <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=16" alt="Portrait of Priya Natarajan" />
+    <img class="mk-team-member-photo" src="images/avatars/16-480.webp" alt="Portrait of Priya Natarajan" />
     <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Remote</span>
     <ul class="mk-team-member-links">
       <li
@@ -83,7 +83,7 @@
 ```html example part label="Team Member (compact)"
 <article class="mk-team-member" data-variant="compact" aria-labelledby="tm-c0">
   <div class="mk-team-member-portrait">
-    <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=25" alt="Portrait of Sophie Tan" />
+    <img class="mk-team-member-photo" src="images/avatars/25-480.webp" alt="Portrait of Sophie Tan" />
     <ul class="mk-team-member-links">
       <li
         ><a href="#" aria-label="Sophie Tan on LinkedIn"

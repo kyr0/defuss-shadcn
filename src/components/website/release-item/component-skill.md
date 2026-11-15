@@ -31,7 +31,7 @@ Built from: [Avatar](../../data-display/avatar/component-skill.md).
     <div class="mk-release-item-body">
       <h3 class="mk-release-item-title">Tables in docs</h3>
       <p class="mk-release-item-desc">Insert a table with /table - sort, filter and resize columns. Paste from a spreadsheet and the structure comes along.</p>
-      <img class="mk-release-item-media" src="https://picsum.photos/seed/rel-table/1000/500" alt="">
+      <img class="mk-release-item-media" src="images/photos/s-rel-table-1000x500.webp" alt="">
       <p class="mk-release-item-meta"><a href="#">#4812</a> · <span class="avatar" data-size="xs"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span> by Hannah</p>
     </div>
   </article>

@@ -13,6 +13,7 @@ import {
   pageSection,
   pageSourceRel,
   resolvePageRefs,
+  resolveStandaloneAssets,
   sectionSlug,
   standaloneAppId,
   standaloneDeckId,
@@ -67,7 +68,9 @@ describe('pageSection', () => {
     expect(ids).toContain('app-notes');
     expect(ids).toContain('deck-system-in-numbers');
     expect(ids).toContain('full-paper');
-    const navCount = new Set(NAV.flatMap((s) => s.items.flatMap((i) => [i.href, ...(i.children ?? []).map((c) => c.href)]))).size;
+    const navCount = new Set(
+      NAV.flatMap((s) => s.items.flatMap((i) => [i.href, ...(i.children ?? []).map((c) => c.href)])),
+    ).size;
     expect(ids.length).toBeGreaterThanOrEqual(navCount);
   });
 });
@@ -106,14 +109,33 @@ describe('paths and links', () => {
         '<pre>&lt;a href="button.html"&gt;</pre><a href="no-such.html">dead</a>',
     );
     // the root page: ids gain their folder, assets stay
-    expect(resolvePageRefs('<a href="button.html">b</a><link href="css/x.css">', 'index.html')).toBe('<a href="actions/button.html">b</a><link href="css/x.css">');
+    expect(resolvePageRefs('<a href="button.html">b</a><link href="css/x.css">', 'index.html')).toBe(
+      '<a href="actions/button.html">b</a><link href="css/x.css">',
+    );
     // a video's media and its captions - VERIFIED: a full-screen page asked videos/demo.en.vtt of its own folder (404)
-    expect(resolvePageRefs('<video poster="images/p.png"><source src="videos/v.webm" /><track src="videos/v.en.vtt" /></video>', 'website/full-website-media.html')).toBe(
+    expect(
+      resolvePageRefs(
+        '<video poster="images/p.png"><source src="videos/v.webm" /><track src="videos/v.en.vtt" /></video>',
+        'website/full-website-media.html',
+      ),
+    ).toBe(
       '<video poster="../images/p.png"><source src="../videos/v.webm" /><track src="../videos/v.en.vtt" /></video>',
     );
   });
 
-  it('pageLinks: an example\'s page ids map to their paths from the docs root; other links and escaped samples stay out', () => {
+  it("resolveStandaloneAssets: a full-screen page's script, data and style strings reach the docs root; resolved attributes and text stay", () => {
+    const html =
+      `<img src="../images/a.webp"><script>img.src = 'images/photos/' + id + '-900x600.webp'; const d = {"src": "images/avatars/3-96.webp"}; const t = \`images/x\`;</script>` +
+      `<div style="background: url(images/photos/b.webp)"></div><p>see images/ for more</p>`;
+    expect(resolveStandaloneAssets(html, 'website/full-website-shop.html')).toBe(
+      `<img src="../images/a.webp"><script>img.src = '../images/photos/' + id + '-900x600.webp'; const d = {"src": "../images/avatars/3-96.webp"}; const t = \`../images/x\`;</script>` +
+        `<div style="background: url(../images/photos/b.webp)"></div><p>see images/ for more</p>`,
+    );
+    // a page at the docs root needs no prefix
+    expect(resolveStandaloneAssets(`img.src = 'images/x.webp'`, 'index.html')).toBe(`img.src = 'images/x.webp'`);
+  });
+
+  it("pageLinks: an example's page ids map to their paths from the docs root; other links and escaped samples stay out", () => {
     const html =
       '<a href="paper.html" target="_blank">r</a><a href="button.html#variants">b</a><iframe src="deck-system-in-numbers.html"></iframe>' +
       '<a href="https://x.y/badge.html">e</a><a href="no-such.html">dead</a><img src="images/x.png"><pre>&lt;a href="badge.html"&gt;</pre>';

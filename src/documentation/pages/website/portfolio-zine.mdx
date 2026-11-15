@@ -643,7 +643,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >
         </div>
         <figure class="pf-photo frame-polaroid frame-tape" data-df-entrance="zoom" style="--df-motion-delay: 300ms">
-          <img src="https://picsum.photos/id/836/600/750" alt="Ama Owusu with a guitar" />
+          <img src="images/photos/836-600x750.webp" alt="Ama Owusu with a guitar" />
           <figcaption>me, 2026</figcaption>
           <span class="pf-stamp stamp" aria-hidden="true">EST.<br />2014<br />LDN</span>
         </figure>
@@ -659,7 +659,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <ul class="mk-portfolio-grid" data-variant="scatter">
           <li class="mk-portfolio-grid-item" data-df-entrance="pop">
             <a class="mk-portfolio-grid-link frame-tape" href="#/work/paper-cuts-12" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1073/600/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/1073-600x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Paper Cuts #12</strong>
                 <span class="mk-portfolio-grid-meta">Riso zine, 40 pages</span>
@@ -668,7 +668,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item" data-df-entrance="pop" style="--df-motion-delay: 100ms">
             <a class="mk-portfolio-grid-link" href="#/work/stripes" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/600/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/951-600x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Stripes</strong>
                 <span class="mk-portfolio-grid-meta">Poster series</span>
@@ -677,7 +677,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item" data-df-entrance="pop" style="--df-motion-delay: 200ms">
             <a class="mk-portfolio-grid-link frame-tape" href="#/work/typewriter-tales" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/403/600/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/403-600x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Typewriter Tales</strong>
                 <span class="mk-portfolio-grid-meta">Short stories</span>
@@ -686,7 +686,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item" data-df-entrance="pop" style="--df-motion-delay: 300ms">
             <a class="mk-portfolio-grid-link" href="#/work/strawberry-riot" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1080/600/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/429-600x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Strawberry Riot</strong>
                 <span class="mk-portfolio-grid-meta">Album art</span>
@@ -764,7 +764,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             data-case-img="0"
             data-w="900"
             data-h="900"
-            src="https://picsum.photos/id/1073/900/900"
+            src="images/photos/1073-900x900.webp"
             alt="Open books laid out page by page"
           />
           <figcaption data-case="title">Paper Cuts #12</figcaption>
@@ -795,14 +795,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             data-case-img="1"
             data-w="700"
             data-h="560"
-            src="https://picsum.photos/id/4/700/560"
+            src="images/photos/4-700x560.webp"
             alt="Hands writing in a notebook beside a laptop"
           />
           <img
             data-case-img="2"
             data-w="700"
             data-h="560"
-            src="https://picsum.photos/id/252/700/560"
+            src="images/photos/252-700x560.webp"
             alt="Hand tools laid out in rows on white"
           />
         </div>
@@ -932,7 +932,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         "work": "From across the room it is a crate of strawberries. Up close every berry is a mouth cut from a magazine - singing, shouting, eating - glued in rows and scanned at full size so each cut edge survives the print.",
         "result": "The first pressing of 1,000 sold out on tour. The band turned the mouths into badges and a T-shirt, and the original collage now hangs in their rehearsal room.",
         "images": [
-          [1080, "Strawberries packed in a crate"],
+          [429, "Fresh raspberries in a white cup"],
           [39, "A turntable's tonearm over a record"],
           [145, "The headstock and tuning pegs of a guitar"]
         ]
@@ -992,7 +992,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       view.find('[data-case-img]').each((_i, img) => {
         const [id, alt] = item.images[Number(img.dataset.caseImg)];
         df$(img)
-          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('src', 'images/photos/' + id + '-' + img.dataset.w + 'x' + img.dataset.h + '.webp')
           .attr('alt', alt);
       });
       for (const [rel, to] of Object.entries(near)) {

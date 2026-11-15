@@ -1182,7 +1182,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           data-speed="0"
           data-look-set='{"default": {"data-contrast": "1.35"}, "evening": {"data-contrast": "-1.35"}}'
           ><img
-            src="https://picsum.photos/id/180/1200/750"
+            src="images/photos/180-1200x750.webp"
             alt="A laptop and an open notebook on a wooden desk"
             crossorigin="anonymous"
         /></div>
@@ -1275,7 +1275,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         >
       </div>
       <figure class="mk-news-item-media"
-        ><img src="https://picsum.photos/id/259/900/600" alt="A person on a bench before a city skyline"
+        ><img src="images/photos/259-900x600.webp" alt="A person on a bench before a city skyline"
       /></figure>
     </article>
     <article class="mk-news-item" data-topic="engineering">
@@ -1294,7 +1294,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         >
       </div>
       <figure class="mk-news-item-media"
-        ><img src="https://picsum.photos/id/175/900/600" alt="A clock face, close up"
+        ><img src="images/photos/175-900x600.webp" alt="A clock face, close up"
       /></figure>
     </article>
     <article class="mk-news-item" data-topic="product">
@@ -1315,7 +1315,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         >
       </div>
       <figure class="mk-news-item-media"
-        ><img src="https://picsum.photos/id/2/900/600" alt="A laptop, a notebook and a coffee on a table"
+        ><img src="images/photos/2-900x600.webp" alt="A laptop, a notebook and a coffee on a table"
       /></figure>
     </article>
   </div>
@@ -1345,7 +1345,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </div>
         <figure class="mk-news-item-media"
           ><img
-            src="https://picsum.photos/id/180/900/600"
+            src="images/photos/180-900x600.webp"
             alt="A laptop and an open notebook on a wooden desk"
             data-row-photo
         /></figure>
@@ -1366,9 +1366,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       >
       <p class="mk-article-header-subtitle" data-story-field="summary"></p>
       <div class="mk-article-header-byline">
-        <span class="avatar"
-          ><img class="avatar-image" src="https://i.pravatar.cc/96?img=44" alt="" data-story-face
-        /></span>
+        <span class="avatar"><img class="avatar-image" src="images/avatars/44-96.webp" alt="" data-story-face /></span>
         <div>
           <a class="mk-article-header-author" href="#/story/acme-4#news-story-author" data-router-link data-story-author
             >Marta Silva</a
@@ -1381,7 +1379,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </div>
       </div>
       <figure class="mk-article-header-media">
-        <img src="https://picsum.photos/id/180/1400/788" alt="" data-story-photo />
+        <img src="images/photos/180-1400x788.webp" alt="" data-story-photo />
         <figcaption data-story-field="caption"></figcaption>
       </figure>
     </header>
@@ -1389,7 +1387,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <div class="news-story-after news-story-column">
       <section class="mk-author-bio" id="news-story-author" aria-labelledby="news-story-author-name">
         <span class="avatar" data-size="lg"
-          ><img class="avatar-image" src="https://i.pravatar.cc/160?img=44" alt="" data-story-face
+          ><img class="avatar-image" src="images/avatars/44-160.webp" alt="" data-story-face
         /></span>
         <div class="mk-author-bio-body">
           <span class="mk-author-bio-label" data-i18n-target="story-written">Written by</span>
@@ -1446,7 +1444,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <p class="mk-news-item-summary" data-related-summary></p>
           </div>
           <figure class="mk-news-item-media"
-            ><img src="https://picsum.photos/id/160/900/600" alt="" data-related-photo
+            ><img src="images/photos/160-900x600.webp" alt="" data-related-photo
           /></figure>
         </article>
         <article class="mk-news-item" data-story-related>
@@ -1459,7 +1457,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <p class="mk-news-item-summary" data-related-summary></p>
           </div>
           <figure class="mk-news-item-media"
-            ><img src="https://picsum.photos/id/2/900/600" alt="" data-related-photo
+            ><img src="images/photos/2-900x600.webp" alt="" data-related-photo
           /></figure>
         </article>
         <article class="mk-news-item" data-story-related>
@@ -1472,7 +1470,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <p class="mk-news-item-summary" data-related-summary></p>
           </div>
           <figure class="mk-news-item-media"
-            ><img src="https://picsum.photos/id/308/900/600" alt="" data-related-photo
+            ><img src="images/photos/308-900x600.webp" alt="" data-related-photo
           /></figure>
         </article>
       </div>
@@ -2305,9 +2303,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       });
       view
         .find('[data-story-photo]')
-        .attr('src', 'https://picsum.photos/id/' + story.photo + '/1400/788')
+        .attr('src', 'images/photos/' + story.photo + '-1400x788.webp')
         .attr('alt', text.alt);
-      view.find('[data-story-face]').attr('src', 'https://i.pravatar.cc/160?img=' + author.img);
+      view.find('[data-story-face]').attr('src', 'images/avatars/' + author.img + '-160.webp');
       view
         .find('[data-story-author]')
         .text(author.name)
@@ -2353,7 +2351,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         card.find('[data-related-summary]').text(said(slug).summary);
         card
           .find('[data-related-photo]')
-          .attr('src', 'https://picsum.photos/id/' + STORIES[slug].photo + '/900/600')
+          .attr('src', 'images/photos/' + STORIES[slug].photo + '-900x600.webp')
           .attr('alt', said(slug).alt);
       });
     };
@@ -2383,7 +2381,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         card.find('[data-row-summary]').text(said(slug).summary);
         card
           .find('[data-row-photo]')
-          .attr('src', 'https://picsum.photos/id/' + STORIES[slug].photo + '/900/600')
+          .attr('src', 'images/photos/' + STORIES[slug].photo + '-900x600.webp')
           .attr('alt', said(slug).alt);
         if (i > 0) list.append(row);
       });

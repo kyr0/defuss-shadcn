@@ -29,7 +29,7 @@ Built from: [Button](../button/component-skill.md).
 ```html
 <ul class="mk-wishlist-list" aria-label="Wishlist, 3 items">
   <li class="mk-wishlist-item">
-    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-throw/300/375" alt="">
+    <img class="mk-wishlist-item-image" src="images/photos/s-prod-throw-300x375.webp" alt="">
     <div class="mk-wishlist-item-info">
       <h3 class="mk-wishlist-item-name"><a href="#">Wool throw</a></h3>
       <p class="mk-wishlist-item-options">Oat · 130 × 180 cm</p>
@@ -43,7 +43,7 @@ Built from: [Button](../button/component-skill.md).
     </div>
   </li>
   <li class="mk-wishlist-item">
-    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-vase/300/375" alt="">
+    <img class="mk-wishlist-item-image" src="images/photos/s-prod-vase-300x375.webp" alt="">
     <div class="mk-wishlist-item-info">
       <h3 class="mk-wishlist-item-name"><a href="#">Ceramic vase</a></h3>
       <p class="mk-wishlist-item-options">Speckled white</p>
@@ -57,7 +57,7 @@ Built from: [Button](../button/component-skill.md).
     </div>
   </li>
   <li class="mk-wishlist-item">
-    <img class="mk-wishlist-item-image" src="https://picsum.photos/seed/prod-lamp/300/375" alt="">
+    <img class="mk-wishlist-item-image" src="images/photos/s-prod-lamp-300x375.webp" alt="">
     <div class="mk-wishlist-item-info">
       <h3 class="mk-wishlist-item-name"><a href="#">Paper lamp</a></h3>
       <p class="mk-wishlist-item-options">Ø 45 cm</p>

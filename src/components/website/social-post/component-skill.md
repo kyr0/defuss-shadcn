@@ -36,7 +36,7 @@ Built from: [Avatar](../../data-display/avatar/component-skill.md).
     </header>
     <div class="mk-social-post-text"><p>Shipped offline sync to every Acme workspace today 🎉
   Four years, two rewrites and one very patient team. Thank you all. <a href="#">#calmsoftware</a> <a href="#">#localfirst</a></p></div>
-    <img class="mk-social-post-media" src="https://picsum.photos/seed/post-launch/1000/625" alt="">
+    <img class="mk-social-post-media" src="images/photos/s-post-launch-1000x625.webp" alt="">
     <footer class="mk-social-post-foot">
       <a class="mk-social-post-time" href="#"><time datetime="2026-10-01T09:41">9:41 AM · Oct 1, 2026</time></a>
       <ul class="mk-social-post-stats"><li><i data-lucide="message-circle"></i>48<span class="sr-only"> replies</span></li><li><i data-lucide="repeat-2"></i>212<span class="sr-only"> reposts</span></li><li><i data-lucide="heart"></i>1.4k<span class="sr-only"> likes</span></li></ul>

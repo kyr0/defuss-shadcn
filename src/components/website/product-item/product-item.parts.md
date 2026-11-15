@@ -3,8 +3,8 @@
 ```html example part label="Product Item"
 <article class="mk-product-item">
   <div class="mk-product-item-media">
-    <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="" />
-    <img class="mk-product-item-image" data-hover="" src="https://picsum.photos/seed/prod-bag-b/600/750" alt="" />
+    <img class="mk-product-item-image" src="images/photos/s-prod-bag-600x750.webp" alt="" />
+    <img class="mk-product-item-image" data-hover="" src="images/photos/s-prod-bag-b-600x750.webp" alt="" />
     <label class="mk-product-item-wish"
       ><input type="checkbox" name="wish" value="p3" /><i data-lucide="heart"></i
       ><span class="sr-only">Save Canvas tote to your wishlist</span></label
@@ -29,8 +29,8 @@
 ```html example part label="Product Item (horizontal)"
 <article class="mk-product-item" data-variant="horizontal">
   <div class="mk-product-item-media">
-    <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="" />
-    <img class="mk-product-item-image" data-hover="" src="https://picsum.photos/seed/prod-bag-b/600/750" alt="" />
+    <img class="mk-product-item-image" src="images/photos/s-prod-bag-600x750.webp" alt="" />
+    <img class="mk-product-item-image" data-hover="" src="images/photos/s-prod-bag-b-600x750.webp" alt="" />
     <label class="mk-product-item-wish"
       ><input type="checkbox" name="wish" value="p5" /><i data-lucide="heart"></i
       ><span class="sr-only">Save Canvas tote to your wishlist</span></label
@@ -55,8 +55,8 @@
 ```html example part label="Product Item (minimal)"
 <article class="mk-product-item" data-variant="minimal">
   <div class="mk-product-item-media">
-    <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-vase/600/750" alt="" />
-    <img class="mk-product-item-image" data-hover="" src="https://picsum.photos/seed/prod-vase-b/600/750" alt="" />
+    <img class="mk-product-item-image" src="images/photos/s-prod-vase-600x750.webp" alt="" />
+    <img class="mk-product-item-image" data-hover="" src="images/photos/s-prod-vase-b-600x750.webp" alt="" />
     <label class="mk-product-item-wish"
       ><input type="checkbox" name="wish" value="pm0" /><i data-lucide="heart"></i
       ><span class="sr-only">Save Ceramic vase to your wishlist</span></label

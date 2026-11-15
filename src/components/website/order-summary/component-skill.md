@@ -28,8 +28,8 @@ An `<aside>` (or a `<details>` for the collapsible variant): the items as a list
 <aside class="mk-order-summary" aria-labelledby="os-title">
   <h2 class="mk-order-summary-title" id="os-title">Your order</h2>
   <ul class="mk-order-summary-items">
-    <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-shirt/160/200" alt=""><b aria-label="Quantity 1">1</b></span><span class="mk-order-summary-name">Linen shirt<small>Sand · M</small></span><span class="mk-order-summary-price">€64.00</span></li>
-    <li><span class="mk-order-summary-thumb"><img src="https://picsum.photos/seed/prod-mug/160/200" alt=""><b aria-label="Quantity 2">2</b></span><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span><span class="mk-order-summary-price">€44.00</span></li>
+    <li><span class="mk-order-summary-thumb"><img src="images/photos/s-prod-shirt-160x200.webp" alt=""><b aria-label="Quantity 1">1</b></span><span class="mk-order-summary-name">Linen shirt<small>Sand · M</small></span><span class="mk-order-summary-price">€64.00</span></li>
+    <li><span class="mk-order-summary-thumb"><img src="images/photos/s-prod-mug-160x200.webp" alt=""><b aria-label="Quantity 2">2</b></span><span class="mk-order-summary-name">Stoneware mug<small>Oat</small></span><span class="mk-order-summary-price">€44.00</span></li>
   </ul>
   <dl class="mk-order-summary-totals">
     <div><dt>Subtotal</dt><dd>€108.00</dd></div>

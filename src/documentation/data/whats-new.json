@@ -2,6 +2,898 @@
   "version": 1,
   "releases": [
     {
+      "version": "unreleased",
+      "created": [
+        "showcase-framework"
+      ],
+      "updated": [
+        "about-intro",
+        "annotated-timeseries",
+        "audio-player",
+        "before-after",
+        "blog",
+        "boxplot",
+        "bubble",
+        "bump-ranking",
+        "calendar-heatmap",
+        "card",
+        "cart-item",
+        "case-preview",
+        "case-study",
+        "chord",
+        "collection-item",
+        "coming-soon",
+        "cta",
+        "diff",
+        "diverging-bars",
+        "dock",
+        "dumbbell-before-after",
+        "editorial-highlight-bars",
+        "election-hex-cartogram",
+        "election-majority-bar",
+        "election-shift-arrows",
+        "event-header",
+        "event-item",
+        "gallery-item",
+        "hero",
+        "image",
+        "image-gallery",
+        "index",
+        "industry-agency",
+        "industry-ai",
+        "industry-hotel",
+        "industry-law",
+        "industry-practice",
+        "industry-restaurant",
+        "industry-salon",
+        "industry-spa",
+        "jittered-distribution",
+        "location-item",
+        "login-form",
+        "lollipop-ranking",
+        "media-gallery",
+        "message",
+        "navbar",
+        "navigation-menu",
+        "normalized-stack",
+        "order-summary",
+        "parliament-hemicycle",
+        "playlist-item",
+        "portfolio-bento",
+        "portfolio-brutalist",
+        "portfolio-developer",
+        "portfolio-editorial",
+        "portfolio-grid",
+        "portfolio-minimal",
+        "portfolio-neon",
+        "portfolio-photographer",
+        "portfolio-playful",
+        "portfolio-swiss",
+        "portfolio-zine",
+        "product-item",
+        "profile-header",
+        "project-details",
+        "project-item",
+        "release-item",
+        "resource-item",
+        "resume-entry",
+        "sankey",
+        "scaffold-admin-dashboard",
+        "scaffold-desktop",
+        "scaffold-issue-tracker",
+        "scaffold-messenger",
+        "scaffold-notes",
+        "scatter-quadrants",
+        "search-result",
+        "service-item",
+        "session-item",
+        "shader",
+        "shader-gradients",
+        "shader-light",
+        "shader-liquid",
+        "shader-patterns",
+        "showcase-bouldering",
+        "showcase-records",
+        "showcase-roastery",
+        "site-header",
+        "slopegraph",
+        "small-multiples",
+        "social-post",
+        "speaker-item",
+        "system-in-numbers",
+        "team-member",
+        "text-media",
+        "theme-designer",
+        "timeline-item",
+        "treemap",
+        "use-case",
+        "view-switcher",
+        "violin-custom",
+        "virtual-list",
+        "waffle-dot-matrix",
+        "waterfall",
+        "website-account-states",
+        "website-article",
+        "website-blog",
+        "website-comments",
+        "website-company",
+        "website-docs-help",
+        "website-events-promotions",
+        "website-landing-page",
+        "website-media",
+        "website-news",
+        "website-resume-portfolio",
+        "website-shop",
+        "website-showcase",
+        "wishlist-item"
+      ],
+      "examples": {
+        "about-intro": {
+          "created": [],
+          "updated": [
+            "Default"
+          ]
+        },
+        "annotated-timeseries": {
+          "created": [],
+          "updated": [
+            "Sunday Magazine Longform"
+          ]
+        },
+        "audio-player": {
+          "created": [],
+          "updated": [
+            "Default",
+            "Podcast"
+          ]
+        },
+        "before-after": {
+          "created": [],
+          "updated": [
+            "Slider",
+            "Toggle",
+            "Side by side"
+          ]
+        },
+        "blog": {
+          "created": [],
+          "updated": [
+            "Overlay",
+            "Carousel with filters"
+          ]
+        },
+        "boxplot": {
+          "created": [],
+          "updated": [
+            "Academic Monograph"
+          ]
+        },
+        "bubble": {
+          "created": [],
+          "updated": [
+            "Media"
+          ]
+        },
+        "bump-ranking": {
+          "created": [],
+          "updated": [
+            "Neo Tokyo Neon"
+          ]
+        },
+        "calendar-heatmap": {
+          "created": [],
+          "updated": [
+            "Pastel Stationery"
+          ]
+        },
+        "card": {
+          "created": [],
+          "updated": [
+            "With Image",
+            "Image overlay",
+            "Media",
+            "Image on the side",
+            "Responsive by its own width",
+            "Badges and indicators",
+            "Link cards",
+            "Shapes, frames and stacks"
+          ]
+        },
+        "cart-item": {
+          "created": [],
+          "updated": [
+            "Cart",
+            "Mini cart"
+          ]
+        },
+        "case-preview": {
+          "created": [],
+          "updated": [
+            "Wide",
+            "Grid"
+          ]
+        },
+        "case-study": {
+          "created": [],
+          "updated": [
+            "Default"
+          ]
+        },
+        "chord": {
+          "created": [],
+          "updated": [
+            "Glass Hologram"
+          ]
+        },
+        "collection-item": {
+          "created": [],
+          "updated": [
+            "Banner",
+            "Grid",
+            "Overlay",
+            "Stack"
+          ]
+        },
+        "coming-soon": {
+          "created": [],
+          "updated": [
+            "With a picture"
+          ]
+        },
+        "cta": {
+          "created": [],
+          "updated": [
+            "Over a picture"
+          ]
+        },
+        "diff": {
+          "created": [],
+          "updated": [
+            "Default",
+            "Vertical",
+            "Follow the pointer",
+            "Start position and ratio",
+            "Right to left",
+            "Printed: both sides in full",
+            "Variants"
+          ]
+        },
+        "diverging-bars": {
+          "created": [],
+          "updated": [
+            "Neo-Brutalist Zine"
+          ]
+        },
+        "dock": {
+          "created": [],
+          "updated": [
+            "Autohide",
+            "Colors"
+          ]
+        },
+        "dumbbell-before-after": {
+          "created": [],
+          "updated": [
+            "Financial Broadsheet"
+          ]
+        },
+        "editorial-highlight-bars": {
+          "created": [],
+          "updated": [
+            "Swiss International"
+          ]
+        },
+        "election-hex-cartogram": {
+          "created": [],
+          "updated": [
+            "Election Night Newspaper"
+          ]
+        },
+        "election-majority-bar": {
+          "created": [],
+          "updated": [
+            "Live News Election Desk"
+          ]
+        },
+        "election-shift-arrows": {
+          "created": [],
+          "updated": [
+            "Transit Infographic"
+          ]
+        },
+        "event-header": {
+          "created": [],
+          "updated": [
+            "Over a cover",
+            "With a poster"
+          ]
+        },
+        "event-item": {
+          "created": [],
+          "updated": [
+            "Cards"
+          ]
+        },
+        "gallery-item": {
+          "created": [],
+          "updated": [
+            "Default",
+            "Overlay",
+            "Framed"
+          ]
+        },
+        "hero": {
+          "created": [],
+          "updated": [
+            "Split with media",
+            "Background image"
+          ]
+        },
+        "image": {
+          "created": [],
+          "updated": [
+            "Default",
+            "With Caption",
+            "Lightbox Preview",
+            "Progressive Loading",
+            "Aspect Ratios",
+            "Object Fit",
+            "Border Radius"
+          ]
+        },
+        "image-gallery": {
+          "created": [],
+          "updated": [
+            "Auto-advancing gallery",
+            "Hover gallery",
+            "Product card",
+            "Position bar",
+            "Zoom",
+            "Vertical zones",
+            "Up to ten images"
+          ]
+        },
+        "industry-agency": {
+          "created": [],
+          "updated": [
+            "Loud/Quiet, a brand and digital design studio"
+          ]
+        },
+        "industry-ai": {
+          "created": [],
+          "updated": [
+            "Quillon, meeting decisions API"
+          ]
+        },
+        "industry-hotel": {
+          "created": [],
+          "updated": [
+            "Hotel Ebbstein, Möwensund"
+          ]
+        },
+        "industry-law": {
+          "created": [],
+          "updated": [
+            "Lindholm & Kaya, employment and tenancy law"
+          ]
+        },
+        "industry-practice": {
+          "created": [],
+          "updated": [
+            "Praxis am Kastanienhof, Erlenbrück"
+          ]
+        },
+        "industry-restaurant": {
+          "created": [],
+          "updated": [
+            "Taula Llarga, Catalan restaurant"
+          ]
+        },
+        "industry-salon": {
+          "created": [],
+          "updated": [
+            "Juniper & Shear, hair studio"
+          ]
+        },
+        "industry-spa": {
+          "created": [],
+          "updated": [
+            "Salt & Cedar, a day spa"
+          ]
+        },
+        "jittered-distribution": {
+          "created": [],
+          "updated": [
+            "Organic Data Garden"
+          ]
+        },
+        "location-item": {
+          "created": [],
+          "updated": [
+            "Cards"
+          ]
+        },
+        "login-form": {
+          "created": [],
+          "updated": [
+            "Split"
+          ]
+        },
+        "lollipop-ranking": {
+          "created": [],
+          "updated": [
+            "Bauhaus Primary Poster"
+          ]
+        },
+        "media-gallery": {
+          "created": [],
+          "updated": [
+            "Default"
+          ]
+        },
+        "message": {
+          "created": [],
+          "updated": [
+            "Attachments"
+          ]
+        },
+        "navbar": {
+          "created": [],
+          "updated": [
+            "Glass and floating"
+          ]
+        },
+        "navigation-menu": {
+          "created": [],
+          "updated": [
+            "With a featured block"
+          ]
+        },
+        "normalized-stack": {
+          "created": [],
+          "updated": [
+            "Engineering Blueprint"
+          ]
+        },
+        "order-summary": {
+          "created": [],
+          "updated": [
+            "Default",
+            "Collapsible"
+          ]
+        },
+        "parliament-hemicycle": {
+          "created": [],
+          "updated": [
+            "Civic Parchment"
+          ]
+        },
+        "playlist-item": {
+          "created": [],
+          "updated": [
+            "Tracks",
+            "Episodes"
+          ]
+        },
+        "portfolio-bento": {
+          "created": [],
+          "updated": [
+            "Aiko Tanaka, product designer"
+          ]
+        },
+        "portfolio-brutalist": {
+          "created": [],
+          "updated": [
+            "Knut Berg, creative developer"
+          ]
+        },
+        "portfolio-developer": {
+          "created": [],
+          "updated": [
+            "Sam Lindqvist, infrastructure engineer"
+          ]
+        },
+        "portfolio-editorial": {
+          "created": [],
+          "updated": [
+            "Clara Moreau, art director"
+          ]
+        },
+        "portfolio-grid": {
+          "created": [],
+          "updated": [
+            "Bento",
+            "Masonry",
+            "Scatter",
+            "Strip",
+            "Index",
+            "Shaped tiles"
+          ]
+        },
+        "portfolio-minimal": {
+          "created": [],
+          "updated": [
+            "Noor Haddad, writer and engineer"
+          ]
+        },
+        "portfolio-neon": {
+          "created": [],
+          "updated": [
+            "Rio Vega, creative technologist"
+          ]
+        },
+        "portfolio-photographer": {
+          "created": [],
+          "updated": [
+            "Ines Duarte, photographer"
+          ]
+        },
+        "portfolio-playful": {
+          "created": [],
+          "updated": [
+            "Juno Park, illustrator"
+          ]
+        },
+        "portfolio-swiss": {
+          "created": [],
+          "updated": [
+            "Lukas Graf, graphic designer"
+          ]
+        },
+        "portfolio-zine": {
+          "created": [],
+          "updated": [
+            "Ama Owusu, collage artist"
+          ]
+        },
+        "product-item": {
+          "created": [],
+          "updated": [
+            "Grid",
+            "Horizontal",
+            "Minimal"
+          ]
+        },
+        "profile-header": {
+          "created": [],
+          "updated": [
+            "Default"
+          ]
+        },
+        "project-details": {
+          "created": [],
+          "updated": [
+            "Default"
+          ]
+        },
+        "project-item": {
+          "created": [],
+          "updated": [
+            "Wide",
+            "Grid",
+            "Overlay"
+          ]
+        },
+        "release-item": {
+          "created": [],
+          "updated": [
+            "Default"
+          ]
+        },
+        "resource-item": {
+          "created": [],
+          "updated": [
+            "Featured"
+          ]
+        },
+        "resume-entry": {
+          "created": [],
+          "updated": [
+            "Projects"
+          ]
+        },
+        "sankey": {
+          "created": [],
+          "updated": [
+            "Industrial Schematic"
+          ]
+        },
+        "scaffold-admin-dashboard": {
+          "created": [],
+          "updated": [
+            "Admin dashboard"
+          ]
+        },
+        "scaffold-desktop": {
+          "created": [],
+          "updated": [
+            "Desktop"
+          ]
+        },
+        "scaffold-issue-tracker": {
+          "created": [],
+          "updated": [
+            "Issue tracker"
+          ]
+        },
+        "scaffold-messenger": {
+          "created": [],
+          "updated": [
+            "Messenger"
+          ]
+        },
+        "scaffold-notes": {
+          "created": [],
+          "updated": [
+            "Notes and docs"
+          ]
+        },
+        "scatter-quadrants": {
+          "created": [],
+          "updated": [
+            "Annual Report Corporate"
+          ]
+        },
+        "search-result": {
+          "created": [],
+          "updated": [
+            "With thumbnails",
+            "Products"
+          ]
+        },
+        "service-item": {
+          "created": [],
+          "updated": [
+            "With pictures"
+          ]
+        },
+        "session-item": {
+          "created": [],
+          "updated": [
+            "Agenda",
+            "Cover"
+          ]
+        },
+        "shader": {
+          "created": [],
+          "updated": [
+            "A logo in liquid metal, a photo dithered"
+          ]
+        },
+        "shader-gradients": {
+          "created": [],
+          "updated": [
+            "A scene and a photo, dithered"
+          ]
+        },
+        "shader-light": {
+          "created": [],
+          "updated": [
+            "A foil portrait"
+          ]
+        },
+        "shader-liquid": {
+          "created": [],
+          "updated": [
+            "A pool and a photo",
+            "Reeded glass over color and a photo",
+            "Press the water"
+          ]
+        },
+        "shader-patterns": {
+          "created": [],
+          "updated": [
+            "A photo as dots",
+            "A broken signal",
+            "An old television"
+          ]
+        },
+        "showcase-bouldering": {
+          "created": [],
+          "updated": [
+            "Grip, bouldering in Bochum"
+          ]
+        },
+        "showcase-records": {
+          "created": [],
+          "updated": [
+            "Lowtide Records, Hamburg"
+          ]
+        },
+        "showcase-roastery": {
+          "created": [],
+          "updated": [
+            "Kiln & Bean, coffee roasters"
+          ]
+        },
+        "site-header": {
+          "created": [],
+          "updated": [
+            "Over an image"
+          ]
+        },
+        "slopegraph": {
+          "created": [],
+          "updated": [
+            "Terminal Data Noir"
+          ]
+        },
+        "small-multiples": {
+          "created": [],
+          "updated": [
+            "1960s Modernist Grid"
+          ]
+        },
+        "social-post": {
+          "created": [],
+          "updated": [
+            "Post",
+            "Photo post"
+          ]
+        },
+        "speaker-item": {
+          "created": [],
+          "updated": [
+            "Keynote",
+            "Grid",
+            "Overlay",
+            "Compact"
+          ]
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
+          ]
+        },
+        "team-member": {
+          "created": [],
+          "updated": [
+            "Team grid",
+            "Horizontal",
+            "Compact"
+          ]
+        },
+        "text-media": {
+          "created": [],
+          "updated": [
+            "Default",
+            "Overlap"
+          ]
+        },
+        "timeline-item": {
+          "created": [],
+          "updated": [
+            "Our story"
+          ]
+        },
+        "treemap": {
+          "created": [],
+          "updated": [
+            "Mondrian Composition"
+          ]
+        },
+        "use-case": {
+          "created": [],
+          "updated": [
+            "Default",
+            "Reverse"
+          ]
+        },
+        "view-switcher": {
+          "created": [],
+          "updated": [
+            "Default",
+            "Labels"
+          ]
+        },
+        "violin-custom": {
+          "created": [],
+          "updated": [
+            "Fashion Editorial"
+          ]
+        },
+        "virtual-list": {
+          "created": [],
+          "updated": [
+            "Grid"
+          ]
+        },
+        "waffle-dot-matrix": {
+          "created": [],
+          "updated": [
+            "Pixel Arcade"
+          ]
+        },
+        "waterfall": {
+          "created": [],
+          "updated": [
+            "Art Deco Night"
+          ]
+        },
+        "website-account-states": {
+          "created": [],
+          "updated": [
+            "Sign in",
+            "Account settings"
+          ]
+        },
+        "website-article": {
+          "created": [],
+          "updated": [
+            "An article page"
+          ]
+        },
+        "website-blog": {
+          "created": [],
+          "updated": [
+            "A blog front"
+          ]
+        },
+        "website-comments": {
+          "created": [],
+          "updated": [
+            "A discussion"
+          ]
+        },
+        "website-company": {
+          "created": [],
+          "updated": [
+            "An about page"
+          ]
+        },
+        "website-docs-help": {
+          "created": [],
+          "updated": [
+            "Release notes"
+          ]
+        },
+        "website-events-promotions": {
+          "created": [],
+          "updated": [
+            "An event page"
+          ]
+        },
+        "website-landing-page": {
+          "created": [],
+          "updated": [
+            "A landing page"
+          ]
+        },
+        "website-media": {
+          "created": [],
+          "updated": [
+            "A media page"
+          ]
+        },
+        "website-news": {
+          "created": [],
+          "updated": [
+            "A news front"
+          ]
+        },
+        "website-resume-portfolio": {
+          "created": [],
+          "updated": [
+            "A personal site"
+          ]
+        },
+        "website-shop": {
+          "created": [],
+          "updated": [
+            "A store and its checkout"
+          ]
+        },
+        "wishlist-item": {
+          "created": [],
+          "updated": [
+            "List",
+            "Cards"
+          ]
+        }
+      }
+    },
+    {
       "version": "0.9.14",
       "created": [
         "design-language",

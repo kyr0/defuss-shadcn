@@ -9,13 +9,13 @@
     command="show-modal"
     aria-label="Enlarge: Harbour at dawn"
   >
-    <img src="https://picsum.photos/seed/gal-harbour/800/600" alt="Harbour at dawn" />
+    <img src="images/photos/s-gal-harbour-800x600.webp" alt="Harbour at dawn" />
     <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
   </button>
   <figcaption class="mk-gallery-item-caption">Harbour at dawn <span>Lisbon, 2026</span></figcaption>
   <dialog class="mk-gallery-item-viewer" id="gi-1" aria-label="Harbour at dawn">
     <div class="mk-gallery-item-viewer-inner">
-      <img src="https://picsum.photos/seed/gal-harbour/1600/1200" alt="Harbour at dawn" />
+      <img src="images/photos/s-gal-harbour-1600x1200.webp" alt="Harbour at dawn" />
       <p>Harbour at dawn <span>Lisbon, 2026</span></p>
       <form method="dialog"
         ><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button
@@ -34,13 +34,13 @@
     command="show-modal"
     aria-label="Enlarge: Morning market"
   >
-    <img src="https://picsum.photos/seed/gal-o1/800/600" alt="Morning market" />
+    <img src="images/photos/s-gal-o1-800x600.webp" alt="Morning market" />
     <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
   </button>
   <figcaption class="mk-gallery-item-caption">Morning market <span>Porto</span></figcaption>
   <dialog class="mk-gallery-item-viewer" id="gi-4" aria-label="Morning market">
     <div class="mk-gallery-item-viewer-inner">
-      <img src="https://picsum.photos/seed/gal-o1/1600/1200" alt="Morning market" />
+      <img src="images/photos/s-gal-o1-1600x1200.webp" alt="Morning market" />
       <p>Morning market <span>Porto</span></p>
       <form method="dialog"
         ><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button
@@ -59,13 +59,13 @@
     command="show-modal"
     aria-label="Enlarge: Summer, 1998"
   >
-    <img src="https://picsum.photos/seed/gal-f1/800/600" alt="Summer, 1998" />
+    <img src="images/photos/s-gal-f1-800x600.webp" alt="Summer, 1998" />
     <span class="mk-gallery-item-zoom" aria-hidden="true"><i data-lucide="maximize-2"></i></span>
   </button>
   <figcaption class="mk-gallery-item-caption">Summer, 1998 <span>Algarve</span></figcaption>
   <dialog class="mk-gallery-item-viewer" id="gi-7" aria-label="Summer, 1998">
     <div class="mk-gallery-item-viewer-inner">
-      <img src="https://picsum.photos/seed/gal-f1/1600/1200" alt="Summer, 1998" />
+      <img src="images/photos/s-gal-f1-1600x1200.webp" alt="Summer, 1998" />
       <p>Summer, 1998 <span>Algarve</span></p>
       <form method="dialog"
         ><button class="mk-gallery-item-close" aria-label="Close"><i data-lucide="x"></i></button

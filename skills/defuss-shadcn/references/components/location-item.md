@@ -28,7 +28,7 @@ Built from: [Button](button.md).
 
 ```html
   <article class="mk-location-item">
-    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-0/800/450" alt="">
+    <img class="mk-location-item-media" src="images/photos/s-loc-0-800x450.webp" alt="">
     <div class="mk-location-item-body">
       <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div>
       <address class="mk-location-item-address">Rua da Prata 120<br>1100-420 Lisboa, Portugal</address>
@@ -40,7 +40,7 @@ Built from: [Button](button.md).
     </div>
   </article>
   <article class="mk-location-item">
-    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-1/800/450" alt="">
+    <img class="mk-location-item-media" src="images/photos/s-loc-1-800x450.webp" alt="">
     <div class="mk-location-item-body">
       <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Berlin</h3><span class="mk-location-item-distance">2,310 km</span></div>
       <address class="mk-location-item-address">Torstraße 45<br>10119 Berlin, Germany</address>
@@ -52,7 +52,7 @@ Built from: [Button](button.md).
     </div>
   </article>
   <article class="mk-location-item">
-    <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-2/800/450" alt="">
+    <img class="mk-location-item-media" src="images/photos/s-loc-2-800x450.webp" alt="">
     <div class="mk-location-item-body">
       <div class="mk-location-item-head"><h3 class="mk-location-item-name">Acme Montreal</h3><span class="mk-location-item-distance">5,240 km</span></div>
       <address class="mk-location-item-address">4200 Boulevard Saint-Laurent<br>Montréal, QC H2W 2R2, Canada</address>

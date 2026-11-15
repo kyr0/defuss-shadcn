@@ -629,7 +629,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <span class="pf-square" data-df-entrance="left" style="--df-motion-delay: 400ms" aria-hidden="true"></span>
       </section>
       <section class="pf-intro" aria-label="About">
-        <img src="https://picsum.photos/id/669/600/800" alt="Lukas Graf" data-df-entrance="fade" />
+        <img src="images/photos/1005-600x800.webp" alt="Lukas Graf" data-df-entrance="fade" />
         <p
           >Posters, identities and typefaces for museums, concert halls and the old town of Zürich. Fourteen years of
           grids - and of knowing when to break one.</p
@@ -648,7 +648,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <ul class="mk-portfolio-grid">
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/halle-neun" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/700/700" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/951-700x700.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Halle Neun season posters</strong>
                 <span class="mk-portfolio-grid-meta">Posters, 2026</span>
@@ -657,7 +657,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/rietpark" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/939/700/700" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/939-700x700.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Museum Rietpark wayfinding</strong>
                 <span class="mk-portfolio-grid-meta">Signage, 2025</span>
@@ -666,7 +666,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/limmat-grotesk" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/403/700/700" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/403-700x700.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Limmat Grotesk</strong>
                 <span class="mk-portfolio-grid-meta">Typeface, 2024</span>
@@ -675,7 +675,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/altstadt" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1047/700/700" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/946-700x700.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Altstadt Society</strong>
                 <span class="mk-portfolio-grid-meta">Identity, 2022</span>
@@ -776,7 +776,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         data-case-img="0"
         data-w="1600"
         data-h="900"
-        src="https://picsum.photos/id/951/1600/900"
+        src="images/photos/951-1600x900.webp"
         alt="A building front striped in red, yellow and white"
       />
       <section class="pf-section" aria-labelledby="pf-sw-brief">
@@ -799,14 +799,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               data-case-img="1"
               data-w="800"
               data-h="800"
-              src="https://picsum.photos/id/158/800/800"
+              src="images/photos/158-800x800.webp"
               alt="Stage lights fanning out over a concert crowd"
             />
             <img
               data-case-img="2"
               data-w="800"
               data-h="800"
-              src="https://picsum.photos/id/117/800/800"
+              src="images/photos/117-800x800.webp"
               alt="Raised hands in front of a lit stage in a dark hall"
             />
           </div>
@@ -934,7 +934,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         "work": "The mark is the outline of the old town's streets reduced to six strokes. Each shop gets the mark with its house number, cut in enamel or printed in one colour, and a guide of twelve pages tells the owners where it goes and where it never goes.",
         "result": "Sixty shops carry the mark today. The society's walking map, printed twice a year, became the most-taken leaflet at the station, and the enamel plates are now a souvenir of their own.",
         "images": [
-          [1047, "A narrow brick alley with fire escapes"],
+          [946, "A yellow brick house with a black door and white windows"],
           [288, "The roofs and spires of an old town"],
           [164, "Old houses and boats along a canal"]
         ]
@@ -984,7 +984,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       view.find('[data-case-img]').each((_i, img) => {
         const [id, alt] = project.images[Number(img.dataset.caseImg)];
         df$(img)
-          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('src', 'images/photos/' + id + '-' + img.dataset.w + 'x' + img.dataset.h + '.webp')
           .attr('alt', alt);
       });
       for (const [rel, to] of Object.entries(near)) {

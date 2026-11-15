@@ -944,7 +944,7 @@
   <header class="mk-header">
     <div class="mk-header-inner">
       <a class="mk-header-brand" href="#/" data-router-link
-        ><img class="corner-squircle" src="https://picsum.photos/id/832/96/96" alt="" /><span class="mk-header-name"
+        ><img class="corner-squircle" src="../images/photos/832-96x96.webp" alt="" /><span class="mk-header-name"
           >Aiko Tanaka</span
         ></a
       >
@@ -994,7 +994,7 @@
     </li>
     <li class="pf-tile pf-photo corner-squircle" data-df-entrance="zoom">
       <button type="button" commandfor="pf-bento-about" command="show-modal">
-        <img src="https://picsum.photos/id/832/600/900" alt="Aiko Tanaka reading in a pale blue blouse" />
+        <img src="../images/photos/832-600x900.webp" alt="Aiko Tanaka reading in a pale blue blouse" />
         <span class="pf-photo-tag">About me <i data-lucide="arrow-up-right"></i></span>
       </button>
     </li>
@@ -1037,7 +1037,7 @@
           >
             <img
               class="mk-portfolio-grid-media"
-              src="https://picsum.photos/id/1060/900/500"
+              src="../images/photos/1060-900x500.webp"
               alt="Coffee dripping through a pour-over filter in a café"
             />
             <span class="mk-portfolio-grid-caption">
@@ -1056,7 +1056,7 @@
           >
             <img
               class="mk-portfolio-grid-media"
-              src="https://picsum.photos/id/180/600/600"
+              src="../images/photos/180-600x600.webp"
               alt="A laptop beside an open notebook with wireframe sketches"
             />
             <span class="mk-portfolio-grid-caption">
@@ -1075,7 +1075,7 @@
           >
             <img
               class="mk-portfolio-grid-media"
-              src="https://picsum.photos/id/367/600/600"
+              src="../images/photos/367-600x600.webp"
               alt="A hand holding an e-reader outdoors"
             />
             <span class="mk-portfolio-grid-caption">
@@ -1279,7 +1279,7 @@
         data-case-img="0"
         data-w="1600"
         data-h="700"
-        src="https://picsum.photos/id/1060/1600/700"
+        src="../images/photos/1060-1600x700.webp"
         alt="Coffee dripping through a pour-over filter in a café"
       />
     </figure>
@@ -1305,7 +1305,7 @@
         data-case-img="1"
         data-w="700"
         data-h="900"
-        src="https://picsum.photos/id/30/700/900"
+        src="../images/photos/30-700x900.webp"
         alt="A red mug of coffee on a wooden table"
       />
     </figure>
@@ -1424,10 +1424,7 @@
     <div class="mk-media-gallery-viewer-inner">
       <ul class="mk-media-gallery-track" tabindex="0" aria-label="Case studies - scroll sideways">
         <li
-          ><img
-            src="https://picsum.photos/id/1060/1400/778"
-            alt="Coffee dripping through a pour-over filter in a café"
-          /><p
+          ><img src="../images/photos/1060-1400x778.webp" alt="Coffee dripping through a pour-over filter in a café" /><p
             ><strong>Kumo checkout</strong> · Lead designer, 2025 · +18% completed orders · 1 / 3<br />A coffee
             subscription lost a third of its buyers at the address step. Three fields went, one page went, and the order
             button stopped moving. <a href="#/work/kumo-checkout" data-router-link>Read the case →</a></p
@@ -1435,7 +1432,7 @@
         >
         <li
           ><img
-            src="https://picsum.photos/id/180/1400/1400"
+            src="../images/photos/180-1400x1400.webp"
             alt="A laptop beside an open notebook with wireframe sketches"
           /><p
             ><strong>Fleet dashboard</strong> · Product designer, 2024 · B2B · 2024 · 2 / 3<br />One screen for two
@@ -1444,7 +1441,7 @@
           ></li
         >
         <li
-          ><img src="https://picsum.photos/id/367/1400/1400" alt="A hand holding an e-reader outdoors" /><p
+          ><img src="../images/photos/367-1400x1400.webp" alt="A hand holding an e-reader outdoors" /><p
             ><strong>Hana onboarding</strong> · Product designer, 2023 · App · 2023 · 3 / 3<br />A reading app asked
             eleven questions before the first page. Now it asks one, and learns the rest from what people read.
             <a href="#/work/hana-onboarding" data-router-link>Read the case →</a></p
@@ -1467,7 +1464,7 @@
   </dialog>
   <dialog class="pf-dialog pf-about" id="pf-bento-about" aria-labelledby="pf-bento-about-title">
     <div class="pf-about-grid">
-      <img src="https://picsum.photos/id/832/800/1000" alt="Aiko Tanaka reading in a pale blue blouse" />
+      <img src="../images/photos/832-800x1000.webp" alt="Aiko Tanaka reading in a pale blue blouse" />
       <div class="pf-dialog-body">
         <button
           class="btn pf-dialog-x"
@@ -1763,7 +1760,7 @@
       view.find('[data-case-img]').each((_i, img) => {
         const [id, alt] = item.images[Number(img.dataset.caseImg)];
         df$(img)
-          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('src', '../images/photos/' + id + '-' + img.dataset.w + 'x' + img.dataset.h + '.webp')
           .attr('alt', alt);
       });
       view.find('[data-case-list] a').each((_i, link) => {

@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { build } from 'defuss-ssg';
 import { STANDALONE_DECKS, standaloneDeckFile, STANDALONE_APPS, standaloneAppFile, STANDALONE_DOCS, standaloneDocFile, appName, exampleFence } from './lib/docs-ssg.ts'
 import { pageFile } from '../src/documentation/lib/page-dirs-files.ts'
-import { resolvePageRefs } from '../src/documentation/lib/page-dirs.ts';
+import { resolvePageRefs, resolveStandaloneAssets } from '../src/documentation/lib/page-dirs.ts';
 import { bundlesUsedIn } from '../src/documentation/lib/extra-bundles.ts';
 import { studioLibraryFiles } from './lib/studio-library-files.ts';
 
@@ -74,7 +74,8 @@ const writePage = (rel: string, html: string): void => {
   const file = join(ROOT, 'dist', 'documentation', rel);
   mkdirSync(dirname(file), { recursive: true });
   // the fence links other pages by id (the deck links the scaffolds): resolved from this file's folder
-  writeFileSync(file, resolvePageRefs(html, rel));
+  // and the asset strings its scripts, data blocks and styles hold (resolveStandaloneAssets: the demo photos)
+  writeFileSync(file, resolveStandaloneAssets(resolvePageRefs(html, rel), rel));
 };
 // a page whose markup holds a Geo Map reads its data from this build (dist/components/geo-map/data/), as the docs
 // cards do (runtime/code-example.ts geoDataUrl): the map's default is the release's npm package, which exists only

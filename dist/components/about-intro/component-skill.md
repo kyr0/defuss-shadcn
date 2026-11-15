@@ -41,8 +41,8 @@ A heading with an eyebrow and a lead paragraph, two photos in a `<figure>` and t
       </dl>
     </div>
     <figure class="mk-about-intro-media">
-      <img src="https://picsum.photos/seed/about-office/600/800" alt="">
-      <img src="https://picsum.photos/seed/about-team/600/800" alt="">
+      <img src="images/photos/s-about-office-600x800.webp" alt="">
+      <img src="images/photos/s-about-team-600x800.webp" alt="">
     </figure>
   </div>
 </section>

@@ -27,7 +27,7 @@ An `<article>`: a picture, the collection name as a link covering the card, the 
 
 ```html
   <article class="mk-collection-item">
-    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-linen/800/1000" alt="">
+    <img class="mk-collection-item-media" src="images/photos/s-col-linen-800x1000.webp" alt="">
     <div class="mk-collection-item-body">
       <h3 class="mk-collection-item-title"><a href="#">Linen basics</a></h3>
       <p class="mk-collection-item-count">24 products</p>
@@ -35,7 +35,7 @@ An `<article>`: a picture, the collection name as a link covering the card, the 
     </div>
   </article>
   <article class="mk-collection-item">
-    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-knit/800/1000" alt="">
+    <img class="mk-collection-item-media" src="images/photos/s-col-knit-800x1000.webp" alt="">
     <div class="mk-collection-item-body">
       <h3 class="mk-collection-item-title"><a href="#">Autumn knitwear</a></h3>
       <p class="mk-collection-item-count">18 products</p>
@@ -43,7 +43,7 @@ An `<article>`: a picture, the collection name as a link covering the card, the 
     </div>
   </article>
   <article class="mk-collection-item">
-    <img class="mk-collection-item-media" src="https://picsum.photos/seed/col-home/800/1000" alt="">
+    <img class="mk-collection-item-media" src="images/photos/s-col-home-800x1000.webp" alt="">
     <div class="mk-collection-item-body">
       <h3 class="mk-collection-item-title"><a href="#">Home & table</a></h3>
       <p class="mk-collection-item-count">42 products</p>

@@ -40,7 +40,9 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 try {
   const page = await browser.newPage();
   const pageErrors: string[] = [];
-  page.on('pageerror', (e) => { if (!VENDOR.test(e.message)) pageErrors.push(e.message); });
+  page.on('pageerror', (e) => {
+    if (!VENDOR.test(e.message)) pageErrors.push(e.message);
+  });
   await page.goto(`${server.url}${PAGE}`);
 
   await check('page renders: static chrome shell rendered', async () => {
@@ -49,7 +51,9 @@ try {
       header: !!document.querySelector('.site-header .header-brand'),
       links: document.querySelectorAll('.site-sidebar .nav-link').length,
       sections: document.querySelectorAll('.site-sidebar .nav-section').length,
-      openByDefault: [...document.querySelectorAll('details[data-nav-section]')].filter((d) => (d as HTMLDetailsElement).open).length,
+      openByDefault: [...document.querySelectorAll('details[data-nav-section]')].filter(
+        (d) => (d as HTMLDetailsElement).open,
+      ).length,
     }));
     assert.ok(counts.header, 'site-header did not render the brand');
     // brand must read "defuss-shadcn" - the pre-fork "shadcn-html" regressed once
@@ -88,10 +92,14 @@ try {
     assert.equal(facts.height, '36px', `button.css height not applied (${facts.height})`);
     assert.notEqual(facts.radius, '0px', 'radius token not resolving through component CSS');
     // bg must be the resolved --primary, proving the token chain end-to-end
-    const probe = await page.evaluate(
-      (p) => { const d = document.createElement('div'); d.style.color = p; document.body.append(d); const c = getComputedStyle(d).color; d.remove(); return c; },
-      facts.primary,
-    );
+    const probe = await page.evaluate((p) => {
+      const d = document.createElement('div');
+      d.style.color = p;
+      document.body.append(d);
+      const c = getComputedStyle(d).color;
+      d.remove();
+      return c;
+    }, facts.primary);
     assert.equal(facts.bg, probe, 'button background is not the resolved --primary token');
   });
 
@@ -103,33 +111,50 @@ try {
   // the maintainer (2026-10-19): the Application Scaffolds card leads the pillar cards (top-left) and opens
   // every full-screen app in a new tab, every other card links its page, the card links are underlined at
   // rest, "Download ZIP" has a dashed grey border, and the index says it was built with VAE (vae.defuss.org)
-  await check('index: the scaffolds card leads and opens every app in a new tab; every card links on; VAE named', async () => {
-    const facts = await page.evaluate(() => {
-      const cards = [...document.querySelectorAll('main h3.card-title')].map((h) => h.closest('.card')!);
-      const zip = [...document.querySelectorAll('main a.btn')].find((a) => /Download ZIP/.test(a.textContent ?? ''));
-      return {
-        first: cards[0]?.querySelector('h3')?.textContent?.trim(),
-        apps: [...(cards[0]?.querySelectorAll('table a') ?? [])].map((a) => [a.getAttribute('href'), (a as HTMLAnchorElement).target]),
-        linkless: cards.filter((c) => !c.querySelector('.card-footer :is(a[href], button)')).map((c) => c.querySelector('h3')?.textContent?.trim()),
-        decoration: [...document.querySelectorAll('main .card-footer .btn')].map((a) => getComputedStyle(a).textDecorationLine),
-        zip: zip && getComputedStyle(zip).borderTopStyle,
-        vae: [...document.querySelectorAll('main a')].find((a) => a.textContent?.trim() === 'Built using Verified Agentic Engineering (VAE)')?.getAttribute('href'),
-      };
-    });
-    assert.equal(facts.first, 'Application Scaffolds', 'the Application Scaffolds card is not the first pillar card');
-    assert.deepEqual(facts.apps, STANDALONE_APPS.map((s) => [pageRel(standaloneAppId(s)), '_blank']), 'the scaffolds table does not open every full-screen app in a new tab');
-    assert.deepEqual(facts.linkless, [], 'a pillar card links nowhere');
-    assert.ok(facts.decoration.length >= 6 && facts.decoration.every((d) => d === 'underline'), `card links not underlined at rest: ${facts.decoration}`);
-    assert.equal(facts.zip, 'dashed', 'Download ZIP lost its dashed border');
-    assert.equal(facts.vae, 'https://vae.defuss.org', 'the index does not name VAE with a link to vae.defuss.org');
-  });
+  await check(
+    'index: the scaffolds card leads and opens every app in a new tab; every card links on; VAE named',
+    async () => {
+      const facts = await page.evaluate(() => {
+        const cards = [...document.querySelectorAll('main h3.card-title')].map((h) => h.closest('.card')!);
+        const zip = [...document.querySelectorAll('main a.btn')].find((a) => /Download ZIP/.test(a.textContent ?? ''));
+        return {
+          first: cards[0]?.querySelector('h3')?.textContent?.trim(),
+          apps: [...(cards[0]?.querySelectorAll('table a') ?? [])].map((a) => [
+            a.getAttribute('href'),
+            (a as HTMLAnchorElement).target,
+          ]),
+          linkless: cards
+            .filter((c) => !c.querySelector('.card-footer :is(a[href], button)'))
+            .map((c) => c.querySelector('h3')?.textContent?.trim()),
+          decoration: [...document.querySelectorAll('main .card-footer .btn')].map(
+            (a) => getComputedStyle(a).textDecorationLine,
+          ),
+          zip: zip && getComputedStyle(zip).borderTopStyle,
+          vae: [...document.querySelectorAll('main a')]
+            .find((a) => a.textContent?.trim() === 'Built using Verified Agentic Engineering (VAE)')
+            ?.getAttribute('href'),
+        };
+      });
+      assert.equal(facts.first, 'Application Scaffolds', 'the Application Scaffolds card is not the first pillar card');
+      assert.deepEqual(
+        facts.apps,
+        STANDALONE_APPS.map((s) => [pageRel(standaloneAppId(s)), '_blank']),
+        'the scaffolds table does not open every full-screen app in a new tab',
+      );
+      assert.deepEqual(facts.linkless, [], 'a pillar card links nowhere');
+      assert.ok(
+        facts.decoration.length >= 6 && facts.decoration.every((d) => d === 'underline'),
+        `card links not underlined at rest: ${facts.decoration}`,
+      );
+      assert.equal(facts.zip, 'dashed', 'Download ZIP lost its dashed border');
+      assert.equal(facts.vae, 'https://vae.defuss.org', 'the index does not name VAE with a link to vae.defuss.org');
+    },
+  );
 
   await check('SPA navigation: nav click swaps title, main and active link', async () => {
     const titleBefore = await page.title();
     await page.click('.site-sidebar a.nav-link[data-page="data-display/badge.html"]');
-    await page.waitForFunction(
-      (t: string) => document.title !== t, titleBefore, { timeout: 5_000 },
-    );
+    await page.waitForFunction((t: string) => document.title !== t, titleBefore, { timeout: 5_000 });
     const state = await page.evaluate(() => ({
       title: document.title,
       h1: document.querySelector('main h1')?.textContent?.trim() ?? '',
@@ -166,7 +191,8 @@ try {
     await page.click('.header-search-input');
     await page.waitForFunction(
       () => (document.getElementById('docs-palette') as HTMLDialogElement | null)?.open,
-      undefined, { timeout: 5_000 },
+      undefined,
+      { timeout: 5_000 },
     );
     const stats = await page.evaluate(() => {
       const items = document.querySelectorAll('#docs-palette-list .command-item');
@@ -195,7 +221,11 @@ try {
       const hl = document.querySelector('#docs-palette-list [data-highlighted]');
       return { visible, hlHref: hl?.getAttribute('data-href') };
     });
-    assert.deepEqual(filtered.visible.map((v) => v.href), ['forms-inputs/combobox.html'], 'filter should leave exactly the Combobox page entry');
+    assert.deepEqual(
+      filtered.visible.map((v) => v.href),
+      ['forms-inputs/combobox.html'],
+      'filter should leave exactly the Combobox page entry',
+    );
     assert.equal(filtered.hlHref, 'forms-inputs/combobox.html', 'first match must be auto-highlighted');
     await page.keyboard.press('Enter'); // command.js: Enter clicks the highlighted item
     await page.waitForFunction(() => /Combobox/.test(document.title), undefined, { timeout: 5_000 });
@@ -205,7 +235,8 @@ try {
     );
     assert.equal(
       await page.evaluate(() => document.querySelector('.nav-link.active')?.getAttribute('data-page')),
-      'forms-inputs/combobox.html', 'SPA nav did not mark the new page active',
+      'forms-inputs/combobox.html',
+      'SPA nav did not mark the new page active',
     );
   });
 
@@ -214,13 +245,18 @@ try {
     // suppress window - wait past it before re-opening via the trigger
     await page.waitForTimeout(300);
     await page.click('.header-search-input');
-    await page.waitForFunction(() => (document.getElementById('docs-palette') as HTMLDialogElement).open, undefined, { timeout: 5_000 });
+    await page.waitForFunction(() => (document.getElementById('docs-palette') as HTMLDialogElement).open, undefined, {
+      timeout: 5_000,
+    });
     const cmdInput = page.locator('#docs-palette .command-input');
     await cmdInput.fill('quick start'); // a section heading, not any page label
     const hit = page.locator('#docs-palette-list .command-item:not([hidden])').first();
     const href = await hit.getAttribute('data-href');
     // the index carries pages from the docs root (lib/plugins.ts): <section>/<page>.html#id
-    assert.ok(href && href.startsWith('introduction/installation.html#'), `expected an installation section hit, got ${href}`);
+    assert.ok(
+      href && href.startsWith('introduction/installation.html#'),
+      `expected an installation section hit, got ${href}`,
+    );
     await hit.click();
     const id = href!.slice(href!.indexOf('#') + 1);
     // SPA swap is async (scrollToWhenReady polls up to 2s) - wait for the element
@@ -229,21 +265,23 @@ try {
         const el = document.getElementById(sectionId);
         return !!el && Math.abs(el.getBoundingClientRect().top) < 300;
       },
-      id, { timeout: 5_000 },
+      id,
+      { timeout: 5_000 },
     );
   });
 
   await check('Ctrl/Cmd+K opens the palette anywhere on the page', async () => {
     await page.keyboard.press('Control+k');
-    await page.waitForFunction(
-      () => (document.getElementById('docs-palette') as HTMLDialogElement).open,
-      undefined, { timeout: 5_000 },
-    );
+    await page.waitForFunction(() => (document.getElementById('docs-palette') as HTMLDialogElement).open, undefined, {
+      timeout: 5_000,
+    });
     const focused = await page.evaluate(() => document.activeElement?.classList.contains('command-input'));
     assert.ok(focused, 'Ctrl+K opened the palette but did not focus its input');
     // Escape closes without instantly reopening via the trigger-restore focus
     await page.keyboard.press('Escape');
-    await page.waitForFunction(() => !(document.getElementById('docs-palette') as HTMLDialogElement).open, undefined, { timeout: 5_000 });
+    await page.waitForFunction(() => !(document.getElementById('docs-palette') as HTMLDialogElement).open, undefined, {
+      timeout: 5_000,
+    });
     await page.waitForTimeout(250); // past the trigger-restore suppress window
     assert.ok(
       await page.evaluate(() => !(document.getElementById('docs-palette') as HTMLDialogElement).open),
@@ -257,13 +295,27 @@ try {
     // pairs; this checks what the browser ACTUALLY paints through the real
     // layout (correct token wiring in .nav-link.active, transitions settled).
     const REGRESSION_SET: Array<[string, 'light' | 'dark']> = [
-      ['default', 'light'], ['catppuccin', 'light'], ['supabase', 'light'],
-      ['tangerine', 'light'], ['retro-arcade', 'light'], ['midnight-bloom', 'light'],
-      ['candyland', 'light'], ['modern-minimal', 'dark'], ['mono', 'dark'],
-      ['kodama-grove', 'dark'], ['neo-brutalism', 'dark'], ['nature', 'dark'],
-      ['mocha-mousse', 'dark'], ['supabase', 'dark'], ['catppuccin', 'dark'],
-      ['northern-lights', 'dark'], ['sunset-horizon', 'dark'], ['midnight-bloom', 'dark'],
-      ['candyland', 'dark'], ['retro-arcade', 'dark'], ['bold-tech', 'dark'],
+      ['default', 'light'],
+      ['catppuccin', 'light'],
+      ['supabase', 'light'],
+      ['tangerine', 'light'],
+      ['retro-arcade', 'light'],
+      ['midnight-bloom', 'light'],
+      ['candyland', 'light'],
+      ['modern-minimal', 'dark'],
+      ['mono', 'dark'],
+      ['kodama-grove', 'dark'],
+      ['neo-brutalism', 'dark'],
+      ['nature', 'dark'],
+      ['mocha-mousse', 'dark'],
+      ['supabase', 'dark'],
+      ['catppuccin', 'dark'],
+      ['northern-lights', 'dark'],
+      ['sunset-horizon', 'dark'],
+      ['midnight-bloom', 'dark'],
+      ['candyland', 'dark'],
+      ['retro-arcade', 'dark'],
+      ['bold-tech', 'dark'],
       ['elegant-luxury', 'dark'],
     ];
     const bad: string[] = [];
@@ -330,11 +382,12 @@ try {
     const viewport = page.viewportSize();
     await page.setViewportSize({ width: 1600, height: 1000 });
     await page.goto(`${server.url}${PAGE}`);
-    const railMain = () => page.evaluate(() => ({
-      toggle: !!document.getElementById('wide-toggle'),
-      aside: !!document.querySelector('.site-aside'),
-      maxWidth: getComputedStyle(document.querySelector('main')!).maxWidth,
-    }));
+    const railMain = () =>
+      page.evaluate(() => ({
+        toggle: !!document.getElementById('wide-toggle'),
+        aside: !!document.querySelector('.site-aside'),
+        maxWidth: getComputedStyle(document.querySelector('main')!).maxWidth,
+      }));
     const rail = await railMain();
     assert.equal(rail.toggle, false, 'the wide toggle is still in the header');
     assert.ok(rail.aside, 'index lost its deck rail - the check proves nothing');
@@ -360,7 +413,7 @@ try {
     assert.equal(other.maxWidth, 'none', 'a regular page main is still capped');
   });
 
-  await check('the deck rail\'s Fullscreen button: the deck fills the viewport edge to edge, focused', async () => {
+  await check("the deck rail's Fullscreen button: the deck fills the viewport edge to edge, focused", async () => {
     const viewport = page.viewportSize();
     await page.setViewportSize({ width: 1680, height: 1000 });
     await page.goto(`${server.url}${PAGE}`);
@@ -368,17 +421,32 @@ try {
     // second (hidden at this width) deck for small screens
     const btn = page.locator('.site-aside .deck-rail [data-deck-fullscreen]');
     await btn.scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => !!document.querySelector('.site-aside .deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
-    assert.equal(await page.$$eval('.site-aside .deck-rail iframe', (n) => n.length), 0, 'the deck waits in the teaser - nothing loaded yet');
-    const edges = await page.evaluate(() => [document.querySelector('.site-aside [data-deck-fullscreen]')!.getBoundingClientRect().right, document.querySelector('.site-aside .deck-rail-caption')!.getBoundingClientRect().right].map(Math.round));
-    assert.equal(edges[0], edges[1], 'the button sits at the caption\'s end');
+    await page.waitForFunction(() => !!document.querySelector('.site-aside .deck-rail .teaser[data-init]'), undefined, {
+      timeout: 15_000,
+    });
+    assert.equal(
+      await page.$$eval('.site-aside .deck-rail iframe', (n) => n.length),
+      0,
+      'the deck waits in the teaser - nothing loaded yet',
+    );
+    const edges = await page.evaluate(() =>
+      [
+        document.querySelector('.site-aside [data-deck-fullscreen]')!.getBoundingClientRect().right,
+        document.querySelector('.site-aside .deck-rail-caption')!.getBoundingClientRect().right,
+      ].map(Math.round),
+    );
+    assert.equal(edges[0], edges[1], "the button sits at the caption's end");
     await btn.click();
     await page.waitForFunction(() => document.fullscreenElement?.tagName === 'IFRAME', undefined, { timeout: 5_000 });
     // the deck loads into the fresh frame, then takes focus
-    await page.waitForFunction(() => {
-      const d = (document.fullscreenElement as HTMLIFrameElement | null)?.contentDocument;
-      return !!d && d.activeElement === d.querySelector('.presentation');
-    }, undefined, { timeout: 15_000 });
+    await page.waitForFunction(
+      () => {
+        const d = (document.fullscreenElement as HTMLIFrameElement | null)?.contentDocument;
+        return !!d && d.activeElement === d.querySelector('.presentation');
+      },
+      undefined,
+      { timeout: 15_000 },
+    );
     const fs = await page.evaluate(() => {
       const d = (document.fullscreenElement as HTMLIFrameElement).contentDocument!;
       const r = d.querySelector('.presentation')!.getBoundingClientRect();
@@ -389,48 +457,65 @@ try {
     if (viewport) await page.setViewportSize(viewport);
   });
 
-  await check('the deck rail is a teaser: a click on the card loads the deck in its place, the aura stops', async () => {
-    const viewport = page.viewportSize();
-    await page.setViewportSize({ width: 1680, height: 1000 });
-    await page.goto(`${server.url}${PAGE}`);
-    await page.waitForFunction(() => !!document.querySelector('.site-aside .deck-rail .teaser[data-init]'), undefined, { timeout: 15_000 });
-    const box = (await page.locator('.site-aside .deck-rail .teaser').boundingBox())!;
-    await page.click('.site-aside .deck-rail .teaser-text');
-    await page.waitForFunction(() => !!(document.querySelector('.site-aside .deck-rail iframe') as HTMLIFrameElement | null)?.contentDocument?.querySelector('.presentation[data-init]'), undefined, { timeout: 15_000 });
-    const after = await page.evaluate(() => ({
-      h: Math.round(document.querySelector('.site-aside .deck-rail .teaser')!.getBoundingClientRect().height),
-      aura: getComputedStyle(document.querySelector('.site-aside .deck-rail .aura')!).animationName,
-    }));
-    assert.ok(Math.abs(after.h - box.height) <= 2, `the swap keeps the rail's height (${box.height} -> ${after.h})`);
-    assert.equal(after.aura, 'none');
-    if (viewport) await page.setViewportSize(viewport);
-  });
+  await check(
+    'the deck rail is a teaser: a click on the card loads the deck in its place, the aura stops',
+    async () => {
+      const viewport = page.viewportSize();
+      await page.setViewportSize({ width: 1680, height: 1000 });
+      await page.goto(`${server.url}${PAGE}`);
+      await page.waitForFunction(
+        () => !!document.querySelector('.site-aside .deck-rail .teaser[data-init]'),
+        undefined,
+        { timeout: 15_000 },
+      );
+      const box = (await page.locator('.site-aside .deck-rail .teaser').boundingBox())!;
+      await page.click('.site-aside .deck-rail .teaser-text');
+      await page.waitForFunction(
+        () =>
+          !!(
+            document.querySelector('.site-aside .deck-rail iframe') as HTMLIFrameElement | null
+          )?.contentDocument?.querySelector('.presentation[data-init]'),
+        undefined,
+        { timeout: 15_000 },
+      );
+      const after = await page.evaluate(() => ({
+        h: Math.round(document.querySelector('.site-aside .deck-rail .teaser')!.getBoundingClientRect().height),
+        aura: getComputedStyle(document.querySelector('.site-aside .deck-rail .aura')!).animationName,
+      }));
+      assert.ok(Math.abs(after.h - box.height) <= 2, `the swap keeps the rail's height (${box.height} -> ${after.h})`);
+      assert.equal(after.aura, 'none');
+      if (viewport) await page.setViewportSize(viewport);
+    },
+  );
 
   // Why: below 88rem the sticky right rail is hidden - the deck must still
   // render, breaking into the main flow: under the hero buttons and the CDN
   // note, over the pillar cards (its caption wrapping under it).
-  await check('the deck renders on small screens: in the main flow, under the intro buttons, over the pillar cards', async () => {
-    const viewport = page.viewportSize();
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`${server.url}${PAGE}`);
-    const order = await page.evaluate(() => {
-      const deck = document.querySelector('.rail-fallback .deck-rail .teaser');
-      const buttons = document.querySelector('main .btn')?.parentElement;
-      const boxes = document.querySelector('main .card');
-      if (!deck || !buttons || !boxes) return null;
-      const r = (el: Element) => el.getBoundingClientRect();
-      return {
-        visible: r(deck).height > 0,
-        underButtons: r(deck).top >= r(buttons).bottom - 1,
-        overBoxes: r(deck).bottom <= r(boxes).top + 1,
-      };
-    });
-    assert.ok(order, 'index lost its fallback deck, hero buttons or pillar cards');
-    assert.equal(order.visible, true, 'the fallback deck teaser has no height on a phone viewport');
-    assert.equal(order.underButtons, true, 'the fallback deck does not sit under the hero buttons');
-    assert.equal(order.overBoxes, true, 'the fallback deck does not sit over the pillar cards');
-    if (viewport) await page.setViewportSize(viewport);
-  });
+  await check(
+    'the deck renders on small screens: in the main flow, under the intro buttons, over the pillar cards',
+    async () => {
+      const viewport = page.viewportSize();
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(`${server.url}${PAGE}`);
+      const order = await page.evaluate(() => {
+        const deck = document.querySelector('.rail-fallback .deck-rail .teaser');
+        const buttons = document.querySelector('main .btn')?.parentElement;
+        const boxes = document.querySelector('main .card');
+        if (!deck || !buttons || !boxes) return null;
+        const r = (el: Element) => el.getBoundingClientRect();
+        return {
+          visible: r(deck).height > 0,
+          underButtons: r(deck).top >= r(buttons).bottom - 1,
+          overBoxes: r(deck).bottom <= r(boxes).top + 1,
+        };
+      });
+      assert.ok(order, 'index lost its fallback deck, hero buttons or pillar cards');
+      assert.equal(order.visible, true, 'the fallback deck teaser has no height on a phone viewport');
+      assert.equal(order.underButtons, true, 'the fallback deck does not sit under the hero buttons');
+      assert.equal(order.overBoxes, true, 'the fallback deck does not sit over the pillar cards');
+      if (viewport) await page.setViewportSize(viewport);
+    },
+  );
 
   // Why: on phones the drawer was `height: calc(100vh - 3.5rem)` - 100vh is the viewport with
   // the browser toolbar HIDDEN, so while the toolbar showed, the drawer's end sat below the
@@ -454,15 +539,32 @@ try {
         let height = '';
         const walk = (rules: CSSRuleList, layered: boolean) => {
           for (const rule of rules) {
-            if (rule instanceof CSSMediaRule) { if (matchMedia(rule.conditionText).matches) walk(rule.cssRules, layered); }
-            else if (rule instanceof CSSLayerBlockRule) walk(rule.cssRules, true);
-            else if (rule instanceof CSSStyleRule && !layered && rule.style.height && sb.matches(rule.selectorText)) height = rule.style.height;
+            if (rule instanceof CSSMediaRule) {
+              if (matchMedia(rule.conditionText).matches) walk(rule.cssRules, layered);
+            } else if (rule instanceof CSSLayerBlockRule) walk(rule.cssRules, true);
+            else if (rule instanceof CSSStyleRule && !layered && rule.style.height && sb.matches(rule.selectorText))
+              height = rule.style.height;
           }
         };
-        for (const sheet of document.styleSheets) { try { walk(sheet.cssRules, false); } catch { /* a cross-origin sheet */ } }
-        return { height, edge: Math.round(sb.getBoundingClientRect().bottom), vh: innerHeight, link: Math.round(last.getBoundingClientRect().bottom), text: last.textContent?.trim() };
+        for (const sheet of document.styleSheets) {
+          try {
+            walk(sheet.cssRules, false);
+          } catch {
+            /* a cross-origin sheet */
+          }
+        }
+        return {
+          height,
+          edge: Math.round(sb.getBoundingClientRect().bottom),
+          vh: innerHeight,
+          link: Math.round(last.getBoundingClientRect().bottom),
+          text: last.textContent?.trim(),
+        };
       });
-      assert.ok(!/(^|[^ds])vh\b/.test(r.height), `the drawer's height is "${r.height}" - 100vh is the viewport with the toolbar hidden; end it at the visible viewport (bottom: 0)`);
+      assert.ok(
+        !/(^|[^ds])vh\b/.test(r.height),
+        `the drawer's height is "${r.height}" - 100vh is the viewport with the toolbar hidden; end it at the visible viewport (bottom: 0)`,
+      );
       assert.equal(r.edge, r.vh, `drawer ends at ${r.edge}px in a ${r.vh}px viewport`);
       assert.ok(r.link <= r.vh, `the last link "${r.text}" ends at ${r.link}px, below the ${r.vh}px viewport`);
     } finally {
@@ -477,7 +579,10 @@ try {
       h2s: [...document.querySelectorAll('main h2')].map((h) => h.textContent?.trim() ?? ''),
       prose: !!document.querySelector('.arch-prose'),
       // the maintainer (2026-10-19): a button to the method's own site, with an arrow icon
-      vae: [...document.querySelectorAll('main a.btn[href="https://vae.defuss.org"]')].map((a) => [(a as HTMLAnchorElement).target, !!a.querySelector('svg')]),
+      vae: [...document.querySelectorAll('main a.btn[href="https://vae.defuss.org"]')].map((a) => [
+        (a as HTMLAnchorElement).target,
+        !!a.querySelector('svg'),
+      ]),
     }));
     assert.match(state.h1, /Verified Agentic Engineering/, 'h1 missing');
     assert.deepEqual(state.vae, [['_blank', true]], 'the vae.defuss.org button (new tab, arrow icon) is missing');
@@ -494,145 +599,222 @@ try {
   // the maintainer: the Studio (2026-10-18) and Floors, Walls & Tunnels (2026-11-07) are too fragile to offer - not in
   // the sidebar. An alpha page is listed nowhere (nav.ts listed): checked on the page before it in the NAV order,
   // whose sidebar and pager would name it
-  await check('an alpha page (the Studio, Floors, Walls & Tunnels) is listed nowhere - sidebar, pager, search index, root SKILL.md - and still renders', async () => {
-    const index = readFileSync(join(ROOT, 'dist', 'documentation', 'js', 'search-index.js'), 'utf8');
-    const skill = readFileSync(join(ROOT, 'skills', 'defuss-shadcn', 'SKILL.md'), 'utf8');
-    for (const alpha of ALL_PAGES.filter((p) => p.alpha)) {
-      const slug = alpha.href.replace(/\.html$/, '');
-      const rel = pageRel(slug);
-      const before = ALL_PAGES[ALL_PAGES.indexOf(alpha) - 1];
-      await page.goto(`${server.url}/dist/documentation/${pageRel(before.href.replace(/\.html$/, ''))}`);
-      const r = await page.evaluate(
-        (rel) => ({
-          sidebar: [...document.querySelectorAll('.site-sidebar a')].filter((a) => a.getAttribute('data-page') === rel).length,
-          pager: [...document.querySelectorAll('.page-nav a')].map((a) => a.getAttribute('href') ?? ''),
-        }),
-        rel,
-      );
-      assert.equal(r.sidebar, 0, `${before.label}'s sidebar links ${alpha.label}`);
-      assert.ok(!r.pager.some((h) => h.endsWith(alpha.href)), `${before.label}'s pager names ${alpha.label}: ${r.pager.join(', ')}`);
-      assert.ok(!index.includes(`"h":"${rel}`), `the search index lists ${rel}`);
-      assert.ok(!skill.includes(`pages/${rel.replace(/\.html$/, '.mdx')})`), `the root SKILL.md lists ${slug}`);
-      await page.goto(`${server.url}/dist/documentation/${rel}`);
-      // the heading's own text - a component page's type badge sits inside it
-      const h1 = await page.evaluate(() => {
-        const h = document.querySelector('main h1')?.cloneNode(true) as HTMLElement | undefined;
-        h?.querySelectorAll('.type-badge').forEach((b) => b.remove());
-        return h?.textContent?.trim();
-      });
-      assert.equal(h1, alpha.label, `${rel} renders`);
-    }
-  });
+  await check(
+    'an alpha page (the Studio, Floors, Walls & Tunnels) is listed nowhere - sidebar, pager, search index, root SKILL.md - and still renders',
+    async () => {
+      const index = readFileSync(join(ROOT, 'dist', 'documentation', 'js', 'search-index.js'), 'utf8');
+      const skill = readFileSync(join(ROOT, 'skills', 'defuss-shadcn', 'SKILL.md'), 'utf8');
+      for (const alpha of ALL_PAGES.filter((p) => p.alpha)) {
+        const slug = alpha.href.replace(/\.html$/, '');
+        const rel = pageRel(slug);
+        const before = ALL_PAGES[ALL_PAGES.indexOf(alpha) - 1];
+        await page.goto(`${server.url}/dist/documentation/${pageRel(before.href.replace(/\.html$/, ''))}`);
+        const r = await page.evaluate(
+          (rel) => ({
+            sidebar: [...document.querySelectorAll('.site-sidebar a')].filter(
+              (a) => a.getAttribute('data-page') === rel,
+            ).length,
+            pager: [...document.querySelectorAll('.page-nav a')].map((a) => a.getAttribute('href') ?? ''),
+          }),
+          rel,
+        );
+        assert.equal(r.sidebar, 0, `${before.label}'s sidebar links ${alpha.label}`);
+        assert.ok(
+          !r.pager.some((h) => h.endsWith(alpha.href)),
+          `${before.label}'s pager names ${alpha.label}: ${r.pager.join(', ')}`,
+        );
+        assert.ok(!index.includes(`"h":"${rel}`), `the search index lists ${rel}`);
+        assert.ok(!skill.includes(`pages/${rel.replace(/\.html$/, '.mdx')})`), `the root SKILL.md lists ${slug}`);
+        await page.goto(`${server.url}/dist/documentation/${rel}`);
+        // the heading's own text - a component page's type badge sits inside it
+        const h1 = await page.evaluate(() => {
+          const h = document.querySelector('main h1')?.cloneNode(true) as HTMLElement | undefined;
+          h?.querySelectorAll('.type-badge').forEach((b) => b.remove());
+          return h?.textContent?.trim();
+        });
+        assert.equal(h1, alpha.label, `${rel} renders`);
+      }
+    },
+  );
 
-  await check("What's new: a first visit marks the newest release's pages (sidebar, sections, the front page's dialog and count); opening one clears it; seeAll clears all", async () => {
-    const p = await browser.newPage();
-    try {
-      await p.goto(`${server.url}${PAGE}`);
-      await p.evaluate(() => localStorage.removeItem('defuss-shadcn-whats-new'));
-      await p.reload();
-      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
-      const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as {
-        releases: { version: string; created: string[]; updated: string[] }[];
-      };
-      const versions = await p.evaluate(() => document.documentElement.getAttribute('data-whats-new'));
-      assert.equal(versions, record.releases.slice(0, 6).map((r) => r.version).join(' '), 'the pages carry the record');
-      const newest = record.releases[0];
-      // the page shown (index) counts as opened
-      const want = [...new Set([...newest.created, ...newest.updated])].filter((id) => id !== 'index').sort();
-      const unseen = async () =>
-        [...new Set(await p.$$eval('a.sidebar-link[data-unseen]', (as) => as.map((a) => a.getAttribute('data-page')!.replace(/^.*\//, '').replace(/\.html$/, ''))))].sort();
-      assert.deepEqual(await unseen(), want, 'the sidebar marks the newest release, minus the page shown');
-      const created = await p.$$eval('a.sidebar-link[data-unseen="created"] [data-whats-new-dot]', (ds) => ds.map((d) => [(d as HTMLElement).hidden, d.getAttribute('data-variant'), d.getAttribute('aria-label')]));
-      assert.ok(created.length === newest.created.length && created.every(([h, v, l]) => !h && v === 'info' && l === 'New'), 'a new page: a blue New dot');
-      assert.ok((await p.locator('summary [data-whats-new-dot]:not([hidden])').count()) > 0, 'the sections that hold them show a dot');
-      assert.equal(await p.textContent('[data-whats-new-count]'), String(want.length), 'the count on the trigger');
-      // the dialog
-      await p.click('[data-dialog-trigger="whats-new"]');
-      await p.waitForFunction(() => (document.getElementById('whats-new') as HTMLDialogElement).open);
-      assert.equal(await p.getAttribute(`[data-whats-new-release="${newest.version}"]`, 'data-fresh'), '');
-      assert.equal(await p.locator('#whats-new [data-whats-new-item][data-unseen]').count(), want.length, 'its pages carry the dot');
-      await p.keyboard.press('Escape');
-      // opening a marked page clears its mark (and keeps the others)
-      const target = want[0];
-      const rel = await p.getAttribute(`a.sidebar-link[data-page$="/${target}.html"]`, 'data-page');
-      await p.goto(`${server.url}/dist/documentation/${rel}`);
-      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
-      assert.deepEqual(await unseen(), want.slice(1), 'the page opened lost its mark');
-      assert.ok((await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.state().seen)).includes(target));
-      await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.seeAll());
-      assert.deepEqual(await unseen(), [], 'seeAll clears every mark');
-      assert.equal(await p.locator('[data-whats-new-dot]:not([hidden])').count(), 0);
-    } finally {
-      await p.close();
-    }
-  });
+  await check(
+    "What's new: a first visit marks the newest release's pages (sidebar, sections, the front page's dialog and count); opening one clears it; seeAll clears all",
+    async () => {
+      const p = await browser.newPage();
+      try {
+        await p.goto(`${server.url}${PAGE}`);
+        await p.evaluate(() => localStorage.removeItem('defuss-shadcn-whats-new'));
+        await p.reload();
+        await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+        const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as {
+          releases: { version: string; created: string[]; updated: string[] }[];
+        };
+        const versions = await p.evaluate(() => document.documentElement.getAttribute('data-whats-new'));
+        assert.equal(
+          versions,
+          record.releases
+            .slice(0, 6)
+            .map((r) => r.version)
+            .join(' '),
+          'the pages carry the record',
+        );
+        const newest = record.releases[0];
+        // the page shown (index) counts as opened
+        const want = [...new Set([...newest.created, ...newest.updated])].filter((id) => id !== 'index').sort();
+        const unseen = async () =>
+          [
+            ...new Set(
+              await p.$$eval('a.sidebar-link[data-unseen]', (as) =>
+                as.map((a) =>
+                  a
+                    .getAttribute('data-page')!
+                    .replace(/^.*\//, '')
+                    .replace(/\.html$/, ''),
+                ),
+              ),
+            ),
+          ].sort();
+        assert.deepEqual(await unseen(), want, 'the sidebar marks the newest release, minus the page shown');
+        const created = await p.$$eval('a.sidebar-link[data-unseen="created"] [data-whats-new-dot]', (ds) =>
+          ds.map((d) => [(d as HTMLElement).hidden, d.getAttribute('data-variant'), d.getAttribute('aria-label')]),
+        );
+        assert.ok(
+          created.length === newest.created.length && created.every(([h, v, l]) => !h && v === 'info' && l === 'New'),
+          'a new page: a blue New dot',
+        );
+        assert.ok(
+          (await p.locator('summary [data-whats-new-dot]:not([hidden])').count()) > 0,
+          'the sections that hold them show a dot',
+        );
+        assert.equal(await p.textContent('[data-whats-new-count]'), String(want.length), 'the count on the trigger');
+        // the dialog
+        await p.click('[data-dialog-trigger="whats-new"]');
+        await p.waitForFunction(() => (document.getElementById('whats-new') as HTMLDialogElement).open);
+        assert.equal(await p.getAttribute(`[data-whats-new-release="${newest.version}"]`, 'data-fresh'), '');
+        // a page in two releases' lists carries its dot in both: count the newest release's own list
+        assert.equal(
+          await p
+            .locator(`#whats-new [data-whats-new-release="${newest.version}"] [data-whats-new-item][data-unseen]`)
+            .count(),
+          want.length,
+          'its pages carry the dot',
+        );
+        await p.keyboard.press('Escape');
+        // opening a marked page clears its mark (and keeps the others)
+        const target = want[0];
+        const rel = await p.getAttribute(`a.sidebar-link[data-page$="/${target}.html"]`, 'data-page');
+        await p.goto(`${server.url}/dist/documentation/${rel}`);
+        await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+        assert.deepEqual(await unseen(), want.slice(1), 'the page opened lost its mark');
+        assert.ok((await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.state().seen)).includes(target));
+        await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.seeAll());
+        assert.deepEqual(await unseen(), [], 'seeAll clears every mark');
+        assert.equal(await p.locator('[data-whats-new-dot]:not([hidden])').count(), 0);
+      } finally {
+        await p.close();
+      }
+    },
+  );
 
-  await check("What's new, example by example: an unseen page marks its changed examples and lists them at its top - once; the changelog links every example and gathers what is unseen into New for you", async () => {
-    const p = await browser.newPage();
-    try {
-      await p.goto(`${server.url}${PAGE}`);
-      await p.evaluate(() => localStorage.removeItem('defuss-shadcn-whats-new'));
-      await p.reload();
-      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
-      const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as {
-        releases: { version: string; examples?: Record<string, { created: string[]; updated: string[] }> }[];
-      };
-      const newest = record.releases[0];
-      const [pageId, ex] = Object.entries(newest.examples ?? {}).find(([id]) => id !== 'index' && id !== 'changelog') ?? [];
-      assert.ok(pageId && ex, 'the newest release names changed examples');
-      const labels = [...ex!.created, ...ex!.updated];
-      const rel = await p.getAttribute(`a.sidebar-link[data-page$="/${pageId}.html"]`, 'data-page');
-      await p.goto(`${server.url}/dist/documentation/${rel}`);
-      await p.waitForSelector('[data-whats-new-here]');
-      const listed = await p.$$eval('[data-whats-new-here] a[href^="#"]', (as) => as.map((a) => [a.getAttribute('href')!, a.textContent!.trim()]));
-      assert.deepEqual(listed.map(([, t]) => t).sort(), [...labels].sort(), 'the note lists every changed example');
-      const order = await p.$$eval('main [data-whats-new-example]', (els) => els.map((e) => '#' + e.id));
-      assert.deepEqual(listed.map(([h]) => h), order.filter((h) => listed.some(([l]) => l === h)), 'in page order');
-      for (const [href] of listed)
-        assert.ok(await p.$(`${href}[data-whats-new-example] [data-whats-new-mark]`), `${href} carries its mark and a dot`);
-      // the next visit: the page was opened - no note, no dots
-      await p.reload();
-      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
-      assert.equal(await p.locator('[data-whats-new-here], [data-whats-new-mark]').count(), 0, 'shown once');
-      // the changelog links each example to its label; New for you lists the unseen pages, not the one opened
-      const log = await p.getAttribute('a.sidebar-link[data-page$="/changelog.html"]', 'data-page');
-      await p.goto(`${server.url}/dist/documentation/${log}`);
-      await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
-      const links = await p.$$eval(`[data-whats-new-pages="${newest.version}"] [data-whats-new-example-link="${pageId}"]`, (as) => as.map((a) => a.getAttribute('href')!));
-      assert.equal(links.length, labels.length, 'one link per changed example');
-      assert.deepEqual(links.map((h) => h.replace(/^.*#/, '#')).sort(), listed.map(([h]) => h).sort(), 'the same anchors as on the page');
-      assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), true, 'New for you shows');
-      const forYou = await p.$$eval('[data-whats-new-for-you] [data-whats-new-page]', (ls) => ls.map((l) => l.getAttribute('data-whats-new-page')));
-      assert.ok(forYou.length > 0 && !forYou.includes(pageId!), 'the unseen pages, without the one opened');
-      await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.seeAll());
-      assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), false, 'nothing unseen: hidden');
-    } finally {
-      await p.close();
-    }
-  });
+  await check(
+    "What's new, example by example: an unseen page marks its changed examples and lists them at its top - once; the changelog links every example and gathers what is unseen into New for you",
+    async () => {
+      const p = await browser.newPage();
+      try {
+        await p.goto(`${server.url}${PAGE}`);
+        await p.evaluate(() => localStorage.removeItem('defuss-shadcn-whats-new'));
+        await p.reload();
+        await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+        const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as {
+          releases: { version: string; examples?: Record<string, { created: string[]; updated: string[] }> }[];
+        };
+        const newest = record.releases[0];
+        const [pageId, ex] =
+          Object.entries(newest.examples ?? {}).find(([id]) => id !== 'index' && id !== 'changelog') ?? [];
+        assert.ok(pageId && ex, 'the newest release names changed examples');
+        const labels = [...ex!.created, ...ex!.updated];
+        const rel = await p.getAttribute(`a.sidebar-link[data-page$="/${pageId}.html"]`, 'data-page');
+        await p.goto(`${server.url}/dist/documentation/${rel}`);
+        await p.waitForSelector('[data-whats-new-here]');
+        const listed = await p.$$eval('[data-whats-new-here] a[href^="#"]', (as) =>
+          as.map((a) => [a.getAttribute('href')!, a.textContent!.trim()]),
+        );
+        assert.deepEqual(listed.map(([, t]) => t).sort(), [...labels].sort(), 'the note lists every changed example');
+        const order = await p.$$eval('main [data-whats-new-example]', (els) => els.map((e) => '#' + e.id));
+        assert.deepEqual(
+          listed.map(([h]) => h),
+          order.filter((h) => listed.some(([l]) => l === h)),
+          'in page order',
+        );
+        for (const [href] of listed)
+          assert.ok(
+            await p.$(`${href}[data-whats-new-example] [data-whats-new-mark]`),
+            `${href} carries its mark and a dot`,
+          );
+        // the next visit: the page was opened - no note, no dots
+        await p.reload();
+        await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+        assert.equal(await p.locator('[data-whats-new-here], [data-whats-new-mark]').count(), 0, 'shown once');
+        // the changelog links each example to its label; New for you lists the unseen pages, not the one opened
+        const log = await p.getAttribute('a.sidebar-link[data-page$="/changelog.html"]', 'data-page');
+        await p.goto(`${server.url}/dist/documentation/${log}`);
+        await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.docs?.whatsNew);
+        const links = await p.$$eval(
+          `[data-whats-new-pages="${newest.version}"] [data-whats-new-example-link="${pageId}"]`,
+          (as) => as.map((a) => a.getAttribute('href')!),
+        );
+        assert.equal(links.length, labels.length, 'one link per changed example');
+        assert.deepEqual(
+          links.map((h) => h.replace(/^.*#/, '#')).sort(),
+          listed.map(([h]) => h).sort(),
+          'the same anchors as on the page',
+        );
+        assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), true, 'New for you shows');
+        const forYou = await p.$$eval('[data-whats-new-for-you] [data-whats-new-page]', (ls) =>
+          ls.map((l) => l.getAttribute('data-whats-new-page')),
+        );
+        assert.ok(forYou.length > 0 && !forYou.includes(pageId!), 'the unseen pages, without the one opened');
+        await p.evaluate(() => (globalThis as any).df$.shadcn.docs.whatsNew.seeAll());
+        assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), false, 'nothing unseen: hidden');
+      } finally {
+        await p.close();
+      }
+    },
+  );
 
   // VERIFIED: (the v0.9.14 release, its make build) the record keys a release by the package version ("0.9.14"), the
   // changelog by its tag ("v0.9.14"): a released entry listed no pages and the dialog no commit messages until both
   // matched - while a version is "unreleased" (every run between releases) the check above passes either way
-  await check("What's new, released: each released version the record keeps lists its pages under its changelog entry and its commit messages in the front page's dialog", async () => {
-    const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as { releases: { version: string }[] };
-    const log = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/changelog.json'), 'utf8')) as { entries: { version: string }[] };
-    const released = record.releases
-      .slice(0, 6) // the dialog shows the newest six (WHATS_NEW_RELEASES)
-      .map((r) => r.version)
-      .filter((v) => v !== 'unreleased' && log.entries.some((e) => e.version === `v${v}`));
-    const p = await browser.newPage();
-    try {
-      await p.goto(`${server.url}${PAGE}`);
-      for (const v of released)
-        assert.ok(await p.$(`dialog#whats-new [data-whats-new-release="${v}"] .whats-new-commits li`), `the dialog lists v${v}'s commit messages`);
-      const rel = await p.getAttribute('a.sidebar-link[data-page$="/changelog.html"]', 'data-page');
-      await p.goto(`${server.url}/dist/documentation/${rel}`);
-      for (const v of released) assert.ok(await p.$(`[data-whats-new-pages="${v}"]`), `v${v}'s changelog entry lists its pages`);
-    } finally {
-      await p.close();
-    }
-  });
+  await check(
+    "What's new, released: each released version the record keeps lists its pages under its changelog entry and its commit messages in the front page's dialog",
+    async () => {
+      const record = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/whats-new.json'), 'utf8')) as {
+        releases: { version: string }[];
+      };
+      const log = JSON.parse(readFileSync(join(ROOT, 'src/documentation/data/changelog.json'), 'utf8')) as {
+        entries: { version: string }[];
+      };
+      const released = record.releases
+        .slice(0, 6) // the dialog shows the newest six (WHATS_NEW_RELEASES)
+        .map((r) => r.version)
+        .filter((v) => v !== 'unreleased' && log.entries.some((e) => e.version === `v${v}`));
+      const p = await browser.newPage();
+      try {
+        await p.goto(`${server.url}${PAGE}`);
+        for (const v of released)
+          assert.ok(
+            await p.$(`dialog#whats-new [data-whats-new-release="${v}"] .whats-new-commits li`),
+            `the dialog lists v${v}'s commit messages`,
+          );
+        const rel = await p.getAttribute('a.sidebar-link[data-page$="/changelog.html"]', 'data-page');
+        await p.goto(`${server.url}/dist/documentation/${rel}`);
+        for (const v of released)
+          assert.ok(await p.$(`[data-whats-new-pages="${v}"]`), `v${v}'s changelog entry lists its pages`);
+      } finally {
+        await p.close();
+      }
+    },
+  );
 
   await check('no first-party page errors during the whole run', async () => {
     assert.deepEqual(pageErrors, [], `uncaught page errors: ${pageErrors.join(' | ')}`);

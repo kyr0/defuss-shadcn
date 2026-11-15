@@ -31,8 +31,8 @@ Built from: [Badge](../badge/component-skill.md), [Button](../button/component-s
 ```html
   <article class="mk-product-item">
     <div class="mk-product-item-media">
-      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-shirt/600/750" alt="">
-      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-shirt-b/600/750" alt="">
+      <img class="mk-product-item-image" src="images/photos/s-prod-shirt-600x750.webp" alt="">
+      <img class="mk-product-item-image" data-hover src="images/photos/s-prod-shirt-b-600x750.webp" alt="">
       <span class="badge mk-product-item-badge" data-variant="default" data-sale>−20%</span>
       <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p1"><i data-lucide="heart"></i><span class="sr-only">Save Linen shirt to your wishlist</span></label>
     </div>
@@ -47,8 +47,8 @@ Built from: [Badge](../badge/component-skill.md), [Button](../button/component-s
   </article>
   <article class="mk-product-item">
     <div class="mk-product-item-media">
-      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-mug/600/750" alt="">
-      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-mug-b/600/750" alt="">
+      <img class="mk-product-item-image" src="images/photos/s-prod-mug-600x750.webp" alt="">
+      <img class="mk-product-item-image" data-hover src="images/photos/s-prod-mug-b-600x750.webp" alt="">
       <span class="badge mk-product-item-badge" data-variant="default">New</span>
       <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p2"><i data-lucide="heart"></i><span class="sr-only">Save Stoneware mug to your wishlist</span></label>
     </div>
@@ -63,8 +63,8 @@ Built from: [Badge](../badge/component-skill.md), [Button](../button/component-s
   </article>
   <article class="mk-product-item">
     <div class="mk-product-item-media">
-      <img class="mk-product-item-image" src="https://picsum.photos/seed/prod-bag/600/750" alt="">
-      <img class="mk-product-item-image" data-hover src="https://picsum.photos/seed/prod-bag-b/600/750" alt="">
+      <img class="mk-product-item-image" src="images/photos/s-prod-bag-600x750.webp" alt="">
+      <img class="mk-product-item-image" data-hover src="images/photos/s-prod-bag-b-600x750.webp" alt="">
       <label class="mk-product-item-wish"><input type="checkbox" name="wish" value="p3"><i data-lucide="heart"></i><span class="sr-only">Save Canvas tote to your wishlist</span></label>
     </div>
     <div class="mk-product-item-body">

@@ -22,7 +22,7 @@
 
 ```html example part label="Event Item (card)"
 <article class="mk-event-item" data-variant="card">
-  <img class="mk-event-item-media" src="https://picsum.photos/seed/ev-meetup/800/450" alt="" />
+  <img class="mk-event-item-media" src="images/photos/s-ev-meetup-800x450.webp" alt="" />
   <time class="mk-event-item-date" datetime="2026-10-14T18:00"><span>Oct</span><b>14</b></time>
   <div class="mk-event-item-body">
     <h3 class="mk-event-item-title"><a href="#">Calm Product Meetup Lisbon</a></h3>

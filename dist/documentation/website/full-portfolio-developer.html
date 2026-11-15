@@ -562,7 +562,7 @@
         <header class="mk-resume-header" data-variant="compact">
           <img
             class="mk-resume-header-photo shape-hexagon"
-            src="https://picsum.photos/id/1005/400/400"
+            src="../images/photos/1005-400x400.webp"
             alt="Sam Lindqvist"
             data-df-entrance="spin"
           />
@@ -926,7 +926,7 @@
         </section>
       </div>
       <figure class="pf-repo-shot">
-        <img data-repo-shot src="https://picsum.photos/id/1038/1400/600" alt="Dark, choppy water of the open sea" />
+        <img data-repo-shot src="../images/photos/1038-1400x600.webp" alt="Dark, choppy water of the open sea" />
         <figcaption data-repo="caption">The name: water that pushes back</figcaption>
       </figure>
       <section class="pf-repo-result" aria-labelledby="pf-dev-repo-result">
@@ -970,7 +970,7 @@
         >
         <div class="mk-article-header-byline">
           <span class="avatar"
-            ><img class="avatar-image shape-hexagon" src="https://picsum.photos/id/1005/96/96" alt=""
+            ><img class="avatar-image shape-hexagon" src="../images/photos/1005-96x96.webp" alt=""
           /></span>
           <div>
             <a class="mk-article-header-author" href="#/" data-router-link>Sam Lindqvist</a>
@@ -1628,7 +1628,7 @@
       terminal(page.find('[data-repo-term]'), repo.term);
       page
         .find('[data-repo-shot]')
-        .attr('src', 'https://picsum.photos/id/' + repo.shot[0] + '/1400/600')
+        .attr('src', '../images/photos/' + repo.shot[0] + '-1400x600.webp')
         .attr('alt', repo.alt ?? repo.shot[1]);
       const [prev, next] = around(REPOS, name);
       page.find('[rel="prev"]').attr('href', '#/repos/' + prev);

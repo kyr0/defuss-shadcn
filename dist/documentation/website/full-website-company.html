@@ -886,8 +886,8 @@
         </dl>
       </div>
       <figure class="mk-about-intro-media">
-        <img src="https://picsum.photos/id/308/800/1000" alt="A narrow, colourful street in an old town" />
-        <img src="https://picsum.photos/id/1/600/600" alt="Someone typing on a laptop" />
+        <img src="../images/photos/308-800x1000.webp" alt="A narrow, colourful street in an old town" />
+        <img src="../images/photos/1-600x600.webp" alt="Someone typing on a laptop" />
       </figure>
     </div>
   </section>
@@ -950,7 +950,7 @@
   <div class="co-team" data-company-view="team" hidden>
     <article class="mk-team-member" aria-labelledby="tm-0">
       <div class="mk-team-member-portrait">
-        <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=25" alt="Portrait of Sophie Tan" />
+        <img class="mk-team-member-photo" src="../images/avatars/25-480.webp" alt="Portrait of Sophie Tan" />
         <span class="mk-team-member-tag"
           ><i data-lucide="map-pin"></i><span data-i18n-target="c2-t1">Lisbon</span></span
         >
@@ -1014,7 +1014,7 @@
     </article>
     <article class="mk-team-member" aria-labelledby="tm-1">
       <div class="mk-team-member-portrait">
-        <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=32" alt="Portrait of Hannah Lee" />
+        <img class="mk-team-member-photo" src="../images/avatars/32-480.webp" alt="Portrait of Hannah Lee" />
         <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Berlin</span>
         <ul class="mk-team-member-links">
           <li
@@ -1076,7 +1076,7 @@
     </article>
     <article class="mk-team-member" aria-labelledby="tm-2">
       <div class="mk-team-member-portrait">
-        <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=12" alt="Portrait of Alex Moreau" />
+        <img class="mk-team-member-photo" src="../images/avatars/12-480.webp" alt="Portrait of Alex Moreau" />
         <span class="mk-team-member-tag"
           ><i data-lucide="map-pin"></i><span data-i18n-target="c2-t2">Lisbon</span></span
         >
@@ -1140,7 +1140,7 @@
     </article>
     <article class="mk-team-member" aria-labelledby="tm-3">
       <div class="mk-team-member-portrait">
-        <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=16" alt="Portrait of Priya Natarajan" />
+        <img class="mk-team-member-photo" src="../images/avatars/16-480.webp" alt="Portrait of Priya Natarajan" />
         <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Remote</span>
         <ul class="mk-team-member-links">
           <li
@@ -1227,7 +1227,7 @@
         <p class="mk-timeline-item-text" data-i18n-target="c2-h3t"
           >A two-year rewrite ships: Acme works on a plane, in a tunnel, anywhere.</p
         >
-        <img class="mk-timeline-item-media" src="https://picsum.photos/id/0/900/506" alt="" />
+        <img class="mk-timeline-item-media" src="../images/photos/0-900x506.webp" alt="" />
       </div>
     </li>
     <li class="mk-timeline-item">
@@ -1429,7 +1429,7 @@
   </section>
   <template data-co-case-card>
     <article class="mk-case-preview">
-      <figure class="mk-case-preview-media"><img src="https://picsum.photos/id/180/800/500" alt="" /></figure>
+      <figure class="mk-case-preview-media"><img src="../images/photos/180-800x500.webp" alt="" /></figure>
       <div class="mk-case-preview-body">
         <div class="mk-case-preview-meta"
           ><span class="mk-case-preview-logo" data-case-card="client"></span
@@ -1461,7 +1461,7 @@
         ></div>
         <h1 class="mk-case-study-title" id="cs-title" data-case-field="title"></h1>
         <figure class="mk-case-study-cover"
-          ><img src="https://picsum.photos/id/180/1600/700" alt="" data-case-cover
+          ><img src="../images/photos/180-1600x700.webp" alt="" data-case-cover
         /></figure>
       </header>
       <dl class="mk-case-study-results" data-case-results></dl>
@@ -1481,7 +1481,7 @@
               <blockquote><p data-case-field="quote"></p></blockquote>
               <figcaption
                 ><span class="avatar"
-                  ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" data-case-avatar /></span
+                  ><img class="avatar-image" src="../images/avatars/47-96.webp" alt="" data-case-avatar /></span
                 ><div><strong data-case-field="person"></strong><br /><span data-case-field="role"></span></div
               ></figcaption>
             </figure>
@@ -2652,7 +2652,7 @@
         const t = tr(item);
         const el = df$(card.cloneNode(true));
         el.find('img')
-          .attr('src', 'https://picsum.photos/id/' + item.photo + '/800/500')
+          .attr('src', '../images/photos/' + item.photo + '-800x500.webp')
           .attr('alt', t.alt);
         el.find('[data-case-card="title"]').attr('href', '#/work/' + key);
         fill(el, 'data-case-card', {
@@ -2673,9 +2673,9 @@
       fill(page, 'data-case-field', { ...t, client: item.client, person: item.person, plan: item.plan });
       page
         .find('[data-case-cover]')
-        .attr('src', 'https://picsum.photos/id/' + item.photo + '/1600/700')
+        .attr('src', '../images/photos/' + item.photo + '-1600x700.webp')
         .attr('alt', t.alt);
-      page.find('[data-case-avatar]').attr('src', 'https://i.pravatar.cc/96?img=' + item.avatar);
+      page.find('[data-case-avatar]').attr('src', '../images/avatars/' + item.avatar + '-96.webp');
       const results = page.find('[data-case-results]').html('');
       for (const [value, label] of t.results) {
         results.append(df$('<div></div>').append(df$('<dt></dt>').text(label)).append(df$('<dd></dd>').text(value)));

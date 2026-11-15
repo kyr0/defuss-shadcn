@@ -29,7 +29,7 @@ Built from: [Number Input](../../forms-inputs/number-input/component-skill.md).
 ```html
 <ul class="mk-cart-list" aria-label="Cart, 2 items">
   <li class="mk-cart-item">
-    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-shirt/240/300" alt="">
+    <img class="mk-cart-item-image" src="images/photos/s-prod-shirt-240x300.webp" alt="">
     <div class="mk-cart-item-info">
       <h3 class="mk-cart-item-name"><a href="#">Linen shirt</a></h3>
       <p class="mk-cart-item-options">Sand · Size M</p>
@@ -43,7 +43,7 @@ Built from: [Number Input](../../forms-inputs/number-input/component-skill.md).
     <button class="mk-cart-item-remove" type="button" aria-label="Remove Linen shirt from cart"><i data-lucide="x"></i></button>
   </li>
   <li class="mk-cart-item">
-    <img class="mk-cart-item-image" src="https://picsum.photos/seed/prod-mug/240/300" alt="">
+    <img class="mk-cart-item-image" src="images/photos/s-prod-mug-240x300.webp" alt="">
     <div class="mk-cart-item-info">
       <h3 class="mk-cart-item-name"><a href="#">Stoneware mug</a></h3>
       <p class="mk-cart-item-options">Oat · 350 ml</p>

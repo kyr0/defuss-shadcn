@@ -7,18 +7,18 @@
     "BLK": 135,
     "TPL": 4
   },
-  "templatePages": 93,
-  "templates": 97,
+  "templatePages": 94,
+  "templates": 98,
   "templateGroups": {
     "WYSIWYG Editors": 1,
     "Application": 9,
     "Presentations": 33,
     "Papers": 15,
-    "Website": 35
+    "Website": 36
   },
   "tokens": 52,
-  "examples": 1978,
-  "unitTestFiles": 49,
+  "examples": 1979,
+  "unitTestFiles": 50,
   "withJs": 83,
   "withoutJs": 178,
   "totalSize": 4211741,

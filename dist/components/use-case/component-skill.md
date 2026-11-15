@@ -39,7 +39,7 @@ An `<article>` with an eyebrow (who it is for), a title, the situation and the a
       </ul>
       <p class="mk-use-case-metric"><strong>−40%</strong> time from code freeze to launch</p>
     </div>
-    <figure class="mk-use-case-media"><img src="https://picsum.photos/seed/usecase-launch/1000/750" alt=""></figure>
+    <figure class="mk-use-case-media"><img src="images/photos/s-usecase-launch-1000x750.webp" alt=""></figure>
   </div>
 </article>
 ```

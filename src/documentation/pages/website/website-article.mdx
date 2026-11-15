@@ -700,9 +700,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <h1 class="mk-article-header-title">How offline sync works in Acme 4.0</h1>
     <p class="mk-article-header-subtitle">CRDTs, a write-ahead log and a lot of patience.</p>
     <div class="mk-article-header-byline">
-      <span class="avatar"
-        ><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" data-article-face
-      /></span>
+      <span class="avatar"><img class="avatar-image" src="images/avatars/47-96.webp" alt="" data-article-face /></span>
       <div>
         <a class="mk-article-header-author" href="#article-bio">Sophie Tan</a>
         <div class="mk-article-header-meta"
@@ -714,7 +712,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     </div>
     <figure class="mk-article-header-media">
       <img
-        src="https://picsum.photos/id/60/1400/700"
+        src="images/photos/60-1400x700.webp"
         alt="A desk with a keyboard, a tablet and a notebook"
         data-article-photo
       />
@@ -809,7 +807,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <div class="article-column article-after">
     <section class="mk-author-bio" aria-labelledby="article-bio">
       <span class="avatar" data-size="lg"
-        ><img class="avatar-image" src="https://i.pravatar.cc/160?img=47" alt="" data-article-bio-face
+        ><img class="avatar-image" src="images/avatars/47-160.webp" alt="" data-article-bio-face
       /></span>
       <div class="mk-author-bio-body">
         <span class="mk-author-bio-label" data-i18n-target="written">Written by</span>
@@ -861,7 +859,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <div class="article-next-grid">
         <article class="mk-related-item" data-variant="card" data-related-slot="0">
           <figure class="mk-related-item-media"
-            ><img src="https://picsum.photos/id/225/600/400" alt="" data-related-photo
+            ><img src="images/photos/225-600x400.webp" alt="" data-related-photo
           /></figure>
           <div class="mk-related-item-body">
             <span class="mk-related-item-kind" data-i18n-target="kind-1"
@@ -878,7 +876,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         </article>
         <article class="mk-related-item" data-variant="card" data-related-slot="1">
           <figure class="mk-related-item-media"
-            ><img src="https://picsum.photos/id/160/600/600" alt="" data-related-photo
+            ><img src="images/photos/160-600x600.webp" alt="" data-related-photo
           /></figure>
           <div class="mk-related-item-body">
             <span class="mk-related-item-kind" data-i18n-target="kind-2"
@@ -896,7 +894,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </article>
         <article class="mk-related-item" data-variant="card">
-          <figure class="mk-related-item-media"><img src="https://picsum.photos/id/119/600/400" alt="" /></figure>
+          <figure class="mk-related-item-media"><img src="images/photos/119-600x400.webp" alt="" /></figure>
           <div class="mk-related-item-body">
             <span class="mk-related-item-kind" data-i18n-target="kind-discussion">Discussion</span>
             <h3 class="mk-related-item-title"
@@ -913,14 +911,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <h2 class="mk-author-list-title" id="contributors" data-i18n-target="contributors">Contributors</h2>
       <ul class="mk-author-list-items">
         <li class="mk-author-list-item">
-          <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=47" alt="" /></span>
+          <span class="avatar"><img class="avatar-image" src="images/avatars/47-96.webp" alt="" /></span>
           <div class="mk-author-list-who"
             ><span class="mk-author-list-name">Sophie Tan</span
             ><span class="mk-author-list-role">Staff engineer</span></div
           >
         </li>
         <li class="mk-author-list-item">
-          <span class="avatar"><img class="avatar-image" src="https://i.pravatar.cc/96?img=32" alt="" /></span>
+          <span class="avatar"><img class="avatar-image" src="images/avatars/32-96.webp" alt="" /></span>
           <div class="mk-author-list-who"
             ><span class="mk-author-list-name">Hannah Lee</span
             ><span class="mk-author-list-role" data-i18n-target="role-hannah">Design lead</span></div
@@ -1181,10 +1179,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           df$('.mk-article-header-title').text(article.title);
           df$('.mk-article-header-subtitle').text(article.subtitle);
           df$('.mk-article-header-author').text(article.author);
-          df$('[data-article-face]').attr('src', 'https://i.pravatar.cc/96?img=' + author.img);
+          df$('[data-article-face]').attr('src', 'images/avatars/' + author.img + '-96.webp');
           df$('[data-article-date]').attr('datetime', article.date);
           df$('[data-article-photo]')
-            .attr('src', 'https://picsum.photos/id/' + article.photo + '/1400/700')
+            .attr('src', 'images/photos/' + article.photo + '-1400x700.webp')
             .attr('alt', article.alt);
           df$('[data-article-caption]').text(article.caption);
           // the routed article's paragraphs, or the authored body of the one on the page
@@ -1194,7 +1192,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             for (const text of article.body) body.append(df$('<p></p>').text(text));
           } else body.html(authored);
           // the author under the article
-          df$('[data-article-bio-face]').attr('src', 'https://i.pravatar.cc/160?img=' + author.img);
+          df$('[data-article-bio-face]').attr('src', 'images/avatars/' + author.img + '-160.webp');
           df$('[data-article-bio-name]').text(article.author);
           df$('[data-article-bio-text]').text(author.bio);
           df$('[data-article-bio-mail]').attr('href', 'mailto:' + author.mail);
@@ -1205,9 +1203,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               .find('[data-related-link]')
               .attr('href', '#/articles/' + other)
               .text(ARTICLES[other].title);
-            card
-              .find('[data-related-photo]')
-              .attr('src', 'https://picsum.photos/id/' + ARTICLES[other].photo + '/600/400');
+            card.find('[data-related-photo]').attr('src', 'images/photos/' + ARTICLES[other].photo + '-600x400.webp');
           });
           for (const [rel, step] of [
             ['prev', -1],

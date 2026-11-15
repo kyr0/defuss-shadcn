@@ -20,7 +20,7 @@
 
 ```html example part label="Service Item (image)"
 <article class="mk-service-item" data-variant="image">
-  <img class="mk-service-item-media" src="https://picsum.photos/seed/service-0/800/450" alt="" />
+  <img class="mk-service-item-media" src="images/photos/s-service-0-800x450.webp" alt="" />
   <h3 class="mk-service-item-title"><a href="#">Strategy</a></h3>
   <p class="mk-service-item-desc">Roadmaps and research that tell you what to build next - and what to stop.</p>
   <span class="mk-service-item-more" aria-hidden="true">See the work <i data-lucide="arrow-right"></i></span>

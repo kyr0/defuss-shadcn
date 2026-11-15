@@ -584,7 +584,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <header class="mk-resume-header" data-variant="poster">
         <img
           class="mk-resume-header-photo frame-thick shadow-retro rounded-none"
-          src="https://picsum.photos/id/91/700/700"
+          src="images/photos/91-700x700.webp"
           alt="Knut Berg"
           data-df-entrance="flip"
         />
@@ -612,7 +612,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               href="#/work/northern-lights-live"
               data-router-link
             >
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1079/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/1079-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Northern Lights Live</strong>
                 <span class="mk-portfolio-grid-meta">WebGL · 2026</span>
@@ -625,7 +625,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
               href="#/work/fjord-typeface-site"
               data-router-link
             >
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/942/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/942-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Fjord Typeface Site</strong>
                 <span class="mk-portfolio-grid-meta">Variable fonts · 2025</span>
@@ -634,7 +634,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link frame-thick shadow-hard" href="#/work/synth-in-a-tab" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1082/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/145-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Synth in a Tab</strong>
                 <span class="mk-portfolio-grid-meta">Web Audio · 2024</span>
@@ -643,7 +643,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link frame-thick shadow-hard" href="#/work/metro-night-map" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1033/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/1033-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Metro Night Map</strong>
                 <span class="mk-portfolio-grid-meta">D3 · 2023</span>
@@ -757,7 +757,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       </header>
       <figure class="mk-project-details-cover" data-p-shot="0" data-p-size="1600/800">
         <img
-          src="https://picsum.photos/id/1079/1600/800"
+          src="images/photos/1079-1600x800.webp"
           alt="A ring of sparks spun in the dark, a long exposure in black and white"
         />
       </figure>
@@ -794,14 +794,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       <div class="pf-shots">
         <figure data-p-shot="1" data-p-size="900/675">
           <img
-            src="https://picsum.photos/id/1022/900/675"
+            src="images/photos/1022-900x675.webp"
             alt="Green northern lights over a single pine tree"
             loading="lazy"
           />
           <figcaption>The real sky, for the colours</figcaption>
         </figure>
         <figure data-p-shot="2" data-p-size="900/675">
-          <img src="https://picsum.photos/id/903/900/675" alt="A person under the Milky Way at night" loading="lazy" />
+          <img src="images/photos/903-900x675.webp" alt="A person under the Milky Way at night" loading="lazy" />
           <figcaption>The second-screen mode</figcaption>
         </figure>
       </div>
@@ -975,7 +975,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         "unit": "patches shared in the first year",
         "result": "It runs a weekly workshop for children at a library in Bergen, and three music schools use it to teach what a filter does.",
         "shots": [
-          [1082, "Hands playing a piano, in black and white"],
+          [145, "The tuning pegs of a guitar headstock"],
           [39, "The arm of a record player over a spinning record", "The sequencer, sixteen steps"],
           [452, "A concert crowd with raised hands under stage lights", "A patch played live in Oslo"]
         ]
@@ -1039,7 +1039,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         const [id, alt, caption] = item.shots[Number(figure.dataset.pShot)];
         df$(figure)
           .find('img')
-          .attr('src', 'https://picsum.photos/id/' + id + '/' + figure.dataset.pSize)
+          .attr('src', 'images/photos/' + id + '-' + figure.dataset.pSize.replace('/', 'x') + '.webp')
           .attr('alt', alt);
         if (caption) df$(figure).find('figcaption').text(caption);
       });

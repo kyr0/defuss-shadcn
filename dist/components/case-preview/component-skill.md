@@ -29,7 +29,7 @@ Built from: [Badge](../badge/component-skill.md).
 
 ```html
   <article class="mk-case-preview">
-    <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-nw/800/500" alt=""></figure>
+    <figure class="mk-case-preview-media"><img src="images/photos/s-case-nw-800x500.webp" alt=""></figure>
     <div class="mk-case-preview-body">
       <div class="mk-case-preview-meta"><span class="mk-case-preview-logo">Northwind</span><span class="badge" data-variant="outline">Logistics</span></div>
       <h3 class="mk-case-preview-title"><a href="#">How Northwind cut planning meetings in half</a></h3>
@@ -38,7 +38,7 @@ Built from: [Badge](../badge/component-skill.md).
     </div>
   </article>
   <article class="mk-case-preview">
-    <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-gx/800/500" alt=""></figure>
+    <figure class="mk-case-preview-media"><img src="images/photos/s-case-gx-800x500.webp" alt=""></figure>
     <div class="mk-case-preview-body">
       <div class="mk-case-preview-meta"><span class="mk-case-preview-logo">Globex</span><span class="badge" data-variant="outline">Research</span></div>
       <h3 class="mk-case-preview-title"><a href="#">Globex brings 400 researchers onto one wiki</a></h3>
@@ -47,7 +47,7 @@ Built from: [Badge](../badge/component-skill.md).
     </div>
   </article>
   <article class="mk-case-preview">
-    <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-it/800/500" alt=""></figure>
+    <figure class="mk-case-preview-media"><img src="images/photos/s-case-it-800x500.webp" alt=""></figure>
     <div class="mk-case-preview-body">
       <div class="mk-case-preview-meta"><span class="mk-case-preview-logo">Initech</span><span class="badge" data-variant="outline">SaaS</span></div>
       <h3 class="mk-case-preview-title"><a href="#">Initech ships weekly instead of quarterly</a></h3>

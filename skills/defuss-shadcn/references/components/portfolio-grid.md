@@ -34,7 +34,7 @@ Built from: plain HTML - no other component. Shapes come from `theme/utils/shape
 <ul class="mk-portfolio-grid">
   <li class="mk-portfolio-grid-item" data-span="big">
     <a class="mk-portfolio-grid-link" href="#">
-      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-1/900/900" alt="" />
+      <img class="mk-portfolio-grid-media" src="images/photos/s-pg-1-900x900.webp" alt="" />
       <span class="mk-portfolio-grid-caption">
         <strong class="mk-portfolio-grid-title">Northwind design system</strong>
         <span class="mk-portfolio-grid-meta">Design system · 2025</span>
@@ -43,7 +43,7 @@ Built from: plain HTML - no other component. Shapes come from `theme/utils/shape
   </li>
   <li class="mk-portfolio-grid-item">
     <a class="mk-portfolio-grid-link" href="#">
-      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-2/600/600" alt="" />
+      <img class="mk-portfolio-grid-media" src="images/photos/s-pg-2-600x600.webp" alt="" />
       <span class="mk-portfolio-grid-caption">
         <strong class="mk-portfolio-grid-title">Museo Digital</strong>
         <span class="mk-portfolio-grid-meta">Website · 2024</span>
@@ -52,7 +52,7 @@ Built from: plain HTML - no other component. Shapes come from `theme/utils/shape
   </li>
   <li class="mk-portfolio-grid-item" data-span="tall">
     <a class="mk-portfolio-grid-link" href="#">
-      <img class="mk-portfolio-grid-media" src="https://picsum.photos/seed/pg-3/600/1200" alt="" />
+      <img class="mk-portfolio-grid-media" src="images/photos/s-pg-3-600x1200.webp" alt="" />
       <span class="mk-portfolio-grid-caption">
         <strong class="mk-portfolio-grid-title">Atlas Transit</strong>
         <span class="mk-portfolio-grid-meta">Mobile app · 2023</span>

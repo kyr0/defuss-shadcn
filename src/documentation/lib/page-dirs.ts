@@ -20,7 +20,11 @@ import { NAV, flattenNav } from './nav.ts';
 
 /** `Forms & Inputs` → `forms-inputs` - the section folder of components, pages, tests. */
 export function sectionSlug(heading: string): string {
-  return heading.toLowerCase().replace(/&/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return heading
+    .toLowerCase()
+    .replace(/&/g, ' ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 /** The site root page: the only page outside a section folder. */
@@ -65,23 +69,63 @@ export const WEBSITE_TEMPLATES = [
 /** the Website templates of a page or a part of one, not a whole site (an article, a comments thread, the account
  *  screens, a search page): routed and translated like the rest, but the front page's Websites gallery lists whole
  *  sites only (the maintainer, 2026-11-09) */
-export const WEBSITE_PAGE_TEMPLATES = ['website-article', 'website-comments', 'website-account-states', 'website-search-navigation'];
+export const WEBSITE_PAGE_TEMPLATES = [
+  'website-article',
+  'website-comments',
+  'website-account-states',
+  'website-search-navigation',
+];
 /**
  * The portfolio styles of Resume & Portfolio: one-page sites without routes - each a full-screen page beside it.
  * A list of their own, not part of WEBSITE_TEMPLATES: a template routes and translates (website-templates.e2e drives a
  * route and German on each), a style does neither - tests/e2e/site/portfolio-styles.e2e.ts checks what a style owes.
  */
-export const PORTFOLIO_STYLES = ['portfolio-editorial', 'portfolio-playful', 'portfolio-developer', 'portfolio-bento', 'portfolio-brutalist', 'portfolio-photographer', 'portfolio-swiss', 'portfolio-neon', 'portfolio-zine', 'portfolio-minimal'];
+export const PORTFOLIO_STYLES = [
+  'portfolio-editorial',
+  'portfolio-playful',
+  'portfolio-developer',
+  'portfolio-bento',
+  'portfolio-brutalist',
+  'portfolio-photographer',
+  'portfolio-swiss',
+  'portfolio-neon',
+  'portfolio-zine',
+  'portfolio-minimal',
+];
 /**
  * The Showcase sites of Website: one-page sites, each with its own subject, palette, type and three looks, made to
  * show the components dressed as a brand - no routes, no translation (English), like the portfolio styles; a
  * full-screen page beside each. tests/e2e/site/showcase-sites.e2e.ts checks what a site owes.
  */
-export const SHOWCASE_SITES = ['showcase-roastery', 'showcase-observatory', 'showcase-bouldering', 'showcase-records'];
+export const SHOWCASE_SITES = [
+  'showcase-roastery',
+  'showcase-observatory',
+  'showcase-bouldering',
+  'showcase-records',
+  'showcase-framework',
+];
 /** The industry sites (Website › Industries): one-page sites like the showcases - a restaurant, a hair salon, a hotel, a
  *  doctor's practice, a spa, a law firm, an agency and an AI startup (the maintainer, 2026-11-09). */
-export const INDUSTRY_SITES = ['industry-restaurant', 'industry-salon', 'industry-hotel', 'industry-practice', 'industry-spa', 'industry-law', 'industry-agency', 'industry-ai'];
-export const STANDALONE_DOCS = ['paper', 'letter', 'invoice', 'studio', ...WEBSITE_TEMPLATES, ...PORTFOLIO_STYLES, ...SHOWCASE_SITES, ...INDUSTRY_SITES];
+export const INDUSTRY_SITES = [
+  'industry-restaurant',
+  'industry-salon',
+  'industry-hotel',
+  'industry-practice',
+  'industry-spa',
+  'industry-law',
+  'industry-agency',
+  'industry-ai',
+];
+export const STANDALONE_DOCS = [
+  'paper',
+  'letter',
+  'invoice',
+  'studio',
+  ...WEBSITE_TEMPLATES,
+  ...PORTFOLIO_STYLES,
+  ...SHOWCASE_SITES,
+  ...INDUSTRY_SITES,
+];
 
 /** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) - its bundle is dist/apps/<name>/. */
 export const appName = (slug: string): string => slug.replace(/^scaffold-/, '');
@@ -102,7 +146,8 @@ export function standaloneSource(id: string): string | null {
 
 /** every nav href → the slug of its section, computed once */
 const SECTION_OF = new Map<string, string>();
-for (const s of NAV) for (const i of flattenNav(s.items)) SECTION_OF.set(i.href.replace(/\.html$/, ''), sectionSlug(s.heading));
+for (const s of NAV)
+  for (const i of flattenNav(s.items)) SECTION_OF.set(i.href.replace(/\.html$/, ''), sectionSlug(s.heading));
 
 /** The section folder of a page id ('' for the root page), null when no sidebar section lists it. */
 export function pageSection(id: string): string | null {
@@ -175,10 +220,14 @@ export const assetHref = (from: string, path: string): string => `${docsRoot(fro
  * and asset in every rendered page resolves from its folder.
  */
 // a video's captions (<track src>) too - VERIFIED: full-website-media.html asked videos/demo.en.vtt of its own folder (404)
-const LINK_ATTR = /(<(?:a|iframe|link|script|img|source|track|video|audio|form|use)\b[^>]*?\s(?:href|src|action|poster)=")([^"]*)(")/g;
+const LINK_ATTR =
+  /(<(?:a|iframe|link|script|img|source|track|video|audio|form|use)\b[^>]*?\s(?:href|src|action|poster)=")([^"]*)(")/g;
 const ASSET_ROOTS = /^(?:css|js|fonts|images|videos|templates|files)\//;
 export function resolvePageRefs(html: string, outputFile: string): string {
-  const id = outputFile.replace(/\\/g, '/').replace(/^.*\//, '').replace(/\.html$/, '');
+  const id = outputFile
+    .replace(/\\/g, '/')
+    .replace(/^.*\//, '')
+    .replace(/\.html$/, '');
   return html
     .replace(LINK_ATTR, (whole, open: string, value: string, close: string) => {
       if (/^(?:[a-z][a-z0-9+.-]*:|#|\/|\.\.?\/)/i.test(value)) return whole;
@@ -187,7 +236,29 @@ export function resolvePageRefs(html: string, outputFile: string): string {
       if (ASSET_ROOTS.test(value)) return `${open}${assetHref(id, value)}${close}`;
       return whole;
     })
-    .replace(/(\s(?:href|src)=")(\.\.\/(?:components|theme|apps|schemas)\/)/g, (_m, open: string, path: string) => `${open}${assetHref(id, path)}`);
+    .replace(
+      /(\s(?:href|src)=")(\.\.\/(?:components|theme|apps|schemas)\/)/g,
+      (_m, open: string, path: string) => `${open}${assetHref(id, path)}`,
+    );
+}
+
+/**
+ * A standalone page's asset strings outside the attributes resolvePageRefs reads: a docs card previews its example
+ * with a `<base>` at the docs root, so a script there may build `'images/photos/' + id + '...'` or keep
+ * `"images/..."` in a JSON block or a CSS `url()`; the same example as a full-screen page sits in its section
+ * folder without a base, where those strings named a file of that folder. Every quoted `images/` string (and
+ * `url(images/...)`) gets the page's way to the docs root. Only for the pages build-docs.ts writes itself - a doc
+ * page holds its examples' sources as text, which must keep the docs-root form the card runs.
+ * VERIFIED: (tests/page-dirs.test.ts) script, JSON and url() strings move; attribute values resolvePageRefs already
+ * rewrote and other text stay.
+ */
+export function resolveStandaloneAssets(html: string, outputFile: string): string {
+  const id = outputFile
+    .replace(/\\/g, '/')
+    .replace(/^.*\//, '')
+    .replace(/\.html$/, '');
+  const root = assetHref(id, '');
+  return root ? html.replace(/(["'`]|url\(\s*)images\//g, (_m, open: string) => `${open}${root}images/`) : html;
 }
 
 /** A link value that names a page by its id (`button.html#variants`): [id, its `#` / `?` part], else null. */

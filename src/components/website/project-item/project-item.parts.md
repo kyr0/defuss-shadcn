@@ -2,7 +2,7 @@
 
 ```html example part label="Project Item"
 <article class="mk-project-item">
-  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-a/800/600" alt="" /></figure>
+  <figure class="mk-project-item-media"><img src="images/photos/s-proj-a-800x600.webp" alt="" /></figure>
   <div class="mk-project-item-body">
     <h3 class="mk-project-item-title"><a href="#">Nordlicht Coffee</a></h3>
     <p class="mk-project-item-meta"><span>Brand identity</span><span>2026</span></p>
@@ -16,7 +16,7 @@
 
 ```html example part label="Project Item (overlay)"
 <article class="mk-project-item" data-variant="overlay">
-  <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-o0/640/800" alt="" /></figure>
+  <figure class="mk-project-item-media"><img src="images/photos/s-proj-o0-640x800.webp" alt="" /></figure>
   <div class="mk-project-item-body">
     <h3 class="mk-project-item-title"><a href="#">Kite Festival</a></h3>
     <p class="mk-project-item-meta"><span>Campaign</span><span>2026</span></p>

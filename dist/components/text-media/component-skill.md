@@ -35,7 +35,7 @@ A `<section>`: an eyebrow, a heading, paragraphs, an optional check list and lin
       <ul class="mk-text-media-list"><li><i data-lucide="check"></i>Edits never wait for the network</li><li><i data-lucide="check"></i>Conflicts resolve themselves</li><li><i data-lucide="check"></i>Works on every device</li></ul>
       <a class="mk-text-media-link" href="#">How sync works <i data-lucide="arrow-right"></i></a>
     </div>
-    <figure class="mk-text-media-media"><img src="https://picsum.photos/seed/tm-cabin/1000/750" alt="A laptop on a table in a mountain cabin"></figure>
+    <figure class="mk-text-media-media"><img src="images/photos/s-tm-cabin-1000x750.webp" alt="A laptop on a table in a mountain cabin"></figure>
   </div>
 </section>
 ```

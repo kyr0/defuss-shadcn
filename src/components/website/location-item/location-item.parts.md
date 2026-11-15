@@ -2,7 +2,7 @@
 
 ```html example part label="Location Item"
 <article class="mk-location-item">
-  <img class="mk-location-item-media" src="https://picsum.photos/seed/loc-0/800/450" alt="" />
+  <img class="mk-location-item-media" src="images/photos/s-loc-0-800x450.webp" alt="" />
   <div class="mk-location-item-body">
     <div class="mk-location-item-head"
       ><h3 class="mk-location-item-name">Acme Lisbon</h3><span class="mk-location-item-distance">0.8 km</span></div

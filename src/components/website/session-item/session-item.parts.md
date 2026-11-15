@@ -76,7 +76,7 @@
 >
   <img
     class="mk-session-item-cover"
-    src="https://picsum.photos/id/452/800/600"
+    src="images/photos/452-800x600.webp"
     alt="A crowd raising their hands under blue stage lights"
   />
   <div class="mk-session-item-time"><time datetime="2027-05-12T09:30">09:30</time><span>10:15</span></div>
@@ -90,8 +90,7 @@
     >
     <ul class="mk-session-item-speakers"
       ><li
-        ><span class="avatar" data-size="sm"
-          ><img class="avatar-image" src="https://i.pravatar.cc/96?img=45" alt="" /></span
+        ><span class="avatar" data-size="sm"><img class="avatar-image" src="images/avatars/45-96.webp" alt="" /></span
         >Priya Natarajan</li
       ></ul
     >

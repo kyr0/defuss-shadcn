@@ -24,7 +24,7 @@
 
 ```html example part label="Speaker Item (overlay)"
 <article class="mk-speaker-item" data-variant="overlay" aria-labelledby="sp-o1">
-  <img class="mk-speaker-item-photo" src="https://i.pravatar.cc/480?img=47" alt="Portrait of Sophie Tan" />
+  <img class="mk-speaker-item-photo" src="images/avatars/47-480.webp" alt="Portrait of Sophie Tan" />
   <div class="mk-speaker-item-body">
     <ul class="mk-speaker-item-tags" aria-label="Topics"
       ><li>Sync</li

@@ -29,8 +29,8 @@ A `<figure>` with two stacked pictures of the same size; the "after" picture is 
 ```html
 <figure class="mk-before-after">
   <div class="mk-before-after-stage">
-    <img class="mk-before-after-before" src="https://picsum.photos/seed/ba-street/1200/800?grayscale&amp;blur=2" alt="Before: the photo, faded and blurred">
-    <img class="mk-before-after-after" src="https://picsum.photos/seed/ba-street/1200/800" alt="After: the same photo, restored in color">
+    <img class="mk-before-after-before" src="images/photos/s-ba-street-1200x800-gray-blur2.webp" alt="Before: the photo, faded and blurred">
+    <img class="mk-before-after-after" src="images/photos/s-ba-street-1200x800.webp" alt="After: the same photo, restored in color">
     <span class="mk-before-after-handle" aria-hidden="true"></span>
     <span class="mk-before-after-label" data-side="before">Before</span>
     <span class="mk-before-after-label" data-side="after">After</span>

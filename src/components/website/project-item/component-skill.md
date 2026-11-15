@@ -28,7 +28,7 @@ An `<article>` with a `<figure>`, a title link covering the card, category and y
 
 ```html
   <article class="mk-project-item">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-a/800/600" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="images/photos/s-proj-a-800x600.webp" alt=""></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Nordlicht Coffee</a></h3>
       <p class="mk-project-item-meta"><span>Brand identity</span><span>2026</span></p>
@@ -36,7 +36,7 @@ An `<article>` with a `<figure>`, a title link covering the card, category and y
     </div>
   </article>
   <article class="mk-project-item">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-b/800/600" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="images/photos/s-proj-b-800x600.webp" alt=""></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Atlas Transit app</a></h3>
       <p class="mk-project-item-meta"><span>Product design</span><span>2025</span></p>
@@ -44,7 +44,7 @@ An `<article>` with a `<figure>`, a title link covering the card, category and y
     </div>
   </article>
   <article class="mk-project-item">
-    <figure class="mk-project-item-media"><img src="https://picsum.photos/seed/proj-c/800/600" alt=""></figure>
+    <figure class="mk-project-item-media"><img src="images/photos/s-proj-c-800x600.webp" alt=""></figure>
     <div class="mk-project-item-body">
       <h3 class="mk-project-item-title"><a href="#">Museo Digital</a></h3>
       <p class="mk-project-item-meta"><span>Website</span><span>2025</span></p>

@@ -28,7 +28,7 @@ An `<article>`: cover art, the title, show or artist and a metadata line (`<time
 
 ```html
 <article class="mk-audio-player" aria-labelledby="ap-1">
-  <img class="mk-audio-player-cover" src="https://picsum.photos/seed/podcast-calm/400/400" alt="">
+  <img class="mk-audio-player-cover" src="images/photos/s-podcast-calm-400x400.webp" alt="">
   <div class="mk-audio-player-body">
     <span class="mk-audio-player-show">The Calm Letter · Audio</span>
     <h3 class="mk-audio-player-title" id="ap-1">Why we never ship on Fridays</h3>

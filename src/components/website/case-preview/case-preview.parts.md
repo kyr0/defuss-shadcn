@@ -2,7 +2,7 @@
 
 ```html example part label="Case Preview"
 <article class="mk-case-preview">
-  <figure class="mk-case-preview-media"><img src="https://picsum.photos/seed/case-nw/800/500" alt="" /></figure>
+  <figure class="mk-case-preview-media"><img src="images/photos/s-case-nw-800x500.webp" alt="" /></figure>
   <div class="mk-case-preview-body">
     <div class="mk-case-preview-meta"
       ><span class="mk-case-preview-logo">Northwind</span

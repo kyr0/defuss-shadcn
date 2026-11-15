@@ -605,7 +605,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </div>
         </div>
         <div class="pf-portrait shape-circle frame-conic" data-df-entrance="zoom" style="--df-motion-delay: 150ms">
-          <img src="https://picsum.photos/id/660/700/700" alt="Rio Vega holding a sparkler" />
+          <img src="images/photos/660-700x700.webp" alt="Rio Vega holding a sparkler" />
         </div>
       </section>
       <section id="pf-neon-work" data-pf-section="work" aria-labelledby="pf-neon-work-title">
@@ -613,7 +613,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <ul class="mk-portfolio-grid" data-variant="strip">
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/halo" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1079/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/1079-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Halo</strong>
                 <span class="mk-portfolio-grid-meta">Light installation · 2026</span>
@@ -622,7 +622,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/long-exposure" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1042/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/1042-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Long Exposure</strong>
                 <span class="mk-portfolio-grid-meta">WebGL · 2025</span>
@@ -631,7 +631,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/fiesta-engine" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/959/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/959-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Fiesta Engine</strong>
                 <span class="mk-portfolio-grid-meta">Live visuals · 2025</span>
@@ -640,7 +640,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/aurora-synth" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1022/640/800" alt="" />
+              <img class="mk-portfolio-grid-media" src="images/photos/1022-640x800.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Aurora Synth</strong>
                 <span class="mk-portfolio-grid-meta">Web Audio · 2024</span>
@@ -653,7 +653,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         <section class="pf-glass" aria-labelledby="pf-neon-release">
           <h2 id="pf-neon-release">Latest release</h2>
           <article class="mk-audio-player" data-variant="compact" aria-labelledby="pf-neon-track">
-            <img class="mk-audio-player-cover" src="https://picsum.photos/id/974/300/300" alt="" />
+            <img class="mk-audio-player-cover" src="images/photos/974-300x300.webp" alt="" />
             <div class="mk-audio-player-body">
               <span class="mk-audio-player-show">Rio Vega · Single</span>
               <h3 class="mk-audio-player-title" id="pf-neon-track">Night Bus to Coyoacán</h3>
@@ -735,7 +735,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         data-case-img="0"
         data-w="1600"
         data-h="900"
-        src="https://picsum.photos/id/1079/1600/900"
+        src="images/photos/1079-1600x900.webp"
         alt="A ring of sparks from light painting at night"
       />
       <div class="pf-case-grid">
@@ -777,14 +777,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           data-case-img="1"
           data-w="900"
           data-h="700"
-          src="https://picsum.photos/id/117/900/700"
+          src="images/photos/117-900x700.webp"
           alt="Raised hands in front of a lit stage in a dark hall"
         />
         <img
           data-case-img="2"
           data-w="900"
           data-h="700"
-          src="https://picsum.photos/id/195/900/700"
+          src="images/photos/195-900x700.webp"
           alt="An alley strung with lights at night"
         />
       </div>
@@ -965,7 +965,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       view.find('[data-case-img]').each((_i, img) => {
         const [id, alt] = item.images[Number(img.dataset.caseImg)];
         df$(img)
-          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('src', 'images/photos/' + id + '-' + img.dataset.w + 'x' + img.dataset.h + '.webp')
           .attr('alt', alt);
       });
       for (const [rel, to] of Object.entries(near)) {

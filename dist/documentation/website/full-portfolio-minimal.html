@@ -511,11 +511,7 @@
   <div class="pf-column" data-pf-view="home" data-df-stagger style="--df-motion-stagger-step: 120ms">
     <div data-df-entrance="fade">
       <header class="mk-resume-header" data-variant="compact">
-        <img
-          class="mk-resume-header-photo shape-circle"
-          src="https://picsum.photos/id/338/200/200?grayscale"
-          alt="Noor Haddad"
-        />
+        <img class="mk-resume-header-photo shape-circle" src="../images/photos/338-200x200-gray.webp" alt="Noor Haddad" />
         <div class="mk-resume-header-body">
           <p class="mk-resume-header-status"
             ><span class="indicator-dot" data-variant="success" aria-hidden="true"></span> Open to a staff role in
@@ -626,7 +622,7 @@
         data-case-img="0"
         data-w="1200"
         data-h="750"
-        src="https://picsum.photos/id/180/1200/750"
+        src="../images/photos/180-1200x750.webp"
         alt="A laptop beside an open notebook with wireframe sketches"
       />
     </figure>
@@ -844,7 +840,7 @@
       view.find('[data-case-img]').each((_i, img) => {
         const [id, alt] = item.images[Number(img.dataset.caseImg)];
         df$(img)
-          .attr('src', 'https://picsum.photos/id/' + id + '/' + img.dataset.w + '/' + img.dataset.h)
+          .attr('src', '../images/photos/' + id + '-' + img.dataset.w + 'x' + img.dataset.h + '.webp')
           .attr('alt', alt);
       });
       for (const [rel, to] of Object.entries(near)) {

@@ -29,7 +29,7 @@ Built from: [Avatar](../avatar/component-skill.md), [Button](../button/component
 
 ```html
 <header class="mk-profile-header">
-  <img class="mk-profile-header-cover" src="https://picsum.photos/seed/profile-cover/1400/400" alt="">
+  <img class="mk-profile-header-cover" src="images/photos/s-profile-cover-1400x400.webp" alt="">
   <div class="mk-profile-header-body">
     <div class="mk-profile-header-top">
       <span class="avatar" data-size="xl"><img class="avatar-image" src="images/mk-portrait2.png" alt=""></span>

@@ -29,7 +29,7 @@ An `<article>` labelled by the name: a portrait (descriptive `alt`) with an opti
 ```html
   <article class="mk-team-member" aria-labelledby="tm-0">
     <div class="mk-team-member-portrait">
-      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=25" alt="Portrait of Sophie Tan">
+      <img class="mk-team-member-photo" src="images/avatars/25-480.webp" alt="Portrait of Sophie Tan">
       <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Lisbon</span>
       <ul class="mk-team-member-links">
         <li><a href="#" aria-label="Sophie Tan on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
@@ -46,7 +46,7 @@ An `<article>` labelled by the name: a portrait (descriptive `alt`) with an opti
   </article>
   <article class="mk-team-member" aria-labelledby="tm-1">
     <div class="mk-team-member-portrait">
-      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=32" alt="Portrait of Hannah Lee">
+      <img class="mk-team-member-photo" src="images/avatars/32-480.webp" alt="Portrait of Hannah Lee">
       <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Berlin</span>
       <ul class="mk-team-member-links">
         <li><a href="#" aria-label="Hannah Lee on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
@@ -63,7 +63,7 @@ An `<article>` labelled by the name: a portrait (descriptive `alt`) with an opti
   </article>
   <article class="mk-team-member" aria-labelledby="tm-2">
     <div class="mk-team-member-portrait">
-      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=12" alt="Portrait of Aron Homberg">
+      <img class="mk-team-member-photo" src="images/avatars/12-480.webp" alt="Portrait of Aron Homberg">
       <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Lisbon</span>
       <ul class="mk-team-member-links">
         <li><a href="#" aria-label="Aron Homberg on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>
@@ -80,7 +80,7 @@ An `<article>` labelled by the name: a portrait (descriptive `alt`) with an opti
   </article>
   <article class="mk-team-member" aria-labelledby="tm-3">
     <div class="mk-team-member-portrait">
-      <img class="mk-team-member-photo" src="https://i.pravatar.cc/480?img=16" alt="Portrait of Priya Natarajan">
+      <img class="mk-team-member-photo" src="images/avatars/16-480.webp" alt="Portrait of Priya Natarajan">
       <span class="mk-team-member-tag"><i data-lucide="map-pin"></i>Remote</span>
       <ul class="mk-team-member-links">
         <li><a href="#" aria-label="Priya Natarajan on LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5 3.5A2.5 2.5 0 1 1 5 8.5 2.5 2.5 0 0 1 5 3.5ZM3 10h4v11H3V10Zm7 0h3.8v1.6h.1c.5-1 1.8-1.9 3.6-1.9 3.9 0 4.5 2.5 4.5 5.8V21h-4v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5h-4V10Z"/></svg></a></li>

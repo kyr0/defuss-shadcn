@@ -641,6 +641,7 @@ export const NAV = [
                     { label: 'Observatory', href: 'showcase-observatory.html', type: 'TPL' },
                     { label: 'Bouldering Gym', href: 'showcase-bouldering.html', type: 'TPL' },
                     { label: 'Record Shop', href: 'showcase-records.html', type: 'TPL' },
+                    { label: 'Framework', href: 'showcase-framework.html', type: 'TPL' },
                 ],
             },
             {
