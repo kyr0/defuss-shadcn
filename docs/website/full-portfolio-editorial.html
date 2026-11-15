@@ -448,7 +448,7 @@
       <header class="mk-resume-header" data-variant="split">
         <img
           class="mk-resume-header-photo corner-arch"
-          src="https://picsum.photos/id/1027/800/1000"
+          src="../images/photos/1027-800x1000.webp"
           alt="Clara Moreau"
           data-df-entrance="wipe-up"
         />
@@ -480,7 +480,7 @@
         <ul class="mk-portfolio-grid" data-variant="index">
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/revue-lumiere" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1073/800/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="../images/photos/1073-800x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Revue Lumière, a redesign</strong>
                 <span class="mk-portfolio-grid-meta">Magazine · 2026</span>
@@ -489,7 +489,7 @@
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/the-quiet-atlas" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/24/800/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="../images/photos/24-800x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">The Quiet Atlas</strong>
                 <span class="mk-portfolio-grid-meta">Book · 2024</span>
@@ -498,7 +498,7 @@
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/maison-verre" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/1068/800/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="../images/photos/1068-800x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Maison Verre</strong>
                 <span class="mk-portfolio-grid-meta">Identity · 2023</span>
@@ -507,7 +507,7 @@
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/festival-du-livre" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/951/800/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="../images/photos/951-800x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Festival du Livre</strong>
                 <span class="mk-portfolio-grid-meta">Campaign · 2021</span>
@@ -516,7 +516,7 @@
           </li>
           <li class="mk-portfolio-grid-item">
             <a class="mk-portfolio-grid-link" href="#/work/eleven-gardens" data-router-link>
-              <img class="mk-portfolio-grid-media" src="https://picsum.photos/id/82/800/600" alt="" />
+              <img class="mk-portfolio-grid-media" src="../images/photos/82-800x600.webp" alt="" />
               <span class="mk-portfolio-grid-caption">
                 <strong class="mk-portfolio-grid-title">Eleven Gardens</strong>
                 <span class="mk-portfolio-grid-meta">Exhibition · 2019</span>
@@ -527,7 +527,7 @@
       </section>
       <article class="pf-feature" aria-labelledby="pf-ed-feature">
         <figure class="parallax-reveal">
-          <img src="https://picsum.photos/id/1073/1200/900" alt="Book pages laid out edge to edge on a table" />
+          <img src="../images/photos/1073-1200x900.webp" alt="Book pages laid out edge to edge on a table" />
           <figcaption>Revue Lumière, issue 212 - the flat plan of the first issue on the new grid.</figcaption>
         </figure>
         <div>
@@ -624,7 +624,7 @@
           >
         </header>
         <figure class="mk-project-details-cover" data-case-shot="0" data-case-size="1600/800">
-          <img src="https://picsum.photos/id/1073/1600/800" alt="Book pages laid out edge to edge on a table" />
+          <img src="../images/photos/1073-1600x800.webp" alt="Book pages laid out edge to edge on a table" />
           <figcaption>The flat plan of issue 212, laid out page by page</figcaption>
         </figure>
         <dl class="mk-project-details-facts">
@@ -663,18 +663,14 @@
         <div class="pf-case-shots">
           <figure data-case-shot="1" data-case-size="900/675">
             <img
-              src="https://picsum.photos/id/20/900/675"
+              src="../images/photos/20-900x675.webp"
               alt="A desk with a notebook, a pencil, a phone and printed logos"
               loading="lazy"
             />
             <figcaption>The grid, first drawn by hand</figcaption>
           </figure>
           <figure data-case-shot="2" data-case-size="900/675">
-            <img
-              src="https://picsum.photos/id/403/900/675"
-              alt="The keys of an old typewriter, close up"
-              loading="lazy"
-            />
+            <img src="../images/photos/403-900x675.webp" alt="The keys of an old typewriter, close up" loading="lazy" />
             <figcaption>One cover line instead of nine</figcaption>
           </figure>
         </div>
@@ -813,7 +809,7 @@
         "result": "Forty-two thousand visitors came, more than ever before. The striped totes sold out on the first morning.",
         "shots": [
           [951, "A building wall painted in red, yellow and white stripes", "A painted wall near the station"],
-          [1047, "A narrow street between old brick buildings", "The route from the station, signed in stripes"],
+          [57, "A street between tall brick buildings", "The route from the station, signed in stripes"],
           [
             1059,
             "A small shop with framed prints on the wall, a jacket and a workbench",
@@ -877,7 +873,7 @@
         const [id, alt, caption] = item.shots[Number(figure.dataset.caseShot)];
         df$(figure)
           .find('img')
-          .attr('src', 'https://picsum.photos/id/' + id + '/' + figure.dataset.caseSize)
+          .attr('src', '../images/photos/' + id + '-' + figure.dataset.caseSize.replace('/', 'x') + '.webp')
           .attr('alt', alt);
         df$(figure).find('figcaption').text(caption);
       });
