@@ -343,6 +343,7 @@ export const NAV = [
                     { label: 'Desktop', href: 'scaffold-desktop.html', type: 'TPL' },
                     { label: 'Document Editor', href: 'scaffold-document-editor.html', type: 'TPL' },
                     { label: 'Knowledge Graph', href: 'scaffold-knowledge-graph.html', type: 'TPL' },
+                    { label: 'API Documentation', href: 'scaffold-api-docs.html', type: 'TPL' },
                 ],
             },
         ] },

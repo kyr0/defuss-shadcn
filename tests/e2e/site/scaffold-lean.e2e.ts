@@ -67,6 +67,9 @@ async function open(href: string, full: boolean, extras: string[] = []): Promise
   page.on('console', (m) => { if (m.type() === 'error' && !/lucide|unpkg|Failed to load resource/i.test(m.text())) errors.push(m.text()); });
   // the icons come from a CDN in both variants - stub it so the comparison never waits on the network
   await page.route('https://unpkg.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: '' }));
+  // Shiki too (the API documentation paints its code with it): its paint lands at its own time in each load - the
+  // code stays plain in both variants
+  await page.route('https://esm.sh/**', (r) => r.fulfill({ status: 404, body: 'offline' }));
   // the Editor.js builds too (the document editor): the pinned devDependencies, never the network
   await offlineJsdelivr(page);
   const url = `${server.url}/dist/documentation/${href}`;

@@ -4,11 +4,13 @@
     {
       "version": "unreleased",
       "created": [
+        "scaffold-api-docs",
         "showcase-framework"
       ],
       "updated": [
         "about-intro",
         "annotated-timeseries",
+        "application-scaffolds",
         "audio-player",
         "before-after",
         "blog",
@@ -77,6 +79,7 @@
         "release-item",
         "resource-item",
         "resume-entry",
+        "routing",
         "sankey",
         "scaffold-admin-dashboard",
         "scaffold-desktop",
@@ -105,6 +108,7 @@
         "text-media",
         "theme-designer",
         "timeline-item",
+        "translation",
         "treemap",
         "use-case",
         "view-switcher",

@@ -12,6 +12,9 @@ import {
   WEBSITE_PAGE_TEMPLATES,
   WEBSITE_TEMPLATES,
 } from '../../../src/documentation/lib/page-dirs.ts';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { pageDirs } from '../../../src/documentation/lib/page-dirs-files.ts';
 
 /**
  * Why: the maintainer (2026-11-09) - "every website that we have should have all its sub-pages/links correctly
@@ -25,6 +28,8 @@ import {
  * Every picture a site or a full-screen app shows loads, on every route: the photos and avatars ship with the docs
  * (images/photos, images/avatars - scripts/lib/site-photos.ts). VERIFIED: (2026-11-15) while the old photo host was down
  * the published sites showed no picture, and nothing here noticed; a script-built name with no file fails here.
+ * The docs cards whose script builds a photo name (outside the sites and apps above) are opened card by card too -
+ * VERIFIED: (2026-11-15) the Virtual List's Grid asked for 24 photos no one had fetched.
  */
 const server = startServer();
 const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
@@ -170,6 +175,28 @@ try {
       await p.waitForLoadState('networkidle');
       assert.deepEqual([...new Set(broken)], [], 'pictures that do not load');
       assert.deepEqual(await emptyImages(p), [], 'pictures shown empty');
+      await p.close();
+    });
+  }
+  /** the other pages whose examples build a photo or avatar name by script */
+  const SCRIPTED = /images\/(photos|avatars)\/[^'"`\s)]*['"`]\s*\+|images\/(photos|avatars)\/[^'"`\s)]*\$\{/;
+  const pagesRoot = join(import.meta.dirname, '..', '..', '..', 'src', 'documentation', 'pages');
+  const cardPages = pageDirs(pagesRoot)
+    .filter((d) => d.folder !== 'website' && !(STANDALONE_APPS as readonly string[]).includes(d.slug))
+    .filter((d) => SCRIPTED.test(readFileSync(d.file, 'utf8')))
+    .map((d) => d.slug);
+  for (const slug of cardPages) {
+    await check(`${slug}: every picture its cards build loads`, async () => {
+      const p = await browser.newPage({ viewport: { width: 1400, height: 900 }, reducedMotion: 'reduce' });
+      const broken = watchImages(p);
+      await offlineJsdelivr(p);
+      await p.goto(`${server.url}/dist/documentation/${pageRel(slug)}`, { waitUntil: 'load' });
+      for (const card of await p.locator('.code-example').all()) {
+        await card.scrollIntoViewIfNeeded();
+        await p.waitForTimeout(400);
+      }
+      await p.waitForTimeout(1500); // a docs page never goes network-idle (its search worker)
+      assert.deepEqual([...new Set(broken)], [], 'pictures that do not load');
       await p.close();
     });
   }
