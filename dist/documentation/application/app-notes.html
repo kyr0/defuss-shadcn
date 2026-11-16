@@ -4577,7 +4577,7 @@
   </dialog>
   <input
     type="file"
-    accept="application/json,.json"
+    accept=".br,.json,application/json"
     hidden
     data-nt-import-file
     aria-label="Backup file"
@@ -6649,23 +6649,35 @@
       find();
     });
 
-    // -- backups: the workspace and its search index in one JSON file, and back
-    const download = async (name, text) => {
+    // -- backups: the workspace and its search index in one JSON file, Brotli-compressed with defuss-brotli (the
+    //    base64 vectors and the markup shrink to about a tenth), and back. The compressor's WASM loads on the
+    //    first backup only; import also takes an uncompressed .json
+    const brotliCompressor = async () => {
+      const m = await import('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/compressor-slim.js');
+      await m.init('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/compressor.wasm');
+      return m;
+    };
+    const brotliDecompressor = async () => {
+      const m = await import('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/decompressor-slim.js');
+      await m.init(BROTLI_WASM);
+      return m;
+    };
+    const download = async (name, bytes) => {
       if (globalThis.showSaveFilePicker) {
         try {
           const handle = await globalThis.showSaveFilePicker({
             suggestedName: name,
-            types: [{ description: 'Folio backup', accept: { 'application/json': ['.json'] } }],
+            types: [{ description: 'Folio backup', accept: { 'application/x-brotli': ['.br'] } }],
           });
           const out = await handle.createWritable();
-          await out.write(text);
+          await out.write(bytes);
           await out.close();
           return true;
         } catch (e) {
           if (e?.name === 'AbortError') return false;
         }
       }
-      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/x-brotli' }));
       const a = el('a');
       a.href = url;
       a.download = name;
@@ -6680,7 +6692,7 @@
       await reindex();
       const index = await readJson(INDEX);
       const regions = capture();
-      const name = 'folio-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      const name = 'folio-backup-' + new Date().toISOString().slice(0, 10) + '.json.br';
       const text = JSON.stringify({
         format: 'folio-backup',
         version: 1,
@@ -6688,7 +6700,9 @@
         workspace: { format: 'folio-workspace', version: 1, generation, saved: savedAt, regions },
         index,
       });
-      if (await download(name, text))
+      // quality 9: within a few percent of 11 on this JSON, several times faster in WASM
+      const bytes = (await brotliCompressor()).compressText(text, { quality: 9 });
+      if (await download(name, bytes))
         toast(words().backedUp, fmt(words().backedUpDesc, { n: pageCount(regions), f: name }));
     };
     // the confirm dialog: one question, its answer
@@ -6727,7 +6741,10 @@
       if (!file) return;
       let data = null;
       try {
-        data = JSON.parse(await file.text());
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        // a Brotli stream has no magic number: a backup that starts like JSON is JSON, anything else is decoded
+        const plain = /^\s*\{/.test(decode(bytes.subarray(0, 16)));
+        data = JSON.parse(plain ? decode(bytes) : (await brotliDecompressor()).decompressText(bytes));
       } catch {
         data = null;
       }

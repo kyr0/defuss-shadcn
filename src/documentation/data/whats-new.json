@@ -2,10 +2,11 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.9.16",
       "created": [],
       "updated": [
         "index",
+        "installation",
         "scaffold-notes",
         "system-in-numbers"
       ],

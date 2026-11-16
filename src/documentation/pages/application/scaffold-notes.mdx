@@ -4583,7 +4583,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   </dialog>
   <input
     type="file"
-    accept="application/json,.json"
+    accept=".br,.json,application/json"
     hidden
     data-nt-import-file
     aria-label="Backup file"
@@ -6655,23 +6655,35 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       find();
     });
 
-    // -- backups: the workspace and its search index in one JSON file, and back
-    const download = async (name, text) => {
+    // -- backups: the workspace and its search index in one JSON file, Brotli-compressed with defuss-brotli (the
+    //    base64 vectors and the markup shrink to about a tenth), and back. The compressor's WASM loads on the
+    //    first backup only; import also takes an uncompressed .json
+    const brotliCompressor = async () => {
+      const m = await import('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/compressor-slim.js');
+      await m.init('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/compressor.wasm');
+      return m;
+    };
+    const brotliDecompressor = async () => {
+      const m = await import('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/decompressor-slim.js');
+      await m.init(BROTLI_WASM);
+      return m;
+    };
+    const download = async (name, bytes) => {
       if (globalThis.showSaveFilePicker) {
         try {
           const handle = await globalThis.showSaveFilePicker({
             suggestedName: name,
-            types: [{ description: 'Folio backup', accept: { 'application/json': ['.json'] } }],
+            types: [{ description: 'Folio backup', accept: { 'application/x-brotli': ['.br'] } }],
           });
           const out = await handle.createWritable();
-          await out.write(text);
+          await out.write(bytes);
           await out.close();
           return true;
         } catch (e) {
           if (e?.name === 'AbortError') return false;
         }
       }
-      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/x-brotli' }));
       const a = el('a');
       a.href = url;
       a.download = name;
@@ -6686,7 +6698,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       await reindex();
       const index = await readJson(INDEX);
       const regions = capture();
-      const name = 'folio-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      const name = 'folio-backup-' + new Date().toISOString().slice(0, 10) + '.json.br';
       const text = JSON.stringify({
         format: 'folio-backup',
         version: 1,
@@ -6694,7 +6706,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         workspace: { format: 'folio-workspace', version: 1, generation, saved: savedAt, regions },
         index,
       });
-      if (await download(name, text))
+      // quality 9: within a few percent of 11 on this JSON, several times faster in WASM
+      const bytes = (await brotliCompressor()).compressText(text, { quality: 9 });
+      if (await download(name, bytes))
         toast(words().backedUp, fmt(words().backedUpDesc, { n: pageCount(regions), f: name }));
     };
     // the confirm dialog: one question, its answer
@@ -6733,7 +6747,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       if (!file) return;
       let data = null;
       try {
-        data = JSON.parse(await file.text());
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        // a Brotli stream has no magic number: a backup that starts like JSON is JSON, anything else is decoded
+        const plain = /^\s*\{/.test(decode(bytes.subarray(0, 16)));
+        data = JSON.parse(plain ? decode(bytes) : (await brotliDecompressor()).decompressText(bytes));
       } catch {
         data = null;
       }
@@ -6817,7 +6834,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <li><strong>Database</strong> - the roadmap is one set of items in three views: a <DocLink href="table.html">Table</DocLink> with <DocLink href="select.html">Select</DocLink> status pills, a board you drag cards across, a gallery with covers. Opening an item shows it in a <DocLink href="sheet.html">Sheet</DocLink>; every edit reaches all three views.</li>
   <li><strong>Storage</strong> - <a href="https://storage.defuss.org" target="_blank" rel="noopener">defuss-storage</a> keeps the workspace in a folder of the browser's origin private file system (its directory adapter, on the page itself). The workspace is the markup of the parts a reader changes - the pages, both sidebars' trees, the palette's page list and the trash - with live form values written as attributes and the components' runtime marks taken out, so every component starts again on it. A change is saved 0.6 s after the last one, into two files in turn, each with its generation: storage files have no atomic replace, and a write cut short leaves the other one whole. Until the stored workspace is in place the pages stay hidden (3 s at most). Two tabs that edit at once overwrite each other's saves - the last one wins. The docs preview is a sandboxed frame without storage: it keeps the files in memory and says so at the foot of the sidebar; the full-screen app keeps them across reloads.</li>
   <li><strong>Search</strong> - <a href="https://search.defuss.org" target="_blank" rel="noopener">defuss-search</a> ranks one document per section of a page (a heading starts one) and per roadmap item. Keywords work at once: BM25 over an English and a German analyzer, the title three times the text, prefix and fuzzy matching on the last word. Search by meaning is the lexical-semantic strategy with both models of defuss-vectorsearch: Winzling-embed turns every section and query into a vector, and the hits of both sources are fused and reordered by the ColBERT reranker (the reranked preset). The models' pinned files download once as Brotli from Hugging Face (about 34 MB with ONNX Runtime's WASM), are checked against their SHA-256 and are kept in the same storage. They download on a click in the palette or in Settings - nobody gets 34 MB unasked - and once the full-screen app keeps them they load by themselves (the preview keeps nothing, so there they come on a click each time). A vector is kept under a hash of its text, so an edit embeds only the sections it changed. Each hit shows whether keywords, meaning or both found it; a click opens the page at its section.</li>
-  <li><strong>Backups</strong> - the workspace menu (and Settings) writes one JSON file: the workspace and its search index - the lexical index, its documents and every vector. Import reads such a file back, after asking, and nothing is embedded again; a backup is treated as foreign markup, so scripts, frames, event attributes and script URLs are removed before it is shown. Reset brings back the sample workspace.</li>
+  <li><strong>Backups</strong> - the workspace menu (and Settings) writes one file, <code>folio-backup-&lt;date&gt;.json.br</code>: the workspace and its search index - the lexical index, its documents and every vector - as JSON, Brotli-compressed with <a href="https://github.com/kyr0/defuss-brotli" target="_blank" rel="noopener">defuss-brotli</a> (its compressor's WASM loads with the first backup). Import decodes it, and also takes an uncompressed <code>.json</code>. Import reads such a file back, after asking, and nothing is embedded again; a backup is treated as foreign markup, so scripts, frames, event attributes and script URLs are removed before it is shown. Reset brings back the sample workspace.</li>
   <li><strong>Full screen</strong> - <DocLink href="app-notes.html">app-notes.html</DocLink> is generated from this page's example at build time.</li>
 </ul>
 

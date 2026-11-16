@@ -5,7 +5,8 @@
       "date": "November 16, 2026",
       "commits": [
         "feat(notes): workspace in OPFS (defuss-storage), hybrid search with both models (defuss-search), backup and import"
-      ]
+      ],
+      "hash": "674fa2ef"
     },
     {
       "version": "v0.9.15",

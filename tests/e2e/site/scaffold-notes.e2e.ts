@@ -2,6 +2,7 @@ import { chromium, type Page } from 'playwright';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { brotliDecompressSync } from 'node:zlib';
 import { startServer } from '../server.ts';
 import { offlineJsdelivr, offlineModels } from '../lib/vendor-offline.ts';
 import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
@@ -446,16 +447,20 @@ try {
   });
 
   let backupFile = '';
-  await check('backup: the workspace menu saves the pages and the search index in one file', async () => {
+  await check('backup: the workspace menu saves the pages and the search index in one Brotli-compressed file', async () => {
     await palette(false);
     await app.click('.nt-ws');
     const download = app.waitForEvent('download');
     await app.click('#nt-ws-menu [data-nt-backup]');
     const d = await download;
-    assert.match(d.suggestedFilename(), /^folio-backup-\d{4}-\d{2}-\d{2}\.json$/);
-    backupFile = join(OUT, 'notes-backup.json');
+    assert.match(d.suggestedFilename(), /^folio-backup-\d{4}-\d{2}-\d{2}\.json\.br$/);
+    backupFile = join(OUT, 'notes-backup.json.br');
     await d.saveAs(backupFile);
-    const backup = JSON.parse(readFileSync(backupFile, 'utf8'));
+    const packed = readFileSync(backupFile);
+    assert.notEqual(packed[0], '{'.charCodeAt(0), 'not plain JSON');
+    const json = brotliDecompressSync(packed).toString('utf8');
+    assert.ok(packed.length * 4 < json.length, `Brotli shrinks it: ${packed.length} of ${json.length} bytes`);
+    const backup = JSON.parse(json);
     assert.equal(backup.format, 'folio-backup');
     assert.equal(backup.workspace.regions['.nt-pages'].length, 1);
     assert.ok(backup.workspace.regions['.nt-pages'][0].includes('Getting started - kept'));
@@ -491,8 +496,9 @@ try {
     await fresh.close();
   });
 
-  await check('a hostile backup: its scripts, event attributes and script URLs do not run', async () => {
-    const backup = JSON.parse(readFileSync(backupFile, 'utf8'));
+  await check('a hostile backup (plain JSON): its scripts, event attributes and script URLs do not run', async () => {
+    // an uncompressed .json imports too
+    const backup = JSON.parse(brotliDecompressSync(readFileSync(backupFile)).toString('utf8'));
     backup.workspace.regions['.nt-pages'][0] = backup.workspace.regions['.nt-pages'][0].replace(
       '<div class="nt-blocks">',
       '<div class="nt-blocks"><img src="x" onerror="globalThis.__pwned = 1"><script>globalThis.__pwned = 2</script><a href=" javascript:globalThis.__pwned=3" id="nt-evil">x</a><iframe srcdoc="<script>parent.__pwned=4</script>"></iframe>',
