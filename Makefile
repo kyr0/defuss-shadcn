@@ -54,7 +54,7 @@ purge-cdn: ## Purge jsDelivr @latest cache for all dist assets (run after deploy
 # SSG build, docs mirror, gate + tests. No screenshots: they are taken by hand
 # when a change needs a look (`make screenshots`), and no gate reads them (the
 # maintainer, 2026-11-10 - every release re-shot all ~460 PNGs twice).
-build: ## Full pipeline: lint → compile → bundle → minify → stats → figures → docs SSG → docs → verify → tests → e2e
+build: ## Full pipeline: lint → compile → bundle → minify → stats → figures → docs SSG → docs → verify → tests → e2e (SKIP_E2E=1: without e2e)
 	bun run lint
 	bun scripts/build.ts
 	bun scripts/bundle.ts
@@ -65,7 +65,7 @@ build: ## Full pipeline: lint → compile → bundle → minify → stats → fi
 	bun run docs
 	bun run verify
 	bun run test:run
-	bun run e2e
+	@if [ -n "$(SKIP_E2E)" ]; then echo "⚠️  e2e skipped (SKIP_E2E=1)"; else bun run e2e; fi
 
 build-docs: ## Build the documentation site only
 	bun run build:docs

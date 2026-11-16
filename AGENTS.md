@@ -169,7 +169,7 @@ defuss-shadcn/
 │   ├── lib/schema.ts                  ← component schema contract: validator + ## States table parser + CodeExample rules (pure)
 │   ├── lib/e2e-select.ts              ← which inputs an e2e file exercises (its fixtures and the BUILT dist files they load - all.js via the apps.ts markup analysis; the named component's sources; docs tests: all of src/ + scripts/) - pure, tests/e2e-select.test.ts
 │   ├── push.sh                        ← non-release: commit everything on main + push (SSH, else HTTPS via gh - lib/git-push.sh)
-│   ├── deploy.sh                      ← release, on main: bump every version site, changelog entry, make build, two-commit rule, tag v<version>, push, GitHub release + its section ZIPs (release-zips), purge-cdn
+│   ├── deploy.sh                      ← release, on main: bump every version site, changelog entry, make build, two-commit rule, tag v<version>, push, GitHub release + its section ZIPs (release-zips), purge-cdn; `--skip-e2e` runs make build with `SKIP_E2E=1` (every gate but the e2e)
 │   ├── bump-version.ts                ← moves every version site (lib/version-sites.ts) to a new version
 │   ├── lib/version-sites.ts           ← every file that carries the release version (package.json, plugin.json, SHARED_ABI, deck cover) - bump-version writes, verify's `version sites` gate checks; plus every CDN pin `defuss-shadcn@vX.Y.Z` in the authored docs (PIN_GLOBS - the installation page's "Pinning a version"): bump-version moves them, verify's `pinned versions` gate requires the current release
 │   ├── lib/git-push.sh                ← push_ref: push to origin, falling back to HTTPS with gh credentials when SSH is unavailable

@@ -147,3 +147,5 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-15T14:51:22Z s=5187d371 FINDING src/documentation/pages/website/showcase-framework.mdx:.wf-changes .badge learn=none: a markup slip on one page, seen in screenshots
 2026-11-15T20:32:19Z s=5187d371 FINDING src/documentation/pages/application/scaffold-api-docs.mdx request() learn=none: covered by the e2e sample checks for plain ids; no further rule
 2026-11-15T20:32:19Z s=5187d371 FINDING src/documentation/pages/application/scaffold-api-docs.mdx sandbox() learn=none: a 100-request e2e loop costs more than it proves
+2026-11-16T11:36:46Z s=5187d371 FINDING scripts/deploy.sh argument loop learn=none: deploy.sh has no test harness and a release cannot run in a test; tmp/probe-deploy-args.sh is the evidence
+2026-11-16T11:36:46Z s=5187d371 FINDING Makefile build learn=none: a make recipe switch; make -n shows both branches

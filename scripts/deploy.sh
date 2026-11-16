@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./scripts/deploy.sh [patch|minor|major] [alpha|beta|rc|release]
+# Usage: ./scripts/deploy.sh [--skip-e2e] [patch|minor|major] [alpha|beta|rc|release]
 # Default: patch, preserving current prerelease suffix
+# --skip-e2e: the pipeline runs without the e2e tests (everything else - lint,
+#   verify, unit tests - still gates the release). Run the e2e yourself first
+#   (`make e2e`): a release skips the browser proof of the shipped files.
 #
 # Examples:
 #   ./scripts/deploy.sh              → 0.9.0        → 0.9.1        (patch bump, keep suffix)
@@ -34,8 +37,17 @@ set -euo pipefail
 
 source "$(dirname "$0")/lib/git-push.sh"
 
-BUMP_TYPE="${1:-patch}"
-PHASE="${2:-}"  # alpha, beta, rc, release, or empty (keep current)
+SKIP_E2E=""
+ARGS=()
+for arg in "$@"; do
+  case "$arg" in
+    --skip-e2e) SKIP_E2E=1 ;;
+    -*) echo "❌ Unknown option: $arg (use --skip-e2e)"; exit 1 ;;
+    *) ARGS+=("$arg") ;;
+  esac
+done
+BUMP_TYPE="${ARGS[0]:-patch}"
+PHASE="${ARGS[1]:-}"  # alpha, beta, rc, release, or empty (keep current)
 
 CURRENT_BRANCH=$(git branch --show-current)
 if [[ "$CURRENT_BRANCH" != "main" ]]; then
@@ -82,7 +94,7 @@ if git rev-parse -q --verify "refs/tags/${TAG}" > /dev/null; then
   exit 1
 fi
 
-echo "📦 Releasing v${FULL_VERSION} → ${TAG} (${BUMP_TYPE}${PHASE:+, phase: $PHASE})"
+echo "📦 Releasing v${FULL_VERSION} → ${TAG} (${BUMP_TYPE}${PHASE:+, phase: $PHASE}${SKIP_E2E:+, e2e skipped})"
 
 # 0. agent state the sessions before this release left behind lands as its own
 # commit, after every precondition passed and before anything is bumped
@@ -112,7 +124,11 @@ bun scripts/changelog-entry.ts add "${NEW_VERSION}" "${DATE}" ${COMMIT_LINES[@]+
 echo "✅ Changelog entry for ${TAG} (${#COMMIT_LINES[@]} commits since ${LAST_TAG:-the first commit})"
 
 # 3. the full pipeline from the bumped sources (same gates as CI)
-E2E_ALL=1 make build # a release runs every e2e file, changed or not
+if [[ -n "$SKIP_E2E" ]]; then
+  SKIP_E2E=1 make build # --skip-e2e: every gate but the browser tests
+else
+  E2E_ALL=1 make build # a release runs every e2e file, changed or not
+fi
 
 # 4a. first commit: the entry alone, while the COMMITTED version is still the
 # old one - every commit on main stays verify-green. docs/ is NOT part of it:
