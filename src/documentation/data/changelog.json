@@ -1,6 +1,13 @@
 {
   "entries": [
     {
+      "version": "v0.9.16",
+      "date": "November 16, 2026",
+      "commits": [
+        "feat(notes): workspace in OPFS (defuss-storage), hybrid search with both models (defuss-search), backup and import"
+      ]
+    },
+    {
       "version": "v0.9.15",
       "date": "November 16, 2026",
       "commits": [
