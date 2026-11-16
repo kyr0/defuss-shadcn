@@ -1,7 +1,7 @@
 // dist/components/typewriter/typewriter.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.14") {
+if (!__df$shared || __df$shared.abi !== "0.9.15") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -187,5 +187,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=2C41902B48E10D1A64756E2164756E21
+//# debugId=7C1A8E6D4844549F64756E2164756E21
 //# sourceMappingURL=primitives.js.map

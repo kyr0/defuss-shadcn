@@ -8,7 +8,8 @@
         "feat(application): API Documentation scaffold (defuss-search, defuss-i18n, defuss-dom-router); fetch the Virtual List grid photos and check docs cards' script-built photo names",
         "docs: republish the v0.9.14 site snapshot with the self-hosted photos and the Framework showcase",
         "feat(website): self-hosted demo photos and avatars (WebP) and the Framework showcase site"
-      ]
+      ],
+      "hash": "3cbe9202"
     },
     {
       "version": "v0.9.14",

@@ -2,7 +2,7 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.9.15",
       "created": [
         "scaffold-api-docs",
         "showcase-framework"
@@ -49,6 +49,7 @@
         "industry-restaurant",
         "industry-salon",
         "industry-spa",
+        "installation",
         "jittered-distribution",
         "location-item",
         "login-form",
