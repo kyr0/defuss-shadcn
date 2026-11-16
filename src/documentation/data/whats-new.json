@@ -2,6 +2,29 @@
   "version": 1,
   "releases": [
     {
+      "version": "unreleased",
+      "created": [],
+      "updated": [
+        "index",
+        "scaffold-notes",
+        "system-in-numbers"
+      ],
+      "examples": {
+        "scaffold-notes": {
+          "created": [],
+          "updated": [
+            "Notes and docs"
+          ]
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
+          ]
+        }
+      }
+    },
+    {
       "version": "0.9.15",
       "created": [
         "scaffold-api-docs",

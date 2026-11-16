@@ -4500,6 +4500,7 @@
       "page": "scaffold-notes",
       "href": "application/app-notes.html",
       "components": [
+        "alert-dialog",
         "avatar",
         "badge",
         "breadcrumb",
@@ -4515,6 +4516,7 @@
         "kbd",
         "language-switcher",
         "popover",
+        "progress",
         "select",
         "separator",
         "sheet",
@@ -4528,14 +4530,14 @@
         "tree-view",
         "typography"
       ],
-      "jsSize": 282048,
-      "jsSizeMinified": 154671,
-      "cssSize": 339913,
-      "cssSizeMinified": 210933,
-      "totalSizeGz": 123749,
-      "totalSizeGzMinified": 78145,
-      "jsSizeGzMinified": 49855,
-      "cssSizeGzMinified": 28290
+      "jsSize": 293252,
+      "jsSizeMinified": 161351,
+      "cssSize": 352080,
+      "cssSizeMinified": 217848,
+      "totalSizeGz": 129021,
+      "totalSizeGzMinified": 81097,
+      "jsSizeGzMinified": 51684,
+      "cssSizeGzMinified": 29413
     },
     "status-page": {
       "page": "scaffold-status-page",

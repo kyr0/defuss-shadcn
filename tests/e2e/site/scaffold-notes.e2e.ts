@@ -1,7 +1,9 @@
-import { chromium } from 'playwright';
+import { chromium, type Page } from 'playwright';
 import assert from 'node:assert/strict';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { startServer } from '../server.ts';
-import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { offlineJsdelivr, offlineModels } from '../lib/vendor-offline.ts';
 import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/translation.ts';
 
 /**
@@ -12,10 +14,19 @@ import { chooseLanguage, renderedLanguage, translationGaps } from '../lib/transl
  * markdown shortcuts, the slash menu, the format bar, toggles, the block
  * menu, drag to move), titles and icons everywhere, new pages, favorites,
  * trash, page options, the roadmap database in all three views with its
- * peek, ⌘K, sharing and the narrow layout.
+ * peek, ⌘K, sharing and the narrow layout. And what makes it usable: every edit
+ * is kept (defuss-storage, OPFS) and comes back on a reload; ⌘K ranks every
+ * section with defuss-search - by keywords, and by meaning once Winzling-embed
+ * and the ColBERT reranker are loaded (served offline from .cache/models); a
+ * backup holds the pages and the search index, imports into a fresh browser
+ * without embedding again, and a hostile one runs nothing.
  */
 const PAGE = '/dist/documentation/application/app-notes.html';
 const server = startServer();
+/** the stored workspace is in place (the pages are hidden until then) */
+const ready = (p: Page) => p.waitForFunction(() => document.querySelector('[data-nt]')?.getAttribute('data-nt-store') !== 'loading', undefined, { timeout: 15_000 });
+const OUT = join(import.meta.dirname, '..', '..', '..', 'output', 'e2e');
+mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
 let failures = 0;
 async function check(label: string, fn: () => Promise<void>): Promise<void> {
@@ -31,9 +42,11 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await offlineJsdelivr(page);
+  await page.route(/huggingface\.co/, (r) => r.abort());
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto(`${server.url}${PAGE}`);
+  await ready(page);
   await page.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.contextMenuApi, undefined, { timeout: 10_000 });
   const shown = (sel: string) => page.$eval(sel, (e) => e.checkVisibility());
   const current = () => page.evaluate(() => [...document.querySelectorAll('.nt-page')].filter((p) => getComputedStyle(p).display !== 'none').map((p) => (p as HTMLElement).dataset.page));
@@ -70,6 +83,7 @@ try {
 
   await check('Enter continues a list; Enter on an empty item leaves it', async () => {
     await page.goto(`${server.url}${PAGE}#/pages/getting-started`);
+    await ready(page);
     await page.click(`${GS} .nt-blocks > .nt-block[data-type="bullet"]:last-child > .nt-text`);
     await page.keyboard.press('End');
     await page.keyboard.press('Enter');
@@ -165,6 +179,7 @@ try {
   await check('drag a block by its handle below another', async () => {
     const before = await blocks('onboarding');
     await page.goto(`${server.url}${PAGE}#/pages/onboarding`);
+    await ready(page);
     await page.waitForTimeout(150);
     const first = '#p-onboarding .nt-blocks > .nt-block:nth-child(1)';
     await page.hover(first);
@@ -176,6 +191,7 @@ try {
 
   await check('the title and the icon follow the page into the tree, the breadcrumb and ⌘K', async () => {
     await page.goto(`${server.url}${PAGE}#/pages/journal`);
+    await ready(page);
     await page.waitForTimeout(150);
     await page.click('#t-journal');
     await page.keyboard.press('End');
@@ -208,6 +224,7 @@ try {
     assert.equal(await page.$eval('#nt-sidebar [data-nt-private] [data-page="journal"]', (x) => (x as HTMLElement).hidden), true);
     assert.equal(await page.$$eval('[data-nt-trash-list] li', (x) => x.length), 1);
     await page.goto(`${server.url}${PAGE}#/pages/journal`);
+    await ready(page);
     assert.equal(await shown('#p-journal .nt-trashed'), true);
     await page.click('#p-journal .nt-trashed [data-nt-restore]');
     assert.equal(await shown('#p-journal .nt-trashed'), false);
@@ -229,6 +246,7 @@ try {
 
   await check('the roadmap: a status select moves the board card and the gallery pill', async () => {
     await page.goto(`${server.url}${PAGE}#/pages/roadmap`);
+    await ready(page);
     await page.waitForTimeout(150);
     assert.equal(await page.$$eval('#p-roadmap tbody tr', (r) => r.length), 7);
     await page.selectOption('#p-roadmap tr[data-item="r3"] select[data-field="status"]', 'done');
@@ -307,7 +325,9 @@ try {
     const hash = '#/pages/roadmap';
     const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
     await offlineJsdelivr(p);
+    await p.route(/huggingface\.co/, (r) => r.abort());
     await p.goto(`${server.url}${PAGE}${hash}`);
+    await ready(p);
     await p.waitForFunction((r) => document.querySelector(r)?.hasAttribute('lang'), '[data-nt]', { timeout: 15_000 });
     const visible = (sel: string) => p.$eval(sel, (e) => e.checkVisibility());
     assert.equal(await visible('#p-roadmap'), true);
@@ -325,6 +345,226 @@ try {
     await p.close();
   });
 
+  // -- storage, search and backups: a browser of its own, with the models served offline
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
+  // the native save dialog has no one to answer it here: the backup takes the download path
+  await ctx.addInitScript(() => {
+    delete (globalThis as { showSaveFilePicker?: unknown }).showSaveFilePicker;
+  });
+  const app = await ctx.newPage();
+  await offlineJsdelivr(app);
+  const modelRequests = await offlineModels(app);
+  const appErrors: string[] = [];
+  app.on('pageerror', (e) => appErrors.push(String(e)));
+  await app.goto(`${server.url}${PAGE}`);
+  await ready(app);
+  const saved = () => app.waitForFunction(() => document.querySelector('#nt-sidebar [data-nt-saved]')?.getAttribute('data-state') === 'saved', undefined, { timeout: 5000 });
+  /** the palette open or closed - ⌘K toggles it, so a check left open by another must not turn it off */
+  const palette = async (open: boolean) => {
+    if ((await app.$eval('#nt-cmd', (d) => (d as HTMLDialogElement).open)) !== open) await app.keyboard.press('Meta+k');
+  };
+  const search = async (q: string) => {
+    // the keyword index is built after the stored workspace is in place - under load that takes a while
+    await app.waitForFunction(() => /ready/.test(document.querySelector('[data-nt-set="lexical"]')?.textContent ?? ''), undefined, { timeout: 30_000 });
+    await palette(true);
+    await app.fill('#nt-cmd .command-input', q);
+    await app.waitForFunction((q) => document.querySelector('[data-nt-find-status]')?.textContent?.includes(' ms') && (document.querySelector('#nt-cmd .command-input') as HTMLInputElement).value === q, q, { timeout: 15_000 });
+    await app.waitForTimeout(150);
+    return app.$$eval('#nt-cmd [data-nt-hit]', (h) => h.map((x) => ({ id: (x as HTMLElement).dataset.ntHit!, via: (x as HTMLElement).dataset.via! })));
+  };
+  const readIndex = (p: Page) =>
+    p.evaluate(async () => {
+      const dir = await (await navigator.storage.getDirectory()).getDirectoryHandle('folio');
+      const file = await (await dir.getFileHandle('search-index.json')).getFile();
+      const index = JSON.parse(await file.text());
+      return { documents: index.documents.length, vectors: Object.keys(index.vectors).length, model: index.model as string | null };
+    });
+
+  await check('storage: an edit is saved in the origin private file system and comes back on a reload', async () => {
+    assert.equal(await app.getAttribute('[data-nt]', 'data-nt-store'), 'opfs');
+    await app.click('#p-getting-started .nt-title');
+    await app.keyboard.press('End');
+    await app.keyboard.type(' - kept');
+    await saved();
+    assert.equal(await app.textContent('#nt-sidebar [data-nt-saved]'), 'Saved in this browser');
+    await app.reload();
+    await ready(app);
+    assert.equal(await app.textContent('#p-getting-started .nt-title'), 'Getting started - kept');
+    assert.equal(await app.textContent('#nt-sidebar [data-nt-private] [data-title-of="getting-started"]'), 'Getting started - kept');
+  });
+
+  await check('search by keywords: ⌘K ranks sections and items; a hit opens its page at the section', async () => {
+    const hits = await search('reviewer');
+    assert.ok(hits.length > 0, 'a keyword finds something');
+    assert.ok(hits[0]!.id.startsWith('code-review~'), `the review guidelines first, got ${hits[0]?.id}`);
+    assert.ok(hits[0]!.via.split(' ').includes('lexical'));
+    // the palette's own highlight is no edit: an open palette once saved, re-ranked and saved again in a loop
+    await app.waitForTimeout(1500);
+    assert.equal(await app.getAttribute('#nt-sidebar [data-nt-saved]', 'data-state'), 'saved', 'nothing to save while searching');
+    assert.equal(await app.$eval('#nt-cmd [data-nt-cmd-pages]', (g) => g.checkVisibility()), false, 'the hits replace the page list');
+    await app.click(`#nt-cmd [data-nt-hit="${hits[0]!.id}"]`);
+    await app.waitForFunction(() => location.hash === '#/pages/code-review' && !document.getElementById('p-code-review')!.hidden);
+    assert.equal(await app.$eval('#nt-cmd', (d) => (d as HTMLDialogElement).open), false);
+    const item = await search('widgets');
+    assert.ok(item.some((h) => h.id === 'roadmap~item~r5'), 'a roadmap item is a document of its own');
+    await app.click('#nt-cmd [data-nt-hit="roadmap~item~r5"]');
+    await app.waitForFunction(() => (document.getElementById('nt-peek') as HTMLDialogElement).open);
+    assert.equal(await app.textContent('#nt-peek [data-peek="name"]'), 'Home screen widgets');
+    await app.keyboard.press('Escape');
+  });
+
+  await check('search by meaning: on a click both models load from their pinned files, a German query finds the meeting notes, nonsense finds nothing', async () => {
+    // nobody gets them unasked: the palette offers them
+    await palette(false);
+    await palette(true);
+    assert.equal(await app.textContent('#nt-cmd [data-nt-semantic]'), 'Also search by meaning');
+    assert.equal(modelRequests.length, 0, 'no model file before the click');
+    await app.click('#nt-cmd [data-nt-semantic]');
+    await palette(false);
+    await app.waitForFunction(() => /ready/.test(document.querySelector('[data-nt-set="semantic"]')?.textContent ?? ''), undefined, { timeout: 120_000 });
+    const files = modelRequests.map((u) => u.split('/').pop());
+    for (const f of ['model_uint4.onnx.br', 'model_q8.onnx.br']) assert.ok(files.includes(f), `${f} was downloaded`);
+    const de = await search('Besprechung');
+    assert.ok(de[0]?.id.startsWith('meetings~'), `the meeting notes first, got ${de.map((h) => h.id)}`);
+    assert.ok(!de[0]!.via.includes('lexical'), 'no keyword of the page is in the query - meaning found it');
+    assert.ok((await app.textContent('[data-nt-find-status]'))!.includes('keywords and meaning'));
+    assert.deepEqual(await search('zzqx qqv'), [], 'below the threshold nothing is a hit');
+    await palette(false);
+    const index = await readIndex(app);
+    assert.equal(index.vectors, index.documents, 'a vector per document, kept in the index file');
+    assert.ok(index.model?.startsWith('winzling:'));
+  });
+
+  await check('a reload loads the kept models by itself, from storage, not from the network', async () => {
+    const before = modelRequests.length;
+    await app.reload();
+    await ready(app);
+    await app.waitForFunction(() => /ready/.test(document.querySelector('[data-nt-set="semantic"]')?.textContent ?? ''), undefined, { timeout: 60_000 });
+    assert.equal(modelRequests.length, before, 'no model file downloaded again');
+    assert.ok((await search('Besprechung'))[0]?.id.startsWith('meetings~'));
+    await palette(false);
+  });
+
+  let backupFile = '';
+  await check('backup: the workspace menu saves the pages and the search index in one file', async () => {
+    await palette(false);
+    await app.click('.nt-ws');
+    const download = app.waitForEvent('download');
+    await app.click('#nt-ws-menu [data-nt-backup]');
+    const d = await download;
+    assert.match(d.suggestedFilename(), /^folio-backup-\d{4}-\d{2}-\d{2}\.json$/);
+    backupFile = join(OUT, 'notes-backup.json');
+    await d.saveAs(backupFile);
+    const backup = JSON.parse(readFileSync(backupFile, 'utf8'));
+    assert.equal(backup.format, 'folio-backup');
+    assert.equal(backup.workspace.regions['.nt-pages'].length, 1);
+    assert.ok(backup.workspace.regions['.nt-pages'][0].includes('Getting started - kept'));
+    assert.equal(backup.index.format, 'folio-index');
+    assert.equal(Object.keys(backup.index.vectors).length, backup.index.documents.length);
+    assert.ok(backup.index.lexical, 'the lexical index too');
+  });
+
+  await check('import: a fresh browser asks, then holds the pages and the index - nothing embedded again', async () => {
+    const fresh = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const p = await fresh.newPage();
+    await offlineJsdelivr(p);
+    await p.route(/huggingface\.co/, (r) => r.abort());
+    await p.goto(`${server.url}${PAGE}`);
+    await ready(p);
+    assert.equal(await p.textContent('#p-getting-started .nt-title'), 'Getting started');
+    await p.setInputFiles('[data-nt-import-file]', backupFile);
+    await p.waitForSelector('#nt-confirm[open]');
+    assert.match((await p.textContent('#nt-confirm-desc'))!, /holds 7 pages/);
+    await p.click('#nt-confirm [data-nt-confirm-ok]');
+    await p.waitForFunction(() => document.querySelector('#p-getting-started .nt-title')?.textContent === 'Getting started - kept');
+    await p.waitForFunction(() => document.querySelector('#nt-sidebar [data-nt-saved]')?.getAttribute('data-state') === 'saved');
+    // the index file is written once the restored workspace is indexed
+    let index = await readIndex(p).catch(() => null);
+    for (let i = 0; i < 50 && !index?.vectors; i++) {
+      await p.waitForTimeout(100);
+      index = await readIndex(p).catch(() => null);
+    }
+    assert.ok(index && index.vectors > 0 && index.vectors === index.documents, 'the vectors came with the backup');
+    await p.reload();
+    await ready(p);
+    assert.equal(await p.textContent('#p-getting-started .nt-title'), 'Getting started - kept');
+    await fresh.close();
+  });
+
+  await check('a hostile backup: its scripts, event attributes and script URLs do not run', async () => {
+    const backup = JSON.parse(readFileSync(backupFile, 'utf8'));
+    backup.workspace.regions['.nt-pages'][0] = backup.workspace.regions['.nt-pages'][0].replace(
+      '<div class="nt-blocks">',
+      '<div class="nt-blocks"><img src="x" onerror="globalThis.__pwned = 1"><script>globalThis.__pwned = 2</script><a href=" javascript:globalThis.__pwned=3" id="nt-evil">x</a><iframe srcdoc="<script>parent.__pwned=4</script>"></iframe>',
+    );
+    const evil = join(OUT, 'notes-backup-hostile.json');
+    writeFileSync(evil, JSON.stringify(backup));
+    await app.setInputFiles('[data-nt-import-file]', evil);
+    await app.waitForSelector('#nt-confirm[open]');
+    await app.click('#nt-confirm [data-nt-confirm-ok]');
+    await app.waitForTimeout(800);
+    assert.equal(await app.evaluate(() => (globalThis as { __pwned?: number }).__pwned), undefined);
+    assert.equal(await app.$$eval('.nt-pages :is(script, iframe, [onerror])', (x) => x.length), 0);
+    assert.equal(await app.$eval('#nt-evil', (a) => a.hasAttribute('href')), false);
+  });
+
+  await check('Settings: Remove the models takes their files out of storage; the palette offers them again', async () => {
+    await palette(false);
+    const modelFiles = () =>
+      app.evaluate(async () => {
+        const names: string[] = [];
+        for await (const name of ((await (await navigator.storage.getDirectory()).getDirectoryHandle('folio')) as unknown as { keys(): AsyncIterable<string> }).keys()) names.push(name);
+        return names.filter((n) => n.startsWith('model-')).length;
+      });
+    assert.equal(await modelFiles(), 7, 'the seven pinned files of both models');
+    await app.click('.nt-ws');
+    await app.click('#nt-ws-menu [data-nt-settings]');
+    await app.click('#nt-settings [data-nt-forget]');
+    await app.waitForFunction(() => (document.querySelector('#nt-settings [data-nt-forget]') as HTMLElement).hidden);
+    assert.equal(await modelFiles(), 0);
+    assert.equal(await app.isVisible('#nt-settings [data-nt-semantic]'), true, 'Settings offers them again');
+    await app.click('#nt-settings [data-dialog-close]');
+  });
+
+  await check('reset: Settings asks, then brings back the sample workspace', async () => {
+    await app.click('.nt-ws');
+    await app.click('#nt-ws-menu [data-nt-settings]');
+    assert.equal(await app.$eval('#nt-settings', (d) => (d as HTMLDialogElement).open), true);
+    assert.match((await app.textContent('[data-nt-set="storage"]'))!, /origin private file system/);
+    assert.match((await app.textContent('[data-nt-set="lexical"]'))!, /Keyword search over \d+ sections/);
+    await app.click('#nt-settings [data-nt-reset]');
+    await app.waitForSelector('#nt-confirm[open]');
+    await app.click('#nt-confirm [data-nt-confirm-ok]');
+    await app.waitForFunction(() => document.querySelector('#p-getting-started .nt-title')?.textContent === 'Getting started');
+    await saved();
+    await app.reload();
+    await ready(app);
+    assert.equal(await app.textContent('#p-getting-started .nt-title'), 'Getting started');
+  });
+
+  await check('storage, search and backups: no script errors', async () => {
+    assert.deepEqual(appErrors, []);
+  });
+  await ctx.close();
+
+  await check('the docs card: a sandboxed frame without storage keeps the workspace in memory, says so, and searches by keywords', async () => {
+    const docs = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+    await offlineJsdelivr(docs);
+    await docs.context().route(/huggingface\.co/, (r) => r.abort());
+    const cardErrors: string[] = [];
+    docs.on('pageerror', (e) => cardErrors.push(String(e)));
+    await docs.goto(`${server.url}/dist/documentation/application/scaffold-notes.html`);
+    const card = docs.frameLocator('.code-example iframe').first();
+    await card.locator('[data-nt][data-nt-store="memory"]').waitFor({ state: 'attached', timeout: 30_000 });
+    assert.equal(await card.locator('#nt-sidebar [data-nt-saved]').textContent(), 'Not kept - this preview has no storage');
+    await card.locator('[data-command-trigger="nt-cmd"]').first().evaluate((b) => (b as HTMLElement).click());
+    await card.locator('#nt-cmd .command-input').fill('roadmap');
+    await card.locator('#nt-cmd [data-nt-hit]').first().waitFor({ timeout: 15_000 });
+    assert.match((await card.locator('[data-nt-find-status]').textContent())!, /results in \d+ ms - keywords$/);
+    assert.equal(await card.locator('#nt-cmd [data-nt-semantic]').isVisible(), true, 'the models are offered, never loaded unasked');
+    assert.deepEqual(cardErrors, []);
+    await docs.close();
+  });
 } finally {
   await browser.close();
   server.stop();

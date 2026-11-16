@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
-import { brotliCompressSync } from 'node:zlib';
+import { brotliCompressSync, constants } from 'node:zlib';
 import type { Page } from 'playwright';
 
 /**
@@ -55,7 +55,7 @@ export async function offlineJsdelivr(page: Page): Promise<string[]> {
   const requests: string[] = await offlineFlags(page);
   // only the packages this repo pins as devDependencies - other jsDelivr files (echarts) stay the page's own business.
   // On the context: the Compute Engine is imported inside a worker, which page routes do not see
-  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@|@xterm\/|onnxruntime-web@|defuss-brotli@|defuss-lid@|defuss-search@|defuss-lexicalsearch@)/.test(u.href), async (route) => {
+  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@|@xterm\/|onnxruntime-web@|defuss-brotli@|defuss-lid@|defuss-search@|defuss-lexicalsearch@|defuss-vectorsearch@|defuss-db@|defuss-storage@|@huggingface\/tokenizers@)/.test(u.href), async (route) => {
     const url = route.request().url();
     requests.push(url);
     // @scope/name@version/path → node_modules/@scope/name/path
@@ -93,6 +93,13 @@ const HF_URL = /^https:\/\/huggingface\.co\/([^/]+\/[^/]+)\/resolve\/([0-9a-f]+)
  * compressed here as Hugging Face stores it. A file the cache lacks answers 404 - the build fetches the model only
  * when it encodes, so an e2e run after a build with a cold cache still has it. Returns the request log.
  */
+/** a model file Brotli compressed once per process, at quality 5: quality 11 took ~a minute for Winzling-embed's 40 MB */
+const COMPRESSED = new Map<string, Buffer>();
+const compressed = (path: string): Buffer => {
+  let body = COMPRESSED.get(path);
+  if (!body) COMPRESSED.set(path, (body = brotliCompressSync(readFileSync(path), { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })));
+  return body;
+};
 export async function offlineModels(page: Page): Promise<string[]> {
   const requests: string[] = [];
   await page.context().route((u) => HF_URL.test(u.href), async (route) => {
@@ -101,7 +108,7 @@ export async function offlineModels(page: Page): Promise<string[]> {
     const [, id, revision, file] = HF_URL.exec(url)!;
     const path = resolve(MODELS, id!, revision!, file!);
     if (!existsSync(path)) return route.fulfill({ status: 404, body: `not in .cache/models - run a docs build with an empty .cache/search/` });
-    await route.fulfill({ status: 200, contentType: 'application/octet-stream', headers: { 'Access-Control-Allow-Origin': '*' }, body: brotliCompressSync(readFileSync(path)) });
+    await route.fulfill({ status: 200, contentType: 'application/octet-stream', headers: { 'Access-Control-Allow-Origin': '*' }, body: compressed(path) });
   });
   return requests;
 }

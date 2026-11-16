@@ -47,6 +47,7 @@
         "defuss-rpc": "^1.6.2",
         "defuss-search": "0.5.0",
         "defuss-ssg": "^0.7.5",
+        "defuss-storage": "0.3.1",
         "defuss-vectorsearch": "0.4.0",
         "geographiclib-geodesic": "2.2.0",
         "grapesjs": "0.23.6",
@@ -975,6 +976,8 @@
     "defuss-search": ["defuss-search@0.5.0", "", { "peerDependencies": { "defuss-lexicalsearch": "^0.4.0", "defuss-vectorsearch": "^0.4.0" }, "optionalPeers": ["defuss-lexicalsearch", "defuss-vectorsearch"] }, "sha512-EEUVEIKMDzkt+GO9OmvIv1FXMczRremsIVpmrJ6XiQGSRutL/rP8BOFh4wVhoKRNwz+ApawC56goOPeChw3F+Q=="],
 
     "defuss-ssg": ["defuss-ssg@0.7.5", "", { "dependencies": { "@mdx-js/rollup": "^3.1.0", "defuss": "^3.4.7", "defuss-express": "^0.3.5", "defuss-vite": "^1.2.0", "esbuild": "^0.27.3", "fast-glob": "^3.3.3", "rehype-katex": "^7.0.1", "rehype-stringify": "^10.0.1", "remark-frontmatter": "^5.0.0", "remark-gfm": "^4.0.1", "remark-math": "^6.0.0", "remark-mdx-frontmatter": "^5.2.0", "remark-parse": "^11.0.0", "remark-rehype": "^11.1.2", "rolldown": "^1.0.0-rc.18", "toml": "^3.0.0", "vite": "^8.0.0", "ws": "^8.20.0", "yaml": "^2.8.2" }, "peerDependencies": { "defuss-rpc": "*" }, "bin": { "defuss-ssg": "dist/cli.mjs" } }, "sha512-9XJBGQMIypyai1kGAUpiIVAw2v5iyz9tk5zcA1GBBVhvdiU48stVaDP0vFTlc09140ttU0he5JeY+RotUVu++Q=="],
+
+    "defuss-storage": ["defuss-storage@0.3.1", "", {}, "sha512-ygggE2yQIOwfBUDKjmeS55h+xX+Rq/0Hq4yZG0unr6rsu4cPSs4Ioh77y8CV1mMayf+OXS4gta8LDrzqOla2lQ=="],
 
     "defuss-store": ["defuss-store@0.1.0", "", {}, "sha512-1FaR2bO8Zz8MyD95v1/+NXKcxsWarq3p1vazlwWfvW/JBWUcM/srvxNLFgFs2tUQh8bLLQUmYiZxCguTvLs85Q=="],
 

@@ -149,3 +149,6 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-15T20:32:19Z s=5187d371 FINDING src/documentation/pages/application/scaffold-api-docs.mdx sandbox() learn=none: a 100-request e2e loop costs more than it proves
 2026-11-16T11:36:46Z s=5187d371 FINDING scripts/deploy.sh argument loop learn=none: deploy.sh has no test harness and a release cannot run in a test; tmp/probe-deploy-args.sh is the evidence
 2026-11-16T11:36:46Z s=5187d371 FINDING Makefile build learn=none: a make recipe switch; make -n shows both branches
+2026-11-16T16:04:56Z s=5187d371 FINDING scaffold-notes.mdx module: settings.json learn=none: dead state removed; nothing to pin
+2026-11-16T16:04:56Z s=5187d371 FINDING scaffold-notes.mdx: two tabs learn=none: a documented limit, not a defect fixed
+2026-11-16T16:04:56Z s=5187d371 FINDING tests/e2e/site/scaffold-notes.e2e.ts learn=none: test robustness under load

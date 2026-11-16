@@ -90,6 +90,7 @@
     "defuss-rpc": "^1.6.2",
     "defuss-search": "0.5.0",
     "defuss-ssg": "^0.7.5",
+    "defuss-storage": "0.3.1",
     "defuss-vectorsearch": "0.4.0",
     "geographiclib-geodesic": "2.2.0",
     "grapesjs": "0.23.6",

@@ -12,6 +12,19 @@
 <style>:root { --scaffold-height: 100dvh; } html, body { height: 100%; margin: 0; } body { overflow: hidden; background: var(--background); color: var(--foreground); }</style>
 </head>
 <body>
+<!-- the modules of the search's models import packages by name - this map names their pinned builds -->
+<script type="importmap">
+  {
+    "imports": {
+      "defuss-db": "https://cdn.jsdelivr.net/npm/defuss-db@2.0.2/dist/index.mjs",
+      "defuss-db/client.js": "https://cdn.jsdelivr.net/npm/defuss-db@2.0.2/dist/client.mjs",
+      "@huggingface/tokenizers": "https://cdn.jsdelivr.net/npm/@huggingface/tokenizers@0.2.0/dist/tokenizers.min.mjs",
+      "onnxruntime-web/webgpu": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.wasm.bundle.min.mjs",
+      "defuss-vectorsearch/turboquant.js": "https://cdn.jsdelivr.net/npm/defuss-vectorsearch@0.4.0/dist/turboquant.mjs",
+      "defuss-lexicalsearch": "https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/index.js"
+    }
+  }
+</script>
 <style>
   /* Folio: the scaffold's own glue - layout and the editor look. Every control
      is a shipped component (Sidebar, Tree View, Toolbar, Context Menu, Command,
@@ -71,7 +84,7 @@
   .nt-locale {
     margin-block-end: 0.375rem;
   }
-  .nt-sidebar[data-state='collapsed'] .nt-locale {
+  .nt-sidebar[data-state='collapsed'] :is(.nt-locale, .nt-saved) {
     display: none;
   }
   .nt-ws-name {
@@ -1296,7 +1309,145 @@
       width: 8rem;
     }
   }
+  /* storage: the stored workspace replaces the sample before anyone sees it - at most 3 s, then the sample shows */
+  .nt[data-nt-store='loading'] .nt-pages {
+    visibility: hidden;
+    animation: nt-reveal 0s 3s forwards;
+  }
+  @keyframes nt-reveal {
+    to {
+      visibility: visible;
+    }
+  }
+  .nt-saved {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0 0 0.375rem;
+    padding-inline: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    &::before {
+      content: '';
+      flex: none;
+      width: 0.4375rem;
+      height: 0.4375rem;
+      border-radius: 50%;
+      background: oklch(0.65 0.15 150);
+    }
+    &[data-state='saving']::before {
+      background: var(--muted-foreground);
+    }
+    &:is([data-state='memory'], [data-state='error'])::before {
+      background: oklch(0.75 0.16 70);
+    }
+    &:empty {
+      display: none;
+    }
+  }
+
+  /* search: hits ranked by defuss-search - the page, the section, a snippet and how each was found */
+  .nt .nt-hit {
+    align-items: flex-start;
+    & > .nt-hit-icon {
+      flex: none;
+      width: 1.25rem;
+      text-align: center;
+    }
+  }
+  .nt-hit-main {
+    display: grid;
+    flex: 1;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+  .nt-hit-title {
+    overflow: hidden;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    & small {
+      color: var(--muted-foreground);
+      font-weight: 400;
+    }
+  }
+  .nt-hit-snippet {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    & mark {
+      border-radius: 2px;
+      background: oklch(0.9 0.13 95 / 0.65);
+      color: inherit;
+    }
+  }
+  .dark .nt-hit-snippet mark {
+    background: oklch(0.55 0.11 95 / 0.55);
+  }
+  .nt-hit-via {
+    display: flex;
+    flex: none;
+    gap: 0.25rem;
+  }
+  .nt-find-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-block-start: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    &:has(> span:empty):has(> button[hidden]) {
+      display: none;
+    }
+  }
+  .nt .nt-flash {
+    animation: nt-flash 1.6s ease-out;
+  }
+  @keyframes nt-flash {
+    from {
+      background: oklch(0.9 0.13 95 / 0.65);
+    }
+  }
+
+  /* Settings */
+  .nt-set {
+    display: grid;
+    gap: 1.25rem;
+    & section {
+      display: grid;
+      gap: 0.5rem;
+    }
+    & h3 {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    & p {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.8125rem;
+      &:empty {
+        display: none;
+      }
+    }
+  }
+  .nt-set-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .nt .nt-flash {
+      animation: none;
+      outline: 2px solid var(--ring);
+    }
     .nt-page:not([hidden]) {
       animation: none;
     }
@@ -1318,7 +1469,7 @@
     }
   }
 </style>
-<div class="nt" data-nt data-i18n-component>
+<div class="nt" data-nt data-i18n-component data-nt-store="loading">
   <aside
     class="app-sidebar nt-sidebar"
     id="nt-sidebar"
@@ -1361,8 +1512,14 @@
         data-i18n-aria-label-en="Workspace"
         data-i18n-aria-label-de="Arbeitsbereich"
       >
-        <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Settings are part of the full product"
+        <button role="menuitem" class="dropdown-item" tabindex="-1" data-nt-settings
           ><i data-lucide="settings"></i> <span data-i18n-target="ws-settings">Settings</span></button
+        >
+        <button role="menuitem" class="dropdown-item" tabindex="-1" data-nt-backup
+          ><i data-lucide="download"></i> <span data-i18n-target="ws-backup">Back up workspace</span></button
+        >
+        <button role="menuitem" class="dropdown-item" tabindex="-1" data-nt-import
+          ><i data-lucide="upload"></i> <span data-i18n-target="ws-import">Import backup…</span></button
         >
         <button role="menuitem" class="dropdown-item" tabindex="-1" data-toast="Invite link copied"
           ><i data-lucide="user-plus"></i> <span data-i18n-target="ws-invite">Invite members</span></button
@@ -1494,6 +1651,7 @@
       </details>
     </div>
     <div class="sidebar-footer">
+      <p class="nt-saved" data-nt-saved role="status"></p>
       <div
         class="language-switcher nt-locale"
         id="nt-lang"
@@ -1647,6 +1805,7 @@
       </details>
     </div>
     <div class="sidebar-footer">
+      <p class="nt-saved" data-nt-saved role="status"></p>
       <div
         class="language-switcher nt-locale"
         id="nt-lang-m"
@@ -4234,6 +4393,7 @@
   <dialog
     id="nt-cmd"
     class="command"
+    data-filter="none"
     role="dialog"
     aria-modal="true"
     aria-label="Search"
@@ -4253,6 +4413,7 @@
           spellcheck="false"
       /></div>
       <div class="command-list">
+        <div class="command-group" data-nt-hits></div>
         <div class="command-group" data-nt-cmd-pages>
           <p class="command-group-heading" data-i18n-target="cmd-pages">Pages</p>
           <button class="command-item" data-go="/pages/getting-started" data-page="getting-started"
@@ -4291,6 +4452,10 @@
         </div>
       </div>
       <div class="command-empty" hidden data-i18n-target="cmd-empty">No results found.</div>
+      <div class="nt-find-status"
+        ><span data-nt-find-status></span
+        ><button class="btn" data-variant="ghost" data-size="xs" type="button" data-nt-semantic hidden></button
+      ></div>
     </div>
   </dialog>
 
@@ -4347,6 +4512,110 @@
       </div>
     </div>
     <button class="sheet-close-x" data-sheet-close aria-label="Close"><i data-lucide="x"></i></button>
+  </dialog>
+
+  <!-- Settings: where the workspace is kept, the search and its models, backups (the module writes the status lines) -->
+  <dialog
+    id="nt-settings"
+    class="dialog nt-settings"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="nt-settings-title"
+    aria-describedby="nt-settings-desc"
+  >
+    <div class="dialog-content">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="nt-settings-title" data-i18n-target="set-title">Settings</h2>
+        <p class="dialog-description" id="nt-settings-desc" data-i18n-target="set-desc"
+          >Your pages stay in this browser. A backup takes them and the search index anywhere.</p
+        >
+      </div>
+      <div class="dialog-body nt-set">
+        <section aria-labelledby="nt-set-storage">
+          <h3 id="nt-set-storage" data-i18n-target="set-storage">Storage</h3>
+          <p data-nt-set="storage"></p>
+          <div class="nt-set-actions">
+            <button class="btn" data-variant="outline" data-size="sm" type="button" data-nt-backup
+              ><i data-lucide="download"></i> <span data-i18n-target="set-backup">Back up</span></button
+            >
+            <button class="btn" data-variant="outline" data-size="sm" type="button" data-nt-import
+              ><i data-lucide="upload"></i> <span data-i18n-target="set-import">Import…</span></button
+            >
+            <button class="btn" data-variant="ghost" data-size="sm" type="button" data-nt-reset
+              ><i data-lucide="rotate-ccw"></i> <span data-i18n-target="set-reset">Reset to the sample</span></button
+            >
+          </div>
+        </section>
+        <section aria-labelledby="nt-set-search">
+          <h3 id="nt-set-search" data-i18n-target="set-search">Search</h3>
+          <p data-nt-set="lexical"></p>
+          <p data-nt-set="semantic"></p>
+          <progress
+            class="progress"
+            data-nt-set="progress"
+            max="1"
+            value="0"
+            hidden
+            aria-label="Model download"
+            data-i18n-aria-label-en="Model download"
+            data-i18n-aria-label-de="Modell-Download"
+          ></progress>
+          <div class="nt-set-actions">
+            <button class="btn" data-size="sm" type="button" data-nt-semantic hidden></button>
+            <button class="btn" data-variant="ghost" data-size="sm" type="button" data-nt-forget hidden
+              ><i data-lucide="trash-2"></i> <span data-i18n-target="set-forget">Remove the models</span></button
+            >
+          </div>
+        </section>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="outline" type="button" data-dialog-close data-i18n-target="set-close"
+          >Close</button
+        >
+      </div>
+    </div>
+  </dialog>
+  <input
+    type="file"
+    accept="application/json,.json"
+    hidden
+    data-nt-import-file
+    aria-label="Backup file"
+    data-i18n-aria-label-en="Backup file"
+    data-i18n-aria-label-de="Sicherungsdatei"
+  />
+  <!-- asks before a backup or the sample replaces the workspace (the module writes the question) -->
+  <dialog
+    id="nt-confirm"
+    class="alert-dialog"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="nt-confirm-title"
+    aria-describedby="nt-confirm-desc"
+  >
+    <div class="alert-dialog-content">
+      <div class="alert-dialog-header">
+        <h2 class="alert-dialog-title" id="nt-confirm-title"></h2>
+        <p class="alert-dialog-description" id="nt-confirm-desc"></p>
+      </div>
+      <div class="alert-dialog-footer">
+        <button
+          class="btn"
+          data-variant="outline"
+          type="button"
+          data-alert-dialog-close
+          data-i18n-target="confirm-cancel"
+          >Cancel</button
+        >
+        <button
+          class="btn"
+          data-variant="destructive"
+          type="button"
+          data-alert-dialog-close
+          data-nt-confirm-ok
+        ></button>
+      </div>
+    </div>
   </dialog>
 
   <!-- what the script stamps out -->
@@ -4511,6 +4780,34 @@
   <template data-i18n-for="nav-add-d" data-i18n-locale="de">Seite hinzufügen</template>
   <template data-i18n-for="ws-settings" data-i18n-locale="en">Settings</template>
   <template data-i18n-for="ws-settings" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="ws-backup" data-i18n-locale="en">Back up workspace</template>
+  <template data-i18n-for="ws-backup" data-i18n-locale="de">Arbeitsbereich sichern</template>
+  <template data-i18n-for="ws-import" data-i18n-locale="en">Import backup…</template>
+  <template data-i18n-for="ws-import" data-i18n-locale="de">Sicherung importieren…</template>
+  <template data-i18n-for="set-title" data-i18n-locale="en">Settings</template>
+  <template data-i18n-for="set-title" data-i18n-locale="de">Einstellungen</template>
+  <template data-i18n-for="set-desc" data-i18n-locale="en"
+    >Your pages stay in this browser. A backup takes them and the search index anywhere.</template
+  >
+  <template data-i18n-for="set-desc" data-i18n-locale="de"
+    >Deine Seiten bleiben in diesem Browser. Eine Sicherung nimmt sie und den Suchindex überallhin mit.</template
+  >
+  <template data-i18n-for="set-storage" data-i18n-locale="en">Storage</template>
+  <template data-i18n-for="set-storage" data-i18n-locale="de">Speicher</template>
+  <template data-i18n-for="set-backup" data-i18n-locale="en">Back up</template>
+  <template data-i18n-for="set-backup" data-i18n-locale="de">Sichern</template>
+  <template data-i18n-for="set-import" data-i18n-locale="en">Import…</template>
+  <template data-i18n-for="set-import" data-i18n-locale="de">Importieren…</template>
+  <template data-i18n-for="set-reset" data-i18n-locale="en">Reset to the sample</template>
+  <template data-i18n-for="set-reset" data-i18n-locale="de">Auf das Beispiel zurücksetzen</template>
+  <template data-i18n-for="set-search" data-i18n-locale="en">Search</template>
+  <template data-i18n-for="set-search" data-i18n-locale="de">Suche</template>
+  <template data-i18n-for="set-forget" data-i18n-locale="en">Remove the models</template>
+  <template data-i18n-for="set-forget" data-i18n-locale="de">Modelle entfernen</template>
+  <template data-i18n-for="set-close" data-i18n-locale="en">Close</template>
+  <template data-i18n-for="set-close" data-i18n-locale="de">Schließen</template>
+  <template data-i18n-for="confirm-cancel" data-i18n-locale="en">Cancel</template>
+  <template data-i18n-for="confirm-cancel" data-i18n-locale="de">Abbrechen</template>
   <template data-i18n-for="ws-invite" data-i18n-locale="en">Invite members</template>
   <template data-i18n-for="ws-invite" data-i18n-locale="de">Mitglieder einladen</template>
   <template data-i18n-for="ws-theme" data-i18n-locale="en">Toggle theme</template>
@@ -5254,10 +5551,20 @@
     });
 
     // -- the roadmap database ----------------------------------------------------------------
-    const db = app.querySelector('[data-nt-db]');
+    // the roadmap's element and the counters are read again when the workspace is restored from storage or a
+    // backup (the module below replaces the pages): `nt-restored`
+    let db = app.querySelector('[data-nt-db]');
     const peek = app.querySelector('#nt-peek');
     let peekId = null,
       itemN = 7;
+    const highest = (sel, attr, re) =>
+      Math.max(0, ...[...app.querySelectorAll(sel)].map((x) => Number((re.exec(x.getAttribute(attr)) || [])[1]) || 0));
+    app.addEventListener('nt-restored', () => {
+      db = app.querySelector('[data-nt-db]');
+      itemN = Math.max(7, highest('[data-nt-db] tr[data-item]', 'data-item', /^r(\d+)$/));
+      n = highest('.nt-page[data-page]', 'data-page', /^untitled-(\d+)$/);
+      if (page()) sync();
+    });
     const fmt = (iso) =>
       iso
         ? new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -5356,8 +5663,8 @@
     peek.addEventListener('close', () => {
       peekId = null;
     });
-    db.addEventListener('change', (e) => {
-      const s = e.target.closest('select[data-field="status"]');
+    app.addEventListener('change', (e) => {
+      const s = e.target.closest('[data-nt-db] select[data-field="status"]');
       if (s) setItem(s.closest('[data-item]').dataset.item, 'status', s.value);
     });
     const newItem = (status) => {
@@ -5391,7 +5698,8 @@
       openPeek(id);
       requestAnimationFrame(() => peek.querySelector('[data-peek="name"]').focus());
     };
-    db.querySelector('[data-nt-db-filter]').addEventListener('input', (e) => {
+    app.addEventListener('input', (e) => {
+      if (!e.target.matches('[data-nt-db-filter]')) return;
       const q = e.target.value.trim().toLowerCase();
       db.querySelectorAll('[data-item]').forEach((x) => {
         x.hidden = !!q && !x.querySelector('[data-f="name"]').textContent.toLowerCase().includes(q);
@@ -5466,22 +5774,988 @@
   })();
 </script>
 <script type="module">
-  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language
+  // routing and translation: defuss-dom-router owns the address, defuss-i18n the language; the workspace lives in
+  // defuss-storage (the origin private file system) and defuss-search ranks every section by keywords and by meaning
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
   import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
+
+  // loaded beside the page: the storage adapters and the lexical search; the two models only when asked for
+  const STORAGE = Promise.all([
+    import('https://cdn.jsdelivr.net/npm/defuss-storage@0.3.1/dist/index.mjs'),
+    import('https://cdn.jsdelivr.net/npm/defuss-storage@0.3.1/dist/directory.mjs'),
+  ]);
+  const SEARCH = Promise.all([
+    import('https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/index.js'),
+    import('https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/en.js'),
+    import('https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/de.js'),
+    import('https://cdn.jsdelivr.net/npm/defuss-search@0.5.0/dist/strategies.js'),
+  ]);
+  const MODELS = () =>
+    Promise.all([
+      import('https://cdn.jsdelivr.net/npm/defuss-vectorsearch@0.4.0/dist/onnx.mjs'),
+      import('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/decompressor-slim.js'),
+    ]);
+  const BROTLI_WASM = 'https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/decompressor.wasm';
+  // a full-screen page names its own path to the pictures here (the build rewrites the string)
+  const IMAGES = '../images/';
+
+  const WORDS = {
+    en: {
+      opening: 'Opening…',
+      saved: 'Saved in this browser',
+      saving: 'Saving…',
+      memory: 'Not kept - this preview has no storage',
+      failed: 'Not saved: %e',
+      storageOpfs:
+        'Your pages are kept in this browser, in its origin private file system (saved %t). Nothing leaves it.',
+      storageMemory:
+        'This preview has no storage, so your pages are gone on reload - the full-screen app keeps them. A backup takes them along either way.',
+      never: 'not yet',
+      lexical: 'Keyword search over %n sections: ready.',
+      lexicalLoading: 'Keyword search is loading…',
+      semanticOff:
+        'Search by meaning runs two models in this browser - Winzling-embed finds what a query means, a ColBERT reranker orders the best hits. About 34 MB, downloaded once.',
+      semanticKept: 'Search by meaning: the models are kept in this browser.',
+      semanticLoading: 'Downloading %f - %l of %m',
+      semanticStarting: 'Starting the models…',
+      semanticIndexing: 'Reading your pages by meaning: %i of %n sections…',
+      semanticReady: 'Search by meaning: ready - %n sections, %k.',
+      keptHere: 'the models are kept in this browser',
+      keptMemory: 'the models stay until the page reloads',
+      semanticError: 'The models could not load: %e',
+      load: 'Download the models (~34 MB)',
+      loadKept: 'Turn on search by meaning',
+      retry: 'Try again',
+      offer: 'Also search by meaning',
+      results: '%n results in %t ms - keywords',
+      resultsHybrid: '%n results in %t ms - keywords and meaning',
+      plain: 'Titles only until the search has loaded',
+      viaWords: 'keywords',
+      viaMeaning: 'meaning',
+      backedUp: 'Backup saved',
+      backedUpDesc: '%n pages and the search index in %f.',
+      imported: 'Backup imported',
+      importedDesc: '%n pages from %d.',
+      notBackup: 'Not a Folio backup',
+      reset: 'Back to the sample workspace',
+      forgotten: 'Models removed',
+      importTitle: 'Replace this workspace?',
+      importText: 'The backup from %d holds %n pages. It replaces every page here - back them up first to keep them.',
+      importOk: 'Replace',
+      resetTitle: 'Reset to the sample?',
+      resetText: 'Every page goes back to the sample workspace. Back up first to keep your pages.',
+      resetOk: 'Reset',
+    },
+    de: {
+      opening: 'Wird geöffnet…',
+      saved: 'In diesem Browser gespeichert',
+      saving: 'Wird gespeichert…',
+      memory: 'Nicht gespeichert - diese Vorschau hat keinen Speicher',
+      failed: 'Nicht gespeichert: %e',
+      storageOpfs:
+        'Deine Seiten bleiben in diesem Browser, in seinem Origin Private File System (gespeichert %t). Nichts verlässt ihn.',
+      storageMemory:
+        'Diese Vorschau hat keinen Speicher, deine Seiten sind nach dem Neuladen weg - die Vollbild-App behält sie. Eine Sicherung nimmt sie in jedem Fall mit.',
+      never: 'noch nicht',
+      lexical: 'Stichwortsuche über %n Abschnitte: bereit.',
+      lexicalLoading: 'Die Stichwortsuche wird geladen…',
+      semanticOff:
+        'Die Suche nach Bedeutung führt zwei Modelle in diesem Browser aus - Winzling-embed versteht, was eine Anfrage meint, ein ColBERT-Reranker ordnet die besten Treffer. Etwa 34 MB, einmal geladen.',
+      semanticKept: 'Suche nach Bedeutung: die Modelle liegen in diesem Browser.',
+      semanticLoading: '%f wird geladen - %l von %m',
+      semanticStarting: 'Die Modelle starten…',
+      semanticIndexing: 'Deine Seiten werden nach Bedeutung gelesen: %i von %n Abschnitten…',
+      semanticReady: 'Suche nach Bedeutung: bereit - %n Abschnitte, %k.',
+      keptHere: 'die Modelle bleiben in diesem Browser',
+      keptMemory: 'die Modelle bleiben bis zum Neuladen',
+      semanticError: 'Die Modelle konnten nicht laden: %e',
+      load: 'Modelle laden (~34 MB)',
+      loadKept: 'Suche nach Bedeutung einschalten',
+      retry: 'Erneut versuchen',
+      offer: 'Auch nach Bedeutung suchen',
+      results: '%n Treffer in %t ms - Stichwörter',
+      resultsHybrid: '%n Treffer in %t ms - Stichwörter und Bedeutung',
+      plain: 'Nur Titel, bis die Suche geladen ist',
+      viaWords: 'Stichwort',
+      viaMeaning: 'Bedeutung',
+      backedUp: 'Sicherung gespeichert',
+      backedUpDesc: '%n Seiten und der Suchindex in %f.',
+      imported: 'Sicherung importiert',
+      importedDesc: '%n Seiten vom %d.',
+      notBackup: 'Keine Folio-Sicherung',
+      reset: 'Zurück zum Beispiel-Arbeitsbereich',
+      forgotten: 'Modelle entfernt',
+      importTitle: 'Diesen Arbeitsbereich ersetzen?',
+      importText:
+        'Die Sicherung vom %d enthält %n Seiten. Sie ersetzt jede Seite hier - sichere sie vorher, um sie zu behalten.',
+      importOk: 'Ersetzen',
+      resetTitle: 'Auf das Beispiel zurücksetzen?',
+      resetText: 'Jede Seite wird wieder zum Beispiel-Arbeitsbereich. Sichere vorher, um deine Seiten zu behalten.',
+      resetOk: 'Zurücksetzen',
+    },
+  };
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
     const app = df$('[data-nt]').get(0);
+    const $ = (sel, root = app) => root.querySelector(sel);
+    const $$ = (sel, root = app) => [...root.querySelectorAll(sel)];
 
     // -- translation: the markup is the catalog (the templates at the end of the app)
     const locale = createI18n({
       locale: 'en', // the demos start in English; the language select offers German
     });
-    createDomI18n(df$).bind(app, locale);
+    const i18n = createDomI18n(df$).bind(app, locale);
     // two switches (the sidebar and the mobile drawer) show one language
     df$('[data-app-locale]').each((_i, el) => {
       df$.shadcn.languageSwitcher.bind(el, locale);
+    });
+    const words = () => WORDS[locale.locale === 'de' ? 'de' : 'en'];
+    const fmt = (text, values) => text.replace(/%(\w)/g, (_m, k) => String(values[k] ?? ''));
+    const mb = (bytes) => (bytes / 1e6).toFixed(1) + ' MB';
+    const toast = (title, description) => df$.shadcn.toast.show(description ? { title, description } : { title });
+    const encode = (text) => new TextEncoder().encode(text);
+    const decode = (bytes) => new TextDecoder().decode(bytes);
+
+    // -- storage: defuss-storage over a folder of the origin private file system; a page without one (the docs
+    //    preview is a sandboxed frame) keeps the files in memory. Files are opened per operation and closed again,
+    //    so another tab of the app can open them too (an open file is owned - BUSY elsewhere)
+    let storage = null;
+    let kind = 'memory';
+    try {
+      const [{ createMemoryStorage }, { createDirectoryStorage }] = await STORAGE;
+      try {
+        const root = await navigator.storage.getDirectory();
+        storage = await createDirectoryStorage(await root.getDirectoryHandle('folio', { create: true }), {
+          name: 'folio',
+        });
+        kind = 'opfs';
+      } catch {
+        storage = createMemoryStorage();
+      }
+    } catch {
+      // no storage module (offline): a map stands in, so the rest still works for this visit
+      const files = new Map();
+      storage = {
+        list: async () => [...files.keys()].sort(),
+        remove: async (name) => files.delete(name),
+        open: async (name, options = {}) => {
+          if (!files.has(name) && !options.create) throw Object.assign(new Error(name), { code: 'NOT_FOUND' });
+          if (!files.has(name)) files.set(name, new Uint8Array());
+          return {
+            size: async () => files.get(name).length,
+            readExactly: async () => files.get(name).slice(),
+            truncate: async () => files.set(name, new Uint8Array()),
+            write: async (_at, bytes) => files.set(name, bytes.slice()),
+            flush: async () => {},
+            close: async () => {},
+          };
+        },
+      };
+    }
+    const busy = async (fn) => {
+      for (let i = 0; ; i++) {
+        try {
+          return await fn();
+        } catch (e) {
+          if (e?.code !== 'BUSY' || i > 20) throw e;
+          await new Promise((r) => setTimeout(r, 50));
+        }
+      }
+    };
+    const readFile = (name) =>
+      busy(async () => {
+        let file;
+        try {
+          file = await storage.open(name, { readOnly: true });
+        } catch (e) {
+          if (e?.code === 'NOT_FOUND') return null;
+          throw e;
+        }
+        try {
+          return await file.readExactly(0, await file.size());
+        } finally {
+          await file.close();
+        }
+      });
+    const writeFile = (name, bytes) =>
+      busy(async () => {
+        const file = await storage.open(name, { create: true });
+        try {
+          await file.truncate(0);
+          await file.write(0, bytes);
+          await file.flush();
+        } finally {
+          await file.close();
+        }
+      });
+    const readJson = async (name) => {
+      try {
+        const bytes = await readFile(name);
+        return bytes ? JSON.parse(decode(bytes)) : null;
+      } catch {
+        return null;
+      }
+    };
+
+    // -- the workspace: what the reader changes lives in these parts of the page - the pages, the two trees of
+    //    both sidebars, the palette's page list and the trash. A snapshot is their markup with live form values
+    //    written as attributes and the runtime's marks taken out, so every component starts again on it
+    const REGIONS = ['.nt-pages', '[data-nt-private]', '[data-nt-favs]', '[data-nt-cmd-pages]', '[data-nt-trash-list]'];
+    const RUNTIME = [
+      'data-init',
+      'data-api',
+      'data-state-name',
+      'data-dragging',
+      'data-drop',
+      'data-over',
+      'data-highlighted',
+    ];
+    const trashed = (page) => !!$('.nt-pages > .nt-page[data-page="' + CSS.escape(page) + '"][data-trashed]');
+    const capture = () => {
+      const regions = {};
+      for (const sel of REGIONS)
+        regions[sel] = $$(sel).map((live) => {
+          const copy = live.cloneNode(true);
+          const fields = $$('input, select, textarea', copy);
+          $$('input, select, textarea', live).forEach((x, i) => {
+            const y = fields[i];
+            if (x.type === 'checkbox' || x.type === 'radio') y.toggleAttribute('checked', x.checked);
+            else if (x.tagName === 'SELECT')
+              [...y.options].forEach((o, k) => o.toggleAttribute('selected', k === x.selectedIndex));
+            else if (x.tagName === 'TEXTAREA') y.textContent = x.value;
+            else y.setAttribute('value', x.value);
+          });
+          for (const el of $$('*', copy)) for (const a of RUNTIME) el.removeAttribute(a);
+          // the palette hides its page items under a query: what is kept is only the trash's hiding
+          for (const b of $$('.command-item[data-page]', copy)) b.toggleAttribute('hidden', trashed(b.dataset.page));
+          // a picture's path from the docs root, whichever page saved it
+          return copy.innerHTML.replace(/(src=")(?:\.\.\/)+(?=images\/)/g, '$1');
+        });
+      return regions;
+    };
+    // a backup is a file from anywhere: nothing in it may run
+    const sanitize = (html) => {
+      const t = document.createElement('template');
+      t.innerHTML = html;
+      // (an SVG animation can set an href to a script URL - the workspace has none)
+      for (const el of $$(
+        'script, style, template, iframe, frame, object, embed, base, meta, link, animate, set, animateMotion, animateTransform',
+        t.content,
+      ))
+        el.remove();
+      for (const el of $$('*', t.content))
+        for (const a of [...el.attributes]) {
+          const value = a.value.replace(/[\s\u0000-\u001f]/g, '').toLowerCase();
+          if (
+            a.name.startsWith('on') ||
+            a.name === 'srcdoc' ||
+            (/^(href|src|action|formaction|xlink:href|poster)$/.test(a.name) &&
+              /^(javascript|vbscript|data:(?!image\/(png|jpeg|gif|webp)))/.test(value))
+          )
+            el.removeAttribute(a.name);
+        }
+      return t.innerHTML;
+    };
+    const fits = (regions) =>
+      regions && REGIONS.every((sel) => Array.isArray(regions[sel]) && regions[sel].length === $$(sel).length);
+    let restoring = false;
+    const restore = (regions) => {
+      restoring = true;
+      for (const sel of REGIONS)
+        $$(sel).forEach((el, i) => {
+          el.innerHTML = sanitize(String(regions[sel][i])).replace(/src="images\//g, 'src="' + IMAGES);
+        });
+      globalThis.lucide?.createIcons();
+      i18n.rescan();
+      i18n.refresh();
+      // the wiring reads the roadmap and its counters again
+      app.dispatchEvent(new CustomEvent('nt-restored'));
+      queueMicrotask(() => {
+        restoring = false;
+      });
+    };
+    const pageCount = (regions) => (String(regions['.nt-pages']?.[0] ?? '').match(/<article\b/g) || []).length;
+
+    // two slots written in turn, each with its generation: a write cut short leaves the other one whole
+    const SLOTS = ['workspace-a.json', 'workspace-b.json'];
+    let generation = 0;
+    let savedAt = '';
+    const valid = (doc) => doc?.format === 'folio-workspace' && doc.version === 1 && fits(doc.regions);
+    const loadWorkspace = async () =>
+      (await Promise.all(SLOTS.map(readJson))).filter(valid).sort((a, b) => b.generation - a.generation)[0] ?? null;
+
+    const SAMPLE = capture(); // before anything is restored: what Reset brings back
+    let touched = false; // the reader typed before the stored workspace arrived - theirs wins
+    const early = () => {
+      touched = true;
+    };
+    app.addEventListener('input', early, { once: true });
+    const stored = await loadWorkspace();
+    app.removeEventListener('input', early);
+    if (stored && !touched) {
+      restore(stored.regions);
+      generation = stored.generation;
+      savedAt = stored.saved;
+    }
+    const INDEX = 'search-index.json';
+    const storedIndex = await readJson(INDEX);
+    app.dataset.ntStore = kind;
+
+    // -- saving: every change, a moment after the last one
+    const savedLabel = (state, error) => {
+      const w = words();
+      const text = { saved: w.saved, saving: w.saving, memory: w.memory, error: fmt(w.failed, { e: error }) }[state];
+      for (const el of $$('[data-nt-saved]')) {
+        el.dataset.state = state;
+        el.textContent = text;
+      }
+    };
+    let saveState = kind === 'opfs' ? 'saved' : 'memory';
+    let saveError = '';
+    const showSaved = () => savedLabel(saveState, saveError);
+    let saveTimer = 0;
+    let saving = Promise.resolve();
+    const save = (from) => {
+      clearTimeout(saveTimer);
+      saveState = 'saving';
+      showSaved();
+      saving = saving.then(async () => {
+        const doc = {
+          format: 'folio-workspace',
+          version: 1,
+          generation: generation + 1,
+          saved: new Date().toISOString(),
+          regions: capture(),
+        };
+        try {
+          await writeFile(SLOTS[doc.generation % 2], encode(JSON.stringify(doc)));
+          generation = doc.generation;
+          savedAt = doc.saved;
+          saveState = kind === 'opfs' ? 'saved' : 'memory';
+        } catch (e) {
+          saveState = 'error';
+          saveError = e?.code || e?.message || String(e);
+        }
+        showSaved();
+        render();
+        reindex(from ? { ...from, generation } : undefined);
+      });
+      return saving;
+    };
+    const changed = () => {
+      if (restoring) return;
+      saveState = 'saving';
+      showSaved();
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 600);
+    };
+    // what the router and the components mark at run time is no change of the workspace
+    const ignored = (m) =>
+      m.type === 'attributes' &&
+      (RUNTIME.includes(m.attributeName) ||
+        ['aria-selected', 'aria-expanded', 'tabindex', 'data-state'].includes(m.attributeName) ||
+        (m.attributeName === 'hidden' &&
+          m.target.matches('.nt-page, [data-nt-cmd-pages], [data-nt-cmd-pages] .command-item')));
+    const watch = new MutationObserver((list) => {
+      if (list.some((m) => !ignored(m))) changed();
+    });
+    for (const sel of REGIONS)
+      for (const el of $$(sel))
+        watch.observe(el, { subtree: true, childList: true, characterData: true, attributes: true });
+    // a checkbox, a select or a date changes a property, not the markup
+    app.addEventListener('change', (e) => {
+      if (REGIONS.some((sel) => e.target.closest(sel))) changed();
+    });
+    addEventListener('pagehide', () => {
+      if (saveState === 'saving') save();
+    });
+
+    // -- the search: one document per section of a page (a heading starts one) and per roadmap item
+    const hash = (text) => {
+      // cyrb53: a key for a text's vector, not a security hash
+      let h1 = 0xdeadbeef,
+        h2 = 0x41c6ce57;
+      for (let i = 0; i < text.length; i++) {
+        const c = text.charCodeAt(i);
+        h1 = Math.imul(h1 ^ c, 2654435761);
+        h2 = Math.imul(h2 ^ c, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      return (h2 >>> 0).toString(16).padStart(8, '0') + (h1 >>> 0).toString(16).padStart(8, '0');
+    };
+    const sections = () => {
+      const docs = [];
+      const add = (d) => {
+        const meaning = [d.title, d.heading, d.text].filter(Boolean).join('. ').slice(0, 1500);
+        docs.push({ ...d, meaning, hash: hash(meaning) });
+      };
+      for (const p of $$('.nt-pages > .nt-page:not([data-trashed])')) {
+        const page = p.dataset.page;
+        const title = $('[data-nt-title]', p)?.textContent.trim() || 'Untitled';
+        const icon = $('.nt-icon [data-icon-of]', p)?.textContent.trim() || '📄';
+        let part = { heading: '', at: 0, lines: [] };
+        let k = 0;
+        const flush = () => {
+          const text = part.lines.join(' ').replace(/\s+/g, ' ').trim();
+          if (text || part.heading || !k)
+            add({ id: page + '~' + k++, page, title, icon, heading: part.heading, at: part.at, text });
+        };
+        $$('.nt-blocks .nt-block', p).forEach((b, i) => {
+          const text = ($(':scope > .nt-text, :scope > figure > .nt-text', b)?.textContent ?? '').trim();
+          if (/^h[123]$/.test(b.dataset.type)) {
+            flush();
+            part = { heading: text, at: i, lines: [] };
+          } else if (text) part.lines.push(text);
+        });
+        flush();
+        for (const r of $$('[data-nt-db] tr[data-item]', p)) {
+          const name = $('[data-f="name"]', r)?.textContent.trim() || 'Untitled';
+          const facts = ['status', 'owner', 'due', 'tags'].map((f) => $('[data-f="' + f + '"]', r)?.textContent.trim());
+          const status = $('select[data-field="status"]', r);
+          if (status) facts[0] = status.selectedOptions[0]?.textContent.trim();
+          add({
+            id: page + '~item~' + r.dataset.item,
+            page,
+            item: r.dataset.item,
+            title: name,
+            icon: '🗂️',
+            heading: title,
+            at: 0,
+            text: [...facts, r.dataset.body].filter(Boolean).join(' · '),
+          });
+        }
+      }
+      return docs;
+    };
+
+    // the index on disk describes one workspace generation: the lexical index, its documents and their vectors
+    // (keyed by the text they were made from, so an edit embeds only what changed)
+    const toB64 = (f32) => {
+      const b = new Uint8Array(f32.buffer, f32.byteOffset, f32.byteLength);
+      let s = '';
+      for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000));
+      return btoa(s);
+    };
+    const fromB64 = (text) => {
+      const s = atob(text);
+      const b = new Uint8Array(s.length);
+      for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i);
+      return new Float32Array(b.buffer);
+    };
+    let vectors = new Map(); // hash → Float32Array (Winzling-embed, 384 dimensions)
+    let vectorModel = '';
+    const takeVectors = (index) => {
+      if (!index || typeof index.vectors !== 'object' || !index.model) return;
+      if (vectorModel && index.model !== vectorModel) return;
+      for (const [h, v] of Object.entries(index.vectors))
+        if (typeof v === 'string') {
+          const f = fromB64(v);
+          if (f.length === index.dimensions) vectors.set(h, f);
+        }
+      vectorModel = index.model;
+    };
+    const indexFile = (lexical, docs) => ({
+      format: 'folio-index',
+      version: 1,
+      generation,
+      lexical: lexical.toJSON(),
+      documents: docs,
+      model: vectorModel || null,
+      dimensions: 384,
+      vectors: Object.fromEntries(
+        docs.filter((d) => vectors.has(d.hash)).map((d) => [d.hash, toB64(vectors.get(d.hash))]),
+      ),
+    });
+
+    let current = null; // { docs: Map(id → doc), search, hybrid, count }
+    let models = null; // { embedder, reranker }
+    const sem = { state: 'off', file: '', loaded: 0, total: 0, done: 0, count: 0, error: '' };
+    let indexing = null;
+    let again = false;
+    // builds the search for the workspace as it is now - from the stored index when it describes this generation
+    const reindex = (from) => {
+      if (indexing) {
+        again = true;
+        return indexing;
+      }
+      indexing = (async () => {
+        try {
+          const [{ LexicalSearch }, en, de, strategies] = await SEARCH;
+          const analyzers = { [en.default.id]: en.default, [de.default.id]: de.default };
+          let lexical = null;
+          let docs = null;
+          if (from?.generation === generation && Array.isArray(from.documents)) {
+            try {
+              lexical = LexicalSearch.fromJSON(from.lexical, analyzers);
+              docs = from.documents;
+            } catch {
+              lexical = null;
+            }
+          }
+          if (!lexical) {
+            docs = sections();
+            lexical = new LexicalSearch({
+              fields: {
+                title: { analyzer: en.default, weight: 3 },
+                text: { analyzer: en.default },
+                titleDe: { analyzer: de.default, weight: 3 },
+                textDe: { analyzer: de.default },
+              },
+            });
+            lexical.addAll(
+              docs.map((d) => {
+                const title = d.heading ? d.title + ' - ' + d.heading : d.title;
+                return { id: d.id, fields: { title, text: d.text, titleDe: title, textDe: d.text } };
+              }),
+            );
+          }
+          const options = { lexical: { search: { prefix: true, fuzzy: true } } };
+          let search;
+          if (models) {
+            const missing = [...new Map(docs.filter((d) => !vectors.has(d.hash)).map((d) => [d.hash, d])).values()];
+            if (missing.length) {
+              Object.assign(sem, { state: 'indexing', done: 0, count: missing.length });
+              render();
+              for (let i = 0; i < missing.length; i += 8) {
+                const batch = missing.slice(i, i + 8);
+                const out = await models.embedder.embedDocuments(batch.map((d) => d.meaning));
+                batch.forEach((d, j) => vectors.set(d.hash, Float32Array.from(out[j])));
+                sem.done = i + batch.length;
+                render();
+                await new Promise((r) => setTimeout(r)); // the page stays responsive between batches
+              }
+            }
+            search = await strategies.createLexicalSemanticSearch(lexical, {
+              documents: docs.map((d) => ({ id: d.id, text: d.meaning })),
+              embedder: models.embedder,
+              reranker: models.reranker,
+              vectors: docs.map((d) => vectors.get(d.hash)),
+              ...options,
+            });
+            sem.state = 'ready';
+          } else search = strategies.createLexicalOnlySearch(lexical, options);
+          current = { docs: new Map(docs.map((d) => [d.id, d])), search, hybrid: !!models, count: docs.length };
+          await writeFile(INDEX, encode(JSON.stringify(indexFile(lexical, docs)))).catch(() => {});
+        } catch (e) {
+          if (models) Object.assign(sem, { state: 'error', error: e?.message || String(e) });
+        } finally {
+          indexing = null;
+        }
+        render();
+        find();
+        if (again) {
+          again = false;
+          reindex();
+        }
+      })();
+      return indexing;
+    };
+
+    // -- the two models: the pinned files of defuss-vectorsearch's releases, downloaded once as <file>.br from
+    //    Hugging Face, decoded with defuss-brotli, checked against their SHA-256 and kept in the storage above
+    const sha256 = async (bytes) =>
+      [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
+        .map((x) => x.toString(16).padStart(2, '0'))
+        .join('');
+    const modelFile = (sha) => 'model-' + sha.slice(0, 32) + '.bin';
+    // the files of a model download side by side: the status shows the one that moved last
+    let shownAt = 0;
+    const fetchBytes = async (url, name) => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(name + ': HTTP ' + res.status);
+      const total = Number(res.headers.get('content-length')) || 0;
+      const reader = res.body.getReader();
+      const parts = [];
+      let loaded = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        parts.push(value);
+        loaded += value.length;
+        Object.assign(sem, { file: name, loaded, total });
+        if (performance.now() - shownAt > 100) {
+          shownAt = performance.now();
+          render();
+        }
+      }
+      const out = new Uint8Array(loaded);
+      let at = 0;
+      for (const p of parts) {
+        out.set(p, at);
+        at += p.length;
+      }
+      return out;
+    };
+    const loader = (brotli, id, revision, pins) => async (path) => {
+      const sha = pins[path];
+      if (!sha) throw new Error(path + ' is not pinned');
+      const kept = await readFile(modelFile(sha)).catch(() => null);
+      if (kept && (await sha256(kept)) === sha) return kept;
+      const raw = await fetchBytes(
+        'https://huggingface.co/' + id + '/resolve/' + revision + '/' + path + '.br',
+        path.split('/').pop(),
+      );
+      let bytes;
+      try {
+        bytes = brotli.decompress(raw);
+      } catch {
+        bytes = raw; // a server that sent it with Content-Encoding: br - the browser decoded it already
+      }
+      if ((await sha256(bytes)) !== sha) throw new Error(path + ': SHA-256 differs from the pinned release');
+      await writeFile(modelFile(sha), bytes).catch(() => {});
+      return bytes;
+    };
+    // the two models are seven pinned files; loading checks each against its SHA-256 anyway
+    const modelsKept = async () => (await storage.list()).filter((name) => name.startsWith('model-')).length >= 7;
+    const loadModels = async () => {
+      if (models || sem.state === 'loading' || sem.state === 'starting') return;
+      Object.assign(sem, { state: 'loading', file: '', loaded: 0, total: 0, error: '' });
+      render();
+      try {
+        const [onnx, brotli] = await MODELS();
+        await brotli.init(BROTLI_WASM);
+        const colbert = onnx.MOEDERNCOLBERT_MODELS['1.5m'];
+        const embedder = onnx.createWinzlingEmbedder({
+          device: 'wasm',
+          numThreads: 1,
+          truncate: true,
+          loadFile: loader(brotli, onnx.WINZLING_MODEL_ID, onnx.WINZLING_REVISION, onnx.WINZLING_FILES),
+        });
+        const reranker = onnx.createColbertReranker({
+          model: '1.5m',
+          precision: 'q8',
+          device: 'wasm',
+          numThreads: 1,
+          truncate: true,
+          loadFile: loader(brotli, colbert.id, colbert.revision, colbert.files),
+        });
+        // both load now, not on the first query
+        await embedder.embedQuery('Folio');
+        await reranker.encodeQueries(['Folio']);
+        sem.state = 'starting';
+        render();
+        const model = embedder.fingerprint;
+        if (vectorModel !== model) vectors = new Map();
+        vectorModel = model;
+        models = { embedder, reranker };
+        kept = await modelsKept().catch(() => false);
+        await reindex();
+      } catch (e) {
+        Object.assign(sem, { state: 'error', error: e?.message || String(e) });
+        render();
+      }
+    };
+    const forgetModels = async () => {
+      const gone = models;
+      models = null;
+      await Promise.all([gone?.embedder.dispose?.(), gone?.reranker.dispose?.()]).catch(() => {});
+      for (const name of await storage.list())
+        if (name.startsWith('model-')) await storage.remove(name).catch(() => {});
+      kept = false;
+      Object.assign(sem, { state: 'off', error: '' });
+      toast(words().forgotten);
+      await reindex();
+    };
+
+    // -- the palette: below a query the ranked hits replace the page list (the Command component filters nothing
+    //    under data-filter="none" - it keeps the keys, the highlight and the empty state)
+    const cmd = $('#nt-cmd');
+    const query = $('.command-input', cmd);
+    const hitsBox = $('[data-nt-hits]', cmd);
+    const pageList = $('[data-nt-cmd-pages]', cmd);
+    const findStatus = $('[data-nt-find-status]', cmd);
+    // a hit found by meaning alone, below this cosine, is noise - VERIFIED on the sample: nonsense scored 0.19 at most,
+    // the sections a query meant 0.35 to 0.43
+    const MIN_MEANING = 0.3;
+    const el = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    // the query's words marked in a snippet around the first of them
+    const snippet = (text, q) => {
+      const terms = q
+        .toLowerCase()
+        .split(/[^\p{L}\p{N}]+/u)
+        .filter((t) => t.length > 1);
+      const lower = text.toLowerCase();
+      const first = Math.min(...terms.map((t) => lower.indexOf(t)).filter((i) => i >= 0), Infinity);
+      const from = Number.isFinite(first) ? Math.max(0, first - 40) : 0;
+      const part = (from ? '…' : '') + text.slice(from, from + 160);
+      const box = el('span', 'nt-hit-snippet');
+      if (!terms.length) box.textContent = part;
+      else
+        part
+          .split(new RegExp('(' + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'gi'))
+          .forEach((bit, i) => box.append(i % 2 ? el('mark', '', bit) : document.createTextNode(bit)));
+      return box;
+    };
+    const hitItem = (doc, h, q) => {
+      const item = el('button', 'command-item nt-hit');
+      item.type = 'button';
+      item.dataset.ntHit = doc.id;
+      const main = el('span', 'nt-hit-main');
+      const title = el('span', 'nt-hit-title', doc.title);
+      if (doc.heading) title.append(' ', el('small', '', '· ' + doc.heading));
+      main.append(title);
+      if (doc.text) main.append(snippet(doc.text, q));
+      const via = el('span', 'nt-hit-via');
+      item.dataset.via = Object.keys(h.signals).join(' ');
+      if (h.signals.lexical) via.append(el('span', 'badge', words().viaWords));
+      if (h.signals.vector) via.append(el('span', 'badge', words().viaMeaning));
+      for (const b of via.children) b.dataset.variant = 'outline';
+      item.append(el('span', 'nt-hit-icon', doc.icon), main, via);
+      return item;
+    };
+    let asked = 0;
+    let shownStatus = '';
+    const find = async () => {
+      const text = query.value.trim();
+      const ask = ++asked;
+      for (const b of $$('.command-item[data-page]', pageList)) b.hidden = !!text || trashed(b.dataset.page);
+      for (const b of $$('.command-group:not([data-nt-hits]):not([data-nt-cmd-pages]) .command-item', cmd))
+        b.hidden = !!text && !b.textContent.toLowerCase().includes(text.toLowerCase());
+      const w = words();
+      let status = '';
+      const items = [];
+      if (text && current) {
+        const t0 = performance.now();
+        let found = [];
+        try {
+          found = await current.search.search({ text }, { limit: 12 });
+        } catch {
+          found = [];
+        }
+        if (ask !== asked) return;
+        for (const h of found) {
+          const doc = current.docs.get(h.id);
+          if (!doc) continue;
+          if (!h.signals.lexical && (h.signals.vector?.score ?? 0) < MIN_MEANING) continue;
+          items.push(hitItem(doc, h, text));
+          if (items.length === 8) break;
+        }
+        status = fmt(current.hybrid ? w.resultsHybrid : w.results, {
+          n: items.length,
+          t: (performance.now() - t0).toFixed(0),
+        });
+      } else if (text) {
+        // the search has not arrived yet: the page titles
+        for (const b of $$('.command-item', pageList))
+          if (b.textContent.toLowerCase().includes(text.toLowerCase())) {
+            const copy = b.cloneNode(true);
+            copy.hidden = false;
+            items.push(copy);
+          }
+        status = w.plain;
+      }
+      hitsBox.replaceChildren(...items);
+      shownStatus = status;
+      renderOffer();
+    };
+    query.addEventListener('input', find);
+    new MutationObserver(() => cmd.open && find()).observe(cmd, { attributes: true, attributeFilter: ['open'] });
+    cmd.addEventListener('close', () => {
+      query.value = '';
+      find();
+    });
+    // a hit opens its page at its section (or the roadmap item in its peek)
+    const open = (doc) => {
+      cmd.close();
+      let frames = 0;
+      const at = () => {
+        const p = $('#p-' + CSS.escape(doc.page));
+        if (!p || p.hidden) return ++frames < 60 && requestAnimationFrame(at);
+        if (doc.item) {
+          $('[data-nt-db] tr[data-item="' + CSS.escape(doc.item) + '"] [data-nt-open]', p)?.click();
+          return;
+        }
+        const block = $$('.nt-blocks .nt-block', p)[doc.at];
+        if (!block) return;
+        block.scrollIntoView({ block: 'center' });
+        block.classList.remove('nt-flash');
+        void block.offsetWidth;
+        block.classList.add('nt-flash');
+        setTimeout(() => block.classList.remove('nt-flash'), 1700);
+      };
+      if (location.hash !== '#/pages/' + doc.page) location.hash = '/pages/' + doc.page;
+      requestAnimationFrame(at);
+    };
+    hitsBox.addEventListener('click', (e) => {
+      const item = e.target.closest('[data-nt-hit]');
+      if (item && current?.docs.get(item.dataset.ntHit)) open(current.docs.get(item.dataset.ntHit));
+    });
+
+    // -- status: the sidebar's save line, the palette's offer and Settings
+    const settingsBox = $('#nt-settings');
+    const line = (name, text) => {
+      const p = $('[data-nt-set="' + name + '"]', settingsBox);
+      if (p) p.textContent = text;
+    };
+    let kept = false;
+    const semanticText = () => {
+      const w = words();
+      if (sem.state === 'loading')
+        return sem.file
+          ? fmt(w.semanticLoading, { f: sem.file, l: mb(sem.loaded), m: sem.total ? mb(sem.total) : '…' })
+          : w.semanticStarting;
+      if (sem.state === 'starting') return w.semanticStarting;
+      if (sem.state === 'indexing') return fmt(w.semanticIndexing, { i: sem.done, n: sem.count });
+      if (sem.state === 'ready')
+        return fmt(w.semanticReady, { n: current?.count ?? 0, k: kind === 'opfs' ? w.keptHere : w.keptMemory });
+      if (sem.state === 'error') return fmt(w.semanticError, { e: sem.error });
+      return kept ? w.semanticKept : w.semanticOff;
+    };
+    const offerLabel = () => (sem.state === 'error' ? words().retry : kept ? words().loadKept : words().load);
+    // below the hits: their count and time, or what the models are doing; the offer while they are off
+    const renderOffer = () => {
+      const button = $('[data-nt-semantic]', cmd);
+      const offer = !models && (sem.state === 'off' || sem.state === 'error');
+      button.hidden = !offer;
+      button.textContent = sem.state === 'error' ? words().retry : kept ? words().loadKept : words().offer;
+      const busy = ['loading', 'starting', 'indexing', 'error'].includes(sem.state);
+      findStatus.textContent = query.value.trim() && !busy ? shownStatus : busy ? semanticText() : '';
+    };
+    const render = () => {
+      const w = words();
+      showSaved();
+      line(
+        'storage',
+        kind === 'opfs'
+          ? fmt(w.storageOpfs, { t: savedAt ? new Date(savedAt).toLocaleString(locale.locale) : w.never })
+          : w.storageMemory,
+      );
+      line('lexical', current ? fmt(w.lexical, { n: current.count }) : w.lexicalLoading);
+      line('semantic', semanticText());
+      const bar = $('[data-nt-set="progress"]', settingsBox);
+      bar.hidden = sem.state !== 'loading' && sem.state !== 'indexing';
+      if (sem.state === 'loading') {
+        bar.max = sem.total || 1;
+        bar.value = sem.total ? sem.loaded : 0;
+      } else if (sem.state === 'indexing') {
+        bar.max = sem.count || 1;
+        bar.value = sem.done;
+      }
+      const load = $('[data-nt-semantic]', settingsBox);
+      load.hidden = !!models || sem.state === 'loading' || sem.state === 'starting' || sem.state === 'indexing';
+      load.textContent = offerLabel();
+      $('[data-nt-forget]', settingsBox).hidden = !models && !kept;
+      renderOffer();
+    };
+    app.addEventListener('defuss-i18n:change', () => {
+      render();
+      find();
+    });
+
+    // -- backups: the workspace and its search index in one JSON file, and back
+    const download = async (name, text) => {
+      if (globalThis.showSaveFilePicker) {
+        try {
+          const handle = await globalThis.showSaveFilePicker({
+            suggestedName: name,
+            types: [{ description: 'Folio backup', accept: { 'application/json': ['.json'] } }],
+          });
+          const out = await handle.createWritable();
+          await out.write(text);
+          await out.close();
+          return true;
+        } catch (e) {
+          if (e?.name === 'AbortError') return false;
+        }
+      }
+      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      const a = el('a');
+      a.href = url;
+      a.download = name;
+      document.body.append(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      return true;
+    };
+    const backup = async () => {
+      if (saveState === 'saving') await save();
+      await reindex();
+      const index = await readJson(INDEX);
+      const regions = capture();
+      const name = 'folio-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      const text = JSON.stringify({
+        format: 'folio-backup',
+        version: 1,
+        exported: new Date().toISOString(),
+        workspace: { format: 'folio-workspace', version: 1, generation, saved: savedAt, regions },
+        index,
+      });
+      if (await download(name, text))
+        toast(words().backedUp, fmt(words().backedUpDesc, { n: pageCount(regions), f: name }));
+    };
+    // the confirm dialog: one question, its answer
+    const confirmBox = $('#nt-confirm');
+    let onConfirm = null;
+    const ask = (title, text, ok, then) => {
+      $('#nt-confirm-title', confirmBox).textContent = title;
+      $('#nt-confirm-desc', confirmBox).textContent = text;
+      $('[data-nt-confirm-ok]', confirmBox).textContent = ok;
+      onConfirm = then;
+      confirmBox.showModal();
+    };
+    $('[data-nt-confirm-ok]', confirmBox).addEventListener('click', () => {
+      const then = onConfirm;
+      onConfirm = null;
+      then?.();
+    });
+    confirmBox.addEventListener('close', () => {
+      onConfirm = null;
+    });
+    const replaceWith = async (workspace, index) => {
+      clearTimeout(saveTimer);
+      restore(workspace.regions);
+      // the backup's own index describes what was just restored: its vectors and its lexical index come back
+      const own = index?.format === 'folio-index' && index.version === 1 ? index : null;
+      if (own) takeVectors(own);
+      await save(own);
+      await indexing;
+      const home = $('.nt-pages > .nt-page:not([data-trashed])');
+      location.hash = home ? '/pages/' + home.dataset.page : '/';
+    };
+    const fileInput = $('[data-nt-import-file]');
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files?.[0];
+      fileInput.value = '';
+      if (!file) return;
+      let data = null;
+      try {
+        data = JSON.parse(await file.text());
+      } catch {
+        data = null;
+      }
+      if (data?.format !== 'folio-backup' || data.version !== 1 || !valid(data.workspace)) {
+        toast(words().notBackup, file.name);
+        return;
+      }
+      const date = new Date(data.exported || data.workspace.saved || Date.now()).toLocaleDateString(locale.locale);
+      const n = pageCount(data.workspace.regions);
+      ask(words().importTitle, fmt(words().importText, { d: date, n }), words().importOk, async () => {
+        await replaceWith(data.workspace, data.index);
+        toast(words().imported, fmt(words().importedDesc, { n, d: date }));
+      });
+    });
+    app.addEventListener('click', (e) => {
+      if (e.target.closest('[data-nt-settings]')) {
+        render();
+        settingsBox.showModal();
+      }
+      if (e.target.closest('[data-nt-backup]')) backup();
+      if (e.target.closest('[data-nt-import]')) fileInput.click();
+      if (e.target.closest('[data-nt-reset]'))
+        ask(words().resetTitle, words().resetText, words().resetOk, async () => {
+          await replaceWith({ regions: SAMPLE }, null);
+          toast(words().reset);
+        });
+      if (e.target.closest('[data-nt-semantic]')) loadModels();
+      if (e.target.closest('[data-nt-forget]')) forgetModels();
     });
 
     // -- routing: the first page, and one route per page (#/pages/roadmap) - new pages too
@@ -5509,6 +6783,15 @@
       addEventListener('hashchange', follow);
       follow();
     }
+
+    // -- the search starts: from the stored index when it describes this workspace. The models download on a
+    //    click (about 34 MB - nobody gets them unasked); once this browser keeps them they load by themselves
+    takeVectors(storedIndex);
+    render();
+    await reindex(storedIndex);
+    kept = await modelsKept().catch(() => false);
+    render();
+    if (kept) (globalThis.requestIdleCallback ?? setTimeout)(() => loadModels(), { timeout: 2000 });
   });
 </script>
 <script type="module" src="../../apps/notes/notes.min.js"></script>
