@@ -140,12 +140,36 @@ try {
     assert.equal((await info('#dg-orders')).state, 'default');
   });
 
-  await check('locked columns: the pin moves a column into the sticky group; scrolling leaves it in place', async () => {
-    await page.hover('#dg-orders .data-grid-header[data-field="status"]');
-    await page.click('#dg-orders .data-grid-header[data-field="status"] .data-grid-pin');
+  // the column menu, moving, resizing (mouse, keyboard, touch) - every check leaves #dg-orders as authored
+  const menuOpen = () => page.$eval('#dg-orders .data-grid-menu', (m) => m.matches(':popover-open')).catch(() => false);
+  const openMenu = async (field: string) => {
+    await page.click(`#dg-orders .data-grid-header[data-field="${field}"] .data-grid-menu-button`);
+    assert.ok(await menuOpen(), 'the menu opens');
+  };
+  const menuItem = (action: string, field?: string) =>
+    `#dg-orders .data-grid-menu [data-action="${action}"]${field ? `[data-field="${field}"]` : ''}`;
+  const shownHeaders = () => page.$$eval('#dg-orders .data-grid-header:not([hidden])', (hs) => hs.map((h) => (h as HTMLElement).dataset.field));
+  const firstRow = () => page.$eval('#dg-orders .data-grid-rows > .data-grid-row', (r) => [...r.children].map((c) => c.textContent));
+  const headerBox = (field: string) => page.$eval(`#dg-orders .data-grid-header[data-field="${field}"]`, (h) => {
+    const r = h.getBoundingClientRect();
+    return { x: r.left, y: r.top, w: r.width, h: r.height };
+  });
+  const resetColumns = () => page.$eval('#dg-orders', (g) => (globalThis as any).df$.shadcn.dataGrid.resetColumns(g));
+
+  await check('column menu: lock / unlock moves a column into the sticky group; scrolling leaves it in place', async () => {
+    await openMenu('status');
+    const roles = await page.$$eval('#dg-orders .data-grid-menu .data-grid-menu-item', (is) => is.map((i) => [i.getAttribute('role'), (i as HTMLElement).dataset.action, i.getAttribute('aria-checked')]));
+    assert.deepEqual(roles.slice(0, 3), [['menuitemradio', 'asc', 'false'], ['menuitemradio', 'desc', 'false'], ['menuitemcheckbox', 'lock', 'false']]);
+    assert.equal(roles.filter((r) => r[1] === 'show').length, 5, 'a checkbox per column');
+    assert.equal(await page.$eval('#dg-orders .data-grid-header[data-field="status"] .data-grid-menu-button', (b) => b.getAttribute('aria-expanded')), 'true');
+    await page.click(menuItem('lock'));
     const s = await info('#dg-orders');
     assert.deepEqual(s.config.locked, ['id', 'status']);
-    assert.deepEqual(s.headers, ['id', 'status', 'customer', 'region', 'amount'], 'locked first, in authored order');
+    assert.deepEqual(s.headers, ['id', 'status', 'customer', 'region', 'amount'], 'locked first, in column order');
+    assert.ok(await menuOpen(), 'a checkbox keeps the menu open');
+    assert.equal(await page.$eval(menuItem('lock'), (i) => i.getAttribute('aria-checked')), 'true');
+    await page.keyboard.press('Escape');
+    assert.equal(await menuOpen(), false);
     const sticky = await page.$eval('#dg-orders .data-grid-rows > .data-grid-row', (r) => [...r.children].map((c) => getComputedStyle(c).position));
     assert.deepEqual(sticky, ['sticky', 'sticky', 'static', 'static', 'static']);
     await page.$eval('#dg-orders', (g: HTMLElement) => { g.style.maxWidth = '22rem'; });
@@ -155,9 +179,191 @@ try {
     await page.waitForTimeout(100);
     const after = await page.$eval('#dg-orders .data-grid-header[data-field="status"]', (h) => h.getBoundingClientRect().left);
     assert.equal(Math.round(after), Math.round(before), 'the locked column stays while the rest scrolls');
+    await page.$eval('#dg-orders .data-grid-viewport', (v) => { v.scrollLeft = 0; });
     await page.$eval('#dg-orders', (g: HTMLElement) => { g.style.maxWidth = ''; });
-    await page.click('#dg-orders .data-grid-header[data-field="status"] .data-grid-pin');
+    await openMenu('status');
+    await page.click(menuItem('lock'));
+    await page.keyboard.press('Escape');
     assert.deepEqual((await info('#dg-orders')).config.locked, ['id']);
+  });
+
+  await check('column menu: sort ascending / descending, the sort in force checked; the menu closes', async () => {
+    await openMenu('amount');
+    await page.click(menuItem('desc'));
+    assert.equal(await menuOpen(), false);
+    let s = await info('#dg-orders');
+    assert.deepEqual(s.config.sorters, [{ field: 'amount', direction: 'desc' }]);
+    assert.equal(await page.$eval('#dg-orders .data-grid-header[data-field="amount"]', (h) => h.getAttribute('aria-sort')), 'descending');
+    const top = Number(s.cells[0][3].replace(/[^0-9.]/g, ''));
+    const next = Number(s.cells[1][3].replace(/[^0-9.]/g, ''));
+    assert.ok(top >= next, 'descending amounts');
+    await openMenu('amount');
+    assert.equal(await page.$eval(menuItem('desc'), (i) => i.getAttribute('aria-checked')), 'true');
+    await page.click(menuItem('asc'));
+    s = await info('#dg-orders');
+    assert.deepEqual(s.config.sorters, [{ field: 'amount', direction: 'asc' }]);
+    await page.$eval('#dg-orders', (g) => (globalThis as any).df$.shadcn.dataGrid.query(g, { sorters: [] }));
+  });
+
+  await check('column menu: hide / show columns as checkboxes; the last shown column cannot go', async () => {
+    await openMenu('customer');
+    await page.click(menuItem('show', 'region'));
+    let s = await info('#dg-orders');
+    assert.deepEqual(s.config.hidden, ['region']);
+    assert.deepEqual(await shownHeaders(), ['id', 'customer', 'amount', 'status']);
+    assert.equal((await firstRow()).length, 4, 'the cells follow');
+    assert.equal(await page.$eval('#dg-orders', (g) => g.getAttribute('aria-colcount')), '4');
+    assert.equal(await page.$$eval('#dg-orders .data-grid-filter-cell', (c) => c.length), 4, 'the filter row follows');
+    for (const f of ['id', 'amount', 'status']) await page.click(menuItem('show', f));
+    assert.deepEqual(await shownHeaders(), ['customer']);
+    assert.equal(await page.$eval(menuItem('show', 'customer'), (i) => (i as HTMLButtonElement).disabled), true, 'the last one stays');
+    // hiding the column the menu hangs from closes the menu
+    await page.click(menuItem('show', 'id'));
+    await page.click(menuItem('show', 'customer'));
+    assert.equal(await menuOpen(), false);
+    assert.deepEqual(await shownHeaders(), ['id']);
+    await resetColumns();
+    s = await info('#dg-orders');
+    assert.deepEqual(s.config.hidden, []);
+    assert.deepEqual(await shownHeaders(), ['id', 'customer', 'region', 'amount', 'status']);
+  });
+
+  await check('drag a header (mouse): the column moves, its cells follow, the click sorts nothing; into the locked group it locks', async () => {
+    const from = await headerBox('customer');
+    const to = await headerBox('amount');
+    await page.mouse.move(from.x + 20, from.y + from.h / 2);
+    await page.mouse.down();
+    await page.mouse.move(from.x + 40, from.y + from.h / 2, { steps: 3 });
+    assert.equal(await page.$eval('#dg-orders .data-grid-header[data-field="customer"]', (h) => h.hasAttribute('data-dragging')), true);
+    assert.equal(await page.$$eval('#dg-orders .data-grid-drop-marker', (m) => m.length), 1, 'the drop marker shows');
+    await page.mouse.move(to.x + to.w - 5, to.y + to.h / 2, { steps: 8 });
+    await page.mouse.up();
+    let s = await info('#dg-orders');
+    assert.deepEqual(s.headers, ['id', 'region', 'amount', 'customer', 'status']);
+    assert.deepEqual(s.config.columns, ['id', 'region', 'amount', 'customer', 'status']);
+    assert.deepEqual(s.cells[0], ['1', 'EU', '\u20AC0.00', 'Ada A.', 'open']);
+    assert.deepEqual(s.config.sorters, [], 'a drag is no click');
+    assert.equal(await page.$$eval('#dg-orders .data-grid-drop-marker', (m) => m.length), 0);
+    // to the start: into the locked group
+    const st = await headerBox('status');
+    const id = await headerBox('id');
+    await page.mouse.move(st.x + 20, st.y + st.h / 2);
+    await page.mouse.down();
+    await page.mouse.move(id.x + 4, id.y + id.h / 2, { steps: 10 });
+    await page.mouse.up();
+    s = await info('#dg-orders');
+    assert.deepEqual(s.headers.slice(0, 2), ['status', 'id']);
+    assert.deepEqual(s.config.locked, ['status', 'id']);
+    await resetColumns();
+    s = await info('#dg-orders');
+    assert.deepEqual(s.headers, ['id', 'customer', 'region', 'amount', 'status']);
+    assert.deepEqual(s.config.locked, ['id']);
+  });
+
+  await check('resize (mouse): the end edge widens a column, cells follow; a double click gives it its authored width', async () => {
+    const box = await headerBox('customer');
+    const handle = await page.$eval('#dg-orders .data-grid-header[data-field="customer"] .data-grid-resizer', (h) => {
+      const r = h.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    await page.mouse.move(handle.x, handle.y);
+    await page.mouse.down();
+    await page.mouse.move(handle.x + 60, handle.y, { steps: 6 });
+    await page.mouse.up();
+    const s = await info('#dg-orders');
+    assert.equal(s.config.widths.customer, Math.round(box.w + 60));
+    assert.equal(Math.round((await headerBox('customer')).w), Math.round(box.w + 60));
+    const cell = await page.$eval('#dg-orders .data-grid-rows > .data-grid-row > [data-field="customer"]', (c) => c.getBoundingClientRect().width);
+    assert.equal(Math.round(cell), Math.round(box.w + 60), 'the body column follows');
+    assert.deepEqual(s.config.sorters, [], 'a resize is no click');
+    await page.mouse.dblclick(handle.x + 60, handle.y);
+    assert.deepEqual((await info('#dg-orders')).config.widths, {});
+    assert.equal(Math.round((await headerBox('customer')).w), Math.round(box.w));
+  });
+
+  await check('keyboard: Alt+Arrow Down opens the menu (first item focused, arrows move, Escape returns); Alt+Shift+Arrow moves, Alt+Arrow resizes', async () => {
+    await page.focus('#dg-orders .data-grid-header[data-field="customer"]');
+    await page.$eval('#dg-orders', (g: any) => { g._focus = { row: -1, col: 1 }; });
+    await page.keyboard.press('Alt+ArrowDown');
+    assert.ok(await menuOpen());
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement).dataset.action), 'asc');
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement).dataset.action), 'desc');
+    await page.keyboard.press('End');
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement).dataset.action), 'reset');
+    await page.keyboard.press('Escape');
+    assert.equal(await menuOpen(), false);
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement).dataset.field), 'customer', 'focus back on its header');
+    await page.keyboard.press('Alt+Shift+ArrowRight');
+    let s = await info('#dg-orders');
+    assert.deepEqual(s.headers, ['id', 'region', 'customer', 'amount', 'status']);
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement).dataset.field), 'customer', 'focus moves with it');
+    const w = (await headerBox('customer')).w;
+    await page.keyboard.press('Alt+ArrowRight');
+    s = await info('#dg-orders');
+    assert.equal(s.config.widths.customer, Math.round(w) + 16);
+    await resetColumns();
+  });
+
+  await check('touch: a tap sorts, a long press opens the menu, a long press then a drag moves the column, the edge resizes', async () => {
+    const ctx = await browser.newContext({ viewport: { width: 1000, height: 900 }, hasTouch: true });
+    const tp = await ctx.newPage();
+    tp.on('pageerror', (e) => { failures++; console.error(`  ✗ page error (touch): ${e.message}`); });
+    await tp.goto(`${server.url}/tests/e2e/big-data/data-grid.e2e-fixture.html`);
+    await tp.waitForFunction(() => (globalThis as Record<string, unknown>).__fixtureReady === true, null, { timeout: 15_000 });
+    const cdp = await ctx.newCDPSession(tp);
+    const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x = 0, y = 0) =>
+      cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    const box = (sel: string) => tp.$eval(sel, (h) => { const r = h.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+    const cfg = () => tp.$eval('#dg-orders', (g: any) => g.store.value.config);
+    const reg = await box('#dg-orders .data-grid-header[data-field="region"]');
+    // a tap
+    await touch('touchStart', reg.x + 15, reg.y + reg.h / 2);
+    await touch('touchEnd');
+    await tp.waitForTimeout(100);
+    assert.deepEqual((await cfg()).sorters, [{ field: 'region', direction: 'asc' }], 'a tap sorts');
+    await tp.$eval('#dg-orders', (g) => (globalThis as any).df$.shadcn.dataGrid.query(g, { sorters: [] }));
+    // a long press, released where it rests
+    await touch('touchStart', reg.x + 15, reg.y + reg.h / 2);
+    await tp.waitForTimeout(700);
+    await touch('touchEnd');
+    await tp.waitForTimeout(100);
+    assert.equal(await tp.$eval('#dg-orders .data-grid-menu', (m) => m.matches(':popover-open')), true, 'a long press opens the menu');
+    assert.deepEqual((await cfg()).sorters, [], 'and sorts nothing');
+    await tp.keyboard.press('Escape');
+    // a long press, then a drag past Amount
+    const amt = await box('#dg-orders .data-grid-header[data-field="amount"]');
+    await touch('touchStart', reg.x + 15, reg.y + reg.h / 2);
+    await tp.waitForTimeout(700);
+    for (let i = 1; i <= 8; i++) await touch('touchMove', reg.x + 15 + ((amt.x + amt.w - 5 - reg.x - 15) * i) / 8, reg.y + reg.h / 2);
+    await touch('touchEnd');
+    await tp.waitForTimeout(100);
+    let c = await cfg();
+    assert.deepEqual(c.columns, ['id', 'customer', 'amount', 'region', 'status'], 'the column moved');
+    assert.deepEqual(c.sorters, []);
+    assert.equal(await tp.$eval('#dg-orders .data-grid-menu', (m) => m.matches(':popover-open')), false, 'a drag opens no menu');
+    // the edge: a finger drags it at once
+    const st = await box('#dg-orders .data-grid-header[data-field="status"] .data-grid-resizer');
+    const before = (await box('#dg-orders .data-grid-header[data-field="status"]')).w;
+    await touch('touchStart', st.x + st.w / 2, st.y + st.h / 2);
+    for (let i = 1; i <= 5; i++) await touch('touchMove', st.x + st.w / 2 + i * 10, st.y + st.h / 2);
+    await touch('touchEnd');
+    await tp.waitForTimeout(100);
+    c = await cfg();
+    assert.equal(c.widths.status, Math.round(before + 50));
+    await tp.$eval('#dg-orders', (g) => (globalThis as any).df$.shadcn.dataGrid.resetColumns(g));
+    await ctx.close();
+  });
+
+  await check('the arrangement is part of the kept view: a reload finds the columns as they were left', async () => {
+    await page.$eval('#dg-orders', (g) => (globalThis as any).df$.shadcn.dataGrid.query(g, { columns: ['id', 'status', 'customer', 'region', 'amount'], hidden: ['region'], widths: { customer: 222 } }));
+    await ready();
+    const s = await info('#dg-orders');
+    assert.deepEqual(s.headers, ['id', 'status', 'customer', 'region', 'amount']);
+    assert.deepEqual(await shownHeaders(), ['id', 'status', 'customer', 'amount']);
+    assert.equal(Math.round((await headerBox('customer')).w), 222);
+    await resetColumns();
+    assert.deepEqual(await shownHeaders(), ['id', 'customer', 'region', 'amount', 'status']);
   });
 
   await check('selection: click selects one, Ctrl/Meta toggles, Shift selects a range; aria-selected + status', async () => {
@@ -399,7 +605,7 @@ try {
     await assertRenderContract(page, '.data-grid[id]', ['default', 'loading', 'empty'], {
       // measured: column template, sticky offsets; counts follow the data
       runtimeAttrs: ['style', 'aria-rowcount', 'aria-colcount', 'aria-multiselectable', 'role', 'tabindex', 'data-has-locked', 'data-loading-more'],
-      runtimeOwned: '.data-grid-rows, .data-grid-filters, .data-grid-pin, .data-grid-footer',
+      runtimeOwned: '.data-grid-rows, .data-grid-filters, .data-grid-menu-button, .data-grid-resizer, .data-grid-menu, .data-grid-footer',
     });
   });
 } finally {

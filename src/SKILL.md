@@ -734,7 +734,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 
 **Type:** ATM
 **Why:** One scroll container with a sticky head and a windowed body - only the rows on screen exist, sticky columns need no JS - while every query (multisort, column filters, pages) runs locally over all rows through defuss-dataview.
-**When:** Tables of thousands to millions of records that people sort, filter, lock columns of, page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
+**When:** Tables of thousands to millions of records that people sort, filter, arrange (move, lock, hide, resize columns), page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
 **Files:** dist/components/data-grid/data-grid.css + dist/components/data-grid/data-grid.js
 **Supported states:** default, loading, empty
 **Screenshots:** screenshots/{light,dark}/data-grid.png, screenshots/{light,dark}/data-grid-loading.png, screenshots/{light,dark}/data-grid-empty.png

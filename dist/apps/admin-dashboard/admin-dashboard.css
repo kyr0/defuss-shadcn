@@ -5706,13 +5706,39 @@
   }
 
   .data-grid-header {
+    position: relative;
     height: var(--data-grid-row-height);
     font-weight: 500;
     font-size: 0.8125rem;
     background: var(--muted);
     cursor: pointer;
     user-select: none;
+    -webkit-user-select: none;
+    /* a long press lifts the column - no callout over it (iOS) */
+    -webkit-touch-callout: none;
     white-space: nowrap;
+
+    /* a hidden column: the attribute alone loses to display: flex */
+    &[hidden] {
+      display: none;
+    }
+
+    /* a finger rests on it: lifted, ready to move */
+    &[data-pressed] {
+      background: color-mix(in oklch, var(--accent) 70%, var(--muted));
+      color: var(--foreground);
+    }
+
+    /* the column being moved follows the pointer above the others */
+    &[data-dragging] {
+      z-index: 3;
+      border-radius: var(--radius-sm);
+      outline: 1px solid var(--border);
+      background: var(--popover);
+      color: var(--foreground);
+      box-shadow: var(--shadow-md);
+      cursor: grabbing;
+    }
 
     &[data-type="number"] {
       justify-content: flex-end;
@@ -5722,22 +5748,19 @@
       cursor: default;
     }
 
-    /* the sort direction, and the priority of a multisort (1, 2, …) */
+    /* the sort direction - an arrow with a shaft, unlike the menu's chevron - and the priority of a multisort (1, 2, …) */
     &[aria-sort]::after {
       content: "";
       flex: none;
-      width: 0.5rem;
-      height: 0.5rem;
-      border-inline-end: 1.5px solid currentColor;
-      border-bottom: 1.5px solid currentColor;
-      rotate: 45deg;
-      translate: 0 -0.125rem;
-      color: var(--foreground);
+      width: 0.8125rem;
+      height: 0.8125rem;
+      background: var(--foreground);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='m19 12-7 7-7-7'/%3E%3C/svg%3E")
+        center / contain no-repeat;
     }
 
     &[aria-sort="ascending"]::after {
-      rotate: -135deg;
-      translate: 0 0.125rem;
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 7-7 7 7'/%3E%3Cpath d='M12 19V5'/%3E%3C/svg%3E");
     }
 
     &[data-sort-index]::before {
@@ -5762,56 +5785,263 @@
     }
   }
 
-  /* the lock toggle: a pin that shows on hover / focus and stays when locked */
-  .data-grid-pin {
+  /* the column menu's arrow, at the end of every header; a locked column shows a pin in it */
+  .data-grid-menu-button {
     order: 3;
     flex: none;
-    display: grid;
-    place-items: center;
-    width: 1.375rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.125rem;
+    min-width: 1.375rem;
     height: 1.375rem;
     margin-inline-start: auto;
-    padding: 0;
+    padding: 0 0.125rem;
     border: 0;
     border-radius: var(--radius-sm);
     background: transparent;
     color: var(--muted-foreground);
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 120ms ease;
 
-    /* the icon is a mask over currentColor (pin), so it follows the theme */
-    &::before {
+    /* icons are masks over currentColor, so they follow the theme */
+    &::before,
+    &::after {
       content: "";
+      flex: none;
       width: 0.875rem;
       height: 0.875rem;
       background: currentColor;
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 17v5'/%3E%3Cpath d='M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z'/%3E%3C/svg%3E")
-        center / contain no-repeat;
-      rotate: 45deg;
     }
 
-    &:hover {
+    &::before {
+      display: none;
+      width: 0.75rem;
+      height: 0.75rem;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 17v5'/%3E%3Cpath d='M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+      color: var(--primary);
+    }
+
+    &::after {
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    }
+
+    &:hover,
+    &[aria-expanded="true"] {
       background: var(--accent);
       color: var(--accent-foreground);
     }
   }
 
-  .data-grid-header:is(:hover, :focus-within, [data-locked]) .data-grid-pin {
-    opacity: 1;
+  .data-grid-header[data-locked] .data-grid-menu-button::before {
+    display: block;
   }
 
-  .data-grid-header[data-locked] .data-grid-pin {
-    color: var(--primary);
+  /* right-aligned headers pack at the end: the arrow follows the label */
+  .data-grid-header[data-type="number"] .data-grid-menu-button {
+    margin-inline-start: 0;
+  }
 
-    &::before {
-      rotate: 0deg;
+  /* the end edge resizes the column: a line shows where it is */
+  .data-grid-resizer {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    z-index: 1;
+    width: 0.5rem;
+    cursor: col-resize;
+    touch-action: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block: 25%;
+      inset-inline-end: 0;
+      width: 1px;
+      background: var(--border);
+    }
+
+    &:hover::after,
+    &[data-active]::after {
+      inset-block: 0;
+      width: 2px;
+      background: var(--ring);
     }
   }
 
-  .data-grid-header[data-type="number"] .data-grid-pin {
-    order: -1;
-    margin-inline: 0 auto;
+  .data-grid[data-resizing] {
+    cursor: col-resize;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* where a moved column lands */
+  .data-grid-drop-marker {
+    position: absolute;
+    top: 0;
+    z-index: 4;
+    width: 2px;
+    height: var(--data-grid-row-height);
+    margin-inline-start: -1px;
+    background: var(--primary);
+    pointer-events: none;
+  }
+
+  /* a finger needs room: the arrow and the edge grow on coarse pointers */
+  @media (pointer: coarse) {
+    .data-grid-menu-button {
+      min-width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .data-grid-resizer {
+      width: 1rem;
+    }
+  }
+
+  /* -- the column menu: a popover anchored to the arrow it opened from */
+  .data-grid-menu {
+    position: fixed;
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    margin: 0.25rem 0 0;
+    /* no room below or at the end: above the arrow, or toward the other side */
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
+    min-width: 12rem;
+    max-height: min(26rem, calc(100dvh - 1rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-md);
+    font-size: 0.875rem;
+
+    &:popover-open {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .data-grid-menu-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .data-grid-menu-label {
+    padding: 0.375rem 0.5rem 0.25rem;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .data-grid-menu-separator {
+    flex: none;
+    height: 1px;
+    margin: 0.25rem -0.25rem;
+    background: var(--border);
+  }
+
+  .data-grid-menu-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 2rem;
+    padding: 0.25rem 0.5rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    white-space: nowrap;
+    cursor: pointer;
+
+    /* the leading slot: an icon, or the checkbox */
+    &::before {
+      content: "";
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      background: currentColor;
+    }
+
+    &[data-action="asc"]::before {
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 7-7 7 7'/%3E%3Cpath d='M12 19V5'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    }
+
+    &[data-action="desc"]::before {
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='m19 12-7 7-7-7'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    }
+
+    &[data-action="reset"]::before {
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    }
+
+    /* the sort in force: a dot at the end */
+    &[role="menuitemradio"][aria-checked="true"]::after {
+      content: "";
+      width: 0.375rem;
+      height: 0.375rem;
+      margin-inline-start: auto;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    &[role="menuitemcheckbox"]::before {
+      box-sizing: border-box;
+      border: 1px solid var(--input);
+      border-radius: calc(var(--radius-sm) - 2px);
+      background: var(--background);
+    }
+
+    &[role="menuitemcheckbox"][aria-checked="true"]::before {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    /* the tick, drawn over the box */
+    &[role="menuitemcheckbox"][aria-checked="true"]::after {
+      content: "";
+      position: absolute;
+      inset-inline-start: calc(0.5rem + 0.3125rem);
+      top: 50%;
+      width: 0.3125rem;
+      height: 0.5625rem;
+      border-inline-end: 2px solid var(--primary-foreground);
+      border-bottom: 2px solid var(--primary-foreground);
+      rotate: 45deg;
+      translate: 0 -60%;
+    }
+
+    &:is(:hover, :focus-visible):not(:disabled) {
+      outline: none;
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  @media (pointer: coarse) {
+    .data-grid-menu-item {
+      min-height: 2.75rem;
+    }
   }
 
   /* -- the filter row ------------------------------------------ */
@@ -6089,8 +6319,14 @@
     .data-grid-head,
     .data-grid-body .data-grid-row,
     .data-grid-filter,
-    .data-grid-page-btn {
+    .data-grid-page-btn,
+    .data-grid-menu,
+    .data-grid-menu-item[role="menuitemcheckbox"]::before {
       border-color: var(--muted-foreground);
+    }
+
+    .data-grid-resizer::after {
+      background: var(--muted-foreground);
     }
 
     .data-grid-header,
@@ -6120,13 +6356,41 @@
       outline-color: Highlight;
     }
 
-    .data-grid-header[aria-sort]::after,
+    .data-grid-menu {
+      border-color: CanvasText;
+    }
+
+    .data-grid-menu-item:is(:hover, :focus-visible):not(:disabled) {
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    .data-grid-menu-item[role="menuitemcheckbox"]::before {
+      border-color: ButtonText;
+    }
+
+    .data-grid-menu-item[role="menuitemcheckbox"][aria-checked="true"]::after {
+      border-color: ButtonText;
+    }
+
+    .data-grid-drop-marker,
+    .data-grid-resizer::after {
+      background: Highlight;
+    }
+
     .data-grid-toggle::before {
       border-color: ButtonText;
     }
 
+    .data-grid-header[aria-sort]::after {
+      forced-color-adjust: none;
+      background: ButtonText;
+    }
+
     /* masked icons paint their background - keep it the text color */
-    .data-grid-pin::before,
+    .data-grid-menu-button::before,
+    .data-grid-menu-button::after,
+    .data-grid-menu-item:not([role="menuitemcheckbox"])::before,
     .data-grid-page-btn::before {
       forced-color-adjust: none;
       background: ButtonText;

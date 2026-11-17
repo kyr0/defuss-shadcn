@@ -157,3 +157,6 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-17T15:00:30Z s=5187d371 FINDING compute in the examples, not in core learn=none: a design choice, documented in AGENTS.md Big data
 2026-11-17T15:00:30Z s=5187d371 FINDING skills + tree-grid.mdx keyboard lines learn=none: the prose gate enforces it
 2026-11-17T15:00:30Z s=5187d371 FINDING Notes app (reported slow navigation on the live site) learn=none: no reproduction yet
+2026-11-17T18:21:20Z s=5187d371 FINDING data-grid.css header sort indicator learn=none: a visual judgement, checked by screenshots
+2026-11-17T18:21:20Z s=5187d371 FINDING data-grid.ts beginDrag/long press: navigator.vibrate learn=none: no console-warning assertion in the touch e2e; the guard is the documented API
+2026-11-17T18:21:20Z s=5187d371 FINDING studio.e2e WebKit drag (full e2e run) learn=none: a load-dependent WebKit drag timing, not reproduced alone

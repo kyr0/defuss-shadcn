@@ -16,7 +16,8 @@
         "data-grid": {
           "created": [
             "Projection: computed columns and totals",
-            "Aggregation: a report that follows the grid"
+            "Aggregation: a report that follows the grid",
+            "Arranging columns"
           ],
           "updated": []
         },

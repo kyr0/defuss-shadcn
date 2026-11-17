@@ -2,14 +2,17 @@
 // A grid over any number of records: only the rows on screen exist in the
 // DOM (shared windowing, src/shared/virtual.ts) and every query runs locally
 // over all rows through defuss-dataview (src/shared/dataview.ts) - multisort,
-// column filters, locked columns, pages, infinite loading, selection. With
+// column filters, locked columns, pages, infinite loading, selection - and
+// columns a reader arranges: a menu per header (sort, lock, show / hide),
+// dragged into another place, resized at their edge (touch: hold, then drag). With
 // data-parent-field every row may have a parent: the grid becomes an ARIA
 // treegrid that still filters, sorts and pages.
 //
 // The query IS the state's config (AGENTS.md "State through stores"):
-// el.store.value.config = { filters, sorters, locked, page, expanded,
-// collapsed, selected } - plain JSON any code can subscribe to or set. The
-// view (sort, filters, locked columns, open rows) survives a reload: session
+// el.store.value.config = { filters, sorters, locked, columns, hidden, widths,
+// page, expanded, collapsed, selected } - plain JSON any code can subscribe to
+// or set. The view (sort, filters, the columns' order, lock, visibility and
+// widths, open rows) survives a reload: session
 // storage by default, local storage or nothing per instance (data-persist,
 // data-persist-prefix / -key, or setSource's persist option).
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
@@ -31,7 +34,14 @@ const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const dataGridStates = ['default', 'loading', 'empty'];
 /** the part that is persisted (selection and the open page are per visit) */
-const SAVED_KEYS = ['filters', 'sorters', 'locked', 'expanded'];
+const SAVED_KEYS = ['filters', 'sorters', 'locked', 'columns', 'hidden', 'widths', 'expanded'];
+/** a kept value of one of SAVED_KEYS: widths is a map of numbers, every other key a list */
+const keepable = (key, value) => key === 'widths'
+    ? typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value) &&
+        Object.values(value).every((w) => typeof w === 'number' && w > 0)
+    : Array.isArray(value);
 const numberFormat = new Map();
 /** a cell value as text: data-format="number" | "currency:EUR" | "percent" | "date" - in the text's locale (the grid's nearest [lang], else 'en') */
 function format(value, spec, el) {
@@ -74,6 +84,13 @@ function readColumns(grid) {
         width: el.dataset.width || 'minmax(8rem, 1fr)',
         align: el.dataset.align || (el.dataset.type === 'number' ? 'end' : ''),
         sortable: el.dataset.sortable !== 'false',
+        lockable: el.dataset.lockable !== 'false',
+        hideable: el.dataset.hideable !== 'false',
+        resizable: el.dataset.resizable !== 'false',
+        movable: el.dataset.movable !== 'false',
+        // the authored arrangement - what Reset columns returns to
+        lockedAtStart: el.hasAttribute('data-locked'),
+        hiddenAtStart: el.hidden,
         // sort by another field than the one shown (a priority's rank, not its label)
         sortField: el.dataset.sortField || el.dataset.field,
         options: el.dataset.options ? el.dataset.options.split(',').map((o) => o.trim()) : null,
@@ -95,7 +112,7 @@ function attachPersistence(grid, config) {
         : null;
     const kept = {};
     for (const k of SAVED_KEYS)
-        if (Array.isArray(grid._saved?.value[k]))
+        if (keepable(k, grid._saved?.value[k]))
             kept[k] = grid._saved.value[k];
     return kept;
 }
@@ -103,11 +120,22 @@ function attachPersistence(grid, config) {
 const authoredSort = (grid) => grid._columns
     .filter((c) => c.el.dataset.sort === 'asc' || c.el.dataset.sort === 'desc')
     .map((c) => ({ field: c.sortField, direction: c.el.dataset.sort }));
-/** locked fields first (in authored order), then the rest */
+/** locked fields first (in the given order), then the rest */
 function ordered(items, locked, fieldOf) {
     const set = new Set(locked || []);
     return [...items.filter((i) => set.has(fieldOf(i))), ...items.filter((i) => !set.has(fieldOf(i)))];
 }
+/** the items in the reader's column order (config.columns; a field it does not name keeps its authored place after them) */
+function inColumnOrder(items, config, fieldOf) {
+    const rank = new Map((config.columns || []).map((f, i) => [f, i]));
+    const at = (item, i) => rank.get(fieldOf(item)) ?? rank.size + i;
+    return items
+        .map((item, i) => [at(item, i), item])
+        .sort((a, b) => a[0] - b[0])
+        .map((p) => p[1]);
+}
+/** the display order: the column order, locked columns first */
+const arrange = (items, config, fieldOf) => ordered(inColumnOrder(items, config, fieldOf), config.locked, fieldOf);
 /**
  * The markup of a state, for render() AND the live element (one function):
  * header order (locked columns first), data-locked, aria-sort and the sort
@@ -119,7 +147,11 @@ function applyMarkup(root, state) {
     const row = headerRowOf(root);
     const locked = new Set(config.locked || []);
     const sorters = config.sorters || [];
-    const order = ordered(headers, config.locked, (el) => el.dataset.field);
+    const hidden = new Set(config.hidden || []);
+    // never every column (layoutColumns shows them all then)
+    if (headers.every((el) => hidden.has(el.dataset.field)))
+        hidden.clear();
+    const order = arrange(headers, config, (el) => el.dataset.field);
     // only move what is out of place: an authored order stays untouched
     if (row && order.some((el, i) => dfDollar(row).children('.data-grid-header').get(i) !== el)) {
         order.forEach((el) => dfDollar(row).append(el));
@@ -129,6 +161,7 @@ function applyMarkup(root, state) {
         const dir = at < 0 ? null : sorters[at].direction || sorters[at].dir || 'asc';
         dfDollar(el)
             .attr('data-locked', locked.has(el.dataset.field) ? '' : null)
+            .attr('hidden', hidden.has(el.dataset.field) ? '' : null)
             .attr('aria-sort', dir ? (dir === 'asc' ? 'ascending' : 'descending') : null)
             .attr('data-sort-index', dir && sorters.length > 1 ? String(at + 1) : null);
     }
@@ -170,9 +203,14 @@ const parts = (grid) => grid._parts;
 const rowHeight = (grid) => grid._rowHeight;
 /** column template + the sticky offsets of the locked columns */
 function layoutColumns(grid, config) {
-    const columns = ordered(grid._columns, config.locked, (c) => c.field);
+    const all = arrange(grid._columns, config, (c) => c.field);
+    const hidden = new Set(config.hidden || []);
+    // a kept view that hides every column (its fields renamed since) shows them all
+    const visible = all.filter((c) => !hidden.has(c.field));
+    const columns = visible.length ? visible : all;
     grid._order = columns;
-    grid.style.setProperty('--data-grid-template', columns.map((c) => c.width).join(' '));
+    const widths = config.widths || {};
+    grid.style.setProperty('--data-grid-template', columns.map((c) => (widths[c.field] > 0 ? `${widths[c.field]}px` : c.width)).join(' '));
     const locked = new Set(config.locked || []);
     // offsets are measured: widths may be rem, minmax(), fr
     let left = 0;
@@ -265,18 +303,32 @@ function distinct(grid, field) {
     }
     return [...seen].sort();
 }
-/** a pin button per header: lock / unlock the column */
-function buildPins(grid) {
+/** a header's label: its text (the tools the runtime adds carry none) */
+const labelOf = (column) => column.el.textContent.trim();
+/** per header: the menu button (the arrow) and, unless data-resizable="false", the resize handle at its end edge */
+function buildHeaderTools(grid) {
     for (const column of grid._columns) {
-        if (column.el.dataset.lockable === 'false' || dfDollar(column.el).children('.data-grid-pin').get(0))
-            continue;
-        const pin = document.createElement('button');
-        pin.type = 'button';
-        pin.className = 'data-grid-pin';
-        pin.tabIndex = -1;
-        pin.dataset.field = column.field;
-        pin.setAttribute('aria-label', `Lock ${column.el.textContent.trim()}`);
-        dfDollar(column.el).append(pin);
+        const label = labelOf(column);
+        if (!dfDollar(column.el).children('.data-grid-menu-button').get(0)) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'data-grid-menu-button';
+            button.tabIndex = -1;
+            button.dataset.field = column.field;
+            button.setAttribute('aria-haspopup', 'menu');
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-label', `${label} column menu`);
+            dfDollar(column.el).append(button);
+        }
+        if (column.resizable && !dfDollar(column.el).children('.data-grid-resizer').get(0)) {
+            const handle = document.createElement('span');
+            handle.className = 'data-grid-resizer';
+            handle.dataset.field = column.field;
+            handle.setAttribute('role', 'separator');
+            handle.setAttribute('aria-orientation', 'vertical');
+            handle.setAttribute('aria-label', `Resize ${label}`);
+            dfDollar(column.el).append(handle);
+        }
     }
 }
 // -- rendering --------------------------------------------------------------
@@ -480,7 +532,10 @@ function refresh(grid, config, previous) {
     if (moved)
         grid._focus = { row: grid._focus.row < 0 ? -1 : 0, col: grid._focus.col };
     grid.setAttribute('aria-rowcount', String((grid._result.entries.length || 0) + (grid._parts.filters ? 2 : 1)));
-    grid.setAttribute('aria-colcount', String(grid._columns.length));
+    grid.setAttribute('aria-colcount', String(grid._order.length));
+    // a hidden column takes its cell with it
+    if (grid._focus.col >= grid._order.length)
+        grid._focus = { ...grid._focus, col: Math.max(0, grid._order.length - 1) };
     renderRows(grid);
     renderFooter(grid, config);
     return grid._result.entries.length;
@@ -599,7 +654,7 @@ function focusCell(grid, row, col) {
     target?.focus({ preventScroll: row === -1 });
 }
 function onKeydown(grid, e) {
-    if (e.target.closest?.('.data-grid-filters, .data-grid-footer'))
+    if (e.target.closest?.('.data-grid-filters, .data-grid-footer, .data-grid-menu'))
         return;
     // a control in a custom cell keeps its keys, as it keeps its clicks (onClick): a field types a space and moves its
     // caret, a checkbox ticks on Space, a select opens on Enter - the grid would take them for row navigation
@@ -609,6 +664,31 @@ function onKeydown(grid, e) {
     const page = Math.max(1, Math.floor((grid._parts.viewport.clientHeight - grid._parts.head.offsetHeight) / rowHeight(grid)) - 1);
     const last = grid._shown.length - 1;
     const entry = row >= 0 ? grid._shown[row] : null;
+    // a header: Alt+Arrow Down opens its menu, Alt+Shift+Arrow Left / Right moves the column, Alt+Arrow Left / Right
+    // resizes it
+    const header = row === -1 ? grid._order[col] : null;
+    if (header && e.altKey && !e.ctrlKey && !e.metaKey) {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            openMenu(grid, header);
+            return;
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            const later = e.key === 'ArrowRight';
+            if (e.shiftKey) {
+                if (header.movable)
+                    dropColumn(grid, header.field, later ? col + 2 : col - 1);
+                focusCell(grid, -1, grid._order.indexOf(header));
+            }
+            else if (header.resizable) {
+                const width = Math.round(header.el.getBoundingClientRect().width) + (later ? KEY_STEP : -KEY_STEP);
+                query(grid, { widths: { ...configOf(grid).widths, [header.field]: Math.max(MIN_WIDTH, width) } });
+                focusCell(grid, -1, col);
+            }
+            return;
+        }
+    }
     let next = null;
     switch (e.key) {
         case 'ArrowDown':
@@ -691,14 +771,16 @@ function onKeydown(grid, e) {
 }
 function onClick(grid, e) {
     const t = e.target;
-    const pin = t.closest('.data-grid-pin');
-    if (pin) {
-        const locked = new Set(configOf(grid).locked || []);
-        if (locked.has(pin.dataset.field))
-            locked.delete(pin.dataset.field);
-        else
-            locked.add(pin.dataset.field);
-        query(grid, { locked: grid._columns.map((c) => c.field).filter((f) => locked.has(f)) });
+    // the click that ends a drag, a resize or a long press is no sort
+    if (grid._suppressClick || t.closest('.data-grid-menu, .data-grid-resizer'))
+        return;
+    const menuButton = t.closest('.data-grid-menu-button');
+    if (menuButton) {
+        const column = grid._columns.find((c) => c.field === menuButton.dataset.field);
+        // light dismiss closed it on the way here: the same arrow again only closes
+        if (grid._menuClosedBy !== menuButton && column)
+            openMenu(grid, column);
+        grid._menuClosedBy = null;
         return;
     }
     const pageButton = t.closest('[data-page]');
@@ -777,6 +859,471 @@ async function onNearEnd(grid, force = false) {
     // a short first page may not fill the viewport - keep going until it does
     if (!grid._exhausted && grid._parts.viewport.scrollHeight <= grid._parts.viewport.clientHeight)
         onNearEnd(grid, true);
+}
+// -- arranging the columns: the menu, moving, resizing ----------------------------
+/** the narrowest a column may be dragged (px) */
+const MIN_WIDTH = 48;
+/** what Alt+Arrow Left / Right adds or takes (px) */
+const KEY_STEP = 16;
+/** how long a finger rests on a header before it lifts the column (ms) */
+const LONG_PRESS_MS = 450;
+/** how far a mouse moves before a press on a header becomes a drag, and a finger before a resting touch scrolls (px) */
+const DRAG_SLOP = 6;
+const TOUCH_SLOP = 10;
+// anchor() needs CSS anchor positioning; without it the menu is placed once from the arrow's box
+const anchorPositioning = typeof CSS !== 'undefined' && CSS.supports('anchor-name: --a');
+let menuSeq = 0;
+/** the column order as fields, hidden columns included (no lock grouping) */
+const columnFields = (grid, config) => inColumnOrder(grid._columns, config, (c) => c.field).map((c) => c.field);
+/** lock or unlock a column; locked keeps the column order */
+function setLocked(grid, field, on) {
+    const config = configOf(grid);
+    const locked = new Set(config.locked || []);
+    if (on)
+        locked.add(field);
+    else
+        locked.delete(field);
+    query(grid, { locked: columnFields(grid, config).filter((f) => locked.has(f)) });
+}
+/** show or hide a column - never the last one shown */
+function setHidden(grid, field, on) {
+    const config = configOf(grid);
+    const hidden = new Set(config.hidden || []);
+    if (on)
+        hidden.add(field);
+    else
+        hidden.delete(field);
+    if (grid._columns.every((c) => hidden.has(c.field)))
+        return;
+    query(grid, { hidden: grid._columns.map((c) => c.field).filter((f) => hidden.has(f)) });
+}
+/**
+ * Move a column to a gap between the shown columns (0 = before the first, n = after the last). A gap inside the
+ * locked group locks it, one past it unlocks it, the gap between the two keeps its lock; a hidden column stays after
+ * the column it followed.
+ */
+function dropColumn(grid, field, gap) {
+    const config = configOf(grid);
+    const shownFields = grid._order.map((c) => c.field);
+    const from = shownFields.indexOf(field);
+    const column = grid._columns.find((c) => c.field === field);
+    if (from < 0 || !column)
+        return;
+    gap = Math.max(0, Math.min(shownFields.length, gap));
+    if (gap === from || gap === from + 1)
+        return;
+    const locked = new Set(config.locked || []);
+    const rest = shownFields.filter((f) => f !== field);
+    const lockedCount = rest.filter((f) => locked.has(f)).length;
+    let at = gap > from ? gap - 1 : gap;
+    if (at < lockedCount && !column.lockable)
+        at = lockedCount;
+    if (at < lockedCount)
+        locked.add(field);
+    else if (at > lockedCount)
+        locked.delete(field);
+    rest.splice(at, 0, field);
+    const before = arrange(grid._columns, config, (c) => c.field).map((c) => c.field);
+    const hidden = new Set(config.hidden || []);
+    before.forEach((f, i) => {
+        if (!hidden.has(f))
+            return;
+        const after = rest.indexOf(before[i - 1]);
+        rest.splice(after + 1, 0, f);
+    });
+    query(grid, { columns: rest, locked: rest.filter((f) => locked.has(f)) });
+}
+/** back to the authored columns: their order, lock, visibility and widths */
+function resetColumns(grid) {
+    query(grid, {
+        columns: grid._columns.map((c) => c.field),
+        locked: grid._columns.filter((c) => c.lockedAtStart).map((c) => c.field),
+        hidden: grid._columns.filter((c) => c.hiddenAtStart).map((c) => c.field),
+        widths: {},
+    });
+}
+// -- the column menu: one popover per grid, anchored to the arrow it opened from
+function menuOf(grid) {
+    if (grid._menu)
+        return grid._menu;
+    const menu = document.createElement('div');
+    menu.className = 'data-grid-menu';
+    menu.id = `data-grid-menu-${++menuSeq}`;
+    menu.setAttribute('popover', 'auto');
+    menu.setAttribute('role', 'menu');
+    dfDollar(grid).append(menu);
+    menu.addEventListener('click', (e) => onMenuClick(grid, e));
+    menu.addEventListener('keydown', (e) => onMenuKey(grid, e));
+    menu.addEventListener('toggle', (e) => {
+        const open = e.newState === 'open';
+        const button = grid._menuButton;
+        button?.setAttribute('aria-expanded', String(open));
+        if (open)
+            return;
+        // closed from inside (Escape, Tab, a pick): back to its header, or where it was when the column went away
+        const inside = menu.contains(document.activeElement) || document.activeElement === document.body;
+        const column = grid._columns.find((c) => c.field === grid._menuField);
+        grid._menuField = null;
+        if (inside && column) {
+            const at = grid._order.indexOf(column);
+            focusCell(grid, -1, at >= 0 ? at : Math.min(grid._focus.col, grid._order.length - 1));
+        }
+    });
+    grid._menu = menu;
+    return menu;
+}
+/** a menu item: a button with its role, its action and its checked state */
+function menuItem(role, action, text, checked, disabled, field) {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'data-grid-menu-item';
+    item.tabIndex = -1;
+    item.setAttribute('role', role);
+    item.dataset.action = action;
+    if (field)
+        item.dataset.field = field;
+    if (checked !== null)
+        item.setAttribute('aria-checked', String(checked));
+    item.disabled = disabled;
+    item.textContent = text;
+    return item;
+}
+function menuPart(className, role) {
+    const el = document.createElement('div');
+    el.className = className;
+    el.setAttribute('role', role);
+    return el;
+}
+/** (re)write the menu for the column it is open for: sort, lock, the shown columns, reset */
+function fillMenu(grid) {
+    const menu = grid._menu;
+    const column = grid._columns.find((c) => c.field === grid._menuField);
+    if (!menu || !column)
+        return;
+    const config = configOf(grid);
+    const sorter = (config.sorters || []).find((x) => x.field === column.sortField);
+    const dir = sorter ? sorter.direction || sorter.dir || 'asc' : null;
+    const locked = new Set(config.locked || []);
+    const hidden = new Set(config.hidden || []);
+    const shownCount = grid._columns.filter((c) => !hidden.has(c.field)).length;
+    menu.setAttribute('aria-label', `${labelOf(column)} column`);
+    const group = menuPart('data-grid-menu-group', 'group');
+    group.setAttribute('aria-label', 'Columns');
+    const title = document.createElement('div');
+    title.className = 'data-grid-menu-label';
+    title.setAttribute('aria-hidden', 'true');
+    title.textContent = 'Columns';
+    group.append(title, ...arrange(grid._columns, config, (c) => c.field).map((c) => {
+        const isShown = !hidden.has(c.field);
+        return menuItem('menuitemcheckbox', 'show', labelOf(c), isShown, !c.hideable || (isShown && shownCount === 1), c.field);
+    }));
+    menu.textContent = '';
+    menu.append(menuItem('menuitemradio', 'asc', 'Sort ascending', dir === 'asc', !column.sortable), menuItem('menuitemradio', 'desc', 'Sort descending', dir === 'desc', !column.sortable), menuPart('data-grid-menu-separator', 'separator'), menuItem('menuitemcheckbox', 'lock', 'Lock column', locked.has(column.field), !column.lockable), menuPart('data-grid-menu-separator', 'separator'), group, menuPart('data-grid-menu-separator', 'separator'), menuItem('menuitem', 'reset', 'Reset columns', null, false));
+}
+const menuItems = (grid) => dfDollar(grid._menu)
+    .find('.data-grid-menu-item')
+    .toArray()
+    .filter((b) => !b.disabled);
+/** open a column's menu at its arrow, the first item focused */
+function openMenu(grid, column) {
+    const menu = menuOf(grid);
+    const button = dfDollar(column.el).children('.data-grid-menu-button').get(0);
+    if (!button || column.el.hidden)
+        return;
+    if (grid._menuButton && grid._menuButton !== button) {
+        grid._menuButton.style.removeProperty('anchor-name');
+        grid._menuButton.setAttribute('aria-expanded', 'false');
+    }
+    grid._menuButton = button;
+    // the toggle event comes a task later - the arrow says so now
+    button.setAttribute('aria-expanded', 'true');
+    grid._menuField = column.field;
+    const anchor = `--${menu.id}`;
+    button.style.setProperty('anchor-name', anchor);
+    menu.style.setProperty('position-anchor', anchor);
+    fillMenu(grid);
+    if (!menu.matches(':popover-open'))
+        menu.showPopover();
+    if (!anchorPositioning) {
+        const box = button.getBoundingClientRect();
+        menu.style.top = `${Math.min(box.bottom + 4, innerHeight - menu.offsetHeight - 8)}px`;
+        menu.style.left = `${Math.max(8, Math.min(box.right - menu.offsetWidth, innerWidth - menu.offsetWidth - 8))}px`;
+    }
+    menuItems(grid)[0]?.focus({ preventScroll: true });
+}
+function onMenuClick(grid, e) {
+    const item = e.target.closest('.data-grid-menu-item');
+    const column = grid._columns.find((c) => c.field === grid._menuField);
+    if (!item || item.disabled || !column)
+        return;
+    const action = item.dataset.action;
+    if (action === 'asc' || action === 'desc') {
+        query(grid, { sorters: [{ field: column.sortField, direction: action }], page: 0 });
+        grid._menu.hidePopover();
+        return;
+    }
+    if (action === 'reset') {
+        resetColumns(grid);
+        grid._menu.hidePopover();
+        return;
+    }
+    if (action === 'lock')
+        setLocked(grid, column.field, item.getAttribute('aria-checked') !== 'true');
+    if (action === 'show') {
+        const hide = item.getAttribute('aria-checked') === 'true';
+        setHidden(grid, item.dataset.field, hide);
+        // its own column went: the arrow it hangs from is gone
+        if (hide && item.dataset.field === column.field) {
+            grid._menu.hidePopover();
+            return;
+        }
+    }
+    // a checkbox keeps the menu open: write it again, the same item focused
+    fillMenu(grid);
+    const again = menuItems(grid).find((b) => b.dataset.action === action && (b.dataset.field ?? '') === (item.dataset.field ?? ''));
+    again?.focus({ preventScroll: true });
+}
+/** APG menu keys: arrows, Home / End move; Enter / Space are the buttons' own; Tab leaves (Escape is the popover's) */
+function onMenuKey(grid, e) {
+    const items = menuItems(grid);
+    const at = items.indexOf(document.activeElement);
+    let next = -1;
+    if (e.key === 'ArrowDown')
+        next = (at + 1) % items.length;
+    else if (e.key === 'ArrowUp')
+        next = (at - 1 + items.length) % items.length;
+    else if (e.key === 'Home')
+        next = 0;
+    else if (e.key === 'End')
+        next = items.length - 1;
+    else if (e.key === 'Tab') {
+        e.preventDefault();
+        grid._menu.hidePopover();
+        return;
+    }
+    else
+        return;
+    e.preventDefault();
+    items[next]?.focus({ preventScroll: true });
+}
+// -- pointer: press a header to drag it (a finger holds first), drag an end edge to resize
+const isRtl = (grid) => getComputedStyle(grid).direction === 'rtl';
+function onPointerDown(grid, e) {
+    if (e.button !== 0 || !e.isPrimary)
+        return;
+    const t = e.target;
+    const header = t.closest('.data-grid-header');
+    if (!header || !grid._parts.head.contains(header))
+        return;
+    const column = grid._columns.find((c) => c.el === header);
+    if (!column)
+        return;
+    const menuButton = t.closest('.data-grid-menu-button');
+    if (menuButton) {
+        // light dismiss is about to close the menu this arrow opened - the click must not open it again
+        grid._menuClosedBy = grid._menu?.matches(':popover-open') && grid._menuButton === menuButton ? menuButton : null;
+        return;
+    }
+    const handle = t.closest('.data-grid-resizer');
+    if (handle) {
+        if (!column.resizable)
+            return;
+        e.preventDefault();
+        try {
+            handle.setPointerCapture(e.pointerId);
+        }
+        catch {
+            // a pointer that already ended
+        }
+        grid._press = {
+            id: e.pointerId,
+            column,
+            x: e.clientX,
+            resize: true,
+            handle,
+            start: header.getBoundingClientRect().width,
+            width: 0,
+            rtl: isRtl(grid),
+        };
+        handle.setAttribute('data-active', '');
+        grid.setAttribute('data-resizing', '');
+        return;
+    }
+    const press = {
+        id: e.pointerId,
+        column,
+        x: e.clientX,
+        y: e.clientY,
+        touch: e.pointerType === 'touch',
+        long: false,
+        dragging: false,
+        timer: 0,
+        gap: -1,
+        tx: 0,
+        lastX: e.clientX,
+        edge: 0,
+    };
+    grid._press = press;
+    // a finger that rests lifts the column: then it drags it, or opens the menu where it lets go
+    if (press.touch)
+        press.timer = setTimeout(() => {
+            press.long = true;
+            header.setAttribute('data-pressed', '');
+            // Chrome refuses (and logs) a vibration before the page's first tap
+            if (navigator.userActivation?.hasBeenActive)
+                navigator.vibrate?.(10);
+        }, LONG_PRESS_MS);
+}
+function onPointerMove(grid, e) {
+    const press = grid._press;
+    if (!press || e.pointerId !== press.id)
+        return;
+    // a mouse released outside the grid sent its pointerup elsewhere: no button, no press
+    if (!press.touch && !press.dragging && !press.resize && !e.buttons) {
+        endPress(grid);
+        return;
+    }
+    if (press.resize) {
+        const dx = (e.clientX - press.x) * (press.rtl ? -1 : 1);
+        press.width = Math.max(MIN_WIDTH, Math.round(press.start + dx));
+        if (!press.frame)
+            press.frame = requestAnimationFrame(() => {
+                press.frame = 0;
+                showWidths(grid, { ...configOf(grid).widths, [press.column.field]: press.width });
+            });
+        return;
+    }
+    const dx = e.clientX - press.x;
+    const dy = e.clientY - press.y;
+    if (!press.dragging) {
+        if (press.touch && !press.long) {
+            // a finger that moves before it rests scrolls
+            if (Math.hypot(dx, dy) > TOUCH_SLOP)
+                endPress(grid);
+            return;
+        }
+        if (Math.abs(dx) < DRAG_SLOP || !press.column.movable)
+            return;
+        beginDrag(grid, e);
+    }
+    press.lastX = e.clientX;
+    dragTo(grid);
+}
+/** the live widths while a resize runs: the template and the locked offsets, no store write */
+function showWidths(grid, widths) {
+    const config = { ...configOf(grid), widths };
+    layoutColumns(grid, config);
+    syncFilters(grid, config);
+    grid._gen++;
+    renderRows(grid);
+}
+function beginDrag(grid, e) {
+    const press = grid._press;
+    const header = press.column.el;
+    press.dragging = true;
+    press.grab = e.clientX - header.getBoundingClientRect().left;
+    try {
+        header.setPointerCapture(e.pointerId);
+    }
+    catch {
+        // a pointer that already ended
+    }
+    if (grid._menu?.matches(':popover-open'))
+        grid._menu.hidePopover();
+    header.setAttribute('data-dragging', '');
+    grid.setAttribute('data-dragging', '');
+    const marker = document.createElement('div');
+    marker.className = 'data-grid-drop-marker';
+    marker.setAttribute('aria-hidden', 'true');
+    dfDollar(grid._parts.head).append(marker);
+    press.marker = marker;
+}
+/** follow the pointer: the column moves with it, the marker shows the gap it lands in, the edges scroll */
+function dragTo(grid) {
+    const press = grid._press;
+    if (!press?.dragging)
+        return;
+    const header = press.column.el;
+    const rtl = isRtl(grid);
+    const rects = grid._order.map((c) => {
+        const r = c.el.getBoundingClientRect();
+        // the dragged header is drawn moved: its slot is where it was
+        return c === press.column ? { left: r.left - press.tx, right: r.right - press.tx, width: r.width } : r;
+    });
+    const own = rects[grid._order.indexOf(press.column)];
+    press.tx = press.lastX - press.grab - own.left;
+    header.style.translate = `${press.tx}px 0`;
+    const mid = (r) => r.left + r.width / 2;
+    let gap = rects.filter((r) => (rtl ? mid(r) > press.lastX : mid(r) < press.lastX)).length;
+    gap = Math.max(0, Math.min(rects.length, gap));
+    press.gap = gap;
+    const head = grid._parts.head.getBoundingClientRect();
+    const edge = gap < rects.length ? (rtl ? rects[gap].right : rects[gap].left) : rtl ? rects[gap - 1].left : rects[gap - 1].right;
+    press.marker.style.left = `${edge - head.left}px`;
+    // the gaps beside its own place move nothing
+    const from = grid._order.indexOf(press.column);
+    press.marker.hidden = gap === from || gap === from + 1;
+    const view = grid._parts.viewport.getBoundingClientRect();
+    press.edge = press.lastX < view.left + 32 ? -1 : press.lastX > view.right - 32 ? 1 : 0;
+    if (press.edge && !press.scrolling) {
+        press.scrolling = true;
+        const step = () => {
+            if (grid._press !== press || !press.edge) {
+                press.scrolling = false;
+                return;
+            }
+            grid._parts.viewport.scrollLeft += press.edge * 12;
+            dragTo(grid);
+            requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }
+}
+function onPointerUp(grid, e) {
+    const press = grid._press;
+    if (!press || e.pointerId !== press.id)
+        return;
+    if (press.resize) {
+        if (press.width)
+            query(grid, { widths: { ...configOf(grid).widths, [press.column.field]: press.width } });
+        endPress(grid, true);
+        return;
+    }
+    if (press.dragging) {
+        const { column, gap } = press;
+        endPress(grid, true);
+        if (gap >= 0)
+            dropColumn(grid, column.field, gap);
+        focusCell(grid, -1, grid._order.indexOf(column));
+        return;
+    }
+    const long = press.long;
+    endPress(grid, long);
+    if (long)
+        openMenu(grid, press.column);
+}
+/** clean up a press; swallow the click it ends in when it was a drag, a resize or a long press */
+function endPress(grid, swallowClick = false) {
+    const press = grid._press;
+    if (!press)
+        return;
+    grid._press = null;
+    clearTimeout(press.timer);
+    cancelAnimationFrame(press.frame);
+    press.column.el.removeAttribute('data-pressed');
+    press.column.el.removeAttribute('data-dragging');
+    press.column.el.style.removeProperty('translate');
+    press.marker?.remove();
+    press.handle?.removeAttribute('data-active');
+    grid.removeAttribute('data-dragging');
+    grid.removeAttribute('data-resizing');
+    if (swallowClick) {
+        grid._suppressClick = true;
+        // the click comes in the same task as the pointerup, or not at all
+        setTimeout(() => {
+            grid._suppressClick = false;
+        });
+    }
 }
 // -- df$.shadcn.dataGrid: the imperative surface -------------------------------
 const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
@@ -876,6 +1423,12 @@ df$.dataGrid = {
         const filtering = (configOf(grid).filters || []).length > 0;
         query(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });
     },
+    /**
+     * Back to the authored columns: their order, lock (data-locked), visibility (hidden) and widths (data-width) - what
+     * the column menu's "Reset columns" does.
+     * @param target - the .data-grid element or its selector
+     */
+    resetColumns: (target) => resetColumns(resolve(target)),
 };
 // -- init --------------------------------------------------------------------------
 function init() {
@@ -917,7 +1470,7 @@ function init() {
             column.el.setAttribute('role', 'columnheader');
             column.el.tabIndex = -1;
         }
-        buildPins(grid);
+        buildHeaderTools(grid);
         buildFilters(grid);
         // the authored query (data-locked / data-sort headers), then setSource's
         // starting query (records may arrive first), then the kept view
@@ -925,7 +1478,10 @@ function init() {
         const config = {
             filters: [],
             sorters: authoredSort(grid),
-            locked: grid._columns.filter((c) => c.el.hasAttribute('data-locked')).map((c) => c.field),
+            locked: grid._columns.filter((c) => c.lockedAtStart).map((c) => c.field),
+            columns: grid._columns.map((c) => c.field),
+            hidden: grid._columns.filter((c) => c.hiddenAtStart).map((c) => c.field),
+            widths: {},
             page: 0,
             expanded: [],
             collapsed: [],
@@ -953,6 +1509,36 @@ function init() {
             renderRows(grid);
         }).observe(grid);
         grid.addEventListener('click', (e) => onClick(grid, e));
+        head.addEventListener('pointerdown', (e) => onPointerDown(grid, e));
+        grid.addEventListener('pointermove', (e) => onPointerMove(grid, e));
+        grid.addEventListener('pointerup', (e) => onPointerUp(grid, e));
+        grid.addEventListener('pointercancel', () => endPress(grid));
+        // a finger that lifted a column drags it: the page must not scroll under it
+        head.addEventListener('touchmove', (e) => {
+            if (grid._press && (grid._press.long || grid._press.dragging || grid._press.resize))
+                e.preventDefault();
+        }, { passive: false });
+        // right click, the context-menu key, Shift+F10: the header's menu (a finger's long press opens it on release)
+        head.addEventListener('contextmenu', (e) => {
+            const header = e.target.closest('.data-grid-header');
+            const column = grid._columns.find((c) => c.el === header);
+            if (!column)
+                return;
+            e.preventDefault();
+            if (grid._press?.touch)
+                grid._press.long = true;
+            else
+                openMenu(grid, column);
+        });
+        grid.addEventListener('dblclick', (e) => {
+            // a double click on a resize handle gives the column its authored width again
+            const handle = e.target.closest('.data-grid-resizer');
+            if (!handle)
+                return;
+            const field = handle.dataset.field ?? '';
+            const { [field]: _dropped, ...widths } = configOf(grid).widths || {};
+            query(grid, { widths });
+        });
         grid.addEventListener('keydown', (e) => onKeydown(grid, e));
         grid.addEventListener('input', (e) => onFilterInput(grid, e));
         grid.addEventListener('change', (e) => onFilterInput(grid, e));

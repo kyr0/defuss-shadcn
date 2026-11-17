@@ -11159,7 +11159,8 @@ new MutationObserver(init18).observe(document, { childList: true, subtree: true 
 var df$19 = defussGlobals();
 var dfDollar18 = defussQuery();
 var dataGridStates = ["default", "loading", "empty"];
-var SAVED_KEYS = ["filters", "sorters", "locked", "expanded"];
+var SAVED_KEYS = ["filters", "sorters", "locked", "columns", "hidden", "widths", "expanded"];
+var keepable = (key, value) => key === "widths" ? typeof value === "object" && value !== null && !Array.isArray(value) && Object.values(value).every((w) => typeof w === "number" && w > 0) : Array.isArray(value);
 var numberFormat = new Map;
 function format3(value, spec, el) {
   if (value == null)
@@ -11193,6 +11194,12 @@ function readColumns(grid) {
     width: el.dataset.width || "minmax(8rem, 1fr)",
     align: el.dataset.align || (el.dataset.type === "number" ? "end" : ""),
     sortable: el.dataset.sortable !== "false",
+    lockable: el.dataset.lockable !== "false",
+    hideable: el.dataset.hideable !== "false",
+    resizable: el.dataset.resizable !== "false",
+    movable: el.dataset.movable !== "false",
+    lockedAtStart: el.hasAttribute("data-locked"),
+    hiddenAtStart: el.hidden,
     sortField: el.dataset.sortField || el.dataset.field,
     options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null
   }));
@@ -11206,7 +11213,7 @@ function attachPersistence2(grid, config) {
   }) : null;
   const kept = {};
   for (const k of SAVED_KEYS)
-    if (Array.isArray(grid._saved?.value[k]))
+    if (keepable(k, grid._saved?.value[k]))
       kept[k] = grid._saved.value[k];
   return kept;
 }
@@ -11215,20 +11222,29 @@ function ordered(items, locked, fieldOf) {
   const set = new Set(locked || []);
   return [...items.filter((i) => set.has(fieldOf(i))), ...items.filter((i) => !set.has(fieldOf(i)))];
 }
+function inColumnOrder(items, config, fieldOf) {
+  const rank = new Map((config.columns || []).map((f, i) => [f, i]));
+  const at = (item, i) => rank.get(fieldOf(item)) ?? rank.size + i;
+  return items.map((item, i) => [at(item, i), item]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
+}
+var arrange = (items, config, fieldOf) => ordered(inColumnOrder(items, config, fieldOf), config.locked, fieldOf);
 function applyMarkup18(root, state) {
   const config = state.config || {};
   const headers = root._columns ? root._columns.map((c) => c.el) : headersOf(root);
   const row = headerRowOf(root);
   const locked = new Set(config.locked || []);
   const sorters = config.sorters || [];
-  const order = ordered(headers, config.locked, (el) => el.dataset.field);
+  const hidden = new Set(config.hidden || []);
+  if (headers.every((el) => hidden.has(el.dataset.field)))
+    hidden.clear();
+  const order = arrange(headers, config, (el) => el.dataset.field);
   if (row && order.some((el, i) => dfDollar18(row).children(".data-grid-header").get(i) !== el)) {
     order.forEach((el) => dfDollar18(row).append(el));
   }
   for (const el of headers) {
     const at = sorters.findIndex((s) => s.field === (el.dataset.sortField || el.dataset.field));
     const dir = at < 0 ? null : sorters[at].direction || sorters[at].dir || "asc";
-    dfDollar18(el).attr("data-locked", locked.has(el.dataset.field) ? "" : null).attr("aria-sort", dir ? dir === "asc" ? "ascending" : "descending" : null).attr("data-sort-index", dir && sorters.length > 1 ? String(at + 1) : null);
+    dfDollar18(el).attr("data-locked", locked.has(el.dataset.field) ? "" : null).attr("hidden", hidden.has(el.dataset.field) ? "" : null).attr("aria-sort", dir ? dir === "asc" ? "ascending" : "descending" : null).attr("data-sort-index", dir && sorters.length > 1 ? String(at + 1) : null);
   }
   dfDollar18(root).attr("data-state", state.name).attr("aria-busy", state.name === "loading" ? "true" : null);
 }
@@ -11259,9 +11275,13 @@ var pageCount = (grid) => Math.max(1, Math.ceil((grid._result?.entries.length ??
 var parts = (grid) => grid._parts;
 var rowHeight = (grid) => grid._rowHeight;
 function layoutColumns(grid, config) {
-  const columns = ordered(grid._columns, config.locked, (c) => c.field);
+  const all = arrange(grid._columns, config, (c) => c.field);
+  const hidden = new Set(config.hidden || []);
+  const visible = all.filter((c) => !hidden.has(c.field));
+  const columns = visible.length ? visible : all;
   grid._order = columns;
-  grid.style.setProperty("--data-grid-template", columns.map((c) => c.width).join(" "));
+  const widths = config.widths || {};
+  grid.style.setProperty("--data-grid-template", columns.map((c) => widths[c.field] > 0 ? `${widths[c.field]}px` : c.width).join(" "));
   const locked = new Set(config.locked || []);
   let left = 0;
   grid._lockLeft = {};
@@ -11348,17 +11368,30 @@ function distinct(grid, field) {
   }
   return [...seen].sort();
 }
-function buildPins(grid) {
+var labelOf2 = (column) => column.el.textContent.trim();
+function buildHeaderTools(grid) {
   for (const column of grid._columns) {
-    if (column.el.dataset.lockable === "false" || dfDollar18(column.el).children(".data-grid-pin").get(0))
-      continue;
-    const pin = document.createElement("button");
-    pin.type = "button";
-    pin.className = "data-grid-pin";
-    pin.tabIndex = -1;
-    pin.dataset.field = column.field;
-    pin.setAttribute("aria-label", `Lock ${column.el.textContent.trim()}`);
-    dfDollar18(column.el).append(pin);
+    const label = labelOf2(column);
+    if (!dfDollar18(column.el).children(".data-grid-menu-button").get(0)) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "data-grid-menu-button";
+      button.tabIndex = -1;
+      button.dataset.field = column.field;
+      button.setAttribute("aria-haspopup", "menu");
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-label", `${label} column menu`);
+      dfDollar18(column.el).append(button);
+    }
+    if (column.resizable && !dfDollar18(column.el).children(".data-grid-resizer").get(0)) {
+      const handle = document.createElement("span");
+      handle.className = "data-grid-resizer";
+      handle.dataset.field = column.field;
+      handle.setAttribute("role", "separator");
+      handle.setAttribute("aria-orientation", "vertical");
+      handle.setAttribute("aria-label", `Resize ${label}`);
+      dfDollar18(column.el).append(handle);
+    }
   }
 }
 function fillCell(grid, cell, column, entry, first) {
@@ -11546,7 +11579,9 @@ function refresh(grid, config, previous) {
   if (moved)
     grid._focus = { row: grid._focus.row < 0 ? -1 : 0, col: grid._focus.col };
   grid.setAttribute("aria-rowcount", String((grid._result.entries.length || 0) + (grid._parts.filters ? 2 : 1)));
-  grid.setAttribute("aria-colcount", String(grid._columns.length));
+  grid.setAttribute("aria-colcount", String(grid._order.length));
+  if (grid._focus.col >= grid._order.length)
+    grid._focus = { ...grid._focus, col: Math.max(0, grid._order.length - 1) };
   renderRows(grid);
   renderFooter(grid, config);
   return grid._result.entries.length;
@@ -11646,7 +11681,7 @@ function focusCell(grid, row, col) {
   target?.focus({ preventScroll: row === -1 });
 }
 function onKeydown2(grid, e) {
-  if (e.target.closest?.(".data-grid-filters, .data-grid-footer"))
+  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu"))
     return;
   if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
     return;
@@ -11654,6 +11689,28 @@ function onKeydown2(grid, e) {
   const page = Math.max(1, Math.floor((grid._parts.viewport.clientHeight - grid._parts.head.offsetHeight) / rowHeight(grid)) - 1);
   const last = grid._shown.length - 1;
   const entry = row >= 0 ? grid._shown[row] : null;
+  const header = row === -1 ? grid._order[col] : null;
+  if (header && e.altKey && !e.ctrlKey && !e.metaKey) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      openMenu(grid, header);
+      return;
+    }
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      const later = e.key === "ArrowRight";
+      if (e.shiftKey) {
+        if (header.movable)
+          dropColumn(grid, header.field, later ? col + 2 : col - 1);
+        focusCell(grid, -1, grid._order.indexOf(header));
+      } else if (header.resizable) {
+        const width = Math.round(header.el.getBoundingClientRect().width) + (later ? KEY_STEP : -KEY_STEP);
+        query(grid, { widths: { ...configOf3(grid).widths, [header.field]: Math.max(MIN_WIDTH, width) } });
+        focusCell(grid, -1, col);
+      }
+      return;
+    }
+  }
   let next = null;
   switch (e.key) {
     case "ArrowDown":
@@ -11729,14 +11786,14 @@ function onKeydown2(grid, e) {
 }
 function onClick(grid, e) {
   const t = e.target;
-  const pin = t.closest(".data-grid-pin");
-  if (pin) {
-    const locked = new Set(configOf3(grid).locked || []);
-    if (locked.has(pin.dataset.field))
-      locked.delete(pin.dataset.field);
-    else
-      locked.add(pin.dataset.field);
-    query(grid, { locked: grid._columns.map((c) => c.field).filter((f) => locked.has(f)) });
+  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer"))
+    return;
+  const menuButton = t.closest(".data-grid-menu-button");
+  if (menuButton) {
+    const column = grid._columns.find((c) => c.field === menuButton.dataset.field);
+    if (grid._menuClosedBy !== menuButton && column)
+      openMenu(grid, column);
+    grid._menuClosedBy = null;
     return;
   }
   const pageButton = t.closest("[data-page]");
@@ -11807,6 +11864,425 @@ async function onNearEnd(grid, force = false) {
   if (!grid._exhausted && grid._parts.viewport.scrollHeight <= grid._parts.viewport.clientHeight)
     onNearEnd(grid, true);
 }
+var MIN_WIDTH = 48;
+var KEY_STEP = 16;
+var LONG_PRESS_MS = 450;
+var DRAG_SLOP = 6;
+var TOUCH_SLOP = 10;
+var anchorPositioning = typeof CSS !== "undefined" && CSS.supports("anchor-name: --a");
+var menuSeq = 0;
+var columnFields = (grid, config) => inColumnOrder(grid._columns, config, (c) => c.field).map((c) => c.field);
+function setLocked(grid, field, on) {
+  const config = configOf3(grid);
+  const locked = new Set(config.locked || []);
+  if (on)
+    locked.add(field);
+  else
+    locked.delete(field);
+  query(grid, { locked: columnFields(grid, config).filter((f) => locked.has(f)) });
+}
+function setHidden(grid, field, on) {
+  const config = configOf3(grid);
+  const hidden = new Set(config.hidden || []);
+  if (on)
+    hidden.add(field);
+  else
+    hidden.delete(field);
+  if (grid._columns.every((c) => hidden.has(c.field)))
+    return;
+  query(grid, { hidden: grid._columns.map((c) => c.field).filter((f) => hidden.has(f)) });
+}
+function dropColumn(grid, field, gap) {
+  const config = configOf3(grid);
+  const shownFields = grid._order.map((c) => c.field);
+  const from = shownFields.indexOf(field);
+  const column = grid._columns.find((c) => c.field === field);
+  if (from < 0 || !column)
+    return;
+  gap = Math.max(0, Math.min(shownFields.length, gap));
+  if (gap === from || gap === from + 1)
+    return;
+  const locked = new Set(config.locked || []);
+  const rest = shownFields.filter((f) => f !== field);
+  const lockedCount = rest.filter((f) => locked.has(f)).length;
+  let at = gap > from ? gap - 1 : gap;
+  if (at < lockedCount && !column.lockable)
+    at = lockedCount;
+  if (at < lockedCount)
+    locked.add(field);
+  else if (at > lockedCount)
+    locked.delete(field);
+  rest.splice(at, 0, field);
+  const before = arrange(grid._columns, config, (c) => c.field).map((c) => c.field);
+  const hidden = new Set(config.hidden || []);
+  before.forEach((f, i) => {
+    if (!hidden.has(f))
+      return;
+    const after = rest.indexOf(before[i - 1]);
+    rest.splice(after + 1, 0, f);
+  });
+  query(grid, { columns: rest, locked: rest.filter((f) => locked.has(f)) });
+}
+function resetColumns(grid) {
+  query(grid, {
+    columns: grid._columns.map((c) => c.field),
+    locked: grid._columns.filter((c) => c.lockedAtStart).map((c) => c.field),
+    hidden: grid._columns.filter((c) => c.hiddenAtStart).map((c) => c.field),
+    widths: {}
+  });
+}
+function menuOf(grid) {
+  if (grid._menu)
+    return grid._menu;
+  const menu = document.createElement("div");
+  menu.className = "data-grid-menu";
+  menu.id = `data-grid-menu-${++menuSeq}`;
+  menu.setAttribute("popover", "auto");
+  menu.setAttribute("role", "menu");
+  dfDollar18(grid).append(menu);
+  menu.addEventListener("click", (e) => onMenuClick(grid, e));
+  menu.addEventListener("keydown", (e) => onMenuKey(grid, e));
+  menu.addEventListener("toggle", (e) => {
+    const open = e.newState === "open";
+    const button = grid._menuButton;
+    button?.setAttribute("aria-expanded", String(open));
+    if (open)
+      return;
+    const inside = menu.contains(document.activeElement) || document.activeElement === document.body;
+    const column = grid._columns.find((c) => c.field === grid._menuField);
+    grid._menuField = null;
+    if (inside && column) {
+      const at = grid._order.indexOf(column);
+      focusCell(grid, -1, at >= 0 ? at : Math.min(grid._focus.col, grid._order.length - 1));
+    }
+  });
+  grid._menu = menu;
+  return menu;
+}
+function menuItem2(role, action, text, checked, disabled, field) {
+  const item = document.createElement("button");
+  item.type = "button";
+  item.className = "data-grid-menu-item";
+  item.tabIndex = -1;
+  item.setAttribute("role", role);
+  item.dataset.action = action;
+  if (field)
+    item.dataset.field = field;
+  if (checked !== null)
+    item.setAttribute("aria-checked", String(checked));
+  item.disabled = disabled;
+  item.textContent = text;
+  return item;
+}
+function menuPart(className, role) {
+  const el = document.createElement("div");
+  el.className = className;
+  el.setAttribute("role", role);
+  return el;
+}
+function fillMenu(grid) {
+  const menu = grid._menu;
+  const column = grid._columns.find((c) => c.field === grid._menuField);
+  if (!menu || !column)
+    return;
+  const config = configOf3(grid);
+  const sorter = (config.sorters || []).find((x) => x.field === column.sortField);
+  const dir = sorter ? sorter.direction || sorter.dir || "asc" : null;
+  const locked = new Set(config.locked || []);
+  const hidden = new Set(config.hidden || []);
+  const shownCount = grid._columns.filter((c) => !hidden.has(c.field)).length;
+  menu.setAttribute("aria-label", `${labelOf2(column)} column`);
+  const group = menuPart("data-grid-menu-group", "group");
+  group.setAttribute("aria-label", "Columns");
+  const title = document.createElement("div");
+  title.className = "data-grid-menu-label";
+  title.setAttribute("aria-hidden", "true");
+  title.textContent = "Columns";
+  group.append(title, ...arrange(grid._columns, config, (c) => c.field).map((c) => {
+    const isShown = !hidden.has(c.field);
+    return menuItem2("menuitemcheckbox", "show", labelOf2(c), isShown, !c.hideable || isShown && shownCount === 1, c.field);
+  }));
+  menu.textContent = "";
+  menu.append(menuItem2("menuitemradio", "asc", "Sort ascending", dir === "asc", !column.sortable), menuItem2("menuitemradio", "desc", "Sort descending", dir === "desc", !column.sortable), menuPart("data-grid-menu-separator", "separator"), menuItem2("menuitemcheckbox", "lock", "Lock column", locked.has(column.field), !column.lockable), menuPart("data-grid-menu-separator", "separator"), group, menuPart("data-grid-menu-separator", "separator"), menuItem2("menuitem", "reset", "Reset columns", null, false));
+}
+var menuItems = (grid) => dfDollar18(grid._menu).find(".data-grid-menu-item").toArray().filter((b) => !b.disabled);
+function openMenu(grid, column) {
+  const menu = menuOf(grid);
+  const button = dfDollar18(column.el).children(".data-grid-menu-button").get(0);
+  if (!button || column.el.hidden)
+    return;
+  if (grid._menuButton && grid._menuButton !== button) {
+    grid._menuButton.style.removeProperty("anchor-name");
+    grid._menuButton.setAttribute("aria-expanded", "false");
+  }
+  grid._menuButton = button;
+  button.setAttribute("aria-expanded", "true");
+  grid._menuField = column.field;
+  const anchor = `--${menu.id}`;
+  button.style.setProperty("anchor-name", anchor);
+  menu.style.setProperty("position-anchor", anchor);
+  fillMenu(grid);
+  if (!menu.matches(":popover-open"))
+    menu.showPopover();
+  if (!anchorPositioning) {
+    const box = button.getBoundingClientRect();
+    menu.style.top = `${Math.min(box.bottom + 4, innerHeight - menu.offsetHeight - 8)}px`;
+    menu.style.left = `${Math.max(8, Math.min(box.right - menu.offsetWidth, innerWidth - menu.offsetWidth - 8))}px`;
+  }
+  menuItems(grid)[0]?.focus({ preventScroll: true });
+}
+function onMenuClick(grid, e) {
+  const item = e.target.closest(".data-grid-menu-item");
+  const column = grid._columns.find((c) => c.field === grid._menuField);
+  if (!item || item.disabled || !column)
+    return;
+  const action = item.dataset.action;
+  if (action === "asc" || action === "desc") {
+    query(grid, { sorters: [{ field: column.sortField, direction: action }], page: 0 });
+    grid._menu.hidePopover();
+    return;
+  }
+  if (action === "reset") {
+    resetColumns(grid);
+    grid._menu.hidePopover();
+    return;
+  }
+  if (action === "lock")
+    setLocked(grid, column.field, item.getAttribute("aria-checked") !== "true");
+  if (action === "show") {
+    const hide = item.getAttribute("aria-checked") === "true";
+    setHidden(grid, item.dataset.field, hide);
+    if (hide && item.dataset.field === column.field) {
+      grid._menu.hidePopover();
+      return;
+    }
+  }
+  fillMenu(grid);
+  const again = menuItems(grid).find((b) => b.dataset.action === action && (b.dataset.field ?? "") === (item.dataset.field ?? ""));
+  again?.focus({ preventScroll: true });
+}
+function onMenuKey(grid, e) {
+  const items = menuItems(grid);
+  const at = items.indexOf(document.activeElement);
+  let next = -1;
+  if (e.key === "ArrowDown")
+    next = (at + 1) % items.length;
+  else if (e.key === "ArrowUp")
+    next = (at - 1 + items.length) % items.length;
+  else if (e.key === "Home")
+    next = 0;
+  else if (e.key === "End")
+    next = items.length - 1;
+  else if (e.key === "Tab") {
+    e.preventDefault();
+    grid._menu.hidePopover();
+    return;
+  } else
+    return;
+  e.preventDefault();
+  items[next]?.focus({ preventScroll: true });
+}
+var isRtl = (grid) => getComputedStyle(grid).direction === "rtl";
+function onPointerDown(grid, e) {
+  if (e.button !== 0 || !e.isPrimary)
+    return;
+  const t = e.target;
+  const header = t.closest(".data-grid-header");
+  if (!header || !grid._parts.head.contains(header))
+    return;
+  const column = grid._columns.find((c) => c.el === header);
+  if (!column)
+    return;
+  const menuButton = t.closest(".data-grid-menu-button");
+  if (menuButton) {
+    grid._menuClosedBy = grid._menu?.matches(":popover-open") && grid._menuButton === menuButton ? menuButton : null;
+    return;
+  }
+  const handle = t.closest(".data-grid-resizer");
+  if (handle) {
+    if (!column.resizable)
+      return;
+    e.preventDefault();
+    try {
+      handle.setPointerCapture(e.pointerId);
+    } catch {}
+    grid._press = {
+      id: e.pointerId,
+      column,
+      x: e.clientX,
+      resize: true,
+      handle,
+      start: header.getBoundingClientRect().width,
+      width: 0,
+      rtl: isRtl(grid)
+    };
+    handle.setAttribute("data-active", "");
+    grid.setAttribute("data-resizing", "");
+    return;
+  }
+  const press = {
+    id: e.pointerId,
+    column,
+    x: e.clientX,
+    y: e.clientY,
+    touch: e.pointerType === "touch",
+    long: false,
+    dragging: false,
+    timer: 0,
+    gap: -1,
+    tx: 0,
+    lastX: e.clientX,
+    edge: 0
+  };
+  grid._press = press;
+  if (press.touch)
+    press.timer = setTimeout(() => {
+      press.long = true;
+      header.setAttribute("data-pressed", "");
+      if (navigator.userActivation?.hasBeenActive)
+        navigator.vibrate?.(10);
+    }, LONG_PRESS_MS);
+}
+function onPointerMove(grid, e) {
+  const press = grid._press;
+  if (!press || e.pointerId !== press.id)
+    return;
+  if (!press.touch && !press.dragging && !press.resize && !e.buttons) {
+    endPress(grid);
+    return;
+  }
+  if (press.resize) {
+    const dx = (e.clientX - press.x) * (press.rtl ? -1 : 1);
+    press.width = Math.max(MIN_WIDTH, Math.round(press.start + dx));
+    if (!press.frame)
+      press.frame = requestAnimationFrame(() => {
+        press.frame = 0;
+        showWidths(grid, { ...configOf3(grid).widths, [press.column.field]: press.width });
+      });
+    return;
+  }
+  const dx = e.clientX - press.x;
+  const dy = e.clientY - press.y;
+  if (!press.dragging) {
+    if (press.touch && !press.long) {
+      if (Math.hypot(dx, dy) > TOUCH_SLOP)
+        endPress(grid);
+      return;
+    }
+    if (Math.abs(dx) < DRAG_SLOP || !press.column.movable)
+      return;
+    beginDrag(grid, e);
+  }
+  press.lastX = e.clientX;
+  dragTo(grid);
+}
+function showWidths(grid, widths) {
+  const config = { ...configOf3(grid), widths };
+  layoutColumns(grid, config);
+  syncFilters(grid, config);
+  grid._gen++;
+  renderRows(grid);
+}
+function beginDrag(grid, e) {
+  const press = grid._press;
+  const header = press.column.el;
+  press.dragging = true;
+  press.grab = e.clientX - header.getBoundingClientRect().left;
+  try {
+    header.setPointerCapture(e.pointerId);
+  } catch {}
+  if (grid._menu?.matches(":popover-open"))
+    grid._menu.hidePopover();
+  header.setAttribute("data-dragging", "");
+  grid.setAttribute("data-dragging", "");
+  const marker = document.createElement("div");
+  marker.className = "data-grid-drop-marker";
+  marker.setAttribute("aria-hidden", "true");
+  dfDollar18(grid._parts.head).append(marker);
+  press.marker = marker;
+}
+function dragTo(grid) {
+  const press = grid._press;
+  if (!press?.dragging)
+    return;
+  const header = press.column.el;
+  const rtl = isRtl(grid);
+  const rects = grid._order.map((c) => {
+    const r = c.el.getBoundingClientRect();
+    return c === press.column ? { left: r.left - press.tx, right: r.right - press.tx, width: r.width } : r;
+  });
+  const own = rects[grid._order.indexOf(press.column)];
+  press.tx = press.lastX - press.grab - own.left;
+  header.style.translate = `${press.tx}px 0`;
+  const mid = (r) => r.left + r.width / 2;
+  let gap = rects.filter((r) => rtl ? mid(r) > press.lastX : mid(r) < press.lastX).length;
+  gap = Math.max(0, Math.min(rects.length, gap));
+  press.gap = gap;
+  const head = grid._parts.head.getBoundingClientRect();
+  const edge = gap < rects.length ? rtl ? rects[gap].right : rects[gap].left : rtl ? rects[gap - 1].left : rects[gap - 1].right;
+  press.marker.style.left = `${edge - head.left}px`;
+  const from = grid._order.indexOf(press.column);
+  press.marker.hidden = gap === from || gap === from + 1;
+  const view = grid._parts.viewport.getBoundingClientRect();
+  press.edge = press.lastX < view.left + 32 ? -1 : press.lastX > view.right - 32 ? 1 : 0;
+  if (press.edge && !press.scrolling) {
+    press.scrolling = true;
+    const step = () => {
+      if (grid._press !== press || !press.edge) {
+        press.scrolling = false;
+        return;
+      }
+      grid._parts.viewport.scrollLeft += press.edge * 12;
+      dragTo(grid);
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+}
+function onPointerUp(grid, e) {
+  const press = grid._press;
+  if (!press || e.pointerId !== press.id)
+    return;
+  if (press.resize) {
+    if (press.width)
+      query(grid, { widths: { ...configOf3(grid).widths, [press.column.field]: press.width } });
+    endPress(grid, true);
+    return;
+  }
+  if (press.dragging) {
+    const { column, gap } = press;
+    endPress(grid, true);
+    if (gap >= 0)
+      dropColumn(grid, column.field, gap);
+    focusCell(grid, -1, grid._order.indexOf(column));
+    return;
+  }
+  const long = press.long;
+  endPress(grid, long);
+  if (long)
+    openMenu(grid, press.column);
+}
+function endPress(grid, swallowClick = false) {
+  const press = grid._press;
+  if (!press)
+    return;
+  grid._press = null;
+  clearTimeout(press.timer);
+  cancelAnimationFrame(press.frame);
+  press.column.el.removeAttribute("data-pressed");
+  press.column.el.removeAttribute("data-dragging");
+  press.column.el.style.removeProperty("translate");
+  press.marker?.remove();
+  press.handle?.removeAttribute("data-active");
+  grid.removeAttribute("data-dragging");
+  grid.removeAttribute("data-resizing");
+  if (swallowClick) {
+    grid._suppressClick = true;
+    setTimeout(() => {
+      grid._suppressClick = false;
+    });
+  }
+}
 var resolve6 = (target) => typeof target === "string" ? dfDollar18(target).get(0) : target;
 df$19.dataGrid = {
   setSource(target, rows, options = {}) {
@@ -11853,7 +12329,8 @@ df$19.dataGrid = {
     const grid = resolve6(target);
     const filtering = (configOf3(grid).filters || []).length > 0;
     query(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });
-  }
+  },
+  resetColumns: (target) => resetColumns(resolve6(target))
 };
 function init19() {
   dfDollar18(".data-grid:not([data-init])").toArray().forEach((grid) => {
@@ -11889,13 +12366,16 @@ function init19() {
       column.el.setAttribute("role", "columnheader");
       column.el.tabIndex = -1;
     }
-    buildPins(grid);
+    buildHeaderTools(grid);
     buildFilters(grid);
     const early = grid._sourceOptions || {};
     const config = {
       filters: [],
       sorters: authoredSort(grid),
-      locked: grid._columns.filter((c) => c.el.hasAttribute("data-locked")).map((c) => c.field),
+      locked: grid._columns.filter((c) => c.lockedAtStart).map((c) => c.field),
+      columns: grid._columns.map((c) => c.field),
+      hidden: grid._columns.filter((c) => c.hiddenAtStart).map((c) => c.field),
+      widths: {},
       page: 0,
       expanded: [],
       collapsed: [],
@@ -11922,6 +12402,33 @@ function init19() {
       renderRows(grid);
     }).observe(grid);
     grid.addEventListener("click", (e) => onClick(grid, e));
+    head.addEventListener("pointerdown", (e) => onPointerDown(grid, e));
+    grid.addEventListener("pointermove", (e) => onPointerMove(grid, e));
+    grid.addEventListener("pointerup", (e) => onPointerUp(grid, e));
+    grid.addEventListener("pointercancel", () => endPress(grid));
+    head.addEventListener("touchmove", (e) => {
+      if (grid._press && (grid._press.long || grid._press.dragging || grid._press.resize))
+        e.preventDefault();
+    }, { passive: false });
+    head.addEventListener("contextmenu", (e) => {
+      const header = e.target.closest(".data-grid-header");
+      const column = grid._columns.find((c) => c.el === header);
+      if (!column)
+        return;
+      e.preventDefault();
+      if (grid._press?.touch)
+        grid._press.long = true;
+      else
+        openMenu(grid, column);
+    });
+    grid.addEventListener("dblclick", (e) => {
+      const handle = e.target.closest(".data-grid-resizer");
+      if (!handle)
+        return;
+      const field = handle.dataset.field ?? "";
+      const { [field]: _dropped, ...widths } = configOf3(grid).widths || {};
+      query(grid, { widths });
+    });
     grid.addEventListener("keydown", (e) => onKeydown2(grid, e));
     grid.addEventListener("input", (e) => onFilterInput(grid, e));
     grid.addEventListener("change", (e) => onFilterInput(grid, e));
@@ -16417,7 +16924,7 @@ var envelopeApi = componentState({
 });
 df$26.envelopeApi = envelopeApi;
 df$26.envelopeStates = envelopeStates;
-function onPointerDown(el, e) {
+function onPointerDown2(el, e) {
   const rt = runtimeOf2(el);
   const node = e.target.closest?.(".envelope-handle");
   if (!rt || !node || rt.status === "disabled" || e.button !== 0)
@@ -16451,7 +16958,7 @@ function onPointerDown(el, e) {
   else
     drawHandles(el);
 }
-function onPointerMove(el, e) {
+function onPointerMove2(el, e) {
   const rt = runtimeOf2(el);
   const d = rt?.drag;
   if (!d || e.pointerId !== d.id)
@@ -16593,8 +17100,8 @@ function init26() {
     syncControls(el);
     writeOutputs(el);
     bindComponent(el, envelopeApi, { name: rt.status, config: { params: clone(params) } });
-    dfDollar25(rt.plot).on("pointerdown", (e) => onPointerDown(el, e));
-    dfDollar25(rt.plot).on("pointermove", (e) => onPointerMove(el, e));
+    dfDollar25(rt.plot).on("pointerdown", (e) => onPointerDown2(el, e));
+    dfDollar25(rt.plot).on("pointermove", (e) => onPointerMove2(el, e));
     dfDollar25(rt.plot).on("pointerup", () => endDrag(el, false));
     dfDollar25(rt.plot).on("pointercancel", () => endDrag(el, false));
     dfDollar25(rt.plot).on("lostpointercapture", () => endDrag(el, false));
@@ -17214,14 +17721,14 @@ function infosOf(song) {
     const key = String(raw.key ?? "");
     const signature = signatureOf(raw);
     const bpm = clamp4(num6(raw.bpm, 90), 20, 400);
-    return { id: String(s.id), label: labelOf2(raw, signature), key, signature, bpm };
+    return { id: String(s.id), label: labelOf3(raw, signature), key, signature, bpm };
   });
 }
 function signatureOf(raw) {
   const time = Array.isArray(raw.time) ? raw.time : [];
   return `${clamp4(Math.round(num6(time[0], 4)), 1, 32)}/${Math.max(1, Math.round(num6(time[1], 4)))}`;
 }
-var labelOf2 = (raw, signature) => String(raw.label ?? `${raw.key ? `${raw.key} · ` : ""}${signature}${capoOf(raw) ? ` · capo ${capoOf(raw)}` : ""}`);
+var labelOf3 = (raw, signature) => String(raw.label ?? `${raw.key ? `${raw.key} · ` : ""}${signature}${capoOf(raw) ? ` · capo ${capoOf(raw)}` : ""}`);
 function pick(song, key, signature, current) {
   const inKey = infosOf(song).filter((i) => i.key === String(key ?? ""));
   if (!inKey.length)
@@ -17371,7 +17878,7 @@ function build2(song, raw) {
     }
   return {
     id: String(raw.id),
-    label: labelOf2(raw, signatureOf(raw)),
+    label: labelOf3(raw, signatureOf(raw)),
     key: String(raw.key ?? ""),
     bpm,
     beats,
@@ -19218,7 +19725,7 @@ var df$33 = defussGlobals();
 var dfDollar32 = defussQuery();
 var knobStates = ["default", "adjusting", "disabled"];
 var MIN_SPEED = 0.02;
-var KEY_STEP = 0.01;
+var KEY_STEP2 = 0.01;
 var FINE_STEP = 0.001;
 var PAGE_STEP = 0.1;
 var MAX_TICKS = 49;
@@ -19554,7 +20061,7 @@ function reach(el, e) {
   rt.dial.style.setProperty("--knob-reach", `${Math.round(dist)}px`);
 }
 var radiusOf = (el, box) => Math.max(8, num7(el.getAttribute("data-radius"), box.width));
-function onPointerDown2(el, e) {
+function onPointerDown3(el, e) {
   const rt = runtimeOf4(el);
   if (!rt || rt.input.disabled || e.button !== 0)
     return;
@@ -19581,7 +20088,7 @@ function onPointerDown2(el, e) {
   el.api?.setState("adjusting");
   reach(el, e);
 }
-function onPointerMove2(el, e) {
+function onPointerMove3(el, e) {
   const rt = runtimeOf4(el);
   const d = rt?.drag;
   if (!d || e.pointerId !== d.id)
@@ -19624,7 +20131,7 @@ function onKey3(el, e) {
   if (dir && step > 0)
     value = rt.value + dir * step * Math.sign(rangeOf2(el, rt.input).max - rangeOf2(el, rt.input).min || 1);
   else if (dir)
-    value = valueAt2(el, rt.p + dir * (e.shiftKey ? FINE_STEP : KEY_STEP));
+    value = valueAt2(el, rt.p + dir * (e.shiftKey ? FINE_STEP : KEY_STEP2));
   else if (e.key === "PageUp" || e.key === "PageDown")
     value = valueAt2(el, rt.p + (e.key === "PageUp" ? PAGE_STEP : -PAGE_STEP));
   else if (e.key === "Home" || e.key === "End")
@@ -19732,8 +20239,8 @@ function init33() {
     renderDial(el);
     show2(el, num7(input.value, defaultOf(el)), true, false);
     bindComponent(el, knobApi, { name: input.disabled ? "disabled" : "default", config: { value: rt.value } });
-    dfDollar32(dial).on("pointerdown", (e) => onPointerDown2(el, e));
-    dfDollar32(dial).on("pointermove", (e) => onPointerMove2(el, e));
+    dfDollar32(dial).on("pointerdown", (e) => onPointerDown3(el, e));
+    dfDollar32(dial).on("pointermove", (e) => onPointerMove3(el, e));
     dfDollar32(dial).on("pointerup", () => endDrag2(el, false));
     dfDollar32(dial).on("pointercancel", () => endDrag2(el, false));
     dfDollar32(dial).on("lostpointercapture", () => endDrag2(el, false));
@@ -20091,8 +20598,8 @@ function faceHtml(el, tag) {
   const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf2(el)) : nameIn(tag, tag);
   return `${flag}${text ? `<span class="language-switcher-label" lang="${esc13(tag)}" dir="${dirOf(tag)}">${esc13(text)}</span>` : ""}`;
 }
-var labelOf3 = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
-var ariaOf = (el, tag) => `${labelOf3(el)}: ${nameIn(tag, tag)}`;
+var labelOf4 = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
+var ariaOf = (el, tag) => `${labelOf4(el)}: ${nameIn(tag, tag)}`;
 function namesOf(el, tag, ui) {
   const own = nameIn(tag, tag), shown = nameIn(tag, ui);
   if (el.dataset.names === "native")
@@ -20115,7 +20622,7 @@ function comboboxHtml(el, uid) {
 <button type="button" class="btn combobox-trigger" data-variant="${esc13(el.dataset.buttonVariant || "ghost")}"${icon ? ' data-size="icon"' : ""} aria-haspopup="listbox" aria-expanded="false" aria-label="${esc13(ariaOf(el, value))}" aria-controls="${uid}-popover"><span class="combobox-value">${faceHtml(el, value)}</span>${icon ? "" : CHEVRON}</button>
 <div id="${uid}-popover" class="combobox-content language-switcher-content" popover>
 <div class="combobox-search"${languages.length > 7 ? "" : " data-quiet"}><input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="${uid}-listbox" aria-activedescendant="" aria-autocomplete="list" placeholder="${esc13(search)}" aria-label="${esc13(search)}"></div>
-<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc13(labelOf3(el))}"><div class="combobox-empty" hidden>${esc13(el.dataset.empty || "No language found.")}</div>${options}</div>
+<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc13(labelOf4(el))}"><div class="combobox-empty" hidden>${esc13(el.dataset.empty || "No language found.")}</div>${options}</div>
 </div>
 </div>`;
 }
@@ -20191,7 +20698,7 @@ function update(el) {
     return;
   }
   chrome.find(".combobox-trigger").attr("aria-label", ariaOf(el, value));
-  chrome.find('[role="listbox"]').attr("aria-label", labelOf3(el));
+  chrome.find('[role="listbox"]').attr("aria-label", labelOf4(el));
   if (!changed)
     return;
   chrome.find(".combobox-value").html(faceHtml(el, value)).attr("data-placeholder", null);
@@ -21197,13 +21704,13 @@ var df$36 = defussGlobals();
 var dfDollar35 = defussQuery();
 var menubarStates = ["default", "open"];
 var triggersOf = (bar) => Array.from(dfDollar35(bar).find(".menubar-trigger").toArray()).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
-var menuOf = (trigger) => dfDollar35("#" + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute("popovertarget") || "")).get(0);
-var openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(":popover-open")) ?? null;
+var menuOf2 = (trigger) => dfDollar35("#" + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute("popovertarget") || "")).get(0);
+var openMenuOf = (bar) => triggersOf(bar).map(menuOf2).find((m) => m?.matches(":popover-open")) ?? null;
 function setRoving(bar, active) {
   triggersOf(bar).forEach((t) => t.setAttribute("tabindex", t === active ? "0" : "-1"));
 }
-function openMenu(bar, trigger, quiet = false) {
-  const menu = menuOf(trigger);
+function openMenu2(bar, trigger, quiet = false) {
+  const menu = menuOf2(trigger);
   if (!menu)
     return;
   setRoving(bar, trigger);
@@ -21240,7 +21747,7 @@ function triggerStateChange36(bar, stateName, config) {
       const ts = triggersOf(bar);
       const t = typeof config.menu === "number" ? ts[config.menu] : config.menu ? ts.find((x) => x.dataset.dropdownTrigger === config.menu) : ts[0];
       if (t)
-        openMenu(bar, t);
+        openMenu2(bar, t);
       break;
     }
   }
@@ -21273,7 +21780,7 @@ function init36() {
     });
     setRoving(bar, triggers[0]);
     triggers.forEach((t) => {
-      menuOf(t)?.addEventListener("toggle", () => {
+      menuOf2(t)?.addEventListener("toggle", () => {
         bar.dataset.stateName = openMenuOf(bar) ? "open" : "default";
       });
     });
@@ -21282,8 +21789,8 @@ function init36() {
       if (!t || t.closest(".menubar") !== bar || !triggersOf(bar).includes(t))
         return;
       const open = openMenuOf(bar);
-      if (open && menuOf(t) !== open)
-        openMenu(bar, t, true);
+      if (open && menuOf2(t) !== open)
+        openMenu2(bar, t, true);
     });
     bar.addEventListener("keydown", (e) => {
       const ts = triggersOf(bar);
@@ -21292,14 +21799,14 @@ function init36() {
       const prev = rtl ? "ArrowRight" : "ArrowLeft";
       const onTrigger = e.target instanceof Element && e.target.classList.contains("menubar-trigger");
       const openMenuEl = openMenuOf(bar);
-      const i = onTrigger ? ts.indexOf(e.target) : ts.findIndex((t) => menuOf(t) === openMenuEl);
+      const i = onTrigger ? ts.indexOf(e.target) : ts.findIndex((t) => menuOf2(t) === openMenuEl);
       if (i < 0)
         return;
       const step = (d) => ts[(i + d + ts.length) % ts.length];
       if (onTrigger) {
         const moveTo = (t) => {
           if (openMenuEl)
-            openMenu(bar, t);
+            openMenu2(bar, t);
           else {
             setRoving(bar, t);
             t.focus();
@@ -21328,19 +21835,19 @@ function init36() {
           case "Enter":
           case " ":
             e.preventDefault();
-            openMenu(bar, ts[i]);
+            openMenu2(bar, ts[i]);
             break;
           case "ArrowUp": {
             e.preventDefault();
-            const menu = menuOf(ts[i]);
+            const menu = menuOf2(ts[i]);
             if (menu && !menu.matches(":popover-open")) {
               menu.addEventListener("toggle", (ev) => {
                 if (ev.newState === "open")
                   focusItem(menu, true);
               }, { once: true });
-              openMenu(bar, ts[i]);
+              openMenu2(bar, ts[i]);
             } else {
-              openMenu(bar, ts[i]);
+              openMenu2(bar, ts[i]);
               if (menu)
                 focusItem(menu, true);
             }
@@ -21353,10 +21860,10 @@ function init36() {
         return;
       if (e.key === next) {
         e.preventDefault();
-        openMenu(bar, step(1));
+        openMenu2(bar, step(1));
       } else if (e.key === prev) {
         e.preventDefault();
-        openMenu(bar, step(-1));
+        openMenu2(bar, step(-1));
       }
     });
   });
@@ -27881,7 +28388,7 @@ var iconOf = (tab) => {
     return "";
   return icon.getAttribute("data-lucide") ?? icon.textContent.trim();
 };
-var labelOf4 = (tab) => {
+var labelOf5 = (tab) => {
   const label = dfDollar58(tab).find(":scope > .tab-label").get(0);
   if (label)
     return label.textContent.trim();
@@ -27915,7 +28422,7 @@ var setIcon = (tab, icon) => {
     globalThis.lucide?.createIcons?.();
 };
 var applyContent = (tab, config) => {
-  if (typeof config.label === "string" && config.label !== labelOf4(tab))
+  if (typeof config.label === "string" && config.label !== labelOf5(tab))
     setLabel(tab, config.label);
   if (typeof config.icon === "string" && config.icon !== iconOf(tab))
     setIcon(tab, config.icon);
@@ -27952,7 +28459,7 @@ var nextEnabled = (from, triggers) => {
 var tabName = (tab) => tab.disabled ? "disabled" : tab.getAttribute("aria-selected") === "true" ? "active" : "default";
 var restoreTab = (tab) => {
   tab.disabled = tab._authored.disabled;
-  if (labelOf4(tab) !== tab._authored.label)
+  if (labelOf5(tab) !== tab._authored.label)
     setLabel(tab, tab._authored.label);
   if (iconOf(tab) !== tab._authored.icon)
     setIcon(tab, tab._authored.icon);
@@ -28069,7 +28576,7 @@ var tabsApi = componentState({
     }
     return {
       name: tabName(el),
-      config: { ...state.config, label: labelOf4(el), icon: iconOf(el) }
+      config: { ...state.config, label: labelOf5(el), icon: iconOf(el) }
     };
   },
   markup: (el, state) => (el.getAttribute("role") === "tablist" ? listMarkup : tabMarkup)(el, state.name, state.config),
@@ -28085,7 +28592,7 @@ function init59() {
       t._authored = {
         selected: t.getAttribute("aria-selected") === "true",
         disabled: t.disabled,
-        label: labelOf4(t),
+        label: labelOf5(t),
         icon: iconOf(t)
       };
       bindComponent(t, tabsApi);
@@ -30815,6 +31322,6 @@ df$72.win = windowActions;
 init72();
 new MutationObserver(init72).observe(document, { childList: true, subtree: true });
 
-//# debugId=E43D381C26432A3564756E2164756E21
+//# debugId=3475AB6E5AE841A964756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

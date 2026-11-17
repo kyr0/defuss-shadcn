@@ -3,7 +3,7 @@ name: Data Grid
 type: ATM
 section: big-data
 why: One scroll container with a sticky head and a windowed body - only the rows on screen exist, sticky columns need no JS - while every query (multisort, column filters, pages) runs locally over all rows through defuss-dataview.
-when: Tables of thousands to millions of records that people sort, filter, lock columns of, page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
+when: Tables of thousands to millions of records that people sort, filter, arrange (move, lock, hide, resize columns), page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
 where: dist/components/data-grid/data-grid.css + dist/components/data-grid/data-grid.js
 supportedStates: default, loading, empty
 ---
@@ -28,7 +28,11 @@ every window or page is a slice of it.
 - [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky) - the head stays on top, locked columns stay at the start, inside one scroll container
 - [CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout) - head, filter row and every body row share one track template (`--data-grid-template`)
 - [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - the last locked column draws the edge the rest scrolls under
-- [`mask`](https://developer.mozilla.org/en-US/docs/Web/CSS/mask) - pin and pager icons are masks over `currentColor`
+- [`mask`](https://developer.mozilla.org/en-US/docs/Web/CSS/mask) - menu, sort and pager icons are masks over `currentColor`
+- [Popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API) - the column menu: top layer, light dismiss, Escape
+- [CSS anchor positioning](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) - the menu hangs from the arrow it opened from and flips where there is no room
+- [Pointer Events](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events) + [`setPointerCapture()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture) - one code path for mouse, pen and touch: drag a header, drag an edge, hold a header
+- [`touch-action`](https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action) / [`pointer: coarse`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/pointer) - a finger drags an edge without scrolling; the arrow, the edge and the menu items grow for fingers
 - [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) - `data-format="number" | "currency:EUR" | "percent"` cells
 - [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver) - the window and the sticky offsets follow the container
 - [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) - one render per frame however many scroll events arrive
@@ -41,8 +45,9 @@ every window or page is a slice of it.
 
 ## Structure
 
-Author the head; the component builds the filter row, the row pool and the
-footer, and the records come from JavaScript:
+Author the head; the component builds the filter row, the row pool, the
+footer and each header's tools (the menu arrow, the resize edge), and the
+records come from JavaScript:
 
 ```html
 <div class="data-grid" id="orders" aria-label="Orders" data-select="multiple"
@@ -117,7 +122,32 @@ dataGrid.setSource(grid, rows, {
 });
 ```
 
-The view (sort, filters, locked columns, open rows) is kept **for the session by
+### Arranging columns
+
+Every header carries an arrow at its end that opens the **column menu**: Sort
+ascending / Sort descending, a **Lock column** checkbox, a **Columns** list
+with a checkbox per column (shown or hidden; the last shown one stays) and
+**Reset columns** (the authored order, lock, visibility and widths). A press
+on a header that moves **drags the column** to another place - a marker shows
+the gap it lands in; dropped among the locked columns it locks, past them it
+unlocks. The **end edge of a header resizes** its column (a double click gives
+it its authored width again). Right click opens the menu too.
+
+**Touch**: a tap sorts; a finger that **rests** on a header (about half a
+second) lifts the column - drag it, or let go where it is for the menu; the
+end edge drags at once. On coarse pointers the arrow, the edge and the menu
+items are larger.
+
+The arrangement is the query - `columns` (every field in order), `hidden`,
+`widths` (px) and `locked` - so code sets it like any other key, and it is
+kept with the view:
+
+```js
+dataGrid.query(grid, { columns: ['id', 'amount', 'customer', 'region'], hidden: ['region'], widths: { customer: 240 } });
+dataGrid.resetColumns(grid);   // what "Reset columns" does
+```
+
+The view (sort, filters, the columns' order, lock, visibility and widths, open rows) is kept **for the session by
 default** - a reload finds the grid as it was left - under a generated key
 (`defuss-shadcn:<page path>:data-grid:<id>`). `data-persist` / `data-persist-prefix` /
 `data-persist-key` (or `persist`) change where; the selection and the open page are per visit.
@@ -134,7 +164,7 @@ default** - a reload finds the grid as it was left - under a generated key
 | `data-page-size` | `.data-grid` | Rows a page (default 50) |
 | `data-select="single"` / `"multiple"` | `.data-grid` | Click / Space select; multiple: Ctrl/Meta toggles, Shift selects a range |
 | `data-parent-field` / `data-id-field` | `.data-grid` | A tree grid |
-| `data-persist="session\|local\|none"` | `.data-grid` | Where the view (sort, filters, locked columns, open rows) is kept: session storage (the default), local storage, or nowhere |
+| `data-persist="session\|local\|none"` | `.data-grid` | Where the view (sort, filters, the columns' arrangement, open rows) is kept: session storage (the default), local storage, or nowhere |
 | `data-persist-prefix` | `.data-grid` | The generated key's start (default `defuss-shadcn:<page path>`; the key is `<prefix>:data-grid:<id>`) |
 | `data-persist-key` | `.data-grid` | The whole key - e.g. one view shared by several pages |
 | `data-empty-text` | `.data-grid` | Shown in the `empty` state |
@@ -143,10 +173,11 @@ default** - a reload finds the grid as it was left - under a generated key
 | `data-format` | `.data-grid-header` | `number` · `currency:EUR` · `percent` · `date`; `""` = raw value |
 | `data-width` | `.data-grid-header` | A grid track: `9rem`, `minmax(8rem, 1fr)` (default) |
 | `data-filter="text" \| "number" \| "select"` | `.data-grid-header` | A filter input in the filter row; select options from `data-options="A,B"` or the data |
-| `data-locked` | `.data-grid-header` | Locked from the start; the pin locks / unlocks at runtime |
+| `data-locked` | `.data-grid-header` | Locked from the start; the column menu locks / unlocks at runtime |
+| `hidden` | `.data-grid-header` | Hidden from the start; the column menu shows it |
 | `data-sort="asc\|desc"` | `.data-grid-header` | The starting sort (several headers: a multisort in column order) |
 | `data-sort-field` | `.data-grid-header` | Sort this column by another field (a priority by its rank, not its label) |
-| `data-sortable="false"` / `data-lockable="false"` | `.data-grid-header` | Opt a column out |
+| `data-sortable="false"` / `data-lockable="false"` / `data-hideable="false"` / `data-movable="false"` / `data-resizable="false"` | `.data-grid-header` | Opt a column out of sorting, locking, hiding, moving or resizing |
 
 ## Custom properties
 
@@ -166,8 +197,8 @@ default** - a reload finds the grid as it was left - under a generated key
 | `empty` | No rows: `data-empty-text` |
 
 The config of every state is the query, merged on each `setState` (pass a
-key to change it): `{ filters, sorters, locked, page, expanded, collapsed,
-selected }` - dataview's own filter (`{ field, op, value }`) and sorter
+key to change it): `{ filters, sorters, locked, columns, hidden, widths,
+page, expanded, collapsed, selected }` - dataview's own filter (`{ field, op, value }`) and sorter
 (`{ field, direction }`) shapes. It is `el.store.value.config`: subscribe to
 follow it, set it to drive the grid.
 
@@ -181,8 +212,8 @@ df$.shadcn.dataGrid.query(grid, { locked: ['id', 'customer'] });
 ```
 
 The registry globals are `df$.shadcn.dataGridApi` / `df$.shadcn.dataGridStates`;
-`df$.shadcn.dataGrid` has `setSource`, `query`, `rows`, `selected`,
-`expandAll`, `collapseAll`.
+`df$.shadcn.dataGrid` has `setSource`, `query`, `rows`, `source`, `selected`,
+`selectAll`, `clearSelection`, `expandAll`, `collapseAll`, `resetColumns`.
 
 ---
 
@@ -196,9 +227,9 @@ The registry globals are `df$.shadcn.dataGridApi` / `df$.shadcn.dataGridStates`;
 
 | State | Description |
 |---|---|
-| `default` | The rows of the query; a query nothing matches lands in empty. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns, pinned to the start in this order</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
-| `loading` | Busy: skeleton rows, aria-busy - a grid without records (or waiting for load()) starts here. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns, pinned to the start in this order</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
-| `empty` | No rows: the data-empty-text shows. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns, pinned to the start in this order</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
+| `default` | The rows of the query; a query nothing matches lands in empty. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns - they stick at the start, in column order</td></tr><tr><td><code>columns?</code></td><td><code>string[]</code></td><td>every field in the order the reader arranged (locked columns still come first)</td></tr><tr><td><code>hidden?</code></td><td><code>string[]</code></td><td>the fields of the hidden columns</td></tr><tr><td><code>widths?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>the widths in px of the columns the reader resized (the rest keep data-width)</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
+| `loading` | Busy: skeleton rows, aria-busy - a grid without records (or waiting for load()) starts here. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns - they stick at the start, in column order</td></tr><tr><td><code>columns?</code></td><td><code>string[]</code></td><td>every field in the order the reader arranged (locked columns still come first)</td></tr><tr><td><code>hidden?</code></td><td><code>string[]</code></td><td>the fields of the hidden columns</td></tr><tr><td><code>widths?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>the widths in px of the columns the reader resized (the rest keep data-width)</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
+| `empty` | No rows: the data-empty-text shows. <b>config</b> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns - they stick at the start, in column order</td></tr><tr><td><code>columns?</code></td><td><code>string[]</code></td><td>every field in the order the reader arranged (locked columns still come first)</td></tr><tr><td><code>hidden?</code></td><td><code>string[]</code></td><td>the fields of the hidden columns</td></tr><tr><td><code>widths?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>the widths in px of the columns the reader resized (the rest keep data-width)</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
 
 ### Every element
 
@@ -234,6 +265,7 @@ The registry globals are `df$.shadcn.dataGridApi` / `df$.shadcn.dataGridStates`;
 | <code>clearSelection(target: string \| HTMLElement): void</code> | Select nothing. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> |
 | <code>expandAll(target: string \| HTMLElement): void</code> | Tree grid: open every branch. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> |
 | <code>collapseAll(target: string \| HTMLElement): void</code> | Tree grid: close every branch (while filtering: the ways to the matches too). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> |
+| <code>resetColumns(target: string \| HTMLElement): void</code> | Back to the authored columns: their order, lock (data-locked), visibility (hidden) and widths (data-width) - what the column menu's "Reset columns" does. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-grid element or its selector</td></tr></table> |
 
 ### Events
 
@@ -247,7 +279,7 @@ The registry globals are `df$.shadcn.dataGridApi` / `df$.shadcn.dataGridStates`;
 |---|---|
 | `DataGridActivateDetail` | What data-grid-activate carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>record</code></td><td><code>DataviewRow</code></td><td>the row's record</td></tr><tr><td><code>index</code></td><td><code>number</code></td><td>its position in the query (every page)</td></tr></table> |
 | `DataGridOptions` | What setSource() takes besides the records. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>idField?</code></td><td><code>string</code></td><td>the id field (default 'id', or data-id-field)</td></tr><tr><td><code>parentIdField?</code></td><td><code>string</code></td><td>a tree grid: the parent-id field (or data-parent-field)</td></tr><tr><td><code>cells?</code></td><td><code>Record&lt;string, (el: HTMLElement, record: DataviewRow, meta: DataGridRowMeta) =&gt; void&gt;</code></td><td>custom cell content per field: fill the cell's content element</td></tr><tr><td><code>load?</code></td><td><code>(offset: number, size: number) =&gt; Promise&lt;DataviewRow[]&gt;</code></td><td>data-paging="infinite" from a remote source: the next records from offset (an empty answer ends the loading)</td></tr><tr><td><code>query?</code></td><td><code>DataGridQuery</code></td><td>the starting query (a kept view wins over it)</td></tr><tr><td><code>persist?</code></td><td><code>ViewPersistence</code></td><td>where the view is kept between visits (default: session storage under a generated key)</td></tr></table> |
-| `DataGridQuery` | The grid's query - its state config (merged on every query()). <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns, pinned to the start in this order</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
+| `DataGridQuery` | The grid's query - its state config (merged on every query()). <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>filters?</code></td><td><code>DataviewFilter[]</code></td><td>filters over every record (a tree grid shows a match with its ancestors)</td></tr><tr><td><code>sorters?</code></td><td><code>DataviewSorter[]</code></td><td>the sort order - several sorters sort by each in turn</td></tr><tr><td><code>locked?</code></td><td><code>string[]</code></td><td>the fields of the locked columns - they stick at the start, in column order</td></tr><tr><td><code>columns?</code></td><td><code>string[]</code></td><td>every field in the order the reader arranged (locked columns still come first)</td></tr><tr><td><code>hidden?</code></td><td><code>string[]</code></td><td>the fields of the hidden columns</td></tr><tr><td><code>widths?</code></td><td><code>Record&lt;string, number&gt;</code></td><td>the widths in px of the columns the reader resized (the rest keep data-width)</td></tr><tr><td><code>page?</code></td><td><code>number</code></td><td>the page shown, 0-based (data-paging="pages")</td></tr><tr><td><code>expanded?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid: the ids of the open rows</td></tr><tr><td><code>collapsed?</code></td><td><code>DataviewJsonValue[]</code></td><td>tree grid, while filtering: the rows the user closed again</td></tr><tr><td><code>selected?</code></td><td><code>DataviewJsonValue[]</code></td><td>the ids of the selected rows</td></tr></table> |
 | `DataGridRowMeta` | Where a record sits - what a custom cell receives. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>depth</code></td><td><code>number</code></td><td>tree grid: 0 for a root row</td></tr><tr><td><code>hasChildren</code></td><td><code>boolean</code></td><td>tree grid: whether it has child rows</td></tr><tr><td><code>isExpanded</code></td><td><code>boolean</code></td><td>tree grid: whether its children show</td></tr><tr><td><code>isMatch</code></td><td><code>boolean</code></td><td>whether it matches the filters (false for an ancestor shown for a match)</td></tr><tr><td><code>isSelected</code></td><td><code>boolean</code></td><td>whether it is selected</td></tr><tr><td><code>parentId</code></td><td><code>DataviewJsonValue \| null</code></td><td>tree grid: its parent's id, null for a root</td></tr></table> |
 
 ---
@@ -266,12 +298,19 @@ The registry globals are `df$.shadcn.dataGridApi` / `df$.shadcn.dataGridStates`;
 | `aria-selected` | `.data-grid-row` | With `data-select` |
 | `aria-level` / `aria-expanded` | `.data-grid-row` | Tree grid |
 | `aria-busy="true"` | `.data-grid` | In `loading` |
+| `aria-haspopup="menu"` + `aria-expanded` + `aria-label` | `.data-grid-menu-button` | Set: the header's menu arrow |
+| `role="menu"` · `menuitemradio` (sort) · `menuitemcheckbox` + `aria-checked` (lock, each column) · `role="group"` (Columns) | `.data-grid-menu` | Set: the column menu |
+| `role="separator"` + `aria-orientation="vertical"` + `aria-label` | `.data-grid-resizer` | Set: a header's resize edge |
 
 Keyboard (APG grid): arrows move cell by cell (Up from the first row reaches
 the header), Home / End the row's ends, Ctrl+Home / Ctrl+End the first / last
 row, Page Up / Down a screen, Space selects (Shift: a range), Enter on a header
 sorts (Shift+Enter adds it), Enter on a row fires `data-grid-activate`. Tree
 grid, first column: Arrow Right opens, Arrow Left closes or goes to the parent.
+On a header: Alt+Arrow Down (or the context-menu key) opens its menu - Arrow
+Up / Down, Home / End move, Enter / Space pick, Escape or Tab close and return
+to the header -, Alt+Shift+Arrow Left / Right moves the column, Alt+Arrow Left
+/ Right makes it 16px narrower / wider.
 
 ---
 
@@ -285,8 +324,15 @@ grid, first column: Arrow Right opens, Arrow Left closes or goes to the parent.
   `>=` `<` `<=` `=` `!=` (`> 100`), a select matches exactly. All filters combine.
 - **Multisort**: a click sorts by that column alone (ascending, then descending, then off);
   Shift+click adds it to the sort (or cycles it in place).
-- **Locking moves the column into the sticky group** at the start (authored
+- **Locking moves the column into the sticky group** at the start (column
   order kept) - the head and every row reorder together.
+- **A hidden column keeps its filter** - the rows it filters stay filtered
+  while it is hidden; show it to change the filter.
+- **The tree grid's toggle sits in the first shown column** - move or hide the
+  first column and the next one carries it.
+- **The menu is one popover per grid**, in the top layer: a grid with
+  `overflow: hidden` around it does not clip it. Without CSS anchor
+  positioning it is placed once under the arrow.
 - **Rows are recycled** - put one delegated listener on the grid and read the
   record through `df$.shadcn.dataGrid.rows(grid)[row.dataset.index]`, or listen
   to `data-grid-activate`.

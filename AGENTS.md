@@ -974,7 +974,14 @@ they demonstrate it by remounting, not reloading. The Autocomplete's requests
 are dataview requests too (`{ query, filters, sorters, page, pageSize }`):
 rows / url (default fetch client) / load(request, { signal }) - debounced,
 the in-flight request aborted on the next keystroke. Synthetic demo data is deterministic (row i always reads the
-same) so e2e checks can name exact cells.
+same) so e2e checks can name exact cells. A reader arranges a Data Grid's columns (the maintainer 2026-11-17): the arrow at each
+header's end opens ONE popover menu per grid (sort, a Lock column checkbox, a checkbox per column to show or hide it,
+Reset columns), a header drags to another place (into the locked group it locks), its end edge resizes - one Pointer
+Events path for mouse and touch: a finger rests ~450 ms before it lifts a column (a tap still sorts, a rest without a
+move opens the menu; a non-passive touchmove stops the scroll under it), the edge drags at once (`touch-action: none`).
+The arrangement is the query - `columns`, `hidden`, `widths`, `locked` - so it is kept with the view and
+`resetColumns()` writes the authored one back; data-grid.e2e drives mouse, keys and real touches (CDP
+`Input.dispatchTouchEvent`).
 
 Aggregation is the dataview layer's too (defuss-dataview filters, sorts, pages and walks trees but does not group):
 `aggregate(rows, spec)` / `source.aggregate(query, spec)` (`df$.dataview.aggregate`) group the rows a query's

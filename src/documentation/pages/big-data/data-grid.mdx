@@ -22,6 +22,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky" title="head and locked columns stay put"><code>position: sticky</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-anchor" title="the runtime owns the scroll position"><code>overflow-anchor: none</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout" title="one track template for head and rows"><code>CSS Grid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="the column menu: top layer, light dismiss"><code>popover</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="the menu hangs from its arrow"><code>anchor()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" title="move and resize columns by mouse, pen or finger"><code>Pointer Events</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="currency / number cells"><code>Intl.NumberFormat</code></ApiPill>
     <ApiPill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="cell-by-cell keyboard, aria-rowindex against the real length"><code>ARIA grid</code></ApiPill>
   </SkillRow>
@@ -34,6 +37,9 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     <code>.data-grid-head</code>
     <code>.data-grid-row</code>
     <code>.data-grid-header</code>
+    <code>.data-grid-menu-button</code>
+    <code>.data-grid-resizer</code>
+    <code>.data-grid-menu</code>
     <code>.data-grid-body</code>
     <code>.data-grid-cell</code>
     <code>.data-grid-footer</code>
@@ -41,7 +47,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText>Grid: <code>data-paging</code> (<code>virtual</code> · <code>pages</code> · <code>infinite</code>), <code>data-page-size</code>, <code>data-select</code>, <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>. Header: <code>data-field</code>, <code>data-sort</code>, <code>data-sort-field</code>, <code>data-type</code>, <code>data-format</code>, <code>data-width</code>, <code>data-filter</code>, <code>data-options</code>, <code>data-locked</code>.</SkillText>
+<SkillText>Grid: <code>data-paging</code> (<code>virtual</code> · <code>pages</code> · <code>infinite</code>), <code>data-page-size</code>, <code>data-select</code>, <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>. Header: <code>data-field</code>, <code>data-sort</code>, <code>data-sort-field</code>, <code>data-type</code>, <code>data-format</code>, <code>data-width</code>, <code>data-filter</code>, <code>data-options</code>, <code>data-locked</code>, <code>hidden</code>, <code>data-sortable</code> / <code>data-lockable</code> / <code>data-hideable</code> / <code>data-movable</code> / <code>data-resizable</code> <code>="false"</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -191,7 +197,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
-```html example label="100,000 orders" hint="Click a header to sort, Shift+click to add a column to the sort. Type in the filter row - every filter runs over all 100,000 rows (text anywhere, case-insensitive; numbers take > 500, <= 20 …). The pin in a header locks the column: it moves into the sticky group and stays while the rest scrolls sideways. Click / Shift+click / Ctrl+click select rows; arrows move cell by cell. The line under the grid subscribes to the grid's store."
+```html example label="100,000 orders" hint="Click a header to sort, Shift+click to add a column to the sort. Type in the filter row - every filter runs over all 100,000 rows (text anywhere, case-insensitive; numbers take > 500, <= 20 …). The arrow at a header's end opens its menu: sort, Lock column (it moves into the sticky group and stays while the rest scrolls sideways), a checkbox per column to show or hide it, Reset columns. Drag a header to move its column (on touch: hold it first; let go without moving for the menu), drag its end edge to resize, double-click the edge for its authored width. Click / Shift+click / Ctrl+click select rows; arrows move cell by cell. The line under the grid subscribes to the grid's store."
 <div class="flex flex-col gap-2">
   <div
     class="data-grid"
@@ -607,6 +613,72 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Arranging columns" schema="none" hint="Every header has an arrow at its end: its menu sorts, locks the column and lists every column with a checkbox to show or hide it (Email starts hidden - the header carries hidden). Drag a header to move the column - into the locked group it locks -, drag a header's end edge to resize it. On a phone or tablet hold a header until it lifts, then drag it, or let go for the menu. The arrangement is the query (columns, hidden, widths, locked): the panel below only subscribes to the store, Reset columns writes the authored one back."
+<div class="flex flex-col gap-3">
+  <div class="data-grid" id="dg-arrange" aria-label="People" style="height: 15rem">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="5rem" data-locked>
+            ID
+          </div>
+          <div class="data-grid-header" data-field="name" data-width="10rem">Name</div>
+          <div class="data-grid-header" data-field="email" data-width="14rem" hidden>Email</div>
+          <div class="data-grid-header" data-field="team" data-width="8rem">Team</div>
+          <div class="data-grid-header" data-field="city" data-width="8rem">City</div>
+          <div class="data-grid-header" data-field="since" data-type="number" data-format="" data-width="6rem"
+            >Since</div
+          >
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="dg-arrange-reset">Reset columns</button>
+  </div>
+  <pre
+    class="text-xs m-0 overflow-x-auto"
+    id="dg-arrange-json"
+    style="padding: 0.75rem; border-radius: var(--radius-md); background: var(--muted)"
+  ></pre>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const first = ['Ada', 'Grace', 'Linus', 'Margaret', 'Ken', 'Barbara', 'Dennis', 'Frances'];
+    const last = ['Lovelace', 'Hopper', 'Torvalds', 'Hamilton', 'Thompson', 'Liskov', 'Ritchie', 'Allen'];
+    const teams = ['Platform', 'Search', 'Payments', 'Mobile', 'Data'];
+    const cities = ['Berlin', 'Lisbon', 'Austin', 'Osaka', 'Nairobi', 'Toronto'];
+    const people = Array.from({ length: 5_000 }, (_, i) => {
+      const name = first[i % 8] + ' ' + last[(i * 3) % 8];
+      return {
+        id: i + 1,
+        name,
+        email: name.toLowerCase().replace(' ', '.') + (i + 1) + '@example.org',
+        team: teams[(i * 7) % 5],
+        city: cities[(i * 5) % 6],
+        since: 2012 + ((i * 11) % 13),
+      };
+    });
+    const grid = document.getElementById('dg-arrange');
+    const { dataGrid } = df$.shadcn;
+    dataGrid.setSource(grid, people);
+    document.getElementById('dg-arrange-reset').addEventListener('click', () => dataGrid.resetColumns(grid));
+    const json = document.getElementById('dg-arrange-json');
+    grid.store.subscribe(
+      ({ config }) => {
+        json.textContent = JSON.stringify(
+          { columns: config.columns, locked: config.locked, hidden: config.hidden, widths: config.widths },
+          null,
+          1,
+        );
+      },
+      { immediate: true },
+    );
+  });
+</script>
+```
+
 ```html example label="The store is the query" schema="none" hint="Everything the grid shows is el.store.value.config - plain JSON. These buttons only write the query (df$.shadcn.dataGrid.query merges into it); the panel below only subscribes to the store. The grid does the rest."
 <div class="flex flex-col gap-3">
   <div class="flex flex-wrap gap-2">
@@ -683,7 +755,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
-```html example label="A kept view" schema="none" hint="Every grid keeps its sort, filters, locked columns and open rows - in session storage by default, under a generated key (data-persist-prefix sets its start, data-persist-key the whole key). data-persist='local' keeps them across visits, 'none' keeps nothing; setSource's persist option does the same from code. data-sort on a header is the starting sort. This sandboxed example has no storage (the store falls back to memory), so instead of reloading: sort, filter or lock a column, then mount a fresh grid - it comes back as you left it."
+```html example label="A kept view" schema="none" hint="Every grid keeps its sort, filters, the arrangement of its columns (order, lock, visibility, widths) and open rows - in session storage by default, under a generated key (data-persist-prefix sets its start, data-persist-key the whole key). data-persist='local' keeps them across visits, 'none' keeps nothing; setSource's persist option does the same from code. data-sort on a header is the starting sort. This sandboxed example has no storage (the store falls back to memory), so instead of reloading: sort, filter, move or hide a column, then mount a fresh grid - it comes back as you left it."
 <div class="flex flex-col gap-3" style="max-width: 36rem">
   <button class="btn" data-variant="outline" data-size="sm" type="button" id="dg-remount" style="align-self: flex-start"
     >Mount a fresh grid</button
