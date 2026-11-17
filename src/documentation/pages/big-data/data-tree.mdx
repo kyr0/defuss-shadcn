@@ -192,6 +192,125 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Aggregated branches: 250,000 requests" schema="none" hint="Each node is a group of request log lines - service, then endpoint, then outcome - measured by an aggregate plan per level: the requests, the average and slowest latency and the errors (a count with a where). Its label shows them, the error share computed from two measures. Turn on Only slow requests: the plans run again with a where (latency > 800 ms) and the open branches stay open."
+<div class="flex flex-col gap-2" style="max-width: 34rem">
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="switch-item flex items-center gap-2">
+      <input class="switch" type="checkbox" role="switch" id="dt-requests-slow" />
+      <label for="dt-requests-slow">Only slow requests</label>
+    </div>
+    <output class="text-sm text-muted-foreground" id="dt-requests-line" aria-live="polite"
+      >Aggregating 250,000 requests…</output
+    >
+  </div>
+  <div class="data-tree" id="dt-requests" aria-label="Requests by service" style="height: 18rem"></div>
+</div>
+<script type="module">
+  import {
+    forRows,
+    createImmutableArraySource,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-dataview@0.6.0/dist/browser-compute.mjs';
+
+  addEventListener('DOMContentLoaded', () => {
+    const services = {
+      checkout: ['POST /orders', 'GET /orders/:id', 'POST /payments', 'GET /cart'],
+      catalog: ['GET /products', 'GET /products/:id', 'GET /search', 'GET /categories'],
+      accounts: ['POST /login', 'GET /me', 'PUT /me', 'POST /logout'],
+      shipping: ['GET /rates', 'POST /labels', 'GET /tracking/:id'],
+    };
+    const routes = Object.entries(services).flatMap(([service, list]) =>
+      list.map((endpoint) => ({ service, endpoint })),
+    );
+    // a deterministic pseudo-random number in [0, n) for row i and a salt: row i always reads the same
+    const pick = (i, salt, n) => {
+      let h = Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(salt + 1, 0x85ebca6b);
+      h = Math.imul(h ^ (h >>> 15), 0x2c1b3c6d);
+      h = Math.imul(h ^ (h >>> 12), 0x297a2d39);
+      return ((h ^ (h >>> 15)) >>> 0) % n;
+    };
+    // synthetic log lines: each endpoint with its own traffic, speed and error rate
+    const requests = Array.from({ length: 250_000 }, (_, i) => {
+      const r = Math.min(pick(i, 1, routes.length), pick(i, 2, routes.length));
+      const roll = pick(i, 3, 20 + 9 * (r % 6));
+      const outcome = roll === 0 ? 'server error' : roll < 3 ? 'client error' : 'ok';
+      return {
+        ...routes[r],
+        outcome,
+        latency: 15 + 30 * (r % 5) + pick(i, 4, 300 + 120 * (r % 4)) + (outcome === 'server error' ? 500 : 0),
+      };
+    });
+    const source = createImmutableArraySource(requests);
+
+    const q = forRows();
+    const failed = q.neq(q.field('outcome'), q.literal('ok'));
+    const levels = [['service'], ['service', 'endpoint'], ['service', 'endpoint', 'outcome']];
+    const plansFor = (slow) =>
+      levels.map((keys) =>
+        q.aggregate({
+          ...(slow ? { where: q.gt(q.field('latency'), q.literal(800)) } : {}),
+          groupBy: Object.fromEntries(keys.map((k) => [k, q.field(k)])),
+          measures: {
+            requests: q.count(),
+            latency: q.avg(q.field('latency')),
+            slowest: q.max(q.field('latency')),
+            errors: q.count(undefined, { where: failed }),
+          },
+          orderBy: [{ field: 'requests', direction: 'desc' }],
+        }),
+      );
+
+    const int = new Intl.NumberFormat('en');
+    const pct = new Intl.NumberFormat('en', { style: 'percent', maximumFractionDigits: 1 });
+    const tree = document.getElementById('dt-requests');
+    const slow = document.getElementById('dt-requests-slow');
+    const line = document.getElementById('dt-requests-line');
+    const render = (label, node) => {
+      const name = document.createElement('span');
+      name.textContent = node.name;
+      const meta = document.createElement('span');
+      meta.className = 'data-tree-meta';
+      meta.textContent =
+        int.format(node.requests) +
+        ' req · ' +
+        Math.round(node.latency) +
+        ' ms avg · ' +
+        (node.depth < 2 ? pct.format(node.errors / node.requests) + ' errors' : int.format(node.slowest) + ' ms max');
+      label.append(name, meta);
+    };
+    let run = 0;
+    const update = async () => {
+      const mine = ++run;
+      const started = performance.now();
+      const results = await Promise.all(plansFor(slow.checked).map((plan) => plan.evaluate(source)));
+      if (mine !== run) return;
+      const nodes = results.flatMap(({ rows }, depth) =>
+        rows.map((group) => {
+          const path = levels[depth].map((k) => group[k]);
+          return {
+            id: path.join(' › '),
+            parentId: depth ? path.slice(0, -1).join(' › ') : null,
+            name: path[depth],
+            depth,
+            ...group,
+          };
+        }),
+      );
+      df$.shadcn.dataTree.setSource(tree, nodes, { render });
+      const total = results[0].rows.reduce((n, r) => n + r.requests, 0);
+      line.textContent =
+        int.format(total) +
+        ' requests in ' +
+        nodes.length +
+        ' groups · ' +
+        Math.round(performance.now() - started) +
+        ' ms';
+    };
+    slow.addEventListener('change', update);
+    update();
+  });
+</script>
+```
+
 ```html example label="Loading and empty" schema="none" hint="A tree without records waits in 'loading' (placeholder rows, aria-busy); a filter nothing matches lands in 'empty' with data-empty-text."
 <div class="flex flex-wrap gap-4">
   <div class="data-tree" aria-label="Waiting for data" style="height: 9rem; flex: 1; min-width: 12rem"></div>

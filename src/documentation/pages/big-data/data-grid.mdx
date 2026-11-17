@@ -282,6 +282,331 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Projection: computed columns and totals" schema="none" hint="defuss-dataview/compute projects 100,000 order lines once: a rows plan selects the fields the grid shows and computes Net (quantity × unit price × (1 − discount)), VAT (net × the country's rate) and Gross - the grid gets the projected rows. The line under it is a scalar aggregate plan over the rows the grid's filters match, run again on every filter change: type > 500 in Gross or pick a country."
+<div class="flex flex-col gap-2">
+  <div class="data-grid" id="dg-lines" aria-label="Order lines" data-empty-text="No lines match." style="height: 22rem">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div
+            class="data-grid-header"
+            data-field="id"
+            data-type="number"
+            data-format=""
+            data-width="6rem"
+            data-filter="number"
+            data-locked
+            >Line</div
+          >
+          <div class="data-grid-header" data-field="product" data-width="10rem" data-filter="text">Product</div>
+          <div class="data-grid-header" data-field="country" data-width="9rem" data-filter="select">Country</div>
+          <div class="data-grid-header" data-field="quantity" data-type="number" data-width="5rem" data-filter="number"
+            >Qty</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="discount"
+            data-type="number"
+            data-format="percent"
+            data-width="6rem"
+            data-filter="number"
+            >Discount</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="net"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="8rem"
+            data-filter="number"
+            >Net</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="vat"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="7rem"
+            data-filter="number"
+            >VAT</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="gross"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="8rem"
+            data-filter="number"
+            >Gross</div
+          >
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <output class="text-sm text-muted-foreground" id="dg-lines-totals" aria-live="polite"
+    >Projecting 100,000 lines…</output
+  >
+</div>
+<script type="module">
+  import {
+    forRows,
+    createImmutableArraySource,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-dataview@0.6.0/dist/browser-compute.mjs';
+
+  addEventListener('DOMContentLoaded', async () => {
+    const products = ['Desk lamp', 'Notebook', 'Headphones', 'Backpack', 'Mug', 'Keyboard', 'Monitor arm', 'Plant pot'];
+    const vatRates = { Germany: 0.19, Portugal: 0.23, Japan: 0.1, Canada: 0.05, Kenya: 0.16, Peru: 0.18, France: 0.2 };
+    const countries = Object.keys(vatRates);
+    // deterministic synthetic order lines: line i always reads the same
+    const lines = Array.from({ length: 100_000 }, (_, i) => {
+      const country = countries[(i * 3) % 7];
+      return {
+        id: 500_001 + i,
+        product: products[(i * 5) % 8],
+        country,
+        quantity: 1 + ((i * 7) % 9),
+        unitPrice: 4 + ((i * 7919) % 9600) / 100,
+        discount: [0, 0, 0.05, 0.1, 0.15][(i * 11) % 5],
+        vatRate: vatRates[country],
+        warehouse: 'WH-' + (1 + (i % 4)),
+      };
+    });
+
+    // projection: the grid's columns, three of them computed - one pass, no per-row code of ours
+    const q = forRows();
+    const net = q.mul(q.mul(q.field('quantity'), q.field('unitPrice')), q.sub(q.literal(1), q.field('discount')));
+    const vat = q.mul(net, q.field('vatRate'));
+    const projection = q.rows({
+      select: {
+        id: q.field('id'),
+        product: q.field('product'),
+        country: q.field('country'),
+        quantity: q.field('quantity'),
+        discount: q.field('discount'),
+        net,
+        vat,
+        gross: q.add(net, vat),
+      },
+    });
+    const { rows } = await projection.evaluate(createImmutableArraySource(lines), {}, { maxOutputRows: lines.length });
+    const grid = document.getElementById('dg-lines');
+    df$.shadcn.dataGrid.setSource(grid, rows);
+
+    // aggregation: one row of totals over what the grid's filters match
+    const totals = q.aggregate({
+      measures: {
+        lines: q.count(),
+        units: q.sum(q.field('quantity')),
+        net: q.sum(q.field('net')),
+        vat: q.sum(q.field('vat')),
+        gross: q.sum(q.field('gross')),
+      },
+    });
+    const out = document.getElementById('dg-lines-totals');
+    const int = new Intl.NumberFormat('en');
+    const eur = new Intl.NumberFormat('en', { style: 'currency', currency: 'EUR' });
+    const data = (value, text) => '<data value="' + value + '">' + text + '</data>';
+    let shown = null;
+    const update = async ({ config }) => {
+      const key = JSON.stringify(config.filters);
+      if (key === shown) return;
+      shown = key;
+      const started = performance.now();
+      const matching = createImmutableArraySource(df$.shadcn.dataGrid.rows(grid));
+      const [sum] = (await totals.evaluate(matching)).rows;
+      if (key !== shown) return; // a newer filter is on its way
+      const ms = Math.round(performance.now() - started);
+      df$(out).html(
+        data(sum.lines, int.format(sum.lines)) +
+          ' lines · ' +
+          data(sum.units, int.format(sum.units)) +
+          ' units · net ' +
+          data(sum.net ?? 0, eur.format(sum.net ?? 0)) +
+          ' · VAT ' +
+          data(sum.vat ?? 0, eur.format(sum.vat ?? 0)) +
+          ' · gross ' +
+          data(sum.gross ?? 0, eur.format(sum.gross ?? 0)) +
+          ' (' +
+          ms +
+          ' ms)',
+      );
+    };
+    grid.store.subscribe(update);
+    update(grid.store.value);
+  });
+</script>
+```
+
+```html example label="Aggregation: a report that follows the grid" schema="none" hint="An aggregate plan groups the orders the upper grid's filters match and measures each group: orders, units, revenue and its average (refunds excluded through a measure's where), the largest order and the refunds. The groups are the lower grid's rows - sort them like any grid. Filter the orders (Status: refunded, Qty > 5 ...) or group by another field."
+<div class="flex flex-col gap-3">
+  <div
+    class="data-grid"
+    id="dg-report-orders"
+    aria-label="Orders"
+    data-empty-text="No orders match."
+    style="height: 16rem"
+  >
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="id" data-type="number" data-format="" data-width="6rem">Order</div>
+          <div class="data-grid-header" data-field="country" data-width="9rem" data-filter="select">Country</div>
+          <div class="data-grid-header" data-field="product" data-width="10rem" data-filter="select">Product</div>
+          <div class="data-grid-header" data-field="status" data-width="8rem" data-filter="select">Status</div>
+          <div class="data-grid-header" data-field="quantity" data-type="number" data-width="5rem" data-filter="number"
+            >Qty</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="total"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="8rem"
+            data-filter="number"
+            >Total</div
+          >
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <label class="label" for="dg-report-by">Group by</label>
+    <select class="select w-auto" id="dg-report-by">
+      <option value="country" selected>Country</option>
+      <option value="product">Product</option>
+      <option value="status">Status</option>
+    </select>
+    <output class="text-sm text-muted-foreground" id="dg-report-line" aria-live="polite"></output>
+  </div>
+  <div class="data-grid" id="dg-report" aria-label="Report" data-empty-text="No groups." style="height: 14rem">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="group" data-width="minmax(9rem, 1fr)">Group</div>
+          <div class="data-grid-header" data-field="orders" data-type="number" data-width="6rem">Orders</div>
+          <div class="data-grid-header" data-field="units" data-type="number" data-width="6rem">Units</div>
+          <div
+            class="data-grid-header"
+            data-field="revenue"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="9rem"
+            >Revenue</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="average"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="8rem"
+            >Avg order</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="largest"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="8rem"
+            >Largest</div
+          >
+          <div class="data-grid-header" data-field="refunds" data-type="number" data-width="6rem">Refunds</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import {
+    forRows,
+    createImmutableArraySource,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-dataview@0.6.0/dist/browser-compute.mjs';
+
+  addEventListener('DOMContentLoaded', () => {
+    const countries = ['Germany', 'Portugal', 'Japan', 'Canada', 'Kenya', 'Peru', 'France', 'India'];
+    const products = ['Desk lamp', 'Notebook', 'Headphones', 'Backpack', 'Mug', 'Keyboard', 'Monitor arm', 'Plant pot'];
+    const statuses = ['open', 'paid', 'shipped', 'delivered', 'refunded'];
+    // a deterministic pseudo-random number in [0, n) for row i and a salt: row i always reads the same
+    const pick = (i, salt, n) => {
+      let h = Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(salt + 1, 0x85ebca6b);
+      h = Math.imul(h ^ (h >>> 15), 0x2c1b3c6d);
+      h = Math.imul(h ^ (h >>> 12), 0x297a2d39);
+      return ((h ^ (h >>> 15)) >>> 0) % n;
+    };
+    // synthetic orders: some countries and products sell more than others
+    const orders = Array.from({ length: 100_000 }, (_, i) => {
+      const product = Math.min(pick(i, 2, 8), pick(i, 3, 8));
+      const quantity = 1 + pick(i, 4, 9);
+      return {
+        id: 100_001 + i,
+        country: countries[Math.min(pick(i, 1, 8), pick(i, 5, 8))],
+        product: products[product],
+        status: statuses[pick(i, 6, 12) < 1 ? 4 : pick(i, 7, 4)],
+        quantity,
+        total: Math.round(quantity * (4 + 6 * product + pick(i, 8, 4800) / 100) * 100) / 100,
+      };
+    });
+    const grid = document.getElementById('dg-report-orders');
+    const report = document.getElementById('dg-report');
+    const by = document.getElementById('dg-report-by');
+    const line = document.getElementById('dg-report-line');
+    df$.shadcn.dataGrid.setSource(grid, orders);
+
+    // one prepared plan per grouping: prepare once, evaluate on every change
+    const q = forRows();
+    const kept = q.neq(q.field('status'), q.literal('refunded'));
+    const plans = {};
+    const plan = (field) =>
+      (plans[field] ??= q.aggregate({
+        groupBy: { group: q.field(field) },
+        measures: {
+          orders: q.count(),
+          units: q.sum(q.field('quantity')),
+          revenue: q.sum(q.field('total'), { where: kept }),
+          average: q.avg(q.field('total'), { where: kept }),
+          largest: q.max(q.field('total')),
+          refunds: q.count(undefined, { where: q.not(kept) }),
+        },
+        orderBy: [{ field: 'revenue', direction: 'desc' }],
+      }));
+
+    let run = 0;
+    const update = async () => {
+      const mine = ++run;
+      const started = performance.now();
+      const matching = df$.shadcn.dataGrid.rows(grid);
+      const { rows, summary } = await plan(by.value).evaluate(
+        createImmutableArraySource(matching),
+        {},
+        { count: 'exact' },
+      );
+      if (mine !== run) return; // a newer filter or grouping is on its way
+      df$.shadcn.dataGrid.setSource(report, rows, { idField: 'group' });
+      line.textContent =
+        summary.totalResultRows +
+        ' groups of ' +
+        matching.length.toLocaleString('en') +
+        ' orders · ' +
+        Math.round(performance.now() - started) +
+        ' ms · strategy ' +
+        summary.strategy;
+    };
+    let filters = null;
+    grid.store.subscribe(({ config }) => {
+      const key = JSON.stringify(config.filters);
+      if (key === filters) return;
+      filters = key;
+      update();
+    });
+    by.addEventListener('change', update);
+    filters = JSON.stringify(grid.store.value.config.filters);
+    update();
+  });
+</script>
+```
+
 ```html example label="The store is the query" schema="none" hint="Everything the grid shows is el.store.value.config - plain JSON. These buttons only write the query (df$.shadcn.dataGrid.query merges into it); the panel below only subscribes to the store. The grid does the rest."
 <div class="flex flex-col gap-3">
   <div class="flex flex-wrap gap-2">

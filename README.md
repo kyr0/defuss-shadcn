@@ -15,7 +15,7 @@ Themeable, stateful components, built on semantic HTML, modern CSS, and vanilla 
 
 Built using [Verified Agentic Engineering (VAE)](https://vae.defuss.org).
 
-**261 components - 83 with JavaScript, 178 CSS-only - 673.4 KiB minified + compressed - 366.5 KiB as the all.css/all.js bundle**
+**261 components - 83 with JavaScript, 178 CSS-only - 673.4 KiB minified + compressed - 368.1 KiB as the all.css/all.js bundle**
 178 of 261 components need no JavaScript - native HTML and modern CSS cover them entirely.
 <!-- parity anchor: README and index (AGENTS.md) - the footprint sentence and pillar set must match src/documentation/pages/index.mdx; commit both files together -->
 The footprint is measured from the shipped `dist/` files on every build and published as [`dist/stats.json`](dist/stats.json); `verify` fails the build if this sentence and that file disagree.

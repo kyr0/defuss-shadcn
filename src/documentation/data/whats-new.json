@@ -2,6 +2,51 @@
   "version": 1,
   "releases": [
     {
+      "version": "unreleased",
+      "created": [],
+      "updated": [
+        "data-grid",
+        "data-tree",
+        "index",
+        "scaffold-notes",
+        "system-in-numbers",
+        "tree-grid"
+      ],
+      "examples": {
+        "data-grid": {
+          "created": [
+            "Projection: computed columns and totals",
+            "Aggregation: a report that follows the grid"
+          ],
+          "updated": []
+        },
+        "data-tree": {
+          "created": [
+            "Aggregated branches: 250,000 requests"
+          ],
+          "updated": []
+        },
+        "scaffold-notes": {
+          "created": [],
+          "updated": [
+            "Notes and docs"
+          ]
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
+          ]
+        },
+        "tree-grid": {
+          "created": [
+            "Totals per branch: an aggregated tree"
+          ],
+          "updated": []
+        }
+      }
+    },
+    {
       "version": "0.9.16",
       "created": [],
       "updated": [

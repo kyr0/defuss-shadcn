@@ -369,7 +369,18 @@ try {
     await app.waitForFunction(() => /ready/.test(document.querySelector('[data-nt-set="lexical"]')?.textContent ?? ''), undefined, { timeout: 30_000 });
     await palette(true);
     await app.fill('#nt-cmd .command-input', q);
-    await app.waitForFunction((q) => document.querySelector('[data-nt-find-status]')?.textContent?.includes(' ms') && (document.querySelector('#nt-cmd .command-input') as HTMLInputElement).value === q, q, { timeout: 15_000 });
+    await app
+      .waitForFunction((q) => document.querySelector('[data-nt-find-status]')?.textContent?.includes(' ms') && (document.querySelector('#nt-cmd .command-input') as HTMLInputElement).value === q, q, { timeout: 15_000 })
+      .catch(async () => {
+        const seen = await app.evaluate(() => ({
+          open: (document.getElementById('nt-cmd') as HTMLDialogElement).open,
+          value: (document.querySelector('#nt-cmd .command-input') as HTMLInputElement).value,
+          status: document.querySelector('[data-nt-find-status]')?.textContent,
+          lexical: document.querySelector('[data-nt-set="lexical"]')?.textContent,
+          semantic: document.querySelector('[data-nt-set="semantic"]')?.textContent,
+        }));
+        throw new Error(`no ranked result for "${q}": ${JSON.stringify(seen)}`);
+      });
     await app.waitForTimeout(150);
     return app.$$eval('#nt-cmd [data-nt-hit]', (h) => h.map((x) => ({ id: (x as HTMLElement).dataset.ntHit!, via: (x as HTMLElement).dataset.via! })));
   };

@@ -6563,7 +6563,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     };
     query.addEventListener('input', find);
     new MutationObserver(() => cmd.open && find()).observe(cmd, { attributes: true, attributeFilter: ['open'] });
+    // `close` fires after the exit transition: a palette opened again meanwhile keeps its new query
     cmd.addEventListener('close', () => {
+      if (cmd.open) return;
       query.value = '';
       find();
     });

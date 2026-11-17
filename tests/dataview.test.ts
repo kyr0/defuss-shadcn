@@ -133,3 +133,36 @@ describe('source.aggregate()', () => {
     expect(source.aggregate({ filters }, {}).rows).toEqual([{ count: 4 }]);
   });
 });
+
+describe('source.query()', () => {
+  it('sorts strings in the reader\'s order, as 0.4 did: case and accents beside their letter (defuss-dataview 0.5 sorts by code units unless asked)', () => {
+    const source = dataSource([
+      { id: 1, name: 'b' },
+      { id: 2, name: 'B' },
+      { id: 3, name: 'ä' },
+      { id: 4, name: 'a' },
+      { id: 5, name: 'c' },
+    ]);
+    const names = source.query({ sorters: [{ field: 'name', direction: 'asc' }] }).entries.map((e) => e.row.name);
+    expect(names).toEqual([...names].sort((x, y) => x.localeCompare(y)));
+    expect(names.indexOf('ä')).toBeLessThan(names.indexOf('b'));
+    expect(names.at(-1)).toBe('c');
+  });
+
+  it('a tree filter keeps the ancestors of its matches, case-insensitively; branchIds lists the parents; setRows drops the cache', () => {
+    const tree = [
+      { id: 'eu', parentId: null, name: 'Europe' },
+      { id: 'de', parentId: 'eu', name: 'Germany' },
+      { id: 'ber', parentId: 'de', name: 'Berlin' },
+      { id: 'us', parentId: null, name: 'United States' },
+    ];
+    const source = dataSource(tree, { tree: { idField: 'id', parentIdField: 'parentId' } });
+    const hit = source.query({ filters: [{ field: 'name', op: 'contains', value: 'BERL' }] });
+    expect(hit.matchedRows).toBe(1);
+    expect(hit.entries.map((e) => e.row.id)).toEqual(['eu', 'de', 'ber']);
+    expect(source.branchIds().sort()).toEqual(['de', 'eu']);
+    expect(source.query({ expanded: [] }).entries.map((e) => e.row.id)).toEqual(['eu', 'us']);
+    source.setRows([...tree, { id: 'fr', parentId: 'eu', name: 'France' }]);
+    expect(source.query({ expanded: ['eu'] }).entries.map((e) => e.row.id)).toEqual(['eu', 'de', 'fr', 'us']);
+  });
+});

@@ -293,3 +293,10 @@ grid, first column: Arrow Right opens, Arrow Left closes or goes to the parent.
 - **Queries scan every row once** - 100,000 rows filter and multisort in tens of
   milliseconds; the result is cached until the query or the rows change, so
   scrolling and selecting never re-run it.
+- **Computed columns, totals and reports** come from
+  [defuss-dataview/compute](https://www.npmjs.com/package/defuss-dataview)
+  (`browser-compute.mjs`), not from the grid: a `rows` plan projects records
+  into the columns a grid shows, an `aggregate` plan over
+  `df$.shadcn.dataGrid.rows(grid)` (what the filters match) gives totals or
+  groups - hand groups to a second grid, or levels of groups linked by a parent
+  id to a tree grid. The docs page shows all three.

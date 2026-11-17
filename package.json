@@ -120,7 +120,7 @@
   "dependencies": {
     "defuss-morph": "0.2.0",
     "defuss-query": "0.2.0",
-    "defuss-dataview": "0.4.0",
+    "defuss-dataview": "0.6.0",
     "defuss-store": "0.1.0"
   }
 }

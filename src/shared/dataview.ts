@@ -30,12 +30,14 @@ import type {
   DataviewFilter,
   DataviewFilterOperator,
   DataviewJsonValue,
-  DataviewRow,
   DataviewSorter,
 } from 'defuss-dataview';
 
 export { addRows, createDataview, evaluateDataview, removeRows, setParent, updateRows };
-export type { DataviewEntry, DataviewFilter, DataviewFilterOperator, DataviewJsonValue, DataviewRow, DataviewSorter };
+export type { DataviewEntry, DataviewFilter, DataviewFilterOperator, DataviewJsonValue, DataviewSorter };
+
+/** A record: fields read by name. (defuss-dataview 0.5 widened its own row type to any object.) */
+export type DataviewRow = Record<string, unknown>;
 
 /** What a component asks a source - plain JSON, kept in its store. */
 export interface DataQuery {
@@ -230,6 +232,9 @@ export function dataSource<T extends DataviewRow>(
       const filtering = filters.length > 0;
       const view = createDataview({
         idField,
+        // a reader expects 'ä' beside 'a' and 'b' before 'B': defuss-dataview 0.5 sorts strings by code units
+        // unless locale collation is asked for (what 0.4's localeCompare did)
+        semantics: { strings: 'locale' },
         sorters: q.sorters ?? [],
         filters: filtering ? [{ field: idField, op: 'in', value: matching(filters) }] : [],
         tree: options.tree

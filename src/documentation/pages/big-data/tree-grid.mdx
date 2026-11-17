@@ -147,6 +147,150 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Totals per branch: an aggregated tree" schema="none" hint="200,000 sales become a tree with three aggregate plans that differ only in their groupBy - region, region + country, region + country + channel - run on one source. Every branch carries the totals of everything below it: orders, units, revenue, the average order and the returns (a count with a where). Pick a year: the plans run again with a where and the open branches stay open. Sorting sorts siblings."
+<div class="flex flex-col gap-2" style="max-width: 48rem">
+  <div class="flex flex-wrap items-center gap-2">
+    <label class="label" for="tg-sales-year">Year</label>
+    <select class="select w-auto" id="tg-sales-year">
+      <option value="" selected>All years</option>
+      <option value="2024">2024</option>
+      <option value="2025">2025</option>
+    </select>
+    <output class="text-sm text-muted-foreground" id="tg-sales-line" aria-live="polite"
+      >Aggregating 200,000 sales…</output
+    >
+  </div>
+  <div class="data-grid" id="tg-sales" aria-label="Sales by region" data-parent-field="parentId" style="height: 22rem">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="name" data-width="minmax(12rem, 1fr)" data-filter="text"
+            >Market</div
+          >
+          <div class="data-grid-header" data-field="orders" data-type="number" data-width="6rem">Orders</div>
+          <div class="data-grid-header" data-field="units" data-type="number" data-width="6rem">Units</div>
+          <div
+            class="data-grid-header"
+            data-field="revenue"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="9rem"
+            data-sort="desc"
+            >Revenue</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="average"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="7rem"
+            >Avg order</div
+          >
+          <div class="data-grid-header" data-field="returns" data-type="number" data-width="6rem">Returns</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import {
+    forRows,
+    createImmutableArraySource,
+  } from 'https://cdn.jsdelivr.net/npm/defuss-dataview@0.6.0/dist/browser-compute.mjs';
+
+  addEventListener('DOMContentLoaded', () => {
+    const markets = {
+      Europe: ['Germany', 'France', 'Spain', 'Poland'],
+      Americas: ['United States', 'Brazil', 'Canada'],
+      'Asia Pacific': ['Japan', 'India', 'Australia'],
+      Africa: ['Nigeria', 'Kenya'],
+    };
+    const places = Object.entries(markets).flatMap(([region, list]) => list.map((country) => ({ region, country })));
+    const channels = ['Online', 'Retail', 'Partner'];
+    // a deterministic pseudo-random number in [0, n) for row i and a salt: row i always reads the same
+    const pick = (i, salt, n) => {
+      let h = Math.imul(i + 1, 0x9e3779b1) ^ Math.imul(salt + 1, 0x85ebca6b);
+      h = Math.imul(h ^ (h >>> 15), 0x2c1b3c6d);
+      h = Math.imul(h ^ (h >>> 12), 0x297a2d39);
+      return ((h ^ (h >>> 15)) >>> 0) % n;
+    };
+    // synthetic sales: the larger markets sell more, partners in bulk, online returns more
+    const sales = Array.from({ length: 200_000 }, (_, i) => {
+      const place = places[Math.min(pick(i, 1, places.length), pick(i, 2, places.length))];
+      const channel = channels[pick(i, 3, 3)];
+      const units = 1 + pick(i, 4, channel === 'Partner' ? 12 : 4);
+      return {
+        ...place,
+        channel,
+        year: 2024 + pick(i, 5, 2),
+        units,
+        revenue: Math.round(units * (9 + pick(i, 6, 12_000) / 100) * 100) / 100,
+        returned: pick(i, 7, channel === 'Online' ? 12 : 30) === 0,
+      };
+    });
+    const source = createImmutableArraySource(sales);
+
+    // the measures every level shares; the levels differ in their groupBy only
+    const q = forRows();
+    const measures = {
+      orders: q.count(),
+      units: q.sum(q.field('units')),
+      revenue: q.sum(q.field('revenue')),
+      average: q.avg(q.field('revenue')),
+      returns: q.count(undefined, { where: q.field('returned') }),
+    };
+    const levels = [['region'], ['region', 'country'], ['region', 'country', 'channel']];
+    const plansFor = (year) =>
+      levels.map((keys) =>
+        q.aggregate({
+          ...(year ? { where: q.eq(q.field('year'), q.literal(Number(year))) } : {}),
+          groupBy: Object.fromEntries(keys.map((k) => [k, q.field(k)])),
+          measures,
+        }),
+      );
+
+    const grid = document.getElementById('tg-sales');
+    const year = document.getElementById('tg-sales-year');
+    const line = document.getElementById('tg-sales-line');
+    let run = 0;
+    const update = async () => {
+      const mine = ++run;
+      const started = performance.now();
+      const results = await Promise.all(plansFor(year.value).map((plan) => plan.evaluate(source)));
+      if (mine !== run) return;
+      // a group's path is its id, the path without its last key its parent: the tree links itself
+      const rows = results.flatMap(({ rows }, depth) =>
+        rows.map((group) => {
+          const path = levels[depth].map((k) => group[k]);
+          return {
+            id: path.join('/'),
+            parentId: depth ? path.slice(0, -1).join('/') : null,
+            name: path[depth],
+            orders: group.orders,
+            units: group.units,
+            revenue: group.revenue,
+            average: group.average,
+            returns: group.returns,
+          };
+        }),
+      );
+      df$.shadcn.dataGrid.setSource(grid, rows);
+      const total = results[0].rows.reduce((n, r) => n + r.orders, 0);
+      line.textContent =
+        rows.length +
+        ' groups from ' +
+        total.toLocaleString('en') +
+        ' sales · ' +
+        Math.round(performance.now() - started) +
+        ' ms';
+    };
+    year.addEventListener('change', update);
+    update();
+  });
+</script>
+```
+
 ```html example label="Driven through the store" schema="none" hint="Open branches are config.expanded - plain JSON in the grid's store. The list below subscribes to it; the buttons only write it."
 <div class="flex flex-col gap-3" style="max-width: 36rem">
   <div class="flex flex-wrap gap-2">
@@ -216,7 +360,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   <li><code>role="treegrid"</code>; each row carries <code>aria-level</code> and, with children, <code>aria-expanded</code>.</li>
   <li>The config gains <code>expanded</code> (the open branch ids) and, while a filter is active, <code>collapsed</code> (branches closed again - a filter opens every branch that holds a match).</li>
   <li>Sorting orders siblings; the hierarchy never breaks. A filter's matches keep their ancestors, and the status line counts both (<em>"12 rows shown · 10 of 11,020 match"</em>).</li>
-  <li>Keyboard on the first column: → opens a branch, ← closes it or moves to the parent. <code>df$.shadcn.dataGrid.expandAll(grid)</code> / <code>collapseAll(grid)</code> open or close everything.</li>
+  <li>Keyboard on the first column: Right Arrow opens a branch, Left Arrow closes it or moves to the parent. <code>df$.shadcn.dataGrid.expandAll(grid)</code> / <code>collapseAll(grid)</code> open or close everything.</li>
 </ul>
 
 <SourceFiles component="data-grid" section="css">

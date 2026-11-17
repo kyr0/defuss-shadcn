@@ -3824,7 +3824,7 @@ function viewPersistence(el, kind, fallbackId, config = {}) {
   const key = config.key ?? el.dataset.persistKey ?? `${prefix}:${kind}:${el.id || fallbackId}`;
   return { area: area === "local" ? "local" : "session", key };
 }
-// node_modules/defuss-dataview/dist/index.mjs
+// node_modules/defuss-dataview/dist/query-CcmE25W0.mjs
 var forbidden = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
 function fieldParts(field) {
   if (typeof field !== "string" || !field)
@@ -3838,6 +3838,14 @@ function compileAccessor(field) {
   const parts = fieldParts(field);
   if (parts.length === 1)
     return (row) => typeof row === "object" && row !== null && Object.hasOwn(row, field) ? row[field] : undefined;
+  const own = (value, key) => typeof value === "object" && value !== null && Object.hasOwn(value, key) ? value[key] : undefined;
+  const [a, b, c, d] = parts;
+  if (parts.length === 2)
+    return (row) => own(own(row, a), b);
+  if (parts.length === 3)
+    return (row) => own(own(own(row, a), b), c);
+  if (parts.length === 4)
+    return (row) => own(own(own(own(row, a), b), c), d);
   return (row) => {
     let current = row;
     for (const part of parts) {
@@ -3874,6 +3882,10 @@ function setField(row, field, value) {
     next = copy;
   }
   return next;
+}
+var details = /* @__PURE__ */ new WeakMap;
+function registerQueryDetails(query, value) {
+  details.set(query, value);
 }
 function idKey(value) {
   if (value === null || typeof value === "boolean" || typeof value === "string" || typeof value === "number" && Number.isFinite(value))
@@ -3939,219 +3951,83 @@ function selectionKey(value) {
     throw error;
   }
 }
-var invalid = (value) => value == null || typeof value === "number" && Number.isNaN(value) || value instanceof Date && Number.isNaN(value.getTime());
-var rank = (value) => value == null ? 7 : invalid(value) ? 6 : typeof value === "boolean" ? 0 : typeof value === "number" ? 1 : typeof value === "bigint" ? 2 : typeof value === "string" ? 3 : value instanceof Date ? 4 : 5;
-function compareValues(left, right) {
-  if (Object.is(left, right) || left === right)
-    return 0;
-  if (typeof left === "number" && typeof right === "number") {
-    if (Number.isNaN(left))
-      return 1;
-    if (Number.isNaN(right))
-      return -1;
-    return left < right ? -1 : 1;
-  }
-  if (typeof left === "string" && typeof right === "string")
-    return left.localeCompare(right);
-  if (typeof left === "boolean" && typeof right === "boolean")
-    return left ? 1 : -1;
-  const a = rank(left), b = rank(right);
-  if (a !== b)
-    return a - b;
-  if (a >= 6)
-    return 0;
-  if (left instanceof Date && right instanceof Date)
-    return Math.sign(left.getTime() - right.getTime());
-  return String(left).localeCompare(String(right));
+function bytesOf(value) {
+  if (value instanceof ArrayBuffer)
+    return new Uint8Array(value);
+  if (ArrayBuffer.isView(value))
+    return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+  return;
 }
-function testFilter(cell, filter) {
-  const { op, value } = filter;
-  switch (op) {
-    case "eq":
-      return cell === value;
-    case "neq":
-      return cell !== value;
-    case "gt":
-      return !invalid(cell) && !invalid(value) && compareValues(cell, value) > 0;
-    case "gte":
-      return !invalid(cell) && !invalid(value) && compareValues(cell, value) >= 0;
-    case "lt":
-      return !invalid(cell) && !invalid(value) && compareValues(cell, value) < 0;
-    case "lte":
-      return !invalid(cell) && !invalid(value) && compareValues(cell, value) <= 0;
-    case "in":
-      return Array.isArray(value) && value.some((item) => item === cell);
-    case "contains":
-      return typeof cell === "string" && typeof value === "string" ? cell.includes(value) : Array.isArray(cell) && cell.some((item) => item === value);
-    case "startsWith":
-      return typeof cell === "string" && typeof value === "string" && cell.startsWith(value);
-    case "endsWith":
-      return typeof cell === "string" && typeof value === "string" && cell.endsWith(value);
-    default:
-      return false;
-  }
+var invalidValue = (value) => value == null || typeof value === "number" && Number.isNaN(value) || value instanceof Date && Number.isNaN(value.getTime());
+var rank = (v) => v == null ? 8 : invalidValue(v) ? 7 : typeof v === "boolean" ? 0 : typeof v === "number" ? 1 : typeof v === "bigint" ? 2 : typeof v === "string" ? 3 : v instanceof Date ? 4 : v instanceof ArrayBuffer || ArrayBuffer.isView(v) ? 5 : 6;
+function normalizeSemantics(options) {
+  createValueOperations(options);
+  const copy = {};
+  if (options.equality !== undefined)
+    copy.equality = options.equality;
+  if (options.strings !== undefined)
+    copy.strings = options.strings;
+  if (options.locale !== undefined)
+    copy.locale = Array.isArray(options.locale) ? Object.freeze([...options.locale]) : options.locale;
+  if (options.collatorOptions !== undefined)
+    copy.collatorOptions = Object.freeze({ ...options.collatorOptions });
+  return Object.freeze(copy);
 }
-function compileQuery(view) {
-  const filters = view.filters.map((filter) => {
-    const get = compileAccessor(filter.field);
-    if (filter.op === "in" && Array.isArray(filter.value) && filter.value.length > 16) {
-      const values = new Set(filter.value);
-      return (row) => {
-        const value = get(row);
-        return !Number.isNaN(value) && values.has(value);
-      };
-    }
-    return (row) => testFilter(get(row), filter);
-  });
-  const sorters = view.sorters.map((sorter) => ({ get: compileAccessor(sorter.field), sign: sorter.direction === "desc" ? -1 : 1 }));
-  return {
-    matches: (row) => {
-      for (const filter of filters)
-        if (!filter(row))
-          return false;
+function createValueOperations(options = {}) {
+  if (options === null || typeof options !== "object" || Array.isArray(options))
+    throw new TypeError("semantics must be an object.");
+  if (options.equality !== undefined && !["value", "identity"].includes(options.equality))
+    throw new TypeError("Invalid equality semantics.");
+  if (options.strings !== undefined && !["code-unit", "locale"].includes(options.strings))
+    throw new TypeError("Invalid string semantics.");
+  if (options.strings !== "locale" && (options.locale !== undefined || options.collatorOptions !== undefined))
+    throw new TypeError("Locale options require strings: locale.");
+  const collator = options.strings === "locale" ? new Intl.Collator(options.locale, options.collatorOptions) : undefined;
+  const equality = options.equality ?? "value";
+  const comparisonId = `dataview-order-v1:${collator ? JSON.stringify(collator.resolvedOptions()) : "code-unit"}`;
+  function equal(a, b) {
+    if (a === b || typeof a === "number" && typeof b === "number" && Number.isNaN(a) && Number.isNaN(b))
       return true;
-    },
-    compare: (left, right) => {
-      for (const sorter of sorters) {
-        const result = compareValues(sorter.get(left), sorter.get(right));
-        if (result !== 0)
-          return result * sorter.sign;
-      }
+    if (equality === "identity")
+      return false;
+    if (a instanceof Date && b instanceof Date)
+      return Object.is(a.getTime(), b.getTime());
+    const ab = bytesOf(a), bb = bytesOf(b);
+    if (!ab || !bb || ab.length !== bb.length)
+      return false;
+    for (let i = 0;i < ab.length; i++)
+      if (ab[i] !== bb[i])
+        return false;
+    return true;
+  }
+  function compare(a, b) {
+    if (a === b || Object.is(a, b))
       return 0;
+    if (typeof a === "number" && typeof b === "number")
+      return Number.isNaN(a) ? 1 : Number.isNaN(b) ? -1 : a < b ? -1 : 1;
+    if (typeof a === "string" && typeof b === "string")
+      return collator ? collator.compare(a, b) : a < b ? -1 : 1;
+    if (typeof a === "bigint" && typeof b === "bigint")
+      return a < b ? -1 : 1;
+    const ar = rank(a), br = rank(b);
+    if (ar !== br)
+      return ar - br;
+    if (ar >= 6)
+      return 0;
+    if (a instanceof Date && b instanceof Date)
+      return a.getTime() < b.getTime() ? -1 : a.getTime() > b.getTime() ? 1 : 0;
+    const ab = bytesOf(a), bb = bytesOf(b);
+    if (ab && bb) {
+      for (let i = 0;i < Math.min(ab.length, bb.length); i++)
+        if (ab[i] !== bb[i])
+          return ab[i] - bb[i];
+      return ab.length - bb.length;
     }
-  };
+    return a < b ? -1 : 1;
+  }
+  return { equal, compare, comparisonId, equality };
 }
-function evaluateTree(rows, view) {
-  const tree = view.tree;
-  const getId = compileAccessor(tree.idField), getParent = compileAccessor(tree.parentIdField);
-  const keys = rows.map((row) => rowIdKey(getId(row)));
-  const parents = rows.map((row) => getParent(row));
-  const byId = /* @__PURE__ */ new Map;
-  for (let index = 0;index < rows.length; index++) {
-    const key = keys[index];
-    if (key !== undefined && !byId.has(key))
-      byId.set(key, index);
-  }
-  const parentIndex = new Int32Array(rows.length);
-  for (let index = 0;index < rows.length; index++) {
-    const key = rowIdKey(parents[index]);
-    const parent = key === undefined ? -1 : byId.get(key) ?? -1;
-    parentIndex[index] = parent === index ? -1 : parent;
-  }
-  const color = new Uint8Array(rows.length);
-  for (let start = 0;start < rows.length; start++) {
-    if (color[start] !== 0)
-      continue;
-    const trail = [];
-    let current = start;
-    while (current !== -1 && color[current] === 0) {
-      color[current] = 1;
-      trail.push(current);
-      current = parentIndex[current];
-    }
-    if (current !== -1 && color[current] === 1) {
-      let root = current;
-      for (let node = parentIndex[current];node !== current; node = parentIndex[node])
-        root = Math.min(root, node);
-      parentIndex[root] = -1;
-    }
-    for (const node of trail)
-      color[node] = 2;
-  }
-  const children = Array.from({ length: rows.length });
-  const roots = [];
-  for (let index = 0;index < rows.length; index++) {
-    const parent = parentIndex[index];
-    if (parent === -1)
-      roots.push(index);
-    else
-      (children[parent] ??= []).push(index);
-  }
-  const query = compileQuery(view);
-  if (view.sorters.length) {
-    const compare = (left, right) => query.compare(rows[left], rows[right]) || left - right;
-    roots.sort(compare);
-    for (const group of children)
-      if (group && group.length > 1)
-        group.sort(compare);
-  }
-  const matched = new Uint8Array(rows.length);
-  let matchedRows = 0;
-  for (let index = 0;index < rows.length; index++) {
-    if (query.matches(rows[index])) {
-      matched[index] = 1;
-      matchedRows++;
-    }
-  }
-  const included = matched.slice();
-  if (tree.includeAncestors) {
-    const done = new Uint8Array(rows.length);
-    for (let index = 0;index < rows.length; index++) {
-      if (!matched[index])
-        continue;
-      for (let parent = parentIndex[index];parent !== -1 && !done[parent]; parent = parentIndex[parent]) {
-        done[parent] = 1;
-        included[parent] = 1;
-      }
-    }
-  }
-  if (tree.includeDescendantsOfMatch) {
-    const done = new Uint8Array(rows.length);
-    const stack2 = [];
-    for (let index = 0;index < rows.length; index++) {
-      if (!matched[index] || done[index])
-        continue;
-      stack2.push(index);
-      while (stack2.length) {
-        const node = stack2.pop();
-        if (done[node])
-          continue;
-        done[node] = 1;
-        included[node] = 1;
-        for (const child of children[node] ?? [])
-          stack2.push(child);
-      }
-    }
-  }
-  const expanded = new Set(tree.expandedIds.map(idKey));
-  const collapsed = new Set((tree.collapsedIds ?? []).map(idKey));
-  const all = tree.expandAll ?? tree.expandedIds.length === 0;
-  const selected = new Set(view.meta.selectedRowIds.map(idKey));
-  const getSelectionId = compileAccessor(view.idField);
-  const offset = view.pageSize ? view.page * view.pageSize : 0;
-  const end = view.pageSize ? offset + view.pageSize : Infinity;
-  const entries = [];
-  let visibleRows = 0;
-  const stack = [];
-  for (let index = roots.length - 1;index >= 0; index--)
-    stack.push({ index: roots[index], depth: 0 });
-  while (stack.length) {
-    const { index, depth } = stack.pop();
-    const group = children[index];
-    const hasChildren = !!group?.length;
-    const key = keys[index];
-    const isOpen = all ? key === undefined || !collapsed.has(key) : key !== undefined && expanded.has(key);
-    const canDescend = isOpen && (tree.maxDepth === undefined || depth < tree.maxDepth);
-    if (included[index]) {
-      if (visibleRows >= offset && visibleRows < end) {
-        const selectedKey = selected.size ? selectionKey(getSelectionId(rows[index])) : undefined;
-        entries.push({ row: rows[index], meta: {
-          depth,
-          hasChildren,
-          isExpanded: hasChildren && canDescend,
-          isMatch: matched[index] === 1,
-          isSelected: selectedKey !== undefined && selected.has(selectedKey),
-          parentId: parents[index] ?? null
-        } });
-      }
-      visibleRows++;
-    }
-    if (canDescend && group)
-      for (let child = group.length - 1;child >= 0; child--)
-        stack.push({ index: group[child], depth: depth + 1 });
-  }
-  return { entries, matchedRows, visibleRows };
-}
+var compareValues = createValueOperations().compare;
 var operators = ["eq", "neq", "gt", "gte", "lt", "lte", "in", "contains", "startsWith", "endsWith"];
 var array = (value, name) => {
   if (!Array.isArray(value))
@@ -4213,7 +4089,359 @@ function createDataview(request = {}) {
   }
   const idField = request.idField ?? tree?.idField ?? "id";
   fieldParts(idField);
-  return { filters, sorters, page, pageSize, idField, meta: normalizeMeta(request.meta), tree };
+  return { filters, sorters, page, pageSize, idField, meta: normalizeMeta(request.meta), tree, semantics: request.semantics === undefined ? undefined : normalizeSemantics(request.semantics) };
+}
+function operand(value, byValue) {
+  if (!byValue)
+    return value;
+  if (value instanceof Date)
+    return new Date(value.getTime());
+  const bytes = bytesOf(value);
+  return bytes ? bytes.slice() : value;
+}
+function compileQuery(request = {}) {
+  const view = createDataview({ filters: request.filters, sorters: request.sorters });
+  const ops = createValueOperations(request.semantics);
+  const captured = view.filters;
+  const filters = view.filters.map((filter) => {
+    const get = compileAccessor(filter.field), op = filter.op;
+    const value = operand(filter.value, ops.equality === "value");
+    const members = op === "in" && Array.isArray(value) ? value.map((v) => operand(v, ops.equality === "value")) : undefined;
+    filter.value = value;
+    if (op === "in")
+      filter.members = members;
+    const set = members && members.length > 16 && members.every((v) => v === null || typeof v !== "object") ? new Set(members) : undefined;
+    const primitive = value === null || typeof value !== "object";
+    const equal = primitive ? (cell) => cell === value || typeof value === "number" && Number.isNaN(value) && typeof cell === "number" && Number.isNaN(cell) : (cell) => ops.equal(cell, value);
+    const valid = primitive ? !invalidValue(value) : undefined;
+    const range = (cell) => {
+      if (!(valid ?? !invalidValue(value)) || invalidValue(cell))
+        return;
+      return ops.compare(cell, value);
+    };
+    switch (op) {
+      case "eq":
+        return (row) => equal(get(row));
+      case "neq":
+        return (row) => !equal(get(row));
+      case "gt":
+        return (row) => {
+          const c = range(get(row));
+          return c !== undefined && c > 0;
+        };
+      case "gte":
+        return (row) => {
+          const c = range(get(row));
+          return c !== undefined && c >= 0;
+        };
+      case "lt":
+        return (row) => {
+          const c = range(get(row));
+          return c !== undefined && c < 0;
+        };
+      case "lte":
+        return (row) => {
+          const c = range(get(row));
+          return c !== undefined && c <= 0;
+        };
+      case "in":
+        return (row) => {
+          const cell = get(row);
+          return set ? set.has(cell) : members?.some((v) => ops.equal(cell, v)) ?? false;
+        };
+      case "contains":
+        return (row) => {
+          const cell = get(row);
+          return typeof cell === "string" && typeof value === "string" ? cell.includes(value) : Array.isArray(cell) && cell.some((v) => ops.equal(v, value));
+        };
+      case "startsWith":
+        return (row) => {
+          const cell = get(row);
+          return typeof cell === "string" && typeof value === "string" && cell.startsWith(value);
+        };
+      case "endsWith":
+        return (row) => {
+          const cell = get(row);
+          return typeof cell === "string" && typeof value === "string" && cell.endsWith(value);
+        };
+    }
+  });
+  const sorters = view.sorters.map((s) => ({ get: compileAccessor(s.field), sign: s.direction === "desc" ? -1 : 1 }));
+  const [f0, f1, f2, f3] = filters;
+  const matches = filters.length === 1 ? f0 : filters.length === 2 ? (row) => f0(row) && f1(row) : filters.length === 3 ? (row) => f0(row) && f1(row) && f2(row) : filters.length === 4 ? (row) => f0(row) && f1(row) && f2(row) && f3(row) : (row) => {
+    for (const f of filters)
+      if (!f(row))
+        return false;
+    return true;
+  };
+  const comparisons = sorters.length >= 2 && sorters.length <= 4 ? sorters.map((s) => (left, right) => {
+    const result = ops.compare(s.get(left), s.get(right));
+    return result ? result * s.sign : 0;
+  }) : [];
+  const [c0, c1, c2, c3] = comparisons;
+  const compare = sorters.length === 1 ? (a, b) => {
+    const result = ops.compare(sorters[0].get(a), sorters[0].get(b));
+    return result ? result * sorters[0].sign : 0;
+  } : comparisons.length === 2 ? (a, b) => c0(a, b) || c1(a, b) : comparisons.length === 3 ? (a, b) => c0(a, b) || c1(a, b) || c2(a, b) : comparisons.length === 4 ? (a, b) => c0(a, b) || c1(a, b) || c2(a, b) || c3(a, b) : (a, b) => {
+    for (const s of sorters) {
+      const result = ops.compare(s.get(a), s.get(b));
+      if (result)
+        return result * s.sign;
+    }
+    return 0;
+  };
+  const compiled = Object.freeze({
+    ordering: Object.freeze({ comparisonId: ops.comparisonId, sorters: Object.freeze(view.sorters.map((s) => Object.freeze({ field: s.field, direction: s.direction }))) }),
+    hasFilters: filters.length > 0,
+    matches,
+    compare
+  });
+  registerQueryDetails(compiled, { compareValues: ops.compare, filters: captured });
+  return compiled;
+}
+// node_modules/defuss-dataview/dist/heap-B_Bk5TE1.mjs
+class TopK {
+  constructor(capacity, compare) {
+    this.capacity = capacity;
+    this.compare = compare;
+  }
+  capacity;
+  compare;
+  items = [];
+  addAccepted(value) {
+    if (this.capacity === Infinity) {
+      this.items.push(value);
+      return;
+    }
+    if (this.items.length < this.capacity) {
+      let index2 = this.items.length;
+      this.items.push(value);
+      while (index2 > 0) {
+        const parent = Math.floor((index2 - 1) / 2);
+        if (this.compare(this.items[parent], value) >= 0)
+          break;
+        this.items[index2] = this.items[parent];
+        index2 = parent;
+      }
+      this.items[index2] = value;
+      return;
+    }
+    const evicted = this.items[0];
+    let index = 0;
+    while (index * 2 + 1 < this.items.length) {
+      let child = index * 2 + 1;
+      if (child + 1 < this.items.length && this.compare(this.items[child + 1], this.items[child]) > 0)
+        child++;
+      if (this.compare(value, this.items[child]) >= 0)
+        break;
+      this.items[index] = this.items[child];
+      index = child;
+    }
+    this.items[index] = value;
+    return evicted;
+  }
+}
+
+// node_modules/defuss-dataview/dist/index.mjs
+function evaluateTree(rows, view) {
+  const tree = view.tree;
+  const getId = compileAccessor(tree.idField), getParent = compileAccessor(tree.parentIdField);
+  const ids = rows.map((row) => getId(row));
+  const keys = ids.map((id) => typeof id === "number" && Number.isFinite(id) ? undefined : rowIdKey(id));
+  const keyAt = (index) => keys[index] ?? (typeof ids[index] === "number" ? JSON.stringify(ids[index]) : undefined);
+  const parents = rows.map((row) => getParent(row));
+  const byId = /* @__PURE__ */ new Map, byNumber = /* @__PURE__ */ new Map;
+  for (let index = rows.length - 1;index >= 0; index--) {
+    const id = ids[index];
+    if (typeof id === "number")
+      byNumber.set(id, index);
+    else {
+      const key = keys[index];
+      if (key !== undefined)
+        byId.set(key, index);
+    }
+  }
+  const parentIndex = new Int32Array(rows.length);
+  for (let index = 0;index < rows.length; index++) {
+    const value = parents[index];
+    let parent = -1;
+    if (typeof value === "number" && Number.isFinite(value))
+      parent = byNumber.get(value) ?? -1;
+    else {
+      const key = rowIdKey(value);
+      if (key !== undefined)
+        parent = byId.get(key) ?? -1;
+    }
+    parentIndex[index] = parent === index ? -1 : parent;
+  }
+  const color = new Uint8Array(rows.length);
+  for (let start = 0;start < rows.length; start++) {
+    if (color[start] !== 0)
+      continue;
+    const trail = [];
+    let current = start;
+    while (current !== -1 && color[current] === 0) {
+      color[current] = 1;
+      trail.push(current);
+      current = parentIndex[current];
+    }
+    if (current !== -1 && color[current] === 1) {
+      let root = current;
+      for (let node = parentIndex[current];node !== current; node = parentIndex[node])
+        root = Math.min(root, node);
+      parentIndex[root] = -1;
+    }
+    for (const node of trail)
+      color[node] = 2;
+  }
+  const children = rows.map(() => {
+    return;
+  });
+  const roots = [];
+  for (let index = 0;index < rows.length; index++) {
+    const parent = parentIndex[index];
+    if (parent === -1)
+      roots.push(index);
+    else
+      (children[parent] ??= []).push(index);
+  }
+  const query = compileQuery(view);
+  if (view.sorters.length) {
+    const compare = (left, right) => query.compare(rows[left], rows[right]) || left - right;
+    roots.sort(compare);
+    for (const group of children)
+      if (group && group.length > 1)
+        group.sort(compare);
+  }
+  const matched = new Uint8Array(rows.length);
+  let matchedRows = 0;
+  for (let index = 0;index < rows.length; index++) {
+    if (query.matches(rows[index])) {
+      matched[index] = 1;
+      matchedRows++;
+    }
+  }
+  const included = matched.slice();
+  if (tree.includeAncestors) {
+    const done = new Uint8Array(rows.length);
+    for (let index = 0;index < rows.length; index++) {
+      if (!matched[index])
+        continue;
+      for (let parent = parentIndex[index];parent !== -1 && !done[parent]; parent = parentIndex[parent]) {
+        done[parent] = 1;
+        included[parent] = 1;
+      }
+    }
+  }
+  if (tree.includeDescendantsOfMatch) {
+    const done = new Uint8Array(rows.length);
+    const stack = [];
+    for (let index = 0;index < rows.length; index++) {
+      if (!matched[index] || done[index])
+        continue;
+      stack.push(index);
+      while (stack.length) {
+        const node = stack.pop();
+        if (done[node])
+          continue;
+        done[node] = 1;
+        included[node] = 1;
+        for (const child of children[node] ?? [])
+          stack.push(child);
+      }
+    }
+  }
+  const expanded = new Set(tree.expandedIds.map(idKey));
+  const collapsed = new Set((tree.collapsedIds ?? []).map(idKey));
+  const all = tree.expandAll ?? tree.expandedIds.length === 0;
+  const selected = new Set(view.meta.selectedRowIds.map(idKey));
+  const getSelectionId = compileAccessor(view.idField);
+  const offset = view.pageSize ? view.page * view.pageSize : 0;
+  const end = view.pageSize ? offset + view.pageSize : Infinity;
+  const entries = [];
+  let visibleRows = 0;
+  const stackIndex = new Int32Array(rows.length), stackDepth = new Int32Array(rows.length);
+  let top = 0;
+  for (let index = roots.length - 1;index >= 0; index--) {
+    stackIndex[top] = roots[index];
+    stackDepth[top++] = 0;
+  }
+  const anyCollapsed = collapsed.size > 0;
+  while (top) {
+    const index = stackIndex[--top], depth = stackDepth[top];
+    const group = children[index];
+    const hasChildren = !!group?.length;
+    let isOpen = all;
+    if (!all || anyCollapsed) {
+      const key = keyAt(index);
+      isOpen = all ? key === undefined || !collapsed.has(key) : key !== undefined && expanded.has(key);
+    }
+    const canDescend = isOpen && (tree.maxDepth === undefined || depth < tree.maxDepth);
+    if (included[index]) {
+      if (visibleRows >= offset && visibleRows < end) {
+        const selectedKey = selected.size ? selectionKey(getSelectionId(rows[index])) : undefined;
+        entries.push({ row: rows[index], meta: {
+          depth,
+          hasChildren,
+          isExpanded: hasChildren && canDescend,
+          isMatch: matched[index] === 1,
+          isSelected: selectedKey !== undefined && selected.has(selectedKey),
+          parentId: parents[index] ?? null
+        } });
+      }
+      visibleRows++;
+    }
+    if (canDescend && group)
+      for (let child = group.length - 1;child >= 0; child--) {
+        stackIndex[top] = group[child];
+        stackDepth[top++] = depth + 1;
+      }
+  }
+  return { entries, matchedRows, visibleRows };
+}
+function flatPage(rows, query, end) {
+  const sample = [];
+  let next = 0, reverse = true, strict = false;
+  while (next < rows.length && sample.length < 32) {
+    const row = rows[next++];
+    if (!query.matches(row))
+      continue;
+    if (sample.length) {
+      const c = query.compare(sample[sample.length - 1], row);
+      reverse &&= c >= 0;
+      strict ||= c > 0;
+    }
+    sample.push(row);
+  }
+  if (reverse && strict) {
+    for (;next < rows.length; next++)
+      if (query.matches(rows[next]))
+        sample.push(rows[next]);
+    const total2 = sample.length;
+    sample.sort(query.compare);
+    return { rows: sample.slice(0, end), total: total2 };
+  }
+  const compare = (a, b) => query.compare(a.row, b.row) || a.ordinal - b.ordinal;
+  const heap = new TopK(end, compare);
+  let total = 0;
+  const add = (row) => {
+    const ordinal = total++;
+    if (heap.items.length < end)
+      heap.addAccepted({ row, ordinal });
+    else if (query.compare(row, heap.items[0].row) < 0) {
+      const candidate = heap.items[0];
+      candidate.row = row;
+      candidate.ordinal = ordinal;
+      heap.addAccepted(candidate);
+    }
+  };
+  for (const row of sample)
+    add(row);
+  for (;next < rows.length; next++)
+    if (query.matches(rows[next]))
+      add(rows[next]);
+  heap.items.sort(compare);
+  return { rows: heap.items.map((c) => c.row), total };
 }
 function evaluateFlat(rows, view) {
   const query = compileQuery(view);
@@ -4237,7 +4465,13 @@ function evaluateFlat(rows, view) {
     }
     matchedRows++;
   }
-  if (view.sorters.length || !view.filters.length) {
+  if (view.sorters.length && rows.length >= 1024 && end <= rows.length / 16) {
+    const result = flatPage(rows, query, end);
+    matchedRows = offset;
+    for (let i = offset;i < result.rows.length; i++)
+      append(result.rows[i]);
+    matchedRows = result.total;
+  } else if (view.sorters.length || !view.filters.length) {
     const ordered = view.filters.length ? rows.filter(query.matches) : view.sorters.length ? [...rows] : rows;
     if (view.sorters.length)
       ordered.sort(query.compare);
@@ -4442,6 +4676,7 @@ function dataSource(rows, options = {}) {
       const filtering = filters.length > 0;
       const view = createDataview({
         idField,
+        semantics: { strings: "locale" },
         sorters: q.sorters ?? [],
         filters: filtering ? [{ field: idField, op: "in", value: matching(filters) }] : [],
         tree: options.tree ? {
@@ -9775,6 +10010,6 @@ function init19() {
 init19();
 new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 
-//# debugId=7F20548A5CE6348964756E2164756E21
+//# debugId=61DF75625D7BB38064756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=admin-dashboard.js.map

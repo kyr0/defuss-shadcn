@@ -152,3 +152,8 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-16T16:04:56Z s=5187d371 FINDING scaffold-notes.mdx module: settings.json learn=none: dead state removed; nothing to pin
 2026-11-16T16:04:56Z s=5187d371 FINDING scaffold-notes.mdx: two tabs learn=none: a documented limit, not a defect fixed
 2026-11-16T16:04:56Z s=5187d371 FINDING tests/e2e/site/scaffold-notes.e2e.ts learn=none: test robustness under load
+2026-11-16T17:56:18Z s=5187d371 FINDING tests/e2e/site/documentation.e2e.ts What's new example by example learn=none: a test assumption about record contents, fixed in the test
+2026-11-16T17:56:18Z s=5187d371 FINDING Stop-hook gate during the release learn=none: already in .vae/MEMORY.md (gate beside a running deploy)
+2026-11-17T15:00:30Z s=5187d371 FINDING compute in the examples, not in core learn=none: a design choice, documented in AGENTS.md Big data
+2026-11-17T15:00:30Z s=5187d371 FINDING skills + tree-grid.mdx keyboard lines learn=none: the prose gate enforces it
+2026-11-17T15:00:30Z s=5187d371 FINDING Notes app (reported slow navigation on the live site) learn=none: no reproduction yet

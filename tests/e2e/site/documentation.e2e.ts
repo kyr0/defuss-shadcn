@@ -769,6 +769,12 @@ try {
           listed.map(([h]) => h).sort(),
           'the same anchors as on the page',
         );
+        // a first visit sees the newest release only: right after a release that entry may name just the page opened
+        const unseen = [...(newest as { created?: string[] }).created ?? [], ...((newest as { updated?: string[] }).updated ?? [])].filter((id) => id !== pageId);
+        if (!unseen.length) {
+          assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), false, 'nothing unseen: hidden');
+          return;
+        }
         assert.equal(await p.locator('[data-whats-new-for-you]').isVisible(), true, 'New for you shows');
         const forYou = await p.$$eval('[data-whats-new-for-you] [data-whats-new-page]', (ls) =>
           ls.map((l) => l.getAttribute('data-whats-new-page')),

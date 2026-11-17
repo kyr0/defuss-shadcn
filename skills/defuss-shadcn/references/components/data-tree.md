@@ -91,7 +91,7 @@ df$.shadcn.dataTree.setSource(tree, files, {
 
 | State | Meaning |
 |-------|---------|
-| `default` | The visible nodes of the query; nothing visible → `empty` |
+| `default` | The visible nodes of the query; with nothing visible the state is `empty` |
 | `loading` | Busy: placeholder rows, `aria-busy="true"` (a tree without records starts here) |
 | `empty` | Nothing to show: `data-empty-text` |
 
@@ -189,8 +189,8 @@ Registry globals: `df$.shadcn.dataTreeApi` / `df$.shadcn.dataTreeStates`;
 | `aria-selected` | `.data-tree-item` | Set |
 | `aria-busy="true"` | `.data-tree` | In `loading` |
 
-Keyboard (APG tree): ↑ / ↓ move, → opens a branch then steps into it, ←
-closes it or goes to the parent, Home / End, Page Up / Down, Enter or Space
+Keyboard (APG tree): Up / Down Arrow move, Right Arrow opens a branch, then steps into it, Left
+Arrow closes it or goes to the parent, Home / End, Page Up / Down, Enter or Space
 selects, `*` opens every sibling.
 
 ---
@@ -203,4 +203,9 @@ selects, `*` opens every sibling.
   first one becomes active.
 - **Items are recycled** - never attach a listener per item; listen to
   `data-tree-select` or one delegated `click` on the tree.
+- **Aggregated branches**: the records may be groups instead of raw rows - one
+  [defuss-dataview/compute](https://www.npmjs.com/package/defuss-dataview)
+  `aggregate` plan per level (`groupBy` one key more each), a group's key path
+  its id and the path without its last key its parent; a `render` label shows
+  the measures.
 - Give the tree a height; with none it collapses.

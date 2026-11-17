@@ -985,7 +985,17 @@ that keeps the totals, empty bins `fill`ed; the spec is plain JSON. `source.aggr
 `df$.shadcn.chart.bind(el, { source, aggregate, option, follow })` - a chart over a million rows draws their groups,
 follows the filters of a Data Grid (`follow: grid` + `df$.shadcn.dataGrid.source(grid)`), regroups with
 `update()`, and fires `chart-data` (Charts > Big Data, `pages/charts/charts-big-data.mdx`; tests/dataview.test.ts
-pins the spec). VERIFIED (Chromium, 1,000,000 rows): building them ~85 ms, a filter 60-70 ms, a numeric sort 400 ms,
+pins the spec).
+
+defuss-dataview 0.5 sorts strings by UTF-16 code units; the source passes `semantics: { strings: 'locale' }`, so a
+grid sorts names as a reader expects (0.4's localeCompare order). Projection and SQL-like aggregation are
+defuss-dataview 0.6's `compute` entry (`forRows()`: `rows`, `aggregate` with groupBy / measures with `where` /
+having / orderBy, `view` = a page plus totals) - 63 kB, so it stays out of core: the docs examples import
+`browser-compute.mjs` from jsDelivr (pinned with the devDependency; e2e serve it offline) and hand the results to
+the components - computed columns and filter-following totals (Data Grid "Projection"), a report grid that follows
+another grid's filters, aggregated trees whose levels are one plan each (Tree Grid "Totals per branch", Data Tree
+"Aggregated branches"); `tests/e2e/site/big-data-compute-docs.e2e.ts` checks their numbers. The charts keep
+`aggregate()` above: compute has no time or number buckets. VERIFIED (Chromium, 1,000,000 rows): building them ~85 ms, a filter 60-70 ms, a numeric sort 400 ms,
 an aggregation 25-50 ms.
 
 ### Component schemas (machine contracts, REQUIRED)
