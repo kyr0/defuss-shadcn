@@ -77,6 +77,28 @@
       <div class="calendar-header"><span class="calendar-heading"></span></div>
       <table class="calendar-grid" role="grid"></table>
     </div>
+    <!-- inside a form: the calendar's buttons never submit it -->
+    <form id="cal-form" onsubmit="event.preventDefault(); this.dataset.submitted = String(Number(this.dataset.submitted || 0) + 1)">
+      <div class="calendar" id="cal-in-form" data-mode="range" data-current-date="2026-10" style="margin-top:1rem;">
+        <div class="calendar-header">
+          <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">‹</button>
+          <span class="calendar-heading"></span>
+          <button class="calendar-nav" data-action="next-month" aria-label="Next month">›</button>
+        </div>
+        <table class="calendar-grid" role="grid"></table>
+      </div>
+    </form>
+    <!-- ISO week numbers: Monday weeks, and Sunday weeks (the week of each row's Thursday) -->
+    <div class="calendar" id="cal-weeks" data-week-numbers data-week-start="monday" data-current-date="2026-12" style="margin-top:1rem;">
+      <div class="calendar-header"><span class="calendar-heading"></span></div>
+      <table class="calendar-grid" role="grid"></table>
+    </div>
+    <div data-week-numbers>
+      <div class="calendar" id="cal-weeks-sun" data-week-start="sunday" data-current-date="2027-01" style="margin-top:1rem;">
+        <div class="calendar-header"><span class="calendar-heading"></span></div>
+        <table class="calendar-grid" role="grid"></table>
+      </div>
+    </div>
     <script type="module" src="/dist/components/calendar/calendar.js"></script>
   </body>
 </html>

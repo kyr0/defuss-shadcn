@@ -52,3 +52,18 @@
   </div>
 </dialog>
 ```
+
+```html example part label="Dialog (xl)"
+<dialog class="dialog" data-size="xl" id="xl-dialog" aria-labelledby="xl-dialog-title">
+  <div class="dialog-content">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="xl-dialog-title">New event</h2>
+      <p class="dialog-description">A wide dialog: room for two months side by side.</p>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn" data-variant="outline" data-dialog-close="">Cancel</button>
+      <button class="btn">Save</button>
+    </div>
+  </div>
+</dialog>
+```

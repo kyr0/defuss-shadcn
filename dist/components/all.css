@@ -8046,6 +8046,23 @@
     border-spacing: 0;
   }
 
+  /* the ISO week column (data-week-numbers): quieter and narrower than the days */
+  .calendar-week-label,
+  .calendar-week {
+    width: 1.75rem;
+    padding: 0;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in oklch, var(--muted-foreground) 80%, transparent);
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .calendar-week {
+    border-inline-end: 1px solid var(--border);
+  }
+
   .calendar-day-label {
     width: 2.25rem;
     height: 2.25rem;
@@ -8150,11 +8167,14 @@
 
   /* -- Day data: marks + notes -----------------------------------
      data-mark="…" is the page's own classification of a day (a holiday, a
-     booked night, a scheduled event): a dot in the cell's corner plus, for
-     the built-in names, a look of its own. Any other name gets the neutral
-     dot - style it with .calendar-day[data-mark="name"]. A note is a second
-     line under the number (a price, a count); a calendar with notes gets
-     taller cells (data-notes, set by the JS). */
+     booked night, a scheduled event): a dot centered under the number (in
+     the cell's corner when the calendar has notes - the note takes that
+     line) plus, for the built-in names, a look of its own. Any other name
+     gets the neutral dot - style it with .calendar-day[data-mark="name"].
+     A note is a second line under the number (a price, a count); a calendar
+     with notes gets taller cells (data-notes, set by the JS). The dot keeps
+     a gap to the digits at every density: in a corner it touched a
+     two-digit number of a compact 1.5rem button. */
   .calendar-day button {
     position: relative;
   }
@@ -8162,12 +8182,26 @@
   .calendar-day[data-mark] button::after {
     content: "";
     position: absolute;
-    top: 0.1875rem;
-    inset-inline-end: 0.1875rem;
-    width: 0.3125rem;
-    height: 0.3125rem;
+    bottom: 0.125rem;
+    inset-inline-start: calc(50% - 0.125rem);
+    width: 0.25rem;
+    height: 0.25rem;
     border-radius: 50%;
     background-color: var(--muted-foreground);
+  }
+
+  /* a calendar with marks lifts every number (not only the marked ones, so a
+     row stays on one line) to make room for the dot */
+  .calendar:not([data-notes]):has(.calendar-day[data-mark]) .calendar-day button {
+    padding-block-end: 0.375rem;
+  }
+
+  .calendar[data-notes] .calendar-day[data-mark] button::after {
+    bottom: auto;
+    top: 0.1875rem;
+    inset-inline: auto 0.1875rem;
+    width: 0.3125rem;
+    height: 0.3125rem;
   }
 
   .calendar-day[data-mark="holiday"] button {

@@ -135,6 +135,41 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
 </div>
 ```
 
+```html example label="Week numbers" hint="data-week-numbers adds a column of ISO 8601 week numbers - the week of each row's Thursday, so the number is right whatever day the weeks start on. Set it on the calendar, or once on a .calendar-range or any ancestor (an app's settings) for every calendar inside; data-week-numbers=&quot;false&quot; turns it off below one that turns it on. The column is a row header per week; the arrow keys still walk the days." height="24"
+<div class="calendar" data-week-start="monday" data-week-numbers data-current-date="2026-12">
+  <div class="calendar-header">
+    <button class="calendar-nav" data-action="prev-month" aria-label="Previous month">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m15 18-6-6 6-6"></path>
+      </svg>
+    </button>
+    <button type="button" class="calendar-heading" aria-live="polite"></button>
+    <button class="calendar-nav" data-action="next-month" aria-label="Next month">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m9 18 6-6-6-6"></path>
+      </svg>
+    </button>
+  </div>
+  <table class="calendar-grid" role="grid"></table>
+</div>
+```
+
 ```html example label="Date of birth (dropdowns)" hint="data-caption=&quot;dropdown&quot; puts native month and year selects between the arrows - the quickest way to a date decades away: open the year and type 1987. Years run from data-year-from to data-year-to (defaults: data-min-date / data-max-date, else 100 years back to 10 ahead); months outside min / max are disabled." height="24"
 <div
   class="calendar"

@@ -49,6 +49,7 @@ export const STANDALONE_APPS = [
   'scaffold-document-editor',
   'scaffold-knowledge-graph',
   'scaffold-api-docs',
+  'scaffold-calendar',
 ];
 /** the Website templates: a site needs an address to route - their full-screen page is where the router owns one
  *  (a docs card is an about:srcdoc frame - the Client-side Routing guide) */

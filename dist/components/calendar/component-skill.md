@@ -69,6 +69,7 @@ supportedStates: default
 | `data-in-range` | Day between the endpoints (the band) |
 | `data-range-span` | Endpoint that joins a band (the band runs half into it) |
 | `data-range-preview` | Would-be span while hovering/focusing after the start |
+| `calendar-week` (a `th`) | The row's ISO week number (`data-week-numbers`) |
 
 ## Jumping to a month or year
 
@@ -81,7 +82,7 @@ upgraded to one by the JS): it switches the calendar's view.
 | `months` | 2026 | a year | shows that month's days |
 | `years` | `2016 – 2027` | 12 years | shows that year's months |
 
-The heading cycles days → months → years → days; `Escape` returns to the
+The heading cycles from the days to the months, the years and back to the days; `Escape` returns to the
 days; arrow keys walk the 4-column month / year grid. Months and years
 wholly outside `data-min-date` / `data-max-date` are disabled. The picker is
 a `.calendar-picker` the JS inserts after the grid (buttons
@@ -109,6 +110,17 @@ Sunday. A browser that reports no week info starts on Sunday.
 <div class="calendar" data-week-start="monday">…</div>
 ```
 
+## Week numbers
+`data-week-numbers` adds a column of ISO 8601 week numbers before the days: a `<th class="calendar-week" scope="row">`
+per week and an empty `<th class="calendar-week-label">` named with the locale's word for a week. The number is the
+ISO week of the row's Thursday, so it is right for every `data-week-start` (a Sunday row from 27 December to 2
+January is week 53 of the year before). Set it on the calendar, or once on a `.calendar-range` or any ancestor - an
+app's settings - for every calendar inside; `data-week-numbers="false"` turns it off below an ancestor that turns it
+on. The calendar reads it when it renders: after changing it on an ancestor,
+`api.setState('default', api.getState().config)` draws the same month again.
+```html
+<div class="calendar" data-week-start="monday" data-week-numbers>…</div>
+```
 ## Day data: marks, notes, blocked days
 
 A map from ISO date to `{ mark?, note?, label?, disabled? }`, given either
@@ -164,6 +176,7 @@ A range is **one answer**: a start and an end, drawn as one span.
 - **Picking:** the first click sets the start, the second the end. A click **before** the start restarts there - an end can never precede its start. A click after a complete range starts a new one. Disabled days (`data-min-date` / `data-max-date`) never select; outside days are hidden in range mode.
 - **Preview:** after the start, hovering or focusing a later day previews the span (`data-range-preview` - lighter band, outlined end), across months.
 - **Source of truth:** `data-range-start` / `data-range-end` (ISO) on the owner - preset them in markup; they always mirror the live choice. Inputs inside the owner marked `data-range-input="start"` / `"end"` receive the ISO dates (`change` fires), so the range submits with the form.
+- **In a form:** every button the calendar has is `type="button"` (the runtime sets it on authored arrows and headings that name no type), so a pick never submits the form around it - the range inputs submit with it when the form does.
 - **Event:** every pick fires `calendar:range` on the owner (bubbles) with `detail = { start, end, startIso, endIso }` (`Date`s; `end`/`endIso` null until closed).
 - **State API:** `api.setState('default', { start: 'YYYY-MM-DD', end: 'YYYY-MM-DD' })` on any calendar of the owner sets the range (an end before the start is dropped; `''` clears); `getState().config` adds `rangeStart` / `rangeEnd`.
 

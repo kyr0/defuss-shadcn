@@ -160,3 +160,6 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-17T18:21:20Z s=5187d371 FINDING data-grid.css header sort indicator learn=none: a visual judgement, checked by screenshots
 2026-11-17T18:21:20Z s=5187d371 FINDING data-grid.ts beginDrag/long press: navigator.vibrate learn=none: no console-warning assertion in the touch e2e; the guard is the documented API
 2026-11-17T18:21:20Z s=5187d371 FINDING studio.e2e WebKit drag (full e2e run) learn=none: a load-dependent WebKit drag timing, not reproduced alone
+2026-11-17T19:46:04Z s=5187d371 FINDING scaffold-calendar.mdx tints learn=none: a visual judgement; the rule stands in AGENTS.md beside the Media Timeline one
+2026-11-17T19:46:04Z s=5187d371 FINDING scripts/individual-examples.ts --write (dialog xl) learn=none: why the cutter keeps the whole fence for a dialog nested in an app is not established; the parts were written by hand and the gate passes
+2026-11-17T23:03:04Z s=5187d371 FINDING src/components/data-display/calendar/calendar.css .calendar-day[data-mark] button::after learn=none: a visual spacing judgement, checked by screenshots; calendar.e2e still asserts the mark dot exists

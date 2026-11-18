@@ -539,6 +539,35 @@ try {
     assert.deepEqual(firsts, ['Mon', 'Mon']);
   });
 
+  await check('in a form: a pick, the arrows and the heading never submit it (every button the calendar has is type="button")', async () => {
+    await page.click('#cal-in-form [data-cal-date="2026-10-12"] button');
+    await page.click('#cal-in-form [data-cal-date="2026-10-14"] button');
+    await page.click('#cal-in-form [data-action="next-month"]');
+    await page.click('#cal-in-form .calendar-heading');
+    await page.keyboard.press('Escape');
+    assert.equal(await page.getAttribute('#cal-form', 'data-submitted'), null);
+    const types = await page.$$eval('#cal-in-form button', (bs) => [...new Set(bs.map((b) => b.getAttribute('type')))]);
+    assert.deepEqual(types, ['button']);
+  });
+
+  await check('week numbers: data-week-numbers (on the calendar or an ancestor) adds the ISO week of every row; the days and their keys stay', async () => {
+    const weeks = (sel: string) => page.$$eval(`${sel} tbody th.calendar-week`, (els) => els.map((e) => e.textContent!.trim()));
+    // December 2026 in Monday weeks: 30 Nov ... 3 Jan - the last row holds Thursday 31 December, week 53
+    assert.deepEqual(await weeks('#cal-weeks'), ['49', '50', '51', '52', '53']);
+    assert.equal(await page.$eval('#cal-weeks thead th:first-child', (th) => [th.className, th.getAttribute('aria-label')].join('|')), 'calendar-week-label|week');
+    assert.equal(await page.$$eval('#cal-weeks .calendar-day-label', (l) => l.length), 7);
+    assert.equal(await page.$eval('#cal-weeks tbody th.calendar-week', (th) => th.getAttribute('scope')), 'row');
+    // January 2027 in Sunday weeks: the first row (27 Dec - 2 Jan) holds Thursday 31 December - still week 53
+    assert.deepEqual((await weeks('#cal-weeks-sun')).slice(0, 2), ['53', '1']);
+    assert.equal(await page.$$eval('#cal-default tbody th.calendar-week', (t) => t.length), 0, 'none without the attribute');
+    // arrow keys still walk the days, a week down is seven days
+    await page.focus('#cal-weeks [data-cal-date="2026-12-09"] button');
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await page.evaluate(() => document.activeElement?.closest('td')?.getAttribute('data-cal-date')), '2026-12-16');
+    await page.keyboard.press('ArrowLeft');
+    assert.equal(await page.evaluate(() => document.activeElement?.closest('td')?.getAttribute('data-cal-date')), '2026-12-15');
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await assertRenderContract(page, '.calendar[id]', ['default']);
   });

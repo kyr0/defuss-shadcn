@@ -315,3 +315,7 @@
   ><i data-lucide="arrow-left"></i> Back</button
 >
 ```
+
+```html example part label="Button (sm, disabled)"
+<button class="btn" data-size="sm" type="button" disabled><i data-lucide="calendar-check"></i> Book</button>
+```

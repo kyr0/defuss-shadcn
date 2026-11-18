@@ -2519,6 +2519,23 @@ function weekStart(el) {
   const named = WEEKDAYS.indexOf((el.closest("[data-week-start]")?.getAttribute("data-week-start") ?? "").trim().toLowerCase());
   return named >= 0 ? named : names(el).firstDay;
 }
+function weekNumbers(el) {
+  const owner = el.closest("[data-week-numbers]");
+  return !!owner && owner.getAttribute("data-week-numbers") !== "false";
+}
+function isoWeek(date) {
+  const thursday = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 3 - (date.getDay() + 6) % 7);
+  const jan4 = new Date(thursday.getFullYear(), 0, 4);
+  const days = Math.round((thursday.getTime() - jan4.getTime()) / 86400000);
+  return 1 + Math.floor((days + (jan4.getDay() + 6) % 7) / 7);
+}
+function weekWord(locale) {
+  try {
+    return new Intl.DisplayNames(locale, { type: "dateTimeField" }).of("weekOfYear") || "Week";
+  } catch {
+    return "Week";
+  }
+}
 var nameSets = new Map;
 function names(el) {
   const locale = textLocale2(el);
@@ -2527,7 +2544,8 @@ function names(el) {
       days: Array.from({ length: 7 }, (_, i) => new Intl.DateTimeFormat(locale, { weekday: "short" }).format(new Date(2024, 0, i))),
       months: Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(2024, i, 1))),
       full: new Intl.DateTimeFormat(locale, { dateStyle: "full" }),
-      firstDay: localeFirstDay(locale)
+      firstDay: localeFirstDay(locale),
+      week: weekWord(locale)
     });
   }
   return nameSets.get(locale);
@@ -2783,7 +2801,7 @@ function setView(el, view) {
     detail: { view, year: st.year, month: st.month }
   }));
 }
-var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null), start = 0) => {
+var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days, locale = names(null), start = 0, weeks = false) => {
   const full = locale.full;
   const rangeAttrs = (iso) => {
     if (!range || !range.start)
@@ -2807,6 +2825,8 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
   const startDay = (firstDayOfMonth(year, month) - start + 7) % 7;
   const prevTotal = daysInMonth(year, month - 1);
   let html = "<thead><tr>";
+  if (weeks)
+    html += `<th class="calendar-week-label" scope="col" aria-label="${locale.week}"></th>`;
   for (let d = 0;d < 7; d++) {
     html += `<th class="calendar-day-label" scope="col">${locale.days[(d + start) % 7]}</th>`;
   }
@@ -2816,6 +2836,10 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
   const rows = Math.ceil((startDay + total) / 7);
   for (let r = 0;r < rows; r++) {
     html += "<tr>";
+    if (weeks) {
+      const thursday = new Date(year, month, 1 - startDay + r * 7 + (4 - start + 7) % 7);
+      html += `<th class="calendar-week" scope="row">${isoWeek(thursday)}</th>`;
+    }
     for (let c = 0;c < 7; c++) {
       const cellIndex = r * 7 + c;
       if (cellIndex < startDay) {
@@ -2823,12 +2847,12 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
         const iso = isoDate(new Date(year, month - 1, prevDay));
         const dd = dayData(days, iso, full);
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? " data-disabled" : "";
-        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev"${dd.aria}>${prevDay}${dd.note}</button></td>`;
+        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button type="button" tabindex="-1" data-day="${prevDay}" data-outside="prev"${dd.aria}>${prevDay}${dd.note}</button></td>`;
       } else if (dayNum > total) {
         const iso = isoDate(new Date(year, month + 1, nextDayNum));
         const dd = dayData(days, iso, full);
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? " data-disabled" : "";
-        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next"${dd.aria}>${nextDayNum}${dd.note}</button></td>`;
+        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button type="button" tabindex="-1" data-day="${nextDayNum}" data-outside="next"${dd.aria}>${nextDayNum}${dd.note}</button></td>`;
         nextDayNum++;
       } else {
         let attrs = "";
@@ -2841,7 +2865,7 @@ var renderGrid = (year, month, selectedDay, calId, minDate, maxDate, range, days
         if (!isoInRange(iso, minDate, maxDate) || dd.blocked)
           attrs += " data-disabled";
         attrs += rangeAttrs(iso) + dd.attrs;
-        html += `<td class="calendar-day"${attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button data-day="${dayNum}"${dd.aria}>${dayNum}${dd.note}</button></td>`;
+        html += `<td class="calendar-day"${attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button type="button" data-day="${dayNum}"${dd.aria}>${dayNum}${dd.note}</button></td>`;
         dayNum++;
       }
     }
@@ -2878,7 +2902,7 @@ var renderCalendar = (el, year, month, selectedDay) => {
   const range = r ? { start: r.start, end: r.end, preview: !r.end && r.start && r.hover && r.hover >= r.start ? r.hover : null } : null;
   const days = daysOf(el);
   el.toggleAttribute("data-notes", Object.values(days).some((d) => d && d.note != null && d.note !== ""));
-  dfDollar10(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days, names(el), weekStart(el)));
+  dfDollar10(grid).morph(renderGrid(year, month, selectedDay, el.dataset.calId || "", st.minDate, st.maxDate, range, days, names(el), weekStart(el), weekNumbers(el)));
   if (focusKey)
     dfDollar10(grid).find(`[data-cal-date="${focusKey}"] button`).get(0)?.focus();
   const selDate = dfDollar10(el).find(".calendar-day[data-selected]").get(0)?.getAttribute("data-cal-date");
@@ -2942,6 +2966,9 @@ function init10() {
       dfDollar10(heading).replaceWith(button);
       heading = button;
     }
+    for (const own of dfDollar10(cal).find(".calendar-nav, button.calendar-heading").toArray())
+      if (!own.hasAttribute("type"))
+        own.setAttribute("type", "button");
     if (heading && heading.tagName === "BUTTON") {
       dfDollar10(heading).attr("aria-haspopup", "grid");
       if (!dfDollar10(cal).find(".calendar-picker").get(0)) {
@@ -3714,5 +3741,5 @@ function init12() {
 init12();
 new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
-//# debugId=11C7C2453B09519D64756E2164756E21
+//# debugId=579828242DD1CE2664756E2164756E21
 //# sourceMappingURL=data-display.js.map

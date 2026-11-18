@@ -1,6 +1,6 @@
 {
   "schema": "defuss-shadcn-search.v1",
-  "fingerprint": "d1a05e0ed514b23ed89c645c504475fd4d6cb42f156b99dfed6825bddbc6e729",
+  "fingerprint": "0b06553f4b41168d16491a9b074c20b10c2384193faad7bc45e02c1f588c59d8",
   "model": {
     "id": "kyr0/winzling-embed-SauerkrautLM-MoEdernColBERT-1.5M-weight-space-programming",
     "revision": "bd312dffe70801e6aa4a53b287f35018aa5dd88e",
@@ -21,15 +21,15 @@
   },
   "documents": {
     "file": "documents.json.br",
-    "bytes": 244855,
-    "rawBytes": 1106716,
-    "count": 3290
+    "bytes": 245484,
+    "rawBytes": 1108991,
+    "count": 3294
   },
   "tokens": {
     "file": "tokens.bin.br",
-    "bytes": 1812055,
-    "rawBytes": 2626408,
-    "size": 40832,
+    "bytes": 1814644,
+    "rawBytes": 2630072,
+    "size": 40889,
     "dims": 128,
     "rotatedDims": 128,
     "codeBytes": 64,

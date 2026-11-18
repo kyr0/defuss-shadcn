@@ -344,6 +344,7 @@ export const NAV = [
                     { label: 'Document Editor', href: 'scaffold-document-editor.html', type: 'TPL' },
                     { label: 'Knowledge Graph', href: 'scaffold-knowledge-graph.html', type: 'TPL' },
                     { label: 'API Documentation', href: 'scaffold-api-docs.html', type: 'TPL' },
+                    { label: 'Calendar', href: 'scaffold-calendar.html', type: 'TPL' },
                 ],
             },
         ] },

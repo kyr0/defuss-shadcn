@@ -7,33 +7,33 @@
     "BLK": 135,
     "TPL": 4
   },
-  "templatePages": 95,
-  "templates": 99,
+  "templatePages": 96,
+  "templates": 100,
   "templateGroups": {
     "WYSIWYG Editors": 1,
-    "Application": 10,
+    "Application": 11,
     "Presentations": 33,
     "Papers": 15,
     "Website": 36
   },
   "tokens": 52,
-  "examples": 1985,
+  "examples": 1987,
   "unitTestFiles": 51,
   "withJs": 83,
   "withoutJs": 178,
-  "totalSize": 4244815,
-  "totalSizeMinified": 2125913,
-  "totalSizeGz": 1208678,
-  "totalSizeGzMinified": 693637,
+  "totalSize": 4248070,
+  "totalSizeMinified": 2127282,
+  "totalSizeGz": 1209684,
+  "totalSizeGzMinified": 694031,
   "bundle": {
-    "jsSize": 1167946,
-    "jsSizeMinified": 680148,
-    "cssSize": 1625303,
-    "cssSizeMinified": 940106,
-    "totalSizeGz": 601147,
-    "totalSizeGzMinified": 380918,
-    "jsSizeGzMinified": 214326,
-    "cssSizeGzMinified": 166592
+    "jsSize": 1169182,
+    "jsSizeMinified": 680970,
+    "cssSize": 1626430,
+    "cssSizeMinified": 940659,
+    "totalSizeGz": 601757,
+    "totalSizeGzMinified": 381237,
+    "jsSizeGzMinified": 214552,
+    "cssSizeGzMinified": 166685
   },
   "core": {
     "jsSize": 183525,
@@ -331,14 +331,14 @@
         "sections/data-display.css",
         "sections/data-display.js"
       ],
-      "jsSize": 141178,
-      "jsSizeMinified": 79097,
-      "cssSize": 136058,
-      "cssSizeMinified": 71300,
-      "totalSizeGz": 62264,
-      "totalSizeGzMinified": 38587,
-      "jsSizeGzMinified": 24430,
-      "cssSizeGzMinified": 14157
+      "jsSize": 142415,
+      "jsSizeMinified": 79919,
+      "cssSize": 137185,
+      "cssSizeMinified": 71853,
+      "totalSizeGz": 62898,
+      "totalSizeGzMinified": 38952,
+      "jsSizeGzMinified": 24689,
+      "cssSizeGzMinified": 14263
     },
     "multimedia": {
       "heading": "Multimedia",
@@ -977,7 +977,7 @@
     "count": 26,
     "minGzMinified": 5000,
     "maxGzMinified": 66114,
-    "meanGzMinified": 20844
+    "meanGzMinified": 20858
   },
   "components": {
     "about-intro": {
@@ -1426,14 +1426,14 @@
       "name": "calendar",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 45027,
-      "jsSizeMinified": 16786,
-      "cssSize": 15069,
-      "cssSizeMinified": 8426,
-      "totalSizeGz": 16379,
-      "totalSizeGzMinified": 7766,
-      "totalSize": 60096,
-      "totalSizeMinified": 25212
+      "jsSize": 47155,
+      "jsSizeMinified": 17602,
+      "cssSize": 16196,
+      "cssSizeMinified": 8979,
+      "totalSizeGz": 17385,
+      "totalSizeGzMinified": 8160,
+      "totalSize": 63351,
+      "totalSizeMinified": 26581
     },
     "card": {
       "name": "card",
@@ -4618,14 +4618,14 @@
         "typography",
         "window"
       ],
-      "jsSize": 354105,
-      "jsSizeMinified": 198067,
-      "cssSize": 431683,
-      "cssSizeMinified": 268714,
-      "totalSizeGz": 159165,
-      "totalSizeGzMinified": 101547,
-      "jsSizeGzMinified": 63790,
-      "cssSizeGzMinified": 37757
+      "jsSize": 355341,
+      "jsSizeMinified": 198889,
+      "cssSize": 432810,
+      "cssSizeMinified": 269267,
+      "totalSizeGz": 159800,
+      "totalSizeGzMinified": 101925,
+      "jsSizeGzMinified": 64061,
+      "cssSizeGzMinified": 37864
     },
     "document-editor": {
       "page": "scaffold-document-editor",
@@ -4743,6 +4743,43 @@
       "totalSizeGzMinified": 69850,
       "jsSizeGzMinified": 45953,
       "cssSizeGzMinified": 23897
+    },
+    "calendar": {
+      "page": "scaffold-calendar",
+      "href": "application/app-calendar.html",
+      "components": [
+        "avatar",
+        "badge",
+        "button",
+        "calendar",
+        "card",
+        "checkbox",
+        "combobox",
+        "date-picker",
+        "dialog",
+        "dropdown",
+        "icon",
+        "input",
+        "label",
+        "language-switcher",
+        "select",
+        "swap",
+        "switch",
+        "table",
+        "textarea",
+        "toast",
+        "toggle",
+        "toggle-group",
+        "typography"
+      ],
+      "jsSize": 293881,
+      "jsSizeMinified": 162062,
+      "cssSize": 322680,
+      "cssSizeMinified": 202801,
+      "totalSizeGz": 125407,
+      "totalSizeGzMinified": 80277,
+      "jsSizeGzMinified": 53296,
+      "cssSizeGzMinified": 26981
     }
   }
 }

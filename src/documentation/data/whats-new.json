@@ -3,16 +3,30 @@
   "releases": [
     {
       "version": "unreleased",
-      "created": [],
+      "created": [
+        "scaffold-calendar"
+      ],
       "updated": [
+        "application-scaffolds",
+        "button",
+        "calendar",
         "data-grid",
         "data-tree",
+        "dialog",
         "index",
+        "routing",
         "scaffold-notes",
         "system-in-numbers",
+        "translation",
         "tree-grid"
       ],
       "examples": {
+        "calendar": {
+          "created": [
+            "Week numbers"
+          ],
+          "updated": []
+        },
         "data-grid": {
           "created": [
             "Projection: computed columns and totals",

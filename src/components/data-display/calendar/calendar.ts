@@ -256,6 +256,32 @@ function weekStart(el): number {
   return named >= 0 ? named : names(el).firstDay;
 }
 
+/**
+ * Whether the grids show ISO week numbers: data-week-numbers on the calendar or its nearest ancestor that has the
+ * attribute ("false" turns them off below an ancestor that turns them on) - a .calendar-range or an app sets it once.
+ */
+function weekNumbers(el): boolean {
+  const owner = el.closest('[data-week-numbers]');
+  return !!owner && owner.getAttribute('data-week-numbers') !== 'false';
+}
+
+/** the ISO 8601 week of a date: the Monday-to-Sunday week that holds its Thursday, counted from the week of 4 January */
+function isoWeek(date: Date): number {
+  const thursday = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 3 - ((date.getDay() + 6) % 7));
+  const jan4 = new Date(thursday.getFullYear(), 0, 4);
+  const days = Math.round((thursday.getTime() - jan4.getTime()) / 86_400_000);
+  return 1 + Math.floor((days + ((jan4.getDay() + 6) % 7)) / 7);
+}
+
+/** the word for a week in a locale ("week", "Woche") - the week column's accessible name */
+function weekWord(locale: string): string {
+  try {
+    return new Intl.DisplayNames(locale, { type: 'dateTimeField' }).of('weekOfYear') || 'Week';
+  } catch {
+    return 'Week';
+  }
+}
+
 /** weekday / month names, the full date and the first weekday, in the text's locale (the calendar's nearest [lang],
  *  else 'en') - one set per locale */
 const nameSets = new Map();
@@ -271,6 +297,7 @@ function names(el) {
       ),
       full: new Intl.DateTimeFormat(locale, { dateStyle: 'full' }),
       firstDay: localeFirstDay(locale),
+      week: weekWord(locale),
     });
   }
   return nameSets.get(locale);
@@ -620,6 +647,7 @@ const renderGrid = (
   days?,
   locale = names(null),
   start = 0,
+  weeks = false,
 ) => {
   const full = locale.full;
   // range marks: endpoints + the span between them; while only the start is
@@ -645,6 +673,8 @@ const renderGrid = (
   const prevTotal = daysInMonth(year, month - 1);
 
   let html = '<thead><tr>';
+  // the week column: a row header per week - its ISO number is the week of the row's Thursday, whatever day it starts on
+  if (weeks) html += `<th class="calendar-week-label" scope="col" aria-label="${locale.week}"></th>`;
   for (let d = 0; d < 7; d++) {
     html += `<th class="calendar-day-label" scope="col">${locale.days[(d + start) % 7]}</th>`;
   }
@@ -656,6 +686,10 @@ const renderGrid = (
 
   for (let r = 0; r < rows; r++) {
     html += '<tr>';
+    if (weeks) {
+      const thursday = new Date(year, month, 1 - startDay + r * 7 + ((4 - start + 7) % 7));
+      html += `<th class="calendar-week" scope="row">${isoWeek(thursday)}</th>`;
+    }
     for (let c = 0; c < 7; c++) {
       const cellIndex = r * 7 + c;
       if (cellIndex < startDay) {
@@ -665,12 +699,12 @@ const renderGrid = (
         // outside days honor the range too: clicking one selects there, so an
         // out-of-range preview day must be disabled exactly like an in-month one
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? ' data-disabled' : '';
-        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${prevDay}" data-outside="prev"${dd.aria}>${prevDay}${dd.note}</button></td>`;
+        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button type="button" tabindex="-1" data-day="${prevDay}" data-outside="prev"${dd.aria}>${prevDay}${dd.note}</button></td>`;
       } else if (dayNum > total) {
         const iso = isoDate(new Date(year, month + 1, nextDayNum));
         const dd = dayData(days, iso, full);
         const off = !isoInRange(iso, minDate, maxDate) || dd.blocked ? ' data-disabled' : '';
-        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button tabindex="-1" data-day="${nextDayNum}" data-outside="next"${dd.aria}>${nextDayNum}${dd.note}</button></td>`;
+        html += `<td class="calendar-day" data-outside${off}${dd.attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button type="button" tabindex="-1" data-day="${nextDayNum}" data-outside="next"${dd.aria}>${nextDayNum}${dd.note}</button></td>`;
         nextDayNum++;
       } else {
         let attrs = '';
@@ -681,7 +715,7 @@ const renderGrid = (
         // a blocked day (disabled in the day data) is unselectable like one outside min/max
         if (!isoInRange(iso, minDate, maxDate) || dd.blocked) attrs += ' data-disabled';
         attrs += rangeAttrs(iso) + dd.attrs;
-        html += `<td class="calendar-day"${attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button data-day="${dayNum}"${dd.aria}>${dayNum}${dd.note}</button></td>`;
+        html += `<td class="calendar-day"${attrs} id="${calId}-${iso}" data-cal-date="${iso}"><button type="button" data-day="${dayNum}"${dd.aria}>${dayNum}${dd.note}</button></td>`;
         dayNum++;
       }
     }
@@ -750,6 +784,7 @@ const renderCalendar = (el, year, month, selectedDay) => {
       days,
       names(el),
       weekStart(el),
+      weekNumbers(el),
     ),
   );
 
@@ -839,6 +874,10 @@ function init() {
         dfDollar(heading).replaceWith(button);
         heading = button;
       }
+      // a calendar's own buttons never submit the form it sits in (a range picker with its inputs in a form, a
+      // calendar in a dialog's form): an authored arrow or heading without a type would be a submit button
+      for (const own of dfDollar(cal).find('.calendar-nav, button.calendar-heading').toArray())
+        if (!own.hasAttribute('type')) own.setAttribute('type', 'button');
       if (heading && heading.tagName === 'BUTTON') {
         dfDollar(heading).attr('aria-haspopup', 'grid');
         if (!dfDollar(cal).find('.calendar-picker').get(0)) {
