@@ -21,6 +21,9 @@
   <!-- custom labels + local persistence under its own key (expanded / selected survive a reload) -->
   <div class="data-tree" id="dt-saved" aria-label="Saved tree" data-persist="local" data-persist-key="fixture-tree"></div>
 
+  <!-- one open way (data-exclusive) + reveal() -->
+  <div class="data-tree" id="dt-way" aria-label="One way" data-exclusive data-persist="none"></div>
+
   <!-- waits for records: the loading state -->
   <div class="data-tree" id="dt-wait" aria-label="Pending tree"></div>
 
@@ -45,6 +48,7 @@
       }
     }
     tree.setSource(document.getElementById('dt-big'), rows);
+    tree.setSource(document.getElementById('dt-way'), rows);
     tree.setSource(document.getElementById('dt-saved'), [
       { id: 'src', parentId: null, name: 'src', files: 3 },
       { id: 'src/a.ts', parentId: 'src', name: 'a.ts' },

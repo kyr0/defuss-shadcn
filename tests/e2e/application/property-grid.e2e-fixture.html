@@ -327,6 +327,10 @@
       <div class="property-grid" id="pg-readonly" data-readonly data-key-label="Field" data-value-label="Reading" aria-label="Read-only" style="flex:1 1 16rem">
         <script type="application/json" class="property-grid-source">{ "uptime": "99.98%", "build": 1842, "healthy": true }</script>
       </div>
+      <div class="property-grid" id="pg-list" data-layout="list" aria-label="Upscaler settings" style="flex:1 1 16rem">
+        <script type="application/json" class="property-grid-source">{ "model": "real-esrgan-x4", "scale": 4, "faces": true, "output": { "format": "webp", "quality": 82 } }</script>
+        <script type="application/json" class="property-grid-config">{ "model": { "displayName": "Model", "options": ["real-esrgan-x4", "swinir", "lanczos"] }, "scale": { "displayName": "Scale", "min": 1, "max": 8, "integer": true } }</script>
+      </div>
     </div>
   </div>
   <script type="module" src="/dist/components/all.js"></script>

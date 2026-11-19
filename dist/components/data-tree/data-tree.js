@@ -214,6 +214,25 @@ df$.dataTreeStates = dataTreeStates;
 // -- interaction ------------------------------------------------------------------
 const query = (tree, patch) => dataTreeApi.setState(tree, tree.store.value.name === 'loading' ? 'loading' : 'default', patch);
 const entryAt = (tree, index) => tree._result?.entries[index];
+/** a record's ancestors, the root first (parent ids cached per source) */
+function ancestorsOf(tree, id) {
+    const src = tree._source;
+    if (tree._parents?.source !== src) {
+        const field = tree._parentField || 'parentId';
+        const map = new Map();
+        for (const row of src.rows)
+            map.set(row[src.idField], row[field] ?? null);
+        tree._parents = { source: src, map };
+    }
+    const map = tree._parents.map;
+    const out = [];
+    const seen = new Set();
+    for (let at = map.get(id) ?? null; at !== null && map.has(at) && !seen.has(at); at = map.get(at) ?? null) {
+        seen.add(at);
+        out.unshift(at);
+    }
+    return out;
+}
 function setExpanded(tree, index, open) {
     const entry = entryAt(tree, index);
     if (!entry?.meta.hasChildren || entry.meta.isExpanded === open)
@@ -227,6 +246,10 @@ function setExpanded(tree, index, open) {
         else
             collapsed.add(id);
         query(tree, { collapsed: [...collapsed] });
+    }
+    else if (open && tree.hasAttribute('data-exclusive')) {
+        // one open way: the branch and its ancestors - its open siblings close, with what was open below them
+        query(tree, { expanded: [...ancestorsOf(tree, id), id] });
     }
     else {
         const expanded = new Set(config.expanded || []);
@@ -361,6 +384,7 @@ df$.dataTree = {
         const idField = options.idField || tree.dataset.idField || 'id';
         const parentIdField = options.parentIdField || tree.dataset.parentField || 'parentId';
         tree._source = dataSource(rows, { idField, tree: { idField, parentIdField } });
+        tree._parentField = parentIdField;
         tree._render = options.render || null;
         tree._sourceOptions = options;
         // options.query starts the view; a kept view (options.persist moves it) wins
@@ -394,6 +418,37 @@ df$.dataTree = {
         const tree = resolve(target);
         const filtering = (configOf(tree).filters || []).length > 0;
         query(tree, filtering ? { collapsed: tree._source.branchIds() } : { expanded: [] });
+    },
+    /**
+     * Shows a record: opens the way to it (with data-exclusive only that way - every other branch closes), selects it
+     * and scrolls it into view as the active item. No data-tree-select fires - the page asked for it.
+     * @param target - the .data-tree element or its selector
+     * @param id - the record's id
+     * @returns false when the record is unknown or a filter hides it
+     */
+    reveal(target, id) {
+        const tree = resolve(target);
+        if (!tree?._source || !tree.store)
+            return false;
+        if (!tree._source.rows.some((r) => r[tree._source.idField] === id))
+            return false;
+        const way = ancestorsOf(tree, id);
+        const config = configOf(tree);
+        if ((config.filters || []).length) {
+            const collapsed = new Set(config.collapsed || []);
+            for (const a of way)
+                collapsed.delete(a);
+            query(tree, { collapsed: [...collapsed], selected: id });
+        }
+        else {
+            const expanded = tree.hasAttribute('data-exclusive') ? way : [...new Set([...(config.expanded || []), ...way])];
+            query(tree, { expanded, selected: id });
+        }
+        const index = tree._result?.entries.findIndex((e) => e.row[tree._source.idField] === id) ?? -1;
+        if (index < 0)
+            return false;
+        activate(tree, index);
+        return true;
     },
     /**
      * The selected record.

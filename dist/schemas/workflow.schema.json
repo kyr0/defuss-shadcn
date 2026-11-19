@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "name": "workflow",
+  "states": {
+    "readonly": {
+      "type": "boolean",
+      "default": false,
+      "target": { "kind": "selector", "selector": ".workflow" },
+      "mutation": { "kind": "api", "name": "readonly", "args": {} },
+      "observation": { "kind": "attribute", "name": "data-readonly" },
+      "editor": { "component": "checkbox" }
+    },
+    "selected": {
+      "type": "string",
+      "default": "",
+      "target": { "kind": "selector", "selector": ".workflow" },
+      "mutation": { "kind": "api", "name": "@current", "args": { "selected": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-selected" },
+      "editor": { "component": "text" }
+    },
+    "edge": {
+      "type": "string",
+      "default": "",
+      "target": { "kind": "selector", "selector": ".workflow" },
+      "mutation": { "kind": "api", "name": "@current", "args": { "edge": "@value" } },
+      "observation": { "kind": "attribute", "name": "data-selected-edge" },
+      "editor": { "component": "text" }
+    }
+  },
+  "actions": {}
+}

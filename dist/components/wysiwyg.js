@@ -79,6 +79,7 @@ var EXTRA_BUNDLES = {
   geo: ["geo-map"],
   shaders: ["shader"],
   graphs: ["graph-explorer"],
+  workflows: ["workflow"],
   terminal: ["terminal"]
 };
 var BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join("|")})(?:\\.min)?\\.js(?:[?#]|$)`);
@@ -1909,5 +1910,5 @@ df$2.editorjs = {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=424CB220DF47415C64756E2164756E21
+//# debugId=62C31A62CCF974AB64756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map

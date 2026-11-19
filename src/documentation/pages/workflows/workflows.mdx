@@ -1,0 +1,302 @@
+---
+title: "Workflows"
+description: "Workflows in defuss-shadcn: a node editor for workflows of 10,000 nodes and 100,000 connections - typed ports, cards built from the system's form components, a worker that draws every connection, groups, subworkflows, undo, runs and the ComfyUI and Gradio formats."
+slug: "workflows"
+---
+
+import { DocPage, PageHeader, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="workflows" title="Workflows" introStyle="max-width:42rem;">
+  One component for node-based editors: the <DocLink href="workflow.html">Workflow</DocLink> turns a JSON document of nodes, typed ports and connections into an editor you pan, zoom, connect, group and run. A Web Worker draws the connections and every node far from the view into one canvas; only the cards near the view become HTML - built from the system's own Input, Select, Slider and Switch - so 10,000 nodes and 100,000 connections stay a page of a few hundred elements. The palette, the outline, the inspector and the toolbar are outlets the page places around it.
+</PageHeader>
+
+```html example label="Headline studio" schema="none" hint="Drag a node by its title, drag from a port to another to connect (compatible ports grow), click a connection to inspect it. Add nodes from Nodes by click or drag. Run executes the steps in the page - each step waits a moment so you can watch the states. ⌘Z undoes, F fits." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="toolbar flex-wrap" role="toolbar" aria-label="Headline studio">
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="undo"
+      >Undo</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="redo"
+      >Redo</button
+    >
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="arrange"
+      >Arrange</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="group"
+      >Group</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="duplicate"
+      >Duplicate</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="delete"
+      >Delete</button
+    >
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="readonly"
+      aria-pressed="false"
+      >Read only</button
+    >
+    <button class="btn" data-size="sm" type="button" data-workflow-for="studio" data-workflow-action="run">Run</button>
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="studio"
+      data-workflow-action="cancel"
+      >Cancel</button
+    >
+  </div>
+  <div class="workflow" id="studio" aria-label="Headline studio" style="--workflow-height: 30rem"></div>
+  <div class="grid gap-2" style="grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr))">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Nodes</h3></div>
+      <div
+        class="card-content"
+        style="max-block-size: 20rem; overflow: auto"
+        data-workflow-for="studio"
+        data-workflow-outlet="palette"
+      ></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Outline</h3></div>
+      <div
+        class="card-content"
+        style="max-block-size: 20rem; overflow: auto"
+        data-workflow-for="studio"
+        data-workflow-outlet="outline"
+      ></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Inspector</h3></div>
+      <div
+        class="card-content"
+        style="max-block-size: 20rem; overflow: auto"
+        data-workflow-for="studio"
+        data-workflow-outlet="inspector"
+      ></div>
+    </div>
+  </div>
+  <p class="text-sm text-muted-foreground m-0">
+    <span data-workflow-for="studio" data-workflow-output="nodes"></span> nodes,
+    <span data-workflow-for="studio" data-workflow-output="edges"></span> connections ·
+    <span data-workflow-for="studio" data-workflow-output="selection"></span> ·
+    <span data-workflow-for="studio" data-workflow-output="zoom"></span>
+  </p>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$.shadcn.workflow;
+    const el = df$('#studio').get(0);
+    const first = (inputs, key, fallback = '') => inputs[key]?.[0] ?? fallback;
+    const wait = (ms, signal) =>
+      new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, ms);
+        signal.addEventListener('abort', () => (clearTimeout(timer), reject(signal.reason)));
+      });
+    const types = [
+      {
+        type: 'topic',
+        label: 'Topic',
+        category: 'Inputs',
+        color: 'chart-1',
+        description: 'What the story is about',
+        ports: [{ id: 'text', direction: 'output', type: 'text' }],
+        defaults: { text: 'night trains are back in europe' },
+        fields: [{ key: 'text', label: 'Topic', kind: 'textarea', rows: 2 }],
+        run: (node) => ({ text: node.data.text }),
+      },
+      {
+        type: 'tone',
+        label: 'Tone',
+        category: 'Inputs',
+        color: 'chart-2',
+        description: 'Calm, bold or playful',
+        ports: [{ id: 'tone', direction: 'output', type: 'tone' }],
+        defaults: { tone: 'bold' },
+        fields: [{ key: 'tone', label: 'Tone', kind: 'select', options: ['calm', 'bold', 'playful'] }],
+        run: (node) => ({ tone: node.data.tone }),
+      },
+      {
+        type: 'limit',
+        label: 'Word limit',
+        category: 'Inputs',
+        color: 'chart-2',
+        description: 'A number of words',
+        ports: [{ id: 'n', label: 'words', direction: 'output', type: 'number' }],
+        defaults: { n: 6 },
+        fields: [{ key: 'n', label: 'Words', kind: 'slider', min: 3, max: 12, step: 1 }],
+        run: (node) => ({ n: node.data.n }),
+      },
+      {
+        type: 'compose',
+        label: 'Compose',
+        category: 'Steps',
+        color: 'chart-3',
+        description: 'A headline in a tone',
+        ports: [
+          { id: 'topic', direction: 'input', type: 'text' },
+          { id: 'tone', direction: 'input', type: 'tone', optional: true },
+          { id: 'headline', direction: 'output', type: 'text' },
+        ],
+        run: async (node, { inputs, signal, progress }) => {
+          const topic = first(inputs, 'topic');
+          progress(0.4);
+          await wait(400, signal);
+          const lines = { calm: topic, bold: `${topic}!`, playful: `Guess what: ${topic}` };
+          return { headline: lines[first(inputs, 'tone', 'calm')] ?? topic };
+        },
+      },
+      {
+        type: 'titlecase',
+        label: 'Title case',
+        category: 'Steps',
+        color: 'chart-3',
+        description: 'Every word capitalized',
+        ports: [
+          { id: 'text', direction: 'input', type: 'text' },
+          { id: 'out', label: 'text', direction: 'output', type: 'text' },
+        ],
+        run: (node, { inputs }) => ({ out: String(first(inputs, 'text')).replace(/\b\w/g, (c) => c.toUpperCase()) }),
+      },
+      {
+        type: 'trim',
+        label: 'Trim',
+        category: 'Steps',
+        color: 'chart-3',
+        description: 'At most n words',
+        ports: [
+          { id: 'text', direction: 'input', type: 'text' },
+          { id: 'max', direction: 'input', type: 'number' },
+          { id: 'out', label: 'text', direction: 'output', type: 'text' },
+        ],
+        run: (node, { inputs }) => {
+          const words = String(first(inputs, 'text')).split(/\s+/);
+          const max = Number(first(inputs, 'max', 99));
+          return { out: words.length > max ? `${words.slice(0, max).join(' ')} ...` : words.join(' ') };
+        },
+      },
+      {
+        type: 'count',
+        label: 'Word count',
+        category: 'Analyze',
+        color: 'chart-4',
+        description: 'How many words',
+        ports: [
+          { id: 'text', direction: 'input', type: 'text' },
+          { id: 'words', direction: 'output', type: 'number' },
+        ],
+        run: (node, { inputs }) => ({ words: String(first(inputs, 'text')).split(/\s+/).filter(Boolean).length }),
+      },
+      {
+        type: 'preview',
+        label: 'Preview',
+        category: 'Outputs',
+        color: 'chart-5',
+        description: 'Shows what arrives',
+        ports: [{ id: 'value', direction: 'input', type: 'any', maxConnections: 0 }],
+        fields: [{ key: 'value', label: 'Result', kind: 'output' }],
+        run: (node, { inputs }) => ({ value: (inputs.value ?? []).join('\n') }),
+      },
+    ];
+    for (const type of types) w.register(el, type);
+    const node = (id, type, x, y) => w.node(el, type, { x, y }, { id });
+    const edge = (from, to) => {
+      const [a, p] = from.split('.');
+      const [b, q] = to.split('.');
+      return { id: `${from}-${to}`, source: { node: a, port: p }, target: { node: b, port: q } };
+    };
+    w.load(el, {
+      schemaVersion: 1,
+      id: 'headlines',
+      title: 'Headline studio',
+      nodes: [
+        node('topic', 'topic', 0, 0),
+        node('tone', 'tone', 0, 220),
+        node('limit', 'limit', 0, 410),
+        node('compose', 'compose', 340, 80),
+        node('title', 'titlecase', 660, 0),
+        node('trim', 'trim', 660, 200),
+        node('preview', 'preview', 980, 0),
+        node('count', 'count', 660, 400),
+      ],
+      edges: [
+        edge('topic.text', 'compose.topic'),
+        edge('tone.tone', 'compose.tone'),
+        edge('compose.headline', 'title.text'),
+        edge('title.out', 'trim.text'),
+        edge('limit.n', 'trim.max'),
+        edge('trim.out', 'preview.value'),
+        edge('trim.out', 'count.text'),
+        edge('count.words', 'preview.value'),
+      ],
+      groups: [],
+    });
+  });
+</script>
+```
+
+<H2 id="how-it-works">How it works</H2>
+
+<DocText>The graph lives in a store on the main thread: every edit is a transaction of new values that is checked whole - port types, how many connections a port takes, cycles - and rolled back whole when it fails, so the graph is never half changed. The worker keeps a derived scene of node boxes and connection curves in a spatial hash; each frame it draws what is in view into an <code>OffscreenCanvas</code> and hands the bitmap back. The page meanwhile moves at most 150 HTML cards with the camera, so panning never waits on the worker.</DocText>
+
+```mermaid label="One edit, one frame" caption="Fig 1. An edit becomes a transaction in the store; the worker redraws the scene; the cards and the bitmap meet in one animation frame."
+flowchart LR
+    Edit["edit:<br/>drag, connect, type"] -->|"patches"| Store["store:<br/>checks, history"]
+    Store -->|"changed geometry"| Worker["worker:<br/>scene, spatial hash"]
+    Worker -->|"ImageBitmap"| Canvas["canvas:<br/>connections, far nodes"]
+    Store --> Cards["HTML cards:<br/>at most 150 near the view"]
+    Canvas --> Frame["one animation frame"]
+    Cards --> Frame
+```
+
+<H2 id="topics">Topics</H2>
+
+<DocText><DocLink href="workflow-large.html">Large Workflows</DocLink> - 10,000 nodes and 100,000 connections, the render budget and what it samples. <DocLink href="workflow-nodes.html">Node Types & Fields</DocLink> - declaring node types, the card controls and custom card bodies. <DocLink href="workflow-editing.html">Editing & Structure</DocLink> - connecting, moving, groups, subworkflows and the keys. <DocLink href="workflow-run.html">Running Workflows</DocLink> - run handlers in the page, an execution adapter for a server, the node states. <DocLink href="workflow-formats.html">Formats & Import</DocLink> - the JSON document, ComfyUI and Gradio, import and export.</DocText>
+
+</DocPage>

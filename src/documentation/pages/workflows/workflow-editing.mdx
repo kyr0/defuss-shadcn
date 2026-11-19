@@ -1,0 +1,1438 @@
+---
+title: "Workflow: Editing & Structure"
+description: "Editing a workflow: connecting typed ports by drag or keyboard, moving and resizing on a grid, selection, copy and paste, reroute points, groups that collapse, subworkflows with a breadcrumb, undo of every change, and the keys."
+slug: "workflow-editing"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="workflow-editing" title="Editing & Structure" component="workflow">
+  Every edit is a transaction: the new values of the nodes, connections and groups it touches, checked together and applied together - or refused together with the reason. A drag shows where things go without changing the graph and commits once when you let go, so one gesture is one undo step. The toolbar here is plain Buttons wired by <code>data-workflow-action</code>; each one is disabled while it cannot apply.
+</PageHeader>
+
+<H2 id="connect">Connect, move, select</H2>
+
+<DocText>Drag from a port to a port of the other direction; while you drag, the ports that would take the connection grow and the others fade. Drop on a card and its first free port that fits takes it. Dragging from an occupied input lifts its connection to move it elsewhere. Click a connection to select it; Alt-click adds a reroute point, whose square handle drags. Shift-drag on the background selects with a marquee, Shift-click adds a node to the selection.</DocText>
+
+```html example label="An editor with its toolbar" schema="none" hint="Connect Source to Clean, select two cards and press Group, Duplicate them with ⌘D, then Undo step by step. Select a connection to choose its route in the inspector." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="toolbar flex-wrap" role="toolbar" aria-label="Edit">
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="undo"
+      >Undo</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="redo"
+      >Redo</button
+    >
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="select-all"
+      >Select all</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="align-left"
+      >Align left</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="align-top"
+      >Align top</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="group"
+      data-workflow-title="Cleaning"
+      >Group</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="ungroup"
+      >Ungroup</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="duplicate"
+      >Duplicate</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="delete"
+      >Delete</button
+    >
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="arrange"
+      >Arrange</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="etl"
+      data-workflow-action="fit"
+      >Fit</button
+    >
+  </div>
+  <div class="grid gap-2" style="grid-template-columns: minmax(0, 1fr) 16rem">
+    <div class="workflow" id="etl" aria-label="A data pipeline" style="--workflow-height: 26rem">
+      <script type="application/json" class="workflow-source">
+        {
+          "schemaVersion": 1,
+          "id": "etl",
+          "title": "Orders pipeline",
+          "nodes": [
+            {
+              "id": "src",
+              "type": "source",
+              "title": "Source",
+              "x": 0,
+              "y": 0,
+              "width": 220,
+              "height": 120,
+              "ports": [{ "id": "rows", "direction": "output", "type": "table" }],
+              "data": { "table": "orders" }
+            },
+            {
+              "id": "clean",
+              "type": "clean",
+              "title": "Clean",
+              "x": 300,
+              "y": 0,
+              "width": 220,
+              "height": 120,
+              "ports": [
+                { "id": "rows", "direction": "input", "type": "table" },
+                { "id": "out", "label": "rows", "direction": "output", "type": "table" }
+              ],
+              "data": { "drop": "nulls" }
+            },
+            {
+              "id": "dedupe",
+              "type": "dedupe",
+              "title": "Deduplicate",
+              "x": 300,
+              "y": 180,
+              "width": 220,
+              "height": 120,
+              "ports": [
+                { "id": "rows", "direction": "input", "type": "table" },
+                { "id": "out", "label": "rows", "direction": "output", "type": "table" }
+              ],
+              "data": { "key": "order_id" }
+            },
+            {
+              "id": "sum",
+              "type": "aggregate",
+              "title": "Revenue by day",
+              "x": 600,
+              "y": 80,
+              "width": 220,
+              "height": 140,
+              "ports": [
+                { "id": "rows", "direction": "input", "type": "table", "maxConnections": 0 },
+                { "id": "out", "label": "series", "direction": "output", "type": "series" }
+              ],
+              "data": { "group": "day", "sum": "amount" }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "source": { "node": "clean", "port": "out" },
+              "target": { "node": "dedupe", "port": "rows" }
+            },
+            {
+              "id": "e2",
+              "source": { "node": "dedupe", "port": "out" },
+              "target": { "node": "sum", "port": "rows" },
+              "route": "orthogonal"
+            }
+          ],
+          "groups": []
+        }
+      </script>
+    </div>
+    <div class="card">
+      <div
+        class="card-content"
+        style="max-block-size: 26rem; overflow: auto"
+        data-workflow-for="etl"
+        data-workflow-outlet="inspector"
+      ></div>
+    </div>
+  </div>
+</div>
+```
+
+<H2 id="navigate">Navigate with a tree</H2>
+
+<DocText><code>tree()</code> hands a <DocLink href="data-tree.html">Data Tree</DocLink> the whole document as records - every group, node and the nodes inside subworkflows, each naming its parent row - and <code>reveal(path, &#123; camera &#125;)</code> shows a row's node: it enters the subworkflows on the way, selects the node and, with <code>camera</code>, moves the view to it. The other way round, <code>workflow-select</code> carries the subworkflow <code>path</code>, and the tree's own <code>reveal()</code> opens the way to the node. With <code>data-exclusive</code> the tree keeps that one way open and closes every other branch. The filter above the tree finds a node at any depth.</DocText>
+
+```html example label="A tree beside the editor" schema="none" hint="Pick a node in the tree: Follow (pressed) selects it and moves the view to it - Translate's German opens the subworkflow. Release Follow and a pick only selects. Click a card: the tree opens the way to it and closes the rest. Type in the filter to find a node."
+<div class="grid gap-2">
+  <div class="toolbar flex-wrap" role="toolbar" aria-label="Navigate the release workflow">
+    <button class="toggle" id="release-follow" type="button" aria-pressed="true" data-size="sm">
+      <svg
+        aria-hidden="true"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M22 12h-4M6 12H2M12 6V2M12 22v-4" />
+      </svg>
+      Follow
+    </button>
+    <div class="separator" data-orientation="vertical" role="separator"></div>
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="release"
+      data-workflow-action="fit"
+      >Fit</button
+    >
+    <button
+      class="btn"
+      data-variant="ghost"
+      data-size="sm"
+      type="button"
+      data-workflow-for="release"
+      data-workflow-action="parent"
+      >Up</button
+    >
+    <div class="flex-1" data-workflow-for="release" data-workflow-outlet="breadcrumb"></div>
+  </div>
+  <div class="grid gap-2" style="grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr)">
+    <div class="grid gap-2 content-start">
+      <input class="input" data-tree-filter="release-tree" aria-label="Find a node" placeholder="Find a node…" />
+      <div
+        class="data-tree"
+        id="release-tree"
+        aria-label="The release workflow's nodes"
+        data-label-field="title"
+        data-exclusive
+        data-persist="none"
+        style="height: 22rem"
+      ></div>
+    </div>
+    <div class="workflow" id="release" aria-label="Release workflow" style="--workflow-height: 24.75rem">
+      <script type="application/json" class="workflow-source">
+        {
+          "schemaVersion": 1,
+          "id": "release",
+          "title": "Release",
+          "nodes": [
+            {
+              "id": "changes",
+              "type": "step",
+              "title": "Changelog",
+              "x": 0,
+              "y": 0,
+              "width": 190,
+              "height": 110,
+              "ports": [
+                {
+                  "id": "out",
+                  "label": "text",
+                  "direction": "output",
+                  "type": "text"
+                }
+              ],
+              "data": {
+                "file": "CHANGELOG.md"
+              },
+              "groupId": "collect"
+            },
+            {
+              "id": "issues",
+              "type": "step",
+              "title": "Closed issues",
+              "x": 0,
+              "y": 140,
+              "width": 190,
+              "height": 110,
+              "ports": [
+                {
+                  "id": "out",
+                  "label": "text",
+                  "direction": "output",
+                  "type": "text"
+                }
+              ],
+              "data": {
+                "milestone": "v2.4"
+              },
+              "groupId": "collect"
+            },
+            {
+              "id": "commits",
+              "type": "step",
+              "title": "Commits",
+              "x": 0,
+              "y": 280,
+              "width": 190,
+              "height": 110,
+              "ports": [
+                {
+                  "id": "out",
+                  "label": "text",
+                  "direction": "output",
+                  "type": "text"
+                }
+              ],
+              "data": {
+                "since": "v2.3.0"
+              },
+              "groupId": "collect"
+            },
+            {
+              "id": "draft",
+              "type": "step",
+              "title": "Draft notes",
+              "x": 270,
+              "y": 140,
+              "width": 190,
+              "height": 110,
+              "ports": [
+                {
+                  "id": "in",
+                  "label": "text",
+                  "direction": "input",
+                  "type": "text",
+                  "maxConnections": 0
+                },
+                {
+                  "id": "out",
+                  "label": "text",
+                  "direction": "output",
+                  "type": "text"
+                }
+              ],
+              "data": {
+                "tone": "plain"
+              },
+              "groupId": "write"
+            },
+            {
+              "id": "translate",
+              "type": "step",
+              "title": "Translate",
+              "x": 510,
+              "y": 140,
+              "width": 190,
+              "height": 110,
+              "ports": [
+                {
+                  "id": "in",
+                  "label": "text",
+                  "direction": "input",
+                  "type": "text",
+                  "maxConnections": 0
+                },
+                {
+                  "id": "out",
+                  "label": "text",
+                  "direction": "output",
+                  "type": "text"
+                }
+              ],
+              "data": {},
+              "groupId": "write",
+              "subgraph": {
+                "schemaVersion": 1,
+                "id": "translate",
+                "title": "Translate",
+                "nodes": [
+                  {
+                    "id": "german",
+                    "type": "step",
+                    "title": "German",
+                    "x": 0,
+                    "y": 0,
+                    "width": 220,
+                    "height": 120,
+                    "ports": [
+                      {
+                        "id": "in",
+                        "label": "text",
+                        "direction": "input",
+                        "type": "text",
+                        "maxConnections": 0
+                      },
+                      {
+                        "id": "out",
+                        "label": "text",
+                        "direction": "output",
+                        "type": "text"
+                      }
+                    ],
+                    "data": {
+                      "locale": "de"
+                    }
+                  },
+                  {
+                    "id": "french",
+                    "type": "step",
+                    "title": "French",
+                    "x": 0,
+                    "y": 170,
+                    "width": 220,
+                    "height": 120,
+                    "ports": [
+                      {
+                        "id": "in",
+                        "label": "text",
+                        "direction": "input",
+                        "type": "text",
+                        "maxConnections": 0
+                      },
+                      {
+                        "id": "out",
+                        "label": "text",
+                        "direction": "output",
+                        "type": "text"
+                      }
+                    ],
+                    "data": {
+                      "locale": "fr"
+                    }
+                  },
+                  {
+                    "id": "review",
+                    "type": "step",
+                    "title": "Review",
+                    "x": 320,
+                    "y": 80,
+                    "width": 220,
+                    "height": 120,
+                    "ports": [
+                      {
+                        "id": "de",
+                        "label": "text",
+                        "direction": "input",
+                        "type": "text"
+                      },
+                      {
+                        "id": "fr",
+                        "label": "text",
+                        "direction": "input",
+                        "type": "text"
+                      },
+                      {
+                        "id": "out",
+                        "label": "text",
+                        "direction": "output",
+                        "type": "text"
+                      }
+                    ],
+                    "data": {
+                      "by": "docs team"
+                    }
+                  }
+                ],
+                "edges": [
+                  {
+                    "id": "t1",
+                    "source": {
+                      "node": "german",
+                      "port": "out"
+                    },
+                    "target": {
+                      "node": "review",
+                      "port": "de"
+                    }
+                  },
+                  {
+                    "id": "t2",
+                    "source": {
+                      "node": "french",
+                      "port": "out"
+                    },
+                    "target": {
+                      "node": "review",
+                      "port": "fr"
+                    }
+                  }
+                ],
+                "groups": [],
+                "inputs": [
+                  {
+                    "id": "in",
+                    "type": "text",
+                    "endpoint": {
+                      "node": "german",
+                      "port": "in"
+                    }
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "text",
+                    "endpoint": {
+                      "node": "review",
+                      "port": "out"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "publish",
+              "type": "step",
+              "title": "Publish",
+              "x": 750,
+              "y": 140,
+              "width": 190,
+              "height": 110,
+              "ports": [
+                {
+                  "id": "in",
+                  "label": "text",
+                  "direction": "input",
+                  "type": "text"
+                }
+              ],
+              "data": {
+                "channel": "blog"
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "source": {
+                "node": "changes",
+                "port": "out"
+              },
+              "target": {
+                "node": "draft",
+                "port": "in"
+              }
+            },
+            {
+              "id": "e2",
+              "source": {
+                "node": "issues",
+                "port": "out"
+              },
+              "target": {
+                "node": "draft",
+                "port": "in"
+              }
+            },
+            {
+              "id": "e3",
+              "source": {
+                "node": "commits",
+                "port": "out"
+              },
+              "target": {
+                "node": "draft",
+                "port": "in"
+              }
+            },
+            {
+              "id": "e4",
+              "source": {
+                "node": "draft",
+                "port": "out"
+              },
+              "target": {
+                "node": "translate",
+                "port": "in"
+              }
+            },
+            {
+              "id": "e5",
+              "source": {
+                "node": "translate",
+                "port": "out"
+              },
+              "target": {
+                "node": "publish",
+                "port": "in"
+              }
+            }
+          ],
+          "groups": [
+            {
+              "id": "collect",
+              "title": "Collect",
+              "x": -20,
+              "y": -50,
+              "width": 230,
+              "height": 460
+            },
+            {
+              "id": "write",
+              "title": "Write",
+              "x": 250,
+              "y": 90,
+              "width": 470,
+              "height": 180
+            }
+          ]
+        }
+      </script>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const W = df$.shadcn.workflow;
+    const T = df$.shadcn.dataTree;
+    const wf = document.getElementById('release');
+    const tree = document.getElementById('release-tree');
+    const follow = document.getElementById('release-follow');
+    // the tree's records: every group, node and subworkflow node of the document, each naming its parent row
+    const load = () =>
+      T.setSource(tree, W.tree(wf), {
+        render: (label, row) => {
+          const name = document.createElement('span');
+          name.textContent = row.title;
+          label.append(name);
+          if (row.kind === 'node') return;
+          const kind = document.createElement('span');
+          kind.className = 'data-tree-meta';
+          kind.textContent = row.kind;
+          label.append(kind);
+        },
+      });
+    load();
+    let timer = 0;
+    wf.addEventListener('workflow-change', () => {
+      clearTimeout(timer);
+      timer = setTimeout(load, 200);
+    });
+    // a pick in the tree selects the node - entering its subworkflow; Follow also moves the view to it
+    let syncing = false;
+    tree.addEventListener('data-tree-select', (e) => {
+      const row = e.detail.record;
+      if (row.kind === 'group') return;
+      syncing = true;
+      W.reveal(wf, row.path, { camera: follow.getAttribute('aria-pressed') === 'true' });
+      syncing = false;
+    });
+    // a selection in the editor opens the one way to it in the tree (data-exclusive) and shows it there
+    wf.addEventListener('workflow-select', (e) => {
+      if (syncing || e.detail.selected.length !== 1) return;
+      T.reveal(tree, [...e.detail.path, e.detail.selected[0]].join('/'));
+    });
+  });
+</script>
+```
+
+<H2 id="list">Fields in a list</H2>
+
+<DocText><code>data-layout="list"</code> on the editor (or <code>layout: 'list'</code> on one node type) draws a card's fields as a <DocLink href="property-grid.html">Property Grid</DocLink> list: each label above its value, no rule lines, a value that edits in place with the editor its kind calls for - a select, a number, a switch, a color. A node without a type shows its whole data that way, so an imported node is editable too. The grid's own events stay inside the card: an edit is one undoable change and a <code>workflow-field-change</code> with the node, the key, the new and the old value.</DocText>
+
+```html example label="Every node edits inline" schema="none" hint="Click a value: it opens in place under its label - Enter commits, Escape keeps the old value, Tab moves to the next. Camera raw has no type: its data is the list. The log under the editor follows workflow-field-change; ⌘Z undoes an edit."
+<div class="grid gap-2">
+  <div class="workflow" id="grading" data-layout="list" aria-label="Grading" style="--workflow-height: 22rem">
+    <script type="application/json" class="workflow-types">
+      [
+        {
+          "type": "upscale",
+          "label": "Upscale",
+          "color": "chart-2",
+          "ports": [
+            {
+              "id": "image",
+              "label": "image",
+              "direction": "input",
+              "type": "image",
+              "maxConnections": 0
+            },
+            {
+              "id": "out",
+              "label": "image",
+              "direction": "output",
+              "type": "image"
+            }
+          ],
+          "fields": [
+            {
+              "key": "model",
+              "label": "Model",
+              "kind": "select",
+              "options": ["real-esrgan-x4", "swinir", "lanczos"]
+            },
+            {
+              "key": "scale",
+              "label": "Scale",
+              "kind": "number",
+              "min": 1,
+              "max": 8
+            },
+            {
+              "key": "faces",
+              "label": "Restore faces",
+              "kind": "switch"
+            }
+          ]
+        },
+        {
+          "type": "grade",
+          "label": "Color grade",
+          "color": "chart-3",
+          "ports": [
+            {
+              "id": "image",
+              "label": "image",
+              "direction": "input",
+              "type": "image",
+              "maxConnections": 0
+            },
+            {
+              "id": "out",
+              "label": "image",
+              "direction": "output",
+              "type": "image"
+            }
+          ],
+          "fields": [
+            {
+              "key": "look",
+              "label": "Look",
+              "kind": "select",
+              "options": ["neutral", "warm", "teal and orange"]
+            },
+            {
+              "key": "strength",
+              "label": "Strength",
+              "kind": "slider",
+              "min": 0,
+              "max": 100,
+              "step": 5
+            },
+            {
+              "key": "tint",
+              "label": "Tint",
+              "kind": "color"
+            },
+            {
+              "key": "note",
+              "label": "Note",
+              "kind": "text"
+            }
+          ]
+        }
+      ]
+    </script>
+    <script type="application/json" class="workflow-source">
+      {
+        "schemaVersion": 1,
+        "id": "grading",
+        "title": "Grading",
+        "nodes": [
+          {
+            "id": "src",
+            "type": "camera-raw",
+            "title": "Camera raw",
+            "x": 0,
+            "y": 0,
+            "width": 220,
+            "height": 240,
+            "ports": [
+              {
+                "id": "out",
+                "label": "image",
+                "direction": "output",
+                "type": "image"
+              }
+            ],
+            "data": {
+              "file": "harbour.dng",
+              "iso": 200,
+              "lens": "35mm"
+            }
+          },
+          {
+            "id": "up",
+            "type": "upscale",
+            "title": "Upscale",
+            "x": 300,
+            "y": 0,
+            "width": 230,
+            "height": 240,
+            "ports": [
+              {
+                "id": "image",
+                "label": "image",
+                "direction": "input",
+                "type": "image"
+              },
+              {
+                "id": "out",
+                "label": "image",
+                "direction": "output",
+                "type": "image"
+              }
+            ],
+            "data": {
+              "model": "real-esrgan-x4",
+              "scale": 4,
+              "faces": true
+            }
+          },
+          {
+            "id": "gr",
+            "type": "grade",
+            "title": "Color grade",
+            "x": 610,
+            "y": 0,
+            "width": 230,
+            "height": 300,
+            "ports": [
+              {
+                "id": "image",
+                "label": "image",
+                "direction": "input",
+                "type": "image"
+              },
+              {
+                "id": "out",
+                "label": "image",
+                "direction": "output",
+                "type": "image"
+              }
+            ],
+            "data": {
+              "look": "warm",
+              "strength": 60,
+              "tint": "#f59e0b",
+              "note": "golden hour"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": {
+              "node": "src",
+              "port": "out"
+            },
+            "target": {
+              "node": "up",
+              "port": "image"
+            }
+          },
+          {
+            "id": "e2",
+            "source": {
+              "node": "up",
+              "port": "out"
+            },
+            "target": {
+              "node": "gr",
+              "port": "image"
+            }
+          }
+        ],
+        "groups": []
+      }
+    </script>
+  </div>
+  <ol class="text-sm text-muted-foreground m-0 ps-5" id="grading-log" aria-live="polite">
+    <li>Edit a value - each change lands here.</li>
+  </ol>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const log = document.getElementById('grading-log');
+    document.getElementById('grading').addEventListener('workflow-field-change', (e) => {
+      const { nodeId, key, value, oldValue } = e.detail;
+      const line = document.createElement('li');
+      line.textContent = nodeId + '.' + key + ': ' + JSON.stringify(oldValue) + ' to ' + JSON.stringify(value);
+      log.prepend(line);
+      while (log.children.length > 4) log.lastElementChild.remove();
+    });
+  });
+</script>
+```
+
+<H2 id="editors">Editing in a window or a dialog</H2>
+
+<DocText>Some values do not fit in a card: a template that wants a code editor, rich text, or a setting made of several answers that a wizard collects and folds into one object. A field's <code>edit(value, context)</code> is its custom editor - it opens whatever the page has (a <DocLink href="window.html">Window</DocLink>, a <DocLink href="dialog.html">Dialog</DocLink>) and resolves with the new value, or <code>undefined</code> to keep the old one. Such a field shows its value instead of a control - <code>render(value, context)</code> draws it (badges for the wizard's object), and its label ends in an arrow that says "this opens elsewhere". <code>renderLabel(value, context)</code> draws any label from the value: an icon, a color, a word. A JSON type names a custom editor with <code>editor: "external"</code>: a click then fires <code>workflow-field-edit</code> (cancelable) and the page writes the result with <code>setField()</code>.</DocText>
+
+```html example label="A window and a wizard" schema="none" hint="Click the template: a Window opens with the text in a code editor - Save writes it back. Click the upscaler's config: a three-step wizard collects the model, the clean-up and the output and folds them into one object, shown as badges. The temperature's label turns into a flame past 1.2. Notes is edited by the page through workflow-field-edit. Every change is one ⌘Z away and lands in the log."
+<div class="grid gap-2">
+  <div class="window-desktop" style="height: 24rem">
+    <div class="workflow" id="jobs" aria-label="Jobs" style="--workflow-height: 24rem">
+      <script type="application/json" class="workflow-source">
+        {
+          "schemaVersion": 1,
+          "id": "jobs",
+          "title": "Jobs",
+          "nodes": [
+            {
+              "id": "tpl",
+              "type": "template",
+              "title": "Prompt template",
+              "x": 0,
+              "y": 0,
+              "width": 280,
+              "height": 300,
+              "ports": [
+                {
+                  "id": "prompt",
+                  "direction": "output",
+                  "type": "text"
+                }
+              ],
+              "data": {
+                "template": "You are a careful editor.\nRewrite {{text}} in a {{tone}} tone.\nKeep it under {{words}} words.\nAnswer in {{language}}.",
+                "temperature": 0.7
+              }
+            },
+            {
+              "id": "job",
+              "type": "upscaler",
+              "title": "Upscaler job",
+              "x": 360,
+              "y": 0,
+              "width": 300,
+              "height": 300,
+              "ports": [
+                {
+                  "id": "prompt",
+                  "direction": "input",
+                  "type": "text"
+                },
+                {
+                  "id": "image",
+                  "direction": "output",
+                  "type": "image"
+                }
+              ],
+              "data": {
+                "config": {
+                  "model": "real-esrgan-x4",
+                  "scale": 4,
+                  "denoise": 30,
+                  "faces": true,
+                  "output": {
+                    "format": "webp",
+                    "quality": 82
+                  }
+                },
+                "notes": "The faces in the harbour shots need the restore pass."
+              }
+            }
+          ],
+          "edges": [
+            {
+              "id": "e1",
+              "source": {
+                "node": "tpl",
+                "port": "prompt"
+              },
+              "target": {
+                "node": "job",
+                "port": "prompt"
+              }
+            }
+          ],
+          "groups": []
+        }
+      </script>
+    </div>
+    <dialog
+      class="window"
+      id="jobs-code"
+      data-resizable
+      style="--window-x: 2.5rem; --window-y: 1.5rem; --window-w: 26rem"
+    >
+      <header class="window-titlebar">
+        <h2 class="window-title" id="jobs-code-title">Template</h2>
+        <form method="dialog" class="window-controls">
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body" data-flush>
+        <textarea
+          class="textarea"
+          id="jobs-code-text"
+          aria-labelledby="jobs-code-title"
+          rows="10"
+          spellcheck="false"
+          style="border: 0; border-radius: 0; font-family: var(--font-mono); font-size: 0.8125rem; resize: none"
+        ></textarea>
+      </div>
+      <footer class="window-statusbar flex justify-end gap-2">
+        <button class="btn" data-variant="outline" data-size="sm" type="button" id="jobs-code-cancel">Cancel</button>
+        <button class="btn" data-size="sm" type="button" id="jobs-code-save">Save</button>
+      </footer>
+    </dialog>
+  </div>
+  <ol class="text-sm text-muted-foreground m-0 ps-5" id="jobs-log" aria-live="polite">
+    <li>Open an editor - the requests and the changes land here.</li>
+  </ol>
+  <dialog class="dialog" id="jobs-wizard" aria-labelledby="jobs-wizard-title">
+    <form method="dialog" class="dialog-content" id="jobs-wizard-form">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="jobs-wizard-title">Configure the upscaler</h2>
+        <p class="dialog-description">Three steps; Finish folds the answers into the node's config.</p>
+      </div>
+      <ol class="steps" id="jobs-wizard-steps">
+        <li class="step" data-status="current" aria-current="step">
+          <div class="step-indicator">1</div>
+          <div class="step-content">
+            <p class="step-title">Model</p>
+            <p class="step-description">What upscales</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-indicator">2</div>
+          <div class="step-content">
+            <p class="step-title">Clean-up</p>
+            <p class="step-description">Noise and faces</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-indicator">3</div>
+          <div class="step-content">
+            <p class="step-title">Output</p>
+            <p class="step-description">The file</p>
+          </div>
+        </li>
+      </ol>
+      <div class="dialog-body">
+        <fieldset class="grid gap-3 m-0 p-0" style="border: 0" data-step="0">
+          <legend class="label mb-2">Model</legend>
+          <div class="radio-group" role="radiogroup" aria-label="Model">
+            <label class="flex items-center gap-2"
+              ><input class="radio" type="radio" name="model" value="real-esrgan-x4" /> Real-ESRGAN x4</label
+            >
+            <label class="flex items-center gap-2"
+              ><input class="radio" type="radio" name="model" value="swinir" /> SwinIR</label
+            >
+            <label class="flex items-center gap-2"
+              ><input class="radio" type="radio" name="model" value="lanczos" /> Lanczos (no model)</label
+            >
+          </div>
+          <label class="label" for="jobs-scale">Scale</label>
+          <select class="select" id="jobs-scale" name="scale">
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+            <option value="8">8×</option>
+          </select>
+        </fieldset>
+        <fieldset class="grid gap-3 m-0 p-0" style="border: 0" data-step="1" hidden>
+          <label class="label" for="jobs-denoise">Denoise</label>
+          <input class="slider" type="range" id="jobs-denoise" name="denoise" min="0" max="100" step="5" />
+          <label class="flex items-center gap-2"
+            ><input class="switch" type="checkbox" role="switch" name="faces" /> Restore faces</label
+          >
+        </fieldset>
+        <fieldset class="grid gap-3 m-0 p-0" style="border: 0" data-step="2" hidden>
+          <label class="label" for="jobs-format">Format</label>
+          <select class="select" id="jobs-format" name="format">
+            <option>webp</option>
+            <option>png</option>
+            <option>avif</option>
+          </select>
+          <label class="label" for="jobs-quality">Quality</label>
+          <input class="input" type="number" id="jobs-quality" name="quality" min="1" max="100" />
+        </fieldset>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn" data-variant="ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn" data-variant="outline" type="button" id="jobs-back">Back</button>
+        <button class="btn" type="button" id="jobs-next">Next</button>
+        <button class="btn" value="finish" id="jobs-finish" style="display: none">Finish</button>
+      </div>
+    </form>
+  </dialog>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const W = df$.shadcn.workflow;
+    const wf = document.getElementById('jobs');
+    const log = document.getElementById('jobs-log');
+    const say = (text) => {
+      const line = document.createElement('li');
+      line.textContent = text;
+      log.prepend(line);
+      while (log.children.length > 4) log.lastElementChild.remove();
+    };
+
+    // the code editor: a Window over the editor; resolves with the text on Save, undefined otherwise
+    const win = document.getElementById('jobs-code');
+    const code = document.getElementById('jobs-code-text');
+    const editText = (title, value) =>
+      new Promise((resolve) => {
+        document.getElementById('jobs-code-title').textContent = title;
+        code.value = value ?? '';
+        const off = new AbortController();
+        const finish = (result) => {
+          off.abort();
+          if (win.open) df$.shadcn.win.close(win);
+          resolve(result);
+        };
+        document
+          .getElementById('jobs-code-save')
+          .addEventListener('click', () => finish(code.value), { signal: off.signal });
+        document
+          .getElementById('jobs-code-cancel')
+          .addEventListener('click', () => finish(undefined), { signal: off.signal });
+        win.addEventListener('close', () => finish(undefined), { signal: off.signal });
+        df$.shadcn.win.open(win);
+        code.focus();
+      });
+
+    // the wizard: three steps in a modal Dialog, folded into one object on Finish
+    const wizard = document.getElementById('jobs-wizard');
+    const form = document.getElementById('jobs-wizard-form');
+    const steps = [...document.querySelectorAll('#jobs-wizard-steps .step')];
+    const pages = [...form.querySelectorAll('[data-step]')];
+    let at = 0;
+    const show = (i) => {
+      at = i;
+      pages.forEach((p, k) => (p.hidden = k !== i));
+      steps.forEach((s, k) => {
+        s.dataset.status = k < i ? 'complete' : k === i ? 'current' : '';
+        if (k === i) s.setAttribute('aria-current', 'step');
+        else s.removeAttribute('aria-current');
+      });
+      document.getElementById('jobs-back').disabled = i === 0;
+      // a Button's display beats the hidden attribute: show and hide them by style
+      document.getElementById('jobs-next').style.display = i === pages.length - 1 ? 'none' : '';
+      document.getElementById('jobs-finish').style.display = i === pages.length - 1 ? '' : 'none';
+    };
+    document.getElementById('jobs-back').addEventListener('click', () => show(Math.max(0, at - 1)));
+    document.getElementById('jobs-next').addEventListener('click', () => show(Math.min(pages.length - 1, at + 1)));
+    const editConfig = (config) =>
+      new Promise((resolve) => {
+        const f = form.elements;
+        f.model.value = config.model;
+        f.scale.value = String(config.scale);
+        f.denoise.value = String(config.denoise);
+        f.faces.checked = config.faces;
+        f.format.value = config.output.format;
+        f.quality.value = String(config.output.quality);
+        show(0);
+        wizard.returnValue = '';
+        wizard.addEventListener(
+          'close',
+          () =>
+            resolve(
+              wizard.returnValue === 'finish'
+                ? {
+                    model: f.model.value,
+                    scale: Number(f.scale.value),
+                    denoise: Number(f.denoise.value),
+                    faces: f.faces.checked,
+                    output: { format: f.format.value, quality: Number(f.quality.value) },
+                  }
+                : undefined,
+            ),
+          { once: true },
+        );
+        wizard.showModal();
+      });
+
+    const badge = (text) => {
+      const b = document.createElement('span');
+      b.className = 'badge';
+      b.dataset.variant = 'secondary';
+      b.textContent = text;
+      return b;
+    };
+    W.register(wf, {
+      type: 'template',
+      label: 'Prompt template',
+      color: 'chart-1',
+      ports: [{ id: 'prompt', direction: 'output', type: 'text' }],
+      fields: [
+        {
+          key: 'template',
+          label: 'Template',
+          kind: 'textarea',
+          height: 116,
+          edit: (value) => editText('Template', value),
+          render: (value) => {
+            const pre = document.createElement('pre');
+            pre.style.cssText = 'margin: 0; font-family: var(--font-mono); font-size: 0.75rem; white-space: pre-wrap';
+            pre.textContent = String(value ?? '')
+              .split('\n')
+              .slice(0, 4)
+              .join('\n');
+            return pre;
+          },
+        },
+        {
+          key: 'temperature',
+          label: 'Temperature',
+          kind: 'slider',
+          min: 0,
+          max: 2,
+          step: 0.1,
+          // the label follows the value: an icon per range, the destructive color when it runs hot
+          renderLabel: (t) => {
+            const el = document.createElement('span');
+            el.textContent = (t < 0.5 ? '🧊 ' : t > 1.2 ? '🔥 ' : '🌡️ ') + 'Temperature';
+            if (t > 1.2) el.style.color = 'var(--destructive)';
+            return el;
+          },
+        },
+      ],
+    });
+    W.register(wf, {
+      type: 'upscaler',
+      label: 'Upscaler job',
+      color: 'chart-2',
+      ports: [
+        { id: 'prompt', direction: 'input', type: 'text' },
+        { id: 'image', direction: 'output', type: 'image' },
+      ],
+      fields: [
+        {
+          key: 'config',
+          label: 'Config',
+          kind: 'value',
+          height: 92,
+          edit: (value) => editConfig(value),
+          render: (c) => {
+            const box = document.createElement('div');
+            box.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.25rem';
+            box.append(badge(c.model), badge(c.scale + '×'), badge('denoise ' + c.denoise + '%'));
+            if (c.faces) box.append(badge('faces'));
+            box.append(badge(c.output.format + ' · ' + c.output.quality));
+            return box;
+          },
+        },
+        // edited by the page: workflow-field-edit below
+        { key: 'notes', label: 'Notes', kind: 'textarea', editor: 'external' },
+      ],
+    });
+    wf.addEventListener('workflow-field-edit', async (e) => {
+      say('workflow-field-edit: ' + e.detail.nodeId + '.' + e.detail.key);
+      if (e.detail.key !== 'notes') return;
+      e.preventDefault();
+      const next = await editText('Notes', e.detail.value);
+      if (next !== undefined) W.setField(wf, e.detail.nodeId, 'notes', next);
+    });
+    wf.addEventListener('workflow-field-change', (e) =>
+      say('workflow-field-change: ' + e.detail.nodeId + '.' + e.detail.key + ' = ' + JSON.stringify(e.detail.value)),
+    );
+  });
+</script>
+```
+
+<H2 id="subworkflows">Subworkflows</H2>
+
+<DocText>A node can hold a whole workflow. Its ports are the nested workflow's <code>inputs</code> and <code>outputs</code>, each bound to a port inside; a run passes values through them. The card looks stacked; a double click, Enter or the <code>enter</code> action opens it, and the breadcrumb or the <code>parent</code> action leaves it again, writing the changes back into the node as one undoable change of the outer workflow.</DocText>
+
+```html example label="A subworkflow" schema="none" hint="Double click Normalize to open it; the breadcrumb follows. Edit something inside, then click Release notes in the breadcrumb - the change travels back into the node." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="flex-1" data-workflow-for="nested" data-workflow-outlet="breadcrumb"></div>
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="nested"
+      data-workflow-action="enter"
+      >Open</button
+    >
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="nested"
+      data-workflow-action="parent"
+      >Up</button
+    >
+  </div>
+  <div class="workflow" id="nested" data-selected="norm" aria-label="Release notes" style="--workflow-height: 20rem">
+    <script type="application/json" class="workflow-source">
+      {
+        "schemaVersion": 1,
+        "id": "notes",
+        "title": "Release notes",
+        "nodes": [
+          {
+            "id": "log",
+            "type": "git-log",
+            "title": "Commits",
+            "x": 0,
+            "y": 0,
+            "width": 220,
+            "height": 110,
+            "ports": [{ "id": "lines", "direction": "output", "type": "text" }],
+            "data": { "range": "v1.2..v1.3" }
+          },
+          {
+            "id": "norm",
+            "type": "subworkflow",
+            "title": "Normalize",
+            "x": 300,
+            "y": 0,
+            "width": 220,
+            "height": 110,
+            "ports": [
+              { "id": "in", "label": "text", "direction": "input", "type": "text" },
+              { "id": "out", "label": "text", "direction": "output", "type": "text" }
+            ],
+            "data": {},
+            "subgraph": {
+              "schemaVersion": 1,
+              "id": "normalize",
+              "title": "Normalize",
+              "nodes": [
+                {
+                  "id": "trim",
+                  "type": "trim",
+                  "title": "Trim",
+                  "x": 0,
+                  "y": 0,
+                  "width": 200,
+                  "height": 110,
+                  "ports": [
+                    { "id": "in", "label": "text", "direction": "input", "type": "text" },
+                    { "id": "out", "label": "text", "direction": "output", "type": "text" }
+                  ],
+                  "data": {}
+                },
+                {
+                  "id": "dedupe",
+                  "type": "dedupe",
+                  "title": "Unique lines",
+                  "x": 280,
+                  "y": 0,
+                  "width": 200,
+                  "height": 110,
+                  "ports": [
+                    { "id": "in", "label": "text", "direction": "input", "type": "text" },
+                    { "id": "out", "label": "text", "direction": "output", "type": "text" }
+                  ],
+                  "data": {}
+                }
+              ],
+              "edges": [
+                {
+                  "id": "i1",
+                  "source": { "node": "trim", "port": "out" },
+                  "target": { "node": "dedupe", "port": "in" }
+                }
+              ],
+              "groups": [],
+              "inputs": [{ "id": "in", "type": "text", "endpoint": { "node": "trim", "port": "in" } }],
+              "outputs": [{ "id": "out", "type": "text", "endpoint": { "node": "dedupe", "port": "out" } }]
+            }
+          },
+          {
+            "id": "md",
+            "type": "markdown",
+            "title": "Markdown",
+            "x": 600,
+            "y": 0,
+            "width": 220,
+            "height": 110,
+            "ports": [{ "id": "in", "label": "text", "direction": "input", "type": "text" }],
+            "data": { "file": "CHANGELOG.md" }
+          }
+        ],
+        "edges": [
+          { "id": "e1", "source": { "node": "log", "port": "lines" }, "target": { "node": "norm", "port": "in" } },
+          { "id": "e2", "source": { "node": "norm", "port": "out" }, "target": { "node": "md", "port": "in" } }
+        ],
+        "groups": []
+      }
+    </script>
+  </div>
+</div>
+```
+
+<H2 id="keys">Keys</H2>
+
+<DocText>The editor is one tab stop; its keys work while it has the focus and stay off while a card's control has it, so typing in a field never moves a node.</DocText>
+
+<div class="overflow-x-auto">
+  <table class="table">
+    <thead><tr><th>Keys</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd class="kbd">Arrow keys</kbd></td><td>Nudge the selection by 16 (with Shift by 64)</td></tr>
+      <tr><td><kbd class="kbd-group"><kbd class="kbd">Alt</kbd><kbd class="kbd">Right</kbd></kbd></td><td>Follow a connection to the next node (Alt + Left: the one before)</td></tr>
+      <tr><td><kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">Z</kbd></kbd></td><td>Undo; with Shift, or ⌘ Y, redo</td></tr>
+      <tr><td><kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">C</kbd></kbd> <kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">V</kbd></kbd> <kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">D</kbd></kbd></td><td>Copy, paste, duplicate the selection with its inner connections</td></tr>
+      <tr><td><kbd class="kbd-group"><kbd class="kbd">⌘</kbd><kbd class="kbd">A</kbd></kbd></td><td>Select every node</td></tr>
+      <tr><td><kbd class="kbd">Delete</kbd></td><td>Delete the selected nodes and their connections, or the selected connection</td></tr>
+      <tr><td><kbd class="kbd">F</kbd></td><td>Fit the workflow; with Shift, the selection</td></tr>
+      <tr><td><kbd class="kbd">+</kbd> <kbd class="kbd">−</kbd> <kbd class="kbd">0</kbd></td><td>Zoom in, out, to 100 %</td></tr>
+      <tr><td><kbd class="kbd">Enter</kbd></td><td>Open the selected subworkflow; on a port: start or finish a connection</td></tr>
+      <tr><td><kbd class="kbd">Space</kbd> + drag</td><td>Pan, also over cards</td></tr>
+      <tr><td><kbd class="kbd">Esc</kbd></td><td>Cancel a drag or a pending connection</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<DocText>On a touch screen one finger drags cards and pans, two fingers pinch to zoom. A card's resize handle also takes the arrow keys. See <DocLink href="workflow.html">Workflow</DocLink> for every action name.</DocText>
+
+<SourceFiles component="workflow" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Workflow's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="workflow" section="js" jsTitle="JS" />
+
+</DocPage>

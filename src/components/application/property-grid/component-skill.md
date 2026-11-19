@@ -62,7 +62,7 @@ df$.shadcn.propertyGrid.configure('#settings', {
 ```
 
 `ctx` = `{ path, depth, type, config, source, grid }`. A `getEditorFn`
-object: `{ el, getValue(), validate?() → message, focus?(), immediate?,
+object: `{ el, getValue(), validate?() returning a message, focus?(), immediate?,
 multiline?, ownsEnter? }` - `immediate` commits on `change` (a switch, a
 select), `multiline` / `ownsEnter` leave Enter to the editor (a textarea's
 new line, a Combobox tag input adding a tag) - Ctrl / Cmd + Enter or leaving
@@ -78,7 +78,7 @@ value - across keys too (`ctx.source`).
 | Field | Meaning |
 |-------|---------|
 | `displayName` | The key's label |
-| `type` | `string`, `number`, `boolean`, `enum`, `color`, `date`, `text` (multi-line), `json` (edit a group as JSON) - else detected from the value (`#rrggbb` → color, `YYYY-MM-DD` → date, a line break → text) |
+| `type` | `string`, `number`, `boolean`, `enum`, `color`, `date`, `text` (multi-line), `json` (edit a group as JSON) - else detected from the value (`#rrggbb` is a color, `YYYY-MM-DD` a date, a line break makes text) |
 | `options` | Enum values - `["a", "b"]` or `[{ "value": 1, "label": "One" }]` |
 | `readOnly` / `hidden` | Shown without editing / not shown |
 | `description` | The key's tooltip |
@@ -94,6 +94,7 @@ value - across keys too (`ctx.source`).
 |-----------|----|---------|
 | (none) | `.property-grid` | Dense rows (1.875rem) |
 | `data-variant="comfortable"` | `.property-grid` | Roomier rows (2.375rem) |
+| `data-layout="list"` | `.property-grid` | The property list: each label above its value, no header row and no rule lines - a column of properties for a narrow place (a workflow node card, an inspector); every value still edits in place |
 | `data-sort="asc\|desc"` | `.property-grid` | Keys sorted (arrays keep their order); default: the source's order |
 | `data-readonly` | `.property-grid` | Nothing edits |
 | `data-headless` | `.property-grid` | No Property / Value header row |
@@ -110,9 +111,9 @@ Custom properties: `--property-grid-key-width` (42%), `--property-grid-row`,
 
 | Key | Does |
 |-----|------|
-| ↑ / ↓ / Home / End / PageUp / PageDown | Move between rows (one row in the tab order) |
+| Up / Down / Home / End / PageUp / PageDown | Move between rows (one row in the tab order) |
 | Enter / F2 | Edit the value (on a group: fold / unfold) |
-| ← / → | Fold / unfold a group |
+| Left / Right | Fold / unfold a group |
 | Enter (in an editor) | Commit (a textarea: Ctrl / Cmd + Enter) |
 | Escape | Cancel the edit |
 | Tab / Shift + Tab | Commit and move to the next / previous row |

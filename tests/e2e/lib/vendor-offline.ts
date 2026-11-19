@@ -55,7 +55,7 @@ export async function offlineJsdelivr(page: Page): Promise<string[]> {
   const requests: string[] = await offlineFlags(page);
   // only the packages this repo pins as devDependencies - other jsDelivr files (echarts) stay the page's own business.
   // On the context: the Compute Engine is imported inside a worker, which page routes do not see
-  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@|@xterm\/|onnxruntime-web@|defuss-brotli@|defuss-lid@|defuss-search@|defuss-lexicalsearch@|defuss-vectorsearch@|defuss-db@|defuss-storage@|defuss-dataview@|@huggingface\/tokenizers@)/.test(u.href), async (route) => {
+  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@|@xterm\/|onnxruntime-web@|defuss-brotli@|defuss-lid@|defuss-search@|defuss-lexicalsearch@|defuss-vectorsearch@|defuss-db@|defuss-storage@|defuss-dataview@|@huggingface\/tokenizers@|three@)/.test(u.href), async (route) => {
     const url = route.request().url();
     requests.push(url);
     // @scope/name@version/path → node_modules/@scope/name/path

@@ -124,6 +124,7 @@ const EXTRA_BUNDLES = {
     geo: ['geo-map'],
     shaders: ['shader'],
     graphs: ['graph-explorer'],
+    workflows: ['workflow'],
     terminal: ['terminal'],
 };
 const BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join('|')})(?:\\.min)?\\.js(?:[?#]|$)`);

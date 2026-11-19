@@ -86,6 +86,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
             <tr class="table-row"><td class="table-cell"><a class="link" href="app-knowledge-graph.html" target="_blank" rel="noopener">Knowledge <span class="whitespace-nowrap">Graph<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.knowledge-graph.totalSizeGzMinified" data-stat-format="kib">176.1</span> KiB</td></tr>
             <tr class="table-row"><td class="table-cell"><a class="link" href="app-api-docs.html" target="_blank" rel="noopener">API <span class="whitespace-nowrap">Documentation<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.api-docs.totalSizeGzMinified" data-stat-format="kib">68.2</span> KiB</td></tr>
             <tr class="table-row"><td class="table-cell"><a class="link" href="app-calendar.html" target="_blank" rel="noopener"><span class="whitespace-nowrap">Calendar<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.calendar.totalSizeGzMinified" data-stat-format="kib">78.4</span> KiB</td></tr>
+            <tr class="table-row"><td class="table-cell"><a class="link" href="app-workflow-studio.html" target="_blank" rel="noopener">Workflow <span class="whitespace-nowrap">Studio<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></a></td><td class="table-cell whitespace-nowrap" style="text-align:right;"><span data-stat="stats.apps.workflow-studio.totalSizeGzMinified" data-stat-format="kib">133.8</span> KiB</td></tr>
           </tbody>
         </table>
       </div>
@@ -177,7 +178,7 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
         </div>
         <h3 class="card-title card-title-sm">Accessible</h3>
       </div>
-      <p class="card-description card-desc-sm">Built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists, map regions walked and picked by keyboard). Keyboard navigation, focus management, and screen reader support by default - and every theme preset's nav text is contrast-gated (WCAG AA) by <code>verify</code>.</p>
+      <p class="card-description card-desc-sm">Built on native HTML elements and WAI-ARIA patterns (menus and menubars with nested submenus, tabs, dialogs, trees, comboboxes, one-time-code fields, virtualized lists, map regions walked and picked by keyboard, workflow ports connected by keyboard). Keyboard navigation, focus management, and screen reader support by default - and every theme preset's nav text is contrast-gated (WCAG AA) by <code>verify</code>.</p>
     </div>
     <div class="card-footer">
       <a class="btn card-link" data-variant="link" data-size="sm" href="accessibility.html">Accessibility guide →</a>
@@ -288,6 +289,14 @@ import { DocPage, PageHeader, SkillPanel, Example, ExampleLabel, ExampleHint, Ex
       <h4 class="card-title card-title-sm"><span class="whitespace-nowrap">Calendar<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
       <p class="card-description">Day, week, month and year views with your week start and calendar weeks, and Find a time: a lane per person, the free slots lit up, a poll.</p>
       <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.calendar.totalSizeGzMinified" data-stat-format="kib">78.4</b> KiB gzip, its own bundle</p>
+    </div>
+  </a>
+  <a class="card" data-size="sm" href="app-workflow-studio.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">
+    <div class="card-header">
+      <span class="home-app-icon" aria-hidden="true"><i data-lucide="workflow"></i></span>
+      <h4 class="card-title card-title-sm">Workflow <span class="whitespace-nowrap">Studio<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:0.25rem;vertical-align:-0.0625rem;"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg></span><span class="sr-only"> (opens in a new tab)</span></h4>
+      <p class="card-description">Six runnable workflows - agents, a route planner, a three.js scene, order to cash, a hand-built neural network and the BDI-II form logic - with a tree to find any node.</p>
+      <p class="text-xs text-muted-foreground mt-2 mb-0"><b data-stat="stats.apps.workflow-studio.totalSizeGzMinified" data-stat-format="kib">133.8</b> KiB gzip, its own bundle</p>
     </div>
   </a>
 </div>

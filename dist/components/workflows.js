@@ -1,0 +1,5469 @@
+// dist/components/workflow/workflow.js
+var __df$core = globalThis.df$;
+var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
+if (!__df$shared || __df$shared.abi !== "0.9.16") {
+  throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
+}
+var { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent } = __df$shared;
+var df$ = defussGlobals();
+var dfDollar = defussQuery();
+var workflowStates = ["default", "readonly"];
+function fail(message) {
+  throw new Error(message);
+}
+function assert(condition, message) {
+  if (!condition)
+    fail(message);
+}
+var isRecord = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+function text(v, field) {
+  assert(typeof v === "string" && v.length > 0 && v.length <= 1e4, `Invalid ${field}`);
+}
+function ident(v) {
+  text(v, "id");
+  assert(v.length <= 200, "ID exceeds 200 characters");
+}
+function num(v, field) {
+  assert(typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= 1e9, `Invalid ${field}`);
+}
+function rect(v) {
+  for (const k of ["x", "y", "width", "height"])
+    num(v[k], k);
+  assert(v.width >= 80 && v.height >= 40, "Invalid geometry: minimum size 80 × 40");
+}
+function jsonValue(value, depth = 0) {
+  assert(depth <= 32, "JSON nesting exceeds 32");
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return;
+  if (typeof value === "number") {
+    assert(Number.isFinite(value), "Non-finite JSON number");
+    return;
+  }
+  assert(typeof value === "object", "Data must contain only JSON values");
+  const proto = Object.getPrototypeOf(value);
+  assert(Array.isArray(value) || proto === Object.prototype || proto === null, "Data must be plain JSON");
+  for (const child of Object.values(value))
+    jsonValue(child, depth + 1);
+}
+function validateNode(value, depth = 0) {
+  assert(isRecord(value), "Invalid node");
+  ident(value.id);
+  text(value.type, "node type");
+  text(value.title, "node title");
+  rect(value);
+  assert(Array.isArray(value.ports), "Ports must be an array");
+  assert(value.ports.length <= 256, "At most 256 ports per node");
+  const ports = new Set;
+  for (const p of value.ports) {
+    assert(isRecord(p), "Invalid port");
+    ident(p.id);
+    text(p.type, "port type");
+    assert(!ports.has(p.id), `Duplicate port ${p.id}`);
+    ports.add(p.id);
+    assert(p.direction === "input" || p.direction === "output", "Invalid port direction");
+    if (p.label !== undefined)
+      text(p.label, "port label");
+    if (p.optional !== undefined)
+      assert(typeof p.optional === "boolean", "Invalid optional flag");
+    if (p.maxConnections !== undefined)
+      assert(Number.isInteger(p.maxConnections) && p.maxConnections >= 0, "Invalid port multiplicity");
+    if (p.accepts !== undefined)
+      assert(Array.isArray(p.accepts) && p.accepts.every((t) => typeof t === "string" && t.length), "Invalid accepted types");
+  }
+  assert(isRecord(value.data), "Node data must be an object");
+  jsonValue(value.data);
+  if (value.groupId !== undefined)
+    ident(value.groupId);
+  if (value.locked !== undefined)
+    assert(typeof value.locked === "boolean", "Invalid locked flag");
+  if (value.subgraph !== undefined) {
+    assert(depth < 8, "Subworkflow nesting exceeds 8");
+    validateDocument(value.subgraph, depth + 1);
+  }
+}
+function validateEdge(value) {
+  assert(isRecord(value), "Invalid edge");
+  ident(value.id);
+  for (const k of ["source", "target"]) {
+    const e = value[k];
+    assert(isRecord(e), "Invalid endpoint");
+    ident(e.node);
+    ident(e.port);
+  }
+  if (value.route !== undefined)
+    assert(["bezier", "orthogonal", "straight"].includes(value.route), "Invalid route");
+  if (value.points !== undefined) {
+    assert(Array.isArray(value.points) && value.points.length <= 256, "Invalid reroute points");
+    for (const p of value.points) {
+      assert(isRecord(p), "Invalid point");
+      num(p.x, "point x");
+      num(p.y, "point y");
+    }
+  }
+  if (value.label !== undefined)
+    text(value.label, "edge label");
+  if (value.color !== undefined)
+    text(value.color, "edge color");
+  edgeLook(value, "edge");
+  if (value.type !== undefined)
+    text(value.type, "edge type");
+  if (value.data !== undefined) {
+    assert(isRecord(value.data), "Invalid edge data");
+    jsonValue(value.data);
+  }
+}
+function edgeLook(value, what) {
+  if (value.dash !== undefined)
+    assert(["solid", "dashed", "dotted"].includes(value.dash), `Invalid ${what} dash`);
+  if (value.width !== undefined)
+    assert(typeof value.width === "number" && value.width >= 0.5 && value.width <= 12, `Invalid ${what} width (0.5 to 12)`);
+  if (value.animated !== undefined)
+    assert(typeof value.animated === "boolean", `Invalid ${what} animated`);
+}
+function validateGroup(value) {
+  assert(isRecord(value), "Invalid group");
+  ident(value.id);
+  text(value.title, "group title");
+  rect(value);
+  if (value.parentId !== undefined)
+    ident(value.parentId);
+  if (value.collapsed !== undefined)
+    assert(typeof value.collapsed === "boolean", "Invalid collapsed flag");
+  if (value.color !== undefined)
+    text(value.color, "group color");
+}
+function validateDocument(value, depth = 0) {
+  assert(isRecord(value), "Invalid document");
+  assert(value.schemaVersion === 1, `Unsupported schemaVersion ${String(value.schemaVersion)}`);
+  ident(value.id);
+  text(value.title, "document title");
+  if (value.policy !== undefined)
+    assert(isRecord(value.policy) && typeof value.policy.allowCycles === "boolean", "Invalid graph policy");
+  for (const k of ["nodes", "edges", "groups"])
+    assert(Array.isArray(value[k]), `${k} must be an array`);
+  const nodes = value.nodes;
+  const edges = value.edges;
+  const groups = value.groups;
+  assert(nodes.length <= 1e5 && edges.length <= 1e6 && groups.length <= 1e4, "Document exceeds import limits");
+  const lists = [
+    [nodes, (v) => validateNode(v, depth)],
+    [edges, validateEdge],
+    [groups, validateGroup]
+  ];
+  for (const [items, validate] of lists) {
+    const ids = new Set;
+    for (const item of items) {
+      validate(item);
+      const key = item.id;
+      assert(!ids.has(key), `Duplicate ID ${key}`);
+      ids.add(key);
+    }
+  }
+  if (value.metadata !== undefined) {
+    assert(isRecord(value.metadata), "Invalid metadata");
+    jsonValue(value.metadata);
+  }
+  for (const key of ["inputs", "outputs"])
+    if (value[key] !== undefined) {
+      assert(Array.isArray(value[key]), `Invalid ${key}`);
+      const ids = new Set;
+      for (const port of value[key]) {
+        assert(isRecord(port), "Invalid interface port");
+        ident(port.id);
+        text(port.type, "interface type");
+        assert(!ids.has(port.id), "Duplicate interface port");
+        ids.add(port.id);
+        assert(isRecord(port.endpoint), "Invalid interface endpoint");
+        ident(port.endpoint.node);
+        ident(port.endpoint.port);
+      }
+    }
+}
+function frozen(value) {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const v of Object.values(value))
+      frozen(v);
+  }
+  return value;
+}
+var uidCounter = 0;
+var uid = (prefix = "id") => `${prefix}-${globalThis.crypto?.randomUUID?.().slice(0, 8) ?? Date.now().toString(36)}${(++uidCounter).toString(36)}`;
+var emptyDocument = () => ({
+  schemaVersion: 1,
+  id: "workflow",
+  title: "Untitled workflow",
+  nodes: [],
+  edges: [],
+  groups: []
+});
+var portKey = (p) => p.node + "\x00" + p.port;
+var edgeKey = (e) => e.source.node + "\x00" + e.source.port + "\x00" + e.target.node + "\x00" + e.target.port;
+var capacity = (port) => port.maxConnections === 0 ? Infinity : port.maxConnections ?? (port.direction === "input" ? 1 : Infinity);
+
+class GraphStore {
+  nodes = new Map;
+  edges = new Map;
+  groups = new Map;
+  incident = new Map;
+  outbound = new Map;
+  portEdges = new Map;
+  signatures = new Map;
+  listeners = new Set;
+  past = [];
+  future = [];
+  header;
+  version = 0;
+  policy;
+  constructor(document2 = emptyDocument(), policy = {}) {
+    validateDocument(document2);
+    this.policy = Object.freeze({
+      ...policy,
+      allowCycles: policy.allowCycles ?? document2.policy?.allowCycles ?? false
+    });
+    const copy = structuredClone(document2);
+    const { nodes, edges, groups, ...header } = copy;
+    this.header = frozen({ ...header, policy: { allowCycles: !!this.policy.allowCycles } });
+    for (const value of nodes)
+      this.validateSubgraph(value);
+    for (const value of nodes)
+      this.raw({ kind: "nodes", id: value.id, value: frozen(value) });
+    for (const value of groups)
+      this.raw({ kind: "groups", id: value.id, value: frozen(value) });
+    for (const value of edges)
+      this.raw({ kind: "edges", id: value.id, value: frozen(value) });
+    this.validateGroups();
+    this.validateInterface();
+    for (const edge of this.edges.values())
+      this.validateConnection(edge, false);
+    if (!this.policy.allowCycles)
+      this.topologicalOrder();
+  }
+  get title() {
+    return this.header.title;
+  }
+  get canUndo() {
+    return this.past.length > 0;
+  }
+  get canRedo() {
+    return this.future.length > 0;
+  }
+  subscribe(listener) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+  export() {
+    const byId = (a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    return structuredClone({
+      ...this.header,
+      nodes: [...this.nodes.values()].sort(byId),
+      edges: [...this.edges.values()].sort(byId),
+      groups: [...this.groups.values()].sort(byId)
+    });
+  }
+  edgesFor(id) {
+    return this.incident.get(id) ?? new Set;
+  }
+  connections(endpoint) {
+    return this.portEdges.get(portKey(endpoint)) ?? new Set;
+  }
+  index(map, key, id, add) {
+    if (add) {
+      let set = map.get(key);
+      if (!set)
+        map.set(key, set = new Set);
+      set.add(id);
+    } else {
+      const set = map.get(key);
+      set?.delete(id);
+      if (!set?.size)
+        map.delete(key);
+    }
+  }
+  indexEdge(e, add) {
+    this.index(this.incident, e.source.node, e.id, add);
+    this.index(this.incident, e.target.node, e.id, add);
+    this.index(this.portEdges, portKey(e.source), e.id, add);
+    this.index(this.portEdges, portKey(e.target), e.id, add);
+    this.index(this.outbound, e.source.node, e.id, add);
+    this.index(this.signatures, edgeKey(e), e.id, add);
+  }
+  valueOf(p) {
+    return p.kind === "nodes" ? this.nodes.get(p.id) : p.kind === "edges" ? this.edges.get(p.id) : this.groups.get(p.id);
+  }
+  raw(p) {
+    if (p.kind === "edges") {
+      const prev = this.edges.get(p.id);
+      if (prev)
+        this.indexEdge(prev, false);
+      if (p.value) {
+        this.edges.set(p.id, p.value);
+        this.indexEdge(p.value, true);
+      } else
+        this.edges.delete(p.id);
+    } else if (p.kind === "nodes") {
+      if (p.value)
+        this.nodes.set(p.id, p.value);
+      else
+        this.nodes.delete(p.id);
+    } else if (p.value)
+      this.groups.set(p.id, p.value);
+    else
+      this.groups.delete(p.id);
+  }
+  announce(label, patches, undo) {
+    const event = Object.freeze({
+      label,
+      patches: Object.freeze(patches),
+      version: ++this.version,
+      undo
+    });
+    for (const listener of this.listeners)
+      try {
+        listener(event);
+      } catch (e) {
+        console.error("workflow: a change listener failed", e);
+      }
+  }
+  commit(label, patches) {
+    if (!patches.length)
+      return;
+    const unique = new Map;
+    for (const p of patches) {
+      assert(p.kind === "nodes" || p.kind === "edges" || p.kind === "groups", "Unknown entity");
+      if (p.value) {
+        if (p.kind === "nodes") {
+          validateNode(p.value);
+          if (p.value.subgraph !== this.nodes.get(p.id)?.subgraph)
+            this.validateSubgraph(p.value);
+        } else if (p.kind === "edges")
+          validateEdge(p.value);
+        else
+          validateGroup(p.value);
+        assert(p.id === p.value.id, "Patch ID mismatch");
+      }
+      unique.set(p.kind + "\x00" + p.id, frozen(structuredClone(p)));
+    }
+    const forward = [...unique.values()];
+    const backward = forward.map((p) => Object.freeze({ kind: p.kind, id: p.id, value: this.valueOf(p) }));
+    const affected = new Set;
+    for (const p of forward) {
+      if (p.kind === "nodes")
+        for (const id of this.edgesFor(p.id))
+          affected.add(id);
+      this.raw(p);
+    }
+    try {
+      for (const p of forward) {
+        if (p.kind === "edges")
+          affected.add(p.id);
+        if (p.kind === "nodes") {
+          for (const id of this.edgesFor(p.id))
+            affected.add(id);
+          const groupId = p.value?.groupId;
+          if (groupId)
+            assert(this.groups.has(groupId), "Missing group");
+        }
+      }
+      if (forward.some((p) => p.kind === "groups"))
+        this.validateGroups();
+      this.validateInterface();
+      for (const id of affected) {
+        const e = this.edges.get(id);
+        if (e)
+          this.validateConnection(e, false);
+      }
+      if (!this.policy.allowCycles) {
+        for (const p of forward)
+          if (p.kind === "edges" && p.value)
+            this.checkCycle(p.value);
+      }
+    } catch (e) {
+      for (const p of [...backward].reverse())
+        this.raw(p);
+      throw e;
+    }
+    this.past.push({ label, forward, backward });
+    this.future = [];
+    if (this.past.length > (this.policy.historyLimit ?? 100))
+      this.past.shift();
+    this.announce(label, forward, false);
+  }
+  undo() {
+    const entry = this.past.pop();
+    if (!entry)
+      return;
+    for (const p of entry.backward)
+      this.raw(p);
+    this.future.push(entry);
+    this.announce(`Undo ${entry.label}`, entry.backward, true);
+  }
+  redo() {
+    const entry = this.future.pop();
+    if (!entry)
+      return;
+    for (const p of entry.forward)
+      this.raw(p);
+    this.past.push(entry);
+    this.announce(`Redo ${entry.label}`, entry.forward, true);
+  }
+  history() {
+    return {
+      changes: [...this.past, ...[...this.future].reverse()].map((e) => e.label),
+      at: this.past.length
+    };
+  }
+  travel(at) {
+    const to = Math.max(0, Math.min(Math.round(at), this.past.length + this.future.length));
+    while (this.past.length > to)
+      this.undo();
+    while (this.past.length < to && this.future.length)
+      this.redo();
+  }
+  updateNode(id, update, label = "Update node") {
+    const n = this.nodes.get(id);
+    assert(n, "Unknown node");
+    this.commit(label, [{ kind: "nodes", id, value: { ...n, ...update } }]);
+  }
+  addNode(node) {
+    assert(!this.nodes.has(node.id), "Duplicate node ID");
+    this.commit("Add node", [{ kind: "nodes", id: node.id, value: node }]);
+  }
+  connect(source, target, replaceId) {
+    const edge = {
+      id: replaceId ?? uid("edge"),
+      source,
+      target,
+      route: this.edges.get(replaceId ?? "")?.route ?? "bezier"
+    };
+    this.commit(replaceId ? "Reconnect" : "Connect", [{ kind: "edges", id: edge.id, value: edge }]);
+    return edge.id;
+  }
+  canConnect(source, target, replaceId) {
+    try {
+      this.validateConnection({ id: replaceId ?? "\x00preview", source, target }, true);
+      return;
+    } catch (e) {
+      return e.message;
+    }
+  }
+  deleteNodes(ids) {
+    const patches = [];
+    const edgeIds = new Set;
+    for (const id of ids) {
+      if (this.nodes.get(id)?.locked)
+        continue;
+      for (const e of this.edgesFor(id))
+        edgeIds.add(e);
+      patches.push({ kind: "nodes", id });
+    }
+    this.commit("Delete nodes", [...[...edgeIds].map((id) => ({ kind: "edges", id })), ...patches]);
+  }
+  deleteEdge(id) {
+    this.commit("Disconnect", [{ kind: "edges", id }]);
+  }
+  groupNodes(ids, title = "Group") {
+    const nodes = [...ids].map((id) => this.nodes.get(id)).filter((n) => !!n);
+    assert(nodes.length, "Select at least one node");
+    const id = uid("group");
+    const x = Math.min(...nodes.map((n) => n.x)) - 30;
+    const y = Math.min(...nodes.map((n) => n.y)) - 60;
+    const parentId = nodes.every((n) => n.groupId && n.groupId === nodes[0].groupId) ? nodes[0].groupId : undefined;
+    const group = {
+      id,
+      title,
+      x,
+      y,
+      width: Math.max(...nodes.map((n) => n.x + n.width)) - x + 30,
+      height: Math.max(...nodes.map((n) => n.y + n.height)) - y + 30,
+      ...parentId ? { parentId } : {}
+    };
+    this.commit("Group nodes", [
+      { kind: "groups", id, value: group },
+      ...nodes.map((n) => ({ kind: "nodes", id: n.id, value: { ...n, groupId: id } }))
+    ]);
+    return id;
+  }
+  ungroup(id) {
+    const parentId = this.groups.get(id)?.parentId;
+    const patches = [{ kind: "groups", id }];
+    const lift = (v, key) => {
+      const copy = { ...v };
+      if (parentId)
+        copy[key] = parentId;
+      else
+        delete copy[key];
+      return copy;
+    };
+    for (const n of this.nodes.values())
+      if (n.groupId === id)
+        patches.push({ kind: "nodes", id: n.id, value: lift(n, "groupId") });
+    for (const g of this.groups.values())
+      if (g.parentId === id)
+        patches.push({ kind: "groups", id: g.id, value: lift(g, "parentId") });
+    this.commit("Ungroup", patches);
+  }
+  groupMembers(id) {
+    const members = [];
+    for (const n of this.nodes.values()) {
+      let gid = n.groupId;
+      while (gid) {
+        if (gid === id) {
+          members.push(n);
+          break;
+        }
+        gid = this.groups.get(gid)?.parentId;
+      }
+    }
+    return members;
+  }
+  fragment(ids) {
+    const selected = new Set(ids);
+    const doc = emptyDocument();
+    doc.nodes = [...selected].map((id) => this.nodes.get(id)).filter((n) => !!n).map((n) => {
+      const copy = structuredClone(n);
+      delete copy.groupId;
+      return copy;
+    });
+    doc.edges = structuredClone([...this.edges.values()].filter((e) => selected.has(e.source.node) && selected.has(e.target.node)));
+    return doc;
+  }
+  paste(fragment, offset = { x: 40, y: 40 }) {
+    const valid = new GraphStore(fragment, this.policy);
+    const remap = new Map([...valid.nodes.keys()].map((id) => [id, uid("node")]));
+    const nodes = [...valid.nodes.values()].map((n) => {
+      const v = { ...n, id: remap.get(n.id), x: n.x + offset.x, y: n.y + offset.y };
+      delete v.groupId;
+      return v;
+    });
+    const edges = [...valid.edges.values()].map((e) => ({
+      ...e,
+      id: uid("edge"),
+      source: { ...e.source, node: remap.get(e.source.node) },
+      target: { ...e.target, node: remap.get(e.target.node) },
+      points: e.points?.map((p) => ({ x: p.x + offset.x, y: p.y + offset.y }))
+    }));
+    this.commit("Paste", [
+      ...nodes.map((value) => ({ kind: "nodes", id: value.id, value })),
+      ...edges.map((value) => ({ kind: "edges", id: value.id, value }))
+    ]);
+    return nodes.map((n) => n.id);
+  }
+  compatible(out, input) {
+    if (this.policy.compatible)
+      return this.policy.compatible(out, input);
+    return out.type === input.type || out.type === "any" || input.type === "any" || !!input.accepts?.includes(out.type);
+  }
+  validateConnection(edge, cycle) {
+    const source = this.nodes.get(edge.source.node);
+    const target = this.nodes.get(edge.target.node);
+    assert(source && target, `Dangling edge ${edge.id}`);
+    assert(source !== target, "A node cannot connect to itself");
+    const out = source.ports.find((p) => p.id === edge.source.port);
+    const input = target.ports.find((p) => p.id === edge.target.port);
+    assert(out?.direction === "output" && input?.direction === "input", `Invalid port direction on ${edge.id}`);
+    assert(this.compatible(out, input), `Incompatible types: ${out.type} → ${input.type}`);
+    for (const [endpoint, port] of [
+      [edge.source, out],
+      [edge.target, input]
+    ]) {
+      const set = this.connections(endpoint);
+      const count = set.size - (set.has(edge.id) ? 1 : 0);
+      assert(count < capacity(port), `Port ${port.label ?? port.id} is full`);
+    }
+    const duplicates = this.signatures.get(edgeKey(edge));
+    assert(!duplicates || duplicates.size - (duplicates.has(edge.id) ? 1 : 0) === 0, "Duplicate connection");
+    const reason = this.policy.connection?.(edge, source, target);
+    assert(!reason, reason ?? "Connection rejected");
+    if (cycle && !this.policy.allowCycles)
+      this.checkCycle(edge);
+  }
+  checkCycle(edge) {
+    const stack = [edge.target.node];
+    const seen = new Set;
+    while (stack.length) {
+      const id = stack.pop();
+      assert(id !== edge.source.node, "Connection would create a cycle");
+      if (seen.has(id))
+        continue;
+      seen.add(id);
+      for (const eid of this.outbound.get(id) ?? [])
+        if (eid !== edge.id)
+          stack.push(this.edges.get(eid).target.node);
+    }
+  }
+  validateGroups() {
+    for (const n of this.nodes.values())
+      if (n.groupId)
+        assert(this.groups.has(n.groupId), `Missing group ${n.groupId}`);
+    for (const g of this.groups.values()) {
+      const seen = new Set([g.id]);
+      let p = g.parentId;
+      while (p) {
+        assert(!seen.has(p), "Group hierarchy cycle");
+        seen.add(p);
+        const parent = this.groups.get(p);
+        assert(parent, `Missing group ${p}`);
+        p = parent.parentId;
+      }
+    }
+  }
+  validateSubgraph(node) {
+    if (!node.subgraph)
+      return;
+    new GraphStore(node.subgraph);
+    for (const direction of ["input", "output"]) {
+      const bindings = (direction === "input" ? node.subgraph.inputs : node.subgraph.outputs) ?? [];
+      const ports = node.ports.filter((p) => p.direction === direction);
+      assert(ports.length === bindings.length && ports.every((p) => bindings.some((b) => b.id === p.id && b.type === p.type)), `Subworkflow interface mismatch on ${node.id}`);
+    }
+  }
+  validateInterface() {
+    for (const [ports, direction] of [
+      [this.header.inputs, "input"],
+      [this.header.outputs, "output"]
+    ])
+      for (const p of ports ?? []) {
+        const port = this.nodes.get(p.endpoint.node)?.ports.find((q) => q.id === p.endpoint.port);
+        assert(port && port.direction === direction && port.type === p.type, `Invalid interface binding ${p.id}`);
+      }
+  }
+  topologicalOrder() {
+    const indegree = new Map([...this.nodes.keys()].map((id) => [id, 0]));
+    for (const e of this.edges.values())
+      indegree.set(e.target.node, indegree.get(e.target.node) + 1);
+    const queue = [...indegree].filter(([, d]) => d === 0).map(([id]) => id);
+    for (let i = 0;i < queue.length; i++)
+      for (const eid of this.outbound.get(queue[i]) ?? []) {
+        const target = this.edges.get(eid).target.node;
+        const d = indegree.get(target) - 1;
+        indegree.set(target, d);
+        if (!d)
+          queue.push(target);
+      }
+    assert(queue.length === this.nodes.size, "Graph contains a cycle");
+    return queue;
+  }
+}
+function workflowEngine() {
+  const PORT_TOP = 52;
+  const PORT_STEP = 26;
+  const HEADER = 40;
+  const portPosition = (node, portId) => {
+    let port;
+    for (const p of node.ports)
+      if (p.id === portId) {
+        port = p;
+        break;
+      }
+    let row = 0;
+    if (port)
+      for (const p of node.ports) {
+        if (p.id === portId)
+          break;
+        if (p.direction === port.direction)
+          row++;
+      }
+    return { x: node.x + (port?.direction === "output" ? node.width : 0), y: node.y + PORT_TOP + row * PORT_STEP };
+  };
+  const contentTop = (node) => {
+    let i = 0;
+    let o = 0;
+    for (const p of node.ports)
+      if (p.direction === "input")
+        i++;
+      else
+        o++;
+    return PORT_TOP + Math.max(i, o) * PORT_STEP - 8;
+  };
+  const viewport = (camera, width, height, padding = 0) => ({
+    x: (-camera.x - padding) / camera.zoom,
+    y: (-camera.y - padding) / camera.zoom,
+    width: (width + padding * 2) / camera.zoom,
+    height: (height + padding * 2) / camera.zoom
+  });
+  const bounds = (points, padding = 0) => {
+    let x = Infinity;
+    let y = Infinity;
+    let right = -Infinity;
+    let bottom = -Infinity;
+    for (const p of points) {
+      if (p.x < x)
+        x = p.x;
+      if (p.y < y)
+        y = p.y;
+      if (p.x > right)
+        right = p.x;
+      if (p.y > bottom)
+        bottom = p.y;
+    }
+    return { x: x - padding, y: y - padding, width: right - x + padding * 2, height: bottom - y + padding * 2 };
+  };
+  const intersects = (a, b) => a.x <= b.x + b.width && a.x + a.width >= b.x && a.y <= b.y + b.height && a.y + a.height >= b.y;
+  const route = (edge, a, b) => {
+    let points;
+    let cubic = false;
+    if (edge.points?.length)
+      points = [a, ...edge.points, b];
+    else if (edge.route === "straight")
+      points = [a, b];
+    else if (edge.route === "orthogonal") {
+      const mid = (a.x + b.x) / 2;
+      points = [a, { x: mid, y: a.y }, { x: mid, y: b.y }, b];
+    } else {
+      const arm = Math.max(48, Math.abs(b.x - a.x) * 0.5);
+      points = [a, { x: a.x + arm, y: a.y }, { x: b.x - arm, y: b.y }, b];
+      cubic = true;
+    }
+    return { points, cubic, box: bounds(points, 8), type: -1 };
+  };
+  const trace = (ctx, curve) => {
+    const p = curve.points;
+    ctx.moveTo(p[0].x, p[0].y);
+    if (curve.cubic)
+      ctx.bezierCurveTo(p[1].x, p[1].y, p[2].x, p[2].y, p[3].x, p[3].y);
+    else
+      for (let i = 1;i < p.length; i++)
+        ctx.lineTo(p[i].x, p[i].y);
+  };
+  const samples = (curve) => {
+    if (!curve.cubic)
+      return curve.points;
+    const [a, b, c, d] = curve.points;
+    const result = [];
+    for (let i = 0;i <= 32; i++) {
+      const t = i / 32;
+      const s = 1 - t;
+      result.push({
+        x: s * s * s * a.x + 3 * s * s * t * b.x + 3 * s * t * t * c.x + t * t * t * d.x,
+        y: s * s * s * a.y + 3 * s * s * t * b.y + 3 * s * t * t * c.y + t * t * t * d.y
+      });
+    }
+    return result;
+  };
+  const distanceToCurve = (point, curve) => {
+    const pts = samples(curve);
+    let min = Infinity;
+    for (let i = 1;i < pts.length; i++) {
+      const a = pts[i - 1];
+      const b = pts[i];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const t = Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+      min = Math.min(min, Math.hypot(point.x - a.x - t * dx, point.y - a.y - t * dy));
+    }
+    return min;
+  };
+  const collapsedAncestor = (node, groups) => {
+    let id = node.groupId;
+    let collapsed;
+    let guard = 0;
+    while (id && guard++ < 64) {
+      const g = groups.get(id);
+      if (!g)
+        break;
+      if (g.collapsed)
+        collapsed = id;
+      id = g.parentId;
+    }
+    return collapsed;
+  };
+  const typeIndex = (type) => {
+    if (!type || type === "any")
+      return -1;
+    let h = 2166136261;
+    for (let i = 0;i < type.length; i++)
+      h = Math.imul(h ^ type.charCodeAt(i), 16777619);
+    return (h >>> 0) % 8;
+  };
+
+  class SpatialIndex {
+    items;
+    levels;
+    constructor() {
+      this.items = new Map;
+      this.levels = new Map;
+    }
+    get size() {
+      return this.items.size;
+    }
+    clear() {
+      this.items.clear();
+      this.levels.clear();
+    }
+    remove(id) {
+      const item = this.items.get(id);
+      if (!item)
+        return;
+      const grid = this.levels.get(item.level);
+      for (const key of item.keys) {
+        const cell = grid.get(key);
+        cell.delete(id);
+        if (!cell.size)
+          grid.delete(key);
+      }
+      if (!grid.size)
+        this.levels.delete(item.level);
+      this.items.delete(id);
+    }
+    set(id, box) {
+      this.remove(id);
+      const level = Math.max(7, Math.ceil(Math.log2(Math.max(box.width, box.height, 1))));
+      const size = 2 ** level;
+      let grid = this.levels.get(level);
+      if (!grid)
+        this.levels.set(level, grid = new Map);
+      const keys = [];
+      for (let x = Math.floor(box.x / size);x <= Math.floor((box.x + box.width) / size); x++)
+        for (let y = Math.floor(box.y / size);y <= Math.floor((box.y + box.height) / size); y++) {
+          const key = x + "," + y;
+          keys.push(key);
+          let cell = grid.get(key);
+          if (!cell)
+            grid.set(key, cell = new Set);
+          cell.add(id);
+        }
+      this.items.set(id, { box: { x: box.x, y: box.y, width: box.width, height: box.height }, level, keys });
+    }
+    query(box, limit = Infinity, workLimit = Infinity) {
+      const seen = new Set;
+      const ids = [];
+      let examined = 0;
+      let stopped = false;
+      const visit = (cell) => {
+        if (!cell)
+          return;
+        for (const id of cell) {
+          if (seen.has(id))
+            continue;
+          seen.add(id);
+          examined++;
+          if (intersects(this.items.get(id).box, box))
+            ids.push(id);
+          if (ids.length >= limit || examined >= workLimit) {
+            stopped = true;
+            return;
+          }
+        }
+      };
+      for (const [level, grid] of this.levels) {
+        const size = 2 ** level;
+        const x0 = Math.floor(box.x / size);
+        const x1 = Math.floor((box.x + box.width) / size);
+        const y0 = Math.floor(box.y / size);
+        const y1 = Math.floor((box.y + box.height) / size);
+        if ((x1 - x0 + 1) * (y1 - y0 + 1) > grid.size * 2) {
+          for (const [key, cell] of grid) {
+            const comma = key.indexOf(",");
+            const x = +key.slice(0, comma);
+            const y = +key.slice(comma + 1);
+            if (x >= x0 && x <= x1 && y >= y0 && y <= y1)
+              visit(cell);
+            if (stopped)
+              break;
+          }
+        } else
+          for (let x = x0;x <= x1 && !stopped; x++)
+            for (let y = y0;y <= y1 && !stopped; y++)
+              visit(grid.get(x + "," + y));
+        if (stopped)
+          break;
+      }
+      return { ids, examined, truncated: stopped };
+    }
+  }
+
+  class Scene {
+    nodes;
+    edges;
+    groups;
+    nodeIndex;
+    edgeIndex;
+    curves;
+    incident;
+    members;
+    constructor() {
+      this.nodes = new Map;
+      this.edges = new Map;
+      this.groups = new Map;
+      this.nodeIndex = new SpatialIndex;
+      this.edgeIndex = new SpatialIndex;
+      this.curves = new Map;
+      this.incident = new Map;
+      this.members = new Map;
+    }
+    load(doc) {
+      this.nodes = new Map(doc.nodes.map((n) => [n.id, n]));
+      this.edges = new Map(doc.edges.map((e) => [e.id, e]));
+      this.groups = new Map(doc.groups.map((g) => [g.id, g]));
+      this.incident.clear();
+      for (const e of doc.edges)
+        this.indexEdge(e, true);
+      this.rebuild();
+    }
+    indexEdge(e, add) {
+      for (const id of e.source.node === e.target.node ? [e.source.node] : [e.source.node, e.target.node]) {
+        if (add) {
+          let set = this.incident.get(id);
+          if (!set)
+            this.incident.set(id, set = new Set);
+          set.add(e.id);
+        } else {
+          const set = this.incident.get(id);
+          set?.delete(e.id);
+          if (!set?.size)
+            this.incident.delete(id);
+        }
+      }
+    }
+    node(id) {
+      const n = this.nodes.get(id);
+      this.nodeIndex.remove(id);
+      if (n && !collapsedAncestor(n, this.groups))
+        this.nodeIndex.set(id, n);
+    }
+    edge(id) {
+      this.edgeIndex.remove(id);
+      this.curves.delete(id);
+      const e = this.edges.get(id);
+      if (!e)
+        return;
+      const a = this.nodes.get(e.source.node);
+      const b = this.nodes.get(e.target.node);
+      if (!a || !b)
+        return;
+      const ga = collapsedAncestor(a, this.groups);
+      const gb = collapsedAncestor(b, this.groups);
+      if (ga && ga === gb)
+        return;
+      const proxy = (gid, output) => {
+        const g = this.groups.get(gid);
+        return { x: g.x + (output ? 240 : 0), y: g.y + 28 };
+      };
+      const curve = route(e, ga ? proxy(ga, true) : portPosition(a, e.source.port), gb ? proxy(gb, false) : portPosition(b, e.target.port));
+      let type = "any";
+      for (const p of a.ports)
+        if (p.id === e.source.port) {
+          type = p.type;
+          break;
+        }
+      curve.type = typeIndex(type);
+      this.curves.set(id, curve);
+      this.edgeIndex.set(id, curve.box);
+    }
+    rebuild() {
+      this.members.clear();
+      for (const n of this.nodes.values()) {
+        let id = n.groupId;
+        let guard = 0;
+        while (id && guard++ < 64) {
+          let members = this.members.get(id);
+          if (!members)
+            this.members.set(id, members = new Set);
+          members.add(n.id);
+          id = this.groups.get(id)?.parentId;
+        }
+      }
+      this.nodeIndex.clear();
+      this.edgeIndex.clear();
+      this.curves.clear();
+      for (const id of this.nodes.keys())
+        this.node(id);
+      for (const id of this.edges.keys())
+        this.edge(id);
+    }
+    patch(patches) {
+      const nodes = new Set;
+      const edges = new Set;
+      const movedGroups = new Set;
+      let groups = false;
+      for (const p of patches) {
+        if (p.kind === "nodes") {
+          if (this.nodes.get(p.id)?.groupId !== p.value?.groupId)
+            groups = true;
+          if (p.value)
+            this.nodes.set(p.id, p.value);
+          else
+            this.nodes.delete(p.id);
+          nodes.add(p.id);
+        } else if (p.kind === "groups") {
+          const old = this.groups.get(p.id);
+          if (!old || !p.value || old.collapsed !== p.value.collapsed || old.parentId !== p.value.parentId)
+            groups = true;
+          else
+            movedGroups.add(p.id);
+          if (p.value)
+            this.groups.set(p.id, p.value);
+          else
+            this.groups.delete(p.id);
+        } else {
+          const old = this.edges.get(p.id);
+          if (old)
+            this.indexEdge(old, false);
+          if (p.value) {
+            this.edges.set(p.id, p.value);
+            this.indexEdge(p.value, true);
+          } else
+            this.edges.delete(p.id);
+          edges.add(p.id);
+        }
+      }
+      if (groups) {
+        this.rebuild();
+        return;
+      }
+      for (const id of movedGroups)
+        for (const member of this.members.get(id) ?? [])
+          for (const eid of this.incident.get(member) ?? [])
+            edges.add(eid);
+      for (const id of nodes) {
+        this.node(id);
+        for (const eid of this.incident.get(id) ?? [])
+          edges.add(eid);
+      }
+      for (const id of edges)
+        this.edge(id);
+    }
+    hit(point, tolerance) {
+      const query = this.edgeIndex.query({ x: point.x - tolerance, y: point.y - tolerance, width: tolerance * 2, height: tolerance * 2 }, 2000, 1e4);
+      let best;
+      let min = tolerance;
+      for (const id of query.ids) {
+        const d = distanceToCurve(point, this.curves.get(id));
+        if (d < min) {
+          min = d;
+          best = id;
+        }
+      }
+      return best;
+    }
+    draw(ctx, f) {
+      const start = performance.now();
+      const c = f.camera;
+      const p = f.palette;
+      ctx.setTransform(f.dpr, 0, 0, f.dpr, 0, 0);
+      ctx.clearRect(0, 0, f.width, f.height);
+      ctx.setTransform(f.dpr * c.zoom, 0, 0, f.dpr * c.zoom, f.dpr * c.x, f.dpr * c.y);
+      const box = viewport(c, f.width, f.height, 50);
+      const eq = this.edgeIndex.query(box, f.maxEdges, f.maxEdges * 6);
+      const tiny = c.zoom < 0.12;
+      const nodeLimit = tiny ? f.maxNodes * 10 : f.maxNodes;
+      const nq = this.nodeIndex.query(box, nodeLimit, nodeLimit * 6);
+      if (f.edgeSelection && this.curves.has(f.edgeSelection) && !eq.ids.includes(f.edgeSelection)) {
+        if (eq.ids.length >= f.maxEdges)
+          eq.ids.pop();
+        eq.ids.unshift(f.edgeSelection);
+      }
+      const selected = new Set(f.selection);
+      const hot = new Set;
+      if (selected.size && selected.size <= 64)
+        for (const id of selected)
+          for (const eid of this.incident.get(id) ?? [])
+            hot.add(eid);
+      const batches = new Map;
+      for (const id of eq.ids) {
+        if (id === f.edgeSelection || hot.has(id))
+          continue;
+        const e = this.edges.get(id);
+        const curve = this.curves.get(id);
+        const color = e.color ?? (curve.type >= 0 ? p.types[curve.type] : p.edge);
+        const dash = e.dash ?? "solid";
+        const width = e.width ?? 1.75;
+        const key = color + "|" + dash + "|" + width;
+        let batch = batches.get(key);
+        if (!batch)
+          batches.set(key, batch = { color, dash, width, ids: [] });
+        batch.ids.push(id);
+      }
+      const px = 1 / c.zoom;
+      ctx.lineCap = "round";
+      ctx.globalAlpha = c.zoom < 0.2 ? 0.4 : c.zoom < 0.5 ? 0.6 : 0.85;
+      for (const batch of batches.values()) {
+        const w = Math.max(1, batch.width * px);
+        ctx.strokeStyle = batch.color;
+        ctx.lineWidth = w;
+        const b = Math.max(1, batch.width);
+        ctx.setLineDash(batch.dash === "dashed" ? [Math.max(6, b * 3) * px, Math.max(5, b * 2.5) * px] : batch.dash === "dotted" ? [0.01, Math.max(4, b * 2.5) * px] : []);
+        ctx.beginPath();
+        for (const id of batch.ids)
+          trace(ctx, this.curves.get(id));
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+      if (hot.size) {
+        ctx.strokeStyle = p.accent;
+        ctx.lineWidth = Math.max(1.5, 2.25 * px);
+        ctx.beginPath();
+        for (const id of hot) {
+          const curve = this.curves.get(id);
+          if (curve && id !== f.edgeSelection)
+            trace(ctx, curve);
+        }
+        ctx.stroke();
+      }
+      if (f.edgeSelection && this.curves.has(f.edgeSelection)) {
+        ctx.strokeStyle = p.accent;
+        ctx.lineWidth = Math.max(2, 3.5 * px);
+        ctx.beginPath();
+        trace(ctx, this.curves.get(f.edgeSelection));
+        ctx.stroke();
+      }
+      const dom = new Set(f.domIds);
+      const radius = Math.min(p.radius, 12);
+      const font = f.dpr * c.zoom >= 0.18;
+      const titleSize = Math.max(13, 11 / c.zoom);
+      let fontSize = 0;
+      ctx.textBaseline = "middle";
+      if (tiny) {
+        const boxes = new Map;
+        for (const id of nq.ids) {
+          if (dom.has(id))
+            continue;
+          const n = this.nodes.get(id);
+          const color = selected.has(id) ? p.accent : n.accent ?? p.muted;
+          let list = boxes.get(color);
+          if (!list)
+            boxes.set(color, list = []);
+          list.push(n);
+        }
+        for (const [color, list] of boxes) {
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          for (const n of list)
+            ctx.rect(n.x, n.y, n.width, n.height);
+          ctx.fill();
+        }
+      }
+      for (const id of tiny ? [] : nq.ids) {
+        if (dom.has(id))
+          continue;
+        const n = this.nodes.get(id);
+        const accent = n.accent ?? p.muted;
+        const h = n.height;
+        const size = Math.min(titleSize, h * 0.6 / 1.7);
+        const band = Math.max(HEADER, size * 1.7);
+        ctx.fillStyle = p.node;
+        ctx.strokeStyle = selected.has(id) ? p.accent : p.border;
+        ctx.lineWidth = (selected.has(id) ? 2.5 : 1) * px;
+        ctx.beginPath();
+        ctx.roundRect(n.x, n.y, n.width, h, radius);
+        ctx.fill();
+        ctx.stroke();
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(n.x, n.y, n.width, band, [radius, radius, 0, 0]);
+        ctx.clip();
+        ctx.globalAlpha = 0.16;
+        ctx.fillStyle = accent;
+        ctx.fillRect(n.x, n.y, n.width, band);
+        ctx.globalAlpha = 1;
+        ctx.fillRect(n.x, n.y, Math.max(4, 3 / c.zoom), band);
+        ctx.restore();
+        if (n.status && n.status !== "idle") {
+          ctx.fillStyle = p.status[n.status] ?? p.muted;
+          ctx.fillRect(n.x, n.y + h - 4, n.width, 4);
+        }
+        if (font) {
+          if (fontSize !== size)
+            ctx.font = `600 ${fontSize = size}px ${p.font}`;
+          const pad = Math.max(14, size * 0.9);
+          const fits = Math.max(1, Math.floor((n.width - pad * 2) / (size * 0.58)));
+          ctx.fillStyle = p.text;
+          ctx.fillText(n.title.length > fits ? n.title.slice(0, Math.max(1, fits - 1)) + "…" : n.title, n.x + pad, n.y + band / 2, n.width - pad * 2);
+        }
+        if (c.zoom >= 0.35)
+          for (const port of n.ports) {
+            const pos = portPosition(n, port.id);
+            const t = typeIndex(port.type);
+            ctx.beginPath();
+            ctx.fillStyle = t >= 0 ? p.types[t] : p.muted;
+            ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+      }
+      return {
+        frame: f.id,
+        drawMs: performance.now() - start,
+        edges: eq.ids.length,
+        nodes: nq.ids.length,
+        edgeBudget: f.maxEdges,
+        edgesTruncated: eq.truncated
+      };
+    }
+  }
+  const layeredLayout = (doc, gap = { x: 100, y: 48 }) => {
+    const indegree = new Map(doc.nodes.map((n) => [n.id, 0]));
+    const outgoing = new Map;
+    const level = new Map;
+    for (const e of doc.edges) {
+      indegree.set(e.target.node, (indegree.get(e.target.node) ?? 0) + 1);
+      const out = outgoing.get(e.source.node) ?? [];
+      out.push(e.target.node);
+      outgoing.set(e.source.node, out);
+    }
+    const queue = doc.nodes.filter((n) => indegree.get(n.id) === 0).map((n) => n.id);
+    for (const id of queue)
+      level.set(id, 0);
+    for (let i = 0;i < queue.length; i++)
+      for (const target of outgoing.get(queue[i]) ?? []) {
+        level.set(target, Math.max(level.get(target) ?? 0, level.get(queue[i]) + 1));
+        const count = indegree.get(target) - 1;
+        indegree.set(target, count);
+        if (!count)
+          queue.push(target);
+      }
+    let max = 0;
+    for (const value of level.values())
+      max = Math.max(max, value);
+    for (const [id, degree] of indegree)
+      if (degree > 0)
+        level.set(id, max + 1);
+    const columns = new Map;
+    for (const n of doc.nodes) {
+      const l = level.get(n.id);
+      let col = columns.get(l);
+      if (!col)
+        columns.set(l, col = []);
+      col.push(n);
+    }
+    const sources = new Map;
+    for (const e of doc.edges) {
+      const list = sources.get(e.target.node) ?? [];
+      list.push(e.source.node);
+      sources.set(e.target.node, list);
+    }
+    const rowOf = new Map;
+    const widths = new Map;
+    const levels = [...columns.keys()].sort((a, b) => a - b);
+    for (const l of levels) {
+      const col = columns.get(l);
+      if (l > 0)
+        col.sort((a, b) => {
+          const mean = (n) => {
+            const s = (sources.get(n.id) ?? []).map((id) => rowOf.get(id)).filter((r) => r !== undefined);
+            return s.length ? s.reduce((x, y) => x + y, 0) / s.length : Infinity;
+          };
+          return mean(a) - mean(b);
+        });
+      col.forEach((n, i) => rowOf.set(n.id, i));
+      widths.set(l, Math.max(...col.map((n) => n.width)));
+    }
+    const result = [];
+    let x = 0;
+    for (const l of levels) {
+      let y = 0;
+      for (const n of columns.get(l)) {
+        result.push([n.id, { x, y }]);
+        y += n.height + gap.y;
+      }
+      x += widths.get(l) + gap.x;
+    }
+    return result;
+  };
+  return {
+    PORT_TOP,
+    PORT_STEP,
+    HEADER,
+    portPosition,
+    contentTop,
+    viewport,
+    bounds,
+    intersects,
+    route,
+    distanceToCurve,
+    collapsedAncestor,
+    typeIndex,
+    SpatialIndex,
+    Scene,
+    layeredLayout
+  };
+}
+function workflowWorker(self, engineFactory) {
+  const engine = engineFactory();
+  const scene = new engine.Scene;
+  let canvas;
+  self.onmessage = (event) => {
+    const m = event.data;
+    try {
+      if (m.type === "load")
+        scene.load(m.doc);
+      else if (m.type === "patch")
+        scene.patch(m.patches);
+      else if (m.type === "hit")
+        self.postMessage({ type: "hit", id: m.id, edge: scene.hit(m.point, m.tolerance) });
+      else if (m.type === "layout")
+        self.postMessage({ type: "layout", id: m.id, positions: engine.layeredLayout(m.doc) });
+      else if (m.type === "frame") {
+        const f = m.frame;
+        const w = Math.max(1, Math.round(f.width * f.dpr));
+        const h = Math.max(1, Math.round(f.height * f.dpr));
+        if (!canvas)
+          canvas = new OffscreenCanvas(w, h);
+        if (canvas.width !== w)
+          canvas.width = w;
+        if (canvas.height !== h)
+          canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx)
+          throw new Error("OffscreenCanvas 2D is unavailable");
+        const start = performance.now();
+        const stats = scene.draw(ctx, f);
+        const bitmap = canvas.transferToImageBitmap();
+        stats.rasterMs = performance.now() - start;
+        self.postMessage({ type: "frame", frame: f, stats, bitmap }, [bitmap]);
+      }
+    } catch (error) {
+      self.postMessage({ type: "error", id: m?.id, message: error.message });
+    }
+  };
+}
+var ENGINE = workflowEngine();
+var workerSource = "";
+function startWorker(name) {
+  if (typeof Worker === "undefined" || typeof OffscreenCanvas === "undefined")
+    return null;
+  try {
+    workerSource ||= URL.createObjectURL(new Blob([`(${workflowWorker.toString()})(self, ${workflowEngine.toString()});`], { type: "text/javascript" }));
+    return new Worker(workerSource, { name });
+  } catch {
+    return null;
+  }
+}
+
+class EdgeRenderer {
+  document;
+  present;
+  mode = "main";
+  canvas;
+  worker = null;
+  scene = null;
+  inFlight = false;
+  next = null;
+  timer;
+  dead = false;
+  hitId = 0;
+  waits = new Map;
+  constructor(canvas, document2, present, useWorker) {
+    this.document = document2;
+    this.present = present;
+    this.canvas = canvas;
+    const worker = useWorker ? startWorker("defuss-workflow") : null;
+    if (!worker) {
+      this.fallback();
+      return;
+    }
+    this.worker = worker;
+    this.mode = "worker";
+    worker.onmessage = (event) => this.message(event.data);
+    worker.onerror = () => this.fallback();
+    worker.postMessage({ type: "load", doc: this.document() });
+  }
+  message(m) {
+    if (m.type === "error") {
+      if (m.id && this.waits.has(m.id)) {
+        this.waits.get(m.id)(NO_ANSWER);
+        this.waits.delete(m.id);
+      } else
+        this.fallback();
+      return;
+    }
+    if (m.type === "hit" || m.type === "layout") {
+      this.waits.get(m.id)?.(m.type === "hit" ? m.edge : m.positions);
+      this.waits.delete(m.id);
+      return;
+    }
+    if (m.type !== "frame")
+      return;
+    clearTimeout(this.timer);
+    this.inFlight = false;
+    if (this.dead) {
+      m.bitmap.close();
+      return;
+    }
+    this.resize(m.frame);
+    const ctx = this.canvas.getContext("bitmaprenderer");
+    if (ctx)
+      ctx.transferFromImageBitmap(m.bitmap);
+    else
+      m.bitmap.close();
+    this.present(m.frame, m.stats, "worker");
+    const next = this.next;
+    this.next = null;
+    if (next && next.id !== m.frame.id)
+      this.draw(next);
+  }
+  fallback() {
+    if (this.dead)
+      return;
+    this.worker?.terminate();
+    this.worker = null;
+    clearTimeout(this.timer);
+    this.inFlight = false;
+    if (this.mode === "worker") {
+      const fresh = this.canvas.ownerDocument.createElement("canvas");
+      fresh.className = this.canvas.className;
+      this.canvas.replaceWith(fresh);
+      this.canvas = fresh;
+    }
+    this.mode = "main";
+    this.scene = new ENGINE.Scene;
+    this.scene.load(this.document());
+    for (const resolve of this.waits.values())
+      resolve(NO_ANSWER);
+    this.waits.clear();
+    if (this.next)
+      this.draw(this.next);
+  }
+  load(doc) {
+    if (this.dead)
+      return;
+    if (this.worker)
+      this.worker.postMessage({ type: "load", doc });
+    else
+      this.scene.load(doc);
+  }
+  patch(patches) {
+    if (this.dead || !patches.length)
+      return;
+    if (this.worker)
+      this.worker.postMessage({ type: "patch", patches });
+    else
+      this.scene.patch(patches);
+  }
+  draw(frame) {
+    if (this.dead)
+      return;
+    this.next = frame;
+    if (this.worker) {
+      if (this.inFlight)
+        return;
+      this.inFlight = true;
+      this.next = null;
+      this.worker.postMessage({ type: "frame", frame });
+      this.timer = setTimeout(() => this.fallback(), 1e4);
+    } else {
+      this.next = null;
+      this.resize(frame);
+      const stats = this.scene.draw(this.canvas.getContext("2d"), frame);
+      this.present(frame, stats, "main");
+    }
+  }
+  resize(f) {
+    const w = Math.max(1, Math.round(f.width * f.dpr));
+    const h = Math.max(1, Math.round(f.height * f.dpr));
+    if (this.canvas.width !== w)
+      this.canvas.width = w;
+    if (this.canvas.height !== h)
+      this.canvas.height = h;
+  }
+  ask(message, timeout) {
+    return new Promise((resolve) => {
+      const id = ++this.hitId;
+      this.waits.set(id, resolve);
+      this.worker.postMessage({ ...message, id });
+      setTimeout(() => {
+        if (this.waits.delete(id))
+          resolve(NO_ANSWER);
+      }, timeout);
+    });
+  }
+  hit(point, tolerance) {
+    if (this.dead)
+      return Promise.resolve(null);
+    if (!this.worker)
+      return Promise.resolve(this.scene.hit(point, tolerance));
+    return this.ask({ type: "hit", point, tolerance }, 1e4).then((answer) => answer === NO_ANSWER ? null : answer);
+  }
+  destroy() {
+    this.dead = true;
+    this.worker?.terminate();
+    clearTimeout(this.timer);
+    for (const resolve of this.waits.values())
+      resolve(NO_ANSWER);
+    this.waits.clear();
+  }
+}
+function layoutPositions(doc, signal) {
+  if (signal?.aborted)
+    return Promise.reject(new Error("Layout cancelled"));
+  const worker = startWorker("defuss-workflow-layout");
+  if (!worker)
+    return Promise.resolve(ENGINE.layeredLayout(doc));
+  return new Promise((resolve, reject) => {
+    const finish = () => {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", abort);
+      worker.terminate();
+    };
+    const abort = () => {
+      finish();
+      reject(new Error("Layout cancelled"));
+    };
+    const timer = setTimeout(() => {
+      finish();
+      reject(new Error("Layout timed out"));
+    }, 30000);
+    signal?.addEventListener("abort", abort, { once: true });
+    worker.onerror = () => {
+      finish();
+      resolve(ENGINE.layeredLayout(doc));
+    };
+    worker.onmessage = (e) => {
+      finish();
+      if (e.data.type === "error")
+        reject(new Error(e.data.message));
+      else
+        resolve(e.data.positions);
+    };
+    worker.postMessage({ type: "layout", id: 1, doc });
+  });
+}
+function layoutPatches(doc, positions) {
+  if (doc.nodes.some((n) => n.locked))
+    throw new Error("Unlock nodes before arranging");
+  const nodes = doc.nodes.map((n) => ({ ...n, ...positions.get(n.id) }));
+  const groups = new Map(doc.groups.map((g) => [g.id, g]));
+  const points = new Map;
+  for (const n of nodes) {
+    let gid = n.groupId;
+    while (gid) {
+      const pts = points.get(gid) ?? [];
+      pts.push({ x: n.x - 30, y: n.y - 60 }, { x: n.x + n.width + 30, y: n.y + n.height + 30 });
+      points.set(gid, pts);
+      gid = groups.get(gid)?.parentId;
+    }
+  }
+  return [
+    ...nodes.map((value) => ({ kind: "nodes", id: value.id, value })),
+    ...doc.groups.map((g) => ({
+      kind: "groups",
+      id: g.id,
+      value: points.has(g.id) ? { ...g, ...ENGINE.bounds(points.get(g.id)) } : g
+    })),
+    ...doc.edges.filter((e) => e.points?.length).map((e) => ({ kind: "edges", id: e.id, value: { ...e, points: [] } }))
+  ];
+}
+var ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+var esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ESC[c]);
+var fmt = (n) => Number(n).toLocaleString("en-US");
+var clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+var MIN_ZOOM = 0.025;
+var MAX_ZOOM = 3;
+var CARD_ZOOM = 0.55;
+var NO_ANSWER = Symbol("no answer");
+function capture(el, pointerId) {
+  try {
+    el.setPointerCapture(pointerId);
+  } catch {}
+}
+var SAFE_IMAGE = /^(?:https?:|data:image\/|blob:|\.{0,2}\/|[\w-]+\/)/i;
+var ICONS = {
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  minus: '<path d="M5 12h14"/>',
+  fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',
+  edit: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  map: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>'
+};
+var icon = (name) => `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] ?? ""}</svg>`;
+var accentOf = (color) => !color ? undefined : /^chart-[1-5]$/.test(color) ? `var(--${color})` : color;
+var globalTypes = new Map;
+var globalEdgeTypes = new Map;
+function checkEdgeType(definition) {
+  assert(isRecord(definition), "Invalid connection type");
+  text(definition.type, "connection type");
+  assert(definition.type.length > 0, "A connection type needs a name");
+  if (definition.color !== undefined)
+    text(definition.color, "connection type color");
+  edgeLook(definition, "connection type");
+  if (definition.render !== undefined)
+    assert(typeof definition.render === "function", "A connection type render must be a function");
+  return definition;
+}
+var FIELD_KINDS = [
+  "text",
+  "textarea",
+  "number",
+  "select",
+  "slider",
+  "checkbox",
+  "switch",
+  "color",
+  "image",
+  "output",
+  "value"
+];
+var customEditor = (f) => !!f.edit || f.editor === "external";
+var showsValue = (f) => customEditor(f) || !!f.render || f.kind === "value" || f.kind === "output" || f.kind === "image";
+function checkType(definition) {
+  assert(isRecord(definition), "Invalid node type");
+  text(definition.type, "node type name");
+  text(definition.label, "node type label");
+  assert(Array.isArray(definition.ports), "A node type needs ports");
+  validateNode({
+    id: "probe",
+    type: definition.type,
+    title: definition.label,
+    x: 0,
+    y: 0,
+    width: 260,
+    height: 200,
+    ports: definition.ports,
+    data: definition.defaults ?? {}
+  });
+  for (const f of definition.fields ?? []) {
+    assert(isRecord(f), "Invalid field");
+    text(f.key, "field key");
+    assert(FIELD_KINDS.includes(f.kind), `Unknown field kind ${String(f.kind)}`);
+    assert(f.editor === undefined || f.editor === "inline" || f.editor === "external", "Invalid field editor");
+    assert(f.height === undefined || typeof f.height === "number" && f.height > 0, "Invalid field height");
+    for (const hook of ["edit", "render", "renderLabel"])
+      assert(f[hook] === undefined || typeof f[hook] === "function", `A field's ${hook} must be a function`);
+  }
+  assert(definition.layout === undefined || definition.layout === "controls" || definition.layout === "list", "Invalid node layout");
+  return {
+    ...definition,
+    ports: structuredClone(definition.ports),
+    defaults: structuredClone(definition.defaults ?? {})
+  };
+}
+var fieldHeight = (f, layout = "controls") => f.height ?? (f.kind === "image" ? 150 : layout === "list" ? 50 : f.kind === "value" ? 78 : controlHeight(f));
+var controlHeight = (f) => f.kind === "textarea" ? 46 + 20 * (f.rows ?? 3) : f.kind === "image" ? 150 : f.kind === "output" ? 72 : f.kind === "checkbox" || f.kind === "switch" ? 34 : 62;
+function createNode(definition, at, layout = "controls") {
+  const node = {
+    id: uid("node"),
+    type: definition.type,
+    title: definition.label,
+    x: Math.round(at.x),
+    y: Math.round(at.y),
+    width: definition.width ?? 260,
+    height: 100,
+    ports: structuredClone(definition.ports),
+    data: structuredClone(definition.defaults ?? {})
+  };
+  const fields = (definition.fields ?? []).reduce((h, f) => h + fieldHeight(f, definition.layout ?? layout), 0);
+  node.height = definition.height ?? Math.max(120, ENGINE.contentTop(node) + 20 + (fields || 48));
+  return node;
+}
+function changedSince() {
+  let last;
+  return (node, runtime, readonly) => {
+    const same = last && last[2] === runtime && last[3] === node.title && last[4] === readonly && (last[0] === node.data || last[1] === JSON.stringify(node.data));
+    if (same) {
+      last[0] = node.data;
+      return false;
+    }
+    last = [node.data, JSON.stringify(node.data), runtime, node.title, readonly];
+    return true;
+  };
+}
+var outputOf = (runtime) => runtime.output && typeof runtime.output === "object" && !Array.isArray(runtime.output) ? runtime.output : null;
+function fieldValue(field, node, runtime) {
+  const out = outputOf(runtime);
+  if (field.kind === "output")
+    return out?.[field.key];
+  if (field.kind === "image")
+    return out?.[field.key] ?? node.data[field.key];
+  return node.data[field.key];
+}
+function put(el, content) {
+  if (content === null || content === undefined)
+    return false;
+  dfDollar(el).empty();
+  if (typeof content === "string")
+    el.textContent = content;
+  else
+    el.append(content);
+  return true;
+}
+function defaultLabel(el, field) {
+  dfDollar(el).empty();
+  el.append(el.ownerDocument.createTextNode(field.label ?? field.key));
+  if (!customEditor(field))
+    return;
+  const mark = el.ownerDocument.createElement("span");
+  mark.className = "workflow-field-edit-icon";
+  mark.setAttribute("aria-hidden", "true");
+  dfDollar(mark).html(icon("edit"));
+  el.append(mark);
+}
+function summary(value) {
+  if (value === undefined || value === null)
+    return "";
+  if (typeof value !== "object")
+    return String(value);
+  const short = (v) => v === null || typeof v !== "object" ? String(v) : Array.isArray(v) ? `[${v.length}]` : "{…}";
+  const text = Array.isArray(value) ? `${value.length} ${value.length === 1 ? "item" : "items"}: ${value.slice(0, 4).map(short).join(", ")}` : Object.entries(value).slice(0, 6).map(([k, v]) => `${k}: ${short(v)}`).join(" · ");
+  return text.length > 140 ? text.slice(0, 139) + "…" : text;
+}
+function defaultValueView(el, field, value) {
+  const doc = el.ownerDocument;
+  const empty = value === undefined || value === null || value === "";
+  el.dataset.empty = String(empty);
+  if (field.kind === "image") {
+    const src = String(value ?? "");
+    if (!SAFE_IMAGE.test(src)) {
+      dfDollar(el).empty();
+      el.dataset.empty = "true";
+      el.textContent = "No picture yet";
+      return;
+    }
+    let img = dfDollar(el).children("img").get(0);
+    if (!img) {
+      dfDollar(el).empty();
+      img = doc.createElement("img");
+      img.className = "workflow-image";
+      img.alt = field.label ?? field.key;
+      img.decoding = "async";
+      img.loading = "lazy";
+      el.append(img);
+    }
+    if (img.getAttribute("src") !== src)
+      img.setAttribute("src", src);
+    return;
+  }
+  dfDollar(el).empty();
+  if (empty) {
+    el.textContent = field.kind === "output" ? "—" : "Not set";
+    return;
+  }
+  if (field.kind === "color" && typeof value === "string") {
+    const swatch = doc.createElement("i");
+    swatch.className = "workflow-field-swatch";
+    swatch.style.background = value;
+    swatch.setAttribute("aria-hidden", "true");
+    el.append(swatch, doc.createTextNode(value));
+    return;
+  }
+  el.textContent = typeof value === "string" ? value : field.kind === "output" ? JSON.stringify(value) : summary(value);
+}
+function fieldsView(host, node, fields, fh, idBase) {
+  const doc = host.ownerDocument;
+  const entries = [];
+  const off = new AbortController;
+  const signal = off.signal;
+  fields.forEach((field, i) => {
+    const wrap = doc.createElement("div");
+    wrap.className = "workflow-field";
+    wrap.dataset.kind = field.kind;
+    wrap.dataset.key = field.key;
+    const id = `${idBase}-${i}-${field.key}`.replace(/[^\w-]/g, "_");
+    const commit = (value) => fh.write({ [field.key]: value });
+    if (showsValue(field)) {
+      const label = doc.createElement("span");
+      label.className = "label workflow-field-label";
+      label.id = `${id}-label`;
+      const value = doc.createElement("div");
+      value.className = field.kind === "output" && !field.render ? "workflow-field-value workflow-output" : "workflow-field-value";
+      value.id = id;
+      if (customEditor(field)) {
+        wrap.dataset.customEditor = "";
+        value.setAttribute("role", "button");
+        value.tabIndex = 0;
+        value.setAttribute("aria-haspopup", "dialog");
+        value.setAttribute("aria-labelledby", label.id);
+        value.dataset.workflowFieldEdit = field.key;
+        const open = () => {
+          if (!fh.readonly())
+            fh.edit(field.key);
+        };
+        value.addEventListener("click", open, { signal });
+        value.addEventListener("keydown", (e) => {
+          if (e.key !== "Enter" && e.key !== " ")
+            return;
+          e.preventDefault();
+          open();
+        }, { signal });
+      }
+      wrap.append(label, value);
+      host.append(wrap);
+      entries.push({ field, label, el: value, shows: true });
+      return;
+    }
+    const label = doc.createElement("label");
+    label.className = "label";
+    label.htmlFor = id;
+    let el;
+    let readout;
+    if (field.kind === "textarea") {
+      const t = doc.createElement("textarea");
+      t.className = "textarea";
+      t.rows = field.rows ?? 3;
+      if (field.placeholder)
+        t.placeholder = field.placeholder;
+      t.addEventListener("change", () => commit(t.value), { signal });
+      el = t;
+    } else if (field.kind === "select") {
+      const sel = doc.createElement("select");
+      sel.className = "select";
+      for (const option of field.options ?? []) {
+        const o = doc.createElement("option");
+        o.value = o.textContent = option;
+        sel.append(o);
+      }
+      sel.addEventListener("change", () => commit(sel.value), { signal });
+      el = sel;
+    } else {
+      const input = doc.createElement("input");
+      if (field.kind === "number" || field.kind === "slider") {
+        if (field.kind === "slider") {
+          input.type = "range";
+          input.className = "slider";
+        } else {
+          input.type = "number";
+          input.className = "input";
+        }
+        if (field.min !== undefined)
+          input.min = String(field.min);
+        if (field.max !== undefined)
+          input.max = String(field.max);
+        if (field.step !== undefined)
+          input.step = String(field.step);
+        input.addEventListener("change", () => commit(input.valueAsNumber), { signal });
+        if (field.kind === "slider") {
+          readout = doc.createElement("output");
+          readout.className = "workflow-readout";
+          input.addEventListener("input", () => readout.textContent = input.value, { signal });
+        }
+      } else if (field.kind === "checkbox" || field.kind === "switch") {
+        input.type = "checkbox";
+        input.className = "checkbox";
+        if (field.kind === "switch") {
+          input.className = "switch";
+          input.setAttribute("role", "switch");
+        }
+        input.addEventListener("change", () => commit(input.checked), { signal });
+      } else if (field.kind === "color") {
+        input.type = "color";
+        input.className = "workflow-color";
+        input.addEventListener("change", () => commit(input.value), { signal });
+      } else {
+        input.type = "text";
+        input.className = "input";
+        if (field.placeholder)
+          input.placeholder = field.placeholder;
+        input.addEventListener("change", () => commit(input.value), { signal });
+      }
+      el = input;
+    }
+    el.id = id;
+    if (field.kind === "checkbox" || field.kind === "switch") {
+      wrap.classList.add("workflow-field-row");
+      wrap.append(el, label);
+    } else if (readout) {
+      const head = doc.createElement("div");
+      head.className = "workflow-field-head";
+      head.append(label, readout);
+      wrap.append(head, el);
+    } else
+      wrap.append(label, el);
+    host.append(wrap);
+    entries.push({ field, label, el, readout });
+  });
+  const changed = changedSince();
+  const view = {
+    update(n, runtime) {
+      if (!changed(n, runtime, fh.readonly()))
+        return;
+      for (const entry of entries) {
+        const { field, el, readout } = entry;
+        const value = fieldValue(field, n, runtime);
+        const ctx = fh.context(field, n, runtime);
+        if (!put(entry.label, field.renderLabel?.(value, ctx)))
+          defaultLabel(entry.label, field);
+        if (entry.shows) {
+          if (customEditor(field))
+            el.setAttribute("aria-disabled", String(ctx.readonly));
+          if (field.render) {
+            if (put(el, field.render(value, ctx))) {
+              el.dataset.empty = "false";
+              entry.shown = undefined;
+              continue;
+            }
+          }
+          const key = JSON.stringify(value ?? null);
+          if (entry.shown !== key)
+            defaultValueView(el, field, value);
+          entry.shown = key;
+          continue;
+        }
+        if (el === doc.activeElement)
+          continue;
+        const input = el;
+        if (field.kind === "checkbox" || field.kind === "switch")
+          input.checked = value === true;
+        else
+          input.value = value === undefined || value === null ? "" : String(value);
+        if (readout)
+          readout.textContent = input.value;
+      }
+    },
+    destroy() {
+      off.abort();
+      dfDollar(host).empty();
+    }
+  };
+  view.update(node, IDLE);
+  return view;
+}
+function gridConfig(field) {
+  const conf = { displayName: field.label ?? field.key };
+  if (showsValue(field))
+    return { ...conf, type: "json", readOnly: true };
+  if (field.kind === "select")
+    return { ...conf, type: "enum", options: field.options ?? [] };
+  if (field.kind === "number" || field.kind === "slider")
+    return { ...conf, type: "number", min: field.min, max: field.max, step: field.step };
+  if (field.kind === "checkbox" || field.kind === "switch")
+    return { ...conf, type: "boolean" };
+  if (field.kind === "color")
+    return { ...conf, type: "color" };
+  return { ...conf, type: field.kind === "textarea" ? "text" : "string" };
+}
+function listView(host, node, fields, fh) {
+  const pg = df$.propertyGrid;
+  const configure = pg?.configure;
+  if (!configure)
+    return null;
+  const doc = host.ownerDocument;
+  const grid = doc.createElement("div");
+  grid.className = "property-grid workflow-properties";
+  grid.dataset.layout = "list";
+  grid.dataset.frame = "none";
+  grid.setAttribute("aria-label", `${node.title}: fields`);
+  host.append(grid);
+  const byKey = new Map((fields ?? []).map((f) => [f.key, f]));
+  let current = node;
+  let runtime = IDLE;
+  const ctxFor = (key) => {
+    const field = byKey.get(key);
+    return field ? fh.context(field, current, runtime) : null;
+  };
+  const sourceConfig = {};
+  for (const field of fields ?? [])
+    sourceConfig[field.key] = gridConfig(field);
+  const off = new AbortController;
+  const signal = off.signal;
+  grid.addEventListener("property-grid-beforechange", (e) => e.stopPropagation(), { signal });
+  grid.addEventListener("property-grid-change", (e) => {
+    e.stopPropagation();
+    const { path, source } = e.detail;
+    const top = path.split(".")[0];
+    if (fields && !byKey.has(top))
+      return;
+    shown = JSON.stringify(source);
+    fh.write({ [top]: source[top] });
+  }, { signal });
+  const openFrom = (target) => {
+    const row = target?.closest?.("tr[data-path]");
+    const cell = target?.closest?.(".property-grid-value");
+    const field = row && cell ? byKey.get(row.dataset.path) : undefined;
+    if (!field || !customEditor(field) || fh.readonly())
+      return false;
+    fh.edit(field.key);
+    return true;
+  };
+  grid.addEventListener("click", (e) => void openFrom(e.target), { signal });
+  grid.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === "F2") && openFrom(e.target))
+      e.preventDefault();
+  }, { signal });
+  let shown = "";
+  let pending = null;
+  let readonly;
+  let unsubscribe;
+  const apply = (source) => {
+    const text = JSON.stringify(source);
+    if (text === shown)
+      return;
+    shown = text;
+    configure(grid, { source });
+  };
+  configure(grid, {
+    sourceConfig,
+    keyRenderFn: (key) => {
+      const field = byKey.get(key);
+      if (!field)
+        return null;
+      const el = doc.createElement("span");
+      el.className = "workflow-field-label";
+      const ctx = ctxFor(key);
+      if (!put(el, field.renderLabel?.(fieldValue(field, current, runtime), ctx)))
+        defaultLabel(el, field);
+      return el;
+    },
+    valueRenderFn: (_value, key) => {
+      const field = byKey.get(key);
+      if (!field || !showsValue(field))
+        return null;
+      const el = doc.createElement("div");
+      el.className = field.kind === "output" && !field.render ? "workflow-field-value workflow-output" : "workflow-field-value";
+      const value = fieldValue(field, current, runtime);
+      if (!(field.render && put(el, field.render(value, ctxFor(key)))))
+        defaultValueView(el, field, value);
+      if (customEditor(field))
+        el.dataset.workflowFieldEdit = field.key;
+      return el;
+    },
+    getEditorFn: (key) => {
+      const field = byKey.get(key);
+      return field && showsValue(field) ? false : null;
+    }
+  });
+  const changed = changedSince();
+  const view = {
+    update(n, state) {
+      if (!changed(n, state, fh.readonly()))
+        return;
+      current = n;
+      runtime = state;
+      const ro = fh.readonly();
+      if (ro !== readonly) {
+        readonly = ro;
+        grid.toggleAttribute("data-readonly", ro);
+        shown = "";
+      }
+      const source = fields ? Object.fromEntries(fields.map((f) => [f.key, fieldValue(f, n, state) ?? null])) : { ...n.data };
+      if (grid.store?.value.name === "editing") {
+        pending = source;
+        unsubscribe ??= grid.store.subscribe((v) => {
+          if (v.name !== "editing" && pending) {
+            const next = pending;
+            pending = null;
+            queueMicrotask(() => apply(next));
+          }
+        });
+        return;
+      }
+      if (fields?.some((f) => f.render || f.renderLabel))
+        shown = "";
+      apply(source);
+    },
+    destroy() {
+      off.abort();
+      unsubscribe?.();
+      dfDollar(host).empty();
+    }
+  };
+  view.update(node, IDLE);
+  return view;
+}
+function dataView(host, node, description) {
+  const doc = host.ownerDocument;
+  const intro = doc.createElement("p");
+  intro.className = "workflow-node-description";
+  const list = doc.createElement("dl");
+  list.className = "workflow-data";
+  host.append(intro, list);
+  const view = {
+    update(n, runtime) {
+      intro.textContent = description ?? "";
+      intro.hidden = !description;
+      const out = runtime.output && typeof runtime.output === "object" && !Array.isArray(runtime.output) ? runtime.output : {};
+      const entries = [...Object.entries(n.data), ...Object.entries(out).map(([k, v]) => [`→ ${k}`, v])].slice(0, 5);
+      dfDollar(list).empty();
+      list.append(...entries.flatMap(([k, v]) => {
+        const dt = doc.createElement("dt");
+        dt.textContent = k;
+        const dd = doc.createElement("dd");
+        const s = typeof v === "string" ? v : JSON.stringify(v);
+        dd.textContent = s.length > 80 ? s.slice(0, 79) + "…" : s;
+        return [dt, dd];
+      }));
+    },
+    destroy() {
+      dfDollar(host).empty();
+    }
+  };
+  view.update(node, { status: "idle" });
+  return view;
+}
+var IDLE = Object.freeze({ status: "idle" });
+var edgeTypesVersion = 0;
+function curveAt(curve, t = 0.5) {
+  const p = curve.points;
+  if (curve.cubic) {
+    const u = 1 - t;
+    const a = u * u * u;
+    const b = 3 * u * u * t;
+    const d = 3 * u * t * t;
+    const e = t * t * t;
+    return {
+      x: a * p[0].x + b * p[1].x + d * p[2].x + e * p[3].x,
+      y: a * p[0].y + b * p[1].y + d * p[2].y + e * p[3].y
+    };
+  }
+  let total = 0;
+  for (let i = 1;i < p.length; i++)
+    total += Math.hypot(p[i].x - p[i - 1].x, p[i].y - p[i - 1].y);
+  let left = total * t;
+  for (let i = 1;i < p.length; i++) {
+    const d = Math.hypot(p[i].x - p[i - 1].x, p[i].y - p[i - 1].y);
+    if (d >= left && d > 0)
+      return { x: p[i - 1].x + (p[i].x - p[i - 1].x) * left / d, y: p[i - 1].y + (p[i].y - p[i - 1].y) * left / d };
+    left -= d;
+  }
+  return p[0];
+}
+
+class Canvas {
+  graph;
+  root;
+  selected = new Set;
+  selectedEdge;
+  camera = { x: 80, y: 80, zoom: 1 };
+  readonly;
+  stats;
+  palette;
+  hooks;
+  budget = { dom: 150, edges: 5000, nodes: 3000 };
+  edgeBudget = 5000;
+  fastFrames = 0;
+  nodeIndex = new ENGINE.SpatialIndex;
+  groupIndex = new ENGINE.SpatialIndex;
+  cards = new Map;
+  pool = [];
+  groupEls = new Map;
+  runtime = new Map;
+  statusDirty = new Set;
+  viewport;
+  grid;
+  groupLayer;
+  nodeLayer;
+  overlay;
+  mini;
+  miniBase;
+  miniBounds = { x: 0, y: 0, width: 1, height: 1 };
+  miniDirty = true;
+  live;
+  message;
+  empty;
+  renderer;
+  flowLayer;
+  labelLayer;
+  decor = new Map;
+  decorated = null;
+  drawnCamera = null;
+  abort = new AbortController;
+  resize;
+  unsubscribe;
+  raf = 0;
+  frameId = 0;
+  revision = 0;
+  dead = false;
+  gesture;
+  pointers = new Map;
+  space = false;
+  preview = new Map;
+  pendingPreview = new Map;
+  groupPreview = new Map;
+  pendingGroups = [];
+  connection;
+  clipboard;
+  viewTimer;
+  messageTimer;
+  colorCache = new Map;
+  probe;
+  zoomLabel;
+  probeCtx = null;
+  idBase;
+  ready;
+  resolveReady;
+  constructor(root, store, options, hooks) {
+    this.root = root;
+    this.graph = store;
+    this.hooks = hooks;
+    this.readonly = options.readonly;
+    this.idBase = (root.id || uid("wf")) + "-f";
+    this.ready = new Promise((resolve) => this.resolveReady = resolve);
+    const doc = root.ownerDocument;
+    const viewport = doc.createElement("div");
+    viewport.className = "workflow-viewport";
+    viewport.setAttribute("data-ce-chrome", "");
+    dfDollar(viewport).html(`<div class="workflow-grid"></div><div class="workflow-groups"></div><canvas class="workflow-edges"></canvas>` + `<svg class="workflow-edge-flow" aria-hidden="true"></svg>` + `<div class="workflow-nodes"></div><div class="workflow-edge-labels"></div><canvas class="workflow-overlay"></canvas>` + `<div class="workflow-empty" hidden><strong>An empty workflow</strong><span>Add a node from the palette, then drag from a port to connect it.</span></div>` + `<div class="workflow-message" role="status" hidden></div>` + (options.controls ? `<div class="workflow-controls" role="toolbar" aria-label="View">` + `<button type="button" class="btn" data-variant="ghost" data-size="icon-sm" data-workflow-control="zoom-out" aria-label="Zoom out" title="Zoom out (−)">${icon("minus")}</button>` + `<button type="button" class="workflow-zoom" data-workflow-control="reset" aria-label="Zoom to 100%" title="Zoom to 100%">100%</button>` + `<button type="button" class="btn" data-variant="ghost" data-size="icon-sm" data-workflow-control="zoom-in" aria-label="Zoom in" title="Zoom in (+)">${icon("plus")}</button>` + `<button type="button" class="btn" data-variant="ghost" data-size="icon-sm" data-workflow-control="fit" aria-label="Fit the workflow" title="Fit (F)">${icon("fit")}</button>` + `</div>` : "") + `<canvas class="workflow-minimap" aria-label="Minimap - click to move the view"${options.minimap ? "" : " hidden"}></canvas>` + `<span class="workflow-probe" aria-hidden="true"></span>` + `<div class="workflow-live" aria-live="polite" aria-atomic="true"></div>`);
+    root.append(viewport);
+    this.viewport = viewport;
+    const part = (cls) => dfDollar(viewport).children(cls).get(0);
+    this.grid = part(".workflow-grid");
+    this.groupLayer = part(".workflow-groups");
+    this.nodeLayer = part(".workflow-nodes");
+    this.flowLayer = part(".workflow-edge-flow");
+    this.labelLayer = part(".workflow-edge-labels");
+    this.overlay = part(".workflow-overlay");
+    this.mini = part(".workflow-minimap");
+    this.miniBase = doc.createElement("canvas");
+    this.live = part(".workflow-live");
+    this.message = part(".workflow-message");
+    this.empty = part(".workflow-empty");
+    this.probe = part(".workflow-probe");
+    this.zoomLabel = dfDollar(viewport).find(".workflow-zoom").get(0);
+    this.palette = this.readPalette();
+    this.reindex();
+    this.renderer = new EdgeRenderer(part(".workflow-edges"), () => this.sceneDocument(), (f, s, r) => this.present(f, s, r), options.worker);
+    this.unsubscribe = this.subscribe();
+    this.resize = new ResizeObserver(() => {
+      this.miniDirty = true;
+      this.request();
+    });
+    this.resize.observe(root);
+    this.listen();
+    this.request();
+  }
+  resolve(color) {
+    const cached = this.colorCache.get(color);
+    if (cached)
+      return cached;
+    this.probe.style.color = "";
+    this.probe.style.color = color;
+    const computed = getComputedStyle(this.probe).color || color;
+    let out = computed;
+    try {
+      this.probeCtx ??= this.root.ownerDocument.createElement("canvas").getContext("2d", { willReadFrequently: true });
+      const ctx = this.probeCtx;
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = "#000";
+      ctx.fillStyle = computed;
+      ctx.fillRect(0, 0, 1, 1);
+      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+      out = `rgba(${r}, ${g}, ${b}, ${(a / 255).toFixed(3)})`;
+    } catch {}
+    this.colorCache.set(color, out);
+    return out;
+  }
+  readPalette() {
+    this.colorCache.clear();
+    const css = getComputedStyle(this.root);
+    const v = (name, fallback) => this.resolve(css.getPropertyValue(name).trim() || fallback);
+    const radius = parseFloat(getComputedStyle(this.probe).borderTopLeftRadius) || 10;
+    return {
+      node: v("--workflow-node", "#fff"),
+      border: v("--workflow-border", "#ddd"),
+      text: v("--workflow-text", "#111"),
+      muted: v("--workflow-muted", "#888"),
+      accent: v("--workflow-accent", "#3b82f6"),
+      edge: v("--workflow-edge", "#999"),
+      font: css.fontFamily || "system-ui, sans-serif",
+      radius,
+      types: Array.from({ length: 8 }, (_, i) => v(`--workflow-type-${i}`, "#888")),
+      status: {
+        queued: v("--workflow-queued", "#888"),
+        running: v("--workflow-running", "#3b82f6"),
+        success: v("--workflow-success", "#16a34a"),
+        error: v("--workflow-error", "#dc2626"),
+        cancelled: v("--workflow-muted", "#888")
+      }
+    };
+  }
+  refreshTheme() {
+    this.palette = this.readPalette();
+    this.decorated = null;
+    for (const d of this.decor.values())
+      d.drawn = undefined;
+    this.renderer.load(this.sceneDocument());
+    this.miniDirty = true;
+    this.request();
+  }
+  subscribe() {
+    return this.graph.subscribe((change) => {
+      this.revision++;
+      this.preview.clear();
+      this.pendingPreview.clear();
+      this.groupPreview.clear();
+      this.pendingGroups = [];
+      if (change.patches.some((p) => p.kind === "groups"))
+        this.reindex();
+      else
+        for (const p of change.patches)
+          if (p.kind === "nodes") {
+            this.nodeIndex.remove(p.id);
+            const n = p.value;
+            if (n && !ENGINE.collapsedAncestor(n, this.graph.groups))
+              this.nodeIndex.set(p.id, n);
+            if (!n) {
+              this.selected.delete(p.id);
+              this.runtime.delete(p.id);
+            }
+          }
+      if (this.selectedEdge && !this.graph.edges.has(this.selectedEdge))
+        this.selectedEdge = undefined;
+      if (change.patches.some((p) => p.kind === "edges"))
+        this.decorated = null;
+      this.renderer.patch(change.patches.map((p) => this.scenePatch(p)));
+      this.miniDirty = true;
+      this.request();
+      this.hooks.change(change);
+    });
+  }
+  setGraph(store) {
+    this.cancel();
+    this.unsubscribe();
+    this.graph = store;
+    this.unsubscribe = this.subscribe();
+    this.selected.clear();
+    this.selectedEdge = undefined;
+    this.runtime.clear();
+    for (const [id, card] of this.cards)
+      this.release(id, card);
+    for (const el of this.groupEls.values())
+      el.remove();
+    this.groupEls.clear();
+    for (const id of this.decor.keys())
+      this.dropDecor(id);
+    this.decorated = null;
+    this.revision++;
+    this.reindex();
+    this.renderer.load(this.sceneDocument());
+    this.miniDirty = true;
+    this.request();
+  }
+  sceneNode(n) {
+    const definition = this.hooks.types(n.type);
+    const accent = accentOf(definition?.color);
+    const status = this.runtime.get(n.id)?.status;
+    return {
+      id: n.id,
+      type: n.type,
+      title: n.title,
+      x: n.x,
+      y: n.y,
+      width: n.width,
+      height: n.height,
+      ports: n.ports,
+      data: {},
+      groupId: n.groupId,
+      accent: accent ? this.resolve(accent) : undefined,
+      status: status && status !== "idle" ? status : undefined
+    };
+  }
+  scenePatch(p) {
+    if (p.kind === "nodes" && p.value)
+      return { ...p, value: this.sceneNode(p.value) };
+    if (p.kind === "edges" && p.value)
+      return { ...p, value: this.sceneEdge(p.value) };
+    return p;
+  }
+  look(e) {
+    let port;
+    const source = this.graph.nodes.get(e.source.node);
+    if (source) {
+      for (const p of source.ports)
+        if (p.id === e.source.port) {
+          port = p;
+          break;
+        }
+    }
+    const type = this.hooks.edgeType(e.type ?? port?.type ?? "");
+    return {
+      type,
+      port,
+      color: e.color ?? type?.color,
+      dash: e.dash ?? type?.dash,
+      width: e.width ?? type?.width,
+      animated: e.animated ?? type?.animated ?? false
+    };
+  }
+  sceneEdge(e) {
+    const look = this.look(e);
+    const color = accentOf(look.color);
+    return {
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      route: e.route,
+      points: e.points,
+      color: color ? this.resolve(color) : undefined,
+      dash: look.dash,
+      width: look.width
+    };
+  }
+  sceneDocument() {
+    return {
+      schemaVersion: 1,
+      id: "scene",
+      title: "scene",
+      nodes: [...this.graph.nodes.values()].map((n) => this.sceneNode(this.preview.get(n.id) ?? n)),
+      edges: [...this.graph.edges.values()].map((e) => this.sceneEdge(e)),
+      groups: [...this.graph.groups.values()]
+    };
+  }
+  reindex() {
+    this.nodeIndex.clear();
+    this.groupIndex.clear();
+    for (const n of this.graph.nodes.values())
+      if (!ENGINE.collapsedAncestor(n, this.graph.groups))
+        this.nodeIndex.set(n.id, n);
+    for (const g of this.graph.groups.values())
+      if (!this.hiddenGroup(g))
+        this.groupIndex.set(g.id, { ...g, width: g.collapsed ? 240 : g.width, height: g.collapsed ? 56 : g.height });
+  }
+  hiddenGroup(g) {
+    let id = g.parentId;
+    while (id) {
+      const p = this.graph.groups.get(id);
+      if (!p)
+        break;
+      if (p.collapsed)
+        return true;
+      id = p.parentId;
+    }
+    return false;
+  }
+  setReadonly(value) {
+    if (this.readonly === value)
+      return;
+    this.cancel();
+    this.readonly = value;
+    for (const card of this.cards.values()) {
+      card.body.disabled = value;
+      if (card.node)
+        this.attempt(() => card.view?.update(card.node, card.runtime ?? IDLE));
+    }
+    this.request();
+  }
+  setCamera(camera, rest = true) {
+    if (![camera.x, camera.y, camera.zoom].every(Number.isFinite))
+      throw new Error("Invalid camera");
+    this.camera = { x: camera.x, y: camera.y, zoom: clamp(camera.zoom, MIN_ZOOM, MAX_ZOOM) };
+    this.request();
+    if (rest)
+      this.rest();
+  }
+  rest() {
+    clearTimeout(this.viewTimer);
+    this.viewTimer = setTimeout(() => this.hooks.view(), 150);
+  }
+  select(ids, edge) {
+    const next = new Set;
+    for (const id of ids)
+      if (this.graph.nodes.has(id))
+        next.add(id);
+    const nextEdge = edge && this.graph.edges.has(edge) ? edge : undefined;
+    const same = next.size === this.selected.size && [...next].every((id) => this.selected.has(id)) && nextEdge === this.selectedEdge;
+    if (same)
+      return;
+    this.selected.clear();
+    for (const id of next)
+      this.selected.add(id);
+    this.selectedEdge = nextEdge;
+    this.request();
+    this.hooks.select();
+  }
+  setRuntime(id, state) {
+    if (!this.graph.nodes.has(id))
+      return;
+    const before = this.runtime.get(id)?.status ?? "idle";
+    if (state.status === "idle")
+      this.runtime.delete(id);
+    else
+      this.runtime.set(id, { ...state });
+    if (before !== state.status)
+      this.statusDirty.add(id);
+    this.request();
+  }
+  clearRuntime() {
+    for (const id of this.runtime.keys())
+      this.statusDirty.add(id);
+    this.runtime.clear();
+    this.request();
+  }
+  getRuntime(id) {
+    return this.runtime.get(id) ?? IDLE;
+  }
+  center() {
+    return {
+      x: (this.root.clientWidth / 2 - this.camera.x) / this.camera.zoom,
+      y: (this.root.clientHeight / 2 - this.camera.y) / this.camera.zoom
+    };
+  }
+  flyTo(point, zoom = this.camera.zoom) {
+    this.setCamera({
+      x: this.root.clientWidth / 2 - point.x * zoom,
+      y: this.root.clientHeight / 2 - point.y * zoom,
+      zoom
+    });
+  }
+  focusField(id, key) {
+    const k = CSS.escape(key);
+    const find = () => {
+      const body = this.cards.get(id)?.body;
+      return body ? dfDollar(body).find(`[data-key="${k}"] :is(input,select,textarea,[tabindex]), tr[data-path="${k}"] .property-grid-value`).get(0) : undefined;
+    };
+    if (!this.graph.nodes.has(id))
+      return false;
+    const now = find();
+    if (now) {
+      now.focus({ preventScroll: true });
+      return true;
+    }
+    this.focusNode(id, false);
+    requestAnimationFrame(() => requestAnimationFrame(() => find()?.focus({ preventScroll: true })));
+    return true;
+  }
+  focusNode(id, focus = true) {
+    const n = this.graph.nodes.get(id);
+    if (!n)
+      return;
+    const collapsed = ENGINE.collapsedAncestor(n, this.graph.groups);
+    if (collapsed) {
+      const g = this.graph.groups.get(collapsed);
+      this.flyTo({ x: g.x + 120, y: g.y + 28 });
+    } else
+      this.flyTo({ x: n.x + n.width / 2, y: n.y + n.height / 2 }, Math.max(this.camera.zoom, 0.8));
+    this.select([id]);
+    if (focus)
+      this.root.focus({ preventScroll: true });
+  }
+  fit(selectionOnly = false) {
+    const nodes = selectionOnly ? [...this.selected].map((id) => this.graph.nodes.get(id)).filter(Boolean) : [...this.graph.nodes.values()];
+    const w = this.root.clientWidth;
+    const h = this.root.clientHeight;
+    if (!nodes.length || !w || !h) {
+      this.setCamera({ x: 80, y: 80, zoom: 1 });
+      return;
+    }
+    let x0 = Infinity;
+    let y0 = Infinity;
+    let x1 = -Infinity;
+    let y1 = -Infinity;
+    for (const n of nodes) {
+      if (n.x < x0)
+        x0 = n.x;
+      if (n.y < y0)
+        y0 = n.y;
+      if (n.x + n.width > x1)
+        x1 = n.x + n.width;
+      if (n.y + n.height > y1)
+        y1 = n.y + n.height;
+    }
+    const b = { x: x0 - 60, y: y0 - 60, width: x1 - x0 + 120, height: y1 - y0 + 120 };
+    let band = 0;
+    for (const sel of [".workflow-minimap", ".workflow-controls"]) {
+      const part = dfDollar(this.root).find(sel).get(0);
+      if (part && !part.hidden)
+        band = Math.max(band, h - part.offsetTop + 8);
+    }
+    const zoomIn = (height) => clamp(Math.min(1.2, w / b.width, height / b.height), MIN_ZOOM, MAX_ZOOM);
+    const above = band > 0 && h - band >= h * 0.55 && (zoomIn(h - band) >= CARD_ZOOM || zoomIn(h) < CARD_ZOOM);
+    const free = above ? h - band : h;
+    const zoom = zoomIn(free);
+    this.setCamera({ x: (w - b.width * zoom) / 2 - b.x * zoom, y: (free - b.height * zoom) / 2 - b.y * zoom, zoom });
+  }
+  zoomBy(factor) {
+    this.zoomAt({ x: this.root.clientWidth / 2, y: this.root.clientHeight / 2 }, factor);
+  }
+  zoomAt(p, factor) {
+    const w = this.toWorld(p);
+    const zoom = clamp(this.camera.zoom * factor, MIN_ZOOM, MAX_ZOOM);
+    this.setCamera({ x: p.x - w.x * zoom, y: p.y - w.y * zoom, zoom });
+  }
+  toWorld(p, camera = this.camera) {
+    return { x: (p.x - camera.x) / camera.zoom, y: (p.y - camera.y) / camera.zoom };
+  }
+  toScreen(p, camera = this.camera) {
+    return { x: p.x * camera.zoom + camera.x, y: p.y * camera.zoom + camera.y };
+  }
+  local(e) {
+    const r = this.root.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+  notify(message, tone = "info") {
+    this.live.textContent = message;
+    this.message.textContent = message;
+    this.message.dataset.tone = tone;
+    this.message.hidden = false;
+    clearTimeout(this.messageTimer);
+    this.messageTimer = setTimeout(() => this.message.hidden = true, 4000);
+  }
+  report(error) {
+    const message = error instanceof Error ? error.message : String(error);
+    this.notify(message, "error");
+    this.hooks.error(message);
+  }
+  attempt(fn) {
+    try {
+      fn();
+    } catch (e) {
+      this.report(e);
+    }
+  }
+  request() {
+    if (!this.raf && !this.dead)
+      this.raf = requestAnimationFrame(() => {
+        this.raf = 0;
+        this.draw();
+      });
+  }
+  domIds() {
+    const w = this.root.clientWidth;
+    const h = this.root.clientHeight;
+    const box = ENGINE.viewport(this.camera, w, h, 160);
+    const ids = new Set;
+    const doc = this.root.ownerDocument;
+    const focused = doc.activeElement?.closest("[data-node-id]")?.dataset.nodeId;
+    if (focused && this.root.contains(doc.activeElement) && this.graph.nodes.has(focused))
+      ids.add(focused);
+    if (this.camera.zoom < CARD_ZOOM)
+      return [...ids];
+    for (const id of this.selected) {
+      if (ids.size >= this.budget.dom)
+        break;
+      const n = this.preview.get(id) ?? this.graph.nodes.get(id);
+      if (!ENGINE.collapsedAncestor(n, this.graph.groups) && ENGINE.intersects(n, box))
+        ids.add(id);
+    }
+    for (const id of this.nodeIndex.query(box, this.budget.dom * 4, 20000).ids) {
+      if (ids.size >= this.budget.dom)
+        break;
+      ids.add(id);
+    }
+    return [...ids];
+  }
+  draw() {
+    if (this.dead)
+      return;
+    const w = this.root.clientWidth;
+    const h = this.root.clientHeight;
+    if (!w || !h)
+      return;
+    if (this.pendingPreview.size) {
+      this.renderer.patch([...this.pendingPreview.values()].map((n) => ({ kind: "nodes", id: n.id, value: this.sceneNode(n) })));
+      this.pendingPreview.clear();
+    }
+    if (this.pendingGroups.length) {
+      this.renderer.patch(this.pendingGroups);
+      this.pendingGroups = [];
+    }
+    if (this.statusDirty.size) {
+      const patches = [];
+      for (const id of this.statusDirty) {
+        const n = this.preview.get(id) ?? this.graph.nodes.get(id);
+        if (n)
+          patches.push({ kind: "nodes", id, value: this.sceneNode(n) });
+      }
+      this.statusDirty.clear();
+      this.renderer.patch(patches);
+    }
+    const domIds = this.domIds();
+    this.syncCards(domIds);
+    this.renderGroups(w, h);
+    this.place();
+    this.empty.hidden = this.graph.nodes.size > 0;
+    const frame = {
+      id: ++this.frameId,
+      revision: this.revision,
+      camera: { ...this.camera },
+      width: w,
+      height: h,
+      dpr: Math.min(globalThis.devicePixelRatio || 1, 2),
+      domIds,
+      selection: [...this.selected].slice(0, 64),
+      edgeSelection: this.selectedEdge,
+      maxEdges: this.edgeBudget,
+      maxNodes: this.budget.nodes,
+      palette: this.palette
+    };
+    this.renderer.draw(frame);
+    this.drawOverlay();
+    this.drawMinimap();
+  }
+  place() {
+    const c = this.camera;
+    const step = 24 * c.zoom;
+    this.grid.style.backgroundSize = `${step}px ${step}px`;
+    this.grid.style.backgroundPosition = `${c.x}px ${c.y}px`;
+    this.grid.dataset.fine = String(step < 8);
+    for (const [id, card] of this.cards) {
+      const n = this.preview.get(id) ?? this.graph.nodes.get(id);
+      if (n)
+        card.el.style.transform = `translate(${n.x * c.zoom + c.x}px, ${n.y * c.zoom + c.y}px) scale(${c.zoom})`;
+    }
+    this.groupLayer.style.setProperty("--workflow-zoom", String(c.zoom));
+    for (const [id, el] of this.groupEls) {
+      const g = this.groupPreview.get(id) ?? this.graph.groups.get(id);
+      if (g)
+        el.style.transform = `translate(${g.x * c.zoom + c.x}px, ${g.y * c.zoom + c.y}px) scale(${c.zoom})`;
+    }
+    const d = this.drawnCamera;
+    const canvas = this.renderer.canvas;
+    if (d) {
+      const s = c.zoom / d.zoom;
+      canvas.style.transform = s === 1 && c.x === d.x && c.y === d.y ? "" : `translate(${c.x - d.x * s}px, ${c.y - d.y * s}px) scale(${s})`;
+    }
+    const zoom = this.zoomLabel;
+    if (zoom)
+      zoom.textContent = `${Math.round(c.zoom * 100)}%`;
+    this.placeEdges();
+  }
+  curveOf(e) {
+    const a = this.preview.get(e.source.node) ?? this.graph.nodes.get(e.source.node);
+    const b = this.preview.get(e.target.node) ?? this.graph.nodes.get(e.target.node);
+    if (!a || !b)
+      return null;
+    if (ENGINE.collapsedAncestor(a, this.graph.groups) || ENGINE.collapsedAncestor(b, this.graph.groups))
+      return null;
+    return ENGINE.route(e, ENGINE.portPosition(a, e.source.port), ENGINE.portPosition(b, e.target.port));
+  }
+  dropDecor(id) {
+    const d = this.decor.get(id);
+    d?.path?.remove();
+    d?.label?.remove();
+    this.decor.delete(id);
+  }
+  placeEdges() {
+    const c = this.camera;
+    const box = ENGINE.viewport(c, this.root.clientWidth, this.root.clientHeight, 40);
+    const wanted = new Map;
+    if (c.zoom >= 0.12) {
+      if (!this.decorated) {
+        this.decorated = new Set;
+        for (const e of this.graph.edges.values()) {
+          const look = this.look(e);
+          if (e.label || look.animated || look.type?.render)
+            this.decorated.add(e.id);
+        }
+      }
+      const flowing = new Set;
+      for (const [id, r] of this.runtime)
+        if (r.status === "running") {
+          for (const eid of this.graph.edgesFor(id))
+            if (this.graph.edges.get(eid)?.target.node === id)
+              flowing.add(eid);
+        }
+      const candidates = this.decorated.size + flowing.size <= 1500 ? [...this.decorated, ...flowing] : this.nodeIndex.query(box, 300, 5000).ids.flatMap((id) => [...this.graph.edgesFor(id)]).filter((id) => this.decorated.has(id) || flowing.has(id));
+      for (const id of candidates) {
+        if (wanted.size >= 300)
+          break;
+        if (wanted.has(id))
+          continue;
+        const e = this.graph.edges.get(id);
+        if (!e)
+          continue;
+        const curve = this.curveOf(e);
+        if (!curve || !ENGINE.intersects(curve.box, box))
+          continue;
+        const look = this.look(e);
+        wanted.set(id, {
+          e,
+          curve,
+          look,
+          flow: look.animated || flowing.has(id),
+          label: c.zoom >= 0.3 && (!!e.label || !!look.type?.render)
+        });
+      }
+    }
+    for (const id of this.decor.keys())
+      if (!wanted.has(id))
+        this.dropDecor(id);
+    const labels = [];
+    const doc = this.root.ownerDocument;
+    const screen = (p) => `${(p.x * c.zoom + c.x).toFixed(1)},${(p.y * c.zoom + c.y).toFixed(1)}`;
+    for (const [id, w] of wanted) {
+      let d = this.decor.get(id);
+      if (!d)
+        this.decor.set(id, d = {});
+      if (w.flow) {
+        if (!d.path) {
+          d.path = doc.createElementNS("http://www.w3.org/2000/svg", "path");
+          d.path.setAttribute("class", "workflow-edge-flow-path");
+          this.flowLayer.append(d.path);
+        }
+        const p = w.curve.points;
+        d.path.setAttribute("d", w.curve.cubic ? `M${screen(p[0])}C${screen(p[1])} ${screen(p[2])} ${screen(p[3])}` : "M" + p.map(screen).join("L"));
+        const slot = ENGINE.typeIndex(w.look.port?.type ?? "any");
+        d.path.style.stroke = accentOf(w.look.color) ?? (slot >= 0 ? `var(--workflow-type-${slot})` : "var(--workflow-edge)");
+        d.path.style.strokeWidth = `${Math.max(2, (w.look.width ?? 1.75) + 1)}px`;
+        d.path.toggleAttribute("data-selected", id === this.selectedEdge);
+      } else if (d.path) {
+        d.path.remove();
+        d.path = undefined;
+      }
+      if (w.label) {
+        const runtime = this.getRuntime(w.e.source.node);
+        const value = outputOf(runtime)?.[w.e.source.port];
+        const selected = id === this.selectedEdge;
+        const drawn = d.drawn;
+        if (!d.label || !drawn || drawn[0] !== w.e || drawn[1] !== value || drawn[2] !== selected || drawn[3] !== edgeTypesVersion || drawn[4] !== runtime.status) {
+          if (!d.label) {
+            d.label = doc.createElement("button");
+            d.label.type = "button";
+            d.label.className = "workflow-edge-label";
+            d.label.tabIndex = -1;
+            d.label.dataset.edgeId = id;
+            this.labelLayer.append(d.label);
+          }
+          d.drawn = [w.e, value, selected, edgeTypesVersion, runtime.status];
+          let content = w.e.label ?? null;
+          if (content === null && w.look.type?.render)
+            try {
+              content = w.look.type.render(w.e, {
+                source: this.graph.nodes.get(w.e.source.node),
+                target: this.graph.nodes.get(w.e.target.node),
+                port: w.look.port,
+                value,
+                runtime,
+                selected,
+                workflow: this.root
+              });
+            } catch (error) {
+              this.report(error);
+            }
+          if (!put(d.label, content)) {
+            d.label.remove();
+            d.label = undefined;
+            continue;
+          }
+          d.label.toggleAttribute("data-selected", selected);
+          d.label.setAttribute("aria-label", `Connection ${w.e.label ?? id}`);
+          d.size = undefined;
+        }
+        labels.push({ d, curve: w.curve, selected: id === this.selectedEdge });
+      } else if (d.label) {
+        d.label.remove();
+        d.label = undefined;
+        d.drawn = undefined;
+      }
+    }
+    this.placeLabels(labels, box);
+  }
+  placeLabels(list, box) {
+    if (!list.length)
+      return;
+    const c = this.camera;
+    const scale = Math.min(1.25, Math.max(0.75, c.zoom));
+    for (const it of list)
+      if (!it.d.size?.width)
+        it.d.size = { width: it.d.label.offsetWidth, height: it.d.label.offsetHeight };
+    const crowd = list.length <= 150;
+    const cards = [];
+    if (crowd)
+      for (const id of this.nodeIndex.query(box, 600, 6000).ids) {
+        const n = this.preview.get(id) ?? this.graph.nodes.get(id);
+        if (!n || ENGINE.collapsedAncestor(n, this.graph.groups))
+          continue;
+        const x = n.x * c.zoom + c.x;
+        const y = n.y * c.zoom + c.y;
+        cards.push({ x, y, r: x + n.width * c.zoom, b: y + n.height * c.zoom });
+      }
+    const placed = [];
+    const free = (q) => !cards.some((o) => q.x < o.r && q.r > o.x && q.y < o.b && q.b > o.y) && !placed.some((o) => q.x < o.r && q.r > o.x && q.y < o.b && q.b > o.y);
+    const ALONG = [0.5, 0.4, 0.6, 0.3, 0.7, 0.22, 0.78];
+    const PLACES = [
+      ...ALONG.map((t) => [t, 0]),
+      ...ALONG.flatMap((t) => [
+        [t, 1],
+        [t, -1]
+      ])
+    ];
+    for (const it of [...list].sort((a, b) => Number(b.selected) - Number(a.selected))) {
+      const w = it.d.size.width * scale;
+      const h = it.d.size.height * scale;
+      const rect = ([t, side]) => {
+        const m = curveAt(it.curve, t);
+        const x = m.x * c.zoom + c.x - w / 2;
+        const y = m.y * c.zoom + c.y - h / 2 + side * (h / 2 + 6);
+        return { x: x - 2, y: y - 2, r: x + w + 2, b: y + h + 2 };
+      };
+      let at;
+      if (crowd)
+        for (const place of PLACES) {
+          const q = rect(place);
+          if (free(q)) {
+            at = q;
+            break;
+          }
+        }
+      else
+        at = rect([0.5, 0]);
+      const crowded = !at && !it.selected;
+      if (!at)
+        at = rect([0.5, 0]);
+      if (!crowded)
+        placed.push(at);
+      it.d.label.toggleAttribute("data-crowded", crowded);
+      it.d.label.style.transform = `translate(${(at.x + 2).toFixed(1)}px, ${(at.y + 2).toFixed(1)}px) scale(${scale})`;
+    }
+  }
+  present(f, stats, renderer) {
+    if (this.dead)
+      return;
+    const cost = stats.rasterMs ?? stats.drawMs;
+    if (cost > 20 && stats.edges > 128) {
+      this.edgeBudget = Math.max(Math.min(128, this.budget.edges), Math.floor(this.edgeBudget * Math.max(0.15, Math.min(0.8, 14 / cost))));
+      this.fastFrames = 0;
+    } else if (cost < 10 && ++this.fastFrames >= 30) {
+      this.edgeBudget = Math.min(this.budget.edges, Math.ceil(this.edgeBudget * 1.15));
+      this.fastFrames = 0;
+    }
+    this.drawnCamera = f.camera;
+    this.place();
+    this.stats = {
+      frame: stats.frame,
+      drawMs: Math.round(stats.drawMs * 10) / 10,
+      edges: stats.edges,
+      nodes: stats.nodes,
+      domNodes: this.cards.size,
+      edgeBudget: stats.edgeBudget,
+      edgesTruncated: stats.edgesTruncated,
+      renderer,
+      zoom: f.camera.zoom
+    };
+    this.root.dataset.renderer = renderer;
+    this.hooks.frame(this.stats);
+    this.resolveReady();
+  }
+  release(id, card) {
+    this.attempt(() => card.view?.destroy());
+    card.view = undefined;
+    card.node = undefined;
+    card.runtime = undefined;
+    dfDollar(card.body).empty();
+    card.el.remove();
+    this.cards.delete(id);
+    if (this.pool.length < this.budget.dom)
+      this.pool.push(card);
+  }
+  syncCards(ids) {
+    const wanted = new Set(ids);
+    for (const [id, card] of this.cards)
+      if (!wanted.has(id))
+        this.release(id, card);
+    for (const id of ids) {
+      const node = this.preview.get(id) ?? this.graph.nodes.get(id);
+      if (!node)
+        continue;
+      let card = this.cards.get(id);
+      if (!card) {
+        card = this.pool.pop() ?? this.newCard();
+        this.cards.set(id, card);
+        card.el.dataset.nodeId = id;
+        card.signature = "";
+        card.type = "";
+        this.nodeLayer.append(card.el);
+      }
+      this.updateCard(card, node);
+    }
+  }
+  newCard() {
+    const doc = this.root.ownerDocument;
+    const el = doc.createElement("article");
+    el.className = "workflow-node";
+    el.setAttribute("role", "group");
+    const head = doc.createElement("header");
+    head.className = "workflow-node-header";
+    const title = doc.createElement("span");
+    title.className = "workflow-node-title";
+    const status = doc.createElement("span");
+    status.className = "workflow-node-status";
+    head.append(title, status);
+    const ports = doc.createElement("div");
+    ports.className = "workflow-node-ports";
+    const body = doc.createElement("fieldset");
+    body.className = "workflow-node-body";
+    const progress = doc.createElement("div");
+    progress.className = "workflow-node-progress";
+    const resize = doc.createElement("button");
+    resize.type = "button";
+    resize.className = "workflow-node-resize";
+    resize.setAttribute("aria-label", "Resize node");
+    resize.title = "Drag to resize; arrow keys resize";
+    resize.addEventListener("keydown", (e) => {
+      if (!e.key.startsWith("Arrow") || this.readonly)
+        return;
+      e.preventDefault();
+      e.stopPropagation();
+      const n = this.graph.nodes.get(el.dataset.nodeId);
+      if (!n || n.locked)
+        return;
+      const dx = e.key === "ArrowRight" ? 16 : e.key === "ArrowLeft" ? -16 : 0;
+      const dy = e.key === "ArrowDown" ? 16 : e.key === "ArrowUp" ? -16 : 0;
+      this.attempt(() => this.graph.updateNode(n.id, { width: Math.max(160, n.width + dx), height: Math.max(ENGINE.contentTop(n) + 40, n.height + dy) }, "Resize"));
+    });
+    el.append(head, ports, body, progress, resize);
+    return { el, title, status, ports, body, progress, signature: "", type: "", typeVersion: -1 };
+  }
+  updateCard(card, n) {
+    const c = this.camera;
+    card.el.style.width = `${n.width}px`;
+    card.el.style.height = `${n.height}px`;
+    card.el.style.transform = `translate(${n.x * c.zoom + c.x}px, ${n.y * c.zoom + c.y}px) scale(${c.zoom})`;
+    card.el.toggleAttribute("data-selected", this.selected.has(n.id));
+    card.el.toggleAttribute("data-locked", !!n.locked);
+    card.el.toggleAttribute("data-subgraph", !!n.subgraph);
+    card.el.setAttribute("aria-label", n.title);
+    if (card.title.textContent !== n.title)
+      card.title.textContent = n.title;
+    const state = this.getRuntime(n.id);
+    card.el.dataset.status = state.status;
+    card.status.title = state.message ?? state.status;
+    card.status.textContent = state.status === "running" && state.progress !== undefined ? `${Math.round(state.progress * 100)}%` : state.status === "idle" ? "" : state.status;
+    card.progress.style.setProperty("--workflow-progress", String(state.progress ?? (state.status === "success" ? 1 : 0)));
+    const definition = this.hooks.types(n.type);
+    const accent = accentOf(definition?.color);
+    if (accent)
+      card.el.style.setProperty("--workflow-accent-color", accent);
+    else
+      card.el.style.removeProperty("--workflow-accent-color");
+    const signature = JSON.stringify(n.ports);
+    if (card.signature !== signature) {
+      dfDollar(card.ports).empty();
+      card.signature = signature;
+      for (const direction of ["input", "output"])
+        n.ports.filter((p) => p.direction === direction).forEach((p, i) => {
+          const doc = this.root.ownerDocument;
+          const button = doc.createElement("button");
+          button.type = "button";
+          button.className = "workflow-port";
+          button.dataset.portId = p.id;
+          button.dataset.direction = direction;
+          button.style.top = `${ENGINE.PORT_TOP + i * ENGINE.PORT_STEP - 11}px`;
+          const t = ENGINE.typeIndex(p.type);
+          button.style.setProperty("--workflow-port", t >= 0 ? `var(--workflow-type-${t})` : "var(--workflow-edge)");
+          button.title = `${p.label ?? p.id} · ${p.type}`;
+          button.setAttribute("aria-label", `${direction} ${p.label ?? p.id} (${p.type})`);
+          const dot = doc.createElement("i");
+          dot.setAttribute("aria-hidden", "true");
+          const label = doc.createElement("span");
+          label.textContent = p.label ?? p.id;
+          button.append(dot, label);
+          card.ports.append(button);
+        });
+    }
+    card.body.style.top = `${ENGINE.contentTop(n)}px`;
+    const version = this.hooks.typesVersion();
+    if (card.type !== n.type || !card.node || card.typeVersion !== version) {
+      this.attempt(() => card.view?.destroy());
+      card.view = undefined;
+      dfDollar(card.body).empty();
+      card.type = n.type;
+      card.typeVersion = version;
+      const id = n.id;
+      const context = {
+        updateData: (data) => this.hooks.write(id, data),
+        requestResize: (height) => {
+          const current = this.graph.nodes.get(id);
+          if (!this.readonly && current)
+            this.attempt(() => this.graph.updateNode(id, { height: Math.max(ENGINE.contentTop(current) + 40, height) }, "Resize"));
+        }
+      };
+      const host = {
+        write: (data) => this.hooks.write(id, data),
+        edit: (key) => this.hooks.edit(id, key),
+        context: (field, node, runtime) => ({
+          node,
+          field,
+          runtime,
+          workflow: this.root,
+          readonly: this.readonly,
+          custom: customEditor(field)
+        }),
+        readonly: () => this.readonly
+      };
+      const layout = definition?.layout ?? this.hooks.layout();
+      this.attempt(() => {
+        if (definition?.mount)
+          card.view = definition.mount(card.body, n, context);
+        else {
+          const fields = definition?.fields?.length ? definition.fields : null;
+          const list = layout === "list" ? listView(card.body, n, fields, host) : null;
+          if (list)
+            card.view = list;
+          else if (fields)
+            card.view = fieldsView(card.body, n, fields, host, `${this.idBase}-${n.id}`);
+          else
+            card.view = dataView(card.body, n, definition?.description);
+        }
+      });
+      card.el.dataset.layout = dfDollar(card.body).children(".workflow-properties").get(0) ? "list" : "controls";
+      card.node = undefined;
+    }
+    if (card.node !== n || card.runtime !== state)
+      this.attempt(() => card.view?.update(n, state));
+    card.node = n;
+    card.runtime = state;
+    card.body.disabled = this.readonly;
+    if (this.connection)
+      this.markCompatible(card);
+  }
+  renderGroups(w, h) {
+    const ids = new Set(this.groupIndex.query(ENGINE.viewport(this.camera, w, h, 100), 100, 2000).ids);
+    for (const [id, el] of this.groupEls)
+      if (!ids.has(id)) {
+        el.remove();
+        this.groupEls.delete(id);
+      }
+    for (const id of ids) {
+      const g = this.groupPreview.get(id) ?? this.graph.groups.get(id);
+      if (!g)
+        continue;
+      let el = this.groupEls.get(id);
+      if (!el) {
+        el = this.root.ownerDocument.createElement("section");
+        el.className = "workflow-group";
+        el.dataset.groupId = id;
+        dfDollar(el).html(`<header class="workflow-group-header"><button type="button" class="workflow-group-toggle"></button><span class="workflow-group-title"></span><span class="workflow-group-count"></span></header>`);
+        this.groupEls.set(id, el);
+        this.groupLayer.append(el);
+      }
+      el.style.width = `${g.collapsed ? 240 : g.width}px`;
+      el.style.height = `${g.collapsed ? 56 : g.height}px`;
+      el.toggleAttribute("data-collapsed", !!g.collapsed);
+      if (g.color)
+        el.style.setProperty("--workflow-group-color", g.color);
+      const title = dfDollar(el).find(".workflow-group-title").get(0);
+      if (title.textContent !== g.title)
+        title.textContent = g.title;
+      const toggle = dfDollar(el).find(".workflow-group-toggle").get(0);
+      toggle.textContent = g.collapsed ? "+" : "−";
+      toggle.setAttribute("aria-label", `${g.collapsed ? "Expand" : "Collapse"} ${g.title}`);
+      toggle.setAttribute("aria-expanded", String(!g.collapsed));
+      toggle.disabled = this.readonly;
+      const count = dfDollar(el).find(".workflow-group-count").get(0);
+      count.textContent = g.collapsed ? `${fmt(this.graph.groupMembers(id).length)} nodes` : "";
+    }
+  }
+  toggleGroup(id) {
+    const g = this.graph.groups.get(id);
+    if (!g || this.readonly)
+      return;
+    this.attempt(() => this.graph.commit(g.collapsed ? "Expand group" : "Collapse group", [
+      { kind: "groups", id, value: { ...g, collapsed: !g.collapsed } }
+    ]));
+  }
+  listen() {
+    const signal = this.abort.signal;
+    const root = this.root;
+    root.addEventListener("scroll", () => {
+      if (root.scrollLeft || root.scrollTop)
+        root.scrollTo(0, 0);
+    }, { signal });
+    root.addEventListener("pointerdown", (e) => this.down(e), { signal });
+    root.addEventListener("pointermove", (e) => this.move(e), { signal });
+    root.addEventListener("pointerup", (e) => this.up(e), { signal });
+    root.addEventListener("pointercancel", (e) => {
+      this.pointers.delete(e.pointerId);
+      this.cancel();
+    }, { signal });
+    root.addEventListener("lostpointercapture", (e) => {
+      this.pointers.delete(e.pointerId);
+      if (this.gesture && this.gesture.pointer === e.pointerId)
+        this.cancel();
+    }, { signal });
+    root.addEventListener("wheel", (e) => this.wheel(e), { passive: false, signal });
+    root.addEventListener("keydown", (e) => this.key(e), { signal });
+    root.addEventListener("keyup", (e) => {
+      if (e.code === "Space")
+        this.space = false;
+    }, { signal });
+    root.addEventListener("focusout", () => {
+      this.space = false;
+      this.request();
+    }, { signal });
+    root.addEventListener("dblclick", (e) => {
+      const target = e.target;
+      const id = target.closest("[data-node-id]")?.dataset.nodeId ?? (target === root ? this.pressedNode : undefined);
+      if (id && this.graph.nodes.get(id)?.subgraph && !target.closest("input,textarea,select,button"))
+        this.hooks.enter(id);
+      else if (!id && !target.closest(".workflow-group,.workflow-controls,.workflow-minimap"))
+        this.fit();
+    }, { signal });
+    root.addEventListener("click", (e) => {
+      const target = e.target;
+      const control = target.closest("[data-workflow-control]")?.dataset.workflowControl;
+      if (control === "zoom-in")
+        this.zoomBy(1.25);
+      else if (control === "zoom-out")
+        this.zoomBy(0.8);
+      else if (control === "fit")
+        this.fit();
+      else if (control === "reset")
+        this.zoomBy(1 / this.camera.zoom);
+      const toggle = target.closest(".workflow-group-toggle");
+      if (toggle)
+        this.toggleGroup(toggle.closest("[data-group-id]").dataset.groupId);
+      const port = target.closest("[data-port-id]");
+      if (port && e.detail === 0 && !this.readonly) {
+        const nodeEl = port.closest("[data-node-id]");
+        this.portAction({ node: nodeEl.dataset.nodeId, port: port.dataset.portId }, port.dataset.direction);
+      }
+    }, { signal });
+    root.addEventListener("dragover", (e) => {
+      if (e.dataTransfer?.types.includes("application/x-workflow-type") && !this.readonly) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+      }
+    }, { signal });
+    root.addEventListener("drop", (e) => {
+      const type = e.dataTransfer?.getData("application/x-workflow-type");
+      if (!type || this.readonly)
+        return;
+      e.preventDefault();
+      this.addNode(type, this.toWorld(this.local(e)));
+    }, { signal });
+    this.mini.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      capture(this.mini, e.pointerId);
+      this.miniJump(e);
+    }, { signal });
+    this.mini.addEventListener("pointermove", (e) => {
+      if (this.mini.hasPointerCapture(e.pointerId))
+        this.miniJump(e);
+    }, { signal });
+  }
+  miniJump(e) {
+    const r = this.mini.getBoundingClientRect();
+    const b = this.miniBounds;
+    this.flyTo({
+      x: b.x + (e.clientX - r.left) / r.width * b.width,
+      y: b.y + (e.clientY - r.top) / r.height * b.height
+    });
+  }
+  addNode(type, at) {
+    if (this.readonly)
+      return;
+    const definition = this.hooks.types(type);
+    if (!definition) {
+      this.report(`Unknown node type ${type}`);
+      return;
+    }
+    const where = at ?? this.center();
+    const node = createNode(definition, { x: where.x - (definition.width ?? 260) / 2, y: where.y - 40 }, this.hooks.layout());
+    let added;
+    this.attempt(() => {
+      this.graph.addNode(node);
+      this.select([node.id]);
+      added = node.id;
+    });
+    return added;
+  }
+  down(e) {
+    const target = e.target;
+    if (e.button === 2)
+      return;
+    if (target.closest(".workflow-minimap,.workflow-controls,.workflow-group-toggle"))
+      return;
+    const edgeLabel = target.closest(".workflow-edge-label");
+    if (edgeLabel?.dataset.edgeId && e.pointerType !== "touch") {
+      e.preventDefault();
+      this.select([], edgeLabel.dataset.edgeId);
+      this.root.focus({ preventScroll: true });
+      return;
+    }
+    const point = this.local(e);
+    if (e.pointerType === "touch") {
+      this.pointers.set(e.pointerId, point);
+      if (this.pointers.size === 2) {
+        this.cancel();
+        const [a, b] = [...this.pointers.values()];
+        this.gesture = {
+          type: "pinch",
+          pointer: e.pointerId,
+          start: point,
+          last: point,
+          camera: { ...this.camera },
+          original: [],
+          pinch: {
+            distance: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+            center: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+          }
+        };
+        e.preventDefault();
+        return;
+      }
+    }
+    const port = target.closest("[data-port-id]");
+    const nodeEl = target.closest("[data-node-id]");
+    if (port && nodeEl && !this.readonly) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.portAction({ node: nodeEl.dataset.nodeId, port: port.dataset.portId }, port.dataset.direction);
+      if (this.connection)
+        this.connection.cursor = point;
+      capture(this.root, e.pointerId);
+      return;
+    }
+    if (target.closest('input,textarea,select,option,label,[contenteditable="true"],a,.property-grid,[data-workflow-field-edit]') || target.closest("button:not(.workflow-node-resize)"))
+      return;
+    this.root.focus({ preventScroll: true });
+    this.pressedNode = nodeEl?.dataset.nodeId;
+    let type = "pan";
+    let original = [];
+    if (nodeEl && !this.space && e.button !== 1) {
+      const id = nodeEl.dataset.nodeId;
+      if (e.shiftKey || e.metaKey || e.ctrlKey) {
+        const next = new Set(this.selected);
+        if (next.has(id))
+          next.delete(id);
+        else
+          next.add(id);
+        this.select(next);
+      } else if (!this.selected.has(id))
+        this.select([id]);
+      if (!this.readonly) {
+        type = target.closest(".workflow-node-resize") ? "resize" : "move";
+        original = (type === "resize" ? [id] : [...this.selected]).map((nid) => this.graph.nodes.get(nid)).filter((n) => n && !n.locked);
+      }
+    } else if (e.shiftKey && !this.space)
+      type = "marquee";
+    const groupEl = target.closest(".workflow-group-header")?.closest("[data-group-id]");
+    let movingGroups;
+    if (groupEl && !this.readonly) {
+      const gid = groupEl.dataset.groupId;
+      const members = this.graph.groupMembers(gid);
+      if (members.some((n) => n.locked)) {
+        this.report("Unlock the group’s nodes before moving it");
+        return;
+      }
+      this.select(members.map((n) => n.id));
+      type = "move";
+      original = members;
+      movingGroups = [...this.graph.groups.values()].filter((g) => {
+        let id = g.id;
+        while (id) {
+          if (id === gid)
+            return true;
+          id = this.graph.groups.get(id)?.parentId;
+        }
+        return false;
+      });
+    }
+    if (!nodeEl && this.selectedEdge && !this.readonly) {
+      const edge = this.graph.edges.get(this.selectedEdge);
+      const index = edge?.points?.findIndex((p) => {
+        const s = this.toScreen(p);
+        return Math.hypot(s.x - point.x, s.y - point.y) < 9;
+      }) ?? -1;
+      if (index >= 0) {
+        this.gesture = {
+          type: "bend",
+          pointer: e.pointerId,
+          start: point,
+          last: point,
+          camera: { ...this.camera },
+          original,
+          bend: { edge: this.selectedEdge, index, points: structuredClone(edge.points) }
+        };
+        e.preventDefault();
+        capture(this.root, e.pointerId);
+        return;
+      }
+    }
+    this.gesture = {
+      type,
+      pointer: e.pointerId,
+      start: point,
+      last: point,
+      camera: { ...this.camera },
+      original,
+      groups: movingGroups
+    };
+    e.preventDefault();
+    capture(this.root, e.pointerId);
+    this.root.dataset.gesture = type;
+  }
+  move(e) {
+    const point = this.local(e);
+    if (this.pointers.has(e.pointerId))
+      this.pointers.set(e.pointerId, point);
+    if (this.connection) {
+      this.connection.cursor = point;
+      this.connectionMoved = true;
+      this.drawOverlay();
+    }
+    const g = this.gesture;
+    if (!g)
+      return;
+    if (g.type === "pinch") {
+      if (this.pointers.size < 2)
+        return;
+      const [a, b] = [...this.pointers.values()];
+      const distance = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+      const center = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const zoom = clamp(g.camera.zoom * distance / g.pinch.distance, MIN_ZOOM, MAX_ZOOM);
+      const world = this.toWorld(g.pinch.center, g.camera);
+      this.setCamera({ x: center.x - world.x * zoom, y: center.y - world.y * zoom, zoom });
+      return;
+    }
+    if (g.pointer !== e.pointerId)
+      return;
+    g.last = point;
+    const dx = g.last.x - g.start.x;
+    const dy = g.last.y - g.start.y;
+    if (g.type === "pan")
+      this.setCamera({ ...g.camera, x: g.camera.x + dx, y: g.camera.y + dy });
+    else if (g.type === "move" || g.type === "resize") {
+      const grid = 16;
+      const snap = (v) => e.altKey ? v : Math.round(v / grid) * grid;
+      const wx = dx / this.camera.zoom;
+      const wy = dy / this.camera.zoom;
+      for (const n of g.original) {
+        const value = g.type === "move" ? { ...n, x: g.groups ? n.x + snap(wx) : snap(n.x + wx), y: g.groups ? n.y + snap(wy) : snap(n.y + wy) } : {
+          ...n,
+          width: Math.max(160, snap(n.width + wx)),
+          height: Math.max(ENGINE.contentTop(n) + 40, snap(n.height + wy))
+        };
+        this.preview.set(n.id, value);
+        this.pendingPreview.set(n.id, value);
+        if (!ENGINE.collapsedAncestor(n, this.graph.groups))
+          this.nodeIndex.set(n.id, value);
+        const card = this.cards.get(n.id);
+        if (card)
+          this.updateCard(card, value);
+      }
+      this.pendingGroups = (g.groups ?? []).map((group) => {
+        const value = { ...group, x: group.x + snap(wx), y: group.y + snap(wy) };
+        this.groupPreview.set(group.id, value);
+        this.groupIndex.set(group.id, {
+          ...value,
+          width: value.collapsed ? 240 : value.width,
+          height: value.collapsed ? 56 : value.height
+        });
+        return { kind: "groups", id: group.id, value };
+      });
+      this.request();
+    } else
+      this.drawOverlay();
+  }
+  up(e) {
+    this.pointers.delete(e.pointerId);
+    if (this.connection && e.type === "pointerup") {
+      const hit = this.root.ownerDocument.elementFromPoint(e.clientX, e.clientY);
+      const portEl = hit?.closest("[data-port-id]");
+      const nodeEl = hit?.closest("[data-node-id]");
+      const from = this.connection.endpoint;
+      if (portEl && nodeEl) {
+        const endpoint = { node: nodeEl.dataset.nodeId, port: portEl.dataset.portId };
+        if (endpoint.node !== from.node || endpoint.port !== from.port)
+          this.portAction(endpoint, portEl.dataset.direction);
+      } else if (nodeEl && nodeEl.dataset.nodeId !== from.node) {
+        const port = this.bestPort(nodeEl.dataset.nodeId);
+        if (port)
+          this.portAction({ node: nodeEl.dataset.nodeId, port: port.id }, port.direction);
+        else {
+          this.report("No free port of a matching type on that node");
+          this.endConnection();
+        }
+      } else if (this.connectionMoved)
+        this.endConnection();
+    }
+    const g = this.gesture;
+    if (g?.type === "pinch") {
+      if (this.pointers.size < 2) {
+        this.gesture = undefined;
+        delete this.root.dataset.gesture;
+      }
+      return;
+    }
+    if (g && g.pointer !== e.pointerId)
+      return;
+    this.gesture = undefined;
+    delete this.root.dataset.gesture;
+    if (this.root.hasPointerCapture(e.pointerId))
+      this.root.releasePointerCapture(e.pointerId);
+    if (!g)
+      return;
+    const moved = Math.hypot(g.last.x - g.start.x, g.last.y - g.start.y) > 3;
+    if (g.type === "move" || g.type === "resize") {
+      const patches = [
+        ...[...this.preview.values()].map((value) => ({ kind: "nodes", id: value.id, value })),
+        ...[...this.groupPreview.values()].map((value) => ({ kind: "groups", id: value.id, value }))
+      ];
+      this.preview.clear();
+      this.pendingPreview.clear();
+      this.groupPreview.clear();
+      this.pendingGroups = [];
+      if (moved && patches.length) {
+        try {
+          this.graph.commit(g.type === "move" ? "Move nodes" : "Resize nodes", patches);
+        } catch (err) {
+          this.restore(g);
+          this.report(err);
+        }
+      } else
+        this.restore(g);
+    } else if (g.type === "marquee") {
+      const a = this.toWorld(g.start);
+      const b = this.toWorld(g.last);
+      const rect = {
+        x: Math.min(a.x, b.x),
+        y: Math.min(a.y, b.y),
+        width: Math.abs(a.x - b.x),
+        height: Math.abs(a.y - b.y)
+      };
+      this.select(this.nodeIndex.query(rect).ids);
+    } else if (g.type === "bend" && g.bend) {
+      const edge = this.graph.edges.get(g.bend.edge);
+      if (edge && moved) {
+        g.bend.points[g.bend.index] = this.toWorld(g.last);
+        this.attempt(() => this.graph.commit("Move reroute point", [
+          { kind: "edges", id: edge.id, value: { ...edge, points: g.bend.points } }
+        ]));
+      }
+    } else if (g.type === "pan" && !moved) {
+      const store = this.graph;
+      const version = store.version;
+      const point = this.toWorld(this.local(e));
+      if (!this.pressedNode)
+        this.renderer.hit(point, 8 / this.camera.zoom).then((id) => {
+          if (this.dead || this.graph !== store || store.version !== version)
+            return;
+          this.select([], id);
+          if (id && e.altKey && !this.readonly) {
+            const edge = this.graph.edges.get(id);
+            this.attempt(() => this.graph.commit("Add reroute point", [
+              { kind: "edges", id, value: { ...edge, points: [...edge.points ?? [], point] } }
+            ]));
+          }
+        });
+    }
+    this.drawOverlay();
+    this.request();
+  }
+  connectionMoved = false;
+  pressedNode;
+  restore(g) {
+    this.renderer.patch([
+      ...g.original.map((value) => ({ kind: "nodes", id: value.id, value: this.sceneNode(value) })),
+      ...(g.groups ?? []).map((value) => ({ kind: "groups", id: value.id, value }))
+    ]);
+    this.reindex();
+  }
+  bestPort(nodeId) {
+    const pending = this.connection;
+    const n = this.graph.nodes.get(nodeId);
+    if (!pending || !n)
+      return;
+    const want = pending.direction === "output" ? "input" : "output";
+    return n.ports.find((p) => {
+      if (p.direction !== want)
+        return false;
+      const endpoint = { node: nodeId, port: p.id };
+      return want === "input" ? !this.graph.canConnect(pending.endpoint, endpoint, pending.replaceId) : !this.graph.canConnect(endpoint, pending.endpoint, pending.replaceId);
+    });
+  }
+  markCompatible(card) {
+    const pending = this.connection;
+    for (const el of dfDollar(card.ports).children("[data-port-id]").toArray()) {
+      if (!pending) {
+        delete el.dataset.compatible;
+        continue;
+      }
+      const endpoint = { node: card.el.dataset.nodeId, port: el.dataset.portId };
+      const ok = el.dataset.direction !== pending.direction && endpoint.node !== pending.endpoint.node && !(el.dataset.direction === "input" ? this.graph.canConnect(pending.endpoint, endpoint, pending.replaceId) : this.graph.canConnect(endpoint, pending.endpoint, pending.replaceId));
+      el.dataset.compatible = String(ok);
+    }
+  }
+  endConnection() {
+    this.connection = undefined;
+    this.connectionMoved = false;
+    delete this.root.dataset.connecting;
+    for (const card of this.cards.values())
+      this.markCompatible(card);
+    this.drawOverlay();
+  }
+  portAction(endpoint, direction) {
+    if (!this.connection) {
+      const existing = direction === "input" ? [...this.graph.connections(endpoint)][0] : undefined;
+      if (existing) {
+        const edge = this.graph.edges.get(existing);
+        this.connection = { endpoint: edge.source, direction: "output", replaceId: existing };
+      } else
+        this.connection = { endpoint, direction };
+      this.root.dataset.connecting = this.connection.direction;
+      this.live.textContent = "Pick a port to connect to. Escape cancels.";
+      for (const card of this.cards.values())
+        this.markCompatible(card);
+      this.drawOverlay();
+      return;
+    }
+    const pending = this.connection;
+    if (pending.direction === direction) {
+      if (pending.endpoint.node === endpoint.node && pending.endpoint.port === endpoint.port)
+        return;
+      this.report("Connect an output to an input");
+      this.endConnection();
+      return;
+    }
+    const source = direction === "output" ? endpoint : pending.endpoint;
+    const target = direction === "input" ? endpoint : pending.endpoint;
+    this.attempt(() => {
+      const id = this.graph.connect(source, target, pending.replaceId);
+      this.live.textContent = "Connected";
+      this.select([], id);
+    });
+    this.endConnection();
+  }
+  cancel() {
+    const g = this.gesture;
+    this.gesture = undefined;
+    delete this.root.dataset.gesture;
+    if (this.connection)
+      this.endConnection();
+    this.preview.clear();
+    this.pendingPreview.clear();
+    this.groupPreview.clear();
+    this.pendingGroups = [];
+    this.revision++;
+    if (g && (g.original.length || g.groups?.length))
+      this.restore(g);
+    this.drawOverlay();
+    this.request();
+  }
+  wheel(e) {
+    const target = e.target;
+    const body = target.closest(".workflow-node-body, textarea, select");
+    if (body && body.scrollHeight > body.clientHeight && !e.ctrlKey)
+      return;
+    if (target.closest(".workflow-minimap"))
+      return;
+    e.preventDefault();
+    const scale = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+    if (!e.ctrlKey && !e.metaKey && (e.shiftKey || e.deltaMode === 0 && Math.abs(e.deltaX) > 0.5)) {
+      const dx = e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX;
+      const dy = e.shiftKey && !e.deltaX ? 0 : e.deltaY;
+      this.setCamera({ ...this.camera, x: this.camera.x - dx * scale, y: this.camera.y - dy * scale });
+    } else
+      this.zoomAt(this.local(e), Math.exp(-e.deltaY * scale * (e.ctrlKey ? 0.01 : 0.0015)));
+  }
+  copy() {
+    this.clipboard = this.graph.fragment(this.selected);
+  }
+  paste(fragment = this.clipboard) {
+    if (this.readonly || !fragment)
+      return;
+    this.attempt(() => this.select(this.graph.paste(fragment)));
+  }
+  duplicate() {
+    if (!this.readonly && this.selected.size)
+      this.paste(this.graph.fragment(this.selected));
+  }
+  removeSelection() {
+    if (this.readonly)
+      return;
+    this.attempt(() => {
+      if (this.selectedEdge)
+        this.graph.deleteEdge(this.selectedEdge);
+      else if (this.selected.size)
+        this.graph.deleteNodes(this.selected);
+      this.select([]);
+    });
+  }
+  align(axis) {
+    if (this.readonly)
+      return;
+    const nodes = [...this.selected].map((id) => this.graph.nodes.get(id)).filter((n) => n && !n.locked);
+    if (nodes.length < 2)
+      return;
+    const coordinate = Math.min(...nodes.map((n) => n[axis]));
+    this.attempt(() => this.graph.commit(axis === "x" ? "Align left" : "Align top", nodes.map((n) => ({ kind: "nodes", id: n.id, value: { ...n, [axis]: coordinate } }))));
+  }
+  key(e) {
+    const target = e.target;
+    if (target.closest('input,textarea,select,[contenteditable="true"],.property-grid,[data-workflow-field-edit]'))
+      return;
+    const mod = e.ctrlKey || e.metaKey;
+    const k = e.key.toLowerCase();
+    if (e.key === "Escape") {
+      if (this.connection || this.gesture)
+        e.preventDefault();
+      this.cancel();
+      return;
+    }
+    if (e.code === "Space" && target === this.root) {
+      this.space = true;
+      e.preventDefault();
+      return;
+    }
+    if (mod && k === "a") {
+      e.preventDefault();
+      this.select(this.graph.nodes.keys());
+    } else if (mod && k === "c") {
+      e.preventDefault();
+      this.copy();
+    } else if (mod && k === "v") {
+      e.preventDefault();
+      this.paste();
+    } else if (mod && k === "d") {
+      e.preventDefault();
+      this.duplicate();
+    } else if (mod && (k === "z" || k === "y")) {
+      e.preventDefault();
+      if (this.readonly)
+        return;
+      this.cancel();
+      if (e.shiftKey || k === "y")
+        this.graph.redo();
+      else
+        this.graph.undo();
+    } else if ((e.key === "Delete" || e.key === "Backspace") && !mod) {
+      e.preventDefault();
+      this.removeSelection();
+    } else if (k === "f" && !mod) {
+      e.preventDefault();
+      this.fit(e.shiftKey && this.selected.size > 0);
+    } else if ((e.key === "+" || e.key === "=") && !mod)
+      this.zoomBy(1.25);
+    else if (e.key === "-" && !mod)
+      this.zoomBy(0.8);
+    else if (e.key === "0" && !mod)
+      this.zoomBy(1 / this.camera.zoom);
+    else if (e.key === "Enter" && this.selected.size === 1) {
+      const id = [...this.selected][0];
+      if (this.graph.nodes.get(id)?.subgraph) {
+        e.preventDefault();
+        this.hooks.enter(id);
+      }
+    } else if (e.key.startsWith("Arrow") && this.selected.size && target === this.root) {
+      e.preventDefault();
+      if (e.altKey) {
+        const first = [...this.selected][0];
+        const forward = e.key === "ArrowRight" || e.key === "ArrowDown";
+        for (const eid of this.graph.edgesFor(first)) {
+          const edge = this.graph.edges.get(eid);
+          if (forward && edge.source.node === first)
+            return this.focusNode(edge.target.node);
+          if (!forward && edge.target.node === first)
+            return this.focusNode(edge.source.node);
+        }
+        return;
+      }
+      if (this.readonly)
+        return;
+      const amount = e.shiftKey ? 64 : 16;
+      const dx = e.key === "ArrowLeft" ? -amount : e.key === "ArrowRight" ? amount : 0;
+      const dy = e.key === "ArrowUp" ? -amount : e.key === "ArrowDown" ? amount : 0;
+      this.attempt(() => this.graph.commit("Nudge nodes", [...this.selected].map((id) => this.graph.nodes.get(id)).filter((n) => n && !n.locked).map((n) => ({ kind: "nodes", id: n.id, value: { ...n, x: n.x + dx, y: n.y + dy } }))));
+    }
+  }
+  drawOverlay() {
+    const w = this.root.clientWidth;
+    const h = this.root.clientHeight;
+    const dpr = Math.min(globalThis.devicePixelRatio || 1, 2);
+    if (this.overlay.width !== Math.round(w * dpr))
+      this.overlay.width = Math.round(w * dpr);
+    if (this.overlay.height !== Math.round(h * dpr))
+      this.overlay.height = Math.round(h * dpr);
+    const ctx = this.overlay.getContext("2d");
+    if (!ctx)
+      return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = this.palette.accent;
+    ctx.fillStyle = this.palette.accent;
+    ctx.lineWidth = 2;
+    const pending = this.connection;
+    if (pending) {
+      const n = this.graph.nodes.get(pending.endpoint.node);
+      if (n) {
+        const p = this.toScreen(ENGINE.portPosition(n, pending.endpoint.port));
+        const q = pending.cursor ?? { x: p.x + (pending.direction === "output" ? 80 : -80), y: p.y };
+        const arm = Math.max(40, Math.abs(q.x - p.x) / 2) * (pending.direction === "output" ? 1 : -1);
+        ctx.setLineDash([6, 5]);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.bezierCurveTo(p.x + arm, p.y, q.x - arm, q.y, q.x, q.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(q.x, q.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    const g = this.gesture;
+    if (g?.type === "marquee") {
+      ctx.globalAlpha = 0.12;
+      ctx.fillRect(g.start.x, g.start.y, g.last.x - g.start.x, g.last.y - g.start.y);
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(g.start.x + 0.5, g.start.y + 0.5, g.last.x - g.start.x, g.last.y - g.start.y);
+    }
+    const points = g?.bend ? g.bend.points.map((p, i) => i === g.bend.index ? this.toWorld(g.last) : p) : this.graph.edges.get(this.selectedEdge ?? "")?.points;
+    for (const p of points ?? []) {
+      const s = this.toScreen(p);
+      ctx.fillRect(s.x - 5, s.y - 5, 10, 10);
+    }
+  }
+  drawMinimap() {
+    if (this.mini.hidden)
+      return;
+    const W = 180;
+    const H = 116;
+    const dpr = Math.min(globalThis.devicePixelRatio || 1, 2);
+    if (this.mini.width !== W * dpr) {
+      this.mini.width = this.miniBase.width = W * dpr;
+      this.mini.height = this.miniBase.height = H * dpr;
+      this.miniDirty = true;
+    }
+    if (this.miniDirty) {
+      this.miniDirty = false;
+      const base = this.miniBase.getContext("2d");
+      base.setTransform(dpr, 0, 0, dpr, 0, 0);
+      base.clearRect(0, 0, W, H);
+      const nodes = [...this.graph.nodes.values()];
+      if (!nodes.length)
+        this.miniBounds = { x: 0, y: 0, width: 1000, height: 640 };
+      else {
+        const pts = [];
+        for (const n of nodes)
+          pts.push(n, { x: n.x + n.width, y: n.y + n.height });
+        const b = ENGINE.bounds(pts, 120);
+        const scale = Math.min(W / b.width, H / b.height);
+        b.x -= (W / scale - b.width) / 2;
+        b.y -= (H / scale - b.height) / 2;
+        b.width = W / scale;
+        b.height = H / scale;
+        this.miniBounds = b;
+        base.fillStyle = this.palette.muted;
+        base.globalAlpha = 0.55;
+        const stride = Math.max(1, Math.ceil(nodes.length / 4000));
+        for (let i = 0;i < nodes.length; i += stride) {
+          const n = nodes[i];
+          base.fillRect((n.x - b.x) * scale, (n.y - b.y) * scale, Math.max(1, n.width * scale), Math.max(1, n.height * scale));
+        }
+        base.globalAlpha = 1;
+        base.fillStyle = this.palette.accent;
+        for (const id of [...this.selected].slice(0, 500)) {
+          const n = this.graph.nodes.get(id);
+          if (n)
+            base.fillRect((n.x - b.x) * scale, (n.y - b.y) * scale, Math.max(2, n.width * scale), Math.max(2, n.height * scale));
+        }
+      }
+    }
+    const ctx = this.mini.getContext("2d");
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, this.mini.width, this.mini.height);
+    ctx.drawImage(this.miniBase, 0, 0);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const b = this.miniBounds;
+    const scale = W / b.width;
+    const box = ENGINE.viewport(this.camera, this.root.clientWidth, this.root.clientHeight);
+    ctx.strokeStyle = this.palette.accent;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect((box.x - b.x) * scale, (box.y - b.y) * scale, box.width * scale, box.height * scale);
+  }
+  selectionChanged() {
+    this.miniDirty = true;
+  }
+  visibleNodeIds() {
+    const box = ENGINE.viewport(this.camera, this.root.clientWidth, this.root.clientHeight);
+    return this.nodeIndex.query(box).ids;
+  }
+  destroy() {
+    if (this.dead)
+      return;
+    this.dead = true;
+    cancelAnimationFrame(this.raf);
+    clearTimeout(this.viewTimer);
+    clearTimeout(this.messageTimer);
+    this.abort.abort();
+    this.resize.disconnect();
+    this.unsubscribe();
+    this.renderer.destroy();
+    for (const card of this.cards.values())
+      this.attempt(() => card.view?.destroy());
+    this.cards.clear();
+    this.pool = [];
+    this.viewport.remove();
+    delete this.root.dataset.renderer;
+    delete this.root.dataset.gesture;
+    delete this.root.dataset.connecting;
+  }
+}
+function localExecutor(types) {
+  return {
+    async run(document2, context) {
+      const evaluate = async (doc, seeds, root) => {
+        const store = new GraphStore(doc);
+        const outputs = Object.create(null);
+        let i = 0;
+        for (const id of store.topologicalOrder()) {
+          context.signal.throwIfAborted();
+          const node = store.nodes.get(id);
+          const inputs = Object.assign(Object.create(null), seeds[id]);
+          for (const eid of store.edgesFor(id)) {
+            const e = store.edges.get(eid);
+            if (e.target.node !== id)
+              continue;
+            const value = outputs[e.source.node]?.[e.source.port];
+            if (value === undefined)
+              continue;
+            (inputs[e.target.port] ??= []).push(value);
+          }
+          if (root)
+            context.emit({ nodeId: id, state: { status: "running", progress: 0 } });
+          if (node.subgraph) {
+            const injected = Object.create(null);
+            for (const p of node.subgraph.inputs ?? [])
+              (injected[p.endpoint.node] ??= Object.create(null))[p.endpoint.port] = inputs[p.id] ?? [];
+            const nested = await evaluate(node.subgraph, injected, false);
+            outputs[id] = Object.create(null);
+            for (const p of node.subgraph.outputs ?? []) {
+              const v = nested[p.endpoint.node]?.[p.endpoint.port];
+              if (v !== undefined)
+                outputs[id][p.id] = v;
+            }
+          } else {
+            const type = types(node.type);
+            if (!type?.run)
+              throw new Error(`No run handler for ${node.title} (${node.type})`);
+            const progress = (value) => {
+              if (root)
+                context.emit({ nodeId: id, state: { status: "running", progress: clamp(value, 0, 1) } });
+            };
+            outputs[id] = await type.run(structuredClone(node), { inputs, signal: context.signal, progress }) ?? {};
+          }
+          context.signal.throwIfAborted();
+          if (root)
+            context.emit({ nodeId: id, state: { status: "success", progress: 1, output: outputs[id] } });
+          if (++i % 64 === 0)
+            await new Promise((r) => setTimeout(r, 0));
+        }
+        return outputs;
+      };
+      await evaluate(document2, Object.create(null), true);
+    }
+  };
+}
+var GENERATED_TYPES = ["image", "latent", "text", "number"];
+function generate(spec = {}) {
+  const count = clamp(Math.floor(spec.nodes ?? 1000), 1, 1e5);
+  const want = clamp(Math.floor(spec.edges ?? count * 2), 0, Math.min(1e6, count * 60));
+  let seed = (spec.seed ?? 1) >>> 0 || 1;
+  const rand = () => {
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    return (seed >>> 0) / 4294967296;
+  };
+  const perStage = clamp(Math.floor(spec.stage ?? Math.ceil(Math.sqrt(count))), 1, count);
+  const stages = Math.ceil(count / perStage);
+  const doc = emptyDocument();
+  doc.id = `generated-${count}`;
+  doc.title = `${fmt(count)} nodes, ${fmt(want)} connections`;
+  const ports = [
+    ...GENERATED_TYPES.map((type) => ({
+      id: `in-${type}`,
+      label: type,
+      direction: "input",
+      type,
+      maxConnections: 0
+    })),
+    ...GENERATED_TYPES.map((type) => ({ id: `out-${type}`, label: type, direction: "output", type }))
+  ];
+  const STEPS = ["Load", "Resize", "Encode", "Sample", "Decode", "Filter", "Blend", "Score", "Caption", "Save"];
+  for (let i = 0;i < count; i++) {
+    const stage = Math.floor(i / perStage);
+    const row = i % perStage;
+    doc.nodes.push({
+      id: `n${i}`,
+      type: "generated",
+      title: `${STEPS[(stage + row) % STEPS.length]} ${i}`,
+      x: stage * 360,
+      y: row * 220,
+      width: 240,
+      height: 180,
+      ports,
+      data: { stage, index: i }
+    });
+  }
+  if (stages > 1)
+    for (let i = 0;i < want; i++) {
+      const s = Math.floor(rand() * (stages - 1));
+      const t = Math.min(stages - 1, s + 1 + Math.floor(rand() * rand() * 3));
+      const a = s * perStage + Math.floor(rand() * perStage);
+      const b = t * perStage + Math.floor(rand() * perStage);
+      if (a >= count || b >= count)
+        continue;
+      const type = GENERATED_TYPES[Math.floor(rand() * GENERATED_TYPES.length)];
+      doc.edges.push({
+        id: `e${doc.edges.length}`,
+        source: { node: `n${a}`, port: `out-${type}` },
+        target: { node: `n${b}`, port: `in-${type}` }
+      });
+    }
+  const seen = new Set;
+  doc.edges = doc.edges.filter((e) => {
+    const key = edgeKey(e);
+    if (seen.has(key))
+      return false;
+    seen.add(key);
+    return true;
+  });
+  const span = Math.floor(spec.groups ?? 0);
+  if (span > 0)
+    for (let s = 0, g = 0;s < stages; s += span, g++) {
+      const id = `g${g}`;
+      const x = s * 360 - 30;
+      const width = Math.min(span, stages - s) * 360 - 120 + 60;
+      doc.groups.push({
+        id,
+        title: `Stages ${s + 1}-${Math.min(stages, s + span)}`,
+        x,
+        y: -60,
+        width,
+        height: perStage * 220 + 50,
+        ...spec.collapsed && g % 2 === 1 ? { collapsed: true } : {}
+      });
+      for (let i = s * perStage;i < Math.min(count, (s + span) * perStage); i++)
+        doc.nodes[i].groupId = id;
+    }
+  return doc;
+}
+function fromComfy(prompt) {
+  jsonValue(prompt);
+  assert(isRecord(prompt), "Invalid ComfyUI prompt");
+  const doc = emptyDocument();
+  doc.id = "comfyui-prompt";
+  doc.title = "Imported ComfyUI prompt";
+  const map = new Map;
+  Object.entries(prompt).forEach(([id, entry], i) => {
+    const raw = entry;
+    assert(isRecord(raw) && typeof raw.class_type === "string" && isRecord(raw.inputs), "Invalid ComfyUI node");
+    const n = {
+      id,
+      type: `comfy:${entry.class_type}`,
+      title: entry._meta?.title || entry.class_type,
+      x: i % 4 * 360,
+      y: Math.floor(i / 4) * 300,
+      width: 260,
+      height: 200,
+      ports: [],
+      data: { params: {} }
+    };
+    map.set(id, n);
+    doc.nodes.push(n);
+  });
+  for (const [id, entry] of Object.entries(prompt)) {
+    const n = map.get(id);
+    for (const [key, value] of Object.entries(entry.inputs)) {
+      if (Array.isArray(value) && value.length === 2 && typeof value[0] === "string" && typeof value[1] === "number") {
+        const source = map.get(value[0]);
+        assert(source && Number.isInteger(value[1]) && value[1] >= 0 && value[1] < 256, "Invalid ComfyUI output link");
+        const out = `out:${value[1]}`;
+        for (let slot = 0;slot <= value[1]; slot++)
+          if (!source.ports.some((p) => p.id === `out:${slot}`))
+            source.ports.push({ id: `out:${slot}`, label: `Output ${slot}`, direction: "output", type: "any" });
+        n.ports.push({ id: `in:${key}`, label: key, direction: "input", type: "any" });
+        doc.edges.push({
+          id: `link-${doc.edges.length}`,
+          source: { node: source.id, port: out },
+          target: { node: id, port: `in:${key}` }
+        });
+      } else
+        n.data.params[key] = value;
+    }
+  }
+  for (const n of doc.nodes)
+    n.height = Math.max(n.height, 110 + 26 * n.ports.length);
+  return new GraphStore(doc).export();
+}
+function toComfy(document2) {
+  const store = new GraphStore(document2);
+  const prompt = Object.create(null);
+  for (const n of store.nodes.values()) {
+    assert(n.type.startsWith("comfy:") && !n.subgraph, "ComfyUI export needs imported comfy:* nodes");
+    const params = n.data.params;
+    assert(isRecord(params), "Invalid ComfyUI parameters");
+    prompt[n.id] = {
+      class_type: n.type.slice(6),
+      inputs: structuredClone(params),
+      _meta: { title: n.title }
+    };
+  }
+  for (const e of store.edges.values()) {
+    assert(e.source.port.startsWith("out:") && e.target.port.startsWith("in:"), "Invalid ComfyUI port");
+    prompt[e.target.node].inputs[e.target.port.slice(3)] = [e.source.node, Number(e.source.port.slice(4))];
+  }
+  return prompt;
+}
+var object = (value, name) => {
+  assert(isRecord(value), `Invalid ${name}`);
+  return value;
+};
+var list = (value, name) => {
+  assert(Array.isArray(value), `Invalid ${name}`);
+  return value;
+};
+var word = (value, name) => {
+  assert(typeof value === "string" && value.length > 0, `Invalid ${name}`);
+  return value;
+};
+function fromGradio(raw) {
+  jsonValue(raw);
+  const input = object(raw, "Gradio workflow");
+  assert(input.schema_version === "2", 'The Gradio adapter reads schema_version "2"');
+  const doc = emptyDocument();
+  doc.id = typeof input.id === "string" ? input.id : "gradio-workflow";
+  doc.title = word(input.name, "Gradio name");
+  const { references, operators, subjects, edges, ...metadata } = input;
+  doc.metadata = { gradio: metadata };
+  for (const [collection, role] of [
+    [references, "reference"],
+    [operators, "operator"],
+    [subjects, "subject"]
+  ])
+    for (const value of list(collection, role)) {
+      const n = object(value, "Gradio node");
+      const ports = [];
+      const originalPorts = {};
+      for (const [direction, values] of [
+        ["input", n.inputs],
+        ["output", n.outputs]
+      ])
+        for (const pv of list(values, `${direction} ports`)) {
+          const p = object(pv, "Gradio port");
+          const id = `${direction}:${word(p.id, "port id")}`;
+          const type = word(p.type, "port type");
+          originalPorts[id] = p;
+          ports.push({
+            id,
+            label: typeof p.label === "string" && p.label ? p.label : String(p.id),
+            direction,
+            type,
+            optional: p.required !== true,
+            ...type === "text" ? { accepts: ["markdown"] } : type === "markdown" ? { accepts: ["text"] } : {}
+          });
+        }
+      const { inputs: _inputs, outputs: _outputs, data, x, y, width, height, ...extra } = n;
+      doc.nodes.push({
+        id: word(n.id, "node id"),
+        type: `gradio:${role}`,
+        title: word(n.label, "node label"),
+        x: typeof x === "number" ? x : doc.nodes.length % 4 * 360,
+        y: typeof y === "number" ? y : Math.floor(doc.nodes.length / 4) * 300,
+        width: typeof width === "number" ? Math.max(160, width) : 260,
+        height: typeof height === "number" ? Math.max(110 + 26 * ports.length, height) : Math.max(200, 110 + 26 * ports.length),
+        ports,
+        data: { values: data ?? {}, gradio: extra, gradioPorts: originalPorts }
+      });
+    }
+  doc.edges = list(edges, "Gradio edges").map((value) => {
+    const e = object(value, "Gradio edge");
+    return {
+      id: word(e.id, "edge id"),
+      source: { node: word(e.from_node_id, "source node"), port: `output:${word(e.from_port_id, "source port")}` },
+      target: { node: word(e.to_node_id, "target node"), port: `input:${word(e.to_port_id, "target port")}` }
+    };
+  });
+  return new GraphStore(doc).export();
+}
+function toGradio(document2) {
+  const store = new GraphStore(document2);
+  const result = {
+    ...object(document2.metadata?.gradio ?? {}, "Gradio metadata"),
+    schema_version: "2",
+    id: document2.id,
+    name: document2.title,
+    references: [],
+    operators: [],
+    subjects: [],
+    edges: []
+  };
+  for (const n of store.nodes.values()) {
+    assert(n.type.startsWith("gradio:") && !n.subgraph, "Gradio export needs imported gradio:* nodes");
+    const extra = object(n.data.gradio, "Gradio node metadata");
+    const original = object(n.data.gradioPorts, "Gradio port metadata");
+    const ports = (direction) => n.ports.filter((p) => p.direction === direction).map((p) => ({
+      ...original[p.id] ? object(original[p.id], "port metadata") : {},
+      id: p.id.slice(direction.length + 1),
+      label: p.label ?? p.id,
+      type: p.type,
+      required: !p.optional
+    }));
+    const value = {
+      ...extra,
+      id: n.id,
+      label: n.title,
+      data: n.data.values ?? {},
+      inputs: ports("input"),
+      outputs: ports("output"),
+      x: n.x,
+      y: n.y,
+      width: n.width,
+      height: n.height
+    };
+    const collection = n.type === "gradio:reference" ? "references" : n.type === "gradio:operator" ? "operators" : n.type === "gradio:subject" ? "subjects" : "";
+    assert(collection, "Unknown Gradio role");
+    result[collection].push(value);
+  }
+  result.edges = [...store.edges.values()].map((e) => ({
+    id: e.id,
+    from_node_id: e.source.node,
+    from_port_id: e.source.port.slice(7),
+    to_node_id: e.target.node,
+    to_port_id: e.target.port.slice(6),
+    type: store.nodes.get(e.source.node).ports.find((p) => p.id === e.source.port).type
+  }));
+  return result;
+}
+function readAny(raw) {
+  assert(isRecord(raw), "Not a workflow");
+  if (raw.schemaVersion !== undefined)
+    return raw;
+  if (raw.schema_version !== undefined)
+    return fromGradio(raw);
+  return fromComfy(raw);
+}
+var OUTLETS = ["palette", "outline", "inspector", "breadcrumb"];
+var live = new Set;
+var typesVersion = 0;
+
+class Workflow {
+  el;
+  canvas;
+  types = new Map;
+  edgeTypes = new Map;
+  stack = [];
+  execution = null;
+  runAbort = null;
+  layoutAbort = null;
+  outletsTimer = 0;
+  inspectedKey = "";
+  inspectedGraph = null;
+  attrObserver;
+  writing = false;
+  themeObserver;
+  offTheme;
+  file;
+  failed = "";
+  constructor(el) {
+    this.el = el;
+    this.readTypes();
+    let store;
+    try {
+      store = new GraphStore(this.readSource());
+    } catch (e) {
+      this.failed = e.message;
+      store = new GraphStore;
+    }
+    el.setAttribute("role", "application");
+    el.setAttribute("aria-roledescription", "workflow editor");
+    if (!el.hasAttribute("tabindex"))
+      el.tabIndex = 0;
+    this.canvas = new Canvas(el, store, {
+      readonly: el.hasAttribute("data-readonly"),
+      worker: el.dataset.worker !== "none",
+      minimap: el.dataset.minimap !== "none",
+      controls: el.dataset.controls !== "none"
+    }, {
+      types: (type) => this.type(type),
+      typesVersion: () => typesVersion,
+      change: (change) => this.changed(change),
+      select: () => this.selected(),
+      view: () => this.emit("workflow-view"),
+      frame: () => this.scheduleOutputs(),
+      error: (message) => this.emit("workflow-error", message),
+      enter: (id) => this.enter(id),
+      write: (id, data) => void this.writeData(id, data),
+      edit: (id, key) => void this.editField(id, key),
+      layout: () => this.layout(),
+      edgeType: (name) => this.edgeTypes.get(name) ?? globalEdgeTypes.get(name)
+    });
+    this.file = el.ownerDocument.createElement("input");
+    this.file.type = "file";
+    this.file.accept = ".json,application/json";
+    this.file.hidden = true;
+    this.file.setAttribute("data-ce-chrome", "");
+    this.file.addEventListener("change", () => void this.importFile());
+    this.canvas.viewport.append(this.file);
+    if (this.failed)
+      this.canvas.report(`The workflow could not be read: ${this.failed}`);
+    this.attrObserver = new MutationObserver(() => {
+      if (this.writing)
+        return;
+      const c = configOf(el);
+      this.canvas.setReadonly(el.hasAttribute("data-readonly"));
+      this.canvas.select(c.selected, c.edge ?? undefined);
+      this.refreshOutlets();
+    });
+    this.attrObserver.observe(el, {
+      attributes: true,
+      attributeFilter: ["data-readonly", "data-selected", "data-selected-edge"]
+    });
+    const initial = configOf(el);
+    if (initial.selected.length || initial.edge)
+      this.canvas.select(initial.selected, initial.edge ?? undefined);
+    const theme = () => this.canvas.refreshTheme();
+    this.themeObserver = new MutationObserver(theme);
+    this.themeObserver.observe(el.ownerDocument.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "style", "data-theme"]
+    });
+    el.ownerDocument.addEventListener("defuss-theme-change", theme);
+    this.offTheme = () => el.ownerDocument.removeEventListener("defuss-theme-change", theme);
+    live.add(this);
+    this.canvas.ready.then(() => {
+      if (el.dataset.camera) {
+        const [x, y, zoom] = el.dataset.camera.split(/[\s,]+/).map(Number);
+        if ([x, y, zoom].every(Number.isFinite))
+          this.canvas.setCamera({ x, y, zoom });
+        else
+          this.canvas.fit();
+      } else
+        this.canvas.fit();
+      el.dataset.workflowStatus = this.failed ? "error" : "ready";
+      this.refreshOutlets();
+    });
+    this.canvas.fit();
+    this.refreshOutlets();
+  }
+  readSource() {
+    const script = dfDollar(this.el).children("script.workflow-source").get(0);
+    if (script?.textContent?.trim()) {
+      const doc = readAny(JSON.parse(script.textContent));
+      return doc;
+    }
+    if (this.el.dataset.generate)
+      return generate({
+        nodes: Number(this.el.dataset.generate),
+        edges: this.el.dataset.edges ? Number(this.el.dataset.edges) : undefined,
+        seed: this.el.dataset.seed ? Number(this.el.dataset.seed) : undefined,
+        stage: this.el.dataset.stage ? Number(this.el.dataset.stage) : undefined,
+        groups: this.el.dataset.groups ? Number(this.el.dataset.groups) : undefined,
+        collapsed: this.el.hasAttribute("data-collapsed")
+      });
+    return emptyDocument();
+  }
+  readTypes() {
+    for (const script of dfDollar(this.el).children("script.workflow-types").toArray()) {
+      try {
+        const list = JSON.parse(script.textContent || "[]");
+        for (const t of Array.isArray(list) ? list : [list]) {
+          const checked = checkType(t);
+          this.types.set(checked.type, checked);
+        }
+      } catch (e) {
+        console.error("workflow: invalid node types", e);
+      }
+    }
+  }
+  type(type) {
+    const local = this.types.get(type);
+    const global = globalTypes.get(type);
+    if (!local || !global)
+      return local ?? global;
+    const fields = local.fields && global.fields ? local.fields.map((field) => {
+      const lender = global.fields.find((g) => g.key === field.key);
+      return lender ? { ...lender, ...field } : field;
+    }) : local.fields ?? global.fields;
+    return { ...global, ...local, fields, run: local.run ?? global.run, mount: local.mount ?? global.mount };
+  }
+  layout() {
+    return this.el.dataset.layout === "list" ? "list" : "controls";
+  }
+  location() {
+    return this.stack.map((f) => f.nodeId);
+  }
+  writeData(id, data) {
+    if (this.canvas.readonly)
+      return false;
+    const node = this.graph.nodes.get(id);
+    if (!node)
+      return false;
+    const changed = Object.keys(data).filter((k) => JSON.stringify(node.data[k]) !== JSON.stringify(data[k]));
+    if (!changed.length)
+      return true;
+    let ok = false;
+    this.canvas.attempt(() => {
+      this.graph.updateNode(id, { data: { ...node.data, ...data } }, `Edit ${node.title || id}: ${changed.join(", ")}`);
+      ok = true;
+    });
+    if (!ok)
+      return false;
+    const path = this.location();
+    for (const key of changed)
+      this.el.dispatchEvent(new CustomEvent("workflow-field-change", {
+        bubbles: true,
+        detail: {
+          nodeId: id,
+          key,
+          value: structuredClone(data[key]),
+          oldValue: node.data[key] === undefined ? undefined : structuredClone(node.data[key]),
+          path
+        }
+      }));
+    return true;
+  }
+  field(id, key) {
+    const node = this.graph.nodes.get(id);
+    return node ? this.type(node.type)?.fields?.find((f) => f.key === key) : undefined;
+  }
+  async editField(id, key) {
+    const node = this.graph.nodes.get(id);
+    const field = this.field(id, key);
+    if (!node || !field)
+      return false;
+    if (!customEditor(field))
+      return this.canvas.focusField(id, key);
+    if (this.canvas.readonly)
+      return false;
+    const value = node.data[key] === undefined ? undefined : structuredClone(node.data[key]);
+    const asked = new CustomEvent("workflow-field-edit", {
+      bubbles: true,
+      cancelable: true,
+      detail: { nodeId: id, key, value, path: this.location() }
+    });
+    if (!this.el.dispatchEvent(asked) || !field.edit)
+      return false;
+    const graph = this.graph;
+    let next;
+    try {
+      next = await field.edit(value, {
+        node,
+        field,
+        runtime: this.canvas.getRuntime(id),
+        workflow: this.el,
+        readonly: false,
+        custom: true
+      });
+    } catch (e) {
+      this.canvas.report(e);
+      return false;
+    }
+    if (next === undefined || this.graph !== graph || !graph.nodes.has(id))
+      return false;
+    return this.writeData(id, { [key]: next });
+  }
+  tree() {
+    const rows = [];
+    const levels = [...this.stack.map((f) => f.graph), this.graph];
+    const entered = this.location();
+    const walk = (nodes, groups, depth, prefix, parent) => {
+      const level = prefix.join("/");
+      const known = new Set;
+      const groupList = [...groups];
+      for (const g of groupList)
+        known.add(g.id);
+      for (const g of groupList)
+        rows.push({
+          id: `${level}#${g.id}`,
+          parentId: g.parentId && known.has(g.parentId) ? `${level}#${g.parentId}` : parent,
+          title: g.title,
+          kind: "group",
+          type: "group",
+          path: [...prefix]
+        });
+      for (const n of nodes) {
+        const path = [...prefix, n.id];
+        const id = path.join("/");
+        rows.push({
+          id,
+          parentId: n.groupId && known.has(n.groupId) ? `${level}#${n.groupId}` : parent,
+          title: n.title,
+          kind: n.subgraph ? "subworkflow" : "node",
+          type: n.type,
+          path
+        });
+        if (!n.subgraph)
+          continue;
+        const live = depth >= 0 && entered[depth] === n.id ? levels[depth + 1] : undefined;
+        if (live)
+          walk(live.nodes.values(), live.groups.values(), depth + 1, path, id);
+        else
+          walk(n.subgraph.nodes, n.subgraph.groups ?? [], -1, path, id);
+      }
+    };
+    walk(levels[0].nodes.values(), levels[0].groups.values(), 0, [], null);
+    return rows;
+  }
+  reveal(path, camera) {
+    if (!path.length)
+      return false;
+    const way = path.slice(0, -1);
+    const id = path[path.length - 1];
+    const here = this.location();
+    let common = 0;
+    while (common < here.length && common < way.length && here[common] === way[common])
+      common++;
+    if (here.length > common)
+      this.leave(here.length - common);
+    for (let i = common;i < way.length; i++) {
+      if (!this.graph.nodes.get(way[i])?.subgraph)
+        return false;
+      this.enter(way[i]);
+    }
+    if (!this.graph.nodes.has(id))
+      return false;
+    if (camera)
+      this.canvas.focusNode(id, false);
+    else
+      this.canvas.select([id]);
+    return true;
+  }
+  register(definition) {
+    const checked = checkType(definition);
+    this.types.set(checked.type, checked);
+    typesVersion++;
+    this.canvas.refreshTheme();
+    this.refreshOutlets();
+    return () => {
+      if (this.types.get(checked.type) === checked)
+        this.types.delete(checked.type);
+      typesVersion++;
+      this.canvas.refreshTheme();
+      this.refreshOutlets();
+    };
+  }
+  registerEdge(definition) {
+    const checked = checkEdgeType(definition);
+    this.edgeTypes.set(checked.type, checked);
+    edgeTypesVersion++;
+    this.canvas.refreshTheme();
+    return () => {
+      if (this.edgeTypes.get(checked.type) === checked)
+        this.edgeTypes.delete(checked.type);
+      edgeTypesVersion++;
+      this.canvas.refreshTheme();
+    };
+  }
+  setEdge(id, update) {
+    const e = this.graph.edges.get(id);
+    if (!e)
+      return false;
+    const next = { ...e, ...update, id: e.id, source: e.source, target: e.target };
+    for (const k of Object.keys(next))
+      if (next[k] === undefined || next[k] === null)
+        delete next[k];
+    validateEdge(next);
+    this.graph.commit("Edit connection", [{ kind: "edges", id, value: next }]);
+    return true;
+  }
+  allTypes() {
+    return [...new Set([...globalTypes.keys(), ...this.types.keys()])].map((t) => this.type(t));
+  }
+  get graph() {
+    return this.canvas.graph;
+  }
+  emit(name, message) {
+    const el = this.el;
+    if (name === "workflow-view") {
+      el.dispatchEvent(new CustomEvent("workflow-view", {
+        bubbles: true,
+        detail: { camera: { ...this.canvas.camera } }
+      }));
+    } else if (name === "workflow-error") {
+      el.dispatchEvent(new CustomEvent("workflow-error", { bubbles: true, detail: { message: message ?? "" } }));
+    }
+  }
+  changed(change) {
+    this.el.dispatchEvent(new CustomEvent("workflow-change", {
+      bubbles: true,
+      detail: { label: change.label, version: change.version, undo: change.undo, patches: change.patches }
+    }));
+    this.writeAttrs();
+    this.refreshOutlets();
+  }
+  selected() {
+    this.canvas.selectionChanged();
+    this.writeAttrs();
+    const { selected, edge } = configOf(this.el);
+    this.el.dispatchEvent(new CustomEvent("workflow-select", {
+      bubbles: true,
+      detail: { selected, edge, path: this.location() }
+    }));
+    this.refreshOutlets();
+  }
+  writeAttrs() {
+    this.writing = true;
+    applyMarkup(this.el, this.canvas.readonly ? "readonly" : "default", {
+      selected: [...this.canvas.selected],
+      edge: this.canvas.selectedEdge ?? null
+    });
+    this.attrObserver?.takeRecords();
+    this.writing = false;
+  }
+  setReadonly(on) {
+    this.canvas.setReadonly(on);
+    this.writeAttrs();
+    this.refreshOutlets();
+  }
+  enter(id) {
+    const n = this.graph.nodes.get(id);
+    if (!n?.subgraph)
+      return;
+    let child;
+    try {
+      child = new GraphStore(n.subgraph);
+    } catch (e) {
+      this.canvas.report(e);
+      return;
+    }
+    this.stack.push({ graph: this.graph, nodeId: id, camera: { ...this.canvas.camera } });
+    this.canvas.setGraph(child);
+    this.canvas.fit();
+    this.navigated();
+  }
+  leave(levels = 1) {
+    for (let i = 0;i < levels; i++) {
+      const parent = this.stack.pop();
+      if (!parent)
+        break;
+      if (!this.canvas.readonly && this.graph.version > 0)
+        this.canvas.attempt(() => parent.graph.updateNode(parent.nodeId, { subgraph: this.graph.export() }, "Edit subworkflow"));
+      this.canvas.setGraph(parent.graph);
+      this.canvas.setCamera(parent.camera);
+    }
+    this.navigated();
+  }
+  navigated() {
+    this.writeAttrs();
+    this.el.dispatchEvent(new CustomEvent("workflow-navigate", { bubbles: true, detail: { path: this.path() } }));
+    this.refreshOutlets();
+  }
+  path() {
+    return [...this.stack.map((f) => f.graph.title), this.graph.title];
+  }
+  export() {
+    let doc = this.graph.export();
+    for (const frame of [...this.stack].reverse()) {
+      const parent = frame.graph.export();
+      const n = parent.nodes.find((x) => x.id === frame.nodeId);
+      n.subgraph = doc;
+      doc = parent;
+    }
+    return doc;
+  }
+  load(doc) {
+    const store = new GraphStore(doc);
+    this.cancelRun();
+    this.layoutAbort?.abort();
+    this.stack = [];
+    this.canvas.setGraph(store);
+    this.canvas.fit();
+    this.navigated();
+  }
+  async arrange() {
+    if (this.canvas.readonly)
+      return;
+    this.layoutAbort?.abort();
+    const abort = new AbortController;
+    this.layoutAbort = abort;
+    const store = this.graph;
+    const version = store.version;
+    const doc = store.export();
+    this.canvas.notify("Arranging…");
+    try {
+      const positions = await layoutPositions(doc, abort.signal);
+      if (abort.signal.aborted || this.graph !== store || store.version !== version)
+        return;
+      store.commit("Arrange", layoutPatches(doc, new Map(positions)));
+      this.canvas.fit();
+      this.canvas.notify("Arranged");
+    } catch (e) {
+      if (!abort.signal.aborted)
+        this.canvas.report(e);
+    }
+  }
+  configure(options) {
+    if ("execution" in options)
+      this.execution = options.execution ?? null;
+    this.refreshOutlets();
+  }
+  get running() {
+    return !!this.runAbort;
+  }
+  cancelRun() {
+    this.runAbort?.abort(new DOMException("Run cancelled", "AbortError"));
+  }
+  async run() {
+    if (this.runAbort)
+      return;
+    const abort = new AbortController;
+    this.runAbort = abort;
+    const canvas = this.canvas;
+    const store = this.graph;
+    const doc = store.export();
+    const adapter = this.execution ?? localExecutor((type) => this.type(type));
+    const active = new Set(doc.nodes.map((n) => n.id));
+    canvas.clearRuntime();
+    const send = (e) => {
+      if (abort.signal.aborted || !active.has(e.nodeId) || canvas.graph !== store)
+        return;
+      canvas.setRuntime(e.nodeId, e.state);
+      this.el.dispatchEvent(new CustomEvent("workflow-node-state", {
+        bubbles: true,
+        detail: { nodeId: e.nodeId, state: e.state }
+      }));
+      if (e.state.status === "success" || e.state.status === "error" || e.state.status === "cancelled")
+        active.delete(e.nodeId);
+    };
+    for (const id of active)
+      canvas.setRuntime(id, { status: "queued" });
+    this.el.dataset.running = "";
+    this.el.setAttribute("aria-busy", "true");
+    this.runEvent("running");
+    this.refreshOutlets();
+    let status = "done";
+    let message;
+    try {
+      await Promise.race([
+        adapter.run(structuredClone(doc), { signal: abort.signal, emit: send }),
+        new Promise((_, reject) => abort.signal.addEventListener("abort", () => reject(abort.signal.reason), { once: true }))
+      ]);
+      for (const id of active)
+        canvas.setRuntime(id, { status: "success" });
+    } catch (error) {
+      status = abort.signal.aborted ? "cancelled" : "error";
+      message = error?.message ?? String(error);
+      for (const id of active)
+        canvas.setRuntime(id, { status: abort.signal.aborted ? "cancelled" : "error", message });
+      if (status === "error")
+        canvas.report(message);
+    } finally {
+      this.runAbort = null;
+      delete this.el.dataset.running;
+      this.el.removeAttribute("aria-busy");
+      this.runEvent(status, message);
+      this.refreshOutlets();
+    }
+  }
+  runEvent(status, message) {
+    this.el.dispatchEvent(new CustomEvent("workflow-run", {
+      bubbles: true,
+      detail: { status, ...message ? { message } : {} }
+    }));
+  }
+  async importFile() {
+    const selected = this.file.files?.[0];
+    this.file.value = "";
+    if (!selected)
+      return;
+    try {
+      if (selected.size > 128 * 1024 * 1024)
+        throw new Error("The file exceeds 128 MiB");
+      this.load(readAny(JSON.parse(await selected.text())));
+      this.canvas.notify(`Imported ${selected.name}`);
+    } catch (e) {
+      this.canvas.report(e);
+    }
+  }
+  download() {
+    const doc = this.export();
+    const blob = new Blob([JSON.stringify(doc, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = this.el.ownerDocument.createElement("a");
+    a.href = url;
+    a.download = `${(doc.title || "workflow").replace(/[^\w-]+/g, "-").toLowerCase()}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  action(name, source) {
+    const c = this.canvas;
+    const edit = (fn) => {
+      if (!c.readonly)
+        c.attempt(fn);
+    };
+    switch (name) {
+      case "undo":
+        edit(() => this.graph.undo());
+        break;
+      case "redo":
+        edit(() => this.graph.redo());
+        break;
+      case "fit":
+        c.fit();
+        break;
+      case "fit-selection":
+        c.fit(c.selected.size > 0);
+        break;
+      case "zoom-in":
+        c.zoomBy(1.25);
+        break;
+      case "zoom-out":
+        c.zoomBy(0.8);
+        break;
+      case "arrange":
+        this.arrange();
+        break;
+      case "group":
+        edit(() => {
+          const id = this.graph.groupNodes(c.selected, source?.dataset.workflowTitle || "Group");
+          c.notify(`Grouped as ${this.graph.groups.get(id).title}`);
+        });
+        break;
+      case "ungroup": {
+        const n = this.graph.nodes.get([...c.selected][0] ?? "");
+        if (n?.groupId)
+          edit(() => this.graph.ungroup(n.groupId));
+        break;
+      }
+      case "collapse": {
+        const n = this.graph.nodes.get([...c.selected][0] ?? "");
+        if (n?.groupId)
+          c.toggleGroup(n.groupId);
+        break;
+      }
+      case "duplicate":
+        c.duplicate();
+        break;
+      case "copy":
+        c.copy();
+        break;
+      case "paste":
+        c.paste();
+        break;
+      case "delete":
+        c.removeSelection();
+        break;
+      case "select-all":
+        c.select(this.graph.nodes.keys());
+        break;
+      case "align-left":
+        c.align("x");
+        break;
+      case "align-top":
+        c.align("y");
+        break;
+      case "run":
+        this.run();
+        break;
+      case "cancel":
+        this.cancelRun();
+        break;
+      case "parent":
+        this.leave();
+        break;
+      case "top":
+        this.leave(this.stack.length);
+        break;
+      case "enter":
+        if (c.selected.size === 1)
+          this.enter([...c.selected][0]);
+        break;
+      case "import":
+        if (!c.readonly)
+          this.file.click();
+        break;
+      case "export":
+        this.download();
+        break;
+      case "readonly":
+        this.setReadonly(!c.readonly);
+        break;
+      case "add":
+        if (source?.dataset.workflowType)
+          c.addNode(source.dataset.workflowType);
+        break;
+      default:
+        c.report(`Unknown action ${name}`);
+    }
+  }
+  find(selector) {
+    const id = this.el.id;
+    const outside = id ? dfDollar(`[data-workflow-for="${CSS.escape(id)}"]`).toArray() : [];
+    return outside.filter((o) => o.matches(selector));
+  }
+  scheduleOutputs() {
+    if (this.outletsTimer)
+      return;
+    this.outletsTimer = globalThis.setTimeout(() => {
+      this.outletsTimer = 0;
+      this.renderOutputs();
+    }, 120);
+  }
+  refreshOutlets() {
+    this.renderOutputs();
+    this.renderActions();
+    for (const o of this.find('[data-workflow-outlet="palette"]'))
+      this.renderPalette(o);
+    for (const o of this.find('[data-workflow-outlet="outline"]'))
+      this.renderOutline(o);
+    for (const o of this.find('[data-workflow-outlet="inspector"]'))
+      this.renderInspector(o);
+    for (const o of this.find('[data-workflow-outlet="breadcrumb"]'))
+      this.renderBreadcrumb(o);
+  }
+  renderOutputs() {
+    const c = this.canvas;
+    const s = c.stats;
+    const values = {
+      title: this.graph.title,
+      nodes: fmt(this.graph.nodes.size),
+      edges: fmt(this.graph.edges.size),
+      groups: fmt(this.graph.groups.size),
+      selection: c.selectedEdge ? "1 connection" : c.selected.size ? `${fmt(c.selected.size)} selected` : "Nothing selected",
+      zoom: `${Math.round(c.camera.zoom * 100)}%`,
+      drawn: s ? `${fmt(s.edges)} connections drawn${s.edgesTruncated ? " (sampled)" : ""}` : "",
+      cards: s ? `${fmt(s.domNodes)} cards` : "",
+      renderer: s ? s.renderer === "worker" ? "Worker canvas" : "Main-thread canvas" : "",
+      frame: s ? `${s.drawMs.toFixed(1)} ms` : "",
+      status: this.running ? "Running…" : c.live.textContent || "Ready",
+      depth: String(this.stack.length)
+    };
+    for (const o of this.find("[data-workflow-output]")) {
+      const key = o.dataset.workflowOutput;
+      if (key in values && o.textContent !== values[key])
+        o.textContent = values[key];
+      if (key === "drawn")
+        o.toggleAttribute("data-sampled", !!s?.edgesTruncated);
+    }
+  }
+  renderActions() {
+    const c = this.canvas;
+    const ro = c.readonly;
+    const single = c.selected.size === 1 ? this.graph.nodes.get([...c.selected][0]) : undefined;
+    const disabled = {
+      undo: ro || !this.graph.canUndo,
+      redo: ro || !this.graph.canRedo,
+      arrange: ro || !this.graph.nodes.size,
+      group: ro || !c.selected.size,
+      ungroup: ro || !single?.groupId,
+      collapse: ro || !single?.groupId,
+      duplicate: ro || !c.selected.size,
+      delete: ro || !c.selected.size && !c.selectedEdge,
+      paste: ro,
+      "align-left": ro || c.selected.size < 2,
+      "align-top": ro || c.selected.size < 2,
+      "fit-selection": !c.selected.size,
+      run: this.running || !this.graph.nodes.size,
+      cancel: !this.running,
+      parent: !this.stack.length,
+      top: !this.stack.length,
+      enter: !single?.subgraph,
+      import: ro,
+      add: ro
+    };
+    for (const b of this.find("[data-workflow-action]")) {
+      const name = b.dataset.workflowAction;
+      if (name in disabled)
+        b.disabled = disabled[name];
+      if (name === "readonly")
+        b.setAttribute("aria-pressed", String(ro));
+    }
+  }
+  renderPalette(o) {
+    let listEl = dfDollar(o).find(".workflow-palette-list").get(0);
+    if (!listEl) {
+      dfDollar(o).html(`<div class="workflow-palette" data-ce-chrome><input class="input" data-size="sm" type="search" placeholder="Search node types" aria-label="Search node types" data-workflow-search="palette"><div class="workflow-palette-list" role="list"></div></div>`);
+      listEl = dfDollar(o).find(".workflow-palette-list").get(0);
+    }
+    const search = dfDollar(o).find("[data-workflow-search]").get(0);
+    const query = search.value.trim().toLowerCase();
+    const ro = this.canvas.readonly;
+    const only = (o.dataset.workflowTypes ?? "").split(/\s+/).filter(Boolean);
+    const listed = (type) => !only.length || only.some((w) => w.endsWith("*") ? type.startsWith(w.slice(0, -1)) : type === w);
+    const groups = new Map;
+    for (const t of this.allTypes()) {
+      if (!listed(t.type))
+        continue;
+      if (query && !`${t.label} ${t.type} ${t.description ?? ""} ${t.category ?? ""}`.toLowerCase().includes(query))
+        continue;
+      const key = t.category ?? "Nodes";
+      if (!groups.has(key))
+        groups.set(key, []);
+      groups.get(key).push(t);
+    }
+    let markup = "";
+    for (const [category, types] of groups) {
+      markup += `<p class="workflow-palette-heading">${esc(category)}</p>`;
+      for (const t of types) {
+        const accent = accentOf(t.color);
+        markup += `<button type="button" class="workflow-palette-item" role="listitem" draggable="${!ro}" data-workflow-action="add" data-workflow-type="${esc(t.type)}"${ro ? " disabled" : ""}` + `${accent ? ` style="--workflow-accent-color: ${esc(accent)}"` : ""} title="Click to add, or drag onto the canvas">` + `<span class="workflow-palette-swatch" aria-hidden="true"></span><span class="workflow-palette-text"><strong>${esc(t.label)}</strong>${t.description ? `<small>${esc(t.description)}</small>` : ""}</span></button>`;
+      }
+    }
+    if (!markup)
+      markup = `<p class="workflow-muted">No node type matches.</p>`;
+    dfDollar(listEl).html(markup);
+  }
+  renderOutline(o) {
+    let listEl = dfDollar(o).find(".workflow-outline-list").get(0);
+    if (!listEl) {
+      dfDollar(o).html(`<div class="workflow-outline" data-ce-chrome><input class="input" data-size="sm" type="search" placeholder="Find a node" aria-label="Find a node" data-workflow-search="outline"><div class="workflow-outline-list"></div></div>`);
+      listEl = dfDollar(o).find(".workflow-outline-list").get(0);
+    }
+    const search = dfDollar(o).find("[data-workflow-search]").get(0);
+    const query = search.value.trim().toLowerCase();
+    const LIMIT = 100;
+    let count = 0;
+    let markup = "";
+    const groups = [...this.graph.groups.values()].filter((g) => !query || g.title.toLowerCase().includes(query));
+    if (groups.length) {
+      markup += `<p class="workflow-palette-heading">Groups</p>`;
+      for (const g of groups.slice(0, 50))
+        markup += `<button type="button" class="workflow-outline-item" data-workflow-group="${esc(g.id)}" aria-expanded="${!g.collapsed}"><span class="workflow-outline-icon" aria-hidden="true">${g.collapsed ? "▸" : "▾"}</span><span>${esc(g.title)}</span><small>${fmt(this.graph.groupMembers(g.id).length)}</small></button>`;
+    }
+    markup += `<p class="workflow-palette-heading">Nodes</p>`;
+    for (const n of this.graph.nodes.values()) {
+      if (query && !`${n.title} ${n.id} ${n.type}`.toLowerCase().includes(query))
+        continue;
+      if (++count > LIMIT)
+        continue;
+      const current = this.canvas.selected.has(n.id);
+      markup += `<button type="button" class="workflow-outline-item" data-workflow-node="${esc(n.id)}"${current ? ' aria-current="true"' : ""}><span class="workflow-outline-icon" aria-hidden="true">${n.subgraph ? "⧉" : "•"}</span><span>${esc(n.title)}</span><small>${esc(n.type)}</small></button>`;
+    }
+    if (!count)
+      markup += `<p class="workflow-muted">No node matches.</p>`;
+    else if (count > LIMIT)
+      markup += `<p class="workflow-muted">${fmt(LIMIT)} of ${fmt(count)} shown - search to narrow.</p>`;
+    dfDollar(listEl).html(markup);
+  }
+  renderBreadcrumb(o) {
+    const path = this.path();
+    const items = path.map((title, i) => {
+      const last = i === path.length - 1;
+      const up = path.length - 1 - i;
+      return (i ? `<li class="breadcrumb-separator" aria-hidden="true">/</li>` : "") + `<li class="breadcrumb-item">${last ? `<span class="breadcrumb-page" aria-current="page">${esc(title)}</span>` : `<button type="button" class="breadcrumb-link" data-workflow-up="${up}">${esc(title)}</button>`}</li>`;
+    }).join("");
+    dfDollar(o).html(`<nav class="breadcrumb" aria-label="Workflow path" data-ce-chrome><ol class="breadcrumb-list">${items}</ol></nav>`);
+  }
+  renderInspector(o) {
+    const c = this.canvas;
+    const store = this.graph;
+    const ids = [...c.selected];
+    const doc = o.ownerDocument;
+    const key = JSON.stringify([ids, c.selectedEdge, store.version, c.readonly, this.stack.length]);
+    if (o.contains(doc.activeElement) && doc.activeElement?.matches("input,textarea,select") && this.inspectedKey.startsWith(JSON.stringify([ids, c.selectedEdge]).slice(0, -1)))
+      return;
+    if (key === this.inspectedKey && store === this.inspectedGraph && dfDollar(o).children("[data-ce-chrome]").get(0))
+      return;
+    this.inspectedKey = key;
+    this.inspectedGraph = store;
+    const ro = c.readonly ? " disabled" : "";
+    const field = (label, control, id) => `<div class="workflow-inspector-field"><label class="label" for="${id}">${esc(label)}</label>${control}</div>`;
+    const base = (this.el.id || "workflow") + "-inspector";
+    let body = "";
+    if (c.selectedEdge) {
+      const e = store.edges.get(c.selectedEdge);
+      const from = store.nodes.get(e.source.node);
+      const to = store.nodes.get(e.target.node);
+      const port = from?.ports.find((p) => p.id === e.source.port);
+      body = `<p class="workflow-inspector-kicker">Connection</p><h3 class="workflow-inspector-title">${esc(from?.title)} → ${esc(to?.title)}</h3>` + `<p class="workflow-muted"><code>${esc(e.source.port)}</code> → <code>${esc(e.target.port)}</code> · ${esc(port?.type ?? "any")}</p>` + field("Route", `<select class="select" id="${base}-route" data-workflow-edit="route"${ro}>${["bezier", "orthogonal", "straight"].map((r) => `<option value="${r}"${(e.route ?? "bezier") === r ? " selected" : ""}>${r[0].toUpperCase() + r.slice(1)}</option>`).join("")}</select>`, `${base}-route`) + field("Label", `<input class="input" id="${base}-edge-label" data-workflow-edit="edge-label" value="${esc(e.label ?? "")}"${ro}>`, `${base}-edge-label`) + field("Line", `<select class="select" id="${base}-dash" data-workflow-edit="dash"${ro}>${["solid", "dashed", "dotted"].map((r) => `<option value="${r}"${(e.dash ?? "solid") === r ? " selected" : ""}>${r[0].toUpperCase() + r.slice(1)}</option>`).join("")}</select>`, `${base}-dash`) + `<div class="workflow-inspector-actions"><button type="button" class="btn" data-variant="outline" data-size="sm" data-workflow-edit="clear-points"${ro || !e.points?.length ? " disabled" : ""}>Clear reroute points</button>` + `<button type="button" class="btn" data-variant="destructive" data-size="sm" data-workflow-edit="disconnect"${ro}>Disconnect</button></div>` + `<p class="workflow-muted">Alt-click the connection to add a reroute point, drag its square handles to move them.</p>`;
+    } else if (ids.length === 1) {
+      const n = store.nodes.get(ids[0]);
+      const type = this.type(n.type);
+      const json = JSON.stringify(n.data, null, 2);
+      const edges = [...store.edgesFor(n.id)].slice(0, 50).map((id) => store.edges.get(id));
+      body = `<p class="workflow-inspector-kicker">${esc(type?.label ?? n.type)}</p><h3 class="workflow-inspector-title">${esc(n.title)}</h3>` + field("Title", `<input class="input" id="${base}-title" data-workflow-edit="title" value="${esc(n.title)}"${ro}>`, `${base}-title`) + `<div class="workflow-inspector-row"><input class="switch" type="checkbox" role="switch" id="${base}-locked" data-workflow-edit="locked"${n.locked ? " checked" : ""}${ro}><label for="${base}-locked">Lock position</label></div>` + field("Data (JSON)", `<textarea class="textarea workflow-json" id="${base}-data" rows="6" spellcheck="false" data-workflow-edit="data"${ro}>${esc(json)}</textarea>`, `${base}-data`) + `<div class="workflow-inspector-actions"><button type="button" class="btn" data-variant="secondary" data-size="sm" data-workflow-edit="apply-data"${ro}>Apply data</button>` + (n.subgraph ? `<button type="button" class="btn" data-variant="outline" data-size="sm" data-workflow-action="enter">Open subworkflow</button>` : "") + (n.groupId ? `<button type="button" class="btn" data-variant="outline" data-size="sm" data-workflow-action="ungroup"${ro}>Ungroup</button>` : "") + `</div>` + `<p class="workflow-palette-heading">Ports</p><ul class="workflow-inspector-list">${n.ports.map((p) => `<li><span class="workflow-port-swatch" style="--workflow-port: ${ENGINE.typeIndex(p.type) >= 0 ? `var(--workflow-type-${ENGINE.typeIndex(p.type)})` : "var(--workflow-edge)"}" aria-hidden="true"></span>${p.direction === "input" ? "in" : "out"} <strong>${esc(p.label ?? p.id)}</strong><code>${esc(p.type)}</code><span class="workflow-muted">${store.connections({ node: n.id, port: p.id }).size}</span></li>`).join("")}</ul>` + `<p class="workflow-palette-heading">Connections (${fmt(store.edgesFor(n.id).size)})</p><div class="workflow-inspector-list">${edges.map((e) => {
+        const other = store.nodes.get(e.source.node === n.id ? e.target.node : e.source.node);
+        return `<button type="button" class="workflow-outline-item" data-workflow-select-edge="${esc(e.id)}"><span class="workflow-outline-icon" aria-hidden="true">${e.source.node === n.id ? "→" : "←"}</span><span>${esc(other?.title)}</span><small>${esc(e.source.node === n.id ? e.source.port : e.target.port)}</small></button>`;
+      }).join("")}</div>`;
+    } else if (ids.length > 1) {
+      body = `<p class="workflow-inspector-kicker">Selection</p><h3 class="workflow-inspector-title">${fmt(ids.length)} nodes</h3>` + `<div class="workflow-inspector-actions">` + `<button type="button" class="btn" data-variant="outline" data-size="sm" data-workflow-action="align-left"${ro}>Align left</button>` + `<button type="button" class="btn" data-variant="outline" data-size="sm" data-workflow-action="align-top"${ro}>Align top</button>` + `<button type="button" class="btn" data-variant="outline" data-size="sm" data-workflow-action="group"${ro}>Group</button>` + `<button type="button" class="btn" data-variant="outline" data-size="sm" data-workflow-action="fit-selection">Fit selection</button>` + `</div>`;
+    } else {
+      const k = (keys) => keys.length > 1 ? `<kbd class="kbd-group">${keys.map((x) => `<kbd class="kbd">${x}</kbd>`).join("")}</kbd>` : `<kbd class="kbd">${keys[0]}</kbd>`;
+      const rows = [
+        [["Drag"], "Pan; Shift-drag selects"],
+        [["Wheel"], "Zoom; a trackpad pans"],
+        [["⌘", "Z"], "Undo; ⇧ redoes"],
+        [["⌘", "D"], "Duplicate"],
+        [["⌘", "C"], "Copy; ⌘ V pastes"],
+        [["F"], "Fit; ⇧ F the selection"],
+        [["Del"], "Delete the selection"],
+        [["Alt", "→"], "Follow a connection"],
+        [["Esc"], "Cancel"]
+      ];
+      body = `<p class="workflow-inspector-kicker">${esc(this.graph.title)}</p><h3 class="workflow-inspector-title">${fmt(store.nodes.size)} nodes, ${fmt(store.edges.size)} connections</h3>` + `<p class="workflow-muted">Select a node or a connection to inspect it. Drag from a port to connect; drop on a card to use its first free port that fits.</p>` + `<dl class="workflow-keys">${rows.map(([keys, what]) => `<dt>${k(keys)}</dt><dd>${esc(what)}</dd>`).join("")}</dl>`;
+    }
+    dfDollar(o).html(`<div class="workflow-inspector" data-ce-chrome>${body}</div>`);
+  }
+  edit(control) {
+    const c = this.canvas;
+    const store = this.graph;
+    const what = control.dataset.workflowEdit;
+    const id = [...c.selected][0];
+    const node = id ? store.nodes.get(id) : undefined;
+    c.attempt(() => {
+      if (what === "title" && node)
+        store.updateNode(node.id, { title: control.value.trim() || node.title }, "Rename");
+      else if (what === "locked" && node)
+        store.updateNode(node.id, { locked: control.checked }, "Lock");
+      else if (what === "apply-data" && node) {
+        const area = dfDollar(control.closest(".workflow-inspector")).find('[data-workflow-edit="data"]').get(0);
+        let parsed;
+        try {
+          parsed = JSON.parse(area.value);
+        } catch {
+          throw new Error("The data is not valid JSON");
+        }
+        assert(isRecord(parsed), "The data must be a JSON object");
+        store.updateNode(node.id, { data: parsed }, "Edit data");
+        c.notify("Data applied");
+      } else if (c.selectedEdge) {
+        const e = store.edges.get(c.selectedEdge);
+        if (!e)
+          return;
+        if (what === "route")
+          store.commit("Change route", [
+            {
+              kind: "edges",
+              id: e.id,
+              value: { ...e, route: control.value }
+            }
+          ]);
+        else if (what === "edge-label" || what === "dash") {
+          const value = control.value.trim();
+          this.setEdge(e.id, what === "dash" ? { dash: value === "solid" ? undefined : value } : { label: value || undefined });
+        } else if (what === "clear-points")
+          store.commit("Clear reroute points", [{ kind: "edges", id: e.id, value: { ...e, points: [] } }]);
+        else if (what === "disconnect")
+          c.removeSelection();
+      }
+    });
+  }
+  destroy() {
+    this.cancelRun();
+    this.layoutAbort?.abort();
+    clearTimeout(this.outletsTimer);
+    this.attrObserver.disconnect();
+    this.themeObserver.disconnect();
+    this.offTheme();
+    this.canvas.destroy();
+    this.file.remove();
+    live.delete(this);
+    for (const kind of OUTLETS)
+      for (const o of this.find(`[data-workflow-outlet="${kind}"]`))
+        dfDollar(o).children("[data-ce-chrome]").remove();
+    delete this.el.dataset.workflowStatus;
+  }
+}
+function configOf(el) {
+  const inst = el._workflow;
+  return {
+    selected: (el.getAttribute("data-selected") ?? "").split(/\s+/).filter(Boolean),
+    edge: el.getAttribute("data-selected-edge") || null,
+    camera: inst ? { ...inst.canvas.camera } : null
+  };
+}
+var idList = (v) => Array.isArray(v) ? v.map(String) : typeof v === "string" ? v.split(/\s+/).filter(Boolean) : [];
+function applyMarkup(el, name, config) {
+  el.toggleAttribute("data-readonly", name === "readonly");
+  const selected = config.edge ? [] : idList(config.selected);
+  if (selected.length)
+    el.setAttribute("data-selected", selected.join(" "));
+  else
+    el.removeAttribute("data-selected");
+  if (config.edge)
+    el.setAttribute("data-selected-edge", config.edge);
+  else
+    el.removeAttribute("data-selected-edge");
+}
+function triggerStateChange(el, name, config, incoming) {
+  const inst = el._workflow;
+  if (!inst) {
+    applyMarkup(el, name, config);
+    return Promise.resolve();
+  }
+  const merged = { ...config };
+  if (incoming && "selected" in incoming && idList(incoming.selected).length && !("edge" in incoming))
+    merged.edge = null;
+  inst.canvas.setReadonly(name === "readonly");
+  inst.canvas.select(merged.edge ? [] : idList(merged.selected), merged.edge || undefined);
+  if (incoming?.camera)
+    inst.canvas.setCamera(incoming.camera);
+  inst.writeAttrs();
+  inst.refreshOutlets();
+  return inst.canvas.ready;
+}
+var workflowApi = componentState({
+  component: "workflow",
+  states: workflowStates,
+  mergeConfig: true,
+  apply: (el, state, _previous, incoming) => triggerStateChange(el, state.name, state.config, incoming),
+  read: (el) => ({
+    name: el.hasAttribute("data-readonly") ? "readonly" : "default",
+    config: configOf(el)
+  }),
+  markup: (el, state) => applyMarkup(el, state.name, state.config),
+  events: ["workflow-view"]
+});
+df$.workflowApi = workflowApi;
+df$.workflowStates = workflowStates;
+var instanceFor = (from) => {
+  const host = from.closest("[data-workflow-for]");
+  const id = host?.dataset.workflowFor;
+  const el = id ? dfDollar(`#${CSS.escape(id)}`).get(0) : from.closest(".workflow");
+  return el?._workflow;
+};
+var docs = new WeakSet;
+function delegate(doc) {
+  if (docs.has(doc))
+    return;
+  docs.add(doc);
+  doc.addEventListener("click", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element))
+      return;
+    const action = target.closest("[data-workflow-action]");
+    if (action && !action.disabled) {
+      const inst = instanceFor(action);
+      if (inst) {
+        e.preventDefault();
+        inst.action(action.dataset.workflowAction, action);
+        return;
+      }
+    }
+    const inst = instanceFor(target);
+    if (!inst)
+      return;
+    const node = target.closest("[data-workflow-node]");
+    if (node)
+      inst.canvas.focusNode(node.dataset.workflowNode);
+    const group = target.closest("[data-workflow-group]");
+    if (group)
+      inst.canvas.toggleGroup(group.dataset.workflowGroup);
+    const edge = target.closest("[data-workflow-select-edge]");
+    if (edge)
+      inst.canvas.select([], edge.dataset.workflowSelectEdge);
+    const up = target.closest("[data-workflow-up]");
+    if (up)
+      inst.leave(Number(up.dataset.workflowUp) || 1);
+    const edit = target.closest("button[data-workflow-edit]");
+    if (edit)
+      inst.edit(edit);
+  });
+  doc.addEventListener("change", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element) || !target.matches("input[data-workflow-edit],select[data-workflow-edit]"))
+      return;
+    instanceFor(target)?.edit(target);
+  });
+  doc.addEventListener("input", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element) || !target.matches("[data-workflow-search]"))
+      return;
+    const inst = instanceFor(target);
+    const outlet = target.closest("[data-workflow-outlet]");
+    if (!inst || !outlet)
+      return;
+    if (target.dataset.workflowSearch === "palette")
+      inst.renderPalette(outlet);
+    else
+      inst.renderOutline(outlet);
+  });
+  doc.addEventListener("keydown", (e) => {
+    const target = e.target;
+    if (e.key !== "Enter" || !(target instanceof Element) || !target.matches('[data-workflow-search="palette"]'))
+      return;
+    const first = dfDollar(target.closest("[data-workflow-outlet]")).find("[data-workflow-type]:not([disabled])").get(0);
+    if (first) {
+      e.preventDefault();
+      instanceFor(target)?.action("add", first);
+    }
+  });
+  doc.addEventListener("dragstart", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element))
+      return;
+    const item = target.closest("[data-workflow-type]");
+    if (item && e.dataTransfer) {
+      e.dataTransfer.setData("application/x-workflow-type", item.dataset.workflowType);
+      e.dataTransfer.effectAllowed = "copy";
+    }
+  });
+}
+var resolveTarget = (target) => typeof target === "string" ? dfDollar(target).get(0) ?? null : target;
+var need = (target) => {
+  const inst = resolveTarget(target)?._workflow;
+  if (!inst)
+    throw new Error("workflow: the element is not initialized");
+  return inst;
+};
+df$.workflow = {
+  register(scope, definition) {
+    if (scope === "global") {
+      const checked = checkType(definition);
+      globalTypes.set(checked.type, checked);
+      typesVersion++;
+      for (const inst of live)
+        inst.refreshOutlets();
+      for (const inst of live)
+        inst.canvas.refreshTheme();
+      return () => {
+        if (globalTypes.get(checked.type) === checked)
+          globalTypes.delete(checked.type);
+        typesVersion++;
+        for (const inst of live)
+          inst.refreshOutlets();
+      };
+    }
+    return need(scope).register(definition);
+  },
+  registerEdge(scope, definition) {
+    if (scope === "global") {
+      const checked = checkEdgeType(definition);
+      globalEdgeTypes.set(checked.type, checked);
+      edgeTypesVersion++;
+      for (const inst of live)
+        inst.canvas.refreshTheme();
+      return () => {
+        if (globalEdgeTypes.get(checked.type) === checked)
+          globalEdgeTypes.delete(checked.type);
+        edgeTypesVersion++;
+        for (const inst of live)
+          inst.canvas.refreshTheme();
+      };
+    }
+    return need(scope).registerEdge(definition);
+  },
+  setEdge(target, id, update) {
+    return need(target).setEdge(id, update);
+  },
+  load(target, document2) {
+    need(target).load(readAny(document2));
+  },
+  export(target) {
+    return need(target).export();
+  },
+  addNode(target, type, at) {
+    return need(target).canvas.addNode(type, at);
+  },
+  node(target, type, at, overrides) {
+    const inst = need(target);
+    const definition = inst.type(type);
+    if (!definition)
+      throw new Error(`Unknown node type ${type}`);
+    const n = createNode(definition, at, inst.layout());
+    const { data, ...rest } = overrides ?? {};
+    return { ...n, ...rest, data: { ...n.data, ...data } };
+  },
+  connect(target, source, to) {
+    return need(target).graph.connect(source, to);
+  },
+  commit(target, label, patches) {
+    need(target).graph.commit(label, patches);
+  },
+  undo(target) {
+    need(target).graph.undo();
+  },
+  redo(target) {
+    need(target).graph.redo();
+  },
+  history(target) {
+    return need(target).graph.history();
+  },
+  travel(target, at) {
+    const inst = need(target);
+    if (!inst.canvas.readonly)
+      inst.canvas.attempt(() => inst.graph.travel(at));
+  },
+  select(target, ids, edge) {
+    need(target).canvas.select(edge ? [] : ids, edge);
+  },
+  focus(target, id) {
+    need(target).canvas.focusNode(id);
+  },
+  setField(target, id, key, value) {
+    return need(target).writeData(id, { [key]: value });
+  },
+  getField(target, id, key) {
+    const v = need(target).graph.nodes.get(id)?.data[key];
+    return v === undefined ? undefined : structuredClone(v);
+  },
+  editField(target, id, key) {
+    return need(target).editField(id, key);
+  },
+  tree(target) {
+    return need(target).tree();
+  },
+  reveal(target, path, options) {
+    return need(target).reveal(path, !!options?.camera);
+  },
+  fit(target, selection) {
+    need(target).canvas.fit(!!selection);
+  },
+  camera(target, camera) {
+    const inst = need(target);
+    if (camera)
+      inst.canvas.setCamera(camera);
+    return { ...inst.canvas.camera };
+  },
+  arrange(target) {
+    return need(target).arrange();
+  },
+  run(target) {
+    return need(target).run();
+  },
+  cancel(target) {
+    need(target).cancelRun();
+  },
+  setRuntime(target, id, state) {
+    need(target).canvas.setRuntime(id, state);
+  },
+  configure(target, options) {
+    need(target).configure(options);
+  },
+  enter(target, id) {
+    need(target).enter(id);
+  },
+  leave(target, levels) {
+    need(target).leave(levels ?? 1);
+  },
+  stats(target) {
+    const s = need(target).canvas.stats;
+    return s ? { ...s } : null;
+  },
+  action(target, name) {
+    need(target).action(name);
+  },
+  generate(spec) {
+    return generate(spec);
+  },
+  validate(document2) {
+    try {
+      new GraphStore(document2);
+      return null;
+    } catch (e) {
+      return e.message;
+    }
+  },
+  fromComfy(prompt) {
+    return fromComfy(prompt);
+  },
+  toComfy(document2) {
+    return toComfy(document2);
+  },
+  fromGradio(workflow) {
+    return fromGradio(workflow);
+  },
+  toGradio(document2) {
+    return toGradio(document2);
+  },
+  destroy(target) {
+    const el = resolveTarget(target);
+    const inst = el?._workflow;
+    if (!el || !inst)
+      return;
+    inst.destroy();
+    el._workflow = undefined;
+    unbindComponent(el);
+    delete el.api;
+  }
+};
+function init() {
+  dfDollar(".workflow:not([data-init])").toArray().forEach((el) => {
+    el.dataset.init = "";
+    delegate(el.ownerDocument);
+    let inst;
+    try {
+      inst = new Workflow(el);
+    } catch (e) {
+      el.dataset.workflowStatus = "error";
+      console.error("workflow: could not start", e);
+      return;
+    }
+    el._workflow = inst;
+    const config = configOf(el);
+    bindComponent(el, workflowApi, {
+      name: el.hasAttribute("data-readonly") ? "readonly" : "default",
+      config
+    });
+    inst.writeAttrs();
+  });
+  for (const inst of live)
+    for (const kind of OUTLETS)
+      for (const o of inst.find(`[data-workflow-outlet="${kind}"]`))
+        if (!dfDollar(o).children("[data-ce-chrome]").get(0)) {
+          inst.refreshOutlets();
+          break;
+        }
+  for (const inst of live)
+    if (!inst.el.isConnected)
+      df$.workflow.destroy(inst.el);
+}
+init();
+new MutationObserver((records) => {
+  if (records.some((r) => !r.target.closest?.(".workflow-viewport")))
+    init();
+}).observe(document, { childList: true, subtree: true });
+
+//# debugId=3FCAE518F10BD36C64756E2164756E21
+//# sourceMappingURL=workflows.js.map

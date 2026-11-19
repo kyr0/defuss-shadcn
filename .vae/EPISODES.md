@@ -163,3 +163,12 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-17T19:46:04Z s=5187d371 FINDING scaffold-calendar.mdx tints learn=none: a visual judgement; the rule stands in AGENTS.md beside the Media Timeline one
 2026-11-17T19:46:04Z s=5187d371 FINDING scripts/individual-examples.ts --write (dialog xl) learn=none: why the cutter keeps the whole fence for a dialog nested in an app is not established; the parts were written by hand and the gate passes
 2026-11-17T23:03:04Z s=5187d371 FINDING src/components/data-display/calendar/calendar.css .calendar-day[data-mark] button::after learn=none: a visual spacing judgement, checked by screenshots; calendar.e2e still asserts the mark dot exists
+2026-11-18T04:18:54Z s=5187d371 FINDING src/components/workflows/workflow/workflow.ts EdgeRenderer.ask / hit learn=none: a busy worker past the deadline is not reproducible on demand; the contended runs never reached it (the real cause of the flake was the scroll above)
+2026-11-18T04:18:54Z s=5187d371 FINDING src/components/workflows/workflow/workflow.ts fit() learn=none: a layout judgement checked by screenshots of every docs example
+2026-11-18T12:11:17Z s=5187d371 FINDING src/components/workflows/workflow/workflow.ts defaultValueView (image) learn=none: checked by screenshot; MEMORY css-hidden already states the rule
+2026-11-18T12:11:17Z s=5187d371 FINDING src/documentation/pages/workflows/workflow-editing.mdx wizard Next / Finish learn=none: docs example script; checked by tmp/probe-wf-edit.ts (wizard finishes with the folded config)
+2026-11-18T17:11:33Z s=5187d371 FINDING src/documentation/pages/application/scaffold-workflow-studio.mdx BDI-II item wording learn=none: a licensing question, not a code defect
+2026-11-18T21:00:17Z s=5187d371 FINDING tests/e2e/site/studio.e2e.ts WebKit drag learn=none: a load-dependent WebKit drag flake; no mechanism observed, so no test or rule
+2026-11-19T01:45:13Z s=5187d371 FINDING workflow.ts far-field titles + group titles (workflow.css --workflow-zoom) learn=none: visual only, checked on screenshots in light, dark, 1440 and 1920 - no assertion reads canvas text
+2026-11-19T01:45:13Z s=5187d371 FINDING tmp/ws/app-core.js FIT heights; app-bdi / app-scene layout learn=none: the heights are measured data of this page, not a rule: a probe re-measures them when a card changes
+2026-11-19T01:45:13Z s=5187d371 FINDING tests/e2e/site/scaffold-workflow-studio.e2e.ts first frame at a new place learn=none: GPU-process latency under SwiftShader; not reproduced on a GPU, so no rule

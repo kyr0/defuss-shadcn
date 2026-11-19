@@ -130,10 +130,14 @@ export function initHooks(ts: string): { attrs: string[]; tags: string[] } {
 }
 
 /** The class tokens a text uses: class="…" attributes (template strings
- *  included) and classList / addClass / toggleClass string arguments. */
+ *  included), `className = '…'` assignments and `{ class: '…' }` props of
+ *  element helpers (the Workflow Studio's fields and preview were missed
+ *  without them), and classList / addClass / toggleClass string arguments.
+ *  A class picked by an expression (`kind === 'a' ? 'x' : 'y'`) is not read:
+ *  a component writes one literal per case. */
 export function usedClasses(text: string): Set<string> {
   const out = new Set<string>();
-  for (const m of text.matchAll(/\bclass(?:Name)?=\\?["'`]([^"'`\\]*)/g)) for (const c of m[1].split(/\s+/)) if (/^[a-z][a-z0-9-]*$/i.test(c)) out.add(c);
+  for (const m of text.matchAll(/\bclass(?:Name)?\s*[:=]\s*\\?["'`]([^"'`\\]*)/g)) for (const c of m[1].split(/\s+/)) if (/^[a-z][a-z0-9-]*$/i.test(c)) out.add(c);
   for (const m of text.matchAll(/\b(?:classList\.(?:add|toggle|remove)|addClass|toggleClass)\(\s*['"`]([^'"`]+)['"`]/g)) for (const c of m[1].split(/\s+/)) out.add(c);
   return out;
 }

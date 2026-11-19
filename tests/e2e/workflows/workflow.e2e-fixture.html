@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>workflow e2e fixture</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/layout.css" />
+    <link rel="stylesheet" href="/dist/theme/utils/sizing.css" />
+    <link rel="stylesheet" href="/dist/components/all.css" />
+    <link rel="stylesheet" href="/dist/components/workflow/workflow.css" />
+    <style>
+      body { padding: 1rem; max-width: 110rem; font-family: system-ui; }
+      .app { display: grid; grid-template-columns: 15rem minmax(0, 1fr) 18rem; gap: 0.75rem; align-items: start; }
+      .app aside { max-block-size: 34rem; overflow: auto; }
+      .bar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-block: 0.5rem; }
+      .workflow { margin-block: 1rem; }
+    </style>
+  </head>
+  <body>
+    <!-- mirrors the doc pages: the application (toolbar, palette, outline, inspector, breadcrumb, readouts around a
+         workflow with groups and a subworkflow), a generated 10,000-node workflow, a grouped one, a readonly one -->
+    <div class="toolbar bar" role="toolbar" aria-label="Workflow">
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="undo">Undo</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="redo">Redo</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="arrange">Arrange</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="group" data-workflow-title="Text steps">Group</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="delete">Delete</button>
+      <button class="btn" data-variant="ghost" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="parent">Up</button>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="readonly" aria-pressed="false">Read only</button>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="export">Export</button>
+      <button class="btn" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="run">Run</button>
+      <button class="btn" data-variant="outline" data-size="sm" type="button" data-workflow-for="wf-basic" data-workflow-action="cancel">Cancel</button>
+    </div>
+    <div id="wf-crumbs" data-workflow-for="wf-basic" data-workflow-outlet="breadcrumb"></div>
+    <div class="app">
+      <aside>
+        <div id="wf-palette" data-workflow-for="wf-basic" data-workflow-outlet="palette"></div>
+        <div id="wf-outline" data-workflow-for="wf-basic" data-workflow-outlet="outline"></div>
+      </aside>
+      <div class="workflow" id="wf-basic" aria-label="Text pipeline" style="--workflow-height: 34rem; margin: 0">
+        <script type="application/json" class="workflow-source">
+          {
+            "schemaVersion": 1,
+            "id": "text-pipeline",
+            "title": "Text pipeline",
+            "nodes": [
+              { "id": "p1", "type": "prompt", "title": "Prompt", "x": 0, "y": 0, "width": 260, "height": 180, "groupId": "g1",
+                "ports": [{ "id": "text", "direction": "output", "type": "text" }], "data": { "text": "a lighthouse at dawn" } },
+              { "id": "n1", "type": "number", "title": "Times", "x": 0, "y": 240, "width": 260, "height": 160, "groupId": "g1",
+                "ports": [{ "id": "value", "direction": "output", "type": "number" }], "data": { "value": 2 } },
+              { "id": "u1", "type": "uppercase", "title": "Uppercase", "x": 380, "y": 0, "width": 220, "height": 120,
+                "ports": [{ "id": "text", "direction": "input", "type": "text" }, { "id": "out", "label": "text", "direction": "output", "type": "text" }], "data": {} },
+              { "id": "r1", "type": "repeat", "title": "Repeat", "x": 700, "y": 40, "width": 240, "height": 180,
+                "ports": [{ "id": "text", "direction": "input", "type": "text" }, { "id": "times", "direction": "input", "type": "number" }, { "id": "out", "label": "text", "direction": "output", "type": "text" }], "data": { "separator": " / " } },
+              { "id": "c1", "type": "count", "title": "Word count", "x": 700, "y": 300, "width": 220, "height": 120,
+                "ports": [{ "id": "text", "direction": "input", "type": "text" }, { "id": "words", "direction": "output", "type": "number" }], "data": {} },
+              { "id": "s1", "type": "subworkflow", "title": "Shout", "x": 380, "y": 300, "width": 220, "height": 120,
+                "ports": [{ "id": "text", "direction": "input", "type": "text" }, { "id": "out", "label": "text", "direction": "output", "type": "text" }], "data": {},
+                "subgraph": {
+                  "schemaVersion": 1, "id": "shout", "title": "Shout",
+                  "nodes": [
+                    { "id": "su", "type": "uppercase", "title": "Uppercase", "x": 0, "y": 0, "width": 220, "height": 120,
+                      "ports": [{ "id": "text", "direction": "input", "type": "text" }, { "id": "out", "label": "text", "direction": "output", "type": "text" }], "data": {} }
+                  ],
+                  "edges": [], "groups": [],
+                  "inputs": [{ "id": "text", "type": "text", "endpoint": { "node": "su", "port": "text" } }],
+                  "outputs": [{ "id": "out", "type": "text", "endpoint": { "node": "su", "port": "out" } }]
+                } },
+              { "id": "v1", "type": "preview", "title": "Preview", "x": 1040, "y": 80, "width": 280, "height": 200,
+                "ports": [{ "id": "value", "direction": "input", "type": "any", "maxConnections": 0 }], "data": {} }
+            ],
+            "edges": [
+              { "id": "e1", "source": { "node": "p1", "port": "text" }, "target": { "node": "u1", "port": "text" } },
+              { "id": "e2", "source": { "node": "u1", "port": "out" }, "target": { "node": "r1", "port": "text" } },
+              { "id": "e3", "source": { "node": "n1", "port": "value" }, "target": { "node": "r1", "port": "times" } },
+              { "id": "e4", "source": { "node": "r1", "port": "out" }, "target": { "node": "v1", "port": "value" } },
+              { "id": "e5", "source": { "node": "p1", "port": "text" }, "target": { "node": "c1", "port": "text" } },
+              { "id": "e6", "source": { "node": "c1", "port": "words" }, "target": { "node": "v1", "port": "value" } },
+              { "id": "e7", "source": { "node": "p1", "port": "text" }, "target": { "node": "s1", "port": "text" } },
+              { "id": "e8", "source": { "node": "s1", "port": "out" }, "target": { "node": "v1", "port": "value" } }
+            ],
+            "groups": [{ "id": "g1", "title": "Inputs", "x": -30, "y": -60, "width": 320, "height": 490 }]
+          }
+        </script>
+      </div>
+      <aside id="wf-inspector" data-workflow-for="wf-basic" data-workflow-outlet="inspector"></aside>
+    </div>
+    <p class="bar text-sm">
+      <span id="out-title" data-workflow-for="wf-basic" data-workflow-output="title"></span> ·
+      <span id="out-nodes" data-workflow-for="wf-basic" data-workflow-output="nodes"></span> nodes ·
+      <span id="out-edges" data-workflow-for="wf-basic" data-workflow-output="edges"></span> connections ·
+      <span id="out-selection" data-workflow-for="wf-basic" data-workflow-output="selection"></span> ·
+      <span id="out-zoom" data-workflow-for="wf-basic" data-workflow-output="zoom"></span> ·
+      <span id="out-drawn" data-workflow-for="wf-basic" data-workflow-output="drawn"></span>
+    </p>
+
+    <div class="workflow" id="wf-big" data-generate="10000" data-edges="100000" data-seed="7" aria-label="A synthetic workflow of 10,000 nodes"></div>
+    <p class="bar text-sm"><span id="big-drawn" data-workflow-for="wf-big" data-workflow-output="drawn"></span> · <span id="big-cards" data-workflow-for="wf-big" data-workflow-output="cards"></span> · <span id="big-renderer" data-workflow-for="wf-big" data-workflow-output="renderer"></span></p>
+
+    <div class="workflow" id="wf-groups" data-generate="240" data-edges="480" data-seed="3" data-stage="12" data-groups="5" data-collapsed data-worker="none" aria-label="Stages in groups" style="--workflow-height: 24rem"></div>
+
+    <div class="workflow" id="wf-readonly" data-readonly data-selected="b" data-minimap="none" aria-label="A finished pipeline" style="--workflow-height: 18rem">
+      <script type="application/json" class="workflow-source">
+        {
+          "schemaVersion": 1, "id": "finished", "title": "Finished",
+          "nodes": [
+            { "id": "a", "type": "prompt", "title": "Prompt", "x": 0, "y": 0, "width": 260, "height": 180,
+              "ports": [{ "id": "text", "direction": "output", "type": "text" }], "data": { "text": "read only" } },
+            { "id": "b", "type": "preview", "title": "Preview", "x": 380, "y": 0, "width": 260, "height": 180,
+              "ports": [{ "id": "value", "direction": "input", "type": "any", "maxConnections": 0 }], "data": {} }
+          ],
+          "edges": [{ "id": "e1", "source": { "node": "a", "port": "text" }, "target": { "node": "b", "port": "value" } }],
+          "groups": []
+        }
+      </script>
+    </div>
+
+    <!-- fields: a custom editor (edit), an external one (workflow-field-edit), render, renderLabel - as controls and as a list -->
+    <div class="workflow" id="wf-custom" data-minimap="none" aria-label="Custom field editors" style="--workflow-height: 26rem">
+      <script type="application/json" class="workflow-types">
+        [{ "type": "stamp", "label": "Stamp", "ports": [{ "id": "in", "direction": "input", "type": "text" }],
+           "fields": [{ "key": "name", "label": "Name", "kind": "text" }, { "key": "stamp", "label": "Stamp", "kind": "output" }] }]
+      </script>
+      <script type="application/json" class="workflow-source">
+        {
+          "schemaVersion": 1, "id": "custom", "title": "Jobs",
+          "nodes": [
+            { "id": "st", "type": "stamp", "title": "Stamp", "x": 700, "y": 0, "width": 260, "height": 220,
+              "ports": [{ "id": "in", "direction": "input", "type": "text" }], "data": { "name": "approved" } },
+            { "id": "j1", "type": "job", "title": "Upscale", "x": 0, "y": 0, "width": 280, "height": 330,
+              "ports": [{ "id": "in", "direction": "input", "type": "text" }, { "id": "out", "direction": "output", "type": "text" }],
+              "data": { "threshold": 0.4, "config": { "model": "x4", "steps": 30, "faces": true }, "script": "return input;" } },
+            { "id": "raw", "type": "unknown-kind", "title": "Imported", "x": 380, "y": 0, "width": 240, "height": 200,
+              "ports": [{ "id": "in", "direction": "input", "type": "text" }], "data": { "quality": 82, "format": "webp" } }
+          ],
+          "edges": [{ "id": "e1", "source": { "node": "j1", "port": "out" }, "target": { "node": "raw", "port": "in" } }],
+          "groups": []
+        }
+      </script>
+    </div>
+    <div class="workflow" id="wf-list" data-layout="list" data-minimap="none" aria-label="Fields as a property list" style="--workflow-height: 26rem">
+      <script type="application/json" class="workflow-source">
+        {
+          "schemaVersion": 1, "id": "list", "title": "Jobs",
+          "nodes": [
+            { "id": "j1", "type": "job", "title": "Upscale", "x": 0, "y": 0, "width": 280, "height": 330,
+              "ports": [{ "id": "in", "direction": "input", "type": "text" }, { "id": "out", "direction": "output", "type": "text" }],
+              "data": { "threshold": 0.4, "config": { "model": "x4", "steps": 30, "faces": true }, "script": "return input;" } },
+            { "id": "raw", "type": "unknown-kind", "title": "Imported", "x": 380, "y": 0, "width": 240, "height": 200,
+              "ports": [{ "id": "in", "direction": "input", "type": "text" }], "data": { "quality": 82, "format": "webp" } }
+          ],
+          "edges": [{ "id": "e1", "source": { "node": "j1", "port": "out" }, "target": { "node": "raw", "port": "in" } }],
+          "groups": []
+        }
+      </script>
+    </div>
+
+    <!-- connection types: a port type's look and label renderer, a connection's own type, label and animation -->
+    <div class="workflow" id="wf-links" data-minimap="none" aria-label="Connection types" style="--workflow-height: 22rem">
+      <script type="application/json" class="workflow-source">
+        {
+          "schemaVersion": 1, "id": "links", "title": "Links",
+          "nodes": [
+            { "id": "src", "type": "nums", "title": "Numbers", "x": 0, "y": 0, "width": 200, "height": 120,
+              "ports": [{ "id": "out", "direction": "output", "type": "batch" }], "data": {} },
+            { "id": "sink", "type": "total", "title": "Total", "x": 420, "y": 0, "width": 220, "height": 200,
+              "ports": [{ "id": "in", "direction": "input", "type": "batch" }, { "id": "alt", "direction": "input", "type": "batch", "optional": true },
+                        { "id": "note", "direction": "input", "type": "text", "optional": true }], "data": {} },
+            { "id": "msg", "type": "prompt", "title": "Note", "x": 0, "y": 220, "width": 200, "height": 150,
+              "ports": [{ "id": "text", "direction": "output", "type": "text" }], "data": { "text": "hi" } }
+          ],
+          "edges": [
+            { "id": "l1", "source": { "node": "src", "port": "out" }, "target": { "node": "sink", "port": "in" } },
+            { "id": "l2", "type": "fallback", "source": { "node": "src", "port": "out" }, "target": { "node": "sink", "port": "alt" } },
+            { "id": "l3", "label": "plain", "animated": true, "source": { "node": "msg", "port": "text" }, "target": { "node": "sink", "port": "note" } }
+          ],
+          "groups": []
+        }
+      </script>
+    </div>
+
+    <!-- the navigator: a Data Tree of the whole document (groups, a subworkflow), a Follow toggle, a filter -->
+    <div class="bar">
+      <button class="toggle" id="nav-follow" type="button" aria-pressed="false" data-size="sm">Follow</button>
+      <input class="input" id="nav-filter" data-tree-filter="nav-tree" aria-label="Find a node" placeholder="Find a node…" style="max-width: 14rem" />
+    </div>
+    <div style="display: grid; grid-template-columns: 16rem minmax(0, 1fr); gap: 0.75rem">
+      <div class="data-tree" id="nav-tree" aria-label="Nodes" data-label-field="title" data-exclusive data-persist="none" style="height: 24rem"></div>
+      <div class="workflow" id="nav-wf" aria-label="A navigated workflow" style="--workflow-height: 24rem; margin: 0">
+        <script type="application/json" class="workflow-source">
+          {
+            "schemaVersion": 1, "id": "nav", "title": "Release",
+            "nodes": [
+              { "id": "a", "type": "prompt", "title": "Notes", "x": 0, "y": 0, "width": 260, "height": 180, "groupId": "g1",
+                "ports": [{ "id": "text", "direction": "output", "type": "text" }], "data": { "text": "v1" } },
+              { "id": "b", "type": "uppercase", "title": "Shout", "x": 340, "y": 0, "width": 260, "height": 140, "groupId": "g1",
+                "ports": [{ "id": "text", "direction": "input", "type": "text" }, { "id": "out", "label": "text", "direction": "output", "type": "text" }], "data": {} },
+              { "id": "far", "type": "preview", "title": "Far away", "x": 3000, "y": 1800, "width": 260, "height": 180,
+                "ports": [{ "id": "value", "direction": "input", "type": "any", "maxConnections": 0 }], "data": {} },
+              { "id": "sub", "type": "subworkflow", "title": "Polish", "x": 700, "y": 0, "width": 260, "height": 140,
+                "ports": [{ "id": "in", "direction": "input", "type": "text" }],
+                "data": {},
+                "subgraph": {
+                  "schemaVersion": 1, "id": "polish", "title": "Polish",
+                  "nodes": [
+                    { "id": "inner", "type": "uppercase", "title": "Inner shout", "x": 0, "y": 0, "width": 260, "height": 140,
+                      "ports": [{ "id": "text", "direction": "input", "type": "text" }, { "id": "out", "label": "text", "direction": "output", "type": "text" }], "data": {} }
+                  ],
+                  "edges": [], "groups": [],
+                  "inputs": [{ "id": "in", "type": "text", "endpoint": { "node": "inner", "port": "text" } }]
+                } }
+            ],
+            "edges": [{ "id": "e1", "source": { "node": "a", "port": "text" }, "target": { "node": "b", "port": "text" } }],
+            "groups": [{ "id": "g1", "title": "Draft", "x": -30, "y": -60, "width": 660, "height": 280 }]
+          }
+        </script>
+      </div>
+    </div>
+
+    <script type="module" src="/dist/components/all.js"></script>
+    <script type="module" src="/dist/components/workflow/workflow.js"></script>
+    <script type="module">
+      // the node types every workflow on the page knows: how their cards look and how they run
+      const W = globalThis.df$.shadcn.workflow;
+      const text = (inputs, key) => String(inputs[key]?.[0] ?? '');
+      W.register('global', { type: 'prompt', label: 'Prompt', category: 'Inputs', color: 'chart-1', description: 'A line of text',
+        ports: [{ id: 'text', direction: 'output', type: 'text' }], defaults: { text: 'a forest at noon' },
+        fields: [{ key: 'text', label: 'Text', kind: 'textarea', rows: 2 }], run: (n) => ({ text: n.data.text }) });
+      W.register('global', { type: 'number', label: 'Number', category: 'Inputs', color: 'chart-2', description: 'A number from a slider',
+        ports: [{ id: 'value', direction: 'output', type: 'number' }], defaults: { value: 3 },
+        fields: [{ key: 'value', label: 'Value', kind: 'slider', min: 0, max: 10, step: 1 }], run: (n) => ({ value: n.data.value }) });
+      W.register('global', { type: 'uppercase', label: 'Uppercase', category: 'Text', color: 'chart-3', description: 'Every letter capital',
+        ports: [{ id: 'text', direction: 'input', type: 'text' }, { id: 'out', label: 'text', direction: 'output', type: 'text' }],
+        run: (n, { inputs }) => ({ out: text(inputs, 'text').toUpperCase() }) });
+      W.register('global', { type: 'repeat', label: 'Repeat', category: 'Text', color: 'chart-3', description: 'The text, n times',
+        ports: [{ id: 'text', direction: 'input', type: 'text' }, { id: 'times', direction: 'input', type: 'number' }, { id: 'out', label: 'text', direction: 'output', type: 'text' }],
+        defaults: { separator: ' ' }, fields: [{ key: 'separator', label: 'Separator', kind: 'text' }],
+        run: (n, { inputs }) => ({ out: Array(Number(inputs.times?.[0] ?? 1)).fill(text(inputs, 'text')).join(String(n.data.separator)) }) });
+      W.register('global', { type: 'count', label: 'Word count', category: 'Analyze', color: 'chart-4', description: 'How many words',
+        ports: [{ id: 'text', direction: 'input', type: 'text' }, { id: 'words', direction: 'output', type: 'number' }],
+        run: (n, { inputs }) => ({ words: text(inputs, 'text').split(/\s+/).filter(Boolean).length }) });
+      W.register('global', { type: 'preview', label: 'Preview', category: 'Outputs', color: 'chart-5', description: 'Shows what arrives',
+        ports: [{ id: 'value', direction: 'input', type: 'any', maxConnections: 0 }], fields: [{ key: 'value', label: 'Result', kind: 'output' }],
+        run: (n, { inputs }) => ({ value: (inputs.value ?? []).map(String).join('\n') }) });
+      // a node of aggregate values: the config is edited by a custom editor (here: what the test hands it), the script
+      // by the page (workflow-field-edit); the threshold's label follows its value
+      W.register('global', { type: 'job', label: 'Job', category: 'Jobs', color: 'chart-2',
+        ports: [{ id: 'in', direction: 'input', type: 'text' }, { id: 'out', direction: 'output', type: 'text' }],
+        defaults: { threshold: 0.4, config: { model: 'x4', steps: 30, faces: true }, script: 'return input;' },
+        fields: [
+          { key: 'threshold', label: 'Threshold', kind: 'slider', min: 0, max: 1, step: 0.1,
+            renderLabel: (v) => { const el = document.createElement('span'); el.className = 'fx-label'; el.dataset.level = v > 0.8 ? 'high' : 'ok'; el.textContent = (v > 0.8 ? '⚠ ' : '✓ ') + 'Threshold'; return el; } },
+          { key: 'config', label: 'Config', kind: 'value', height: 80,
+            render: (v) => { const el = document.createElement('div'); el.className = 'fx-config'; el.textContent = v ? v.model + ' · ' + v.steps + ' steps' + (v.faces ? ' · faces' : '') : ''; return el; },
+            edit: async (v, ctx) => { globalThis.__edited = { value: v, node: ctx.node.id, custom: ctx.custom }; return globalThis.__nextConfig; } },
+          { key: 'script', label: 'Script', kind: 'textarea', editor: 'external' },
+        ] });
+      // a JSON type's field lends render() from the global type of the same name (and run())
+      W.register('global', { type: 'stamp', label: 'Stamp', category: 'Jobs', ports: [],
+        fields: [{ key: 'stamp', kind: 'output', render: (v, ctx) => { const b = document.createElement('span'); b.className = 'badge fx-stamp'; b.textContent = v ?? ctx.node.data.name; return b; } }],
+        run: (n) => ({ stamp: String(n.data.name).toUpperCase() }) });
+      // connection types: every connection from a batch port counts what went through; a fallback is a type of its own
+      W.registerEdge('global', { type: 'batch', color: 'chart-2', width: 3, render: (e, c) => (Array.isArray(c.value) ? c.value.length + ' values' : 'batch') });
+      W.registerEdge('global', { type: 'fallback', dash: 'dotted', render: () => 'on empty' });
+      W.register('global', { type: 'nums', label: 'Numbers', category: 'Batches', ports: [{ id: 'out', direction: 'output', type: 'batch' }],
+        run: () => new Promise((r) => setTimeout(() => r({ out: [1, 2, 3] }), 50)) });
+      W.register('global', { type: 'total', label: 'Total', category: 'Batches',
+        ports: [{ id: 'in', direction: 'input', type: 'batch' }, { id: 'out', direction: 'output', type: 'number' }],
+        fields: [{ key: 'out', label: 'Total', kind: 'output' }],
+        run: (n, { inputs }) => new Promise((r) => setTimeout(() => r({ out: (inputs.in?.[0] ?? []).reduce((a, b) => a + b, 0) }), 600)) });
+      // the navigator: tree rows from the document, the tree follows the selection, a pick in the tree selects
+      const wf = document.getElementById('nav-wf');
+      const tree = document.getElementById('nav-tree');
+      const follow = document.getElementById('nav-follow');
+      const T = globalThis.df$.shadcn.dataTree;
+      let syncing = false;
+      let timer = 0;
+      const load = () => T.setSource(tree, W.tree(wf));
+      load();
+      wf.addEventListener('workflow-change', () => { clearTimeout(timer); timer = setTimeout(load, 150); });
+      tree.addEventListener('data-tree-select', (e) => {
+        const row = e.detail.record;
+        if (row.kind === 'group') return;
+        syncing = true;
+        W.reveal(wf, row.path, { camera: follow.getAttribute('aria-pressed') === 'true' });
+        syncing = false;
+      });
+      wf.addEventListener('workflow-select', (e) => {
+        if (syncing || e.detail.selected.length !== 1) return;
+        T.reveal(tree, [...e.detail.path, e.detail.selected[0]].join('/'));
+      });
+    </script>
+  </body>
+</html>

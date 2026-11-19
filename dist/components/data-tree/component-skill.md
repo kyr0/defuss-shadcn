@@ -76,6 +76,7 @@ df$.shadcn.dataTree.setSource(tree, files, {
 | `data-persist-prefix` | `.data-tree` | The generated key's start (default `defuss-shadcn:<page path>`; the key is `<prefix>:data-tree:<id>`) |
 | `data-persist-key` | `.data-tree` | The whole key - e.g. one view shared by several pages |
 | `data-empty-text` | `.data-tree` | Shown in the `empty` state |
+| `data-exclusive` | `.data-tree` | One open way: opening a branch closes every branch that is not on its way, and `reveal()` opens only the way to its record - for a navigator that follows a selection somewhere else |
 | `data-tree-filter="tree-id"` (+ `data-field`) | any `<input>` | Filters that tree as you type - no listener code |
 
 ## Custom properties
@@ -110,6 +111,8 @@ df$.shadcn.dataTree.expandAll(tree);
 
 Registry globals: `df$.shadcn.dataTreeApi` / `df$.shadcn.dataTreeStates`;
 `df$.shadcn.dataTree` has `setSource`, `query`, `expandAll`, `collapseAll`,
+`reveal` (opens the way to a record, selects it and scrolls it into view - a
+selection made elsewhere, shown in the tree; no `data-tree-select` fires) and
 `selected`. Selecting dispatches `data-tree-select` (`detail.record`).
 
 ---
@@ -157,6 +160,7 @@ Registry globals: `df$.shadcn.dataTreeApi` / `df$.shadcn.dataTreeStates`;
 | <code>query(target: string \| HTMLElement, patch: DataTreeQuery): void</code> | Merge into the query: { filters?, sorters?, expanded?, selected? }. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-tree element or its selector</td></tr><tr><td><code>patch</code></td><td><code>DataTreeQuery</code></td><td>the query keys to change</td></tr></table> |
 | <code>expandAll(target: string \| HTMLElement): void</code> | Open every branch. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-tree element or its selector</td></tr></table> |
 | <code>collapseAll(target: string \| HTMLElement): void</code> | Close every branch (while filtering: the ways to the matches too). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-tree element or its selector</td></tr></table> |
+| <code>reveal(target: string \| HTMLElement, id: DataviewJsonValue): boolean</code> | Shows a record: opens the way to it (with data-exclusive only that way - every other branch closes), selects it and scrolls it into view as the active item. No data-tree-select fires - the page asked for it. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-tree element or its selector</td></tr><tr><td><code>id</code></td><td><code>DataviewJsonValue</code></td><td>the record's id</td></tr></table> <b>Returns</b> <code>boolean</code> - false when the record is unknown or a filter hides it |
 | <code>selected(target: string \| HTMLElement): DataviewRow \| null</code> | The selected record. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .data-tree element or its selector</td></tr></table> <b>Returns</b> <code>DataviewRow \| null</code> - the record whose id is selected, null when none is |
 
 ### Events

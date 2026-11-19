@@ -1,0 +1,159 @@
+---
+title: "Workflow: Formats & Import"
+description: "The Workflow document format (schema version 1, plain JSON), its checks and limits, importing and exporting files, and the adapters for ComfyUI API prompts and Gradio workflows."
+slug: "workflow-formats"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="workflow-formats" title="Formats & Import" component="workflow">
+  A workflow is a JSON document - the same text the editor reads from its script, writes on export and takes on import. Nothing about it lives only in the page: positions, ports, connections, groups, reroute points and nested subworkflows are all in the document, and two exports of the same workflow are byte for byte equal (every list sorted by id).
+</PageHeader>
+
+<H2 id="document">The document</H2>
+
+<DocText><code>schemaVersion</code> is 1; a document has an <code>id</code>, a <code>title</code> and the lists <code>nodes</code>, <code>edges</code> and <code>groups</code>. A node has its geometry, typed <code>ports</code>, JSON <code>data</code>, optionally a <code>groupId</code>, <code>locked</code> and a <code>subgraph</code>; a connection joins a <code>source</code> port to a <code>target</code> port, with an optional <code>route</code> (bezier, orthogonal, straight), reroute <code>points</code>, <code>label</code> and <code>color</code>. A workflow used as a subworkflow names its <code>inputs</code> and <code>outputs</code>.</DocText>
+
+<DocText>A document is checked twice before it is used: its structure (every field's type, finite coordinates, plain JSON data, at most 100,000 nodes, 1,000,000 connections, 10,000 groups, 256 ports a node, eight levels of subworkflows) and its graph (every connection between existing ports of the right direction and compatible types, no port over its capacity, no duplicate, no loop unless <code>policy.allowCycles</code>, groups without loops, subworkflow ports matching their interface). <code>df$.shadcn.workflow.validate(document)</code> returns the first problem, or <code>null</code>.</DocText>
+
+<H2 id="import-export">Import and export</H2>
+
+<DocText>The <code>import</code> action opens a file picker and reads any of the three formats below; a file that fails a check changes nothing and the editor says why. The <code>export</code> action downloads the whole document - a subworkflow being edited is written back into its node first.</DocText>
+
+```html example label="Files and samples" schema="none" sandbox="downloads" hint="Export downloads this workflow as JSON. Import it again - or any workflow JSON, a ComfyUI API prompt or a Gradio workflow. The ComfyUI and Gradio buttons load small samples through the adapters; the box shows the document as it would be exported." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="formats"
+      data-workflow-action="import"
+      >Import</button
+    >
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="formats"
+      data-workflow-action="export"
+      >Export</button
+    >
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" id="load-comfy">ComfyUI sample</button>
+    <button class="btn" data-variant="ghost" data-size="sm" type="button" id="load-gradio">Gradio sample</button>
+    <span class="text-sm text-muted-foreground" data-workflow-for="formats" data-workflow-output="title"></span>
+  </div>
+  <div class="workflow" id="formats" aria-label="Formats" style="--workflow-height: 20rem">
+    <script type="application/json" class="workflow-source">
+      {
+        "schemaVersion": 1,
+        "id": "hello",
+        "title": "Hello",
+        "nodes": [
+          {
+            "id": "a",
+            "type": "text",
+            "title": "Text",
+            "x": 0,
+            "y": 0,
+            "width": 220,
+            "height": 110,
+            "ports": [{ "id": "out", "label": "text", "direction": "output", "type": "text" }],
+            "data": { "value": "hello" }
+          },
+          {
+            "id": "b",
+            "type": "print",
+            "title": "Print",
+            "x": 320,
+            "y": 0,
+            "width": 220,
+            "height": 110,
+            "ports": [{ "id": "in", "label": "text", "direction": "input", "type": "text" }],
+            "data": {}
+          }
+        ],
+        "edges": [{ "id": "e1", "source": { "node": "a", "port": "out" }, "target": { "node": "b", "port": "in" } }],
+        "groups": []
+      }
+    </script>
+  </div>
+  <pre class="text-xs m-0" style="max-block-size: 12rem; overflow: auto" id="formats-json"></pre>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$.shadcn.workflow;
+    const el = df$('#formats').get(0);
+    const out = df$('#formats-json').get(0);
+    const show = () => (out.textContent = JSON.stringify(w.export(el), null, 2));
+    el.addEventListener('workflow-change', show);
+    el.addEventListener('workflow-navigate', show);
+    show();
+    df$('#load-comfy').on('click', () =>
+      w.load(el, {
+        4: { class_type: 'CheckpointLoaderSimple', inputs: { ckpt_name: 'sd_xl_base_1.0.safetensors' } },
+        6: { class_type: 'CLIPTextEncode', inputs: { text: 'a harbour at dusk', clip: ['4', 1] } },
+        5: { class_type: 'EmptyLatentImage', inputs: { width: 1024, height: 1024, batch_size: 1 } },
+        3: {
+          class_type: 'KSampler',
+          inputs: { seed: 42, steps: 25, cfg: 7, model: ['4', 0], positive: ['6', 0], latent_image: ['5', 0] },
+        },
+        8: { class_type: 'VAEDecode', inputs: { samples: ['3', 0], vae: ['4', 2] } },
+        9: { class_type: 'SaveImage', inputs: { filename_prefix: 'harbour', images: ['8', 0] } },
+      }),
+    );
+    df$('#load-gradio').on('click', () =>
+      w.load(el, {
+        schema_version: '2',
+        id: 'summarize',
+        name: 'Summarize a page',
+        references: [
+          { id: 'url', label: 'Page URL', inputs: [], outputs: [{ id: 'text', label: 'URL', type: 'text' }] },
+        ],
+        operators: [
+          {
+            id: 'fetch',
+            label: 'Fetch',
+            inputs: [{ id: 'url', type: 'text', required: true }],
+            outputs: [{ id: 'page', type: 'markdown' }],
+          },
+          {
+            id: 'sum',
+            label: 'Summarize',
+            inputs: [{ id: 'page', type: 'markdown', required: true }],
+            outputs: [{ id: 'summary', type: 'text' }],
+          },
+        ],
+        subjects: [
+          { id: 'show', label: 'Summary', inputs: [{ id: 'text', type: 'text', required: true }], outputs: [] },
+        ],
+        edges: [
+          { id: 'e1', from_node_id: 'url', from_port_id: 'text', to_node_id: 'fetch', to_port_id: 'url' },
+          { id: 'e2', from_node_id: 'fetch', from_port_id: 'page', to_node_id: 'sum', to_port_id: 'page' },
+          { id: 'e3', from_node_id: 'sum', from_port_id: 'summary', to_node_id: 'show', to_port_id: 'text' },
+        ],
+      }),
+    );
+  });
+</script>
+```
+
+<H2 id="comfyui">ComfyUI</H2>
+
+<DocText><code>fromComfy(prompt)</code> reads a ComfyUI <em>API prompt</em> - an object of node ids, each with its <code>class_type</code> and <code>inputs</code>, where a link is <code>[node id, output slot]</code> - and <code>toComfy(document)</code> writes one back. Links become typed ports (<code>any</code>, since the prompt names no types), the other inputs become the node's <code>params</code>, and the nodes are laid out on a grid because a prompt has no positions. It is not ComfyUI's visual workflow format, and the editor does not talk to a ComfyUI server: an <DocLink href="workflow-run.html">execution adapter</DocLink> is where that belongs.</DocText>
+
+<H2 id="gradio">Gradio</H2>
+
+<DocText><code>fromGradio(workflow)</code> reads a Gradio workflow of <code>schema_version</code> "2" - references, operators and subjects with their input and output ports and the connections between them - and <code>toGradio(document)</code> writes one back. Port types are kept (text and markdown accept each other), positions are kept when present, and everything the editor does not use stays in the node's data, so a round trip keeps it. Groups, routes and subworkflows have no place in that format and are left out.</DocText>
+
+<SourceFiles component="workflow" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Workflow's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="workflow" section="js" jsTitle="JS" />
+
+</DocPage>

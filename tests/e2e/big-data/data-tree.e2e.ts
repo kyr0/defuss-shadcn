@@ -64,6 +64,52 @@ try {
     assert.deepEqual(await items('#dt-big', 3), [['1', 'Region 1', 'true', '1/10'], ['2', 'Country 1.1', 'false', '1/10'], ['2', 'Country 1.2', 'false', '2/10']]);
   });
 
+  await check('data-exclusive: opening a branch closes the open branches off its way', async () => {
+    // Region 2 (id 11012) open, then Region 1 opens: Region 2 closes
+    await page.$eval('#dt-way', (t: any) => t.api.setState('default', { expanded: [11012] }));
+    await page.click('#dt-way .data-tree-item:nth-child(1) .data-tree-toggle');
+    assert.deepEqual((await config('#dt-way')).expanded, [1]);
+    // Country 1.1 (id 2) opens below it: the way is Region 1, Country 1.1
+    await page.click('#dt-way .data-tree-item:nth-child(2) .data-tree-toggle');
+    assert.deepEqual((await config('#dt-way')).expanded, [1, 2]);
+  });
+
+  await check('reveal(): only the way to a deep record opens, it is selected, active and on screen; no data-tree-select', async () => {
+    const r = await page.$eval('#dt-way', (t: any) => {
+      let fired = 0;
+      t.addEventListener('data-tree-select', () => fired++);
+      // District 7.4.61.3: a region holds 11,011 records, a country 1,101, a city 11
+      const region = 1 + 6 * 11011;
+      const country = region + 1 + 3 * 1101;
+      const city = country + 60 * 11 + 1;
+      const district = city + 3;
+      const dt = (globalThis as any).df$.shadcn.dataTree;
+      const ok = dt.reveal(t, district);
+      const active = t.querySelector('.data-tree-item[data-active]');
+      const box = active?.getBoundingClientRect();
+      const tb = t.getBoundingClientRect();
+      return {
+        ok,
+        expanded: t.store.value.config.expanded,
+        selected: t.store.value.config.selected === district,
+        active: active?.textContent,
+        selectedItem: t.querySelector('[aria-selected="true"]')?.textContent,
+        inView: !!box && box.top >= tb.top - 1 && box.bottom <= tb.bottom + 1,
+        fired,
+        unknown: dt.reveal(t, "nope"),
+        want: [region, country, city],
+      };
+    });
+    assert.equal(r.ok, true);
+    assert.deepEqual(r.expanded, r.want);
+    assert.equal(r.selected, true);
+    assert.equal(r.active, 'District 7.4.61.3');
+    assert.equal(r.selectedItem, 'District 7.4.61.3');
+    assert.equal(r.inView, true);
+    assert.equal(r.fired, 0);
+    assert.equal(r.unknown, false);
+  });
+
   await check('keyboard (APG tree): ↓ moves, → opens then steps in, ← closes / goes to the parent, Enter selects', async () => {
     await page.focus('#dt-big');
     await page.keyboard.press('ArrowDown');

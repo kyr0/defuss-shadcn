@@ -91,6 +91,9 @@ async function open(href: string, full: boolean, extras: string[] = []): Promise
   // an Editor.js document mounts after its builds arrive - compare once it did (the fake clock is advanced meanwhile)
   await waitEditorsSettled(page, (ms) => page.clock.runFor(ms));
   await page.clock.runFor(2000);
+  // an app that works on its own after load (the Workflow Studio runs its first workflow) settles first: each load
+  // reaches its end at its own pace, and aria-busy says when it is still on the way
+  for (let i = 0; i < 80 && (await page.evaluate(() => !!document.querySelector('[aria-busy="true"]'))); i++) await page.clock.runFor(500);
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   return { page, errors };
 }

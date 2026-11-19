@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.16 - Agent Skill
 
-261 components (178 CSS-only, 83 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+262 components (178 CSS-only, 84 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -235,6 +235,15 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Edge Rules & Labels](../../src/documentation/pages/graphs/graph-edges.mdx) - How the Graph Explorer draws links: declarative style rules the worker evaluates for every edge, aggregated links between clusters, cycles, labels and icons that add words as you zoom in, circuit breakers with health by share, Live mode - and a selected link's details, built in or of your own.
 - [Details & Pages](../../src/documentation/pages/graphs/graph-details.mdx) - The Graph Explorer's details and relations outlets, a node's or a link's full page (Expand maximizes the Panel that holds the details), the drill-down from page to page, and detail renderers that compose library components - a Chart in an island.
 
+### Workflows
+
+- [Workflows Overview](../../src/documentation/pages/workflows/workflows.mdx) - Workflows in defuss-shadcn: a node editor for workflows of 10,000 nodes and 100,000 connections - typed ports, cards built from the system's form components, a worker that draws every connection, groups, subworkflows, undo, runs and the ComfyUI and Gradio formats.
+- [Large Workflows](../../src/documentation/pages/workflows/workflow-large.mdx) - Workflows of 10,000 nodes and 100,000 connections: a worker draws the connections and far nodes into one canvas, at most 150 cards become HTML, a frame that costs too much draws fewer connections and says so, groups collapse whole stages.
+- [Node Types & Fields](../../src/documentation/pages/workflows/workflow-nodes.mdx) - Node types for the Workflow editor: ports and their types, defaults, the card controls built from the system's form components (text, number, select, slider, switch, color, image, output) and custom card bodies.
+- [Editing & Structure](../../src/documentation/pages/workflows/workflow-editing.mdx) - Editing a workflow: connecting typed ports by drag or keyboard, moving and resizing on a grid, selection, copy and paste, reroute points, groups that collapse, subworkflows with a breadcrumb, undo of every change, and the keys.
+- [Running Workflows](../../src/documentation/pages/workflows/workflow-run.mdx) - Running a workflow: node types' run handlers in the page in topological order with progress and cancellation, or an execution adapter that runs the document elsewhere and reports each node's state; the cards and the canvas show queued, running, success and error.
+- [Formats & Import](../../src/documentation/pages/workflows/workflow-formats.mdx) - The Workflow document format (schema version 1, plain JSON), its checks and limits, importing and exporting files, and the adapters for ComfyUI API prompts and Gradio workflows.
+
 ### Math
 
 - [Math Overview](../../src/documentation/pages/math/math.mdx) - Mathematics in defuss-shadcn: render a formula with KaTeX, edit it with MathLive, compute and explain it with the Cortex Compute Engine - three components, each loading its engine only when a page uses it.
@@ -281,6 +290,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Knowledge Graph](../../src/documentation/pages/application/scaffold-knowledge-graph.mdx) - Application scaffold: a knowledge graph of a million services, datasets and people - the Graph Explorer in a Border Layout of Panels, details that drill down from a domain to a system to a dataset, links you can inspect, and detail pages composed from Chart, Geo Map, Avatar, Timeline, Progress, Table, Badge and Statistic; built only from the shipped components.
   - [API Documentation](../../src/documentation/pages/application/scaffold-api-docs.mdx) - Application scaffold: an API reference in the style of the big developer portals - guides, resources with their object schemas, one page per endpoint with parameters, responses and code samples in curl, JavaScript and Python, a Try it form answered by an in-browser sandbox, and a search over every endpoint with defuss-search; routed with defuss-dom-router and in English and German with defuss-i18n.
   - [Calendar](../../src/documentation/pages/application/scaffold-calendar.mdx) - Application scaffold: an Apple-Calendar-style calendar - day, week, month and year views, calendars by colour, events with repeats, a week start and calendar weeks you choose - and Find a time, where every person gets a calendar of their own colour, the slots everyone is free light up and a Doodle-style poll books the best one.
+  - [Workflow Studio](../../src/documentation/pages/application/scaffold-workflow-studio.mdx) - Application scaffold: an n8n- and ComfyUI-style workflow studio with six apps you can run - an AI agent crew with prompts and external data, a route planner that calls its traffic service twice, a three.js scene graph with shader and animation subworkflows, an order-to-cash process that hands schemaful objects from step to step, a hand-built neural network of 973 weights and biases that computes A + B, A - B, A × B and A ÷ B, and the complete form logic of the BDI-II questionnaire; built only from the shipped components.
 
 ### Presentations
 
@@ -862,6 +872,14 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** A worker draws the far field into one canvas and decides which few hundred nodes get DOM, so a million-node graph stays a bounded page; every node, label and panel you read is plain, themed, keyboard-reachable HTML.
 - **When:** Exploring large connected data - service maps, data lineage, knowledge graphs, dependency graphs - by semantic zoom, search and drill-down. For a schematic you draw by hand, diagram; for a small text-defined diagram, mermaid; for a tree of records, data-tree.
 - **States:** `default`, `selected`, `focused` · **Skill:** [references/components/graph-explorer.md](references/components/graph-explorer.md) · **Examples:** [src/documentation/pages/graphs/graph-explorer.mdx](../../src/documentation/pages/graphs/graph-explorer.mdx)
+
+### Workflows
+
+#### Workflow · MOL · JS
+
+- **Why:** A worker draws every connection and far node into one canvas and only the cards near the view get HTML, so a workflow of 10,000 nodes and 100,000 connections stays a bounded page - and every card you edit is the system's own form markup, typed ports and all.
+- **When:** Node-based editors - AI image and text pipelines, ETL and data flows, automations, build graphs, any typed directed graph a reader edits and runs. For a graph to explore rather than edit, graph-explorer; for a diagram drawn as illustration, diagram; for a text-defined chart, mermaid.
+- **States:** `default`, `readonly` · **Skill:** [references/components/workflow.md](references/components/workflow.md) · **Examples:** [src/documentation/pages/workflows/workflow.mdx](../../src/documentation/pages/workflows/workflow.mdx)
 
 ### Math
 

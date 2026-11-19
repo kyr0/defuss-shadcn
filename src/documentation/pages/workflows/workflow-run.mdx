@@ -1,0 +1,213 @@
+---
+title: "Workflow: Running Workflows"
+description: "Running a workflow: node types' run handlers in the page in topological order with progress and cancellation, or an execution adapter that runs the document elsewhere and reports each node's state; the cards and the canvas show queued, running, success and error."
+slug: "workflow-run"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="workflow-run" title="Running Workflows" component="workflow">
+  The editor draws a workflow; what running it means belongs to the page. The built-in runner calls each node type's <code>run()</code> in the page, in the order the connections give; an execution adapter hands the whole document to something else - a server, a queue, a worker - and reports each node's state as it changes. Either way every card shows its state, a progress bar while it runs, and the canvas marks the far nodes the same way.
+</PageHeader>
+
+<H2 id="in-the-page">Run handlers in the page</H2>
+
+<DocText>A type's <code>run(node, &#123; inputs, signal, progress &#125;)</code> gets the values arriving at each input port - one per connection - and returns its outputs by output port; it may be async, report <code>progress(0..1)</code> and should stop when <code>signal</code> aborts. A subworkflow runs as one node: its inputs go in, its outputs come out. A node type without a handler fails the run with its name.</DocText>
+
+```html example label="Run in the page" schema="none" hint="Run: the numbers are generated, filtered and summed step by step - each step waits a moment so the states are visible. Cancel during a run stops it: what had not finished shows cancelled. Change Count or Seed and run again." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-size="sm" type="button" data-workflow-for="numbers" data-workflow-action="run">Run</button>
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="numbers"
+      data-workflow-action="cancel"
+      >Cancel</button
+    >
+    <span class="text-sm text-muted-foreground" id="numbers-log">Not run yet</span>
+  </div>
+  <div class="workflow" id="numbers" aria-label="A numbers pipeline" style="--workflow-height: 24rem"></div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$.shadcn.workflow;
+    const el = df$('#numbers').get(0);
+    const wait = (ms, signal) =>
+      new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, ms);
+        signal.addEventListener('abort', () => (clearTimeout(timer), reject(signal.reason)));
+      });
+    const step = async (signal, progress) => {
+      for (let i = 1; i <= 4; i++) {
+        await wait(150, signal);
+        progress(i / 4);
+      }
+    };
+    const list = { id: 'values', direction: 'output', type: 'numbers' };
+    w.register(el, {
+      type: 'random',
+      label: 'Random numbers',
+      color: 'chart-1',
+      ports: [list],
+      defaults: { count: 12, seed: 7 },
+      fields: [
+        { key: 'count', label: 'Count', kind: 'number', min: 1, max: 1000 },
+        { key: 'seed', label: 'Seed', kind: 'number' },
+      ],
+      run: async (node, { signal, progress }) => {
+        await step(signal, progress);
+        let s = node.data.seed || 1;
+        const next = () => (s = (s * 16807) % 2147483647) % 100;
+        return { values: Array.from({ length: node.data.count }, next) };
+      },
+    });
+    w.register(el, {
+      type: 'filter',
+      label: 'Keep even',
+      color: 'chart-3',
+      ports: [{ id: 'in', label: 'values', direction: 'input', type: 'numbers' }, list],
+      run: async (node, { inputs, signal, progress }) => {
+        await step(signal, progress);
+        return { values: (inputs.in?.[0] ?? []).filter((v) => v % 2 === 0) };
+      },
+    });
+    w.register(el, {
+      type: 'sum',
+      label: 'Sum',
+      color: 'chart-4',
+      ports: [
+        { id: 'in', label: 'values', direction: 'input', type: 'numbers' },
+        { id: 'total', direction: 'output', type: 'number' },
+      ],
+      fields: [{ key: 'total', label: 'Total', kind: 'output' }],
+      run: async (node, { inputs, signal, progress }) => {
+        await step(signal, progress);
+        return { total: (inputs.in?.[0] ?? []).reduce((a, b) => a + b, 0) };
+      },
+    });
+    w.register(el, {
+      type: 'count',
+      label: 'Count',
+      color: 'chart-4',
+      ports: [
+        { id: 'in', label: 'values', direction: 'input', type: 'numbers' },
+        { id: 'n', label: 'count', direction: 'output', type: 'number' },
+      ],
+      fields: [{ key: 'n', label: 'How many', kind: 'output' }],
+      run: async (node, { inputs, signal, progress }) => {
+        await step(signal, progress);
+        return { n: (inputs.in?.[0] ?? []).length };
+      },
+    });
+    const node = (id, type, x, y) => w.node(el, type, { x, y }, { id });
+    w.load(el, {
+      schemaVersion: 1,
+      id: 'numbers',
+      title: 'Numbers',
+      nodes: [
+        node('rnd', 'random', 0, 40),
+        node('even', 'filter', 340, 40),
+        node('sum', 'sum', 660, 0),
+        node('count', 'count', 660, 200),
+      ],
+      edges: [
+        { id: 'e1', source: { node: 'rnd', port: 'values' }, target: { node: 'even', port: 'in' } },
+        { id: 'e2', source: { node: 'even', port: 'values' }, target: { node: 'sum', port: 'in' } },
+        { id: 'e3', source: { node: 'even', port: 'values' }, target: { node: 'count', port: 'in' } },
+      ],
+      groups: [],
+    });
+    const log = df$('#numbers-log').get(0);
+    el.addEventListener('workflow-run', (e) => {
+      log.textContent =
+        e.detail.status === 'running'
+          ? 'Running...'
+          : `Run ${e.detail.status}${e.detail.message ? `: ${e.detail.message}` : ''}`;
+    });
+  });
+</script>
+```
+
+<H2 id="adapter">An execution adapter</H2>
+
+<DocText>An adapter is an object with <code>run(document, &#123; signal, emit &#125;)</code>: it gets a copy of the whole document, calls <code>emit(&#123; nodeId, state &#125;)</code> whenever a node's state changes and resolves when the run is done (rejects when it failed). The editor queues every node first and marks the ones never reported as done or failed when the run ends. <code>setRuntime()</code> sets a state from outside a run - a server's queue position, a cache hit.</DocText>
+
+```html example label="A pretend remote runner" schema="none" hint="This adapter stands in for a server: it never computes anything, it reports each node as queued, running with progress and done, after a pause - the way a remote queue would. The log lists what it reported." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-size="sm" type="button" data-workflow-for="remote" data-workflow-action="run"
+      >Send to the runner</button
+    >
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="remote"
+      data-workflow-action="cancel"
+      >Cancel</button
+    >
+  </div>
+  <div
+    class="workflow"
+    id="remote"
+    data-generate="9"
+    data-edges="14"
+    data-seed="2"
+    data-stage="3"
+    aria-label="A remote run"
+    style="--workflow-height: 28rem"
+  ></div>
+  <pre class="text-xs m-0" style="max-block-size: 8rem; overflow: auto" id="remote-log"></pre>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$.shadcn.workflow;
+    const el = df$('#remote').get(0);
+    const log = df$('#remote-log').get(0);
+    const sleep = (ms, signal) =>
+      new Promise((resolve, reject) => {
+        const timer = setTimeout(resolve, ms);
+        signal.addEventListener('abort', () => (clearTimeout(timer), reject(signal.reason)));
+      });
+    w.configure(el, {
+      execution: {
+        async run(doc, { signal, emit }) {
+          const stages = [...new Set(doc.nodes.map((n) => n.data.stage))].sort((a, b) => a - b);
+          for (const stage of stages) {
+            const batch = doc.nodes.filter((n) => n.data.stage === stage);
+            for (let p = 0.25; p <= 1; p += 0.25) {
+              await sleep(120, signal);
+              for (const n of batch)
+                emit({
+                  nodeId: n.id,
+                  state: p < 1 ? { status: 'running', progress: p } : { status: 'success', output: { stage } },
+                });
+            }
+            log.textContent += `stage ${stage}: ${batch.length} nodes done\n`;
+          }
+        },
+      },
+    });
+    el.addEventListener('workflow-run', (e) => {
+      if (e.detail.status === 'running') log.textContent = '';
+      else log.textContent += `run ${e.detail.status}\n`;
+    });
+  });
+</script>
+```
+
+<DocText>Running does not need the editor to be writable: a <DocLink href="workflow.html">read-only</DocLink> workflow runs too. The <code>workflow-node-state</code> event reports every state change, <code>workflow-run</code> the start (<code>running</code>) and the end (<code>done</code>, <code>error</code> with its message, <code>cancelled</code>).</DocText>
+
+<SourceFiles component="workflow" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Workflow's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="workflow" section="js" jsTitle="JS" />
+
+</DocPage>

@@ -1,39 +1,39 @@
 {
-  "total": 261,
+  "total": 262,
   "byType": {
     "ATM": 80,
-    "MOL": 36,
+    "MOL": 37,
     "ORG": 6,
     "BLK": 135,
     "TPL": 4
   },
-  "templatePages": 96,
-  "templates": 100,
+  "templatePages": 97,
+  "templates": 101,
   "templateGroups": {
     "WYSIWYG Editors": 1,
-    "Application": 11,
+    "Application": 12,
     "Presentations": 33,
     "Papers": 15,
     "Website": 36
   },
   "tokens": 52,
-  "examples": 1987,
-  "unitTestFiles": 51,
-  "withJs": 83,
+  "examples": 2008,
+  "unitTestFiles": 52,
+  "withJs": 84,
   "withoutJs": 178,
-  "totalSize": 4248070,
-  "totalSizeMinified": 2127282,
-  "totalSizeGz": 1209684,
-  "totalSizeGzMinified": 694031,
+  "totalSize": 4539015,
+  "totalSizeMinified": 2270715,
+  "totalSizeGz": 1278586,
+  "totalSizeGzMinified": 737305,
   "bundle": {
-    "jsSize": 1169182,
-    "jsSizeMinified": 680970,
-    "cssSize": 1626430,
-    "cssSizeMinified": 940659,
-    "totalSizeGz": 601757,
-    "totalSizeGzMinified": 381237,
-    "jsSizeGzMinified": 214552,
-    "cssSizeGzMinified": 166685
+    "jsSize": 1170771,
+    "jsSizeMinified": 681847,
+    "cssSize": 1627890,
+    "cssSizeMinified": 941529,
+    "totalSizeGz": 602422,
+    "totalSizeGzMinified": 381632,
+    "jsSizeGzMinified": 214809,
+    "cssSizeGzMinified": 166823
   },
   "core": {
     "jsSize": 183525,
@@ -47,13 +47,13 @@
   },
   "bundles": {
     "wysiwyg": {
-      "jsSize": 74615,
-      "jsSizeMinified": 47202,
+      "jsSize": 74642,
+      "jsSizeMinified": 47225,
       "cssSize": 25048,
       "cssSizeMinified": 16078,
-      "totalSizeGz": 26160,
-      "totalSizeGzMinified": 19948,
-      "jsSizeGzMinified": 16313,
+      "totalSizeGz": 26173,
+      "totalSizeGzMinified": 19960,
+      "jsSizeGzMinified": 16325,
       "cssSizeGzMinified": 3635
     },
     "mermaid": {
@@ -115,6 +115,16 @@
       "totalSizeGzMinified": 59705,
       "jsSizeGzMinified": 49762,
       "cssSizeGzMinified": 9943
+    },
+    "workflows": {
+      "jsSize": 199147,
+      "jsSizeMinified": 123988,
+      "cssSize": 25561,
+      "cssSizeMinified": 17646,
+      "totalSizeGz": 55159,
+      "totalSizeGzMinified": 42857,
+      "jsSizeGzMinified": 38833,
+      "cssSizeGzMinified": 4024
     },
     "terminal": {
       "jsSize": 28251,
@@ -266,13 +276,13 @@
         "sections/wysiwyg-editors.css",
         "sections/wysiwyg-editors.js"
       ],
-      "jsSize": 95633,
-      "jsSizeMinified": 59892,
+      "jsSize": 95660,
+      "jsSizeMinified": 59915,
       "cssSize": 28708,
       "cssSizeMinified": 18244,
-      "totalSizeGz": 32219,
-      "totalSizeGzMinified": 24424,
-      "jsSizeGzMinified": 20379,
+      "totalSizeGz": 32229,
+      "totalSizeGzMinified": 24436,
+      "jsSizeGzMinified": 20391,
       "cssSizeGzMinified": 4045
     },
     "questionnaire": {
@@ -389,13 +399,13 @@
         "sections/big-data.css",
         "sections/big-data.js"
       ],
-      "jsSize": 91055,
-      "jsSizeMinified": 53570,
+      "jsSize": 92638,
+      "jsSizeMinified": 54441,
       "cssSize": 38059,
       "cssSizeMinified": 24046,
-      "totalSizeGz": 28322,
-      "totalSizeGzMinified": 20398,
-      "jsSizeGzMinified": 15935,
+      "totalSizeGz": 28717,
+      "totalSizeGzMinified": 20691,
+      "jsSizeGzMinified": 16228,
       "cssSizeGzMinified": 4463
     },
     "charts": {
@@ -470,6 +480,32 @@
       "totalSizeGzMinified": 59705,
       "jsSizeGzMinified": 49762,
       "cssSizeGzMinified": 9943
+    },
+    "workflows": {
+      "heading": "Workflows",
+      "members": [
+        "workflow"
+      ],
+      "needs": [
+        "Primitives",
+        "Actions",
+        "Forms & Inputs",
+        "Big Data",
+        "Navigation",
+        "Application"
+      ],
+      "files": [
+        "components/workflows.css",
+        "components/workflows.js"
+      ],
+      "jsSize": 199147,
+      "jsSizeMinified": 123988,
+      "cssSize": 25561,
+      "cssSizeMinified": 17646,
+      "totalSizeGz": 55159,
+      "totalSizeGzMinified": 42857,
+      "jsSizeGzMinified": 38833,
+      "cssSizeGzMinified": 4024
     },
     "math": {
       "heading": "Math",
@@ -683,12 +719,12 @@
       ],
       "jsSize": 103729,
       "jsSizeMinified": 62904,
-      "cssSize": 76579,
-      "cssSizeMinified": 42243,
-      "totalSizeGz": 39506,
-      "totalSizeGzMinified": 26817,
+      "cssSize": 78039,
+      "cssSizeMinified": 43113,
+      "totalSizeGz": 39764,
+      "totalSizeGzMinified": 26943,
       "jsSizeGzMinified": 18735,
-      "cssSizeGzMinified": 8082
+      "cssSizeGzMinified": 8208
     },
     "chat": {
       "heading": "Chat",
@@ -974,10 +1010,10 @@
     }
   },
   "sectionBundles": {
-    "count": 26,
+    "count": 27,
     "minGzMinified": 5000,
     "maxGzMinified": 66114,
-    "meanGzMinified": 20858
+    "meanGzMinified": 21689
   },
   "components": {
     "about-intro": {
@@ -1582,14 +1618,14 @@
       "name": "code-example",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 80894,
-      "jsSizeMinified": 36045,
+      "jsSize": 80923,
+      "jsSizeMinified": 36068,
       "cssSize": 15074,
       "cssSizeMinified": 9426,
-      "totalSizeGz": 26922,
-      "totalSizeGzMinified": 14776,
-      "totalSize": 95968,
-      "totalSizeMinified": 45471
+      "totalSizeGz": 26932,
+      "totalSizeGzMinified": 14787,
+      "totalSize": 95997,
+      "totalSizeMinified": 45494
     },
     "collapsible": {
       "name": "collapsible",
@@ -1829,14 +1865,14 @@
       "name": "data-tree",
       "type": "ATM",
       "withJs": true,
-      "jsSize": 19425,
-      "jsSizeMinified": 8114,
+      "jsSize": 21784,
+      "jsSizeMinified": 8986,
       "cssSize": 5553,
       "cssSizeMinified": 3538,
-      "totalSizeGz": 7566,
-      "totalSizeGzMinified": 4437,
-      "totalSize": 24978,
-      "totalSizeMinified": 11652
+      "totalSizeGz": 8138,
+      "totalSizeGzMinified": 4725,
+      "totalSize": 27337,
+      "totalSizeMinified": 12524
     },
     "date-picker": {
       "name": "date-picker",
@@ -3209,12 +3245,12 @@
       "withJs": true,
       "jsSize": 36167,
       "jsSizeMinified": 15249,
-      "cssSize": 7310,
-      "cssSizeMinified": 5094,
-      "totalSizeGz": 11432,
-      "totalSizeGzMinified": 6732,
-      "totalSize": 43477,
-      "totalSizeMinified": 20343
+      "cssSize": 8770,
+      "cssSizeMinified": 5964,
+      "totalSizeGz": 11703,
+      "totalSizeGzMinified": 6874,
+      "totalSize": 44937,
+      "totalSizeMinified": 21213
     },
     "qr-code": {
       "name": "qr-code",
@@ -4372,6 +4408,19 @@
       "totalSizeGzMinified": 813,
       "totalSize": 3315,
       "totalSizeMinified": 2104
+    },
+    "workflow": {
+      "name": "workflow",
+      "type": "MOL",
+      "withJs": true,
+      "jsSize": 261589,
+      "jsSizeMinified": 124067,
+      "cssSize": 25508,
+      "cssSizeMinified": 17601,
+      "totalSizeGz": 68049,
+      "totalSizeGzMinified": 42833,
+      "totalSize": 287097,
+      "totalSizeMinified": 141668
     }
   },
   "apps": {
@@ -4780,6 +4829,52 @@
       "totalSizeGzMinified": 80277,
       "jsSizeGzMinified": 53296,
       "cssSizeGzMinified": 26981
+    },
+    "workflow-studio": {
+      "page": "scaffold-workflow-studio",
+      "href": "application/app-workflow-studio.html",
+      "components": [
+        "alert",
+        "badge",
+        "border-layout",
+        "breadcrumb",
+        "button",
+        "button-group",
+        "card",
+        "checkbox",
+        "combobox",
+        "data-tree",
+        "dialog",
+        "dropdown",
+        "icon",
+        "input",
+        "kbd",
+        "label",
+        "language-switcher",
+        "panel",
+        "property-grid",
+        "resizer",
+        "select",
+        "separator",
+        "slider",
+        "steps",
+        "swap",
+        "switch",
+        "table",
+        "textarea",
+        "toggle",
+        "typography",
+        "window",
+        "workflow"
+      ],
+      "jsSize": 547198,
+      "jsSizeMinified": 319079,
+      "cssSize": 406534,
+      "cssSizeMinified": 253223,
+      "totalSizeGz": 204404,
+      "totalSizeGzMinified": 137016,
+      "jsSizeGzMinified": 101061,
+      "cssSizeGzMinified": 35955
     }
   }
 }

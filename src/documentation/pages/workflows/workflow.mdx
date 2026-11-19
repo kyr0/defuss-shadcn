@@ -1,0 +1,414 @@
+---
+title: "Workflow"
+description: "Workflow component - a node editor over a JSON document: typed ports and checked connections, cards built from the system's form components, a worker that draws every connection, groups, subworkflows, undo, runs, and outlets for the palette, outline, inspector and toolbar."
+slug: "workflow"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocText, DocLink, SkillField, SkillText, SkillRow, SkillGrid, Variant, ApiPill, ApiSection, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="workflow" title="Workflow" component="workflow">
+  A node editor as one element: a <code>&lt;div class="workflow"&gt;</code> becomes a focusable viewport over a workflow document - nodes with typed input and output ports, the connections between them, groups and nested subworkflows. The document is a JSON script inside the element; node types describe the cards with the system's own form controls. What the editor shows is attributes: the selection (<code>data-selected</code>, <code>data-selected-edge</code>) and the read-only state (<code>data-readonly</code>). The palette, the outline, the inspector, a breadcrumb, readouts and toolbar buttons are outlets the page places.
+</PageHeader>
+
+<SkillPanel component="workflow">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div role="application"&gt;</code> with a canvas for the worker's bitmap of connections and far nodes, a canvas for the gestures and a pool of <code>&lt;article&gt;</code> cards whose ports are buttons and whose controls sit in a <code>&lt;fieldset&gt;</code>. The graph is JSON; the state is on the element as <code>data-*</code> attributes.</SkillText>
+  </SkillField>
+
+  <SkillField label="Built from">
+<SkillText><DocLink href="input.html">Input</DocLink>, <DocLink href="textarea.html">Textarea</DocLink>, <DocLink href="select.html">Select</DocLink>, <DocLink href="slider.html">Slider</DocLink>, <DocLink href="checkbox.html">Checkbox</DocLink>, <DocLink href="switch.html">Switch</DocLink> and <DocLink href="label.html">Label</DocLink> in the cards; <DocLink href="button.html">Button</DocLink>, <DocLink href="kbd.html">Kbd</DocLink> and <DocLink href="breadcrumb.html">Breadcrumb</DocLink> in the outlets.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API" title="the scene off the main thread"><code>Worker</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas" title="connections and far nodes, drawn in the worker"><code>OffscreenCanvas</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/ImageBitmapRenderingContext" title="the bitmap, shown without a copy"><code>bitmaprenderer</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" title="pan, pinch, drag, connect"><code>Pointer Events</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API" title="node types onto the canvas"><code>Drag and Drop</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/structuredClone" title="frozen values, undo"><code>structuredClone</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" title="runs and layouts cancel"><code>AbortController</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.workflow</code>
+    <code>.workflow-node</code>
+    <code>.workflow-port</code>
+    <code>.workflow-group</code>
+    <code>.workflow-field</code>
+    <code>.workflow-palette</code>
+    <code>.workflow-inspector</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Upstream">
+<SkillGrid>
+    <Variant name="defuss-workflow" description="The workflow canvas and editor this component is ported from: graph store, worker-rendered connections, virtualized cards (MIT, Aron Homberg)" />
+    <Variant name="Lucide (ISC)" description="The four icons of the view controls, inline" />
+  </SkillGrid>
+  </SkillField>
+
+  <SkillField label="Accessibility">
+<SkillText dense>• One tab stop for the canvas: arrows nudge the selection, Alt + arrow follows a connection, F fits, Delete removes, ⌘Z undoes, Escape cancels</SkillText>
+  <SkillText dense>• Every card is a labelled group; its ports are buttons named by direction, name and type - Enter on one port, then on another, connects</SkillText>
+  <SkillText dense>• Connections, refusals and arrangements are announced in a live region; reduced motion, more contrast and forced colors are honoured on the canvas too</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Workflow" sandbox="downloads" hint="An image pipeline that runs in the page - once on load, then on every Run: it loads the picture, resizes it, turns it gray and raises the contrast on a canvas, and the Output node shows the result with a Download button. Change a field and run again. Drag a card by its title, drag from an output port to an input port, select with a click (Shift adds) or a Shift-drag. The State tab writes the same attributes the clicks do."
+<div class="grid gap-2">
+  <div class="toolbar" role="toolbar" aria-label="Run the pipeline">
+    <button class="btn" data-size="sm" type="button" data-workflow-for="images" data-workflow-action="run">Run</button>
+    <button
+      class="btn"
+      data-variant="outline"
+      data-size="sm"
+      type="button"
+      data-workflow-for="images"
+      data-workflow-action="cancel"
+      >Cancel</button
+    >
+    <span class="text-sm text-muted-foreground" data-workflow-for="images" data-workflow-output="status"></span>
+  </div>
+  <div class="workflow" id="images" data-state-demo aria-label="Image pipeline" style="--workflow-height: 28rem">
+    <script type="application/json" class="workflow-types">
+      [
+        {
+          "type": "load",
+          "label": "Load image",
+          "color": "chart-1",
+          "ports": [{ "id": "image", "direction": "output", "type": "image" }],
+          "fields": [{ "key": "image", "label": "Picture", "kind": "image" }]
+        },
+        {
+          "type": "resize",
+          "label": "Resize",
+          "color": "chart-2",
+          "ports": [
+            { "id": "image", "direction": "input", "type": "image" },
+            { "id": "out", "label": "image", "direction": "output", "type": "image" }
+          ],
+          "fields": [
+            { "key": "width", "label": "Width", "kind": "number", "min": 16, "max": 2048 },
+            { "key": "height", "label": "Height", "kind": "number", "min": 16, "max": 2048 },
+            { "key": "fit", "label": "Fit", "kind": "select", "options": ["cover", "contain", "fill"] }
+          ]
+        },
+        {
+          "type": "adjust",
+          "label": "Adjust",
+          "color": "chart-3",
+          "ports": [
+            { "id": "image", "direction": "input", "type": "image" },
+            { "id": "out", "label": "image", "direction": "output", "type": "image" }
+          ],
+          "fields": [
+            { "key": "contrast", "label": "Contrast", "kind": "slider", "min": 0, "max": 200, "step": 5 },
+            { "key": "gray", "label": "Grayscale", "kind": "switch" }
+          ]
+        },
+        {
+          "type": "output",
+          "label": "Output",
+          "color": "chart-4",
+          "ports": [{ "id": "image", "direction": "input", "type": "image" }],
+          "fields": [
+            { "key": "image", "label": "Result", "kind": "image" },
+            { "key": "name", "label": "File name", "kind": "text" },
+            { "key": "file", "label": "File", "kind": "output" }
+          ]
+        }
+      ]
+    </script>
+    <script type="application/json" class="workflow-source">
+      {
+        "schemaVersion": 1,
+        "id": "images",
+        "title": "Image pipeline",
+        "nodes": [
+          {
+            "id": "load",
+            "type": "load",
+            "title": "Load image",
+            "x": 0,
+            "y": 0,
+            "width": 240,
+            "height": 240,
+            "ports": [{ "id": "image", "direction": "output", "type": "image" }],
+            "data": { "image": "images/photos/1018-600x400.webp" }
+          },
+          {
+            "id": "resize",
+            "type": "resize",
+            "title": "Resize",
+            "x": 320,
+            "y": 0,
+            "width": 240,
+            "height": 290,
+            "ports": [
+              { "id": "image", "direction": "input", "type": "image" },
+              { "id": "out", "label": "image", "direction": "output", "type": "image" }
+            ],
+            "data": { "width": 480, "height": 320, "fit": "cover" }
+          },
+          {
+            "id": "adjust",
+            "type": "adjust",
+            "title": "Adjust",
+            "x": 640,
+            "y": 0,
+            "width": 240,
+            "height": 200,
+            "ports": [
+              { "id": "image", "direction": "input", "type": "image" },
+              { "id": "out", "label": "image", "direction": "output", "type": "image" }
+            ],
+            "data": { "contrast": 130, "gray": true }
+          },
+          {
+            "id": "output",
+            "type": "output",
+            "title": "Output",
+            "x": 960,
+            "y": 0,
+            "width": 240,
+            "height": 400,
+            "ports": [{ "id": "image", "direction": "input", "type": "image" }],
+            "data": { "name": "harbour-gray.png" }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": { "node": "load", "port": "image" },
+            "target": { "node": "resize", "port": "image" }
+          },
+          {
+            "id": "e2",
+            "source": { "node": "resize", "port": "out" },
+            "target": { "node": "adjust", "port": "image" }
+          },
+          { "id": "e3", "source": { "node": "adjust", "port": "out" }, "target": { "node": "output", "port": "image" } }
+        ],
+        "groups": []
+      }
+    </script>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const W = df$.shadcn.workflow;
+    // a picture travels from node to node as a data URL; each step draws it on a canvas
+    const open = (src) =>
+      new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('The picture did not load'));
+        img.src = src;
+      });
+    const canvas = (width, height) => {
+      const c = document.createElement('canvas');
+      c.width = width;
+      c.height = height;
+      return c;
+    };
+    const first = (inputs) => {
+      const src = inputs.image?.[0];
+      if (!src) throw new Error('No picture arrives - connect the input');
+      return src;
+    };
+    // the JSON types above keep their ports and fields; these lend them what JSON cannot hold: run() and a renderer
+    W.register('global', {
+      type: 'load',
+      label: 'Load image',
+      ports: [],
+      run: async (node) => {
+        const img = await open(node.data.image);
+        const c = canvas(img.naturalWidth, img.naturalHeight);
+        c.getContext('2d').drawImage(img, 0, 0);
+        return { image: c.toDataURL('image/png') };
+      },
+    });
+    W.register('global', {
+      type: 'resize',
+      label: 'Resize',
+      ports: [],
+      run: async (node, { inputs }) => {
+        const img = await open(first(inputs));
+        const { width, height, fit } = node.data;
+        const c = canvas(width, height);
+        const ctx = c.getContext('2d');
+        const sx = width / img.naturalWidth;
+        const sy = height / img.naturalHeight;
+        if (fit === 'fill') ctx.drawImage(img, 0, 0, width, height);
+        else {
+          const scale = fit === 'cover' ? Math.max(sx, sy) : Math.min(sx, sy);
+          const w = img.naturalWidth * scale;
+          const h = img.naturalHeight * scale;
+          ctx.drawImage(img, (width - w) / 2, (height - h) / 2, w, h);
+        }
+        return { out: c.toDataURL('image/png') };
+      },
+    });
+    W.register('global', {
+      type: 'adjust',
+      label: 'Adjust',
+      ports: [],
+      // the transformer: every pixel through luminance (Rec. 709) and a contrast curve around the middle gray
+      run: async (node, { inputs, progress }) => {
+        const img = await open(first(inputs));
+        const c = canvas(img.naturalWidth, img.naturalHeight);
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const pixels = ctx.getImageData(0, 0, c.width, c.height);
+        const d = pixels.data;
+        const k = node.data.contrast / 100;
+        const curve = (v) => Math.max(0, Math.min(255, (v - 128) * k + 128));
+        for (let i = 0; i < d.length; i += 4) {
+          let [r, g, b] = [d[i], d[i + 1], d[i + 2]];
+          if (node.data.gray) r = g = b = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+          d[i] = curve(r);
+          d[i + 1] = curve(g);
+          d[i + 2] = curve(b);
+          if (i % 400000 === 0) progress(i / d.length);
+        }
+        ctx.putImageData(pixels, 0, 0);
+        return { out: c.toDataURL('image/png') };
+      },
+    });
+    W.register('global', {
+      type: 'output',
+      label: 'Output',
+      ports: [],
+      fields: [
+        {
+          key: 'file',
+          kind: 'output',
+          // the File field draws a download link for the result instead of its text
+          render: (url, { node }) => {
+            if (!url) return 'Run the workflow to get a file';
+            const a = document.createElement('a');
+            a.className = 'btn';
+            a.dataset.variant = 'outline';
+            a.dataset.size = 'sm';
+            a.href = url;
+            a.download = node.data.name || 'image.png';
+            a.textContent = 'Download ' + a.download;
+            return a;
+          },
+        },
+      ],
+      run: (node, { inputs }) => ({ image: first(inputs), file: first(inputs) }),
+    });
+    // run once, so the Output node shows the gray picture and its Download button from the start
+    W.run('#images');
+  });
+</script>
+```
+
+<DocText>A node type's <code>fields</code> are the card's controls, each bound to a key of the node's data - an edit is one undoable change and a <code>workflow-field-change</code> event. The types here are JSON inside the element; the script registers the same type names globally to lend them what JSON cannot hold - each <code>run()</code>, and the Output's File field a <code>render()</code> that draws the download link. A field of kind <code>output</code> or <code>image</code> shows what the last run produced. <code>color</code> is a theme chart color for the card's band; the ports take one of eight fixed hues by their type's name, so an <code>image</code> port and its connections look the same in every workflow. <DocLink href="workflow-nodes.html">Node Types & Fields</DocLink> lists every field kind.</DocText>
+
+```html example label="Read only" hint="data-readonly: the graph can be panned, zoomed, selected and run - the cards' controls are disabled, nothing moves or connects. data-selected starts with the second node selected; data-minimap and data-controls hide the chrome; the line under it is a selection output."
+<div class="grid gap-2">
+  <div
+    class="workflow"
+    id="finished"
+    data-readonly
+    data-selected="b"
+    data-minimap="none"
+    data-controls="none"
+    aria-label="A finished pipeline"
+    style="--workflow-height: 16rem"
+  >
+    <script type="application/json" class="workflow-source">
+      {
+        "schemaVersion": 1,
+        "id": "finished",
+        "title": "Finished",
+        "nodes": [
+          {
+            "id": "a",
+            "type": "source",
+            "title": "Orders",
+            "x": 0,
+            "y": 0,
+            "width": 240,
+            "height": 130,
+            "ports": [{ "id": "rows", "direction": "output", "type": "table" }],
+            "data": { "rows": 182000 }
+          },
+          {
+            "id": "b",
+            "type": "filter",
+            "title": "Paid only",
+            "x": 320,
+            "y": 0,
+            "width": 240,
+            "height": 130,
+            "ports": [
+              { "id": "rows", "direction": "input", "type": "table" },
+              { "id": "out", "label": "rows", "direction": "output", "type": "table" }
+            ],
+            "data": { "where": "status = paid" }
+          },
+          {
+            "id": "c",
+            "type": "sink",
+            "title": "Warehouse",
+            "x": 640,
+            "y": 0,
+            "width": 240,
+            "height": 130,
+            "ports": [{ "id": "rows", "direction": "input", "type": "table" }],
+            "data": { "table": "paid_orders" }
+          }
+        ],
+        "edges": [
+          { "id": "e1", "source": { "node": "a", "port": "rows" }, "target": { "node": "b", "port": "rows" } },
+          { "id": "e2", "source": { "node": "b", "port": "out" }, "target": { "node": "c", "port": "rows" } }
+        ],
+        "groups": []
+      }
+    </script>
+  </div>
+  <p class="text-sm text-muted-foreground m-0">
+    <span data-workflow-for="finished" data-workflow-output="selection"></span> - a click selects, nothing else changes
+  </p>
+</div>
+```
+
+<DocText>Nodes without a type definition - an import, a generated workflow, a type registered later - show their data at a glance; a type registered afterwards redraws them with its controls.</DocText>
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per instance through the bound <code>api</code>. The state is the element's attributes - a click, a marquee, the read-only action or an attribute written from outside changes it without <code>setState</code>, and <code>getState()</code> reports it:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - editable</li>
+    <li><code>readonly</code> - looked at, selected and run; the cards' controls are disabled, nothing moves, connects or is deleted (<code>data-readonly</code>)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Both states take <code>selected</code> (node ids, <code>data-selected</code>), <code>edge</code> (a connection's id, <code>data-selected-edge</code>; nodes and a connection are never selected together) and <code>camera</code> (<code>&#123; x, y, zoom &#125;</code> - read live, moves the view when passed, no markup). Events: <code>workflow-change</code> (a committed transaction), <code>workflow-select</code>, <code>workflow-view</code> (the camera came to rest), <code>workflow-run</code>, <code>workflow-node-state</code>, <code>workflow-navigate</code> (in or out of a subworkflow), <code>workflow-error</code> (a refused or failed action, with the reason).</p>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/workflow-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/workflow.schema.json"><code>workflow.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `readonly` | `boolean` | `true`, `false` | `false` | Looked at, selected and run - not changed (`data-readonly`). |
+| `selected` | `string` | `—` | `""` | The selected node ids, space separated (observed from `data-selected`). |
+| `edge` | `string` | `—` | `""` | The selected connection's id (observed from `data-selected-edge`); nodes and a connection are never selected together. |
+```
+
+</StatesSection>
+
+<ApiSection component="workflow" />
+
+<SourceFiles component="workflow" section="css" />
+
+<SourceFiles component="workflow" section="js" jsTitle="JS" />
+
+</DocPage>

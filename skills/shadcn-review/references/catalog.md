@@ -2,7 +2,7 @@
 
 # Component catalog
 
-261 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+262 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.16/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -141,6 +141,12 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | Component | Type | States | JS | When |
 | --- | --- | --- | --- | --- |
 | [Graph Explorer](../../defuss-shadcn/references/components/graph-explorer.md) `graph-explorer` | MOL | default, selected, focused | yes | Exploring large connected data - service maps, data lineage, knowledge graphs, dependency graphs - by semantic zoom, search and drill-down. For a schematic you draw by hand, diagram; for a small text-defined diagram, mermaid; for a tree of records, data-tree. |
+
+## Workflows
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Workflow](../../defuss-shadcn/references/components/workflow.md) `workflow` | MOL | default, readonly | yes | Node-based editors - AI image and text pipelines, ETL and data flows, automations, build graphs, any typed directed graph a reader edits and runs. For a graph to explore rather than edit, graph-explorer; for a diagram drawn as illustration, diagram; for a text-defined chart, mermaid. |
 
 ## Math
 

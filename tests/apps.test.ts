@@ -47,6 +47,12 @@ describe('usedClasses', () => {
     const text = `<div class="card p-4"></div><script>el.classList.add('toast'); q.html(\`<b class="badge">\`)</script>`;
     expect([...usedClasses(text)].sort()).toEqual(['badge', 'card', 'p-4', 'toast']);
   });
+  // VERIFIED (2026-11-19): the Workflow Studio bundle lacked Slider, Checkbox, Badge, Alert and Table - the
+  // classes came from `input.className = 'slider'` and `h('span', { class: 'badge' })`
+  it('reads className assignments and class props of element helpers', () => {
+    const text = `input.className = 'slider'; h('div', { class: 'alert', role: 'alert' }); x.className="table"`;
+    expect([...usedClasses(text)].sort()).toEqual(['alert', 'slider', 'table']);
+  });
 });
 
 describe('appResolver', () => {

@@ -91,6 +91,7 @@
     "video": "./video.schema.json",
     "virtual-list": "./virtual-list.schema.json",
     "visual-editor": "./visual-editor.schema.json",
-    "window": "./window.schema.json"
+    "window": "./window.schema.json",
+    "workflow": "./workflow.schema.json"
   }
 }

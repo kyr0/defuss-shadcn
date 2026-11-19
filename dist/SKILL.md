@@ -2699,3 +2699,13 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default
 **Screenshots:** screenshots/{light,dark}/wishlist-item.png
 **Skill:** [components/wishlist-item/component-skill.md](components/wishlist-item/component-skill.md)
+
+## Workflow
+
+**Type:** MOL
+**Why:** A worker draws every connection and far node into one canvas and only the cards near the view get HTML, so a workflow of 10,000 nodes and 100,000 connections stays a bounded page - and every card you edit is the system's own form markup, typed ports and all.
+**When:** Node-based editors - AI image and text pipelines, ETL and data flows, automations, build graphs, any typed directed graph a reader edits and runs. For a graph to explore rather than edit, graph-explorer; for a diagram drawn as illustration, diagram; for a text-defined chart, mermaid.
+**Files:** dist/components/workflows.css + dist/components/workflows.js (the extra bundle - load it after all.css / all.js; per component: dist/components/workflow/workflow.css + workflow.js)
+**Supported states:** default, readonly
+**Screenshots:** screenshots/{light,dark}/workflow.png, screenshots/{light,dark}/workflow-readonly.png
+**Skill:** [components/workflow/component-skill.md](components/workflow/component-skill.md)

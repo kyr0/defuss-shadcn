@@ -281,6 +281,15 @@ export const NAV: NavSection[] = [
     { label: 'Edge Rules & Labels', href: 'graph-edges.html', type: 'MOL' },
     { label: 'Details & Pages', href: 'graph-details.html', type: 'MOL' },
   ]},
+  { heading: 'Workflows', icon: 'workflow', items: [
+    { label: 'Workflows Overview', href: 'workflows.html' },
+    { label: 'Workflow', href: 'workflow.html' },
+    { label: 'Large Workflows', href: 'workflow-large.html', type: 'MOL' },
+    { label: 'Node Types & Fields', href: 'workflow-nodes.html', type: 'MOL' },
+    { label: 'Editing & Structure', href: 'workflow-editing.html', type: 'MOL' },
+    { label: 'Running Workflows', href: 'workflow-run.html', type: 'MOL' },
+    { label: 'Formats & Import', href: 'workflow-formats.html', type: 'MOL' },
+  ]},
   { heading: 'Math', icon: 'sigma', items: [
     { label: 'Math Overview', href: 'math.html' },
     { label: 'Formula Rendering', href: 'math-renderer.html' },
@@ -373,6 +382,7 @@ export const NAV: NavSection[] = [
         { label: 'Knowledge Graph', href: 'scaffold-knowledge-graph.html', type: 'TPL' },
         { label: 'API Documentation', href: 'scaffold-api-docs.html', type: 'TPL' },
         { label: 'Calendar', href: 'scaffold-calendar.html', type: 'TPL' },
+        { label: 'Workflow Studio', href: 'scaffold-workflow-studio.html', type: 'TPL' },
       ],
     },
   ]},

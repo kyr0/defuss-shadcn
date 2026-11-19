@@ -237,6 +237,28 @@ try {
     assert.ok(h > d, `comfortable ${h} > dense ${d}`);
   });
 
+  await check('data-layout=list: each label above its value, no header, no rule lines; a value still edits in place', async () => {
+    const g = await page.$eval('#pg-list', (root) => {
+      const tr = root.querySelector('tbody tr[data-path="scale"]')!;
+      const key = tr.querySelector('.property-grid-key')!.getBoundingClientRect();
+      const value = tr.querySelector('.property-grid-value')!.getBoundingClientRect();
+      return {
+        above: key.bottom <= value.top + 1,
+        sameStart: Math.abs(key.left - value.left) < 1,
+        head: getComputedStyle(root.querySelector('thead')!).display,
+        rule: getComputedStyle(tr.querySelector('.property-grid-key')!).borderInlineEndWidth,
+        top: getComputedStyle(tr.querySelector('.property-grid-value')!).borderBlockStartWidth,
+        label: tr.querySelector('.property-grid-key')!.textContent,
+      };
+    });
+    assert.deepEqual(g, { above: true, sameStart: true, head: 'none', rule: '0px', top: '0px', label: 'Scale' });
+    await page.click(cell('#pg-list', 'scale'));
+    assert.equal(await stateName('#pg-list'), 'editing');
+    await page.fill('#pg-list .property-grid-editor input', '6');
+    await page.keyboard.press('Enter');
+    assert.equal((await source('#pg-list')).scale, 6);
+  });
+
   await check('inspector: a diagram selection fills the grid in the panel; an edit writes back into the diagram', async () => {
     await page.click('#pg-diagram [data-node="db"]');
     assert.deepEqual(await source('#pg-selection'), { id: 'db', name: 'Orders', meta: 'Postgres', tone: 'none', shape: 'store' });

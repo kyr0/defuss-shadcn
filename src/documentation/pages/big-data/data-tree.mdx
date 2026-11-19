@@ -192,6 +192,56 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="One open way" schema="none" hint="data-exclusive keeps one way open: open Region 3, then Region 5 - Region 3 closes with everything below it. The field picks a district somewhere else; reveal() opens only the way to it, selects it and scrolls it into view."
+<div class="flex flex-col gap-2" style="max-width: 26rem">
+  <form class="flex gap-2" id="dt-way-form">
+    <input class="input" id="dt-way-input" aria-label="A district" value="District 7.4.61.3" />
+    <button class="btn" data-variant="outline" type="submit">Reveal</button>
+  </form>
+  <div
+    class="data-tree"
+    id="dt-way"
+    aria-label="Places, one way open"
+    data-exclusive
+    data-persist="none"
+    style="height: 16rem"
+  ></div>
+  <p class="text-sm text-muted-foreground m-0" id="dt-way-line" aria-live="polite"></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const rows = [];
+    let id = 0;
+    for (let a = 1; a <= 10; a++) {
+      const region = ++id;
+      rows.push({ id: region, parentId: null, name: 'Region ' + a });
+      for (let b = 1; b <= 10; b++) {
+        const country = ++id;
+        rows.push({ id: country, parentId: region, name: 'Country ' + a + '.' + b });
+        for (let c = 1; c <= 100; c++) {
+          const city = ++id;
+          rows.push({ id: city, parentId: country, name: 'City ' + a + '.' + b + '.' + c });
+          for (let d = 1; d <= 10; d++)
+            rows.push({ id: ++id, parentId: city, name: 'District ' + a + '.' + b + '.' + c + '.' + d });
+        }
+      }
+    }
+    const tree = document.getElementById('dt-way');
+    df$.shadcn.dataTree.setSource(tree, rows);
+    const line = document.getElementById('dt-way-line');
+    tree.store.subscribe(({ config }) => (line.textContent = config.expanded.length + ' branches open'), {
+      immediate: true,
+    });
+    document.getElementById('dt-way-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('dt-way-input').value.trim();
+      const row = rows.find((r) => r.name === name);
+      if (!row || !df$.shadcn.dataTree.reveal(tree, row.id)) line.textContent = 'No place is called ' + name;
+    });
+  });
+</script>
+```
+
 ```html example label="Aggregated branches: 250,000 requests" schema="none" hint="Each node is a group of request log lines - service, then endpoint, then outcome - measured by an aggregate plan per level: the requests, the average and slowest latency and the errors (a count with a where). Its label shows them, the error share computed from two measures. Turn on Only slow requests: the plans run again with a where (latency > 800 ms) and the open branches stay open."
 <div class="flex flex-col gap-2" style="max-width: 34rem">
   <div class="flex flex-wrap items-center gap-3">

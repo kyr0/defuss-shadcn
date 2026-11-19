@@ -12637,6 +12637,24 @@ df$20.dataTreeApi = dataTreeApi;
 df$20.dataTreeStates = dataTreeStates;
 var query2 = (tree, patch) => dataTreeApi.setState(tree, tree.store.value.name === "loading" ? "loading" : "default", patch);
 var entryAt = (tree, index) => tree._result?.entries[index];
+function ancestorsOf(tree, id) {
+  const src = tree._source;
+  if (tree._parents?.source !== src) {
+    const field = tree._parentField || "parentId";
+    const map = new Map;
+    for (const row of src.rows)
+      map.set(row[src.idField], row[field] ?? null);
+    tree._parents = { source: src, map };
+  }
+  const map = tree._parents.map;
+  const out = [];
+  const seen = new Set;
+  for (let at = map.get(id) ?? null;at !== null && map.has(at) && !seen.has(at); at = map.get(at) ?? null) {
+    seen.add(at);
+    out.unshift(at);
+  }
+  return out;
+}
 function setExpanded(tree, index, open) {
   const entry = entryAt(tree, index);
   if (!entry?.meta.hasChildren || entry.meta.isExpanded === open)
@@ -12650,6 +12668,8 @@ function setExpanded(tree, index, open) {
     else
       collapsed.add(id);
     query2(tree, { collapsed: [...collapsed] });
+  } else if (open && tree.hasAttribute("data-exclusive")) {
+    query2(tree, { expanded: [...ancestorsOf(tree, id), id] });
   } else {
     const expanded = new Set(config.expanded || []);
     if (open)
@@ -12766,6 +12786,7 @@ df$20.dataTree = {
     const idField = options.idField || tree.dataset.idField || "id";
     const parentIdField = options.parentIdField || tree.dataset.parentField || "parentId";
     tree._source = dataSource(rows, { idField, tree: { idField, parentIdField } });
+    tree._parentField = parentIdField;
     tree._render = options.render || null;
     tree._sourceOptions = options;
     if (tree.store)
@@ -12785,6 +12806,29 @@ df$20.dataTree = {
     const tree = resolve7(target);
     const filtering = (configOf4(tree).filters || []).length > 0;
     query2(tree, filtering ? { collapsed: tree._source.branchIds() } : { expanded: [] });
+  },
+  reveal(target, id) {
+    const tree = resolve7(target);
+    if (!tree?._source || !tree.store)
+      return false;
+    if (!tree._source.rows.some((r) => r[tree._source.idField] === id))
+      return false;
+    const way = ancestorsOf(tree, id);
+    const config = configOf4(tree);
+    if ((config.filters || []).length) {
+      const collapsed = new Set(config.collapsed || []);
+      for (const a of way)
+        collapsed.delete(a);
+      query2(tree, { collapsed: [...collapsed], selected: id });
+    } else {
+      const expanded = tree.hasAttribute("data-exclusive") ? way : [...new Set([...config.expanded || [], ...way])];
+      query2(tree, { expanded, selected: id });
+    }
+    const index = tree._result?.entries.findIndex((e) => e.row[tree._source.idField] === id) ?? -1;
+    if (index < 0)
+      return false;
+    activate3(tree, index);
+    return true;
   },
   selected(target) {
     const tree = resolve7(target);
@@ -31349,6 +31393,6 @@ df$72.win = windowActions;
 init72();
 new MutationObserver(init72).observe(document, { childList: true, subtree: true });
 
-//# debugId=949B95A5CBE47E7C64756E2164756E21
+//# debugId=C767C41AE779AA0564756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

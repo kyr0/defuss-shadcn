@@ -126,6 +126,34 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, D
 </script>
 ```
 
+<H2 id="list">Property list</H2>
+
+<DocText><code>data-layout="list"</code> puts each label above its value and drops the header row and the rule lines - the same grid as a column of properties for a narrow place: a node in a <DocLink href="workflow.html">Workflow</DocLink> uses it for its fields (<DocLink href="workflow-editing.html">Editing & Structure</DocLink>). Every value still edits in place with the same editors, keys and events.</DocText>
+
+```html example label="A property list" height="24" hint="Click a value: the editor opens under its label, Enter commits, Escape keeps the old value. The nested object stays a foldable group."
+<div class="property-grid" id="pg-list" data-layout="list" aria-label="Upscaler settings" style="max-width: 18rem">
+  <script type="application/json" class="property-grid-source">
+    {
+      "model": "real-esrgan-x4",
+      "scale": 4,
+      "tile": 512,
+      "faces": true,
+      "tint": "#3b82f6",
+      "output": { "format": "webp", "quality": 82 }
+    }
+  </script>
+  <script type="application/json" class="property-grid-config">
+    {
+      "model": { "displayName": "Model", "options": ["real-esrgan-x4", "swinir", "lanczos"] },
+      "scale": { "displayName": "Scale", "min": 1, "max": 8, "integer": true },
+      "tile": { "displayName": "Tile size" },
+      "faces": { "displayName": "Restore faces" },
+      "tint": { "displayName": "Preview tint" }
+    }
+  </script>
+</div>
+```
+
 <H2 id="custom-editors">Custom editors</H2>
 
 <DocText><code>getEditorFn(key, value, ctx)</code> picks the editor per key: return an element (an input or a select - its value is read back, a range or number input as a number), an object <code>&#123; el, getValue(), validate?(), focus?(), immediate? &#125;</code> for anything composite, <code>null</code> for the built-in editor or <code>false</code> to make the key read-only. Every committed change fires <code>property-grid-beforechange</code> (cancelable) and <code>property-grid-change</code>.</DocText>

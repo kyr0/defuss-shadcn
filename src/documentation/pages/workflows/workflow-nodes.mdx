@@ -1,0 +1,486 @@
+---
+title: "Workflow: Node Types & Fields"
+description: "Node types for the Workflow editor: ports and their types, defaults, the card controls built from the system's form components (text, number, select, slider, switch, color, image, output) and custom card bodies."
+slug: "workflow-nodes"
+---
+
+import { DocPage, PageHeader, SourceFiles, SourceNote, DocText, DocLink, H2 } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="workflow-nodes" title="Node Types & Fields" component="workflow">
+  A node type says what a node of that type is: its ports, its starting data, the controls its card shows and how it runs. Types come from a JSON script inside the editor or from <code>df$.shadcn.workflow.register()</code> - globally for every editor on the page, or for one. A type the editor's JSON names and a global script registers is one type: the JSON describes the card, the script adds what JSON cannot hold, such as a run handler.
+</PageHeader>
+
+<H2 id="fields">Every field kind</H2>
+
+<DocText>A field binds a control to a key of the node's data. Text, number, select, color, checkbox and switch write on change; a slider shows its value while it moves and writes when released; every write is one undoable change. <code>image</code> shows a picture from the data or from the run's output, <code>output</code> shows what the last run produced for that key, <code>value</code> shows the data as it is - a summary, or whatever the field's <code>render()</code> draws. <code>height</code> gives a field more room in a new card. Labels and values of your own and custom editors follow below and on <DocLink href="workflow-editing.html#toc-editing-in-a-window-or-a-dialog">Editing & Structure</DocLink>.</DocText>
+
+```html example label="Fields" schema="none" hint="Edit any control: the change lands in the node's data (⌘Z undoes it). A card's controls take Tab like any form; the canvas keys stay off while a control has the focus." previewStyle="align-items:stretch;"
+<div class="workflow" id="fields" aria-label="Every field kind" style="--workflow-height: 30rem">
+  <script type="application/json" class="workflow-types">
+    [
+      {
+        "type": "settings",
+        "label": "Settings",
+        "color": "chart-1",
+        "ports": [{ "id": "config", "direction": "output", "type": "config" }],
+        "fields": [
+          { "key": "name", "label": "Name", "kind": "text", "placeholder": "A name" },
+          { "key": "notes", "label": "Notes", "kind": "textarea", "rows": 2 },
+          { "key": "steps", "label": "Steps", "kind": "number", "min": 1, "max": 150 },
+          { "key": "sampler", "label": "Sampler", "kind": "select", "options": ["euler", "dpm++", "ddim"] }
+        ]
+      },
+      {
+        "type": "style",
+        "label": "Style",
+        "color": "chart-3",
+        "ports": [
+          { "id": "config", "direction": "input", "type": "config" },
+          { "id": "image", "direction": "output", "type": "image" }
+        ],
+        "fields": [
+          { "key": "strength", "label": "Strength", "kind": "slider", "min": 0, "max": 1, "step": 0.05 },
+          { "key": "seamless", "label": "Seamless", "kind": "checkbox" },
+          { "key": "upscale", "label": "Upscale", "kind": "switch" },
+          { "key": "tint", "label": "Tint", "kind": "color" }
+        ]
+      },
+      {
+        "type": "show",
+        "label": "Show",
+        "color": "chart-5",
+        "ports": [{ "id": "image", "direction": "input", "type": "image" }],
+        "fields": [
+          { "key": "src", "label": "Picture", "kind": "image" },
+          { "key": "caption", "label": "Last result", "kind": "output" }
+        ]
+      }
+    ]
+  </script>
+  <script type="application/json" class="workflow-source">
+    {
+      "schemaVersion": 1,
+      "id": "fields",
+      "title": "Fields",
+      "nodes": [
+        {
+          "id": "a",
+          "type": "settings",
+          "title": "Settings",
+          "x": 0,
+          "y": 0,
+          "width": 260,
+          "height": 380,
+          "ports": [{ "id": "config", "direction": "output", "type": "config" }],
+          "data": { "name": "Harbour at dusk", "notes": "warm light, long shadows", "steps": 30, "sampler": "dpm++" }
+        },
+        {
+          "id": "b",
+          "type": "style",
+          "title": "Style",
+          "x": 340,
+          "y": 0,
+          "width": 260,
+          "height": 330,
+          "ports": [
+            { "id": "config", "direction": "input", "type": "config" },
+            { "id": "image", "direction": "output", "type": "image" }
+          ],
+          "data": { "strength": 0.6, "seamless": true, "upscale": false, "tint": "#c0843a" }
+        },
+        {
+          "id": "c",
+          "type": "show",
+          "title": "Show",
+          "x": 680,
+          "y": 0,
+          "width": 260,
+          "height": 310,
+          "ports": [{ "id": "image", "direction": "input", "type": "image" }],
+          "data": { "src": "images/photos/1036-600x400.webp" }
+        }
+      ],
+      "edges": [
+        { "id": "e1", "source": { "node": "a", "port": "config" }, "target": { "node": "b", "port": "config" } },
+        { "id": "e2", "source": { "node": "b", "port": "image" }, "target": { "node": "c", "port": "image" } }
+      ],
+      "groups": []
+    }
+  </script>
+</div>
+```
+
+<H2 id="ports">Ports and their types</H2>
+
+<DocText>A port is an input or an output with a type. An output connects to an input of the same type, to an input of type <code>any</code>, or to an input that lists its type in <code>accepts</code>. An input takes one connection unless <code>maxConnections</code> says more - <code>0</code> means any number; an output feeds any number of inputs. Each type gets one of eight hues by its name, on the port, in the inspector and along its connections. A connection that would close a loop is refused unless the document sets <code>policy.allowCycles</code>.</DocText>
+
+```html example label="Typed ports" schema="none" hint="Drag from Number's output: only the inputs that take a number grow. Merge takes any number of texts; Format accepts a number in its text input. A refused connection says why, above the canvas." previewStyle="align-items:stretch;"
+<div class="workflow" id="ports" aria-label="Typed ports" style="--workflow-height: 22rem">
+  <script type="application/json" class="workflow-source">
+    {
+      "schemaVersion": 1,
+      "id": "ports",
+      "title": "Typed ports",
+      "nodes": [
+        {
+          "id": "t",
+          "type": "text",
+          "title": "Text",
+          "x": 0,
+          "y": 0,
+          "width": 220,
+          "height": 110,
+          "ports": [{ "id": "out", "label": "text", "direction": "output", "type": "text" }],
+          "data": { "value": "hello" }
+        },
+        {
+          "id": "n",
+          "type": "number",
+          "title": "Number",
+          "x": 0,
+          "y": 160,
+          "width": 220,
+          "height": 110,
+          "ports": [{ "id": "out", "label": "number", "direction": "output", "type": "number" }],
+          "data": { "value": 42 }
+        },
+        {
+          "id": "m",
+          "type": "merge",
+          "title": "Merge",
+          "x": 320,
+          "y": 0,
+          "width": 220,
+          "height": 110,
+          "ports": [
+            { "id": "in", "label": "texts", "direction": "input", "type": "text", "maxConnections": 0 },
+            { "id": "out", "label": "text", "direction": "output", "type": "text" }
+          ],
+          "data": {}
+        },
+        {
+          "id": "f",
+          "type": "format",
+          "title": "Format",
+          "x": 320,
+          "y": 160,
+          "width": 220,
+          "height": 136,
+          "ports": [
+            { "id": "in", "label": "text", "direction": "input", "type": "text", "accepts": ["number"] },
+            { "id": "unit", "direction": "input", "type": "unit", "optional": true },
+            { "id": "out", "label": "text", "direction": "output", "type": "text" }
+          ],
+          "data": {}
+        },
+        {
+          "id": "s",
+          "type": "sink",
+          "title": "Anything",
+          "x": 640,
+          "y": 80,
+          "width": 220,
+          "height": 110,
+          "ports": [{ "id": "in", "label": "any", "direction": "input", "type": "any" }],
+          "data": {}
+        }
+      ],
+      "edges": [{ "id": "e1", "source": { "node": "t", "port": "out" }, "target": { "node": "m", "port": "in" } }],
+      "groups": []
+    }
+  </script>
+</div>
+```
+
+<H2 id="renderers">Labels and values of your own</H2>
+
+<DocText>Every field can draw its own label and its own value. <code>renderLabel(value, context)</code> returns text or a node for the label - an icon or a color that follows the value; <code>null</code> keeps the default. <code>render(value, context)</code> draws the value in place of a control: a list as badges, a sentence built from the whole node (<code>context.node</code>), anything an input cannot show. A field drawn by <code>render</code> is read in the card and edited elsewhere - by a custom editor (<DocLink href="workflow-editing.html">Editing & Structure</DocLink>), or not at all. Every edit fires <code>workflow-field-change</code> with the node, the key and both values.</DocText>
+
+```html example label="Labels that follow the value" schema="none" hint="Set the severity to critical: its label turns red with a siren, and the sentence at the bottom changes with it. Move the threshold past 80 and its label warns. The channels and the sentence are drawn by render(); the log under the editor follows workflow-field-change." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="workflow" id="alerts" aria-label="Alert rules" style="--workflow-height: 24rem"></div>
+  <ol class="text-sm text-muted-foreground m-0 ps-5" id="alerts-log" aria-live="polite">
+    <li>Change a field - each change lands here.</li>
+  </ol>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$.shadcn.workflow;
+    const el = df$('#alerts').get(0);
+    const ICON = { info: 'ℹ️', warning: '⚠️', critical: '🚨' };
+    const label = (text, color) => {
+      const span = document.createElement('span');
+      span.textContent = text;
+      if (color) span.style.color = color;
+      return span;
+    };
+    w.register(el, {
+      type: 'alert',
+      label: 'Alert rule',
+      color: 'chart-5',
+      ports: [{ id: 'metric', direction: 'input', type: 'number' }],
+      defaults: { severity: 'warning', threshold: 60, channels: ['email', 'chat'] },
+      fields: [
+        {
+          key: 'severity',
+          label: 'Severity',
+          kind: 'select',
+          options: ['info', 'warning', 'critical'],
+          renderLabel: (v) => label(ICON[v] + ' Severity', v === 'critical' ? 'var(--destructive)' : null),
+        },
+        {
+          key: 'threshold',
+          label: 'Threshold (ms)',
+          kind: 'slider',
+          min: 0,
+          max: 200,
+          step: 10,
+          renderLabel: (v) => (v > 80 ? label('Threshold (ms) - slow', 'var(--destructive)') : null),
+        },
+        {
+          key: 'channels',
+          label: 'Channels',
+          kind: 'value',
+          render: (list) => {
+            const box = document.createElement('div');
+            box.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.25rem';
+            for (const c of list ?? []) {
+              const b = document.createElement('span');
+              b.className = 'badge';
+              b.dataset.variant = 'outline';
+              b.textContent = c;
+              box.append(b);
+            }
+            return box;
+          },
+        },
+        {
+          key: 'summary',
+          label: 'In words',
+          kind: 'value',
+          render: (_v, { node }) =>
+            'Sends a ' +
+            node.data.severity +
+            ' alert to ' +
+            node.data.channels.join(' and ') +
+            ' when p95 passes ' +
+            node.data.threshold +
+            ' ms.',
+        },
+      ],
+    });
+    w.load(el, {
+      schemaVersion: 1,
+      id: 'alerts',
+      title: 'Alert rules',
+      nodes: [
+        w.node(el, 'alert', { x: 0, y: 0 }, { id: 'checkout', title: 'Checkout latency', width: 280 }),
+        w.node(
+          el,
+          'alert',
+          { x: 360, y: 0 },
+          {
+            id: 'search',
+            title: 'Search latency',
+            width: 280,
+            data: { severity: 'critical', threshold: 120, channels: ['pager', 'chat', 'email'] },
+          },
+        ),
+      ],
+      edges: [],
+      groups: [],
+    });
+    const log = document.getElementById('alerts-log');
+    el.addEventListener('workflow-field-change', (e) => {
+      const line = document.createElement('li');
+      line.textContent =
+        e.detail.nodeId +
+        '.' +
+        e.detail.key +
+        ': ' +
+        JSON.stringify(e.detail.oldValue) +
+        ' to ' +
+        JSON.stringify(e.detail.value);
+      log.prepend(line);
+      while (log.children.length > 4) log.lastElementChild.remove();
+    });
+  });
+</script>
+```
+
+<H2 id="connections">Connection types</H2>
+
+<DocText>A connection takes its look from its type: <code>registerEdge(scope, &#123; type, color, dash, width, animated, render &#125;)</code> names a type a connection carries in <code>type</code> - or a port type, so every connection leaving a port of that type takes it. <code>dash</code> is solid, dashed or dotted, <code>width</code> 0.5 to 12 pixels, <code>animated</code> sends dashes along the line. <code>render(edge, context)</code> draws its label - <code>context.value</code> is what the last run sent through it. A connection's own <code>label</code>, <code>color</code>, <code>dash</code>, <code>width</code> and <code>animated</code> win over its type's, and <code>setEdge()</code> changes them as one undoable change. While a node runs, the connections into it carry moving dashes too. The canvas draws the lines; the labels and the moving dashes are HTML and SVG for the connections in view only, at most 300.</DocText>
+
+```html example label="Lines and labels by type" schema="none" hint="Run: dashes travel into each node while it runs, and the batch labels say how many values went through. The dotted connection is a type of its own with a fixed label. Click a label to select its connection - the inspector edits its label and its line. Flag sends red dashes along the selected connection through setEdge(); ⌘Z takes it back." previewStyle="align-items:stretch;"
+<div class="grid gap-2">
+  <div class="toolbar flex-wrap" role="toolbar" aria-label="Connections">
+    <button class="btn" data-size="sm" type="button" data-workflow-for="links" data-workflow-action="run">Run</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="links-flag"
+      >Flag the selected connection</button
+    >
+    <span class="text-sm text-muted-foreground" id="links-said" aria-live="polite">Click a label.</span>
+  </div>
+  <div class="grid gap-2" style="grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem)">
+    <div class="workflow" id="links" aria-label="Connection types" style="--workflow-height: 22rem"></div>
+    <div class="card">
+      <div
+        class="card-content"
+        style="max-block-size: 22rem; overflow: auto"
+        data-workflow-for="links"
+        data-workflow-outlet="inspector"
+      ></div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$.shadcn.workflow;
+    const el = df$('#links').get(0);
+    const wait = (ms, signal) =>
+      new Promise((resolve, reject) => {
+        const t = setTimeout(resolve, ms);
+        signal.addEventListener('abort', () => (clearTimeout(t), reject(new Error('Cancelled'))));
+      });
+    // every connection that leaves a port of type "batch" is a thick line whose label counts the values in it
+    w.registerEdge(el, {
+      type: 'batch',
+      color: 'chart-2',
+      width: 3,
+      render: (edge, { value }) => (Array.isArray(value) ? value.length + ' values' : 'batch'),
+    });
+    // a connection type of its own: named in the connection's type
+    w.registerEdge(el, { type: 'fallback', dash: 'dotted', color: 'chart-5', render: () => 'on empty' });
+    const batch = (id) => ({ id, direction: 'output', type: 'batch' });
+    w.register(el, {
+      type: 'numbers',
+      label: 'Numbers',
+      color: 'chart-1',
+      ports: [batch('out')],
+      run: async (node, { signal }) => (await wait(500, signal), { out: [3, 1, 4, 1, 5, 9, 2, 6] }),
+    });
+    w.register(el, {
+      type: 'keep',
+      label: 'Keep above',
+      color: 'chart-2',
+      ports: [{ id: 'in', direction: 'input', type: 'batch' }, batch('out')],
+      defaults: { min: 2 },
+      fields: [{ key: 'min', label: 'Minimum', kind: 'number' }],
+      run: async (node, { inputs, signal }) => (
+        await wait(600, signal),
+        { out: (inputs.in[0] ?? []).filter((n) => n > node.data.min) }
+      ),
+    });
+    w.register(el, {
+      type: 'sum',
+      label: 'Sum',
+      color: 'chart-3',
+      ports: [
+        { id: 'in', direction: 'input', type: 'batch' },
+        { id: 'zero', direction: 'input', type: 'batch', optional: true },
+        { id: 'out', direction: 'output', type: 'number' },
+      ],
+      fields: [{ key: 'out', label: 'Sum', kind: 'output' }],
+      run: async (node, { inputs, signal }) => (
+        await wait(600, signal),
+        { out: (inputs.in[0] ?? []).reduce((a, b) => a + b, 0) }
+      ),
+    });
+    w.load(el, {
+      schemaVersion: 1,
+      id: 'links',
+      title: 'Connection types',
+      nodes: [
+        w.node(el, 'numbers', { x: 0, y: 150 }, { id: 'numbers', width: 200 }),
+        w.node(el, 'keep', { x: 300, y: 0 }, { id: 'keep', width: 220 }),
+        w.node(el, 'sum', { x: 620, y: 150 }, { id: 'sum', width: 220 }),
+      ],
+      edges: [
+        { id: 'e1', source: { node: 'numbers', port: 'out' }, target: { node: 'keep', port: 'in' } },
+        { id: 'e2', source: { node: 'keep', port: 'out' }, target: { node: 'sum', port: 'in' } },
+        {
+          id: 'e3',
+          type: 'fallback',
+          source: { node: 'numbers', port: 'out' },
+          target: { node: 'sum', port: 'zero' },
+        },
+      ],
+      groups: [],
+    });
+    const said = document.getElementById('links-said');
+    el.addEventListener('workflow-select', (e) => {
+      if (e.detail.edge) said.textContent = 'Selected connection ' + e.detail.edge + '.';
+    });
+    document.getElementById('links-flag').addEventListener('click', () => {
+      const edge = el.api.getState().config.edge;
+      if (!edge) return void (said.textContent = 'Select a connection first - click its label.');
+      w.setEdge(el, edge, { animated: true, color: 'var(--destructive)', label: 'flagged' });
+      said.textContent = 'Flagged ' + edge + ' - ⌘Z takes it back.';
+    });
+  });
+</script>
+```
+
+<H2 id="custom">A card body of your own</H2>
+
+<DocText>When fields are not enough, <code>mount(host, node, context)</code> draws the card body itself and returns <code>update(node, runtime)</code> and <code>destroy()</code>: the editor mounts it when the card appears, updates it when the node or its run state changes and destroys it when the card leaves the view. <code>context.updateData()</code> writes the node's data as one undoable change. Keep the body light - a pool of cards reuses it as you pan.</DocText>
+
+```html example label="A color swatch body" schema="none" hint="The swatch body is the page's own: pick a color with the native picker and the swatch and its hex code follow; undo restores both." previewStyle="align-items:stretch;"
+<div class="workflow" id="custom" aria-label="A custom card body" style="--workflow-height: 18rem"></div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    const w = df$.shadcn.workflow;
+    const el = df$('#custom').get(0);
+    w.register(el, {
+      type: 'swatch',
+      label: 'Swatch',
+      color: 'chart-2',
+      ports: [{ id: 'color', direction: 'output', type: 'color' }],
+      defaults: { hex: '#2f6fde' },
+      height: 190,
+      mount(host, node, context) {
+        const swatch = document.createElement('label');
+        swatch.style.cssText =
+          'display:grid;place-items:center;block-size:5rem;border-radius:var(--radius-md);cursor:pointer;font:600 0.875rem var(--font-mono);color:#fff';
+        const picker = document.createElement('input');
+        picker.type = 'color';
+        picker.style.cssText = 'position:absolute;opacity:0;inline-size:1px';
+        const code = document.createElement('span');
+        swatch.append(picker, code);
+        host.append(swatch);
+        const show = (hex) => {
+          swatch.style.background = hex;
+          code.textContent = hex;
+          picker.value = hex;
+        };
+        picker.addEventListener('change', () => context.updateData({ hex: picker.value }));
+        show(node.data.hex);
+        return { update: (next) => show(next.data.hex), destroy: () => host.replaceChildren() };
+      },
+    });
+    w.load(el, {
+      schemaVersion: 1,
+      id: 'custom',
+      title: 'Swatches',
+      nodes: [
+        w.node(el, 'swatch', { x: 0, y: 0 }, { id: 'a' }),
+        w.node(el, 'swatch', { x: 320, y: 0 }, { id: 'b', data: { hex: '#d9480f' } }),
+      ],
+      edges: [],
+      groups: [],
+    });
+  });
+</script>
+```
+
+<DocText>A type's <code>run(node, &#123; inputs, signal, progress &#125;)</code> is its behaviour - see <DocLink href="workflow-run.html">Running Workflows</DocLink>.</DocText>
+
+<SourceFiles component="workflow" section="css">
+  <SourceNote for="css">The stylesheet and the script are the Workflow's.</SourceNote>
+</SourceFiles>
+
+<SourceFiles component="workflow" section="js" jsTitle="JS" />
+
+</DocPage>

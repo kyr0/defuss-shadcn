@@ -1861,6 +1861,62 @@
     cursor: pointer;
   }
 
+  /* the property list: each label above its value, no header and no rule lines - a form-like column of
+     properties (a node card, a narrow inspector); every value still edits in place */
+  .property-grid[data-layout="list"] {
+    --property-grid-row: 1.75rem;
+
+    & .property-grid-table,
+    & .property-grid-table > tbody {
+      display: block;
+    }
+    & .property-grid-table > thead {
+      display: none;
+    }
+    & .property-grid-table > tbody > tr {
+      display: grid;
+      gap: 0.125rem;
+      block-size: auto;
+      padding-block: 0.25rem;
+      padding-inline-start: calc(var(--depth, 0) * var(--property-grid-indent));
+    }
+    & .property-grid-table tbody tr + tr > * {
+      border-block-start: 0;
+    }
+    & .property-grid-key {
+      padding: 0 var(--property-grid-pad-x);
+      border-inline-end: 0;
+      color: var(--muted-foreground);
+      font-size: 0.92em;
+    }
+    & .property-grid-value {
+      display: flex;
+      align-items: center;
+      min-block-size: var(--property-grid-row);
+      border-radius: var(--radius-sm);
+
+      & > * {
+        min-inline-size: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      &[data-editing] {
+        display: block;
+        padding: 0;
+      }
+    }
+    & .property-grid-group {
+      background: none;
+
+      & > .property-grid-key {
+        color: var(--foreground);
+      }
+      & > .property-grid-value {
+        min-block-size: 0;
+      }
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .property-grid-toggle::before {
       transition: none;
