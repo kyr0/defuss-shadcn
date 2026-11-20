@@ -29,6 +29,20 @@ export {
   type MediaTextEntry,
   type MediaTextTrack,
 } from './media.js';
+// the cell editors every in-place editing component shares (Property Grid, Property Tree, Data Grid, Data Tree)
+export {
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
+  type BuiltinEditorOptions,
+  type CellEditor,
+  type EditorRules,
+  type EditorType,
+} from './editors.js';
 export { textLocale, DEFAULT_LOCALE } from './locale.js';
 export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';
 export { defussGlobals, safeShowPopover } from './state-api.js';

@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.16 - Agent Skill
 
-262 components (178 CSS-only, 84 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+271 components (180 CSS-only, 91 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -283,7 +283,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [Admin Dashboard](../../src/documentation/pages/application/scaffold-admin-dashboard.mdx) - Application scaffold: a complete, clickable admin dashboard - sidebar, command palette, KPIs with live charts, orders with bulk actions, customers, settings - built only from the shipped components.
   - [Messenger](../../src/documentation/pages/application/scaffold-messenger.mdx) - Application scaffold: a WhatsApp-style messenger - chat list with filters, conversations with voice notes, photos, replies and reactions, live sending with read receipts and replies, calls, contact info and dark mode - built only from the shipped components.
   - [Issue Tracker](../../src/documentation/pages/application/scaffold-issue-tracker.mdx) - Application scaffold: a Linear-style issue tracker - issues by status as a list or a drag-and-drop board, issue pages with editable properties and comments, a context menu, a ⌘K palette, keyboard shortcuts, inbox, cycles with a burn-up chart and projects - built only from the shipped components.
-  - [Notes & Docs](../../src/documentation/pages/application/scaffold-notes.mdx) - Application scaffold: a Notion-style workspace - a page tree, a block editor with a slash menu, markdown shortcuts, a floating format bar and drag to move, covers and icons, sharing, favorites and trash, and a roadmap database with table, board and gallery views, kept in the browser with defuss-storage (OPFS), searched by keywords and meaning with defuss-search and backed up into one file - built only from the shipped components.
+  - [Notes & Docs](../../src/documentation/pages/application/scaffold-notes.mdx) - Application scaffold: a Notion-style workspace - a page tree, a block editor with a slash menu of text and component blocks (hints, images, tables, milestones, roadmap databases), page templates, markdown shortcuts, a floating format bar and drag to move, covers and icons, sharing, favorites and trash, and a roadmap database with table, board and gallery views, kept in the browser with defuss-storage (OPFS), searched by keywords and meaning with defuss-search and backed up into one file - built only from the shipped components.
   - [Status Page](../../src/documentation/pages/application/scaffold-status-page.mdx) - Application scaffold: a Statuspage-style status page - overall status, active incidents with their timeline, scheduled maintenance with a countdown, component groups with 90-day uptime bars, response-time metrics, past incidents and history - plus the operator console that creates, updates and resolves incidents live; built only from the shipped components.
   - [Desktop](../../src/documentation/pages/application/scaffold-desktop.mdx) - Application scaffold: a Windows-style desktop - wallpaper and icons, movable windows, a taskbar with a start menu, quick settings and a clock with a calendar, context menus to change the layout and the theme, and working apps: an editor, a calculator, a browser, settings and a recycle bin - built only from the shipped components.
   - [Document Editor](../../src/documentation/pages/application/scaffold-document-editor.mdx) - Application scaffold: a Google-Docs-style document editor - Markdown documents in Editor.js with a formatting toolbar, a comment column that scrolls on its own with comments tied to spans of the text, replies and quotes, a document list, sharing and autosave - built only from the shipped components.
@@ -291,6 +291,14 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [API Documentation](../../src/documentation/pages/application/scaffold-api-docs.mdx) - Application scaffold: an API reference in the style of the big developer portals - guides, resources with their object schemas, one page per endpoint with parameters, responses and code samples in curl, JavaScript and Python, a Try it form answered by an in-browser sandbox, and a search over every endpoint with defuss-search; routed with defuss-dom-router and in English and German with defuss-i18n.
   - [Calendar](../../src/documentation/pages/application/scaffold-calendar.mdx) - Application scaffold: an Apple-Calendar-style calendar - day, week, month and year views, calendars by colour, events with repeats, a week start and calendar weeks you choose - and Find a time, where every person gets a calendar of their own colour, the slots everyone is free light up and a Doodle-style poll books the best one.
   - [Workflow Studio](../../src/documentation/pages/application/scaffold-workflow-studio.mdx) - Application scaffold: an n8n- and ComfyUI-style workflow studio with six apps you can run - an AI agent crew with prompts and external data, a route planner that calls its traffic service twice, a three.js scene graph with shader and animation subworkflows, an order-to-cash process that hands schemaful objects from step to step, a hand-built neural network of 973 weights and biases that computes A + B, A - B, A × B and A ÷ B, and the complete form logic of the BDI-II questionnaire; built only from the shipped components.
+
+### Desktop
+
+- [Modern](../../src/documentation/pages/desktop/desktop-modern.mdx) - The look of the system itself: the theme's tokens, a glass bar centred at the bottom, a glass start menu with a search and pinned apps, the modern icons. It follows the docs theme - light, dark and every preset.
+- [Windows 7 Look](../../src/documentation/pages/desktop/desktop-windows-7.mdx) - Glass: frames that blur the wallpaper, a red glass close key, the round start orb on a dark glass bar whose buttons are icons, a start menu with a white panel of programs and the search under it beside a glass column of places, glossy icons and Segoe UI. Remade from scratch - the drawings and the wallpaper are our own.
+- [Windows XP Look](../../src/documentation/pages/desktop/desktop-windows-xp.mdx) - The blue title bars with their rounded tops, beige windows, the green start button on a blue bar, the start menu with the user on a blue banner, pinned programs on white and all programs on light blue, the welcome screen with the users right of a divider, a sky over a green hill. Remade from scratch - the hill, the icons and the start mark are our own.
+- [Windows 98 Look](../../src/documentation/pages/desktop/desktop-windows-98.mdx) - Bevelled grey on teal: gradient title bars, raised buttons that press in, sunken fields, the start menu with its brand strip up the side and folders that cascade, a pixel font, 16-colour icons. Remade from scratch on the system's components; the pixel font is the CC BY-SA 'Pixelated MS Sans Serif' by lou.
+- [Windows 95 Look](../../src/documentation/pages/desktop/desktop-windows-95.mdx) - Where it started: the same bevelled grey as 98 with solid navy title bars, a plain start menu without a brand strip and the teal desktop. Remade from scratch on the system's components, with the CC BY-SA pixel font.
 
 ### Presentations
 
@@ -423,7 +431,7 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 
 #### Text Rotate · ATM · CSS
 
-- **Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
+- **Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and one animation for any number of lines (registered counters, sibling-count()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
 - **When:** A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
 - **States:** `default` · **Skill:** [references/components/text-rotate.md](references/components/text-rotate.md) · **Examples:** [src/documentation/pages/primitives/text-rotate.mdx](../../src/documentation/pages/primitives/text-rotate.mdx)
 
@@ -1119,6 +1127,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **When:** Inspecting and editing one object - the selection of a designer (Studio), a service's settings, a node's properties, a record's raw fields. Many records with the same columns are data-grid; a form a user fills in once is form.
 - **States:** `default`, `editing` · **Skill:** [references/components/property-grid.md](references/components/property-grid.md) · **Examples:** [src/documentation/pages/application/property-grid.mdx](../../src/documentation/pages/application/property-grid.mdx)
 
+#### Property Tree · ATM · JS
+
+- **Why:** The Property Grid's in-place editing for a whole linked structure - one value (JSON, or with DSON Map, Set, Date, BigInt, RegExp, shared nodes and cycles) as a windowed tree of key / value rows; values, keys, types and entries edit in place with the shared cell editors, every edit one undo step.
+- **When:** Inspecting and editing a nested document - a configuration, an API response, a state store, a graph of objects that point at each other. One flat object with labels and rules per key is property-grid; many records with the same fields are data-grid; a hierarchy of records is data-tree.
+- **States:** `default`, `editing` · **Skill:** [references/components/property-tree.md](references/components/property-tree.md) · **Examples:** [src/documentation/pages/application/property-tree.mdx](../../src/documentation/pages/application/property-tree.mdx)
+
 #### Window · ATM · JS
 
 - **Why:** A non-modal `<dialog>` - open / close, the close event and the × (a `<form method="dialog">` submit) are the browser's, and resizing is native CSS resize; the runtime only moves windows by their title bar, raises the clicked one to the front and maximizes / minimizes.
@@ -1130,6 +1144,56 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** Comments on spans of a document as Cards in a column that scrolls on its own - the anchors are marks the runtime wraps around the exact text (block id + text), so a click on the text finds the comment and a click on the comment finds the text; one JSON model carries it all.
 - **When:** Reviewing a document - a Google-Docs-style editor (the Document Editor scaffold on Editor.js), a rendered article, any markup whose blocks carry ids; for a chat about the whole thing use Session, for a plain list of remarks Comment Item.
 - **States:** `default`, `current` · **Skill:** [references/components/doc-comments.md](references/components/doc-comments.md) · **Examples:** [src/documentation/pages/application/doc-comments.mdx](../../src/documentation/pages/application/doc-comments.mdx)
+
+### Desktop
+
+#### Window Manager · MOL · JS
+
+- **Why:** The model of one desktop's windows - which are open, in what order, which is in front, which are minimized - published as one event, so a taskbar or any other view renders it; every window change goes through the Window component's own State API.
+- **When:** Any desktop-like UI with several windows and something that lists them (a taskbar, a window menu, a switcher). For windows alone use window - its df$.shadcn.win already moves, raises and arranges them.
+- **States:** `default`, `desktop` · **Skill:** [references/components/window-manager.md](references/components/window-manager.md) · **Examples:** [src/documentation/pages/desktop/window-manager.mdx](../../src/documentation/pages/desktop/window-manager.mdx)
+
+#### Desktop Manager · ATM · JS
+
+- **Why:** A multi-select listbox of desktop icons with the classic selection model - click, Ctrl / Cmd, Shift ranges, a rubber band drawn from an empty spot, Ctrl+A, arrows by place - and icons that drag to grid cells; opening, deleting and renaming are events the page answers.
+- **When:** The icon surface of a desktop or any spatial file view (a folder window's icon view). For a list with checkboxes use table or virtual-list; for a single pick use radio-group.
+- **States:** `default`, `selected` · **Skill:** [references/components/desktop-manager.md](references/components/desktop-manager.md) · **Examples:** [src/documentation/pages/desktop/desktop-manager.mdx](../../src/documentation/pages/desktop/desktop-manager.mdx)
+
+#### Taskbar · MOL · JS
+
+- **Why:** A toolbar along a desktop's edge whose window buttons are the Window Manager's model - one per open window, pressed for the one in front, a click brings it forward or minimizes it; the Start Button, the page's launchers and the Tray sit in it.
+- **When:** A desktop with windows. For a dock of launchers only use dock; for an app's own toolbar use toolbar.
+- **States:** `default` · **Skill:** [references/components/taskbar.md](references/components/taskbar.md) · **Examples:** [src/documentation/pages/desktop/taskbar.mdx](../../src/documentation/pages/desktop/taskbar.mdx)
+
+#### Tray · ATM · JS
+
+- **Why:** The notification area of a taskbar - icon buttons that open popovers natively and carry badges, a clock the runtime keeps with Intl in the tray's language, and a show-desktop strip that asks the Window Manager.
+- **When:** The end of a taskbar - status icons, quick settings, the clock. For a status line inside an app use a window's status bar.
+- **States:** `default` · **Skill:** [references/components/tray.md](references/components/tray.md) · **Examples:** [src/documentation/pages/desktop/tray.mdx](../../src/documentation/pages/desktop/tray.mdx)
+
+#### Start Button · ATM · CSS
+
+- **Why:** A native popovertarget button - it opens its Start Menu with no script of its own; the menu anchors itself to it and keeps aria-expanded.
+- **When:** The first button of a taskbar, opening a start menu. For a menu of commands anywhere else use dropdown; for a launcher grid use command.
+- **States:** `default` · **Skill:** [references/components/start-button.md](references/components/start-button.md) · **Examples:** [src/documentation/pages/desktop/start-button.mdx](../../src/documentation/pages/desktop/start-button.mdx)
+
+#### Start Menu · MOL · JS
+
+- **Why:** A popover the Start Button opens with no script; the runtime adds what a start menu needs - search as you type over every item, folders that open beside their item, arrows and Enter, and one start-select event that the page turns into an app.
+- **When:** The menu of a desktop's Start Button - apps, folders, the user, power. For a command palette use command; for a menu on any button use dropdown.
+- **States:** `default`, `open` · **Skill:** [references/components/start-menu.md](references/components/start-menu.md) · **Examples:** [src/documentation/pages/desktop/start-menu.mdx](../../src/documentation/pages/desktop/start-menu.mdx)
+
+#### Logon · MOL · JS
+
+- **Why:** A sign-in and lock screen that checks nothing itself - the users are buttons, the picked one's password is a real form, a submit is an event the page answers with done() or fail(), so any sign-in (or none) fits behind it.
+- **When:** The start or lock screen of a desktop. For a sign-in page of a website use the website's Login Form block; for a password prompt in an app use a dialog with a form.
+- **States:** `default`, `signing-in`, `error`, `signed-in` · **Skill:** [references/components/logon.md](references/components/logon.md) · **Examples:** [src/documentation/pages/desktop/logon.mdx](../../src/documentation/pages/desktop/logon.mdx)
+
+#### Desktop · ORG · CSS
+
+- **Why:** One element lays out a whole desktop - the window area with its icons, the taskbar on any edge, the start menu and the logon screen - and data-variant gives it a look (7, XP, 98, 95 or the modern default) by tokens and chrome rules, so the same markup and the same component APIs serve every look.
+- **When:** A desktop-like UI or a period look for one. For windows alone use window in a window-desktop; for an app's frame use border-layout.
+- **States:** `default` · **Skill:** [references/components/desktop.md](references/components/desktop.md) · **Examples:** [src/documentation/pages/desktop/desktop.mdx](../../src/documentation/pages/desktop/desktop.mdx)
 
 ### Chat
 

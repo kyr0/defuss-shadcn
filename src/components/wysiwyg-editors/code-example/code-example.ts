@@ -206,11 +206,15 @@ const EXTRA_BUNDLES: Readonly<Record<string, readonly string[]>> = {
   graphs: ['graph-explorer'],
   workflows: ['workflow'],
   terminal: ['terminal'],
+  desktop: ['window-manager', 'desktop-manager', 'taskbar', 'tray', 'start-button', 'start-menu', 'logon', 'desktop'],
 };
 const BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join('|')})(?:\\.min)?\\.js(?:[?#]|$)`);
-/** the extra bundles a preview source needs, in EXTRA_BUNDLES order */
+/** the extra bundles a preview source needs, in EXTRA_BUNDLES order - a member's name, never the end of another
+ * name (a Window example's `window-desktop` names no Desktop) */
 const neededBundles = (source: string): string[] =>
-  Object.keys(EXTRA_BUNDLES).filter((b) => EXTRA_BUNDLES[b].some((m) => new RegExp(`\\b${m}\\b`).test(source || '')));
+  Object.keys(EXTRA_BUNDLES).filter((b) =>
+    EXTRA_BUNDLES[b].some((m) => new RegExp(`(?<![\\w-])${m}\\b`).test(source || '')),
+  );
 // the scripts' URLs as this module runs: an SPA router that later changes the address keeps them, and a relative
 // src read then names the new page's folder (a script keeps no loaded URL - a sheet does: sheetUrl)
 const loadedScripts = new Map<HTMLScriptElement, string>();

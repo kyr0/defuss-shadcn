@@ -2290,6 +2290,174 @@ function bindMedia(root, prefix, report) {
   delegate(prefix);
   mediaPaint(root, prefix);
 }
+// src/shared/editors.ts
+var isObject = (v) => v !== null && typeof v === "object";
+function valueType(value, rules) {
+  if (rules?.type)
+    return rules.type;
+  if (rules?.options)
+    return "enum";
+  if (value === null)
+    return "null";
+  if (Array.isArray(value))
+    return "array";
+  if (typeof value === "object")
+    return "object";
+  if (typeof value === "boolean")
+    return "boolean";
+  if (typeof value === "number")
+    return "number";
+  if (typeof value === "string") {
+    if (/^#[0-9a-f]{6}$/i.test(value))
+      return "color";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
+      return "date";
+    if (value.includes(`
+`))
+      return "text";
+  }
+  return "string";
+}
+function builtinEditor(type, value, rules, options = {}) {
+  const dfDollar = defussQuery();
+  const size = options.size ?? "xs";
+  if (type === "boolean") {
+    const el = document.createElement("input");
+    el.type = "checkbox";
+    el.className = "switch";
+    el.setAttribute("role", "switch");
+    el.checked = !!value;
+    return { el, getValue: () => el.checked, immediate: true };
+  }
+  if (type === "enum") {
+    const el = document.createElement("select");
+    el.className = "select";
+    el.dataset.size = size;
+    const choices = rules?.options ?? [];
+    for (const opt of choices) {
+      const o = document.createElement("option");
+      const [v, label] = isObject(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
+      o.value = String(v);
+      dfDollar(o).text(String(label));
+      if (v === value)
+        o.selected = true;
+      el.append(o);
+    }
+    const values = choices.map((o) => isObject(o) ? o.value : o);
+    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
+  }
+  if (type === "text" || type === "object" || type === "array" || type === "json") {
+    const el = document.createElement("textarea");
+    el.className = "textarea";
+    el.rows = type === "text" ? 3 : 5;
+    const json = type !== "text";
+    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
+    return {
+      el,
+      multiline: true,
+      getValue: () => json ? JSON.parse(el.value) : el.value,
+      validate: () => {
+        if (!json)
+          return "";
+        try {
+          JSON.parse(el.value);
+          return "";
+        } catch (error) {
+          return String(error.message ?? error);
+        }
+      }
+    };
+  }
+  const el = document.createElement("input");
+  el.className = type === "color" ? options.colorClass ?? "" : "input";
+  if (type !== "color")
+    el.dataset.size = size;
+  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
+  if (type === "number") {
+    el.step = String(rules?.step ?? "any");
+    if (rules?.min != null)
+      el.min = String(rules.min);
+    if (rules?.max != null)
+      el.max = String(rules.max);
+    el.inputMode = "decimal";
+  }
+  el.value = value == null ? "" : String(value);
+  return {
+    el,
+    immediate: type === "color" || type === "date",
+    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
+    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
+  };
+}
+function asEditor(custom) {
+  if (!custom)
+    return null;
+  if (custom instanceof HTMLElement) {
+    const el = custom;
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
+  }
+  if (isObject(custom) && custom.el instanceof HTMLElement && typeof custom.getValue === "function")
+    return custom;
+  return null;
+}
+function editorControl(editor) {
+  const sel = "input, select, textarea, button, [tabindex]";
+  return editor.el.matches?.(sel) ? editor.el : defussQuery()(editor.el).find(sel).get(0) ?? editor.el;
+}
+function focusEditor(editor) {
+  const target = editorControl(editor);
+  (editor.focus ?? (() => target.focus?.()))();
+  if (target.select && !["checkbox", "color", "date", "range"].includes(target.type))
+    target.select();
+}
+function editorProblem(rules, value) {
+  if (!rules)
+    return "";
+  const say = (fallback) => rules.message || fallback;
+  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
+  if (rules.required && empty)
+    return say("Required");
+  if (empty)
+    return "";
+  if (typeof value === "number") {
+    if (Number.isNaN(value))
+      return say("Not a number");
+    if (rules.integer && !Number.isInteger(value))
+      return say("Must be a whole number");
+    if (rules.min != null && value < rules.min)
+      return say(`Must be at least ${rules.min}`);
+    if (rules.max != null && value > rules.max)
+      return say(`Must be at most ${rules.max}`);
+  }
+  if (typeof value === "string") {
+    if (rules.minLength != null && value.length < rules.minLength)
+      return say(`At least ${rules.minLength} characters`);
+    if (rules.maxLength != null && value.length > rules.maxLength)
+      return say(`At most ${rules.maxLength} characters`);
+    if (rules.pattern && !new RegExp(`^(?:${rules.pattern})$`).test(value))
+      return say("Does not match the expected format");
+  }
+  if (Array.isArray(value)) {
+    if (rules.minItems != null && value.length < rules.minItems)
+      return say(`At least ${rules.minItems}`);
+    if (rules.maxItems != null && value.length > rules.maxItems)
+      return say(`At most ${rules.maxItems}`);
+  }
+  return "";
+}
+function editorKey(e, editor) {
+  if (e.key === "Escape")
+    return "cancel";
+  if (e.key === "Enter" && (!(editor.multiline || editor.ownsEnter) || e.metaKey || e.ctrlKey))
+    return "commit";
+  if (e.key === "Tab")
+    return e.shiftKey ? "prev" : "next";
+  return null;
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5146,6 +5314,13 @@ shadcn.shared = {
   sheetUrl,
   mathClone,
   mathText,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -6109,8 +6284,34 @@ function readColumns(grid) {
     lockedAtStart: el.hasAttribute("data-locked"),
     hiddenAtStart: el.hidden,
     sortField: el.dataset.sortField || el.dataset.field,
-    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null
+    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null,
+    editable: el.hasAttribute("data-editable"),
+    editor: el.dataset.editor || "",
+    rules: columnRules(el)
   }));
+}
+function columnRules(el) {
+  const num = (name) => el.dataset[name] != null && el.dataset[name] !== "" ? Number(el.dataset[name]) : undefined;
+  const rules = {};
+  if (el.hasAttribute("data-required"))
+    rules.required = true;
+  if (el.hasAttribute("data-integer"))
+    rules.integer = true;
+  if (num("min") != null)
+    rules.min = num("min");
+  if (num("max") != null)
+    rules.max = num("max");
+  if (el.dataset.step)
+    rules.step = el.dataset.step;
+  if (num("minLength") != null)
+    rules.minLength = num("minLength");
+  if (num("maxLength") != null)
+    rules.maxLength = num("maxLength");
+  if (el.dataset.pattern)
+    rules.pattern = el.dataset.pattern;
+  if (el.dataset.message)
+    rules.message = el.dataset.message;
+  return rules;
 }
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
@@ -6314,6 +6515,8 @@ function fillCell(grid, cell, column, entry, first) {
     cell.dataset.align = column.align;
   else
     delete cell.dataset.align;
+  cell.toggleAttribute("data-editable", !!column.editable && !grid.hasAttribute("data-readonly"));
+  delete cell.dataset.editing;
   cell.textContent = "";
   if (first && isTree(grid)) {
     cell.style.setProperty("--depth", String(entry.meta.depth));
@@ -6363,6 +6566,7 @@ function renderRows(grid) {
   const base = paging(grid) === "pages" ? Math.max(0, config.page || 0) * pageSize(grid) : 0;
   const headRows = grid._parts.filters ? 2 : 1;
   const focus = grid._focus;
+  let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
     const row = pool.children[i];
     const index = win.first + i;
@@ -6394,6 +6598,17 @@ function renderRows(grid) {
       }
     }
     const id = entry.row[grid._source.idField];
+    const ed = grid._editor;
+    if (ed && ed.id === id) {
+      edShown = true;
+      if (!row.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || !document.activeElement || document.activeElement === document.body;
+        ed.rowEl = row;
+        placeEditor(grid, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
+      }
+    }
     if (grid.dataset.select)
       row.setAttribute("aria-selected", String(selected.has(id)));
     else
@@ -6402,6 +6617,11 @@ function renderRows(grid) {
       row.children[c].tabIndex = focus.row === index && focus.col === c ? 0 : -1;
     }
   }
+  if (grid._editor && !edShown && !grid._writing)
+    queueMicrotask(() => {
+      if (grid._editor && !commitEdit(grid, "none"))
+        cancelEdit(grid, false);
+    });
 }
 function renderFooter(grid, config) {
   const count = (n) => format2(n, "number", grid);
@@ -6474,6 +6694,12 @@ function renderFooter(grid, config) {
 }
 function refresh(grid, config, previous) {
   grid._config = config;
+  if (grid._editor && !grid._writing) {
+    grid._writing = true;
+    if (!commitEdit(grid, "none"))
+      grid._editor = null;
+    grid._writing = false;
+  }
   evaluate(grid, config);
   grid._selected = new Set(config.selected || []);
   grid._shown = shown2(grid, config);
@@ -6588,8 +6814,192 @@ function focusCell(grid, row, col) {
   const target = row === -1 ? grid._order[col].el : dfDollar5(grid._parts.pool).children(".data-grid-row").toArray().find((r) => r._index === row)?.children[col];
   target?.focus({ preventScroll: row === -1 });
 }
+var editableColumn = (grid, col) => {
+  const column = grid._order?.[col];
+  return column?.editable ? column : null;
+};
+var editContext = (grid, record, column) => ({
+  record,
+  field: column.field,
+  type: column.editor || (column.type === "number" ? "number" : valueType(record[column.field], column.options ? { options: column.options } : null)),
+  rules: { ...column.rules, ...column.options ? { options: column.options } : {} },
+  grid
+});
+var rowElOf = (grid, id) => dfDollar5(grid._parts.pool).children(".data-grid-row").toArray().find((r) => grid._shown[r._index]?.row[grid._source.idField] === id);
+function placeEditor(grid, ed) {
+  const col = grid._order.findIndex((c) => c.field === ed.field);
+  const cell = ed.rowEl?.children[col];
+  if (!cell)
+    return;
+  ed.cell = cell;
+  cell.dataset.editing = "";
+  const content = dfDollar5(cell).children(".data-grid-content").get(0);
+  if (content && content !== ed.wrap)
+    content.replaceWith(ed.wrap);
+  else if (!cell.contains(ed.wrap))
+    dfDollar5(cell).append(ed.wrap);
+}
+function openEdit(grid, row, col) {
+  const column = editableColumn(grid, col);
+  const entry = grid._shown?.[row];
+  if (!column || !entry || grid.hasAttribute("data-readonly"))
+    return false;
+  if (grid._editor && !commitEdit(grid, "none"))
+    return false;
+  const record = entry.row;
+  const value = record[column.field];
+  const ctx = editContext(grid, record, column);
+  const custom = grid._sourceOptions?.getEditorFn?.(column.field, value, ctx);
+  if (custom === false)
+    return false;
+  const editor = asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules, { colorClass: "data-grid-color-input" });
+  focusCell(grid, row, col);
+  const id = record[grid._source.idField];
+  const wrap = document.createElement("span");
+  wrap.className = "data-grid-editor data-grid-content";
+  dfDollar5(wrap).append(editor.el);
+  const ed = { id, field: column.field, column, editor, wrap, value, record, rowEl: rowElOf(grid, id), cell: null };
+  grid._editor = ed;
+  placeEditor(grid, ed);
+  wrap.addEventListener("keydown", (e) => {
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    if (act === "cancel") {
+      e.preventDefault();
+      e.stopPropagation();
+      cancelEdit(grid);
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    commitEdit(grid, act === "commit" ? "stay" : act);
+  });
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commitEdit(grid, "stay");
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (grid._editor === ed && !wrap.contains(document.activeElement))
+        commitEdit(grid, "none");
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+function cancelEdit(grid, focus = true) {
+  const ed = grid._editor;
+  if (!ed)
+    return;
+  grid._editor = null;
+  grid._gen++;
+  renderRows(grid);
+  if (focus)
+    focusRecord(grid, ed.id, ed.field);
+}
+function focusRecord(grid, id, field, by = 0) {
+  const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+  const col = grid._order.findIndex((c) => c.field === field);
+  if (row < 0 || col < 0)
+    return;
+  if (!by)
+    return focusCell(grid, row, col);
+  const editable = grid._order.map((c, i) => c.editable ? i : -1).filter((i) => i >= 0);
+  let at = editable.indexOf(col) + by;
+  let r = row;
+  if (at >= editable.length)
+    [at, r] = [0, row + 1];
+  if (at < 0)
+    [at, r] = [editable.length - 1, row - 1];
+  if (r < 0 || r >= grid._shown.length)
+    return focusCell(grid, row, col);
+  openEdit(grid, r, editable[at]);
+}
+function showEditProblem(ed, problem) {
+  const control = editorControl(ed.editor);
+  control.setAttribute("aria-invalid", "true");
+  let note = dfDollar5(ed.wrap).children(".data-grid-error").get(0);
+  if (!note) {
+    note = document.createElement("span");
+    note.className = "data-grid-error";
+    note.setAttribute("role", "alert");
+    note.id = `dg-error-${Math.random().toString(36).slice(2, 8)}`;
+    dfDollar5(ed.wrap).append(note);
+    control.setAttribute("aria-describedby", note.id);
+  }
+  dfDollar5(note).text(problem);
+}
+function writeRecord(grid, id, patch) {
+  const idField = grid._source.idField;
+  const rows = grid._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0)
+    return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  grid._source.setRows(next);
+  grid._writing = true;
+  triggerStateChange5(grid, grid.store.value, grid.store.value);
+  grid._writing = false;
+  return record;
+}
+function commitEdit(grid, then = "stay") {
+  const ed = grid._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = editContext(grid, ed.record, ed.column);
+  if (!problem)
+    problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = grid._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    showEditProblem(ed, problem);
+    return false;
+  }
+  grid._editor = null;
+  const oldValue = ed.value;
+  const before = new CustomEvent("data-grid-beforeedit", {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.record, field: ed.field, value, oldValue }
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !grid.dispatchEvent(before)) {
+    grid._gen++;
+    renderRows(grid);
+  } else {
+    const record = writeRecord(grid, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+      bubbles: true,
+      detail: { record, field: ed.field, value, oldValue }
+    }));
+  }
+  if (then === "stay")
+    focusRecord(grid, ed.id, ed.field);
+  else if (then === "next" || then === "prev")
+    focusRecord(grid, ed.id, ed.field, then === "next" ? 1 : -1);
+  return true;
+}
 function onKeydown2(grid, e) {
-  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu"))
+  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu, .data-grid-editor"))
     return;
   if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
     return;
@@ -6672,7 +7082,16 @@ function onKeydown2(grid, e) {
       selectAll(grid);
       next = [row, col];
       break;
+    case "F2":
+      if (row < 0 || !openEdit(grid, row, col))
+        return;
+      e.preventDefault();
+      return;
     case "Enter":
+      if (row >= 0 && !e.shiftKey && editableColumn(grid, col) && openEdit(grid, row, col)) {
+        e.preventDefault();
+        return;
+      }
       if (row === -1) {
         const column = grid._order[col];
         if (column.sortable)
@@ -6694,7 +7113,7 @@ function onKeydown2(grid, e) {
 }
 function onClick(grid, e) {
   const t = e.target;
-  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer"))
+  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer, .data-grid-editor"))
     return;
   const menuButton = t.closest(".data-grid-menu-button");
   if (menuButton) {
@@ -7238,7 +7657,31 @@ df$5.dataGrid = {
     const filtering = (configOf(grid).filters || []).length > 0;
     query(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });
   },
-  resetColumns: (target) => resetColumns(resolve(target))
+  resetColumns: (target) => resetColumns(resolve(target)),
+  edit(target, id, field) {
+    const grid = resolve(target);
+    const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+    const col = grid._order.findIndex((c) => c.field === field);
+    if (row < 0 || col < 0)
+      return false;
+    focusCell(grid, row, col);
+    return openEdit(grid, row, col);
+  },
+  commit: (target) => commitEdit(resolve(target)),
+  cancel: (target) => cancelEdit(resolve(target)),
+  update(target, id, patch) {
+    const grid = resolve(target);
+    const old = grid._source.rows.find((r) => r[grid._source.idField] === id);
+    if (!old)
+      return null;
+    const record = writeRecord(grid, id, patch);
+    for (const field of Object.keys(patch))
+      grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+        bubbles: true,
+        detail: { record, field, value: patch[field], oldValue: old[field] }
+      }));
+    return record;
+  }
 };
 function init5() {
   dfDollar5(".data-grid:not([data-init])").toArray().forEach((grid) => {
@@ -7330,6 +7773,13 @@ function init5() {
         openMenu(grid, column);
     });
     grid.addEventListener("dblclick", (e) => {
+      const cell = e.target.closest(".data-grid-cell");
+      const rowEl = cell?.closest(".data-grid-row");
+      if (cell && rowEl && grid._parts.pool.contains(rowEl) && !cell.hasAttribute("data-editing")) {
+        if (openEdit(grid, rowEl._index, [...rowEl.children].indexOf(cell)))
+          e.preventDefault();
+        return;
+      }
       const handle = e.target.closest(".data-grid-resizer");
       if (!handle)
         return;
@@ -9531,6 +9981,6 @@ function init15() {
 init15();
 new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
-//# debugId=C7E3C4D1878D8B6564756E2164756E21
+//# debugId=49763D065EBEBA2F64756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=issue-tracker.js.map

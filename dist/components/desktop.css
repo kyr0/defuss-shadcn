@@ -1,0 +1,3270 @@
+/* ── components/window-manager/window-manager.css ── */
+/* -- Window Manager component -------------------------------------
+   The area one desktop's windows live in. It adds no chrome of its own: the
+   windows are Window components, a taskbar renders the manager's model. With
+   a taskbar bound (data-taskbar, set by the Taskbar) a minimized window leaves
+   the desktop for its taskbar button instead of rolling up to its title bar. */
+
+@layer components {
+  .window-manager {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .window-manager[data-taskbar] .window[data-minimized] {
+    display: none;
+  }
+}
+
+/* ── components/desktop-manager/desktop-manager.css ── */
+/* -- Desktop Manager component ------------------------------------
+   A desktop's icon surface: icons fill columns top to bottom, then the next
+   column (a dragged icon keeps its cell through grid-area), a selected icon
+   is tinted, the rubber band is a translucent box drawn by the runtime.
+   Inside a .window-manager it lies under the windows and fills the area. */
+
+@layer components {
+  .desktop-manager {
+    --desktop-icon-size: 2.5rem;
+    --desktop-icon-cell-w: 5.75rem;
+    --desktop-icon-cell-h: 5.75rem;
+    position: relative;
+    box-sizing: border-box;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fill, var(--desktop-icon-cell-h));
+    grid-auto-columns: var(--desktop-icon-cell-w);
+    align-content: start;
+    justify-content: start;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    min-height: 12rem;
+    overflow: hidden;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    background: var(--desktop-wallpaper, transparent);
+    background-size: cover;
+    background-position: center;
+    /* the band and icon drags own every pointer on the surface - nothing here scrolls */
+    touch-action: none;
+    user-select: none;
+    outline: none;
+
+    &[data-size="sm"] {
+      --desktop-icon-size: 2rem;
+      --desktop-icon-cell-w: 4.75rem;
+      --desktop-icon-cell-h: 4.75rem;
+    }
+    &[data-size="lg"] {
+      --desktop-icon-size: 3.25rem;
+      --desktop-icon-cell-w: 6.75rem;
+      --desktop-icon-cell-h: 6.75rem;
+    }
+  }
+
+  .window-manager > .desktop-manager {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    min-height: 0;
+  }
+
+  .desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    padding: 0.375rem 0.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: inherit;
+    text-align: center;
+    cursor: default;
+    outline: none;
+
+    &:hover {
+      background: color-mix(in oklch, var(--accent) 45%, transparent);
+    }
+    &[aria-selected="true"] {
+      background: color-mix(in oklch, var(--primary) 22%, transparent);
+      border-color: color-mix(in oklch, var(--primary) 45%, transparent);
+    }
+    &:focus-visible {
+      border-color: var(--ring);
+      border-style: dotted;
+    }
+  }
+
+  .desktop-icon-image {
+    display: grid;
+    place-items: center;
+    width: var(--desktop-icon-size);
+    height: var(--desktop-icon-size);
+    flex: none;
+    pointer-events: none;
+
+    & > :is(svg, img, .desktop-glyph) {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .desktop-icon-label {
+    max-width: 100%;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+
+    .desktop-icon[aria-selected="true"]:focus-within &,
+    &[contenteditable="true"] {
+      -webkit-line-clamp: unset;
+    }
+    &[contenteditable="true"] {
+      padding-inline: 0.125rem;
+      background: var(--background);
+      color: var(--foreground);
+      outline: 1px solid var(--ring);
+      user-select: text;
+      cursor: text;
+    }
+  }
+
+  /* on a wallpaper the label reads on any picture */
+  .desktop-manager[data-on-wallpaper] .desktop-icon-label {
+    color: white;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.8);
+  }
+  .desktop-manager[data-on-wallpaper] .desktop-icon[aria-selected="true"] .desktop-icon-label {
+    text-shadow: none;
+  }
+
+  .desktop-manager-band {
+    position: absolute;
+    z-index: 1;
+    border: 1px solid var(--primary);
+    background: color-mix(in oklch, var(--primary) 18%, transparent);
+    pointer-events: none;
+  }
+
+  .desktop-manager[data-dragging] .desktop-icon[aria-selected="true"] {
+    opacity: 0.7;
+    z-index: 2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-icon {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .desktop-icon[aria-selected="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+    .desktop-manager-band {
+      border-color: Highlight;
+    }
+  }
+}
+
+/* ── components/taskbar/taskbar.css ── */
+/* -- Taskbar component --------------------------------------------
+   The bar along a desktop's edge: the Start Button, launchers, one button per
+   open window (rendered from the Window Manager) and the Tray at the end.
+   data-position puts it on any edge (left / right: a column), data-align
+   centres the buttons with the Start Button (the Tray stays at the end). */
+
+@layer components {
+  .taskbar {
+    --taskbar-size: 3rem;
+    position: relative;
+    z-index: 40;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: var(--taskbar-size);
+    padding: 0.25rem 0.375rem;
+    border-block-start: 1px solid var(--border);
+    background: color-mix(in oklch, var(--card) 88%, transparent);
+    color: var(--card-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    backdrop-filter: blur(16px);
+
+    &[data-position="top"] {
+      border-block-start: 0;
+      border-block-end: 1px solid var(--border);
+    }
+    &:is([data-position="left"], [data-position="right"]) {
+      flex-direction: column;
+      min-height: 0;
+      min-width: var(--taskbar-size);
+      padding: 0.375rem 0.25rem;
+      border-block-start: 0;
+      border-inline-end: 1px solid var(--border);
+    }
+    &[data-position="right"] {
+      border-inline-end: 0;
+      border-inline-start: 1px solid var(--border);
+    }
+  }
+
+  .taskbar-launchers,
+  .taskbar-windows {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    min-width: 0;
+
+    .taskbar:is([data-position="left"], [data-position="right"]) & {
+      flex-direction: column;
+    }
+  }
+
+  .taskbar-windows {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* centred: Start, launchers and windows together in the middle */
+  .taskbar[data-align="center"] {
+    & > :first-child {
+      margin-inline-start: auto;
+    }
+    & .taskbar-windows {
+      flex: 0 1 auto;
+      margin-inline-end: auto;
+    }
+  }
+
+  .taskbar-launcher,
+  .taskbar-window {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    max-width: 11rem;
+    padding-inline: 0.5rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: default;
+
+    &:hover {
+      background: color-mix(in oklch, var(--accent) 70%, transparent);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+    & svg,
+    & img,
+    & .desktop-glyph {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex: none;
+    }
+  }
+
+  .taskbar-window {
+    flex: 0 1 11rem;
+    justify-content: flex-start;
+
+    /* the line under a window's button: thin when open, long when in front */
+    &::after {
+      content: "";
+      position: absolute;
+      inset-block-end: 0.125rem;
+      inset-inline: 40%;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--muted-foreground);
+    }
+    &[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      &::after {
+        inset-inline: 25%;
+        background: var(--primary);
+      }
+    }
+    &[data-minimized] {
+      opacity: 0.8;
+    }
+  }
+
+  .taskbar-window-icon {
+    display: contents;
+  }
+
+  .taskbar-window-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .taskbar:is([data-position="left"], [data-position="right"]) & {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .taskbar {
+      backdrop-filter: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .taskbar-window[aria-pressed="true"] {
+      outline: 2px solid Highlight;
+    }
+  }
+}
+
+/* ── components/tray/tray.css ── */
+/* -- Tray component -----------------------------------------------
+   The notification area: small icon buttons (a badge on one with
+   data-badge), the clock the runtime keeps (two lines with the date) and a
+   thin "show desktop" strip at the very end. */
+
+@layer components {
+  .tray {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin-inline-start: auto;
+    height: 100%;
+
+    .taskbar:is([data-position="left"], [data-position="right"]) & {
+      flex-direction: column;
+      margin-inline-start: 0;
+      margin-block-start: auto;
+      height: auto;
+    }
+  }
+
+  .tray-item {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: inherit;
+    cursor: default;
+
+    & svg,
+    & img {
+      width: 1rem;
+      height: 1rem;
+    }
+    &:hover {
+      background: color-mix(in oklch, var(--accent) 70%, transparent);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+    &[data-badge]::after {
+      content: attr(data-badge);
+      position: absolute;
+      inset-block-start: 0.0625rem;
+      inset-inline-end: 0;
+      min-width: 0.875rem;
+      height: 0.875rem;
+      padding-inline: 0.1875rem;
+      box-sizing: border-box;
+      border-radius: 999px;
+      background: var(--destructive);
+      color: var(--destructive-foreground, white);
+      font-size: 0.5625rem;
+      font-weight: 700;
+      line-height: 0.875rem;
+      text-align: center;
+    }
+  }
+
+  .tray-clock {
+    padding-inline: 0.375rem;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25;
+    text-align: end;
+    white-space: pre;
+  }
+
+  .tray-show-desktop {
+    align-self: stretch;
+    width: 0.375rem;
+    margin-inline-start: 0.25rem;
+    padding: 0;
+    border: 0;
+    border-inline-start: 1px solid var(--border);
+    background: none;
+    cursor: default;
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in oklch, var(--accent) 70%, transparent);
+      outline: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .tray-item[data-badge]::after {
+      forced-color-adjust: none;
+      background: Highlight;
+      color: HighlightText;
+    }
+  }
+}
+
+/* ── components/start-button/start-button.css ── */
+/* -- Start Button component ---------------------------------------
+   The button that opens a Start Menu - a native popovertarget, no script of
+   its own (the Start Menu anchors itself to it and keeps aria-expanded). An
+   icon, a label or both; pressed while its menu is open. A look restyles it
+   (a bevelled "Start", a green pill, a round orb). */
+
+@layer components {
+  .start-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    padding-inline: 0.625rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: default;
+
+    &:hover {
+      background: color-mix(in oklch, var(--accent) 70%, transparent);
+    }
+    &[aria-expanded="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+    & > :is(svg, img, .start-button-icon) {
+      width: 1.375rem;
+      height: 1.375rem;
+      flex: none;
+    }
+    /* icon only: the label stays for assistive technology */
+    &[data-variant="icon"] .start-button-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .start-button[aria-expanded="true"] {
+      outline: 2px solid Highlight;
+    }
+  }
+}
+
+/* ── components/start-menu/start-menu.css ── */
+/* -- Start Menu component -----------------------------------------
+   A popover anchored to its Start Button (above it, flipped below when there
+   is no room): a head with the user, a search field, pinned items in a grid,
+   all items in a list - a folder opens its own popover beside it - and the
+   power buttons at the foot. While searching, the matches of every list and
+   folder show in one list. A look restyles it; the markup stays. */
+
+@layer components {
+  .start-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    position-area: top span-right;
+    position-try-fallbacks: flip-block, flip-inline;
+    box-sizing: border-box;
+    width: min(22rem, calc(100vw - 1rem));
+    max-height: min(32rem, 80vh);
+    padding: 0.75rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.625rem;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-xl);
+
+    &:popover-open {
+      display: flex;
+    }
+  }
+
+  .start-menu-head {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+  }
+
+  .start-menu-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.625rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--muted-foreground);
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex: none;
+    }
+    & input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: none;
+      color: var(--foreground);
+      font: inherit;
+    }
+    &:focus-within {
+      border-color: var(--ring);
+    }
+  }
+
+  .start-menu-heading {
+    margin: 0.25rem 0.25rem 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .start-menu-pinned {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+    gap: 0.25rem;
+
+    & .start-menu-item {
+      flex-direction: column;
+      gap: 0.375rem;
+      padding-block: 0.625rem;
+      text-align: center;
+      font-size: 0.75rem;
+    }
+    & .start-menu-icon {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  .start-menu-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .start-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.4375rem 0.625rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: default;
+    outline: none;
+
+    &:is(:hover, :focus-visible, [aria-expanded="true"]) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+    &[disabled] {
+      opacity: 0.5;
+    }
+    /* a folder: an arrow at the end */
+    &[aria-haspopup]::after {
+      content: "";
+      margin-inline-start: auto;
+      width: 0.375rem;
+      height: 0.375rem;
+      border-block-start: 1.5px solid currentColor;
+      border-inline-end: 1.5px solid currentColor;
+      rotate: 45deg;
+    }
+  }
+
+  .start-menu-icon {
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+
+    & > :is(svg, img, .desktop-glyph) {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .start-menu-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* a folder's popover, beside its item */
+  .start-menu-sub {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    position-area: right span-bottom;
+    position-try-fallbacks: flip-inline, flip-block;
+    box-sizing: border-box;
+    min-width: 12rem;
+    max-height: 70vh;
+    padding: 0.375rem;
+    display: none;
+    flex-direction: column;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-lg);
+
+    &:popover-open {
+      display: flex;
+    }
+  }
+
+  .start-menu-foot {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-block-start: auto;
+    padding-block-start: 0.5rem;
+    border-block-start: 1px solid var(--border);
+
+    & .start-menu-item {
+      width: auto;
+    }
+    & .start-menu-item:first-child {
+      margin-inline-end: auto;
+    }
+  }
+
+  .start-menu-empty {
+    margin: 0;
+    padding: 0.75rem;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+
+  /* searching: every list's matches in one list; folders, pinned items and the rest step aside */
+  .start-menu[data-searching] {
+    & .start-menu-pinned,
+    & .start-menu-heading,
+    & .start-menu-item[aria-haspopup],
+    & .start-menu-list .start-menu-item:not([data-match]) {
+      display: none;
+    }
+    & .start-menu-sub {
+      display: contents;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .start-menu,
+    .start-menu-sub {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .start-menu-item:is(:hover, :focus-visible, [aria-expanded="true"]) {
+      background: Highlight;
+      color: HighlightText;
+    }
+  }
+}
+
+/* ── components/logon/logon.css ── */
+/* -- Logon component ----------------------------------------------
+   A full-area sign-in / lock screen: the users as large buttons, the picked
+   one's password form beside them, the power buttons in a corner. Inside a
+   positioned desktop it covers it (position absolute, inset 0). A look
+   restyles it - the screen with a divider and tiles, a centred avatar, a
+   small dialog. Signed in, it hides. */
+
+@layer components {
+  .logon {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: 1.5rem;
+    background: var(--logon-background, var(--background));
+    color: var(--foreground);
+    font-family: var(--font-sans);
+
+    &[data-signed-in] {
+      display: none;
+    }
+  }
+
+  .logon-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem 3rem;
+    align-self: center;
+  }
+
+  .logon-brand {
+    display: grid;
+    gap: 0.25rem;
+    text-align: center;
+  }
+
+  .logon-users {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .logon-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 7rem;
+    padding: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    & .avatar {
+      width: 4rem;
+      height: 4rem;
+    }
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &[aria-pressed="true"] {
+      border-color: var(--ring);
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .logon-name {
+    font-weight: 600;
+  }
+
+  .logon-form {
+    display: grid;
+    gap: 0.5rem;
+    width: min(18rem, 100%);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .logon-for {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .logon-field {
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  .logon-error {
+    margin: 0;
+    color: var(--destructive);
+    font-size: 0.875rem;
+  }
+
+  .logon-power {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  @media (forced-colors: active) {
+    .logon-user[aria-pressed="true"] {
+      outline: 2px solid Highlight;
+    }
+  }
+}
+
+/* ── components/desktop/desktop.css ── */
+/* -- Desktop component --------------------------------------------
+   A whole desktop: a Window Manager (with a Desktop Manager under its
+   windows), a Taskbar on any edge, a Start Menu and a Logon screen, laid out
+   by one .desktop element - and its LOOK. data-variant restyles everything
+   inside with remade, look-alike chrome, icons and wallpapers: win7 (glass),
+   winxp (the blue bars and the green start), win98 and win95 (bevelled grey,
+   the pixel font); none is the modern look of the system's own tokens. The
+   markup never changes between looks - a look is tokens on the .desktop plus
+   chrome rules for the components inside.
+
+   The icons are .desktop-glyph elements (data-glyph): our own drawings, in
+   three art styles that follow the look. The 95 / 98 looks set type in
+   "Pixelated MS Sans Serif" by lou (FontStruct), licensed CC BY-SA 3.0
+   (https://creativecommons.org/licenses/by-sa/3.0/) - the font files below
+   are that work, embedded unchanged; the rest of this file is MIT. Chrome
+   proportions follow the MIT frameworks 98.css, xp.css and 7.css by Jordan
+   Scales and Khang Nguyen-Kim; colours and drawings are our own. */
+
+@font-face {
+  font-family: "Desktop Pixel Sans";
+  src: url("data:font/woff2;base64,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")
+    format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Desktop Pixel Sans";
+  src: url("data:font/woff2;base64,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")
+    format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@layer components {
+  /* -- The desktop: the window area and the bar beside it ------------ */
+  .desktop {
+    --desktop-wallpaper:
+      radial-gradient(60% 80% at 15% 20%, oklch(0.72 0.12 260 / 0.85), transparent 70%),
+      radial-gradient(55% 70% at 85% 30%, oklch(0.75 0.11 320 / 0.7), transparent 70%),
+      radial-gradient(70% 70% at 60% 100%, oklch(0.7 0.1 210 / 0.8), transparent 70%), oklch(0.86 0.04 250);
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 24rem;
+    overflow: hidden;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+
+    & > .window-manager {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      border-radius: 0;
+      background: var(--desktop-wallpaper);
+      background-size: cover;
+      background-position: center;
+    }
+    & > .window-manager > .desktop-manager {
+      background: none;
+    }
+    & .window .desktop-manager {
+      background: var(--background);
+    }
+    &:has(> .taskbar[data-position="top"]) {
+      flex-direction: column-reverse;
+    }
+    &:has(> .taskbar[data-position="left"]) {
+      flex-direction: row-reverse;
+    }
+    &:has(> .taskbar[data-position="right"]) {
+      flex-direction: row;
+    }
+    & .logon {
+      --logon-background: var(--desktop-wallpaper);
+      background-size: cover;
+    }
+  }
+
+  /* the glyph art of each look, once: the modern art at no specificity (a desktop's default, and a glyph outside any
+     desktop), the 95 / 98 art in their block, the glossy art shared by XP and 7 */
+  :where(.desktop, .desktop-glyph:not(.desktop .desktop-glyph)) {
+    --desktop-glyph-computer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4.5' y='4.5' width='23' height='17' rx='2' fill='%23cbd5e1'/%3E%3Crect x='7.5' y='7.5' width='17' height='11' rx='1' fill='%2360a5fa'/%3E%3Cpath d='M12.5 21.5h7l1.5 4h-10z' fill='%23cbd5e1'/%3E%3Crect x='7.5' y='25.5' width='17' height='3' rx='1' fill='%23cbd5e1'/%3E%3C/svg%3E");
+    --desktop-glyph-folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3.5 8.5h9l2 2.5h14v16h-25z' fill='%23f6c453'/%3E%3Cpath d='M3.5 13.5h25v13h-25z' fill='%23f6c453'/%3E%3C/svg%3E");
+    --desktop-glyph-documents: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3.5 8.5h9l2 2.5h14v16h-25z' fill='%23f6c453'/%3E%3Crect x='9.5' y='5.5' width='14' height='17' rx='1' fill='%23f8fafc'/%3E%3Cpath d='M12 10h9M12 13h9M12 16h6' fill='none' stroke='%232563eb' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M3.5 15.5h25v11h-25z' fill='%23f6c453'/%3E%3C/svg%3E");
+    --desktop-glyph-trash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8.5 9.5h15l-1.5 18h-12z' fill='%23cbd5e1'/%3E%3Crect x='6.5' y='6.5' width='19' height='3' rx='1' fill='%23cbd5e1'/%3E%3Crect x='13.5' y='4.5' width='5' height='2' rx='1' fill='%23cbd5e1'/%3E%3Cpath d='M13 12.5v12M16 12.5v12M19 12.5v12' fill='none' stroke='%2394a3b8' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M7.5 3.5h13l5 5v20h-18z' fill='%23f8fafc'/%3E%3Cpath d='M20.5 3.5v5h5' fill='%23f8fafc'/%3E%3Cpath d='M10.5 12.5h11M10.5 15.5h11M10.5 18.5h11M10.5 21.5h7' fill='none' stroke='%232563eb' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-terminal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3.5' y='5.5' width='25' height='21' rx='2' fill='%23334155'/%3E%3Crect x='3.5' y='5.5' width='25' height='4' rx='2' fill='%23cbd5e1'/%3E%3Cpath d='M7.5 14.5l3.5 3-3.5 3' fill='none' stroke='%23e5e7eb' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M13.5 21h6' fill='none' stroke='%23e5e7eb' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-settings: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10.5' fill='%23cbd5e1'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='%23f8fafc'/%3E%3Cpath d='M16 3.5v4M16 24.5v4M3.5 16h4M24.5 16h4M7.2 7.2l2.8 2.8M22 22l2.8 2.8M7.2 24.8l2.8-2.8M22 10l2.8-2.8' fill='none' stroke='%23334155' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-browser: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%2360a5fa'/%3E%3Cpath d='M9 9.5c3 0 5 2 4 5s-4 2-4 5-3 1-4-1c0-4 1-7 4-9z' fill='%234ade80'/%3E%3Cpath d='M19 6.5c2 1 2 3 4 3s3 3 2 6-3 1-4 3-3 0-3-3 1-3 0-5z' fill='%234ade80'/%3E%3C/svg%3E");
+    --desktop-glyph-mail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3.5' y='8.5' width='25' height='17' rx='1' fill='%23f8fafc'/%3E%3Cpath d='M4 9l12 9 12-9' fill='none' stroke='%23334155' stroke-width='1.2' stroke-linecap='round'/%3E%3Cpath d='M4 25l9-8M28 25l-9-8' fill='none' stroke='%2394a3b8' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-picture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3.5' y='5.5' width='25' height='21' rx='2' fill='%23f8fafc'/%3E%3Crect x='6.5' y='8.5' width='19' height='15' rx='1' fill='%232dd4bf'/%3E%3Ccircle cx='11.5' cy='13' r='2.5' fill='%23fde047'/%3E%3Cpath d='M6.5 23.5l6-7 4 4 3-3 6 6z' fill='%234ade80'/%3E%3C/svg%3E");
+    --desktop-glyph-calculator: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='7.5' y='3.5' width='17' height='25' rx='2' fill='%23cbd5e1'/%3E%3Crect x='10.5' y='6.5' width='11' height='5' rx='1' fill='%234ade80'/%3E%3Crect x='10.5' y='13.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='14.5' y='13.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='18.5' y='13.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='10.5' y='17.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='14.5' y='17.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='18.5' y='17.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='10.5' y='21.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='14.5' y='21.5' width='3' height='3' rx='0.5' fill='%23f8fafc'/%3E%3Crect x='18.5' y='21.5' width='3' height='3' rx='0.5' fill='%23f87171'/%3E%3C/svg%3E");
+    --desktop-glyph-music: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M12.5 7.5l13-3v16' fill='%23334155'/%3E%3Cpath d='M12.5 7.5v15M25.5 4.5v16' fill='none' stroke='%230f172a' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='9.5' cy='23' r='3.5' fill='%23a78bfa'/%3E%3Ccircle cx='22.5' cy='21' r='3.5' fill='%23a78bfa'/%3E%3Crect x='12' y='6' width='14' height='3' rx='0' fill='%23334155'/%3E%3C/svg%3E");
+    --desktop-glyph-network: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2.5' y='4.5' width='12' height='9' rx='1' fill='%23cbd5e1'/%3E%3Crect x='4.5' y='6.5' width='8' height='5' rx='0' fill='%2360a5fa'/%3E%3Crect x='17.5' y='18.5' width='12' height='9' rx='1' fill='%23cbd5e1'/%3E%3Crect x='19.5' y='20.5' width='8' height='5' rx='0' fill='%2360a5fa'/%3E%3Cpath d='M8.5 14v5h9' fill='none' stroke='%23334155' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='8.5' cy='19' r='1.5' fill='%23fde047'/%3E%3C/svg%3E");
+    --desktop-glyph-help: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%23fde047'/%3E%3Cpath d='M12 12.5a4 4 0 1 1 5.5 3.7c-1 .5-1.5 1.2-1.5 2.3v1' fill='none' stroke='%230f172a' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='23.5' r='1.5' fill='%23334155'/%3E%3C/svg%3E");
+    --desktop-glyph-user: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='11' r='6' fill='%23fde047'/%3E%3Cpath d='M5.5 28.5c0-6 4.5-10 10.5-10s10.5 4 10.5 10z' fill='%2360a5fa'/%3E%3C/svg%3E");
+    --desktop-glyph-power: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%23f87171'/%3E%3Cpath d='M16 9v7' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M11.5 11.5a6.5 6.5 0 1 0 9 0' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-flag: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 7.5c3-1.5 6-1.5 10.5 0v8c-4.5-1.5-7.5-1.5-10.5 0z' fill='%23f87171'/%3E%3Cpath d='M16.5 8c3 1.5 7 1.5 11.5 0v8c-4.5 1.5-8.5 1.5-11.5 0z' fill='%234ade80'/%3E%3Cpath d='M4 17.5c3-1.5 6-1.5 10.5 0v8c-4.5-1.5-7.5-1.5-10.5 0z' fill='%2360a5fa'/%3E%3Cpath d='M16.5 18c3 1.5 7 1.5 11.5 0v8c-4.5 1.5-8.5 1.5-11.5 0z' fill='%23fde047'/%3E%3C/svg%3E");
+  }
+  .desktop:is([data-variant="winxp"], [data-variant="win7"]) {
+    --desktop-glyph-computer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gmetal' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23eef1f5'/%3E%3Cstop offset='1' stop-color='%239aa6b6'/%3E%3C/linearGradient%3E%3ClinearGradient id='gscreen' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237cc4ff'/%3E%3Cstop offset='1' stop-color='%231450c8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4.5' y='4.5' width='23' height='17' rx='1.4' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Crect x='7.5' y='7.5' width='17' height='11' rx='0.7' fill='url(%23gscreen)' stroke='%230e388c' stroke-width='1'/%3E%3Crect x='8' y='8' width='16' height='4' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3Cpath d='M12.5 21.5h7l1.5 4h-10z' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Crect x='7.5' y='25.5' width='17' height='3' rx='0.7' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gfolder' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffe28a'/%3E%3Cstop offset='1' stop-color='%23e0a92a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M3.5 8.5h9l2 2.5h14v16h-25z' fill='url(%23gfolder)' stroke='%239d761d' stroke-width='1'/%3E%3Cpath d='M3.5 13.5h25v13h-25z' fill='url(%23gfolder)' stroke='%239d761d' stroke-width='1'/%3E%3Crect x='4' y='14' width='24' height='5' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3C/svg%3E");
+    --desktop-glyph-documents: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gfolder' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffe28a'/%3E%3Cstop offset='1' stop-color='%23e0a92a'/%3E%3C/linearGradient%3E%3ClinearGradient id='gpaper' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23d6e0ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M3.5 8.5h9l2 2.5h14v16h-25z' fill='url(%23gfolder)' stroke='%239d761d' stroke-width='1'/%3E%3Crect x='9.5' y='5.5' width='14' height='17' rx='0.7' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Cpath d='M12 10h9M12 13h9M12 16h6' fill='none' stroke='%231a5bd8' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M3.5 15.5h25v11h-25z' fill='url(%23gfolder)' stroke='%239d761d' stroke-width='1'/%3E%3Crect x='4' y='16' width='24' height='4' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3C/svg%3E");
+    --desktop-glyph-trash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gmetal' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23eef1f5'/%3E%3Cstop offset='1' stop-color='%239aa6b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M8.5 9.5h15l-1.5 18h-12z' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Crect x='6.5' y='6.5' width='19' height='3' rx='0.7' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Crect x='13.5' y='4.5' width='5' height='2' rx='0.7' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Cpath d='M13 12.5v12M16 12.5v12M19 12.5v12' fill='none' stroke='%239aa6b6' stroke-width='1' stroke-linecap='round'/%3E%3Crect x='9' y='10' width='14' height='4' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3C/svg%3E");
+    --desktop-glyph-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gpaper' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23d6e0ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M7.5 3.5h13l5 5v20h-18z' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Cpath d='M20.5 3.5v5h5' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Cpath d='M10.5 12.5h11M10.5 15.5h11M10.5 18.5h11M10.5 21.5h7' fill='none' stroke='%231a5bd8' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-terminal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gblack' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%234a4f57'/%3E%3Cstop offset='1' stop-color='%23101418'/%3E%3C/linearGradient%3E%3ClinearGradient id='gmetal' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23eef1f5'/%3E%3Cstop offset='1' stop-color='%239aa6b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='3.5' y='5.5' width='25' height='21' rx='1.4' fill='url(%23gblack)' stroke='%230b0e11' stroke-width='1'/%3E%3Crect x='3.5' y='5.5' width='25' height='4' rx='1.4' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Cpath d='M7.5 14.5l3.5 3-3.5 3' fill='none' stroke='%23e5e7eb' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M13.5 21h6' fill='none' stroke='%23e5e7eb' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-settings: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gmetal' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23eef1f5'/%3E%3Cstop offset='1' stop-color='%239aa6b6'/%3E%3C/linearGradient%3E%3ClinearGradient id='gpaper' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23d6e0ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='10.5' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Cpath d='M16 3.5v4M16 24.5v4M3.5 16h4M24.5 16h4M7.2 7.2l2.8 2.8M22 22l2.8 2.8M7.2 24.8l2.8-2.8M22 10l2.8-2.8' fill='none' stroke='%234b5563' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-browser: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gblue' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237cb8ff'/%3E%3Cstop offset='1' stop-color='%231a5bd8'/%3E%3C/linearGradient%3E%3ClinearGradient id='ggreen' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%238fe38f'/%3E%3Cstop offset='1' stop-color='%232a8f2a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='12' fill='url(%23gblue)' stroke='%23124097' stroke-width='1'/%3E%3Cpath d='M9 9.5c3 0 5 2 4 5s-4 2-4 5-3 1-4-1c0-4 1-7 4-9z' fill='url(%23ggreen)' stroke='%231d641d' stroke-width='1'/%3E%3Cpath d='M19 6.5c2 1 2 3 4 3s3 3 2 6-3 1-4 3-3 0-3-3 1-3 0-5z' fill='url(%23ggreen)' stroke='%231d641d' stroke-width='1'/%3E%3Crect x='7' y='6' width='18' height='6' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3C/svg%3E");
+    --desktop-glyph-mail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gpaper' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23d6e0ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='3.5' y='8.5' width='25' height='17' rx='0.7' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Cpath d='M4 9l12 9 12-9' fill='none' stroke='%234b5563' stroke-width='1.2' stroke-linecap='round'/%3E%3Cpath d='M4 25l9-8M28 25l-9-8' fill='none' stroke='%239aa6b6' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+    --desktop-glyph-picture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gpaper' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23d6e0ee'/%3E%3C/linearGradient%3E%3ClinearGradient id='gteal' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237fe8dc'/%3E%3Cstop offset='1' stop-color='%23138f84'/%3E%3C/linearGradient%3E%3ClinearGradient id='gyellow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff08a'/%3E%3Cstop offset='1' stop-color='%23e8a800'/%3E%3C/linearGradient%3E%3ClinearGradient id='ggreen' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%238fe38f'/%3E%3Cstop offset='1' stop-color='%232a8f2a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='3.5' y='5.5' width='25' height='21' rx='1.4' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='6.5' y='8.5' width='19' height='15' rx='0.7' fill='url(%23gteal)' stroke='%230d645c' stroke-width='1'/%3E%3Ccircle cx='11.5' cy='13' r='2.5' fill='url(%23gyellow)' stroke='%23a27600' stroke-width='1'/%3E%3Cpath d='M6.5 23.5l6-7 4 4 3-3 6 6z' fill='url(%23ggreen)' stroke='%231d641d' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-calculator: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gmetal' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23eef1f5'/%3E%3Cstop offset='1' stop-color='%239aa6b6'/%3E%3C/linearGradient%3E%3ClinearGradient id='ggreen' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%238fe38f'/%3E%3Cstop offset='1' stop-color='%232a8f2a'/%3E%3C/linearGradient%3E%3ClinearGradient id='gpaper' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffffff'/%3E%3Cstop offset='1' stop-color='%23d6e0ee'/%3E%3C/linearGradient%3E%3ClinearGradient id='gred' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ff8a7a'/%3E%3Cstop offset='1' stop-color='%23c22a1c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='7.5' y='3.5' width='17' height='25' rx='1.4' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Crect x='10.5' y='6.5' width='11' height='5' rx='0.7' fill='url(%23ggreen)' stroke='%231d641d' stroke-width='1'/%3E%3Crect x='10.5' y='13.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='14.5' y='13.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='18.5' y='13.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='10.5' y='17.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='14.5' y='17.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='18.5' y='17.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='10.5' y='21.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='14.5' y='21.5' width='3' height='3' rx='0.35' fill='url(%23gpaper)' stroke='%23969da7' stroke-width='1'/%3E%3Crect x='18.5' y='21.5' width='3' height='3' rx='0.35' fill='url(%23gred)' stroke='%23881d14' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-music: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gblack' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%234a4f57'/%3E%3Cstop offset='1' stop-color='%23101418'/%3E%3C/linearGradient%3E%3ClinearGradient id='gviolet' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23c9b2ff'/%3E%3Cstop offset='1' stop-color='%236a3fd0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M12.5 7.5l13-3v16' fill='url(%23gblack)' stroke='%230b0e11' stroke-width='1'/%3E%3Cpath d='M12.5 7.5v15M25.5 4.5v16' fill='none' stroke='%23101418' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='9.5' cy='23' r='3.5' fill='url(%23gviolet)' stroke='%234a2c92' stroke-width='1'/%3E%3Ccircle cx='22.5' cy='21' r='3.5' fill='url(%23gviolet)' stroke='%234a2c92' stroke-width='1'/%3E%3Crect x='12' y='6' width='14' height='3' rx='0' fill='url(%23gblack)' stroke='%230b0e11' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-network: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gmetal' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23eef1f5'/%3E%3Cstop offset='1' stop-color='%239aa6b6'/%3E%3C/linearGradient%3E%3ClinearGradient id='gscreen' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237cc4ff'/%3E%3Cstop offset='1' stop-color='%231450c8'/%3E%3C/linearGradient%3E%3ClinearGradient id='gyellow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff08a'/%3E%3Cstop offset='1' stop-color='%23e8a800'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='2.5' y='4.5' width='12' height='9' rx='0.7' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Crect x='4.5' y='6.5' width='8' height='5' rx='0' fill='url(%23gscreen)' stroke='%230e388c' stroke-width='1'/%3E%3Crect x='17.5' y='18.5' width='12' height='9' rx='0.7' fill='url(%23gmetal)' stroke='%236c747f' stroke-width='1'/%3E%3Crect x='19.5' y='20.5' width='8' height='5' rx='0' fill='url(%23gscreen)' stroke='%230e388c' stroke-width='1'/%3E%3Cpath d='M8.5 14v5h9' fill='none' stroke='%234b5563' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='8.5' cy='19' r='1.5' fill='url(%23gyellow)' stroke='%23a27600' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-help: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gyellow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff08a'/%3E%3Cstop offset='1' stop-color='%23e8a800'/%3E%3C/linearGradient%3E%3ClinearGradient id='gblack' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%234a4f57'/%3E%3Cstop offset='1' stop-color='%23101418'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='12' fill='url(%23gyellow)' stroke='%23a27600' stroke-width='1'/%3E%3Cpath d='M12 12.5a4 4 0 1 1 5.5 3.7c-1 .5-1.5 1.2-1.5 2.3v1' fill='none' stroke='%23101418' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='23.5' r='1.5' fill='url(%23gblack)' stroke='%230b0e11' stroke-width='1'/%3E%3Crect x='8' y='6' width='16' height='6' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3C/svg%3E");
+    --desktop-glyph-user: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gyellow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff08a'/%3E%3Cstop offset='1' stop-color='%23e8a800'/%3E%3C/linearGradient%3E%3ClinearGradient id='gblue' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237cb8ff'/%3E%3Cstop offset='1' stop-color='%231a5bd8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='11' r='6' fill='url(%23gyellow)' stroke='%23a27600' stroke-width='1'/%3E%3Cpath d='M5.5 28.5c0-6 4.5-10 10.5-10s10.5 4 10.5 10z' fill='url(%23gblue)' stroke='%23124097' stroke-width='1'/%3E%3Crect x='8' y='19' width='16' height='4' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3C/svg%3E");
+    --desktop-glyph-power: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gred' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ff8a7a'/%3E%3Cstop offset='1' stop-color='%23c22a1c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='12' fill='url(%23gred)' stroke='%23881d14' stroke-width='1'/%3E%3Cpath d='M16 9v7' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M11.5 11.5a6.5 6.5 0 1 0 9 0' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round'/%3E%3Crect x='8' y='6' width='16' height='6' rx='1.4' fill='%23fff' opacity='0.35'/%3E%3C/svg%3E");
+    --desktop-glyph-flag: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='gred' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ff8a7a'/%3E%3Cstop offset='1' stop-color='%23c22a1c'/%3E%3C/linearGradient%3E%3ClinearGradient id='ggreen' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%238fe38f'/%3E%3Cstop offset='1' stop-color='%232a8f2a'/%3E%3C/linearGradient%3E%3ClinearGradient id='gblue' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237cb8ff'/%3E%3Cstop offset='1' stop-color='%231a5bd8'/%3E%3C/linearGradient%3E%3ClinearGradient id='gyellow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23fff08a'/%3E%3Cstop offset='1' stop-color='%23e8a800'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M4 7.5c3-1.5 6-1.5 10.5 0v8c-4.5-1.5-7.5-1.5-10.5 0z' fill='url(%23gred)' stroke='%23881d14' stroke-width='1'/%3E%3Cpath d='M16.5 8c3 1.5 7 1.5 11.5 0v8c-4.5 1.5-8.5 1.5-11.5 0z' fill='url(%23ggreen)' stroke='%231d641d' stroke-width='1'/%3E%3Cpath d='M4 17.5c3-1.5 6-1.5 10.5 0v8c-4.5-1.5-7.5-1.5-10.5 0z' fill='url(%23gblue)' stroke='%23124097' stroke-width='1'/%3E%3Cpath d='M16.5 18c3 1.5 7 1.5 11.5 0v8c-4.5 1.5-8.5 1.5-11.5 0z' fill='url(%23gyellow)' stroke='%23a27600' stroke-width='1'/%3E%3C/svg%3E");
+  }
+
+  /* the glyphs: the look's art for each name (a glyph outside a desktop takes the modern art) */
+  .desktop-glyph {
+    display: inline-block;
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    vertical-align: middle;
+    background: var(--_glyph) center / contain no-repeat;
+    &[data-glyph="computer"] {
+      --_glyph: var(--desktop-glyph-computer);
+    }
+    &[data-glyph="folder"] {
+      --_glyph: var(--desktop-glyph-folder);
+    }
+    &[data-glyph="documents"] {
+      --_glyph: var(--desktop-glyph-documents);
+    }
+    &[data-glyph="trash"] {
+      --_glyph: var(--desktop-glyph-trash);
+    }
+    &[data-glyph="text"] {
+      --_glyph: var(--desktop-glyph-text);
+    }
+    &[data-glyph="terminal"] {
+      --_glyph: var(--desktop-glyph-terminal);
+    }
+    &[data-glyph="settings"] {
+      --_glyph: var(--desktop-glyph-settings);
+    }
+    &[data-glyph="browser"] {
+      --_glyph: var(--desktop-glyph-browser);
+    }
+    &[data-glyph="mail"] {
+      --_glyph: var(--desktop-glyph-mail);
+    }
+    &[data-glyph="picture"] {
+      --_glyph: var(--desktop-glyph-picture);
+    }
+    &[data-glyph="calculator"] {
+      --_glyph: var(--desktop-glyph-calculator);
+    }
+    &[data-glyph="music"] {
+      --_glyph: var(--desktop-glyph-music);
+    }
+    &[data-glyph="network"] {
+      --_glyph: var(--desktop-glyph-network);
+    }
+    &[data-glyph="help"] {
+      --_glyph: var(--desktop-glyph-help);
+    }
+    &[data-glyph="user"] {
+      --_glyph: var(--desktop-glyph-user);
+    }
+    &[data-glyph="power"] {
+      --_glyph: var(--desktop-glyph-power);
+    }
+    &[data-glyph="flag"] {
+      --_glyph: var(--desktop-glyph-flag);
+    }
+  }
+
+  /* the modern look's start menu opens centred over a centred bar, like the current one */
+  .desktop:not([data-variant]) .taskbar[data-align="center"] ~ .start-menu,
+  .desktop:not([data-variant]) .start-menu {
+    border-radius: var(--radius-xl);
+    background: color-mix(in oklch, var(--popover) 88%, transparent);
+    backdrop-filter: blur(24px) saturate(1.4);
+  }
+  .desktop:not([data-variant]) .taskbar {
+    background: color-mix(in oklch, var(--card) 72%, transparent);
+    backdrop-filter: blur(24px) saturate(1.4);
+  }
+  .desktop:not([data-variant]) .logon-main {
+    padding: 1.5rem;
+    border-radius: var(--radius-xl);
+    background: color-mix(in oklch, var(--card) 70%, transparent);
+    backdrop-filter: blur(20px);
+  }
+
+  /* -- 95 and 98: bevelled grey, the pixel font ------------------------- */
+  .desktop:is([data-variant="win95"], [data-variant="win98"]) {
+    --background: #fff;
+    --foreground: #000;
+    --card: #c0c0c0;
+    --card-foreground: #000;
+    --popover: #c0c0c0;
+    --popover-foreground: #000;
+    --primary: #000080;
+    --primary-foreground: #fff;
+    --secondary: #c0c0c0;
+    --secondary-foreground: #000;
+    --muted: #c0c0c0;
+    --muted-foreground: #404040;
+    --accent: #000080;
+    --accent-foreground: #fff;
+    --destructive: #800000;
+    --destructive-foreground: #fff;
+    --border: #808080;
+    --input: #808080;
+    --ring: #000;
+    --radius: 0px;
+    --font-sans: "Desktop Pixel Sans", "MS Sans Serif", "Microsoft Sans Serif", Tahoma, Arial, sans-serif;
+    --shadow-2xs: none;
+    --shadow-xs: none;
+    --shadow-sm: none;
+    --shadow: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+    --shadow-2xl: none;
+    --desktop-wallpaper: #008080;
+    --_raised: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+    --_pressed: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+    --_sunken: inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+    --_frame: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff;
+    --_title: #000080;
+    --_title-off: #808080;
+    --desktop-glyph-computer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='4.5' y='4.5' width='23' height='17' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Crect x='7.5' y='7.5' width='17' height='11' rx='0' fill='%23008080' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M12.5 21.5h7l1.5 4h-10z' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Crect x='7.5' y='25.5' width='17' height='3' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M3.5 8.5h9l2 2.5h14v16h-25z' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M3.5 13.5h25v13h-25z' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-documents: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M3.5 8.5h9l2 2.5h14v16h-25z' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3Crect x='9.5' y='5.5' width='14' height='17' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M12 10h9M12 13h9M12 16h6' fill='none' stroke='%23000080' stroke-width='1' stroke-linecap='square'/%3E%3Cpath d='M3.5 15.5h25v11h-25z' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-trash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M8.5 9.5h15l-1.5 18h-12z' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Crect x='6.5' y='6.5' width='19' height='3' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Crect x='13.5' y='4.5' width='5' height='2' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M13 12.5v12M16 12.5v12M19 12.5v12' fill='none' stroke='%23808080' stroke-width='1' stroke-linecap='square'/%3E%3C/svg%3E");
+    --desktop-glyph-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M7.5 3.5h13l5 5v20h-18z' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M20.5 3.5v5h5' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M10.5 12.5h11M10.5 15.5h11M10.5 18.5h11M10.5 21.5h7' fill='none' stroke='%23000080' stroke-width='1' stroke-linecap='square'/%3E%3C/svg%3E");
+    --desktop-glyph-terminal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='3.5' y='5.5' width='25' height='21' rx='0' fill='%23000000' stroke='%23000' stroke-width='1'/%3E%3Crect x='3.5' y='5.5' width='25' height='4' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M7.5 14.5l3.5 3-3.5 3' fill='none' stroke='%23e5e7eb' stroke-width='2' stroke-linecap='square'/%3E%3Cpath d='M13.5 21h6' fill='none' stroke='%23e5e7eb' stroke-width='2' stroke-linecap='square'/%3E%3C/svg%3E");
+    --desktop-glyph-settings: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Ccircle cx='16' cy='16' r='10.5' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M16 3.5v4M16 24.5v4M3.5 16h4M24.5 16h4M7.2 7.2l2.8 2.8M22 22l2.8 2.8M7.2 24.8l2.8-2.8M22 10l2.8-2.8' fill='none' stroke='%23000000' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E");
+    --desktop-glyph-browser: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Ccircle cx='16' cy='16' r='12' fill='%230000ff' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M9 9.5c3 0 5 2 4 5s-4 2-4 5-3 1-4-1c0-4 1-7 4-9z' fill='%2300ff00' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M19 6.5c2 1 2 3 4 3s3 3 2 6-3 1-4 3-3 0-3-3 1-3 0-5z' fill='%2300ff00' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-mail: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='3.5' y='8.5' width='25' height='17' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M4 9l12 9 12-9' fill='none' stroke='%23000000' stroke-width='1' stroke-linecap='square'/%3E%3Cpath d='M4 25l9-8M28 25l-9-8' fill='none' stroke='%23808080' stroke-width='1' stroke-linecap='square'/%3E%3C/svg%3E");
+    --desktop-glyph-picture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='3.5' y='5.5' width='25' height='21' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='6.5' y='8.5' width='19' height='15' rx='0' fill='%2300ffff' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='11.5' cy='13' r='2.5' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M6.5 23.5l6-7 4 4 3-3 6 6z' fill='%2300ff00' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-calculator: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='7.5' y='3.5' width='17' height='25' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Crect x='10.5' y='6.5' width='11' height='5' rx='0' fill='%2300ff00' stroke='%23000' stroke-width='1'/%3E%3Crect x='10.5' y='13.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='14.5' y='13.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='18.5' y='13.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='10.5' y='17.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='14.5' y='17.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='18.5' y='17.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='10.5' y='21.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='14.5' y='21.5' width='3' height='3' rx='0' fill='%23ffffff' stroke='%23000' stroke-width='1'/%3E%3Crect x='18.5' y='21.5' width='3' height='3' rx='0' fill='%23ff0000' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-music: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M12.5 7.5l13-3v16' fill='%23000000' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M12.5 7.5v15M25.5 4.5v16' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='square'/%3E%3Ccircle cx='9.5' cy='23' r='3.5' fill='%23ff00ff' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='22.5' cy='21' r='3.5' fill='%23ff00ff' stroke='%23000' stroke-width='1'/%3E%3Crect x='12' y='6' width='14' height='3' rx='0' fill='%23000000' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-network: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='2.5' y='4.5' width='12' height='9' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Crect x='4.5' y='6.5' width='8' height='5' rx='0' fill='%23008080' stroke='%23000' stroke-width='1'/%3E%3Crect x='17.5' y='18.5' width='12' height='9' rx='0' fill='%23c0c0c0' stroke='%23000' stroke-width='1'/%3E%3Crect x='19.5' y='20.5' width='8' height='5' rx='0' fill='%23008080' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M8.5 14v5h9' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='square'/%3E%3Ccircle cx='8.5' cy='19' r='1.5' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-help: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Ccircle cx='16' cy='16' r='12' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M12 12.5a4 4 0 1 1 5.5 3.7c-1 .5-1.5 1.2-1.5 2.3v1' fill='none' stroke='%23000000' stroke-width='3' stroke-linecap='square'/%3E%3Ccircle cx='16' cy='23.5' r='1.5' fill='%23000000' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-user: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Ccircle cx='16' cy='11' r='6' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M5.5 28.5c0-6 4.5-10 10.5-10s10.5 4 10.5 10z' fill='%230000ff' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    --desktop-glyph-power: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Ccircle cx='16' cy='16' r='12' fill='%23ff0000' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M16 9v7' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='square'/%3E%3Cpath d='M11.5 11.5a6.5 6.5 0 1 0 9 0' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E");
+    --desktop-glyph-flag: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpath d='M4 7.5c3-1.5 6-1.5 10.5 0v8c-4.5-1.5-7.5-1.5-10.5 0z' fill='%23ff0000' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M16.5 8c3 1.5 7 1.5 11.5 0v8c-4.5 1.5-8.5 1.5-11.5 0z' fill='%2300ff00' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M4 17.5c3-1.5 6-1.5 10.5 0v8c-4.5-1.5-7.5-1.5-10.5 0z' fill='%230000ff' stroke='%23000' stroke-width='1'/%3E%3Cpath d='M16.5 18c3 1.5 7 1.5 11.5 0v8c-4.5 1.5-8.5 1.5-11.5 0z' fill='%23ffff00' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+    font-size: 11px;
+    line-height: 1.3;
+    -webkit-font-smoothing: none;
+    color: #000;
+
+    & .window {
+      --_titlebar: 18px;
+      padding: 3px;
+      border: 0;
+      border-radius: 0;
+      background: #c0c0c0;
+      color: #000;
+      font-size: 11px;
+      box-shadow: var(--_frame);
+      & > .window-titlebar {
+        height: 18px;
+        gap: 3px;
+        padding-inline: 3px 2px;
+        border: 0;
+        background: var(--_title);
+        color: #fff;
+      }
+      & .window-icon {
+        width: 16px;
+        height: 16px;
+        color: inherit;
+      }
+      & .window-title {
+        font-size: 11px;
+        font-weight: 700;
+      }
+      & .window-controls {
+        align-self: center;
+        gap: 0;
+      }
+      & .window-controls > button {
+        width: 16px;
+        height: 14px;
+        background: #c0c0c0;
+        color: #000;
+        box-shadow: var(--_raised);
+        &:hover {
+          background: #c0c0c0;
+        }
+        &:active {
+          box-shadow: var(--_pressed);
+        }
+      }
+      & .window-controls > .window-close {
+        margin-inline-start: 2px;
+        &:hover {
+          background: #c0c0c0;
+          color: #000;
+        }
+      }
+      & .window-minimize::before {
+        width: 6px;
+        height: 2px;
+        translate: -60% 2px;
+      }
+      & .window-maximize::before {
+        width: 9px;
+        height: 8px;
+        border-top-width: 2px;
+        border-radius: 0;
+      }
+      & .window-close::before,
+      & .window-close::after {
+        width: 8px;
+        height: 2px;
+      }
+      &[data-maximized] .window-maximize::after {
+        background: #c0c0c0;
+        border-top-width: 2px;
+        border-radius: 0;
+      }
+      /* the frame's 3px is the border; the content sits 2px under the title bar. A folder's body (its Desktop Manager) is
+         the period's sunken well: four 1px lines, dark above and left, light below and right */
+      & > .window-body {
+        margin: 2px 0 0;
+        padding: 6px;
+      }
+      & > .window-body[data-flush]:has(> .desktop-manager) {
+        padding: 2px;
+        background: #fff;
+        box-shadow: var(--_sunken);
+      }
+      & > .window-toolbar {
+        min-height: 20px;
+        border: 0;
+        background: #c0c0c0;
+      }
+      & > .window-statusbar {
+        margin-top: 2px;
+        border: 0;
+        background: #c0c0c0;
+        color: #000;
+        box-shadow:
+          inset 1px 1px #808080,
+          inset -1px -1px #fff;
+      }
+      &:not([data-active]) > .window-titlebar {
+        background: var(--_title-off);
+        color: #c0c0c0;
+      }
+    }
+
+    /* the bar, the Start Button, the window buttons and the tray */
+    & .taskbar {
+      --taskbar-size: 28px;
+      gap: 3px;
+      padding: 2px;
+      border: 0;
+      background: #c0c0c0;
+      color: #000;
+      font-size: 11px;
+      backdrop-filter: none;
+      box-shadow:
+        inset 0 1px #dfdfdf,
+        inset 0 2px #fff;
+    }
+    & .start-button {
+      height: 22px;
+      min-width: 0;
+      gap: 3px;
+      padding-inline: 3px 5px;
+      border-radius: 0;
+      background: #c0c0c0;
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: var(--_raised);
+      &:hover {
+        background: #c0c0c0;
+      }
+      &[aria-expanded="true"] {
+        background: #c0c0c0;
+        color: #000;
+        box-shadow: var(--_pressed);
+        outline: 1px dotted #000;
+        outline-offset: -4px;
+      }
+      & > :is(svg, img, .start-button-icon) {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    & :is(.taskbar-window, .taskbar-launcher) {
+      height: 22px;
+      min-width: 22px;
+      padding-inline: 3px;
+      border-radius: 0;
+      background: #c0c0c0;
+      color: #000;
+      box-shadow: var(--_raised);
+      &:hover {
+        background: #c0c0c0;
+      }
+      & svg,
+      & img,
+      & .desktop-glyph {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    & .taskbar-window {
+      flex-basis: 160px;
+      max-width: 160px;
+      &::after {
+        display: none;
+      }
+      &[aria-pressed="true"] {
+        color: #000;
+        font-weight: 700;
+        background: repeating-conic-gradient(#c0c0c0 0 25%, #fff 0 50%) 0 0 / 2px 2px;
+        box-shadow: var(--_pressed);
+      }
+      &[data-minimized] {
+        opacity: 1;
+      }
+    }
+    & .tray {
+      height: 22px;
+      gap: 2px;
+      padding-inline: 4px 8px;
+      box-shadow:
+        inset -1px -1px #fff,
+        inset 1px 1px #808080;
+    }
+    & .tray-item {
+      width: 18px;
+      height: 18px;
+      border-radius: 0;
+      &:hover {
+        background: none;
+      }
+      & svg,
+      & img {
+        width: 16px;
+        height: 16px;
+      }
+      &[data-badge]::after {
+        border-radius: 0;
+        background: #800000;
+      }
+    }
+    & .tray-clock {
+      padding-inline: 4px 0;
+      font-size: 11px;
+    }
+    & .tray-show-desktop {
+      display: none;
+    }
+
+    /* the start menu: a raised panel with the brand strip up its side */
+    & .start-menu {
+      width: auto;
+      min-width: 200px;
+      max-width: 280px;
+      gap: 0;
+      padding: 3px 3px 3px 28px;
+      border: 0;
+      border-radius: 0;
+      background: #c0c0c0;
+      color: #000;
+      font-size: 11px;
+      box-shadow: var(--_frame);
+      overflow: visible;
+    }
+    & .start-menu-head {
+      position: absolute;
+      inset: 3px auto 3px 3px;
+      width: 22px;
+      padding-block: 6px;
+      justify-content: flex-start;
+      writing-mode: vertical-rl;
+      rotate: 180deg;
+      background: #808080;
+      color: #c0c0c0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      & .avatar {
+        display: none;
+      }
+    }
+    & :is(.start-menu-search, .start-menu-heading) {
+      display: none;
+    }
+    & .start-menu-pinned {
+      display: flex;
+      flex-direction: column;
+      padding-block-end: 3px;
+      margin-block-end: 3px;
+      border-block-end: 1px solid #808080;
+      box-shadow: 0 1px #fff;
+      & .start-menu-item {
+        flex-direction: row;
+        gap: 8px;
+        padding-block: 4px;
+        text-align: start;
+        font-size: 11px;
+      }
+      & .start-menu-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    & .start-menu-item {
+      gap: 8px;
+      padding: 4px 18px 4px 4px;
+      border-radius: 0;
+      font-size: 11px;
+      &:is(:hover, :focus-visible, [aria-expanded="true"]) {
+        background: #000080;
+        color: #fff;
+        outline: none;
+      }
+      &[aria-haspopup]::after {
+        width: 0;
+        height: 0;
+        border: 4px solid transparent;
+        border-inline-start-color: currentColor;
+        border-inline-end: 0;
+        rotate: none;
+      }
+    }
+    & .start-menu-list .start-menu-icon {
+      width: 24px;
+      height: 24px;
+    }
+    & .start-menu-sub {
+      min-width: 160px;
+      padding: 3px;
+      border: 0;
+      border-radius: 0;
+      background: #c0c0c0;
+      color: #000;
+      font-size: 11px;
+      box-shadow: var(--_frame);
+      & .start-menu-item {
+        padding-block: 2px;
+      }
+      & .start-menu-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+    & .start-menu-foot {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding-block-start: 3px;
+      border-block-start: 1px solid #808080;
+      box-shadow: inset 0 1px #fff;
+      & .start-menu-item {
+        width: 100%;
+        margin: 0;
+      }
+    }
+
+    /* the icons: white labels on the wallpaper, the selection in navy */
+    & .desktop-icon {
+      border-radius: 0;
+      &:hover {
+        background: none;
+      }
+      &[aria-selected="true"] {
+        background: none;
+        border-color: transparent;
+        & .desktop-icon-label {
+          background: #000080;
+          color: #fff;
+        }
+        & .desktop-icon-image {
+          filter: brightness(0.6) sepia(1) hue-rotate(190deg) saturate(5);
+        }
+      }
+      &:focus-visible {
+        border-color: transparent;
+        & .desktop-icon-label {
+          outline: 1px dotted #fff;
+        }
+      }
+    }
+    & .desktop-icon-label {
+      padding-inline: 2px;
+      font-size: 11px;
+    }
+    & .desktop-manager[data-on-wallpaper] .desktop-icon-label {
+      text-shadow: none;
+    }
+    & .desktop-manager-band {
+      border: 1px dotted #fff;
+      background: none;
+    }
+
+    /* the controls a window's content uses */
+    & .btn {
+      min-height: 23px;
+      min-width: 75px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 0;
+      background: #c0c0c0;
+      color: #000;
+      font: inherit;
+      font-size: 11px;
+      box-shadow: var(--_raised);
+      &:hover {
+        background: #c0c0c0;
+      }
+      &:active {
+        box-shadow: var(--_pressed);
+      }
+      &:focus-visible {
+        outline: 1px dotted #000;
+        outline-offset: -4px;
+      }
+      &:is([data-variant~="ghost"], [data-variant~="link"]) {
+        min-width: 0;
+        min-height: 18px;
+        padding: 0 6px;
+        background: none;
+        box-shadow: none;
+        &:hover {
+          box-shadow:
+            inset -1px -1px #808080,
+            inset 1px 1px #fff;
+        }
+      }
+    }
+    & :is(.input, .textarea, .select, select, input[type="text"], input[type="search"], input[type="password"]) {
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+      color: #000;
+      font: inherit;
+      font-size: 11px;
+      box-shadow: var(--_sunken);
+    }
+    & :is(.input, .select) {
+      height: 21px;
+      padding: 2px 4px;
+    }
+    & ::-webkit-scrollbar {
+      width: 16px;
+      height: 16px;
+      background: repeating-conic-gradient(#c0c0c0 0 25%, #fff 0 50%) 0 0 / 2px 2px;
+    }
+    & ::-webkit-scrollbar-thumb {
+      background: #c0c0c0;
+      box-shadow: var(--_raised);
+    }
+
+    /* the logon: a small welcome dialog on the wallpaper */
+    & .logon {
+      place-items: center;
+      grid-template-rows: 1fr auto;
+      color: #000;
+      font-size: 11px;
+    }
+    & .logon-main {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      width: min(320px, 92%);
+      padding: 3px 3px 12px;
+      background: #c0c0c0;
+      box-shadow: var(--_frame);
+      & > :not(.logon-brand) {
+        margin-inline: 10px;
+      }
+    }
+    & .logon-brand {
+      padding: 2px 4px;
+      background: var(--_title);
+      color: #fff;
+      text-align: start;
+      & > :not(strong) {
+        display: none;
+      }
+    }
+    & .logon-users {
+      flex-direction: column;
+      gap: 0;
+      padding: 2px;
+      background: #fff;
+      box-shadow: var(--_sunken);
+    }
+    & .logon-user {
+      flex-direction: row;
+      gap: 6px;
+      min-width: 0;
+      width: 100%;
+      padding: 2px 4px;
+      border: 0;
+      border-radius: 0;
+      & .avatar {
+        width: 20px;
+        height: 20px;
+        font-size: 9px;
+      }
+      &:hover {
+        background: none;
+        color: #000;
+      }
+      &[aria-pressed="true"] {
+        background: #000080;
+        color: #fff;
+      }
+    }
+    & .logon-name {
+      font-weight: 400;
+    }
+    & .logon-form {
+      width: auto;
+    }
+    & .logon-power {
+      align-self: end;
+      & .btn {
+        min-width: 0;
+      }
+    }
+  }
+  .desktop[data-variant="win98"] {
+    --_title: linear-gradient(90deg, #000080, #1084d0);
+    --_title-off: linear-gradient(90deg, #808080, #b5b5b5);
+    & .start-menu-head {
+      background: linear-gradient(0deg, #000080, #1084d0);
+      color: #fff;
+    }
+  }
+  /* 95: the start menu is the plain raised panel, no strip up its side (the maintainer 2026-11-20) */
+  .desktop[data-variant="win95"] {
+    & .start-menu {
+      padding-inline-start: 3px;
+    }
+    & .start-menu-head {
+      display: none;
+    }
+  }
+
+  /* -- XP: the blue bars, the green start, beige windows --------------- */
+  .desktop[data-variant="winxp"] {
+    --background: #fff;
+    --foreground: #000;
+    --card: #ece9d8;
+    --card-foreground: #000;
+    --popover: #fff;
+    --popover-foreground: #000;
+    --primary: #316ac5;
+    --primary-foreground: #fff;
+    --secondary: #ece9d8;
+    --secondary-foreground: #000;
+    --muted: #ece9d8;
+    --muted-foreground: #5a5a5a;
+    --accent: #316ac5;
+    --accent-foreground: #fff;
+    --destructive: #c42b1c;
+    --destructive-foreground: #fff;
+    --border: #aca899;
+    --input: #7f9db9;
+    --ring: #316ac5;
+    --radius: 3px;
+    --font-sans: Tahoma, Verdana, "Segoe UI", sans-serif;
+    --desktop-wallpaper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMid slice'%3E %3Cdefs%3E %3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%231d5fcf'/%3E%3Cstop offset='.55' stop-color='%235c9ae8'/%3E%3Cstop offset='1' stop-color='%23b9dbf7'/%3E%3C/linearGradient%3E %3ClinearGradient id='h' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237cc63b'/%3E%3Cstop offset='.4' stop-color='%234c9a1e'/%3E%3Cstop offset='1' stop-color='%232f6e10'/%3E%3C/linearGradient%3E %3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%235aa82a'/%3E%3Cstop offset='1' stop-color='%232a5f0c'/%3E%3C/linearGradient%3E %3Cfilter id='c' x='-20%' y='-50%' width='140%' height='200%'%3E%3CfeGaussianBlur stdDeviation='18'/%3E%3C/filter%3E %3C/defs%3E %3Crect width='1600' height='1000' fill='url(%23s)'/%3E %3Cg fill='%23fff' filter='url(%23c)' opacity='.85'%3E %3Cellipse cx='330' cy='220' rx='210' ry='48'/%3E%3Cellipse cx='460' cy='190' rx='150' ry='55'/%3E %3Cellipse cx='1080' cy='160' rx='240' ry='45'/%3E%3Cellipse cx='1230' cy='190' rx='160' ry='40'/%3E %3Cellipse cx='780' cy='330' rx='190' ry='30' opacity='.7'/%3E%3Cellipse cx='1420' cy='360' rx='170' ry='26' opacity='.6'/%3E %3C/g%3E %3Cpath d='M0 760 C 260 610 560 600 860 640 C 1120 675 1350 620 1600 560 L1600 1000 L0 1000 Z' fill='url(%23b)'/%3E %3Cpath d='M-40 820 C 300 640 720 610 1080 700 C 1300 755 1460 760 1640 720 L1640 1000 L-40 1000 Z' fill='url(%23h)'/%3E %3Cpath d='M120 800 C 420 690 760 680 1060 735' fill='none' stroke='%23b6ec7c' stroke-width='6' opacity='.35'/%3E %3C/svg%3E");
+    --_bar: linear-gradient(
+      180deg,
+      #1f2f86 0,
+      #3165c4 3%,
+      #3682e5 6%,
+      #4490e6 10%,
+      #3883e5 12%,
+      #2b71e0 15%,
+      #2663da 18%,
+      #235bd6 20%,
+      #2258d5 23%,
+      #2157d6 38%,
+      #245ddb 54%,
+      #2562df 86%,
+      #245fdc 89%,
+      #2158d4 92%,
+      #1d4ec0 95%,
+      #1941a5 98%
+    );
+    --_title: linear-gradient(
+      180deg,
+      #0997ff,
+      #0053ee 8%,
+      #0050ee 40%,
+      #06f 88%,
+      #06f 93%,
+      #005bff 95%,
+      #003dd7 96%,
+      #003dd7
+    );
+    font-size: 11px;
+    line-height: 1.35;
+    color: #000;
+
+    & .window {
+      --_titlebar: 28px;
+      padding: 0 3px 3px;
+      border: 0;
+      border-radius: 8px 8px 0 0;
+      background: #ece9d8;
+      color: #000;
+      font-size: 11px;
+      box-shadow:
+        inset -1px -1px #00138c,
+        inset 1px 1px #0831d9,
+        inset -2px -2px #001ea0,
+        inset 2px 2px #166aee,
+        inset -3px -3px #003bda,
+        inset 3px 3px #0855dd,
+        2px 2px 8px rgb(0 0 0 / 0.35);
+      & > .window-titlebar {
+        height: 28px;
+        margin-inline: -3px;
+        gap: 4px;
+        padding-inline: 6px 5px;
+        border: 0;
+        border-radius: 8px 7px 0 0;
+        background: var(--_title);
+        color: #fff;
+      }
+      & .window-icon {
+        width: 16px;
+        height: 16px;
+        color: #fff;
+      }
+      & .window-title {
+        font:
+          700 13px/1 "Trebuchet MS",
+          Tahoma,
+          sans-serif;
+        text-shadow: 1px 1px #0f1089;
+      }
+      & .window-controls {
+        align-self: center;
+        gap: 2px;
+      }
+      & .window-controls > button {
+        width: 21px;
+        height: 21px;
+        border: 1px solid #fff;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #5b9aff, #2565e8 45%, #1b5fe0 55%, #3c86ff);
+        color: #fff;
+        box-shadow: inset -1px -1px 1px #1a4fd2;
+        &:hover {
+          background: linear-gradient(180deg, #82b4ff, #3c7ef2 45%, #2f73ef 55%, #64a2ff);
+        }
+        &:active {
+          background: linear-gradient(180deg, #2a5fd0, #1c4fbf 50%, #3f7be0);
+        }
+        &::before,
+        &::after {
+          translate: -50% -50%;
+        }
+      }
+      & .window-controls > .window-close {
+        background: linear-gradient(180deg, #f1a283, #e2643a 45%, #d4512a 55%, #e67752);
+        &:hover {
+          background: linear-gradient(180deg, #ffbba3, #f07a52 45%, #e46440 55%, #f28c69);
+          color: #fff;
+        }
+      }
+      & .window-minimize::before {
+        width: 8px;
+        height: 3px;
+        translate: -60% 3px;
+      }
+      & .window-maximize::before {
+        width: 10px;
+        height: 10px;
+        border-width: 1px;
+        border-top-width: 3px;
+        border-radius: 0;
+      }
+      & .window-close::before,
+      & .window-close::after {
+        width: 11px;
+        height: 2px;
+      }
+      &[data-maximized] .window-maximize::after {
+        background: #2565e8;
+        border-top-width: 2px;
+      }
+      & > .window-body {
+        padding: 8px;
+      }
+      /* a folder's content runs to the frame, as in the period's Explorer - no beige band around it */
+      & > .window-body[data-flush]:has(> .desktop-manager) {
+        padding: 0;
+      }
+      & > .window-toolbar {
+        border-bottom: 1px solid #d8d2bd;
+        background: #ece9d8;
+      }
+      & > .window-statusbar {
+        border-top: 1px solid #d8d2bd;
+        background: #ece9d8;
+        color: #000;
+      }
+      &:not([data-active]) {
+        box-shadow:
+          inset -1px -1px #7a8fd4,
+          inset 1px 1px #8fa4e0,
+          inset -2px -2px #7c96dc,
+          inset 2px 2px #a6b8ea,
+          inset -3px -3px #839ce0,
+          inset 3px 3px #98aee6;
+        & > .window-titlebar {
+          background: linear-gradient(
+            180deg,
+            #7697e7,
+            #7e9ee3 3%,
+            #94afe8 6%,
+            #97b4e9 8%,
+            #82a5e4 14%,
+            #7c9fe2 17%,
+            #7996de 25%,
+            #7b99e1 56%,
+            #82a9e9 81%,
+            #80a5e7 89%,
+            #7b96e1 94%,
+            #7a93df 97%,
+            #abbae3
+          );
+          color: #d8e4f8;
+        }
+        & .window-title {
+          text-shadow: none;
+        }
+        & .window-controls > button {
+          opacity: 0.6;
+        }
+      }
+      &[data-maximized] {
+        border-radius: 0;
+        & > .window-titlebar {
+          border-radius: 0;
+        }
+      }
+    }
+
+    & .taskbar {
+      --taskbar-size: 30px;
+      gap: 4px;
+      padding: 0;
+      border: 0;
+      background: var(--_bar);
+      color: #fff;
+      font-size: 11px;
+      backdrop-filter: none;
+    }
+    & .start-button {
+      align-self: stretch;
+      height: auto;
+      min-width: 0;
+      gap: 5px;
+      padding-inline: 8px 22px;
+      margin-inline-end: 8px;
+      border-radius: 0 12px 12px 0;
+      background: linear-gradient(
+        180deg,
+        #3c8f3c,
+        #3c9a3c 5%,
+        #59b64a 12%,
+        #5ab348 35%,
+        #4ba145 70%,
+        #3a8d33 90%,
+        #2f7a2b
+      );
+      color: #fff;
+      font:
+        italic 700 18px/1 "Trebuchet MS",
+        Tahoma,
+        sans-serif;
+      text-transform: lowercase;
+      text-shadow: 1px 1px 2px #1a4a1a;
+      box-shadow:
+        inset 0 1px 1px #8fe08a,
+        inset -2px 0 3px #2a6a26,
+        3px 0 6px rgb(0 0 0 / 0.35);
+      &:hover {
+        background: linear-gradient(
+          180deg,
+          #48a248,
+          #4aad4a 5%,
+          #6ac85a 12%,
+          #6bc458 35%,
+          #5bb354 70%,
+          #48a040 90%,
+          #3a8a35
+        );
+      }
+      &[aria-expanded="true"] {
+        background: linear-gradient(180deg, #2c6e2c, #2f7a2f 10%, #3f9238 40%, #3a8a33 80%, #2a6a26);
+        color: #fff;
+      }
+      & > :is(svg, img, .start-button-icon) {
+        width: 20px;
+        height: 20px;
+        filter: drop-shadow(1px 1px 1px rgb(0 0 0 / 0.5));
+      }
+    }
+    & :is(.taskbar-window, .taskbar-launcher) {
+      height: 24px;
+      color: #fff;
+      border-radius: 3px;
+      & svg,
+      & img,
+      & .desktop-glyph {
+        width: 16px;
+        height: 16px;
+      }
+      &:hover {
+        background: rgb(255 255 255 / 0.15);
+      }
+    }
+    & .taskbar-window {
+      flex-basis: 160px;
+      max-width: 160px;
+      border: 1px solid #1a4fca;
+      background: linear-gradient(180deg, #3c81f3, #3d84f6 10%, #3a7ff2 90%, #2e6fe3);
+      box-shadow: inset 0 1px #6aa3ff;
+      &::after {
+        display: none;
+      }
+      &:hover {
+        background: linear-gradient(180deg, #53a0ff, #5398ff 10%, #4b90fb 90%, #3c80f0);
+      }
+      &[aria-pressed="true"] {
+        background: #1e52b7;
+        color: #fff;
+        box-shadow:
+          inset 1px 1px 2px #0e3a8a,
+          inset -1px -1px #3c74d6;
+      }
+      &[data-minimized] {
+        opacity: 1;
+      }
+    }
+    & .tray {
+      align-self: stretch;
+      height: auto;
+      gap: 2px;
+      padding-inline: 10px;
+      border-inline-start: 1px solid #1042af;
+      background: linear-gradient(
+        180deg,
+        #0c59b9 1%,
+        #139ee9 6%,
+        #18b5f2 10%,
+        #139beb 14%,
+        #1290e8 19%,
+        #0d8dea 63%,
+        #0d9ff1 81%,
+        #0f9eed 88%,
+        #119be9 91%,
+        #1392e2 94%,
+        #137ed7 97%,
+        #095bc9
+      );
+      box-shadow: inset 1px 0 #18bbff;
+      color: #fff;
+    }
+    & .tray-item {
+      width: 18px;
+      height: 18px;
+      color: #fff;
+      &:hover {
+        background: rgb(255 255 255 / 0.2);
+      }
+      & svg {
+        width: 15px;
+        height: 15px;
+      }
+    }
+    & .tray-clock {
+      font-size: 11px;
+    }
+    & .tray-show-desktop {
+      display: none;
+    }
+
+    /* the start menu: the user on a blue banner, pinned on white, all programs on blue, the power bar */
+    & .start-menu {
+      width: min(380px, calc(100vw - 1rem));
+      max-height: min(480px, 85vh);
+      padding: 0;
+      gap: 0;
+      border: 1px solid #1854c3;
+      border-radius: 8px 8px 0 0;
+      background: #fff;
+      color: #000;
+      font-size: 11px;
+      box-shadow: 2px 2px 8px rgb(0 0 0 / 0.5);
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "head head" "pinned list" "empty empty" "foot foot";
+      &:popover-open {
+        display: grid;
+      }
+    }
+    & .start-menu-head {
+      grid-area: head;
+      gap: 8px;
+      padding: 6px 8px;
+      border-block-end: 2px solid #f0a838;
+      background: linear-gradient(
+        180deg,
+        #1868ce,
+        #0e60cb 12%,
+        #0e60cb 20%,
+        #1164cf 32%,
+        #1667cf 33%,
+        #1b6cd3 47%,
+        #1e70d9 54%,
+        #2476dc 60%,
+        #297ae0 65%,
+        #3482e3 77%,
+        #3786e5 79%,
+        #428ee9 90%,
+        #4791eb
+      );
+      color: #fff;
+      font:
+        700 14px "Trebuchet MS",
+        Tahoma,
+        sans-serif;
+      text-shadow: 1px 1px 1px #0f1089;
+      & .avatar {
+        width: 42px;
+        height: 42px;
+        border: 2px solid #fff;
+        border-radius: 3px;
+      }
+    }
+    & :is(.start-menu-search, .start-menu-heading) {
+      display: none;
+    }
+    & .start-menu-pinned {
+      grid-area: pinned;
+      display: flex;
+      flex-direction: column;
+      padding: 6px 0;
+      & .start-menu-item {
+        flex-direction: row;
+        gap: 6px;
+        padding: 4px 8px;
+        text-align: start;
+        font-size: 11px;
+      }
+      & .start-menu-icon {
+        width: 32px;
+        height: 32px;
+      }
+    }
+    & .start-menu-list {
+      grid-area: list;
+      padding: 6px 0;
+      border-inline-start: 1px solid #95bdee;
+      background: #d3e5fa;
+      color: #00136b;
+      & .start-menu-icon {
+        width: 22px;
+        height: 22px;
+      }
+    }
+    & .start-menu-empty {
+      grid-area: empty;
+    }
+    & .start-menu-item {
+      padding: 3px 8px;
+      border-radius: 0;
+      font-size: 11px;
+      &:is(:hover, :focus-visible, [aria-expanded="true"]) {
+        background: #316ac5;
+        color: #fff;
+        outline: none;
+      }
+      &[aria-haspopup]::after {
+        width: 0;
+        height: 0;
+        border: 4px solid transparent;
+        border-inline-start-color: #0e8a0e;
+        border-inline-end: 0;
+        rotate: none;
+      }
+    }
+    & .start-menu-foot {
+      grid-area: foot;
+      justify-content: flex-end;
+      gap: 6px;
+      margin: 0;
+      padding: 6px 8px;
+      border: 0;
+      background: linear-gradient(
+        180deg,
+        #4282d6,
+        #3b85e0 3%,
+        #418ae3 5%,
+        #418ae3 17%,
+        #3c87e2 21%,
+        #3786e4 26%,
+        #3482e3 29%,
+        #2e7ee1 39%,
+        #2374df 49%,
+        #2072db 57%,
+        #196edb 62%,
+        #176bd8 72%,
+        #1468d5 75%,
+        #1165d2 83%,
+        #0f61cb 88%
+      );
+      & .start-menu-item {
+        width: auto;
+        color: #fff;
+        &:first-child {
+          margin-inline-end: 0;
+        }
+        &:is(:hover, :focus-visible) {
+          background: rgb(255 255 255 / 0.18);
+        }
+      }
+      & .start-menu-icon {
+        width: 22px;
+        height: 22px;
+      }
+    }
+    & .start-menu-sub {
+      padding: 2px;
+      border: 1px solid #8a8a8a;
+      border-radius: 0;
+      background: #fff;
+      color: #000;
+      font-size: 11px;
+      box-shadow: 2px 2px 4px rgb(0 0 0 / 0.4);
+      & .start-menu-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    & .desktop-icon {
+      border-radius: 0;
+      &:hover {
+        background: none;
+      }
+      &[aria-selected="true"] {
+        background: none;
+        border-color: transparent;
+        & .desktop-icon-label {
+          background: #316ac5;
+          color: #fff;
+        }
+        & .desktop-icon-image {
+          filter: brightness(0.75) sepia(1) hue-rotate(185deg) saturate(4);
+        }
+      }
+      &:focus-visible {
+        border-color: transparent;
+        & .desktop-icon-label {
+          outline: 1px dotted #fff;
+        }
+      }
+    }
+    & .desktop-icon-label {
+      padding-inline: 2px;
+      font-size: 11px;
+    }
+    /* the shadow is the wallpaper's: inside a window a black label on its own black shadow read as bold */
+    & .desktop-manager[data-on-wallpaper] .desktop-icon-label {
+      text-shadow: 1px 1px 1px #000;
+    }
+    & .desktop-manager-band {
+      border: 1px solid #316ac5;
+      background: rgb(49 106 197 / 0.3);
+    }
+
+    & .btn {
+      min-height: 23px;
+      min-width: 75px;
+      padding: 0 12px;
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #fff, #ecebe6 86%, #d6d0c5);
+      color: #000;
+      font: inherit;
+      font-size: 11px;
+      box-shadow: none;
+      &:hover {
+        box-shadow:
+          inset -1px 1px #fff0cf,
+          inset 1px 2px #fdd889,
+          inset -2px 2px #fbc761,
+          inset 2px -2px #e5a01a;
+      }
+      &:active {
+        background: linear-gradient(180deg, #cdcac3, #e3e3db 8%, #e5e5de 94%, #f2f2f1);
+      }
+      &:focus-visible {
+        outline: 1px dotted #000;
+        outline-offset: -4px;
+      }
+    }
+    & :is(.input, .textarea, .select, select, input[type="text"], input[type="search"], input[type="password"]) {
+      border: 1px solid #7f9db9;
+      border-radius: 0;
+      background: #fff;
+      color: #000;
+      font: inherit;
+      font-size: 11px;
+      box-shadow: none;
+    }
+    & :is(.input, .select) {
+      height: 21px;
+      padding: 2px 3px;
+    }
+
+    /* the logon: a blue welcome screen, the users right of a divider */
+    & .logon {
+      grid-template-rows: 4.5rem 1fr 4.5rem;
+      padding: 0;
+      background:
+        linear-gradient(90deg, transparent, #f99736 30%, #f99736 70%, transparent) left calc(100% - 4.5rem) / 100% 2px
+          no-repeat,
+        linear-gradient(90deg, transparent, rgb(255 255 255 / 0.6) 50%, transparent) left 4.5rem / 100% 1px no-repeat,
+        linear-gradient(#00309c, #00309c) top / 100% 4.5rem no-repeat,
+        linear-gradient(#00309c, #00309c) bottom / 100% 4.5rem no-repeat,
+        radial-gradient(circle at 12% 22%, #8bb0ef, #5a7edc 55%);
+      color: #fff;
+      font-size: 12px;
+      --muted-foreground: #dfe8f8;
+    }
+    & .logon-main {
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+    }
+    & .logon-brand {
+      grid-row: 1 / span 2;
+      padding-inline: 2rem;
+      border-inline-end: 1px solid;
+      border-image: linear-gradient(transparent, rgb(255 255 255 / 0.7), transparent) 1;
+      text-align: end;
+      & strong {
+        font:
+          italic 700 2.25rem/1.1 "Trebuchet MS",
+          Tahoma,
+          sans-serif;
+      }
+    }
+    & .logon-users,
+    & .logon-form {
+      grid-column: 2;
+      padding-inline: 2rem;
+    }
+    & .logon-users {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    & .logon-user {
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 12px;
+      min-width: 0;
+      border: 0;
+      border-radius: 8px;
+      color: #fff;
+      & .avatar {
+        width: 48px;
+        height: 48px;
+        border: 2px solid #fff;
+        border-radius: 4px;
+      }
+      &:hover {
+        background: none;
+        color: #fff;
+        & .avatar {
+          border-color: #fcd96a;
+        }
+      }
+      &[aria-pressed="true"] {
+        background: linear-gradient(90deg, #0d3eaa, transparent);
+        color: #fff;
+        & .avatar {
+          border-color: #fcd96a;
+        }
+      }
+    }
+    & .logon-name {
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+    & .logon-error {
+      color: #fff2b0;
+    }
+    & .logon .logon-power {
+      grid-row: 3;
+      align-self: center;
+      justify-content: flex-end;
+      padding-inline: 2rem;
+      & .btn {
+        min-width: 0;
+        height: auto;
+        padding: 4px 10px 4px 4px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        background: none;
+        color: #fff;
+        gap: 10px;
+        font-size: 14px;
+        text-shadow: 0 1px 1px rgb(0 0 0 / 0.4);
+        & svg {
+          width: 30px;
+          height: 30px;
+          padding: 5px;
+          border: 1px solid #fff;
+          border-radius: 4px;
+          background: linear-gradient(180deg, #f08a4b, #d9480f 60%, #c23e0b);
+          box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4);
+        }
+        /* the ghost hover of 7 / XP (a pale blue gradient) would put white text on white: a dark-blue tint instead */
+        &:hover {
+          border-color: rgb(255 255 255 / 0.35);
+          background: rgb(0 32 110 / 0.45);
+          color: #fff;
+          & svg {
+            background: linear-gradient(180deg, #f9a46c, #e8581c 60%, #d04a12);
+          }
+        }
+        &:focus-visible {
+          outline: 1px dotted #fff;
+          outline-offset: 1px;
+        }
+      }
+    }
+  }
+
+  /* -- 7: glass frames, the orb, a dark glass bar -------------------- */
+  .desktop[data-variant="win7"] {
+    --background: #fff;
+    --foreground: #000;
+    --card: #f0f0f0;
+    --card-foreground: #000;
+    --popover: #f0f0f0;
+    --popover-foreground: #000;
+    --primary: #3c7fb1;
+    --primary-foreground: #fff;
+    --secondary: #f0f0f0;
+    --secondary-foreground: #000;
+    --muted: #f0f0f0;
+    --muted-foreground: #555;
+    --accent: #dcecfc;
+    --accent-foreground: #000;
+    --destructive: #c7270c;
+    --destructive-foreground: #fff;
+    --border: #adadad;
+    --input: #abadb3;
+    --ring: #3399ff;
+    --radius: 3px;
+    --font-sans: "Segoe UI", Tahoma, "Helvetica Neue", sans-serif;
+    --desktop-wallpaper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMid slice'%3E %3Cdefs%3E %3CradialGradient id='g' cx='.5' cy='.55' r='.75'%3E%3Cstop offset='0' stop-color='%233aa4f0'/%3E%3Cstop offset='.45' stop-color='%231767bd'/%3E%3Cstop offset='1' stop-color='%2306305f'/%3E%3C/radialGradient%3E %3ClinearGradient id='r' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23fff' stop-opacity='0'/%3E%3Cstop offset='.5' stop-color='%23d8f4ff' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='0'/%3E%3C/linearGradient%3E %3Cfilter id='b' x='-10%' y='-50%' width='120%' height='200%'%3E%3CfeGaussianBlur stdDeviation='14'/%3E%3C/filter%3E %3Cfilter id='s' x='-10%' y='-50%' width='120%' height='200%'%3E%3CfeGaussianBlur stdDeviation='3'/%3E%3C/filter%3E %3C/defs%3E %3Crect width='1600' height='1000' fill='url(%23g)'/%3E %3Cellipse cx='800' cy='560' rx='520' ry='170' fill='%237fd0ff' opacity='.35' filter='url(%23b)'/%3E %3Cpath d='M-50 700 C 400 520 900 820 1650 470' fill='none' stroke='url(%23r)' stroke-width='60' filter='url(%23b)'/%3E %3Cpath d='M-50 690 C 400 510 900 810 1650 460' fill='none' stroke='url(%23r)' stroke-width='5' filter='url(%23s)'/%3E %3Cpath d='M-50 380 C 500 520 1000 280 1650 420' fill='none' stroke='url(%23r)' stroke-width='40' opacity='.6' filter='url(%23b)'/%3E %3Cpath d='M-50 385 C 500 525 1000 285 1650 425' fill='none' stroke='url(%23r)' stroke-width='3' opacity='.8' filter='url(%23s)'/%3E %3C/svg%3E");
+    --_glass:
+      linear-gradient(
+        118deg,
+        transparent 22%,
+        rgb(255 255 255 / 0.22) 24%,
+        transparent 29%,
+        transparent 58%,
+        rgb(255 255 255 / 0.16) 61%,
+        transparent 66%
+      ),
+      linear-gradient(180deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.18) 38%, rgb(200 225 250 / 0.3));
+    font-size: 12px;
+    line-height: 1.4;
+    color: #000;
+
+    & .window {
+      --_titlebar: 30px;
+      padding: 0 7px 7px;
+      border: 1px solid rgb(0 0 0 / 0.7);
+      border-radius: 7px;
+      background: var(--_glass), rgb(96 148 204 / 0.62);
+      color: #000;
+      font-size: 12px;
+      backdrop-filter: blur(10px) saturate(1.2);
+      box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 0.55),
+        0 6px 22px rgb(0 0 0 / 0.45);
+      & > .window-titlebar {
+        height: 30px;
+        padding-inline: 2px 0;
+        gap: 6px;
+        border: 0;
+        background: none;
+        color: #000;
+      }
+      & .window-icon {
+        width: 16px;
+        height: 16px;
+        color: #000;
+      }
+      & .window-title {
+        font-size: 12px;
+        font-weight: 400;
+        text-shadow:
+          0 0 8px #fff,
+          0 0 8px #fff,
+          0 0 4px #fff;
+      }
+      & .window-controls {
+        align-self: flex-start;
+        gap: 0;
+        margin-block-start: -1px;
+      }
+      & .window-controls > button {
+        width: 26px;
+        height: 19px;
+        border: 1px solid rgb(0 0 0 / 0.6);
+        border-top: 0;
+        border-inline-start-width: 0;
+        background: linear-gradient(
+          180deg,
+          rgb(255 255 255 / 0.55),
+          rgb(255 255 255 / 0.25) 45%,
+          rgb(255 255 255 / 0.05) 50%,
+          rgb(255 255 255 / 0.35)
+        );
+        color: #fff;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.45);
+        filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.6));
+        &:first-child {
+          border-inline-start-width: 1px;
+          border-end-start-radius: 5px;
+        }
+        &:hover {
+          background: linear-gradient(180deg, #b6d9ee, #55b1e3 45%, #2c8fd2 50%, #46c9f4);
+        }
+      }
+      & .window-controls > .window-close {
+        width: 46px;
+        margin: 0;
+        border-end-end-radius: 5px;
+        background: linear-gradient(180deg, #e8a493, #d55f4a 45%, #c7270c 50%, #d1452f);
+        &:hover {
+          background: linear-gradient(180deg, #f9a59a, #e86a51 45%, #d1260c 50%, #f25b3b);
+          color: #fff;
+        }
+      }
+      & .window-minimize::before {
+        width: 9px;
+        height: 3px;
+        translate: -50% 2px;
+      }
+      & .window-maximize::before {
+        width: 10px;
+        height: 8px;
+        border-width: 1px;
+        border-top-width: 2px;
+      }
+      & .window-close::before,
+      & .window-close::after {
+        width: 11px;
+        height: 2px;
+      }
+      &[data-maximized] .window-maximize::after {
+        background: #5b9ad6;
+      }
+      & > .window-body {
+        padding: 10px;
+        border: 1px solid #888;
+        background: #f0f0f0;
+        box-shadow: 0 0 0 1px rgb(255 255 255 / 0.7);
+      }
+      & > .window-toolbar {
+        border: 1px solid #888;
+        border-bottom: 0;
+        background: linear-gradient(180deg, #fafcfe, #e3ecf7);
+      }
+      & > .window-statusbar {
+        border: 1px solid #888;
+        border-top: 0;
+        background: #f0f0f0;
+        color: #000;
+      }
+      &:not([data-active]) {
+        background: var(--_glass), rgb(180 198 218 / 0.6);
+        box-shadow:
+          inset 0 0 0 1px rgb(255 255 255 / 0.45),
+          0 3px 10px rgb(0 0 0 / 0.3);
+        & .window-title {
+          color: #444;
+        }
+        & .window-controls > button {
+          opacity: 0.7;
+        }
+      }
+      &[data-maximized] {
+        padding: 0 2px 2px;
+        border-radius: 0;
+      }
+    }
+
+    & .taskbar {
+      --taskbar-size: 40px;
+      gap: 2px;
+      padding: 0 0 0 4px;
+      border: 0;
+      border-block-start: 1px solid rgb(0 0 0 / 0.6);
+      background:
+        linear-gradient(180deg, rgb(255 255 255 / 0.24), rgb(255 255 255 / 0.08) 50%, rgb(0 0 0 / 0.08) 51%),
+        rgb(22 44 74 / 0.72);
+      color: #fff;
+      font-size: 12px;
+      backdrop-filter: blur(10px) saturate(1.3);
+      box-shadow: inset 0 1px rgb(255 255 255 / 0.35);
+    }
+    & .start-button {
+      width: 46px;
+      height: 46px;
+      min-width: 0;
+      margin-block: -6px 0;
+      margin-inline: 0 8px;
+      padding: 0;
+      border: 1px solid rgb(0 0 0 / 0.65);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 26%, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.08) 42%, transparent 44%),
+        radial-gradient(circle at 50% 100%, #8ae3ff, #2f86d6 45%, #0f3f86 72%);
+      box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 0.4),
+        0 0 6px rgb(0 0 0 / 0.6);
+      &:hover,
+      &[aria-expanded="true"] {
+        background:
+          radial-gradient(circle at 50% 26%, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.12) 42%, transparent 44%),
+          radial-gradient(circle at 50% 100%, #b2f0ff, #49a6f0 45%, #1458b0 72%);
+        box-shadow:
+          inset 0 0 0 1px rgb(255 255 255 / 0.5),
+          0 0 14px #7fd3ff;
+      }
+      & .start-button-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      & > :is(svg, img, .start-button-icon) {
+        width: 26px;
+        height: 26px;
+        filter: drop-shadow(0 0 2px rgb(255 255 255 / 0.6));
+      }
+    }
+    & :is(.taskbar-window, .taskbar-launcher) {
+      flex: none;
+      justify-content: center;
+      width: 60px;
+      max-width: 60px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      color: #fff;
+      & svg,
+      & img,
+      & .desktop-glyph {
+        width: 26px;
+        height: 26px;
+      }
+      &:hover {
+        border-color: rgb(255 255 255 / 0.4);
+        background: linear-gradient(
+          180deg,
+          rgb(255 255 255 / 0.35),
+          rgb(255 255 255 / 0.1) 50%,
+          rgb(255 255 255 / 0.04) 51%,
+          rgb(255 255 255 / 0.18)
+        );
+      }
+    }
+    & .taskbar-window {
+      border-color: rgb(255 255 255 / 0.25);
+      background: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 0.22),
+        rgb(255 255 255 / 0.05) 50%,
+        transparent 51%,
+        rgb(255 255 255 / 0.08)
+      );
+      box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.3);
+      &::after {
+        display: none;
+      }
+      &[aria-pressed="true"] {
+        border-color: rgb(255 255 255 / 0.5);
+        background:
+          radial-gradient(70% 60% at 50% 100%, rgb(140 200 255 / 0.55), transparent),
+          linear-gradient(
+            180deg,
+            rgb(255 255 255 / 0.35),
+            rgb(255 255 255 / 0.12) 50%,
+            rgb(255 255 255 / 0.05) 51%,
+            rgb(255 255 255 / 0.2)
+          );
+        color: #fff;
+      }
+      &[data-minimized] {
+        opacity: 1;
+      }
+    }
+    & .taskbar-window-title {
+      display: none;
+    }
+    & .tray {
+      align-self: stretch;
+      height: auto;
+      gap: 2px;
+      padding-inline-start: 6px;
+      color: #fff;
+    }
+    & .tray-item {
+      width: 22px;
+      height: 22px;
+      color: #fff;
+      &:hover {
+        background: rgb(255 255 255 / 0.18);
+      }
+    }
+    & .tray-clock {
+      padding-inline: 8px;
+      font-size: 12px;
+      text-align: center;
+    }
+    & .tray-show-desktop {
+      width: 14px;
+      margin-inline-start: 4px;
+      border-inline-start: 1px solid rgb(255 255 255 / 0.35);
+      background: linear-gradient(180deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.08));
+      &:hover,
+      &:focus-visible {
+        background: linear-gradient(180deg, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.2));
+      }
+    }
+
+    /* the start menu: a white panel of programs and the search, a glass column of places and power */
+    & .start-menu {
+      width: min(400px, calc(100vw - 1rem));
+      max-height: min(520px, 85vh);
+      padding: 8px;
+      gap: 0 8px;
+      border: 1px solid rgb(0 0 0 / 0.7);
+      border-radius: 7px;
+      background: var(--_glass), rgb(70 120 180 / 0.78);
+      color: #000;
+      font-size: 12px;
+      backdrop-filter: blur(10px) saturate(1.3);
+      box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 0.5),
+        0 6px 24px rgb(0 0 0 / 0.5);
+      grid-template-columns: minmax(0, 1fr) 9.5rem;
+      grid-template-rows: auto 1fr auto auto;
+      grid-template-areas: "pinned head" "list foot" "empty foot" "search foot";
+      &:popover-open {
+        display: grid;
+      }
+    }
+    & .start-menu-heading {
+      display: none;
+    }
+    & :is(.start-menu-pinned, .start-menu-list, .start-menu-empty) {
+      background: #fff;
+    }
+    & .start-menu-pinned {
+      grid-area: pinned;
+      display: flex;
+      flex-direction: column;
+      padding: 6px 6px 4px;
+      border: 1px solid rgb(0 0 0 / 0.45);
+      border-bottom: 0;
+      border-radius: 4px 4px 0 0;
+      & .start-menu-item {
+        flex-direction: row;
+        gap: 8px;
+        padding: 3px 6px;
+        text-align: start;
+        font-size: 12px;
+      }
+      & .start-menu-icon {
+        width: 32px;
+        height: 32px;
+      }
+    }
+    & .start-menu-list {
+      grid-area: list;
+      padding: 4px 6px;
+      border: 1px solid rgb(0 0 0 / 0.45);
+      border-block: 0;
+      box-shadow: inset 0 1px #dde4ee;
+      & .start-menu-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    & .start-menu-empty {
+      grid-area: empty;
+      border-inline: 1px solid rgb(0 0 0 / 0.45);
+    }
+    & .start-menu-search {
+      grid-area: search;
+      padding: 6px 8px;
+      border: 1px solid rgb(0 0 0 / 0.45);
+      border-top: 1px solid #dde4ee;
+      border-radius: 0 0 4px 4px;
+      background: #f0f4f9;
+      & input {
+        padding: 3px 6px;
+        border: 1px solid #a8b9cf;
+        border-radius: 2px;
+        background: #fff;
+        font-style: italic;
+      }
+    }
+    & .start-menu-item {
+      border: 1px solid transparent;
+      border-radius: 3px;
+      color: #000;
+      &:is(:hover, :focus-visible, [aria-expanded="true"]) {
+        border-color: #7da2ce;
+        background: linear-gradient(180deg, #f2f8fd, #dcecfc);
+        color: #000;
+        outline: none;
+      }
+    }
+    & .start-menu-head {
+      grid-area: head;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding-block: 2px 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 400;
+      text-shadow: 0 0 6px rgb(0 0 0 / 0.8);
+      & .avatar {
+        width: 56px;
+        height: 56px;
+        border: 1px solid rgb(255 255 255 / 0.7);
+        border-radius: 5px;
+        box-shadow:
+          0 0 0 3px rgb(255 255 255 / 0.25),
+          0 2px 8px rgb(0 0 0 / 0.5);
+      }
+    }
+    & .start-menu-foot {
+      grid-area: foot;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      & .start-menu-item {
+        width: 100%;
+        color: #fff;
+        text-shadow: 0 0 6px rgb(0 0 0 / 0.9);
+        &:first-child {
+          margin-inline-end: 0;
+        }
+        &:is(:hover, :focus-visible) {
+          border-color: rgb(255 255 255 / 0.45);
+          background: linear-gradient(180deg, rgb(255 255 255 / 0.35), rgb(255 255 255 / 0.1));
+          color: #fff;
+        }
+        &:last-child {
+          margin-block-start: auto;
+          justify-content: center;
+          border: 1px solid rgb(0 0 0 / 0.6);
+          background: linear-gradient(180deg, #e8a493, #d55f4a 45%, #c7270c 50%, #d1452f);
+          box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4);
+        }
+      }
+      & .start-menu-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+    & .start-menu-sub {
+      padding: 2px;
+      border: 1px solid #979797;
+      border-radius: 0;
+      background: #f0f0f0;
+      color: #000;
+      font-size: 12px;
+      box-shadow: 2px 2px 3px rgb(0 0 0 / 0.4);
+      & .start-menu-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    & .desktop-icon {
+      border-radius: 3px;
+      &:hover {
+        border-color: rgb(255 255 255 / 0.45);
+        background: rgb(255 255 255 / 0.15);
+      }
+      &[aria-selected="true"] {
+        border-color: rgb(200 230 255 / 0.75);
+        background: rgb(160 200 255 / 0.35);
+      }
+    }
+    & .desktop-icon-label {
+      font-size: 12px;
+    }
+    & .desktop-manager[data-on-wallpaper] .desktop-icon-label {
+      text-shadow:
+        0 0 4px #000,
+        0 1px 2px #000;
+    }
+    & .desktop-manager-band {
+      border: 1px solid #3399ff;
+      background: rgb(51 153 255 / 0.25);
+    }
+
+    & .btn {
+      min-height: 23px;
+      min-width: 75px;
+      padding: 0 12px;
+      border: 1px solid #707070;
+      border-radius: 3px;
+      background: linear-gradient(180deg, #f2f2f2 45%, #ebebeb 45%, #cfcfcf);
+      color: #000;
+      font: inherit;
+      font-size: 12px;
+      box-shadow: inset 0 0 0 1px #fff;
+      &:hover {
+        border-color: #3c7fb1;
+        background: linear-gradient(180deg, #eaf6fd 45%, #bee6fd 45%, #a7d9f5);
+      }
+      &:active {
+        border-color: #2c628b;
+        background: linear-gradient(180deg, #e5f4fc, #c4e5f6 30% 50%, #98d1ef 50%, #68b3db);
+      }
+    }
+    & :is(.input, .textarea, .select, select, input[type="text"], input[type="search"], input[type="password"]) {
+      border: 1px solid #abadb3;
+      border-radius: 2px;
+      background: #fff;
+      color: #000;
+      font: inherit;
+      font-size: 12px;
+      box-shadow: none;
+      &:hover {
+        border-color: #3d7bad;
+      }
+    }
+
+    /* the logon: blue light, the picked user large in the middle, the form under them */
+    & .logon {
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 115%, rgb(120 210 255 / 0.7), transparent 70%),
+        radial-gradient(ellipse 50% 40% at 18% 15%, rgb(255 255 255 / 0.22), transparent 70%),
+        linear-gradient(180deg, #0e4b8e, #1c6cb8 60%, #3a8fd6);
+      color: #fff;
+      /* muted text (the brand's line) is light grey on the blue screen, not the windows' dark grey */
+      --muted-foreground: #dcdcdc;
+    }
+    & .logon-main {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    & .logon-brand {
+      order: 3;
+      margin-block-start: 1rem;
+      color: rgb(255 255 255 / 0.85);
+      font-size: 1.1rem;
+      text-shadow: 0 0 6px rgb(0 0 0 / 0.6);
+    }
+    & .logon-user {
+      border: 0;
+      color: #fff;
+      font-size: 1.15rem;
+      text-shadow: 0 0 6px rgb(0 0 0 / 0.7);
+      & .avatar {
+        width: 96px;
+        height: 96px;
+        border: 1px solid rgb(255 255 255 / 0.7);
+        border-radius: 6px;
+        box-shadow:
+          0 0 0 4px rgb(255 255 255 / 0.25),
+          0 2px 10px rgb(0 0 0 / 0.5);
+      }
+      &:hover,
+      &[aria-pressed="true"] {
+        background: rgb(255 255 255 / 0.12);
+        color: #fff;
+      }
+    }
+    & .logon[data-user] .logon-user:not([aria-pressed="true"]) {
+      display: none;
+    }
+    & .logon-for {
+      display: none;
+    }
+    & .logon-form .btn[type="submit"] {
+      min-width: 0;
+      width: 28px;
+      padding: 0;
+      border-color: #1b4f8a;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #8fc8f8, #3a8ee0 50%, #1f6ec6 51%, #4aa3ee);
+      color: #fff;
+    }
+    & .logon-error {
+      color: #ffe7a0;
+      text-align: center;
+    }
+    /* .logon raises it over the ghost-button rule of 7 / XP further down (same specificity, later) */
+    & .logon .logon-power .btn {
+      min-width: 0;
+      border-color: #7a1a0c;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #f39c88, #d2462c 50%, #b8260c 51%, #dd5638);
+      color: #fff;
+      text-shadow: 0 1px 1px rgb(0 0 0 / 0.45);
+      /* the ghost hover of 7 / XP (a pale blue gradient) would put white text on white */
+      &:hover {
+        border-color: #8a1e0e;
+        background: linear-gradient(180deg, #f8b8a8, #e3583c 50%, #c9341a 51%, #ec6c4c);
+        color: #fff;
+        box-shadow: 0 0 6px rgb(255 160 130 / 0.7);
+      }
+      &:active {
+        background: linear-gradient(180deg, #d97a66, #b23a22 50%, #961e08 51%, #bf4a30);
+      }
+    }
+  }
+
+  .desktop:is([data-variant="winxp"], [data-variant="win7"]) .btn:is([data-variant~="ghost"], [data-variant~="link"]) {
+    min-width: 0;
+    padding: 0 6px;
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+    &:hover {
+      border-color: #7da2ce;
+      background: linear-gradient(180deg, #f2f8fd, #dcecfc);
+      box-shadow: none;
+    }
+  }
+
+  /* the period looks keep the bar's buttons at its start (centring is the modern look's), a menubar inside a window is
+     flat, a text field is white, the clock shows the time alone where the bar is one line high */
+  .desktop[data-variant] {
+    & .taskbar[data-align="center"] {
+      & > :first-child {
+        margin-inline-start: 0;
+      }
+      & .taskbar-windows {
+        flex: 1 1 auto;
+        margin-inline-end: 0;
+      }
+    }
+  }
+  .desktop:is([data-variant="win95"], [data-variant="win98"]) .start-menu {
+    max-height: none;
+  }
+  .desktop:is([data-variant="win95"], [data-variant="win98"], [data-variant="winxp"]) .tray-clock {
+    max-height: 1.3em;
+    overflow: hidden;
+  }
+
+  /* -- Menus of the period: a window's menubar, its menus, context menus ---------------------------------------
+     Sizes after the originals: 9x a 19px bar, 17px items in the system font with a 20px gutter for the check and the
+     navy highlight, a bevelled grey menu; XP the same rows on a white menu with the Luna blue; 7 a 22px row with an
+     icon gutter, a pale blue rounded highlight. The menus are popovers, but they stay inside the .desktop in the DOM,
+     so the look reaches them. */
+  .desktop[data-variant] {
+    & .window .window-toolbar:has(> .menubar) {
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+    & .window .menubar {
+      gap: 0;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+    }
+    & .window .menubar-trigger {
+      height: auto;
+      padding: 2px 7px;
+      border: 1px solid transparent;
+      border-radius: 0;
+      font: inherit;
+      font-size: 11px;
+      line-height: 15px;
+      color: inherit;
+    }
+    & :is(.dropdown-content, .context-menu) {
+      min-width: 0;
+      padding: 2px;
+      border-radius: 0;
+      font-size: 11px;
+      transition: none;
+      transform: none;
+    }
+    & :is(.dropdown-item, .context-menu-item) {
+      gap: 0;
+      min-height: 17px;
+      padding: 1px 20px;
+      border-radius: 0;
+      font-size: 11px;
+      line-height: 15px;
+      & svg {
+        display: none;
+      }
+    }
+    & .dropdown-shortcut {
+      margin-inline-start: auto;
+      padding-inline-start: 24px;
+      font-size: 11px;
+      letter-spacing: 0;
+      color: inherit;
+      opacity: 1;
+    }
+    & :is(.dropdown-separator, .context-menu-separator) {
+      margin: 3px 0;
+    }
+    /* Notepad: the edit area fills the window under its menu, white in every look */
+    & .window .window-body[data-flush] > textarea:only-child {
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      min-height: 0;
+      margin: 0;
+      padding: 2px 4px;
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+      color: #000;
+      font:
+        13px/1.35 "Lucida Console",
+        Consolas,
+        "Courier New",
+        monospace;
+      resize: none;
+      outline: none;
+      box-shadow: none;
+    }
+  }
+  .desktop:is([data-variant="win95"], [data-variant="win98"]) {
+    & .window .menubar {
+      padding: 0 1px 1px;
+    }
+    & .window .menubar-trigger:hover {
+      box-shadow:
+        inset -1px -1px #808080,
+        inset 1px 1px #fff;
+    }
+    & .window .menubar-trigger[aria-expanded="true"] {
+      box-shadow:
+        inset -1px -1px #fff,
+        inset 1px 1px #808080;
+      background: none;
+      color: inherit;
+    }
+    & :is(.dropdown-content, .context-menu) {
+      border: 0;
+      background: #c0c0c0;
+      box-shadow: var(--_raised);
+      padding: 3px;
+    }
+    & :is(.dropdown-item, .context-menu-item) {
+      color: #000;
+      &:is(:hover, [data-highlighted], :focus-visible) {
+        background: #000080;
+        color: #fff;
+      }
+      &:disabled {
+        color: #808080;
+        text-shadow: 1px 1px #fff;
+        background: none;
+      }
+    }
+    & :is(.dropdown-separator, .context-menu-separator) {
+      height: 0;
+      border-top: 1px solid #808080;
+      border-bottom: 1px solid #fff;
+      background: none;
+      margin: 3px 1px;
+    }
+    & .window .window-body[data-flush] > textarea:only-child {
+      box-shadow: var(--_sunken);
+      padding: 4px 6px;
+      font-family: "Desktop Pixel Sans", "Courier New", monospace;
+      font-size: 11px;
+    }
+    & .window .window-body[data-flush]:has(> textarea:only-child) {
+      padding: 0 2px 2px;
+    }
+    /* the window in front is a pressed button with the light dither, its label bold */
+    & .taskbar-window[aria-pressed="true"] {
+      background: repeating-conic-gradient(#fff 0 25%, #c0c0c0 0 50%) 0 0 / 2px 2px;
+      font-weight: 700;
+    }
+    /* the start menu: 32px icons on its first level, small ones in its folders */
+    & .start-menu > :is(.start-menu-pinned, .start-menu-list, .start-menu-foot) > .start-menu-item {
+      min-height: 34px;
+      & .start-menu-icon {
+        inline-size: 32px;
+        block-size: 32px;
+      }
+    }
+    & .start-menu-sub > .start-menu-item {
+      min-height: 20px;
+      padding-block: 1px;
+      & .start-menu-icon {
+        inline-size: 16px;
+        block-size: 16px;
+      }
+    }
+  }
+  /* 95: a menubar item is selected in navy, not raised */
+  .desktop[data-variant="win95"] .window .menubar-trigger:is(:hover, [aria-expanded="true"]) {
+    box-shadow: none;
+    background: #000080;
+    color: #fff;
+  }
+  .desktop[data-variant="winxp"] {
+    & .window .menubar {
+      padding: 1px 0;
+      background: #ece9d8;
+      border-bottom: 1px solid #d6d2c2;
+    }
+    & .window .menubar-trigger:is(:hover, [aria-expanded="true"]) {
+      background: #316ac5;
+      color: #fff;
+    }
+    & :is(.dropdown-content, .context-menu) {
+      border: 1px solid #aca899;
+      background: #fff;
+      box-shadow: 2px 2px 3px rgb(0 0 0 / 0.35);
+    }
+    & :is(.dropdown-item, .context-menu-item) {
+      min-height: 19px;
+      color: #000;
+      &:is(:hover, [data-highlighted], :focus-visible) {
+        background: #316ac5;
+        color: #fff;
+      }
+      &:disabled {
+        color: #aca899;
+        background: none;
+      }
+    }
+    & :is(.dropdown-separator, .context-menu-separator) {
+      height: 1px;
+      background: #aca899;
+      margin: 3px 1px;
+    }
+    & .window .window-body[data-flush] > textarea:only-child {
+      border: 1px solid #7f9db9;
+    }
+  }
+  .desktop[data-variant="win7"] {
+    & .window .menubar {
+      padding: 1px 2px;
+      background: linear-gradient(#fff, #f1f5fb);
+      border-bottom: 1px solid #dae2ec;
+    }
+    & .window .menubar-trigger {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      &:is(:hover, [aria-expanded="true"]) {
+        border-color: #a8d8eb;
+        background: linear-gradient(#f3fafd, #d9effa);
+        color: #000;
+      }
+    }
+    & :is(.dropdown-content, .context-menu) {
+      padding: 2px;
+      border: 1px solid #979797;
+      background:
+        linear-gradient(90deg, transparent 27px, #e2e3e3 27px 28px, #fff 28px 29px, transparent 29px), #f0f0f0;
+      box-shadow: 3px 3px 3px rgb(0 0 0 / 0.3);
+      font-size: 12px;
+    }
+    & :is(.dropdown-item, .context-menu-item) {
+      min-height: 22px;
+      padding: 3px 20px 3px 32px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      font-size: 12px;
+      color: #000;
+      &:is(:hover, [data-highlighted], :focus-visible) {
+        border-color: #aecff7;
+        background: linear-gradient(#fafbfd, #ebf3fd);
+        color: #000;
+      }
+      &:disabled {
+        color: #6d6d6d;
+        background: none;
+        border-color: transparent;
+      }
+    }
+    & .dropdown-shortcut {
+      font-size: 12px;
+    }
+    & :is(.dropdown-separator, .context-menu-separator) {
+      height: 0;
+      margin: 3px 1px 3px 30px;
+      border-top: 1px solid #e0e0e0;
+      border-bottom: 1px solid #fff;
+      background: none;
+    }
+  }
+  /* a window's menubar spans the window; an edit area that is the whole body leaves it no padding (9x keeps its 2px
+     well, above) */
+  .desktop .window .window-toolbar > .menubar {
+    flex: 1;
+  }
+  .desktop .window > .window-body[data-flush]:has(> textarea:only-child) {
+    padding: 0;
+  }
+  .desktop:not([data-variant]) .window {
+    & .window-toolbar:has(> .menubar) {
+      padding: 0 0.25rem;
+    }
+    & .window-toolbar > .menubar {
+      padding: 0.125rem 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+    }
+  }
+  /* modern: the system's own menus, Notepad's edit area under a hairline */
+  .desktop:not([data-variant]) .window .window-body[data-flush] > textarea:only-child {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: #fff;
+    color: #000;
+    resize: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+  /* an icon-only item names itself in the classic menus (95 to 7 list every command) */
+  .desktop:is([data-variant="win95"], [data-variant="win98"], [data-variant="winxp"], [data-variant="win7"])
+    .start-menu-foot
+    .start-menu-item:not(:has(.start-menu-label))::before {
+    content: attr(aria-label);
+    order: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desktop .taskbar,
+    .desktop .start-menu,
+    .desktop .window {
+      backdrop-filter: none;
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .desktop .window,
+    .desktop .start-menu,
+    .desktop .taskbar {
+      border: 1px solid CanvasText;
+    }
+    .desktop-glyph {
+      forced-color-adjust: none;
+    }
+  }
+}

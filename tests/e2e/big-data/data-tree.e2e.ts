@@ -236,6 +236,65 @@ try {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
   });
 
+  // -- inline editing ---------------------------------------------------------
+  const labels = () => page.$$eval('#dt-edit .data-tree-item', (items) => items.map((i) => i.querySelector('.data-tree-label')!.textContent));
+  const treeEditor = () => page.$eval('#dt-edit', (t) => {
+    const ed = t.querySelector('.data-tree-editor');
+    const c = ed?.querySelector('input') as HTMLInputElement | null;
+    return ed ? { cls: c?.className, focused: ed.contains(document.activeElement), error: ed.querySelector('.data-tree-error')?.textContent ?? '' } : null;
+  });
+  const dblItem = (name: string) =>
+    page.$eval('#dt-edit', (t, name) => {
+      const item = [...t.querySelectorAll('.data-tree-item')].find((i) => i.querySelector('.data-tree-label')!.textContent === name)!;
+      item.querySelector('.data-tree-label')!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+    }, name);
+
+  await check('editing: a double click opens the built-in Input on an item (data-editable); Enter writes it and the siblings sort again', async () => {
+    await page.$eval('#dt-edit', (t) => t.scrollIntoView());
+    assert.deepEqual(await labels(), ['Alpha', 'One', 'Two', 'Beta', 'Gamma']);
+    await dblItem('Alpha');
+    assert.deepEqual(await treeEditor(), { cls: 'input', focused: true, error: '' });
+    // the tree's own keys stay out of the editor: Space types, arrows move the caret
+    await page.keyboard.press('ControlOrMeta+a');
+    await page.keyboard.type('Zeta one');
+    await page.keyboard.press('Enter');
+    assert.equal(await treeEditor(), null);
+    assert.deepEqual(await labels(), ['Beta', 'Gamma', 'Zeta one', 'One', 'Two'], 'renamed and sorted among its siblings');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'dt-edit', 'the tree has the focus again');
+  });
+
+  await check('editing: F2 opens the active item; Escape keeps the name; the rules and validateFn refuse a value; false keeps an item from editing', async () => {
+    await page.$eval('#dt-edit', (t: any) => (globalThis as any).df$.shadcn.dataTree.edit(t, 'a/1'));
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('F2');
+    assert.ok((await treeEditor())?.focused, 'F2 on the active item');
+    for (const [text, error] of [['', 'Required'], ['A much longer name', 'At most 12 characters'], ['Taken', 'That name is taken']] as const) {
+      await page.keyboard.press('ControlOrMeta+a');
+      if (text) await page.keyboard.type(text);
+      else await page.keyboard.press('Backspace');
+      await page.keyboard.press('Enter');
+      assert.equal((await treeEditor())?.error, error, text);
+    }
+    await page.keyboard.press('Escape');
+    assert.ok((await labels()).includes('One'), 'Escape kept the name');
+    assert.equal(await page.$eval('#dt-edit', (t: any) => (globalThis as any).df$.shadcn.dataTree.edit(t, 'c')), false, 'getEditorFn false');
+  });
+
+  await check('editing: a custom editor (getEditorFn) writes its value and patch() in one edit; data-tree-edit carries the new record', async () => {
+    const detail = await page.$eval('#dt-edit', async (t: any) => {
+      const got = new Promise<any>((r) => t.addEventListener('data-tree-edit', (e: any) => r({ field: e.detail.field, value: e.detail.value, record: e.detail.record }), { once: true }));
+      (globalThis as any).df$.shadcn.dataTree.edit(t, 'b');
+      const input = t.querySelector('.data-tree-editor input');
+      input.value = 'Bravo';
+      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      return got;
+    });
+    assert.deepEqual(detail, { field: 'name', value: 'Bravo', record: { id: 'b', parentId: null, name: 'Bravo', tone: 'y' } });
+    const rec = await page.$eval('#dt-edit', (t: any) => (globalThis as any).df$.shadcn.dataTree.update(t, 'c', { name: 'Delta' }));
+    assert.equal(rec.name, 'Delta');
+    assert.deepEqual((await labels()).slice(0, 2), ['Bravo', 'Delta']);
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await ready();
     await assertRenderContract(page, '.data-tree[id]', ['default', 'loading', 'empty'], {

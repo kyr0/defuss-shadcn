@@ -1,0 +1,146 @@
+---
+title: "Logon"
+description: "Logon component - a sign-in and lock screen that checks nothing itself: users as buttons, a real password form, logon-submit answered by the page with done() or fail(), lock() to come back."
+slug: "logon"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="logon" title="Logon" component="logon">
+  The screen a desktop starts with and comes back to when it is locked. The users are buttons; picking one opens a real password form for them (Enter submits, password managers know the field). The component checks nothing: a submit fires <code>logon-submit</code> with the user and what was typed, and the page answers - <code>done()</code> signs in and the screen hides, <code>fail()</code> shows a message under the field and keeps the user, <code>lock()</code> brings the users back later. A user without a password signs in on the pick. Power buttons fire <code>logon-power</code>. Inside a positioned desktop the screen covers it.
+</PageHeader>
+
+<SkillPanel component="logon">
+  <SkillField label="Native basis">
+<SkillText>Buttons for the users and a <code>&lt;form&gt;</code> with an <code>autocomplete="current-password"</code> field; the runtime turns the native submit into an event. The message is a <code>role="alert"</code> paragraph, the field <code>aria-invalid</code> while it shows.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event" title="Enter and the button submit"><code>submit</code> event</ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete" title="password managers know the field"><code>autocomplete</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-invalid" title="a refused sign-in"><code>aria-invalid</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="logon-submit, logon-power"><code>CustomEvent</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Nothing is checked or kept: the password is in the event's detail and in the field until the state changes.</SkillText>
+  <SkillText dense>• <code>data-no-password</code> on a user signs in on the pick (an empty password in the event).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Sign in and lock" hint="Pick Ada and type 'secret' (anything else is refused), or pick Guest. Signed in, the desktop behind shows; Lock brings the screen back."
+<div class="grid gap-2">
+  <label class="flex items-center gap-2 text-sm"
+    >Look
+    <select class="select" data-look style="width: auto">
+      <option value="">Modern</option>
+      <option value="win7">7</option>
+      <option value="winxp">XP</option>
+      <option value="win98">98</option>
+      <option value="win95">95</option>
+    </select></label
+  >
+
+  <div class="desktop" style="height: 24rem">
+    <div class="window-desktop window-manager grid place-items-center">
+      <button class="btn" type="button" id="logon-lock"><i data-lucide="lock"></i> Lock</button>
+    </div>
+    <div class="logon" id="logon-demo" data-state-demo aria-label="Sign in">
+      <div class="logon-main">
+        <div class="logon-brand">
+          <strong>Workstation</strong>
+          <span class="text-sm text-muted-foreground">Pick your name to begin</span>
+        </div>
+        <ul class="logon-users">
+          <li>
+            <button class="logon-user" type="button" data-user="ada">
+              <span class="avatar"><img class="avatar-image" src="images/avatars/5-96.webp" alt="" /></span>
+              <span class="logon-name">Ada</span>
+            </button>
+          </li>
+          <li>
+            <button class="logon-user" type="button" data-user="guest" data-no-password>
+              <span class="avatar"><span class="avatar-fallback">G</span></span>
+              <span class="logon-name">Guest</span>
+            </button>
+          </li>
+        </ul>
+        <form class="logon-form" hidden>
+          <p class="logon-for"></p>
+          <div class="logon-field">
+            <input
+              class="input"
+              type="password"
+              name="password"
+              aria-label="Password"
+              autocomplete="current-password"
+            />
+            <button class="btn" type="submit" aria-label="Sign in"><i data-lucide="arrow-right"></i></button>
+          </div>
+          <p class="logon-error" role="alert" hidden></p>
+        </form>
+      </div>
+      <div class="logon-power">
+        <button class="btn" data-variant="ghost" type="button" data-logon-power="shutdown"
+          ><i data-lucide="power"></i> Turn off</button
+        >
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const logon = document.querySelector('#logon-demo');
+    logon.addEventListener('logon-submit', (e) => {
+      if (e.detail.user === 'guest' || e.detail.password === 'secret') df$.shadcn.logon.done(logon);
+      else df$.shadcn.logon.fail(logon, 'That password is not right - try "secret".');
+    });
+    document.querySelector('#logon-lock').addEventListener('click', () => df$.shadcn.logon.lock(logon));
+  });
+</script>
+<script>
+  // the Look select: the .desktop next to it takes the period's look
+  document.addEventListener('DOMContentLoaded', () => {
+    const select = document.querySelector('[data-look]');
+    const desk = select.closest('.grid').querySelector('.desktop');
+    select.addEventListener('change', () => {
+      if (select.value) desk.dataset.variant = select.value;
+      else delete desk.dataset.variant;
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.logon</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the users to pick from</li>
+    <li><code>signing-in</code> - <code>\{ user \}</code>: the password form for that user</li>
+    <li><code>error</code> - <code>\{ user, message \}</code>: the page refused it; the message shows under the field</li>
+    <li><code>signed-in</code> - <code>\{ user \}</code>: the screen hides</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/logon-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/logon.schema.json"><code>logon.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `signed-in` | `boolean` | `true`, `false` | `false` | Signed in: the screen hides (data-state-name). |
+```
+
+</StatesSection>
+
+<ApiSection component="logon" />
+
+<SourceFiles component="logon" section="css" />
+
+<SourceFiles component="logon" section="js">
+  <SourceNote for="js">The native submit becomes <code>logon-submit</code>; <code>done()</code>, <code>fail()</code> and <code>lock()</code> are the page's answers.</SourceNote>
+</SourceFiles>
+
+</DocPage>

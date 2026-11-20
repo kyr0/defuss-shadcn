@@ -188,7 +188,10 @@ try {
     const lean = await render('all-extras-lean', tags, body, `/zip/${folder}/`);
     const full = await render('all-extras-full', FULL, body, '/');
     assert.deepEqual(lean.errors, full.errors);
-    for (const m of members) assert.ok(lean.apis.includes(`${camel(m)}Api`), `${m} registered its State API from its extra bundle`);
+    // a CSS-only member (the Desktop section's Start Button and Desktop) has no State API
+    for (const m of members)
+      if (existsSync(componentFile(join(ROOT, 'src', 'components'), m, `${m}.ts`)))
+        assert.ok(lean.apis.includes(`${camel(m)}Api`), `${m} registered its State API from its extra bundle`);
     const [a, b] = [await snapshot(lean.page), await snapshot(full.page)];
     assert.deepEqual(a, b);
     await lean.page.close();

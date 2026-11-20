@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-dominant</code> (<code>ns</code>, <code>we</code>), <code>data-center-min</code>, <code>data-collapsible</code>, <code>data-save</code>, <code>data-frame="none"</code>, <code>data-divider</code> (<code>dashed</code>, <code>dotted</code>, <code>double</code>, <code>thick</code>, <code>none</code>, <code>gap</code>), <code>data-grip</code> (<code>dots</code>, <code>bar</code>, <code>none</code>); on a region's resizer: <code>data-min</code> / <code>data-max</code>, <code>data-collapsible</code>, <code>data-divider</code>, <code>data-grip</code>; on a fixed region: <code>data-fit</code> with <code>--border-layout-fit-min</code> / <code>-max</code>; several Panels on one side: a <code>.border-layout-stack</code> as the pane (dividers between them, a panel's <code>data-min</code>; <code>data-direction</code> <code>row</code> / <code>column</code>, <code>data-exclusive</code> - one panel open); <code>--border-layout-divider-color</code> / <code>-width</code>, <code>--border-layout-accent</code>; events <code>resizer-resize</code>, <code>border-layout-collapse</code>; API <code>df$.shadcn.borderLayout</code>.</SkillText>
+<SkillText><code>data-dominant</code> (<code>ns</code>, <code>we</code>), <code>data-center-min</code>, <code>data-collapsible</code>, <code>data-save</code>, <code>data-frame="none"</code>, <code>data-divider</code> (<code>dashed</code>, <code>dotted</code>, <code>double</code>, <code>thick</code>, <code>none</code>, <code>gap</code>), <code>data-grip</code> (<code>dots</code>, <code>bar</code>, <code>none</code>); on a region's resizer: <code>data-min</code> / <code>data-max</code>, <code>data-collapsible</code>, <code>data-divider</code>, <code>data-grip</code>; on a fixed region: <code>data-fit</code> with <code>--border-layout-fit-min</code> / <code>-max</code>; several Panels on one side: a <code>.border-layout-stack</code> as the pane (dividers between them, a panel's <code>data-min</code>; <code>data-direction</code> <code>row</code> / <code>column</code>, <code>data-exclusive</code> - one panel open, <code>data-keep</code> - the n opened last; deep navigation: <code>data-levels</code> with <code>--panel-size</code> per level, <code>data-drill</code>); <code>--border-layout-divider-color</code> / <code>-width</code>, <code>--border-layout-accent</code>; events <code>resizer-resize</code>, <code>border-layout-collapse</code>, <code>border-layout-stack-change</code>; API <code>df$.shadcn.borderLayout</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -407,6 +407,176 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, S
         <div class="panel-body"><p class="text-sm m-0">Four people can edit</p></div>
       </section>
     </div>
+  </div>
+</div>
+```
+
+```html example label="Deep navigation: levels side by side" schema="none" hint="A row stack with data-levels is a trail: each level keeps its own width and the region is their sum. Pick a section, then a book - every pick adds a level (push), data-keep='2' folds the earlier ones to bars, and the center gets their room. With data-drill a folded level is a breadcrumb: click its bar (or Tab to it, Enter) and the levels after it go."
+<div class="border-layout" style="height: 22rem">
+  <div
+    class="border-layout-stack border-layout-west"
+    id="lv-trail"
+    data-direction="row"
+    data-levels
+    data-keep="2"
+    data-drill
+    aria-label="Library"
+  >
+    <section class="card panel" id="lv-sections" style="--panel-size: 11rem" aria-labelledby="lv-sections-t">
+      <header class="panel-header">
+        <i data-lucide="library" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="lv-sections-t">Sections</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Sections" />
+            <span class="swap-off"><i data-lucide="chevron-left"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-right"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body">
+        <div class="flex flex-col gap-1">
+          <button class="btn justify-start" data-variant="ghost" data-size="sm" type="button" data-lv-section="Fiction"
+            >Fiction</button
+          >
+          <button class="btn justify-start" data-variant="ghost" data-size="sm" type="button" data-lv-section="History"
+            >History</button
+          >
+          <button class="btn justify-start" data-variant="ghost" data-size="sm" type="button" data-lv-section="Science"
+            >Science</button
+          >
+        </div>
+      </div>
+    </section>
+  </div>
+  <main class="border-layout-center border-layout-pane">
+    <div class="grid gap-2 text-sm">
+      <span class="font-medium">Center</span>
+      <output id="lv-out" class="text-muted-foreground">Pick a section</output>
+    </div>
+  </main>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const books = {
+      Fiction: [
+        ['Dune', 'Frank Herbert, 1965'],
+        ['Emma', 'Jane Austen, 1815'],
+        ['Ulysses', 'James Joyce, 1922'],
+      ],
+      History: [
+        ['SPQR', 'Mary Beard, 2015'],
+        ['Postwar', 'Tony Judt, 2005'],
+        ['The Guns of August', 'Barbara Tuchman, 1962'],
+      ],
+      Science: [
+        ['Cosmos', 'Carl Sagan, 1980'],
+        ['The Gene', 'Siddhartha Mukherjee, 2016'],
+        ['Silent Spring', 'Rachel Carson, 1962'],
+      ],
+    };
+    const trail = df$('#lv-trail').get(0);
+    const bl = df$.shadcn.borderLayout;
+    const level = (id, title, icon, size, body) =>
+      `<section class="card panel" id="${id}" style="--panel-size: ${size}" aria-labelledby="${id}-t">
+        <header class="panel-header">
+          <i data-lucide="${icon}" class="panel-icon" aria-hidden="true"></i>
+          <h3 class="panel-title" id="${id}-t">${title}</h3>
+          <div class="panel-tools"><label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize ${title}" />
+            <span class="swap-off"><i data-lucide="chevron-left"></i></span><span class="swap-on"><i data-lucide="chevron-right"></i></span></label></div>
+        </header>
+        <div class="panel-body">${body}</div>
+      </section>`;
+    const add = (markup) => {
+      bl.push(trail, markup);
+      globalThis.lucide?.createIcons();
+    };
+    df$(trail).on('click', (e) => {
+      const section = e.target.closest('[data-lv-section]');
+      const book = e.target.closest('[data-lv-book]');
+      if (section) {
+        const name = section.dataset.lvSection;
+        bl.pop(trail, 0);
+        const list = books[name]
+          .map(
+            ([t]) =>
+              `<button class="btn justify-start" data-variant="ghost" data-size="sm" type="button" data-lv-book="${t}">${t}</button>`,
+          )
+          .join('');
+        add(level('lv-items', name, 'folder', '12rem', `<div class="flex flex-col gap-1">${list}</div>`));
+      } else if (book) {
+        const name = book.dataset.lvBook;
+        const by = Object.values(books)
+          .flat()
+          .find(([t]) => t === name)[1];
+        bl.pop(trail, 1);
+        add(level('lv-details', name, 'book-open', '14rem', `<p class="text-sm m-0">${by}</p>`));
+      }
+    });
+    // the trail's levels: open ones by title, folded ones in brackets
+    df$(trail).on('border-layout-stack-change', (e) => {
+      const name = (p) => p.querySelector('.panel-title').textContent;
+      df$('#lv-out').text(
+        e.detail.panels.map((p) => (e.detail.open.includes(p) ? name(p) : '[' + name(p) + ']')).join(' / '),
+      );
+    });
+  });
+</script>
+```
+
+```html example label="Levels on the east side" schema="none" hint="On the east side the levels run from the edge toward the center - the deepest next to the center. Three levels are authored open with data-keep='2', so the outermost starts as a bar. Drag the line after a level to change its own width."
+<div class="border-layout" style="height: 18rem">
+  <main class="border-layout-center border-layout-pane"><span class="text-sm font-medium">Editor</span></main>
+  <div
+    class="border-layout-stack border-layout-east"
+    id="lv-east"
+    data-direction="row"
+    data-levels
+    data-keep="2"
+    aria-label="Inspector"
+  >
+    <section class="card panel" id="lv-project" style="--panel-size: 10rem" aria-labelledby="lv-project-t">
+      <header class="panel-header">
+        <i data-lucide="briefcase" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="lv-project-t">Project</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Project" />
+            <span class="swap-off"><i data-lucide="chevron-left"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-right"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm m-0">defuss-shadcn</p></div>
+    </section>
+    <section class="card panel" id="lv-folder" style="--panel-size: 10rem" aria-labelledby="lv-folder-t">
+      <header class="panel-header">
+        <i data-lucide="folder" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="lv-folder-t">Folder</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize Folder" />
+            <span class="swap-off"><i data-lucide="chevron-left"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-right"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm m-0">src/components</p></div>
+    </section>
+    <section class="card panel" id="lv-file" style="--panel-size: 12rem" aria-labelledby="lv-file-t">
+      <header class="panel-header">
+        <i data-lucide="file" class="panel-icon" aria-hidden="true"></i>
+        <h3 class="panel-title" id="lv-file-t">File</h3>
+        <div class="panel-tools">
+          <label class="swap panel-minimize">
+            <input type="checkbox" aria-label="Minimize File" />
+            <span class="swap-off"><i data-lucide="chevron-left"></i></span>
+            <span class="swap-on"><i data-lucide="chevron-right"></i></span>
+          </label>
+        </div>
+      </header>
+      <div class="panel-body"><p class="text-sm m-0">border-layout.ts</p></div>
+    </section>
   </div>
 </div>
 ```

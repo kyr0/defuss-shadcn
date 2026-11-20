@@ -532,15 +532,20 @@ var minOf = (panel) => {
 };
 var open = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
 var titleOf = (panel) => dfDollar3(panel).find(":scope > .panel-header .panel-title").text().trim() || panel.getAttribute("aria-label") || "";
-function exclusive(stack, again) {
-  if (!stack.hasAttribute("data-exclusive"))
+var keepOf = (stack) => stack.hasAttribute("data-exclusive") ? 1 : Math.max(0, Math.floor(num(stack.dataset.keep, 0)));
+function keepOpen(stack, again) {
+  const n = keepOf(stack);
+  if (!n)
     return;
   const opened = panelsOf(stack).filter(open);
-  const fresh = opened.filter((p) => p !== stack._open);
-  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
-  stack._open = keep;
+  const order = (stack._order ?? []).filter((p) => opened.includes(p));
+  for (const p of opened)
+    if (!order.includes(p))
+      order.push(p);
+  stack._order = order;
+  const keep = new Set(order.slice(-n));
   for (const p of opened) {
-    if (p === keep)
+    if (keep.has(p))
       continue;
     if (p.api)
       p.api.setState("minimized");
@@ -548,10 +553,44 @@ function exclusive(stack, again) {
       setTimeout(again);
   }
 }
+var levelsOf = (stack) => stack.hasAttribute("data-levels");
+function drill(stack, panels) {
+  const was = stack._wasOpen;
+  stack._wasOpen = new Set(panels.filter(open));
+  if (!was || !stack.hasAttribute("data-drill"))
+    return;
+  const reopened = panels.find((p) => open(p) && !was.has(p) && stack._seen?.has(p));
+  stack._seen = new Set(panels);
+  if (reopened)
+    dropAfter(stack, reopened);
+}
+function dropAfter(stack, panel) {
+  const panels = panelsOf(stack);
+  for (const p of panels.slice(panels.indexOf(panel) + 1)) {
+    const d = p.previousElementSibling;
+    if (d?.classList.contains("border-layout-stack-divider"))
+      d.remove();
+    p.remove();
+  }
+}
+function report(stack, panels) {
+  const detail = { panels, open: panels.filter(open) };
+  const was = stack._reported;
+  stack._reported = detail;
+  const same = (a, b) => a.length === b.length && a.every((p, i) => p === b[i]);
+  if (!was || same(was.panels, detail.panels) && same(was.open, detail.open))
+    return;
+  stack.dispatchEvent(new CustomEvent("border-layout-stack-change", { bubbles: true, detail }));
+}
 function syncStack(layout, side, region, stack) {
-  exclusive(stack, () => syncStack(layout, side, region, stack));
+  keepOpen(stack, () => syncStack(layout, side, region, stack));
+  drill(stack, panelsOf(stack));
   const row = isRow(stack, side);
   const panels = panelsOf(stack);
+  if (!stack._seen)
+    stack._seen = new Set(panels);
+  for (const p of panels)
+    stack._seen.add(p);
   for (const panel of panels.slice(1)) {
     const prev = panel.previousElementSibling;
     if (prev?.classList.contains("border-layout-stack-divider"))
@@ -579,8 +618,12 @@ function syncStack(layout, side, region, stack) {
   }
   if (pending && !pending.hidden)
     pending.hidden = true;
+  for (const d of dfDollar3(stack).children(".border-layout-stack-divider").toArray())
+    if (!d.nextElementSibling?.classList.contains("panel"))
+      d.remove();
+  const levels = levelsOf(stack);
   for (const d of dfDollar3(stack).children(".border-layout-stack-divider").toArray()) {
-    const live = !d.hidden && open(d._prev) && open(d._next);
+    const live = !d.hidden && open(d._prev) && (levels || open(d._next));
     d.setAttribute("aria-disabled", String(!live));
     d.tabIndex = live ? 0 : -1;
     if (!d._prev)
@@ -589,13 +632,33 @@ function syncStack(layout, side, region, stack) {
       d._prev.id = `${stack.id || layout.id || "stack"}-${Math.random().toString(36).slice(2, 7)}`;
     d.setAttribute("aria-controls", d._prev.id);
     d.setAttribute("aria-label", `Resize ${titleOf(d._prev) || "panel"}`);
-    if (live) {
+    if (live && levels) {
+      d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
+      d.setAttribute("aria-valuemin", String(minOf(d._prev)));
+      d.setAttribute("aria-valuemax", String(maxLevel(d._prev)));
+    } else if (live) {
       const both = extent(d._prev, row) + extent(d._next, row);
       d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
       d.setAttribute("aria-valuemin", String(minOf(d._prev)));
       d.setAttribute("aria-valuemax", String(Math.round(both - minOf(d._next))));
     }
   }
+  if (stack.hasAttribute("data-drill"))
+    for (const p of panels) {
+      const header = dfDollar3(p).children(".panel-header").get(0);
+      if (!header)
+        continue;
+      const crumb = p.hasAttribute("data-minimized");
+      if (crumb) {
+        header.tabIndex = 0;
+        header.setAttribute("role", "button");
+        header.setAttribute("aria-label", `Back to ${titleOf(p) || "this level"}`);
+      } else if (header.getAttribute("role") === "button") {
+        header.removeAttribute("tabindex");
+        header.removeAttribute("role");
+        header.removeAttribute("aria-label");
+      }
+    }
   const shown = panels.filter((p) => !p.hidden);
   const folded = shown.length > 0 && shown.every((p) => p.hasAttribute("data-minimized"));
   region.toggleAttribute("data-panel-minimized", folded);
@@ -603,12 +666,21 @@ function syncStack(layout, side, region, stack) {
   const handle = region.classList.contains("resizer") ? dfDollar3(region).children(".resizer-handle").get(0) : null;
   if (handle)
     handle.inert = folded || !shown.length;
+  report(stack, panels);
 }
+var maxLevel = (panel) => num(panel.dataset.max, 640);
 function moveDivider(layout, side, divider, delta) {
   const { _prev: a, _next: b } = divider;
+  const stack = divider.parentElement;
+  if (a && levelsOf(stack)) {
+    if (!open(a))
+      return;
+    const px = extent(a, true) + (side === "east" ? -delta : delta);
+    a.style.setProperty("--panel-size", `${Math.round(Math.min(Math.max(px, minOf(a)), maxLevel(a)))}px`);
+    return;
+  }
   if (!a || !b || !open(a) || !open(b))
     return;
-  const stack = divider.parentElement;
   const sizes = new Map(panelsOf(stack).filter(open).map((p) => [p, extent(p, isRow(stack, side))]));
   const both = sizes.get(a) + sizes.get(b);
   const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
@@ -662,15 +734,38 @@ function initStacks(layout) {
       divider.addEventListener("pointerup", end);
       divider.addEventListener("pointercancel", end);
     });
+    const bar = (e) => {
+      if (!stack.hasAttribute("data-drill"))
+        return null;
+      const header = e.target.closest?.(".panel-header");
+      const panel = header?.parentElement;
+      if (!panel || panel.parentElement !== stack || !panel.hasAttribute("data-minimized"))
+        return null;
+      if (e.target.closest(".panel-tools"))
+        return null;
+      return panel;
+    };
+    stack.addEventListener("click", (e) => bar(e)?.api?.setState("default"));
+    stack.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ")
+        return;
+      const panel = bar(e);
+      if (!panel)
+        return;
+      e.preventDefault();
+      panel.api?.setState("default");
+    });
     stack.addEventListener("keydown", (e) => {
       const divider = e.target.closest?.(".border-layout-stack-divider");
       if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
         return;
       const step = e.shiftKey ? 100 : 10;
       const back = isRow(stack, side) ? "ArrowLeft" : "ArrowUp", fwd = isRow(stack, side) ? "ArrowRight" : "ArrowDown";
-      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
+      let delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
       if (!delta)
         return;
+      if (levelsOf(stack) && side === "east" && (e.key === "Home" || e.key === "End"))
+        delta = -delta;
       e.preventDefault();
       moveDivider(layout, side, divider, delta);
       sync();
@@ -854,6 +949,10 @@ function init3() {
     });
   });
 }
+var resolveStack = (target) => {
+  const el = typeof target === "string" ? dfDollar3(`#${CSS.escape(target)}`).get(0) ?? dfDollar3(target).get(0) : target;
+  return el?.classList.contains("border-layout-stack") ? el : null;
+};
 df$3.borderLayout = {
   collapse: (target, side) => {
     const l = resolve(target);
@@ -880,6 +979,38 @@ df$3.borderLayout = {
       clamp2(l);
       setSize(r, side, px);
     }
+  },
+  push: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const el = typeof panel === "string" ? dfDollar3(panel).get(0) : panel;
+    if (!el)
+      return null;
+    el.removeAttribute("data-minimized");
+    dfDollar3(st).append(el);
+    return el;
+  },
+  pop: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const panels = panelsOf(st);
+    const el = typeof panel === "number" ? panels[panel] : typeof panel === "string" ? panels.find((p) => p.id === panel) : panels.includes(panel) ? panel : undefined;
+    if (!el)
+      return null;
+    dropAfter(st, el);
+    const api = el.api;
+    if (api)
+      api.setState("default");
+    else
+      el.removeAttribute("data-minimized");
+    return el;
+  },
+  levels: (stack) => {
+    const st = resolveStack(stack);
+    const panels = st ? panelsOf(st) : [];
+    return { panels, open: panels.filter(open) };
   },
   sizes: (target) => {
     const l = resolve(target);
@@ -1094,7 +1225,7 @@ var __df$shared5 = __df$core5 && __df$core5.shadcn && __df$core5.shadcn.shared;
 if (!__df$shared5 || __df$shared5.abi !== "0.9.16") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals5, defussQuery: defussQuery5, componentState: componentState5, bindComponent: bindComponent5 } = __df$shared5;
+var { defussGlobals: defussGlobals5, defussQuery: defussQuery5, componentState: componentState5, bindComponent: bindComponent5, asEditor, builtinEditor, editorControl, editorKey, editorProblem, focusEditor, valueType } = __df$shared5;
 var df$5 = defussGlobals5();
 var dfDollar5 = defussQuery5();
 var propertyGridStates = ["default", "editing"];
@@ -1121,32 +1252,7 @@ function setAt(obj, path, value) {
   copy[head] = setAt(isGroup(obj) ? obj[head] : undefined, rest, value);
   return copy;
 }
-function typeOf(value, conf) {
-  if (conf?.type)
-    return conf.type;
-  if (conf?.options)
-    return "enum";
-  if (value === null)
-    return "null";
-  if (Array.isArray(value))
-    return "array";
-  if (typeof value === "object")
-    return "object";
-  if (typeof value === "boolean")
-    return "boolean";
-  if (typeof value === "number")
-    return "number";
-  if (typeof value === "string") {
-    if (/^#[0-9a-f]{6}$/i.test(value))
-      return "color";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
-      return "date";
-    if (value.includes(`
-`))
-      return "text";
-  }
-  return "string";
-}
+var typeOf = (value, conf) => valueType(value, conf);
 function confOf(root, path) {
   const sc = optionsOf(root).sourceConfig ?? {};
   return sc[pathKey(path)] ?? sc[path[path.length - 1]] ?? null;
@@ -1318,75 +1424,7 @@ function moveFocus(root, from, by) {
   root._current = next.closest("tr").dataset.path;
   next.focus();
 }
-function defaultEditor(type, value, conf) {
-  let el;
-  if (type === "boolean") {
-    el = document.createElement("input");
-    el.type = "checkbox";
-    el.className = "switch";
-    el.setAttribute("role", "switch");
-    el.checked = !!value;
-    return { el, getValue: () => el.checked, immediate: true };
-  }
-  if (type === "enum") {
-    el = document.createElement("select");
-    el.className = "select";
-    el.dataset.size = "xs";
-    for (const opt of conf?.options ?? []) {
-      const o = document.createElement("option");
-      const [v, label] = isGroup(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
-      o.value = String(v);
-      dfDollar5(o).text(String(label));
-      if (v === value)
-        o.selected = true;
-      el.append(o);
-    }
-    const values = (conf?.options ?? []).map((o) => isGroup(o) ? o.value : o);
-    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
-  }
-  if (type === "text" || type === "object" || type === "array" || type === "json") {
-    el = document.createElement("textarea");
-    el.className = "textarea";
-    el.rows = type === "text" ? 3 : 5;
-    const json = type !== "text";
-    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
-    return {
-      el,
-      multiline: true,
-      getValue: () => json ? JSON.parse(el.value) : el.value,
-      validate: () => {
-        if (!json)
-          return "";
-        try {
-          JSON.parse(el.value);
-          return "";
-        } catch (error) {
-          return String(error.message ?? error);
-        }
-      }
-    };
-  }
-  el = document.createElement("input");
-  el.className = type === "color" ? "property-grid-color-input" : "input";
-  if (type !== "color")
-    el.dataset.size = "xs";
-  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
-  if (type === "number") {
-    el.step = conf?.step ?? "any";
-    if (conf?.min != null)
-      el.min = conf.min;
-    if (conf?.max != null)
-      el.max = conf.max;
-    el.inputMode = "decimal";
-  }
-  el.value = value == null ? "" : String(value);
-  return {
-    el,
-    immediate: type === "color" || type === "date",
-    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
-    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
-  };
-}
+var defaultEditor = (type, value, conf) => builtinEditor(type, value, conf, { colorClass: "property-grid-color-input" });
 function editorFor(root, row, value) {
   const conf = confOf(root, row._path);
   const type = row.dataset.type;
@@ -1394,17 +1432,7 @@ function editorFor(root, row, value) {
   const custom = optionsOf(root).getEditorFn?.(row._path[row._path.length - 1], value, ctx);
   if (custom === false)
     return null;
-  if (custom instanceof HTMLElement) {
-    const el = custom;
-    return {
-      el,
-      immediate: el.type === "checkbox" || el.tagName === "SELECT",
-      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
-    };
-  }
-  if (custom && custom.el)
-    return custom;
-  return defaultEditor(type, value, conf);
+  return asEditor(custom) ?? defaultEditor(type, value, conf);
 }
 function openEditor(root, path) {
   closeEditor(root);
@@ -1422,47 +1450,10 @@ function openEditor(root, path) {
   cell.dataset.editing = "";
   dfDollar5(cell).empty().append(wrap);
   root._editor = { path, row, cell, editor, value };
-  const target = editor.el.matches?.("input, select, textarea, button, [tabindex]") ? editor.el : dfDollar5(editor.el).find("input, select, textarea, button, [tabindex]").get(0) ?? editor.el;
-  (editor.focus ?? (() => target.focus?.()))();
-  if (target.select && target.type !== "checkbox" && target.type !== "color" && target.type !== "date")
-    target.select();
+  focusEditor(editor);
   return true;
 }
-function ruleProblem(conf, value) {
-  if (!conf)
-    return "";
-  const say = (fallback) => conf.message || fallback;
-  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
-  if (conf.required && empty)
-    return say("Required");
-  if (empty)
-    return "";
-  if (typeof value === "number") {
-    if (Number.isNaN(value))
-      return say("Not a number");
-    if (conf.integer && !Number.isInteger(value))
-      return say("Must be a whole number");
-    if (conf.min != null && value < conf.min)
-      return say(`Must be at least ${conf.min}`);
-    if (conf.max != null && value > conf.max)
-      return say(`Must be at most ${conf.max}`);
-  }
-  if (typeof value === "string") {
-    if (conf.minLength != null && value.length < conf.minLength)
-      return say(`At least ${conf.minLength} characters`);
-    if (conf.maxLength != null && value.length > conf.maxLength)
-      return say(`At most ${conf.maxLength} characters`);
-    if (conf.pattern && !new RegExp(`^(?:${conf.pattern})$`).test(value))
-      return say("Does not match the expected format");
-  }
-  if (Array.isArray(value)) {
-    if (conf.minItems != null && value.length < conf.minItems)
-      return say(`At least ${conf.minItems}`);
-    if (conf.maxItems != null && value.length > conf.maxItems)
-      return say(`At most ${conf.maxItems}`);
-  }
-  return "";
-}
+var ruleProblem = (conf, value) => editorProblem(conf, value);
 function showProblem(ed, control, problem) {
   control.setAttribute?.("aria-invalid", "true");
   const wrap = dfDollar5(ed.cell).children(".property-grid-editor").get(0) ?? ed.cell;
@@ -1487,7 +1478,7 @@ function commit(root, then = "stay") {
   const ed = root._editor;
   if (!ed)
     return true;
-  const control = dfDollar5(ed.editor.el).find("input, select, textarea").get(0) ?? ed.editor.el;
+  const control = editorControl(ed.editor);
   const { path, row } = ed;
   const key = row._path[row._path.length - 1];
   let problem = ed.editor.validate?.() ?? "";
@@ -1695,16 +1686,17 @@ function init5() {
     dfDollar5(root).on("keydown", (e) => {
       const t = e.target;
       if (root._editor && root._editor.cell.contains(t)) {
-        if (e.key === "Escape") {
+        const act = editorKey(e, root._editor.editor);
+        if (act === "cancel") {
           e.preventDefault();
           e.stopPropagation();
           const { path } = root._editor;
           root.api.setState("default", { editing: null });
           restoreFocus(root, path, "stay");
-        } else if (e.key === "Enter" && (!(root._editor.editor.multiline || root._editor.editor.ownsEnter) || e.metaKey || e.ctrlKey)) {
+        } else if (act === "commit") {
           e.preventDefault();
           commit(root);
-        } else if (e.key === "Tab") {
+        } else if (act === "next" || act === "prev") {
           const targets = focusTargets(root);
           const at = targets.findIndex((x) => x.closest("tr") === root._editor.row);
           const edge = e.shiftKey ? at <= 0 : at >= targets.length - 1;
@@ -1752,26 +1744,1395 @@ function init5() {
 init5();
 new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
-// dist/components/window/window.js
+// dist/components/property-tree/property-tree.js
 var __df$core6 = globalThis.df$;
 var __df$shared6 = __df$core6 && __df$core6.shadcn && __df$core6.shadcn.shared;
 if (!__df$shared6 || __df$shared6.abi !== "0.9.16") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals6, defussQuery: defussQuery6, componentState: componentState6, bindComponent: bindComponent6 } = __df$shared6;
+var { defussGlobals: defussGlobals6, defussQuery: defussQuery6, componentState: componentState6, bindComponent: bindComponent6, virtualWindow, sizerHeight, scrollIntoViewTop, asEditor: asEditor2, builtinEditor: builtinEditor2, editorControl: editorControl2, editorKey: editorKey2, focusEditor: focusEditor2, valueType: valueType2 } = __df$shared6;
 var df$6 = defussGlobals6();
 var dfDollar6 = defussQuery6();
+var propertyTreeStates = ["default", "editing"];
+var DSON_URL = "https://cdn.jsdelivr.net/npm/defuss-dson@1.1.2/dist/index.mjs";
+var dsonModule = null;
+function loadDson(url = DSON_URL) {
+  const vendorUrl = url;
+  dsonModule ??= Promise.resolve().then(() => import(/* @vite-ignore */ vendorUrl)).then((m) => m.DSON ?? m.default);
+  return dsonModule;
+}
+function kindOf(v) {
+  if (v === null)
+    return "null";
+  const t = typeof v;
+  if (t !== "object")
+    return t;
+  if (Array.isArray(v))
+    return "array";
+  if (v instanceof Map)
+    return "map";
+  if (v instanceof Set)
+    return "set";
+  if (v instanceof Date)
+    return "date";
+  if (v instanceof RegExp)
+    return "regexp";
+  if (v instanceof Error)
+    return "error";
+  if (ArrayBuffer.isView(v))
+    return "typed";
+  return "object";
+}
+var CONTAINERS = new Set(["object", "array", "map", "set"]);
+var isContainer = (v) => CONTAINERS.has(kindOf(v));
+function entries(v) {
+  const kind = kindOf(v);
+  if (kind === "array")
+    return v.map((x, i) => [i, i, x]);
+  if (kind === "map")
+    return [...v].map(([k, x], i) => [i, k, x]);
+  if (kind === "set")
+    return [...v].map((x, i) => [i, i, x]);
+  if (kind === "object")
+    return Object.keys(v).map((k) => [k, k, v[k]]);
+  return [];
+}
+var sizeOf2 = (v) => {
+  const kind = kindOf(v);
+  return kind === "map" || kind === "set" ? v.size : kind === "array" ? v.length : Object.keys(v).length;
+};
+function childAt(c, token) {
+  const kind = kindOf(c);
+  if (kind === "map")
+    return [...c.values()][token];
+  if (kind === "set")
+    return [...c][token];
+  return c?.[token];
+}
+function keyAt(c, token) {
+  return kindOf(c) === "map" ? [...c.keys()][token] : token;
+}
+function refill(c, list) {
+  c.clear();
+  if (c instanceof Map)
+    for (const [k, v] of list)
+      c.set(k, v);
+  else
+    for (const v of list)
+      c.add(v);
+}
+function setChild(c, token, value) {
+  const kind = kindOf(c);
+  if (kind === "map") {
+    const list = [...c];
+    list[token] = [list[token][0], value];
+    refill(c, list);
+  } else if (kind === "set") {
+    const list = [...c];
+    list[token] = value;
+    refill(c, list);
+  } else
+    c[token] = value;
+}
+var pointerOf = (path) => path.map((t) => "/" + String(t).replace(/~/g, "~0").replace(/\//g, "~1")).join("");
+function toPath2(p) {
+  if (Array.isArray(p))
+    return p;
+  if (!p)
+    return [];
+  return p.split("/").slice(1).map((t) => t.replace(/~1/g, "/").replace(/~0/g, "~")).map((t) => /^\d+$/.test(t) ? Number(t) : t);
+}
+function locate(tree, path) {
+  let parent = tree._holder;
+  let token = "value";
+  let node = tree._holder.value;
+  for (const t of path) {
+    if (!isContainer(node))
+      return null;
+    const tok = kindOf(node) === "object" ? String(t) : Number(t);
+    parent = node;
+    token = tok;
+    node = childAt(node, tok);
+  }
+  return { parent, token, node };
+}
+function snapshot(c) {
+  const kind = kindOf(c);
+  if (kind === "map")
+    return { kind, list: [...c] };
+  if (kind === "set")
+    return { kind, list: [...c] };
+  if (kind === "array")
+    return { kind, list: c.slice() };
+  return { kind, list: Object.keys(c).map((k) => [k, c[k]]) };
+}
+function restore2(c, snap) {
+  if (snap.kind === "map" || snap.kind === "set")
+    refill(c, snap.list);
+  else if (snap.kind === "array")
+    c.splice(0, c.length, ...snap.list);
+  else {
+    for (const k of Object.keys(c))
+      delete c[k];
+    for (const [k, v] of snap.list)
+      c[k] = v;
+  }
+}
+function firstPaths(root) {
+  const first = new Map;
+  let level = [[root, []]];
+  while (level.length) {
+    const next = [];
+    for (const [v, path] of level) {
+      if (!isContainer(v) || first.has(v))
+        continue;
+      first.set(v, pointerOf(path));
+      for (const [token, , child] of entries(v))
+        if (isContainer(child))
+          next.push([child, [...path, token]]);
+    }
+    level = next;
+  }
+  return first;
+}
+function summary(v, kind = kindOf(v)) {
+  switch (kind) {
+    case "string":
+      return JSON.stringify(v);
+    case "bigint":
+      return `${v}n`;
+    case "date":
+      return Number.isNaN(v.getTime()) ? "Invalid Date" : v.toISOString();
+    case "regexp":
+    case "symbol":
+      return String(v);
+    case "function":
+      return `ƒ ${v.name || "anonymous"}()`;
+    case "error":
+      return `${v.name}: ${v.message}`;
+    case "typed":
+      return `${v.constructor.name}(${v.length ?? v.byteLength}) [${Array.from(v.slice?.(0, 8) ?? []).join(", ")}${(v.length ?? 0) > 8 ? ", ..." : ""}]`;
+    case "array": {
+      const n = v.length;
+      return `[${n} ${n === 1 ? "item" : "items"}]`;
+    }
+    case "map":
+      return `Map(${v.size})`;
+    case "set":
+      return `Set(${v.size})`;
+    case "object": {
+      const n = Object.keys(v).length;
+      return `{${n} ${n === 1 ? "key" : "keys"}}`;
+    }
+    default:
+      return String(v);
+  }
+}
+var keyLabel = (key, parentKind) => parentKind === "map" ? typeof key === "string" ? JSON.stringify(key) : summary(key) : String(key);
+function buildRows(tree) {
+  const root = tree._holder.value;
+  const open = new Set(configOf2(tree).expanded ?? []);
+  const first = tree._first;
+  const rows = [];
+  const walk = (v, path, depth, key, parentKind) => {
+    const pointer = pointerOf(path);
+    const kind = kindOf(v);
+    const row = { path, pointer, depth, key, parentKind, value: v, kind };
+    if (CONTAINERS.has(kind)) {
+      const at = first.get(v);
+      if (at !== pointer) {
+        row.isRef = true;
+        row.ref = at;
+        row.cycle = pointer.startsWith(at + "/") || at === "";
+      } else {
+        row.container = true;
+        row.count = sizeOf2(v);
+        row.open = open.has(pointer);
+      }
+    }
+    rows.push(row);
+    if (row.container && row.open)
+      for (const [token, k, child] of entries(v))
+        walk(child, [...path, token], depth + 1, k, kind);
+  };
+  walk(root, [], 0, null, null);
+  if (tree.hasAttribute("data-hide-root") && rows[0]?.container) {
+    rows.shift();
+    for (const r of rows)
+      r.depth--;
+  }
+  tree._rows = rows;
+}
+var configOf2 = (tree) => tree._config ?? tree.store?.value.config ?? {};
+var optionsOf2 = (tree) => tree._options ?? {};
+var contextOf = (tree, row) => {
+  const at = locate(tree, row.path);
+  return {
+    path: [...row.path],
+    pointer: row.pointer,
+    key: row.key,
+    kind: row.kind,
+    parent: row.path.length ? at?.parent : null,
+    root: tree._holder.value,
+    tree
+  };
+};
+function fillRow(tree, el, row, index) {
+  el._row = row;
+  el._index = index;
+  el.dataset.kind = row.kind;
+  el.style.setProperty("--depth", String(row.depth));
+  el.setAttribute("aria-level", String(row.depth + 1));
+  if (row.container)
+    el.setAttribute("aria-expanded", String(row.open));
+  else
+    el.removeAttribute("aria-expanded");
+  el.toggleAttribute("data-ref", !!row.isRef);
+  delete el.dataset.editing;
+  const [toggle, key, value, type, actions] = el.children;
+  toggle.toggleAttribute("data-leaf", !row.container);
+  key.textContent = row.key === null ? tree.dataset.rootLabel ?? "root" : keyLabel(row.key, row.parentKind);
+  key.dataset.keyKind = row.key === null ? "root" : row.parentKind === "object" ? "key" : row.parentKind === "map" ? "map" : "index";
+  value.textContent = "";
+  value.dataset.kind = row.kind;
+  const custom = !row.isRef && optionsOf2(tree).renderValue?.(value, row.value, contextOf(tree, row));
+  if (!custom) {
+    if (row.isRef) {
+      const link = document.createElement("button");
+      link.type = "button";
+      link.className = "property-tree-ref";
+      link.tabIndex = -1;
+      link.dataset.pointer = row.ref;
+      link.textContent = `${row.cycle ? "cycle" : "ref"} ${row.ref || "/"}`;
+      value.append(link);
+    } else if (row.kind === "string" && /^#[0-9a-f]{6}$/i.test(row.value)) {
+      const swatch = document.createElement("i");
+      swatch.className = "property-tree-swatch";
+      swatch.style.background = row.value;
+      swatch.setAttribute("aria-hidden", "true");
+      value.append(swatch, document.createTextNode(summary(row.value)));
+    } else
+      value.textContent = summary(row.value, row.kind);
+  }
+  type.textContent = row.isRef ? "ref" : row.kind === "typed" ? row.value.constructor.name : row.kind;
+  actions.setAttribute("aria-label", `Actions for ${key.textContent}`);
+  const label = key.textContent + ": " + (row.isRef ? `reference to ${row.ref || "the root"}` : summary(row.value, row.kind));
+  el.setAttribute("aria-label", label);
+}
+function renderRows2(tree) {
+  const pool = tree._pool;
+  if (!pool || !tree._rows)
+    return;
+  const rows = tree._rows;
+  const h = tree._rowHeight;
+  const win = virtualWindow(tree._viewport.scrollTop, tree._viewport.clientHeight, h, rows.length);
+  tree._sizer.style.height = `${sizerHeight(rows.length, h)}px`;
+  while (pool.children.length < win.count) {
+    const el = document.createElement("div");
+    el.className = "property-tree-row";
+    el.setAttribute("role", "treeitem");
+    el.id = `${tree._uid}-row-${pool.children.length}`;
+    for (const part of ["toggle", "key", "value", "type"]) {
+      const span = document.createElement("span");
+      span.className = `property-tree-${part}`;
+      if (part === "toggle" || part === "type")
+        span.setAttribute("aria-hidden", "true");
+      el.append(span);
+    }
+    const actions = document.createElement("button");
+    actions.type = "button";
+    actions.className = "property-tree-actions";
+    actions.tabIndex = -1;
+    actions.setAttribute("aria-haspopup", "menu");
+    el.append(actions);
+    pool.append(el);
+  }
+  while (pool.children.length > win.count)
+    pool.lastElementChild.remove();
+  pool.style.translate = `0 ${win.shift}px`;
+  const selected = configOf2(tree).selected ?? null;
+  let active = null;
+  let edShown = false;
+  for (let i = 0;i < pool.children.length; i++) {
+    const el = pool.children[i];
+    const index = win.first + i;
+    const row = rows[index];
+    const key = `${tree._gen}:${index}`;
+    if (el._key !== key) {
+      el._key = key;
+      fillRow(tree, el, row, index);
+    }
+    const ed = tree._editor;
+    if (ed && ed.pointer === row.pointer) {
+      edShown = true;
+      if (!el.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || document.activeElement === document.body;
+        placeEditor(el, ed);
+        if (focused)
+          editorControl2(ed.editor).focus({ preventScroll: true });
+      }
+    }
+    el.setAttribute("aria-selected", String(row.pointer === selected));
+    el.toggleAttribute("data-active", index === tree._active);
+    if (index === tree._active)
+      active = el;
+  }
+  if (active)
+    tree._viewport.setAttribute("aria-activedescendant", active.id);
+  else
+    tree._viewport.removeAttribute("aria-activedescendant");
+  if (tree._editor && !edShown && !tree._writing)
+    queueMicrotask(() => {
+      if (tree._editor && !commit2(tree, false))
+        cancel(tree, false);
+    });
+}
+function refresh(tree, structural = true) {
+  if (structural)
+    tree._first = firstPaths(tree._holder.value);
+  buildRows(tree);
+  tree._gen = (tree._gen || 0) + 1;
+  tree._active = Math.max(0, Math.min(tree._rows.length - 1, tree._active ?? 0));
+  renderRows2(tree);
+}
+function activate(tree, index) {
+  const total = tree._rows?.length ?? 0;
+  if (!total)
+    return;
+  tree._active = Math.max(0, Math.min(total - 1, index));
+  const vp = tree._viewport;
+  vp.scrollTop = scrollIntoViewTop(tree._active, vp.scrollTop, vp.clientHeight, tree._rowHeight, total);
+  renderRows2(tree);
+}
+var indexOf = (tree, pointer) => tree._rows.findIndex((r) => r.pointer === pointer);
+function change(tree, detail, containers, apply) {
+  if (tree.hasAttribute("data-readonly"))
+    return false;
+  const before = new CustomEvent("property-tree-beforechange", {
+    bubbles: true,
+    cancelable: true,
+    detail
+  });
+  if (!tree.dispatchEvent(before)) {
+    tree._viewPatch = null;
+    return false;
+  }
+  const unique = [...new Set(containers)];
+  const was = unique.map((c) => [c, snapshot(c)]);
+  apply();
+  const now = unique.map((c) => [c, snapshot(c)]);
+  tree._undo.push({ was, now, detail });
+  tree._redo = [];
+  done(tree, detail);
+  return true;
+}
+function done(tree, detail) {
+  tree._writing = true;
+  const view = tree._viewPatch ?? {};
+  tree._viewPatch = null;
+  propertyTreeApi.setState(tree, "default", {
+    ...view,
+    version: (configOf2(tree).version ?? 0) + 1,
+    editing: null,
+    editingKey: false
+  });
+  refresh(tree);
+  tree._writing = false;
+  tree.dispatchEvent(new CustomEvent("property-tree-change", { bubbles: true, detail }));
+}
+function undoStep(tree, back) {
+  const from = back ? tree._undo : tree._redo;
+  const step = from.pop();
+  if (!step)
+    return false;
+  for (const [c, snap] of back ? step.was : step.now)
+    restore2(c, snap);
+  (back ? tree._redo : tree._undo).push(step);
+  done(tree, { ...step.detail, op: back ? "undo" : "redo" });
+  return true;
+}
+function convert(value, kind) {
+  const from = kindOf(value);
+  const text = from === "string" ? value : CONTAINERS.has(from) ? "" : summary(value, from);
+  switch (kind) {
+    case "string":
+      return from === "string" ? value : text;
+    case "number": {
+      const n = Number(from === "bigint" ? Number(value) : value);
+      return Number.isFinite(n) ? n : 0;
+    }
+    case "boolean":
+      return from === "string" ? value === "true" : !!value;
+    case "null":
+      return null;
+    case "object":
+      return from === "array" ? Object.assign({}, value) : from === "map" ? Object.fromEntries(value) : {};
+    case "array":
+      return from === "object" ? Object.values(value) : from === "set" || from === "map" ? [...value.values()] : [];
+    case "map":
+      return from === "object" ? new Map(Object.entries(value)) : new Map;
+    case "set":
+      return from === "array" ? new Set(value) : new Set;
+    case "date":
+      return new Date(from === "string" || from === "number" ? value : Date.now());
+    case "bigint":
+      try {
+        return BigInt(from === "number" ? Math.trunc(value) : from === "string" ? value : 0);
+      } catch {
+        return 0n;
+      }
+    default:
+      return value;
+  }
+}
+function freeKey(c, name) {
+  const has = (k) => c instanceof Map ? c.has(k) : Object.prototype.hasOwnProperty.call(c, k);
+  if (!has(name))
+    return name;
+  let n = 2;
+  while (has(`${name} ${n}`))
+    n++;
+  return `${name} ${n}`;
+}
+var ops = {
+  set(tree, path, value) {
+    const at = locate(tree, path);
+    if (!at)
+      return false;
+    return change(tree, { op: "set", path, pointer: pointerOf(path), value, oldValue: at.node }, [at.parent], () => setChild(at.parent, at.token, value));
+  },
+  type(tree, path, kind) {
+    const at = locate(tree, path);
+    if (!at || kindOf(at.node) === kind)
+      return false;
+    const value = convert(at.node, kind);
+    return change(tree, { op: "type", path, pointer: pointerOf(path), value, oldValue: at.node }, [at.parent], () => setChild(at.parent, at.token, value));
+  },
+  rename(tree, path, key) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return false;
+    const c = at.parent;
+    const kind = kindOf(c);
+    const old = keyAt(c, at.token);
+    if (old === key || kind !== "object" && kind !== "map")
+      return false;
+    const newPath = kind === "object" ? [...path.slice(0, -1), String(key)] : path;
+    return change(tree, { op: "rename", path: newPath, pointer: pointerOf(newPath), value: key, oldValue: old }, [c], () => {
+      if (kind === "map")
+        refill(c, [...c].map(([k, v]) => [k === old ? key : k, v]));
+      else {
+        const list = Object.keys(c).map((k) => [k === old ? String(key) : k, c[k]]);
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+      }
+      const before = pointerOf(path);
+      const after = pointerOf(newPath);
+      if (before !== after)
+        tree._viewPatch = {
+          expanded: (configOf2(tree).expanded ?? []).map((p) => p === before || p.startsWith(before + "/") ? after + p.slice(before.length) : p)
+        };
+    });
+  },
+  add(tree, path, key, value = "", index) {
+    const at = locate(tree, path);
+    if (!at || !isContainer(at.node))
+      return null;
+    const c = at.node;
+    const kind = kindOf(c);
+    let token;
+    if (kind === "array")
+      token = index ?? c.length;
+    else if (kind === "set")
+      token = c.size;
+    else if (kind === "map")
+      token = c.size;
+    else
+      token = freeKey(c, key == null ? "key" : String(key));
+    const newPath = [...path, token];
+    const ok = change(tree, { op: "add", path: newPath, pointer: pointerOf(newPath), value, oldValue: undefined }, [c], () => {
+      if (kind === "array")
+        c.splice(token, 0, value);
+      else if (kind === "set")
+        c.add(value);
+      else if (kind === "map")
+        c.set(freeKey(c, key == null ? "key" : key), value);
+      else
+        c[token] = value;
+      const open = new Set(configOf2(tree).expanded ?? []);
+      open.add(pointerOf(path));
+      tree._viewPatch = { expanded: [...open] };
+    });
+    return ok ? newPath : null;
+  },
+  remove(tree, path) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return false;
+    const c = at.parent;
+    const kind = kindOf(c);
+    return change(tree, { op: "remove", path, pointer: pointerOf(path), value: undefined, oldValue: at.node }, [c], () => {
+      if (kind === "array")
+        c.splice(at.token, 1);
+      else if (kind === "map" || kind === "set")
+        refill(c, [...c].filter((_, i) => i !== at.token));
+      else
+        delete c[at.token];
+    });
+  },
+  duplicate(tree, path) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return null;
+    const c = at.parent;
+    const kind = kindOf(c);
+    let copy;
+    try {
+      copy = structuredClone(at.node);
+    } catch {
+      copy = at.node;
+    }
+    let newPath = path;
+    const ok = change(tree, { op: "add", path, pointer: pointerOf(path), value: copy, oldValue: undefined }, [c], () => {
+      if (kind === "array") {
+        c.splice(at.token + 1, 0, copy);
+        newPath = [...path.slice(0, -1), at.token + 1];
+      } else if (kind === "set") {
+        const list = [...c];
+        list.splice(at.token + 1, 0, copy);
+        refill(c, list);
+      } else if (kind === "map") {
+        const list = [...c];
+        const k = keyAt(c, at.token);
+        list.splice(at.token + 1, 0, [
+          freeKey(c, typeof k === "string" ? `${k} copy` : `${String(k)} copy`),
+          copy
+        ]);
+        refill(c, list);
+        newPath = [...path.slice(0, -1), at.token + 1];
+      } else {
+        const name = freeKey(c, `${at.token} copy`);
+        const list = Object.keys(c).flatMap((k) => k === at.token ? [
+          [k, c[k]],
+          [name, copy]
+        ] : [[k, c[k]]]);
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+        newPath = [...path.slice(0, -1), name];
+      }
+    });
+    return ok ? newPath : null;
+  },
+  move(tree, path, by) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return null;
+    const c = at.parent;
+    const kind = kindOf(c);
+    const keys = kind === "object" ? Object.keys(c) : null;
+    const from = keys ? keys.indexOf(at.token) : at.token;
+    const to = from + by;
+    const size = keys ? keys.length : sizeOf2(c);
+    if (to < 0 || to >= size)
+      return null;
+    const newPath = [...path.slice(0, -1), keys ? at.token : to];
+    const ok = change(tree, { op: "move", path: newPath, pointer: pointerOf(newPath), value: to, oldValue: from }, [c], () => {
+      const list = keys ? keys.map((k) => [k, c[k]]) : kind === "array" ? c.slice() : [...c];
+      const [item] = list.splice(from, 1);
+      list.splice(to, 0, item);
+      if (kind === "array")
+        c.splice(0, c.length, ...list);
+      else if (kind === "map" || kind === "set")
+        refill(c, list);
+      else {
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+      }
+    });
+    return ok ? newPath : null;
+  }
+};
+function jsonSafe(v, seen = new Set) {
+  const kind = kindOf(v);
+  if (kind === "object" || kind === "array") {
+    if (seen.has(v))
+      return false;
+    seen.add(v);
+    return entries(v).every(([, , x]) => jsonSafe(x, seen));
+  }
+  return kind === "string" || kind === "boolean" || kind === "null" || kind === "number" && Number.isFinite(v);
+}
+function defaultEditor2(row) {
+  const v = row.value;
+  const input = (text, read, check) => {
+    const el = document.createElement("input");
+    el.className = "input";
+    el.dataset.size = "xs";
+    el.value = text;
+    return { el, getValue: () => read(el.value), validate: () => check(el.value) };
+  };
+  switch (row.kind) {
+    case "string":
+    case "number":
+    case "boolean":
+      return builtinEditor2(valueType2(v), v, null, { colorClass: "property-tree-color-input" });
+    case "null":
+    case "undefined":
+      return input("", (s) => {
+        if (s.trim() === "")
+          return row.kind === "null" ? null : undefined;
+        try {
+          return JSON.parse(s);
+        } catch {
+          return s;
+        }
+      }, () => "");
+    case "bigint":
+      return input(String(v), (s) => BigInt(s.trim()), (s) => /^\s*-?\d+\s*$/.test(s) ? "" : "A whole number");
+    case "date": {
+      const local = Number.isNaN(v.getTime()) ? "" : new Date(v.getTime() - v.getTimezoneOffset() * 60000).toISOString().slice(0, 23);
+      const el = document.createElement("input");
+      el.type = "datetime-local";
+      el.step = "0.001";
+      el.className = "input";
+      el.dataset.size = "xs";
+      el.value = local;
+      return { el, getValue: () => new Date(el.value), validate: () => el.value ? "" : "A date and time" };
+    }
+    case "regexp":
+      return input(String(v), (s) => {
+        const m = /^\/(.*)\/([dgimsuvy]*)$/s.exec(s.trim());
+        return m ? new RegExp(m[1], m[2]) : new RegExp(s);
+      }, (s) => {
+        try {
+          const m = /^\/(.*)\/([dgimsuvy]*)$/s.exec(s.trim());
+          if (m)
+            new RegExp(m[1], m[2]);
+          else
+            new RegExp(s);
+          return "";
+        } catch (e) {
+          return String(e.message);
+        }
+      });
+    case "object":
+    case "array":
+      return jsonSafe(v) ? builtinEditor2("json", v) : null;
+    default:
+      return null;
+  }
+}
+function placeEditor(el, ed) {
+  ed.el = el;
+  el.dataset.editing = ed.key ? "key" : "value";
+  const cell = el.children[ed.key ? 1 : 2];
+  cell.textContent = "";
+  cell.append(ed.wrap);
+}
+function openEditor2(tree, pointer, key = false) {
+  if (tree.hasAttribute("data-readonly"))
+    return false;
+  if (tree._editor && !commit2(tree, false))
+    return false;
+  const path = toPath2(pointer);
+  if (indexOf(tree, pointer) < 0)
+    reveal(tree, path);
+  const index = indexOf(tree, pointer);
+  const row = tree._rows[index];
+  if (!row || row.isRef)
+    return false;
+  const ctx = contextOf(tree, row);
+  let editor;
+  if (key) {
+    if (row.key === null || row.parentKind !== "object" && !(row.parentKind === "map" && typeof row.key === "string"))
+      return false;
+    const el = document.createElement("input");
+    el.className = "input";
+    el.dataset.size = "xs";
+    el.value = String(row.key);
+    editor = { el, getValue: () => el.value, validate: () => el.value === "" ? "A key" : "" };
+  } else {
+    const custom = optionsOf2(tree).getEditorFn?.([...row.path], row.value, ctx);
+    if (custom === false)
+      return false;
+    editor = asEditor2(custom) ?? defaultEditor2(row);
+  }
+  if (!editor)
+    return false;
+  activate(tree, index);
+  const wrap = document.createElement("span");
+  wrap.className = "property-tree-editor";
+  wrap.append(editor.el);
+  const ed = { pointer, path: row.path, row, key, editor, wrap, el: null };
+  tree._editor = ed;
+  const el = dfDollar6(tree._pool).children(".property-tree-row").toArray().find((r) => r._index === index);
+  if (el)
+    placeEditor(el, ed);
+  wrap.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    const act = editorKey2(e, editor);
+    if (!act)
+      return;
+    e.preventDefault();
+    if (act === "cancel")
+      cancel(tree);
+    else if (commit2(tree) && (act === "next" || act === "prev"))
+      activate(tree, (tree._active ?? 0) + (act === "next" ? 1 : -1));
+  });
+  for (const type of ["click", "dblclick", "pointerdown"])
+    wrap.addEventListener(type, (e) => e.stopPropagation());
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commit2(tree);
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (tree._editor === ed && !wrap.contains(document.activeElement))
+        commit2(tree, false);
+    }, 0);
+  });
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "editing", { editing: pointer, editingKey: key });
+  tree._writing = false;
+  focusEditor2(editor);
+  return true;
+}
+function cancel(tree, focus = true) {
+  if (!tree._editor)
+    return;
+  tree._editor = null;
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false });
+  tree._writing = false;
+  tree._gen++;
+  renderRows2(tree);
+  if (focus)
+    tree._viewport.focus({ preventScroll: true });
+}
+function commit2(tree, focus = true) {
+  const ed = tree._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = { ...contextOf(tree, ed.row), kind: ed.key ? "key" : ed.row.kind };
+  if (!problem && ed.key) {
+    const at = locate(tree, ed.path);
+    const c = at?.parent;
+    const taken = c instanceof Map ? c.has(value) : Object.prototype.hasOwnProperty.call(c ?? {}, value);
+    if (value !== ed.row.key && taken)
+      problem = `"${value}" is already a key here`;
+  }
+  if (!problem) {
+    const answer = optionsOf2(tree).validateFn?.([...ed.path], value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    const control = editorControl2(ed.editor);
+    control.setAttribute("aria-invalid", "true");
+    let note = dfDollar6(ed.wrap).children(".property-tree-error").get(0);
+    if (!note) {
+      note = document.createElement("span");
+      note.className = "property-tree-error";
+      note.setAttribute("role", "alert");
+      note.id = `pt-error-${Math.random().toString(36).slice(2, 8)}`;
+      ed.wrap.append(note);
+      control.setAttribute("aria-describedby", note.id);
+    }
+    dfDollar6(note).text(problem);
+    return false;
+  }
+  tree._editor = null;
+  let changed;
+  if (ed.key)
+    changed = value !== ed.row.key && ops.rename(tree, ed.path, value);
+  else {
+    const same = value === ed.row.value || typeof value !== "object" && Object.is(value, ed.row.value);
+    changed = !same && ops.set(tree, ed.path, value);
+  }
+  if (!changed)
+    cancel(tree, false);
+  else if (ed.key) {
+    const at = indexOf(tree, pointerOf(ed.row.parentKind === "object" ? [...ed.path.slice(0, -1), String(value)] : ed.path));
+    if (at >= 0)
+      activate(tree, at);
+  }
+  if (focus)
+    tree._viewport.focus({ preventScroll: true });
+  return true;
+}
+var TYPES = ["string", "number", "boolean", "null", "object", "array", "map", "set", "date", "bigint"];
+function menuFor(tree, row) {
+  const readonly = tree.hasAttribute("data-readonly");
+  const items = [];
+  const isRoot = row.key === null;
+  if (row.container)
+    items.push({
+      action: "add",
+      label: row.kind === "object" || row.kind === "map" ? "Add property" : "Add item",
+      disabled: readonly
+    });
+  if (row.container)
+    items.push({ action: "toggle", label: row.open ? "Collapse" : "Expand" });
+  if (row.isRef)
+    items.push({ action: "follow", label: "Go to the first appearance" });
+  if (!row.isRef)
+    items.push({ action: "edit", label: "Edit value", disabled: readonly || !defaultEditor2(row) });
+  if (!isRoot && (row.parentKind === "object" || row.parentKind === "map"))
+    items.push({
+      action: "rename",
+      label: "Rename key",
+      disabled: readonly || row.parentKind === "map" && typeof row.key !== "string"
+    });
+  if (!isRoot) {
+    items.push({ action: "duplicate", label: "Duplicate", disabled: readonly, sep: true });
+    items.push({ action: "up", label: "Move up", disabled: readonly });
+    items.push({ action: "down", label: "Move down", disabled: readonly });
+  }
+  if (!row.isRef)
+    TYPES.forEach((t, i) => items.push({ action: `type:${t}`, label: `As ${t}`, checked: row.kind === t, disabled: readonly, sep: i === 0 }));
+  items.push({ action: "copy-path", label: "Copy path", sep: true });
+  items.push({ action: "copy-json", label: "Copy as JSON" });
+  if (!isRoot)
+    items.push({ action: "remove", label: "Delete", disabled: readonly, sep: true });
+  return items;
+}
+function openMenu(tree, index, anchor) {
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  activate(tree, index);
+  const menu = tree._menu;
+  menu.textContent = "";
+  for (const item of menuFor(tree, row)) {
+    if (item.sep && menu.children.length) {
+      const sep = document.createElement("div");
+      sep.className = "property-tree-menu-separator";
+      sep.setAttribute("role", "separator");
+      menu.append(sep);
+    }
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "property-tree-menu-item";
+    b.dataset.action = item.action;
+    b.setAttribute("role", item.checked !== undefined ? "menuitemradio" : "menuitem");
+    if (item.checked !== undefined)
+      b.setAttribute("aria-checked", String(item.checked));
+    b.disabled = !!item.disabled;
+    b.tabIndex = -1;
+    b.textContent = item.label;
+    menu.append(b);
+  }
+  menu._pointer = row.pointer;
+  const el = anchor ?? dfDollar6(tree._pool).children(".property-tree-row").toArray().find((r) => r._index === index)?.lastElementChild;
+  if (el) {
+    for (const r of dfDollar6(tree._pool).find(".property-tree-actions").toArray())
+      r.style.removeProperty("anchor-name");
+    el.style.setProperty("anchor-name", `--${tree._uid}-menu`);
+    el.setAttribute("aria-expanded", "true");
+    menu._anchor = el;
+  }
+  menu.style.setProperty("position-anchor", `--${tree._uid}-menu`);
+  if (!menu.matches(":popover-open"))
+    menu.showPopover();
+  dfDollar6(menu).children("button:not(:disabled)").get(0)?.focus();
+}
+async function runAction(tree, pointer, action) {
+  const index = indexOf(tree, pointer);
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  const path = row.path;
+  if (action === "add") {
+    const added = ops.add(tree, path, row.kind === "map" ? "key" : "key", "");
+    if (added) {
+      const p = pointerOf(added);
+      openEditor2(tree, p, row.kind === "object" || row.kind === "map");
+    }
+  } else if (action === "toggle")
+    toggle(tree, pointer);
+  else if (action === "follow")
+    reveal(tree, toPath2(row.ref), true);
+  else if (action === "edit")
+    openEditor2(tree, pointer);
+  else if (action === "rename")
+    openEditor2(tree, pointer, true);
+  else if (action === "duplicate") {
+    const p = ops.duplicate(tree, path);
+    if (p)
+      activate(tree, indexOf(tree, pointerOf(p)));
+  } else if (action === "up" || action === "down") {
+    const p = ops.move(tree, path, action === "up" ? -1 : 1);
+    if (p)
+      activate(tree, indexOf(tree, pointerOf(p)));
+  } else if (action.startsWith("type:"))
+    ops.type(tree, path, action.slice(5));
+  else if (action === "remove")
+    ops.remove(tree, path);
+  else if (action === "copy-path")
+    await navigator.clipboard?.writeText(pointer || "/").catch(() => {});
+  else if (action === "copy-json")
+    await navigator.clipboard?.writeText(toJson(row.value, 2)).catch(() => {});
+  if (!tree._editor)
+    tree._viewport.focus({ preventScroll: true });
+}
+function toJson(value, space) {
+  const first = firstPaths(value);
+  const seen = new Set;
+  const plain = (v, pointer) => {
+    const kind = kindOf(v);
+    if (CONTAINERS.has(kind)) {
+      if (seen.has(v) || first.get(v) !== pointer)
+        return { $ref: first.get(v) || "#" };
+      seen.add(v);
+    }
+    switch (kind) {
+      case "array":
+        return v.map((x, i) => plain(x, `${pointer}/${i}`));
+      case "set":
+        return [...v].map((x, i) => plain(x, `${pointer}/${i}`));
+      case "map":
+        return Object.fromEntries([...v].map(([k, x], i) => [String(k), plain(x, `${pointer}/${i}`)]));
+      case "object":
+        return Object.fromEntries(Object.keys(v).map((k) => [k, plain(v[k], `${pointer}/${k.replace(/~/g, "~0").replace(/\//g, "~1")}`)]));
+      case "bigint":
+        return String(v);
+      case "date":
+        return Number.isNaN(v.getTime()) ? null : v.toISOString();
+      case "regexp":
+        return String(v);
+      case "typed":
+        return Array.from(v);
+      case "undefined":
+      case "function":
+      case "symbol":
+        return null;
+      case "error":
+        return { name: v.name, message: v.message };
+      default:
+        return v;
+    }
+  };
+  return JSON.stringify(plain(value, ""), null, space);
+}
+function setOpen(tree, pointers) {
+  tree._writing = true;
+  propertyTreeApi.setState(tree, tree.store.value.name, { expanded: pointers });
+  tree._writing = false;
+  refresh(tree, false);
+}
+function toggle(tree, pointer, open) {
+  const set = new Set(configOf2(tree).expanded ?? []);
+  const now = open ?? !set.has(pointer);
+  if (now)
+    set.add(pointer);
+  else
+    for (const p of [...set])
+      if (p === pointer || p.startsWith(pointer + "/"))
+        set.delete(p);
+  setOpen(tree, [...set]);
+}
+function reveal(tree, path, select = false) {
+  const set = new Set(configOf2(tree).expanded ?? []);
+  for (let i = 0;i < path.length; i++)
+    set.add(pointerOf(path.slice(0, i)));
+  setOpen(tree, [...set]);
+  const index = indexOf(tree, pointerOf(path));
+  if (index < 0)
+    return false;
+  activate(tree, index);
+  if (select)
+    selectRow(tree, index);
+  return true;
+}
+function selectRow(tree, index) {
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  tree._writing = true;
+  propertyTreeApi.setState(tree, tree.store.value.name, { selected: row.pointer });
+  tree._writing = false;
+  renderRows2(tree);
+}
+function applyMarkup6(el, state) {
+  dfDollar6(el).attr("data-editing", state.name === "editing" && state.config?.editing != null ? String(state.config.editing) : null);
+}
+function triggerStateChange6(tree, state, incoming) {
+  tree._config = state.config ?? {};
+  applyMarkup6(tree, state);
+  if (tree._writing || !tree._holder)
+    return;
+  if ("expanded" in (incoming ?? {}) || "version" in (incoming ?? {}))
+    refresh(tree, "version" in (incoming ?? {}));
+  else
+    renderRows2(tree);
+  if (state.name === "editing" && state.config?.editing != null) {
+    if (tree._editor?.pointer !== state.config.editing || tree._editor?.key !== !!state.config.editingKey) {
+      if (!openEditor2(tree, state.config.editing, !!state.config.editingKey))
+        queueMicrotask(() => propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false }));
+    }
+  } else if (tree._editor)
+    cancel(tree, false);
+}
+var propertyTreeApi = componentState6({
+  component: "property-tree",
+  states: propertyTreeStates,
+  mergeConfig: true,
+  apply: (tree, state, _previous, incoming) => triggerStateChange6(tree, state, incoming),
+  markup: (el, state) => applyMarkup6(el, state)
+});
+df$6.propertyTreeApi = propertyTreeApi;
+df$6.propertyTreeStates = propertyTreeStates;
+var resolve4 = (target) => typeof target === "string" ? dfDollar6(target).get(0) : target;
+function setValue(tree, value) {
+  tree._holder = { value };
+  tree._undo = [];
+  tree._redo = [];
+  tree._active = 0;
+  tree._editor = null;
+  const open = isContainer(value) ? [""] : [];
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "default", {
+    expanded: open,
+    selected: null,
+    editing: null,
+    editingKey: false,
+    version: 0
+  });
+  tree._writing = false;
+  refresh(tree);
+}
+df$6.propertyTree = {
+  configure(target, options = {}) {
+    const tree = resolve4(target);
+    if (!tree)
+      return null;
+    const { value, ...rest } = options;
+    tree._options = { ...tree._options, ...rest };
+    if ("value" in options) {
+      if (!tree.store)
+        tree._pendingValue = { value };
+      else
+        setValue(tree, value);
+    } else if (tree._holder)
+      refresh(tree);
+    return tree;
+  },
+  setValue(target, value) {
+    const tree = resolve4(target);
+    if (!tree.store)
+      tree._pendingValue = { value };
+    else
+      setValue(tree, value);
+  },
+  value: (target) => resolve4(target)._holder?.value,
+  json: (target, space) => toJson(resolve4(target)._holder?.value, space),
+  async dson(target) {
+    const tree = resolve4(target);
+    const DSON = await loadDson(optionsOf2(tree).urls?.dson);
+    return DSON.stringify(tree._holder?.value);
+  },
+  get: (target, path) => locate(resolve4(target), toPath2(path))?.node,
+  set: (target, path, value) => ops.set(resolve4(target), toPath2(path), value),
+  add: (target, path, key, value, index) => ops.add(resolve4(target), toPath2(path), key, value === undefined ? "" : value, index),
+  remove: (target, path) => ops.remove(resolve4(target), toPath2(path)),
+  rename: (target, path, key) => ops.rename(resolve4(target), toPath2(path), key),
+  setType: (target, path, kind) => ops.type(resolve4(target), toPath2(path), kind),
+  undo: (target) => undoStep(resolve4(target), true),
+  redo: (target) => undoStep(resolve4(target), false),
+  edit: (target, path, key = false) => openEditor2(resolve4(target), pointerOf(toPath2(path)), key),
+  commit: (target) => commit2(resolve4(target)),
+  cancel: (target) => cancel(resolve4(target)),
+  reveal: (target, path) => reveal(resolve4(target), toPath2(path), true),
+  expandAll(target, depth = Infinity) {
+    const tree = resolve4(target);
+    const out = [];
+    const first = tree._first;
+    const walk = (v, path) => {
+      const pointer = pointerOf(path);
+      if (!isContainer(v) || first.get(v) !== pointer || path.length > depth - 1)
+        return;
+      out.push(pointer);
+      for (const [t, , x] of entries(v))
+        walk(x, [...path, t]);
+    };
+    walk(tree._holder.value, []);
+    setOpen(tree, out);
+  },
+  collapseAll(target) {
+    setOpen(resolve4(target), [""]);
+  }
+};
+var uid = 0;
+function onKeydown(tree, e) {
+  if (e.target.closest?.(".property-tree-editor, .property-tree-menu"))
+    return;
+  const index = tree._active ?? 0;
+  const row = tree._rows?.[index];
+  if (!row)
+    return;
+  const page = Math.max(1, Math.floor(tree._viewport.clientHeight / tree._rowHeight) - 1);
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && (e.key === "z" || e.key === "Z")) {
+    e.preventDefault();
+    undoStep(tree, !e.shiftKey);
+    return;
+  }
+  if (mod && (e.key === "y" || e.key === "Y")) {
+    e.preventDefault();
+    undoStep(tree, false);
+    return;
+  }
+  switch (e.key) {
+    case "ArrowDown":
+      if (e.altKey) {
+        const p = ops.move(tree, row.path, 1);
+        if (p)
+          activate(tree, indexOf(tree, pointerOf(p)));
+      } else
+        activate(tree, index + 1);
+      break;
+    case "ArrowUp":
+      if (e.altKey) {
+        const p = ops.move(tree, row.path, -1);
+        if (p)
+          activate(tree, indexOf(tree, pointerOf(p)));
+      } else
+        activate(tree, index - 1);
+      break;
+    case "ArrowRight":
+      if (row.container && !row.open)
+        toggle(tree, row.pointer, true);
+      else if (row.container)
+        activate(tree, index + 1);
+      break;
+    case "ArrowLeft":
+      if (row.container && row.open)
+        toggle(tree, row.pointer, false);
+      else if (row.path.length) {
+        const parent = indexOf(tree, pointerOf(row.path.slice(0, -1)));
+        if (parent >= 0)
+          activate(tree, parent);
+      }
+      break;
+    case "Home":
+      activate(tree, 0);
+      break;
+    case "End":
+      activate(tree, tree._rows.length - 1);
+      break;
+    case "PageDown":
+      activate(tree, index + page);
+      break;
+    case "PageUp":
+      activate(tree, index - page);
+      break;
+    case " ":
+      selectRow(tree, index);
+      break;
+    case "Enter":
+      if (row.isRef)
+        reveal(tree, toPath2(row.ref), true);
+      else if (row.container && !mod && !e.shiftKey)
+        toggle(tree, row.pointer);
+      else if (mod && row.container)
+        runAction(tree, row.pointer, "add");
+      else
+        openEditor2(tree, row.pointer, e.shiftKey);
+      break;
+    case "F2":
+      if (!openEditor2(tree, row.pointer, e.shiftKey))
+        return;
+      break;
+    case "Insert":
+      runAction(tree, row.container ? row.pointer : pointerOf(row.path.slice(0, -1)), "add");
+      break;
+    case "Delete":
+      ops.remove(tree, row.path);
+      break;
+    case "Backspace":
+      if (!mod)
+        return;
+      ops.remove(tree, row.path);
+      break;
+    case "d":
+    case "D":
+      if (!mod)
+        return;
+      runAction(tree, row.pointer, "duplicate");
+      break;
+    case "ContextMenu":
+      openMenu(tree, index);
+      break;
+    case "F10":
+      if (!e.shiftKey)
+        return;
+      openMenu(tree, index);
+      break;
+    default:
+      return;
+  }
+  e.preventDefault();
+}
+function onMenuKey(tree, e) {
+  const items = dfDollar6(tree._menu).children("button:not(:disabled)").toArray();
+  const at = items.indexOf(document.activeElement);
+  const go = { ArrowDown: at + 1, ArrowUp: at - 1, Home: 0, End: items.length - 1 }[e.key];
+  if (go !== undefined) {
+    e.preventDefault();
+    items[(go + items.length) % items.length]?.focus();
+  } else if (e.key === "Escape" || e.key === "Tab") {
+    e.preventDefault();
+    tree._menu.hidePopover();
+    tree._viewport.focus({ preventScroll: true });
+  }
+}
+function init6() {
+  dfDollar6(".property-tree:not([data-init])").toArray().forEach((tree) => {
+    tree.dataset.init = "";
+    tree._uid = tree.id || `property-tree-${++uid}`;
+    const viewport = document.createElement("div");
+    viewport.className = "property-tree-viewport";
+    viewport.setAttribute("role", "tree");
+    viewport.tabIndex = 0;
+    viewport.setAttribute("aria-label", tree.getAttribute("aria-label") || "Value");
+    if (tree.hasAttribute("data-readonly"))
+      viewport.setAttribute("aria-readonly", "true");
+    const sizer = document.createElement("div");
+    sizer.className = "property-tree-sizer";
+    const pool = document.createElement("div");
+    pool.className = "property-tree-rows";
+    pool.setAttribute("role", "presentation");
+    sizer.append(pool);
+    viewport.append(sizer);
+    const menu = document.createElement("div");
+    menu.className = "property-tree-menu";
+    menu.setAttribute("popover", "");
+    menu.setAttribute("role", "menu");
+    menu.setAttribute("aria-label", "Node actions");
+    dfDollar6(tree).append(viewport).append(menu);
+    tree._viewport = viewport;
+    tree._sizer = sizer;
+    tree._pool = pool;
+    tree._menu = menu;
+    tree._rowHeight = parseFloat(getComputedStyle(tree).getPropertyValue("--property-tree-row-height")) || 28;
+    tree._undo = [];
+    tree._redo = [];
+    let queued = false;
+    viewport.addEventListener("scroll", () => {
+      if (queued)
+        return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        renderRows2(tree);
+      });
+    }, { passive: true });
+    new ResizeObserver(() => renderRows2(tree)).observe(viewport);
+    viewport.addEventListener("keydown", (e) => onKeydown(tree, e));
+    viewport.addEventListener("click", (e) => {
+      const t = e.target;
+      const el = t.closest?.(".property-tree-row");
+      if (!el || !pool.contains(el))
+        return;
+      tree._active = el._index;
+      if (t.closest(".property-tree-actions"))
+        return openMenu(tree, el._index, t.closest(".property-tree-actions"));
+      if (t.closest(".property-tree-ref"))
+        return reveal(tree, toPath2(el._row.ref), true);
+      if (t.closest(".property-tree-toggle") && el._row.container)
+        return toggle(tree, el._row.pointer);
+      selectRow(tree, el._index);
+    });
+    viewport.addEventListener("dblclick", (e) => {
+      const t = e.target;
+      const el = t.closest?.(".property-tree-row");
+      if (!el || !pool.contains(el) || t.closest(".property-tree-toggle, .property-tree-actions"))
+        return;
+      const onKey = !!t.closest(".property-tree-key");
+      if (openEditor2(tree, el._row.pointer, onKey && el._row.key !== null))
+        e.preventDefault();
+      else if (el._row.container)
+        toggle(tree, el._row.pointer);
+    });
+    menu.addEventListener("click", (e) => {
+      const b = e.target.closest?.(".property-tree-menu-item");
+      if (!b || b.disabled)
+        return;
+      menu.hidePopover();
+      runAction(tree, menu._pointer, b.dataset.action);
+    });
+    menu.addEventListener("keydown", (e) => onMenuKey(tree, e));
+    menu.addEventListener("toggle", (e) => {
+      if (e.newState === "closed")
+        menu._anchor?.setAttribute("aria-expanded", "false");
+    });
+    const script = dfDollar6(tree).children("script.property-tree-source").get(0);
+    const config = { expanded: [], selected: null, editing: null, editingKey: false, version: 0 };
+    bindComponent6(tree, propertyTreeApi, { name: "default", config });
+    if (tree._pendingValue) {
+      setValue(tree, tree._pendingValue.value);
+      delete tree._pendingValue;
+    } else if (script && script.type === "application/dson") {
+      tree.dataset.loading = "";
+      setValue(tree, undefined);
+      loadDson(optionsOf2(tree).urls?.dson).then((DSON) => {
+        if (tree._holder.value === undefined)
+          setValue(tree, DSON.parse(script.textContent || "null"));
+      }).catch((error) => console.error("[property-tree] DSON source", error)).finally(() => delete tree.dataset.loading);
+    } else {
+      let value = {};
+      try {
+        if (script)
+          value = JSON.parse(script.textContent || "null");
+      } catch (error) {
+        console.error("[property-tree] invalid source JSON", error);
+      }
+      setValue(tree, value);
+    }
+  });
+}
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+
+// dist/components/window/window.js
+var __df$core7 = globalThis.df$;
+var __df$shared7 = __df$core7 && __df$core7.shadcn && __df$core7.shadcn.shared;
+if (!__df$shared7 || __df$shared7.abi !== "0.9.16") {
+  throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
+}
+var { defussGlobals: defussGlobals7, defussQuery: defussQuery7, componentState: componentState7, bindComponent: bindComponent7 } = __df$shared7;
+var df$7 = defussGlobals7();
+var dfDollar7 = defussQuery7();
 var windowStates = ["default", "maximized", "minimized", "closed"];
 var topZ = 10;
 var KEEP = 48;
-var resolve4 = (target) => typeof target === "string" ? dfDollar6("#" + CSS.escape(target)).get(0) ?? dfDollar6(target).get(0) : target;
-var titleOf2 = (w) => dfDollar6(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
+var resolve5 = (target) => typeof target === "string" ? dfDollar7("#" + CSS.escape(target)).get(0) ?? dfDollar7(target).get(0) : target;
+var titleOf2 = (w) => dfDollar7(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 function moveTo(w, x, y) {
   const parent = w.offsetParent;
-  const bar = dfDollar6(w).find(".window-titlebar").get(0);
+  const bar = dfDollar7(w).find(".window-titlebar").get(0);
   if (parent) {
-    const ctl = dfDollar6(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
+    const ctl = dfDollar7(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
     const maxX = parent.clientWidth - KEEP - ctl;
     const minX = KEEP + ctl - w.offsetWidth;
     const maxY = parent.clientHeight - (bar?.offsetHeight ?? KEEP);
@@ -1782,6 +3143,7 @@ function moveTo(w, x, y) {
   w.style.setProperty("--window-y", `${Math.round(y)}px`);
   return { x: Math.round(x), y: Math.round(y) };
 }
+var deskOf = (w) => w.parentElement?.closest(".window-manager, .window-desktop") ?? document;
 function raise(w) {
   if (!w.open)
     return;
@@ -1789,8 +3151,8 @@ function raise(w) {
     return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar6(".window[data-active]").toArray().forEach((o) => {
-    if (o !== w)
+  dfDollar7(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+    if (o !== w && deskOf(o) === deskOf(w))
       o.removeAttribute("data-active");
   });
   w.setAttribute("data-active", "");
@@ -1804,8 +3166,9 @@ function showQuietly(w) {
   else if (w.contains(document.activeElement))
     document.activeElement.blur();
 }
-function activateTopmost() {
-  const open = Array.from(dfDollar6(".window[open]").toArray());
+function activateTopmost(closed) {
+  const desk = deskOf(closed);
+  const open = dfDollar7(desk).find(".window[open]").toArray().filter((o) => deskOf(o) === desk);
   if (!open.length)
     return;
   const top = open.reduce((a, b) => Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a);
@@ -1825,16 +3188,16 @@ function restoreSize(w) {
   w.style.height = w._stash.height;
   w._stash = null;
 }
-function applyMarkup6(el, stateName) {
+function applyMarkup7(el, stateName) {
   const open = stateName !== "closed";
-  dfDollar6(el).attr("open", open ? "" : null);
-  dfDollar6(el).attr("data-maximized", stateName === "maximized" ? "" : null);
-  dfDollar6(el).attr("data-minimized", stateName === "minimized" ? "" : null);
-  dfDollar6(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar6(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar7(el).attr("open", open ? "" : null);
+  dfDollar7(el).attr("data-maximized", stateName === "maximized" ? "" : null);
+  dfDollar7(el).attr("data-minimized", stateName === "minimized" ? "" : null);
+  dfDollar7(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
+  dfDollar7(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
-function triggerStateChange6(w, stateName, config) {
-  const maxBtn = dfDollar6(w).find(".window-maximize").get(0);
+function triggerStateChange7(w, stateName, config) {
+  const maxBtn = dfDollar7(w).find(".window-maximize").get(0);
   if (stateName !== "closed" && !w.open)
     showQuietly(w);
   switch (stateName) {
@@ -1866,23 +3229,23 @@ function triggerStateChange6(w, stateName, config) {
   }
   if (maxBtn)
     maxBtn.setAttribute("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar6(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar7(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
-var windowApi = componentState6({
+var windowApi = componentState7({
   component: "window",
   states: windowStates,
   apply: (w, state) => {
     w.dataset.stateName = state.name;
-    triggerStateChange6(w, state.name, state.config);
+    triggerStateChange7(w, state.name, state.config);
   },
   read: (w, state) => {
     const name = !w.open ? "closed" : w.dataset.stateName || "default";
     return { name, config: name === "closed" ? {} : state.config };
   },
-  markup: (el, state) => applyMarkup6(el, state.name)
+  markup: (el, state) => applyMarkup7(el, state.name)
 });
-df$6.windowApi = windowApi;
-df$6.windowStates = windowStates;
+df$7.windowApi = windowApi;
+df$7.windowStates = windowStates;
 function bindDrag(w, bar) {
   bar.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || e.target.closest("button, a, input, select, textarea"))
@@ -1923,17 +3286,17 @@ function bindDrag(w, bar) {
     w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
   });
 }
-function init6() {
-  dfDollar6("dialog.window:not([data-init])").toArray().forEach((w) => {
+function init7() {
+  dfDollar7("dialog.window:not([data-init])").toArray().forEach((w) => {
     w.dataset.init = "";
-    const bar = dfDollar6(w).find(":scope > .window-titlebar").get(0);
+    const bar = dfDollar7(w).find(":scope > .window-titlebar").get(0);
     if (bar) {
       if (!bar.hasAttribute("tabindex"))
         bar.tabIndex = 0;
       bindDrag(w, bar);
     }
     if (!w.hasAttribute("aria-labelledby") && !w.hasAttribute("aria-label")) {
-      const title = dfDollar6(w).find(".window-title").get(0);
+      const title = dfDollar7(w).find(".window-title").get(0);
       if (title) {
         if (!title.id)
           title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
@@ -1942,12 +3305,12 @@ function init6() {
     }
     w.addEventListener("pointerdown", () => raise(w), true);
     w.addEventListener("focusin", () => raise(w));
-    dfDollar6(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
-    dfDollar6(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
+    dfDollar7(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
+    dfDollar7(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
       e.preventDefault();
       windowApi.setState(w, "closed", {});
     });
-    dfDollar6(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
+    dfDollar7(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
     w.addEventListener("close", () => {
       if (w.open)
         return;
@@ -1955,23 +3318,26 @@ function init6() {
       w.removeAttribute("data-active");
       w.removeAttribute("data-maximized");
       w.removeAttribute("data-minimized");
-      activateTopmost();
+      activateTopmost(w);
     });
-    bindComponent6(w, windowApi);
+    bindComponent7(w, windowApi);
     const initial = !w.open ? "closed" : w.hasAttribute("data-maximized") ? "maximized" : w.hasAttribute("data-minimized") ? "minimized" : "default";
     w.dataset.stateName = initial;
-    dfDollar6(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
-    dfDollar6(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
+    dfDollar7(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
+    dfDollar7(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
     if (w.open) {
       w.style.zIndex = String(++topZ);
-      dfDollar6(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
+      dfDollar7(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+        if (deskOf(o) === deskOf(w))
+          o.removeAttribute("data-active");
+      });
       w.setAttribute("data-active", "");
     }
   });
 }
 function create(options = {}) {
   const { title = "Untitled", icon, content, html, statusbar, id, x, y, width, height, chrome, resizable = true, parent, focus = true, flush = false } = options;
-  const host = resolve4(parent) ?? dfDollar6(".window-desktop").get(0) ?? document.body;
+  const host = resolve5(parent) ?? dfDollar7(".window-desktop").get(0) ?? document.body;
   const w = document.createElement("dialog");
   w.className = "window";
   if (id)
@@ -1980,7 +3346,7 @@ function create(options = {}) {
     w.dataset.chrome = chrome;
   if (resizable)
     w.setAttribute("data-resizable", "");
-  const count = dfDollar6(host).find(":scope > .window").toArray().length;
+  const count = dfDollar7(host).find(":scope > .window").toArray().length;
   w.style.setProperty("--window-x", typeof x === "number" ? `${x}px` : x ?? `${24 + count % 8 * 28}px`);
   w.style.setProperty("--window-y", typeof y === "number" ? `${y}px` : y ?? `${24 + count % 8 * 28}px`);
   if (width !== undefined)
@@ -2031,7 +3397,7 @@ function create(options = {}) {
     w.append(s);
   }
   host.append(w);
-  init6();
+  init7();
   showQuietly(w);
   if (focus)
     windowApi.setState(w, "default", {});
@@ -2039,7 +3405,7 @@ function create(options = {}) {
     globalThis.lucide?.createIcons?.();
   return w;
 }
-var list = (scope, all = false) => dfDollar6(resolve4(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
+var list = (scope, all = false) => dfDollar7(resolve5(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
 function cascade(scope, step = 28) {
   list(scope).sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)).forEach((w, i) => {
     windowApi.setState(w, "default", {});
@@ -2068,29 +3434,29 @@ function tile(scope) {
 var windowActions = {
   create,
   open: (target, config = {}) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (w)
       windowApi.setState(w, "default", config);
     return w;
   },
   close: (target) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (w)
       windowApi.setState(w, "closed", {});
     return w;
   },
   focus: (target) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (w?.open)
       raise(w);
     return w;
   },
   move: (target, x, y) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     return w ? moveTo(w, x, y) : null;
   },
   resize: (target, width, height) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (!w)
       return null;
     w.style.width = "";
@@ -2101,47 +3467,47 @@ var windowActions = {
     return w;
   },
   maximize: (target) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (w)
       windowApi.setState(w, "maximized", {});
     return w;
   },
   minimize: (target) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (w)
       windowApi.setState(w, "minimized", {});
     return w;
   },
   restore: (target) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (w)
       windowApi.setState(w, "default", {});
     return w;
   },
   toggleMaximize: (target) => {
-    const w = resolve4(target);
+    const w = resolve5(target);
     if (w)
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
   },
-  active: () => dfDollar6(".window[open][data-active]").get(0),
+  active: () => dfDollar7(".window[open][data-active]").toArray().reduce((a, b) => !a || Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a, undefined),
   list,
   cascade,
   tile
 };
-df$6.win = windowActions;
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+df$7.win = windowActions;
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
 // dist/components/doc-comments/doc-comments.js
-var __df$core7 = globalThis.df$;
-var __df$shared7 = __df$core7 && __df$core7.shadcn && __df$core7.shadcn.shared;
-if (!__df$shared7 || __df$shared7.abi !== "0.9.16") {
+var __df$core8 = globalThis.df$;
+var __df$shared8 = __df$core8 && __df$core8.shadcn && __df$core8.shadcn.shared;
+if (!__df$shared8 || __df$shared8.abi !== "0.9.16") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals7, defussQuery: defussQuery7, componentState: componentState7, bindComponent: bindComponent7 } = __df$shared7;
-var df$7 = defussGlobals7();
-var dfDollar7 = defussQuery7();
+var { defussGlobals: defussGlobals8, defussQuery: defussQuery8, componentState: componentState8, bindComponent: bindComponent8 } = __df$shared8;
+var df$8 = defussGlobals8();
+var dfDollar8 = defussQuery8();
 var docCommentsStates = ["default", "current"];
 var FLASH_MS = 1600;
 var ICONS = {
@@ -2167,11 +3533,11 @@ function formatTime(iso) {
   return new Intl.DateTimeFormat(undefined, sameDay ? { hour: "numeric", minute: "2-digit" } : { month: "short", day: "numeric" }).format(d);
 }
 function documentOf(el) {
-  const id = dfDollar7(el).attr("data-for");
-  return id ? dfDollar7("#" + CSS.escape(id)).get(0) ?? null : el.previousElementSibling;
+  const id = dfDollar8(el).attr("data-for");
+  return id ? dfDollar8("#" + CSS.escape(id)).get(0) ?? null : el.previousElementSibling;
 }
 function blockOf(root, id) {
-  return dfDollar7(root).find(`[data-id="${CSS.escape(id)}"]`).get(0) ?? dfDollar7(root).find("#" + CSS.escape(id)).get(0) ?? (root.id === id ? root : null);
+  return dfDollar8(root).find(`[data-id="${CSS.escape(id)}"]`).get(0) ?? dfDollar8(root).find("#" + CSS.escape(id)).get(0) ?? (root.id === id ? root : null);
 }
 function findRange(block, text, occurrence = 0) {
   const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
@@ -2242,7 +3608,7 @@ function unwrap(mark) {
   if (!parent)
     return;
   while (mark.firstChild)
-    dfDollar7(mark).before(mark.firstChild);
+    dfDollar8(mark).before(mark.firstChild);
   mark.remove();
   parent.normalize();
 }
@@ -2264,7 +3630,7 @@ function placeMarks(el) {
     if (c.parent)
       continue;
     const anchor = anchorOf(data, c);
-    if (!anchor || dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`).length)
+    if (!anchor || dfDollar8(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`).length)
       continue;
     const block = blockOf(root, anchor.block);
     const range = block && findRange(block, anchor.text, anchor.occurrence ?? 0);
@@ -2285,7 +3651,7 @@ function clearMarks(el) {
   const root = documentOf(el);
   if (!root)
     return;
-  dfDollar7(root).find("mark.doc-comments-mark, mark.doc-comments-flash").each((_i, m) => unwrap(m));
+  dfDollar8(root).find("mark.doc-comments-mark, mark.doc-comments-flash").each((_i, m) => unwrap(m));
 }
 var runtimeOf = (el) => {
   if (!el._comments)
@@ -2296,7 +3662,7 @@ function ordered(el) {
   const data = runtimeOf(el).data;
   const root = documentOf(el);
   const tops = data.comments.filter((c) => !c.parent || !data.comments.some((p) => p.id === c.parent));
-  const markOf = (c) => root ? dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`).get(0) : undefined;
+  const markOf = (c) => root ? dfDollar8(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(c.id)}"]`).get(0) : undefined;
   tops.sort((a, b) => {
     const ma = markOf(a), mb = markOf(b);
     if (!ma || !mb)
@@ -2356,65 +3722,65 @@ function renderColumn(el) {
 </div>
 <ol class="doc-comments-list">${tops.map((c) => cardMarkup(data, c, 0)).join("")}</ol>
 ${data.comments.length ? "" : '<p class="doc-comments-empty">No comments yet.</p>'}`;
-  const keep = dfDollar7(el).children("script.doc-comments-source").get(0);
-  dfDollar7(el).html(head);
+  const keep = dfDollar8(el).children("script.doc-comments-source").get(0);
+  dfDollar8(el).html(head);
   if (keep)
     el.prepend(keep);
-  const current = dfDollar7(el).attr("data-current");
+  const current = dfDollar8(el).attr("data-current");
   if (current)
     markCurrent(el, current);
-  dfDollar7(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
+  dfDollar8(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
 }
 function showComposer(card, text) {
-  const form = dfDollar7(card).children("form.doc-comments-reply").get(0);
+  const form = dfDollar8(card).children("form.doc-comments-reply").get(0);
   if (!form)
     return;
   form.hidden = text === null;
-  dfDollar7(form).find("textarea").val(text ?? "");
-  dfDollar7(card).children(".doc-comments-actions").find('[data-doc-comments-action="reply"]').attr("aria-expanded", String(text !== null));
+  dfDollar8(form).find("textarea").val(text ?? "");
+  dfDollar8(card).children(".doc-comments-actions").find('[data-doc-comments-action="reply"]').attr("aria-expanded", String(text !== null));
 }
 function emitDraft(el, id, text) {
   el.dispatchEvent(new CustomEvent("doc-comments-draft", { bubbles: true, detail: { id, text } }));
 }
-function applyMarkup7(el, name, config) {
-  dfDollar7(el).attr("data-current", name === "current" && config.id ? String(config.id) : null);
+function applyMarkup8(el, name, config) {
+  dfDollar8(el).attr("data-current", name === "current" && config.id ? String(config.id) : null);
 }
 function markCurrent(el, id) {
-  dfDollar7(el).find(".doc-comments-card[aria-current]").each((_i, c) => dfDollar7(c).attr("aria-current", null));
+  dfDollar8(el).find(".doc-comments-card[aria-current]").each((_i, c) => dfDollar8(c).attr("aria-current", null));
   const root = documentOf(el);
   if (root)
-    dfDollar7(root).find("mark.doc-comments-mark[data-current]").each((_i, m) => dfDollar7(m).attr("data-current", null));
+    dfDollar8(root).find("mark.doc-comments-mark[data-current]").each((_i, m) => dfDollar8(m).attr("data-current", null));
   if (!id)
     return;
-  dfDollar7(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).each((_i, c) => dfDollar7(c).attr("aria-current", "true"));
+  dfDollar8(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).each((_i, c) => dfDollar8(c).attr("aria-current", "true"));
   if (root)
-    dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).each((_i, m) => dfDollar7(m).attr("data-current", ""));
+    dfDollar8(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).each((_i, m) => dfDollar8(m).attr("data-current", ""));
 }
 var reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 var scrollTo = (node, block) => node?.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block, inline: "nearest" });
-function triggerStateChange7(el, stateName, config) {
-  applyMarkup7(el, stateName, config);
+function triggerStateChange8(el, stateName, config) {
+  applyMarkup8(el, stateName, config);
   const id = stateName === "current" ? String(config.id ?? "") : null;
   markCurrent(el, id);
   if (id) {
-    scrollTo(dfDollar7(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).get(0), "nearest");
+    scrollTo(dfDollar8(el).find(`.doc-comments-card[data-id="${CSS.escape(id)}"]`).get(0), "nearest");
     const root = documentOf(el);
     if (root)
-      scrollTo(dfDollar7(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).get(0), "center");
+      scrollTo(dfDollar8(root).find(`mark.doc-comments-mark[data-comment="${CSS.escape(id)}"]`).get(0), "center");
   }
 }
-var docCommentsApi = componentState7({
+var docCommentsApi = componentState8({
   component: "doc-comments",
   states: docCommentsStates,
-  apply: (el, state) => triggerStateChange7(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange8(el, state.name, state.config),
   read: (el) => {
-    const id = dfDollar7(el).attr("data-current");
+    const id = dfDollar8(el).attr("data-current");
     return id ? { name: "current", config: { id } } : { name: "default", config: {} };
   },
-  markup: (el, state) => applyMarkup7(el, state.name, state.config)
+  markup: (el, state) => applyMarkup8(el, state.name, state.config)
 });
-df$7.docCommentsApi = docCommentsApi;
-df$7.docCommentsStates = docCommentsStates;
+df$8.docCommentsApi = docCommentsApi;
+df$8.docCommentsStates = docCommentsStates;
 function emitChange(el, id) {
   el.dispatchEvent(new CustomEvent("doc-comments-change", {
     bubbles: true,
@@ -2428,12 +3794,12 @@ function select(el, id, source) {
   el.dispatchEvent(new CustomEvent("doc-comments-select", { bubbles: true, detail: { id, source } }));
   return true;
 }
-var cardIds = (el) => dfDollar7(el).find(".doc-comments-card").toArray().map((c) => c.dataset.id ?? "");
+var cardIds = (el) => dfDollar8(el).find(".doc-comments-card").toArray().map((c) => c.dataset.id ?? "");
 function step(el, dir, source) {
   const ids = cardIds(el);
   if (!ids.length)
     return null;
-  const cur = dfDollar7(el).attr("data-current");
+  const cur = dfDollar8(el).attr("data-current");
   const at = cur ? ids.indexOf(cur) : -1;
   const next = at < 0 ? dir > 0 ? 0 : ids.length - 1 : (at + dir + ids.length) % ids.length;
   select(el, ids[next], source);
@@ -2474,7 +3840,7 @@ function addComment(el, comment) {
   const full = {
     ...comment,
     id,
-    author: comment.author || dfDollar7(el).attr("data-author") || "You",
+    author: comment.author || dfDollar8(el).attr("data-author") || "You",
     time: comment.time ?? new Date().toISOString(),
     body: comment.body.trim(),
     color: comment.color ?? parent?.color
@@ -2497,10 +3863,10 @@ function load(el, data) {
 function setDrafts(el, drafts) {
   const ids = new Set(runtimeOf(el).data.comments.map((c) => c.id));
   runtimeOf(el).drafts = Object.fromEntries(Object.entries(drafts ?? {}).filter(([id, text]) => ids.has(id) && typeof text === "string"));
-  dfDollar7(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
+  dfDollar8(el).find(".doc-comments-card").each((_i, card) => showComposer(card, runtimeOf(el).drafts[card.dataset.id ?? ""] ?? null));
 }
 function sourceOf(el) {
-  const text = dfDollar7(el).children("script.doc-comments-source").get(0)?.textContent ?? "";
+  const text = dfDollar8(el).children("script.doc-comments-source").get(0)?.textContent ?? "";
   if (!text.trim())
     return null;
   try {
@@ -2535,40 +3901,40 @@ function onAction(el, button) {
       showComposer(card, "");
       emitDraft(el, id, "");
     }
-    dfDollar7(card).children("form.doc-comments-reply").find("textarea").get(0)?.focus();
+    dfDollar8(card).children("form.doc-comments-reply").find("textarea").get(0)?.focus();
   } else if (action === "cancel" && card) {
     delete runtimeOf(el).drafts[id];
     showComposer(card, null);
     emitDraft(el, id, null);
   }
 }
-function init7() {
-  dfDollar7(".doc-comments:not([data-init])").toArray().forEach((el) => {
+function init8() {
+  dfDollar8(".doc-comments:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
-    bindComponent7(el, docCommentsApi);
+    bindComponent8(el, docCommentsApi);
     const source = sourceOf(el);
     runtimeOf(el).data = source ? { version: 1, comments: source.comments ?? [] } : { version: 1, comments: [] };
     placeMarks(el);
     renderColumn(el);
-    dfDollar7(el).on("click", (e) => {
+    dfDollar8(el).on("click", (e) => {
       const button = e.target.closest("[data-doc-comments-action]");
       if (button && el.contains(button))
         onAction(el, button);
     });
-    dfDollar7(el).on("submit", (e) => {
+    dfDollar8(el).on("submit", (e) => {
       const form = e.target.closest("form.doc-comments-reply");
       if (!form)
         return;
       e.preventDefault();
       const card = form.closest(".doc-comments-card");
-      const body = dfDollar7(form).find("textarea").get(0)?.value ?? "";
+      const body = dfDollar8(form).find("textarea").get(0)?.value ?? "";
       if (!card?.dataset.id || !body.trim())
         return;
       delete runtimeOf(el).drafts[card.dataset.id];
       emitDraft(el, card.dataset.id, null);
       addComment(el, { parent: card.dataset.id, body });
     });
-    dfDollar7(el).on("input", (e) => {
+    dfDollar8(el).on("input", (e) => {
       const area = e.target;
       const id = area.closest("form.doc-comments-reply")?.closest(".doc-comments-card")?.dataset.id;
       if (!id)
@@ -2578,73 +3944,73 @@ function init7() {
     });
     const root = documentOf(el);
     if (root) {
-      dfDollar7(root).on("click", (e) => {
+      dfDollar8(root).on("click", (e) => {
         const mark = e.target.closest("mark.doc-comments-mark");
         if (mark?.dataset.comment)
           select(el, mark.dataset.comment, "mark");
       });
-      dfDollar7(root).on("editorjs-ready", () => {
+      dfDollar8(root).on("editorjs-ready", () => {
         placeMarks(el);
         renderColumn(el);
       });
-      dfDollar7(root).on("editorjs-change", () => placeMarks(el));
+      dfDollar8(root).on("editorjs-change", () => placeMarks(el));
     }
   });
 }
-var resolve5 = (target) => typeof target === "string" ? dfDollar7(target).get(0) : target;
-df$7.docComments = {
+var resolve6 = (target) => typeof target === "string" ? dfDollar8(target).get(0) : target;
+df$8.docComments = {
   load: (target, data) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     if (el)
       load(el, data);
   },
   data: (target) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? structuredClone(runtimeOf(el).data) : { version: 1, comments: [] };
   },
   add: (target, comment) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? addComment(el, comment) : null;
   },
   reply: (target, parentId, body, author) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? addComment(el, { parent: parentId, body, author }) : null;
   },
   go: (target, id) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? select(el, id, "api") : false;
   },
   next: (target) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? step(el, 1, "api") : null;
   },
   prev: (target) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? step(el, -1, "api") : null;
   },
   flash: (target, quote) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? flash(el, quote) : false;
   },
   drafts: (target) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     return el ? { ...runtimeOf(el).drafts } : {};
   },
   setDrafts: (target, drafts) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     if (el)
       setDrafts(el, drafts);
   },
   refresh: (target) => {
-    const el = resolve5(target);
+    const el = resolve6(target);
     if (el) {
       placeMarks(el);
       renderColumn(el);
     }
   }
 };
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-//# debugId=FB82D6720D9FA40F64756E2164756E21
+//# debugId=0F2271041807940B64756E2164756E21
 //# sourceMappingURL=application.js.map

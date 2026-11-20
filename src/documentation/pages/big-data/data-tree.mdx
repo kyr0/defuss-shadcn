@@ -93,6 +93,141 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Custom editors" schema="none" hint="getEditorFn(field, value, ctx) hands the tree any editor: an element, or { el, getValue, validate?, focus?, immediate?, patch? }. Here a label edits as its name and its colour together - an Input and a row of colour swatches (radio buttons) in one editor; getValue() returns the name, patch() the colour, and both are written in one edit. render() draws the colour dot. Return false to keep an item from editing: the system labels Inbox and Sent stay as they are."
+<div
+  class="data-tree"
+  id="dt-labels"
+  aria-label="Labels"
+  data-editable
+  data-required
+  style="height: 15rem; max-width: 26rem"
+></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const colors = {
+      slate: 'oklch(0.55 0.03 260)',
+      blue: 'oklch(0.6 0.16 250)',
+      green: 'oklch(0.62 0.15 150)',
+      amber: 'oklch(0.75 0.15 75)',
+      red: 'oklch(0.6 0.2 25)',
+    };
+    const labels = [
+      { id: 'inbox', parentId: null, name: 'Inbox', color: 'slate', system: true },
+      { id: 'sent', parentId: null, name: 'Sent', color: 'slate', system: true },
+      { id: 'work', parentId: null, name: 'Work', color: 'blue' },
+      { id: 'work/clients', parentId: 'work', name: 'Clients', color: 'green' },
+      { id: 'work/invoices', parentId: 'work', name: 'Invoices', color: 'amber' },
+      { id: 'home', parentId: null, name: 'Home', color: 'red' },
+      { id: 'home/travel', parentId: 'home', name: 'Travel', color: 'green' },
+    ];
+    // a record's editor: the name in an Input, the colour as radio swatches
+    const labelEditor = (record) => {
+      const el = document.createElement('span');
+      el.style.cssText = 'display: flex; align-items: center; gap: 0.375rem; flex: 1; min-width: 0';
+      const input = document.createElement('input');
+      input.className = 'input';
+      input.dataset.size = 'xs';
+      input.value = record.name;
+      input.setAttribute('aria-label', 'Label name');
+      const swatches = document.createElement('span');
+      swatches.setAttribute('role', 'radiogroup');
+      swatches.setAttribute('aria-label', 'Colour');
+      swatches.style.cssText = 'display: flex; gap: 0.25rem';
+      const name = 'color-' + record.id.replace(/\W/g, '');
+      for (const [key, value] of Object.entries(colors)) {
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = name;
+        radio.value = key;
+        radio.checked = key === record.color;
+        radio.setAttribute('aria-label', key);
+        radio.style.cssText =
+          'appearance: none; margin: 0; width: 1rem; height: 1rem; border-radius: 50%; cursor: pointer; background: ' +
+          value +
+          '; outline-offset: 1px';
+        radio.addEventListener('change', () => input.focus());
+        swatches.append(radio);
+      }
+      const mark = () =>
+        swatches
+          .querySelectorAll('input')
+          .forEach((r) => (r.style.outline = r.checked ? '2px solid var(--ring)' : 'none'));
+      swatches.addEventListener('change', mark);
+      mark();
+      el.append(input, swatches);
+      return {
+        el,
+        getValue: () => input.value.trim(),
+        patch: () => ({ color: swatches.querySelector('input:checked')?.value ?? record.color }),
+        focus: () => input.focus(),
+      };
+    };
+    df$.shadcn.dataTree.setSource(document.getElementById('dt-labels'), labels, {
+      query: { expanded: ['work', 'home'] },
+      render: (label, record) => {
+        const dot = document.createElement('span');
+        dot.style.cssText =
+          'width: 0.625rem; height: 0.625rem; border-radius: 50%; flex: none; background: ' + colors[record.color];
+        const name = document.createElement('span');
+        name.textContent = record.name;
+        label.append(dot, name);
+      },
+      getEditorFn: (field, value, ctx) => (ctx.record.system ? false : labelEditor(ctx.record)),
+    });
+  });
+</script>
+```
+
+```html example label="Inline editing" schema="none" hint="data-editable lets a reader rename an item in place: double-click it, or press F2 on the active item. The editor is the library's Input (data-editor picks another: enum with data-options, number ...); Enter or leaving it writes the name, Escape keeps the old one. data-required, data-max-length and data-pattern refuse a value with a message; validateFn(field, value, ctx) refuses across records - here a name its siblings already use. Every edit replaces the record and runs the query again, so the siblings sort by name (data-sort) and a renamed folder moves among them. The line below listens to data-tree-edit."
+<div
+  class="data-tree"
+  id="dt-rename"
+  aria-label="Folders"
+  data-editable
+  data-required
+  data-max-length="40"
+  data-pattern="[^/]+"
+  data-message="A name without slashes, 1 to 40 characters"
+  style="height: 16rem; max-width: 26rem"
+></div>
+<p class="text-sm" style="margin-block-start: 0.5rem"
+  ><output id="dt-rename-log">Double-click a folder, or press F2.</output></p
+>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const rows = [];
+    let id = 0;
+    for (let a = 0; a < 40; a++) {
+      const top = ++id;
+      rows.push({ id: top, parentId: null, name: 'Project ' + String(a + 1).padStart(2, '0') });
+      for (let b = 0; b < 25; b++) {
+        const sub = ++id;
+        rows.push({
+          id: sub,
+          parentId: top,
+          name: ['Design', 'Docs', 'Research', 'Release', 'Tests'][b % 5] + ' ' + (Math.floor(b / 5) + 1),
+        });
+        for (let c = 0; c < 10; c++) rows.push({ id: ++id, parentId: sub, name: 'Note ' + (c + 1) });
+      }
+    }
+    const tree = document.getElementById('dt-rename');
+    df$.shadcn.dataTree.setSource(tree, rows, {
+      query: { sorters: [{ field: 'name', direction: 'asc' }], expanded: [1] },
+      validateFn: (field, value, ctx) => {
+        const siblings = df$.shadcn.dataTree
+          .source(tree)
+          .rows.filter((r) => r.parentId === ctx.record.parentId && r.id !== ctx.record.id);
+        if (siblings.some((r) => r.name.toLowerCase() === String(value).toLowerCase()))
+          return 'Another item here is called ' + value;
+      },
+    });
+    tree.addEventListener('data-tree-edit', (e) => {
+      document.getElementById('dt-rename-log').textContent = e.detail.oldValue + ' is now ' + e.detail.value;
+    });
+  });
+</script>
+```
+
 ```html example label="111,110 nodes" hint="Ten regions × ten countries × a hundred cities × ten districts. Open branches with the chevrons or the keyboard (↑ ↓ → ← Home End, Enter selects, * opens every sibling). The input is bound by data-tree-filter: type 'district 7.3.4' - every match shows with the path to it opened, the first match becomes active. The line below subscribes to the tree's store."
 <div class="flex flex-col gap-2" style="max-width: 26rem">
   <input class="input" data-tree-filter="dt-geo" aria-label="Filter places" placeholder="Filter places…" />

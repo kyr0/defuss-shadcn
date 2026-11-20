@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logon e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/logon/logon.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; display: grid; gap: 1rem; }
+    .host { position: relative; width: 720px; height: 380px; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: two users (one without a password) and power buttons; a second screen that starts
+       signed in -->
+  <div class="host">
+    <div class="logon" id="logon" aria-label="Sign in">
+      <div class="logon-main">
+        <div class="logon-brand"><strong>Workstation</strong><span>Pick your name to begin</span></div>
+        <ul class="logon-users">
+          <li>
+            <button class="logon-user" id="u-ada" type="button" data-user="ada">
+              <span class="avatar"><span class="avatar-fallback">A</span></span>
+              <span class="logon-name">Ada</span>
+            </button>
+          </li>
+          <li>
+            <button class="logon-user" id="u-guest" type="button" data-user="guest" data-no-password>
+              <span class="avatar"><span class="avatar-fallback">G</span></span>
+              <span class="logon-name">Guest</span>
+            </button>
+          </li>
+        </ul>
+        <form class="logon-form" hidden>
+          <p class="logon-for"></p>
+          <div class="logon-field">
+            <input class="input" type="password" name="password" aria-label="Password" autocomplete="current-password">
+            <button class="btn" type="submit" aria-label="Sign in">Go</button>
+          </div>
+          <p class="logon-error" role="alert" hidden></p>
+        </form>
+      </div>
+      <div class="logon-power">
+        <button class="btn" id="p-off" type="button" data-logon-power="shutdown">Turn off</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="host">
+    <div class="logon" id="logon2" data-signed-in data-user="ada" aria-label="Locked">
+      <div class="logon-main">
+        <ul class="logon-users">
+          <li><button class="logon-user" type="button" data-user="ada"><span class="logon-name">Ada</span></button></li>
+        </ul>
+        <form class="logon-form" hidden>
+          <p class="logon-for"></p>
+          <div class="logon-field"><input class="input" type="password" aria-label="Password"></div>
+          <p class="logon-error" role="alert" hidden></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/logon/logon.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+/* -- Desktop Manager component ------------------------------------
+   A desktop's icon surface: icons fill columns top to bottom, then the next
+   column (a dragged icon keeps its cell through grid-area), a selected icon
+   is tinted, the rubber band is a translucent box drawn by the runtime.
+   Inside a .window-manager it lies under the windows and fills the area. */
+
+@layer components {
+  .desktop-manager {
+    --desktop-icon-size: 2.5rem;
+    --desktop-icon-cell-w: 5.75rem;
+    --desktop-icon-cell-h: 5.75rem;
+    position: relative;
+    box-sizing: border-box;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fill, var(--desktop-icon-cell-h));
+    grid-auto-columns: var(--desktop-icon-cell-w);
+    align-content: start;
+    justify-content: start;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    min-height: 12rem;
+    overflow: hidden;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    background: var(--desktop-wallpaper, transparent);
+    background-size: cover;
+    background-position: center;
+    /* the band and icon drags own every pointer on the surface - nothing here scrolls */
+    touch-action: none;
+    user-select: none;
+    outline: none;
+
+    &[data-size="sm"] {
+      --desktop-icon-size: 2rem;
+      --desktop-icon-cell-w: 4.75rem;
+      --desktop-icon-cell-h: 4.75rem;
+    }
+    &[data-size="lg"] {
+      --desktop-icon-size: 3.25rem;
+      --desktop-icon-cell-w: 6.75rem;
+      --desktop-icon-cell-h: 6.75rem;
+    }
+  }
+
+  .window-manager > .desktop-manager {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    min-height: 0;
+  }
+
+  .desktop-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    padding: 0.375rem 0.25rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: inherit;
+    text-align: center;
+    cursor: default;
+    outline: none;
+
+    &:hover {
+      background: color-mix(in oklch, var(--accent) 45%, transparent);
+    }
+    &[aria-selected="true"] {
+      background: color-mix(in oklch, var(--primary) 22%, transparent);
+      border-color: color-mix(in oklch, var(--primary) 45%, transparent);
+    }
+    &:focus-visible {
+      border-color: var(--ring);
+      border-style: dotted;
+    }
+  }
+
+  .desktop-icon-image {
+    display: grid;
+    place-items: center;
+    width: var(--desktop-icon-size);
+    height: var(--desktop-icon-size);
+    flex: none;
+    pointer-events: none;
+
+    & > :is(svg, img, .desktop-glyph) {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .desktop-icon-label {
+    max-width: 100%;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+
+    .desktop-icon[aria-selected="true"]:focus-within &,
+    &[contenteditable="true"] {
+      -webkit-line-clamp: unset;
+    }
+    &[contenteditable="true"] {
+      padding-inline: 0.125rem;
+      background: var(--background);
+      color: var(--foreground);
+      outline: 1px solid var(--ring);
+      user-select: text;
+      cursor: text;
+    }
+  }
+
+  /* on a wallpaper the label reads on any picture */
+  .desktop-manager[data-on-wallpaper] .desktop-icon-label {
+    color: white;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.8);
+  }
+  .desktop-manager[data-on-wallpaper] .desktop-icon[aria-selected="true"] .desktop-icon-label {
+    text-shadow: none;
+  }
+
+  .desktop-manager-band {
+    position: absolute;
+    z-index: 1;
+    border: 1px solid var(--primary);
+    background: color-mix(in oklch, var(--primary) 18%, transparent);
+    pointer-events: none;
+  }
+
+  .desktop-manager[data-dragging] .desktop-icon[aria-selected="true"] {
+    opacity: 0.7;
+    z-index: 2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .desktop-icon {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .desktop-icon[aria-selected="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+    .desktop-manager-band {
+      border-color: Highlight;
+    }
+  }
+}

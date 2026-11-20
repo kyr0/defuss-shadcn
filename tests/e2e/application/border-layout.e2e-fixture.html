@@ -180,6 +180,65 @@
     </div>
   </div>
 
+  <!-- deep navigation: a west trail of levels (each its own width, the region their sum), keep 2, drill -->
+  <div class="border-layout" id="lv" style="height:220px;width:900px">
+    <div class="border-layout-stack border-layout-west" id="lv-stack" data-direction="row" data-levels data-keep="2" data-drill aria-label="Trail">
+      <section class="card panel" id="lv1" style="--panel-size:150px" aria-labelledby="lv1-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="lv1-t">Sections</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Sections"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">sections</div>
+      </section>
+      <section class="card panel" id="lv2" style="--panel-size:160px" aria-labelledby="lv2-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="lv2-t">Items</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Items"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">items</div>
+      </section>
+    </div>
+    <div class="border-layout-center" id="lv-c">C</div>
+  </div>
+
+  <!-- the east side: the levels run from the edge toward the center; three authored open with keep 2 -->
+  <div class="border-layout" id="lve" style="height:200px;width:900px">
+    <div class="border-layout-center" id="lve-c">C</div>
+    <div class="border-layout-stack border-layout-east" id="lve-stack" data-direction="row" data-levels data-keep="2" aria-label="Inspector">
+      <section class="card panel" id="le1" style="--panel-size:120px" aria-labelledby="le1-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="le1-t">Project</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Project"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">project</div>
+      </section>
+      <section class="card panel" id="le2" style="--panel-size:130px" aria-labelledby="le2-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="le2-t">Folder</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize Folder"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">folder</div>
+      </section>
+      <section class="card panel" id="le3" style="--panel-size:140px" aria-labelledby="le3-t">
+        <header class="panel-header">
+          <h3 class="panel-title" id="le3-t">File</h3>
+          <div class="panel-tools">
+            <label class="swap panel-minimize"><input type="checkbox" aria-label="Minimize File"><span class="swap-off">-</span><span class="swap-on">+</span></label>
+          </div>
+        </header>
+        <div class="panel-body">file</div>
+      </section>
+    </div>
+  </div>
+
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/resizer/resizer.js"></script>
   <script type="module" src="/dist/components/swap/swap.js"></script>

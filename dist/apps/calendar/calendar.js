@@ -2290,6 +2290,174 @@ function bindMedia(root, prefix, report) {
   delegate(prefix);
   mediaPaint(root, prefix);
 }
+// src/shared/editors.ts
+var isObject = (v) => v !== null && typeof v === "object";
+function valueType(value, rules) {
+  if (rules?.type)
+    return rules.type;
+  if (rules?.options)
+    return "enum";
+  if (value === null)
+    return "null";
+  if (Array.isArray(value))
+    return "array";
+  if (typeof value === "object")
+    return "object";
+  if (typeof value === "boolean")
+    return "boolean";
+  if (typeof value === "number")
+    return "number";
+  if (typeof value === "string") {
+    if (/^#[0-9a-f]{6}$/i.test(value))
+      return "color";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
+      return "date";
+    if (value.includes(`
+`))
+      return "text";
+  }
+  return "string";
+}
+function builtinEditor(type, value, rules, options = {}) {
+  const dfDollar = defussQuery();
+  const size = options.size ?? "xs";
+  if (type === "boolean") {
+    const el = document.createElement("input");
+    el.type = "checkbox";
+    el.className = "switch";
+    el.setAttribute("role", "switch");
+    el.checked = !!value;
+    return { el, getValue: () => el.checked, immediate: true };
+  }
+  if (type === "enum") {
+    const el = document.createElement("select");
+    el.className = "select";
+    el.dataset.size = size;
+    const choices = rules?.options ?? [];
+    for (const opt of choices) {
+      const o = document.createElement("option");
+      const [v, label] = isObject(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
+      o.value = String(v);
+      dfDollar(o).text(String(label));
+      if (v === value)
+        o.selected = true;
+      el.append(o);
+    }
+    const values = choices.map((o) => isObject(o) ? o.value : o);
+    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
+  }
+  if (type === "text" || type === "object" || type === "array" || type === "json") {
+    const el = document.createElement("textarea");
+    el.className = "textarea";
+    el.rows = type === "text" ? 3 : 5;
+    const json = type !== "text";
+    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
+    return {
+      el,
+      multiline: true,
+      getValue: () => json ? JSON.parse(el.value) : el.value,
+      validate: () => {
+        if (!json)
+          return "";
+        try {
+          JSON.parse(el.value);
+          return "";
+        } catch (error) {
+          return String(error.message ?? error);
+        }
+      }
+    };
+  }
+  const el = document.createElement("input");
+  el.className = type === "color" ? options.colorClass ?? "" : "input";
+  if (type !== "color")
+    el.dataset.size = size;
+  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
+  if (type === "number") {
+    el.step = String(rules?.step ?? "any");
+    if (rules?.min != null)
+      el.min = String(rules.min);
+    if (rules?.max != null)
+      el.max = String(rules.max);
+    el.inputMode = "decimal";
+  }
+  el.value = value == null ? "" : String(value);
+  return {
+    el,
+    immediate: type === "color" || type === "date",
+    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
+    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
+  };
+}
+function asEditor(custom) {
+  if (!custom)
+    return null;
+  if (custom instanceof HTMLElement) {
+    const el = custom;
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
+  }
+  if (isObject(custom) && custom.el instanceof HTMLElement && typeof custom.getValue === "function")
+    return custom;
+  return null;
+}
+function editorControl(editor) {
+  const sel = "input, select, textarea, button, [tabindex]";
+  return editor.el.matches?.(sel) ? editor.el : defussQuery()(editor.el).find(sel).get(0) ?? editor.el;
+}
+function focusEditor(editor) {
+  const target = editorControl(editor);
+  (editor.focus ?? (() => target.focus?.()))();
+  if (target.select && !["checkbox", "color", "date", "range"].includes(target.type))
+    target.select();
+}
+function editorProblem(rules, value) {
+  if (!rules)
+    return "";
+  const say = (fallback) => rules.message || fallback;
+  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
+  if (rules.required && empty)
+    return say("Required");
+  if (empty)
+    return "";
+  if (typeof value === "number") {
+    if (Number.isNaN(value))
+      return say("Not a number");
+    if (rules.integer && !Number.isInteger(value))
+      return say("Must be a whole number");
+    if (rules.min != null && value < rules.min)
+      return say(`Must be at least ${rules.min}`);
+    if (rules.max != null && value > rules.max)
+      return say(`Must be at most ${rules.max}`);
+  }
+  if (typeof value === "string") {
+    if (rules.minLength != null && value.length < rules.minLength)
+      return say(`At least ${rules.minLength} characters`);
+    if (rules.maxLength != null && value.length > rules.maxLength)
+      return say(`At most ${rules.maxLength} characters`);
+    if (rules.pattern && !new RegExp(`^(?:${rules.pattern})$`).test(value))
+      return say("Does not match the expected format");
+  }
+  if (Array.isArray(value)) {
+    if (rules.minItems != null && value.length < rules.minItems)
+      return say(`At least ${rules.minItems}`);
+    if (rules.maxItems != null && value.length > rules.maxItems)
+      return say(`At most ${rules.maxItems}`);
+  }
+  return "";
+}
+function editorKey(e, editor) {
+  if (e.key === "Escape")
+    return "cancel";
+  if (e.key === "Enter" && (!(editor.multiline || editor.ownsEnter) || e.metaKey || e.ctrlKey))
+    return "commit";
+  if (e.key === "Tab")
+    return e.shiftKey ? "prev" : "next";
+  return null;
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5146,6 +5314,13 @@ shadcn.shared = {
   sheetUrl,
   mathClone,
   mathText,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -8123,6 +8298,6 @@ function init10() {
 init10();
 new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
-//# debugId=B7798E9CEF34158764756E2164756E21
+//# debugId=5CAF5D7F1AEB154364756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=calendar.js.map

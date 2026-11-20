@@ -798,6 +798,12 @@ const VENDOR_IMPORTS: Record<string, { site: RegExp; pinned: string; reason: str
     reason:
       'loads the official xterm.js build, its fit / clipboard / serialize / web-links addons and its stylesheet on the first terminal (pinned jsDelivr ESM files; configure({ urls }) self-hosts them)',
   },
+  'property-tree': {
+    site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
+    pinned: 'https://cdn.jsdelivr.net/npm/defuss-dson@1.1.2/dist/index.mjs',
+    reason:
+      'loads the defuss-dson module for a DSON source or dson() (pinned jsDelivr ESM; configure({ urls: { dson } }) self-hosts it)',
+  },
   editorjs: {
     site: /import\((?:\/\*[^*]*\*\/\s*)?vendorUrl\)/g,
     pinned: 'https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.31.7/dist/editorjs.mjs',

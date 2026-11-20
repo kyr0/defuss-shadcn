@@ -109,8 +109,8 @@
 
   /* the desktop area: windows over the icon surface, above the taskbar */
   .os .os-desktop {
-    position: absolute;
-    inset: 0 0 var(--os-tb) 0;
+    position: relative;
+    flex: 1;
     min-height: 0;
     border-radius: 0;
     background: none;
@@ -131,33 +131,17 @@
       scale: 0.97;
     }
   }
-  .os-icons {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-rows: repeat(auto-fill, var(--os-cell-h));
-    grid-auto-columns: var(--os-cell-w);
-    gap: 0.25rem;
-    height: 100%;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    align-content: start;
+  /* the icons: the Desktop Manager over the whole surface */
+  .os-surface > .desktop-manager {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    background: none;
     transition: opacity 150ms ease;
-    --os-cell-w: 5.5rem;
-    --os-cell-h: 5.75rem;
-  }
-  .os[data-icons='large'] .os-icons {
-    --os-icon: 3.75rem;
-    --os-cell-w: 7rem;
-    --os-cell-h: 7.25rem;
-  }
-  .os[data-icons='small'] .os-icons {
-    --os-icon: 2rem;
-    --os-cell-w: 4.5rem;
-    --os-cell-h: 4.5rem;
   }
   .os[data-right] .os-icons {
     direction: rtl;
-    & .os-icon {
+    & .desktop-icon {
       direction: ltr;
     }
   }
@@ -166,43 +150,6 @@
   }
   .os-icons[data-refresh] {
     opacity: 0;
-  }
-  .os-icon {
-    display: grid;
-    justify-items: center;
-    align-content: start;
-    gap: 0.25rem;
-    padding: 0.375rem 0.25rem;
-    border: 1px solid transparent;
-    border-radius: var(--radius-md);
-    background: none;
-    color: #fff;
-    font: inherit;
-    font-size: 0.75rem;
-    text-align: center;
-    text-shadow: 0 1px 2px oklch(0 0 0 / 0.6);
-    cursor: default;
-    & .os-tile {
-      width: var(--os-icon);
-      height: var(--os-icon);
-      border-radius: 22%;
-      box-shadow: 0 2px 6px oklch(0 0 0 / 0.25);
-    }
-    & > span:last-child {
-      overflow-wrap: anywhere;
-      line-height: 1.25;
-    }
-    &:hover {
-      background: oklch(1 0 0 / 0.14);
-    }
-    &[aria-selected='true'] {
-      border-color: oklch(1 0 0 / 0.45);
-      background: color-mix(in oklch, var(--os-accent) 40%, transparent);
-    }
-    &:focus-visible {
-      outline: 2px solid #fff;
-      outline-offset: 1px;
-    }
   }
   .os-tile {
     display: inline-grid;
@@ -223,20 +170,6 @@
     color: var(--t);
   }
 
-  /* windows: app icons and the active title */
-  .os-wicon {
-    display: inline-grid;
-    place-items: center;
-    width: 1.125rem;
-    height: 1.125rem;
-    border-radius: 0.25rem;
-    background: var(--t);
-    color: #fff;
-    & svg {
-      width: 0.75rem;
-      height: 0.75rem;
-    }
-  }
   .os-dirty {
     display: none;
     margin-inline-end: 0.375rem;
@@ -248,104 +181,88 @@
     display: inline;
   }
 
-  /* the taskbar */
-  .os-taskbar {
-    position: absolute;
-    inset: auto 0 0 0;
-    z-index: 30;
-    display: flex;
-    align-items: center;
-    height: var(--os-tb);
-    padding-inline: 0.5rem 0;
-    border-block-start: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
-    background: var(--os-glass);
-    backdrop-filter: blur(24px) saturate(1.4);
-  }
-  .os-tb-apps {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-    gap: 0.125rem;
-  }
-  .os[data-taskbar='left'] .os-tb-apps {
-    justify-content: flex-start;
-  }
-  .os-tb-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    min-width: 2.5rem;
-    height: 2.5rem;
-    padding: 0 0.375rem;
-    border: 0;
-    border-radius: var(--radius-md);
-    background: none;
-    color: inherit;
-    font: inherit;
-    cursor: default;
-    & > svg {
-      width: 1.125rem;
-      height: 1.125rem;
-    }
-    &:hover {
-      background: color-mix(in oklch, var(--foreground) 8%, transparent);
-    }
-    &:active {
-      scale: 0.96;
-    }
-    &:focus-visible {
-      outline: 2px solid var(--os-accent);
-      outline-offset: -2px;
-    }
-    & .os-tile {
-      width: 1.625rem;
-      height: 1.625rem;
-      border-radius: 0.4375rem;
-    }
-  }
-  .os-start-btn {
-    color: var(--os-accent);
-    & svg {
-      width: 1.375rem;
-      height: 1.375rem;
-    }
-  }
-  .os-tb-app[data-unpinned]:not([data-running]) {
+  /* the bar: the Taskbar component; the modern and 7 looks show the running apps on their launchers (a dot, a glass
+     key), XP, 98 and 95 a button per window and the pinned launchers as Quick Launch */
+  .os.desktop:is(:not([data-variant]), [data-variant='win7']) .os-taskbar .taskbar-windows {
     display: none;
   }
-  .os-tb-app::after {
-    content: '';
-    position: absolute;
-    bottom: 0.125rem;
-    left: 50%;
-    width: 0;
-    height: 0.1875rem;
-    border-radius: 999px;
-    background: var(--muted-foreground);
-    translate: -50% 0;
-    transition: width 150ms ease;
+  .os-tb-app[data-unpinned]:not([data-running]),
+  .os.desktop:is([data-variant='winxp'], [data-variant='win98'], [data-variant='win95']) .os-tb-app[data-unpinned] {
+    display: none;
   }
-  .os-tb-app[data-running]::after {
-    width: 0.375rem;
-  }
-  .os-tb-app[data-active] {
-    background: color-mix(in oklch, var(--foreground) 9%, transparent);
-    &::after {
-      width: 1rem;
-      background: var(--os-accent);
+  .os.desktop:not([data-variant]) {
+    & .start-button-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    & .os-tb-app::after {
+      content: '';
+      position: absolute;
+      bottom: 0.125rem;
+      left: 50%;
+      width: 0;
+      height: 0.1875rem;
+      border-radius: 999px;
+      background: var(--muted-foreground);
+      translate: -50% 0;
+      transition: width 150ms ease;
+    }
+    & .os-tb-app[data-running]::after {
+      width: 0.375rem;
+    }
+    & .os-tb-app[data-active] {
+      background: color-mix(in oklch, var(--foreground) 9%, transparent);
+      &::after {
+        width: 1rem;
+        background: var(--os-accent);
+      }
+    }
+    & .start-button {
+      color: var(--os-accent);
     }
   }
-  .os-tray {
-    display: flex;
-    align-items: center;
-    gap: 0.125rem;
-    height: 100%;
+  .os.desktop[data-variant='win7'] {
+    & .os-tb-app[data-running] {
+      border-color: rgb(255 255 255 / 0.25);
+      background: linear-gradient(
+        180deg,
+        rgb(255 255 255 / 0.22),
+        rgb(255 255 255 / 0.05) 50%,
+        transparent 51%,
+        rgb(255 255 255 / 0.08)
+      );
+    }
+    & .os-tb-app[data-active] {
+      border-color: rgb(255 255 255 / 0.5);
+      background:
+        radial-gradient(70% 60% at 50% 100%, rgb(140 200 255 / 0.55), transparent),
+        linear-gradient(
+          180deg,
+          rgb(255 255 255 / 0.35),
+          rgb(255 255 255 / 0.12) 50%,
+          rgb(255 255 255 / 0.05) 51%,
+          rgb(255 255 255 / 0.2)
+        );
+    }
   }
-  .os-tray-icons {
+  /* Quick Launch: flat small icons */
+  .os.desktop:is([data-variant='winxp'], [data-variant='win98'], [data-variant='win95']) .taskbar-launcher {
+    min-width: 22px;
+    padding: 0 2px;
+    background: none;
+    box-shadow: none;
+    border: 0;
+  }
+  .os-tray-icons,
+  .os-clock {
+    display: inline-flex;
+    width: auto;
     gap: 0.5rem;
+    padding-inline: 0.375rem;
     & svg {
       width: 1rem;
       height: 1rem;
@@ -359,29 +276,12 @@
   .os-vol[data-vol='2'] > svg:nth-child(3) {
     display: block;
   }
-  .os-clock {
-    display: grid;
-    justify-items: end;
-    gap: 0;
-    padding-inline: 0.5rem;
-    line-height: 1.2;
-    font-size: 0.75rem;
-    font-variant-numeric: tabular-nums;
-    & small {
-      font-size: 0.75rem;
-    }
+  /* a look brings its wallpaper; the modern look keeps the chosen one */
+  .os.desktop[data-variant] .os-wall-layer {
+    display: none;
   }
-  .os-show-desktop {
-    width: 0.5rem;
-    height: 100%;
-    margin-inline-start: 0.25rem;
-    border: 0;
-    border-inline-start: 1px solid var(--border);
-    background: none;
-    cursor: default;
-    &:hover {
-      background: color-mix(in oklch, var(--foreground) 8%, transparent);
-    }
+  .os.desktop[data-variant] > .os-desktop {
+    background: var(--desktop-wallpaper) center / cover;
   }
 
   /* flyouts (start, quick settings, calendar) - our own placement above the taskbar */
@@ -415,163 +315,53 @@
       }
     }
   }
-  .os-start {
-    left: 50%;
-    bottom: calc(var(--os-tb) + 0.75rem);
-    width: min(40rem, calc(100vw - 1.5rem));
-    max-height: min(44rem, calc(100vh - 5rem));
+  /* the start menu (the Start Menu component) is wider in the modern look; a search shows the best matches */
+  .os.desktop:not([data-variant]) .os-start {
+    width: min(34rem, calc(100% - 1.5rem));
+    max-height: min(44rem, 85vh);
+  }
+  .os-start[data-os-searching] :is(.start-menu-heading, .start-menu-pinned, .start-menu-list):not(.os-start-results *) {
     display: none;
+  }
+  .os-start-results:not([hidden]) {
+    display: flex;
     flex-direction: column;
-    translate: -50% 0.75rem;
-    &:popover-open {
-      display: flex;
-      translate: -50% 0;
+  }
+  .os-result small {
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+  }
+  .os.desktop:not([data-variant]) .os-start-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  /* XP and 7 list the pinned apps with smaller icons, so the menu keeps its foot */
+  .os.desktop:is([data-variant='winxp'], [data-variant='win7']) .os-start .start-menu-pinned {
+    & .start-menu-item {
+      padding-block: 2px;
     }
-    @starting-style {
-      &:popover-open {
-        translate: -50% 0.75rem;
-      }
+    & .start-menu-icon {
+      width: 24px;
+      height: 24px;
     }
   }
-  .os-start[data-left] {
-    left: 0.75rem;
-    translate: 0 0.75rem;
-    &:popover-open {
-      translate: 0 0;
-    }
+  /* quick settings and the calendar open on their tray buttons */
+  .os-quick {
+    position-anchor: --os-quick;
+  }
+  .os-cal {
+    position-anchor: --os-cal;
   }
   .os-quick,
   .os-cal {
-    right: 0.75rem;
-    bottom: calc(var(--os-tb) + 0.75rem);
+    position-area: top span-left;
+    margin-block-end: 0.5rem;
   }
   /* toasts land above the taskbar */
   .toast-container[data-position^='bottom'] {
     bottom: 3rem;
   }
-  .os-start-search {
-    position: relative;
-    margin: 1.5rem 2rem 1rem;
-    & svg {
-      position: absolute;
-      inset-inline-start: 0.875rem;
-      top: 50%;
-      translate: 0 -50%;
-      width: 1rem;
-      height: 1rem;
-      color: var(--muted-foreground);
-    }
-    & .input {
-      height: 2.5rem;
-      padding-inline-start: 2.5rem;
-      border-radius: 999px;
-      background: var(--background);
-    }
-  }
-  .os-start-home,
-  .os-start-results {
-    flex: 1;
-    min-height: 0;
-    padding: 0 2rem 1rem;
-    overflow-y: auto;
-  }
-  .os-start-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 0.5rem 0.5rem 0.5rem;
-    & h2 {
-      margin: 0;
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-    & .btn svg {
-      width: 0.75rem;
-      height: 0.75rem;
-    }
-  }
-  .os-pinned {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
-    gap: 0.25rem;
-    margin-block-end: 1rem;
-  }
-  .os-app {
-    display: grid;
-    justify-items: center;
-    gap: 0.375rem;
-    padding: 0.625rem 0.25rem;
-    border: 0;
-    border-radius: var(--radius-md);
-    background: none;
-    color: inherit;
-    font: inherit;
-    font-size: 0.75rem;
-    cursor: default;
-    & .os-tile {
-      width: 2.25rem;
-      height: 2.25rem;
-    }
-    &:hover,
-    &:focus-visible {
-      background: color-mix(in oklch, var(--foreground) 7%, transparent);
-      outline: none;
-    }
-  }
-  .os-recent,
-  .os-result-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-    gap: 0.25rem;
-  }
-  .os-recent-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.625rem;
-    border: 0;
-    border-radius: var(--radius-md);
-    background: none;
-    color: inherit;
-    font: inherit;
-    text-align: start;
-    cursor: default;
-    & > span:last-child {
-      display: grid;
-      min-width: 0;
-    }
-    & strong {
-      overflow: hidden;
-      font-weight: 500;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    & small {
-      color: var(--muted-foreground);
-      font-size: 0.75rem;
-    }
-    &:hover,
-    &:focus-visible,
-    &[data-first] {
-      background: color-mix(in oklch, var(--foreground) 7%, transparent);
-      outline: none;
-    }
-  }
-  .os-start-foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 2rem;
-    border-block-start: 1px solid var(--border);
-    background: color-mix(in oklch, var(--muted) 50%, transparent);
-  }
-  .os-me {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.625rem;
-    font-weight: 500;
-  }
-
   .os-quick {
     width: 22rem;
     display: none;
@@ -1217,70 +1007,25 @@
     display: block;
   }
 
-  /* lock + power screens */
-  .os-lock,
+  /* the power screen (sleep, restart, shut down) */
   .os-power-screen {
     position: absolute;
     inset: 0;
     z-index: 60;
     display: grid;
   }
-  .os-lock {
-    place-items: center;
-    grid-template-rows: 1fr auto auto;
-    padding: 3rem 1rem 2rem;
-    background: var(--os-wall);
-    background-size: cover;
-    color: #fff;
-    cursor: pointer;
-    text-shadow: 0 1px 8px oklch(0 0 0 / 0.4);
+  /* the lock (the Logon component): the clock large over the user, on the wallpaper in the modern look */
+  .os.desktop:not([data-variant]) .os-lock {
+    --logon-background: var(--os-wall);
   }
-  .os-lock::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: oklch(0 0 0 / 0.2);
+  .os-lock-clock strong {
+    font-size: 3rem;
+    font-weight: 300;
+    line-height: 1;
   }
-  .os-lock-clock {
-    align-self: start;
-    display: grid;
-    justify-items: center;
-    margin-block-start: 3rem;
-    & p {
-      margin: 0;
-      font-size: clamp(3.5rem, 12cqi, 6.5rem);
-      font-weight: 600;
-      letter-spacing: -0.03em;
-      font-variant-numeric: tabular-nums;
-    }
-    & small {
-      font-size: 1.25rem;
-    }
-  }
-  .os-lock-sign {
-    display: none;
-    justify-items: center;
-    gap: 0.75rem;
-    & strong {
-      font-size: 1.375rem;
-      font-weight: 600;
-    }
-  }
-  .os-lock[data-sign] {
-    backdrop-filter: blur(20px);
-    & .os-lock-clock,
-    & .os-lock-hint {
-      display: none;
-    }
-    & .os-lock-sign {
-      display: grid;
-      align-self: center;
-    }
-  }
-  .os-lock-hint {
-    margin: 0;
-    opacity: 0.85;
+  .os.desktop:is([data-variant='win98'], [data-variant='win95']) .os-lock-clock strong {
+    font-size: inherit;
+    font-weight: 700;
   }
   .os-power-screen {
     place-content: center;
@@ -1351,8 +1096,7 @@
     }
   }
   @media (forced-colors: active) {
-    .os-tile,
-    .os-wicon {
+    .os-tile {
       forced-color-adjust: none;
     }
     .os-tb-app[data-active]::after {
@@ -1361,7 +1105,7 @@
   }
 </style>
 <div
-  class="os"
+  class="os desktop"
   data-os
   data-i18n-component
   data-wallpaper="bloom"
@@ -1373,7 +1117,7 @@
 >
   <div class="os-wall-layer" aria-hidden="true"></div>
 
-  <div class="window-desktop os-desktop">
+  <div class="window-desktop window-manager os-desktop" id="os-desk">
     <div
       class="os-surface"
       data-context-menu="os-ctx"
@@ -1381,102 +1125,111 @@
       data-i18n-aria-label-en="Desktop"
       data-i18n-aria-label-de="Desktop"
     >
-      <div class="os-icons" role="listbox" aria-label="Desktop icons" data-icon-list>
-        <button
-          class="os-icon"
+      <div
+        class="os-icons desktop-manager"
+        data-on-wallpaper
+        role="listbox"
+        aria-multiselectable="true"
+        aria-label="Desktop icons"
+        data-i18n-aria-label-en="Desktop icons"
+        data-i18n-aria-label-de="Desktopsymbole"
+        data-icon-list
+      >
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="bin"
           data-kind="system"
           data-name="Recycle Bin"
-          ><span class="os-tile" style="--t: oklch(0.6 0.04 230)"><i data-lucide="trash-2"></i></span
-          ><span>Recycle Bin</span></button
+          data-value="bin"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="trash"></span></span
+          ><span class="desktop-icon-label">Recycle Bin</span></div
         >
-        <button
-          class="os-icon"
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="browser"
           data-kind="app"
           data-name="Browser"
-          ><span class="os-tile" style="--t: oklch(0.62 0.16 230)"><i data-lucide="globe"></i></span
-          ><span>Browser</span></button
+          data-value="browser"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="browser"></span></span
+          ><span class="desktop-icon-label">Browser</span></div
         >
-        <button
-          class="os-icon"
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="calc"
           data-kind="app"
           data-name="Calculator"
-          ><span class="os-tile" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
-          ><span>Calculator</span></button
+          data-value="calc"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="calculator"></span></span
+          ><span class="desktop-icon-label">Calculator</span></div
         >
-        <button
-          class="os-icon"
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="cmd"
           data-kind="app"
           data-name="Command Prompt"
-          ><span class="os-tile" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
-          ><span>Command Prompt</span></button
+          data-value="cmd"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="terminal"></span></span
+          ><span class="desktop-icon-label">Command Prompt</span></div
         >
-        <button
-          class="os-icon"
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="settings"
           data-kind="app"
           data-name="Settings"
-          ><span class="os-tile" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
-          ><span>Settings</span></button
+          data-value="settings"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="settings"></span></span
+          ><span class="desktop-icon-label">Settings</span></div
         >
-        <button
-          class="os-icon"
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="file:Welcome.txt"
           data-kind="file"
           data-name="Welcome.txt"
-          ><span class="os-tile os-file" style="--t: oklch(0.62 0.15 260)"><i data-lucide="file-text"></i></span
-          ><span>Welcome.txt</span></button
+          data-value="file:Welcome.txt"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="text"></span></span
+          ><span class="desktop-icon-label">Welcome.txt</span></div
         >
-        <button
-          class="os-icon"
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="file:Notes.txt"
           data-kind="file"
           data-name="Notes.txt"
-          ><span class="os-tile os-file" style="--t: oklch(0.62 0.15 260)"><i data-lucide="file-text"></i></span
-          ><span>Notes.txt</span></button
+          data-value="file:Notes.txt"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="text"></span></span
+          ><span class="desktop-icon-label">Notes.txt</span></div
         >
-        <button
-          class="os-icon"
+        <div
+          class="desktop-icon os-icon"
           data-context-menu="os-icon-ctx"
           role="option"
           aria-selected="false"
-          tabindex="-1"
           data-open="file:Todo.txt"
           data-kind="file"
           data-name="Todo.txt"
-          ><span class="os-tile os-file" style="--t: oklch(0.62 0.15 260)"><i data-lucide="file-text"></i></span
-          ><span>Todo.txt</span></button
+          data-value="file:Todo.txt"
+          ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="text"></span></span
+          ><span class="desktop-icon-label">Todo.txt</span></div
         >
       </div>
     </div>
@@ -1488,7 +1241,7 @@
       style="--window-x: 14rem; --window-y: 1.5rem; --window-w: 54rem; --window-h: 36rem"
     >
       <header class="window-titlebar"
-        ><span class="window-icon os-wicon" style="--t: oklch(0.62 0.16 230)"><i data-lucide="globe"></i></span
+        ><span class="window-icon desktop-glyph" data-glyph="browser"></span
         ><h2 class="window-title"><span data-br-title>New tab</span> - Browser</h2
         ><form method="dialog" class="window-controls"
           ><button
@@ -1586,7 +1339,7 @@
       style="--window-x: 10rem; --window-y: 2.5rem; --window-w: 34rem; --window-h: 24rem"
     >
       <header class="window-titlebar"
-        ><span class="window-icon os-wicon" style="--t: oklch(0.62 0.15 260)"><i data-lucide="notebook-pen"></i></span
+        ><span class="window-icon desktop-glyph" data-glyph="text"></span
         ><h2 class="window-title"
           ><span class="os-dirty" aria-label="Unsaved changes">●</span><span data-ed-name>Welcome.txt</span> -
           Editor</h2
@@ -1693,8 +1446,7 @@ Things to try:
       style="--window-x: 48rem; --window-y: 4rem; --window-w: 20rem"
     >
       <header class="window-titlebar"
-        ><span class="window-icon os-wicon" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
-        ><h2 class="window-title">Calculator</h2
+        ><span class="window-icon desktop-glyph" data-glyph="calculator"></span><h2 class="window-title">Calculator</h2
         ><form method="dialog" class="window-controls"
           ><button
             type="button"
@@ -1765,7 +1517,7 @@ Things to try:
       style="--window-x: 14rem; --window-y: 5rem; --window-w: 42rem"
     >
       <header class="window-titlebar"
-        ><span class="window-icon os-wicon" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
+        ><span class="window-icon desktop-glyph" data-glyph="terminal"></span
         ><h2 class="window-title">Command Prompt</h2
         ><form method="dialog" class="window-controls"
           ><button
@@ -1814,7 +1566,7 @@ Things to try:
       style="--window-x: 18rem; --window-y: 3rem; --window-w: 46rem; --window-h: 32rem"
     >
       <header class="window-titlebar"
-        ><span class="window-icon os-wicon" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
+        ><span class="window-icon desktop-glyph" data-glyph="settings"></span
         ><h2 class="window-title" data-i18n-target="set-title">Settings</h2
         ><form method="dialog" class="window-controls"
           ><button
@@ -2007,6 +1759,23 @@ Things to try:
             <h3 data-i18n-target="set-h-disp">Display</h3>
             <div class="os-set-row"
               ><span
+                ><strong data-i18n-target="set-look">Look</strong
+                ><small data-i18n-target="set-look-d">Windows, taskbar and icons of another time</small></span
+              ><select
+                class="select"
+                data-set="look"
+                aria-label="Look"
+                data-i18n-aria-label-en="Look"
+                data-i18n-aria-label-de="Erscheinungsbild"
+                ><option value="modern" selected>Modern</option
+                ><option value="win7">7</option
+                ><option value="winxp">XP</option
+                ><option value="win98">98</option
+                ><option value="win95">95</option></select
+              ></div
+            >
+            <div class="os-set-row"
+              ><span
                 ><strong data-i18n-target="set-bright">Brightness</strong
                 ><small data-i18n-target="set-bright-d">Change the brightness of the built-in display</small></span
               ><input
@@ -2121,8 +1890,7 @@ Things to try:
       style="--window-x: 11rem; --window-y: 6rem; --window-w: 30rem; --window-h: 18rem"
     >
       <header class="window-titlebar"
-        ><span class="window-icon os-wicon" style="--t: oklch(0.6 0.04 230)"><i data-lucide="trash-2"></i></span
-        ><h2 class="window-title">Recycle Bin</h2
+        ><span class="window-icon desktop-glyph" data-glyph="trash"></span><h2 class="window-title">Recycle Bin</h2
         ><form method="dialog" class="window-controls"
           ><button
             type="button"
@@ -2163,71 +1931,120 @@ Things to try:
     </dialog>
   </div>
 
-  <!-- the taskbar -->
-  <nav class="os-taskbar" aria-label="Taskbar">
-    <div class="os-tb-apps">
-      <button class="os-tb-btn os-start-btn" type="button" popovertarget="os-start" aria-label="Start"
-        ><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <rect x="3" y="3" width="8.5" height="8.5" rx="2" fill="currentColor" />
-          <rect x="12.5" y="3" width="8.5" height="8.5" rx="2" fill="currentColor" opacity=".8" />
-          <rect x="3" y="12.5" width="8.5" height="8.5" rx="2" fill="currentColor" opacity=".8" />
-          <rect x="12.5" y="12.5" width="8.5" height="8.5" rx="2" fill="currentColor" opacity=".6" /></svg
-      ></button>
-      <button class="os-tb-btn" type="button" data-os-search aria-label="Search"><i data-lucide="search"></i></button>
-      <button class="os-tb-btn os-tb-app" type="button" data-app-btn="browser" aria-label="Browser" title="Browser"
-        ><span class="os-tile" style="--t: oklch(0.62 0.16 230)"><i data-lucide="globe"></i></span
-      ></button>
-      <button class="os-tb-btn os-tb-app" type="button" data-app-btn="editor" aria-label="Editor" title="Editor"
-        ><span class="os-tile" style="--t: oklch(0.62 0.15 260)"><i data-lucide="notebook-pen"></i></span
-      ></button>
-      <button class="os-tb-btn os-tb-app" type="button" data-app-btn="calc" aria-label="Calculator" title="Calculator"
-        ><span class="os-tile" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
+  <!-- the taskbar: the Taskbar component bound to the Window Manager - Start, the launchers (the running apps on the
+       modern and 7 looks, Quick Launch on XP, 98 and 95, which list a button per window instead), the Tray -->
+  <nav
+    class="taskbar os-taskbar"
+    data-taskbar-for="os-desk"
+    data-align="center"
+    aria-label="Taskbar"
+    data-i18n-aria-label-en="Taskbar"
+    data-i18n-aria-label-de="Taskleiste"
+  >
+    <button class="start-button os-start-btn" type="button" popovertarget="os-start" aria-haspopup="menu"
+      ><span class="start-button-icon desktop-glyph" data-glyph="flag"></span
+      ><span class="start-button-label">Start</span></button
+    >
+    <div class="taskbar-launchers">
+      <button
+        class="taskbar-launcher"
+        type="button"
+        data-os-search
+        aria-label="Search"
+        data-i18n-aria-label-en="Search"
+        data-i18n-aria-label-de="Suchen"
+        ><i data-lucide="search"></i
       ></button>
       <button
-        class="os-tb-btn os-tb-app"
+        class="taskbar-launcher os-tb-app"
+        type="button"
+        data-app-btn="browser"
+        aria-label="Browser"
+        title="Browser"
+        ><span class="desktop-glyph" data-glyph="browser"></span
+      ></button>
+      <button class="taskbar-launcher os-tb-app" type="button" data-app-btn="editor" aria-label="Editor" title="Editor"
+        ><span class="desktop-glyph" data-glyph="text"></span
+      ></button>
+      <button
+        class="taskbar-launcher os-tb-app"
+        type="button"
+        data-app-btn="calc"
+        aria-label="Calculator"
+        data-i18n-aria-label-en="Calculator"
+        data-i18n-aria-label-de="Rechner"
+        title="Calculator"
+        ><span class="desktop-glyph" data-glyph="calculator"></span
+      ></button>
+      <button
+        class="taskbar-launcher os-tb-app"
         type="button"
         data-app-btn="settings"
         aria-label="Settings"
         data-i18n-aria-label-en="Settings"
         data-i18n-aria-label-de="Einstellungen"
         title="Settings"
-        ><span class="os-tile" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
+        ><span class="desktop-glyph" data-glyph="settings"></span
       ></button>
       <button
-        class="os-tb-btn os-tb-app"
+        class="taskbar-launcher os-tb-app"
         type="button"
         data-app-btn="cmd"
         data-unpinned
         aria-label="Command Prompt"
+        data-i18n-aria-label-en="Command Prompt"
+        data-i18n-aria-label-de="Eingabeaufforderung"
         title="Command Prompt"
-        ><span class="os-tile" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
+        ><span class="desktop-glyph" data-glyph="terminal"></span
       ></button>
       <button
-        class="os-tb-btn os-tb-app"
+        class="taskbar-launcher os-tb-app"
         type="button"
         data-app-btn="bin"
         data-unpinned
         aria-label="Recycle Bin"
+        data-i18n-aria-label-en="Recycle Bin"
+        data-i18n-aria-label-de="Papierkorb"
         title="Recycle Bin"
-        ><span class="os-tile" style="--t: oklch(0.6 0.04 230)"><i data-lucide="trash-2"></i></span
+        ><span class="desktop-glyph" data-glyph="trash"></span
       ></button>
     </div>
-    <div class="os-tray">
+    <div
+      class="taskbar-windows"
+      role="group"
+      aria-label="Open windows"
+      data-i18n-aria-label-en="Open windows"
+      data-i18n-aria-label-de="Geöffnete Fenster"
+    ></div>
+    <div
+      class="tray os-tray"
+      data-date
+      role="group"
+      aria-label="Notification area"
+      data-i18n-aria-label-en="Notification area"
+      data-i18n-aria-label-de="Infobereich"
+    >
       <button
-        class="os-tb-btn os-tray-icons"
+        class="tray-item os-tray-icons"
         type="button"
         popovertarget="os-quick"
+        style="anchor-name: --os-quick"
         aria-label="Quick settings: Wi-Fi connected, volume 60%, battery 84%"
         ><i data-lucide="wifi"></i
         ><span class="os-vol" data-vol="2"
           ><i data-lucide="volume-x"></i><i data-lucide="volume-1"></i><i data-lucide="volume-2"></i></span
         ><i data-lucide="battery-medium"></i
       ></button>
-      <button class="os-tb-btn os-clock" type="button" popovertarget="os-cal" aria-label="Clock and calendar"
-        ><time data-os-time>00:00</time><small data-os-date>1/1/2026</small></button
-      >
       <button
-        class="os-show-desktop"
+        class="tray-item os-clock"
+        type="button"
+        popovertarget="os-cal"
+        style="anchor-name: --os-cal"
+        aria-label="Clock and calendar"
+        ><time class="tray-clock" data-os-time></time
+      ></button>
+      <button
+        class="tray-show-desktop"
         type="button"
         data-os-showdesk
         aria-label="Show desktop"
@@ -2236,13 +2053,23 @@ Things to try:
     </div>
   </nav>
 
-  <!-- the start menu -->
-  <div class="os-flyout os-start" id="os-start" popover>
-    <label class="os-start-search"
+  <!-- the start menu: the Start Menu component - the user, the search, pinned apps, recommended documents, power -->
+  <div
+    class="start-menu os-start"
+    id="os-start"
+    popover
+    aria-label="Start"
+    data-i18n-aria-label-en="Start"
+    data-i18n-aria-label-de="Start"
+  >
+    <div class="start-menu-head"
+      ><span class="avatar"><img class="avatar-image" src="https://github.com/kyr0.png" alt="" /></span
+      ><span>Aron Homberg</span></div
+    >
+    <label class="start-menu-search os-start-search"
       ><i data-lucide="search"></i
       ><span class="sr-only" data-i18n-target="start-search">Search apps, settings and documents</span
       ><input
-        class="input"
         type="search"
         placeholder="Search for apps, settings and documents"
         data-i18n-placeholder-en="Search for apps, settings and documents"
@@ -2251,136 +2078,106 @@ Things to try:
         autocomplete="off"
         autofocus
     /></label>
-    <div class="os-start-home">
-      <div class="os-start-head"
-        ><h2 data-i18n-target="start-pinned">Pinned</h2
-        ><button
-          class="btn"
-          data-variant="secondary"
-          data-size="xs"
-          type="button"
-          data-toast="All apps"
-          data-toast-desc="Every app is pinned already."
-          ><span data-i18n-target="start-all">All apps</span> <i data-lucide="chevron-right"></i></button
-      ></div>
-      <div class="os-pinned">
-        <button class="os-app" type="button" data-launch="browser"
-          ><span class="os-tile" style="--t: oklch(0.62 0.16 230)"><i data-lucide="globe"></i></span
-          ><span>Browser</span></button
-        >
-        <button class="os-app" type="button" data-launch="editor"
-          ><span class="os-tile" style="--t: oklch(0.62 0.15 260)"><i data-lucide="notebook-pen"></i></span
-          ><span>Editor</span></button
-        >
-        <button class="os-app" type="button" data-launch="calc"
-          ><span class="os-tile" style="--t: oklch(0.55 0.03 260)"><i data-lucide="calculator"></i></span
-          ><span data-i18n-target="app-calc">Calculator</span></button
-        >
-        <button class="os-app" type="button" data-launch="cmd"
-          ><span class="os-tile" style="--t: oklch(0.3 0.02 260)"><i data-lucide="terminal"></i></span
-          ><span data-i18n-target="app-cmd">Command Prompt</span></button
-        >
-        <button class="os-app" type="button" data-launch="settings"
-          ><span class="os-tile" style="--t: oklch(0.55 0.02 260)"><i data-lucide="settings"></i></span
-          ><span data-i18n-target="app-settings">Settings</span></button
-        >
-        <button class="os-app" type="button" data-launch="bin"
-          ><span class="os-tile" style="--t: oklch(0.6 0.04 230)"><i data-lucide="trash-2"></i></span
-          ><span data-i18n-target="app-bin">Recycle Bin</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Photos isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.65 0.17 300)"><i data-lucide="image"></i></span
-          ><span data-i18n-target="app-photos">Photos</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Mail isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.6 0.15 245)"><i data-lucide="mail"></i></span
-          ><span>Mail</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Calendar isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.6 0.15 245)"><i data-lucide="calendar"></i></span
-          ><span data-i18n-target="app-calendar">Calendar</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Music isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.65 0.2 15)"><i data-lucide="music"></i></span
-          ><span data-i18n-target="app-music">Music</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Store isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.6 0.14 200)"><i data-lucide="shopping-bag"></i></span
-          ><span>Store</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Maps isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.65 0.15 150)"><i data-lucide="map"></i></span
-          ><span data-i18n-target="app-maps">Maps</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Weather isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.75 0.14 80)"><i data-lucide="cloud-sun"></i></span
-          ><span data-i18n-target="app-weather">Weather</span></button
-        >
-        <button
-          class="os-app"
-          type="button"
-          data-toast="Camera isn't part of this demo"
-          data-toast-desc="Try the Browser, Editor, Calculator or Settings."
-          ><span class="os-tile" style="--t: oklch(0.5 0.02 260)"><i data-lucide="camera"></i></span
-          ><span data-i18n-target="app-camera">Camera</span></button
-        >
-      </div>
-      <div class="os-start-head"><h2 data-i18n-target="start-recommended">Recommended</h2></div>
-      <div class="os-recent">
-        <button class="os-recent-item" type="button" data-launch="file:Welcome.txt"
-          ><span class="os-tile os-file" style="--t: oklch(0.62 0.15 260)"><i data-lucide="file-text"></i></span
-          ><span><strong>Welcome.txt</strong><small>Just now</small></span></button
-        >
-        <button class="os-recent-item" type="button" data-launch="file:Notes.txt"
-          ><span class="os-tile os-file" style="--t: oklch(0.62 0.15 260)"><i data-lucide="file-text"></i></span
-          ><span><strong>Notes.txt</strong><small>17m ago</small></span></button
-        >
-        <button class="os-recent-item" type="button" data-launch="file:Todo.txt"
-          ><span class="os-tile os-file" style="--t: oklch(0.62 0.15 260)"><i data-lucide="file-text"></i></span
-          ><span><strong>Todo.txt</strong><small>Yesterday at 6:42 PM</small></span></button
-        >
-        <button class="os-recent-item" type="button" data-launch="browser:acme.example"
-          ><span class="os-tile" style="--t: oklch(0.62 0.16 230)"><i data-lucide="globe"></i></span
-          ><span><strong>acme.example</strong><small>Visited today</small></span></button
-        >
-      </div>
+    <p class="start-menu-heading os-start-head"
+      ><span data-i18n-target="start-pinned">Pinned</span
+      ><button
+        class="btn"
+        data-variant="secondary"
+        data-size="xs"
+        type="button"
+        data-toast="All apps"
+        data-toast-desc="Every app is pinned already."
+        ><span data-i18n-target="start-all">All apps</span> <i data-lucide="chevron-right"></i></button
+    ></p>
+    <div
+      class="start-menu-pinned"
+      role="group"
+      aria-label="Pinned"
+      data-i18n-aria-label-en="Pinned"
+      data-i18n-aria-label-de="Angeheftet"
+    >
+      <button class="start-menu-item os-app" type="button" data-launch="browser"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="browser"></span></span
+        ><span class="start-menu-label">Browser</span></button
+      >
+      <button class="start-menu-item os-app" type="button" data-launch="editor"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span
+        ><span class="start-menu-label">Editor</span></button
+      >
+      <button class="start-menu-item os-app" type="button" data-launch="calc"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="calculator"></span></span
+        ><span class="start-menu-label" data-i18n-target="app-calc">Calculator</span></button
+      >
+      <button class="start-menu-item os-app" type="button" data-launch="cmd"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="terminal"></span></span
+        ><span class="start-menu-label" data-i18n-target="app-cmd">Command Prompt</span></button
+      >
+      <button class="start-menu-item os-app" type="button" data-launch="settings"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="settings"></span></span
+        ><span class="start-menu-label" data-i18n-target="app-settings">Settings</span></button
+      >
+      <button class="start-menu-item os-app" type="button" data-launch="bin"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="trash"></span></span
+        ><span class="start-menu-label" data-i18n-target="app-bin">Recycle Bin</span></button
+      >
+      <button
+        class="start-menu-item os-app"
+        type="button"
+        data-toast="Photos isn't part of this demo"
+        data-toast-desc="Try the Browser, Editor, Calculator or Settings."
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="picture"></span></span
+        ><span class="start-menu-label" data-i18n-target="app-photos">Photos</span></button
+      >
+      <button
+        class="start-menu-item os-app"
+        type="button"
+        data-toast="Mail isn't part of this demo"
+        data-toast-desc="Try the Browser, Editor, Calculator or Settings."
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="mail"></span></span
+        ><span class="start-menu-label">Mail</span></button
+      >
+      <button
+        class="start-menu-item os-app"
+        type="button"
+        data-toast="Music isn't part of this demo"
+        data-toast-desc="Try the Browser, Editor, Calculator or Settings."
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="music"></span></span
+        ><span class="start-menu-label" data-i18n-target="app-music">Music</span></button
+      >
+    </div>
+    <p class="start-menu-heading"><span data-i18n-target="start-recommended">Recommended</span></p>
+    <div
+      class="start-menu-list os-recent"
+      role="group"
+      aria-label="Recommended"
+      data-i18n-aria-label-en="Recommended"
+      data-i18n-aria-label-de="Empfohlen"
+    >
+      <button class="start-menu-item" type="button" data-launch="file:Welcome.txt"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span
+        ><span class="start-menu-label">Welcome.txt</span></button
+      >
+      <button class="start-menu-item" type="button" data-launch="file:Notes.txt"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span
+        ><span class="start-menu-label">Notes.txt</span></button
+      >
+      <button class="start-menu-item" type="button" data-launch="file:Todo.txt"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span
+        ><span class="start-menu-label">Todo.txt</span></button
+      >
+      <button class="start-menu-item" type="button" data-launch="browser:acme.example"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="browser"></span></span
+        ><span class="start-menu-label">acme.example</span></button
+      >
     </div>
     <div class="os-start-results" data-os-results hidden>
-      <div class="os-start-head"><h2 data-i18n-target="start-best">Best matches</h2></div>
+      <p class="start-menu-heading"><span data-i18n-target="start-best">Best matches</span></p>
       <div class="os-result-list" data-os-result-list></div>
     </div>
-    <footer class="os-start-foot">
-      <span class="os-me"
-        ><span class="avatar" data-size="sm"><img class="avatar-image" src="https://github.com/kyr0.png" alt="" /></span
-        >Aron Homberg</span
+    <div class="start-menu-foot os-start-foot">
+      <button class="start-menu-item" type="button" data-power="lock"
+        ><span class="start-menu-icon"><span class="desktop-glyph" data-glyph="user"></span></span
+        ><span class="start-menu-label" data-i18n-target="start-lock">Lock</span></button
       >
       <button
         class="btn"
@@ -2418,7 +2215,7 @@ Things to try:
           ><i data-lucide="power"></i> <span data-i18n-target="power-shutdown">Shut down</span></button
         >
       </div>
-    </footer>
+    </div>
   </div>
 
   <!-- quick settings -->
@@ -2606,14 +2403,27 @@ Things to try:
     </div>
   </dialog>
 
-  <!-- lock, sleep, restart -->
-  <div class="os-lock" data-os-lock hidden>
-    <div class="os-lock-clock"><p data-os-locktime>00:00</p><small data-os-lockdate></small></div>
-    <div class="os-lock-sign"
-      ><span class="avatar" data-size="xl"><img class="avatar-image" src="https://github.com/kyr0.png" alt="" /></span
-      ><strong>Aron Homberg</strong><button class="btn" type="button" data-os-unlock>Sign in</button></div
-    >
-    <p class="os-lock-hint">Click anywhere or press a key</p>
+  <!-- lock: the Logon component (signed in at first) - the clock over the user; a click on the user signs in -->
+  <div
+    class="logon os-lock"
+    data-os-lock
+    data-signed-in
+    data-user="aron"
+    aria-label="Locked"
+    data-i18n-aria-label-en="Locked"
+    data-i18n-aria-label-de="Gesperrt"
+  >
+    <div class="logon-main">
+      <div class="logon-brand os-lock-clock"><strong data-os-locktime>00:00</strong><span data-os-lockdate></span></div>
+      <ul class="logon-users">
+        <li>
+          <button class="logon-user" type="button" data-user="aron" data-no-password data-os-unlock
+            ><span class="avatar"><img class="avatar-image" src="https://github.com/kyr0.png" alt="" /></span
+            ><span class="logon-name">Aron Homberg</span></button
+          >
+        </li>
+      </ul>
+    </div>
   </div>
   <div class="os-power-screen" data-os-screen hidden
     ><div class="spinner" role="status" aria-label="Working"></div><p data-os-screen-text>Restarting</p></div
@@ -2631,7 +2441,7 @@ Things to try:
       style="--window-x: __X__; --window-y: __Y__; --window-w: 34rem; --window-h: 24rem"
     >
       <header class="window-titlebar"
-        ><span class="window-icon os-wicon" style="--t: oklch(0.62 0.15 260)"><i data-lucide="notebook-pen"></i></span
+        ><span class="window-icon desktop-glyph" data-glyph="text"></span
         ><h2 class="window-title"
           ><span class="os-dirty" aria-label="Unsaved changes">●</span><span data-ed-name>Untitled</span> - Editor</h2
         ><form method="dialog" class="window-controls"
@@ -3229,6 +3039,14 @@ Things to try:
     ></template
   >
   <!-- the translations: one template per target and language (defuss-i18n) -->
+  <template data-i18n-for="set-look" data-i18n-locale="en">Look</template>
+  <template data-i18n-for="set-look" data-i18n-locale="de">Erscheinungsbild</template>
+  <template data-i18n-for="set-look-d" data-i18n-locale="en">Windows, taskbar and icons of another time</template>
+  <template data-i18n-for="set-look-d" data-i18n-locale="de"
+    >Fenster, Taskleiste und Symbole aus einer anderen Zeit</template
+  >
+  <template data-i18n-for="start-lock" data-i18n-locale="en">Lock</template>
+  <template data-i18n-for="start-lock" data-i18n-locale="de">Sperren</template>
   <template data-i18n-for="start-search" data-i18n-locale="en">Search apps, settings and documents</template>
   <template data-i18n-for="start-search" data-i18n-locale="de">Apps, Einstellungen und Dokumente durchsuchen</template>
   <template data-i18n-for="start-pinned" data-i18n-locale="en">Pinned</template>
@@ -3245,16 +3063,8 @@ Things to try:
   <template data-i18n-for="app-bin" data-i18n-locale="de">Papierkorb</template>
   <template data-i18n-for="app-photos" data-i18n-locale="en">Photos</template>
   <template data-i18n-for="app-photos" data-i18n-locale="de">Fotos</template>
-  <template data-i18n-for="app-calendar" data-i18n-locale="en">Calendar</template>
-  <template data-i18n-for="app-calendar" data-i18n-locale="de">Kalender</template>
   <template data-i18n-for="app-music" data-i18n-locale="en">Music</template>
   <template data-i18n-for="app-music" data-i18n-locale="de">Musik</template>
-  <template data-i18n-for="app-maps" data-i18n-locale="en">Maps</template>
-  <template data-i18n-for="app-maps" data-i18n-locale="de">Karten</template>
-  <template data-i18n-for="app-weather" data-i18n-locale="en">Weather</template>
-  <template data-i18n-for="app-weather" data-i18n-locale="de">Wetter</template>
-  <template data-i18n-for="app-camera" data-i18n-locale="en">Camera</template>
-  <template data-i18n-for="app-camera" data-i18n-locale="de">Kamera</template>
   <template data-i18n-for="start-recommended" data-i18n-locale="en">Recommended</template>
   <template data-i18n-for="start-recommended" data-i18n-locale="de">Empfohlen</template>
   <template data-i18n-for="start-best" data-i18n-locale="en">Best matches</template>
@@ -3402,6 +3212,7 @@ Things to try:
       right: false,
       taskbar: 'center',
       seconds: false,
+      look: 'modern',
     };
     let kept = null; // the persisted settings (below), once df$ is up
     const set = (k, v) => {
@@ -3410,9 +3221,20 @@ Things to try:
       if (k === 'mode') document.documentElement.classList.toggle('dark', v === 'dark');
       else if (k === 'brightness') app.style.setProperty('--os-bright', v / 100);
       else if (BOOL.includes(k)) app.toggleAttribute('data-' + k, !!v);
-      else app.dataset[k] = v;
-      if (k === 'taskbar') app.querySelector('#os-start').toggleAttribute('data-left', v === 'left');
-      if (k === 'seconds') clock();
+      // the look is the Desktop's data-variant: every component inside takes the period's chrome
+      else if (k === 'look') {
+        if (!['win7', 'winxp', 'win98', 'win95'].includes(v)) app.removeAttribute('data-variant');
+        else app.setAttribute('data-variant', v);
+      } else app.dataset[k] = v;
+      if (k === 'taskbar')
+        app.querySelector('.os-taskbar').setAttribute('data-align', v === 'left' ? 'start' : 'center');
+      if (k === 'icons') {
+        const size = { large: 'lg', small: 'sm' }[v];
+        const list = app.querySelector('[data-icon-list]');
+        if (size) list.setAttribute('data-size', size);
+        else list.removeAttribute('data-size');
+      }
+      if (k === 'seconds') app.querySelector('.os-tray').toggleAttribute('data-seconds', !!v);
       app.querySelectorAll('[data-set="' + k + '"]').forEach((c) => {
         if (c.matches('input[type="radio"]')) c.checked = c.value === String(v);
         else if (c.matches('input[type="checkbox"]')) c.checked = !!v;
@@ -3459,10 +3281,17 @@ Things to try:
           .filter((k) => k !== 'mode')
           .map((k) => [k, S[k]]),
       );
-      const store = globalThis.df$?.store?.persisted('os-desktop:settings', defaults);
+      // settings saved before a key existed (the look) are kept: every key they hold has its default's type
+      const store = globalThis.df$?.store?.persisted('os-desktop:settings', defaults, {
+        validate: (v) =>
+          !!v &&
+          typeof v === 'object' &&
+          Object.keys(defaults).every((k) => !(k in v) || typeof v[k] === typeof defaults[k]),
+      });
       if (!store) return;
       Object.keys(defaults).forEach((k) => {
-        if (store.value[k] !== S[k]) set(k, store.value[k]);
+        const v = k in store.value ? store.value[k] : defaults[k];
+        if (v !== S[k]) set(k, v);
       });
       kept = store;
     };
@@ -3666,18 +3495,13 @@ Things to try:
         : open.sort((x, y) => Number(y.style.zIndex || 0) - Number(x.style.zIndex || 0))[0];
       show(next);
     });
-    app.querySelector('[data-os-showdesk]').addEventListener('click', () => {
-      const shown = wins().filter(visible);
-      if (shown.length) {
-        app._hidden = shown;
-        shown.forEach(mini);
-      } else (app._hidden || []).forEach(show);
-    });
+    // show desktop is the Tray's: it asks the Window Manager (the os-desk) to minimize every window
 
     // -- the start menu ------------------------------------------------------------------
     const start = app.querySelector('#os-start');
     const q = app.querySelector('[data-os-q]');
-    const closeFlyouts = () => app.querySelectorAll('.os-flyout:popover-open').forEach((f) => f.hidePopover());
+    const closeFlyouts = () =>
+      app.querySelectorAll('.os-flyout:popover-open, .start-menu:popover-open').forEach((f) => f.hidePopover());
     start.addEventListener('toggle', (e) => {
       if (e.newState === 'closed') {
         q.value = '';
@@ -3692,30 +3516,30 @@ Things to try:
         what: k,
         name: n,
         kind: 'App',
-        tile: app.querySelector('[data-launch="' + k + '"] .os-tile').outerHTML,
+        tile: app.querySelector('#os-start [data-launch="' + k + '"] .start-menu-icon').outerHTML,
       })),
       ...Object.keys(FILES).map((f) => ({
         what: 'file:' + f,
         name: f,
         kind: 'Document',
-        tile: app.querySelector('.os-recent .os-file')?.outerHTML || '',
+        tile: app.querySelector('.os-recent .start-menu-icon')?.outerHTML || '',
       })),
       {
         what: 'settings',
         name: 'Change the desktop background',
         kind: 'Settings',
-        tile: app.querySelector('[data-launch="settings"] .os-tile').outerHTML,
+        tile: app.querySelector('#os-start [data-launch="settings"] .start-menu-icon').outerHTML,
       },
       {
         what: 'settings',
         name: 'Dark mode',
         kind: 'Settings',
-        tile: app.querySelector('[data-launch="settings"] .os-tile').outerHTML,
+        tile: app.querySelector('#os-start [data-launch="settings"] .start-menu-icon').outerHTML,
       },
     ];
     const search = (v) => {
       const s = v.trim().toLowerCase();
-      app.querySelector('.os-start-home').hidden = !!s;
+      start.toggleAttribute('data-os-searching', !!s);
       const box = app.querySelector('[data-os-results]');
       box.hidden = !s;
       if (!s) return;
@@ -3724,17 +3548,17 @@ Things to try:
         what: 'browser:' + v.trim(),
         name: 'Search the web for “' + v.trim() + '”',
         kind: 'Web',
-        tile: app.querySelector('[data-launch="browser"] .os-tile').outerHTML,
+        tile: app.querySelector('#os-start [data-launch="browser"] .start-menu-icon').outerHTML,
       });
       const list = app.querySelector('[data-os-result-list]');
       list.replaceChildren(
         ...hits.map((h, i) => {
           const b = document.createElement('button');
           b.type = 'button';
-          b.className = 'os-recent-item';
+          b.className = 'start-menu-item os-result';
           b.dataset.launch = h.what;
           if (!i) b.setAttribute('data-first', '');
-          b.innerHTML = h.tile + '<span><strong></strong><small></small></span>';
+          b.innerHTML = h.tile + '<span class="start-menu-label"><strong></strong> <small></small></span>';
           b.querySelector('strong').textContent = h.name;
           b.querySelector('small').textContent = h.kind;
           return b;
@@ -3754,8 +3578,8 @@ Things to try:
     // the Windows key alone toggles the start menu (when the browser lets it through)
     let lone = false;
     document.addEventListener('keydown', (e) => {
+      // Ctrl+Esc is the Start Menu's own
       lone = e.key === 'Meta' || e.key === 'OS';
-      if (e.ctrlKey && e.key === 'Escape') start.togglePopover();
     });
     document.addEventListener('keyup', (e) => {
       if ((e.key === 'Meta' || e.key === 'OS') && lone) start.togglePopover();
@@ -3765,12 +3589,6 @@ Things to try:
     // -- clock ---------------------------------------------------------------------------
     const clock = () => {
       const d = new Date();
-      const t = d.toLocaleTimeString(
-        [],
-        S.seconds ? { hour: '2-digit', minute: '2-digit', second: '2-digit' } : { hour: '2-digit', minute: '2-digit' },
-      );
-      app.querySelector('[data-os-time]').textContent = t;
-      app.querySelector('[data-os-date]').textContent = d.toLocaleDateString('en');
       app.querySelector('[data-os-bigtime]').textContent = d.toLocaleTimeString('en');
       app.querySelector('[data-os-longdate]').textContent = d.toLocaleDateString([], {
         weekday: 'long',
@@ -3809,38 +3627,14 @@ Things to try:
 
     // -- desktop icons and the context menus -------------------------------------------
     const icons = app.querySelector('[data-icon-list]');
-    const select = (i) => {
-      icons.querySelectorAll('[aria-selected="true"]').forEach((x) => x.setAttribute('aria-selected', 'false'));
-      if (i) {
-        i.setAttribute('aria-selected', 'true');
-        i.tabIndex = 0;
-        i.focus();
-      }
-    };
-    icons.addEventListener('click', (e) => {
-      select(e.target.closest('.os-icon'));
-    });
-    icons.addEventListener('dblclick', (e) => {
-      const i = e.target.closest('.os-icon');
-      if (i) open(i.dataset.open);
-    });
-    icons.addEventListener('keydown', (e) => {
-      const i = e.target.closest('.os-icon');
-      if (!i) return;
-      if (e.key === 'Enter') open(i.dataset.open);
-      if (e.key === 'Delete') del(i);
-      if (e.key.startsWith('Arrow')) {
-        const all = [...icons.querySelectorAll('.os-icon')];
-        const n = all[all.indexOf(i) + (e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : -1)];
-        if (n) {
-          e.preventDefault();
-          select(n);
-        }
-      }
-    });
-    app.querySelector('.os-surface').addEventListener('pointerdown', (e) => {
-      if (!e.target.closest('.os-icon')) select(null);
-    });
+    const iconOf = (v) => icons.querySelector('.os-icon[data-value="' + CSS.escape(v) + '"]');
+    icons.addEventListener('desktop-open', (e) => e.detail.values.forEach((v) => open(v)));
+    icons.addEventListener('desktop-delete', (e) =>
+      e.detail.values
+        .map(iconOf)
+        .filter(Boolean)
+        .forEach((i) => del(i)),
+    );
     // right-click: an icon is its own Context Menu trigger (it opens on the
     // button's release, like every context menu); stopping the event here,
     // after the icon's handler, keeps the desktop's menu out of it
@@ -3850,7 +3644,7 @@ Things to try:
       if (!i) return;
       e.stopPropagation();
       ctxIcon = i;
-      select(i);
+      df$.shadcn.desktopManager.select(icons, [i.dataset.value]);
       app.querySelector('#os-icon-ctx [data-icon-act="delete"]').disabled = i.dataset.kind === 'system';
     });
     const sortIcons = () => {
@@ -3863,6 +3657,7 @@ Things to try:
             : a.dataset.name.localeCompare(b.dataset.name),
       );
       icons.append(...all);
+      df$.shadcn.desktopManager.arrange(icons);
     };
     const del = (i) => {
       if (i.dataset.kind !== 'file') return;
@@ -3889,10 +3684,14 @@ Things to try:
       const b = icons.querySelector('.os-icon[data-kind="file"]')?.cloneNode(true) || null;
       if (!b) return;
       b.dataset.open = 'file:' + name;
+      b.dataset.value = 'file:' + name;
       b.dataset.name = name;
       b.setAttribute('aria-selected', 'false');
+      // a fresh element for the runtimes (its Context Menu trigger, the Desktop Manager's roving tabindex)
       b.removeAttribute('data-init');
-      b.querySelector('span:last-child').textContent = name;
+      b.removeAttribute('tabindex');
+      b.removeAttribute('style');
+      b.querySelector('.desktop-icon-label').textContent = name;
       icons.append(b);
     };
     app.querySelector('#os-icon-ctx').addEventListener('click', (e) => {
@@ -4381,28 +4180,11 @@ Things to try:
     const screen = app.querySelector('[data-os-screen]');
     const doLock = () => {
       closeFlyouts();
-      lock.hidden = false;
-      lock.removeAttribute('data-sign');
-      lock.focus?.();
+      df$.shadcn.logon.lock(lock);
     };
-    lock.tabIndex = -1;
-    const advance = () => {
-      if (!lock.hasAttribute('data-sign')) {
-        lock.setAttribute('data-sign', '');
-        requestAnimationFrame(() => lock.querySelector('[data-os-unlock]').focus());
-      }
-    };
-    lock.addEventListener('click', (e) => {
-      if (e.target.closest('[data-os-unlock]')) {
-        lock.hidden = true;
-        toast('Welcome back, Aron');
-      } else advance();
-    });
-    lock.addEventListener('keydown', (e) => {
-      if (!e.target.closest('[data-os-unlock]')) {
-        e.preventDefault();
-        advance();
-      }
+    lock.addEventListener('logon-submit', () => {
+      df$.shadcn.logon.done(lock);
+      toast('Welcome back, Aron');
     });
     screen.addEventListener('click', () => {
       if (screen.hasAttribute('data-black')) {

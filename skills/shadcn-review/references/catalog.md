@@ -2,7 +2,7 @@
 
 # Component catalog
 
-262 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
+271 components by sidebar section. **Type**: ATM Atom, MOL Molecule, ORG Organism, BLK Block, TPL Template. **States**: the names `el.api.setState(name)` accepts (`default` only = no state API). **JS**: ships a script.
 
 Each name links to its component skill (markup, variants, sizes, ARIA, states) in the defuss-shadcn skill next to this one. Not there (this folder installed alone)? Fetch `https://raw.githubusercontent.com/kyr0/defuss-shadcn/v0.9.16/skills/defuss-shadcn/references/components/<name>.md`.
 
@@ -224,8 +224,22 @@ Each name links to its component skill (markup, variants, sizes, ARIA, states) i
 | [Border Layout](../../defuss-shadcn/references/components/border-layout.md) `border-layout` | ORG | default, collapsed | yes | Application frames - an editor with a file tree and a terminal, a mail client, a dashboard with an inspector; any split that the user should be able to resize: two panes side by side (horizontal split), stacked (vertical split), three columns, nested splits. A single resizable box takes resizer; fixed columns take the grid utilities. |
 | [Panel](../../defuss-shadcn/references/components/panel.md) `panel` | MOL | default, minimized, maximized, closed | yes | Titled, foldable tool areas - a file tree, an inspector, a console, dashboard widgets - and above all the regions of a border layout. A plain content box takes card; a disclosure inside flowing text takes collapsible / accordion; movable floating panes take window. |
 | [Property Grid](../../defuss-shadcn/references/components/property-grid.md) `property-grid` | ATM | default, editing | yes | Inspecting and editing one object - the selection of a designer (Studio), a service's settings, a node's properties, a record's raw fields. Many records with the same columns are data-grid; a form a user fills in once is form. |
+| [Property Tree](../../defuss-shadcn/references/components/property-tree.md) `property-tree` | ATM | default, editing | yes | Inspecting and editing a nested document - a configuration, an API response, a state store, a graph of objects that point at each other. One flat object with labels and rules per key is property-grid; many records with the same fields are data-grid; a hierarchy of records is data-tree. |
 | [Window](../../defuss-shadcn/references/components/window.md) `window` | ATM | default, maximized, minimized, closed | yes | Desktop-style UIs - several movable panels over one area (an editor, an inspector, a chat), app mockups, retro pages, tool palettes. For a single blocking question use dialog / alert-dialog; for a panel from an edge use sheet; for splitting fixed panes use resizer. |
 | [Document Comments](../../defuss-shadcn/references/components/doc-comments.md) `doc-comments` | ORG | default, current | yes | Reviewing a document - a Google-Docs-style editor (the Document Editor scaffold on Editor.js), a rendered article, any markup whose blocks carry ids; for a chat about the whole thing use Session, for a plain list of remarks Comment Item. |
+
+## Desktop
+
+| Component | Type | States | JS | When |
+| --- | --- | --- | --- | --- |
+| [Window Manager](../../defuss-shadcn/references/components/window-manager.md) `window-manager` | MOL | default, desktop | yes | Any desktop-like UI with several windows and something that lists them (a taskbar, a window menu, a switcher). For windows alone use window - its df$.shadcn.win already moves, raises and arranges them. |
+| [Desktop Manager](../../defuss-shadcn/references/components/desktop-manager.md) `desktop-manager` | ATM | default, selected | yes | The icon surface of a desktop or any spatial file view (a folder window's icon view). For a list with checkboxes use table or virtual-list; for a single pick use radio-group. |
+| [Taskbar](../../defuss-shadcn/references/components/taskbar.md) `taskbar` | MOL | default | yes | A desktop with windows. For a dock of launchers only use dock; for an app's own toolbar use toolbar. |
+| [Tray](../../defuss-shadcn/references/components/tray.md) `tray` | ATM | default | yes | The end of a taskbar - status icons, quick settings, the clock. For a status line inside an app use a window's status bar. |
+| [Start Button](../../defuss-shadcn/references/components/start-button.md) `start-button` | ATM | default | - | The first button of a taskbar, opening a start menu. For a menu of commands anywhere else use dropdown; for a launcher grid use command. |
+| [Start Menu](../../defuss-shadcn/references/components/start-menu.md) `start-menu` | MOL | default, open | yes | The menu of a desktop's Start Button - apps, folders, the user, power. For a command palette use command; for a menu on any button use dropdown. |
+| [Logon](../../defuss-shadcn/references/components/logon.md) `logon` | MOL | default, signing-in, error, signed-in | yes | The start or lock screen of a desktop. For a sign-in page of a website use the website's Login Form block; for a password prompt in an app use a dialog with a form. |
+| [Desktop](../../defuss-shadcn/references/components/desktop.md) `desktop` | ORG | default | - | A desktop-like UI or a period look for one. For windows alone use window in a window-desktop; for an app's frame use border-layout. |
 
 ## Chat
 

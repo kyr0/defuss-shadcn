@@ -104,7 +104,7 @@ literal colours - they are what they are in every theme.
 
 | Action | Result |
 |--------|--------|
-| Press anywhere in a window | It comes to the front (`data-active`; the others dim their title) |
+| Press anywhere in a window | It comes to the front (`data-active`; the others on the same desktop dim their title - each `.window-desktop` or [Window Manager](../../desktop/window-manager/component-skill.md) keeps its own front window) |
 | Drag the title bar | Moves it; its bar stays inside the desktop so it can always be grabbed back |
 | Title bar focused + arrows | Moves 16px (Shift: 64px) |
 | Double-click the title bar | Maximize / restore |
@@ -219,7 +219,7 @@ stacking are runtime.
 | <code>minimize(target: string \| HTMLElement): HTMLDialogElement \| null</code> | Minimize it to the taskbar. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .window element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLDialogElement \| null</code> - the window, null when the target matches none |
 | <code>restore(target: string \| HTMLElement): HTMLDialogElement \| null</code> | Back to its normal size and place. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .window element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLDialogElement \| null</code> - the window, null when the target matches none |
 | <code>toggleMaximize(target: string \| HTMLElement): HTMLDialogElement \| null</code> | Maximize it, or restore it when it is maximized. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .window element, its id or a selector</td></tr></table> <b>Returns</b> <code>HTMLDialogElement \| null</code> - the window, null when the target matches none |
-| <code>active(): HTMLDialogElement \| undefined</code> | The window in front. <b>Returns</b> <code>HTMLDialogElement \| undefined</code> - the active open window, undefined when none is open |
+| <code>active(): HTMLDialogElement \| undefined</code> | The window in front: of the active windows (one per desktop), the one raised last. <b>Returns</b> <code>HTMLDialogElement \| undefined</code> - the front-most active open window, undefined when none is open |
 | <code>list(scope?: HTMLElement \| string, all: boolean = false): HTMLDialogElement[]</code> | Windows (open unless `all`) inside `scope` (default: the page). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>scope?</code></td><td><code>HTMLElement \| string</code></td><td>a desktop element, its id or a selector (default: the page)</td></tr><tr><td><code>all</code></td><td><code>boolean</code> = <code>false</code></td><td>true: closed windows too</td></tr></table> <b>Returns</b> <code>HTMLDialogElement[]</code> - the windows, in document order |
 | <code>cascade(scope?: HTMLElement \| string, step: number = 28): void</code> | Steps the open windows diagonally from the top-left, front-most last. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>scope?</code></td><td><code>HTMLElement \| string</code></td><td>a desktop element, its id or a selector (default: the page)</td></tr><tr><td><code>step</code></td><td><code>number</code> = <code>28</code></td><td>px between two windows (default 28)</td></tr></table> |
 | <code>tile(scope?: HTMLElement \| string): void</code> | Lays the open windows side by side in a grid that fills their desktop. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>scope?</code></td><td><code>HTMLElement \| string</code></td><td>a desktop element, its id or a selector (default: the page)</td></tr></table> |
@@ -245,7 +245,7 @@ stacking are runtime.
 
 | Element | Attribute | Notes |
 |---------|-----------|-------|
-| `.window` | `aria-labelledby` → `.window-title` | Wired by the runtime when missing; the dialog role is native |
+| `.window` | `aria-labelledby` pointing at `.window-title` | Wired by the runtime when missing; the dialog role is native |
 | control buttons | `aria-label` | "Minimize", "Maximize" / "Restore", "Close" - kept current by the runtime |
 | `.window-titlebar` | `tabindex="0"` (set by the runtime) | Focus it to move the window with the arrow keys |
 

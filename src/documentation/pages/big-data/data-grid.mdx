@@ -197,6 +197,245 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Inline editing" schema="none" hint="A header with data-editable makes its column edit in place: double-click a cell, or press Enter / F2 on it. The editor follows data-editor (string, number, boolean, enum, color, date, text) - else the column's data-type or the value: an Input, a number Input with data-min / data-max / data-integer, a Switch, a Select of data-options, a colour or a date input. Enter or leaving the cell writes the value, Escape keeps the old one, Tab moves to the next editable cell. data-required and the number rules refuse a value with a message. Every edit replaces the record in the source and runs the query again - sorted by Stock, an edited stock moves the row. The line below listens to data-grid-edit."
+<div class="data-grid" id="dg-edit" aria-label="Products" style="height: 18rem">
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="sku" data-width="7rem" data-format="">SKU</div>
+        <div
+          class="data-grid-header"
+          data-field="name"
+          data-width="minmax(10rem, 1fr)"
+          data-editable
+          data-required
+          data-filter="text"
+          >Product</div
+        >
+        <div
+          class="data-grid-header"
+          data-field="stock"
+          data-type="number"
+          data-width="7rem"
+          data-editable
+          data-min="0"
+          data-integer
+          data-sort="desc"
+          >Stock</div
+        >
+        <div
+          class="data-grid-header"
+          data-field="price"
+          data-type="number"
+          data-format="currency:EUR"
+          data-width="8rem"
+          data-editable
+          data-min="0"
+          data-step="0.01"
+          >Price</div
+        >
+        <div
+          class="data-grid-header"
+          data-field="category"
+          data-width="9rem"
+          data-editable
+          data-editor="enum"
+          data-options="Tools, Garden, Kitchen, Office"
+          data-filter="select"
+          >Category</div
+        >
+        <div class="data-grid-header" data-field="active" data-width="6rem" data-editable data-editor="boolean"
+          >Active</div
+        >
+        <div class="data-grid-header" data-field="color" data-width="7rem" data-editable data-editor="color"
+          >Colour</div
+        >
+        <div class="data-grid-header" data-field="restock" data-width="9rem" data-editable data-editor="date"
+          >Restock</div
+        >
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<p class="text-sm" style="margin-block-start: 0.5rem"
+  ><output id="dg-edit-log">Double-click a cell to edit it.</output></p
+>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const names = ['Hammer', 'Rake', 'Kettle', 'Stapler', 'Wrench', 'Hose', 'Whisk', 'Lamp'];
+    const cats = ['Tools', 'Garden', 'Kitchen', 'Office'];
+    const colors = ['#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c'];
+    const rows = Array.from({ length: 10000 }, (_, i) => ({
+      id: i + 1,
+      sku: 'P-' + String(i + 1).padStart(5, '0'),
+      name: names[i % names.length] + ' ' + (Math.floor(i / names.length) + 1),
+      stock: (i * 37) % 500,
+      price: 4.5 + ((i * 53) % 9000) / 100,
+      category: cats[i % cats.length],
+      active: i % 5 !== 0,
+      color: colors[i % colors.length],
+      restock: '2026-' + String(1 + (i % 12)).padStart(2, '0') + '-' + String(1 + (i % 28)).padStart(2, '0'),
+    }));
+    const grid = document.getElementById('dg-edit');
+    df$.shadcn.dataGrid.setSource(grid, rows);
+    grid.addEventListener('data-grid-edit', (e) => {
+      const { record, field, value, oldValue } = e.detail;
+      document.getElementById('dg-edit-log').textContent =
+        record.sku + ' ' + field + ': ' + JSON.stringify(oldValue) + ' to ' + JSON.stringify(value);
+    });
+  });
+</script>
+```
+
+```html example label="Custom editors" schema="none" hint="setSource's getEditorFn(field, value, ctx) hands the grid any editor: an element (an input, a select) or { el, getValue, validate?, focus?, immediate? }. Here the score edits as a Rating (radio stars - a pick commits at once, immediate: true) and shows as a read-only Rating through cells; the progress edits as a Slider with its value beside it (Enter or leaving it commits); the owner is a Select of the team built from the data. validateFn(field, value, ctx) refuses across fields: a task that is done (100 %) needs an owner. Return false from getEditorFn to keep one cell from editing - archived tasks stay as they are."
+<div class="data-grid" id="dg-custom" aria-label="Tasks" style="height: 18rem; max-width: 46rem">
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="task" data-width="minmax(10rem, 1fr)" data-editable data-required
+          >Task</div
+        >
+        <div
+          class="data-grid-header"
+          data-field="score"
+          data-type="number"
+          data-width="9rem"
+          data-align="start"
+          data-editable
+          >Priority</div
+        >
+        <div
+          class="data-grid-header"
+          data-field="progress"
+          data-type="number"
+          data-width="11rem"
+          data-align="start"
+          data-editable
+          >Progress</div
+        >
+        <div class="data-grid-header" data-field="owner" data-width="8rem" data-editable>Owner</div>
+        <div class="data-grid-header" data-field="archived" data-width="6rem">Archived</div>
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<p class="text-sm" style="margin-block-start: 0.5rem"
+  ><output id="dg-custom-log">Double-click a priority, a progress or an owner.</output></p
+>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const team = ['', 'Ada', 'Grace', 'Linus', 'Margaret'];
+    const rows = Array.from({ length: 5000 }, (_, i) => ({
+      id: i + 1,
+      task: 'Task ' + (i + 1),
+      score: 1 + ((i * 7) % 5),
+      progress: (i * 13) % 101,
+      owner: team[(i * 3) % team.length],
+      archived: i % 9 === 0 ? 'yes' : '',
+    }));
+    // a Rating of five radio stars - a pick commits at once
+    const ratingEditor = (value) => {
+      const el = document.createElement('fieldset');
+      el.className = 'rating';
+      el.dataset.size = 'sm';
+      el.setAttribute('aria-label', 'Priority');
+      const name = 'score-' + Math.random().toString(36).slice(2, 7);
+      for (let n = 1; n <= 5; n++) {
+        const item = document.createElement('label');
+        item.className = 'rating-item';
+        const input = document.createElement('input');
+        input.className = 'rating-input';
+        input.type = 'radio';
+        input.name = name;
+        input.value = String(n);
+        input.checked = n === value;
+        input.setAttribute('aria-label', n + (n === 1 ? ' star' : ' stars'));
+        item.append(input);
+        el.append(item);
+      }
+      return {
+        el,
+        immediate: true,
+        getValue: () => Number(el.querySelector('input:checked')?.value ?? value),
+        focus: () => (el.querySelector('input:checked') ?? el.querySelector('input')).focus(),
+      };
+    };
+    // a Slider with its value beside it - Enter or leaving it commits
+    const sliderEditor = (value) => {
+      const el = document.createElement('span');
+      el.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; flex: 1';
+      const range = document.createElement('input');
+      range.type = 'range';
+      range.className = 'slider';
+      range.min = '0';
+      range.max = '100';
+      range.value = String(value);
+      range.setAttribute('aria-label', 'Progress');
+      range.style.flex = '1';
+      const out = document.createElement('output');
+      out.textContent = value + '%';
+      range.addEventListener('input', () => (out.textContent = range.value + '%'));
+      el.append(range, out);
+      return { el, getValue: () => range.valueAsNumber, focus: () => range.focus() };
+    };
+    const ownerEditor = (value) => {
+      const el = document.createElement('select');
+      el.className = 'select';
+      el.dataset.size = 'xs';
+      el.setAttribute('aria-label', 'Owner');
+      for (const name of team) {
+        const o = document.createElement('option');
+        o.value = name;
+        o.textContent = name || 'Nobody';
+        o.selected = name === value;
+        el.append(o);
+      }
+      return el;
+    };
+    const grid = document.getElementById('dg-custom');
+    df$.shadcn.dataGrid.setSource(grid, rows, {
+      cells: {
+        score: (el, record) => {
+          const stars = document.createElement('span');
+          stars.className = 'rating';
+          stars.dataset.readonly = '';
+          stars.dataset.size = 'sm';
+          stars.style.setProperty('--rating-value', record.score);
+          stars.setAttribute('role', 'img');
+          stars.setAttribute('aria-label', 'Priority ' + record.score + ' of 5');
+          el.append(stars);
+        },
+        progress: (el, record) => {
+          const bar = document.createElement('progress');
+          bar.className = 'progress';
+          bar.max = 100;
+          bar.value = record.progress;
+          bar.style.width = '6rem';
+          el.append(bar, ' ' + record.progress + '%');
+        },
+      },
+      getEditorFn: (field, value, ctx) => {
+        if (ctx.record.archived) return false;
+        if (field === 'score') return ratingEditor(value);
+        if (field === 'progress') return sliderEditor(value);
+        if (field === 'owner') return ownerEditor(value);
+        return null; // the built-in editor (the task's Input)
+      },
+      validateFn: (field, value, ctx) => {
+        if (field === 'progress' && value === 100 && !ctx.record.owner) return 'A finished task needs an owner';
+        if (field === 'owner' && !value && ctx.record.progress === 100) return 'A finished task keeps its owner';
+      },
+    });
+    grid.addEventListener('data-grid-edit', (e) => {
+      document.getElementById('dg-custom-log').textContent =
+        e.detail.record.task + ': ' + e.detail.field + ' is now ' + JSON.stringify(e.detail.value);
+    });
+  });
+</script>
+```
+
 ```html example label="100,000 orders" hint="Click a header to sort, Shift+click to add a column to the sort. Type in the filter row - every filter runs over all 100,000 rows (text anywhere, case-insensitive; numbers take > 500, <= 20 …). The arrow at a header's end opens its menu: sort, Lock column (it moves into the sticky group and stays while the rest scrolls sideways), a checkbox per column to show or hide it, Reset columns. Drag a header to move its column (on touch: hold it first; let go without moving for the menu), drag its end edge to resize, double-click the edge for its authored width. Click / Shift+click / Ctrl+click select rows; arrows move cell by cell. The line under the grid subscribes to the grid's store."
 <div class="flex flex-col gap-2">
   <div

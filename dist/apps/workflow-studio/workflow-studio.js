@@ -2290,6 +2290,174 @@ function bindMedia(root, prefix, report) {
   delegate(prefix);
   mediaPaint(root, prefix);
 }
+// src/shared/editors.ts
+var isObject = (v) => v !== null && typeof v === "object";
+function valueType(value, rules) {
+  if (rules?.type)
+    return rules.type;
+  if (rules?.options)
+    return "enum";
+  if (value === null)
+    return "null";
+  if (Array.isArray(value))
+    return "array";
+  if (typeof value === "object")
+    return "object";
+  if (typeof value === "boolean")
+    return "boolean";
+  if (typeof value === "number")
+    return "number";
+  if (typeof value === "string") {
+    if (/^#[0-9a-f]{6}$/i.test(value))
+      return "color";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
+      return "date";
+    if (value.includes(`
+`))
+      return "text";
+  }
+  return "string";
+}
+function builtinEditor(type, value, rules, options = {}) {
+  const dfDollar = defussQuery();
+  const size = options.size ?? "xs";
+  if (type === "boolean") {
+    const el = document.createElement("input");
+    el.type = "checkbox";
+    el.className = "switch";
+    el.setAttribute("role", "switch");
+    el.checked = !!value;
+    return { el, getValue: () => el.checked, immediate: true };
+  }
+  if (type === "enum") {
+    const el = document.createElement("select");
+    el.className = "select";
+    el.dataset.size = size;
+    const choices = rules?.options ?? [];
+    for (const opt of choices) {
+      const o = document.createElement("option");
+      const [v, label] = isObject(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
+      o.value = String(v);
+      dfDollar(o).text(String(label));
+      if (v === value)
+        o.selected = true;
+      el.append(o);
+    }
+    const values = choices.map((o) => isObject(o) ? o.value : o);
+    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
+  }
+  if (type === "text" || type === "object" || type === "array" || type === "json") {
+    const el = document.createElement("textarea");
+    el.className = "textarea";
+    el.rows = type === "text" ? 3 : 5;
+    const json = type !== "text";
+    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
+    return {
+      el,
+      multiline: true,
+      getValue: () => json ? JSON.parse(el.value) : el.value,
+      validate: () => {
+        if (!json)
+          return "";
+        try {
+          JSON.parse(el.value);
+          return "";
+        } catch (error) {
+          return String(error.message ?? error);
+        }
+      }
+    };
+  }
+  const el = document.createElement("input");
+  el.className = type === "color" ? options.colorClass ?? "" : "input";
+  if (type !== "color")
+    el.dataset.size = size;
+  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
+  if (type === "number") {
+    el.step = String(rules?.step ?? "any");
+    if (rules?.min != null)
+      el.min = String(rules.min);
+    if (rules?.max != null)
+      el.max = String(rules.max);
+    el.inputMode = "decimal";
+  }
+  el.value = value == null ? "" : String(value);
+  return {
+    el,
+    immediate: type === "color" || type === "date",
+    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
+    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
+  };
+}
+function asEditor(custom) {
+  if (!custom)
+    return null;
+  if (custom instanceof HTMLElement) {
+    const el = custom;
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
+  }
+  if (isObject(custom) && custom.el instanceof HTMLElement && typeof custom.getValue === "function")
+    return custom;
+  return null;
+}
+function editorControl(editor) {
+  const sel = "input, select, textarea, button, [tabindex]";
+  return editor.el.matches?.(sel) ? editor.el : defussQuery()(editor.el).find(sel).get(0) ?? editor.el;
+}
+function focusEditor(editor) {
+  const target = editorControl(editor);
+  (editor.focus ?? (() => target.focus?.()))();
+  if (target.select && !["checkbox", "color", "date", "range"].includes(target.type))
+    target.select();
+}
+function editorProblem(rules, value) {
+  if (!rules)
+    return "";
+  const say = (fallback) => rules.message || fallback;
+  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
+  if (rules.required && empty)
+    return say("Required");
+  if (empty)
+    return "";
+  if (typeof value === "number") {
+    if (Number.isNaN(value))
+      return say("Not a number");
+    if (rules.integer && !Number.isInteger(value))
+      return say("Must be a whole number");
+    if (rules.min != null && value < rules.min)
+      return say(`Must be at least ${rules.min}`);
+    if (rules.max != null && value > rules.max)
+      return say(`Must be at most ${rules.max}`);
+  }
+  if (typeof value === "string") {
+    if (rules.minLength != null && value.length < rules.minLength)
+      return say(`At least ${rules.minLength} characters`);
+    if (rules.maxLength != null && value.length > rules.maxLength)
+      return say(`At most ${rules.maxLength} characters`);
+    if (rules.pattern && !new RegExp(`^(?:${rules.pattern})$`).test(value))
+      return say("Does not match the expected format");
+  }
+  if (Array.isArray(value)) {
+    if (rules.minItems != null && value.length < rules.minItems)
+      return say(`At least ${rules.minItems}`);
+    if (rules.maxItems != null && value.length > rules.maxItems)
+      return say(`At most ${rules.maxItems}`);
+  }
+  return "";
+}
+function editorKey(e, editor) {
+  if (e.key === "Escape")
+    return "cancel";
+  if (e.key === "Enter" && (!(editor.multiline || editor.ownsEnter) || e.metaKey || e.ctrlKey))
+    return "commit";
+  if (e.key === "Tab")
+    return e.shiftKey ? "prev" : "next";
+  return null;
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5146,6 +5314,13 @@ shadcn.shared = {
   sheetUrl,
   mathClone,
   mathText,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -5345,15 +5520,20 @@ var minOf = (panel) => {
 };
 var open = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
 var titleOf = (panel) => dfDollar(panel).find(":scope > .panel-header .panel-title").text().trim() || panel.getAttribute("aria-label") || "";
-function exclusive(stack, again) {
-  if (!stack.hasAttribute("data-exclusive"))
+var keepOf = (stack) => stack.hasAttribute("data-exclusive") ? 1 : Math.max(0, Math.floor(num2(stack.dataset.keep, 0)));
+function keepOpen(stack, again) {
+  const n = keepOf(stack);
+  if (!n)
     return;
   const opened = panelsOf(stack).filter(open);
-  const fresh = opened.filter((p) => p !== stack._open);
-  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
-  stack._open = keep;
+  const order = (stack._order ?? []).filter((p) => opened.includes(p));
+  for (const p of opened)
+    if (!order.includes(p))
+      order.push(p);
+  stack._order = order;
+  const keep = new Set(order.slice(-n));
   for (const p of opened) {
-    if (p === keep)
+    if (keep.has(p))
       continue;
     if (p.api)
       p.api.setState("minimized");
@@ -5361,10 +5541,44 @@ function exclusive(stack, again) {
       setTimeout(again);
   }
 }
+var levelsOf = (stack) => stack.hasAttribute("data-levels");
+function drill(stack, panels) {
+  const was = stack._wasOpen;
+  stack._wasOpen = new Set(panels.filter(open));
+  if (!was || !stack.hasAttribute("data-drill"))
+    return;
+  const reopened = panels.find((p) => open(p) && !was.has(p) && stack._seen?.has(p));
+  stack._seen = new Set(panels);
+  if (reopened)
+    dropAfter(stack, reopened);
+}
+function dropAfter(stack, panel) {
+  const panels = panelsOf(stack);
+  for (const p of panels.slice(panels.indexOf(panel) + 1)) {
+    const d = p.previousElementSibling;
+    if (d?.classList.contains("border-layout-stack-divider"))
+      d.remove();
+    p.remove();
+  }
+}
+function report(stack, panels) {
+  const detail = { panels, open: panels.filter(open) };
+  const was = stack._reported;
+  stack._reported = detail;
+  const same = (a, b) => a.length === b.length && a.every((p, i) => p === b[i]);
+  if (!was || same(was.panels, detail.panels) && same(was.open, detail.open))
+    return;
+  stack.dispatchEvent(new CustomEvent("border-layout-stack-change", { bubbles: true, detail }));
+}
 function syncStack(layout, side, region, stack) {
-  exclusive(stack, () => syncStack(layout, side, region, stack));
+  keepOpen(stack, () => syncStack(layout, side, region, stack));
+  drill(stack, panelsOf(stack));
   const row = isRow(stack, side);
   const panels = panelsOf(stack);
+  if (!stack._seen)
+    stack._seen = new Set(panels);
+  for (const p of panels)
+    stack._seen.add(p);
   for (const panel of panels.slice(1)) {
     const prev = panel.previousElementSibling;
     if (prev?.classList.contains("border-layout-stack-divider"))
@@ -5392,8 +5606,12 @@ function syncStack(layout, side, region, stack) {
   }
   if (pending && !pending.hidden)
     pending.hidden = true;
+  for (const d of dfDollar(stack).children(".border-layout-stack-divider").toArray())
+    if (!d.nextElementSibling?.classList.contains("panel"))
+      d.remove();
+  const levels = levelsOf(stack);
   for (const d of dfDollar(stack).children(".border-layout-stack-divider").toArray()) {
-    const live = !d.hidden && open(d._prev) && open(d._next);
+    const live = !d.hidden && open(d._prev) && (levels || open(d._next));
     d.setAttribute("aria-disabled", String(!live));
     d.tabIndex = live ? 0 : -1;
     if (!d._prev)
@@ -5402,13 +5620,33 @@ function syncStack(layout, side, region, stack) {
       d._prev.id = `${stack.id || layout.id || "stack"}-${Math.random().toString(36).slice(2, 7)}`;
     d.setAttribute("aria-controls", d._prev.id);
     d.setAttribute("aria-label", `Resize ${titleOf(d._prev) || "panel"}`);
-    if (live) {
+    if (live && levels) {
+      d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
+      d.setAttribute("aria-valuemin", String(minOf(d._prev)));
+      d.setAttribute("aria-valuemax", String(maxLevel(d._prev)));
+    } else if (live) {
       const both = extent(d._prev, row) + extent(d._next, row);
       d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
       d.setAttribute("aria-valuemin", String(minOf(d._prev)));
       d.setAttribute("aria-valuemax", String(Math.round(both - minOf(d._next))));
     }
   }
+  if (stack.hasAttribute("data-drill"))
+    for (const p of panels) {
+      const header = dfDollar(p).children(".panel-header").get(0);
+      if (!header)
+        continue;
+      const crumb = p.hasAttribute("data-minimized");
+      if (crumb) {
+        header.tabIndex = 0;
+        header.setAttribute("role", "button");
+        header.setAttribute("aria-label", `Back to ${titleOf(p) || "this level"}`);
+      } else if (header.getAttribute("role") === "button") {
+        header.removeAttribute("tabindex");
+        header.removeAttribute("role");
+        header.removeAttribute("aria-label");
+      }
+    }
   const shown = panels.filter((p) => !p.hidden);
   const folded = shown.length > 0 && shown.every((p) => p.hasAttribute("data-minimized"));
   region.toggleAttribute("data-panel-minimized", folded);
@@ -5416,12 +5654,21 @@ function syncStack(layout, side, region, stack) {
   const handle = region.classList.contains("resizer") ? dfDollar(region).children(".resizer-handle").get(0) : null;
   if (handle)
     handle.inert = folded || !shown.length;
+  report(stack, panels);
 }
+var maxLevel = (panel) => num2(panel.dataset.max, 640);
 function moveDivider(layout, side, divider, delta) {
   const { _prev: a, _next: b } = divider;
+  const stack = divider.parentElement;
+  if (a && levelsOf(stack)) {
+    if (!open(a))
+      return;
+    const px = extent(a, true) + (side === "east" ? -delta : delta);
+    a.style.setProperty("--panel-size", `${Math.round(Math.min(Math.max(px, minOf(a)), maxLevel(a)))}px`);
+    return;
+  }
   if (!a || !b || !open(a) || !open(b))
     return;
-  const stack = divider.parentElement;
   const sizes = new Map(panelsOf(stack).filter(open).map((p) => [p, extent(p, isRow(stack, side))]));
   const both = sizes.get(a) + sizes.get(b);
   const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
@@ -5475,15 +5722,38 @@ function initStacks(layout) {
       divider.addEventListener("pointerup", end);
       divider.addEventListener("pointercancel", end);
     });
+    const bar = (e) => {
+      if (!stack.hasAttribute("data-drill"))
+        return null;
+      const header = e.target.closest?.(".panel-header");
+      const panel = header?.parentElement;
+      if (!panel || panel.parentElement !== stack || !panel.hasAttribute("data-minimized"))
+        return null;
+      if (e.target.closest(".panel-tools"))
+        return null;
+      return panel;
+    };
+    stack.addEventListener("click", (e) => bar(e)?.api?.setState("default"));
+    stack.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ")
+        return;
+      const panel = bar(e);
+      if (!panel)
+        return;
+      e.preventDefault();
+      panel.api?.setState("default");
+    });
     stack.addEventListener("keydown", (e) => {
       const divider = e.target.closest?.(".border-layout-stack-divider");
       if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
         return;
       const step = e.shiftKey ? 100 : 10;
       const back = isRow(stack, side) ? "ArrowLeft" : "ArrowUp", fwd = isRow(stack, side) ? "ArrowRight" : "ArrowDown";
-      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
+      let delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
       if (!delta)
         return;
+      if (levelsOf(stack) && side === "east" && (e.key === "Home" || e.key === "End"))
+        delta = -delta;
       e.preventDefault();
       moveDivider(layout, side, divider, delta);
       sync();
@@ -5667,6 +5937,10 @@ function init() {
     });
   });
 }
+var resolveStack = (target) => {
+  const el = typeof target === "string" ? dfDollar(`#${CSS.escape(target)}`).get(0) ?? dfDollar(target).get(0) : target;
+  return el?.classList.contains("border-layout-stack") ? el : null;
+};
 df$.borderLayout = {
   collapse: (target, side) => {
     const l = resolve(target);
@@ -5693,6 +5967,38 @@ df$.borderLayout = {
       clamp(l);
       setSize(r, side, px);
     }
+  },
+  push: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const el = typeof panel === "string" ? dfDollar(panel).get(0) : panel;
+    if (!el)
+      return null;
+    el.removeAttribute("data-minimized");
+    dfDollar(st).append(el);
+    return el;
+  },
+  pop: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const panels = panelsOf(st);
+    const el = typeof panel === "number" ? panels[panel] : typeof panel === "string" ? panels.find((p) => p.id === panel) : panels.includes(panel) ? panel : undefined;
+    if (!el)
+      return null;
+    dropAfter(st, el);
+    const api = el.api;
+    if (api)
+      api.setState("default");
+    else
+      el.removeAttribute("data-minimized");
+    return el;
+  },
+  levels: (stack) => {
+    const st = resolveStack(stack);
+    const panels = st ? panelsOf(st) : [];
+    return { panels, open: panels.filter(open) };
   },
   sizes: (target) => {
     const l = resolve(target);
@@ -6268,6 +6574,7 @@ function renderItems(tree) {
   const selected = configOf(tree).selected ?? null;
   const idField = tree._source.idField;
   let active = null;
+  let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
     const item = pool.children[i];
     const index = win.first + i;
@@ -6287,12 +6594,23 @@ function renderItems(tree) {
       else
         item.removeAttribute("aria-expanded");
       item.toggleAttribute("data-match", !!(configOf(tree).filters || []).length && meta.isMatch);
+      delete item.dataset.editing;
       const label = item.lastElementChild;
       if (tree._render) {
         label.textContent = "";
         tree._render(label, entry.row, meta);
       } else {
         label.textContent = String(entry.row[labelField(tree)] ?? "");
+      }
+    }
+    const ed = tree._editor;
+    if (ed && ed.id === entry.row[idField]) {
+      edShown = true;
+      if (!item.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || document.activeElement === document.body;
+        placeTreeEditor(item, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
       }
     }
     item.setAttribute("aria-selected", String(selected !== null && entry.row[idField] === selected));
@@ -6304,10 +6622,196 @@ function renderItems(tree) {
     tree.setAttribute("aria-activedescendant", active.id);
   else
     tree.removeAttribute("aria-activedescendant");
+  if (tree._editor && !edShown && !tree._writing)
+    queueMicrotask(() => {
+      if (tree._editor && !commitTreeEdit(tree, false))
+        cancelTreeEdit(tree, false);
+    });
+}
+var editField = (tree) => tree.dataset.editField || labelField(tree);
+function treeRules(tree) {
+  const d = tree.dataset;
+  const rules = {};
+  if (tree.hasAttribute("data-required"))
+    rules.required = true;
+  if (d.minLength)
+    rules.minLength = Number(d.minLength);
+  if (d.maxLength)
+    rules.maxLength = Number(d.maxLength);
+  if (d.pattern)
+    rules.pattern = d.pattern;
+  if (d.message)
+    rules.message = d.message;
+  if (d.options)
+    rules.options = d.options.split(",").map((o) => o.trim());
+  return rules;
+}
+var treeContext = (tree, entry) => {
+  const field = editField(tree);
+  const rules = treeRules(tree);
+  return {
+    record: entry.row,
+    meta: entry.meta,
+    field,
+    type: tree.dataset.editor || valueType(entry.row[field], rules),
+    rules,
+    tree
+  };
+};
+function placeTreeEditor(item, ed) {
+  ed.item = item;
+  item.dataset.editing = "";
+  const label = item.lastElementChild;
+  label.textContent = "";
+  label.append(ed.wrap);
+}
+function openTreeEdit(tree, index) {
+  if (!tree.hasAttribute("data-editable") || tree.hasAttribute("data-readonly"))
+    return false;
+  const entry = entryAt(tree, index);
+  if (!entry)
+    return false;
+  if (tree._editor && !commitTreeEdit(tree, false))
+    return false;
+  const ctx = treeContext(tree, entry);
+  const value = entry.row[ctx.field];
+  const custom = tree._sourceOptions?.getEditorFn?.(ctx.field, value, ctx);
+  if (custom === false)
+    return false;
+  const editor = asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules);
+  activate(tree, index);
+  const wrap = document.createElement("span");
+  wrap.className = "data-tree-editor";
+  wrap.append(editor.el);
+  const ed = { id: entry.row[tree._source.idField], field: ctx.field, editor, wrap, value, entry, item: null };
+  tree._editor = ed;
+  const item = dfDollar3(tree._pool).children(".data-tree-item").toArray().find((x) => x._index === index);
+  if (item)
+    placeTreeEditor(item, ed);
+  wrap.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    e.preventDefault();
+    if (act === "cancel")
+      cancelTreeEdit(tree);
+    else
+      commitTreeEdit(tree);
+  });
+  wrap.addEventListener("click", (e) => e.stopPropagation());
+  wrap.addEventListener("dblclick", (e) => e.stopPropagation());
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commitTreeEdit(tree);
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (tree._editor === ed && !wrap.contains(document.activeElement))
+        commitTreeEdit(tree, false);
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+function cancelTreeEdit(tree, focus = true) {
+  if (!tree._editor)
+    return;
+  tree._editor = null;
+  tree._gen = (tree._gen || 0) + 1;
+  renderItems(tree);
+  if (focus)
+    tree.focus({ preventScroll: true });
+}
+function writeTreeRecord(tree, id, patch) {
+  const idField = tree._source.idField;
+  const rows = tree._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0)
+    return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  tree._source.setRows(next);
+  tree._writing = true;
+  triggerStateChange3(tree, tree.store.value, tree.store.value);
+  tree._writing = false;
+  const index = tree._result.entries.findIndex((x) => x.row[idField] === id);
+  if (index >= 0)
+    activate(tree, index);
+  return record;
+}
+function commitTreeEdit(tree, focus = true) {
+  const ed = tree._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = treeContext(tree, ed.entry);
+  if (!problem)
+    problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = tree._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    const control = editorControl(ed.editor);
+    control.setAttribute("aria-invalid", "true");
+    let note = dfDollar3(ed.wrap).children(".data-tree-error").get(0);
+    if (!note) {
+      note = document.createElement("span");
+      note.className = "data-tree-error";
+      note.setAttribute("role", "alert");
+      note.id = `dt-error-${Math.random().toString(36).slice(2, 8)}`;
+      ed.wrap.append(note);
+      control.setAttribute("aria-describedby", note.id);
+    }
+    dfDollar3(note).text(problem);
+    return false;
+  }
+  tree._editor = null;
+  const oldValue = ed.value;
+  const before = new CustomEvent("data-tree-beforeedit", {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.entry.row, field: ed.field, value, oldValue }
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !tree.dispatchEvent(before)) {
+    tree._gen = (tree._gen || 0) + 1;
+    renderItems(tree);
+  } else {
+    const record = writeTreeRecord(tree, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    tree.dispatchEvent(new CustomEvent("data-tree-edit", {
+      bubbles: true,
+      detail: { record, field: ed.field, value, oldValue }
+    }));
+  }
+  if (focus)
+    tree.focus({ preventScroll: true });
+  return true;
 }
 function refresh(tree, config, previous) {
   if (!tree._source)
     return 0;
+  if (tree._editor && !tree._writing) {
+    tree._writing = true;
+    if (!commitTreeEdit(tree, false))
+      tree._editor = null;
+    tree._writing = false;
+  }
   tree._result = tree._source.query({
     filters: config.filters,
     sorters: config.sorters,
@@ -6441,6 +6945,8 @@ function activate(tree, index) {
   renderItems(tree);
 }
 function onKeydown2(tree, e) {
+  if (tree._editor && tree._editor.wrap.contains(e.target))
+    return;
   const index = tree._active ?? 0;
   const entry = entryAt(tree, index);
   if (!entry)
@@ -6477,6 +6983,10 @@ function onKeydown2(tree, e) {
       break;
     case "PageUp":
       activate(tree, index - page);
+      break;
+    case "F2":
+      if (!openTreeEdit(tree, index))
+        return;
       break;
     case "Enter":
     case " ":
@@ -6572,6 +7082,29 @@ df$3.dataTree = {
     activate(tree, index);
     return true;
   },
+  source: (target) => resolve2(target)._source,
+  edit(target, id) {
+    const tree = resolve2(target);
+    if (!df$3.dataTree.reveal(tree, id))
+      return false;
+    const index = tree._result.entries.findIndex((x) => x.row[tree._source.idField] === id);
+    return openTreeEdit(tree, index);
+  },
+  commit: (target) => commitTreeEdit(resolve2(target)),
+  cancel: (target) => cancelTreeEdit(resolve2(target)),
+  update(target, id, patch) {
+    const tree = resolve2(target);
+    const old = tree._source.rows.find((r) => r[tree._source.idField] === id);
+    if (!old)
+      return null;
+    const record = writeTreeRecord(tree, id, patch);
+    for (const field of Object.keys(patch))
+      tree.dispatchEvent(new CustomEvent("data-tree-edit", {
+        bubbles: true,
+        detail: { record, field, value: patch[field], oldValue: old[field] }
+      }));
+    return record;
+  },
   selected(target) {
     const tree = resolve2(target);
     const id = configOf(tree).selected ?? null;
@@ -6619,6 +7152,13 @@ function init3() {
     new ResizeObserver(() => renderItems(tree)).observe(tree);
     tree.addEventListener("click", (e) => onClick(tree, e));
     tree.addEventListener("keydown", (e) => onKeydown2(tree, e));
+    tree.addEventListener("dblclick", (e) => {
+      const item = e.target.closest?.(".data-tree-item");
+      if (!item || !tree._pool.contains(item) || e.target.closest(".data-tree-toggle"))
+        return;
+      if (openTreeEdit(tree, item._index))
+        e.preventDefault();
+    });
     bindComponent(tree, dataTreeApi, { name: tree._source ? "default" : "loading", config });
     dataTreeApi.setState(tree, tree._source ? "default" : "loading", config);
   });
@@ -7712,32 +8252,7 @@ function setAt(obj, path, value) {
   copy[head] = setAt(isGroup(obj) ? obj[head] : undefined, rest, value);
   return copy;
 }
-function typeOf(value, conf) {
-  if (conf?.type)
-    return conf.type;
-  if (conf?.options)
-    return "enum";
-  if (value === null)
-    return "null";
-  if (Array.isArray(value))
-    return "array";
-  if (typeof value === "object")
-    return "object";
-  if (typeof value === "boolean")
-    return "boolean";
-  if (typeof value === "number")
-    return "number";
-  if (typeof value === "string") {
-    if (/^#[0-9a-f]{6}$/i.test(value))
-      return "color";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
-      return "date";
-    if (value.includes(`
-`))
-      return "text";
-  }
-  return "string";
-}
+var typeOf = (value, conf) => valueType(value, conf);
 function confOf(root, path) {
   const sc = optionsOf(root).sourceConfig ?? {};
   return sc[pathKey(path)] ?? sc[path[path.length - 1]] ?? null;
@@ -7909,75 +8424,7 @@ function moveFocus(root, from, by) {
   root._current = next.closest("tr").dataset.path;
   next.focus();
 }
-function defaultEditor(type, value, conf) {
-  let el;
-  if (type === "boolean") {
-    el = document.createElement("input");
-    el.type = "checkbox";
-    el.className = "switch";
-    el.setAttribute("role", "switch");
-    el.checked = !!value;
-    return { el, getValue: () => el.checked, immediate: true };
-  }
-  if (type === "enum") {
-    el = document.createElement("select");
-    el.className = "select";
-    el.dataset.size = "xs";
-    for (const opt of conf?.options ?? []) {
-      const o = document.createElement("option");
-      const [v, label] = isGroup(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
-      o.value = String(v);
-      dfDollar8(o).text(String(label));
-      if (v === value)
-        o.selected = true;
-      el.append(o);
-    }
-    const values = (conf?.options ?? []).map((o) => isGroup(o) ? o.value : o);
-    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
-  }
-  if (type === "text" || type === "object" || type === "array" || type === "json") {
-    el = document.createElement("textarea");
-    el.className = "textarea";
-    el.rows = type === "text" ? 3 : 5;
-    const json = type !== "text";
-    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
-    return {
-      el,
-      multiline: true,
-      getValue: () => json ? JSON.parse(el.value) : el.value,
-      validate: () => {
-        if (!json)
-          return "";
-        try {
-          JSON.parse(el.value);
-          return "";
-        } catch (error) {
-          return String(error.message ?? error);
-        }
-      }
-    };
-  }
-  el = document.createElement("input");
-  el.className = type === "color" ? "property-grid-color-input" : "input";
-  if (type !== "color")
-    el.dataset.size = "xs";
-  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
-  if (type === "number") {
-    el.step = conf?.step ?? "any";
-    if (conf?.min != null)
-      el.min = conf.min;
-    if (conf?.max != null)
-      el.max = conf.max;
-    el.inputMode = "decimal";
-  }
-  el.value = value == null ? "" : String(value);
-  return {
-    el,
-    immediate: type === "color" || type === "date",
-    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
-    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
-  };
-}
+var defaultEditor = (type, value, conf) => builtinEditor(type, value, conf, { colorClass: "property-grid-color-input" });
 function editorFor(root, row, value) {
   const conf = confOf(root, row._path);
   const type = row.dataset.type;
@@ -7985,17 +8432,7 @@ function editorFor(root, row, value) {
   const custom = optionsOf(root).getEditorFn?.(row._path[row._path.length - 1], value, ctx);
   if (custom === false)
     return null;
-  if (custom instanceof HTMLElement) {
-    const el = custom;
-    return {
-      el,
-      immediate: el.type === "checkbox" || el.tagName === "SELECT",
-      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
-    };
-  }
-  if (custom && custom.el)
-    return custom;
-  return defaultEditor(type, value, conf);
+  return asEditor(custom) ?? defaultEditor(type, value, conf);
 }
 function openEditor(root, path) {
   closeEditor(root);
@@ -8013,47 +8450,10 @@ function openEditor(root, path) {
   cell.dataset.editing = "";
   dfDollar8(cell).empty().append(wrap);
   root._editor = { path, row, cell, editor, value };
-  const target = editor.el.matches?.("input, select, textarea, button, [tabindex]") ? editor.el : dfDollar8(editor.el).find("input, select, textarea, button, [tabindex]").get(0) ?? editor.el;
-  (editor.focus ?? (() => target.focus?.()))();
-  if (target.select && target.type !== "checkbox" && target.type !== "color" && target.type !== "date")
-    target.select();
+  focusEditor(editor);
   return true;
 }
-function ruleProblem(conf, value) {
-  if (!conf)
-    return "";
-  const say = (fallback) => conf.message || fallback;
-  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
-  if (conf.required && empty)
-    return say("Required");
-  if (empty)
-    return "";
-  if (typeof value === "number") {
-    if (Number.isNaN(value))
-      return say("Not a number");
-    if (conf.integer && !Number.isInteger(value))
-      return say("Must be a whole number");
-    if (conf.min != null && value < conf.min)
-      return say(`Must be at least ${conf.min}`);
-    if (conf.max != null && value > conf.max)
-      return say(`Must be at most ${conf.max}`);
-  }
-  if (typeof value === "string") {
-    if (conf.minLength != null && value.length < conf.minLength)
-      return say(`At least ${conf.minLength} characters`);
-    if (conf.maxLength != null && value.length > conf.maxLength)
-      return say(`At most ${conf.maxLength} characters`);
-    if (conf.pattern && !new RegExp(`^(?:${conf.pattern})$`).test(value))
-      return say("Does not match the expected format");
-  }
-  if (Array.isArray(value)) {
-    if (conf.minItems != null && value.length < conf.minItems)
-      return say(`At least ${conf.minItems}`);
-    if (conf.maxItems != null && value.length > conf.maxItems)
-      return say(`At most ${conf.maxItems}`);
-  }
-  return "";
-}
+var ruleProblem = (conf, value) => editorProblem(conf, value);
 function showProblem(ed, control, problem) {
   control.setAttribute?.("aria-invalid", "true");
   const wrap = dfDollar8(ed.cell).children(".property-grid-editor").get(0) ?? ed.cell;
@@ -8078,7 +8478,7 @@ function commit(root, then = "stay") {
   const ed = root._editor;
   if (!ed)
     return true;
-  const control = dfDollar8(ed.editor.el).find("input, select, textarea").get(0) ?? ed.editor.el;
+  const control = editorControl(ed.editor);
   const { path, row } = ed;
   const key = row._path[row._path.length - 1];
   let problem = ed.editor.validate?.() ?? "";
@@ -8286,16 +8686,17 @@ function init8() {
     dfDollar8(root).on("keydown", (e) => {
       const t = e.target;
       if (root._editor && root._editor.cell.contains(t)) {
-        if (e.key === "Escape") {
+        const act = editorKey(e, root._editor.editor);
+        if (act === "cancel") {
           e.preventDefault();
           e.stopPropagation();
           const { path } = root._editor;
           root.api.setState("default", { editing: null });
           restoreFocus(root, path, "stay");
-        } else if (e.key === "Enter" && (!(root._editor.editor.multiline || root._editor.editor.ownsEnter) || e.metaKey || e.ctrlKey)) {
+        } else if (act === "commit") {
           e.preventDefault();
           commit(root);
-        } else if (e.key === "Tab") {
+        } else if (act === "next" || act === "prev") {
           const targets = focusTargets(root);
           const at = targets.findIndex((x) => x.closest("tr") === root._editor.row);
           const edge = e.shiftKey ? at <= 0 : at >= targets.length - 1;
@@ -9261,6 +9662,7 @@ function moveTo(w, x, y) {
   w.style.setProperty("--window-y", `${Math.round(y)}px`);
   return { x: Math.round(x), y: Math.round(y) };
 }
+var deskOf = (w) => w.parentElement?.closest(".window-manager, .window-desktop") ?? document;
 function raise(w) {
   if (!w.open)
     return;
@@ -9268,8 +9670,8 @@ function raise(w) {
     return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar14(".window[data-active]").toArray().forEach((o) => {
-    if (o !== w)
+  dfDollar14(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+    if (o !== w && deskOf(o) === deskOf(w))
       o.removeAttribute("data-active");
   });
   w.setAttribute("data-active", "");
@@ -9283,8 +9685,9 @@ function showQuietly(w) {
   else if (w.contains(document.activeElement))
     document.activeElement.blur();
 }
-function activateTopmost() {
-  const open = Array.from(dfDollar14(".window[open]").toArray());
+function activateTopmost(closed) {
+  const desk = deskOf(closed);
+  const open = dfDollar14(desk).find(".window[open]").toArray().filter((o) => deskOf(o) === desk);
   if (!open.length)
     return;
   const top = open.reduce((a, b) => Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a);
@@ -9434,7 +9837,7 @@ function init14() {
       w.removeAttribute("data-active");
       w.removeAttribute("data-maximized");
       w.removeAttribute("data-minimized");
-      activateTopmost();
+      activateTopmost(w);
     });
     bindComponent(w, windowApi);
     const initial = !w.open ? "closed" : w.hasAttribute("data-maximized") ? "maximized" : w.hasAttribute("data-minimized") ? "minimized" : "default";
@@ -9443,7 +9846,10 @@ function init14() {
     dfDollar14(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
     if (w.open) {
       w.style.zIndex = String(++topZ);
-      dfDollar14(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
+      dfDollar14(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+        if (deskOf(o) === deskOf(w))
+          o.removeAttribute("data-active");
+      });
       w.setAttribute("data-active", "");
     }
   });
@@ -9619,7 +10025,7 @@ var windowActions = {
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
   },
-  active: () => dfDollar14(".window[open][data-active]").get(0),
+  active: () => dfDollar14(".window[open][data-active]").toArray().reduce((a, b) => !a || Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a, undefined),
   list,
   cascade,
   tile
@@ -15089,6 +15495,6 @@ new MutationObserver((records) => {
     init15();
 }).observe(document, { childList: true, subtree: true });
 
-//# debugId=99CA101B51B2D03D64756E2164756E21
+//# debugId=E4A58AFC0F5DEE4564756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=workflow-studio.js.map

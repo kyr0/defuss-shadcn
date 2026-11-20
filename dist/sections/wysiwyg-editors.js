@@ -80,10 +80,11 @@ var EXTRA_BUNDLES = {
   shaders: ["shader"],
   graphs: ["graph-explorer"],
   workflows: ["workflow"],
-  terminal: ["terminal"]
+  terminal: ["terminal"],
+  desktop: ["window-manager", "desktop-manager", "taskbar", "tray", "start-button", "start-menu", "logon", "desktop"]
 };
 var BUNDLE_SCRIPT = new RegExp(`/(all|core|${Object.keys(EXTRA_BUNDLES).join("|")})(?:\\.min)?\\.js(?:[?#]|$)`);
-var neededBundles = (source) => Object.keys(EXTRA_BUNDLES).filter((b) => EXTRA_BUNDLES[b].some((m) => new RegExp(`\\b${m}\\b`).test(source || "")));
+var neededBundles = (source) => Object.keys(EXTRA_BUNDLES).filter((b) => EXTRA_BUNDLES[b].some((m) => new RegExp(`(?<![\\w-])${m}\\b`).test(source || "")));
 var loadedScripts = new Map;
 dfDollar("script[src]").each((_i, s) => {
   loadedScripts.set(s, s.src);
@@ -2500,5 +2501,5 @@ df$3.visualEditor = {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-//# debugId=00C222ACDC5CB2B464756E2164756E21
+//# debugId=AE711AAA6C5F2A0564756E2164756E21
 //# sourceMappingURL=wysiwyg-editors.js.map

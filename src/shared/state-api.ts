@@ -99,6 +99,20 @@ export { sheetUrl } from './sheet-url.js';
 // the Math components' state is plain JSON: one guard validates what setState() and authored scripts hand them.
 // VERIFIED: (tests/math.test.ts) cycles, class instances, prototype keys, non-finite numbers and oversized TeX throw
 export { mathClone, mathText } from './math.js';
+// the cell editors every in-place editing component shares (Property Grid, Property Tree, Data Grid, Data Tree)
+export {
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
+  type BuiltinEditorOptions,
+  type CellEditor,
+  type EditorRules,
+  type EditorType,
+} from './editors.js';
 // the Video and Audio components are one media engine (HTMLMediaElement state, declarative controls, captions);
 // the Media Timeline formats its clock with the same mediaTime and keys its text rows through mediaTextTracks.
 // VERIFIED: (video.e2e, audio.e2e, media-timeline.e2e) both players and the timeline run on it

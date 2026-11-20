@@ -21,6 +21,14 @@ const dfDollar = defussQuery();
 /** A region that folds and resizes - the center takes what is left. */
 type BorderLayoutSide = 'north' | 'south' | 'west' | 'east';
 
+/** What border-layout-stack-change carries: a stack's levels, outermost first. */
+interface BorderLayoutStackChangeDetail {
+  /** the stack's panels, in order (the outermost level first) */
+  panels: HTMLElement[];
+  /** the open ones (not minimized, not closed), in the same order */
+  open: HTMLElement[];
+}
+
 /** What border-layout-collapse carries. */
 interface BorderLayoutCollapseDetail {
   /** the region that folded or came back */
@@ -177,6 +185,16 @@ function syncState(layout) {
 // data-direction="row" | "column" on the stack lays the panels side by side or top to bottom on any side (a
 // minimized panel in a row on west / east is a vertical tab); data-exclusive keeps one panel open, like <details
 // name>: opening one minimizes the others - through the Panel's own State API, the only writer of its states.
+//
+// Deep navigation: a row stack with data-levels is a trail of levels (Sections, then Items, then Details). Each open
+// level keeps its own width (--panel-size), a minimized one is a vertical bar, and the region is their sum - the
+// room a level gives up goes to the center; on the east side the levels run from the edge toward the center.
+// data-keep="n" keeps the n levels opened last (data-exclusive is keep 1); data-drill makes a folded level a
+// breadcrumb: opening it (a click on its bar, Enter) drops the levels after it. push() adds a level, pop() goes back
+// to one; border-layout-stack-change reports the levels after every change.
+// VERIFIED: (border-layout.e2e "deep navigation") a stack inside a plain region div is never found - a fixed region
+// is its own pane, so a trail is `class="border-layout-stack border-layout-west"`; and the event carries elements, not
+// ids: stamping ids on authored panels would change their markup under the render() contract.
 
 /** The stack a region holds (its pane, or the region itself when fixed), or null. */
 const stackOf = (region) => {
@@ -202,26 +220,71 @@ const open = (panel) => !panel.hidden && !panel.hasAttribute('data-minimized');
 const titleOf = (panel) =>
   dfDollar(panel).find(':scope > .panel-header .panel-title').text().trim() || panel.getAttribute('aria-label') || '';
 
-/** data-exclusive: one open panel - the one opened last (of several authored open: the last); the others minimize */
-function exclusive(stack, again: () => void) {
-  if (!stack.hasAttribute('data-exclusive')) return;
+/** how many panels stay open: data-exclusive is one, data-keep="n" n, else every one (0) */
+const keepOf = (stack) =>
+  stack.hasAttribute('data-exclusive') ? 1 : Math.max(0, Math.floor(num(stack.dataset.keep, 0)));
+
+/** data-keep / data-exclusive: the n panels opened last stay open (of several authored open: the last n), the others
+ *  minimize. The order is kept on the stack (_order, the open panels oldest first). */
+function keepOpen(stack, again: () => void) {
+  const n = keepOf(stack);
+  if (!n) return;
   const opened = panelsOf(stack).filter(open);
-  const fresh = opened.filter((p) => p !== stack._open);
-  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
-  stack._open = keep;
+  const order = (stack._order ?? []).filter((p) => opened.includes(p));
+  for (const p of opened) if (!order.includes(p)) order.push(p);
+  stack._order = order;
+  const keep = new Set(order.slice(-n));
   for (const p of opened) {
-    if (p === keep) continue;
+    if (keep.has(p)) continue;
     // a panel whose script has not run yet (a module loaded after this one) is asked again a task later - a while
     if (p.api) p.api.setState('minimized');
     else if ((stack._waits = (stack._waits ?? 0) + 1) < 50) setTimeout(again);
   }
 }
 
+/** a stack of levels (data-levels): each open level keeps its own width, the divider after a level resizes it */
+const levelsOf = (stack) => stack.hasAttribute('data-levels');
+
+/** data-drill: a level that opened again (not a new one) drops the levels after it */
+function drill(stack, panels) {
+  const was = stack._wasOpen;
+  stack._wasOpen = new Set(panels.filter(open));
+  if (!was || !stack.hasAttribute('data-drill')) return;
+  const reopened = panels.find((p) => open(p) && !was.has(p) && stack._seen?.has(p));
+  stack._seen = new Set(panels);
+  if (reopened) dropAfter(stack, reopened);
+}
+/** removes every level after the given one (with the dividers before them) */
+function dropAfter(stack, panel) {
+  const panels = panelsOf(stack);
+  for (const p of panels.slice(panels.indexOf(panel) + 1)) {
+    const d = p.previousElementSibling;
+    if (d?.classList.contains('border-layout-stack-divider')) d.remove();
+    p.remove();
+  }
+}
+
+/** border-layout-stack-change, when the levels or their open states changed */
+function report(stack, panels) {
+  const detail: BorderLayoutStackChangeDetail = { panels, open: panels.filter(open) };
+  const was = stack._reported;
+  stack._reported = detail;
+  const same = (a: HTMLElement[], b: HTMLElement[]) => a.length === b.length && a.every((p, i) => p === b[i]);
+  if (!was || (same(was.panels, detail.panels) && same(was.open, detail.open))) return;
+  // Fires when a stack's panels change - one added or removed, opened, minimized or closed - with its levels in order.
+  stack.dispatchEvent(
+    new CustomEvent<BorderLayoutStackChangeDetail>('border-layout-stack-change', { bubbles: true, detail }),
+  );
+}
+
 /** dividers between the panels, shown where two visible panels meet; the region follows the panels' states */
 function syncStack(layout, side, region, stack) {
-  exclusive(stack, () => syncStack(layout, side, region, stack));
+  keepOpen(stack, () => syncStack(layout, side, region, stack));
+  drill(stack, panelsOf(stack));
   const row = isRow(stack, side);
   const panels = panelsOf(stack);
+  if (!stack._seen) stack._seen = new Set(panels);
+  for (const p of panels) stack._seen.add(p);
   // a divider between every two adjacent panels (authored markup has none)
   for (const panel of panels.slice(1)) {
     const prev = panel.previousElementSibling;
@@ -252,36 +315,71 @@ function syncStack(layout, side, region, stack) {
     }
   }
   if (pending && !pending.hidden) pending.hidden = true;
+  // a stray divider (its panel removed) goes with it
+  for (const d of dfDollar(stack).children('.border-layout-stack-divider').toArray())
+    if (!d.nextElementSibling?.classList.contains('panel')) d.remove();
+  const levels = levelsOf(stack);
   for (const d of dfDollar(stack).children('.border-layout-stack-divider').toArray()) {
-    const live = !d.hidden && open(d._prev) && open(d._next);
+    // a level's divider resizes that level alone: it needs only the level open
+    const live = !d.hidden && open(d._prev) && (levels || open(d._next));
     d.setAttribute('aria-disabled', String(!live));
     d.tabIndex = live ? 0 : -1;
     if (!d._prev) continue;
     if (!d._prev.id) d._prev.id = `${stack.id || layout.id || 'stack'}-${Math.random().toString(36).slice(2, 7)}`;
     d.setAttribute('aria-controls', d._prev.id);
     d.setAttribute('aria-label', `Resize ${titleOf(d._prev) || 'panel'}`);
-    if (live) {
+    if (live && levels) {
+      d.setAttribute('aria-valuenow', String(Math.round(extent(d._prev, row))));
+      d.setAttribute('aria-valuemin', String(minOf(d._prev)));
+      d.setAttribute('aria-valuemax', String(maxLevel(d._prev)));
+    } else if (live) {
       const both = extent(d._prev, row) + extent(d._next, row);
       d.setAttribute('aria-valuenow', String(Math.round(extent(d._prev, row))));
       d.setAttribute('aria-valuemin', String(minOf(d._prev)));
       d.setAttribute('aria-valuemax', String(Math.round(both - minOf(d._next))));
     }
   }
+  if (stack.hasAttribute('data-drill'))
+    for (const p of panels) {
+      const header = dfDollar(p).children('.panel-header').get(0) as HTMLElement | undefined;
+      if (!header) continue;
+      const crumb = p.hasAttribute('data-minimized');
+      if (crumb) {
+        header.tabIndex = 0;
+        header.setAttribute('role', 'button');
+        header.setAttribute('aria-label', `Back to ${titleOf(p) || 'this level'}`);
+      } else if (header.getAttribute('role') === 'button') {
+        header.removeAttribute('tabindex');
+        header.removeAttribute('role');
+        header.removeAttribute('aria-label');
+      }
+    }
   const shown = panels.filter((p) => !p.hidden);
   const folded = shown.length > 0 && shown.every((p) => p.hasAttribute('data-minimized'));
   region.toggleAttribute('data-panel-minimized', folded);
   region.toggleAttribute('data-stack-closed', panels.length > 0 && !shown.length);
   const handle = region.classList.contains('resizer') ? dfDollar(region).children('.resizer-handle').get(0) : null;
   if (handle) handle.inert = folded || !shown.length;
+  report(stack, panels);
 }
+
+/** the widest a level may get: its data-max, else 640 px */
+const maxLevel = (panel) => num(panel.dataset.max, 640);
 
 /** moves a divider by delta px: the room passes between its two panels; every open panel keeps its px as its share
  *  (--border-layout-share, a flex-grow weight - a custom property, so a minimized panel's flex: none still wins) */
 function moveDivider(layout, side, divider, delta) {
   const a = divider._prev,
     b = divider._next;
-  if (!a || !b || !open(a) || !open(b)) return;
   const stack = divider.parentElement;
+  // a level: the divider after it sets its own width (--panel-size); on the east side the levels run right to left
+  if (a && levelsOf(stack)) {
+    if (!open(a)) return;
+    const px = extent(a, true) + (side === 'east' ? -delta : delta);
+    a.style.setProperty('--panel-size', `${Math.round(Math.min(Math.max(px, minOf(a)), maxLevel(a)))}px`);
+    return;
+  }
+  if (!a || !b || !open(a) || !open(b)) return;
   const sizes = new Map(
     panelsOf(stack)
       .filter(open)
@@ -343,6 +441,23 @@ function initStacks(layout) {
       divider.addEventListener('pointerup', end);
       divider.addEventListener('pointercancel', end);
     });
+    // data-drill: a click on a folded level's bar, or Enter / Space on it, opens that level (the drill drops the deeper ones)
+    const bar = (e: Event) => {
+      if (!stack.hasAttribute('data-drill')) return null;
+      const header = (e.target as HTMLElement).closest?.<HTMLElement>('.panel-header');
+      const panel = header?.parentElement;
+      if (!panel || panel.parentElement !== stack || !panel.hasAttribute('data-minimized')) return null;
+      if ((e.target as HTMLElement).closest('.panel-tools')) return null;
+      return panel;
+    };
+    stack.addEventListener('click', (e) => bar(e)?.api?.setState('default'));
+    stack.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const panel = bar(e);
+      if (!panel) return;
+      e.preventDefault();
+      panel.api?.setState('default');
+    });
     // keys: the window-splitter pattern, like the region dividers - arrows move 10 px (Shift 100), Home / End to either limit
     stack.addEventListener('keydown', (e: KeyboardEvent) => {
       const divider = (e.target as HTMLElement).closest?.<HTMLElement>('.border-layout-stack-divider');
@@ -350,8 +465,10 @@ function initStacks(layout) {
       const step = e.shiftKey ? 100 : 10;
       const back = isRow(stack, side) ? 'ArrowLeft' : 'ArrowUp',
         fwd = isRow(stack, side) ? 'ArrowRight' : 'ArrowDown';
-      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === 'Home' ? -1e6 : e.key === 'End' ? 1e6 : 0;
+      // a level on the east side grows to the left: ArrowLeft makes it wider, like the pointer
+      let delta = e.key === back ? -step : e.key === fwd ? step : e.key === 'Home' ? -1e6 : e.key === 'End' ? 1e6 : 0;
       if (!delta) return;
+      if (levelsOf(stack) && side === 'east' && (e.key === 'Home' || e.key === 'End')) delta = -delta;
       e.preventDefault();
       moveDivider(layout, side, divider, delta);
       sync();
@@ -575,6 +692,15 @@ function init() {
 
 // -- df$.shadcn.borderLayout: the imperative surface ----------------------------------
 
+/** a stack by element, id or selector */
+const resolveStack = (target: string | HTMLElement): HTMLElement | null => {
+  const el =
+    typeof target === 'string'
+      ? ((dfDollar(`#${CSS.escape(target)}`).get(0) ?? dfDollar(target).get(0)) as HTMLElement | undefined)
+      : target;
+  return el?.classList.contains('border-layout-stack') ? el : null;
+};
+
 df$.borderLayout = {
   /**
    * Folds a region away (its divider stays).
@@ -620,6 +746,57 @@ df$.borderLayout = {
       clamp(l);
       setSize(r, side, px);
     }
+  },
+  /**
+   * Adds a level to a stack (deep navigation): the panel goes after the others, opens, and data-keep folds the
+   * earlier levels to bars.
+   * @param stack - the .border-layout-stack element, its id or a selector
+   * @param panel - the .panel element to add, or its markup
+   * @returns the panel added, null when the stack matches none
+   */
+  push: (stack: string | HTMLElement, panel: HTMLElement | string): HTMLElement | null => {
+    const st = resolveStack(stack);
+    if (!st) return null;
+    const el = typeof panel === 'string' ? (dfDollar(panel).get(0) as HTMLElement | undefined) : panel;
+    if (!el) return null;
+    el.removeAttribute('data-minimized');
+    dfDollar(st).append(el);
+    return el;
+  },
+  /**
+   * Goes back to a level: every level after it goes, and it opens.
+   * @param stack - the .border-layout-stack element, its id or a selector
+   * @param panel - the level to go back to: its element, id or index (0 = the outermost)
+   * @returns the level, null when the stack or the level matches none
+   */
+  pop: (stack: string | HTMLElement, panel: HTMLElement | string | number): HTMLElement | null => {
+    const st = resolveStack(stack);
+    if (!st) return null;
+    const panels = panelsOf(st);
+    const el =
+      typeof panel === 'number'
+        ? panels[panel]
+        : typeof panel === 'string'
+          ? panels.find((p) => p.id === panel)
+          : panels.includes(panel)
+            ? panel
+            : undefined;
+    if (!el) return null;
+    dropAfter(st, el);
+    const api = (el as HTMLElement & { api?: { setState(name: string): void } }).api;
+    if (api) api.setState('default');
+    else el.removeAttribute('data-minimized');
+    return el;
+  },
+  /**
+   * A stack's levels, outermost first.
+   * @param stack - the .border-layout-stack element, its id or a selector
+   * @returns the panels with whether each is open, [] when the stack matches none
+   */
+  levels: (stack: string | HTMLElement): BorderLayoutStackChangeDetail => {
+    const st = resolveStack(stack);
+    const panels = st ? panelsOf(st) : [];
+    return { panels, open: panels.filter(open) };
   },
   /**
    * The current sizes: { west: 240, east: 0 (collapsed), ... }.

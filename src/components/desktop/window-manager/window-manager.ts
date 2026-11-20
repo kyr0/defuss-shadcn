@@ -1,0 +1,262 @@
+// -- Window Manager -----------------------------------------------
+// The model of one desktop's windows: which windows it holds, in the order
+// they opened, which one is in front, which are minimized - published as one
+// event (`window-manager-change`) that a taskbar (or anything else) renders,
+// plus the commands a desktop needs (bring to front or minimize from a
+// taskbar button, show the desktop, cascade, tile). It never moves or styles
+// a window itself: every window change goes through the Window component's
+// State API and df$.shadcn.win, so Window stays usable without a manager
+// (AGENTS.md "Compose, don't share state").
+// VERIFIED: (window-manager.e2e) two managers on one page keep their own front window, and cascade / tile
+// arrange their own windows only - a manager is one desktop's model, never the page's.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+/** An element by id, through df$ (null when none has it). */
+const byId = (id: string | null | undefined): HTMLElement | null =>
+  (id ? (dfDollar('#' + CSS.escape(id)).get(0) as HTMLElement | undefined) : undefined) ?? null;
+
+/** One window as the manager publishes it. */
+interface WindowManagerEntry {
+  /** the window's id (the runtime gives one to a window without) */
+  id: string;
+  /** its title (the .window-title text) */
+  title: string;
+  /** the Lucide name of its .window-icon, '' when it has none or another kind of icon */
+  icon: string;
+  /** the data-glyph of its .window-icon (a Desktop glyph that follows the look), '' when it has none */
+  glyph: string;
+  /** its Window state: default, maximized, minimized or closed */
+  state: string;
+  /** whether it is the window in front */
+  active: boolean;
+}
+
+/** What window-manager-change carries. */
+interface WindowManagerChangeDetail {
+  /** the open windows, in the order they opened */
+  windows: WindowManagerEntry[];
+  /** the id of the window in front, '' when none is */
+  active: string;
+}
+
+const windowManagerStates = ['default', 'desktop'];
+
+/** setState() configs per state - neither takes one. */
+export interface WindowManagerStateConfigs {
+  /** The windows as the reader left them (leaving 'desktop' brings back the ones it minimized). */
+  default: {};
+  /** Show the desktop: every open window minimized. */
+  desktop: {};
+}
+
+const resolve = (target) =>
+  typeof target === 'string' ? (dfDollar('#' + CSS.escape(target)).get(0) ?? dfDollar(target).get(0)) : target;
+
+/** The manager a window belongs to (the nearest one around it). */
+const managerOf = (w: Element): HTMLElement | null => w.closest('.window-manager');
+
+/** A manager's own windows - not those of a manager nested inside it. */
+const own = (m: HTMLElement): HTMLDialogElement[] =>
+  dfDollar(m)
+    .find<HTMLDialogElement>('dialog.window')
+    .toArray()
+    .filter((w) => managerOf(w) === m);
+
+let seq = 0;
+const stateOf = (w: HTMLDialogElement): string =>
+  !w.open
+    ? 'closed'
+    : w.hasAttribute('data-minimized')
+      ? 'minimized'
+      : w.hasAttribute('data-maximized')
+        ? 'maximized'
+        : 'default';
+
+/** The manager's open windows, in the order they opened (a window that closes and opens again goes last). */
+function entries(m: HTMLElement): WindowManagerEntry[] {
+  return own(m)
+    .filter((w) => w.open)
+    .sort((a, b) => (a._wmOpened ?? 0) - (b._wmOpened ?? 0))
+    .map((w) => ({
+      id: w.id,
+      title: dfDollar(w).find('.window-title').get(0)?.textContent?.trim() ?? '',
+      icon: dfDollar(w).find('.window-icon').attr('data-lucide') ?? '',
+      glyph: dfDollar(w).find('.window-icon').attr('data-glyph') ?? '',
+      state: stateOf(w),
+      active: w.hasAttribute('data-active'),
+    }));
+}
+
+/** Gives every window an id and a place in the opening order; publishes the model when it changed. */
+function refresh(m: HTMLElement) {
+  for (const w of own(m)) {
+    if (!w.id) w.id = `window-${Math.random().toString(36).slice(2, 8)}`;
+    if (w.open && !w._wmWasOpen) w._wmOpened = ++seq;
+    w._wmWasOpen = w.open;
+  }
+  const windows = entries(m);
+  const active = windows.find((e) => e.active && e.state !== 'minimized')?.id ?? '';
+  const key = JSON.stringify([windows, active]);
+  if (key === m._wmKey) return;
+  m._wmKey = key;
+  // the desktop state ends when a window shows again
+  if (m.dataset.stateName === 'desktop' && windows.some((e) => e.state !== 'minimized'))
+    m.dataset.stateName = 'default';
+  // Fires when the manager's windows change - one opened, closed, came to the front, was minimized or restored, or renamed.
+  m.dispatchEvent(
+    new CustomEvent<WindowManagerChangeDetail>('window-manager-change', { bubbles: true, detail: { windows, active } }),
+  );
+}
+const later = (m: HTMLElement) => {
+  if (m._wmQueued) return;
+  m._wmQueued = true;
+  queueMicrotask(() => {
+    m._wmQueued = false;
+    refresh(m);
+  });
+};
+
+const win = () => df$.win;
+const winApi = () => df$.windowApi;
+
+/** The markup of a state: the manager element itself - its windows are their own components. */
+function applyMarkup(el, stateName) {
+  dfDollar(el).attr('data-desktop-shown', stateName === 'desktop' ? '' : null);
+}
+
+/** UI side of setState: 'desktop' minimizes every open window and remembers them; 'default' brings them back. */
+function triggerStateChange(m, stateName) {
+  if (stateName === 'desktop') {
+    m._wmShown = entries(m)
+      .filter((e) => e.state !== 'minimized')
+      .map((e) => e.id);
+    for (const id of m._wmShown) winApi()?.setState(byId(id), 'minimized', {});
+  } else if (m._wmShown) {
+    for (const id of m._wmShown) {
+      const w = byId(id) as HTMLDialogElement | null;
+      if (w?.open && w.hasAttribute('data-minimized')) winApi()?.setState(w, 'default', {});
+    }
+    m._wmShown = null;
+  }
+  m.dataset.stateName = stateName;
+  applyMarkup(m, stateName);
+}
+
+/** Registry-level API; pass the .window-manager element explicitly. Unknown names throw. */
+export const windowManagerApi = componentState({
+  component: 'window-manager',
+  states: windowManagerStates,
+  apply: (m, state) => triggerStateChange(m, state.name),
+  read: (m, state) => ({ name: m.dataset.stateName || 'default', config: state.config }),
+  markup: (el, state) => applyMarkup(el, state.name),
+});
+
+df$.windowManagerApi = windowManagerApi;
+df$.windowManagerStates = windowManagerStates;
+
+/**
+ * The windows of a manager, in the order they opened.
+ * @param target - the .window-manager element, its id or a selector
+ * @returns its open windows (an empty list when the target matches none)
+ */
+const windows = (target: string | HTMLElement): WindowManagerEntry[] => {
+  const m = resolve(target);
+  return m ? entries(m) : [];
+};
+
+/**
+ * The window in front.
+ * @param target - the .window-manager element, its id or a selector
+ * @returns the active window that is not minimized, undefined when none is
+ */
+const active = (target: string | HTMLElement): HTMLDialogElement | undefined => {
+  const m = resolve(target);
+  return m
+    ? own(m).find((w) => w.open && w.hasAttribute('data-active') && !w.hasAttribute('data-minimized'))
+    : undefined;
+};
+
+/**
+ * What a taskbar button does: a minimized window comes back to the front, the
+ * window in front is minimized, any other comes to the front.
+ * @param target - the .window element, its id or a selector
+ * @returns the window's state afterwards, '' when the target matches none
+ */
+const toggle = (target: string | HTMLElement): string => {
+  const w = resolve(target) as HTMLDialogElement | null;
+  if (!w) return '';
+  const m = managerOf(w);
+  if (w.hasAttribute('data-minimized')) winApi()?.setState(w, w._wmMaximized ? 'maximized' : 'default', {});
+  else if (m && active(m) === w) {
+    w._wmMaximized = w.hasAttribute('data-maximized');
+    winApi()?.setState(w, 'minimized', {});
+  } else win()?.focus(w);
+  return stateOf(w);
+};
+
+/**
+ * Show the desktop (every window minimized), or bring the windows back when it shows.
+ * @param target - the .window-manager element, its id or a selector
+ * @returns whether the desktop shows now
+ */
+const showDesktop = (target: string | HTMLElement): boolean => {
+  const m = resolve(target);
+  if (!m) return false;
+  const showing = m.dataset.stateName === 'desktop';
+  windowManagerApi.setState(m, showing ? 'default' : 'desktop', {});
+  return !showing;
+};
+
+/**
+ * Steps the windows diagonally from the top left - df$.shadcn.win.cascade inside this manager.
+ * @param target - the .window-manager element, its id or a selector
+ * @param step - px between two windows (default 28)
+ */
+const cascade = (target: string | HTMLElement, step: number = 28): void => {
+  const m = resolve(target);
+  if (m) win()?.cascade(m, step);
+};
+
+/**
+ * Lays the windows side by side in a grid - df$.shadcn.win.tile inside this manager.
+ * @param target - the .window-manager element, its id or a selector
+ */
+const tile = (target: string | HTMLElement): void => {
+  const m = resolve(target);
+  if (m) win()?.tile(m);
+};
+
+/** df$.shadcn.windowManager - the windows of a desktop and what a desktop does with them. */
+export const windowManagerActions = { windows, active, toggle, showDesktop, cascade, tile };
+df$.windowManager = windowManagerActions;
+
+function init() {
+  dfDollar('.window-manager:not([data-init])')
+    .toArray()
+    .forEach((m) => {
+      m.dataset.init = '';
+      m.dataset.stateName = m.hasAttribute('data-desktop-shown') ? 'desktop' : 'default';
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(m, windowManagerApi);
+      // whatever changes a window - its state, its title, the front - shows in its attributes or its text
+      new MutationObserver(() => later(m)).observe(m, {
+        subtree: true,
+        childList: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['open', 'data-active', 'data-minimized', 'data-maximized', 'id'],
+      });
+      // close does not bubble: listen on the way down
+      m.addEventListener('close', () => later(m), true);
+      later(m);
+    });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Property Tree e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <!-- the editors (Input, Switch, Select, Rating) come from the bundle -->
+  <link rel="stylesheet" href="/dist/components/all.css">
+  <style>body { margin: 16px; font-family: sans-serif; } .example { margin-bottom: 1.5rem; max-width: 40rem; }</style>
+</head>
+<body>
+  <!-- the doc page's configurations: JSON, DSON with references, a value from script, 100,000 nodes, hooks, read-only, comfortable -->
+  <div class="example">
+    <div class="property-tree" id="pt-json" aria-label="Service configuration" style="block-size: 22rem" data-state-demo>
+      <script type="application/json" class="property-tree-source">
+        { "service": "checkout", "replicas": 3, "public": true, "accent": "#3b82f6", "launched": "2025-03-14",
+          "owner": { "team": "Payments", "oncall": ["ada@example.com", "grace@example.com"] },
+          "limits": { "rps": 1200, "burst": 300 }, "notes": null }
+      </script>
+    </div>
+  </div>
+  <div class="example">
+    <div class="property-tree" id="pt-dson" aria-label="Session" style="block-size: 20rem">
+      <script type="application/dson" class="property-tree-source">[[2,[[1,2],[11,12],[15,16],[21,22],[23,24],[7,8]]],[0,"user"],[2,[[3,4],[5,6],[7,8]]],[0,"name"],[0,"Ada"],[0,"joined"],[3,"2024-03-01T09:00:00.000Z"],[0,"team"],[2,[[3,9],[10,2]]],[0,"Platform"],[0,"lead"],[0,"roles"],[6,[13,14]],[0,"admin"],[0,"editor"],[0,"prefs"],[5,[[17,18],[19,20]]],[0,"theme"],[0,"dark"],[0,"density"],[0,"compact"],[0,"quota"],[8,"9007199254740993"],[0,"pattern"],[4,{"source":"^ord-\\d+$","flags":"i"}]]</script>
+    </div>
+  </div>
+  <div class="example"><div class="property-tree" id="pt-graph" aria-label="Service graph" data-root-label="services" style="block-size: 16rem"></div></div>
+  <div class="example"><div class="property-tree" id="pt-big" aria-label="Catalog" style="block-size: 18rem"></div></div>
+  <div class="example">
+    <div class="property-tree" id="pt-hooks" aria-label="Project" style="block-size: 16rem">
+      <script type="application/json" class="property-tree-source">
+        { "project": "Atlas", "port": 8443, "tasks": [{ "id": "T-1", "status": "todo", "priority": 2 }] }
+      </script>
+    </div>
+  </div>
+  <div class="example">
+    <div class="property-tree" id="pt-ro" aria-label="Response" data-readonly data-hide-root style="block-size: 12rem">
+      <script type="application/json" class="property-tree-source">{ "status": 200, "body": { "items": [1, 2, 3] } }</script>
+    </div>
+  </div>
+  <div class="example">
+    <div class="property-tree" id="pt-comf" aria-label="Profile" data-variant="comfortable" style="block-size: 10rem">
+      <script type="application/json" class="property-tree-source">{ "name": "Ada Lovelace", "notes": "Wrote the first\nprogram." }</script>
+    </div>
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/property-tree/property-tree.js"></script>
+  <script type="module">
+    const pt = globalThis.df$.shadcn.propertyTree;
+    const checkout = { name: 'checkout', dependsOn: [] };
+    const billing = { name: 'billing', dependsOn: [checkout] };
+    checkout.dependsOn.push(billing);
+    const graph = { services: [checkout, billing], ports: new Map([['checkout', 8080], [42, 'answer']]), checksum: new Uint8Array([1, 2, 3]), updated: new Date('2026-11-20T08:30:00Z') };
+    graph.meta = { root: graph };
+    pt.configure('#pt-graph', { value: graph });
+    const products = Array.from({ length: 1000 }, (_, i) => ({
+      sku: 'P-' + String(i + 1).padStart(5, '0'), name: 'Product ' + (i + 1), price: 5 + i, active: i % 7 !== 0,
+      tags: ['a', 'b'], dimensions: { w: 1, h: 2, d: 3 },
+      stock: Array.from({ length: 16 }, (_, k) => ({ store: 'S' + (k + 1), units: (i * (k + 3)) % 250, reserved: (i + k) % 9, bin: 'B' + ((i + k) % 40), audited: k % 3 === 0 })),
+    }));
+    pt.configure('#pt-big', { value: { products } });
+    pt.configure('#pt-hooks', {
+      getEditorFn: (path, value, ctx) => {
+        if (ctx.key === 'id') return false;
+        if (ctx.key !== 'status') return null;
+        const el = document.createElement('select');
+        el.className = 'select status-editor';
+        for (const s of ['todo', 'doing', 'done']) el.append(new Option(s, s, false, s === value));
+        return el;
+      },
+      validateFn: (path, value, ctx) => {
+        if (ctx.kind === 'key' && /\s/.test(value)) return 'A key without spaces';
+        if (ctx.key === 'port' && (value < 1024 || value > 65535)) return 'A port from 1024 to 65535';
+      },
+      renderValue: (el, value, ctx) => {
+        if (ctx.key !== 'status') return false;
+        const badge = document.createElement('span');
+        badge.className = 'badge status-badge';
+        badge.textContent = value;
+        el.append(badge);
+        return true;
+      },
+    });
+    globalThis.__fixtureReady = true;
+  </script>
+</body>
+</html>

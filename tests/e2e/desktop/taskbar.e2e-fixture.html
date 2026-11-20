@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taskbar e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/window/window.css">
+  <link rel="stylesheet" href="/dist/components/window-manager/window-manager.css">
+  <link rel="stylesheet" href="/dist/components/taskbar/taskbar.css">
+  <link rel="stylesheet" href="/dist/components/tray/tray.css">
+  <link rel="stylesheet" href="/dist/components/start-button/start-button.css">
+  <link rel="stylesheet" href="/dist/components/start-menu/start-menu.css">
+  <link rel="stylesheet" href="/dist/components/desktop/desktop.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; display: grid; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: a desktop - a window manager with two windows, the taskbar bound to it with a Start
+       Button, a launcher, the window buttons and a Tray; a second bar on the left edge, centred -->
+  <div class="desktop" id="d1" style="width: 760px; height: 380px;">
+    <div class="window-desktop window-manager" id="desk">
+      <dialog class="window" id="t-notes" open style="--window-x: 20px; --window-y: 20px; --window-w: 260px;">
+        <header class="window-titlebar">
+          <i data-lucide="notebook-pen" class="window-icon"></i>
+          <h2 class="window-title">Notes</h2>
+          <form method="dialog" class="window-controls">
+            <button type="button" class="window-minimize" aria-label="Minimize"></button>
+            <button type="button" class="window-maximize" aria-label="Maximize"></button>
+            <button class="window-close" aria-label="Close"></button>
+          </form>
+        </header>
+        <div class="window-body">A note</div>
+      </dialog>
+      <dialog class="window" id="t-files" open style="--window-x: 220px; --window-y: 60px; --window-w: 260px;">
+        <header class="window-titlebar">
+          <i data-lucide="folder" class="window-icon"></i>
+          <h2 class="window-title">Files</h2>
+          <form method="dialog" class="window-controls">
+            <button type="button" class="window-minimize" aria-label="Minimize"></button>
+            <button type="button" class="window-maximize" aria-label="Maximize"></button>
+            <button class="window-close" aria-label="Close"></button>
+          </form>
+        </header>
+        <div class="window-body">3 files</div>
+      </dialog>
+    </div>
+    <nav class="taskbar" id="bar" data-taskbar-for="desk" aria-label="Taskbar">
+      <button class="start-button" type="button" popovertarget="tb-start" aria-haspopup="menu">
+        <svg class="start-button-icon" viewBox="0 0 16 16"><rect width="16" height="16" /></svg>
+        <span class="start-button-label">Start</span>
+      </button>
+      <div class="taskbar-launchers">
+        <button class="taskbar-launcher" id="launch-terminal" type="button" aria-label="Terminal">
+          <svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg>
+        </button>
+      </div>
+      <div class="taskbar-windows" role="group" aria-label="Open windows"></div>
+      <div class="tray" role="group" aria-label="Notification area">
+        <button class="tray-item" type="button" aria-label="Network"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></button>
+        <time class="tray-clock"></time>
+        <button class="tray-show-desktop" type="button" aria-label="Show desktop"></button>
+      </div>
+    </nav>
+    <div class="start-menu" id="tb-start" popover aria-label="Start">
+      <div class="start-menu-list" role="group" aria-label="All apps">
+        <button class="start-menu-item" type="button" data-value="terminal"><span class="start-menu-label">Terminal</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="desktop" id="d2" style="width: 760px; height: 200px;">
+    <div class="window-desktop window-manager" id="desk2"></div>
+    <nav class="taskbar" id="bar2" data-taskbar-for="desk2" data-position="left" data-align="center" aria-label="Second taskbar">
+      <div class="taskbar-windows" role="group" aria-label="Open windows"></div>
+    </nav>
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/window/window.js"></script>
+  <script type="module" src="/dist/components/window-manager/window-manager.js"></script>
+  <script type="module" src="/dist/components/taskbar/taskbar.js"></script>
+  <script type="module" src="/dist/components/tray/tray.js"></script>
+  <script type="module" src="/dist/components/start-menu/start-menu.js"></script>
+</body>
+</html>

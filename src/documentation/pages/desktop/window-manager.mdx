@@ -1,0 +1,191 @@
+---
+title: "Window Manager"
+description: "Window Manager component - the model of one desktop's windows (open, in what order, which is in front, which are minimized) as one change event, the taskbar's click rule, show desktop, cascade and tile - driving Window components through their own API."
+slug: "window-manager"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="window-manager" title="Window Manager" component="window-manager">
+  The model behind a desktop's windows. A <code>.window-manager</code> holds <DocLink href="window.html">Window</DocLink> components and keeps track of them - which are open, in the order they opened, which one is in front, which are minimized or maximized - and publishes that as one <code>window-manager-change</code> event, so a <DocLink href="taskbar.html">Taskbar</DocLink>, a window menu or a switcher renders it. It never moves or styles a window itself: every change goes through the Window's State API. On top it adds the taskbar's click rule (<code>toggle()</code>), "show desktop" (the <code>desktop</code> state) and cascade / tile for its own windows. Two managers on one page each keep their own front window.
+</PageHeader>
+
+<SkillPanel component="window-manager">
+  <SkillField label="Native basis">
+<SkillText>A positioned element holding non-modal <code>&lt;dialog&gt;</code> windows. One <code>MutationObserver</code> reads their <code>open</code>, <code>data-active</code>, <code>data-minimized</code>, <code>data-maximized</code> and title text; the <code>close</code> event is heard on the way down.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver" title="every window change shows in an attribute or the title"><code>MutationObserver</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event" title="a closed window leaves the model"><code>close</code> event</ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent" title="window-manager-change carries the model"><code>CustomEvent</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/queueMicrotask" title="one change event per burst of mutations"><code>queueMicrotask()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Notes">
+<SkillText dense>• Windows belong to the nearest <code>.window-manager</code> around them; the runtime gives a window without an id one.</SkillText>
+  <SkillText dense>• A Taskbar bound to it sets <code>data-taskbar</code>: minimized windows then leave the desktop for their buttons.</SkillText>
+  <SkillText dense>• <code>toggle(window)</code>: a minimized window comes back (maximized when it was), the window in front minimizes, any other comes to the front.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="A desktop's model" hint="Three windows on one desktop; the list under it is rendered from window-manager-change alone - open, focus, minimize, close and rename a window and watch it follow. A row's button is the taskbar rule. Show desktop minimizes every window and brings the same ones back."
+<div class="grid gap-3">
+  <label class="flex items-center gap-2 text-sm"
+    >Look
+    <select class="select" data-look style="width: auto">
+      <option value="">Modern</option>
+      <option value="win7">7</option>
+      <option value="winxp">XP</option>
+      <option value="win98">98</option>
+      <option value="win95">95</option>
+    </select></label
+  >
+  <div class="desktop" style="height: 18rem">
+    <div class="window-desktop window-manager" id="wm-demo" data-state-demo>
+      <dialog class="window" id="wm-notes" open style="--window-x: 1rem; --window-y: 1rem; --window-w: 15rem">
+        <header class="window-titlebar">
+          <span class="window-icon desktop-glyph" data-glyph="text"></span>
+          <h2 class="window-title">Notes</h2>
+          <form method="dialog" class="window-controls">
+            <button type="button" class="window-minimize" aria-label="Minimize"></button>
+            <button type="button" class="window-maximize" aria-label="Maximize"></button>
+            <button class="window-close" aria-label="Close"></button>
+          </form>
+        </header>
+        <div class="window-body"><p class="m-0" contenteditable="true">Rename me: edit the title below.</p></div>
+      </dialog>
+      <dialog class="window" id="wm-files" open style="--window-x: 9rem; --window-y: 3.5rem; --window-w: 15rem">
+        <header class="window-titlebar">
+          <span class="window-icon desktop-glyph" data-glyph="folder"></span>
+          <h2 class="window-title">Files</h2>
+          <form method="dialog" class="window-controls">
+            <button type="button" class="window-minimize" aria-label="Minimize"></button>
+            <button type="button" class="window-maximize" aria-label="Maximize"></button>
+            <button class="window-close" aria-label="Close"></button>
+          </form>
+        </header>
+        <div class="window-body">3 files</div>
+      </dialog>
+      <dialog class="window" id="wm-calc" style="--window-x: 17rem; --window-y: 1.5rem; --window-w: 12rem">
+        <header class="window-titlebar">
+          <span class="window-icon desktop-glyph" data-glyph="calculator"></span>
+          <h2 class="window-title">Calculator</h2>
+          <form method="dialog" class="window-controls">
+            <button type="button" class="window-minimize" aria-label="Minimize"></button>
+            <button class="window-close" aria-label="Close"></button>
+          </form>
+        </header>
+        <div class="window-body">0</div>
+      </dialog>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="wm-open">Open Calculator</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="wm-show">Show desktop</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="wm-cascade">Cascade</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="wm-tile">Tile</button>
+  </div>
+  <ol class="grid gap-1 m-0 ps-5 text-sm" id="wm-model" aria-label="The model"></ol>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const desk = document.querySelector('#wm-demo');
+    const wm = df$.shadcn.windowManager;
+    const list = document.querySelector('#wm-model');
+    const show = (windows) => {
+      list.replaceChildren(
+        ...windows.map((w) => {
+          const li = document.createElement('li');
+          const b = document.createElement('button');
+          b.className = 'btn';
+          b.dataset.variant = w.active ? 'default' : 'ghost';
+          b.dataset.size = 'sm';
+          b.type = 'button';
+          b.textContent = `${w.title} - ${w.state}${w.active ? ', in front' : ''}`;
+          b.addEventListener('click', () => wm.toggle(w.id));
+          li.append(b);
+          return li;
+        }),
+      );
+    };
+    desk.addEventListener('window-manager-change', (e) => show(e.detail.windows));
+    show(wm.windows(desk));
+    document.querySelector('#wm-open').addEventListener('click', () => df$.shadcn.win.open('wm-calc'));
+    document.querySelector('#wm-show').addEventListener('click', () => wm.showDesktop(desk));
+    document.querySelector('#wm-cascade').addEventListener('click', () => wm.cascade(desk));
+    document.querySelector('#wm-tile').addEventListener('click', () => wm.tile(desk));
+    document.querySelector('#wm-notes p').addEventListener('input', (e) => {
+      document.querySelector('#wm-notes .window-title').textContent = e.target.textContent.slice(0, 24) || 'Notes';
+    });
+  });
+</script>
+<script>
+  // the Look select: the .desktop next to it takes the period's look
+  document.addEventListener('DOMContentLoaded', () => {
+    const select = document.querySelector('[data-look]');
+    const desk = select.closest('.grid').querySelector('.desktop');
+    select.addEventListener('change', () => {
+      if (select.value) desk.dataset.variant = select.value;
+      else delete desk.dataset.variant;
+    });
+  });
+</script>
+```
+
+```html example label="Two desktops, two front windows" hint="Each manager keeps one window in front: a click in the right desktop does not take the front from the left one."
+<div class="grid gap-3" style="grid-template-columns: 1fr 1fr">
+  <div class="window-desktop window-manager" style="height: 12rem">
+    <dialog class="window" open style="--window-x: 0.75rem; --window-y: 0.75rem; --window-w: 10rem">
+      <header class="window-titlebar"><h2 class="window-title">Left one</h2></header>
+      <div class="window-body">Desktop A</div>
+    </dialog>
+    <dialog class="window" open style="--window-x: 3rem; --window-y: 3.5rem; --window-w: 10rem">
+      <header class="window-titlebar"><h2 class="window-title">Left two</h2></header>
+      <div class="window-body">Desktop A</div>
+    </dialog>
+  </div>
+  <div class="window-desktop window-manager" style="height: 12rem">
+    <dialog class="window" open style="--window-x: 0.75rem; --window-y: 0.75rem; --window-w: 10rem">
+      <header class="window-titlebar"><h2 class="window-title">Right one</h2></header>
+      <div class="window-body">Desktop B</div>
+    </dialog>
+    <dialog class="window" open style="--window-x: 3rem; --window-y: 3.5rem; --window-w: 10rem">
+      <header class="window-titlebar"><h2 class="window-title">Right two</h2></header>
+      <div class="window-body">Desktop B</div>
+    </dialog>
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.window-manager</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the windows as the reader left them; leaving <code>desktop</code> brings back the windows it minimized</li>
+    <li><code>desktop</code> - show the desktop: every open window minimized (<code>data-desktop-shown</code>); a window that shows again ends it</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/window-manager-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/window-manager.schema.json"><code>window-manager.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `desktop` | `boolean` | `true`, `false` | `false` | Every window minimized by show desktop (data-state-name). |
+```
+
+</StatesSection>
+
+<ApiSection component="window-manager" />
+
+<SourceFiles component="window-manager" section="css" />
+
+<SourceFiles component="window-manager" section="js">
+  <SourceNote for="js">One observer per manager builds the model; every change to a window goes through <code>df$.shadcn.windowApi</code> / <code>df$.shadcn.win</code>.</SourceNote>
+</SourceFiles>
+
+</DocPage>

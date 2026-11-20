@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/window/window.css">
+  <link rel="stylesheet" href="/dist/components/window-manager/window-manager.css">
+  <link rel="stylesheet" href="/dist/components/taskbar/taskbar.css">
+  <link rel="stylesheet" href="/dist/components/start-button/start-button.css">
+  <link rel="stylesheet" href="/dist/components/desktop/desktop.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; display: grid; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: the same small desktop in each look (none = modern), a bar on the left, glyphs inside and
+       outside a desktop -->
+  <div class="desktop" id="look-modern" style="height: 200px">
+    <div class="window-desktop window-manager" id="m-desk">
+      <dialog class="window" open style="--window-x: 10px; --window-y: 10px; --window-w: 200px">
+        <header class="window-titlebar"><span class="window-icon desktop-glyph" data-glyph="text"></span><h2 class="window-title">Notes</h2></header>
+        <div class="window-body">Text</div>
+      </dialog>
+    </div>
+    <nav class="taskbar" data-taskbar-for="m-desk" aria-label="Taskbar">
+      <button class="start-button" type="button"><span class="start-button-icon desktop-glyph" data-glyph="flag"></span><span class="start-button-label">Start</span></button>
+    </nav>
+  </div>
+  <div class="desktop" id="look-win7" data-variant="win7" style="height: 200px">
+    <div class="window-desktop window-manager" id="s-desk">
+      <dialog class="window" open style="--window-x: 10px; --window-y: 10px; --window-w: 200px">
+        <header class="window-titlebar"><h2 class="window-title">Notes</h2></header>
+        <div class="window-body"><button class="btn" type="button">OK</button></div>
+      </dialog>
+    </div>
+    <nav class="taskbar" data-taskbar-for="s-desk" aria-label="Taskbar">
+      <button class="start-button" type="button"><span class="start-button-icon desktop-glyph" data-glyph="flag"></span><span class="start-button-label">Start</span></button>
+    </nav>
+  </div>
+  <div class="desktop" id="look-winxp" data-variant="winxp" style="height: 200px">
+    <div class="window-desktop window-manager" id="x-desk">
+      <dialog class="window" open style="--window-x: 10px; --window-y: 10px; --window-w: 200px">
+        <header class="window-titlebar"><h2 class="window-title">Notes</h2></header>
+        <div class="window-body"><button class="btn" type="button">OK</button></div>
+      </dialog>
+    </div>
+    <nav class="taskbar" data-taskbar-for="x-desk" aria-label="Taskbar">
+      <button class="start-button" type="button"><span class="start-button-icon desktop-glyph" data-glyph="flag"></span><span class="start-button-label">Start</span></button>
+    </nav>
+  </div>
+  <div class="desktop" id="look-win98" data-variant="win98" style="height: 200px">
+    <div class="window-desktop window-manager" id="n-desk">
+      <dialog class="window" open data-active style="--window-x: 10px; --window-y: 10px; --window-w: 200px">
+        <header class="window-titlebar"><h2 class="window-title">Notes</h2></header>
+        <div class="window-body"><button class="btn" id="b98" type="button">OK</button></div>
+      </dialog>
+    </div>
+    <nav class="taskbar" data-taskbar-for="n-desk" aria-label="Taskbar">
+      <button class="start-button" type="button"><span class="start-button-icon desktop-glyph" data-glyph="flag"></span><span class="start-button-label">Start</span></button>
+    </nav>
+  </div>
+  <div class="desktop" id="look-win95" data-variant="win95" style="height: 200px">
+    <div class="window-desktop window-manager" id="f-desk">
+      <dialog class="window" open data-active style="--window-x: 10px; --window-y: 10px; --window-w: 200px">
+        <header class="window-titlebar"><h2 class="window-title">Notes</h2></header>
+        <div class="window-body">Text</div>
+      </dialog>
+    </div>
+    <nav class="taskbar" data-taskbar-for="f-desk" data-position="left" aria-label="Taskbar on the left"></nav>
+  </div>
+  <span class="desktop-glyph" id="lone-glyph" data-glyph="folder"></span>
+</body>
+</html>

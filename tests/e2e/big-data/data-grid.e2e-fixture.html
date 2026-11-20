@@ -125,6 +125,23 @@
     </div>
   </div>
 
+  <!-- inline editing: built-in editors by type, rules, a custom editor, validateFn, a cell that does not edit -->
+  <div class="data-grid" id="dg-edit" aria-label="Stock" style="height:240px;">
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="name" data-editable data-required>Name</div>
+          <div class="data-grid-header" data-field="qty" data-type="number" data-editable data-min="0" data-integer data-sort="desc">Qty</div>
+          <div class="data-grid-header" data-field="kind" data-editable data-editor="enum" data-options="tool, part, kit">Kind</div>
+          <div class="data-grid-header" data-field="ok" data-editable data-editor="boolean">OK</div>
+          <div class="data-grid-header" data-field="score" data-type="number" data-editable>Score</div>
+          <div class="data-grid-header" data-field="note">Note</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+
   <!-- waits for records: the loading state -->
   <div class="data-grid" id="dg-wait" aria-label="Pending">
     <div class="data-grid-viewport">
@@ -176,6 +193,19 @@
     grid.setSource(document.getElementById('dg-config'), few, {
       query: { sorters: [{ field: 'id', direction: 'desc' }] },
       persist: { area: 'local', prefix: 'myapp' },
+    });
+    const stock = Array.from({ length: 5000 }, (_, i) => ({ id: i + 1, name: `Item ${i + 1}`, qty: (i * 37) % 1000, kind: ['tool', 'part', 'kit'][i % 3], ok: i % 2 === 0, score: 1 + (i % 5), note: i === 0 ? 'locked' : '' }));
+    grid.setSource(document.getElementById('dg-edit'), stock, {
+      // a custom editor: a select of 1-5 (immediate), and a cell that does not edit
+      getEditorFn: (field, value, ctx) => {
+        if (ctx.record.note === 'locked' && field === 'name') return false;
+        if (field !== 'score') return null;
+        const el = document.createElement('select');
+        el.className = 'select score-editor';
+        for (let n = 1; n <= 5; n++) el.append(new Option(String(n), String(n), false, n === value));
+        return { el, immediate: true, getValue: () => Number(el.value) };
+      },
+      validateFn: (field, value) => (field === 'name' && /!/.test(value) ? 'No exclamation marks' : undefined),
     });
     globalThis.__fixtureReady = true;
   </script>

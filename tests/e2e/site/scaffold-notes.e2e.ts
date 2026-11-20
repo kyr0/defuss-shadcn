@@ -299,6 +299,142 @@ try {
     await page.fill('[data-nt-db-filter]', '');
   });
 
+  // the maintainer 2026-11-19: pages from templates like the sample ones (the roadmap), and component blocks -
+  // hints, a roadmap, images - in the editor
+  const newSlug = async () => {
+    await page.click('#nt-sidebar .nt-add-page');
+    await page.waitForTimeout(200);
+    return (await current())[0]!;
+  };
+  const types = (slug: string) => page.$$eval(`#p-${slug} .nt-blocks > .nt-block`, (b) => b.map((x) => (x as HTMLElement).dataset.type));
+  let road = '';
+  await check('templates: Roadmap builds its own database, milestones, icon, cover and full width - the sample roadmap stays as it was', async () => {
+    await page.evaluate(() => (globalThis as any).df$.shadcn.toast.dismiss());
+    road = await newSlug();
+    await page.click(`#p-${road} [data-starter="roadmap"]`);
+    await page.waitForTimeout(200);
+    assert.deepEqual(await types(road), ['p', 'milestones', 'db']);
+    assert.equal(await page.textContent(`#nt-sidebar [data-nt-private] [data-title-of="${road}"]`), 'Roadmap');
+    assert.equal(await page.textContent(`#nt-sidebar [data-nt-private] [data-icon-of="${road}"]`), '🗺️');
+    assert.equal(await page.$eval(`#p-${road}`, (p) => p.hasAttribute('data-full') && !!p.querySelector('.nt-cover img')), true);
+    assert.equal(await page.$$eval(`#p-${road} tr[data-item]`, (r) => r.length), 3);
+    const id = await page.$eval(`#p-${road} tr[data-item]`, (r) => (r as HTMLElement).dataset.item!);
+    await page.selectOption(`#p-${road} tr[data-item="${id}"] select[data-field="status"]`, 'done');
+    assert.equal(await page.$eval(`#p-${road} .nt-card[data-item="${id}"]`, (c) => (c.closest('.nt-col') as HTMLElement).dataset.status), 'done');
+    assert.equal(await page.textContent(`#p-${road} .nt-col[data-status="done"] .nt-count`), '2');
+    await page.click(`#p-${road} .nt-db-views label:has(input[value="board"])`);
+    assert.equal(await page.$eval(`#p-${road} .nt-db-board`, (b) => b.checkVisibility()), true);
+    assert.equal(await page.$eval('#p-roadmap .nt-db-views input[value="gallery"]', (x) => (x as HTMLInputElement).checked), true, 'the sample keeps its own view');
+    await page.click(`#p-${road} .nt-db-bar [data-nt-db-new]`);
+    await page.waitForTimeout(200);
+    await page.keyboard.type('Ship the beta');
+    await page.keyboard.press('Escape');
+    assert.equal(await page.$$eval(`#p-${road} tr[data-item]`, (r) => r.length), 4);
+    assert.equal(await page.$$eval('#p-roadmap tr[data-item]', (r) => r.length), 8, 'the sample has no new item');
+    assert.ok((await page.$$eval(`#p-${road} [data-f="name"]`, (n) => n.map((x) => x.textContent))).includes('Ship the beta'));
+    // the gallery shows one of the hosted photos
+    const src = await page.$eval(`#p-${road} .nt-gcard:last-child img`, (i) => (i as HTMLImageElement).getAttribute('src')!);
+    assert.match(src, /s-nt-r[1-7]-480x260\.webp$/);
+  });
+
+  await check('the palette: New from a template - Onboarding with a tip, to-dos, milestones and a table', async () => {
+    await page.waitForTimeout(200);
+    await page.keyboard.press('Meta+k');
+    await page.click('#nt-cmd .command-item[data-nt-new="onboarding"]');
+    await page.waitForTimeout(300);
+    const slug = (await current())[0]!;
+    assert.deepEqual(await types(slug), ['hint', 'h2', 'todo', 'todo', 'todo', 'h2', 'milestones', 'h2', 'table']);
+    assert.equal(await page.textContent(`#p-${slug} .nt-hint .alert-title`), 'Tip');
+    assert.equal(await page.getAttribute(`#p-${slug} .nt-hint`, 'role'), 'note');
+    assert.equal(await page.$$eval(`#p-${slug} .nt-milestones .timeline-item`, (i) => i.length), 4);
+    assert.equal(await page.$$eval(`#p-${slug} .nt-table tbody tr`, (r) => r.length), 2);
+  });
+
+  await check('component blocks from the slash menu: a warning hint, a table that grows, milestones, an image from a file', async () => {
+    const slug = await newSlug();
+    await page.click(`#p-${slug} [data-starter="empty"]`);
+    const slash = async (q: string) => {
+      await page.keyboard.type('/');
+      await page.waitForTimeout(200);
+      await page.keyboard.type(q);
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(100);
+    };
+    await slash('warn');
+    assert.equal(await focusedType(), 'hint');
+    await page.keyboard.type('Mind the gap');
+    assert.equal(await page.getAttribute(`#p-${slug} .nt-block[data-type="hint"]`, 'data-tone'), 'warning');
+    assert.equal(await page.textContent(`#p-${slug} .nt-hint .alert-description`), 'Mind the gap');
+    await page.keyboard.press('Enter');
+    assert.equal(await focusedType(), 'p', 'Enter leaves the hint');
+    // fast typing right after a pick: the slash menu's last close must not swallow the next one
+    await page.keyboard.type('/table');
+    await page.waitForTimeout(150);
+    await page.keyboard.press('Enter');
+    assert.equal(await page.evaluate(() => document.activeElement!.matches('.nt-table th')), true);
+    await page.keyboard.type('Who');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('Ada');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    assert.equal(await page.$$eval(`#p-${slug} .nt-table tbody tr`, (r) => r.length), 3, 'Enter in the last row adds one');
+    assert.equal(await page.textContent(`#p-${slug} .nt-table tbody tr:first-child td:first-child`), 'Ada');
+    await page.click(`#p-${slug} .nt-table [data-nt-part="col"]`);
+    assert.equal(await page.$$eval(`#p-${slug} .nt-table thead th`, (c) => c.length), 4);
+    // a component block turns into no text type; the paragraph after it takes the next block
+    await page.hover(`#p-${slug} .nt-block[data-type="table"]`);
+    await page.click(`#p-${slug} .nt-block[data-type="table"] > .nt-gutter .nt-grip`);
+    await page.waitForTimeout(200);
+    assert.equal(await page.$eval('#nt-block-menu [data-turn="p"]', (x) => x.checkVisibility()), false);
+    assert.equal(await page.$eval('#nt-block-menu [data-act="dup"]', (x) => x.checkVisibility()), true);
+    await page.keyboard.press('Escape');
+    await page.click(`#p-${slug} .nt-block[data-type="table"] + .nt-block > .nt-text`);
+    await slash('mile');
+    assert.equal(await page.$$eval(`#p-${slug} .nt-milestones .timeline-item`, (i) => i.length), 3);
+    const dot = `#p-${slug} .nt-milestones .timeline-item:nth-child(2) .timeline-dot`;
+    await page.click(dot);
+    assert.deepEqual([await page.getAttribute(dot, 'aria-pressed'), await page.getAttribute(dot, 'data-variant')], ['true', 'active']);
+    await page.click(`#p-${slug} .nt-block[data-type="milestones"] + .nt-block > .nt-text`);
+    await slash('image');
+    await page.waitForTimeout(200);
+    assert.equal(await page.$eval('#nt-image-pick', (m) => m.matches(':popover-open')), true);
+    // a picture from disk: kept as a data URL (WebP), which the stored workspace keeps
+    const photo = readFileSync(join(import.meta.dirname, '..', '..', '..', 'src', 'documentation', 'public', 'images', 'photos', 's-nt-r1-480x260.webp'));
+    await page.setInputFiles('#nt-image-pick [data-nt-image-file]', { name: 'photo.webp', mimeType: 'image/webp', buffer: photo });
+    await page.waitForFunction((s) => !!document.querySelector(`#p-${s} .nt-block[data-type="image"] img`), slug);
+    assert.match(await page.$eval(`#p-${slug} .nt-block[data-type="image"] img`, (i) => (i as HTMLImageElement).src), /^data:image\/webp;base64,/);
+    assert.equal(await page.$eval('#nt-image-pick', (m) => m.matches(':popover-open')), false);
+    await page.keyboard.type('A photo');
+    assert.equal(await page.getAttribute(`#p-${slug} .nt-block[data-type="image"] img`, 'alt'), 'A photo', 'the caption is the alt text');
+    // a hosted photo replaces it
+    await page.hover(`#p-${slug} .nt-figure`);
+    await page.click(`#p-${slug} .nt-figure [data-nt-image]`);
+    await page.click('#nt-image-pick [data-nt-photo]:first-child');
+    assert.match((await page.getAttribute(`#p-${slug} .nt-block[data-type="image"] img`, 'src'))!, /s-nt-harbour-1200x600\.webp$/);
+  });
+
+  await check('templates and component blocks are kept: a reload brings them back', async () => {
+    await page.waitForFunction(() => document.querySelector('#nt-sidebar [data-nt-saved]')?.getAttribute('data-state') === 'saved', undefined, { timeout: 5000 });
+    await page.reload();
+    await ready(page);
+    assert.deepEqual(await types(road), ['p', 'milestones', 'db']);
+    assert.equal(await page.$$eval(`#p-${road} tr[data-item]`, (r) => r.length), 4);
+    const kept = await page.evaluate(() => ({
+      hint: document.querySelector('.nt-block[data-type="hint"][data-tone="warning"] .alert-description')?.textContent,
+      cell: [...document.querySelectorAll('.nt-table td')].some((c) => c.textContent === 'Ada'),
+      dot: document.querySelectorAll('.nt-milestones .timeline-dot[aria-pressed="true"]').length > 0,
+    }));
+    assert.deepEqual(kept, { hint: 'Mind the gap', cell: true, dot: true });
+    // a new database after the reload counts on from the kept ones: its items take fresh ids
+    await page.goto(`${server.url}${PAGE}#/pages/${road}`);
+    await page.waitForTimeout(200);
+    await page.click(`#p-${road} .nt-db-bar [data-nt-db-new]`);
+    await page.waitForTimeout(200);
+    await page.keyboard.press('Escape');
+    const ids = await page.$$eval('[data-nt-db] tr[data-item]', (r) => r.map((x) => (x as HTMLElement).dataset.item));
+    assert.equal(new Set(ids).size, ids.length, 'item ids stay unique: ' + ids.join(' '));
+  });
+
   await check('⌘K jumps to a page; Share invites with a toast', async () => {
     await page.keyboard.press('Meta+k');
     assert.equal(await page.$eval('#nt-cmd', (d) => (d as HTMLDialogElement).open), true);
@@ -403,6 +539,31 @@ try {
     await ready(app);
     assert.equal(await app.textContent('#p-getting-started .nt-title'), 'Getting started - kept');
     assert.equal(await app.textContent('#nt-sidebar [data-nt-private] [data-title-of="getting-started"]'), 'Getting started - kept');
+  });
+
+  // VERIFIED (2026-11-19): the router started only after the storage module (jsDelivr) and the kept workspace had
+  // answered - until then a menu click changed the address and nothing else
+  await check('storage answers late: the menu navigates at once, the kept workspace then arrives on the page shown', async () => {
+    const p = await ctx.newPage();
+    await p.route(/huggingface\.co/, (r) => r.abort());
+    let release!: () => void;
+    const held = new Promise<void>((r) => (release = r));
+    await p.route(/defuss-storage@/, async (route) => {
+      await held;
+      await route.fallback();
+    });
+    await p.goto(`${server.url}${PAGE}#/pages/getting-started`);
+    await p.waitForFunction(() => document.querySelector('#nt-sidebar [data-nt-saved]')?.getAttribute('data-state') === 'opening');
+    assert.equal(await p.textContent('#nt-sidebar [data-nt-saved]'), 'Opening your pages...');
+    await p.click('#nt-sidebar .tree-leaf[href="#/pages/journal"]');
+    await p.waitForFunction(() => !document.getElementById('p-journal')!.hidden, undefined, { timeout: 3000 });
+    assert.equal(await p.getAttribute('[data-nt]', 'data-nt-store'), 'loading', 'the storage is still held');
+    release();
+    await ready(p);
+    assert.equal(await p.evaluate(() => location.hash), '#/pages/journal');
+    assert.deepEqual(await p.$$eval('.nt-pages > .nt-page', (a) => a.filter((x) => !(x as HTMLElement).hidden).map((x) => (x as HTMLElement).dataset.page)), ['journal'], 'the restored pages show the address');
+    assert.equal(await p.textContent('#p-getting-started .nt-title'), 'Getting started - kept');
+    await p.close();
   });
 
   await check('search by keywords: ⌘K ranks sections and items; a hit opens its page at the section', async () => {

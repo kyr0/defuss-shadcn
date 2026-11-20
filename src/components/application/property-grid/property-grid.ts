@@ -10,7 +10,19 @@
 
 // Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
 // build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
-import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+import {
+  defussGlobals,
+  defussQuery,
+  componentState,
+  bindComponent,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
+} from '../../../shared/state-api.js';
 
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
@@ -197,22 +209,8 @@ function setAt(obj, path, value) {
   return copy;
 }
 
-/** the type a property edits as: its sourceConfig type, else what its value looks like */
-function typeOf(value, conf) {
-  if (conf?.type) return conf.type;
-  if (conf?.options) return 'enum';
-  if (value === null) return 'null';
-  if (Array.isArray(value)) return 'array';
-  if (typeof value === 'object') return 'object';
-  if (typeof value === 'boolean') return 'boolean';
-  if (typeof value === 'number') return 'number';
-  if (typeof value === 'string') {
-    if (/^#[0-9a-f]{6}$/i.test(value)) return 'color';
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'date';
-    if (value.includes('\n')) return 'text';
-  }
-  return 'string';
-}
+/** the type a property edits as: its sourceConfig type, else what its value looks like (the shared rule) */
+const typeOf = (value, conf) => valueType(value, conf);
 
 /** a key's sourceConfig - by its full path ("owner.team"), else by its own key */
 function confOf(root, path) {
@@ -406,83 +404,9 @@ function moveFocus(root, from, by) {
 
 // -- editing ---------------------------------------------------------------------------------
 
-/** the built-in editor for a type */
-function defaultEditor(type, value, conf) {
-  let el;
-  if (type === 'boolean') {
-    el = document.createElement('input');
-    el.type = 'checkbox';
-    el.className = 'switch';
-    el.setAttribute('role', 'switch');
-    el.checked = !!value;
-    return { el, getValue: () => el.checked, immediate: true };
-  }
-  if (type === 'enum') {
-    el = document.createElement('select');
-    el.className = 'select';
-    el.dataset.size = 'xs';
-    for (const opt of conf?.options ?? []) {
-      const o = document.createElement('option');
-      const [v, label] = isGroup(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
-      o.value = String(v);
-      dfDollar(o).text(String(label));
-      if (v === value) o.selected = true;
-      el.append(o);
-    }
-    const values = (conf?.options ?? []).map((o) => (isGroup(o) ? o.value : o));
-    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
-  }
-  if (type === 'text' || type === 'object' || type === 'array' || type === 'json') {
-    el = document.createElement('textarea');
-    el.className = 'textarea';
-    el.rows = type === 'text' ? 3 : 5;
-    const json = type !== 'text';
-    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? '');
-    return {
-      el,
-      multiline: true,
-      getValue: () => (json ? JSON.parse(el.value) : el.value),
-      validate: () => {
-        if (!json) return '';
-        try {
-          JSON.parse(el.value);
-          return '';
-        } catch (error) {
-          return String(error.message ?? error);
-        }
-      },
-    };
-  }
-  el = document.createElement('input');
-  el.className = type === 'color' ? 'property-grid-color-input' : 'input';
-  if (type !== 'color') el.dataset.size = 'xs';
-  el.type = type === 'number' ? 'number' : type === 'color' ? 'color' : type === 'date' ? 'date' : 'text';
-  if (type === 'number') {
-    el.step = conf?.step ?? 'any';
-    if (conf?.min != null) el.min = conf.min;
-    if (conf?.max != null) el.max = conf.max;
-    el.inputMode = 'decimal';
-  }
-  el.value = value == null ? '' : String(value);
-  return {
-    el,
-    immediate: type === 'color' || type === 'date',
-    getValue: () =>
-      type === 'number'
-        ? el.value === ''
-          ? null
-          : el.valueAsNumber
-        : type === 'null' && el.value === ''
-          ? null
-          : el.value,
-    validate: () =>
-      type === 'number' && el.value !== '' && Number.isNaN(el.valueAsNumber)
-        ? 'not a number'
-        : el.validity && !el.validity.valid
-          ? el.validationMessage
-          : '',
-  };
-}
+/** the built-in editor for a type (the shared one; the colour input keeps the grid's class) */
+const defaultEditor = (type, value, conf) =>
+  builtinEditor(type, value, conf, { colorClass: 'property-grid-color-input' });
 
 /** getEditorFn's answer as an editor - an element, an { el, getValue … } object, null (the default) or false (read-only) */
 function editorFor(root, row, value) {
@@ -491,17 +415,7 @@ function editorFor(root, row, value) {
   const ctx = { path: [...row._path], type, config: conf, source: configOf(root).source, grid: root };
   const custom = optionsOf(root).getEditorFn?.(row._path[row._path.length - 1], value, ctx);
   if (custom === false) return null;
-  if (custom instanceof HTMLElement) {
-    const el = custom as HTMLInputElement;
-    return {
-      el,
-      immediate: el.type === 'checkbox' || el.tagName === 'SELECT',
-      getValue: () =>
-        el.type === 'checkbox' ? el.checked : el.type === 'number' || el.type === 'range' ? el.valueAsNumber : el.value,
-    };
-  }
-  if (custom && custom.el) return custom;
-  return defaultEditor(type, value, conf);
+  return asEditor(custom) ?? defaultEditor(type, value, conf);
 }
 
 /** open a value's editor in its cell */
@@ -522,43 +436,12 @@ function openEditor(root, path) {
   cell.dataset.editing = '';
   dfDollar(cell).empty().append(wrap);
   root._editor = { path, row, cell, editor, value };
-  const target = editor.el.matches?.('input, select, textarea, button, [tabindex]')
-    ? editor.el
-    : (dfDollar(editor.el).find('input, select, textarea, button, [tabindex]').get(0) ?? editor.el);
-  (editor.focus ?? (() => target.focus?.()))();
-  if (target.select && target.type !== 'checkbox' && target.type !== 'color' && target.type !== 'date') target.select();
+  focusEditor(editor);
   return true;
 }
 
-/**
- * The declarative rules of a key (sourceConfig): required, min / max (numbers),
- * minLength / maxLength / pattern (text), integer. Returns the first broken
- * rule as a message ('' = valid); config.message replaces it.
- */
-function ruleProblem(conf, value) {
-  if (!conf) return '';
-  const say = (fallback) => conf.message || fallback;
-  const empty = value === null || value === undefined || value === '' || (Array.isArray(value) && !value.length);
-  if (conf.required && empty) return say('Required');
-  if (empty) return '';
-  if (typeof value === 'number') {
-    if (Number.isNaN(value)) return say('Not a number');
-    if (conf.integer && !Number.isInteger(value)) return say('Must be a whole number');
-    if (conf.min != null && value < conf.min) return say(`Must be at least ${conf.min}`);
-    if (conf.max != null && value > conf.max) return say(`Must be at most ${conf.max}`);
-  }
-  if (typeof value === 'string') {
-    if (conf.minLength != null && value.length < conf.minLength) return say(`At least ${conf.minLength} characters`);
-    if (conf.maxLength != null && value.length > conf.maxLength) return say(`At most ${conf.maxLength} characters`);
-    if (conf.pattern && !new RegExp(`^(?:${conf.pattern})$`).test(value))
-      return say('Does not match the expected format');
-  }
-  if (Array.isArray(value)) {
-    if (conf.minItems != null && value.length < conf.minItems) return say(`At least ${conf.minItems}`);
-    if (conf.maxItems != null && value.length > conf.maxItems) return say(`At most ${conf.maxItems}`);
-  }
-  return '';
-}
+/** The declarative rules of a key (sourceConfig) - the shared rule checks. */
+const ruleProblem = (conf, value) => editorProblem(conf, value);
 
 /** an invalid value: the control is marked, the message shows under it (and is announced) */
 function showProblem(ed, control, problem) {
@@ -591,7 +474,7 @@ function closeEditor(root) {
 function commit(root, then = 'stay') {
   const ed = root._editor;
   if (!ed) return true;
-  const control = dfDollar(ed.editor.el).find('input, select, textarea').get(0) ?? ed.editor.el;
+  const control = editorControl(ed.editor);
   const { path, row } = ed;
   const key = row._path[row._path.length - 1];
   let problem = ed.editor.validate?.() ?? '';
@@ -880,19 +763,17 @@ function init() {
       dfDollar(root).on('keydown', (e) => {
         const t = e.target;
         if (root._editor && root._editor.cell.contains(t)) {
-          if (e.key === 'Escape') {
+          const act = editorKey(e, root._editor.editor);
+          if (act === 'cancel') {
             e.preventDefault();
             e.stopPropagation();
             const { path } = root._editor;
             root.api.setState('default', { editing: null });
             restoreFocus(root, path, 'stay');
-          } else if (
-            e.key === 'Enter' &&
-            (!(root._editor.editor.multiline || root._editor.editor.ownsEnter) || e.metaKey || e.ctrlKey)
-          ) {
+          } else if (act === 'commit') {
             e.preventDefault();
             commit(root);
-          } else if (e.key === 'Tab') {
+          } else if (act === 'next' || act === 'prev') {
             const targets = focusTargets(root);
             const at = targets.findIndex((x) => x.closest('tr') === root._editor.row);
             const edge = e.shiftKey ? at <= 0 : at >= targets.length - 1;

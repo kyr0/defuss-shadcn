@@ -14,13 +14,13 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 
 <SkillPanel component="text-rotate">
   <SkillField label="Native basis">
-<SkillText>A one-line window (<code>height: 1lh; overflow: hidden</code>) around a stack of 2 - 6 lines; a CSS animation picked by the line count (<code>:has()</code>) moves the stack.</SkillText>
+<SkillText>A one-line window (<code>height: 1lh; overflow: hidden</code>) around a stack of lines - any number; registered counters (<code>@property</code>) animate the round and each line's move is computed from them and the line count (<code>sibling-count()</code>).</SkillText>
   </SkillField>
 
   <SkillField label="Web Platform APIs">
 <SkillRow>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/length#lh" title="a window exactly one line tall"><code>lh</code></ApiPill>
-    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="picks the keyframes by line count"><code>:has()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has" title="counts the lines where sibling-count() is missing"><code>:has()</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state" title="pauses on hover / focus"><code>animation-play-state</code></ApiPill>
     <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" title="the first line stays"><code>prefers-reduced-motion</code></ApiPill>
   </SkillRow>
@@ -139,7 +139,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Six lines, never pausing" schema="none" height="12" hint="Up to six lines; data-pause='none' keeps it rolling under the pointer (a ticker)."
+```html example label="Six lines, never pausing" schema="none" height="12" hint="data-pause='none' keeps it rolling under the pointer (a ticker)."
 <p style="font-size: 1.5rem; font-weight: 600; margin: 0">
   Status:
   <span class="text-rotate" data-pause="none" style="--text-rotate-duration: 9s">
@@ -150,6 +150,36 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       <span>🔍 Verify ok</span>
       <span>🚀 Deployed</span>
       <span>☕ Coffee time</span>
+    </span>
+  </span>
+</p>
+```
+
+```html example label="Twenty lines" schema="none" height="12" hint="Any number of lines works the same way - twenty here, two seconds each (--text-rotate-duration: 40s)."
+<p style="font-size: 1.5rem; font-weight: 600; margin: 0">
+  Made in
+  <span class="text-rotate" style="--text-rotate-duration: 40s">
+    <span>
+      <span>Lisbon</span>
+      <span>Berlin</span>
+      <span>Kyoto</span>
+      <span>Lagos</span>
+      <span>Lima</span>
+      <span>Oslo</span>
+      <span>Seoul</span>
+      <span>Austin</span>
+      <span>Nairobi</span>
+      <span>Hanoi</span>
+      <span>Porto</span>
+      <span>Quito</span>
+      <span>Tunis</span>
+      <span>Perth</span>
+      <span>Riga</span>
+      <span>Cusco</span>
+      <span>Dakar</span>
+      <span>Bergen</span>
+      <span>Osaka</span>
+      <span>Zagreb</span>
     </span>
   </span>
 </p>

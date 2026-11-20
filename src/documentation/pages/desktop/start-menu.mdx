@@ -1,0 +1,171 @@
+---
+title: "Start Menu"
+description: "Start Menu component - a popover the Start Button opens: search as you type over every item, pinned apps, a list with folders that open beside their item, the user and the power buttons; one start-select event."
+slug: "start-menu"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="start-menu" title="Start Menu" component="start-menu">
+  The menu a <DocLink href="start-button.html">Start Button</DocLink> opens - a native popover, so light dismiss, Escape and the top layer come from the browser. The runtime adds what a start menu needs: the focus goes into the search and typing searches every item, a folder's items too, in one list; a folder opens its own popover beside its item (hover, Right arrow), the arrows walk what shows, Enter picks; Ctrl+Esc opens it from anywhere on the desktop. A pick fires <code>start-select</code> with the item's value and closes the menu - the page decides what it opens. The parts are all optional: a classic menu is a list with folders and a foot, a modern one leads with the search and a grid of pinned apps.
+</PageHeader>
+
+<SkillPanel component="start-menu">
+  <SkillField label="Native basis">
+<SkillText>A <code>popover</code> (<code>.start-menu</code>) whose folders are nested popovers (<code>.start-menu-sub</code>) their items name with <code>aria-controls</code>; CSS anchor positioning places the menu on its button and a folder beside its item.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="the menu and its folders"><code>Popover API</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="above the button, folders beside their item"><code>anchor positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks" title="flipped when there is no room"><code>position-try-fallbacks</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/toggle_event" title="focus and aria-expanded on open"><code>toggle</code> event</ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/display#contents" title="a folder's items join the results"><code>display: contents</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Element/checkVisibility" title="arrows walk what shows"><code>checkVisibility()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.start-menu</code> <code>.start-menu-head</code> <code>.start-menu-search</code> <code>.start-menu-heading</code> <code>.start-menu-pinned</code> <code>.start-menu-list</code> <code>.start-menu-item</code> <code>.start-menu-icon</code> <code>.start-menu-label</code> <code>.start-menu-sub</code> <code>.start-menu-empty</code> <code>.start-menu-foot</code>
+  </SkillRow>
+  </SkillField>
+</SkillPanel>
+
+```html example label="A start menu" hint="Open it from the Start Button or with Ctrl+Esc, in any look. Type to search (try 'med' - Media Player is two folders deep); hover or press Right on a folder to open it beside its item. A pick closes the menu and fires start-select - the line under the desktop names it."
+<div class="grid gap-2">
+  <label class="flex items-center gap-2 text-sm"
+    >Look
+    <select class="select" data-look style="width: auto">
+      <option value="">Modern</option>
+      <option value="win7">7</option>
+      <option value="winxp">XP</option>
+      <option value="win98">98</option>
+      <option value="win95">95</option>
+    </select></label
+  >
+  <div class="desktop" id="sm-desk" style="height: 30rem">
+    <div class="window-desktop window-manager" id="sm-wm"></div>
+    <nav class="taskbar" data-taskbar-for="sm-wm" aria-label="Taskbar">
+      <button class="start-button" type="button" popovertarget="sm-demo" aria-haspopup="menu">
+        <span class="start-button-icon desktop-glyph" data-glyph="flag"></span>
+        <span class="start-button-label">Start</span>
+      </button>
+      <div class="taskbar-windows" role="group" aria-label="Open windows"></div>
+    </nav>
+    <div class="start-menu" id="sm-demo" data-state-demo popover aria-label="Start">
+      <div class="start-menu-head">
+        <span class="avatar" data-size="sm"><img class="avatar-image" src="images/avatars/12-96.webp" alt="" /></span>
+        <span>Aron</span>
+      </div>
+      <label class="start-menu-search">
+        <i data-lucide="search"></i>
+        <input type="search" placeholder="Search programs" aria-label="Search programs" />
+      </label>
+      <p class="start-menu-heading">Pinned</p>
+      <div class="start-menu-pinned" role="group" aria-label="Pinned">
+        <button class="start-menu-item" type="button" data-value="notes">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span>
+          <span class="start-menu-label">Notepad</span>
+        </button>
+        <button class="start-menu-item" type="button" data-value="mail">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="mail"></span></span>
+          <span class="start-menu-label">Mail</span>
+        </button>
+        <button class="start-menu-item" type="button" data-value="photos">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="picture"></span></span>
+          <span class="start-menu-label">Photos</span>
+        </button>
+      </div>
+      <p class="start-menu-heading">All programs</p>
+      <div class="start-menu-list" role="group" aria-label="All programs">
+        <button class="start-menu-item" type="button" aria-controls="sm-acc">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="folder"></span></span>
+          <span class="start-menu-label">Accessories</span>
+        </button>
+        <div class="start-menu-sub" id="sm-acc" popover aria-label="Accessories">
+          <button class="start-menu-item" type="button" data-value="calculator">
+            <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="calculator"></span></span>
+            <span class="start-menu-label">Calculator</span>
+          </button>
+          <button class="start-menu-item" type="button" aria-controls="sm-fun">
+            <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="folder"></span></span>
+            <span class="start-menu-label">Entertainment</span>
+          </button>
+          <div class="start-menu-sub" id="sm-fun" popover aria-label="Entertainment">
+            <button class="start-menu-item" type="button" data-value="media">
+              <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="music"></span></span>
+              <span class="start-menu-label">Media Player</span>
+            </button>
+          </div>
+        </div>
+        <button class="start-menu-item" type="button" data-value="terminal">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="terminal"></span></span>
+          <span class="start-menu-label">Command Prompt</span>
+        </button>
+        <button class="start-menu-item" type="button" data-value="browser">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="browser"></span></span>
+          <span class="start-menu-label">Browser</span>
+        </button>
+      </div>
+      <p class="start-menu-empty" hidden>No results</p>
+      <div class="start-menu-foot">
+        <button class="start-menu-item" type="button" data-value="settings">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="settings"></span></span>
+          <span class="start-menu-label">Settings</span>
+        </button>
+        <button class="start-menu-item" type="button" data-value="shutdown" aria-label="Shut down">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="power"></span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <output class="text-sm text-muted-foreground" id="sm-log">Nothing picked yet</output>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const desk = document.querySelector('#sm-desk');
+    desk.parentElement.querySelector('[data-look]').addEventListener('change', (e) => {
+      if (e.target.value) desk.dataset.variant = e.target.value;
+      else delete desk.dataset.variant;
+    });
+    document
+      .querySelector('#sm-demo')
+      .addEventListener(
+        'start-select',
+        (e) => (document.querySelector('#sm-log').textContent = `Picked: ${e.detail.label}`),
+      );
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.start-menu</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - closed</li>
+    <li><code>open</code> - open; <code>\{ query \}</code> searches</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/start-menu-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/start-menu.schema.json"><code>start-menu.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `boolean` | `true`, `false` | `false` | The menu is open (data-state-name). |
+```
+
+</StatesSection>
+
+<ApiSection component="start-menu" />
+
+<SourceFiles component="start-menu" section="css" />
+
+<SourceFiles component="start-menu" section="js">
+  <SourceNote for="js">The popovers open and close natively; the script adds the search, the folders, the keys and <code>start-select</code>.</SourceNote>
+</SourceFiles>
+
+</DocPage>

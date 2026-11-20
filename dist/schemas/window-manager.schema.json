@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "window-manager",
+  "states": {
+    "desktop": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".window-manager"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "desktop"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -210,6 +210,14 @@ try {
     assert.equal(await page.$$eval(icon('New text document.txt'), (i) => i.length), 1);
     const names = await page.$$eval('.os-editor[open] [data-ed-name]', (n) => n.map((x) => x.textContent));
     assert.ok(names.includes('New text document.txt'), names.join());
+    // the new icon is a Context Menu trigger of its own (VERIFIED 2026-11-20: a clone kept the copied data-init and no menu opened)
+    await toasts();
+    await page.click('[data-os-showdesk]');
+    await page.click(icon('New text document.txt'), { button: 'right' });
+    await page.waitForTimeout(150);
+    assert.equal(await page.$eval('#os-icon-ctx', (m) => m.matches(':popover-open')), true);
+    await page.keyboard.press('Escape');
+    await page.click('[data-os-showdesk]');
   });
 
   await check('icons: click selects, Delete recycles a file, the bin restores it', async () => {
@@ -302,15 +310,50 @@ try {
     assert.equal(await page.$$eval('.os .window', (w) => w.filter((x) => x.checkVisibility()).length), before);
   });
 
-  await check('power > Lock shows the lock screen; a click and Sign in unlock', async () => {
+  await check('power > Lock shows the lock screen (the Logon component); a click on the user signs in', async () => {
     await page.click('.os-start-btn');
     await page.click('#os-start [data-dropdown-trigger="os-power"]');
     await page.click('#os-power [data-power="lock"]');
     assert.equal(await shown('[data-os-lock]'), true);
-    await page.click('[data-os-lock]');
     assert.equal(await shown('[data-os-unlock]'), true);
     await page.click('[data-os-unlock]');
     assert.equal(await shown('[data-os-lock]'), false);
+  });
+
+  await check('Settings › Display › Look: the desktop of another time - 98 lists a button per window, modern its launchers', async () => {
+    // from Start: the launcher would minimize Settings when it is the window in front
+    await page.click('.os-start-btn');
+    await page.click('#os-start .os-app[data-launch="settings"]');
+    await page.click('#os-st-disp');
+    await page.selectOption('#os-settings select[data-set="look"]', 'win98');
+    assert.equal(await os('data-variant'), 'win98');
+    assert.equal(await page.$eval('#os-settings .window-titlebar', (t) => getComputedStyle(t).backgroundImage).then((b) => /linear-gradient/.test(b)), true);
+    const windows = await page.$$eval('.os-taskbar .taskbar-window', (b) => b.filter((x) => x.checkVisibility()).map((x) => x.textContent!.trim()));
+    assert.ok(windows.includes('Settings'), windows.join());
+    assert.equal(await shown('.os-wall-layer'), false, 'the look brings its wallpaper');
+    await page.selectOption('#os-settings select[data-set="look"]', 'winxp');
+    assert.equal(await page.$eval('.os-start-btn', (b) => getComputedStyle(b).textTransform), 'lowercase');
+    await page.selectOption('#os-settings select[data-set="look"]', 'modern');
+    assert.equal(await os('data-variant'), null);
+    assert.equal(await shown('.os-taskbar .taskbar-windows'), false, 'modern: the launchers show what runs');
+  });
+
+  await check('settings saved before the Look existed are kept, and the look starts modern', async () => {
+    const p = await browser.newPage({ viewport: { width: 1400, height: 900 } });
+    await offlineJsdelivr(p);
+    await p.goto(`${server.url}${PAGE}`);
+    await p.evaluate(() =>
+      localStorage.setItem('os-desktop:settings', JSON.stringify({ format: 'defuss-store', formatVersion: 1, version: 1, value: {
+        wallpaper: 'aurora', accent: 'green', glass: true, brightness: 100, night: false, icons: 'large', showicons: true, right: false, taskbar: 'left', seconds: false,
+      } })),
+    );
+    await p.reload();
+    await p.waitForFunction(() => !!(globalThis as any).df$?.shadcn?.win, undefined, { timeout: 10_000 });
+    await p.waitForFunction(() => document.querySelector('[data-os]')!.getAttribute('data-accent') === 'green', undefined, { timeout: 5_000 });
+    assert.equal(await p.getAttribute('[data-os]', 'data-wallpaper'), 'aurora');
+    assert.equal(await p.getAttribute('.os-taskbar', 'data-align'), 'start');
+    assert.equal(await p.getAttribute('[data-os]', 'data-variant'), null);
+    await p.close();
   });
 
   await check('narrow: windows fill the screen', async () => {

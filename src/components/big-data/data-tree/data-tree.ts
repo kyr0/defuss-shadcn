@@ -26,8 +26,22 @@ import {
   virtualWindow,
   sizerHeight,
   scrollIntoViewTop,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
 } from '../../../shared/state-api.js';
-import type { DataviewFilter, DataviewJsonValue, DataviewRow, DataviewSorter } from '../../../shared/dataview.js';
+import type { CellEditor, EditorRules } from '../../../shared/editors.js';
+import type {
+  DataSource,
+  DataviewFilter,
+  DataviewJsonValue,
+  DataviewRow,
+  DataviewSorter,
+} from '../../../shared/dataview.js';
 import type { ViewPersistence } from '../../../shared/store.js';
 
 const df$ = defussGlobals();
@@ -67,8 +81,29 @@ interface DataTreeMeta {
   parentId: DataviewJsonValue | null;
 }
 
+/** Where an edit happens - what getEditorFn and validateFn receive. */
+interface DataTreeEditContext {
+  /** the record being edited (unchanged until the edit commits) */
+  record: DataviewRow;
+  /** where it sits in the tree */
+  meta: DataTreeMeta;
+  /** the field that edits (data-edit-field, else the label field) */
+  field: string;
+  /** the type it edits as (data-editor, else from the value) */
+  type: string;
+  /** the tree's rules (data-required, data-min-length, data-max-length, data-pattern) */
+  rules: EditorRules;
+  /** the tree element */
+  tree: HTMLElement;
+}
+
 /** What setSource() takes besides the records. */
 interface DataTreeOptions {
+  /** an editor for an item (data-editable on the tree): an element or a CellEditor; null: the built-in Input; false:
+   *  this item does not edit */
+  getEditorFn?: (field: string, value: unknown, ctx: DataTreeEditContext) => HTMLElement | CellEditor | null | false;
+  /** refuse a value: return a message, or false for a generic one; anything else accepts it */
+  validateFn?: (field: string, value: unknown, ctx: DataTreeEditContext) => string | false | null | undefined;
   /** the id field (default 'id', or data-id-field) */
   idField?: string;
   /** the parent-id field (default 'parentId', or data-parent-field) */
@@ -79,6 +114,30 @@ interface DataTreeOptions {
   query?: DataTreeQuery;
   /** where the view is kept between visits (default: session storage under a generated key) */
   persist?: ViewPersistence;
+}
+
+/** What data-tree-beforeedit carries. */
+interface DataTreeBeforeEditDetail {
+  /** the record as it is */
+  record: DataviewRow;
+  /** the field that edits */
+  field: string;
+  /** the value about to be written */
+  value: unknown;
+  /** the value it holds now */
+  oldValue: unknown;
+}
+
+/** What data-tree-edit carries. */
+interface DataTreeEditDetail {
+  /** the record as it is now (a new object - the old one is never mutated) */
+  record: DataviewRow;
+  /** the field that edited */
+  field: string;
+  /** the value written */
+  value: unknown;
+  /** the value it held */
+  oldValue: unknown;
 }
 
 /** What data-tree-select carries. */
@@ -161,6 +220,7 @@ function renderItems(tree) {
   const selected = configOf(tree).selected ?? null;
   const idField = tree._source.idField;
   let active = null;
+  let edShown = false;
   for (let i = 0; i < pool.children.length; i++) {
     const item = pool.children[i];
     const index = win.first + i;
@@ -178,6 +238,7 @@ function renderItems(tree) {
       if (meta.hasChildren) item.setAttribute('aria-expanded', String(meta.isExpanded));
       else item.removeAttribute('aria-expanded');
       item.toggleAttribute('data-match', !!(configOf(tree).filters || []).length && meta.isMatch);
+      delete item.dataset.editing;
       const label = item.lastElementChild;
       if (tree._render) {
         label.textContent = '';
@@ -186,17 +247,215 @@ function renderItems(tree) {
         label.textContent = String(entry.row[labelField(tree)] ?? '');
       }
     }
+    const ed = tree._editor;
+    if (ed && ed.id === entry.row[idField]) {
+      edShown = true;
+      if (!item.contains(ed.wrap)) {
+        // the item was filled again (a scroll moved its record to another pool element): the editor goes back
+        const focused = ed.wrap.contains(document.activeElement) || document.activeElement === document.body;
+        placeTreeEditor(item, ed);
+        if (focused) (editorControl(ed.editor) as HTMLElement).focus({ preventScroll: true });
+      }
+    }
     item.setAttribute('aria-selected', String(selected !== null && entry.row[idField] === selected));
     item.toggleAttribute('data-active', index === tree._active);
     if (index === tree._active) active = item;
   }
   if (active) tree.setAttribute('aria-activedescendant', active.id);
   else tree.removeAttribute('aria-activedescendant');
+  // the edited record scrolled out of the window: write what the editor holds (refused: drop it)
+  if (tree._editor && !edShown && !tree._writing)
+    queueMicrotask(() => {
+      if (tree._editor && !commitTreeEdit(tree, false)) cancelTreeEdit(tree, false);
+    });
+}
+
+// -- inline editing ---------------------------------------------------------
+
+/** the field an edit writes */
+const editField = (tree) => tree.dataset.editField || labelField(tree);
+
+/** the tree's edit rules, from its attributes */
+function treeRules(tree): EditorRules {
+  const d = tree.dataset;
+  const rules: EditorRules = {};
+  if (tree.hasAttribute('data-required')) rules.required = true;
+  if (d.minLength) rules.minLength = Number(d.minLength);
+  if (d.maxLength) rules.maxLength = Number(d.maxLength);
+  if (d.pattern) rules.pattern = d.pattern;
+  if (d.message) rules.message = d.message;
+  if (d.options) rules.options = d.options.split(',').map((o) => o.trim());
+  return rules;
+}
+
+const treeContext = (tree, entry): DataTreeEditContext => {
+  const field = editField(tree);
+  const rules = treeRules(tree);
+  return {
+    record: entry.row,
+    meta: entry.meta,
+    field,
+    type: tree.dataset.editor || valueType(entry.row[field], rules),
+    rules,
+    tree,
+  };
+};
+
+/** put the open editor into an item's label */
+function placeTreeEditor(item, ed) {
+  ed.item = item;
+  item.dataset.editing = '';
+  const label = item.lastElementChild;
+  label.textContent = '';
+  label.append(ed.wrap);
+}
+
+/** open the editor of the item at an index */
+function openTreeEdit(tree, index) {
+  if (!tree.hasAttribute('data-editable') || tree.hasAttribute('data-readonly')) return false;
+  const entry = entryAt(tree, index);
+  if (!entry) return false;
+  if (tree._editor && !commitTreeEdit(tree, false)) return false;
+  const ctx = treeContext(tree, entry);
+  const value = entry.row[ctx.field];
+  const custom = tree._sourceOptions?.getEditorFn?.(ctx.field, value, ctx);
+  if (custom === false) return false;
+  const editor: CellEditor = asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules);
+  activate(tree, index);
+  const wrap = document.createElement('span');
+  wrap.className = 'data-tree-editor';
+  wrap.append(editor.el);
+  const ed = { id: entry.row[tree._source.idField], field: ctx.field, editor, wrap, value, entry, item: null };
+  tree._editor = ed;
+  const item = dfDollar(tree._pool)
+    .children('.data-tree-item')
+    .toArray()
+    .find((x) => x._index === index);
+  if (item) placeTreeEditor(item, ed);
+  wrap.addEventListener('keydown', (e) => {
+    e.stopPropagation(); // the tree's keys (arrows, Space, Enter) stay out of the editor
+    const act = editorKey(e, editor);
+    if (!act) return;
+    e.preventDefault();
+    if (act === 'cancel') cancelTreeEdit(tree);
+    else commitTreeEdit(tree);
+  });
+  wrap.addEventListener('click', (e) => e.stopPropagation());
+  wrap.addEventListener('dblclick', (e) => e.stopPropagation());
+  wrap.addEventListener('change', () => {
+    if (editor.immediate) commitTreeEdit(tree);
+  });
+  wrap.addEventListener('focusout', (e) => {
+    if (wrap.contains(e.relatedTarget as Node)) return;
+    setTimeout(() => {
+      if (tree._editor === ed && !wrap.contains(document.activeElement)) commitTreeEdit(tree, false);
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+
+/** close the editor without writing; the tree takes the focus back */
+function cancelTreeEdit(tree, focus = true) {
+  if (!tree._editor) return;
+  tree._editor = null;
+  tree._gen = (tree._gen || 0) + 1;
+  renderItems(tree);
+  if (focus) tree.focus({ preventScroll: true });
+}
+
+/** write one record's new values: a new record replaces the old one, the query runs again */
+function writeTreeRecord(tree, id, patch) {
+  const idField = tree._source.idField;
+  const rows = tree._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0) return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  tree._source.setRows(next);
+  tree._writing = true;
+  triggerStateChange(tree, tree.store.value, tree.store.value);
+  tree._writing = false;
+  // the active item follows its record (a sort may move it)
+  const index = tree._result.entries.findIndex((x) => x.row[idField] === id);
+  if (index >= 0) activate(tree, index);
+  return record;
+}
+
+/**
+ * Commit the open editor: validate (the editor, the tree's rules, validateFn), ask data-tree-beforeedit (cancelable),
+ * write the record, then data-tree-edit. Returns false while the value is refused (the editor stays).
+ */
+function commitTreeEdit(tree, focus = true) {
+  const ed = tree._editor;
+  if (!ed) return true;
+  let problem = ed.editor.validate?.() ?? '';
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String((error as Error).message ?? error);
+    }
+  }
+  const ctx = treeContext(tree, ed.entry);
+  if (!problem) problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = tree._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === 'string' && answer) problem = answer;
+    else if (answer === false) problem = 'Invalid value';
+  }
+  if (problem) {
+    const control = editorControl(ed.editor);
+    control.setAttribute('aria-invalid', 'true');
+    let note = dfDollar(ed.wrap).children('.data-tree-error').get(0);
+    if (!note) {
+      note = document.createElement('span');
+      note.className = 'data-tree-error';
+      note.setAttribute('role', 'alert');
+      note.id = `dt-error-${Math.random().toString(36).slice(2, 8)}`;
+      ed.wrap.append(note);
+      control.setAttribute('aria-describedby', note.id);
+    }
+    dfDollar(note).text(problem);
+    return false;
+  }
+  tree._editor = null;
+  const oldValue = ed.value;
+  // Fires before an edited value is written - cancelable: preventDefault() keeps the old value.
+  const before = new CustomEvent<DataTreeBeforeEditDetail>('data-tree-beforeedit', {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.entry.row, field: ed.field, value, oldValue },
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !tree.dispatchEvent(before)) {
+    tree._gen = (tree._gen || 0) + 1;
+    renderItems(tree);
+  } else {
+    const record = writeTreeRecord(tree, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    // Fires after an edited value was written - the new record, the field, the new and the old value.
+    tree.dispatchEvent(
+      new CustomEvent<DataTreeEditDetail>('data-tree-edit', {
+        bubbles: true,
+        detail: { record, field: ed.field, value, oldValue },
+      }),
+    );
+  }
+  if (focus) tree.focus({ preventScroll: true });
+  return true;
 }
 
 /** evaluate the config's query, re-render; returns the visible count */
 function refresh(tree, config, previous) {
   if (!tree._source) return 0;
+  // a new query: the edited item may go - write it first (refused: drop it)
+  if (tree._editor && !tree._writing) {
+    tree._writing = true;
+    if (!commitTreeEdit(tree, false)) tree._editor = null;
+    tree._writing = false;
+  }
   tree._result = tree._source.query({
     filters: config.filters,
     sorters: config.sorters,
@@ -357,6 +616,7 @@ function activate(tree, index) {
 }
 
 function onKeydown(tree, e) {
+  if (tree._editor && tree._editor.wrap.contains(e.target)) return;
   const index = tree._active ?? 0;
   const entry = entryAt(tree, index);
   if (!entry) return;
@@ -390,6 +650,9 @@ function onKeydown(tree, e) {
       break;
     case 'PageUp':
       activate(tree, index - page);
+      break;
+    case 'F2':
+      if (!openTreeEdit(tree, index)) return;
       break;
     case 'Enter':
     case ' ':
@@ -519,6 +782,57 @@ df$.dataTree = {
     return true;
   },
   /**
+   * The tree's query source: its records (source.rows - every edit included) and the cached query over them.
+   * @param target - the .data-tree element or its selector
+   * @returns its source, undefined before setSource()
+   */
+  source: (target: string | HTMLElement): DataSource<DataviewRow> | undefined => resolve(target)._source,
+  /**
+   * Open the editor of a record's item (data-editable on the tree) - its branch opens and it scrolls into view first.
+   * @param target - the .data-tree element or its selector
+   * @param id - the record's id
+   * @returns false when it does not edit (no such record, no data-editable, getEditorFn answered false)
+   */
+  edit(target: string | HTMLElement, id: DataviewJsonValue): boolean {
+    const tree = resolve(target);
+    if (!(df$.dataTree as { reveal(t: HTMLElement, id: DataviewJsonValue): boolean }).reveal(tree, id)) return false;
+    const index = tree._result.entries.findIndex((x) => x.row[tree._source.idField] === id);
+    return openTreeEdit(tree, index);
+  },
+  /**
+   * Commit the open editor.
+   * @param target - the .data-tree element or its selector
+   * @returns false when its value is refused (the editor stays open with the message); true otherwise
+   */
+  commit: (target: string | HTMLElement): boolean => commitTreeEdit(resolve(target)),
+  /**
+   * Close the open editor without writing.
+   * @param target - the .data-tree element or its selector
+   */
+  cancel: (target: string | HTMLElement): void => cancelTreeEdit(resolve(target)),
+  /**
+   * Write new values into one record from script - what an edit writes. The record is replaced by a new object; the
+   * query runs again. Fires data-tree-edit per field.
+   * @param target - the .data-tree element or its selector
+   * @param id - the record's id
+   * @param patch - the fields to change and their new values
+   * @returns the new record, null when no record has that id
+   */
+  update(target: string | HTMLElement, id: DataviewJsonValue, patch: DataviewRow): DataviewRow | null {
+    const tree = resolve(target);
+    const old = tree._source.rows.find((r) => r[tree._source.idField] === id);
+    if (!old) return null;
+    const record = writeTreeRecord(tree, id, patch);
+    for (const field of Object.keys(patch))
+      tree.dispatchEvent(
+        new CustomEvent<DataTreeEditDetail>('data-tree-edit', {
+          bubbles: true,
+          detail: { record, field, value: patch[field], oldValue: old[field] },
+        }),
+      );
+    return record;
+  },
+  /**
    * The selected record.
    * @param target - the .data-tree element or its selector
    * @returns the record whose id is selected, null when none is
@@ -579,6 +893,12 @@ function init() {
       new ResizeObserver(() => renderItems(tree)).observe(tree);
       tree.addEventListener('click', (e) => onClick(tree, e));
       tree.addEventListener('keydown', (e) => onKeydown(tree, e));
+      // a double click on an item edits it (data-editable)
+      tree.addEventListener('dblclick', (e) => {
+        const item = (e.target as HTMLElement).closest?.<HTMLElement & { _index?: number }>('.data-tree-item');
+        if (!item || !tree._pool.contains(item) || (e.target as HTMLElement).closest('.data-tree-toggle')) return;
+        if (openTreeEdit(tree, item._index)) e.preventDefault();
+      });
 
       // el.store + el.api (AGENTS.md "State through stores"): no records yet = loading
       bindComponent(tree, dataTreeApi, { name: tree._source ? 'default' : 'loading', config });

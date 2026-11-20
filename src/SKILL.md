@@ -770,6 +770,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/delivery-options.png
 **Skill:** [components/website/delivery-options/component-skill.md](components/website/delivery-options/component-skill.md)
 
+## Desktop
+
+**Type:** ORG
+**Why:** One element lays out a whole desktop - the window area with its icons, the taskbar on any edge, the start menu and the logon screen - and data-variant gives it a look (7, XP, 98, 95 or the modern default) by tokens and chrome rules, so the same markup and the same component APIs serve every look.
+**When:** A desktop-like UI or a period look for one. For windows alone use window in a window-desktop; for an app's frame use border-layout.
+**Files:** dist/components/desktop/desktop.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/desktop.png
+**Skill:** [components/desktop/desktop/component-skill.md](components/desktop/desktop/component-skill.md)
+
+## Desktop Manager
+
+**Type:** ATM
+**Why:** A multi-select listbox of desktop icons with the classic selection model - click, Ctrl / Cmd, Shift ranges, a rubber band drawn from an empty spot, Ctrl+A, arrows by place - and icons that drag to grid cells; opening, deleting and renaming are events the page answers.
+**When:** The icon surface of a desktop or any spatial file view (a folder window's icon view). For a list with checkboxes use table or virtual-list; for a single pick use radio-group.
+**Files:** dist/components/desktop-manager/desktop-manager.css + dist/components/desktop-manager/desktop-manager.js
+**Supported states:** default, selected
+**Screenshots:** screenshots/{light,dark}/desktop-manager.png, screenshots/{light,dark}/desktop-manager-selected.png
+**Skill:** [components/desktop/desktop-manager/component-skill.md](components/desktop/desktop-manager/component-skill.md)
+
 ## Diagram
 
 **Type:** ATM
@@ -1330,6 +1350,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/login-form.png
 **Skill:** [components/website/login-form/component-skill.md](components/website/login-form/component-skill.md)
 
+## Logon
+
+**Type:** MOL
+**Why:** A sign-in and lock screen that checks nothing itself - the users are buttons, the picked one's password is a real form, a submit is an event the page answers with done() or fail(), so any sign-in (or none) fits behind it.
+**When:** The start or lock screen of a desktop. For a sign-in page of a website use the website's Login Form block; for a password prompt in an app use a dialog with a form.
+**Files:** dist/components/logon/logon.css + dist/components/logon/logon.js
+**Supported states:** default, signing-in, error, signed-in
+**Screenshots:** screenshots/{light,dark}/logon.png, screenshots/{light,dark}/logon-signing-in.png, screenshots/{light,dark}/logon-error.png, screenshots/{light,dark}/logon-signed-in.png
+**Skill:** [components/desktop/logon/component-skill.md](components/desktop/logon/component-skill.md)
+
 ## Maintenance
 
 **Type:** BLK
@@ -1810,6 +1840,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/property-grid.png, screenshots/{light,dark}/property-grid-editing.png
 **Skill:** [components/application/property-grid/component-skill.md](components/application/property-grid/component-skill.md)
 
+## Property Tree
+
+**Type:** ATM
+**Why:** The Property Grid's in-place editing for a whole linked structure - one value (JSON, or with DSON Map, Set, Date, BigInt, RegExp, shared nodes and cycles) as a windowed tree of key / value rows; values, keys, types and entries edit in place with the shared cell editors, every edit one undo step.
+**When:** Inspecting and editing a nested document - a configuration, an API response, a state store, a graph of objects that point at each other. One flat object with labels and rules per key is property-grid; many records with the same fields are data-grid; a hierarchy of records is data-tree.
+**Files:** dist/components/property-tree/property-tree.css + dist/components/property-tree/property-tree.js
+**Supported states:** default, editing
+**Screenshots:** screenshots/{light,dark}/property-tree.png, screenshots/{light,dark}/property-tree-editing.png
+**Skill:** [components/application/property-tree/component-skill.md](components/application/property-tree/component-skill.md)
+
 ## QR Code
 
 **Type:** ATM
@@ -2270,6 +2310,26 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/spinner.png
 **Skill:** [components/feedback-status/spinner/component-skill.md](components/feedback-status/spinner/component-skill.md)
 
+## Start Button
+
+**Type:** ATM
+**Why:** A native popovertarget button - it opens its Start Menu with no script of its own; the menu anchors itself to it and keeps aria-expanded.
+**When:** The first button of a taskbar, opening a start menu. For a menu of commands anywhere else use dropdown; for a launcher grid use command.
+**Files:** dist/components/start-button/start-button.css
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/start-button.png
+**Skill:** [components/desktop/start-button/component-skill.md](components/desktop/start-button/component-skill.md)
+
+## Start Menu
+
+**Type:** MOL
+**Why:** A popover the Start Button opens with no script; the runtime adds what a start menu needs - search as you type over every item, folders that open beside their item, arrows and Enter, and one start-select event that the page turns into an app.
+**When:** The menu of a desktop's Start Button - apps, folders, the user, power. For a command palette use command; for a menu on any button use dropdown.
+**Files:** dist/components/start-menu/start-menu.css + dist/components/start-menu/start-menu.js
+**Supported states:** default, open
+**Screenshots:** screenshots/{light,dark}/start-menu.png, screenshots/{light,dark}/start-menu-open.png
+**Skill:** [components/desktop/start-menu/component-skill.md](components/desktop/start-menu/component-skill.md)
+
 ## Statistic
 
 **Type:** ATM
@@ -2410,6 +2470,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/tag-list.png
 **Skill:** [components/website/tag-list/component-skill.md](components/website/tag-list/component-skill.md)
 
+## Taskbar
+
+**Type:** MOL
+**Why:** A toolbar along a desktop's edge whose window buttons are the Window Manager's model - one per open window, pressed for the one in front, a click brings it forward or minimizes it; the Start Button, the page's launchers and the Tray sit in it.
+**When:** A desktop with windows. For a dock of launchers only use dock; for an app's own toolbar use toolbar.
+**Files:** dist/components/taskbar/taskbar.css + dist/components/taskbar/taskbar.js
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/taskbar.png
+**Skill:** [components/desktop/taskbar/component-skill.md](components/desktop/taskbar/component-skill.md)
+
 ## Team Member
 
 **Type:** BLK
@@ -2463,7 +2533,7 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 ## Text Rotate
 
 **Type:** ATM
-**Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
+**Why:** One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and one animation for any number of lines (registered counters, sibling-count()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
 **When:** A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
 **Files:** dist/components/text-rotate/text-rotate.css
 **Supported states:** default
@@ -2580,6 +2650,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/tracking-status.png
 **Skill:** [components/website/tracking-status/component-skill.md](components/website/tracking-status/component-skill.md)
 
+## Tray
+
+**Type:** ATM
+**Why:** The notification area of a taskbar - icon buttons that open popovers natively and carry badges, a clock the runtime keeps with Intl in the tray's language, and a show-desktop strip that asks the Window Manager.
+**When:** The end of a taskbar - status icons, quick settings, the clock. For a status line inside an app use a window's status bar.
+**Files:** dist/components/tray/tray.css + dist/components/tray/tray.js
+**Supported states:** default
+**Screenshots:** screenshots/{light,dark}/tray.png
+**Skill:** [components/desktop/tray/component-skill.md](components/desktop/tray/component-skill.md)
+
 ## Tree View
 
 **Type:** ATM
@@ -2689,6 +2769,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Supported states:** default, maximized, minimized, closed
 **Screenshots:** screenshots/{light,dark}/window.png, screenshots/{light,dark}/window-maximized.png, screenshots/{light,dark}/window-minimized.png, screenshots/{light,dark}/window-closed.png
 **Skill:** [components/application/window/component-skill.md](components/application/window/component-skill.md)
+
+## Window Manager
+
+**Type:** MOL
+**Why:** The model of one desktop's windows - which are open, in what order, which is in front, which are minimized - published as one event, so a taskbar or any other view renders it; every window change goes through the Window component's own State API.
+**When:** Any desktop-like UI with several windows and something that lists them (a taskbar, a window menu, a switcher). For windows alone use window - its df$.shadcn.win already moves, raises and arranges them.
+**Files:** dist/components/window-manager/window-manager.css + dist/components/window-manager/window-manager.js
+**Supported states:** default, desktop
+**Screenshots:** screenshots/{light,dark}/window-manager.png, screenshots/{light,dark}/window-manager-desktop.png
+**Skill:** [components/desktop/window-manager/component-skill.md](components/desktop/window-manager/component-skill.md)
 
 ## Wishlist Item
 

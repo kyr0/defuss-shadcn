@@ -238,7 +238,7 @@ var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
 if (!__df$shared2 || __df$shared2.abi !== "0.9.16") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, persisted, viewPersistence, dataSource: dataSource2, parseFilter: parseFilter2, filterText, virtualWindow: virtualWindow2, sizerHeight: sizerHeight2, scrollIntoViewTop } = __df$shared2;
+var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, persisted, viewPersistence, dataSource: dataSource2, parseFilter: parseFilter2, filterText, virtualWindow: virtualWindow2, sizerHeight: sizerHeight2, scrollIntoViewTop, asEditor, builtinEditor, editorControl, editorKey, editorProblem, focusEditor, valueType } = __df$shared2;
 var df$2 = defussGlobals2();
 var dfDollar2 = defussQuery2();
 var dataTreeStates = ["default", "loading", "empty"];
@@ -292,6 +292,7 @@ function renderItems(tree) {
   const selected = configOf(tree).selected ?? null;
   const idField = tree._source.idField;
   let active = null;
+  let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
     const item = pool.children[i];
     const index = win.first + i;
@@ -311,12 +312,23 @@ function renderItems(tree) {
       else
         item.removeAttribute("aria-expanded");
       item.toggleAttribute("data-match", !!(configOf(tree).filters || []).length && meta.isMatch);
+      delete item.dataset.editing;
       const label = item.lastElementChild;
       if (tree._render) {
         label.textContent = "";
         tree._render(label, entry.row, meta);
       } else {
         label.textContent = String(entry.row[labelField(tree)] ?? "");
+      }
+    }
+    const ed = tree._editor;
+    if (ed && ed.id === entry.row[idField]) {
+      edShown = true;
+      if (!item.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || document.activeElement === document.body;
+        placeTreeEditor(item, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
       }
     }
     item.setAttribute("aria-selected", String(selected !== null && entry.row[idField] === selected));
@@ -328,10 +340,196 @@ function renderItems(tree) {
     tree.setAttribute("aria-activedescendant", active.id);
   else
     tree.removeAttribute("aria-activedescendant");
+  if (tree._editor && !edShown && !tree._writing)
+    queueMicrotask(() => {
+      if (tree._editor && !commitTreeEdit(tree, false))
+        cancelTreeEdit(tree, false);
+    });
+}
+var editField = (tree) => tree.dataset.editField || labelField(tree);
+function treeRules(tree) {
+  const d = tree.dataset;
+  const rules = {};
+  if (tree.hasAttribute("data-required"))
+    rules.required = true;
+  if (d.minLength)
+    rules.minLength = Number(d.minLength);
+  if (d.maxLength)
+    rules.maxLength = Number(d.maxLength);
+  if (d.pattern)
+    rules.pattern = d.pattern;
+  if (d.message)
+    rules.message = d.message;
+  if (d.options)
+    rules.options = d.options.split(",").map((o) => o.trim());
+  return rules;
+}
+var treeContext = (tree, entry) => {
+  const field = editField(tree);
+  const rules = treeRules(tree);
+  return {
+    record: entry.row,
+    meta: entry.meta,
+    field,
+    type: tree.dataset.editor || valueType(entry.row[field], rules),
+    rules,
+    tree
+  };
+};
+function placeTreeEditor(item, ed) {
+  ed.item = item;
+  item.dataset.editing = "";
+  const label = item.lastElementChild;
+  label.textContent = "";
+  label.append(ed.wrap);
+}
+function openTreeEdit(tree, index) {
+  if (!tree.hasAttribute("data-editable") || tree.hasAttribute("data-readonly"))
+    return false;
+  const entry = entryAt(tree, index);
+  if (!entry)
+    return false;
+  if (tree._editor && !commitTreeEdit(tree, false))
+    return false;
+  const ctx = treeContext(tree, entry);
+  const value = entry.row[ctx.field];
+  const custom = tree._sourceOptions?.getEditorFn?.(ctx.field, value, ctx);
+  if (custom === false)
+    return false;
+  const editor = asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules);
+  activate(tree, index);
+  const wrap = document.createElement("span");
+  wrap.className = "data-tree-editor";
+  wrap.append(editor.el);
+  const ed = { id: entry.row[tree._source.idField], field: ctx.field, editor, wrap, value, entry, item: null };
+  tree._editor = ed;
+  const item = dfDollar2(tree._pool).children(".data-tree-item").toArray().find((x) => x._index === index);
+  if (item)
+    placeTreeEditor(item, ed);
+  wrap.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    e.preventDefault();
+    if (act === "cancel")
+      cancelTreeEdit(tree);
+    else
+      commitTreeEdit(tree);
+  });
+  wrap.addEventListener("click", (e) => e.stopPropagation());
+  wrap.addEventListener("dblclick", (e) => e.stopPropagation());
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commitTreeEdit(tree);
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (tree._editor === ed && !wrap.contains(document.activeElement))
+        commitTreeEdit(tree, false);
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+function cancelTreeEdit(tree, focus = true) {
+  if (!tree._editor)
+    return;
+  tree._editor = null;
+  tree._gen = (tree._gen || 0) + 1;
+  renderItems(tree);
+  if (focus)
+    tree.focus({ preventScroll: true });
+}
+function writeTreeRecord(tree, id, patch) {
+  const idField = tree._source.idField;
+  const rows = tree._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0)
+    return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  tree._source.setRows(next);
+  tree._writing = true;
+  triggerStateChange2(tree, tree.store.value, tree.store.value);
+  tree._writing = false;
+  const index = tree._result.entries.findIndex((x) => x.row[idField] === id);
+  if (index >= 0)
+    activate(tree, index);
+  return record;
+}
+function commitTreeEdit(tree, focus = true) {
+  const ed = tree._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = treeContext(tree, ed.entry);
+  if (!problem)
+    problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = tree._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    const control = editorControl(ed.editor);
+    control.setAttribute("aria-invalid", "true");
+    let note = dfDollar2(ed.wrap).children(".data-tree-error").get(0);
+    if (!note) {
+      note = document.createElement("span");
+      note.className = "data-tree-error";
+      note.setAttribute("role", "alert");
+      note.id = `dt-error-${Math.random().toString(36).slice(2, 8)}`;
+      ed.wrap.append(note);
+      control.setAttribute("aria-describedby", note.id);
+    }
+    dfDollar2(note).text(problem);
+    return false;
+  }
+  tree._editor = null;
+  const oldValue = ed.value;
+  const before = new CustomEvent("data-tree-beforeedit", {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.entry.row, field: ed.field, value, oldValue }
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !tree.dispatchEvent(before)) {
+    tree._gen = (tree._gen || 0) + 1;
+    renderItems(tree);
+  } else {
+    const record = writeTreeRecord(tree, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    tree.dispatchEvent(new CustomEvent("data-tree-edit", {
+      bubbles: true,
+      detail: { record, field: ed.field, value, oldValue }
+    }));
+  }
+  if (focus)
+    tree.focus({ preventScroll: true });
+  return true;
 }
 function refresh2(tree, config, previous) {
   if (!tree._source)
     return 0;
+  if (tree._editor && !tree._writing) {
+    tree._writing = true;
+    if (!commitTreeEdit(tree, false))
+      tree._editor = null;
+    tree._writing = false;
+  }
   tree._result = tree._source.query({
     filters: config.filters,
     sorters: config.sorters,
@@ -465,6 +663,8 @@ function activate(tree, index) {
   renderItems(tree);
 }
 function onKeydown(tree, e) {
+  if (tree._editor && tree._editor.wrap.contains(e.target))
+    return;
   const index = tree._active ?? 0;
   const entry = entryAt(tree, index);
   if (!entry)
@@ -501,6 +701,10 @@ function onKeydown(tree, e) {
       break;
     case "PageUp":
       activate(tree, index - page);
+      break;
+    case "F2":
+      if (!openTreeEdit(tree, index))
+        return;
       break;
     case "Enter":
     case " ":
@@ -596,6 +800,29 @@ df$2.dataTree = {
     activate(tree, index);
     return true;
   },
+  source: (target) => resolve(target)._source,
+  edit(target, id) {
+    const tree = resolve(target);
+    if (!df$2.dataTree.reveal(tree, id))
+      return false;
+    const index = tree._result.entries.findIndex((x) => x.row[tree._source.idField] === id);
+    return openTreeEdit(tree, index);
+  },
+  commit: (target) => commitTreeEdit(resolve(target)),
+  cancel: (target) => cancelTreeEdit(resolve(target)),
+  update(target, id, patch) {
+    const tree = resolve(target);
+    const old = tree._source.rows.find((r) => r[tree._source.idField] === id);
+    if (!old)
+      return null;
+    const record = writeTreeRecord(tree, id, patch);
+    for (const field of Object.keys(patch))
+      tree.dispatchEvent(new CustomEvent("data-tree-edit", {
+        bubbles: true,
+        detail: { record, field, value: patch[field], oldValue: old[field] }
+      }));
+    return record;
+  },
   selected(target) {
     const tree = resolve(target);
     const id = configOf(tree).selected ?? null;
@@ -643,6 +870,13 @@ function init2() {
     new ResizeObserver(() => renderItems(tree)).observe(tree);
     tree.addEventListener("click", (e) => onClick(tree, e));
     tree.addEventListener("keydown", (e) => onKeydown(tree, e));
+    tree.addEventListener("dblclick", (e) => {
+      const item = e.target.closest?.(".data-tree-item");
+      if (!item || !tree._pool.contains(item) || e.target.closest(".data-tree-toggle"))
+        return;
+      if (openTreeEdit(tree, item._index))
+        e.preventDefault();
+    });
     bindComponent2(tree, dataTreeApi, { name: tree._source ? "default" : "loading", config });
     dataTreeApi.setState(tree, tree._source ? "default" : "loading", config);
   });
@@ -656,7 +890,7 @@ var __df$shared3 = __df$core3 && __df$core3.shadcn && __df$core3.shadcn.shared;
 if (!__df$shared3 || __df$shared3.abi !== "0.9.16") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, textLocale, componentState: componentState3, bindComponent: bindComponent3, persisted: persisted2, viewPersistence: viewPersistence2, dataSource: dataSource3, parseFilter: parseFilter3, filterText: filterText2, cycleSort, virtualWindow: virtualWindow3, sizerHeight: sizerHeight3, scrollIntoViewTop: scrollIntoViewTop2 } = __df$shared3;
+var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, textLocale, componentState: componentState3, bindComponent: bindComponent3, persisted: persisted2, viewPersistence: viewPersistence2, dataSource: dataSource3, parseFilter: parseFilter3, filterText: filterText2, cycleSort, virtualWindow: virtualWindow3, sizerHeight: sizerHeight3, scrollIntoViewTop: scrollIntoViewTop2, asEditor: asEditor2, builtinEditor: builtinEditor2, editorControl: editorControl2, editorKey: editorKey2, editorProblem: editorProblem2, focusEditor: focusEditor2, valueType: valueType2 } = __df$shared3;
 var df$3 = defussGlobals3();
 var dfDollar3 = defussQuery3();
 var dataGridStates = ["default", "loading", "empty"];
@@ -702,8 +936,34 @@ function readColumns(grid) {
     lockedAtStart: el.hasAttribute("data-locked"),
     hiddenAtStart: el.hidden,
     sortField: el.dataset.sortField || el.dataset.field,
-    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null
+    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null,
+    editable: el.hasAttribute("data-editable"),
+    editor: el.dataset.editor || "",
+    rules: columnRules(el)
   }));
+}
+function columnRules(el) {
+  const num = (name) => el.dataset[name] != null && el.dataset[name] !== "" ? Number(el.dataset[name]) : undefined;
+  const rules = {};
+  if (el.hasAttribute("data-required"))
+    rules.required = true;
+  if (el.hasAttribute("data-integer"))
+    rules.integer = true;
+  if (num("min") != null)
+    rules.min = num("min");
+  if (num("max") != null)
+    rules.max = num("max");
+  if (el.dataset.step)
+    rules.step = el.dataset.step;
+  if (num("minLength") != null)
+    rules.minLength = num("minLength");
+  if (num("maxLength") != null)
+    rules.maxLength = num("maxLength");
+  if (el.dataset.pattern)
+    rules.pattern = el.dataset.pattern;
+  if (el.dataset.message)
+    rules.message = el.dataset.message;
+  return rules;
 }
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
@@ -907,6 +1167,8 @@ function fillCell(grid, cell, column, entry, first) {
     cell.dataset.align = column.align;
   else
     delete cell.dataset.align;
+  cell.toggleAttribute("data-editable", !!column.editable && !grid.hasAttribute("data-readonly"));
+  delete cell.dataset.editing;
   cell.textContent = "";
   if (first && isTree(grid)) {
     cell.style.setProperty("--depth", String(entry.meta.depth));
@@ -956,6 +1218,7 @@ function renderRows2(grid) {
   const base = paging(grid) === "pages" ? Math.max(0, config.page || 0) * pageSize(grid) : 0;
   const headRows = grid._parts.filters ? 2 : 1;
   const focus = grid._focus;
+  let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
     const row = pool.children[i];
     const index = win.first + i;
@@ -987,6 +1250,17 @@ function renderRows2(grid) {
       }
     }
     const id = entry.row[grid._source.idField];
+    const ed = grid._editor;
+    if (ed && ed.id === id) {
+      edShown = true;
+      if (!row.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || !document.activeElement || document.activeElement === document.body;
+        ed.rowEl = row;
+        placeEditor(grid, ed);
+        if (focused)
+          editorControl2(ed.editor).focus({ preventScroll: true });
+      }
+    }
     if (grid.dataset.select)
       row.setAttribute("aria-selected", String(selected.has(id)));
     else
@@ -995,6 +1269,11 @@ function renderRows2(grid) {
       row.children[c].tabIndex = focus.row === index && focus.col === c ? 0 : -1;
     }
   }
+  if (grid._editor && !edShown && !grid._writing)
+    queueMicrotask(() => {
+      if (grid._editor && !commitEdit(grid, "none"))
+        cancelEdit(grid, false);
+    });
 }
 function renderFooter(grid, config) {
   const count = (n) => format(n, "number", grid);
@@ -1067,6 +1346,12 @@ function renderFooter(grid, config) {
 }
 function refresh3(grid, config, previous) {
   grid._config = config;
+  if (grid._editor && !grid._writing) {
+    grid._writing = true;
+    if (!commitEdit(grid, "none"))
+      grid._editor = null;
+    grid._writing = false;
+  }
   evaluate(grid, config);
   grid._selected = new Set(config.selected || []);
   grid._shown = shown(grid, config);
@@ -1181,8 +1466,192 @@ function focusCell(grid, row, col) {
   const target = row === -1 ? grid._order[col].el : dfDollar3(grid._parts.pool).children(".data-grid-row").toArray().find((r) => r._index === row)?.children[col];
   target?.focus({ preventScroll: row === -1 });
 }
+var editableColumn = (grid, col) => {
+  const column = grid._order?.[col];
+  return column?.editable ? column : null;
+};
+var editContext = (grid, record, column) => ({
+  record,
+  field: column.field,
+  type: column.editor || (column.type === "number" ? "number" : valueType2(record[column.field], column.options ? { options: column.options } : null)),
+  rules: { ...column.rules, ...column.options ? { options: column.options } : {} },
+  grid
+});
+var rowElOf = (grid, id) => dfDollar3(grid._parts.pool).children(".data-grid-row").toArray().find((r) => grid._shown[r._index]?.row[grid._source.idField] === id);
+function placeEditor(grid, ed) {
+  const col = grid._order.findIndex((c) => c.field === ed.field);
+  const cell = ed.rowEl?.children[col];
+  if (!cell)
+    return;
+  ed.cell = cell;
+  cell.dataset.editing = "";
+  const content = dfDollar3(cell).children(".data-grid-content").get(0);
+  if (content && content !== ed.wrap)
+    content.replaceWith(ed.wrap);
+  else if (!cell.contains(ed.wrap))
+    dfDollar3(cell).append(ed.wrap);
+}
+function openEdit(grid, row, col) {
+  const column = editableColumn(grid, col);
+  const entry = grid._shown?.[row];
+  if (!column || !entry || grid.hasAttribute("data-readonly"))
+    return false;
+  if (grid._editor && !commitEdit(grid, "none"))
+    return false;
+  const record = entry.row;
+  const value = record[column.field];
+  const ctx = editContext(grid, record, column);
+  const custom = grid._sourceOptions?.getEditorFn?.(column.field, value, ctx);
+  if (custom === false)
+    return false;
+  const editor = asEditor2(custom) ?? builtinEditor2(ctx.type, value, ctx.rules, { colorClass: "data-grid-color-input" });
+  focusCell(grid, row, col);
+  const id = record[grid._source.idField];
+  const wrap = document.createElement("span");
+  wrap.className = "data-grid-editor data-grid-content";
+  dfDollar3(wrap).append(editor.el);
+  const ed = { id, field: column.field, column, editor, wrap, value, record, rowEl: rowElOf(grid, id), cell: null };
+  grid._editor = ed;
+  placeEditor(grid, ed);
+  wrap.addEventListener("keydown", (e) => {
+    const act = editorKey2(e, editor);
+    if (!act)
+      return;
+    if (act === "cancel") {
+      e.preventDefault();
+      e.stopPropagation();
+      cancelEdit(grid);
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    commitEdit(grid, act === "commit" ? "stay" : act);
+  });
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commitEdit(grid, "stay");
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (grid._editor === ed && !wrap.contains(document.activeElement))
+        commitEdit(grid, "none");
+    }, 0);
+  });
+  focusEditor2(editor);
+  return true;
+}
+function cancelEdit(grid, focus = true) {
+  const ed = grid._editor;
+  if (!ed)
+    return;
+  grid._editor = null;
+  grid._gen++;
+  renderRows2(grid);
+  if (focus)
+    focusRecord(grid, ed.id, ed.field);
+}
+function focusRecord(grid, id, field, by = 0) {
+  const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+  const col = grid._order.findIndex((c) => c.field === field);
+  if (row < 0 || col < 0)
+    return;
+  if (!by)
+    return focusCell(grid, row, col);
+  const editable = grid._order.map((c, i) => c.editable ? i : -1).filter((i) => i >= 0);
+  let at = editable.indexOf(col) + by;
+  let r = row;
+  if (at >= editable.length)
+    [at, r] = [0, row + 1];
+  if (at < 0)
+    [at, r] = [editable.length - 1, row - 1];
+  if (r < 0 || r >= grid._shown.length)
+    return focusCell(grid, row, col);
+  openEdit(grid, r, editable[at]);
+}
+function showEditProblem(ed, problem) {
+  const control = editorControl2(ed.editor);
+  control.setAttribute("aria-invalid", "true");
+  let note = dfDollar3(ed.wrap).children(".data-grid-error").get(0);
+  if (!note) {
+    note = document.createElement("span");
+    note.className = "data-grid-error";
+    note.setAttribute("role", "alert");
+    note.id = `dg-error-${Math.random().toString(36).slice(2, 8)}`;
+    dfDollar3(ed.wrap).append(note);
+    control.setAttribute("aria-describedby", note.id);
+  }
+  dfDollar3(note).text(problem);
+}
+function writeRecord(grid, id, patch) {
+  const idField = grid._source.idField;
+  const rows = grid._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0)
+    return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  grid._source.setRows(next);
+  grid._writing = true;
+  triggerStateChange3(grid, grid.store.value, grid.store.value);
+  grid._writing = false;
+  return record;
+}
+function commitEdit(grid, then = "stay") {
+  const ed = grid._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = editContext(grid, ed.record, ed.column);
+  if (!problem)
+    problem = editorProblem2(ctx.rules, value);
+  if (!problem) {
+    const answer = grid._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    showEditProblem(ed, problem);
+    return false;
+  }
+  grid._editor = null;
+  const oldValue = ed.value;
+  const before = new CustomEvent("data-grid-beforeedit", {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.record, field: ed.field, value, oldValue }
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !grid.dispatchEvent(before)) {
+    grid._gen++;
+    renderRows2(grid);
+  } else {
+    const record = writeRecord(grid, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+      bubbles: true,
+      detail: { record, field: ed.field, value, oldValue }
+    }));
+  }
+  if (then === "stay")
+    focusRecord(grid, ed.id, ed.field);
+  else if (then === "next" || then === "prev")
+    focusRecord(grid, ed.id, ed.field, then === "next" ? 1 : -1);
+  return true;
+}
 function onKeydown2(grid, e) {
-  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu"))
+  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu, .data-grid-editor"))
     return;
   if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
     return;
@@ -1265,7 +1734,16 @@ function onKeydown2(grid, e) {
       selectAll(grid);
       next = [row, col];
       break;
+    case "F2":
+      if (row < 0 || !openEdit(grid, row, col))
+        return;
+      e.preventDefault();
+      return;
     case "Enter":
+      if (row >= 0 && !e.shiftKey && editableColumn(grid, col) && openEdit(grid, row, col)) {
+        e.preventDefault();
+        return;
+      }
       if (row === -1) {
         const column = grid._order[col];
         if (column.sortable)
@@ -1287,7 +1765,7 @@ function onKeydown2(grid, e) {
 }
 function onClick2(grid, e) {
   const t = e.target;
-  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer"))
+  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer, .data-grid-editor"))
     return;
   const menuButton = t.closest(".data-grid-menu-button");
   if (menuButton) {
@@ -1831,7 +2309,31 @@ df$3.dataGrid = {
     const filtering = (configOf2(grid).filters || []).length > 0;
     query2(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });
   },
-  resetColumns: (target) => resetColumns(resolve2(target))
+  resetColumns: (target) => resetColumns(resolve2(target)),
+  edit(target, id, field) {
+    const grid = resolve2(target);
+    const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+    const col = grid._order.findIndex((c) => c.field === field);
+    if (row < 0 || col < 0)
+      return false;
+    focusCell(grid, row, col);
+    return openEdit(grid, row, col);
+  },
+  commit: (target) => commitEdit(resolve2(target)),
+  cancel: (target) => cancelEdit(resolve2(target)),
+  update(target, id, patch) {
+    const grid = resolve2(target);
+    const old = grid._source.rows.find((r) => r[grid._source.idField] === id);
+    if (!old)
+      return null;
+    const record = writeRecord(grid, id, patch);
+    for (const field of Object.keys(patch))
+      grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+        bubbles: true,
+        detail: { record, field, value: patch[field], oldValue: old[field] }
+      }));
+    return record;
+  }
 };
 function init3() {
   dfDollar3(".data-grid:not([data-init])").toArray().forEach((grid) => {
@@ -1923,6 +2425,13 @@ function init3() {
         openMenu(grid, column);
     });
     grid.addEventListener("dblclick", (e) => {
+      const cell = e.target.closest(".data-grid-cell");
+      const rowEl = cell?.closest(".data-grid-row");
+      if (cell && rowEl && grid._parts.pool.contains(rowEl) && !cell.hasAttribute("data-editing")) {
+        if (openEdit(grid, rowEl._index, [...rowEl.children].indexOf(cell)))
+          e.preventDefault();
+        return;
+      }
       const handle = e.target.closest(".data-grid-resizer");
       if (!handle)
         return;
@@ -2422,5 +2931,5 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-//# debugId=FDAB1EF5938041CF64756E2164756E21
+//# debugId=8DCB199222B5B71064756E2164756E21
 //# sourceMappingURL=big-data.js.map

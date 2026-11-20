@@ -4,8 +4,22 @@
     {
       "version": "unreleased",
       "created": [
+        "desktop",
+        "desktop-manager",
+        "desktop-modern",
+        "desktop-windows-7",
+        "desktop-windows-95",
+        "desktop-windows-98",
+        "desktop-windows-xp",
+        "logon",
+        "property-tree",
         "scaffold-calendar",
         "scaffold-workflow-studio",
+        "start-button",
+        "start-menu",
+        "taskbar",
+        "tray",
+        "window-manager",
         "workflow",
         "workflow-editing",
         "workflow-formats",
@@ -16,6 +30,7 @@
       ],
       "updated": [
         "application-scaffolds",
+        "border-layout",
         "button",
         "calendar",
         "code-example",
@@ -25,12 +40,22 @@
         "index",
         "property-grid",
         "routing",
+        "scaffold-desktop",
         "scaffold-notes",
         "system-in-numbers",
+        "text-rotate",
         "translation",
-        "tree-grid"
+        "tree-grid",
+        "window"
       ],
       "examples": {
+        "border-layout": {
+          "created": [
+            "Deep navigation: levels side by side",
+            "Levels on the east side"
+          ],
+          "updated": []
+        },
         "calendar": {
           "created": [
             "Week numbers"
@@ -39,6 +64,8 @@
         },
         "data-grid": {
           "created": [
+            "Inline editing",
+            "Custom editors",
             "Projection: computed columns and totals",
             "Aggregation: a report that follows the grid",
             "Arranging columns"
@@ -47,6 +74,8 @@
         },
         "data-tree": {
           "created": [
+            "Custom editors",
+            "Inline editing",
             "One open way",
             "Aggregated branches: 250,000 requests"
           ],
@@ -57,6 +86,12 @@
             "A property list"
           ],
           "updated": []
+        },
+        "scaffold-desktop": {
+          "created": [],
+          "updated": [
+            "Desktop"
+          ]
         },
         "scaffold-notes": {
           "created": [],
@@ -69,6 +104,12 @@
           "updated": [
             "Design System Report"
           ]
+        },
+        "text-rotate": {
+          "created": [
+            "Twenty lines"
+          ],
+          "updated": []
         },
         "tree-grid": {
           "created": [

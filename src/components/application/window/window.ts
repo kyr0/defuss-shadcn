@@ -129,16 +129,20 @@ function moveTo(w, x, y) {
   return { x: Math.round(x), y: Math.round(y) };
 }
 
-/** Raises a window above every other and marks it the active one. */
+/** The desktop a window belongs to: its nearest window manager or window desktop, else the page. */
+const deskOf = (w) => w.parentElement?.closest('.window-manager, .window-desktop') ?? document;
+
+/** Raises a window above every other and marks it the active one of its desktop. */
 function raise(w) {
   if (!w.open) return;
   if (w.hasAttribute('data-active') && Number(w.style.zIndex) === topZ) return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar('.window[data-active]')
+  dfDollar(deskOf(w))
+    .find('.window[data-active]')
     .toArray()
     .forEach((o) => {
-      if (o !== w) o.removeAttribute('data-active');
+      if (o !== w && deskOf(o) === deskOf(w)) o.removeAttribute('data-active');
     });
   w.setAttribute('data-active', '');
   // Fires when a window comes to the front - its title.
@@ -158,9 +162,13 @@ function showQuietly(w) {
   else if (w.contains(document.activeElement)) (document.activeElement as HTMLElement).blur();
 }
 
-/** Hands "active" to the front-most open window left (after one closed). */
-function activateTopmost() {
-  const open = Array.from(dfDollar('.window[open]').toArray());
+/** Hands "active" to the front-most open window left on the desktop of the one that closed. */
+function activateTopmost(closed) {
+  const desk = deskOf(closed);
+  const open = dfDollar(desk)
+    .find('.window[open]')
+    .toArray()
+    .filter((o) => deskOf(o) === desk);
   if (!open.length) return;
   const top = open.reduce((a, b) => (Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a));
   raise(top);
@@ -359,7 +367,7 @@ function init() {
         w.removeAttribute('data-active');
         w.removeAttribute('data-maximized');
         w.removeAttribute('data-minimized');
-        activateTopmost();
+        activateTopmost(w);
       });
 
       // el.store + el.api (AGENTS.md "State through stores")
@@ -384,10 +392,13 @@ function init() {
         .attr('aria-label', initial === 'minimized' ? 'Restore' : 'Minimize');
       if (w.open) {
         w.style.zIndex = String(++topZ);
-        // the last authored open window starts active
-        dfDollar('.window[data-active]')
+        // the last authored open window of its desktop starts active
+        dfDollar(deskOf(w))
+          .find('.window[data-active]')
           .toArray()
-          .forEach((o) => o.removeAttribute('data-active'));
+          .forEach((o) => {
+            if (deskOf(o) === deskOf(w)) o.removeAttribute('data-active');
+          });
         w.setAttribute('data-active', '');
       }
     });
@@ -634,10 +645,16 @@ export const windowActions = {
     return w;
   },
   /**
-   * The window in front.
-   * @returns the active open window, undefined when none is open
+   * The window in front: of the active windows (one per desktop), the one raised last.
+   * @returns the front-most active open window, undefined when none is open
    */
-  active: (): HTMLDialogElement | undefined => dfDollar<HTMLDialogElement>('.window[open][data-active]').get(0),
+  active: (): HTMLDialogElement | undefined =>
+    dfDollar<HTMLDialogElement>('.window[open][data-active]')
+      .toArray()
+      .reduce<HTMLDialogElement | undefined>(
+        (a, b) => (!a || Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a),
+        undefined,
+      ),
   list,
   cascade,
   tile,

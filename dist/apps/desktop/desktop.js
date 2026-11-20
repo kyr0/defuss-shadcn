@@ -2290,6 +2290,174 @@ function bindMedia(root, prefix, report) {
   delegate(prefix);
   mediaPaint(root, prefix);
 }
+// src/shared/editors.ts
+var isObject = (v) => v !== null && typeof v === "object";
+function valueType(value, rules) {
+  if (rules?.type)
+    return rules.type;
+  if (rules?.options)
+    return "enum";
+  if (value === null)
+    return "null";
+  if (Array.isArray(value))
+    return "array";
+  if (typeof value === "object")
+    return "object";
+  if (typeof value === "boolean")
+    return "boolean";
+  if (typeof value === "number")
+    return "number";
+  if (typeof value === "string") {
+    if (/^#[0-9a-f]{6}$/i.test(value))
+      return "color";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
+      return "date";
+    if (value.includes(`
+`))
+      return "text";
+  }
+  return "string";
+}
+function builtinEditor(type, value, rules, options = {}) {
+  const dfDollar = defussQuery();
+  const size = options.size ?? "xs";
+  if (type === "boolean") {
+    const el = document.createElement("input");
+    el.type = "checkbox";
+    el.className = "switch";
+    el.setAttribute("role", "switch");
+    el.checked = !!value;
+    return { el, getValue: () => el.checked, immediate: true };
+  }
+  if (type === "enum") {
+    const el = document.createElement("select");
+    el.className = "select";
+    el.dataset.size = size;
+    const choices = rules?.options ?? [];
+    for (const opt of choices) {
+      const o = document.createElement("option");
+      const [v, label] = isObject(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
+      o.value = String(v);
+      dfDollar(o).text(String(label));
+      if (v === value)
+        o.selected = true;
+      el.append(o);
+    }
+    const values = choices.map((o) => isObject(o) ? o.value : o);
+    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
+  }
+  if (type === "text" || type === "object" || type === "array" || type === "json") {
+    const el = document.createElement("textarea");
+    el.className = "textarea";
+    el.rows = type === "text" ? 3 : 5;
+    const json = type !== "text";
+    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
+    return {
+      el,
+      multiline: true,
+      getValue: () => json ? JSON.parse(el.value) : el.value,
+      validate: () => {
+        if (!json)
+          return "";
+        try {
+          JSON.parse(el.value);
+          return "";
+        } catch (error) {
+          return String(error.message ?? error);
+        }
+      }
+    };
+  }
+  const el = document.createElement("input");
+  el.className = type === "color" ? options.colorClass ?? "" : "input";
+  if (type !== "color")
+    el.dataset.size = size;
+  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
+  if (type === "number") {
+    el.step = String(rules?.step ?? "any");
+    if (rules?.min != null)
+      el.min = String(rules.min);
+    if (rules?.max != null)
+      el.max = String(rules.max);
+    el.inputMode = "decimal";
+  }
+  el.value = value == null ? "" : String(value);
+  return {
+    el,
+    immediate: type === "color" || type === "date",
+    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
+    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
+  };
+}
+function asEditor(custom) {
+  if (!custom)
+    return null;
+  if (custom instanceof HTMLElement) {
+    const el = custom;
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
+  }
+  if (isObject(custom) && custom.el instanceof HTMLElement && typeof custom.getValue === "function")
+    return custom;
+  return null;
+}
+function editorControl(editor) {
+  const sel = "input, select, textarea, button, [tabindex]";
+  return editor.el.matches?.(sel) ? editor.el : defussQuery()(editor.el).find(sel).get(0) ?? editor.el;
+}
+function focusEditor(editor) {
+  const target = editorControl(editor);
+  (editor.focus ?? (() => target.focus?.()))();
+  if (target.select && !["checkbox", "color", "date", "range"].includes(target.type))
+    target.select();
+}
+function editorProblem(rules, value) {
+  if (!rules)
+    return "";
+  const say = (fallback) => rules.message || fallback;
+  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
+  if (rules.required && empty)
+    return say("Required");
+  if (empty)
+    return "";
+  if (typeof value === "number") {
+    if (Number.isNaN(value))
+      return say("Not a number");
+    if (rules.integer && !Number.isInteger(value))
+      return say("Must be a whole number");
+    if (rules.min != null && value < rules.min)
+      return say(`Must be at least ${rules.min}`);
+    if (rules.max != null && value > rules.max)
+      return say(`Must be at most ${rules.max}`);
+  }
+  if (typeof value === "string") {
+    if (rules.minLength != null && value.length < rules.minLength)
+      return say(`At least ${rules.minLength} characters`);
+    if (rules.maxLength != null && value.length > rules.maxLength)
+      return say(`At most ${rules.maxLength} characters`);
+    if (rules.pattern && !new RegExp(`^(?:${rules.pattern})$`).test(value))
+      return say("Does not match the expected format");
+  }
+  if (Array.isArray(value)) {
+    if (rules.minItems != null && value.length < rules.minItems)
+      return say(`At least ${rules.minItems}`);
+    if (rules.maxItems != null && value.length > rules.maxItems)
+      return say(`At most ${rules.maxItems}`);
+  }
+  return "";
+}
+function editorKey(e, editor) {
+  if (e.key === "Escape")
+    return "cancel";
+  if (e.key === "Enter" && (!(editor.multiline || editor.ownsEnter) || e.metaKey || e.ctrlKey))
+    return "commit";
+  if (e.key === "Tab")
+    return e.shiftKey ? "prev" : "next";
+  return null;
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5146,6 +5314,13 @@ shadcn.shared = {
   sheetUrl,
   mathClone,
   mathText,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -6735,14 +6910,386 @@ function init5() {
 init5();
 new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
-// src/components/overlays/dialog/dialog.ts
+// src/components/desktop/desktop-manager/desktop-manager.ts
 var df$6 = defussGlobals();
 var dfDollar6 = defussQuery();
-var dialogStates = ["default", "open"];
-function applyMarkup6(dialog, stateName) {
-  dfDollar6(dialog).attr("open", stateName === "open" ? "" : null);
+var desktopManagerStates = ["default", "selected"];
+var SLOP = 4;
+var resolve = (target) => typeof target === "string" ? dfDollar6("#" + CSS.escape(target)).get(0) ?? dfDollar6(target).get(0) : target;
+var icons = (m) => dfDollar6(m).find(":scope > .desktop-icon").toArray();
+var valueOf = (i) => i.dataset.value ?? dfDollar6(i).find(".desktop-icon-label").text().trim();
+var selectedOf = (m) => icons(m).filter((i) => i.getAttribute("aria-selected") === "true");
+function applyMarkup6(m, stateName, values = []) {
+  const on = new Set(stateName === "selected" ? values : []);
+  for (const i of icons(m))
+    dfDollar6(i).attr("aria-selected", on.has(valueOf(i)) ? "true" : "false");
 }
-function triggerStateChange6(dialog, stateName, _config) {
+function triggerStateChange6(m, stateName, config) {
+  applyMarkup6(m, stateName, config.values ?? []);
+  const first = selectedOf(m)[0];
+  if (first)
+    setCurrent(m, first, false);
+}
+var desktopManagerApi = componentState({
+  component: "desktop-manager",
+  states: desktopManagerStates,
+  events: ["desktop-select"],
+  apply: (m, state) => triggerStateChange6(m, state.name, state.config),
+  read: (m) => {
+    const values = selectedOf(m).map(valueOf);
+    return values.length ? { name: "selected", config: { values } } : { name: "default", config: {} };
+  },
+  markup: (el, state) => applyMarkup6(el, state.name, state.config.values ?? [])
+});
+df$6.desktopManagerApi = desktopManagerApi;
+df$6.desktopManagerStates = desktopManagerStates;
+function setCurrent(m, icon, focus = true) {
+  for (const i of icons(m))
+    i.tabIndex = i === icon ? 0 : -1;
+  if (focus)
+    icon.focus({ preventScroll: true });
+}
+function emit(m, type, values) {
+  m.dispatchEvent(new CustomEvent(type, { bubbles: true, detail: { values } }));
+}
+function choose(m, list) {
+  const before = selectedOf(m).map(valueOf).join(`
+`);
+  const on = new Set(list);
+  for (const i of icons(m))
+    i.setAttribute("aria-selected", on.has(i) ? "true" : "false");
+  const values = selectedOf(m).map(valueOf);
+  if (values.join(`
+`) !== before)
+    m.dispatchEvent(new CustomEvent("desktop-select", { bubbles: true, detail: { values } }));
+}
+var hits = (a, b) => !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+function band(m, down) {
+  const box = () => m.getBoundingClientRect();
+  const base = down.ctrlKey || down.metaKey ? selectedOf(m) : [];
+  const { clientX: x0, clientY: y0 } = down;
+  let el = null;
+  m.setPointerCapture(down.pointerId);
+  const move = (e) => {
+    if (!el) {
+      if (Math.hypot(e.clientX - x0, e.clientY - y0) < SLOP)
+        return;
+      el = document.createElement("div");
+      el.className = "desktop-manager-band";
+      m.append(el);
+      m.setAttribute("data-selecting", "");
+    }
+    const b = box();
+    const left = Math.min(x0, e.clientX), top = Math.min(y0, e.clientY);
+    const w = Math.abs(e.clientX - x0), h = Math.abs(e.clientY - y0);
+    el.style.left = `${left - b.left + m.scrollLeft}px`;
+    el.style.top = `${top - b.top + m.scrollTop}px`;
+    el.style.width = `${w}px`;
+    el.style.height = `${h}px`;
+    const r = new DOMRect(left, top, w, h);
+    const inside = icons(m).filter((i) => hits(i.getBoundingClientRect(), r));
+    choose(m, [...new Set([...base, ...inside])]);
+  };
+  const up = () => {
+    m.removeEventListener("pointermove", move);
+    m.removeEventListener("pointerup", up);
+    m.removeEventListener("pointercancel", up);
+    if (el) {
+      el.remove();
+      m.removeAttribute("data-selecting");
+      const first = selectedOf(m)[0];
+      if (first)
+        setCurrent(m, first, false);
+    } else if (!base.length)
+      choose(m, []);
+  };
+  m.addEventListener("pointermove", move);
+  m.addEventListener("pointerup", up);
+  m.addEventListener("pointercancel", up);
+}
+function grid(m) {
+  const cs = getComputedStyle(m);
+  const rows = cs.gridTemplateRows.split(" ").filter((x) => x.endsWith("px")).length || 1;
+  const cellH = parseFloat(cs.gridTemplateRows) || 80;
+  const cellW = parseFloat(cs.gridAutoColumns) || 80;
+  const gapY = parseFloat(cs.rowGap) || 0, gapX = parseFloat(cs.columnGap) || 0;
+  return {
+    rows,
+    cellH,
+    cellW,
+    gapY,
+    gapX,
+    padT: parseFloat(cs.paddingTop) || 0,
+    padL: parseFloat(cs.paddingLeft) || 0
+  };
+}
+var cellAt = (g, x, y) => ({
+  row: Math.min(g.rows, Math.max(1, Math.floor((y - g.padT) / (g.cellH + g.gapY)) + 1)),
+  col: Math.max(1, Math.floor((x - g.padL) / (g.cellW + g.gapX)) + 1)
+});
+function dragIcons(m, icon, down) {
+  const { clientX: x0, clientY: y0 } = down;
+  let moving = false;
+  icon.setPointerCapture(down.pointerId);
+  const sel = () => selectedOf(m);
+  const move = (e) => {
+    const dx = e.clientX - x0, dy = e.clientY - y0;
+    if (!moving && Math.hypot(dx, dy) < SLOP)
+      return;
+    moving = true;
+    m.setAttribute("data-dragging", "");
+    for (const i of sel())
+      i.style.translate = `${dx}px ${dy}px`;
+  };
+  const up = (e) => {
+    icon.removeEventListener("pointermove", move);
+    icon.removeEventListener("pointerup", up);
+    icon.removeEventListener("pointercancel", up);
+    if (!moving)
+      return;
+    m.removeAttribute("data-dragging");
+    icon._dmDragged = true;
+    const g = grid(m);
+    const box = m.getBoundingClientRect();
+    const moved = sel();
+    const taken = new Set(icons(m).filter((i) => !moved.includes(i)).map((i) => {
+      const c = cellAt(g, i.offsetLeft + i.offsetWidth / 2, i.offsetTop + i.offsetHeight / 2);
+      return `${c.row}/${c.col}`;
+    }));
+    for (const i of moved) {
+      const r = i.getBoundingClientRect();
+      let c = cellAt(g, r.left + r.width / 2 - box.left + m.scrollLeft, r.top + r.height / 2 - box.top + m.scrollTop);
+      while (taken.has(`${c.row}/${c.col}`))
+        c = c.row < g.rows ? { row: c.row + 1, col: c.col } : { row: 1, col: c.col + 1 };
+      taken.add(`${c.row}/${c.col}`);
+      i.style.translate = "";
+      i.style.gridArea = `${c.row} / ${c.col}`;
+    }
+    if (e.type === "pointercancel")
+      return;
+  };
+  icon.addEventListener("pointermove", move);
+  icon.addEventListener("pointerup", up);
+  icon.addEventListener("pointercancel", up);
+}
+function nearest(m, from, key) {
+  const a = from.getBoundingClientRect();
+  const ax = a.left + a.width / 2, ay = a.top + a.height / 2;
+  let best, bestD = Infinity;
+  for (const i of icons(m)) {
+    if (i === from)
+      continue;
+    const b = i.getBoundingClientRect();
+    const dx = b.left + b.width / 2 - ax, dy = b.top + b.height / 2 - ay;
+    const ahead = key === "ArrowDown" ? dy > 1 : key === "ArrowUp" ? dy < -1 : key === "ArrowRight" ? dx > 1 : dx < -1;
+    if (!ahead)
+      continue;
+    const d = key === "ArrowDown" || key === "ArrowUp" ? Math.abs(dy) + 3 * Math.abs(dx) : Math.abs(dx) + 3 * Math.abs(dy);
+    if (d < bestD) {
+      bestD = d;
+      best = i;
+    }
+  }
+  return best;
+}
+function rename(m, icon) {
+  const label = dfDollar6(icon).find(".desktop-icon-label").get(0);
+  if (!label || label.isContentEditable)
+    return;
+  const old = label.textContent ?? "";
+  label.contentEditable = "true";
+  label.focus();
+  getSelection()?.selectAllChildren(label);
+  const done = (keep) => {
+    label.removeEventListener("keydown", key);
+    label.removeEventListener("blur", blur);
+    label.removeAttribute("contenteditable");
+    const text = (label.textContent ?? "").trim();
+    if (!keep || !text || text === old.trim())
+      label.textContent = old;
+    else
+      m.dispatchEvent(new CustomEvent("desktop-rename", {
+        bubbles: true,
+        detail: { value: valueOf(icon), label: text }
+      }));
+    setCurrent(m, icon);
+  };
+  const key = (e) => {
+    e.stopPropagation();
+    if (e.key === "Enter") {
+      e.preventDefault();
+      done(true);
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      done(false);
+    }
+  };
+  const blur = () => done(false);
+  label.addEventListener("keydown", key);
+  label.addEventListener("blur", blur);
+}
+function bind(m) {
+  m.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || e.target.closest('[contenteditable="true"]'))
+      return;
+    const icon = e.target.closest(".desktop-icon");
+    if (!icon || !m.contains(icon)) {
+      if (e.target === m) {
+        e.preventDefault();
+        m.focus({ preventScroll: true });
+        band(m, e);
+      }
+      return;
+    }
+    e.preventDefault();
+    const sel = selectedOf(m);
+    if (e.shiftKey && m._dmAnchor && m.contains(m._dmAnchor)) {
+      const all = icons(m);
+      const [a, b] = [all.indexOf(m._dmAnchor), all.indexOf(icon)].sort((x, y) => x - y);
+      choose(m, all.slice(a, b + 1));
+    } else if (e.ctrlKey || e.metaKey) {
+      choose(m, sel.includes(icon) ? sel.filter((i) => i !== icon) : [...sel, icon]);
+      m._dmAnchor = icon;
+    } else {
+      if (!sel.includes(icon))
+        choose(m, [icon]);
+      else
+        icon._dmNarrow = sel.length > 1;
+      m._dmAnchor = icon;
+    }
+    setCurrent(m, icon);
+    if (icon.getAttribute("aria-selected") === "true")
+      dragIcons(m, icon, e);
+  });
+  m.addEventListener("click", (e) => {
+    const icon = e.target.closest(".desktop-icon");
+    if (!icon)
+      return;
+    if (icon._dmNarrow && !icon._dmDragged && !(e.ctrlKey || e.metaKey || e.shiftKey))
+      choose(m, [icon]);
+    icon._dmNarrow = false;
+    icon._dmDragged = false;
+  });
+  m.addEventListener("dblclick", (e) => {
+    const icon = e.target.closest(".desktop-icon");
+    if (icon)
+      emit(m, "desktop-open", [valueOf(icon)]);
+  });
+  m.addEventListener("keydown", (e) => {
+    if (e.target.closest('[contenteditable="true"]'))
+      return;
+    const all = icons(m);
+    const cur = e.target.closest(".desktop-icon");
+    if (e.key === "a" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      choose(m, all);
+      return;
+    }
+    if (e.key === "Escape") {
+      choose(m, []);
+      return;
+    }
+    if (e.key === "Enter" && selectedOf(m).length) {
+      e.preventDefault();
+      emit(m, "desktop-open", selectedOf(m).map(valueOf));
+      return;
+    }
+    if (e.key === "Delete" && selectedOf(m).length) {
+      e.preventDefault();
+      emit(m, "desktop-delete", selectedOf(m).map(valueOf));
+      return;
+    }
+    if (e.key === "F2" && cur) {
+      e.preventDefault();
+      rename(m, cur);
+      return;
+    }
+    if (e.key === " " && cur) {
+      e.preventDefault();
+      const sel = selectedOf(m);
+      if (e.ctrlKey || e.metaKey)
+        choose(m, sel.includes(cur) ? sel.filter((i) => i !== cur) : [...sel, cur]);
+      else
+        choose(m, [cur]);
+      m._dmAnchor = cur;
+      return;
+    }
+    if (!e.key.startsWith("Arrow"))
+      return;
+    e.preventDefault();
+    const from = cur ?? all.find((i) => i.tabIndex === 0) ?? all[0];
+    if (!from)
+      return;
+    const next = cur ? nearest(m, from, e.key) : from;
+    if (!next)
+      return;
+    setCurrent(m, next);
+    if (e.shiftKey) {
+      const anchor = m._dmAnchor && m.contains(m._dmAnchor) ? m._dmAnchor : from;
+      m._dmAnchor = anchor;
+      const [a, b] = [all.indexOf(anchor), all.indexOf(next)].sort((x, y) => x - y);
+      choose(m, all.slice(a, b + 1));
+    } else if (!(e.ctrlKey || e.metaKey)) {
+      choose(m, [next]);
+      m._dmAnchor = next;
+    }
+  });
+  m.addEventListener("focus", () => {
+    const cur = icons(m).find((i) => i.tabIndex === 0);
+    if (cur && document.activeElement === m && !m.hasAttribute("data-selecting"))
+      cur.focus({ preventScroll: true });
+  });
+}
+var select = (target, values) => {
+  const m = resolve(target);
+  if (!m)
+    return [];
+  desktopManagerApi.setState(m, values.length ? "selected" : "default", values.length ? { values } : {});
+  return selectedOf(m).map(valueOf);
+};
+var selected = (target) => {
+  const m = resolve(target);
+  return m ? selectedOf(m).map(valueOf) : [];
+};
+var arrange = (target) => {
+  const m = resolve(target);
+  if (m)
+    for (const i of icons(m)) {
+      i.style.gridArea = "";
+      if (!i.getAttribute("style"))
+        i.removeAttribute("style");
+    }
+};
+var desktopManagerActions = { select, selected, arrange };
+df$6.desktopManager = desktopManagerActions;
+function init6() {
+  dfDollar6(".desktop-manager:not([data-init])").toArray().forEach((m) => {
+    m.dataset.init = "";
+    if (!m.hasAttribute("tabindex"))
+      m.tabIndex = -1;
+    const all = icons(m);
+    for (const i of all)
+      if (!i.hasAttribute("aria-selected"))
+        i.setAttribute("aria-selected", "false");
+    const first = all.find((i) => i.getAttribute("aria-selected") === "true") ?? all[0];
+    if (first)
+      setCurrent(m, first, false);
+    bind(m);
+    bindComponent(m, desktopManagerApi);
+  });
+}
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+
+// src/components/overlays/dialog/dialog.ts
+var df$7 = defussGlobals();
+var dfDollar7 = defussQuery();
+var dialogStates = ["default", "open"];
+function applyMarkup7(dialog, stateName) {
+  dfDollar7(dialog).attr("open", stateName === "open" ? "" : null);
+}
+function triggerStateChange7(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -6758,16 +7305,16 @@ var shown2 = (dialog) => dialog.open ? "open" : "default";
 var dialogApi = componentState({
   component: "dialog",
   states: dialogStates,
-  apply: (dialog, state) => triggerStateChange6(dialog, state.name, state.config),
+  apply: (dialog, state) => triggerStateChange7(dialog, state.name, state.config),
   read: (dialog, state) => ({ name: shown2(dialog), config: state.config }),
-  markup: (el, state) => applyMarkup6(el, state.name)
+  markup: (el, state) => applyMarkup7(el, state.name)
 });
-df$6.dialogApi = dialogApi;
-df$6.dialogStates = dialogStates;
-function init6() {
-  dfDollar6("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
+df$7.dialogApi = dialogApi;
+df$7.dialogStates = dialogStates;
+function init7() {
+  dfDollar7("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const dialog = dfDollar6("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
+    const dialog = dfDollar7("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
     if (!dialog)
       return;
     trigger.addEventListener("click", () => {
@@ -6775,14 +7322,14 @@ function init6() {
       dialog.showModal();
     });
   });
-  dfDollar6("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
-    dfDollar6(dialog).data("init", "");
+  dfDollar7("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
+    dfDollar7(dialog).data("init", "");
     bindComponent(dialog, dialogApi, { name: shown2(dialog), config: {} });
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog)
         dialog.close();
     });
-    dfDollar6(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
+    dfDollar7(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         dialog.close();
       });
@@ -6795,17 +7342,17 @@ function init6() {
     });
   });
 }
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/dropdown/dropdown.ts
-var df$7 = defussGlobals();
-var dfDollar7 = defussQuery();
+var df$8 = defussGlobals();
+var dfDollar8 = defussQuery();
 var dropdownStates = ["default", "open"];
 var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
-var itemsOf = (menu) => Array.from(dfDollar7(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
-var subOf = (trigger) => dfDollar7(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
+var itemsOf = (menu) => Array.from(dfDollar8(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+var subOf = (trigger) => dfDollar8(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
 var rootOf2 = (menu) => {
   let m = menu;
   while (m?.parentElement?.closest(".dropdown-content[popover]"))
@@ -6814,8 +7361,8 @@ var rootOf2 = (menu) => {
 };
 var HOVER_OPEN = 120;
 var HOVER_CLOSE = 220;
-function applyMarkup7(_el, _stateName) {}
-function triggerStateChange7(menu, stateName, _config) {
+function applyMarkup8(_el, _stateName) {}
+function triggerStateChange8(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6830,11 +7377,11 @@ function triggerStateChange7(menu, stateName, _config) {
 var dropdownApi = componentState({
   component: "dropdown",
   states: dropdownStates,
-  apply: (menu, state) => triggerStateChange7(menu, state.name, state.config),
-  markup: (el, state) => applyMarkup7(el, state.name)
+  apply: (menu, state) => triggerStateChange8(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup8(el, state.name)
 });
-df$7.dropdownApi = dropdownApi;
-df$7.dropdownStates = dropdownStates;
+df$8.dropdownApi = dropdownApi;
+df$8.dropdownStates = dropdownStates;
 var anchorSeq = 0;
 function highlight(menu, item, focus = true) {
   itemsOf(menu).forEach((i) => {
@@ -6866,7 +7413,7 @@ function activate(menu, item) {
   }
   if (role === "menuitemradio") {
     const group = item.closest('[role="group"]') ?? menu;
-    dfDollar7(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
+    dfDollar8(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
@@ -6909,7 +7456,7 @@ function wireMenu(menu) {
     return;
   menu._wired = true;
   const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
-  const openSubs = () => Array.from(dfDollar7(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
+  const openSubs = () => Array.from(dfDollar8(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
   menu.addEventListener("mousemove", (e) => {
     if (!own(e))
       return;
@@ -7027,8 +7574,8 @@ function wireMenu(menu) {
   });
 }
 function wireSub(wrap) {
-  const trigger = dfDollar7(wrap).find(":scope > .dropdown-sub-trigger").get(0);
-  const sub = dfDollar7(wrap).find(":scope > .dropdown-sub-content").get(0);
+  const trigger = dfDollar8(wrap).find(":scope > .dropdown-sub-trigger").get(0);
+  const sub = dfDollar8(wrap).find(":scope > .dropdown-sub-content").get(0);
   if (!trigger || !sub || sub._subWired)
     return;
   sub._subWired = true;
@@ -7066,10 +7613,10 @@ function wireSub(wrap) {
     highlight(parent, trigger, false);
   });
 }
-function init7() {
-  dfDollar7("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
+function init8() {
+  dfDollar8("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const menu = dfDollar7("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
+    const menu = dfDollar8("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
     if (!menu)
       return;
     const anchorId = `--dropdown-${menu.id}`;
@@ -7098,26 +7645,26 @@ function init7() {
         });
         const active = document.activeElement;
         const other = active instanceof Element && active !== trigger ? active.closest("[data-dropdown-trigger]") : null;
-        const otherOpen = other ? dfDollar7("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
+        const otherOpen = other ? dfDollar8("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
         if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
           trigger.focus({ preventScroll: true });
       }
     });
     wireMenu(menu);
-    dfDollar7(menu).find(".dropdown-sub").toArray().forEach(wireSub);
+    dfDollar8(menu).find(".dropdown-sub").toArray().forEach(wireSub);
   });
-  dfDollar7(".dropdown-sub").toArray().forEach(wireSub);
-  dfDollar7(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
+  dfDollar8(".dropdown-sub").toArray().forEach(wireSub);
+  dfDollar8(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
     menu.dataset.init = "";
     bindComponent(menu, dropdownApi);
   });
 }
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/language-switcher/language-switcher.ts
-var df$8 = defussGlobals();
-var dfDollar8 = defussQuery();
+var df$9 = defussGlobals();
+var dfDollar9 = defussQuery();
 var languageSwitcherStates = ["default", "open"];
 var SEED = `af Afrikaans|Afrikaans|za
 am Amharic|አማርኛ|et
@@ -7239,7 +7786,7 @@ var ALIAS = { he: "iw", nb: "no", tl: "fil" };
 var settings = {
   flags: "https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/{shape}/{region}.svg"
 };
-var resolve = (t) => typeof t === "string" ? dfDollar8("#" + CSS.escape(t)).get(0) ?? dfDollar8(t).get(0) : t;
+var resolve2 = (t) => typeof t === "string" ? dfDollar9("#" + CSS.escape(t)).get(0) ?? dfDollar9(t).get(0) : t;
 var esc4 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 function partsOf(tag) {
   try {
@@ -7324,7 +7871,7 @@ var languagesOf = (el) => {
   const list = (el.dataset.languages || "en").split(/[\s,]+/).filter(Boolean);
   return list.length ? list : ["en"];
 };
-var valueOf = (el, languages = languagesOf(el)) => {
+var valueOf2 = (el, languages = languagesOf(el)) => {
   const v = (el.dataset.value || "").toLowerCase();
   return languages.find((l) => l.toLowerCase() === v) ?? languages[0];
 };
@@ -7352,7 +7899,7 @@ var CHEVRON = '<svg class="combobox-chevron" aria-hidden="true" width="16" heigh
 function faceHtml(el, tag) {
   const display = el.dataset.display || "label";
   const flag = flagHtml(el, tag) || (display === "icon" ? GLOBE : "");
-  const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf(el)) : nameIn(tag, tag);
+  const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf2(el)) : nameIn(tag, tag);
   return `${flag}${text ? `<span class="language-switcher-label" lang="${esc4(tag)}" dir="${dirOf(tag)}">${esc4(text)}</span>` : ""}`;
 }
 var labelOf = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
@@ -7371,7 +7918,7 @@ var optionInner = (el, tag, ui) => {
 };
 function comboboxHtml(el, uid) {
   const languages = languagesOf(el);
-  const value = valueOf(el, languages);
+  const value = valueOf2(el, languages);
   const search = el.dataset.search || "Search languages...";
   const options = languages.map((tag) => `<div role="option" id="${uid}-${idPart2(tag)}" class="combobox-item language-switcher-option" data-value="${esc4(tag)}" aria-selected="${tag === value}">${optionInner(el, tag, value)}</div>`).join("");
   const icon = (el.dataset.display || "label") === "icon";
@@ -7384,7 +7931,7 @@ function comboboxHtml(el, uid) {
 </div>`;
 }
 function swapHtml(el) {
-  const value = valueOf(el);
+  const value = valueOf2(el);
   return `<label class="swap language-switcher-swap"${el.dataset.swap === "fade" ? "" : ` data-variant="${esc4(el.dataset.swap || "flip")}"`} data-ce-chrome${el.dataset.size ? ` data-size="${esc4(el.dataset.size)}"` : ""}>
 <input type="checkbox" role="button" aria-label="${esc4(swapLabel(el, value))}">
 <span class="swap-off">${faceHtml(el, value)}</span>
@@ -7392,7 +7939,7 @@ function swapHtml(el) {
 </label>`;
 }
 function menuHtml(el) {
-  const value = valueOf(el);
+  const value = valueOf2(el);
   return `<div class="language-switcher-menu" data-ce-chrome>${languagesOf(el).map((tag) => `<button type="button" class="dropdown-item dropdown-radio language-switcher-item" role="menuitemradio" tabindex="-1" aria-checked="${tag === value}" data-value="${esc4(tag)}">${optionInner(el, tag, value)}</button>`).join("")}</div>`;
 }
 var swapLabel = (el, value) => {
@@ -7415,26 +7962,26 @@ var STRUCTURE = [
   "swap"
 ];
 var structureOf = (el) => STRUCTURE.map((k) => el.dataset[k] ?? "").join("|");
-var chromeOf = (el) => dfDollar8(el).children("[data-ce-chrome]").get(0);
+var chromeOf = (el) => dfDollar9(el).children("[data-ce-chrome]").get(0);
 function draw2(el) {
   const uid = el.id ? `${el.id}-ls` : el._lsId ??= `language-switcher-${++sequence}`;
   const focused = el.contains(document.activeElement);
-  dfDollar8(el).children("[data-ce-chrome]").remove();
+  dfDollar9(el).children("[data-ce-chrome]").remove();
   const variant = el.dataset.variant;
-  dfDollar8(el).append(dfDollar8(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
+  dfDollar9(el).append(dfDollar9(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
   el._lsStructure = structureOf(el);
-  el._lsValue = valueOf(el);
+  el._lsValue = valueOf2(el);
   if (focused)
-    dfDollar8(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
+    dfDollar9(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
 }
 var sequence = 0;
 function update(el) {
   if (el._lsStructure !== structureOf(el) || !chromeOf(el))
     return draw2(el);
-  const value = valueOf(el);
+  const value = valueOf2(el);
   const changed = el._lsValue !== value;
   el._lsValue = value;
-  const chrome = dfDollar8(chromeOf(el));
+  const chrome = dfDollar9(chromeOf(el));
   if (el.dataset.variant === "swap") {
     const input = chrome.find(":scope > input").get(0);
     if (changed) {
@@ -7442,7 +7989,7 @@ function update(el) {
       chrome.find(`:scope > ${shown}`).html(faceHtml(el, value));
       chrome.find(`:scope > ${hidden}`).html(faceHtml(el, nextOf(el, value)));
     }
-    dfDollar8(input).attr("aria-label", swapLabel(el, value));
+    dfDollar9(input).attr("aria-label", swapLabel(el, value));
     return;
   }
   if (el.dataset.variant === "menu") {
@@ -7450,7 +7997,7 @@ function update(el) {
       return;
     chrome.find(".language-switcher-item").each((_i, item) => {
       const tag = item.dataset.value || "";
-      dfDollar8(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
+      dfDollar9(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
     });
     return;
   }
@@ -7461,17 +8008,17 @@ function update(el) {
   chrome.find(".combobox-value").html(faceHtml(el, value)).attr("data-placeholder", null);
   chrome.find(".language-switcher-option").each((_i, option) => {
     const tag = option.dataset.value || "";
-    dfDollar8(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
+    dfDollar9(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
   });
 }
-function choose(el, tag, announce = true) {
+function choose2(el, tag, announce = true) {
   const languages = languagesOf(el);
   const next = languages.find((l) => l.toLowerCase() === String(tag).toLowerCase());
   if (!next)
     return false;
-  const previous = valueOf(el, languages);
+  const previous = valueOf2(el, languages);
   if (el.dataset.value !== next)
-    dfDollar8(el).attr("data-value", next);
+    dfDollar9(el).attr("data-value", next);
   update(el);
   if (announce && next !== previous)
     el.dispatchEvent(new CustomEvent("language-change", {
@@ -7480,7 +8027,7 @@ function choose(el, tag, announce = true) {
     }));
   return true;
 }
-var popoverOf = (el) => dfDollar8(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
+var popoverOf = (el) => dfDollar9(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
 var isOpen = (el) => {
   try {
     return !!popoverOf(el)?.matches(":popover-open");
@@ -7488,20 +8035,20 @@ var isOpen = (el) => {
     return false;
   }
 };
-function applyMarkup8(el, _name, config) {
+function applyMarkup9(el, _name, config) {
   const languages = languagesOf(el);
   const value = languages.find((l) => l.toLowerCase() === String(config?.value ?? "").toLowerCase());
   if (value)
-    dfDollar8(el).attr("data-value", value);
+    dfDollar9(el).attr("data-value", value);
 }
-function triggerStateChange8(el, name, config) {
+function triggerStateChange9(el, name, config) {
   if (config?.value)
-    choose(el, config.value, false);
+    choose2(el, config.value, false);
   const popover = popoverOf(el);
   if (!popover)
     return;
   if (name === "open" && !isOpen(el))
-    dfDollar8(el).find(".combobox-trigger").get(0)?.click();
+    dfDollar9(el).find(".combobox-trigger").get(0)?.click();
   else if (name !== "open" && isOpen(el))
     popover.hidePopover();
 }
@@ -7509,57 +8056,57 @@ var languageSwitcherApi = componentState({
   component: "language-switcher",
   states: languageSwitcherStates,
   mergeConfig: true,
-  apply: (el, state) => triggerStateChange8(el, state.name, state.config),
-  read: (el) => ({ name: isOpen(el) ? "open" : "default", config: { value: valueOf(el) } }),
-  markup: (el, state) => applyMarkup8(el, state.name, state.config)
+  apply: (el, state) => triggerStateChange9(el, state.name, state.config),
+  read: (el) => ({ name: isOpen(el) ? "open" : "default", config: { value: valueOf2(el) } }),
+  markup: (el, state) => applyMarkup9(el, state.name, state.config)
 });
-df$8.languageSwitcherApi = languageSwitcherApi;
-df$8.languageSwitcherStates = languageSwitcherStates;
-function init8() {
-  dfDollar8(".language-switcher:not([data-init])").each((_i, el) => {
+df$9.languageSwitcherApi = languageSwitcherApi;
+df$9.languageSwitcherStates = languageSwitcherStates;
+function init9() {
+  dfDollar9(".language-switcher:not([data-init])").each((_i, el) => {
     el.dataset.init = "";
-    if (!el.dataset.value || valueOf(el) !== el.dataset.value)
-      dfDollar8(el).attr("data-value", valueOf(el));
+    if (!el.dataset.value || valueOf2(el) !== el.dataset.value)
+      dfDollar9(el).attr("data-value", valueOf2(el));
     draw2(el);
-    dfDollar8(el).on("combobox:change", (e) => {
+    dfDollar9(el).on("combobox:change", (e) => {
       const value = e.detail?.values?.[0];
       el._lsValue = "";
-      if (!value || !choose(el, value))
+      if (!value || !choose2(el, value))
         update(el);
-      languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+      languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf2(el) });
     });
-    dfDollar8(el).on("change", (e) => {
+    dfDollar9(el).on("change", (e) => {
       const input = e.target;
       if (!input.matches(".language-switcher-swap > input") || input.closest(".language-switcher") !== el)
         return;
-      choose(el, nextOf(el, valueOf(el)));
-      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+      choose2(el, nextOf(el, valueOf2(el)));
+      languageSwitcherApi.commit(el, "default", { value: valueOf2(el) });
     });
     const pick = (item) => {
       const it = item;
       if (!it?.matches?.(".language-switcher-item") || it.closest(".language-switcher") !== el)
         return;
       el._lsValue = "";
-      if (!choose(el, it.dataset.value || ""))
+      if (!choose2(el, it.dataset.value || ""))
         update(el);
-      languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
+      languageSwitcherApi.commit(el, "default", { value: valueOf2(el) });
     };
-    dfDollar8(el).on("dropdown:select", (e) => pick(e.detail?.item));
-    dfDollar8(el).on("click", (e) => {
+    dfDollar9(el).on("dropdown:select", (e) => pick(e.detail?.item));
+    dfDollar9(el).on("click", (e) => {
       const item = e.target?.closest?.(".language-switcher-item");
       if (item && !item.closest('[role="menu"]'))
         pick(item);
     });
-    dfDollar8(el).on("keydown", (e) => {
+    dfDollar9(el).on("keydown", (e) => {
       const input = e.target;
       if (e.key !== "Enter" || !input.matches?.(".language-switcher-swap > input"))
         return;
       e.preventDefault();
       input.click();
     });
-    el.addEventListener("toggle", () => languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) }), true);
+    el.addEventListener("toggle", () => languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf2(el) }), true);
     new MutationObserver(() => update(el)).observe(el, { attributes: true, attributeFilter: OBSERVED });
-    bindComponent(el, languageSwitcherApi, { name: "default", config: { value: valueOf(el) } });
+    bindComponent(el, languageSwitcherApi, { name: "default", config: { value: valueOf2(el) } });
   });
 }
 var OBSERVED = [
@@ -7568,24 +8115,24 @@ var OBSERVED = [
   "aria-label",
   ...STRUCTURE.map((k) => "data-" + k.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()))
 ];
-df$8.languageSwitcher = {
+df$9.languageSwitcher = {
   languages: () => LANGUAGES.map((l) => ({ ...l })),
   name: (tag, locale) => nameIn(tag, locale ?? tag),
   region: (tag) => partsOf(tag).region || seedOf(tag)?.region || "",
   choose: (target, tag) => {
-    const el = resolve(target);
-    if (!el || !choose(el, tag))
+    const el = resolve2(target);
+    if (!el || !choose2(el, tag))
       return false;
-    languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+    languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf2(el) });
     return true;
   },
   bind: (target, i18n) => {
-    const el = resolve(target);
+    const el = resolve2(target);
     if (!el || !i18n)
       return () => {};
     const follow = (locale) => {
-      if (locale && locale.toLowerCase() !== valueOf(el).toLowerCase() && choose(el, locale, false))
-        languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
+      if (locale && locale.toLowerCase() !== valueOf2(el).toLowerCase() && choose2(el, locale, false))
+        languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf2(el) });
     };
     follow(i18n.locale);
     const onChange = (e) => {
@@ -7605,15 +8152,149 @@ df$8.languageSwitcher = {
       settings.flags = options.flags;
   }
 };
-init8();
-new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+
+// src/components/desktop/logon/logon.ts
+var df$10 = defussGlobals();
+var dfDollar10 = defussQuery();
+var logonStates = ["default", "signing-in", "error", "signed-in"];
+var resolve3 = (target) => typeof target === "string" ? dfDollar10("#" + CSS.escape(target)).get(0) ?? dfDollar10(target).get(0) : target;
+var users = (el) => dfDollar10(el).find(".logon-user").toArray();
+var nameOf = (u) => (dfDollar10(u).find(".logon-name").get(0)?.textContent ?? u.textContent ?? "").trim();
+function applyMarkup10(el, stateName, config) {
+  const user = stateName === "default" ? "" : config.user ?? "";
+  for (const u of users(el))
+    dfDollar10(u).attr("aria-pressed", user && u.dataset.user === user ? "true" : "false");
+  dfDollar10(el).attr("data-user", user || null);
+  dfDollar10(el).attr("data-signed-in", stateName === "signed-in" ? "" : null);
+  const form = dfDollar10(el).find(".logon-form");
+  form.attr("hidden", stateName === "signing-in" || stateName === "error" ? null : "");
+  const picked = users(el).find((u) => u.dataset.user === user);
+  form.find(".logon-for").text(picked ? nameOf(picked) : "");
+  const err = dfDollar10(el).find(".logon-error");
+  err.attr("hidden", stateName === "error" ? null : "");
+  err.text(stateName === "error" ? config.message ?? "" : "");
+  form.find('input[type="password"]').attr("aria-invalid", stateName === "error" ? "true" : null);
+}
+function triggerStateChange10(el, stateName, config) {
+  applyMarkup10(el, stateName, config);
+  el.dataset.stateName = stateName;
+  const input = dfDollar10(el).find('.logon-form input[type="password"]').get(0);
+  if (stateName === "signing-in" || stateName === "error") {
+    if (input) {
+      if (stateName === "signing-in")
+        input.value = "";
+      requestAnimationFrame(() => input.focus());
+      if (stateName === "error")
+        input.select();
+    }
+  } else if (input)
+    input.value = "";
+  if (stateName === "default")
+    users(el)[0]?.focus({ preventScroll: true });
+}
+var logonApi = componentState({
+  component: "logon",
+  states: logonStates,
+  apply: (el, state) => triggerStateChange10(el, state.name, state.config),
+  read: (el) => {
+    const name = el.dataset.stateName || "default";
+    if (name === "default")
+      return { name, config: {} };
+    const user = el.dataset.user ?? "";
+    if (name !== "error")
+      return { name, config: { user } };
+    return { name, config: { user, message: dfDollar10(el).find(".logon-error").text() } };
+  },
+  markup: (el, state) => applyMarkup10(el, state.name, state.config)
+});
+df$10.logonApi = logonApi;
+df$10.logonStates = logonStates;
+function pickUser(el, u) {
+  const user = u.dataset.user ?? nameOf(u);
+  if (u.hasAttribute("data-no-password")) {
+    logonApi.setState(el, "signing-in", { user });
+    submit(el, user, "");
+  } else
+    logonApi.setState(el, "signing-in", { user });
+}
+function submit(el, user, password) {
+  el.dispatchEvent(new CustomEvent("logon-submit", { bubbles: true, detail: { user, password } }));
+}
+function bind2(el) {
+  el.addEventListener("click", (e) => {
+    const u = e.target.closest(".logon-user");
+    if (u)
+      pickUser(el, u);
+    const p = e.target.closest("[data-logon-power]");
+    if (p)
+      el.dispatchEvent(new CustomEvent("logon-power", {
+        bubbles: true,
+        detail: { action: p.dataset.logonPower ?? "" }
+      }));
+  });
+  dfDollar10(el).find(".logon-form").on("submit", (e) => {
+    e.preventDefault();
+    const input = dfDollar10(el).find('.logon-form input[type="password"]').get(0);
+    submit(el, el.dataset.user ?? "", input?.value ?? "");
+  });
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && e.target.closest(".logon-form")) {
+      e.preventDefault();
+      logonApi.setState(el, "default", {});
+    }
+    const u = e.target.closest(".logon-user");
+    if (!u || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key))
+      return;
+    const all = users(el);
+    const next = all[(all.indexOf(u) + (e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1) + all.length) % all.length];
+    e.preventDefault();
+    next.focus();
+  });
+}
+var fail = (target, message) => {
+  const el = resolve3(target);
+  if (el)
+    logonApi.setState(el, "error", { user: el.dataset.user ?? "", message });
+  return el;
+};
+var done = (target) => {
+  const el = resolve3(target);
+  if (el)
+    logonApi.setState(el, "signed-in", { user: el.dataset.user ?? "" });
+  return el;
+};
+var lock = (target) => {
+  const el = resolve3(target);
+  if (el)
+    logonApi.setState(el, "default", {});
+  return el;
+};
+var logonActions = { fail, done, lock };
+df$10.logon = logonActions;
+function init10() {
+  dfDollar10(".logon:not([data-init])").toArray().forEach((el) => {
+    el.dataset.init = "";
+    for (const u of users(el))
+      if (!u.hasAttribute("aria-pressed"))
+        u.setAttribute("aria-pressed", "false");
+    el.dataset.stateName = el.hasAttribute("data-signed-in") ? "signed-in" : "default";
+    if (el.dataset.stateName === "signed-in")
+      applyMarkup10(el, "signed-in", { user: el.dataset.user ?? "" });
+    bind2(el);
+    bindComponent(el, logonApi);
+  });
+}
+init10();
+new MutationObserver(init10).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/menubar/menubar.ts
-var df$9 = defussGlobals();
-var dfDollar9 = defussQuery();
+var df$11 = defussGlobals();
+var dfDollar11 = defussQuery();
 var menubarStates = ["default", "open"];
-var triggersOf = (bar) => Array.from(dfDollar9(bar).find(".menubar-trigger").toArray()).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
-var menuOf = (trigger) => dfDollar9("#" + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute("popovertarget") || "")).get(0);
+var triggersOf = (bar) => Array.from(dfDollar11(bar).find(".menubar-trigger").toArray()).filter((t) => t.closest(".menubar") === bar && !t.disabled && t.getAttribute("aria-disabled") !== "true");
+var menuOf = (trigger) => dfDollar11("#" + CSS.escape(trigger.dataset.dropdownTrigger || trigger.getAttribute("popovertarget") || "")).get(0);
 var openMenuOf = (bar) => triggersOf(bar).map(menuOf).find((m) => m?.matches(":popover-open")) ?? null;
 function setRoving(bar, active) {
   triggersOf(bar).forEach((t) => t.setAttribute("tabindex", t === active ? "0" : "-1"));
@@ -7634,14 +8315,14 @@ function openMenu(bar, trigger, quiet = false) {
   safeShowPopover(menu);
 }
 function focusItem(menu, last = false) {
-  const own = Array.from(dfDollar9(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute("aria-disabled") !== "true");
+  const own = Array.from(dfDollar11(menu).find('[role^="menuitem"]').toArray()).filter((x) => x.closest('[role="menu"]') === menu && !x.disabled && x.getAttribute("aria-disabled") !== "true");
   own.forEach((x) => x.removeAttribute("data-highlighted"));
   const item = last ? own.at(-1) : own[0];
   item?.setAttribute("data-highlighted", "");
   item?.focus({ preventScroll: true });
 }
-function applyMarkup9(_el, _stateName) {}
-function triggerStateChange9(bar, stateName, config) {
+function applyMarkup11(_el, _stateName) {}
+function triggerStateChange11(bar, stateName, config) {
   switch (stateName) {
     case "default": {
       const open = openMenuOf(bar);
@@ -7666,18 +8347,18 @@ var menubarApi = componentState({
   states: menubarStates,
   apply: (bar, state) => {
     bar.dataset.stateName = state.name;
-    triggerStateChange9(bar, state.name, state.config);
+    triggerStateChange11(bar, state.name, state.config);
   },
   read: (bar, state) => {
     const open = openMenuOf(bar);
     return { name: open ? "open" : "default", config: { ...state.config, menu: open?.id ?? null } };
   },
-  markup: (el, state) => applyMarkup9(el, state.name)
+  markup: (el, state) => applyMarkup11(el, state.name)
 });
-df$9.menubarApi = menubarApi;
-df$9.menubarStates = menubarStates;
-function init9() {
-  dfDollar9(".menubar:not([data-init])").toArray().forEach((bar) => {
+df$11.menubarApi = menubarApi;
+df$11.menubarStates = menubarStates;
+function init11() {
+  dfDollar11(".menubar:not([data-init])").toArray().forEach((bar) => {
     bar.dataset.init = "";
     if (!bar.hasAttribute("role"))
       bar.setAttribute("role", "menubar");
@@ -7777,15 +8458,15 @@ function init9() {
     });
   });
 }
-init9();
-new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+init11();
+new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/navigation-menu/navigation-menu.ts
-var df$10 = defussGlobals();
-var dfDollar10 = defussQuery();
+var df$12 = defussGlobals();
+var dfDollar12 = defussQuery();
 var navigationMenuStates = ["default", "open"];
-function applyMarkup10(_el, _stateName) {}
-function triggerStateChange10(content, stateName, _config) {
+function applyMarkup12(_el, _stateName) {}
+function triggerStateChange12(content, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -7800,35 +8481,35 @@ function triggerStateChange10(content, stateName, _config) {
 var navigationMenuApi = componentState({
   component: "navigation-menu",
   states: navigationMenuStates,
-  apply: (content, state) => triggerStateChange10(content, state.name, state.config),
-  markup: (el, state) => applyMarkup10(el, state.name)
+  apply: (content, state) => triggerStateChange12(content, state.name, state.config),
+  markup: (el, state) => applyMarkup12(el, state.name)
 });
-df$10.navigationMenuApi = navigationMenuApi;
-df$10.navigationMenuStates = navigationMenuStates;
-function init10() {
-  dfDollar10(".nav-menu-trigger[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
+df$12.navigationMenuApi = navigationMenuApi;
+df$12.navigationMenuStates = navigationMenuStates;
+function init12() {
+  dfDollar12(".nav-menu-trigger[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const content = dfDollar10("#" + CSS.escape(trigger.getAttribute("popovertarget"))).get(0);
+    const content = dfDollar12("#" + CSS.escape(trigger.getAttribute("popovertarget"))).get(0);
     if (!content)
       return;
     const anchorId = `--nav-menu-${content.id}`;
     trigger.style.anchorName = anchorId;
     content.style.positionAnchor = anchorId;
   });
-  dfDollar10(".nav-menu-content[popover]:not([data-init])").toArray().forEach((content) => {
+  dfDollar12(".nav-menu-content[popover]:not([data-init])").toArray().forEach((content) => {
     content.dataset.init = "";
     bindComponent(content, navigationMenuApi);
   });
 }
-init10();
-new MutationObserver(init10).observe(document, { childList: true, subtree: true });
+init12();
+new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/popover/popover.ts
-var df$11 = defussGlobals();
-var dfDollar11 = defussQuery();
+var df$13 = defussGlobals();
+var dfDollar13 = defussQuery();
 var popoverStates = ["default", "open"];
-function applyMarkup11(_el, _stateName) {}
-function triggerStateChange11(popover, stateName, _config) {
+function applyMarkup13(_el, _stateName) {}
+function triggerStateChange13(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -7843,15 +8524,15 @@ function triggerStateChange11(popover, stateName, _config) {
 var popoverApi = componentState({
   component: "popover",
   states: popoverStates,
-  apply: (popover, state) => triggerStateChange11(popover, state.name, state.config),
-  markup: (el, state) => applyMarkup11(el, state.name)
+  apply: (popover, state) => triggerStateChange13(popover, state.name, state.config),
+  markup: (el, state) => applyMarkup13(el, state.name)
 });
-df$11.popoverApi = popoverApi;
-df$11.popoverStates = popoverStates;
-function init11() {
-  dfDollar11("[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
+df$13.popoverApi = popoverApi;
+df$13.popoverStates = popoverStates;
+function init13() {
+  dfDollar13("[popovertarget]:not([data-init])").toArray().forEach((trigger) => {
     const id = trigger.getAttribute("popovertarget");
-    const popover = dfDollar11("#" + CSS.escape(id)).get(0);
+    const popover = dfDollar13("#" + CSS.escape(id)).get(0);
     if (!popover || !popover.classList.contains("popover"))
       return;
     trigger.dataset.init = "";
@@ -7859,22 +8540,22 @@ function init11() {
     trigger.style.anchorName = anchorId;
     popover.style.positionAnchor = anchorId;
   });
-  dfDollar11(".popover[popover]:not([data-init])").toArray().forEach((popover) => {
+  dfDollar13(".popover[popover]:not([data-init])").toArray().forEach((popover) => {
     popover.dataset.init = "";
     bindComponent(popover, popoverApi);
   });
 }
-init11();
-new MutationObserver(init11).observe(document, { childList: true, subtree: true });
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/sheet/sheet.ts
-var df$12 = defussGlobals();
-var dfDollar12 = defussQuery();
+var df$14 = defussGlobals();
+var dfDollar14 = defussQuery();
 var sheetStates = ["default", "open"];
-function applyMarkup12(el, stateName) {
-  dfDollar12(el).attr("open", stateName === "open" ? "" : null);
+function applyMarkup14(el, stateName) {
+  dfDollar14(el).attr("open", stateName === "open" ? "" : null);
 }
-function triggerStateChange12(sheet, stateName, _config) {
+function triggerStateChange14(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -7890,16 +8571,16 @@ var shown3 = (sheet) => sheet.open ? "open" : "default";
 var sheetApi = componentState({
   component: "sheet",
   states: sheetStates,
-  apply: (sheet, state) => triggerStateChange12(sheet, state.name, state.config),
+  apply: (sheet, state) => triggerStateChange14(sheet, state.name, state.config),
   read: (sheet, state) => ({ name: shown3(sheet), config: state.config }),
-  markup: (el, state) => applyMarkup12(el, state.name)
+  markup: (el, state) => applyMarkup14(el, state.name)
 });
-df$12.sheetApi = sheetApi;
-df$12.sheetStates = sheetStates;
-function init12() {
-  dfDollar12("[data-sheet-trigger]:not([data-init])").toArray().forEach((trigger) => {
+df$14.sheetApi = sheetApi;
+df$14.sheetStates = sheetStates;
+function init14() {
+  dfDollar14("[data-sheet-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const sheet = dfDollar12("#" + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
+    const sheet = dfDollar14("#" + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
     if (!sheet)
       return;
     trigger.addEventListener("click", () => {
@@ -7907,14 +8588,14 @@ function init12() {
       sheet.showModal();
     });
   });
-  dfDollar12("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
+  dfDollar14("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
     sheet.dataset.init = "";
     bindComponent(sheet, sheetApi, { name: shown3(sheet), config: {} });
     sheet.addEventListener("click", (e) => {
       if (e.target === sheet)
         sheet.close();
     });
-    dfDollar12(sheet).find("[data-sheet-close]").toArray().forEach((btn) => {
+    dfDollar14(sheet).find("[data-sheet-close]").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         sheet.close();
       });
@@ -7927,12 +8608,12 @@ function init12() {
     });
   });
 }
-init12();
-new MutationObserver(init12).observe(document, { childList: true, subtree: true });
+init14();
+new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 
 // src/components/forms-inputs/slider/slider.ts
-var df$13 = defussGlobals();
-var dfDollar13 = defussQuery();
+var df$15 = defussGlobals();
+var dfDollar15 = defussQuery();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -7963,7 +8644,7 @@ var hasFormat = (el) => {
 function outputsOf(el) {
   if (!el.id)
     return [];
-  return [...dfDollar13("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
+  return [...dfDollar15("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
 }
 function emojiThumb(el) {
   const list = (el.dataset.thumbEmoji || "").trim().split(/\s+/).filter(Boolean);
@@ -7999,7 +8680,7 @@ function updateSliderValue(el) {
     }
   }
 }
-var rangeInputs = (range) => [...dfDollar13(range).find(":scope > .slider").toArray()].slice(0, 2);
+var rangeInputs = (range) => [...dfDollar15(range).find(":scope > .slider").toArray()].slice(0, 2);
 function paintRange(range) {
   const [lo, hi] = rangeInputs(range);
   if (!lo || !hi)
@@ -8035,11 +8716,11 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function applyMarkup13(el, stateName) {
+function applyMarkup15(el, stateName) {
   if (stateName === "disabled")
-    dfDollar13(el).attr("disabled", "");
+    dfDollar15(el).attr("disabled", "");
 }
-function triggerStateChange13(el, stateName, config) {
+function triggerStateChange15(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -8055,23 +8736,23 @@ function triggerStateChange13(el, stateName, config) {
 var sliderApi = componentState({
   component: "slider",
   states: sliderStates,
-  apply: (el, state) => triggerStateChange13(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange15(el, state.name, state.config),
   read: (el, state) => {
     return {
       name: el.disabled ? "disabled" : "default",
       config: { ...state.config, value: el.value }
     };
   },
-  markup: (el, state) => applyMarkup13(el, state.name)
+  markup: (el, state) => applyMarkup15(el, state.name)
 });
-df$13.sliderApi = sliderApi;
-df$13.sliderStates = sliderStates;
-function init13() {
-  dfDollar13(".slider-range:not([data-init])").toArray().forEach((range) => {
+df$15.sliderApi = sliderApi;
+df$15.sliderStates = sliderStates;
+function init15() {
+  dfDollar15(".slider-range:not([data-init])").toArray().forEach((range) => {
     range.dataset.init = "";
     initRange(range);
   });
-  dfDollar13(".slider:not([data-init])").toArray().forEach((el) => {
+  dfDollar15(".slider:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     el._defaultDisabled = el.disabled;
     bindComponent(el, sliderApi);
@@ -8081,29 +8762,267 @@ function init13() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init13();
-new MutationObserver(init13).observe(document, { childList: true, subtree: true });
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+
+// src/components/desktop/start-menu/start-menu.ts
+var df$16 = defussGlobals();
+var dfDollar16 = defussQuery();
+var byId = (id) => (id ? dfDollar16("#" + CSS.escape(id)).get(0) : undefined) ?? null;
+var startMenuStates = ["default", "open"];
+var ITEM2 = ".start-menu-item";
+var resolve4 = (target) => typeof target === "string" ? dfDollar16("#" + CSS.escape(target)).get(0) ?? dfDollar16(target).get(0) : target;
+var labelOf2 = (i) => (dfDollar16(i).find(".start-menu-label").get(0)?.textContent ?? i.textContent ?? "").replace(/\s+/g, " ").trim();
+var valueOf3 = (i) => i.dataset.value ?? labelOf2(i);
+var reachable = (menu) => dfDollar16(menu).find(ITEM2).toArray().filter((i) => i.checkVisibility());
+function applyMarkup16(menu, _stateName, query = "") {
+  dfDollar16(menu).find(".start-menu-search input").attr("value", query || null);
+}
+function filter(menu, q) {
+  const query = q.trim().toLowerCase();
+  menu.toggleAttribute("data-searching", !!query);
+  const all = dfDollar16(menu).find(ITEM2).toArray();
+  for (const i of all) {
+    if (i.hasAttribute("aria-haspopup"))
+      continue;
+    i.toggleAttribute("data-match", !!query && labelOf2(i).toLowerCase().includes(query));
+  }
+  if (query) {
+    for (const sub of dfDollar16(menu).find(".start-menu-sub").toArray())
+      if (sub.matches(":popover-open"))
+        sub.hidePopover();
+  }
+  const empty = dfDollar16(menu).find(".start-menu-empty").get(0);
+  if (empty)
+    empty.hidden = !query || all.some((i) => i.hasAttribute("data-match"));
+}
+function triggerStateChange16(menu, stateName, config) {
+  const input = dfDollar16(menu).find(".start-menu-search input").get(0);
+  if (stateName === "open") {
+    if (!menu.matches(":popover-open"))
+      menu.showPopover();
+    if (input && config.query !== undefined && input.value !== config.query) {
+      input.value = config.query;
+      filter(menu, config.query);
+    }
+  } else if (menu.matches(":popover-open"))
+    menu.hidePopover();
+  applyMarkup16(menu, stateName, input?.value ?? "");
+}
+var startMenuApi = componentState({
+  component: "start-menu",
+  states: startMenuStates,
+  events: ["toggle", "input"],
+  apply: (menu, state) => triggerStateChange16(menu, state.name, state.config),
+  read: (menu) => {
+    const q = dfDollar16(menu).find(".start-menu-search input").get(0)?.value ?? "";
+    return menu.matches(":popover-open") ? { name: "open", config: q ? { query: q } : {} } : { name: "default", config: {} };
+  },
+  markup: (el, state) => applyMarkup16(el, state.name, state.config.query ?? "")
+});
+df$16.startMenuApi = startMenuApi;
+df$16.startMenuStates = startMenuStates;
+function openFolder(item, focusFirst) {
+  const sub = byId(item.getAttribute("aria-controls") ?? "");
+  if (!sub)
+    return;
+  const level = item.closest(".start-menu-sub, .start-menu");
+  for (const other of dfDollar16(level).find(':scope [aria-haspopup][aria-expanded="true"]').toArray())
+    if (other !== item && other.closest(".start-menu-sub, .start-menu") === level)
+      closeFolder(other);
+  const name = `--start-menu-${item.getAttribute("aria-controls")}`;
+  item.style.setProperty("anchor-name", name);
+  sub.style.setProperty("position-anchor", name);
+  if (!sub.matches(":popover-open"))
+    sub.showPopover();
+  item.setAttribute("aria-expanded", "true");
+  if (focusFirst)
+    reachable(sub)[0]?.focus();
+}
+function closeFolder(item) {
+  const sub = byId(item.getAttribute("aria-controls") ?? "");
+  if (sub?.matches(":popover-open"))
+    sub.hidePopover();
+  item.setAttribute("aria-expanded", "false");
+}
+function pick(menu, item) {
+  if (item.hasAttribute("aria-haspopup"))
+    return openFolder(item, true);
+  menu.dispatchEvent(new CustomEvent("start-select", {
+    bubbles: true,
+    detail: { value: valueOf3(item), label: labelOf2(item) }
+  }));
+  startMenuApi.setState(menu, "default", {});
+}
+function bind3(menu) {
+  const input = dfDollar16(menu).find(".start-menu-search input").get(0);
+  menu.addEventListener("toggle", (e) => {
+    const open = e.newState === "open";
+    for (const b of dfDollar16(`[popovertarget="${CSS.escape(menu.id)}"]`).toArray())
+      b.setAttribute("aria-expanded", String(open));
+    if (open) {
+      if (input?.checkVisibility())
+        input.focus();
+      else
+        reachable(menu)[0]?.focus();
+    } else {
+      for (const f of dfDollar16(menu).find('[aria-haspopup][aria-expanded="true"]').toArray())
+        closeFolder(f);
+      if (input) {
+        input.value = "";
+        filter(menu, "");
+      }
+    }
+  });
+  input?.addEventListener("input", () => filter(menu, input.value));
+  menu.addEventListener("click", (e) => {
+    const item = e.target.closest(ITEM2);
+    if (item && !item.hasAttribute("disabled"))
+      pick(menu, item);
+  });
+  menu.addEventListener("pointerover", (e) => {
+    if (e.pointerType !== "mouse")
+      return;
+    const item = e.target.closest(ITEM2);
+    if (!item)
+      return;
+    if (item.hasAttribute("aria-haspopup"))
+      openFolder(item, false);
+    else {
+      const level = item.closest(".start-menu-sub, .start-menu");
+      for (const f of dfDollar16(level).find('[aria-haspopup][aria-expanded="true"]').toArray())
+        if (f.closest(".start-menu-sub, .start-menu") === level)
+          closeFolder(f);
+    }
+  });
+  menu.addEventListener("keydown", (e) => {
+    const items = reachable(menu);
+    const cur = e.target.closest(ITEM2);
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const level = cur?.closest(".start-menu-sub") ?? null;
+      const list = level ? items.filter((i) => i.closest(".start-menu-sub") === level) : items.filter((i) => !i.closest(".start-menu-sub"));
+      const k = cur ? list.indexOf(cur) : -1;
+      const next = list[(k + (e.key === "ArrowDown" ? 1 : -1) + list.length) % list.length];
+      next?.focus();
+      return;
+    }
+    if (e.key === "ArrowRight" && cur?.hasAttribute("aria-haspopup")) {
+      e.preventDefault();
+      openFolder(cur, true);
+      return;
+    }
+    if (e.key === "ArrowLeft" && cur?.closest(".start-menu-sub")) {
+      e.preventDefault();
+      const sub = cur.closest(".start-menu-sub");
+      const opener = dfDollar16(menu).find(`[aria-controls="${CSS.escape(sub.id)}"]`).get(0);
+      if (opener) {
+        closeFolder(opener);
+        opener.focus();
+      }
+      return;
+    }
+    if (e.key === "Enter" && e.target === input) {
+      e.preventDefault();
+      const first = items.find((i) => i.hasAttribute("data-match"));
+      if (first)
+        pick(menu, first);
+      return;
+    }
+    if (e.key === "Escape" && cur?.closest(".start-menu-sub")) {
+      e.preventDefault();
+      e.stopPropagation();
+      const sub = cur.closest(".start-menu-sub");
+      const opener = dfDollar16(menu).find(`[aria-controls="${CSS.escape(sub.id)}"]`).get(0);
+      if (opener) {
+        closeFolder(opener);
+        opener.focus();
+      }
+      return;
+    }
+    if (input?.checkVisibility() && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey && e.target !== input) {
+      input.focus();
+    }
+  });
+}
+var openMenu2 = (target, query = "") => {
+  const m = resolve4(target);
+  if (m)
+    startMenuApi.setState(m, "open", { query });
+  return m;
+};
+var closeMenu = (target) => {
+  const m = resolve4(target);
+  if (m)
+    startMenuApi.setState(m, "default", {});
+  return m;
+};
+var toggleMenu = (target) => {
+  const m = resolve4(target);
+  if (!m)
+    return false;
+  const opening = !m.matches(":popover-open");
+  startMenuApi.setState(m, opening ? "open" : "default", opening ? { query: "" } : {});
+  return opening;
+};
+var startMenuActions = { open: openMenu2, close: closeMenu, toggle: toggleMenu };
+df$16.startMenu = startMenuActions;
+function init16() {
+  dfDollar16(".start-menu[popover]:not([data-init])").toArray().forEach((menu) => {
+    menu.dataset.init = "";
+    for (const f of dfDollar16(menu).find(`${ITEM2}[aria-controls]`).toArray()) {
+      f.setAttribute("aria-haspopup", "menu");
+      if (!f.hasAttribute("aria-expanded"))
+        f.setAttribute("aria-expanded", "false");
+    }
+    const name = `--start-menu-${menu.id}`;
+    menu.style.setProperty("position-anchor", name);
+    for (const b of dfDollar16(`[popovertarget="${CSS.escape(menu.id)}"]`).toArray()) {
+      b.style.setProperty("anchor-name", name);
+      b.setAttribute("aria-expanded", "false");
+    }
+    bind3(menu);
+    bindComponent(menu, startMenuApi);
+  });
+}
+if (!document.__startMenuInit) {
+  document.__startMenuInit = true;
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || !e.ctrlKey)
+      return;
+    let menu;
+    for (let p = document.activeElement;p && !menu; p = p.parentElement)
+      menu = dfDollar16(p).find(".start-menu[popover]").get(0);
+    menu ??= dfDollar16(".start-menu[popover]").get(0);
+    if (!menu)
+      return;
+    e.preventDefault();
+    toggleMenu(menu);
+  });
+}
+init16();
+new MutationObserver(init16).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/tabs/tabs.ts
-var df$14 = defussGlobals();
-var dfDollar14 = defussQuery();
+var df$17 = defussGlobals();
+var dfDollar17 = defussQuery();
 var tabsStates = ["default", "active", "disabled"];
 var ICON = ":scope > :is(svg, img, i, .tab-icon)";
 var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
 var iconOf = (tab) => {
-  const icon = dfDollar14(tab).find(ICON).get(0);
+  const icon = dfDollar17(tab).find(ICON).get(0);
   if (!icon)
     return "";
   return icon.getAttribute("data-lucide") ?? icon.textContent.trim();
 };
-var labelOf2 = (tab) => {
-  const label = dfDollar14(tab).find(":scope > .tab-label").get(0);
+var labelOf3 = (tab) => {
+  const label = dfDollar17(tab).find(":scope > .tab-label").get(0);
   if (label)
     return label.textContent.trim();
   return Array.from(tab.childNodes).filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("").trim();
 };
 var setLabel = (tab, text) => {
-  const label = dfDollar14(tab).find(":scope > .tab-label").get(0);
+  const label = dfDollar17(tab).find(":scope > .tab-label").get(0);
   if (label) {
     label.textContent = text;
     return;
@@ -8115,7 +9034,7 @@ var setLabel = (tab, text) => {
   tab.append(document.createTextNode(text));
 };
 var setIcon = (tab, icon) => {
-  dfDollar14(tab).find(ICON).get(0)?.remove();
+  dfDollar17(tab).find(ICON).get(0)?.remove();
   if (!icon)
     return;
   const el = document.createElement(LUCIDE_NAME.test(icon) ? "i" : "span");
@@ -8130,28 +9049,28 @@ var setIcon = (tab, icon) => {
     globalThis.lucide?.createIcons?.();
 };
 var applyContent = (tab, config) => {
-  if (typeof config.label === "string" && config.label !== labelOf2(tab))
+  if (typeof config.label === "string" && config.label !== labelOf3(tab))
     setLabel(tab, config.label);
   if (typeof config.icon === "string" && config.icon !== iconOf(tab))
     setIcon(tab, config.icon);
 };
 var triggersOf2 = (el) => {
   const list = el.getAttribute("role") === "tablist" ? el : el.closest('[role="tablist"]');
-  return Array.from(dfDollar14(list).find('[role="tab"]').toArray());
+  return Array.from(dfDollar17(list).find('[role="tab"]').toArray());
 };
 var activateTab = (tab, triggers) => {
   triggers.forEach((t) => {
     t.setAttribute("aria-selected", "false");
     t.setAttribute("tabindex", "-1");
     t.dataset.stateName = t.disabled ? "disabled" : "default";
-    const panel = dfDollar14("#" + CSS.escape(t.getAttribute("aria-controls"))).get(0);
+    const panel = dfDollar17("#" + CSS.escape(t.getAttribute("aria-controls"))).get(0);
     if (panel)
       panel.hidden = true;
   });
   tab.setAttribute("aria-selected", "true");
   tab.removeAttribute("tabindex");
   tab.dataset.stateName = "active";
-  const panel = dfDollar14("#" + CSS.escape(tab.getAttribute("aria-controls"))).get(0);
+  const panel = dfDollar17("#" + CSS.escape(tab.getAttribute("aria-controls"))).get(0);
   if (panel)
     panel.hidden = false;
 };
@@ -8167,14 +9086,14 @@ var nextEnabled = (from, triggers) => {
 var tabName = (tab) => tab.disabled ? "disabled" : tab.getAttribute("aria-selected") === "true" ? "active" : "default";
 var restoreTab = (tab) => {
   tab.disabled = tab._authored.disabled;
-  if (labelOf2(tab) !== tab._authored.label)
+  if (labelOf3(tab) !== tab._authored.label)
     setLabel(tab, tab._authored.label);
   if (iconOf(tab) !== tab._authored.icon)
     setIcon(tab, tab._authored.icon);
   tab.dataset.stateName = tabName(tab);
 };
 var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
-function triggerStateChange14(el, stateName, config) {
+function triggerStateChange17(el, stateName, config) {
   const triggers = triggersOf2(el);
   const isList = el.getAttribute("role") === "tablist";
   const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
@@ -8246,34 +9165,34 @@ function triggerStateChange14(el, stateName, config) {
   applyContent(tab, config);
 }
 var selectMarkup = (tab, triggers) => {
-  triggers.forEach((t) => dfDollar14(t).attr("aria-selected", "false").attr("tabindex", "-1"));
-  dfDollar14(tab).attr("aria-selected", "true").attr("tabindex", null);
+  triggers.forEach((t) => dfDollar17(t).attr("aria-selected", "false").attr("tabindex", "-1"));
+  dfDollar17(tab).attr("aria-selected", "true").attr("tabindex", null);
 };
-var selectedOf = (t) => dfDollar14(t).attr("aria-selected") === "true";
-var disabledOf = (t) => dfDollar14(t).attr("disabled") != null;
+var selectedOf2 = (t) => dfDollar17(t).attr("aria-selected") === "true";
+var disabledOf = (t) => dfDollar17(t).attr("disabled") != null;
 function listMarkup(list, stateName, config) {
-  const triggers = dfDollar14(list).find('[role="tab"]').toArray();
+  const triggers = dfDollar17(list).find('[role="tab"]').toArray();
   if (stateName === "default") {
-    const tab = triggers.find(selectedOf) || triggers.find((t) => !disabledOf(t));
+    const tab = triggers.find(selectedOf2) || triggers.find((t) => !disabledOf(t));
     if (tab)
       selectMarkup(tab, triggers);
   } else if (stateName === "disabled")
-    triggers.forEach((t) => dfDollar14(t).attr("disabled", ""));
+    triggers.forEach((t) => dfDollar17(t).attr("disabled", ""));
   const pick = typeof config?.index === "number" ? triggers[config.index] : typeof config?.id === "string" ? triggers.find((t) => t.id === config.id) : null;
   if (pick && !disabledOf(pick))
     selectMarkup(pick, triggers);
 }
 function tabMarkup(tab, stateName, config) {
   if (stateName === "active")
-    dfDollar14(tab).attr("disabled", null).attr("aria-selected", "true").attr("tabindex", null);
+    dfDollar17(tab).attr("disabled", null).attr("aria-selected", "true").attr("tabindex", null);
   else
-    dfDollar14(tab).attr("disabled", stateName === "disabled" ? "" : null);
+    dfDollar17(tab).attr("disabled", stateName === "disabled" ? "" : null);
   applyContent(tab, config ?? {});
 }
 var tabsApi = componentState({
   component: "tabs",
   states: tabsStates,
-  apply: (el, state, _previous, incoming) => triggerStateChange14(el, state.name, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange17(el, state.name, incoming),
   read: (el, state) => {
     if (el.getAttribute("role") === "tablist") {
       const triggers = triggersOf2(el);
@@ -8284,23 +9203,23 @@ var tabsApi = componentState({
     }
     return {
       name: tabName(el),
-      config: { ...state.config, label: labelOf2(el), icon: iconOf(el) }
+      config: { ...state.config, label: labelOf3(el), icon: iconOf(el) }
     };
   },
   markup: (el, state) => (el.getAttribute("role") === "tablist" ? listMarkup : tabMarkup)(el, state.name, state.config),
   mergeConfig: true
 });
-df$14.tabsApi = tabsApi;
-df$14.tabsStates = tabsStates;
-function init14() {
-  dfDollar14('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
+df$17.tabsApi = tabsApi;
+df$17.tabsStates = tabsStates;
+function init17() {
+  dfDollar17('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = "";
-    const triggers = Array.from(dfDollar14(tablist).find('[role="tab"]').toArray());
+    const triggers = Array.from(dfDollar17(tablist).find('[role="tab"]').toArray());
     triggers.forEach((t) => {
       t._authored = {
         selected: t.getAttribute("aria-selected") === "true",
         disabled: t.disabled,
-        label: labelOf2(t),
+        label: labelOf3(t),
         icon: iconOf(t)
       };
       bindComponent(t, tabsApi);
@@ -8374,30 +9293,30 @@ function revealFragment() {
   }
   if (!id || id.startsWith("/"))
     return;
-  const target = dfDollar14("#" + CSS.escape(id)).get(0);
+  const target = dfDollar17("#" + CSS.escape(id)).get(0);
   if (!target)
     return;
   const hidden = [];
-  const panelOf = (el) => el ? dfDollar14(el).closest('[role="tabpanel"]').get(0) : undefined;
+  const panelOf = (el) => el ? dfDollar17(el).closest('[role="tabpanel"]').get(0) : undefined;
   for (let panel = panelOf(target);panel; panel = panelOf(panel.parentElement))
     if (panel.hidden)
       hidden.unshift(panel);
   if (!hidden.length)
     return;
   for (const panel of hidden) {
-    const tab = dfDollar14('[role="tab"][aria-controls="' + CSS.escape(panel.id) + '"]').get(0);
-    const tablist = tab && dfDollar14(tab).closest('[role="tablist"]').get(0);
+    const tab = dfDollar17('[role="tab"][aria-controls="' + CSS.escape(panel.id) + '"]').get(0);
+    const tablist = tab && dfDollar17(tab).closest('[role="tablist"]').get(0);
     if (!tab || tab.disabled || !tablist)
       return;
-    activateTab(tab, dfDollar14(tablist).find('[role="tab"]').toArray());
+    activateTab(tab, dfDollar17(tablist).find('[role="tab"]').toArray());
   }
   target.scrollIntoView();
 }
 var fragmentsBound = false;
 function initAll() {
-  const before = dfDollar14('[role="tablist"][data-init]').length;
-  init14();
-  if (dfDollar14('[role="tablist"][data-init]').length !== before)
+  const before = dfDollar17('[role="tablist"][data-init]').length;
+  init17();
+  if (dfDollar17('[role="tablist"][data-init]').length !== before)
     revealFragment();
   if (!fragmentsBound) {
     fragmentsBound = true;
@@ -8407,9 +9326,121 @@ function initAll() {
 initAll();
 new MutationObserver(initAll).observe(document, { childList: true, subtree: true });
 
+// src/components/desktop/taskbar/taskbar.ts
+var df$18 = defussGlobals();
+var dfDollar18 = defussQuery();
+var byId2 = (id) => (id ? dfDollar18("#" + CSS.escape(id)).get(0) : undefined) ?? null;
+var taskbarStates = ["default"];
+var POSITIONS = ["bottom", "top", "left", "right"];
+var managerOf = (bar) => {
+  const id = bar.dataset.taskbarFor;
+  return id ? byId2(id) : null;
+};
+function applyMarkup17(bar, _stateName, config) {
+  if (config.position !== undefined)
+    dfDollar18(bar).attr("data-position", config.position === "bottom" ? null : config.position);
+  if (config.align !== undefined)
+    dfDollar18(bar).attr("data-align", config.align === "start" ? null : config.align);
+}
+function triggerStateChange18(bar, stateName, config) {
+  if (config.position !== undefined && !POSITIONS.includes(config.position))
+    throw new Error(`taskbar: no position ${config.position}`);
+  applyMarkup17(bar, stateName, config);
+}
+var taskbarApi = componentState({
+  component: "taskbar",
+  states: taskbarStates,
+  apply: (bar, state) => triggerStateChange18(bar, state.name, state.config),
+  read: (bar) => ({
+    name: "default",
+    config: { position: bar.dataset.position || "bottom", align: bar.dataset.align || "start" }
+  }),
+  markup: (el, state) => applyMarkup17(el, state.name, state.config)
+});
+df$18.taskbarApi = taskbarApi;
+df$18.taskbarStates = taskbarStates;
+function render(bar, windows) {
+  const list = dfDollar18(bar).find(".taskbar-windows").get(0);
+  if (!list)
+    return;
+  const have = new Map(dfDollar18(list).find(":scope > .taskbar-window").toArray().map((b) => [b.dataset.window, b]));
+  const keep = new Set;
+  for (const w of windows) {
+    keep.add(w.id);
+    let b = have.get(w.id);
+    if (!b) {
+      b = document.createElement("button");
+      b.type = "button";
+      b.className = "taskbar-window";
+      b.dataset.window = w.id;
+      dfDollar18(b).html('<span class="taskbar-window-icon" aria-hidden="true"></span><span class="taskbar-window-title"></span>');
+    }
+    list.append(b);
+    const icon = dfDollar18(b).find(".taskbar-window-icon").get(0);
+    const key = w.glyph ? `glyph:${w.glyph}` : w.icon;
+    if (icon.dataset.icon !== key) {
+      icon.dataset.icon = key;
+      dfDollar18(icon).html(w.glyph ? `<span class="desktop-glyph" data-glyph="${w.glyph}"></span>` : w.icon ? `<i data-lucide="${w.icon}"></i>` : "");
+    }
+    const title = dfDollar18(b).find(".taskbar-window-title").get(0);
+    if (title.textContent !== w.title)
+      title.textContent = w.title;
+    b.title = w.title;
+    b.setAttribute("aria-pressed", String(w.active && w.state !== "minimized"));
+    b.toggleAttribute("data-minimized", w.state === "minimized");
+  }
+  for (const [id, b] of have)
+    if (!keep.has(id))
+      b.remove();
+  if (windows.some((w) => w.icon))
+    globalThis.lucide?.createIcons?.();
+}
+function bind4(bar) {
+  const m = managerOf(bar);
+  if (m) {
+    m.setAttribute("data-taskbar", "");
+    m.addEventListener("window-manager-change", (e) => render(bar, e.detail.windows));
+    const model = df$18.windowManager?.windows(m);
+    if (model)
+      render(bar, model);
+  }
+  bar.addEventListener("click", (e) => {
+    const b = e.target.closest(".taskbar-window");
+    if (b?.dataset.window)
+      df$18.windowManager?.toggle(b.dataset.window);
+  });
+  bar.addEventListener("keydown", (e) => {
+    const list = e.target.closest(".taskbar-windows");
+    if (!list || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key))
+      return;
+    const all = dfDollar18(list).find(".taskbar-window").toArray();
+    const at = all.indexOf(e.target);
+    const next = e.key === "Home" ? all[0] : e.key === "End" ? all.at(-1) : all[(at + (e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1) + all.length) % all.length];
+    if (next) {
+      e.preventDefault();
+      next.focus();
+    }
+  });
+}
+var manager = (target) => {
+  const bar = typeof target === "string" ? byId2(target) ?? dfDollar18(target).get(0) ?? null : target;
+  return bar ? managerOf(bar) : null;
+};
+var taskbarActions = { manager };
+df$18.taskbar = taskbarActions;
+function init18() {
+  dfDollar18(".taskbar:not([data-init])").toArray().forEach((bar) => {
+    bar.dataset.init = "";
+    bind4(bar);
+    bindComponent(bar, taskbarApi);
+  });
+}
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+
 // src/components/mockup/terminal/terminal.ts
-var df$15 = defussGlobals();
-var dfDollar15 = defussQuery();
+var df$19 = defussGlobals();
+var dfDollar19 = defussQuery();
 var terminalStates = ["default", "running", "readonly"];
 var XTERM_URL = "https://cdn.jsdelivr.net/npm/@xterm/xterm@6.0.0/lib/xterm.mjs";
 var PINNED = {
@@ -8443,7 +9474,7 @@ function sheet(url) {
     link.remove();
   });
   sheets.set(url, pending);
-  dfDollar15(document.head).append(link);
+  dfDollar19(document.head).append(link);
   return pending;
 }
 function load() {
@@ -8568,7 +9599,7 @@ function words(line) {
     out.push(m[1] ?? m[2] ?? m[3] ?? "");
   return out;
 }
-var resolve2 = (t) => typeof t === "string" ? dfDollar15("#" + CSS.escape(t)).get(0) ?? dfDollar15(t).get(0) ?? null : t;
+var resolve5 = (t) => typeof t === "string" ? dfDollar19("#" + CSS.escape(t)).get(0) ?? dfDollar19(t).get(0) ?? null : t;
 var live = new Set;
 function put2(s, data) {
   s.chain = s.chain.then(() => new Promise((done) => s.term.write(data, done)));
@@ -8692,7 +9723,7 @@ var BUILTINS = new Map([
 ]);
 var settle = (s) => {
   const name = s.el.hasAttribute("data-readonly") ? "readonly" : s.busy || s.playing ? "running" : "default";
-  dfDollar15(s.el).attr("aria-busy", name === "running" ? "true" : null);
+  dfDollar19(s.el).attr("aria-busy", name === "running" ? "true" : null);
   const config = name === "running" && s.running ? { command: s.running } : { prompt: s.el.dataset.prompt ?? "$ " };
   if (s.el.store)
     terminalApi.commit(s.el, name, config);
@@ -8923,7 +9954,7 @@ function onData(s, data) {
 }
 var sleep = (s, ms) => s.skip || ms <= 0 ? Promise.resolve() : new Promise((done) => setTimeout(done, ms));
 function scriptOf(el) {
-  const script = dfDollar15(el).children("script.terminal-script").get(0);
+  const script = dfDollar19(el).children("script.terminal-script").get(0);
   if (!script)
     return [];
   try {
@@ -9000,17 +10031,17 @@ async function open(el) {
   const host = document.createElement("div");
   host.className = "terminal-screen";
   host.setAttribute("data-ce-chrome", "");
-  dfDollar15(el).append(host);
+  dfDollar19(el).append(host);
   let vendor;
   try {
     vendor = await load();
   } catch (err) {
-    dfDollar15(el).attr("data-error", "");
+    dfDollar19(el).attr("data-error", "");
     const out = document.createElement("output");
     out.className = "terminal-error";
     out.setAttribute("role", "alert");
-    dfDollar15(out).text(`The terminal could not start: ${err instanceof Error ? err.message : String(err)}`);
-    dfDollar15(host).append(out);
+    dfDollar19(out).text(`The terminal could not start: ${err instanceof Error ? err.message : String(err)}`);
+    dfDollar19(host).append(out);
     throw err;
   }
   await document.fonts?.ready;
@@ -9052,14 +10083,14 @@ async function open(el) {
   term.onData((data) => onData(s, data));
   term.attachCustomKeyEventHandler((e) => !(e.key === "Tab" && (e.shiftKey || !s.prompted || !s.line || el.hasAttribute("data-readonly"))));
   const label = el.getAttribute("aria-label");
-  const textarea = dfDollar15(host).find("textarea").get(0);
+  const textarea = dfDollar19(host).find("textarea").get(0);
   if (textarea && label)
     textarea.setAttribute("aria-label", label);
   el.dispatchEvent(new CustomEvent("terminal-ready", {
     bubbles: true,
     detail: { cols: term.cols, rows: term.rows }
   }));
-  dfDollar15(el).attr("data-ready", "");
+  dfDollar19(el).attr("data-ready", "");
   if (el.hasAttribute("data-autoplay") && scriptOf(el).length)
     autoplay(el, s);
   else
@@ -9108,24 +10139,24 @@ function resize(s, first = false) {
     draw3(s);
 }
 function session(target) {
-  const el = resolve2(target);
+  const el = resolve5(target);
   if (!el)
     return Promise.reject(new Error("no terminal"));
-  init15();
+  init19();
   return el._terminalReady ?? Promise.reject(new Error("not a .terminal"));
 }
-function applyMarkup14(el, name, config = {}) {
-  dfDollar15(el).attr("data-readonly", name === "readonly" ? "" : null);
-  dfDollar15(el).attr("aria-busy", name === "running" ? "true" : null);
+function applyMarkup18(el, name, config = {}) {
+  dfDollar19(el).attr("data-readonly", name === "readonly" ? "" : null);
+  dfDollar19(el).attr("aria-busy", name === "running" ? "true" : null);
   if (name === "default" && typeof config.prompt === "string" && config.prompt !== (el.dataset.prompt ?? "$ "))
-    dfDollar15(el).attr("data-prompt", config.prompt);
+    dfDollar19(el).attr("data-prompt", config.prompt);
 }
-async function triggerStateChange15(el, name, config = {}) {
+async function triggerStateChange19(el, name, config = {}) {
   if (!el.hasAttribute("data-ready")) {
     if (name !== "running")
-      applyMarkup14(el, name, config);
+      applyMarkup18(el, name, config);
     else
-      el._terminalReady.then(() => triggerStateChange15(el, name, config), () => {});
+      el._terminalReady.then(() => triggerStateChange19(el, name, config), () => {});
     return;
   }
   const s = await el._terminalReady;
@@ -9136,7 +10167,7 @@ async function triggerStateChange15(el, name, config = {}) {
     if (!command)
       return play(s, scriptOf(el));
     if (el.hasAttribute("data-readonly"))
-      applyMarkup14(el, "default", {});
+      applyMarkup18(el, "default", {});
     s.term.options.disableStdin = false;
     await typeCommand(s, command, false);
     s.history.push(command);
@@ -9147,7 +10178,7 @@ async function triggerStateChange15(el, name, config = {}) {
     s.skip = true;
   const was = el.hasAttribute("data-readonly");
   const prompt = el.dataset.prompt;
-  applyMarkup14(el, name, config);
+  applyMarkup18(el, name, config);
   s.term.options.disableStdin = name === "readonly";
   if (name === "readonly") {
     if (s.prompted)
@@ -9164,18 +10195,18 @@ async function triggerStateChange15(el, name, config = {}) {
 var terminalApi = componentState({
   component: "terminal",
   states: terminalStates,
-  apply: (el, state) => triggerStateChange15(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange19(el, state.name, state.config),
   read: (el) => {
     const s = el._terminal;
     const name = el.hasAttribute("data-readonly") ? "readonly" : s?.busy || s?.playing ? "running" : "default";
     const prompt = el.dataset.prompt ?? "$ ";
     return { name, config: name === "running" && s?.running ? { command: s.running } : { prompt } };
   },
-  markup: (el, state) => applyMarkup14(el, state.name, state.config)
+  markup: (el, state) => applyMarkup18(el, state.name, state.config)
 });
-df$15.terminalApi = terminalApi;
-df$15.terminalStates = terminalStates;
-df$15.terminal = {
+df$19.terminalApi = terminalApi;
+df$19.terminalStates = terminalStates;
+df$19.terminal = {
   load: () => load().then(() => {
     return;
   }),
@@ -9193,7 +10224,7 @@ df$15.terminal = {
     }
   }),
   run: (target, line) => {
-    const el = resolve2(target);
+    const el = resolve5(target);
     if (!el?.api)
       return Promise.reject(new Error("no terminal"));
     el.api.setState("running", { command: String(line) });
@@ -9201,7 +10232,7 @@ df$15.terminal = {
   },
   play: (target, steps) => session(target).then((s) => play(s, steps ?? scriptOf(s.el))),
   commands: (target, commands) => {
-    const el = target === "global" ? null : resolve2(target);
+    const el = target === "global" ? null : resolve5(target);
     if (target !== "global" && !el)
       return () => {};
     const map = el ? el._terminalCommands ??= new Map : globalCommands;
@@ -9215,14 +10246,14 @@ df$15.terminal = {
     };
   },
   prompt: (target, text) => {
-    const el = resolve2(target);
+    const el = resolve5(target);
     if (el?.api && el.api.getState().name === "default")
       el.api.setState("default", { prompt: String(text) });
     else if (el)
-      dfDollar15(el).attr("data-prompt", String(text));
+      dfDollar19(el).attr("data-prompt", String(text));
   },
   text: (target) => {
-    const s = resolve2(target)?._terminal;
+    const s = resolve5(target)?._terminal;
     if (!s)
       return "";
     const buf = s.term.buffer.active;
@@ -9235,7 +10266,7 @@ df$15.terminal = {
 `);
   },
   serialize: (target, format = "html") => {
-    const s = resolve2(target)?._terminal;
+    const s = resolve5(target)?._terminal;
     if (!s)
       return "";
     return format === "vt" ? s.serialize.serialize() : s.serialize.serializeAsHTML({ includeGlobalBackground: true });
@@ -9246,7 +10277,7 @@ df$15.terminal = {
   tone,
   xterm: (target) => session(target).then((s) => s.term),
   theme: (target) => {
-    const el = resolve2(target);
+    const el = resolve5(target);
     return el ? themeOf(el) : {};
   },
   url: XTERM_URL
@@ -9292,9 +10323,9 @@ function sweep() {
     s.term.dispose();
   }
 }
-function init15() {
+function init19() {
   sweep();
-  dfDollar15(".terminal:not([data-init]):not(.xterm)").toArray().forEach((el) => {
+  dfDollar19(".terminal:not([data-init]):not(.xterm)").toArray().forEach((el) => {
     el.dataset.init = "";
     bindComponent(el, terminalApi, {
       name: el.hasAttribute("data-readonly") ? "readonly" : "default",
@@ -9306,49 +10337,49 @@ function init15() {
     el._terminalReady = ready;
   });
 }
-init15();
-new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+init19();
+new MutationObserver(init19).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/toast/toast.ts
-var df$16 = defussGlobals();
-var dfDollar16 = defussQuery();
+var df$20 = defussGlobals();
+var dfDollar20 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup15(_el, _stateName) {}
-function triggerStateChange16(container, stateName, _config) {
+function applyMarkup19(_el, _stateName) {}
+function triggerStateChange20(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar16(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar20(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange16(container, state.name, state.config);
+    triggerStateChange20(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar16(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar20(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup15(el, state.name)
+  markup: (el, state) => applyMarkup19(el, state.name)
 });
-df$16.toastApi = toastApi;
-df$16.toastStates = toastStates;
+df$20.toastApi = toastApi;
+df$20.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar16("#toast-container").get(0);
+var toastContainer = dfDollar20("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar16(document.body).append(toastContainer);
+  dfDollar20(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar16(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar20(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -9379,7 +10410,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar16(el).remove();
+      dfDollar20(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -9393,7 +10424,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar16(el).remove();
+    dfDollar20(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -9424,29 +10455,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar16(contentEl).append(dfDollar16(icons[variant]));
+    dfDollar20(contentEl).append(dfDollar20(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar16(p).text(title);
-    dfDollar16(textDiv).append(p);
+    dfDollar20(p).text(title);
+    dfDollar20(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar16(p).text(description);
-    dfDollar16(textDiv).append(p);
+    dfDollar20(p).text(description);
+    dfDollar20(textDiv).append(p);
   }
-  dfDollar16(contentEl).append(textDiv);
+  dfDollar20(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar16(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar16(contentEl).append(closeBtn);
+  dfDollar20(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar20(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -9456,9 +10487,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar16(el).append(host);
+    dfDollar20(el).append(host);
   }
-  dfDollar16(host).append(contentEl);
+  dfDollar20(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -9467,15 +10498,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar16(actionBtn).text(action.label);
-    dfDollar16(actionsDiv).append(actionBtn);
-    dfDollar16(host).append(actionsDiv);
+    dfDollar20(actionBtn).text(action.label);
+    dfDollar20(actionsDiv).append(actionBtn);
+    dfDollar20(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar16(toastContainer).append(el);
+  dfDollar20(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -9486,13 +10517,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar16(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar20(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init16() {
-  dfDollar16("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init20() {
+  dfDollar20("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -9541,8 +10572,8 @@ function init16() {
     });
   });
 }
-init16();
-new MutationObserver(init16).observe(document.body, { childList: true, subtree: true });
+init20();
+new MutationObserver(init20).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -9562,65 +10593,178 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar16(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar20(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$16.toast = toastActions;
+df$20.toast = toastActions;
 
 // src/components/actions/toggle/toggle.ts
-var df$17 = defussGlobals();
-var dfDollar17 = defussQuery();
+var df$21 = defussGlobals();
+var dfDollar21 = defussQuery();
 var toggleStates = ["default", "pressed"];
-function applyMarkup16(toggle, stateName, defaultPressed) {
-  dfDollar17(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
+function applyMarkup20(toggle, stateName, defaultPressed) {
+  dfDollar21(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
 }
-function triggerStateChange17(toggle, stateName, _config) {
-  applyMarkup16(toggle, stateName, toggle._defaultPressed ?? "false");
+function triggerStateChange21(toggle, stateName, _config) {
+  applyMarkup20(toggle, stateName, toggle._defaultPressed ?? "false");
 }
 var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
-  apply: (toggle, state) => triggerStateChange17(toggle, state.name, state.config),
+  apply: (toggle, state) => triggerStateChange21(toggle, state.name, state.config),
   read: (toggle, state) => ({
-    name: dfDollar17(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    name: dfDollar21(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
     config: state.config
   }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
-    applyMarkup16(toggle, state.name, authored ? authored[1] : "false");
+    applyMarkup20(toggle, state.name, authored ? authored[1] : "false");
   }
 });
-df$17.toggleApi = toggleApi;
-df$17.toggleStates = toggleStates;
-function init17() {
-  dfDollar17(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
-    dfDollar17(toggle).data("init", "");
-    toggle._defaultPressed = dfDollar17(toggle).attr("aria-pressed") || "false";
+df$21.toggleApi = toggleApi;
+df$21.toggleStates = toggleStates;
+function init21() {
+  dfDollar21(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
+    dfDollar21(toggle).data("init", "");
+    toggle._defaultPressed = dfDollar21(toggle).attr("aria-pressed") || "false";
     bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === "true" ? "pressed" : "default", config: {} });
-    dfDollar17(toggle).on("click", () => {
-      dfDollar17(toggle).attr("aria-pressed", String(dfDollar17(toggle).attr("aria-pressed") !== "true"));
+    dfDollar21(toggle).on("click", () => {
+      dfDollar21(toggle).attr("aria-pressed", String(dfDollar21(toggle).attr("aria-pressed") !== "true"));
     });
   });
 }
-init17();
-new MutationObserver(init17).observe(document, { childList: true, subtree: true });
+init21();
+new MutationObserver(init21).observe(document, { childList: true, subtree: true });
+
+// src/components/desktop/tray/tray.ts
+var df$22 = defussGlobals();
+var dfDollar22 = defussQuery();
+var byId3 = (id) => (id ? dfDollar22("#" + CSS.escape(id)).get(0) : undefined) ?? null;
+var trayStates = ["default"];
+var resolve6 = (target) => typeof target === "string" ? dfDollar22("#" + CSS.escape(target)).get(0) ?? dfDollar22(target).get(0) : target;
+function applyMarkup21(tray, _stateName, config) {
+  if (config.seconds !== undefined)
+    dfDollar22(tray).attr("data-seconds", config.seconds ? "" : null);
+  if (config.date !== undefined)
+    dfDollar22(tray).attr("data-date", config.date ? "" : null);
+}
+function tick(tray) {
+  const clock = dfDollar22(tray).find(".tray-clock").get(0);
+  if (!clock)
+    return;
+  const lang = tray.closest("[lang]")?.getAttribute("lang") || undefined;
+  const now = new Date;
+  const time = new Intl.DateTimeFormat(lang, {
+    hour: "numeric",
+    minute: "2-digit",
+    second: tray.hasAttribute("data-seconds") ? "2-digit" : undefined
+  }).format(now);
+  const date = tray.hasAttribute("data-date") ? new Intl.DateTimeFormat(lang, { dateStyle: "short" }).format(now) : "";
+  const text = date ? `${time}
+${date}` : time;
+  if (clock.textContent !== text)
+    clock.textContent = text;
+  clock.dateTime = now.toISOString().slice(0, tray.hasAttribute("data-seconds") ? 19 : 16);
+}
+function triggerStateChange22(tray, stateName, config) {
+  applyMarkup21(tray, stateName, config);
+  tick(tray);
+}
+var trayApi = componentState({
+  component: "tray",
+  states: trayStates,
+  apply: (tray, state) => triggerStateChange22(tray, state.name, state.config),
+  read: (tray) => ({
+    name: "default",
+    config: { seconds: tray.hasAttribute("data-seconds"), date: tray.hasAttribute("data-date") }
+  }),
+  markup: (el, state) => applyMarkup21(el, state.name, state.config)
+});
+df$22.trayApi = trayApi;
+df$22.trayStates = trayStates;
+var managerOf2 = (tray) => {
+  const id = tray.closest(".taskbar")?.dataset.taskbarFor;
+  return id ? byId3(id) : null;
+};
+var add = (target, options) => {
+  const tray = resolve6(target);
+  if (!tray)
+    return null;
+  let b = dfDollar22(tray).find(`.tray-item[data-id="${CSS.escape(options.id)}"]`).get(0);
+  if (!b) {
+    b = document.createElement("button");
+    b.type = "button";
+    b.className = "tray-item";
+    b.dataset.id = options.id;
+    const clock = dfDollar22(tray).find(".tray-clock").get(0);
+    if (clock)
+      clock.before(b);
+    else
+      tray.append(b);
+  }
+  b.setAttribute("aria-label", options.label);
+  b.title = options.label;
+  dfDollar22(b).html(`<i data-lucide="${options.icon}"></i>`);
+  if (options.popover)
+    b.setAttribute("popovertarget", options.popover);
+  badge(b, options.badge ?? "");
+  globalThis.lucide?.createIcons?.();
+  return b;
+};
+var remove = (target, id) => {
+  const tray = resolve6(target);
+  const b = tray ? dfDollar22(tray).find(`.tray-item[data-id="${CSS.escape(id)}"]`).get(0) : undefined;
+  b?.remove();
+  return !!b;
+};
+function badge(item, value) {
+  if (value === "" || value === 0)
+    item.removeAttribute("data-badge");
+  else
+    item.dataset.badge = String(value);
+}
+var trayActions = { add, remove, badge };
+df$22.tray = trayActions;
+function init22() {
+  dfDollar22(".tray:not([data-init])").toArray().forEach((tray) => {
+    tray.dataset.init = "";
+    tick(tray);
+    const loop = () => {
+      if (!tray.isConnected)
+        return;
+      tick(tray);
+      setTimeout(loop, 1000 - Date.now() % 1000 + 5);
+    };
+    setTimeout(loop, 1000 - Date.now() % 1000 + 5);
+    tray.addEventListener("click", (e) => {
+      if (e.target.closest(".tray-show-desktop")) {
+        const m = managerOf2(tray);
+        if (m)
+          df$22.windowManager?.showDesktop(m);
+      }
+    });
+    bindComponent(tray, trayApi);
+  });
+}
+init22();
+new MutationObserver(init22).observe(document, { childList: true, subtree: true });
 
 // src/components/application/window/window.ts
-var df$18 = defussGlobals();
-var dfDollar18 = defussQuery();
+var df$23 = defussGlobals();
+var dfDollar23 = defussQuery();
 var windowStates = ["default", "maximized", "minimized", "closed"];
 var topZ = 10;
 var KEEP = 48;
-var resolve3 = (target) => typeof target === "string" ? dfDollar18("#" + CSS.escape(target)).get(0) ?? dfDollar18(target).get(0) : target;
-var titleOf = (w) => dfDollar18(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
+var resolve7 = (target) => typeof target === "string" ? dfDollar23("#" + CSS.escape(target)).get(0) ?? dfDollar23(target).get(0) : target;
+var titleOf = (w) => dfDollar23(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 function moveTo(w, x, y) {
   const parent = w.offsetParent;
-  const bar = dfDollar18(w).find(".window-titlebar").get(0);
+  const bar = dfDollar23(w).find(".window-titlebar").get(0);
   if (parent) {
-    const ctl = dfDollar18(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
+    const ctl = dfDollar23(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
     const maxX = parent.clientWidth - KEEP - ctl;
     const minX = KEEP + ctl - w.offsetWidth;
     const maxY = parent.clientHeight - (bar?.offsetHeight ?? KEEP);
@@ -9631,6 +10775,7 @@ function moveTo(w, x, y) {
   w.style.setProperty("--window-y", `${Math.round(y)}px`);
   return { x: Math.round(x), y: Math.round(y) };
 }
+var deskOf = (w) => w.parentElement?.closest(".window-manager, .window-desktop") ?? document;
 function raise(w) {
   if (!w.open)
     return;
@@ -9638,8 +10783,8 @@ function raise(w) {
     return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar18(".window[data-active]").toArray().forEach((o) => {
-    if (o !== w)
+  dfDollar23(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+    if (o !== w && deskOf(o) === deskOf(w))
       o.removeAttribute("data-active");
   });
   w.setAttribute("data-active", "");
@@ -9653,8 +10798,9 @@ function showQuietly(w) {
   else if (w.contains(document.activeElement))
     document.activeElement.blur();
 }
-function activateTopmost() {
-  const open = Array.from(dfDollar18(".window[open]").toArray());
+function activateTopmost(closed) {
+  const desk = deskOf(closed);
+  const open = dfDollar23(desk).find(".window[open]").toArray().filter((o) => deskOf(o) === desk);
   if (!open.length)
     return;
   const top = open.reduce((a, b) => Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a);
@@ -9674,16 +10820,16 @@ function restoreSize(w) {
   w.style.height = w._stash.height;
   w._stash = null;
 }
-function applyMarkup17(el, stateName) {
+function applyMarkup22(el, stateName) {
   const open = stateName !== "closed";
-  dfDollar18(el).attr("open", open ? "" : null);
-  dfDollar18(el).attr("data-maximized", stateName === "maximized" ? "" : null);
-  dfDollar18(el).attr("data-minimized", stateName === "minimized" ? "" : null);
-  dfDollar18(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar18(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar23(el).attr("open", open ? "" : null);
+  dfDollar23(el).attr("data-maximized", stateName === "maximized" ? "" : null);
+  dfDollar23(el).attr("data-minimized", stateName === "minimized" ? "" : null);
+  dfDollar23(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
+  dfDollar23(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
-function triggerStateChange18(w, stateName, config) {
-  const maxBtn = dfDollar18(w).find(".window-maximize").get(0);
+function triggerStateChange23(w, stateName, config) {
+  const maxBtn = dfDollar23(w).find(".window-maximize").get(0);
   if (stateName !== "closed" && !w.open)
     showQuietly(w);
   switch (stateName) {
@@ -9715,23 +10861,23 @@ function triggerStateChange18(w, stateName, config) {
   }
   if (maxBtn)
     maxBtn.setAttribute("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar18(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar23(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
 var windowApi = componentState({
   component: "window",
   states: windowStates,
   apply: (w, state) => {
     w.dataset.stateName = state.name;
-    triggerStateChange18(w, state.name, state.config);
+    triggerStateChange23(w, state.name, state.config);
   },
   read: (w, state) => {
     const name = !w.open ? "closed" : w.dataset.stateName || "default";
     return { name, config: name === "closed" ? {} : state.config };
   },
-  markup: (el, state) => applyMarkup17(el, state.name)
+  markup: (el, state) => applyMarkup22(el, state.name)
 });
-df$18.windowApi = windowApi;
-df$18.windowStates = windowStates;
+df$23.windowApi = windowApi;
+df$23.windowStates = windowStates;
 function bindDrag(w, bar) {
   bar.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || e.target.closest("button, a, input, select, textarea"))
@@ -9772,17 +10918,17 @@ function bindDrag(w, bar) {
     w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
   });
 }
-function init18() {
-  dfDollar18("dialog.window:not([data-init])").toArray().forEach((w) => {
+function init23() {
+  dfDollar23("dialog.window:not([data-init])").toArray().forEach((w) => {
     w.dataset.init = "";
-    const bar = dfDollar18(w).find(":scope > .window-titlebar").get(0);
+    const bar = dfDollar23(w).find(":scope > .window-titlebar").get(0);
     if (bar) {
       if (!bar.hasAttribute("tabindex"))
         bar.tabIndex = 0;
       bindDrag(w, bar);
     }
     if (!w.hasAttribute("aria-labelledby") && !w.hasAttribute("aria-label")) {
-      const title = dfDollar18(w).find(".window-title").get(0);
+      const title = dfDollar23(w).find(".window-title").get(0);
       if (title) {
         if (!title.id)
           title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
@@ -9791,12 +10937,12 @@ function init18() {
     }
     w.addEventListener("pointerdown", () => raise(w), true);
     w.addEventListener("focusin", () => raise(w));
-    dfDollar18(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
-    dfDollar18(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
+    dfDollar23(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
+    dfDollar23(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
       e.preventDefault();
       windowApi.setState(w, "closed", {});
     });
-    dfDollar18(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
+    dfDollar23(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
     w.addEventListener("close", () => {
       if (w.open)
         return;
@@ -9804,16 +10950,19 @@ function init18() {
       w.removeAttribute("data-active");
       w.removeAttribute("data-maximized");
       w.removeAttribute("data-minimized");
-      activateTopmost();
+      activateTopmost(w);
     });
     bindComponent(w, windowApi);
     const initial = !w.open ? "closed" : w.hasAttribute("data-maximized") ? "maximized" : w.hasAttribute("data-minimized") ? "minimized" : "default";
     w.dataset.stateName = initial;
-    dfDollar18(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
-    dfDollar18(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
+    dfDollar23(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
+    dfDollar23(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
     if (w.open) {
       w.style.zIndex = String(++topZ);
-      dfDollar18(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
+      dfDollar23(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+        if (deskOf(o) === deskOf(w))
+          o.removeAttribute("data-active");
+      });
       w.setAttribute("data-active", "");
     }
   });
@@ -9836,7 +10985,7 @@ function create(options = {}) {
     focus = true,
     flush = false
   } = options;
-  const host = resolve3(parent) ?? dfDollar18(".window-desktop").get(0) ?? document.body;
+  const host = resolve7(parent) ?? dfDollar23(".window-desktop").get(0) ?? document.body;
   const w = document.createElement("dialog");
   w.className = "window";
   if (id)
@@ -9845,7 +10994,7 @@ function create(options = {}) {
     w.dataset.chrome = chrome;
   if (resizable)
     w.setAttribute("data-resizable", "");
-  const count = dfDollar18(host).find(":scope > .window").toArray().length;
+  const count = dfDollar23(host).find(":scope > .window").toArray().length;
   w.style.setProperty("--window-x", typeof x === "number" ? `${x}px` : x ?? `${24 + count % 8 * 28}px`);
   w.style.setProperty("--window-y", typeof y === "number" ? `${y}px` : y ?? `${24 + count % 8 * 28}px`);
   if (width !== undefined)
@@ -9896,7 +11045,7 @@ function create(options = {}) {
     w.append(s);
   }
   host.append(w);
-  init18();
+  init23();
   showQuietly(w);
   if (focus)
     windowApi.setState(w, "default", {});
@@ -9904,7 +11053,7 @@ function create(options = {}) {
     globalThis.lucide?.createIcons?.();
   return w;
 }
-var list = (scope, all = false) => dfDollar18(resolve3(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
+var list = (scope, all = false) => dfDollar23(resolve7(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
 function cascade(scope, step = 28) {
   list(scope).sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)).forEach((w, i) => {
     windowApi.setState(w, "default", {});
@@ -9933,29 +11082,29 @@ function tile(scope) {
 var windowActions = {
   create,
   open: (target, config = {}) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (w)
       windowApi.setState(w, "default", config);
     return w;
   },
   close: (target) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (w)
       windowApi.setState(w, "closed", {});
     return w;
   },
   focus: (target) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (w?.open)
       raise(w);
     return w;
   },
   move: (target, x, y) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     return w ? moveTo(w, x, y) : null;
   },
   resize: (target, width, height) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (!w)
       return null;
     w.style.width = "";
@@ -9966,38 +11115,176 @@ var windowActions = {
     return w;
   },
   maximize: (target) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (w)
       windowApi.setState(w, "maximized", {});
     return w;
   },
   minimize: (target) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (w)
       windowApi.setState(w, "minimized", {});
     return w;
   },
   restore: (target) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (w)
       windowApi.setState(w, "default", {});
     return w;
   },
   toggleMaximize: (target) => {
-    const w = resolve3(target);
+    const w = resolve7(target);
     if (w)
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
   },
-  active: () => dfDollar18(".window[open][data-active]").get(0),
+  active: () => dfDollar23(".window[open][data-active]").toArray().reduce((a, b) => !a || Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a, undefined),
   list,
   cascade,
   tile
 };
-df$18.win = windowActions;
-init18();
-new MutationObserver(init18).observe(document, { childList: true, subtree: true });
+df$23.win = windowActions;
+init23();
+new MutationObserver(init23).observe(document, { childList: true, subtree: true });
 
-//# debugId=09DAAC84B6E0F0B464756E2164756E21
+// src/components/desktop/window-manager/window-manager.ts
+var df$24 = defussGlobals();
+var dfDollar24 = defussQuery();
+var byId4 = (id) => (id ? dfDollar24("#" + CSS.escape(id)).get(0) : undefined) ?? null;
+var windowManagerStates = ["default", "desktop"];
+var resolve8 = (target) => typeof target === "string" ? dfDollar24("#" + CSS.escape(target)).get(0) ?? dfDollar24(target).get(0) : target;
+var managerOf3 = (w) => w.closest(".window-manager");
+var own2 = (m) => dfDollar24(m).find("dialog.window").toArray().filter((w) => managerOf3(w) === m);
+var seq = 0;
+var stateOf = (w) => !w.open ? "closed" : w.hasAttribute("data-minimized") ? "minimized" : w.hasAttribute("data-maximized") ? "maximized" : "default";
+function entries2(m) {
+  return own2(m).filter((w) => w.open).sort((a, b) => (a._wmOpened ?? 0) - (b._wmOpened ?? 0)).map((w) => ({
+    id: w.id,
+    title: dfDollar24(w).find(".window-title").get(0)?.textContent?.trim() ?? "",
+    icon: dfDollar24(w).find(".window-icon").attr("data-lucide") ?? "",
+    glyph: dfDollar24(w).find(".window-icon").attr("data-glyph") ?? "",
+    state: stateOf(w),
+    active: w.hasAttribute("data-active")
+  }));
+}
+function refresh(m) {
+  for (const w of own2(m)) {
+    if (!w.id)
+      w.id = `window-${Math.random().toString(36).slice(2, 8)}`;
+    if (w.open && !w._wmWasOpen)
+      w._wmOpened = ++seq;
+    w._wmWasOpen = w.open;
+  }
+  const windows = entries2(m);
+  const active = windows.find((e) => e.active && e.state !== "minimized")?.id ?? "";
+  const key = JSON.stringify([windows, active]);
+  if (key === m._wmKey)
+    return;
+  m._wmKey = key;
+  if (m.dataset.stateName === "desktop" && windows.some((e) => e.state !== "minimized"))
+    m.dataset.stateName = "default";
+  m.dispatchEvent(new CustomEvent("window-manager-change", { bubbles: true, detail: { windows, active } }));
+}
+var later = (m) => {
+  if (m._wmQueued)
+    return;
+  m._wmQueued = true;
+  queueMicrotask(() => {
+    m._wmQueued = false;
+    refresh(m);
+  });
+};
+var win = () => df$24.win;
+var winApi = () => df$24.windowApi;
+function applyMarkup23(el, stateName) {
+  dfDollar24(el).attr("data-desktop-shown", stateName === "desktop" ? "" : null);
+}
+function triggerStateChange24(m, stateName) {
+  if (stateName === "desktop") {
+    m._wmShown = entries2(m).filter((e) => e.state !== "minimized").map((e) => e.id);
+    for (const id of m._wmShown)
+      winApi()?.setState(byId4(id), "minimized", {});
+  } else if (m._wmShown) {
+    for (const id of m._wmShown) {
+      const w = byId4(id);
+      if (w?.open && w.hasAttribute("data-minimized"))
+        winApi()?.setState(w, "default", {});
+    }
+    m._wmShown = null;
+  }
+  m.dataset.stateName = stateName;
+  applyMarkup23(m, stateName);
+}
+var windowManagerApi = componentState({
+  component: "window-manager",
+  states: windowManagerStates,
+  apply: (m, state) => triggerStateChange24(m, state.name),
+  read: (m, state) => ({ name: m.dataset.stateName || "default", config: state.config }),
+  markup: (el, state) => applyMarkup23(el, state.name)
+});
+df$24.windowManagerApi = windowManagerApi;
+df$24.windowManagerStates = windowManagerStates;
+var windows = (target) => {
+  const m = resolve8(target);
+  return m ? entries2(m) : [];
+};
+var active2 = (target) => {
+  const m = resolve8(target);
+  return m ? own2(m).find((w) => w.open && w.hasAttribute("data-active") && !w.hasAttribute("data-minimized")) : undefined;
+};
+var toggle = (target) => {
+  const w = resolve8(target);
+  if (!w)
+    return "";
+  const m = managerOf3(w);
+  if (w.hasAttribute("data-minimized"))
+    winApi()?.setState(w, w._wmMaximized ? "maximized" : "default", {});
+  else if (m && active2(m) === w) {
+    w._wmMaximized = w.hasAttribute("data-maximized");
+    winApi()?.setState(w, "minimized", {});
+  } else
+    win()?.focus(w);
+  return stateOf(w);
+};
+var showDesktop = (target) => {
+  const m = resolve8(target);
+  if (!m)
+    return false;
+  const showing = m.dataset.stateName === "desktop";
+  windowManagerApi.setState(m, showing ? "default" : "desktop", {});
+  return !showing;
+};
+var cascade2 = (target, step = 28) => {
+  const m = resolve8(target);
+  if (m)
+    win()?.cascade(m, step);
+};
+var tile2 = (target) => {
+  const m = resolve8(target);
+  if (m)
+    win()?.tile(m);
+};
+var windowManagerActions = { windows, active: active2, toggle, showDesktop, cascade: cascade2, tile: tile2 };
+df$24.windowManager = windowManagerActions;
+function init24() {
+  dfDollar24(".window-manager:not([data-init])").toArray().forEach((m) => {
+    m.dataset.init = "";
+    m.dataset.stateName = m.hasAttribute("data-desktop-shown") ? "desktop" : "default";
+    bindComponent(m, windowManagerApi);
+    new MutationObserver(() => later(m)).observe(m, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["open", "data-active", "data-minimized", "data-maximized", "id"]
+    });
+    m.addEventListener("close", () => later(m), true);
+    later(m);
+  });
+}
+init24();
+new MutationObserver(init24).observe(document, { childList: true, subtree: true });
+
+//# debugId=32DFC745B63CDC1A64756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

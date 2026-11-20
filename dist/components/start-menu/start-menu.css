@@ -1,0 +1,236 @@
+/* -- Start Menu component -----------------------------------------
+   A popover anchored to its Start Button (above it, flipped below when there
+   is no room): a head with the user, a search field, pinned items in a grid,
+   all items in a list - a folder opens its own popover beside it - and the
+   power buttons at the foot. While searching, the matches of every list and
+   folder show in one list. A look restyles it; the markup stays. */
+
+@layer components {
+  .start-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    position-area: top span-right;
+    position-try-fallbacks: flip-block, flip-inline;
+    box-sizing: border-box;
+    width: min(22rem, calc(100vw - 1rem));
+    max-height: min(32rem, 80vh);
+    padding: 0.75rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.625rem;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-xl);
+
+    &:popover-open {
+      display: flex;
+    }
+  }
+
+  .start-menu-head {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+  }
+
+  .start-menu-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.625rem;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    color: var(--muted-foreground);
+
+    & svg {
+      width: 1rem;
+      height: 1rem;
+      flex: none;
+    }
+    & input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: none;
+      color: var(--foreground);
+      font: inherit;
+    }
+    &:focus-within {
+      border-color: var(--ring);
+    }
+  }
+
+  .start-menu-heading {
+    margin: 0.25rem 0.25rem 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .start-menu-pinned {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+    gap: 0.25rem;
+
+    & .start-menu-item {
+      flex-direction: column;
+      gap: 0.375rem;
+      padding-block: 0.625rem;
+      text-align: center;
+      font-size: 0.75rem;
+    }
+    & .start-menu-icon {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  .start-menu-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .start-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.4375rem 0.625rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: default;
+    outline: none;
+
+    &:is(:hover, :focus-visible, [aria-expanded="true"]) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+    &[disabled] {
+      opacity: 0.5;
+    }
+    /* a folder: an arrow at the end */
+    &[aria-haspopup]::after {
+      content: "";
+      margin-inline-start: auto;
+      width: 0.375rem;
+      height: 0.375rem;
+      border-block-start: 1.5px solid currentColor;
+      border-inline-end: 1.5px solid currentColor;
+      rotate: 45deg;
+    }
+  }
+
+  .start-menu-icon {
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex: none;
+
+    & > :is(svg, img, .desktop-glyph) {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .start-menu-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* a folder's popover, beside its item */
+  .start-menu-sub {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    position-area: right span-bottom;
+    position-try-fallbacks: flip-inline, flip-block;
+    box-sizing: border-box;
+    min-width: 12rem;
+    max-height: 70vh;
+    padding: 0.375rem;
+    display: none;
+    flex-direction: column;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-lg);
+
+    &:popover-open {
+      display: flex;
+    }
+  }
+
+  .start-menu-foot {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-block-start: auto;
+    padding-block-start: 0.5rem;
+    border-block-start: 1px solid var(--border);
+
+    & .start-menu-item {
+      width: auto;
+    }
+    & .start-menu-item:first-child {
+      margin-inline-end: auto;
+    }
+  }
+
+  .start-menu-empty {
+    margin: 0;
+    padding: 0.75rem;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+
+  /* searching: every list's matches in one list; folders, pinned items and the rest step aside */
+  .start-menu[data-searching] {
+    & .start-menu-pinned,
+    & .start-menu-heading,
+    & .start-menu-item[aria-haspopup],
+    & .start-menu-list .start-menu-item:not([data-match]) {
+      display: none;
+    }
+    & .start-menu-sub {
+      display: contents;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .start-menu,
+    .start-menu-sub {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .start-menu-item:is(:hover, :focus-visible, [aria-expanded="true"]) {
+      background: Highlight;
+      color: HighlightText;
+    }
+  }
+}

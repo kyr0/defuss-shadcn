@@ -1,0 +1,113 @@
+---
+title: "Start Button"
+description: "Start Button component - the button that opens a Start Menu through native popovertarget, no script of its own; an icon, a label or both."
+slug: "start-button"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="start-button" title="Start Button" component="start-button">
+  The first button of a <DocLink href="taskbar.html">Taskbar</DocLink>. It is a plain <code>&lt;button popovertarget&gt;</code>: the browser opens and closes its <DocLink href="start-menu.html">Start Menu</DocLink>, light-dismisses it and returns the focus. The menu's script anchors the menu to the button and keeps its <code>aria-expanded</code>, which the pressed look follows. An icon, a label or both; a desktop look turns it into a bevelled "Start", a green pill or a round orb.
+</PageHeader>
+
+<SkillPanel component="start-button">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;button popovertarget="..." aria-haspopup="menu"&gt;</code> naming its Start Menu.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget" title="opens the menu without script"><code>popovertarget</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="the menu sits on the button"><code>anchor positioning</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors" title="the open state outlined"><code>forced-colors</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants (data-variant)">
+<SkillText dense>• <code>icon</code> - the icon only; the label stays for screen readers.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="In a taskbar, in every look" hint="The Start Button at the start of a Taskbar; pick a look and it takes that period's shape - the round orb of 7, XP's green start, the bevelled Start of 98 and 95. Its pressed look follows aria-expanded while its menu is open."
+<div class="grid gap-2">
+  <label class="flex items-center gap-2 text-sm"
+    >Look
+    <select class="select" data-look style="width: auto">
+      <option value="">Modern</option>
+      <option value="win7">7</option>
+      <option value="winxp">XP</option>
+      <option value="win98">98</option>
+      <option value="win95">95</option>
+    </select></label
+  >
+  <div class="desktop" id="sb-desk" data-state-demo style="height: 16rem">
+    <div class="window-desktop window-manager" id="sb-wm"></div>
+    <nav class="taskbar" data-taskbar-for="sb-wm" aria-label="Taskbar">
+      <button class="start-button" type="button" popovertarget="sb-menu" aria-haspopup="menu">
+        <span class="start-button-icon desktop-glyph" data-glyph="flag"></span>
+        <span class="start-button-label">Start</span>
+      </button>
+      <div class="taskbar-windows" role="group" aria-label="Open windows"></div>
+    </nav>
+    <div class="start-menu" id="sb-menu" popover aria-label="Start">
+      <div class="start-menu-list" role="group" aria-label="Apps">
+        <button class="start-menu-item" type="button" data-value="notes">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span>
+          <span class="start-menu-label">Notepad</span>
+        </button>
+        <button class="start-menu-item" type="button" data-value="settings">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="settings"></span></span>
+          <span class="start-menu-label">Settings</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const desk = document.querySelector('#sb-desk');
+    desk.parentElement.querySelector('[data-look]').addEventListener('change', (e) => {
+      if (e.target.value) desk.dataset.variant = e.target.value;
+      else delete desk.dataset.variant;
+    });
+  });
+</script>
+```
+
+```html example label="Icon only" hint="data-variant='icon' keeps the label for assistive technology and shows the icon alone - the modern look's centred bar."
+<div class="desktop" style="height: 14rem">
+  <div class="window-desktop window-manager" id="sbi-wm"></div>
+  <nav class="taskbar" data-taskbar-for="sbi-wm" data-align="center" aria-label="Taskbar">
+    <button class="start-button" data-variant="icon" type="button" popovertarget="sbi-menu" aria-haspopup="menu">
+      <span class="start-button-icon desktop-glyph" data-glyph="flag"></span>
+      <span class="start-button-label">Start</span>
+    </button>
+    <div class="taskbar-windows" role="group" aria-label="Open windows"></div>
+  </nav>
+  <div class="start-menu" id="sbi-menu" popover aria-label="Start">
+    <div class="start-menu-list" role="group" aria-label="Apps">
+      <button class="start-menu-item" type="button" data-value="notes">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span>
+        <span class="start-menu-label">Notepad</span>
+      </button>
+      <button class="start-menu-item" type="button" data-value="settings">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="settings"></span></span>
+        <span class="start-menu-label">Settings</span>
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">CSS-only: one state.</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the only state; its menu's open state is the Start Menu's (<code>aria-expanded</code> mirrors it)</li>
+  </ul>
+</StatesSection>
+
+<SourceFiles component="start-button" section="css" />
+
+</DocPage>

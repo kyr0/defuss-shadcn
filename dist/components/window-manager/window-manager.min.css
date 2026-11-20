@@ -1,0 +1,1 @@
+@layer components{.window-manager{isolation:isolate;position:relative;overflow:hidden}.window-manager[data-taskbar] .window[data-minimized]{display:none}}

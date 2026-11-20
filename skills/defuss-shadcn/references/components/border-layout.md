@@ -132,7 +132,40 @@ Nest a border layout in a center (with `data-frame="none"`) for more.
 - `data-exclusive` keeps one panel open, like `<details name>` in an
   accordion: opening one minimizes the open one (through each Panel's State
   API); of several authored open, the last stays open. With every panel
-  minimized the region folds as usual.
+  minimized the region folds as usual. `data-keep="2"` keeps the two panels
+  opened last (`data-exclusive` is keep 1).
+
+### Deep navigation: levels side by side
+
+```html
+<div class="border-layout" style="height: 28rem">
+  <div class="border-layout-stack border-layout-west" id="trail" data-direction="row" data-levels data-keep="2" data-drill aria-label="Library">
+    <section class="card panel" style="--panel-size: 14rem" aria-labelledby="t-sections">...</section>
+    <section class="card panel" style="--panel-size: 16rem" aria-labelledby="t-items">...</section>
+  </div>
+  <main class="border-layout-center">...</main>
+</div>
+```
+
+- A row stack with `data-levels` is a trail of levels (Sections, then Items,
+  then Details), outermost first. Each open level keeps its own width
+  (`--panel-size`, default 16rem); a minimized one is a vertical bar; the
+  region is their sum, so what a level gives up goes to the center. The
+  stack is the region itself (a fixed region, no `.resizer` and no width):
+  the levels size it.
+- On the east side the levels run from the edge toward the center (the
+  deepest level next to the center).
+- The divider after a level resizes that level alone (drag, arrows; between
+  its `data-min` and `data-max`, default 640px).
+- `data-keep="n"` folds every level but the n opened last.
+- `data-drill` makes a folded level a breadcrumb: a click on its bar (not on
+  a tool), or Enter / Space on it, opens it and drops every level after it.
+  Its bar is a button named "Back to {title}".
+- `df$.shadcn.borderLayout.push(stack, panel)` adds a level (an element or
+  its markup) - it opens, and `data-keep` folds the earlier ones;
+  `pop(stack, level)` goes back to a level (element, id or index), dropping
+  the deeper ones; `levels(stack)` lists them. `border-layout-stack-change`
+  (`{ panels, open }`) fires after every change of a stack's panels.
 
 ---
 
@@ -182,6 +215,7 @@ Home / End (the panel before it to its minimum / maximum).
 |-------|--------|------|
 | `resizer-resize` | `{ axis, width, height }` | A region resized (the Resizer's, bubbles to the layout) |
 | `border-layout-collapse` | `{ region, collapsed }` | A region folded or unfolded |
+| `border-layout-stack-change` | `{ panels, open }` | A stack's panels changed: one added, removed, opened, minimized or closed (on the stack, bubbles) |
 
 ## Imperative API - `df$.shadcn.borderLayout`
 
@@ -190,6 +224,7 @@ Home / End (the panel before it to its minimum / maximum).
 | `collapse(layout, 'west')` / `expand(layout, 'west')` / `toggle(layout, 'west')` | Fold / unfold a region |
 | `resize(layout, 'west', 280)` | Set a region's size in px (clamped) |
 | `sizes(layout)` | `{ north, south, west, east }` in px (0 when folded) |
+| `push(stack, panel)` / `pop(stack, level)` / `levels(stack)` | Add a level, go back to one, list them (deep navigation) |
 
 ---
 
@@ -251,6 +286,9 @@ layout.api.setState('default');
 | <code>expand(target: string \| HTMLElement, side: BorderLayoutSide): void</code> | Brings a folded region back. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr><tr><td><code>side</code></td><td><code>BorderLayoutSide</code></td><td>the region</td></tr></table> |
 | <code>toggle(target: string \| HTMLElement, side: BorderLayoutSide): boolean</code> | Folds or unfolds a region. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr><tr><td><code>side</code></td><td><code>BorderLayoutSide</code></td><td>the region</td></tr></table> <b>Returns</b> <code>boolean</code> - true when the region is collapsed now (false also when the layout has no such region) |
 | <code>resize(target: string \| HTMLElement, side: BorderLayoutSide, px: number): void</code> | Sets a region's size (clamped by the resizer's limits). <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr><tr><td><code>side</code></td><td><code>BorderLayoutSide</code></td><td>the region</td></tr><tr><td><code>px</code></td><td><code>number</code></td><td>the width (west / east) or height (north / south) in px</td></tr></table> |
+| <code>push(stack: string \| HTMLElement, panel: HTMLElement \| string): HTMLElement \| null</code> | Adds a level to a stack (deep navigation): the panel goes after the others, opens, and data-keep folds the earlier levels to bars. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>stack</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout-stack element, its id or a selector</td></tr><tr><td><code>panel</code></td><td><code>HTMLElement \| string</code></td><td>the .panel element to add, or its markup</td></tr></table> <b>Returns</b> <code>HTMLElement \| null</code> - the panel added, null when the stack matches none |
+| <code>pop(stack: string \| HTMLElement, panel: HTMLElement \| string \| number): HTMLElement \| null</code> | Goes back to a level: every level after it goes, and it opens. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>stack</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout-stack element, its id or a selector</td></tr><tr><td><code>panel</code></td><td><code>HTMLElement \| string \| number</code></td><td>the level to go back to: its element, id or index (0 = the outermost)</td></tr></table> <b>Returns</b> <code>HTMLElement \| null</code> - the level, null when the stack or the level matches none |
+| <code>levels(stack: string \| HTMLElement): BorderLayoutStackChangeDetail</code> | A stack's levels, outermost first. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>stack</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout-stack element, its id or a selector</td></tr></table> <b>Returns</b> <code>BorderLayoutStackChangeDetail</code> - the panels with whether each is open, [] when the stack matches none |
 | <code>sizes(target: string \| HTMLElement): Partial&lt;Record&lt;BorderLayoutSide, number&gt;&gt;</code> | The current sizes: { west: 240, east: 0 (collapsed), ... }. <table><tr><th>Argument</th><th>Type</th><th>Description</th></tr><tr><td><code>target</code></td><td><code>string \| HTMLElement</code></td><td>the .border-layout element, its id or a selector</td></tr></table> <b>Returns</b> <code>Partial&lt;Record&lt;BorderLayoutSide, number&gt;&gt;</code> - px per region the layout has - 0 for a collapsed one |
 
 ### Events
@@ -258,6 +296,7 @@ layout.api.setState('default');
 | Event | Description |
 |---|---|
 | `border-layout-collapse` | Fires when a region folds away or comes back - which region, and whether it is collapsed now. <code>detail</code>: <code>BorderLayoutCollapseDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>region</code></td><td><code>BorderLayoutSide</code></td><td>the region that folded or came back</td></tr><tr><td><code>collapsed</code></td><td><code>boolean</code></td><td>whether it is collapsed now</td></tr></table> |
+| `border-layout-stack-change` | Fires when a stack's panels change - one added or removed, opened, minimized or closed - with its levels in order. <code>detail</code>: <code>BorderLayoutStackChangeDetail</code> <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>panels</code></td><td><code>HTMLElement[]</code></td><td>the stack's panels, in order (the outermost level first)</td></tr><tr><td><code>open</code></td><td><code>HTMLElement[]</code></td><td>the open ones (not minimized, not closed), in the same order</td></tr></table> |
 
 ### Types
 
@@ -265,6 +304,7 @@ layout.api.setState('default');
 |---|---|
 | `BorderLayoutCollapseDetail` | What border-layout-collapse carries. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>region</code></td><td><code>BorderLayoutSide</code></td><td>the region that folded or came back</td></tr><tr><td><code>collapsed</code></td><td><code>boolean</code></td><td>whether it is collapsed now</td></tr></table> |
 | `BorderLayoutSide` | A region that folds and resizes - the center takes what is left. = <code>'north' \| 'south' \| 'west' \| 'east'</code> |
+| `BorderLayoutStackChangeDetail` | What border-layout-stack-change carries: a stack's levels, outermost first. <table><tr><th>Field</th><th>Type</th><th>Description</th></tr><tr><td><code>panels</code></td><td><code>HTMLElement[]</code></td><td>the stack's panels, in order (the outermost level first)</td></tr><tr><td><code>open</code></td><td><code>HTMLElement[]</code></td><td>the open ones (not minimized, not closed), in the same order</td></tr></table> |
 
 ---
 

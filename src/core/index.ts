@@ -31,6 +31,13 @@ import {
   sheetUrl,
   mathClone,
   mathText,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -100,6 +107,13 @@ type ShadcnNamespace = {
     sheetUrl: typeof sheetUrl;
     mathClone: typeof mathClone;
     mathText: typeof mathText;
+    asEditor: typeof asEditor;
+    builtinEditor: typeof builtinEditor;
+    editorControl: typeof editorControl;
+    editorKey: typeof editorKey;
+    editorProblem: typeof editorProblem;
+    focusEditor: typeof focusEditor;
+    valueType: typeof valueType;
     bindMedia: typeof bindMedia;
     mediaApply: typeof mediaApply;
     mediaMarkup: typeof mediaMarkup;
@@ -193,6 +207,14 @@ shadcn.shared = {
   // the Math components' JSON guard (src/shared/math.ts)
   mathClone,
   mathText,
+  // the cell editors of every in-place editing component (src/shared/editors.ts)
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   // the media engine of Video and Audio, the Media Timeline's clock (src/shared/media.ts)
   bindMedia,
   mediaApply,

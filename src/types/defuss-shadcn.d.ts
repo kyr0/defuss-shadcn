@@ -430,6 +430,48 @@ interface DefussShadcnRegistry {
     cascade(scope?: HTMLElement | string, step?: number): void;
     tile(scope?: HTMLElement | string): void;
   };
+  /** window-manager imperative API (src/components/desktop/window-manager/window-manager.ts) - inline, like win. */
+  windowManager?: {
+    windows(
+      target: string | HTMLElement,
+    ): { id: string; title: string; icon: string; glyph: string; state: string; active: boolean }[];
+    active(target: string | HTMLElement): HTMLDialogElement | undefined;
+    toggle(target: string | HTMLElement): string;
+    showDesktop(target: string | HTMLElement): boolean;
+    cascade(target: string | HTMLElement, step?: number): void;
+    tile(target: string | HTMLElement): void;
+  };
+  /** desktop-manager imperative API (src/components/desktop/desktop-manager/desktop-manager.ts). */
+  desktopManager?: {
+    select(target: string | HTMLElement, values: string[]): string[];
+    selected(target: string | HTMLElement): string[];
+    arrange(target: string | HTMLElement): void;
+  };
+  /** start-menu imperative API (src/components/desktop/start-menu/start-menu.ts). */
+  startMenu?: {
+    open(target: string | HTMLElement, query?: string): HTMLElement | null;
+    close(target: string | HTMLElement): HTMLElement | null;
+    toggle(target: string | HTMLElement): boolean;
+  };
+  /** taskbar imperative API (src/components/desktop/taskbar/taskbar.ts). */
+  taskbar?: {
+    manager(target: string | HTMLElement): HTMLElement | null;
+  };
+  /** tray imperative API (src/components/desktop/tray/tray.ts). */
+  tray?: {
+    add(
+      target: string | HTMLElement,
+      options: { id: string; icon: string; label: string; badge?: string | number; popover?: string },
+    ): HTMLButtonElement | null;
+    remove(target: string | HTMLElement, id: string): boolean;
+    badge(item: HTMLElement, value: string | number): void;
+  };
+  /** logon imperative API (src/components/desktop/logon/logon.ts). */
+  logon?: {
+    fail(target: string | HTMLElement, message: string): HTMLElement | null;
+    done(target: string | HTMLElement): HTMLElement | null;
+    lock(target: string | HTMLElement): HTMLElement | null;
+  };
   /** chart imperative API (src/components/chart/chart.ts): mount/instance/theme/deck stage */
   chart?: {
     mount: typeof import('../components/chart/chart.js').mount;

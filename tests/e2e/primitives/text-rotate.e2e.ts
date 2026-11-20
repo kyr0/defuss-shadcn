@@ -2,20 +2,21 @@ import assert from 'node:assert/strict';
 import { cssSmoke } from '../lib/css-smoke.ts';
 
 /**
- * Why: text-rotate is CSS-only - verify the one-line window, that the line
- * count picks the keyframes, which line is in view at points of the loop
- * (the animation is seeked through getAnimations()), the pause on hover, the
- * down / fade / align / line-height / duration options and reduced motion.
+ * Why: text-rotate is CSS-only - verify the one-line window, which line is in view at points of the loop for any
+ * number of lines (the animations are seeked through getAnimations()), the pause on hover, the down / fade / align /
+ * line-height / duration options and reduced motion. VERIFIED (2026-11-20, the maintainer): it supported only 5 or 6
+ * lines - one keyframe set per count; a 7th line broke it. One mechanism now serves 7, 12 and 20 lines alike.
  */
 type Page = import('playwright').Page;
-/** Seek the element's animation(s) to a fraction of the round; return the line in view. */
+/** Seek every animation of the element to the same moment - a fraction of the round (the longest one); return the
+ *  line in view. */
 const lineAt = (page: Page, id: string, frac: number) =>
   page.$eval('#' + id, (el, frac) => {
     const anims = el.getAnimations({ subtree: true });
+    const round = Math.max(...anims.map((a) => Number((a.effect as KeyframeEffect).getComputedTiming().duration)));
     for (const a of anims) {
-      const d = Number((a.effect as KeyframeEffect).getComputedTiming().duration);
       a.pause();
-      a.currentTime = d * frac;
+      a.currentTime = round * frac;
     }
     const w = el.getBoundingClientRect();
     const lines = [...el.firstElementChild!.children] as HTMLElement[];
@@ -41,10 +42,26 @@ await cssSmoke('text-rotate', [
     },
   },
   {
-    label: 'the line count picks the keyframes (2 / 3 / 6); default round 10s, custom via --text-rotate-duration',
+    label: 'one mechanism for every line count: the round (default 10s, --text-rotate-duration) and a slot per line',
     run: async (page) => {
-      const r = await page.evaluate(() => ['tr2', 'tr3', 'tr6'].map((id) => { const s = getComputedStyle(document.querySelector(`#${id} > span`)!); return [s.animationName, s.animationDuration]; }));
-      assert.deepEqual(r, [['text-rotate-2', '4s'], ['text-rotate-3', '10s'], ['text-rotate-6', '10s']]);
+      const r = await page.evaluate(() => ['tr2', 'tr3', 'tr6', 'tr20'].map((id) => { const s = getComputedStyle(document.querySelector(`#${id} > span > :first-child`)!); return [s.animationName, s.animationDuration]; }));
+      assert.deepEqual(r, [
+        ['text-rotate-index, text-rotate-roll', '4s, 2s'],
+        ['text-rotate-index, text-rotate-roll', '10s, 3.33333s'],
+        ['text-rotate-index, text-rotate-roll', '10s, 1.66667s'],
+        ['text-rotate-index, text-rotate-roll', '40s, 2s'],
+      ]);
+    },
+  },
+  {
+    label: 'seven, twelve and twenty lines each get their slot, in order, up and down and fading; the last rolls back to the first',
+    run: async (page) => {
+      for (const [id, n] of [['tr7', 7], ['tr20', 20], ['down20', 20], ['fade12', 12]] as const) {
+        const seq = [];
+        for (let k = 0; k < n; k++) seq.push(await lineAt(page, id, (k + 0.5) / n));
+        assert.deepEqual(seq, Array.from({ length: n }, (_, i) => String(i + 1)), id);
+        assert.equal(await lineAt(page, id, 0.99999), '1', `${id}: back to the first`);
+      }
     },
   },
   {
@@ -86,9 +103,9 @@ await cssSmoke('text-rotate', [
     label: 'hover pauses the loop; data-pause="none" keeps it running',
     run: async (page) => {
       await page.hover('#tr2');
-      assert.equal(await page.$eval('#tr2 > span', (s) => getComputedStyle(s).animationPlayState), 'paused');
+      assert.equal(await page.$eval('#tr2 > span > :first-child', (s) => getComputedStyle(s).animationPlayState), 'paused');
       await page.hover('#tr6');
-      assert.equal(await page.$eval('#tr6 > span', (s) => getComputedStyle(s).animationPlayState), 'running');
+      assert.equal(await page.$eval('#tr6 > span > :first-child', (s) => getComputedStyle(s).animationPlayState), 'running');
     },
   },
   {
@@ -121,7 +138,7 @@ await cssSmoke('text-rotate', [
     label: 'reduced motion: no animation, the first line stays',
     run: async (page) => {
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      const r = await page.evaluate(() => [getComputedStyle(document.querySelector('#tr3 > span')!).animationName, getComputedStyle(document.querySelector('#fade > span > :first-child')!).opacity]);
+      const r = await page.evaluate(() => [getComputedStyle(document.querySelector('#tr3 > span > :first-child')!).animationName, getComputedStyle(document.querySelector('#fade > span > :first-child')!).opacity]);
       assert.deepEqual(r, ['none', '1']);
     },
   },

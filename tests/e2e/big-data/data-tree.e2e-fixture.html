@@ -25,6 +25,7 @@
   <div class="data-tree" id="dt-way" aria-label="One way" data-exclusive data-persist="none"></div>
 
   <!-- waits for records: the loading state -->
+  <div class="data-tree" id="dt-edit" aria-label="Editable tree" data-editable data-required data-max-length="12" data-persist="none"></div>
   <div class="data-tree" id="dt-wait" aria-label="Pending tree"></div>
 
   <script type="module" src="/dist/components/core.js"></script>
@@ -68,6 +69,25 @@
           el.append(meta);
         }
       },
+    });
+    tree.setSource(document.getElementById('dt-edit'), [
+      { id: 'a', parentId: null, name: 'Alpha', tone: 'x' },
+      { id: 'a/1', parentId: 'a', name: 'One', tone: 'x' },
+      { id: 'a/2', parentId: 'a', name: 'Two', tone: 'x' },
+      { id: 'b', parentId: null, name: 'Beta', tone: 'x' },
+      { id: 'c', parentId: null, name: 'Gamma', tone: 'x', fixed: true },
+    ], {
+      query: { sorters: [{ field: 'name', direction: 'asc' }], expanded: ['a'] },
+      getEditorFn: (field, value, ctx) => {
+        if (ctx.record.fixed) return false;
+        if (ctx.record.id !== 'b') return null;
+        // a record editor: the name and a second field through patch()
+        const el = document.createElement('input');
+        el.className = 'input custom-editor';
+        el.value = value;
+        return { el, getValue: () => el.value, patch: () => ({ tone: 'y' }) };
+      },
+      validateFn: (field, value) => (value === 'Taken' ? 'That name is taken' : undefined),
     });
     globalThis.__fixtureReady = true;
   </script>

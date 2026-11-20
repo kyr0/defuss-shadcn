@@ -2290,6 +2290,174 @@ function bindMedia(root, prefix, report) {
   delegate(prefix);
   mediaPaint(root, prefix);
 }
+// src/shared/editors.ts
+var isObject = (v) => v !== null && typeof v === "object";
+function valueType(value, rules) {
+  if (rules?.type)
+    return rules.type;
+  if (rules?.options)
+    return "enum";
+  if (value === null)
+    return "null";
+  if (Array.isArray(value))
+    return "array";
+  if (typeof value === "object")
+    return "object";
+  if (typeof value === "boolean")
+    return "boolean";
+  if (typeof value === "number")
+    return "number";
+  if (typeof value === "string") {
+    if (/^#[0-9a-f]{6}$/i.test(value))
+      return "color";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
+      return "date";
+    if (value.includes(`
+`))
+      return "text";
+  }
+  return "string";
+}
+function builtinEditor(type, value, rules, options = {}) {
+  const dfDollar = defussQuery();
+  const size = options.size ?? "xs";
+  if (type === "boolean") {
+    const el = document.createElement("input");
+    el.type = "checkbox";
+    el.className = "switch";
+    el.setAttribute("role", "switch");
+    el.checked = !!value;
+    return { el, getValue: () => el.checked, immediate: true };
+  }
+  if (type === "enum") {
+    const el = document.createElement("select");
+    el.className = "select";
+    el.dataset.size = size;
+    const choices = rules?.options ?? [];
+    for (const opt of choices) {
+      const o = document.createElement("option");
+      const [v, label] = isObject(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
+      o.value = String(v);
+      dfDollar(o).text(String(label));
+      if (v === value)
+        o.selected = true;
+      el.append(o);
+    }
+    const values = choices.map((o) => isObject(o) ? o.value : o);
+    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
+  }
+  if (type === "text" || type === "object" || type === "array" || type === "json") {
+    const el = document.createElement("textarea");
+    el.className = "textarea";
+    el.rows = type === "text" ? 3 : 5;
+    const json = type !== "text";
+    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
+    return {
+      el,
+      multiline: true,
+      getValue: () => json ? JSON.parse(el.value) : el.value,
+      validate: () => {
+        if (!json)
+          return "";
+        try {
+          JSON.parse(el.value);
+          return "";
+        } catch (error) {
+          return String(error.message ?? error);
+        }
+      }
+    };
+  }
+  const el = document.createElement("input");
+  el.className = type === "color" ? options.colorClass ?? "" : "input";
+  if (type !== "color")
+    el.dataset.size = size;
+  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
+  if (type === "number") {
+    el.step = String(rules?.step ?? "any");
+    if (rules?.min != null)
+      el.min = String(rules.min);
+    if (rules?.max != null)
+      el.max = String(rules.max);
+    el.inputMode = "decimal";
+  }
+  el.value = value == null ? "" : String(value);
+  return {
+    el,
+    immediate: type === "color" || type === "date",
+    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
+    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
+  };
+}
+function asEditor(custom) {
+  if (!custom)
+    return null;
+  if (custom instanceof HTMLElement) {
+    const el = custom;
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
+  }
+  if (isObject(custom) && custom.el instanceof HTMLElement && typeof custom.getValue === "function")
+    return custom;
+  return null;
+}
+function editorControl(editor) {
+  const sel = "input, select, textarea, button, [tabindex]";
+  return editor.el.matches?.(sel) ? editor.el : defussQuery()(editor.el).find(sel).get(0) ?? editor.el;
+}
+function focusEditor(editor) {
+  const target = editorControl(editor);
+  (editor.focus ?? (() => target.focus?.()))();
+  if (target.select && !["checkbox", "color", "date", "range"].includes(target.type))
+    target.select();
+}
+function editorProblem(rules, value) {
+  if (!rules)
+    return "";
+  const say = (fallback) => rules.message || fallback;
+  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
+  if (rules.required && empty)
+    return say("Required");
+  if (empty)
+    return "";
+  if (typeof value === "number") {
+    if (Number.isNaN(value))
+      return say("Not a number");
+    if (rules.integer && !Number.isInteger(value))
+      return say("Must be a whole number");
+    if (rules.min != null && value < rules.min)
+      return say(`Must be at least ${rules.min}`);
+    if (rules.max != null && value > rules.max)
+      return say(`Must be at most ${rules.max}`);
+  }
+  if (typeof value === "string") {
+    if (rules.minLength != null && value.length < rules.minLength)
+      return say(`At least ${rules.minLength} characters`);
+    if (rules.maxLength != null && value.length > rules.maxLength)
+      return say(`At most ${rules.maxLength} characters`);
+    if (rules.pattern && !new RegExp(`^(?:${rules.pattern})$`).test(value))
+      return say("Does not match the expected format");
+  }
+  if (Array.isArray(value)) {
+    if (rules.minItems != null && value.length < rules.minItems)
+      return say(`At least ${rules.minItems}`);
+    if (rules.maxItems != null && value.length > rules.maxItems)
+      return say(`At most ${rules.maxItems}`);
+  }
+  return "";
+}
+function editorKey(e, editor) {
+  if (e.key === "Escape")
+    return "cancel";
+  if (e.key === "Enter" && (!(editor.multiline || editor.ownsEnter) || e.metaKey || e.ctrlKey))
+    return "commit";
+  if (e.key === "Tab")
+    return e.shiftKey ? "prev" : "next";
+  return null;
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5146,6 +5314,13 @@ shadcn.shared = {
   sheetUrl,
   mathClone,
   mathText,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -5408,15 +5583,20 @@ var minOf = (panel) => {
 };
 var open = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
 var titleOf = (panel) => dfDollar2(panel).find(":scope > .panel-header .panel-title").text().trim() || panel.getAttribute("aria-label") || "";
-function exclusive(stack, again) {
-  if (!stack.hasAttribute("data-exclusive"))
+var keepOf = (stack) => stack.hasAttribute("data-exclusive") ? 1 : Math.max(0, Math.floor(num2(stack.dataset.keep, 0)));
+function keepOpen(stack, again) {
+  const n = keepOf(stack);
+  if (!n)
     return;
   const opened = panelsOf(stack).filter(open);
-  const fresh = opened.filter((p) => p !== stack._open);
-  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
-  stack._open = keep;
+  const order = (stack._order ?? []).filter((p) => opened.includes(p));
+  for (const p of opened)
+    if (!order.includes(p))
+      order.push(p);
+  stack._order = order;
+  const keep = new Set(order.slice(-n));
   for (const p of opened) {
-    if (p === keep)
+    if (keep.has(p))
       continue;
     if (p.api)
       p.api.setState("minimized");
@@ -5424,10 +5604,44 @@ function exclusive(stack, again) {
       setTimeout(again);
   }
 }
+var levelsOf = (stack) => stack.hasAttribute("data-levels");
+function drill(stack, panels) {
+  const was = stack._wasOpen;
+  stack._wasOpen = new Set(panels.filter(open));
+  if (!was || !stack.hasAttribute("data-drill"))
+    return;
+  const reopened = panels.find((p) => open(p) && !was.has(p) && stack._seen?.has(p));
+  stack._seen = new Set(panels);
+  if (reopened)
+    dropAfter(stack, reopened);
+}
+function dropAfter(stack, panel) {
+  const panels = panelsOf(stack);
+  for (const p of panels.slice(panels.indexOf(panel) + 1)) {
+    const d = p.previousElementSibling;
+    if (d?.classList.contains("border-layout-stack-divider"))
+      d.remove();
+    p.remove();
+  }
+}
+function report(stack, panels) {
+  const detail = { panels, open: panels.filter(open) };
+  const was = stack._reported;
+  stack._reported = detail;
+  const same = (a, b) => a.length === b.length && a.every((p, i) => p === b[i]);
+  if (!was || same(was.panels, detail.panels) && same(was.open, detail.open))
+    return;
+  stack.dispatchEvent(new CustomEvent("border-layout-stack-change", { bubbles: true, detail }));
+}
 function syncStack(layout, side, region, stack) {
-  exclusive(stack, () => syncStack(layout, side, region, stack));
+  keepOpen(stack, () => syncStack(layout, side, region, stack));
+  drill(stack, panelsOf(stack));
   const row = isRow(stack, side);
   const panels = panelsOf(stack);
+  if (!stack._seen)
+    stack._seen = new Set(panels);
+  for (const p of panels)
+    stack._seen.add(p);
   for (const panel of panels.slice(1)) {
     const prev = panel.previousElementSibling;
     if (prev?.classList.contains("border-layout-stack-divider"))
@@ -5455,8 +5669,12 @@ function syncStack(layout, side, region, stack) {
   }
   if (pending && !pending.hidden)
     pending.hidden = true;
+  for (const d of dfDollar2(stack).children(".border-layout-stack-divider").toArray())
+    if (!d.nextElementSibling?.classList.contains("panel"))
+      d.remove();
+  const levels = levelsOf(stack);
   for (const d of dfDollar2(stack).children(".border-layout-stack-divider").toArray()) {
-    const live = !d.hidden && open(d._prev) && open(d._next);
+    const live = !d.hidden && open(d._prev) && (levels || open(d._next));
     d.setAttribute("aria-disabled", String(!live));
     d.tabIndex = live ? 0 : -1;
     if (!d._prev)
@@ -5465,13 +5683,33 @@ function syncStack(layout, side, region, stack) {
       d._prev.id = `${stack.id || layout.id || "stack"}-${Math.random().toString(36).slice(2, 7)}`;
     d.setAttribute("aria-controls", d._prev.id);
     d.setAttribute("aria-label", `Resize ${titleOf(d._prev) || "panel"}`);
-    if (live) {
+    if (live && levels) {
+      d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
+      d.setAttribute("aria-valuemin", String(minOf(d._prev)));
+      d.setAttribute("aria-valuemax", String(maxLevel(d._prev)));
+    } else if (live) {
       const both = extent(d._prev, row) + extent(d._next, row);
       d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
       d.setAttribute("aria-valuemin", String(minOf(d._prev)));
       d.setAttribute("aria-valuemax", String(Math.round(both - minOf(d._next))));
     }
   }
+  if (stack.hasAttribute("data-drill"))
+    for (const p of panels) {
+      const header = dfDollar2(p).children(".panel-header").get(0);
+      if (!header)
+        continue;
+      const crumb = p.hasAttribute("data-minimized");
+      if (crumb) {
+        header.tabIndex = 0;
+        header.setAttribute("role", "button");
+        header.setAttribute("aria-label", `Back to ${titleOf(p) || "this level"}`);
+      } else if (header.getAttribute("role") === "button") {
+        header.removeAttribute("tabindex");
+        header.removeAttribute("role");
+        header.removeAttribute("aria-label");
+      }
+    }
   const shown = panels.filter((p) => !p.hidden);
   const folded = shown.length > 0 && shown.every((p) => p.hasAttribute("data-minimized"));
   region.toggleAttribute("data-panel-minimized", folded);
@@ -5479,12 +5717,21 @@ function syncStack(layout, side, region, stack) {
   const handle = region.classList.contains("resizer") ? dfDollar2(region).children(".resizer-handle").get(0) : null;
   if (handle)
     handle.inert = folded || !shown.length;
+  report(stack, panels);
 }
+var maxLevel = (panel) => num2(panel.dataset.max, 640);
 function moveDivider(layout, side, divider, delta) {
   const { _prev: a, _next: b } = divider;
+  const stack = divider.parentElement;
+  if (a && levelsOf(stack)) {
+    if (!open(a))
+      return;
+    const px = extent(a, true) + (side === "east" ? -delta : delta);
+    a.style.setProperty("--panel-size", `${Math.round(Math.min(Math.max(px, minOf(a)), maxLevel(a)))}px`);
+    return;
+  }
   if (!a || !b || !open(a) || !open(b))
     return;
-  const stack = divider.parentElement;
   const sizes = new Map(panelsOf(stack).filter(open).map((p) => [p, extent(p, isRow(stack, side))]));
   const both = sizes.get(a) + sizes.get(b);
   const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
@@ -5538,15 +5785,38 @@ function initStacks(layout) {
       divider.addEventListener("pointerup", end);
       divider.addEventListener("pointercancel", end);
     });
+    const bar = (e) => {
+      if (!stack.hasAttribute("data-drill"))
+        return null;
+      const header = e.target.closest?.(".panel-header");
+      const panel = header?.parentElement;
+      if (!panel || panel.parentElement !== stack || !panel.hasAttribute("data-minimized"))
+        return null;
+      if (e.target.closest(".panel-tools"))
+        return null;
+      return panel;
+    };
+    stack.addEventListener("click", (e) => bar(e)?.api?.setState("default"));
+    stack.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ")
+        return;
+      const panel = bar(e);
+      if (!panel)
+        return;
+      e.preventDefault();
+      panel.api?.setState("default");
+    });
     stack.addEventListener("keydown", (e) => {
       const divider = e.target.closest?.(".border-layout-stack-divider");
       if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
         return;
       const step = e.shiftKey ? 100 : 10;
       const back = isRow(stack, side) ? "ArrowLeft" : "ArrowUp", fwd = isRow(stack, side) ? "ArrowRight" : "ArrowDown";
-      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
+      let delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
       if (!delta)
         return;
+      if (levelsOf(stack) && side === "east" && (e.key === "Home" || e.key === "End"))
+        delta = -delta;
       e.preventDefault();
       moveDivider(layout, side, divider, delta);
       sync();
@@ -5730,6 +6000,10 @@ function init2() {
     });
   });
 }
+var resolveStack = (target) => {
+  const el = typeof target === "string" ? dfDollar2(`#${CSS.escape(target)}`).get(0) ?? dfDollar2(target).get(0) : target;
+  return el?.classList.contains("border-layout-stack") ? el : null;
+};
 df$2.borderLayout = {
   collapse: (target, side) => {
     const l = resolve(target);
@@ -5756,6 +6030,38 @@ df$2.borderLayout = {
       clamp(l);
       setSize(r, side, px);
     }
+  },
+  push: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const el = typeof panel === "string" ? dfDollar2(panel).get(0) : panel;
+    if (!el)
+      return null;
+    el.removeAttribute("data-minimized");
+    dfDollar2(st).append(el);
+    return el;
+  },
+  pop: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const panels = panelsOf(st);
+    const el = typeof panel === "number" ? panels[panel] : typeof panel === "string" ? panels.find((p) => p.id === panel) : panels.includes(panel) ? panel : undefined;
+    if (!el)
+      return null;
+    dropAfter(st, el);
+    const api = el.api;
+    if (api)
+      api.setState("default");
+    else
+      el.removeAttribute("data-minimized");
+    return el;
+  },
+  levels: (stack) => {
+    const st = resolveStack(stack);
+    const panels = st ? panelsOf(st) : [];
+    return { panels, open: panels.filter(open) };
   },
   sizes: (target) => {
     const l = resolve(target);
@@ -7091,8 +7397,34 @@ function readColumns(grid) {
     lockedAtStart: el.hasAttribute("data-locked"),
     hiddenAtStart: el.hidden,
     sortField: el.dataset.sortField || el.dataset.field,
-    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null
+    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null,
+    editable: el.hasAttribute("data-editable"),
+    editor: el.dataset.editor || "",
+    rules: columnRules(el)
   }));
+}
+function columnRules(el) {
+  const num = (name) => el.dataset[name] != null && el.dataset[name] !== "" ? Number(el.dataset[name]) : undefined;
+  const rules = {};
+  if (el.hasAttribute("data-required"))
+    rules.required = true;
+  if (el.hasAttribute("data-integer"))
+    rules.integer = true;
+  if (num("min") != null)
+    rules.min = num("min");
+  if (num("max") != null)
+    rules.max = num("max");
+  if (el.dataset.step)
+    rules.step = el.dataset.step;
+  if (num("minLength") != null)
+    rules.minLength = num("minLength");
+  if (num("maxLength") != null)
+    rules.maxLength = num("maxLength");
+  if (el.dataset.pattern)
+    rules.pattern = el.dataset.pattern;
+  if (el.dataset.message)
+    rules.message = el.dataset.message;
+  return rules;
 }
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
@@ -7296,6 +7628,8 @@ function fillCell(grid, cell, column, entry, first) {
     cell.dataset.align = column.align;
   else
     delete cell.dataset.align;
+  cell.toggleAttribute("data-editable", !!column.editable && !grid.hasAttribute("data-readonly"));
+  delete cell.dataset.editing;
   cell.textContent = "";
   if (first && isTree(grid)) {
     cell.style.setProperty("--depth", String(entry.meta.depth));
@@ -7345,6 +7679,7 @@ function renderRows(grid) {
   const base = paging(grid) === "pages" ? Math.max(0, config.page || 0) * pageSize(grid) : 0;
   const headRows = grid._parts.filters ? 2 : 1;
   const focus = grid._focus;
+  let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
     const row = pool.children[i];
     const index = win.first + i;
@@ -7376,6 +7711,17 @@ function renderRows(grid) {
       }
     }
     const id = entry.row[grid._source.idField];
+    const ed = grid._editor;
+    if (ed && ed.id === id) {
+      edShown = true;
+      if (!row.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || !document.activeElement || document.activeElement === document.body;
+        ed.rowEl = row;
+        placeEditor(grid, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
+      }
+    }
     if (grid.dataset.select)
       row.setAttribute("aria-selected", String(selected.has(id)));
     else
@@ -7384,6 +7730,11 @@ function renderRows(grid) {
       row.children[c].tabIndex = focus.row === index && focus.col === c ? 0 : -1;
     }
   }
+  if (grid._editor && !edShown && !grid._writing)
+    queueMicrotask(() => {
+      if (grid._editor && !commitEdit(grid, "none"))
+        cancelEdit(grid, false);
+    });
 }
 function renderFooter(grid, config) {
   const count = (n) => format2(n, "number", grid);
@@ -7456,6 +7807,12 @@ function renderFooter(grid, config) {
 }
 function refresh(grid, config, previous) {
   grid._config = config;
+  if (grid._editor && !grid._writing) {
+    grid._writing = true;
+    if (!commitEdit(grid, "none"))
+      grid._editor = null;
+    grid._writing = false;
+  }
   evaluate(grid, config);
   grid._selected = new Set(config.selected || []);
   grid._shown = shown2(grid, config);
@@ -7570,8 +7927,192 @@ function focusCell(grid, row, col) {
   const target = row === -1 ? grid._order[col].el : dfDollar6(grid._parts.pool).children(".data-grid-row").toArray().find((r) => r._index === row)?.children[col];
   target?.focus({ preventScroll: row === -1 });
 }
+var editableColumn = (grid, col) => {
+  const column = grid._order?.[col];
+  return column?.editable ? column : null;
+};
+var editContext = (grid, record, column) => ({
+  record,
+  field: column.field,
+  type: column.editor || (column.type === "number" ? "number" : valueType(record[column.field], column.options ? { options: column.options } : null)),
+  rules: { ...column.rules, ...column.options ? { options: column.options } : {} },
+  grid
+});
+var rowElOf = (grid, id) => dfDollar6(grid._parts.pool).children(".data-grid-row").toArray().find((r) => grid._shown[r._index]?.row[grid._source.idField] === id);
+function placeEditor(grid, ed) {
+  const col = grid._order.findIndex((c) => c.field === ed.field);
+  const cell = ed.rowEl?.children[col];
+  if (!cell)
+    return;
+  ed.cell = cell;
+  cell.dataset.editing = "";
+  const content = dfDollar6(cell).children(".data-grid-content").get(0);
+  if (content && content !== ed.wrap)
+    content.replaceWith(ed.wrap);
+  else if (!cell.contains(ed.wrap))
+    dfDollar6(cell).append(ed.wrap);
+}
+function openEdit(grid, row, col) {
+  const column = editableColumn(grid, col);
+  const entry = grid._shown?.[row];
+  if (!column || !entry || grid.hasAttribute("data-readonly"))
+    return false;
+  if (grid._editor && !commitEdit(grid, "none"))
+    return false;
+  const record = entry.row;
+  const value = record[column.field];
+  const ctx = editContext(grid, record, column);
+  const custom = grid._sourceOptions?.getEditorFn?.(column.field, value, ctx);
+  if (custom === false)
+    return false;
+  const editor = asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules, { colorClass: "data-grid-color-input" });
+  focusCell(grid, row, col);
+  const id = record[grid._source.idField];
+  const wrap = document.createElement("span");
+  wrap.className = "data-grid-editor data-grid-content";
+  dfDollar6(wrap).append(editor.el);
+  const ed = { id, field: column.field, column, editor, wrap, value, record, rowEl: rowElOf(grid, id), cell: null };
+  grid._editor = ed;
+  placeEditor(grid, ed);
+  wrap.addEventListener("keydown", (e) => {
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    if (act === "cancel") {
+      e.preventDefault();
+      e.stopPropagation();
+      cancelEdit(grid);
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    commitEdit(grid, act === "commit" ? "stay" : act);
+  });
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commitEdit(grid, "stay");
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (grid._editor === ed && !wrap.contains(document.activeElement))
+        commitEdit(grid, "none");
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+function cancelEdit(grid, focus = true) {
+  const ed = grid._editor;
+  if (!ed)
+    return;
+  grid._editor = null;
+  grid._gen++;
+  renderRows(grid);
+  if (focus)
+    focusRecord(grid, ed.id, ed.field);
+}
+function focusRecord(grid, id, field, by = 0) {
+  const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+  const col = grid._order.findIndex((c) => c.field === field);
+  if (row < 0 || col < 0)
+    return;
+  if (!by)
+    return focusCell(grid, row, col);
+  const editable = grid._order.map((c, i) => c.editable ? i : -1).filter((i) => i >= 0);
+  let at = editable.indexOf(col) + by;
+  let r = row;
+  if (at >= editable.length)
+    [at, r] = [0, row + 1];
+  if (at < 0)
+    [at, r] = [editable.length - 1, row - 1];
+  if (r < 0 || r >= grid._shown.length)
+    return focusCell(grid, row, col);
+  openEdit(grid, r, editable[at]);
+}
+function showEditProblem(ed, problem) {
+  const control = editorControl(ed.editor);
+  control.setAttribute("aria-invalid", "true");
+  let note = dfDollar6(ed.wrap).children(".data-grid-error").get(0);
+  if (!note) {
+    note = document.createElement("span");
+    note.className = "data-grid-error";
+    note.setAttribute("role", "alert");
+    note.id = `dg-error-${Math.random().toString(36).slice(2, 8)}`;
+    dfDollar6(ed.wrap).append(note);
+    control.setAttribute("aria-describedby", note.id);
+  }
+  dfDollar6(note).text(problem);
+}
+function writeRecord(grid, id, patch) {
+  const idField = grid._source.idField;
+  const rows = grid._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0)
+    return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  grid._source.setRows(next);
+  grid._writing = true;
+  triggerStateChange6(grid, grid.store.value, grid.store.value);
+  grid._writing = false;
+  return record;
+}
+function commitEdit(grid, then = "stay") {
+  const ed = grid._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = editContext(grid, ed.record, ed.column);
+  if (!problem)
+    problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = grid._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    showEditProblem(ed, problem);
+    return false;
+  }
+  grid._editor = null;
+  const oldValue = ed.value;
+  const before = new CustomEvent("data-grid-beforeedit", {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.record, field: ed.field, value, oldValue }
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !grid.dispatchEvent(before)) {
+    grid._gen++;
+    renderRows(grid);
+  } else {
+    const record = writeRecord(grid, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+      bubbles: true,
+      detail: { record, field: ed.field, value, oldValue }
+    }));
+  }
+  if (then === "stay")
+    focusRecord(grid, ed.id, ed.field);
+  else if (then === "next" || then === "prev")
+    focusRecord(grid, ed.id, ed.field, then === "next" ? 1 : -1);
+  return true;
+}
 function onKeydown2(grid, e) {
-  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu"))
+  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu, .data-grid-editor"))
     return;
   if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
     return;
@@ -7654,7 +8195,16 @@ function onKeydown2(grid, e) {
       selectAll(grid);
       next = [row, col];
       break;
+    case "F2":
+      if (row < 0 || !openEdit(grid, row, col))
+        return;
+      e.preventDefault();
+      return;
     case "Enter":
+      if (row >= 0 && !e.shiftKey && editableColumn(grid, col) && openEdit(grid, row, col)) {
+        e.preventDefault();
+        return;
+      }
       if (row === -1) {
         const column = grid._order[col];
         if (column.sortable)
@@ -7676,7 +8226,7 @@ function onKeydown2(grid, e) {
 }
 function onClick(grid, e) {
   const t = e.target;
-  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer"))
+  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer, .data-grid-editor"))
     return;
   const menuButton = t.closest(".data-grid-menu-button");
   if (menuButton) {
@@ -8220,7 +8770,31 @@ df$6.dataGrid = {
     const filtering = (configOf(grid).filters || []).length > 0;
     query(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });
   },
-  resetColumns: (target) => resetColumns(resolve2(target))
+  resetColumns: (target) => resetColumns(resolve2(target)),
+  edit(target, id, field) {
+    const grid = resolve2(target);
+    const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+    const col = grid._order.findIndex((c) => c.field === field);
+    if (row < 0 || col < 0)
+      return false;
+    focusCell(grid, row, col);
+    return openEdit(grid, row, col);
+  },
+  commit: (target) => commitEdit(resolve2(target)),
+  cancel: (target) => cancelEdit(resolve2(target)),
+  update(target, id, patch) {
+    const grid = resolve2(target);
+    const old = grid._source.rows.find((r) => r[grid._source.idField] === id);
+    if (!old)
+      return null;
+    const record = writeRecord(grid, id, patch);
+    for (const field of Object.keys(patch))
+      grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+        bubbles: true,
+        detail: { record, field, value: patch[field], oldValue: old[field] }
+      }));
+    return record;
+  }
 };
 function init6() {
   dfDollar6(".data-grid:not([data-init])").toArray().forEach((grid) => {
@@ -8312,6 +8886,13 @@ function init6() {
         openMenu(grid, column);
     });
     grid.addEventListener("dblclick", (e) => {
+      const cell = e.target.closest(".data-grid-cell");
+      const rowEl = cell?.closest(".data-grid-row");
+      if (cell && rowEl && grid._parts.pool.contains(rowEl) && !cell.hasAttribute("data-editing")) {
+        if (openEdit(grid, rowEl._index, [...rowEl.children].indexOf(cell)))
+          e.preventDefault();
+        return;
+      }
       const handle = e.target.closest(".data-grid-resizer");
       if (!handle)
         return;
@@ -19431,6 +20012,6 @@ function init17() {
 init17();
 new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
-//# debugId=F43F330119A8336E64756E2164756E21
+//# debugId=744AECDD04FBA21064756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=knowledge-graph.js.map

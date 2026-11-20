@@ -6417,6 +6417,30 @@
     }
   }
 
+  /* deep navigation (data-levels on a row stack): each open level keeps its own width (--panel-size), a folded one is
+     its bar, and the region is their sum - what a level gives up goes to the center. On the east side the levels run
+     from the edge toward the center. A folded level in a drill stack is a breadcrumb: it takes the pointer. */
+  .border-layout-stack[data-levels] > .panel:not([data-minimized]) {
+    flex: none;
+    inline-size: var(--panel-size, 16rem);
+  }
+  .border-layout-east > .border-layout-stack[data-levels],
+  .border-layout-stack[data-levels].border-layout-east {
+    flex-direction: row-reverse;
+  }
+  .border-layout-stack[data-drill] > .panel[data-minimized] > .panel-header {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
   /* the divider between two panels: a line with a wider hit area */
   .border-layout-stack-divider {
     position: relative;
@@ -14441,6 +14465,63 @@
     text-overflow: ellipsis;
   }
 
+  /* -- inline editing: an editable column's cell holds its editor ------------------
+     The editor fills the cell (a row keeps its height); a refused value shows its message below the cell,
+     over the next row. */
+  .data-grid-cell[data-editing] {
+    overflow: visible;
+    padding-inline: 0.25rem;
+    z-index: 2;
+  }
+  .data-grid-editor {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    overflow: visible;
+
+    & > :is(.input, .select, .textarea) {
+      flex: 1;
+      min-width: 0;
+      inline-size: 100%;
+    }
+    & > .textarea {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline: 0;
+      z-index: 3;
+      min-block-size: 6rem;
+      box-shadow: var(--shadow-md);
+    }
+  }
+  .data-grid-color-input {
+    inline-size: 2.5rem;
+    block-size: calc(var(--data-grid-row-height) - 0.75rem);
+    padding: 0;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    cursor: pointer;
+  }
+  .data-grid-error {
+    position: absolute;
+    inset-block-start: calc(100% + 0.25rem);
+    inset-inline-start: 0;
+    z-index: 4;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--destructive);
+    color: var(--destructive-foreground);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+  }
+  /* an editable cell says so on hover: a double click edits it */
+  .data-grid-row > .data-grid-cell[data-editable]:not([data-editing]):hover {
+    box-shadow: inset 0 0 0 1px var(--input);
+  }
+
   /* -- tree grid: the first column indents and carries the toggle --- */
   .data-grid-toggle {
     flex: none;
@@ -14896,6 +14977,43 @@
     50% {
       opacity: 0.3;
     }
+  }
+
+  /* -- inline editing (data-editable): the label holds its editor; a refused value shows its message below -- */
+  .data-tree-item[data-editing] {
+    overflow: visible;
+    z-index: 2;
+
+    & .data-tree-label {
+      flex: 1;
+      overflow: visible;
+    }
+  }
+  .data-tree-editor {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+
+    & > :is(.input, .select) {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+  .data-tree-error {
+    position: absolute;
+    inset-block-start: calc(100% + 0.25rem);
+    inset-inline-start: 0;
+    z-index: 4;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--destructive);
+    color: var(--destructive-foreground);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
   }
 }
 
@@ -40458,6 +40576,390 @@
   }
 }
 
+/* ── components/property-tree/property-tree.css ── */
+/* -- Property Tree -------------------------------------------------------------
+   One value as a tree of key / value rows - only the open branches have rows, only the rows on screen exist. A row:
+   its fold arrow, its key, its value (a reference to an earlier appearance is a link), its type, an actions button.
+   A value or a key edits in place. Every color, radius and font is the theme's; the value colours are its chart
+   colours. */
+
+@layer components {
+  :where(.property-tree, .property-tree *, .property-tree *::before, .property-tree *::after) {
+    box-sizing: border-box;
+  }
+
+  .property-tree {
+    --property-tree-row-height: 28px;
+    --property-tree-indent: 1rem;
+    --property-tree-key-width: 38%;
+    --property-tree-font: 0.8125rem;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    block-size: 20rem;
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: var(--property-tree-font);
+    line-height: 1.35;
+
+    &[data-variant="comfortable"] {
+      --property-tree-row-height: 34px;
+      --property-tree-font: 0.875rem;
+    }
+    &[data-frame="none"] {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+    & > script {
+      display: none;
+    }
+  }
+
+  .property-tree-viewport {
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-radius: inherit;
+
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+  .property-tree-sizer {
+    position: relative;
+  }
+  .property-tree-rows {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+  }
+
+  .property-tree-row {
+    display: grid;
+    grid-template-columns:
+      calc(0.5rem + var(--depth, 0) * var(--property-tree-indent) + 1rem)
+      minmax(4rem, var(--property-tree-key-width)) minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 0.5rem;
+    block-size: var(--property-tree-row-height);
+    padding-inline-end: 0.25rem;
+    white-space: nowrap;
+    cursor: default;
+
+    &:hover {
+      background: color-mix(in oklab, var(--accent) 60%, transparent);
+    }
+    &[aria-selected="true"] {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    .property-tree-viewport:focus-visible &[data-active] {
+      box-shadow: inset 0 0 0 2px var(--ring);
+    }
+    &[data-editing] {
+      position: relative;
+      z-index: 2;
+      background: var(--background);
+    }
+  }
+
+  .property-tree-toggle {
+    justify-self: end;
+    inline-size: 1rem;
+    block-size: 1rem;
+    cursor: pointer;
+
+    &::before {
+      content: "";
+      display: block;
+      inline-size: 100%;
+      block-size: 100%;
+      background: currentColor;
+      opacity: 0.6;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+        center / 0.875rem no-repeat;
+      transition: rotate 120ms ease;
+    }
+    [aria-expanded="true"] > &::before {
+      rotate: 90deg;
+    }
+    &[data-leaf] {
+      cursor: default;
+
+      &::before {
+        opacity: 0;
+      }
+    }
+  }
+
+  .property-tree-key {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+
+    &[data-key-kind="index"] {
+      color: var(--muted-foreground);
+      font-family: var(--font-mono);
+      font-weight: 400;
+    }
+    &[data-key-kind="root"] {
+      color: var(--muted-foreground);
+    }
+  }
+
+  .property-tree-value {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+
+    &[data-kind="string"] {
+      color: var(--chart-2);
+    }
+    &:is([data-kind="number"], [data-kind="bigint"]) {
+      color: var(--chart-1);
+    }
+    &[data-kind="boolean"] {
+      color: var(--chart-4);
+    }
+    &:is([data-kind="null"], [data-kind="undefined"]) {
+      color: var(--muted-foreground);
+      font-style: italic;
+    }
+    &:is([data-kind="date"], [data-kind="regexp"]) {
+      color: var(--chart-5);
+    }
+    &:is([data-kind="object"], [data-kind="array"], [data-kind="map"], [data-kind="set"], [data-kind="typed"]) {
+      color: var(--muted-foreground);
+    }
+    [aria-selected="true"] > & {
+      color: inherit;
+    }
+  }
+  .property-tree-swatch {
+    flex: none;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--foreground) 20%, transparent);
+  }
+  .property-tree-ref {
+    padding: 0 0.375rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--primary);
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      border-style: solid;
+    }
+  }
+
+  .property-tree-type {
+    padding: 0 0.375rem;
+    border-radius: var(--radius-sm);
+    background: var(--muted);
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    line-height: 1.5;
+  }
+
+  .property-tree-actions {
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    opacity: 0;
+
+    &::before {
+      content: "";
+      inline-size: 1rem;
+      block-size: 1rem;
+      background: currentColor;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='5' cy='12' r='1.8'/%3E%3Ccircle cx='12' cy='12' r='1.8'/%3E%3Ccircle cx='19' cy='12' r='1.8'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    }
+    :is(.property-tree-row:hover, .property-tree-row[data-active], .property-tree-row[aria-selected="true"]) > &,
+    &[aria-expanded="true"] {
+      opacity: 1;
+    }
+    &:hover {
+      background: var(--muted);
+      color: var(--foreground);
+    }
+  }
+  .property-tree[data-readonly] .property-tree-actions {
+    display: none;
+  }
+
+  /* -- editing: a value's (or a key's) editor fills its cell; a refused value shows its message below -- */
+  .property-tree-editor {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    font-family: var(--font-sans);
+
+    & > :is(.input, .select) {
+      flex: 1;
+      min-width: 0;
+    }
+    & > .textarea {
+      position: absolute;
+      inset-block-start: -0.25rem;
+      inset-inline: 0;
+      z-index: 3;
+      min-block-size: 8rem;
+      font-family: var(--font-mono);
+      box-shadow: var(--shadow-md);
+    }
+  }
+  .property-tree-row[data-editing] :is(.property-tree-key, .property-tree-value) {
+    overflow: visible;
+  }
+  .property-tree-color-input {
+    inline-size: 2.5rem;
+    block-size: calc(var(--property-tree-row-height) - 6px);
+    padding: 0;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    cursor: pointer;
+  }
+  .property-tree-error {
+    position: absolute;
+    inset-block-start: calc(100% + 0.25rem);
+    inset-inline-start: 0;
+    z-index: 4;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--destructive);
+    color: var(--destructive-foreground);
+    font-size: 0.75rem;
+    font-family: var(--font-sans);
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+  }
+
+  /* -- the actions menu: one per tree, anchored to the row's button -- */
+  .property-tree-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    position-area: block-end span-inline-start;
+    position-try-fallbacks: flip-block, flip-inline;
+    min-inline-size: 12rem;
+    max-block-size: min(24rem, 70vh);
+    overflow-y: auto;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow: var(--shadow-md);
+    font-size: 0.8125rem;
+  }
+  .property-tree-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    inline-size: 100%;
+    padding: 0.3125rem 0.5rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    &:is(:hover, :focus-visible) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      outline: none;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    &[role="menuitemradio"]::before {
+      content: "";
+      inline-size: 0.5rem;
+      block-size: 0.5rem;
+      border-radius: 50%;
+    }
+    &[aria-checked="true"]::before {
+      background: currentColor;
+    }
+  }
+  .property-tree-menu-separator {
+    block-size: 1px;
+    margin: 0.25rem -0.25rem;
+    background: var(--border);
+  }
+}
+
+/* -- Accessibility ----------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  @layer components {
+    .property-tree-toggle::before {
+      transition: none;
+    }
+  }
+}
+
+@media (prefers-contrast: more) {
+  @layer components {
+    .property-tree {
+      border-color: var(--foreground);
+    }
+    .property-tree-type,
+    .property-tree-value {
+      color: var(--foreground);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .property-tree {
+      border-color: CanvasText;
+    }
+    .property-tree-row[aria-selected="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+    .property-tree-toggle::before,
+    .property-tree-actions::before {
+      background: CanvasText;
+    }
+    .property-tree-viewport:focus-visible .property-tree-row[data-active] {
+      outline: 2px solid Highlight;
+    }
+  }
+}
+
 /* ── components/qr-code/qr-code.css ── */
 /* QR's frame follows the theme; the symbol keeps normal dark-on-light polarity. */
 @layer components {
@@ -55938,18 +56440,53 @@
 /* ── components/text-rotate/text-rotate.css ── */
 /* -- Text Rotate component ------------------------------------------ */
 
+/* the two counters the loop runs on - registered so they animate, inherited so every line reads them */
+@property --_text-rotate-i {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 0;
+}
+/* the line count and a line's index, registered as integers: a value from sibling-count() / sibling-index() computes to
+   a number before steps() and calc() read it (VERIFIED: Firefox kept the raw sibling-count() text, and
+   steps(sibling-count()) dropped the animation) */
+@property --_text-rotate-n {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --_text-rotate-k {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+/* the round's progress, 0 to 1 in steps of 1/n - literal keyframes (VERIFIED: Firefox does not interpolate a keyframe
+   value written as var(), it flipped at half time) */
+@property --_text-rotate-t {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --_text-rotate-e {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
 @layer components {
-  /* daisyUI's text-rotate, CSS only: a .text-rotate holds one <span> of 2-6
-     lines (each a child element); one line shows at a time and the stack
-     rolls on to the next - an infinite loop that pauses while hovered. The
-     window is one line tall (1lh), so it works at any font-size and
-     line-height, inline in a sentence or as a headline. The keyframes are
-     picked from the line count (:has()); --text-rotate-duration sets one
-     full round (default 10s). data-direction="down" rolls the other way,
-     data-effect="fade" crossfades in place, data-pause="none" keeps it
-     running under the pointer. Reduced motion shows the first line only. */
+  /* daisyUI's text-rotate, CSS only: a .text-rotate holds one <span> of lines (each a child element, any number from
+     2); one line shows at a time and the stack rolls on to the next - an infinite loop that pauses while hovered. The
+     window is one line tall (1lh), so it works at any font-size and line-height, inline in a sentence or as a
+     headline. --text-rotate-duration sets one full round (default 10s). data-direction="down" rolls the other way,
+     data-effect="fade" crossfades in place, data-pause="none" keeps it running under the pointer. Reduced motion shows
+     the first line only.
+
+     One mechanism for every line count: two registered counters animate on every line, in step - --_text-rotate-t,
+     the round's progress (0, 1/n, 2/n ... in steps(n); times n it is i, the line shown), and --_text-rotate-e, the roll
+     at the end of each slot (0 while the line holds, easing to 1 in the slot's last 8%). Every line moves by i + e
+     lines, so the stack rolls as one; in the last slot it rolls back to the first line. A fade reads the same counters on every line. n is the line count (sibling-count(), or the :has()
+     rules below), k a line's index (sibling-index(), or :nth-child()). */
   .text-rotate {
-    --_n: 1;
+    --_text-rotate-n: 1;
     --_dur: var(--text-rotate-duration, 10s);
     display: inline-grid;
     height: 1lh;
@@ -55959,12 +56496,24 @@
     & > span {
       display: flex;
       flex-direction: column;
-      animation: var(--_name, none) var(--_dur) cubic-bezier(0.65, 0, 0.35, 1) infinite;
     }
+    /* every line runs the same two animations (in step - they start together) and moves by the same amount, so the
+       stack rolls as one; a line's own sibling-count() is the line count */
     & > span > * {
+      --_text-rotate-k: 0;
+      /* the line shown, 0 to n - 1 (an integer: the progress times n, rounded) */
+      --_text-rotate-i: calc(var(--_text-rotate-t) * var(--_text-rotate-n));
+      /* 1 in the last slot: the roll goes back to the first line */
+      --_last: clamp(0, var(--_text-rotate-i) - var(--_text-rotate-n) + 2, 1);
+      /* how many lines the stack has moved up: i + e, and back to 0 across the last slot */
+      --_p: calc(var(--_text-rotate-i) + var(--_text-rotate-e) * (1 - var(--_text-rotate-n) * var(--_last)));
       display: block;
       height: 1lh;
       white-space: nowrap;
+      translate: 0 calc(var(--_p) * -1lh);
+      animation:
+        text-rotate-index var(--_dur) steps(var(--_text-rotate-n)) infinite,
+        text-rotate-roll calc(var(--_dur) / var(--_text-rotate-n)) infinite;
     }
     &[data-align="center"] > span > * {
       text-align: center;
@@ -55973,389 +56522,309 @@
       text-align: end;
     }
 
-    &:hover > span,
-    &:focus-within > span {
+    &:hover > span > *,
+    &:focus-within > span > * {
       animation-play-state: paused;
     }
-    &[data-pause="none"]:hover > span,
-    &[data-pause="none"]:focus-within > span {
+    &[data-pause="none"]:hover > span > *,
+    &[data-pause="none"]:focus-within > span > * {
       animation-play-state: running;
     }
 
+    /* down: the lines stack bottom up and the stack moves down - line i sits n - 1 - i lines from the top */
     &[data-direction="down"] > span {
       flex-direction: column-reverse;
-      animation-name: var(--_down, none);
+    }
+    &[data-direction="down"] > span > * {
+      translate: 0 calc((var(--_text-rotate-n) - 1 - var(--_p)) * -1lh);
     }
 
-    /* fade: every line in the same cell, each fades through its slot */
+    /* fade: every line in the same cell; the line shown fades out across the slot's roll while the next fades in */
     &[data-effect="fade"] > span {
       display: grid;
-      animation: none;
     }
     &[data-effect="fade"] > span > * {
+      /* 1 for the line shown, 1 for the line after it (the first after the last) */
+      --_on: calc(1 - min(1, abs(var(--_text-rotate-i) - var(--_text-rotate-k))));
+      --_text-rotate-next: calc(
+        1 - min(1, abs(mod(var(--_text-rotate-i) + 1, var(--_text-rotate-n)) - var(--_text-rotate-k)))
+      );
       grid-area: 1 / 1;
-      opacity: 0;
-      animation: var(--_fade, none) var(--_dur) ease infinite both;
-    }
-    &[data-effect="fade"]:hover > span > *,
-    &[data-effect="fade"]:focus-within > span > * {
-      animation-play-state: paused;
-    }
-    &[data-effect="fade"][data-pause="none"]:hover > span > * {
-      animation-play-state: running;
+      opacity: calc(var(--_on) * (1 - var(--_text-rotate-e)) + var(--_text-rotate-next) * var(--_text-rotate-e));
+      translate: 0
+        calc((var(--_text-rotate-next) * (1 - var(--_text-rotate-e)) - var(--_on) * var(--_text-rotate-e)) * 0.25lh);
     }
   }
 
-  /* the line count picks the keyframes */
+  /* the line count and each line's index: the browser counts where it can, else the rules below (up to 40 lines) */
   .text-rotate:has(> span > :nth-child(2):last-child) {
-    --_n: 2;
-    --_name: text-rotate-2;
-    --_down: text-rotate-2-down;
-    --_fade: text-rotate-fade-2;
+    --_text-rotate-n: 2;
   }
   .text-rotate:has(> span > :nth-child(3):last-child) {
-    --_n: 3;
-    --_name: text-rotate-3;
-    --_down: text-rotate-3-down;
-    --_fade: text-rotate-fade-3;
+    --_text-rotate-n: 3;
   }
   .text-rotate:has(> span > :nth-child(4):last-child) {
-    --_n: 4;
-    --_name: text-rotate-4;
-    --_down: text-rotate-4-down;
-    --_fade: text-rotate-fade-4;
+    --_text-rotate-n: 4;
   }
   .text-rotate:has(> span > :nth-child(5):last-child) {
-    --_n: 5;
-    --_name: text-rotate-5;
-    --_down: text-rotate-5-down;
-    --_fade: text-rotate-fade-5;
+    --_text-rotate-n: 5;
   }
   .text-rotate:has(> span > :nth-child(6):last-child) {
-    --_n: 6;
-    --_name: text-rotate-6;
-    --_down: text-rotate-6-down;
-    --_fade: text-rotate-fade-6;
+    --_text-rotate-n: 6;
+  }
+  .text-rotate:has(> span > :nth-child(7):last-child) {
+    --_text-rotate-n: 7;
+  }
+  .text-rotate:has(> span > :nth-child(8):last-child) {
+    --_text-rotate-n: 8;
+  }
+  .text-rotate:has(> span > :nth-child(9):last-child) {
+    --_text-rotate-n: 9;
+  }
+  .text-rotate:has(> span > :nth-child(10):last-child) {
+    --_text-rotate-n: 10;
+  }
+  .text-rotate:has(> span > :nth-child(11):last-child) {
+    --_text-rotate-n: 11;
+  }
+  .text-rotate:has(> span > :nth-child(12):last-child) {
+    --_text-rotate-n: 12;
+  }
+  .text-rotate:has(> span > :nth-child(13):last-child) {
+    --_text-rotate-n: 13;
+  }
+  .text-rotate:has(> span > :nth-child(14):last-child) {
+    --_text-rotate-n: 14;
+  }
+  .text-rotate:has(> span > :nth-child(15):last-child) {
+    --_text-rotate-n: 15;
+  }
+  .text-rotate:has(> span > :nth-child(16):last-child) {
+    --_text-rotate-n: 16;
+  }
+  .text-rotate:has(> span > :nth-child(17):last-child) {
+    --_text-rotate-n: 17;
+  }
+  .text-rotate:has(> span > :nth-child(18):last-child) {
+    --_text-rotate-n: 18;
+  }
+  .text-rotate:has(> span > :nth-child(19):last-child) {
+    --_text-rotate-n: 19;
+  }
+  .text-rotate:has(> span > :nth-child(20):last-child) {
+    --_text-rotate-n: 20;
+  }
+  .text-rotate:has(> span > :nth-child(21):last-child) {
+    --_text-rotate-n: 21;
+  }
+  .text-rotate:has(> span > :nth-child(22):last-child) {
+    --_text-rotate-n: 22;
+  }
+  .text-rotate:has(> span > :nth-child(23):last-child) {
+    --_text-rotate-n: 23;
+  }
+  .text-rotate:has(> span > :nth-child(24):last-child) {
+    --_text-rotate-n: 24;
+  }
+  .text-rotate:has(> span > :nth-child(25):last-child) {
+    --_text-rotate-n: 25;
+  }
+  .text-rotate:has(> span > :nth-child(26):last-child) {
+    --_text-rotate-n: 26;
+  }
+  .text-rotate:has(> span > :nth-child(27):last-child) {
+    --_text-rotate-n: 27;
+  }
+  .text-rotate:has(> span > :nth-child(28):last-child) {
+    --_text-rotate-n: 28;
+  }
+  .text-rotate:has(> span > :nth-child(29):last-child) {
+    --_text-rotate-n: 29;
+  }
+  .text-rotate:has(> span > :nth-child(30):last-child) {
+    --_text-rotate-n: 30;
+  }
+  .text-rotate:has(> span > :nth-child(31):last-child) {
+    --_text-rotate-n: 31;
+  }
+  .text-rotate:has(> span > :nth-child(32):last-child) {
+    --_text-rotate-n: 32;
+  }
+  .text-rotate:has(> span > :nth-child(33):last-child) {
+    --_text-rotate-n: 33;
+  }
+  .text-rotate:has(> span > :nth-child(34):last-child) {
+    --_text-rotate-n: 34;
+  }
+  .text-rotate:has(> span > :nth-child(35):last-child) {
+    --_text-rotate-n: 35;
+  }
+  .text-rotate:has(> span > :nth-child(36):last-child) {
+    --_text-rotate-n: 36;
+  }
+  .text-rotate:has(> span > :nth-child(37):last-child) {
+    --_text-rotate-n: 37;
+  }
+  .text-rotate:has(> span > :nth-child(38):last-child) {
+    --_text-rotate-n: 38;
+  }
+  .text-rotate:has(> span > :nth-child(39):last-child) {
+    --_text-rotate-n: 39;
+  }
+  .text-rotate:has(> span > :nth-child(40):last-child) {
+    --_text-rotate-n: 40;
+  }
+  .text-rotate > span > :nth-child(2) {
+    --_text-rotate-k: 1;
+  }
+  .text-rotate > span > :nth-child(3) {
+    --_text-rotate-k: 2;
+  }
+  .text-rotate > span > :nth-child(4) {
+    --_text-rotate-k: 3;
+  }
+  .text-rotate > span > :nth-child(5) {
+    --_text-rotate-k: 4;
+  }
+  .text-rotate > span > :nth-child(6) {
+    --_text-rotate-k: 5;
+  }
+  .text-rotate > span > :nth-child(7) {
+    --_text-rotate-k: 6;
+  }
+  .text-rotate > span > :nth-child(8) {
+    --_text-rotate-k: 7;
+  }
+  .text-rotate > span > :nth-child(9) {
+    --_text-rotate-k: 8;
+  }
+  .text-rotate > span > :nth-child(10) {
+    --_text-rotate-k: 9;
+  }
+  .text-rotate > span > :nth-child(11) {
+    --_text-rotate-k: 10;
+  }
+  .text-rotate > span > :nth-child(12) {
+    --_text-rotate-k: 11;
+  }
+  .text-rotate > span > :nth-child(13) {
+    --_text-rotate-k: 12;
+  }
+  .text-rotate > span > :nth-child(14) {
+    --_text-rotate-k: 13;
+  }
+  .text-rotate > span > :nth-child(15) {
+    --_text-rotate-k: 14;
+  }
+  .text-rotate > span > :nth-child(16) {
+    --_text-rotate-k: 15;
+  }
+  .text-rotate > span > :nth-child(17) {
+    --_text-rotate-k: 16;
+  }
+  .text-rotate > span > :nth-child(18) {
+    --_text-rotate-k: 17;
+  }
+  .text-rotate > span > :nth-child(19) {
+    --_text-rotate-k: 18;
+  }
+  .text-rotate > span > :nth-child(20) {
+    --_text-rotate-k: 19;
+  }
+  .text-rotate > span > :nth-child(21) {
+    --_text-rotate-k: 20;
+  }
+  .text-rotate > span > :nth-child(22) {
+    --_text-rotate-k: 21;
+  }
+  .text-rotate > span > :nth-child(23) {
+    --_text-rotate-k: 22;
+  }
+  .text-rotate > span > :nth-child(24) {
+    --_text-rotate-k: 23;
+  }
+  .text-rotate > span > :nth-child(25) {
+    --_text-rotate-k: 24;
+  }
+  .text-rotate > span > :nth-child(26) {
+    --_text-rotate-k: 25;
+  }
+  .text-rotate > span > :nth-child(27) {
+    --_text-rotate-k: 26;
+  }
+  .text-rotate > span > :nth-child(28) {
+    --_text-rotate-k: 27;
+  }
+  .text-rotate > span > :nth-child(29) {
+    --_text-rotate-k: 28;
+  }
+  .text-rotate > span > :nth-child(30) {
+    --_text-rotate-k: 29;
+  }
+  .text-rotate > span > :nth-child(31) {
+    --_text-rotate-k: 30;
+  }
+  .text-rotate > span > :nth-child(32) {
+    --_text-rotate-k: 31;
+  }
+  .text-rotate > span > :nth-child(33) {
+    --_text-rotate-k: 32;
+  }
+  .text-rotate > span > :nth-child(34) {
+    --_text-rotate-k: 33;
+  }
+  .text-rotate > span > :nth-child(35) {
+    --_text-rotate-k: 34;
+  }
+  .text-rotate > span > :nth-child(36) {
+    --_text-rotate-k: 35;
+  }
+  .text-rotate > span > :nth-child(37) {
+    --_text-rotate-k: 36;
+  }
+  .text-rotate > span > :nth-child(38) {
+    --_text-rotate-k: 37;
+  }
+  .text-rotate > span > :nth-child(39) {
+    --_text-rotate-k: 38;
+  }
+  .text-rotate > span > :nth-child(40) {
+    --_text-rotate-k: 39;
+  }
+  @supports (z-index: sibling-count()) {
+    .text-rotate > span > * {
+      --_text-rotate-n: sibling-count();
+      --_text-rotate-k: calc(sibling-index() - 1);
+    }
   }
 
-  /* fade: line k starts its slot k-1 slots later */
-  .text-rotate[data-effect="fade"] > span > :nth-child(2) {
-    animation-delay: calc(var(--_dur) * 1 / var(--_n));
+  /* the round's progress: 0, 1/n, 2/n ... (steps(n)) - the line shown is that times n */
+  @keyframes text-rotate-index {
+    from {
+      --_text-rotate-t: 0;
+    }
+    to {
+      --_text-rotate-t: 1;
+    }
   }
-  .text-rotate[data-effect="fade"] > span > :nth-child(3) {
-    animation-delay: calc(var(--_dur) * 2 / var(--_n));
-  }
-  .text-rotate[data-effect="fade"] > span > :nth-child(4) {
-    animation-delay: calc(var(--_dur) * 3 / var(--_n));
-  }
-  .text-rotate[data-effect="fade"] > span > :nth-child(5) {
-    animation-delay: calc(var(--_dur) * 4 / var(--_n));
-  }
-  .text-rotate[data-effect="fade"] > span > :nth-child(6) {
-    animation-delay: calc(var(--_dur) * 5 / var(--_n));
-  }
-
-  @keyframes text-rotate-2 {
+  /* each slot: the line holds for 92%, then the roll eases to the next */
+  @keyframes text-rotate-roll {
     0%,
-    46% {
-      translate: 0 0;
-    }
-    50%,
-    96% {
-      translate: 0 -50%;
+    92% {
+      --_text-rotate-e: 0;
+      animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
     }
     100% {
-      translate: 0 0;
-    }
-  }
-  @keyframes text-rotate-2-down {
-    0%,
-    46% {
-      translate: 0 -50%;
-    }
-    50%,
-    96% {
-      translate: 0 0;
-    }
-    100% {
-      translate: 0 -50%;
-    }
-  }
-  @keyframes text-rotate-fade-2 {
-    0% {
-      opacity: 0;
-      translate: 0 0.25lh;
-    }
-    4%,
-    46% {
-      opacity: 1;
-      translate: 0 0;
-    }
-    50%,
-    100% {
-      opacity: 0;
-      translate: 0 -0.25lh;
-    }
-  }
-  @keyframes text-rotate-3 {
-    0%,
-    30.667% {
-      translate: 0 0;
-    }
-    33.333%,
-    64% {
-      translate: 0 -33.3333%;
-    }
-    66.667%,
-    97.333% {
-      translate: 0 -66.6667%;
-    }
-    100% {
-      translate: 0 0;
-    }
-  }
-  @keyframes text-rotate-3-down {
-    0%,
-    30.667% {
-      translate: 0 -66.6667%;
-    }
-    33.333%,
-    64% {
-      translate: 0 -33.3333%;
-    }
-    66.667%,
-    97.333% {
-      translate: 0 0;
-    }
-    100% {
-      translate: 0 -66.6667%;
-    }
-  }
-  @keyframes text-rotate-fade-3 {
-    0% {
-      opacity: 0;
-      translate: 0 0.25lh;
-    }
-    2.667%,
-    30.667% {
-      opacity: 1;
-      translate: 0 0;
-    }
-    33.333%,
-    100% {
-      opacity: 0;
-      translate: 0 -0.25lh;
-    }
-  }
-  @keyframes text-rotate-4 {
-    0%,
-    23% {
-      translate: 0 0;
-    }
-    25%,
-    48% {
-      translate: 0 -25%;
-    }
-    50%,
-    73% {
-      translate: 0 -50%;
-    }
-    75%,
-    98% {
-      translate: 0 -75%;
-    }
-    100% {
-      translate: 0 0;
-    }
-  }
-  @keyframes text-rotate-4-down {
-    0%,
-    23% {
-      translate: 0 -75%;
-    }
-    25%,
-    48% {
-      translate: 0 -50%;
-    }
-    50%,
-    73% {
-      translate: 0 -25%;
-    }
-    75%,
-    98% {
-      translate: 0 0;
-    }
-    100% {
-      translate: 0 -75%;
-    }
-  }
-  @keyframes text-rotate-fade-4 {
-    0% {
-      opacity: 0;
-      translate: 0 0.25lh;
-    }
-    2%,
-    23% {
-      opacity: 1;
-      translate: 0 0;
-    }
-    25%,
-    100% {
-      opacity: 0;
-      translate: 0 -0.25lh;
-    }
-  }
-  @keyframes text-rotate-5 {
-    0%,
-    18.4% {
-      translate: 0 0;
-    }
-    20%,
-    38.4% {
-      translate: 0 -20%;
-    }
-    40%,
-    58.4% {
-      translate: 0 -40%;
-    }
-    60%,
-    78.4% {
-      translate: 0 -60%;
-    }
-    80%,
-    98.4% {
-      translate: 0 -80%;
-    }
-    100% {
-      translate: 0 0;
-    }
-  }
-  @keyframes text-rotate-5-down {
-    0%,
-    18.4% {
-      translate: 0 -80%;
-    }
-    20%,
-    38.4% {
-      translate: 0 -60%;
-    }
-    40%,
-    58.4% {
-      translate: 0 -40%;
-    }
-    60%,
-    78.4% {
-      translate: 0 -20%;
-    }
-    80%,
-    98.4% {
-      translate: 0 0;
-    }
-    100% {
-      translate: 0 -80%;
-    }
-  }
-  @keyframes text-rotate-fade-5 {
-    0% {
-      opacity: 0;
-      translate: 0 0.25lh;
-    }
-    1.6%,
-    18.4% {
-      opacity: 1;
-      translate: 0 0;
-    }
-    20%,
-    100% {
-      opacity: 0;
-      translate: 0 -0.25lh;
-    }
-  }
-  @keyframes text-rotate-6 {
-    0%,
-    15.333% {
-      translate: 0 0;
-    }
-    16.667%,
-    32% {
-      translate: 0 -16.6667%;
-    }
-    33.333%,
-    48.667% {
-      translate: 0 -33.3333%;
-    }
-    50%,
-    65.333% {
-      translate: 0 -50%;
-    }
-    66.667%,
-    82% {
-      translate: 0 -66.6667%;
-    }
-    83.333%,
-    98.667% {
-      translate: 0 -83.3333%;
-    }
-    100% {
-      translate: 0 0;
-    }
-  }
-  @keyframes text-rotate-6-down {
-    0%,
-    15.333% {
-      translate: 0 -83.3333%;
-    }
-    16.667%,
-    32% {
-      translate: 0 -66.6667%;
-    }
-    33.333%,
-    48.667% {
-      translate: 0 -50%;
-    }
-    50%,
-    65.333% {
-      translate: 0 -33.3333%;
-    }
-    66.667%,
-    82% {
-      translate: 0 -16.6667%;
-    }
-    83.333%,
-    98.667% {
-      translate: 0 0;
-    }
-    100% {
-      translate: 0 -83.3333%;
-    }
-  }
-  @keyframes text-rotate-fade-6 {
-    0% {
-      opacity: 0;
-      translate: 0 0.25lh;
-    }
-    1.333%,
-    15.333% {
-      opacity: 1;
-      translate: 0 0;
-    }
-    16.667%,
-    100% {
-      opacity: 0;
-      translate: 0 -0.25lh;
+      --_text-rotate-e: 1;
     }
   }
 
   /* -- Accessibility ----------------------------------------------------
-     Reduced motion: no rolling - the first line stays. All lines stay in
-     the DOM, so assistive tech reads the full list. */
+     Reduced motion: no rolling - the first line stays (both counters rest at 0). All lines stay in the DOM, so
+     assistive tech reads the full list. */
   @media (prefers-reduced-motion: reduce) {
-    .text-rotate > span,
-    .text-rotate[data-effect="fade"] > span > * {
+    .text-rotate > span > * {
       animation: none;
-    }
-    .text-rotate[data-effect="fade"] > span > :first-child {
-      opacity: 1;
     }
   }
 }

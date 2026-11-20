@@ -1,0 +1,130 @@
+---
+title: "Tray"
+description: "Tray component - the notification area of a taskbar: icon buttons that open popovers and carry badges, a clock in the page's language, and a show-desktop strip."
+slug: "tray"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="tray" title="Tray" component="tray">
+  The notification area at the end of a <DocLink href="taskbar.html">Taskbar</DocLink>. Its items are small icon buttons: one opens its panel natively through <code>popovertarget</code>, one carries a badge. The clock is the runtime's: <code>Intl.DateTimeFormat</code> in the language of the page, with seconds and the date when asked, ticking on the full second. The thin strip at the very end shows the desktop - it asks the <DocLink href="window-manager.html">Window Manager</DocLink> of its taskbar to minimize every window and, pressed again, to bring them back. <code>df$.shadcn.tray</code> adds, badges and removes items from script.
+</PageHeader>
+
+<SkillPanel component="tray">
+  <SkillField label="Native basis">
+<SkillText>A group of <code>&lt;button&gt;</code>s and a <code>&lt;time&gt;</code> the runtime writes. An item opens its popover with <code>popovertarget</code>; a badge is <code>data-badge</code>, drawn with <code>attr()</code>.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat" title="the clock in the page's language"><code>Intl.DateTimeFormat</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time" title="the clock's machine-readable time"><code>&lt;time&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#popovertarget" title="an item opens its panel"><code>popovertarget</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/attr" title="the badge text"><code>attr()</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Variants">
+<SkillText dense>• <code>data-seconds</code> - the clock shows seconds; <code>data-date</code> - the date under the time.</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Items, badge and clock" hint="The network item opens its panel, the bell carries a badge, the clock shows seconds and the date in German (lang on the tray). Add mail puts an item before the clock through df$.shadcn.tray."
+<div class="grid gap-3">
+  <label class="flex items-center gap-2 text-sm"
+    >Look
+    <select class="select" data-look style="width: auto">
+      <option value="">Modern</option>
+      <option value="win7">7</option>
+      <option value="winxp">XP</option>
+      <option value="win98">98</option>
+      <option value="win95">95</option>
+    </select></label
+  >
+  <div class="desktop" style="height: 9rem">
+    <div class="window-desktop window-manager" id="tray-wm"></div>
+    <nav class="taskbar" data-taskbar-for="tray-wm" aria-label="Taskbar">
+      <div
+        class="tray"
+        id="tray-demo"
+        data-state-demo
+        data-seconds
+        data-date
+        lang="de"
+        role="group"
+        aria-label="Notification area"
+      >
+        <button class="tray-item" type="button" aria-label="Network" popovertarget="tray-net"
+          ><i data-lucide="wifi"></i
+        ></button>
+        <button class="tray-item" type="button" aria-label="Notifications, 3 new" data-badge="3"
+          ><i data-lucide="bell"></i
+        ></button>
+        <time class="tray-clock"></time>
+        <button class="tray-show-desktop" type="button" aria-label="Show desktop"></button>
+      </div>
+    </nav>
+  </div>
+  <div class="popover" id="tray-net" popover>
+    <p class="m-0 text-sm"><strong>Home Wi-Fi</strong> - connected</p>
+  </div>
+  <div class="flex gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="tray-add">Add mail</button>
+    <button class="btn" data-variant="outline" data-size="sm" type="button" id="tray-remove">Remove mail</button>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tray = document.querySelector('#tray-demo');
+    let n = 0;
+    document
+      .querySelector('#tray-add')
+      .addEventListener('click', () =>
+        df$.shadcn.tray.add(tray, { id: 'mail', icon: 'mail', label: 'Mail', badge: ++n }),
+      );
+    document.querySelector('#tray-remove').addEventListener('click', () => {
+      df$.shadcn.tray.remove(tray, 'mail');
+      n = 0;
+    });
+  });
+</script>
+<script>
+  // the Look select: the .desktop next to it takes the period's look
+  document.addEventListener('DOMContentLoaded', () => {
+    const select = document.querySelector('[data-look]');
+    const desk = select.closest('.grid').querySelector('.desktop');
+    select.addEventListener('change', () => {
+      if (select.value) desk.dataset.variant = select.value;
+      else delete desk.dataset.variant;
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each <code>.tray</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the tray; <code>\{ seconds, date \}</code> set how the clock reads</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/tray-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/tray.schema.json"><code>tray.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+```
+
+</StatesSection>
+
+<ApiSection component="tray" />
+
+<SourceFiles component="tray" section="css" />
+
+<SourceFiles component="tray" section="js">
+  <SourceNote for="js">The clock ticks on the full second; show desktop calls <code>df$.shadcn.windowManager.showDesktop()</code> on the taskbar's manager.</SourceNote>
+</SourceFiles>
+
+</DocPage>

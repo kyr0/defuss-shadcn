@@ -66,7 +66,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
-```html example label="Several windows" schema="none" hint="Press any window - its bar, its content - and it comes to the front; the others dim their title (data-active marks the front one). Stacking is shared across the page."
+```html example label="Several windows" schema="none" hint="Press any window - its bar, its content - and it comes to the front; the others dim their title (data-active marks the front one). The z-order is shared across the page; the front window is per desktop - each .window-desktop (or Window Manager) keeps its own."
 <div class="window-desktop" style="height: 22rem">
   <dialog class="window" open style="--window-x: 1.5rem; --window-y: 1.5rem; --window-w: 16rem">
     <header class="window-titlebar">

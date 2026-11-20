@@ -600,6 +600,142 @@ try {
     await page.emulateMedia({ reducedMotion: 'no-preference' });
   });
 
+  // -- inline editing ---------------------------------------------------------
+  const cellOf = (row: number, field: string) =>
+    page.$eval(
+      '#dg-edit',
+      (g: any, [row, field]) => {
+        const col = [...g.querySelectorAll('.data-grid-header')].findIndex((h: any) => h.dataset.field === field);
+        const r = [...g.querySelectorAll('.data-grid-rows > .data-grid-row')].find((x: any) => x._index === row);
+        return r?.children[col]?.textContent ?? null;
+      },
+      [row, field] as const,
+    );
+  const editor = () => page.$eval('#dg-edit', (g) => {
+    const ed = g.querySelector('.data-grid-editor');
+    const control = ed?.querySelector('input, select, textarea') as HTMLInputElement | null;
+    return ed ? { tag: control?.tagName, type: control?.type, cls: control?.className, focused: ed.contains(document.activeElement), error: ed.querySelector('.data-grid-error')?.textContent ?? '' } : null;
+  });
+  const dbl = (row: number, field: string) =>
+    page.$eval(
+      '#dg-edit',
+      (g: any, [row, field]) => {
+        const col = [...g.querySelectorAll('.data-grid-header')].findIndex((h: any) => h.dataset.field === field);
+        const r = [...g.querySelectorAll('.data-grid-rows > .data-grid-row')].find((x: any) => x._index === row);
+        r.children[col].dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+      },
+      [row, field] as const,
+    );
+
+  await check('editing: a double click opens the built-in editor of an editable column - an Input, focused; Enter writes it into the record', async () => {
+    await page.$eval('#dg-edit', (g) => g.scrollIntoView());
+    const first = await cellOf(0, 'name');
+    await dbl(0, 'name');
+    assert.deepEqual(await editor(), { tag: 'INPUT', type: 'text', cls: 'input', focused: true, error: '' });
+    const events: any[] = [];
+    await page.exposeFunction('__dgEdit', (d: any) => events.push(d)).catch(() => {});
+    await page.$eval('#dg-edit', (g) => g.addEventListener('data-grid-edit', (e: any) => (globalThis as any).__dgEdit({ field: e.detail.field, value: e.detail.value, oldValue: e.detail.oldValue })));
+    await page.keyboard.press('ControlOrMeta+a');
+    await page.keyboard.type('Renamed');
+    await page.keyboard.press('Enter');
+    assert.equal(await editor(), null);
+    assert.equal(await cellOf(0, 'name'), 'Renamed');
+    await page.waitForFunction(() => true);
+    assert.deepEqual(events.at(-1), { field: 'name', value: 'Renamed', oldValue: first });
+    // the record was replaced, the grid's records carry the new value
+    assert.equal(await page.$eval('#dg-edit', (g) => (globalThis as any).df$.shadcn.dataGrid.rows(g)[0].name), 'Renamed');
+    // the cell has focus again
+    assert.equal(await page.evaluate(() => (document.activeElement as HTMLElement).textContent), 'Renamed');
+  });
+
+  await check('editing: Escape keeps the old value; F2 and Enter on a focused cell open it; Tab moves to the next editable cell', async () => {
+    await page.keyboard.press('F2');
+    await page.keyboard.type('Gone');
+    await page.keyboard.press('Escape');
+    assert.equal(await editor(), null);
+    assert.equal(await cellOf(0, 'name'), 'Renamed');
+    await page.keyboard.press('Enter');
+    assert.equal((await editor())?.tag, 'INPUT');
+    await page.keyboard.press('Tab');
+    const next = await editor();
+    assert.equal(next?.type, 'number', 'Tab opened the Qty editor');
+    await page.keyboard.press('Escape');
+  });
+
+  await check('editing: the rules refuse a value with a message (data-required, data-min, data-integer, validateFn); the editor stays', async () => {
+    for (const [field, text, message] of [
+      ['name', '', 'Required'],
+      ['name', 'Hi!', 'No exclamation marks'],
+      ['qty', '-3', 'Value must be greater than or equal to 0.'],
+      ['qty', '2.5', 'Must be a whole number'],
+    ] as const) {
+      await dbl(0, field);
+      await page.keyboard.press('ControlOrMeta+a');
+      if (text) await page.keyboard.type(text);
+      else await page.keyboard.press('Backspace');
+      await page.keyboard.press('Enter');
+      const ed = await editor();
+      assert.equal(ed?.error, message, field + ' ' + text); // the number Input's own constraint speaks first (its min)
+      assert.equal(await page.$eval('#dg-edit .data-grid-editor :is(input, select)', (c) => c.getAttribute('aria-invalid')), 'true');
+      await page.keyboard.press('Escape');
+    }
+  });
+
+  await check('editing: the query runs again - sorted by Qty, an edited quantity moves its row; the editor types follow the column (number, enum Select, Switch)', async () => {
+    await dbl(0, 'qty');
+    await page.keyboard.press('ControlOrMeta+a');
+    await page.keyboard.type('0');
+    await page.keyboard.press('Enter');
+    // the record moved to its place in the sort (the end) and the focus went with it
+    const moved = await page.evaluate(() => {
+      const g = document.getElementById('dg-edit') as any;
+      const rows = (globalThis as any).df$.shadcn.dataGrid.rows(g);
+      return { focused: (document.activeElement as HTMLElement).textContent, at: g._focus.row, total: rows.length, last: rows.at(-1).qty };
+    });
+    assert.equal(moved.focused, '0');
+    assert.ok(moved.at > moved.total - 50 && moved.last === 0, JSON.stringify(moved));
+    await page.$eval('#dg-edit .data-grid-viewport', (v) => (v.scrollTop = 0));
+    await page.waitForTimeout(100);
+    await dbl(0, 'kind');
+    assert.deepEqual(await page.$eval('#dg-edit .data-grid-editor select', (s: HTMLSelectElement) => [...s.options].map((o) => o.value)), ['tool', 'part', 'kit']);
+    await page.selectOption('#dg-edit .data-grid-editor select', 'kit');
+    assert.equal(await editor(), null, 'a Select commits on change');
+    assert.equal(await cellOf(0, 'kind'), 'kit');
+    await dbl(0, 'ok');
+    assert.equal((await editor())?.cls, 'switch');
+    await page.keyboard.press('Escape');
+  });
+
+  await check('editing: getEditorFn hands in a custom editor (immediate) and keeps a cell from editing (false); a column without data-editable never edits', async () => {
+    await dbl(0, 'score');
+    assert.equal((await editor())?.cls, 'select score-editor');
+    await page.selectOption('#dg-edit .data-grid-editor select', '5');
+    assert.equal(await cellOf(0, 'score'), '5');
+    await dbl(0, 'note');
+    assert.equal(await editor(), null, 'Note has no data-editable');
+    // record 1 (locked) keeps its name: find its row
+    const at = await page.$eval('#dg-edit', (g: any) => g.querySelector('.data-grid-rows') && (globalThis as any).df$.shadcn.dataGrid.rows(g).findIndex((r: any) => r.id === 1));
+    assert.equal(await page.$eval('#dg-edit', (g: any) => (globalThis as any).df$.shadcn.dataGrid.edit(g, 1, 'name')), false);
+    assert.ok(at >= 0);
+    assert.equal(await page.$eval('#dg-edit', (g: any) => (globalThis as any).df$.shadcn.dataGrid.edit(g, 2, 'name')), true, 'edit() opens another record');
+    await page.$eval('#dg-edit', (g: any) => (globalThis as any).df$.shadcn.dataGrid.cancel(g));
+    const rec = await page.$eval('#dg-edit', (g: any) => (globalThis as any).df$.shadcn.dataGrid.update(g, 2, { name: 'From script' }));
+    assert.equal(rec.name, 'From script');
+  });
+
+  await check('editing: scrolling the edited record out of the window writes it', async () => {
+    await page.$eval('#dg-edit .data-grid-viewport', (v) => (v.scrollTop = 0));
+    await page.waitForTimeout(100);
+    await dbl(0, 'name');
+    await page.keyboard.press('ControlOrMeta+a');
+    await page.keyboard.type('Scrolled');
+    const id = await page.$eval('#dg-edit', (g: any) => (globalThis as any).df$.shadcn.dataGrid.rows(g)[0].id);
+    await page.$eval('#dg-edit .data-grid-viewport', (v) => (v.scrollTop = 30000));
+    await page.waitForFunction(() => !document.querySelector('#dg-edit .data-grid-editor'));
+    const name = await page.$eval('#dg-edit', (g: any, id) => (globalThis as any).df$.shadcn.dataGrid.rows(g).find((r: any) => r.id === id).name, id);
+    assert.equal(name, 'Scrolled');
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await ready();
     await assertRenderContract(page, '.data-grid[id]', ['default', 'loading', 'empty'], {

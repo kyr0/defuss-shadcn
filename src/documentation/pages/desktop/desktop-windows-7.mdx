@@ -1,0 +1,439 @@
+---
+title: "Windows 7 Look"
+description: "Glass: frames that blur the wallpaper, a red glass close key, the round start orb on a dark glass bar whose buttons are icons, a start menu with a white panel of programs and the search under it beside a glass column of places, glossy icons and Segoe UI. Remade from scratch - the drawings and the wallpaper are our own."
+slug: "desktop-windows-7"
+---
+
+import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="desktop-windows-7" title="Windows 7 Look" introStyle="max-width:42rem;">
+  Glass: frames that blur the wallpaper, a red glass close key, the round start orb on a dark glass bar whose buttons are icons, a start menu with a white panel of programs and the search under it beside a glass column of places, glossy icons and Segoe UI. Remade from scratch - the drawings and the wallpaper are our own. One of the <DocLink href="desktop.html">Desktop</DocLink> looks.
+</PageHeader>
+
+<div class="flex flex-wrap items-center gap-2 mb-6">
+  <a class="btn" href="full-desktop-windows-7.html" target="_blank" rel="noopener"><i data-lucide="maximize-2"></i> Open full screen</a>
+</div>
+
+```html example standalone label="Windows 7 desktop" schema="none" hint="Sign in (any password, or Guest): the picked user stays alone in the middle. The orb opens the start menu - type to search. Every window, icon and button is the same markup as on the other looks."
+<div class="desktop" id="w7-desktop" data-variant="win7" style="height: var(--scaffold-height, 34rem)">
+  <div class="window-desktop window-manager" id="w7-desk">
+    <div class="desktop-manager" data-on-wallpaper role="listbox" aria-multiselectable="true" aria-label="Desktop">
+      <div class="desktop-icon" role="option" data-value="w7-computer">
+        <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="computer"></span></span>
+        <span class="desktop-icon-label">My Computer</span>
+      </div>
+      <div class="desktop-icon" role="option" data-value="w7-documents">
+        <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="documents"></span></span>
+        <span class="desktop-icon-label">My Documents</span>
+      </div>
+      <div class="desktop-icon" role="option" data-value="w7-notepad">
+        <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="text"></span></span>
+        <span class="desktop-icon-label">Notepad</span>
+      </div>
+      <div class="desktop-icon" role="option" data-value="w7-calculator">
+        <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="calculator"></span></span>
+        <span class="desktop-icon-label">Calculator</span>
+      </div>
+      <div class="desktop-icon" role="option" data-value="w7-about">
+        <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="help"></span></span>
+        <span class="desktop-icon-label">About this look</span>
+      </div>
+      <div class="desktop-icon" role="option" data-value="w7-trash">
+        <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="trash"></span></span>
+        <span class="desktop-icon-label">Recycle Bin</span>
+      </div>
+    </div>
+    <dialog class="window" id="w7-about" open style="--window-x: 8rem; --window-y: 1.5rem; --window-w: 21rem">
+      <header class="window-titlebar">
+        <span class="window-icon desktop-glyph" data-glyph="help"></span>
+        <h2 class="window-title">About this look</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body">
+        <p class="m-0 mb-2"
+          ><strong>Desktop 7</strong> is the system's Desktop component with <code>data-variant="win7"</code>.</p
+        >
+        <p class="m-0 mb-3"
+          >The windows, the icons, the bar, the start menu and the logon screen are the same components on every look -
+          only the sheet changes.</p
+        >
+        <div class="flex justify-end"><button class="btn" type="button" data-close>OK</button></div>
+      </div>
+    </dialog>
+    <dialog
+      class="window"
+      id="w7-notepad"
+      style="--window-x: 12rem; --window-y: 3rem; --window-w: 24rem; --window-h: 15rem"
+    >
+      <header class="window-titlebar">
+        <span class="window-icon desktop-glyph" data-glyph="text"></span>
+        <h2 class="window-title">Untitled - Notepad</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-toolbar">
+        <div class="menubar" role="menubar" aria-label="Notepad">
+          <button class="menubar-trigger" type="button" data-dropdown-trigger="w7-np-file">File</button>
+          <div class="dropdown-content" id="w7-np-file" role="menu" popover aria-label="File">
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >New <span class="dropdown-shortcut">Ctrl+N</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Open... <span class="dropdown-shortcut">Ctrl+O</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Save <span class="dropdown-shortcut">Ctrl+S</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1">Save As...</button>
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1">Page Setup...</button>
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Print... <span class="dropdown-shortcut">Ctrl+P</span></button
+            >
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1">Exit</button>
+          </div>
+          <button class="menubar-trigger" type="button" data-dropdown-trigger="w7-np-edit">Edit</button>
+          <div class="dropdown-content" id="w7-np-edit" role="menu" popover aria-label="Edit">
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Undo <span class="dropdown-shortcut">Ctrl+Z</span></button
+            >
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Cut <span class="dropdown-shortcut">Ctrl+X</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Copy <span class="dropdown-shortcut">Ctrl+C</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Paste <span class="dropdown-shortcut">Ctrl+V</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Delete <span class="dropdown-shortcut">Del</span></button
+            >
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Select All <span class="dropdown-shortcut">Ctrl+A</span></button
+            >
+            <button class="dropdown-item" role="menuitem" tabindex="-1"
+              >Time/Date <span class="dropdown-shortcut">F5</span></button
+            >
+          </div>
+          <button class="menubar-trigger" type="button" data-dropdown-trigger="w7-np-help">Help</button>
+          <div class="dropdown-content" id="w7-np-help" role="menu" popover aria-label="Help">
+            <button class="dropdown-item" role="menuitem" tabindex="-1">Help Topics</button>
+            <div class="dropdown-separator" role="separator"></div>
+            <button class="dropdown-item" role="menuitem" tabindex="-1">About Notepad</button>
+          </div>
+        </div>
+      </div>
+      <div class="window-body" data-flush>
+        <textarea class="textarea" aria-label="Text">Dear diary,
+today the desktop changed its look and nothing else changed.</textarea>
+      </div>
+    </dialog>
+    <dialog
+      class="window"
+      id="w7-computer"
+      style="--window-x: 5rem; --window-y: 2rem; --window-w: 22rem; --window-h: 14rem"
+    >
+      <header class="window-titlebar">
+        <span class="window-icon desktop-glyph" data-glyph="computer"></span>
+        <h2 class="window-title">My Computer</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body" data-flush>
+        <div
+          class="desktop-manager"
+          data-size="sm"
+          role="listbox"
+          aria-multiselectable="true"
+          aria-label="Drives and folders"
+          style="min-height: 0; height: 100%"
+        >
+          <div class="desktop-icon" role="option" data-value="floppy"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="folder"></span></span
+            ><span class="desktop-icon-label">Floppy (A:)</span></div
+          >
+          <div class="desktop-icon" role="option" data-value="disk"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="computer"></span></span
+            ><span class="desktop-icon-label">Local Disk (C:)</span></div
+          >
+          <div class="desktop-icon" role="option" data-value="docs"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="documents"></span></span
+            ><span class="desktop-icon-label">Shared Documents</span></div
+          >
+          <div class="desktop-icon" role="option" data-value="net"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="network"></span></span
+            ><span class="desktop-icon-label">Network</span></div
+          >
+          <div class="desktop-icon" role="option" data-value="panel"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="settings"></span></span
+            ><span class="desktop-icon-label">Control Panel</span></div
+          >
+        </div>
+      </div>
+    </dialog>
+    <dialog
+      class="window"
+      id="w7-documents"
+      style="--window-x: 9rem; --window-y: 4rem; --window-w: 20rem; --window-h: 12rem"
+    >
+      <header class="window-titlebar">
+        <span class="window-icon desktop-glyph" data-glyph="documents"></span>
+        <h2 class="window-title">My Documents</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body" data-flush>
+        <div
+          class="desktop-manager"
+          data-size="sm"
+          role="listbox"
+          aria-multiselectable="true"
+          aria-label="Documents"
+          style="min-height: 0; height: 100%"
+        >
+          <div class="desktop-icon" role="option" data-value="letter"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="text"></span></span
+            ><span class="desktop-icon-label">Letter.txt</span></div
+          >
+          <div class="desktop-icon" role="option" data-value="holiday"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="picture"></span></span
+            ><span class="desktop-icon-label">Holiday.bmp</span></div
+          >
+          <div class="desktop-icon" role="option" data-value="song"
+            ><span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="music"></span></span
+            ><span class="desktop-icon-label">Song.mid</span></div
+          >
+        </div>
+      </div>
+    </dialog>
+    <dialog class="window" id="w7-calculator" style="--window-x: 26rem; --window-y: 2rem; --window-w: 13rem">
+      <header class="window-titlebar">
+        <span class="window-icon desktop-glyph" data-glyph="calculator"></span>
+        <h2 class="window-title">Calculator</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body">
+        <output class="input" data-calc-display style="display: block; text-align: end; margin-bottom: 0.5rem"
+          >0</output
+        >
+        <div class="grid gap-1" style="grid-template-columns: repeat(4, 1fr)">
+          <button class="btn" type="button" data-calc="7" style="min-width: 0; padding: 0">7</button>
+          <button class="btn" type="button" data-calc="8" style="min-width: 0; padding: 0">8</button>
+          <button class="btn" type="button" data-calc="9" style="min-width: 0; padding: 0">9</button>
+          <button class="btn" type="button" data-calc="/" style="min-width: 0; padding: 0">/</button>
+          <button class="btn" type="button" data-calc="4" style="min-width: 0; padding: 0">4</button>
+          <button class="btn" type="button" data-calc="5" style="min-width: 0; padding: 0">5</button>
+          <button class="btn" type="button" data-calc="6" style="min-width: 0; padding: 0">6</button>
+          <button class="btn" type="button" data-calc="*" style="min-width: 0; padding: 0">*</button>
+          <button class="btn" type="button" data-calc="1" style="min-width: 0; padding: 0">1</button>
+          <button class="btn" type="button" data-calc="2" style="min-width: 0; padding: 0">2</button>
+          <button class="btn" type="button" data-calc="3" style="min-width: 0; padding: 0">3</button>
+          <button class="btn" type="button" data-calc="-" style="min-width: 0; padding: 0">-</button>
+          <button class="btn" type="button" data-calc="0" style="min-width: 0; padding: 0">0</button>
+          <button class="btn" type="button" data-calc="." style="min-width: 0; padding: 0">.</button>
+          <button class="btn" type="button" data-calc="=" style="min-width: 0; padding: 0">=</button>
+          <button class="btn" type="button" data-calc="+" style="min-width: 0; padding: 0">+</button>
+        </div>
+      </div>
+    </dialog>
+    <dialog class="window" id="w7-trash" style="--window-x: 14rem; --window-y: 5rem; --window-w: 18rem">
+      <header class="window-titlebar">
+        <span class="window-icon desktop-glyph" data-glyph="trash"></span>
+        <h2 class="window-title">Recycle Bin</h2>
+        <form method="dialog" class="window-controls">
+          <button type="button" class="window-minimize" aria-label="Minimize"></button>
+          <button type="button" class="window-maximize" aria-label="Maximize"></button>
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body">
+        <p class="m-0">The Recycle Bin is empty.</p>
+      </div>
+    </dialog>
+  </div>
+  <nav class="taskbar" data-taskbar-for="w7-desk" aria-label="Taskbar">
+    <button class="start-button" type="button" popovertarget="w7-start" aria-haspopup="menu">
+      <span class="start-button-icon desktop-glyph" data-glyph="flag"></span>
+      <span class="start-button-label">Start</span>
+    </button>
+    <div class="taskbar-windows" role="group" aria-label="Open windows"></div>
+    <div class="tray" data-date role="group" aria-label="Notification area">
+      <button class="tray-item" type="button" aria-label="Network"><i data-lucide="wifi"></i></button>
+      <button class="tray-item" type="button" aria-label="Volume"><i data-lucide="volume-2"></i></button>
+      <time class="tray-clock"></time>
+      <button class="tray-show-desktop" type="button" aria-label="Show desktop"></button>
+    </div>
+  </nav>
+  <div class="start-menu" id="w7-start" popover aria-label="Start">
+    <div class="start-menu-head">
+      <span class="avatar"><img class="avatar-image" src="images/avatars/12-96.webp" alt="" /></span>
+      <span>Desktop 7</span>
+    </div>
+    <label class="start-menu-search">
+      <i data-lucide="search"></i>
+      <input type="search" placeholder="Search programs" aria-label="Search programs" />
+    </label>
+    <p class="start-menu-heading">Pinned</p>
+    <div class="start-menu-pinned" role="group" aria-label="Pinned">
+      <button class="start-menu-item" type="button" data-value="w7-computer">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="computer"></span></span>
+        <span class="start-menu-label">My Computer</span>
+      </button>
+      <button class="start-menu-item" type="button" data-value="w7-documents">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="documents"></span></span>
+        <span class="start-menu-label">My Documents</span>
+      </button>
+      <button class="start-menu-item" type="button" data-value="w7-notepad">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span>
+        <span class="start-menu-label">Notepad</span>
+      </button>
+    </div>
+    <p class="start-menu-heading">All programs</p>
+    <div class="start-menu-list" role="group" aria-label="All programs">
+      <button class="start-menu-item" type="button" aria-controls="w7-programs">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="folder"></span></span>
+        <span class="start-menu-label">Programs</span>
+      </button>
+      <div class="start-menu-sub" id="w7-programs" popover aria-label="Programs">
+        <button class="start-menu-item" type="button" aria-controls="w7-accessories">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="folder"></span></span>
+          <span class="start-menu-label">Accessories</span>
+        </button>
+        <div class="start-menu-sub" id="w7-accessories" popover aria-label="Accessories">
+          <button class="start-menu-item" type="button" data-value="w7-calculator">
+            <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="calculator"></span></span>
+            <span class="start-menu-label">Calculator</span>
+          </button>
+          <button class="start-menu-item" type="button" data-value="w7-notepad">
+            <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="text"></span></span>
+            <span class="start-menu-label">Notepad</span>
+          </button>
+        </div>
+        <button class="start-menu-item" type="button" data-value="w7-trash">
+          <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="trash"></span></span>
+          <span class="start-menu-label">Recycle Bin</span>
+        </button>
+      </div>
+      <button class="start-menu-item" type="button" data-value="w7-about">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="help"></span></span>
+        <span class="start-menu-label">Help</span>
+      </button>
+      <button class="start-menu-item" type="button" data-value="w7-computer">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="settings"></span></span>
+        <span class="start-menu-label">Settings</span>
+      </button>
+    </div>
+    <p class="start-menu-empty" hidden>No programs match</p>
+    <div class="start-menu-foot">
+      <button class="start-menu-item" type="button" data-value="logoff">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="user"></span></span>
+        <span class="start-menu-label">Log off</span>
+      </button>
+      <button class="start-menu-item" type="button" data-value="shutdown" aria-label="Shut down">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="power"></span></span>
+      </button>
+    </div>
+  </div>
+  <div class="logon" aria-label="Sign in">
+    <div class="logon-main">
+      <div class="logon-brand">
+        <strong>Desktop 7</strong>
+        <span>To begin, click your user name</span>
+      </div>
+      <ul class="logon-users">
+        <li>
+          <button class="logon-user" type="button" data-user="aron">
+            <span class="avatar"><img class="avatar-image" src="images/avatars/12-96.webp" alt="" /></span>
+            <span class="logon-name">Aron</span>
+          </button>
+        </li>
+        <li>
+          <button class="logon-user" type="button" data-user="guest" data-no-password>
+            <span class="avatar"><span class="avatar-fallback">G</span></span>
+            <span class="logon-name">Guest</span>
+          </button>
+        </li>
+      </ul>
+      <form class="logon-form" hidden>
+        <p class="logon-for"></p>
+        <div class="logon-field">
+          <input class="input" type="password" name="password" aria-label="Password" autocomplete="current-password" />
+          <button class="btn" type="submit" aria-label="Sign in"><i data-lucide="arrow-right"></i></button>
+        </div>
+        <p class="logon-error" role="alert" hidden></p>
+      </form>
+    </div>
+    <div class="logon-power">
+      <button class="btn" data-variant="ghost" type="button" data-logon-power="shutdown"
+        ><i data-lucide="power"></i> Turn off</button
+      >
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.querySelector('#w7-desktop');
+    const logon = root.querySelector('.logon');
+    const open = (value) => {
+      if (value === 'logoff' || value === 'shutdown') return df$.shadcn.logon.lock(logon);
+      if (value) df$.shadcn.win.open(value);
+    };
+    root
+      .querySelector(':scope > .window-manager > .desktop-manager')
+      .addEventListener('desktop-open', (e) => e.detail.values.forEach(open));
+    root.querySelector('.start-menu').addEventListener('start-select', (e) => open(e.detail.value));
+    logon.addEventListener('logon-submit', () => df$.shadcn.logon.done(logon));
+    logon.addEventListener('logon-power', () => df$.shadcn.logon.fail(logon, 'It is now safe to keep reading.'));
+    root
+      .querySelectorAll('[data-close]')
+      .forEach((b) => b.addEventListener('click', () => b.closest('dialog').close()));
+    // the calculator: digits and one operation at a time
+    const display = root.querySelector('[data-calc-display]');
+    let acc = null,
+      op = null,
+      fresh = true;
+    const calc = (a, b) => ({ '+': a + b, '-': a - b, '*': a * b, '/': b ? a / b : NaN })[op] ?? b;
+    root.querySelectorAll('[data-calc]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const c = b.dataset.calc;
+        const cur = parseFloat(display.textContent);
+        if (/[0-9.]/.test(c)) {
+          display.textContent = fresh || display.textContent === '0' ? (c === '.' ? '0.' : c) : display.textContent + c;
+          fresh = false;
+        } else {
+          acc = acc === null ? cur : calc(acc, cur);
+          display.textContent = String(+acc.toFixed(10));
+          op = c === '=' ? null : c;
+          if (c === '=') acc = null;
+          fresh = true;
+        }
+      }),
+    );
+  });
+</script>
+```
+
+<DocText>Composed from <DocLink href="desktop.html">Desktop</DocLink> (<code>data-variant="win7"</code>), <DocLink href="window-manager.html">Window Manager</DocLink>, <DocLink href="desktop-manager.html">Desktop Manager</DocLink> (the desktop and the folder windows), <DocLink href="window.html">Window</DocLink>, <DocLink href="taskbar.html">Taskbar</DocLink>, <DocLink href="start-button.html">Start Button</DocLink>, <DocLink href="start-menu.html">Start Menu</DocLink>, <DocLink href="tray.html">Tray</DocLink> and <DocLink href="logon.html">Logon</DocLink>, with <DocLink href="button.html">Button</DocLink>, <DocLink href="textarea.html">Textarea</DocLink> and <DocLink href="avatar.html">Avatar</DocLink> inside. The page's script only connects them: an opened icon or a picked program opens its window, a sign-in is accepted, Log off locks the screen.</DocText>
+
+</DocPage>

@@ -33,7 +33,15 @@ import {
   virtualWindow,
   sizerHeight,
   scrollIntoViewTop,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
 } from '../../../shared/state-api.js';
+import type { CellEditor, EditorRules } from '../../../shared/editors.js';
 import type {
   DataSource,
   DataviewFilter,
@@ -90,8 +98,27 @@ interface DataGridRowMeta {
   parentId: DataviewJsonValue | null;
 }
 
+/** Where an edit happens - what getEditorFn and validateFn receive. */
+interface DataGridEditContext {
+  /** the record being edited (unchanged until the edit commits) */
+  record: DataviewRow;
+  /** the column's field */
+  field: string;
+  /** the type the value edits as (data-editor, else the column's data-type, else the value's) */
+  type: string;
+  /** the column's rules (data-required, data-min, data-max, data-integer, data-pattern, data-options) */
+  rules: EditorRules;
+  /** the grid element */
+  grid: HTMLElement;
+}
+
 /** What setSource() takes besides the records. */
 interface DataGridOptions {
+  /** an editor for a cell of an editable column: an element or a CellEditor ({ el, getValue, validate?, focus?,
+   *  immediate?, multiline?, ownsEnter? }); null: the built-in one; false: this cell does not edit */
+  getEditorFn?: (field: string, value: unknown, ctx: DataGridEditContext) => HTMLElement | CellEditor | null | false;
+  /** refuse a value: return a message, or false for a generic one; anything else accepts it */
+  validateFn?: (field: string, value: unknown, ctx: DataGridEditContext) => string | false | null | undefined;
   /** the id field (default 'id', or data-id-field) */
   idField?: string;
   /** a tree grid: the parent-id field (or data-parent-field) */
@@ -104,6 +131,30 @@ interface DataGridOptions {
   query?: DataGridQuery;
   /** where the view is kept between visits (default: session storage under a generated key) */
   persist?: ViewPersistence;
+}
+
+/** What data-grid-beforeedit carries. */
+interface DataGridBeforeEditDetail {
+  /** the record as it is */
+  record: DataviewRow;
+  /** the column's field */
+  field: string;
+  /** the value about to be written */
+  value: unknown;
+  /** the value it holds now */
+  oldValue: unknown;
+}
+
+/** What data-grid-edit carries. */
+interface DataGridEditDetail {
+  /** the record as it is now (a new object - the old one is never mutated) */
+  record: DataviewRow;
+  /** the column's field */
+  field: string;
+  /** the value written */
+  value: unknown;
+  /** the value it held */
+  oldValue: unknown;
 }
 
 /** What data-grid-activate carries. */
@@ -196,7 +247,27 @@ function readColumns(grid) {
     // sort by another field than the one shown (a priority's rank, not its label)
     sortField: el.dataset.sortField || el.dataset.field,
     options: el.dataset.options ? el.dataset.options.split(',').map((o) => o.trim()) : null,
+    // inline editing: data-editable, the editor's type (data-editor) and the rules a value must keep
+    editable: el.hasAttribute('data-editable'),
+    editor: el.dataset.editor || '',
+    rules: columnRules(el),
   }));
+}
+
+/** a column's edit rules, from its header's attributes */
+function columnRules(el: HTMLElement): EditorRules {
+  const num = (name) => (el.dataset[name] != null && el.dataset[name] !== '' ? Number(el.dataset[name]) : undefined);
+  const rules: EditorRules = {};
+  if (el.hasAttribute('data-required')) rules.required = true;
+  if (el.hasAttribute('data-integer')) rules.integer = true;
+  if (num('min') != null) rules.min = num('min');
+  if (num('max') != null) rules.max = num('max');
+  if (el.dataset.step) rules.step = el.dataset.step;
+  if (num('minLength') != null) rules.minLength = num('minLength');
+  if (num('maxLength') != null) rules.maxLength = num('maxLength');
+  if (el.dataset.pattern) rules.pattern = el.dataset.pattern;
+  if (el.dataset.message) rules.message = el.dataset.message;
+  return rules;
 }
 
 /**
@@ -466,6 +537,8 @@ function fillCell(grid, cell, column, entry, first) {
   else cell.style.removeProperty('inset-inline-start');
   if (column.align) cell.dataset.align = column.align;
   else delete cell.dataset.align;
+  cell.toggleAttribute('data-editable', !!column.editable && !grid.hasAttribute('data-readonly'));
+  delete cell.dataset.editing;
   cell.textContent = '';
   if (first && isTree(grid)) {
     cell.style.setProperty('--depth', String(entry.meta.depth));
@@ -514,6 +587,7 @@ function renderRows(grid) {
   const base = paging(grid) === 'pages' ? Math.max(0, config.page || 0) * pageSize(grid) : 0;
   const headRows = grid._parts.filters ? 2 : 1;
   const focus = grid._focus;
+  let edShown = false;
   for (let i = 0; i < pool.children.length; i++) {
     const row = pool.children[i];
     const index = win.first + i;
@@ -542,12 +616,32 @@ function renderRows(grid) {
       }
     }
     const id = entry.row[grid._source.idField];
+    const ed = grid._editor;
+    if (ed && ed.id === id) {
+      edShown = true;
+      if (!row.contains(ed.wrap)) {
+        // the row was filled again (a scroll moved its record to another pool element, a resize): the editor goes
+        // back into its cell, with its focus
+        const focused =
+          ed.wrap.contains(document.activeElement) ||
+          !document.activeElement ||
+          document.activeElement === document.body;
+        ed.rowEl = row;
+        placeEditor(grid, ed);
+        if (focused) (editorControl(ed.editor) as HTMLElement).focus({ preventScroll: true });
+      }
+    }
     if (grid.dataset.select) row.setAttribute('aria-selected', String(selected.has(id)));
     else row.removeAttribute('aria-selected');
     for (let c = 0; c < row.children.length; c++) {
       row.children[c].tabIndex = focus.row === index && focus.col === c ? 0 : -1;
     }
   }
+  // the editor's record scrolled out of the window: write what it holds (refused: drop it)
+  if (grid._editor && !edShown && !grid._writing)
+    queueMicrotask(() => {
+      if (grid._editor && !commitEdit(grid, 'none')) cancelEdit(grid, false);
+    });
 }
 
 /** the counts and the pager below the rows */
@@ -627,6 +721,12 @@ function renderFooter(grid, config) {
  */
 function refresh(grid, config, previous) {
   grid._config = config;
+  // a new query or records: the open editor's cell may go - write it first (refused: drop it)
+  if (grid._editor && !grid._writing) {
+    grid._writing = true;
+    if (!commitEdit(grid, 'none')) grid._editor = null;
+    grid._writing = false;
+  }
   evaluate(grid, config);
   grid._selected = new Set(config.selected || []);
   grid._shown = shown(grid, config);
@@ -759,8 +859,209 @@ function focusCell(grid, row, col) {
   target?.focus({ preventScroll: row === -1 });
 }
 
+// -- inline editing ---------------------------------------------------------
+
+/** the editable column a cell belongs to, or null */
+const editableColumn = (grid, col) => {
+  const column = grid._order?.[col];
+  return column?.editable ? column : null;
+};
+
+/** what getEditorFn / validateFn receive */
+const editContext = (grid, record, column): DataGridEditContext => ({
+  record,
+  field: column.field,
+  type:
+    column.editor ||
+    (column.type === 'number'
+      ? 'number'
+      : valueType(record[column.field], column.options ? { options: column.options } : null)),
+  rules: { ...column.rules, ...(column.options ? { options: column.options } : {}) },
+  grid,
+});
+
+/** the pool row that shows a record, if it is in the window */
+const rowElOf = (grid, id) =>
+  dfDollar(grid._parts.pool)
+    .children('.data-grid-row')
+    .toArray()
+    .find((r) => grid._shown[r._index]?.row[grid._source.idField] === id);
+
+/** put the open editor into its cell (after a re-render filled the cell again) */
+function placeEditor(grid, ed) {
+  const col = grid._order.findIndex((c) => c.field === ed.field);
+  const cell = ed.rowEl?.children[col];
+  if (!cell) return;
+  ed.cell = cell;
+  cell.dataset.editing = '';
+  const content = dfDollar(cell).children('.data-grid-content').get(0);
+  if (content && content !== ed.wrap) content.replaceWith(ed.wrap);
+  else if (!cell.contains(ed.wrap)) dfDollar(cell).append(ed.wrap);
+}
+
+/** open the editor of a cell (row = its place in the query, col = its column in the shown order) */
+function openEdit(grid, row, col) {
+  const column = editableColumn(grid, col);
+  const entry = grid._shown?.[row];
+  if (!column || !entry || grid.hasAttribute('data-readonly')) return false;
+  if (grid._editor && !commitEdit(grid, 'none')) return false;
+  const record = entry.row;
+  const value = record[column.field];
+  const ctx = editContext(grid, record, column);
+  const custom = grid._sourceOptions?.getEditorFn?.(column.field, value, ctx);
+  if (custom === false) return false;
+  const editor: CellEditor =
+    asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules, { colorClass: 'data-grid-color-input' });
+  focusCell(grid, row, col);
+  const id = record[grid._source.idField];
+  const wrap = document.createElement('span');
+  wrap.className = 'data-grid-editor data-grid-content';
+  dfDollar(wrap).append(editor.el);
+  const ed = { id, field: column.field, column, editor, wrap, value, record, rowEl: rowElOf(grid, id), cell: null };
+  grid._editor = ed;
+  placeEditor(grid, ed);
+  wrap.addEventListener('keydown', (e) => {
+    const act = editorKey(e, editor);
+    if (!act) return;
+    if (act === 'cancel') {
+      e.preventDefault();
+      e.stopPropagation();
+      cancelEdit(grid);
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    commitEdit(grid, act === 'commit' ? 'stay' : act);
+  });
+  wrap.addEventListener('change', () => {
+    if (editor.immediate) commitEdit(grid, 'stay');
+  });
+  wrap.addEventListener('focusout', (e) => {
+    if (wrap.contains(e.relatedTarget as Node)) return;
+    // after the click that moved focus is handled (it may open another editor)
+    setTimeout(() => {
+      if (grid._editor === ed && !wrap.contains(document.activeElement)) commitEdit(grid, 'none');
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+
+/** close the editor without writing - the cell shows its value again */
+function cancelEdit(grid, focus = true) {
+  const ed = grid._editor;
+  if (!ed) return;
+  grid._editor = null;
+  grid._gen++;
+  renderRows(grid);
+  if (focus) focusRecord(grid, ed.id, ed.field);
+}
+
+/** focus a record's cell in a column (wherever the query placed it) */
+function focusRecord(grid, id, field, by = 0) {
+  const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+  const col = grid._order.findIndex((c) => c.field === field);
+  if (row < 0 || col < 0) return;
+  if (!by) return focusCell(grid, row, col);
+  // Tab / Shift + Tab: the next editable cell of the row, then of the next row
+  const editable = grid._order.map((c, i) => (c.editable ? i : -1)).filter((i) => i >= 0);
+  let at = editable.indexOf(col) + by;
+  let r = row;
+  if (at >= editable.length) [at, r] = [0, row + 1];
+  if (at < 0) [at, r] = [editable.length - 1, row - 1];
+  if (r < 0 || r >= grid._shown.length) return focusCell(grid, row, col);
+  openEdit(grid, r, editable[at]);
+}
+
+/** show why a value is refused, under the editor (announced) */
+function showEditProblem(ed, problem) {
+  const control = editorControl(ed.editor);
+  control.setAttribute('aria-invalid', 'true');
+  let note = dfDollar(ed.wrap).children('.data-grid-error').get(0);
+  if (!note) {
+    note = document.createElement('span');
+    note.className = 'data-grid-error';
+    note.setAttribute('role', 'alert');
+    note.id = `dg-error-${Math.random().toString(36).slice(2, 8)}`;
+    dfDollar(ed.wrap).append(note);
+    control.setAttribute('aria-describedby', note.id);
+  }
+  dfDollar(note).text(problem);
+}
+
+/** write one record's new values: a new record replaces the old one in the source, the query runs again */
+function writeRecord(grid, id, patch) {
+  const idField = grid._source.idField;
+  const rows = grid._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0) return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  grid._source.setRows(next);
+  // the same query over the new rows: the sort and the filters place the record again
+  grid._writing = true;
+  triggerStateChange(grid, grid.store.value, grid.store.value);
+  grid._writing = false;
+  return record;
+}
+
+/**
+ * Commit the open editor: validate (the editor, the column's rules, validateFn), ask data-grid-beforeedit
+ * (cancelable), write the record, then data-grid-edit. Returns false while the value is refused (the editor stays).
+ */
+function commitEdit(grid, then = 'stay') {
+  const ed = grid._editor;
+  if (!ed) return true;
+  let problem = ed.editor.validate?.() ?? '';
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String((error as Error).message ?? error);
+    }
+  }
+  const ctx = editContext(grid, ed.record, ed.column);
+  if (!problem) problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = grid._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === 'string' && answer) problem = answer;
+    else if (answer === false) problem = 'Invalid value';
+  }
+  if (problem) {
+    showEditProblem(ed, problem);
+    return false;
+  }
+  grid._editor = null;
+  const oldValue = ed.value;
+  // Fires before an edited value is written - cancelable: preventDefault() keeps the old value.
+  const before = new CustomEvent<DataGridBeforeEditDetail>('data-grid-beforeedit', {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.record, field: ed.field, value, oldValue },
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !grid.dispatchEvent(before)) {
+    grid._gen++;
+    renderRows(grid);
+  } else {
+    const record = writeRecord(grid, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    // Fires after an edited value was written - the new record, the field, the new and the old value.
+    grid.dispatchEvent(
+      new CustomEvent<DataGridEditDetail>('data-grid-edit', {
+        bubbles: true,
+        detail: { record, field: ed.field, value, oldValue },
+      }),
+    );
+  }
+  if (then === 'stay') focusRecord(grid, ed.id, ed.field);
+  else if (then === 'next' || then === 'prev') focusRecord(grid, ed.id, ed.field, then === 'next' ? 1 : -1);
+  return true;
+}
+
 function onKeydown(grid, e) {
-  if (e.target.closest?.('.data-grid-filters, .data-grid-footer, .data-grid-menu')) return;
+  if (e.target.closest?.('.data-grid-filters, .data-grid-footer, .data-grid-menu, .data-grid-editor')) return;
   // a control in a custom cell keeps its keys, as it keeps its clicks (onClick): a field types a space and moves its
   // caret, a checkbox ticks on Space, a select opens on Enter - the grid would take them for row navigation
   if (e.target.closest?.('.data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])')) return;
@@ -844,7 +1145,15 @@ function onKeydown(grid, e) {
       selectAll(grid);
       next = [row, col];
       break;
+    case 'F2':
+      if (row < 0 || !openEdit(grid, row, col)) return;
+      e.preventDefault();
+      return;
     case 'Enter':
+      if (row >= 0 && !e.shiftKey && editableColumn(grid, col) && openEdit(grid, row, col)) {
+        e.preventDefault();
+        return;
+      }
       if (row === -1) {
         const column = grid._order[col];
         if (column.sortable)
@@ -870,7 +1179,7 @@ function onKeydown(grid, e) {
 function onClick(grid, e) {
   const t = e.target;
   // the click that ends a drag, a resize or a long press is no sort
-  if (grid._suppressClick || t.closest('.data-grid-menu, .data-grid-resizer')) return;
+  if (grid._suppressClick || t.closest('.data-grid-menu, .data-grid-resizer, .data-grid-editor')) return;
   const menuButton = t.closest('.data-grid-menu-button');
   if (menuButton) {
     const column = grid._columns.find((c) => c.field === menuButton.dataset.field);
@@ -1525,6 +1834,56 @@ df$.dataGrid = {
    * @param target - the .data-grid element or its selector
    */
   resetColumns: (target: string | HTMLElement): void => resetColumns(resolve(target)),
+  /**
+   * Open the editor of a record's cell (an editable column - data-editable on its header). The record is scrolled
+   * into view first.
+   * @param target - the .data-grid element or its selector
+   * @param id - the record's id
+   * @param field - the column's field
+   * @returns false when the cell does not edit (no such record shown, a column without data-editable, getEditorFn
+   *   answered false)
+   */
+  edit(target: string | HTMLElement, id: DataviewJsonValue, field: string): boolean {
+    const grid = resolve(target);
+    const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+    const col = grid._order.findIndex((c) => c.field === field);
+    if (row < 0 || col < 0) return false;
+    focusCell(grid, row, col);
+    return openEdit(grid, row, col);
+  },
+  /**
+   * Commit the open editor.
+   * @param target - the .data-grid element or its selector
+   * @returns false when its value is refused (the editor stays open with the message); true otherwise
+   */
+  commit: (target: string | HTMLElement): boolean => commitEdit(resolve(target)),
+  /**
+   * Close the open editor without writing.
+   * @param target - the .data-grid element or its selector
+   */
+  cancel: (target: string | HTMLElement): void => cancelEdit(resolve(target)),
+  /**
+   * Write new values into one record - what an edit writes, from script (a custom cell's own control, a form beside
+   * the grid). The record is replaced by a new object; the query runs again. Fires data-grid-edit per field.
+   * @param target - the .data-grid element or its selector
+   * @param id - the record's id
+   * @param patch - the fields to change and their new values
+   * @returns the new record, null when no record has that id
+   */
+  update(target: string | HTMLElement, id: DataviewJsonValue, patch: DataviewRow): DataviewRow | null {
+    const grid = resolve(target);
+    const old = grid._source.rows.find((r) => r[grid._source.idField] === id);
+    if (!old) return null;
+    const record = writeRecord(grid, id, patch);
+    for (const field of Object.keys(patch))
+      grid.dispatchEvent(
+        new CustomEvent<DataGridEditDetail>('data-grid-edit', {
+          bubbles: true,
+          detail: { record, field, value: patch[field], oldValue: old[field] },
+        }),
+      );
+    return record;
+  },
 };
 
 // -- init --------------------------------------------------------------------------
@@ -1630,6 +1989,13 @@ function init() {
         else openMenu(grid, column);
       });
       grid.addEventListener('dblclick', (e) => {
+        // a double click on an editable cell opens its editor
+        const cell = (e.target as HTMLElement).closest<HTMLElement>('.data-grid-cell');
+        const rowEl = cell?.closest<HTMLElement & { _index?: number }>('.data-grid-row');
+        if (cell && rowEl && grid._parts.pool.contains(rowEl) && !cell.hasAttribute('data-editing')) {
+          if (openEdit(grid, rowEl._index, [...rowEl.children].indexOf(cell))) e.preventDefault();
+          return;
+        }
         // a double click on a resize handle gives the column its authored width again
         const handle = (e.target as HTMLElement).closest<HTMLElement>('.data-grid-resizer');
         if (!handle) return;

@@ -1,0 +1,318 @@
+// -- Start Menu ---------------------------------------------------
+// A desktop's start menu on a popover: a search field that filters every item
+// as you type, pinned items and a list of all items (a folder opens its own
+// popover beside it, the classic cascading menu), the user and the power
+// buttons. Arrows move through what shows (Right / Left open and close a
+// folder), Enter picks; a pick fires start-select with the item's value and
+// closes the menu - the page decides what it opens. A Start Button opens it.
+// VERIFIED: (start-menu.e2e) a close clears the search even when the page emptied the field first - the Desktop
+// scaffold's handler did, and the next opening showed nothing but an empty result list.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+/** An element by id, through df$ (null when none has it). */
+const byId = (id: string | null | undefined): HTMLElement | null =>
+  (id ? (dfDollar('#' + CSS.escape(id)).get(0) as HTMLElement | undefined) : undefined) ?? null;
+
+/** What start-select carries. */
+interface StartSelectDetail {
+  /** the picked item's data-value (else its label) */
+  value: string;
+  /** the picked item's label */
+  label: string;
+}
+
+const startMenuStates = ['default', 'open'];
+
+/** setState() configs per state. */
+export interface StartMenuStateConfigs {
+  /** Closed. */
+  default: {};
+  /** Open. */
+  open: {
+    /** the search text (the items that match show) */
+    query?: string;
+  };
+}
+
+const ITEM = '.start-menu-item';
+
+const resolve = (target) =>
+  typeof target === 'string' ? (dfDollar('#' + CSS.escape(target)).get(0) ?? dfDollar(target).get(0)) : target;
+
+const labelOf = (i: Element): string =>
+  (dfDollar(i).find('.start-menu-label').get(0)?.textContent ?? i.textContent ?? '').replace(/\s+/g, ' ').trim();
+const valueOf = (i: HTMLElement): string => i.dataset.value ?? labelOf(i);
+
+/** The items the reader can reach now: in the open menu or an open folder, shown, not a folder of the results. */
+const reachable = (menu: HTMLElement): HTMLElement[] =>
+  dfDollar(menu)
+    .find<HTMLElement>(ITEM)
+    .toArray()
+    .filter((i) => i.checkVisibility());
+
+/** The markup of a state: the search text. 'open' itself lives in the top layer (:popover-open). */
+function applyMarkup(menu, _stateName, query = '') {
+  dfDollar(menu)
+    .find('.start-menu-search input')
+    .attr('value', query || null);
+}
+
+/** Filters every item (folders' contents too) by the search text; folders close while it searches. */
+function filter(menu: HTMLElement, q: string) {
+  const query = q.trim().toLowerCase();
+  menu.toggleAttribute('data-searching', !!query);
+  const all = dfDollar(menu).find<HTMLElement>(ITEM).toArray();
+  for (const i of all) {
+    if (i.hasAttribute('aria-haspopup')) continue;
+    i.toggleAttribute('data-match', !!query && labelOf(i).toLowerCase().includes(query));
+  }
+  if (query)
+    for (const sub of dfDollar(menu).find<HTMLElement>('.start-menu-sub').toArray())
+      if (sub.matches(':popover-open')) sub.hidePopover();
+  const empty = dfDollar(menu).find('.start-menu-empty').get(0) as HTMLElement | undefined;
+  if (empty) empty.hidden = !query || all.some((i) => i.hasAttribute('data-match'));
+}
+
+function triggerStateChange(menu, stateName, config) {
+  const input = dfDollar(menu).find('.start-menu-search input').get(0) as HTMLInputElement | undefined;
+  if (stateName === 'open') {
+    if (!menu.matches(':popover-open')) menu.showPopover();
+    if (input && config.query !== undefined && input.value !== config.query) {
+      input.value = config.query;
+      filter(menu, config.query);
+    }
+  } else if (menu.matches(':popover-open')) menu.hidePopover();
+  applyMarkup(menu, stateName, input?.value ?? '');
+}
+
+/** Registry-level API; pass the .start-menu element explicitly. Unknown names throw. */
+export const startMenuApi = componentState({
+  component: 'start-menu',
+  states: startMenuStates,
+  events: ['toggle', 'input'],
+  apply: (menu, state) => triggerStateChange(menu, state.name, state.config),
+  read: (menu) => {
+    const q = (dfDollar(menu).find('.start-menu-search input').get(0) as HTMLInputElement | undefined)?.value ?? '';
+    return menu.matches(':popover-open')
+      ? { name: 'open', config: q ? { query: q } : {} }
+      : { name: 'default', config: {} };
+  },
+  markup: (el, state) => applyMarkup(el, state.name, (state.config.query as string | undefined) ?? ''),
+});
+
+df$.startMenuApi = startMenuApi;
+df$.startMenuStates = startMenuStates;
+
+/** The folder popover an item opens (aria-controls), anchored beside it. */
+function openFolder(item: HTMLElement, focusFirst: boolean) {
+  const sub = byId(item.getAttribute('aria-controls') ?? '');
+  if (!sub) return;
+  // close the folders open beside this one (same level)
+  const level = item.closest('.start-menu-sub, .start-menu');
+  for (const other of dfDollar(level).find<HTMLElement>(':scope [aria-haspopup][aria-expanded="true"]').toArray())
+    if (other !== item && other.closest('.start-menu-sub, .start-menu') === level) closeFolder(other);
+  const name = `--start-menu-${item.getAttribute('aria-controls')}`;
+  item.style.setProperty('anchor-name', name);
+  sub.style.setProperty('position-anchor', name);
+  if (!sub.matches(':popover-open')) sub.showPopover();
+  item.setAttribute('aria-expanded', 'true');
+  if (focusFirst) reachable(sub)[0]?.focus();
+}
+function closeFolder(item: HTMLElement) {
+  const sub = byId(item.getAttribute('aria-controls') ?? '');
+  if (sub?.matches(':popover-open')) sub.hidePopover();
+  item.setAttribute('aria-expanded', 'false');
+}
+
+function pick(menu: HTMLElement, item: HTMLElement) {
+  if (item.hasAttribute('aria-haspopup')) return openFolder(item, true);
+  // Fires when an item is picked - its value and label; the menu closes.
+  menu.dispatchEvent(
+    new CustomEvent<StartSelectDetail>('start-select', {
+      bubbles: true,
+      detail: { value: valueOf(item), label: labelOf(item) },
+    }),
+  );
+  startMenuApi.setState(menu, 'default', {});
+}
+
+function bind(menu: HTMLElement) {
+  const input = dfDollar(menu).find('.start-menu-search input').get(0) as HTMLInputElement | undefined;
+  menu.addEventListener('toggle', (e: Event) => {
+    const open = (e as ToggleEvent).newState === 'open';
+    for (const b of dfDollar(`[popovertarget="${CSS.escape(menu.id)}"]`).toArray())
+      b.setAttribute('aria-expanded', String(open));
+    if (open) {
+      if (input?.checkVisibility()) input.focus();
+      else reachable(menu)[0]?.focus();
+    } else {
+      for (const f of dfDollar(menu).find<HTMLElement>('[aria-haspopup][aria-expanded="true"]').toArray())
+        closeFolder(f);
+      // the search ends with the menu - also when the page cleared the field first
+      if (input) {
+        input.value = '';
+        filter(menu, '');
+      }
+    }
+  });
+  input?.addEventListener('input', () => filter(menu, input.value));
+  menu.addEventListener('click', (e) => {
+    const item = (e.target as Element).closest(ITEM) as HTMLElement | null;
+    if (item && !item.hasAttribute('disabled')) pick(menu, item);
+  });
+  // folders open on hover too, like the classic menu
+  menu.addEventListener('pointerover', (e) => {
+    if ((e as PointerEvent).pointerType !== 'mouse') return;
+    const item = (e.target as Element).closest(ITEM) as HTMLElement | null;
+    if (!item) return;
+    if (item.hasAttribute('aria-haspopup')) openFolder(item, false);
+    else {
+      const level = item.closest('.start-menu-sub, .start-menu');
+      for (const f of dfDollar(level).find<HTMLElement>('[aria-haspopup][aria-expanded="true"]').toArray())
+        if (f.closest('.start-menu-sub, .start-menu') === level) closeFolder(f);
+    }
+  });
+  menu.addEventListener('keydown', (e) => {
+    const items = reachable(menu);
+    const cur = (e.target as Element).closest(ITEM) as HTMLElement | null;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      // within the level the focus is on (a folder's own items), else the whole menu
+      const level = cur?.closest('.start-menu-sub') ?? null;
+      const list = level
+        ? items.filter((i) => i.closest('.start-menu-sub') === level)
+        : items.filter((i) => !i.closest('.start-menu-sub'));
+      const k = cur ? list.indexOf(cur) : -1;
+      const next = list[(k + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length];
+      next?.focus();
+      return;
+    }
+    if (e.key === 'ArrowRight' && cur?.hasAttribute('aria-haspopup')) {
+      e.preventDefault();
+      openFolder(cur, true);
+      return;
+    }
+    if (e.key === 'ArrowLeft' && cur?.closest('.start-menu-sub')) {
+      e.preventDefault();
+      const sub = cur.closest('.start-menu-sub') as HTMLElement;
+      const opener = dfDollar(menu)
+        .find<HTMLElement>(`[aria-controls="${CSS.escape(sub.id)}"]`)
+        .get(0);
+      if (opener) {
+        closeFolder(opener);
+        opener.focus();
+      }
+      return;
+    }
+    if (e.key === 'Enter' && e.target === input) {
+      e.preventDefault();
+      const first = items.find((i) => i.hasAttribute('data-match'));
+      if (first) pick(menu, first);
+      return;
+    }
+    if (e.key === 'Escape' && cur?.closest('.start-menu-sub')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const sub = cur.closest('.start-menu-sub') as HTMLElement;
+      const opener = dfDollar(menu)
+        .find<HTMLElement>(`[aria-controls="${CSS.escape(sub.id)}"]`)
+        .get(0);
+      if (opener) {
+        closeFolder(opener);
+        opener.focus();
+      }
+      return;
+    }
+    // typing anywhere in the menu searches
+    if (input?.checkVisibility() && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey && e.target !== input) {
+      input.focus();
+    }
+  });
+}
+
+/**
+ * Open the menu (with a search text).
+ * @param target - the .start-menu element, its id or a selector
+ * @param query - the text to search for ('' shows everything)
+ * @returns the menu, null when the target matches none
+ */
+const openMenu = (target: string | HTMLElement, query: string = ''): HTMLElement | null => {
+  const m = resolve(target);
+  if (m) startMenuApi.setState(m, 'open', { query });
+  return m;
+};
+
+/**
+ * Close the menu.
+ * @param target - the .start-menu element, its id or a selector
+ * @returns the menu, null when the target matches none
+ */
+const closeMenu = (target: string | HTMLElement): HTMLElement | null => {
+  const m = resolve(target);
+  if (m) startMenuApi.setState(m, 'default', {});
+  return m;
+};
+
+/**
+ * Open it when closed, close it when open.
+ * @param target - the .start-menu element, its id or a selector
+ * @returns whether it is open now
+ */
+const toggleMenu = (target: string | HTMLElement): boolean => {
+  const m = resolve(target);
+  if (!m) return false;
+  const opening = !m.matches(':popover-open');
+  startMenuApi.setState(m, opening ? 'open' : 'default', opening ? { query: '' } : {});
+  return opening;
+};
+
+/** df$.shadcn.startMenu - open, close and toggle a start menu. */
+export const startMenuActions = { open: openMenu, close: closeMenu, toggle: toggleMenu };
+df$.startMenu = startMenuActions;
+
+function init() {
+  dfDollar('.start-menu[popover]:not([data-init])')
+    .toArray()
+    .forEach((menu) => {
+      menu.dataset.init = '';
+      for (const f of dfDollar(menu).find<HTMLElement>(`${ITEM}[aria-controls]`).toArray()) {
+        f.setAttribute('aria-haspopup', 'menu');
+        if (!f.hasAttribute('aria-expanded')) f.setAttribute('aria-expanded', 'false');
+      }
+      // the menu opens at its Start Button (any [popovertarget] naming it)
+      const name = `--start-menu-${menu.id}`;
+      menu.style.setProperty('position-anchor', name);
+      for (const b of dfDollar(`[popovertarget="${CSS.escape(menu.id)}"]`).toArray()) {
+        b.style.setProperty('anchor-name', name);
+        b.setAttribute('aria-expanded', 'false');
+      }
+      bind(menu);
+      // el.store + el.api (AGENTS.md "State through stores")
+      bindComponent(menu, startMenuApi);
+    });
+}
+
+// Ctrl+Esc opens the start menu of the desktop the focus is in (else the first on the page), like the Windows key
+if (!document.__startMenuInit) {
+  document.__startMenuInit = true;
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !e.ctrlKey) return;
+    // the nearest menu around the focus: the desktop the reader is in
+    let menu: HTMLElement | undefined;
+    for (let p = document.activeElement as Element | null; p && !menu; p = p.parentElement)
+      menu = dfDollar(p).find<HTMLElement>('.start-menu[popover]').get(0);
+    menu ??= dfDollar<HTMLElement>('.start-menu[popover]').get(0);
+    if (!menu) return;
+    e.preventDefault();
+    toggleMenu(menu);
+  });
+}
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

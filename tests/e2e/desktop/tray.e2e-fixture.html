@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tray e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/window/window.css">
+  <link rel="stylesheet" href="/dist/components/window-manager/window-manager.css">
+  <link rel="stylesheet" href="/dist/components/taskbar/taskbar.css">
+  <link rel="stylesheet" href="/dist/components/tray/tray.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; display: grid; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: a tray in a taskbar bound to a desktop with a window (show desktop works there), an
+       item with a badge, one that opens a popover, the clock in German with seconds and the date; a second tray on
+       its own with a plain clock -->
+  <div class="desktop" style="width: 640px; height: 260px;">
+    <div class="window-desktop window-manager" id="tray-desk">
+      <dialog class="window" id="tray-win" open style="--window-x: 20px; --window-y: 20px; --window-w: 240px;">
+        <header class="window-titlebar">
+          <h2 class="window-title">Mail</h2>
+          <form method="dialog" class="window-controls">
+            <button type="button" class="window-minimize" aria-label="Minimize"></button>
+            <button class="window-close" aria-label="Close"></button>
+          </form>
+        </header>
+        <div class="window-body">Inbox</div>
+      </dialog>
+    </div>
+    <nav class="taskbar" data-taskbar-for="tray-desk" aria-label="Taskbar">
+      <div class="taskbar-windows" role="group" aria-label="Open windows"></div>
+      <div class="tray" id="tray1" data-seconds data-date role="group" aria-label="Notification area">
+        <button class="tray-item" id="tray-wifi" type="button" aria-label="Network" popovertarget="tray-net"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></button>
+        <button class="tray-item" id="tray-bell" type="button" aria-label="Notifications, 3 new" data-badge="3"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></button>
+        <time class="tray-clock"></time>
+        <button class="tray-show-desktop" type="button" aria-label="Show desktop"></button>
+      </div>
+    </nav>
+    <div class="popover" id="tray-net" popover>Connected</div>
+  </div>
+
+  <div class="tray" id="tray2" role="group" aria-label="A plain clock" lang="en-US">
+    <time class="tray-clock"></time>
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/window/window.js"></script>
+  <script type="module" src="/dist/components/window-manager/window-manager.js"></script>
+  <script type="module" src="/dist/components/taskbar/taskbar.js"></script>
+  <script type="module" src="/dist/components/tray/tray.js"></script>
+</body>
+</html>

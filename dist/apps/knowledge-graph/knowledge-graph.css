@@ -4551,6 +4551,30 @@
     }
   }
 
+  /* deep navigation (data-levels on a row stack): each open level keeps its own width (--panel-size), a folded one is
+     its bar, and the region is their sum - what a level gives up goes to the center. On the east side the levels run
+     from the edge toward the center. A folded level in a drill stack is a breadcrumb: it takes the pointer. */
+  .border-layout-stack[data-levels] > .panel:not([data-minimized]) {
+    flex: none;
+    inline-size: var(--panel-size, 16rem);
+  }
+  .border-layout-east > .border-layout-stack[data-levels],
+  .border-layout-stack[data-levels].border-layout-east {
+    flex-direction: row-reverse;
+  }
+  .border-layout-stack[data-drill] > .panel[data-minimized] > .panel-header {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
   /* the divider between two panels: a line with a wider hit area */
   .border-layout-stack-divider {
     position: relative;
@@ -6830,6 +6854,63 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  /* -- inline editing: an editable column's cell holds its editor ------------------
+     The editor fills the cell (a row keeps its height); a refused value shows its message below the cell,
+     over the next row. */
+  .data-grid-cell[data-editing] {
+    overflow: visible;
+    padding-inline: 0.25rem;
+    z-index: 2;
+  }
+  .data-grid-editor {
+    position: relative;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    overflow: visible;
+
+    & > :is(.input, .select, .textarea) {
+      flex: 1;
+      min-width: 0;
+      inline-size: 100%;
+    }
+    & > .textarea {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline: 0;
+      z-index: 3;
+      min-block-size: 6rem;
+      box-shadow: var(--shadow-md);
+    }
+  }
+  .data-grid-color-input {
+    inline-size: 2.5rem;
+    block-size: calc(var(--data-grid-row-height) - 0.75rem);
+    padding: 0;
+    border: 1px solid var(--input);
+    border-radius: var(--radius-sm);
+    background: var(--background);
+    cursor: pointer;
+  }
+  .data-grid-error {
+    position: absolute;
+    inset-block-start: calc(100% + 0.25rem);
+    inset-inline-start: 0;
+    z-index: 4;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--destructive);
+    color: var(--destructive-foreground);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+  }
+  /* an editable cell says so on hover: a double click edits it */
+  .data-grid-row > .data-grid-cell[data-editable]:not([data-editing]):hover {
+    box-shadow: inset 0 0 0 1px var(--input);
   }
 
   /* -- tree grid: the first column indents and carries the toggle --- */

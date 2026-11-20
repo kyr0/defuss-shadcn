@@ -1,6 +1,6 @@
 ---
 title: "Notes & Docs"
-description: "Application scaffold: a Notion-style workspace - a page tree, a block editor with a slash menu, markdown shortcuts, a floating format bar and drag to move, covers and icons, sharing, favorites and trash, and a roadmap database with table, board and gallery views, kept in the browser with defuss-storage (OPFS), searched by keywords and meaning with defuss-search and backed up into one file - built only from the shipped components."
+description: "Application scaffold: a Notion-style workspace - a page tree, a block editor with a slash menu of text and component blocks (hints, images, tables, milestones, roadmap databases), page templates, markdown shortcuts, a floating format bar and drag to move, covers and icons, sharing, favorites and trash, and a roadmap database with table, board and gallery views, kept in the browser with defuss-storage (OPFS), searched by keywords and meaning with defuss-search and backed up into one file - built only from the shipped components."
 slug: "scaffold-notes"
 ---
 
@@ -349,12 +349,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   }
   .nt-starter {
     display: grid;
-    justify-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
     gap: 0.125rem;
     margin-block-end: 1rem;
     color: var(--muted-foreground);
     & p {
       margin: 0 0 0.5rem;
+      grid-column: 1 / -1;
     }
     & button {
       display: inline-flex;
@@ -586,6 +587,179 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       font-size: 0.8125rem;
     }
   }
+  /* the component blocks: a hint (Alert), an image, a table (Table), milestones (Timeline), a roadmap database */
+  .nt-figure {
+    position: relative;
+  }
+  .nt-image-empty {
+    display: grid;
+    place-items: center;
+    min-height: 7rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-md);
+    background: color-mix(in oklch, var(--muted) 50%, transparent);
+  }
+  .nt-image-actions {
+    position: absolute;
+    inset-block-start: 0.5rem;
+    inset-inline-end: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .nt-figure:is(:hover, :focus-within) .nt-image-actions {
+    opacity: 1;
+  }
+  .nt-image-pick {
+    width: 21rem;
+    padding: 0.5rem;
+    & .nt-menu-heading {
+      margin: 0.25rem 0.25rem 0.375rem;
+    }
+    & form {
+      display: flex;
+      gap: 0.375rem;
+      margin-block-end: 0.5rem;
+    }
+  }
+  .nt-image-photos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.375rem;
+    & button {
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: none;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    & img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+    }
+    & button:hover img,
+    & button:focus-visible img {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+  .nt-upload {
+    position: relative;
+    margin-block-end: 0.5rem;
+    cursor: pointer;
+    & input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    &:has(input:focus-visible) {
+      outline: 2px solid var(--ring);
+    }
+  }
+  .nt-block[data-type='hint'] > .nt-hint {
+    flex: 1;
+    min-width: 0;
+    margin-block: 0.25rem;
+    & .alert-description {
+      margin-block-start: 0.125rem;
+      color: var(--foreground);
+      font-size: 0.875rem;
+    }
+  }
+  .nt-hint[data-tone='note'] {
+    border-color: color-mix(in oklab, var(--nt-blue) 45%, var(--border));
+    background: color-mix(in oklab, var(--nt-blue) 6%, var(--background));
+    & :is(.alert-icon, .alert-title) {
+      color: var(--nt-blue);
+    }
+  }
+  /* literal greens and ambers (the theme has no success or warning token), mixed in oklab: an oklch mix with a
+     white background turned the green pink */
+  .nt-hint[data-tone='tip'] {
+    border-color: color-mix(in oklab, oklch(0.6 0.15 150) 45%, var(--border));
+    background: color-mix(in oklab, oklch(0.6 0.15 150) 6%, var(--background));
+    & :is(.alert-icon, .alert-title) {
+      color: oklch(0.55 0.15 150);
+    }
+  }
+  .nt-hint[data-tone='warning'] {
+    border-color: color-mix(in oklab, oklch(0.75 0.16 75) 60%, var(--border));
+    background: color-mix(in oklab, oklch(0.75 0.16 75) 8%, var(--background));
+    & :is(.alert-icon, .alert-title) {
+      color: oklch(0.58 0.14 65);
+    }
+  }
+  .dark .nt-hint[data-tone='tip'] :is(.alert-icon, .alert-title) {
+    color: oklch(0.75 0.15 150);
+  }
+  .dark .nt-hint[data-tone='warning'] :is(.alert-icon, .alert-title) {
+    color: oklch(0.8 0.15 75);
+  }
+  .nt-hint[data-tone='caution'] {
+    background: color-mix(in oklab, var(--destructive) 6%, var(--background));
+    & .alert-description {
+      opacity: 1;
+      color: var(--foreground);
+    }
+  }
+  .nt-part {
+    flex: 1;
+    min-width: 0;
+    margin-block: 0.25rem;
+  }
+  .nt-part-actions {
+    display: flex;
+    gap: 0.25rem;
+    margin-block-start: 0.25rem;
+    opacity: 0.6;
+    &:is(:hover, :focus-within) {
+      opacity: 1;
+    }
+  }
+  .nt-table .table-container {
+    overflow-x: auto;
+  }
+  .nt-table :is(.table-head, .table-cell) {
+    min-width: 7rem;
+    border-inline-end: 1px solid var(--border);
+    vertical-align: top;
+    &:last-child {
+      border-inline-end: 0;
+    }
+    &:focus {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+  .nt-milestones .timeline {
+    padding-block: 0.25rem;
+  }
+  .nt-milestones .timeline-dot {
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid var(--ring);
+      outline-offset: 2px;
+    }
+  }
+  .nt-milestones :is(.timeline-title, .timeline-time) {
+    min-height: 1lh;
+    outline: none;
+  }
+  .nt-block[data-type='db'] > .nt-db {
+    flex: 1;
+    min-width: 0;
+  }
+  .nt-block-menu[data-kind='part'] :is([data-turn], .nt-turn) {
+    display: none;
+  }
+  .nt-block-menu[data-kind='db'] :is([data-turn], .nt-turn, [data-act='dup']) {
+    display: none;
+  }
   .nt-pagelink {
     display: inline-flex;
     align-items: baseline;
@@ -754,8 +928,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   .nt-share {
     width: 24rem;
     padding: 0.75rem;
-    display: grid;
     gap: 0.75rem;
+    /* only while open: a display on the closed popover beats the browser's hiding, and the closed (transparent)
+       panel took the clicks at the top right of every page */
+    &:popover-open {
+      display: grid;
+    }
   }
   .nt-share-head {
     display: flex;
@@ -4284,10 +4462,68 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       ><span class="nt-slash-icon"><i data-lucide="code"></i></span
       ><span><strong>Code</strong><small>Capture a code snippet.</small></span></button
     >
+    <p class="nt-menu-heading">Hints</p>
+    <button
+      class="context-menu-item nt-slash-item"
+      role="menuitem"
+      tabindex="-1"
+      type="button"
+      data-block="hint"
+      data-tone="note"
+      ><span class="nt-slash-icon"><i data-lucide="info"></i></span
+      ><span><strong>Note</strong><small>Something readers should know.</small></span></button
+    >
+    <button
+      class="context-menu-item nt-slash-item"
+      role="menuitem"
+      tabindex="-1"
+      type="button"
+      data-block="hint"
+      data-tone="tip"
+      ><span class="nt-slash-icon"><i data-lucide="lightbulb"></i></span
+      ><span><strong>Tip</strong><small>A better way to do it.</small></span></button
+    >
+    <button
+      class="context-menu-item nt-slash-item"
+      role="menuitem"
+      tabindex="-1"
+      type="button"
+      data-block="hint"
+      data-tone="warning"
+      ><span class="nt-slash-icon"><i data-lucide="triangle-alert"></i></span
+      ><span><strong>Warning</strong><small>Needs attention before going on.</small></span></button
+    >
+    <button
+      class="context-menu-item nt-slash-item"
+      role="menuitem"
+      tabindex="-1"
+      type="button"
+      data-block="hint"
+      data-tone="caution"
+      ><span class="nt-slash-icon"><i data-lucide="octagon-alert"></i></span
+      ><span><strong>Caution</strong><small>Something that can go wrong for good.</small></span></button
+    >
+    <p class="nt-menu-heading">Media and data</p>
+    <button class="context-menu-item nt-slash-item" role="menuitem" tabindex="-1" type="button" data-block="image"
+      ><span class="nt-slash-icon"><i data-lucide="image"></i></span
+      ><span><strong>Image</strong><small>Upload a picture, embed a link or pick a photo.</small></span></button
+    >
+    <button class="context-menu-item nt-slash-item" role="menuitem" tabindex="-1" type="button" data-block="table"
+      ><span class="nt-slash-icon"><i data-lucide="sheet"></i></span
+      ><span><strong>Table</strong><small>Rows and columns to fill in.</small></span></button
+    >
+    <button class="context-menu-item nt-slash-item" role="menuitem" tabindex="-1" type="button" data-block="milestones"
+      ><span class="nt-slash-icon"><i data-lucide="milestone"></i></span
+      ><span><strong>Milestones</strong><small>Dates on a line; click a dot when one is reached.</small></span></button
+    >
+    <button class="context-menu-item nt-slash-item" role="menuitem" tabindex="-1" type="button" data-block="db"
+      ><span class="nt-slash-icon"><i data-lucide="square-kanban"></i></span
+      ><span><strong>Roadmap</strong><small>A database with table, board and gallery views.</small></span></button
+    >
     <p class="nt-slash-empty">No results</p>
   </div>
   <div class="context-menu nt-block-menu" id="nt-block-menu" popover aria-label="Block options">
-    <p class="nt-menu-heading">Turn into</p>
+    <p class="nt-menu-heading nt-turn">Turn into</p>
     <button class="context-menu-item" role="menuitem" type="button" data-turn="p"
       ><i data-lucide="type"></i> Text</button
     >
@@ -4321,7 +4557,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     <button class="context-menu-item" role="menuitem" type="button" data-turn="code"
       ><i data-lucide="code"></i> Code</button
     >
-    <div class="context-menu-separator" role="separator"></div>
+    <button class="context-menu-item" role="menuitem" type="button" data-turn="hint"
+      ><i data-lucide="info"></i> Hint</button
+    >
+    <div class="context-menu-separator nt-turn" role="separator"></div>
     <button class="context-menu-item" role="menuitem" type="button" data-act="dup"
       ><i data-lucide="copy"></i> Duplicate</button
     >
@@ -4330,7 +4569,47 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     >
   </div>
 
-  <!-- popovers: share, icons, trash -->
+  <!-- popovers: an image block's picture, share, icons, trash -->
+  <div class="popover nt-image-pick" id="nt-image-pick" popover aria-label="Add an image">
+    <p class="nt-menu-heading">Upload</p>
+    <label class="btn nt-upload" data-variant="outline" data-size="sm"
+      ><i data-lucide="upload"></i> Choose a file<input
+        type="file"
+        accept="image/png, image/jpeg, image/gif, image/webp"
+        data-nt-image-file
+    /></label>
+    <p class="nt-menu-heading">Embed a link</p>
+    <form data-nt-image-link
+      ><label class="sr-only" for="nt-image-url">Image link</label
+      ><input class="input" id="nt-image-url" type="url" placeholder="https://..." required /><button
+        class="btn"
+        data-size="sm"
+        type="submit"
+        >Embed</button
+      ></form
+    >
+    <p class="nt-menu-heading">Photos</p>
+    <div class="nt-image-photos"
+      ><button type="button" data-nt-photo aria-label="Harbour"
+        ><img src="images/photos/s-nt-harbour-1200x600.webp" alt="Morning at the harbour" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Lake"
+        ><img src="images/photos/s-nt-cover-lake-1600x400.webp" alt="A lake" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Library"
+        ><img src="images/photos/s-nt-cover-library-1600x400.webp" alt="A library" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Mountains"
+        ><img src="images/photos/s-nt-cover-mountains-1600x400.webp" alt="Mountains" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Desk"
+        ><img src="images/photos/s-nt-cover-desk-1600x400.webp" alt="A desk" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Photo 1"
+        ><img src="images/photos/s-nt-r1-480x260.webp" alt="" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Photo 2"
+        ><img src="images/photos/s-nt-r2-480x260.webp" alt="" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Photo 3"
+        ><img src="images/photos/s-nt-r3-480x260.webp" alt="" loading="lazy" /></button
+      ><button type="button" data-nt-photo aria-label="Photo 4"
+        ><img src="images/photos/s-nt-r4-480x260.webp" alt="" loading="lazy" /></button
+    ></div>
+  </div>
   <div class="popover nt-share" id="nt-share" popover>
     <div class="nt-share-head"><strong>Share</strong><span class="nt-muted">Only you have access</span></div>
     <form class="nt-share-invite" data-nt-invite
@@ -4454,6 +4733,31 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           >
           <button class="command-item" data-nt-theme
             ><i data-lucide="moon"></i> <span data-i18n-target="cmd-dark">Toggle dark mode</span></button
+          >
+        </div>
+        <div class="command-separator"></div>
+        <div class="command-group">
+          <p class="command-group-heading" data-i18n-target="cmd-templates">New from a template</p>
+          <button class="command-item" data-nt-new="roadmap"
+            ><i data-lucide="square-kanban"></i> <span data-i18n-target="tpl-roadmap">Roadmap</span></button
+          >
+          <button class="command-item" data-nt-new="meeting"
+            ><i data-lucide="users"></i> <span data-i18n-target="tpl-meeting">Meeting notes</span></button
+          >
+          <button class="command-item" data-nt-new="wiki"
+            ><i data-lucide="book-open"></i> <span data-i18n-target="tpl-wiki">Wiki page</span></button
+          >
+          <button class="command-item" data-nt-new="journal"
+            ><i data-lucide="notebook-pen"></i> <span data-i18n-target="tpl-journal">Journal entry</span></button
+          >
+          <button class="command-item" data-nt-new="onboarding"
+            ><i data-lucide="rocket"></i> <span data-i18n-target="tpl-onboarding">Onboarding</span></button
+          >
+          <button class="command-item" data-nt-new="project"
+            ><i data-lucide="target"></i> <span data-i18n-target="tpl-project">Project brief</span></button
+          >
+          <button class="command-item" data-nt-new="todo"
+            ><i data-lucide="square-check"></i> <span data-i18n-target="tpl-todo">To-do list</span></button
           >
         </div>
       </div>
@@ -4761,6 +5065,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <button type="button" data-starter="empty"><i data-lucide="file-text"></i> Empty page</button>
             <button type="button" data-starter="todo"><i data-lucide="square-check"></i> To-do list</button>
             <button type="button" data-starter="meeting"><i data-lucide="users"></i> Meeting notes</button>
+            <button type="button" data-starter="roadmap"><i data-lucide="square-kanban"></i> Roadmap</button>
+            <button type="button" data-starter="wiki"><i data-lucide="book-open"></i> Wiki page</button>
+            <button type="button" data-starter="journal"><i data-lucide="notebook-pen"></i> Journal entry</button>
+            <button type="button" data-starter="onboarding"><i data-lucide="rocket"></i> Onboarding</button>
+            <button type="button" data-starter="project"><i data-lucide="target"></i> Project brief</button>
           </div>
           <div class="nt-blocks"> </div>
         </div>
@@ -4842,6 +5151,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <template data-i18n-for="cmd-new" data-i18n-locale="de">Neue Seite</template>
   <template data-i18n-for="cmd-dark" data-i18n-locale="en">Toggle dark mode</template>
   <template data-i18n-for="cmd-dark" data-i18n-locale="de">Dunkelmodus umschalten</template>
+  <template data-i18n-for="cmd-templates" data-i18n-locale="en">New from a template</template>
+  <template data-i18n-for="cmd-templates" data-i18n-locale="de">Neu aus einer Vorlage</template>
+  <template data-i18n-for="tpl-roadmap" data-i18n-locale="en">Roadmap</template>
+  <template data-i18n-for="tpl-roadmap" data-i18n-locale="de">Roadmap</template>
+  <template data-i18n-for="tpl-meeting" data-i18n-locale="en">Meeting notes</template>
+  <template data-i18n-for="tpl-meeting" data-i18n-locale="de">Besprechungsnotizen</template>
+  <template data-i18n-for="tpl-wiki" data-i18n-locale="en">Wiki page</template>
+  <template data-i18n-for="tpl-wiki" data-i18n-locale="de">Wiki-Seite</template>
+  <template data-i18n-for="tpl-journal" data-i18n-locale="en">Journal entry</template>
+  <template data-i18n-for="tpl-journal" data-i18n-locale="de">Tagebucheintrag</template>
+  <template data-i18n-for="tpl-onboarding" data-i18n-locale="en">Onboarding</template>
+  <template data-i18n-for="tpl-onboarding" data-i18n-locale="de">Einarbeitung</template>
+  <template data-i18n-for="tpl-project" data-i18n-locale="en">Project brief</template>
+  <template data-i18n-for="tpl-project" data-i18n-locale="de">Projektsteckbrief</template>
+  <template data-i18n-for="tpl-todo" data-i18n-locale="en">To-do list</template>
+  <template data-i18n-for="tpl-todo" data-i18n-locale="de">Aufgabenliste</template>
   <template data-i18n-for="cmd-empty" data-i18n-locale="en">No results found.</template>
   <template data-i18n-for="cmd-empty" data-i18n-locale="de">Keine Ergebnisse.</template>
   <template data-i18n-for="trash-title" data-i18n-locale="en">Trash</template>
@@ -4872,6 +5197,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       toggle: 'Toggle',
       quote: 'Empty quote',
       callout: 'Type something…',
+      hint: 'Type a hint...',
       code: 'Code',
     };
     const LEVEL = { h1: 2, h2: 3, h3: 4 };
@@ -4886,18 +5212,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       sophie: { name: 'Sophie Tan', face: 25 },
     };
     const TAGS = { editor: 'Editor', sync: 'Sync', api: 'API', mobile: 'Mobile', ai: 'AI' };
-    const COVERS = [
-      'nt-cover-lake',
-      'nt-cover-library',
-      'nt-cover-mountains',
-      'nt-cover-desk',
-      'nt-cover-forest',
-      'nt-cover-city',
-    ];
+    const COVERS = ['nt-cover-lake', 'nt-cover-library', 'nt-cover-mountains', 'nt-cover-desk'];
     const toast = (title, description) => df$.shadcn.toast.show(description ? { title, description } : { title });
     // the page the router module shows; a script navigates by changing the hash, which the router follows
     const page = () => app.querySelector('.nt-page:not([hidden])');
-    const textOf = (b) => b.querySelector(':scope > .nt-text, :scope > figure > .nt-text');
+    const textOf = (b) => b.querySelector(':scope > .nt-text, :scope > figure > .nt-text, :scope > .nt-hint .nt-text');
     const blockOf = (el) => el.closest('.nt-block');
     const edited = (p) => {
       const e = (p || page()).querySelector('[data-edited]');
@@ -4935,9 +5254,41 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     const clean = (t) => {
       if (t.textContent === '' && !t.querySelector('img, kbd, a')) t.replaceChildren();
     };
-    const setType = (b, type) => {
+    // a hint is a text block inside the shipped Alert: its tone names the icon, the title and the colour
+    const HINTS = {
+      note: ['info', 'Note'],
+      tip: ['lightbulb', 'Tip'],
+      warning: ['triangle-alert', 'Warning'],
+      caution: ['octagon-alert', 'Caution'],
+    };
+    const setType = (b, type, tone) => {
       b.querySelectorAll(':scope > :is(.nt-check, .nt-arrow, .nt-emoji)').forEach((x) => x.remove());
       const t = textOf(b);
+      const box = b.querySelector(':scope > .nt-hint');
+      if (box) {
+        t.classList.remove('alert-description');
+        box.replaceWith(t);
+        b.removeAttribute('data-tone');
+      }
+      if (type === 'hint') {
+        tone = HINTS[tone] ? tone : 'note';
+        b.dataset.tone = tone;
+        const a = document.createElement('div');
+        a.className = 'alert nt-hint';
+        a.setAttribute('role', 'note');
+        a.dataset.tone = tone;
+        if (tone === 'caution') a.dataset.variant = 'destructive';
+        a.innerHTML =
+          '<i class="alert-icon" data-lucide="' +
+          HINTS[tone][0] +
+          '" aria-hidden="true"></i><div class="alert-content"><p class="alert-title">' +
+          HINTS[tone][1] +
+          '</p></div>';
+        t.before(a);
+        t.classList.add('alert-description');
+        a.lastElementChild.append(t);
+        lucide();
+      }
       b.dataset.type = type;
       if (PREFIX[type]) t.insertAdjacentHTML('beforebegin', PREFIX[type]);
       t.dataset.placeholder = PH[type] || '';
@@ -4963,13 +5314,113 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         b.removeAttribute('data-open');
       }
     };
-    const make = (type, html) => {
+    const make = (type, html, tone) => {
       const b = document.createElement('div');
       b.className = 'nt-block';
       b.innerHTML = GUTTER + '<div class="nt-text" contenteditable="true"></div>';
-      setType(b, type || 'p');
+      setType(b, type || 'p', tone);
       if (html) textOf(b).innerHTML = html;
       return b;
+    };
+    // the component blocks hold markup of their own instead of one text: an image (a caption is its text), a
+    // table (the shipped Table), milestones (a Timeline) and a roadmap database
+    const PARTS = ['image', 'table', 'milestones', 'db'];
+    const esc = (s) =>
+      String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+    const part = (type, html) => {
+      const b = document.createElement('div');
+      b.className = 'nt-block';
+      b.dataset.type = type;
+      b.innerHTML = GUTTER + html;
+      return b;
+    };
+    const adds = (list) =>
+      '<div class="nt-part-actions">' +
+      list
+        .map(
+          ([k, label]) =>
+            '<button class="btn" data-variant="ghost" data-size="xs" type="button" data-nt-part="' +
+            k +
+            '"><i data-lucide="plus"></i> ' +
+            label +
+            '</button>',
+        )
+        .join('') +
+      '</div>';
+    const IMAGE_ACTIONS =
+      '<span class="nt-image-actions"><button class="btn" data-variant="secondary" data-size="sm" type="button" popovertarget="nt-image-pick" data-nt-image>Replace</button></span>';
+    const imageBlock = (src, caption) =>
+      part(
+        'image',
+        '<figure class="nt-figure">' +
+          (src
+            ? '<img src="' + esc(src) + '" alt="' + esc(caption) + '">' + IMAGE_ACTIONS
+            : '<div class="nt-image-empty"><button class="btn" data-variant="outline" data-size="sm" type="button" popovertarget="nt-image-pick" data-nt-image><i data-lucide="image-plus"></i> Add an image</button></div>') +
+          '<figcaption class="nt-text" contenteditable="true" data-placeholder="Write a caption...">' +
+          esc(caption) +
+          '</figcaption></figure>',
+      );
+    const cell = (head, text) =>
+      head
+        ? '<th class="table-head nt-cell" scope="col" contenteditable="true">' + esc(text) + '</th>'
+        : '<td class="table-cell nt-cell" contenteditable="true">' + esc(text) + '</td>';
+    const tableBlock = (rows) => {
+      const [head, ...body] = rows?.length
+        ? rows
+        : [
+            ['Name', 'Notes', 'Status'],
+            ['', '', ''],
+            ['', '', ''],
+          ];
+      return part(
+        'table',
+        '<div class="nt-part nt-table"><div class="table-container"><table class="table"><thead><tr class="table-row">' +
+          head.map((x) => cell(true, x)).join('') +
+          '</tr></thead><tbody>' +
+          body.map((r) => '<tr class="table-row">' + r.map((x) => cell(false, x)).join('') + '</tr>').join('') +
+          '</tbody></table></div>' +
+          adds([
+            ['row', 'Row'],
+            ['col', 'Column'],
+          ]) +
+          '</div>',
+      );
+    };
+    const milestone = (title, when, reached) =>
+      '<li class="timeline-item"><button class="timeline-dot" type="button" data-variant="' +
+      (reached ? 'active' : 'outline') +
+      '" aria-pressed="' +
+      !!reached +
+      '" aria-label="Reached"></button><div class="timeline-content"><p class="timeline-title nt-cell" contenteditable="true" data-placeholder="Milestone">' +
+      esc(title) +
+      '</p><time class="timeline-time nt-cell" contenteditable="true" data-placeholder="When">' +
+      esc(when) +
+      '</time></div></li>';
+    const milestonesBlock = (list) =>
+      part(
+        'milestones',
+        '<div class="nt-part nt-milestones"><ol class="timeline" data-orientation="horizontal">' +
+          (list?.length
+            ? list
+            : [
+                ['Kick-off', 'Week 1', true],
+                ['First version', 'Week 4'],
+                ['Launch', 'Week 8'],
+              ]
+          )
+            .map((m) => milestone(...m))
+            .join('') +
+          '</ol>' +
+          adds([['milestone', 'Milestone']]) +
+          '</div>',
+      );
+    // one spec per block: [type, text or rows, tone]
+    const build = ([type, a, b]) => {
+      if (type === 'image') return imageBlock(a, b);
+      if (type === 'table') return tableBlock(a);
+      if (type === 'milestones') return milestonesBlock(a);
+      if (type === 'db') return dbBlock(a);
+      return make(type, a, b);
     };
     const caret = (el, atStart) => {
       el.focus();
@@ -4995,9 +5446,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       return r.toString();
     };
     const texts = () =>
-      [...page().querySelectorAll('.nt-blocks .nt-block > .nt-text, .nt-blocks .nt-figure > .nt-text')].filter(
-        (t) => t.checkVisibility() && t.isContentEditable,
-      );
+      [
+        ...page().querySelectorAll(
+          '.nt-blocks .nt-block > .nt-text, .nt-blocks .nt-figure > .nt-text, .nt-blocks .nt-hint .nt-text',
+        ),
+      ].filter((t) => t.checkVisibility() && t.isContentEditable);
     const pos = (el, n) => {
       const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
       for (let x = w.nextNode(); x; x = w.nextNode()) {
@@ -5031,6 +5484,20 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         if (first) caret(first, true);
         return;
       }
+      // a table cell: Enter goes one row down (a new row after the last); a milestone's fields are one line each
+      const c = e.target.closest('.nt-blocks .nt-cell');
+      if (c && e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        const tr = c.closest('tr');
+        if (!tr) return c.blur();
+        const col = [...tr.children].indexOf(c);
+        let next =
+          tr.parentElement.tagName === 'THEAD' ? c.closest('table').tBodies[0]?.rows[0] : tr.nextElementSibling;
+        if (!next) next = addRow(c.closest('table'));
+        caret(next.children[col], false);
+        edited();
+        return;
+      }
       const t = e.target.closest('.nt-blocks .nt-text');
       if (!t || e.isComposing) return;
       const b = blockOf(t);
@@ -5043,7 +5510,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         if (e.key === 'Enter' || e.key === 'Tab') {
           e.preventDefault();
           const a = slashMenu.querySelector('[data-active]');
-          if (a) pick(a.dataset.block);
+          if (a) pick(a.dataset.block, a.dataset.tone);
           else closeSlash();
           return;
         }
@@ -5060,10 +5527,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           return;
         }
         const type = b.dataset.type;
-        if (
-          (LISTS.includes(type) || type === 'toggle' || type === 'quote' || type === 'callout') &&
-          t.textContent === ''
-        ) {
+        if ((LISTS.includes(type) || ['toggle', 'quote', 'callout', 'hint'].includes(type)) && t.textContent === '') {
           setType(b, 'p');
           return;
         }
@@ -5136,10 +5600,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         return;
       }
       const t = e.target.closest('.nt-blocks .nt-text');
-      if (!t) return;
+      if (!t) {
+        if (e.target.closest('.nt-blocks .nt-cell')) edited();
+        return;
+      }
       const b = blockOf(t);
       edited();
       clean(t);
+      const im = t.matches('figcaption') && t.parentElement.querySelector('img');
+      if (im) im.alt = t.textContent.trim();
       // markdown shortcuts: "# " "- " "[] " "> " … at the start of a text block
       if (b.dataset.type === 'p' && e.inputType === 'insertText' && e.data === ' ') {
         const head = before(t).replace(/\u00a0/g, ' ');
@@ -5180,7 +5649,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
     // -- the slash menu (the shipped Context Menu, opened at the caret) ----------------------
     const slashMenu = app.querySelector('#nt-slash');
-    const slash = { open: false, t: null, from: 0 };
+    const slash = { open: false, shown: false, t: null, from: 0 };
     const menuApi = (m, name, cfg) => df$.shadcn.contextMenuApi.setState(m, name, cfg);
     const caretRect = (t) => {
       const s = getSelection();
@@ -5194,7 +5663,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       m.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + 'px';
     };
     const openSlash = (t, from) => {
-      Object.assign(slash, { open: true, t, from });
+      Object.assign(slash, { open: true, shown: slashMenu.matches(':popover-open'), t, from });
       filterSlash('');
       const r = caretRect(t);
       slashMenu._at = r;
@@ -5208,10 +5677,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     );
     const closeSlash = () => {
       slash.open = false;
+      slash.shown = false;
       if (slashMenu.matches(':popover-open')) menuApi(slashMenu, 'default');
     };
+    // the menu closes by itself too (Escape, a click outside). A close counts only for a menu that showed: the
+    // toggle event of the last close arrives after its exit transition (150 ms), and a "/" typed meanwhile had
+    // opened the menu again - Enter then split the line instead of picking (VERIFIED: tmp/notes/probe-slash.ts)
     slashMenu.addEventListener('toggle', (e) => {
-      if (e.newState === 'closed') slash.open = false;
+      if (e.newState === 'open') slash.shown = true;
+      else if (slash.shown) slash.open = slash.shown = false;
     });
     const filterSlash = (q) => {
       q = q.toLowerCase().trim();
@@ -5234,7 +5708,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         next.scrollIntoView({ block: 'nearest' });
       }
     };
-    const pick = (type) => {
+    const pick = (type, tone) => {
       const t = slash.t;
       const end = before(t).length;
       const r = document.createRange();
@@ -5244,11 +5718,27 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       clean(t);
       closeSlash();
       let b = blockOf(t);
+      // a component block takes the place of an empty text block (or goes after a written one), a text block follows
+      if (PARTS.includes(type) || b.dataset.type === 'image') {
+        const nb = build([type, undefined, tone]);
+        if (t.textContent.trim() === '' && b.dataset.type !== 'image') b.replaceWith(nb);
+        else b.after(nb);
+        const after = PARTS.includes(type) || type === 'divider' ? make('p') : null;
+        if (after) nb.after(after);
+        lucide();
+        fill(nb);
+        const first = type === 'divider' ? textOf(after) : nb.querySelector('.nt-cell, .nt-text');
+        nb.scrollIntoView({ block: 'nearest' });
+        if (type === 'image') nb.querySelector('[data-nt-image]').click();
+        else if (first) caret(first, false);
+        edited();
+        return;
+      }
       if (t.textContent.trim() !== '') {
-        const nb = make(type);
+        const nb = make(type, '', tone);
         b.after(nb);
         b = nb;
-      } else setType(b, type);
+      } else setType(b, type, tone);
       if (type === 'divider') {
         const nb = make('p');
         b.after(nb);
@@ -5259,7 +5749,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     slashMenu.addEventListener('mousedown', (e) => e.preventDefault());
     slashMenu.addEventListener('click', (e) => {
       const i = e.target.closest('.nt-slash-item');
-      if (i && slash.t) pick(i.dataset.block);
+      if (i && slash.t) pick(i.dataset.block, i.dataset.tone);
     });
 
     // -- the block gutter: + inserts below and opens the slash menu, ⋮⋮ opens block options --
@@ -5279,6 +5769,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         menuBlock = blockOf(grip);
         app.querySelectorAll('.nt-block[data-selected]').forEach((x) => x.removeAttribute('data-selected'));
         menuBlock.setAttribute('data-selected', '');
+        // a component block cannot turn into text, and a database is not copied (its items are one of a kind)
+        const kind = menuBlock.dataset.type;
+        blockMenu.dataset.kind = kind === 'db' ? 'db' : PARTS.includes(kind) ? 'part' : 'text';
         const r = grip.getBoundingClientRect();
         blockMenu._at = { top: r.top, bottom: r.top - 6, left: r.right + 4 };
         menuApi(blockMenu, 'open', { x: r.right + 4, y: r.top });
@@ -5286,6 +5779,103 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       }
       const arrow = e.target.closest('.nt-arrow');
       if (arrow) toggleOpen(arrow);
+      // the component blocks: a row or a column more, a milestone more, a milestone reached
+      const more = e.target.closest('[data-nt-part]');
+      if (more) {
+        const b = blockOf(more);
+        const k = more.dataset.ntPart;
+        if (k === 'row') caret(addRow(b.querySelector('table')).cells[0], false);
+        if (k === 'col') {
+          const table = b.querySelector('table');
+          for (const tr of table.rows)
+            tr.insertAdjacentHTML('beforeend', cell(tr.parentElement.tagName === 'THEAD', ''));
+          caret(table.rows[0].lastElementChild, false);
+        }
+        if (k === 'milestone') {
+          const ol = b.querySelector('.timeline');
+          ol.insertAdjacentHTML('beforeend', milestone('', ''));
+          caret(ol.lastElementChild.querySelector('.timeline-title'), false);
+        }
+        edited();
+        return;
+      }
+      const dot = e.target.closest('.nt-milestones .timeline-dot');
+      if (dot) {
+        const on = dot.getAttribute('aria-pressed') !== 'true';
+        dot.setAttribute('aria-pressed', on);
+        dot.dataset.variant = on ? 'active' : 'outline';
+        edited();
+      }
+      const img = e.target.closest('[data-nt-image]');
+      if (img) {
+        // the picker opens at the button clicked: the Popover gives every trigger of one popover the same anchor
+        // name, and a button just made has none yet
+        imageFor = blockOf(img);
+        app.querySelectorAll('[data-nt-image]').forEach((x) => {
+          x.style.anchorName = x === img ? '--nt-image-pick' : '';
+        });
+        pickImage.style.positionAnchor = '--nt-image-pick';
+      }
+    });
+    const addRow = (table) => {
+      const body = table.tBodies[0];
+      body.insertAdjacentHTML(
+        'beforeend',
+        '<tr class="table-row">' + [...table.rows[0].cells].map(() => cell(false, '')).join('') + '</tr>',
+      );
+      return body.lastElementChild;
+    };
+
+    // -- an image block's picture: a file (made smaller, kept as a data URL), a link or one of the photos ------------
+    let imageFor = null;
+    const pickImage = app.querySelector('#nt-image-pick');
+    const setImage = (src) => {
+      const b = imageFor;
+      pickImage.hidePopover();
+      if (!b || !b.isConnected) return;
+      const fig = b.querySelector('figure');
+      fig.querySelector('.nt-image-empty')?.remove();
+      let im = fig.querySelector('img');
+      if (!im) {
+        fig.insertAdjacentHTML('afterbegin', '<img alt="">' + IMAGE_ACTIONS);
+        im = fig.querySelector('img');
+      }
+      im.src = src;
+      im.alt = textOf(b)?.textContent.trim() ?? '';
+      caret(textOf(b), false);
+      edited();
+    };
+    const shrink = async (file) => {
+      const bmp = await createImageBitmap(file);
+      const k = Math.min(1, 1600 / bmp.width);
+      const c = document.createElement('canvas');
+      c.width = Math.round(bmp.width * k);
+      c.height = Math.round(bmp.height * k);
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      bmp.close();
+      return c.toDataURL('image/webp', 0.82);
+    };
+    pickImage.addEventListener('change', async (e) => {
+      const input = e.target.closest('[data-nt-image-file]');
+      const file = input?.files[0];
+      if (!file) return;
+      input.value = '';
+      try {
+        setImage(await shrink(file));
+      } catch {
+        toast('This browser cannot read that picture');
+      }
+    });
+    pickImage.querySelector('[data-nt-image-link]').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = e.target.querySelector('input');
+      if (!/^https?:\/\//i.test(input.value.trim())) return toast('An image link starts with https://');
+      setImage(input.value.trim());
+      input.value = '';
+    });
+    pickImage.addEventListener('click', (e) => {
+      const photo = e.target.closest('[data-nt-photo]');
+      if (photo) setImage(photo.querySelector('img').getAttribute('src'));
     });
     blockMenu.addEventListener('toggle', (e) => {
       if (e.newState === 'closed' && menuBlock) menuBlock.removeAttribute('data-selected');
@@ -5347,7 +5937,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         }
       } else {
         const col = e.target.closest('.nt-col');
-        if (!col) return;
+        if (!col || col.closest('[data-nt-db]') !== drag.el.closest('[data-nt-db]')) return;
         e.preventDefault();
         if (!col.hasAttribute('data-over')) {
           unmark();
@@ -5443,7 +6033,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     let n = 0;
     const leafTpl = document.getElementById('nt-tpl-leaf');
     const pageTpl = document.getElementById('nt-tpl-page');
-    const newPage = () => {
+    const newPage = (kind) => {
       const slug = 'untitled-' + ++n;
       app.querySelector('.nt-pages').insertAdjacentHTML('beforeend', pageTpl.innerHTML.replaceAll('__PAGE__', slug));
       app
@@ -5465,36 +6055,179 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         );
       lucide();
       location.hash = '/pages/' + slug;
-      requestAnimationFrame(() => app.querySelector('#t-' + slug).focus());
+      // a template fills the page once the router shows it (the caret needs a shown page)
+      requestAnimationFrame(() => {
+        const p = app.querySelector('#p-' + slug);
+        if (kind && TEMPLATES[kind]) start(p, kind);
+        else app.querySelector('#t-' + slug).focus();
+      });
     };
-    const STARTERS = {
-      empty: [['p', '']],
-      todo: [
-        ['todo', ''],
-        ['todo', ''],
-        ['todo', ''],
-      ],
-      meeting: [
-        ['h2', 'Agenda'],
-        ['bullet', ''],
-        ['h2', 'Notes'],
-        ['p', ''],
-        ['h2', 'Action items'],
-        ['todo', ''],
-      ],
+    const today = (long) =>
+      new Date().toLocaleDateString(
+        'en-US',
+        long ? { weekday: 'long', month: 'long', day: 'numeric' } : { month: 'short', day: 'numeric' },
+      );
+    // the templates a page starts from: the starter on a new page and the palette's "New from a template" offer
+    // them. Each names an icon, a title, a cover and full width where it wants them, and its blocks as specs
+    // for build(): [type, text | rows | items, tone]. They mirror the sample pages
+    const TEMPLATES = {
+      empty: { blocks: [['p', '']] },
+      todo: {
+        icon: '✅',
+        blocks: [
+          ['todo', ''],
+          ['todo', ''],
+          ['todo', ''],
+        ],
+      },
+      meeting: {
+        icon: '📝',
+        title: () => 'Meeting notes · ' + today(),
+        focus: '[data-type="bullet"] > .nt-text',
+        blocks: [
+          ['h2', 'Agenda'],
+          ['bullet', ''],
+          ['h2', 'Notes'],
+          ['p', ''],
+          ['h2', 'Action items'],
+          ['todo', ''],
+        ],
+      },
+      roadmap: {
+        icon: '🗺️',
+        title: () => 'Roadmap',
+        cover: 'nt-cover-mountains',
+        full: true,
+        blocks: [
+          [
+            'p',
+            'What we are building, and when. Switch views, drag cards between columns, or open an item to edit it.',
+          ],
+          ['milestones'],
+          ['db'],
+        ],
+      },
+      wiki: {
+        icon: '📚',
+        title: () => 'Wiki page',
+        blocks: [
+          ['hint', 'Who keeps this page up to date, and when it was last checked.', 'note'],
+          ['h2', 'Overview'],
+          ['p', ''],
+          ['h2', 'How it works'],
+          ['number', ''],
+          ['h2', 'Questions'],
+          ['toggle', 'A question people ask'],
+          ['h2', 'Related pages'],
+          ['bullet', ''],
+        ],
+      },
+      journal: {
+        icon: '✏️',
+        title: () => today(true),
+        focus: '[data-type="p"] > .nt-text',
+        blocks: [
+          ['h2', 'Today'],
+          ['p', ''],
+          ['image'],
+          ['h2', 'Grateful for'],
+          ['bullet', ''],
+          ['h2', 'Tomorrow'],
+          ['todo', ''],
+        ],
+      },
+      onboarding: {
+        icon: '🚀',
+        title: () => 'Onboarding',
+        cover: 'nt-cover-desk',
+        blocks: [
+          ['hint', 'Work through this list in your first week, and ask whenever you are stuck.', 'tip'],
+          ['h2', 'Week one'],
+          ['todo', 'Set up your laptop'],
+          ['todo', 'Meet your buddy'],
+          ['todo', 'Ship a first small change'],
+          ['h2', 'The first months'],
+          [
+            'milestones',
+            [
+              ['First day', 'Day 1', true],
+              ['First change shipped', 'Week 1'],
+              ['First feature', 'Month 1'],
+              ['On call', 'Month 3'],
+            ],
+          ],
+          ['h2', 'People to meet'],
+          [
+            'table',
+            [
+              ['Name', 'Role', 'When'],
+              ['', '', ''],
+              ['', '', ''],
+            ],
+          ],
+        ],
+      },
+      project: {
+        icon: '🎯',
+        title: () => 'Project brief',
+        blocks: [
+          ['hint', 'One page: why, what, who and when.', 'note'],
+          ['h2', 'Problem'],
+          ['p', ''],
+          ['h2', 'Goals'],
+          ['bullet', ''],
+          ['h2', 'Timeline'],
+          ['milestones'],
+          ['h2', 'Risks'],
+          ['hint', 'What could stop us, and what we do about it.', 'warning'],
+          ['h2', 'Who does what'],
+          [
+            'table',
+            [
+              ['Task', 'Owner', 'Due'],
+              ['', '', ''],
+              ['', '', ''],
+            ],
+          ],
+        ],
+      },
+    };
+    const setCover = (p, name) => {
+      const doc = p.querySelector('.nt-doc');
+      doc.insertAdjacentHTML(
+        'beforebegin',
+        '<div class="nt-cover"><img src="images/photos/s-' +
+          name +
+          '-1600x400.webp" alt=""><span class="nt-cover-actions"><button class="btn" data-variant="secondary" data-size="sm" type="button" data-nt-cover>Change cover</button></span></div>',
+      );
+      doc.querySelector('[data-nt-add-cover]')?.remove();
     };
     const start = (p, kind) => {
+      const tpl = TEMPLATES[kind];
       p.querySelector('[data-nt-starter]')?.remove();
-      const blocks = p.querySelector('.nt-blocks');
-      STARTERS[kind].forEach(([t, h]) => blocks.append(make(t, h)));
+      const slug = p.dataset.page;
+      if (tpl.icon)
+        app.querySelectorAll('[data-icon-of="' + slug + '"]').forEach((x) => {
+          x.textContent = tpl.icon;
+        });
+      if (tpl.cover && !p.querySelector('.nt-cover')) setCover(p, tpl.cover);
+      if (tpl.full) {
+        p.setAttribute('data-full', '');
+        p.querySelector('[data-nt-opt="full"]')?.setAttribute('aria-checked', 'true');
+      }
       const title = p.querySelector('[data-nt-title]');
-      if (kind === 'meeting' && !title.textContent.trim()) {
-        title.textContent =
-          'Meeting notes · ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      if (tpl.title && !title.textContent.trim()) {
+        title.textContent = tpl.title();
         title.dispatchEvent(new InputEvent('input', { bubbles: true }));
       }
-      const first = blocks.querySelector(kind === 'meeting' ? '[data-type="bullet"] > .nt-text' : '.nt-text');
-      caret(first, true);
+      const blocks = p.querySelector('.nt-blocks');
+      const made = tpl.blocks.map(build);
+      blocks.append(...made);
+      made.forEach(fill);
+      lucide();
+      const first = blocks.querySelector(tpl.focus || '.nt-text');
+      if (first) caret(first, true);
+      edited(p);
     };
     const favs = () => app.querySelectorAll('[data-nt-favs]');
     const setFav = (slug, on) => {
@@ -5556,18 +6289,42 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       if (item.hasAttribute('data-nt-trash')) trash(p.dataset.page);
     });
 
-    // -- the roadmap database ----------------------------------------------------------------
-    // the roadmap's element and the counters are read again when the workspace is restored from storage or a
-    // backup (the module below replaces the pages): `nt-restored`
-    let db = app.querySelector('[data-nt-db]');
+    // -- the roadmap databases ----------------------------------------------------------------
+    // a page may hold several (the sample's Product Roadmap, the Roadmap template, a /roadmap block): an item's
+    // id is unique in the workspace, so the item names its database. A new database is the sample's markup with
+    // its items taken out, read before the stored workspace replaces the pages; a new item is one of the sample's
+    // rows, cards and gallery cards. The counters are read again on `nt-restored`
     const peek = app.querySelector('#nt-peek');
     let peekId = null,
-      itemN = 7;
+      itemN = 7,
+      dbN = 0;
+    const sample = app.querySelector('[data-nt-db]');
+    const proto = (el) => {
+      const c = el.cloneNode(true);
+      for (const x of [c, ...c.querySelectorAll('*')])
+        for (const a of ['data-init', 'data-api', 'data-state-name', 'data-dragging']) x.removeAttribute(a);
+      return c;
+    };
+    const ITEM = {
+      row: proto(sample.querySelector('tr[data-item]')),
+      card: proto(sample.querySelector('.nt-card')),
+      g: proto(sample.querySelector('.nt-gcard')),
+    };
+    const DB = proto(sample);
+    DB.querySelectorAll('[data-item]').forEach((x) => x.remove());
+    DB.querySelector('[data-nt-db-filter]').removeAttribute('value');
+    DB.querySelectorAll('.nt-count').forEach((c) => {
+      c.textContent = '0';
+    });
     const highest = (sel, attr, re) =>
       Math.max(0, ...[...app.querySelectorAll(sel)].map((x) => Number((re.exec(x.getAttribute(attr)) || [])[1]) || 0));
-    app.addEventListener('nt-restored', () => {
-      db = app.querySelector('[data-nt-db]');
+    const recount = () => {
       itemN = Math.max(7, highest('[data-nt-db] tr[data-item]', 'data-item', /^r(\d+)$/));
+      dbN = highest('[data-nt-db] .nt-db-views input', 'name', /^nt-db-view-(\d+)$/);
+    };
+    recount();
+    app.addEventListener('nt-restored', () => {
+      recount();
       n = highest('.nt-page[data-page]', 'data-page', /^untitled-(\d+)$/);
       if (page()) sync();
     });
@@ -5581,13 +6338,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       '" alt=""></span><span>' +
       PEOPLE[k].name +
       '</span>';
-    const items = (id) => db.querySelectorAll('[data-item="' + id + '"]');
-    const counts = () =>
+    const dbOf = (id) => app.querySelector('[data-nt-db] tr[data-item="' + id + '"]')?.closest('[data-nt-db]');
+    const counts = (db) =>
       db.querySelectorAll('.nt-col').forEach((c) => {
         c.querySelector('.nt-count').textContent = c.querySelectorAll('.nt-card').length;
       });
-    const setItem = (id, field, v) => {
-      items(id).forEach((el) => {
+    // `db` is given while a new database is still being built (not yet in the page)
+    const setItem = (id, field, v, db = dbOf(id)) => {
+      db.querySelectorAll('[data-item="' + id + '"]').forEach((el) => {
         if (field === 'name')
           el.querySelectorAll('[data-f="name"]').forEach((x) => {
             x.textContent = v || 'Untitled';
@@ -5618,7 +6376,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       if (field === 'status') {
         const card = db.querySelector('.nt-card[data-item="' + id + '"]');
         db.querySelector('.nt-col[data-status="' + v + '"] .nt-cards').append(card);
-        counts();
+        counts(db);
       }
       if (peekId === id && field === 'status') {
         const s = peek.querySelector('[data-peek="status"]');
@@ -5627,8 +6385,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       }
       edited(db.closest('.nt-page'));
     };
+    const rowOf = (id) => app.querySelector('[data-nt-db] tr[data-item="' + id + '"]');
     const openPeek = (id) => {
-      const row = db.querySelector('tr[data-item="' + id + '"]');
+      const row = rowOf(id);
       peekId = id;
       peek.querySelector('[data-peek="name"]').textContent =
         row.querySelector('[data-f="name"]').textContent === 'Untitled'
@@ -5653,14 +6412,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       r6: 'One paragraph at the top of any long page, refreshed as it changes.',
       r7: 'Type after the slash to filter block types; Enter inserts the highlighted one.',
     };
-    db.querySelectorAll('tr[data-item]').forEach((r) => {
+    sample.querySelectorAll('tr[data-item]').forEach((r) => {
       r.dataset.body = BODIES[r.dataset.item] || '';
     });
     peek.addEventListener('input', (e) => {
       if (!peekId) return;
       const f = e.target.dataset.peek;
       if (f === 'name') setItem(peekId, 'name', e.target.textContent.trim());
-      if (f === 'body') db.querySelector('tr[data-item="' + peekId + '"]').dataset.body = e.target.textContent;
+      if (f === 'body') rowOf(peekId).dataset.body = e.target.textContent;
     });
     peek.addEventListener('change', (e) => {
       const f = e.target.dataset.peek;
@@ -5673,7 +6432,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       const s = e.target.closest('[data-nt-db] select[data-field="status"]');
       if (s) setItem(s.closest('[data-item]').dataset.item, 'status', s.value);
     });
-    const newItem = (status) => {
+    // a new item in a database; without a name it opens in the peek to be named there
+    const newItem = (db, status, name) => {
       const id = 'r' + ++itemN;
       const today = new Date().toISOString().slice(0, 10);
       const tpl = (el) => {
@@ -5684,39 +6444,69 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         });
         if (c.dataset.ntOpen) c.dataset.ntOpen = id;
         c.querySelectorAll('[data-f="tags"]').forEach((x) => x.replaceChildren());
-        c.removeAttribute('data-init');
-        c.removeAttribute('data-dragging');
         c.hidden = false;
         return c;
       };
-      const row = tpl(db.querySelector('tr[data-item]'));
-      const card = tpl(db.querySelector('.nt-card'));
-      const g = tpl(db.querySelector('.nt-gcard'));
-      g.querySelector('img').src = 'images/photos/s-nt-' + id + '-480x260.webp';
+      const row = tpl(ITEM.row);
+      const card = tpl(ITEM.card);
+      const g = tpl(ITEM.g);
+      // the gallery shows one of the seven hosted roadmap photos
+      const img = g.querySelector('img');
+      img.setAttribute('src', img.getAttribute('src').replace(/s-nt-r\d+/, 's-nt-r' + (((itemN - 1) % 7) + 1)));
       db.querySelector('[data-nt-rows]').append(row);
       db.querySelector('.nt-col .nt-cards').append(card);
       db.querySelector('.nt-db-gallery').append(g);
       row.dataset.body = '';
-      setItem(id, 'name', '');
-      setItem(id, 'owner', 'aron');
-      setItem(id, 'due', today);
-      setItem(id, 'status', status || 'todo');
-      openPeek(id);
-      requestAnimationFrame(() => peek.querySelector('[data-peek="name"]').focus());
+      setItem(id, 'name', name ?? '', db);
+      setItem(id, 'owner', 'aron', db);
+      setItem(id, 'due', today, db);
+      setItem(id, 'status', status || 'todo', db);
+      if (name === undefined) {
+        openPeek(id);
+        requestAnimationFrame(() => peek.querySelector('[data-peek="name"]').focus());
+      }
+    };
+    const STARTER_ITEMS = [
+      ['Write down the first milestone', 'doing'],
+      ['Collect ideas from the team', 'todo'],
+      ['Set up this board', 'done'],
+    ];
+    // a database block: its own radio group for the views; the items go in once it is in the page (fill)
+    const dbBlock = (list) => {
+      const d = DB.cloneNode(true);
+      const name = 'nt-db-view-' + ++dbN;
+      d.querySelectorAll('.nt-db-views input').forEach((x) => {
+        x.name = name;
+      });
+      const b = part('db', '');
+      b.classList.add('nt-db-block');
+      b.append(d);
+      b._items = list ?? STARTER_ITEMS;
+      return b;
+    };
+    const fill = (b) => {
+      const d = b.querySelector(':scope > [data-nt-db]');
+      if (!d || !b._items) return;
+      b._items.forEach(([title, status]) => newItem(d, status, title));
+      delete b._items;
     };
     app.addEventListener('input', (e) => {
       if (!e.target.matches('[data-nt-db-filter]')) return;
       const q = e.target.value.trim().toLowerCase();
-      db.querySelectorAll('[data-item]').forEach((x) => {
-        x.hidden = !!q && !x.querySelector('[data-f="name"]').textContent.toLowerCase().includes(q);
-      });
+      e.target
+        .closest('[data-nt-db]')
+        .querySelectorAll('[data-item]')
+        .forEach((x) => {
+          x.hidden = !!q && !x.querySelector('[data-f="name"]').textContent.toLowerCase().includes(q);
+        });
     });
 
     // -- clicks --------------------------------------------------------------------------------
     app.addEventListener('click', (e) => {
       const go = e.target.closest('[data-go]');
       if (go) location.hash = go.dataset.go;
-      if (e.target.closest('[data-nt-new]')) newPage();
+      const nw = e.target.closest('[data-nt-new]');
+      if (nw) newPage(nw.dataset.ntNew);
       if (e.target.closest('[data-nt-theme]')) document.documentElement.classList.toggle('dark');
       const st = e.target.closest('[data-starter]');
       if (st) start(st.closest('.nt-page'), st.dataset.starter);
@@ -5737,16 +6527,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         img.src = 'images/photos/s-' + COVERS[(at + 1) % COVERS.length] + '-1600x400.webp';
       }
       const addCover = e.target.closest('[data-nt-add-cover]');
-      if (addCover) {
-        const doc = addCover.closest('.nt-doc');
-        doc.insertAdjacentHTML(
-          'beforebegin',
-          '<div class="nt-cover"><img src="images/photos/s-' +
-            COVERS[Math.floor(Math.random() * COVERS.length)] +
-            '-1600x400.webp" alt=""><span class="nt-cover-actions"><button class="btn" data-variant="secondary" data-size="sm" type="button" data-nt-cover>Change cover</button></span></div>',
-        );
-        addCover.remove();
-      }
+      if (addCover) setCover(addCover.closest('.nt-page'), COVERS[Math.floor(Math.random() * COVERS.length)]);
       const fav = e.target.closest('[data-nt-fav]');
       if (fav) {
         const on = fav.getAttribute('aria-pressed') !== 'true';
@@ -5762,7 +6543,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       const open = e.target.closest('[data-nt-open]');
       if (open && !drag) openPeek(open.dataset.ntOpen);
       const dbNew = e.target.closest('[data-nt-db-new]');
-      if (dbNew) newItem(dbNew.dataset.status);
+      if (dbNew) newItem(dbNew.closest('[data-nt-db]'), dbNew.dataset.status);
       const t = e.target.closest('[data-toast]');
       if (t) toast(t.dataset.toast, t.dataset.toastDesc);
     });
@@ -5807,7 +6588,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
   const WORDS = {
     en: {
-      opening: 'Opening…',
+      opening: 'Opening your pages...',
+      late: 'Your kept pages did not open',
+      lateDesc:
+        'The storage did not answer in time. This visit shows the sample and keeps nothing - reload to try again.',
       saved: 'Saved in this browser',
       saving: 'Saving…',
       memory: 'Not kept - this preview has no storage',
@@ -5853,7 +6637,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       resetOk: 'Reset',
     },
     de: {
-      opening: 'Wird geöffnet…',
+      opening: 'Seiten werden geöffnet...',
+      late: 'Deine gespeicherten Seiten haben sich nicht geöffnet',
+      lateDesc:
+        'Der Speicher hat nicht rechtzeitig geantwortet. Dieser Besuch zeigt das Beispiel und speichert nichts - lade neu, um es noch einmal zu versuchen.',
       saved: 'In diesem Browser gespeichert',
       saving: 'Wird gespeichert…',
       memory: 'Nicht gespeichert - diese Vorschau hat keinen Speicher',
@@ -5923,13 +6710,52 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     const encode = (text) => new TextEncoder().encode(text);
     const decode = (bytes) => new TextDecoder().decode(bytes);
 
+    // -- routing: the first page, and one route per page (#/pages/roadmap) - new pages too. It starts before the
+    //    stored workspace is read: storage that answers late (the storage module from the CDN, a busy file) must
+    //    never leave the menu dead. The restore shows the route again (`showRoute`)
+    const routes = [
+      { id: 'home', path: '/' },
+      { id: 'page', path: '/pages/:slug' },
+      { id: 'missing', path: '*' },
+    ];
+    let shown = null;
+    const show = (to) => {
+      shown = to;
+      // a page the workspace does not have shows the first one
+      const page = to.routeId === 'page' ? document.getElementById('p-' + to.params.slug) : null;
+      const open = page?.matches('.nt-page') ? page : df$('.nt-page[data-default]').get(0);
+      df$('.nt-page').each((_i, article) => {
+        article.hidden = article !== open;
+      });
+      // the wiring above selects the page in the tree
+      app.dispatchEvent(new CustomEvent('nt-route'));
+    };
+    const showRoute = () => {
+      if (shown) show(shown);
+    };
+    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
+    router.attachLinks(app);
+    if ((await router.start()).status === 'rejected') {
+      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
+      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
+      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
+      addEventListener('hashchange', follow);
+      follow();
+    }
+
     // -- storage: defuss-storage over a folder of the origin private file system; a page without one (the docs
     //    preview is a sandboxed frame) keeps the files in memory. Files are opened per operation and closed again,
     //    so another tab of the app can open them too (an open file is owned - BUSY elsewhere)
+    for (const el of $$('[data-nt-saved]')) {
+      el.dataset.state = 'opening';
+      el.textContent = words().opening;
+    }
     let storage = null;
     let kind = 'memory';
     try {
-      const [{ createMemoryStorage }, { createDirectoryStorage }] = await STORAGE;
+      // a module import has no time limit of its own: after 10 s this visit goes on without kept pages
+      const late = new Promise((_r, reject) => setTimeout(() => reject(new Error('timeout')), 10_000));
+      const [{ createMemoryStorage }, { createDirectoryStorage }] = await Promise.race([STORAGE, late]);
       try {
         const root = await navigator.storage.getDirectory();
         storage = await createDirectoryStorage(await root.getDirectoryHandle('folio', { create: true }), {
@@ -5939,8 +6765,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       } catch {
         storage = createMemoryStorage();
       }
-    } catch {
-      // no storage module (offline): a map stands in, so the rest still works for this visit
+    } catch (e) {
+      // no storage module (offline, or no answer in time): a map stands in, so the rest still works for this visit
+      if (e?.message === 'timeout') toast(words().late, words().lateDesc);
       const files = new Map();
       storage = {
         list: async () => [...files.keys()].sort(),
@@ -6077,6 +6904,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       i18n.refresh();
       // the wiring reads the roadmap and its counters again
       app.dispatchEvent(new CustomEvent('nt-restored'));
+      // the restored pages carry the hidden state of their save: the address decides which one shows
+      showRoute();
       queueMicrotask(() => {
         restoring = false;
       });
@@ -6209,7 +7038,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             add({ id: page + '~' + k++, page, title, icon, heading: part.heading, at: part.at, text });
         };
         $$('.nt-blocks .nt-block', p).forEach((b, i) => {
-          const text = ($(':scope > .nt-text, :scope > figure > .nt-text', b)?.textContent ?? '').trim();
+          const text = $$(
+            ':scope > .nt-text, :scope > figure > .nt-text, :scope > .nt-hint .nt-text, :scope > .nt-part .nt-cell',
+            b,
+          )
+            .map((x) => x.textContent.trim())
+            .filter(Boolean)
+            .join(' ');
           if (/^h[123]$/.test(b.dataset.type)) {
             flush();
             part = { heading: text, at: i, lines: [] };
@@ -6783,32 +7618,6 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       if (e.target.closest('[data-nt-forget]')) forgetModels();
     });
 
-    // -- routing: the first page, and one route per page (#/pages/roadmap) - new pages too
-    const routes = [
-      { id: 'home', path: '/' },
-      { id: 'page', path: '/pages/:slug' },
-      { id: 'missing', path: '*' },
-    ];
-    const show = (to) => {
-      // a page the workspace does not have shows the first one
-      const page = to.routeId === 'page' ? document.getElementById('p-' + to.params.slug) : null;
-      const open = page?.matches('.nt-page') ? page : df$('.nt-page[data-default]').get(0);
-      df$('.nt-page').each((_i, article) => {
-        article.hidden = article !== open;
-      });
-      // the wiring above selects the page in the tree
-      app.dispatchEvent(new CustomEvent('nt-route'));
-    };
-    const router = createRouter({ mode: 'hash', routes, prepare: ({ to }) => ({ commit: () => show(to) }) });
-    router.attachLinks(app);
-    if ((await router.start()).status === 'rejected') {
-      // no address the router may own - a docs preview is an about:srcdoc frame: the same routes match its hash
-      const preview = createRouter({ mode: 'hash', routes, baseUrl: 'https://preview.invalid/' });
-      const follow = () => show(preview.resolve(location.hash.startsWith('#/') ? location.hash : '#/'));
-      addEventListener('hashchange', follow);
-      follow();
-    }
-
     // -- the search starts: from the stored index when it describes this workspace. The models download on a
     //    click (about 34 MB - nobody gets them unasked); once this browser keeps them they load by themselves
     takeVectors(storedIndex);
@@ -6829,12 +7638,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <li><strong>Shell</strong> - the <DocLink href="sidebar.html">Sidebar</DocLink> holds two <DocLink href="tree-view.html">Tree Views</DocLink> (Favorites, Private pages; a page with sub-pages is a branch), search and new-page actions and the Trash <DocLink href="popover.html">Popover</DocLink>; the top bar has a <DocLink href="breadcrumb.html">Breadcrumb</DocLink>, Share (a Popover with a <DocLink href="switch.html">Switch</DocLink>), favorite and a <DocLink href="dropdown.html">Dropdown</DocLink> of page options - font, small text and full width as radio and checkbox items, copy link, move to trash.</li>
   <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: every page is <code>#/pages/:slug</code> (a new page too - the route reads the slug when it is opened), <code>#/</code> the first one. The commit shows the page's <code>&lt;article&gt;</code> and the wiring selects it in the tree; a script navigates by changing the hash (a new page, a branch row, the trash), which the router follows. Inside the docs preview the same routes match the frame's hash. See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
   <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: the language switch at the foot of the sidebar translates the shell - the sidebar, the workspace menu, the palette, the trash and every label - between English and German. The pages are your content and stay as written. See <DocLink href="translation.html">Translation</DocLink>.</li>
-  <li><strong>Pages</strong> - every page is an <code>&lt;article&gt;</code> with an id. Its title, icon (an emoji Popover) and name stay in step across the tree, the breadcrumb and the <DocLink href="command.html">Command</DocLink> palette (<kbd class="kbd">⌘K</kbd>). New pages are stamped from a <code>&lt;template&gt;</code> and offer starter templates.</li>
+  <li><strong>Pages</strong> - every page is an <code>&lt;article&gt;</code> with an id. Its title, icon (an emoji Popover) and name stay in step across the tree, the breadcrumb and the <DocLink href="command.html">Command</DocLink> palette (<kbd class="kbd">⌘K</kbd>). New pages are stamped from a <code>&lt;template&gt;</code>.</li>
+  <li><strong>Templates</strong> - a new page starts empty, as a to-do list, meeting notes, a roadmap, a wiki page, a journal entry, an onboarding checklist or a project brief - from the starter under its title or from the palette's "New from a template". A template is data in the page script: an icon, a title, a cover and full width where it wants them, and its blocks, built by the same functions the slash menu uses. A template's roadmap is a database of its own beside the sample's.</li>
   <li><strong>Blocks</strong> - each block is a <code>contenteditable</code> element with a <code>data-type</code>: Enter splits, Backspace at the start merges or turns the block back into text, arrows move between blocks, markdown shortcuts convert. Numbered lists count with CSS counters, to-dos strike through with <code>:has(:checked)</code>.</li>
   <li><strong>Slash and block menus</strong> - the <DocLink href="context-menu.html">Context Menu</DocLink>, opened at the caret through its State API: type to filter, arrows and Enter to pick. The ⋮⋮ handle opens Turn into / Duplicate / Delete, and drags the block with native drag and drop.</li>
+  <li><strong>Component blocks</strong> - the slash menu also inserts blocks made of components: hints (an <DocLink href="alert.html">Alert</DocLink> in four tones - note, tip, warning, caution - whose text you write like any other block), an image (upload a file, embed a link or pick a photo; an upload is scaled to 1600 px and kept as a WebP data URL, the caption is its alt text), a table (the Table with editable cells; Enter moves one row down, the last row grows), milestones (a horizontal <DocLink href="timeline.html">Timeline</DocLink> whose dots mark a milestone reached) and a roadmap database. A component block turns into no text type; a database is not duplicated, since its items are one of a kind.</li>
   <li><strong>Format bar</strong> - the <DocLink href="toolbar.html">Toolbar</DocLink> in a manual popover above the selection: bold, italic, underline and strikethrough through the browser's editing commands, inline code and highlight by wrapping the range.</li>
-  <li><strong>Database</strong> - the roadmap is one set of items in three views: a <DocLink href="table.html">Table</DocLink> with <DocLink href="select.html">Select</DocLink> status pills, a board you drag cards across, a gallery with covers. Opening an item shows it in a <DocLink href="sheet.html">Sheet</DocLink>; every edit reaches all three views.</li>
-  <li><strong>Storage</strong> - <a href="https://storage.defuss.org" target="_blank" rel="noopener">defuss-storage</a> keeps the workspace in a folder of the browser's origin private file system (its directory adapter, on the page itself). The workspace is the markup of the parts a reader changes - the pages, both sidebars' trees, the palette's page list and the trash - with live form values written as attributes and the components' runtime marks taken out, so every component starts again on it. A change is saved 0.6 s after the last one, into two files in turn, each with its generation: storage files have no atomic replace, and a write cut short leaves the other one whole. Until the stored workspace is in place the pages stay hidden (3 s at most). Two tabs that edit at once overwrite each other's saves - the last one wins. The docs preview is a sandboxed frame without storage: it keeps the files in memory and says so at the foot of the sidebar; the full-screen app keeps them across reloads.</li>
+  <li><strong>Database</strong> - a roadmap is one set of items in three views: a <DocLink href="table.html">Table</DocLink> with <DocLink href="select.html">Select</DocLink> status pills, a board you drag cards across, a gallery with covers. Opening an item shows it in a <DocLink href="sheet.html">Sheet</DocLink>; every edit reaches all three views. A page may hold several databases: an item's id is unique in the workspace, so it names its database, and a card only moves between the columns of its own board.</li>
+  <li><strong>Storage</strong> - <a href="https://storage.defuss.org" target="_blank" rel="noopener">defuss-storage</a> keeps the workspace in a folder of the browser's origin private file system (its directory adapter, on the page itself). The workspace is the markup of the parts a reader changes - the pages, both sidebars' trees, the palette's page list and the trash - with live form values written as attributes and the components' runtime marks taken out, so every component starts again on it. A change is saved 0.6 s after the last one, into two files in turn, each with its generation: storage files have no atomic replace, and a write cut short leaves the other one whole. Until the stored workspace is in place the pages stay hidden (3 s at most), but the menu already works: the router starts first, and the restored pages show the address the reader went to meanwhile. If the storage module has not loaded after 10 s, the visit goes on with the sample, keeps nothing and says so. Two tabs that edit at once overwrite each other's saves - the last one wins. The docs preview is a sandboxed frame without storage: it keeps the files in memory and says so at the foot of the sidebar; the full-screen app keeps them across reloads.</li>
   <li><strong>Search</strong> - <a href="https://search.defuss.org" target="_blank" rel="noopener">defuss-search</a> ranks one document per section of a page (a heading starts one) and per roadmap item. Keywords work at once: BM25 over an English and a German analyzer, the title three times the text, prefix and fuzzy matching on the last word. Search by meaning is the lexical-semantic strategy with both models of defuss-vectorsearch: Winzling-embed turns every section and query into a vector, and the hits of both sources are fused and reordered by the ColBERT reranker (the reranked preset). The models' pinned files download once as Brotli from Hugging Face (about 34 MB with ONNX Runtime's WASM), are checked against their SHA-256 and are kept in the same storage. They download on a click in the palette or in Settings - nobody gets 34 MB unasked - and once the full-screen app keeps them they load by themselves (the preview keeps nothing, so there they come on a click each time). A vector is kept under a hash of its text, so an edit embeds only the sections it changed. Each hit shows whether keywords, meaning or both found it; a click opens the page at its section.</li>
   <li><strong>Backups</strong> - the workspace menu (and Settings) writes one file, <code>folio-backup-&lt;date&gt;.json.br</code>: the workspace and its search index - the lexical index, its documents and every vector - as JSON, Brotli-compressed with <a href="https://github.com/kyr0/defuss-brotli" target="_blank" rel="noopener">defuss-brotli</a> (its compressor's WASM loads with the first backup). Import decodes it, and also takes an uncompressed <code>.json</code>. Import reads such a file back, after asking, and nothing is embedded again; a backup is treated as foreign markup, so scripts, frames, event attributes and script URLs are removed before it is shown. Reset brings back the sample workspace.</li>
   <li><strong>Full screen</strong> - <DocLink href="app-notes.html">app-notes.html</DocLink> is generated from this page's example at build time.</li>

@@ -2290,6 +2290,174 @@ function bindMedia(root, prefix, report) {
   delegate(prefix);
   mediaPaint(root, prefix);
 }
+// src/shared/editors.ts
+var isObject = (v) => v !== null && typeof v === "object";
+function valueType(value, rules) {
+  if (rules?.type)
+    return rules.type;
+  if (rules?.options)
+    return "enum";
+  if (value === null)
+    return "null";
+  if (Array.isArray(value))
+    return "array";
+  if (typeof value === "object")
+    return "object";
+  if (typeof value === "boolean")
+    return "boolean";
+  if (typeof value === "number")
+    return "number";
+  if (typeof value === "string") {
+    if (/^#[0-9a-f]{6}$/i.test(value))
+      return "color";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
+      return "date";
+    if (value.includes(`
+`))
+      return "text";
+  }
+  return "string";
+}
+function builtinEditor(type, value, rules, options = {}) {
+  const dfDollar = defussQuery();
+  const size = options.size ?? "xs";
+  if (type === "boolean") {
+    const el = document.createElement("input");
+    el.type = "checkbox";
+    el.className = "switch";
+    el.setAttribute("role", "switch");
+    el.checked = !!value;
+    return { el, getValue: () => el.checked, immediate: true };
+  }
+  if (type === "enum") {
+    const el = document.createElement("select");
+    el.className = "select";
+    el.dataset.size = size;
+    const choices = rules?.options ?? [];
+    for (const opt of choices) {
+      const o = document.createElement("option");
+      const [v, label] = isObject(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
+      o.value = String(v);
+      dfDollar(o).text(String(label));
+      if (v === value)
+        o.selected = true;
+      el.append(o);
+    }
+    const values = choices.map((o) => isObject(o) ? o.value : o);
+    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
+  }
+  if (type === "text" || type === "object" || type === "array" || type === "json") {
+    const el = document.createElement("textarea");
+    el.className = "textarea";
+    el.rows = type === "text" ? 3 : 5;
+    const json = type !== "text";
+    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
+    return {
+      el,
+      multiline: true,
+      getValue: () => json ? JSON.parse(el.value) : el.value,
+      validate: () => {
+        if (!json)
+          return "";
+        try {
+          JSON.parse(el.value);
+          return "";
+        } catch (error) {
+          return String(error.message ?? error);
+        }
+      }
+    };
+  }
+  const el = document.createElement("input");
+  el.className = type === "color" ? options.colorClass ?? "" : "input";
+  if (type !== "color")
+    el.dataset.size = size;
+  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
+  if (type === "number") {
+    el.step = String(rules?.step ?? "any");
+    if (rules?.min != null)
+      el.min = String(rules.min);
+    if (rules?.max != null)
+      el.max = String(rules.max);
+    el.inputMode = "decimal";
+  }
+  el.value = value == null ? "" : String(value);
+  return {
+    el,
+    immediate: type === "color" || type === "date",
+    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
+    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
+  };
+}
+function asEditor(custom) {
+  if (!custom)
+    return null;
+  if (custom instanceof HTMLElement) {
+    const el = custom;
+    return {
+      el,
+      immediate: el.type === "checkbox" || el.tagName === "SELECT",
+      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
+    };
+  }
+  if (isObject(custom) && custom.el instanceof HTMLElement && typeof custom.getValue === "function")
+    return custom;
+  return null;
+}
+function editorControl(editor) {
+  const sel = "input, select, textarea, button, [tabindex]";
+  return editor.el.matches?.(sel) ? editor.el : defussQuery()(editor.el).find(sel).get(0) ?? editor.el;
+}
+function focusEditor(editor) {
+  const target = editorControl(editor);
+  (editor.focus ?? (() => target.focus?.()))();
+  if (target.select && !["checkbox", "color", "date", "range"].includes(target.type))
+    target.select();
+}
+function editorProblem(rules, value) {
+  if (!rules)
+    return "";
+  const say = (fallback) => rules.message || fallback;
+  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
+  if (rules.required && empty)
+    return say("Required");
+  if (empty)
+    return "";
+  if (typeof value === "number") {
+    if (Number.isNaN(value))
+      return say("Not a number");
+    if (rules.integer && !Number.isInteger(value))
+      return say("Must be a whole number");
+    if (rules.min != null && value < rules.min)
+      return say(`Must be at least ${rules.min}`);
+    if (rules.max != null && value > rules.max)
+      return say(`Must be at most ${rules.max}`);
+  }
+  if (typeof value === "string") {
+    if (rules.minLength != null && value.length < rules.minLength)
+      return say(`At least ${rules.minLength} characters`);
+    if (rules.maxLength != null && value.length > rules.maxLength)
+      return say(`At most ${rules.maxLength} characters`);
+    if (rules.pattern && !new RegExp(`^(?:${rules.pattern})$`).test(value))
+      return say("Does not match the expected format");
+  }
+  if (Array.isArray(value)) {
+    if (rules.minItems != null && value.length < rules.minItems)
+      return say(`At least ${rules.minItems}`);
+    if (rules.maxItems != null && value.length > rules.maxItems)
+      return say(`At most ${rules.maxItems}`);
+  }
+  return "";
+}
+function editorKey(e, editor) {
+  if (e.key === "Escape")
+    return "cancel";
+  if (e.key === "Enter" && (!(editor.multiline || editor.ownsEnter) || e.metaKey || e.ctrlKey))
+    return "commit";
+  if (e.key === "Tab")
+    return e.shiftKey ? "prev" : "next";
+  return null;
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5146,6 +5314,13 @@ shadcn.shared = {
   sheetUrl,
   mathClone,
   mathText,
+  asEditor,
+  builtinEditor,
+  editorControl,
+  editorKey,
+  editorProblem,
+  focusEditor,
+  valueType,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -7110,15 +7285,20 @@ var minOf = (panel) => {
 };
 var open = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
 var titleOf = (panel) => dfDollar8(panel).find(":scope > .panel-header .panel-title").text().trim() || panel.getAttribute("aria-label") || "";
-function exclusive(stack, again) {
-  if (!stack.hasAttribute("data-exclusive"))
+var keepOf = (stack) => stack.hasAttribute("data-exclusive") ? 1 : Math.max(0, Math.floor(num3(stack.dataset.keep, 0)));
+function keepOpen(stack, again) {
+  const n = keepOf(stack);
+  if (!n)
     return;
   const opened = panelsOf(stack).filter(open);
-  const fresh = opened.filter((p) => p !== stack._open);
-  const keep = fresh[fresh.length - 1] ?? opened[opened.length - 1] ?? null;
-  stack._open = keep;
+  const order = (stack._order ?? []).filter((p) => opened.includes(p));
+  for (const p of opened)
+    if (!order.includes(p))
+      order.push(p);
+  stack._order = order;
+  const keep = new Set(order.slice(-n));
   for (const p of opened) {
-    if (p === keep)
+    if (keep.has(p))
       continue;
     if (p.api)
       p.api.setState("minimized");
@@ -7126,10 +7306,44 @@ function exclusive(stack, again) {
       setTimeout(again);
   }
 }
+var levelsOf = (stack) => stack.hasAttribute("data-levels");
+function drill(stack, panels) {
+  const was = stack._wasOpen;
+  stack._wasOpen = new Set(panels.filter(open));
+  if (!was || !stack.hasAttribute("data-drill"))
+    return;
+  const reopened = panels.find((p) => open(p) && !was.has(p) && stack._seen?.has(p));
+  stack._seen = new Set(panels);
+  if (reopened)
+    dropAfter(stack, reopened);
+}
+function dropAfter(stack, panel) {
+  const panels = panelsOf(stack);
+  for (const p of panels.slice(panels.indexOf(panel) + 1)) {
+    const d = p.previousElementSibling;
+    if (d?.classList.contains("border-layout-stack-divider"))
+      d.remove();
+    p.remove();
+  }
+}
+function report(stack, panels) {
+  const detail = { panels, open: panels.filter(open) };
+  const was = stack._reported;
+  stack._reported = detail;
+  const same = (a, b) => a.length === b.length && a.every((p, i) => p === b[i]);
+  if (!was || same(was.panels, detail.panels) && same(was.open, detail.open))
+    return;
+  stack.dispatchEvent(new CustomEvent("border-layout-stack-change", { bubbles: true, detail }));
+}
 function syncStack(layout, side, region, stack) {
-  exclusive(stack, () => syncStack(layout, side, region, stack));
+  keepOpen(stack, () => syncStack(layout, side, region, stack));
+  drill(stack, panelsOf(stack));
   const row = isRow(stack, side);
   const panels = panelsOf(stack);
+  if (!stack._seen)
+    stack._seen = new Set(panels);
+  for (const p of panels)
+    stack._seen.add(p);
   for (const panel of panels.slice(1)) {
     const prev = panel.previousElementSibling;
     if (prev?.classList.contains("border-layout-stack-divider"))
@@ -7157,8 +7371,12 @@ function syncStack(layout, side, region, stack) {
   }
   if (pending && !pending.hidden)
     pending.hidden = true;
+  for (const d of dfDollar8(stack).children(".border-layout-stack-divider").toArray())
+    if (!d.nextElementSibling?.classList.contains("panel"))
+      d.remove();
+  const levels = levelsOf(stack);
   for (const d of dfDollar8(stack).children(".border-layout-stack-divider").toArray()) {
-    const live = !d.hidden && open(d._prev) && open(d._next);
+    const live = !d.hidden && open(d._prev) && (levels || open(d._next));
     d.setAttribute("aria-disabled", String(!live));
     d.tabIndex = live ? 0 : -1;
     if (!d._prev)
@@ -7167,13 +7385,33 @@ function syncStack(layout, side, region, stack) {
       d._prev.id = `${stack.id || layout.id || "stack"}-${Math.random().toString(36).slice(2, 7)}`;
     d.setAttribute("aria-controls", d._prev.id);
     d.setAttribute("aria-label", `Resize ${titleOf(d._prev) || "panel"}`);
-    if (live) {
+    if (live && levels) {
+      d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
+      d.setAttribute("aria-valuemin", String(minOf(d._prev)));
+      d.setAttribute("aria-valuemax", String(maxLevel(d._prev)));
+    } else if (live) {
       const both = extent(d._prev, row) + extent(d._next, row);
       d.setAttribute("aria-valuenow", String(Math.round(extent(d._prev, row))));
       d.setAttribute("aria-valuemin", String(minOf(d._prev)));
       d.setAttribute("aria-valuemax", String(Math.round(both - minOf(d._next))));
     }
   }
+  if (stack.hasAttribute("data-drill"))
+    for (const p of panels) {
+      const header = dfDollar8(p).children(".panel-header").get(0);
+      if (!header)
+        continue;
+      const crumb = p.hasAttribute("data-minimized");
+      if (crumb) {
+        header.tabIndex = 0;
+        header.setAttribute("role", "button");
+        header.setAttribute("aria-label", `Back to ${titleOf(p) || "this level"}`);
+      } else if (header.getAttribute("role") === "button") {
+        header.removeAttribute("tabindex");
+        header.removeAttribute("role");
+        header.removeAttribute("aria-label");
+      }
+    }
   const shown = panels.filter((p) => !p.hidden);
   const folded = shown.length > 0 && shown.every((p) => p.hasAttribute("data-minimized"));
   region.toggleAttribute("data-panel-minimized", folded);
@@ -7181,12 +7419,21 @@ function syncStack(layout, side, region, stack) {
   const handle = region.classList.contains("resizer") ? dfDollar8(region).children(".resizer-handle").get(0) : null;
   if (handle)
     handle.inert = folded || !shown.length;
+  report(stack, panels);
 }
+var maxLevel = (panel) => num3(panel.dataset.max, 640);
 function moveDivider(layout, side, divider, delta) {
   const { _prev: a, _next: b } = divider;
+  const stack = divider.parentElement;
+  if (a && levelsOf(stack)) {
+    if (!open(a))
+      return;
+    const px = extent(a, true) + (side === "east" ? -delta : delta);
+    a.style.setProperty("--panel-size", `${Math.round(Math.min(Math.max(px, minOf(a)), maxLevel(a)))}px`);
+    return;
+  }
   if (!a || !b || !open(a) || !open(b))
     return;
-  const stack = divider.parentElement;
   const sizes = new Map(panelsOf(stack).filter(open).map((p) => [p, extent(p, isRow(stack, side))]));
   const both = sizes.get(a) + sizes.get(b);
   const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
@@ -7240,15 +7487,38 @@ function initStacks(layout) {
       divider.addEventListener("pointerup", end);
       divider.addEventListener("pointercancel", end);
     });
+    const bar = (e) => {
+      if (!stack.hasAttribute("data-drill"))
+        return null;
+      const header = e.target.closest?.(".panel-header");
+      const panel = header?.parentElement;
+      if (!panel || panel.parentElement !== stack || !panel.hasAttribute("data-minimized"))
+        return null;
+      if (e.target.closest(".panel-tools"))
+        return null;
+      return panel;
+    };
+    stack.addEventListener("click", (e) => bar(e)?.api?.setState("default"));
+    stack.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ")
+        return;
+      const panel = bar(e);
+      if (!panel)
+        return;
+      e.preventDefault();
+      panel.api?.setState("default");
+    });
     stack.addEventListener("keydown", (e) => {
       const divider = e.target.closest?.(".border-layout-stack-divider");
       if (!divider || divider.parentElement !== stack || divider.getAttribute("aria-disabled") === "true")
         return;
       const step = e.shiftKey ? 100 : 10;
       const back = isRow(stack, side) ? "ArrowLeft" : "ArrowUp", fwd = isRow(stack, side) ? "ArrowRight" : "ArrowDown";
-      const delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
+      let delta = e.key === back ? -step : e.key === fwd ? step : e.key === "Home" ? -1e6 : e.key === "End" ? 1e6 : 0;
       if (!delta)
         return;
+      if (levelsOf(stack) && side === "east" && (e.key === "Home" || e.key === "End"))
+        delta = -delta;
       e.preventDefault();
       moveDivider(layout, side, divider, delta);
       sync();
@@ -7432,6 +7702,10 @@ function init8() {
     });
   });
 }
+var resolveStack = (target) => {
+  const el = typeof target === "string" ? dfDollar8(`#${CSS.escape(target)}`).get(0) ?? dfDollar8(target).get(0) : target;
+  return el?.classList.contains("border-layout-stack") ? el : null;
+};
 df$8.borderLayout = {
   collapse: (target, side) => {
     const l = resolve4(target);
@@ -7458,6 +7732,38 @@ df$8.borderLayout = {
       clamp(l);
       setSize(r, side, px);
     }
+  },
+  push: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const el = typeof panel === "string" ? dfDollar8(panel).get(0) : panel;
+    if (!el)
+      return null;
+    el.removeAttribute("data-minimized");
+    dfDollar8(st).append(el);
+    return el;
+  },
+  pop: (stack, panel) => {
+    const st = resolveStack(stack);
+    if (!st)
+      return null;
+    const panels = panelsOf(st);
+    const el = typeof panel === "number" ? panels[panel] : typeof panel === "string" ? panels.find((p) => p.id === panel) : panels.includes(panel) ? panel : undefined;
+    if (!el)
+      return null;
+    dropAfter(st, el);
+    const api = el.api;
+    if (api)
+      api.setState("default");
+    else
+      el.removeAttribute("data-minimized");
+    return el;
+  },
+  levels: (stack) => {
+    const st = resolveStack(stack);
+    const panels = st ? panelsOf(st) : [];
+    return { panels, open: panels.filter(open) };
   },
   sizes: (target) => {
     const l = resolve4(target);
@@ -11228,8 +11534,34 @@ function readColumns(grid) {
     lockedAtStart: el.hasAttribute("data-locked"),
     hiddenAtStart: el.hidden,
     sortField: el.dataset.sortField || el.dataset.field,
-    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null
+    options: el.dataset.options ? el.dataset.options.split(",").map((o) => o.trim()) : null,
+    editable: el.hasAttribute("data-editable"),
+    editor: el.dataset.editor || "",
+    rules: columnRules(el)
   }));
+}
+function columnRules(el) {
+  const num = (name) => el.dataset[name] != null && el.dataset[name] !== "" ? Number(el.dataset[name]) : undefined;
+  const rules = {};
+  if (el.hasAttribute("data-required"))
+    rules.required = true;
+  if (el.hasAttribute("data-integer"))
+    rules.integer = true;
+  if (num("min") != null)
+    rules.min = num("min");
+  if (num("max") != null)
+    rules.max = num("max");
+  if (el.dataset.step)
+    rules.step = el.dataset.step;
+  if (num("minLength") != null)
+    rules.minLength = num("minLength");
+  if (num("maxLength") != null)
+    rules.maxLength = num("maxLength");
+  if (el.dataset.pattern)
+    rules.pattern = el.dataset.pattern;
+  if (el.dataset.message)
+    rules.message = el.dataset.message;
+  return rules;
 }
 function attachPersistence2(grid, config) {
   grid._saved?.destroy();
@@ -11433,6 +11765,8 @@ function fillCell(grid, cell, column, entry, first) {
     cell.dataset.align = column.align;
   else
     delete cell.dataset.align;
+  cell.toggleAttribute("data-editable", !!column.editable && !grid.hasAttribute("data-readonly"));
+  delete cell.dataset.editing;
   cell.textContent = "";
   if (first && isTree(grid)) {
     cell.style.setProperty("--depth", String(entry.meta.depth));
@@ -11482,6 +11816,7 @@ function renderRows(grid) {
   const base = paging(grid) === "pages" ? Math.max(0, config.page || 0) * pageSize(grid) : 0;
   const headRows = grid._parts.filters ? 2 : 1;
   const focus = grid._focus;
+  let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
     const row = pool.children[i];
     const index = win.first + i;
@@ -11513,6 +11848,17 @@ function renderRows(grid) {
       }
     }
     const id = entry.row[grid._source.idField];
+    const ed = grid._editor;
+    if (ed && ed.id === id) {
+      edShown = true;
+      if (!row.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || !document.activeElement || document.activeElement === document.body;
+        ed.rowEl = row;
+        placeEditor(grid, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
+      }
+    }
     if (grid.dataset.select)
       row.setAttribute("aria-selected", String(selected.has(id)));
     else
@@ -11521,6 +11867,11 @@ function renderRows(grid) {
       row.children[c].tabIndex = focus.row === index && focus.col === c ? 0 : -1;
     }
   }
+  if (grid._editor && !edShown && !grid._writing)
+    queueMicrotask(() => {
+      if (grid._editor && !commitEdit(grid, "none"))
+        cancelEdit(grid, false);
+    });
 }
 function renderFooter(grid, config) {
   const count = (n) => format3(n, "number", grid);
@@ -11593,6 +11944,12 @@ function renderFooter(grid, config) {
 }
 function refresh(grid, config, previous) {
   grid._config = config;
+  if (grid._editor && !grid._writing) {
+    grid._writing = true;
+    if (!commitEdit(grid, "none"))
+      grid._editor = null;
+    grid._writing = false;
+  }
   evaluate(grid, config);
   grid._selected = new Set(config.selected || []);
   grid._shown = shown3(grid, config);
@@ -11707,8 +12064,192 @@ function focusCell(grid, row, col) {
   const target = row === -1 ? grid._order[col].el : dfDollar18(grid._parts.pool).children(".data-grid-row").toArray().find((r) => r._index === row)?.children[col];
   target?.focus({ preventScroll: row === -1 });
 }
+var editableColumn = (grid, col) => {
+  const column = grid._order?.[col];
+  return column?.editable ? column : null;
+};
+var editContext = (grid, record, column) => ({
+  record,
+  field: column.field,
+  type: column.editor || (column.type === "number" ? "number" : valueType(record[column.field], column.options ? { options: column.options } : null)),
+  rules: { ...column.rules, ...column.options ? { options: column.options } : {} },
+  grid
+});
+var rowElOf = (grid, id) => dfDollar18(grid._parts.pool).children(".data-grid-row").toArray().find((r) => grid._shown[r._index]?.row[grid._source.idField] === id);
+function placeEditor(grid, ed) {
+  const col = grid._order.findIndex((c) => c.field === ed.field);
+  const cell = ed.rowEl?.children[col];
+  if (!cell)
+    return;
+  ed.cell = cell;
+  cell.dataset.editing = "";
+  const content = dfDollar18(cell).children(".data-grid-content").get(0);
+  if (content && content !== ed.wrap)
+    content.replaceWith(ed.wrap);
+  else if (!cell.contains(ed.wrap))
+    dfDollar18(cell).append(ed.wrap);
+}
+function openEdit(grid, row, col) {
+  const column = editableColumn(grid, col);
+  const entry = grid._shown?.[row];
+  if (!column || !entry || grid.hasAttribute("data-readonly"))
+    return false;
+  if (grid._editor && !commitEdit(grid, "none"))
+    return false;
+  const record = entry.row;
+  const value = record[column.field];
+  const ctx = editContext(grid, record, column);
+  const custom = grid._sourceOptions?.getEditorFn?.(column.field, value, ctx);
+  if (custom === false)
+    return false;
+  const editor = asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules, { colorClass: "data-grid-color-input" });
+  focusCell(grid, row, col);
+  const id = record[grid._source.idField];
+  const wrap = document.createElement("span");
+  wrap.className = "data-grid-editor data-grid-content";
+  dfDollar18(wrap).append(editor.el);
+  const ed = { id, field: column.field, column, editor, wrap, value, record, rowEl: rowElOf(grid, id), cell: null };
+  grid._editor = ed;
+  placeEditor(grid, ed);
+  wrap.addEventListener("keydown", (e) => {
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    if (act === "cancel") {
+      e.preventDefault();
+      e.stopPropagation();
+      cancelEdit(grid);
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    commitEdit(grid, act === "commit" ? "stay" : act);
+  });
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commitEdit(grid, "stay");
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (grid._editor === ed && !wrap.contains(document.activeElement))
+        commitEdit(grid, "none");
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+function cancelEdit(grid, focus = true) {
+  const ed = grid._editor;
+  if (!ed)
+    return;
+  grid._editor = null;
+  grid._gen++;
+  renderRows(grid);
+  if (focus)
+    focusRecord(grid, ed.id, ed.field);
+}
+function focusRecord(grid, id, field, by = 0) {
+  const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+  const col = grid._order.findIndex((c) => c.field === field);
+  if (row < 0 || col < 0)
+    return;
+  if (!by)
+    return focusCell(grid, row, col);
+  const editable = grid._order.map((c, i) => c.editable ? i : -1).filter((i) => i >= 0);
+  let at = editable.indexOf(col) + by;
+  let r = row;
+  if (at >= editable.length)
+    [at, r] = [0, row + 1];
+  if (at < 0)
+    [at, r] = [editable.length - 1, row - 1];
+  if (r < 0 || r >= grid._shown.length)
+    return focusCell(grid, row, col);
+  openEdit(grid, r, editable[at]);
+}
+function showEditProblem(ed, problem) {
+  const control = editorControl(ed.editor);
+  control.setAttribute("aria-invalid", "true");
+  let note = dfDollar18(ed.wrap).children(".data-grid-error").get(0);
+  if (!note) {
+    note = document.createElement("span");
+    note.className = "data-grid-error";
+    note.setAttribute("role", "alert");
+    note.id = `dg-error-${Math.random().toString(36).slice(2, 8)}`;
+    dfDollar18(ed.wrap).append(note);
+    control.setAttribute("aria-describedby", note.id);
+  }
+  dfDollar18(note).text(problem);
+}
+function writeRecord(grid, id, patch) {
+  const idField = grid._source.idField;
+  const rows = grid._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0)
+    return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  grid._source.setRows(next);
+  grid._writing = true;
+  triggerStateChange19(grid, grid.store.value, grid.store.value);
+  grid._writing = false;
+  return record;
+}
+function commitEdit(grid, then = "stay") {
+  const ed = grid._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = editContext(grid, ed.record, ed.column);
+  if (!problem)
+    problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = grid._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    showEditProblem(ed, problem);
+    return false;
+  }
+  grid._editor = null;
+  const oldValue = ed.value;
+  const before = new CustomEvent("data-grid-beforeedit", {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.record, field: ed.field, value, oldValue }
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !grid.dispatchEvent(before)) {
+    grid._gen++;
+    renderRows(grid);
+  } else {
+    const record = writeRecord(grid, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+      bubbles: true,
+      detail: { record, field: ed.field, value, oldValue }
+    }));
+  }
+  if (then === "stay")
+    focusRecord(grid, ed.id, ed.field);
+  else if (then === "next" || then === "prev")
+    focusRecord(grid, ed.id, ed.field, then === "next" ? 1 : -1);
+  return true;
+}
 function onKeydown2(grid, e) {
-  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu"))
+  if (e.target.closest?.(".data-grid-filters, .data-grid-footer, .data-grid-menu, .data-grid-editor"))
     return;
   if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
     return;
@@ -11791,7 +12332,16 @@ function onKeydown2(grid, e) {
       selectAll(grid);
       next = [row, col];
       break;
+    case "F2":
+      if (row < 0 || !openEdit(grid, row, col))
+        return;
+      e.preventDefault();
+      return;
     case "Enter":
+      if (row >= 0 && !e.shiftKey && editableColumn(grid, col) && openEdit(grid, row, col)) {
+        e.preventDefault();
+        return;
+      }
       if (row === -1) {
         const column = grid._order[col];
         if (column.sortable)
@@ -11813,7 +12363,7 @@ function onKeydown2(grid, e) {
 }
 function onClick(grid, e) {
   const t = e.target;
-  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer"))
+  if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer, .data-grid-editor"))
     return;
   const menuButton = t.closest(".data-grid-menu-button");
   if (menuButton) {
@@ -12357,7 +12907,31 @@ df$19.dataGrid = {
     const filtering = (configOf3(grid).filters || []).length > 0;
     query(grid, filtering ? { collapsed: grid._source.branchIds() } : { expanded: [] });
   },
-  resetColumns: (target) => resetColumns(resolve6(target))
+  resetColumns: (target) => resetColumns(resolve6(target)),
+  edit(target, id, field) {
+    const grid = resolve6(target);
+    const row = grid._shown.findIndex((x) => x.row[grid._source.idField] === id);
+    const col = grid._order.findIndex((c) => c.field === field);
+    if (row < 0 || col < 0)
+      return false;
+    focusCell(grid, row, col);
+    return openEdit(grid, row, col);
+  },
+  commit: (target) => commitEdit(resolve6(target)),
+  cancel: (target) => cancelEdit(resolve6(target)),
+  update(target, id, patch) {
+    const grid = resolve6(target);
+    const old = grid._source.rows.find((r) => r[grid._source.idField] === id);
+    if (!old)
+      return null;
+    const record = writeRecord(grid, id, patch);
+    for (const field of Object.keys(patch))
+      grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+        bubbles: true,
+        detail: { record, field, value: patch[field], oldValue: old[field] }
+      }));
+    return record;
+  }
 };
 function init19() {
   dfDollar18(".data-grid:not([data-init])").toArray().forEach((grid) => {
@@ -12449,6 +13023,13 @@ function init19() {
         openMenu(grid, column);
     });
     grid.addEventListener("dblclick", (e) => {
+      const cell = e.target.closest(".data-grid-cell");
+      const rowEl = cell?.closest(".data-grid-row");
+      if (cell && rowEl && grid._parts.pool.contains(rowEl) && !cell.hasAttribute("data-editing")) {
+        if (openEdit(grid, rowEl._index, [...rowEl.children].indexOf(cell)))
+          e.preventDefault();
+        return;
+      }
       const handle = e.target.closest(".data-grid-resizer");
       if (!handle)
         return;
@@ -12526,6 +13107,7 @@ function renderItems(tree) {
   const selected = configOf4(tree).selected ?? null;
   const idField = tree._source.idField;
   let active = null;
+  let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
     const item = pool.children[i];
     const index = win.first + i;
@@ -12545,12 +13127,23 @@ function renderItems(tree) {
       else
         item.removeAttribute("aria-expanded");
       item.toggleAttribute("data-match", !!(configOf4(tree).filters || []).length && meta.isMatch);
+      delete item.dataset.editing;
       const label = item.lastElementChild;
       if (tree._render) {
         label.textContent = "";
         tree._render(label, entry.row, meta);
       } else {
         label.textContent = String(entry.row[labelField(tree)] ?? "");
+      }
+    }
+    const ed = tree._editor;
+    if (ed && ed.id === entry.row[idField]) {
+      edShown = true;
+      if (!item.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || document.activeElement === document.body;
+        placeTreeEditor(item, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
       }
     }
     item.setAttribute("aria-selected", String(selected !== null && entry.row[idField] === selected));
@@ -12562,10 +13155,196 @@ function renderItems(tree) {
     tree.setAttribute("aria-activedescendant", active.id);
   else
     tree.removeAttribute("aria-activedescendant");
+  if (tree._editor && !edShown && !tree._writing)
+    queueMicrotask(() => {
+      if (tree._editor && !commitTreeEdit(tree, false))
+        cancelTreeEdit(tree, false);
+    });
+}
+var editField = (tree) => tree.dataset.editField || labelField(tree);
+function treeRules(tree) {
+  const d = tree.dataset;
+  const rules = {};
+  if (tree.hasAttribute("data-required"))
+    rules.required = true;
+  if (d.minLength)
+    rules.minLength = Number(d.minLength);
+  if (d.maxLength)
+    rules.maxLength = Number(d.maxLength);
+  if (d.pattern)
+    rules.pattern = d.pattern;
+  if (d.message)
+    rules.message = d.message;
+  if (d.options)
+    rules.options = d.options.split(",").map((o) => o.trim());
+  return rules;
+}
+var treeContext = (tree, entry) => {
+  const field = editField(tree);
+  const rules = treeRules(tree);
+  return {
+    record: entry.row,
+    meta: entry.meta,
+    field,
+    type: tree.dataset.editor || valueType(entry.row[field], rules),
+    rules,
+    tree
+  };
+};
+function placeTreeEditor(item, ed) {
+  ed.item = item;
+  item.dataset.editing = "";
+  const label = item.lastElementChild;
+  label.textContent = "";
+  label.append(ed.wrap);
+}
+function openTreeEdit(tree, index) {
+  if (!tree.hasAttribute("data-editable") || tree.hasAttribute("data-readonly"))
+    return false;
+  const entry = entryAt(tree, index);
+  if (!entry)
+    return false;
+  if (tree._editor && !commitTreeEdit(tree, false))
+    return false;
+  const ctx = treeContext(tree, entry);
+  const value = entry.row[ctx.field];
+  const custom = tree._sourceOptions?.getEditorFn?.(ctx.field, value, ctx);
+  if (custom === false)
+    return false;
+  const editor = asEditor(custom) ?? builtinEditor(ctx.type, value, ctx.rules);
+  activate3(tree, index);
+  const wrap = document.createElement("span");
+  wrap.className = "data-tree-editor";
+  wrap.append(editor.el);
+  const ed = { id: entry.row[tree._source.idField], field: ctx.field, editor, wrap, value, entry, item: null };
+  tree._editor = ed;
+  const item = dfDollar19(tree._pool).children(".data-tree-item").toArray().find((x) => x._index === index);
+  if (item)
+    placeTreeEditor(item, ed);
+  wrap.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    e.preventDefault();
+    if (act === "cancel")
+      cancelTreeEdit(tree);
+    else
+      commitTreeEdit(tree);
+  });
+  wrap.addEventListener("click", (e) => e.stopPropagation());
+  wrap.addEventListener("dblclick", (e) => e.stopPropagation());
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commitTreeEdit(tree);
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (tree._editor === ed && !wrap.contains(document.activeElement))
+        commitTreeEdit(tree, false);
+    }, 0);
+  });
+  focusEditor(editor);
+  return true;
+}
+function cancelTreeEdit(tree, focus = true) {
+  if (!tree._editor)
+    return;
+  tree._editor = null;
+  tree._gen = (tree._gen || 0) + 1;
+  renderItems(tree);
+  if (focus)
+    tree.focus({ preventScroll: true });
+}
+function writeTreeRecord(tree, id, patch) {
+  const idField = tree._source.idField;
+  const rows = tree._source.rows;
+  const at = rows.findIndex((r) => r[idField] === id);
+  if (at < 0)
+    return null;
+  const record = { ...rows[at], ...patch };
+  const next = rows.slice();
+  next[at] = record;
+  tree._source.setRows(next);
+  tree._writing = true;
+  triggerStateChange20(tree, tree.store.value, tree.store.value);
+  tree._writing = false;
+  const index = tree._result.entries.findIndex((x) => x.row[idField] === id);
+  if (index >= 0)
+    activate3(tree, index);
+  return record;
+}
+function commitTreeEdit(tree, focus = true) {
+  const ed = tree._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = treeContext(tree, ed.entry);
+  if (!problem)
+    problem = editorProblem(ctx.rules, value);
+  if (!problem) {
+    const answer = tree._sourceOptions?.validateFn?.(ed.field, value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    const control = editorControl(ed.editor);
+    control.setAttribute("aria-invalid", "true");
+    let note = dfDollar19(ed.wrap).children(".data-tree-error").get(0);
+    if (!note) {
+      note = document.createElement("span");
+      note.className = "data-tree-error";
+      note.setAttribute("role", "alert");
+      note.id = `dt-error-${Math.random().toString(36).slice(2, 8)}`;
+      ed.wrap.append(note);
+      control.setAttribute("aria-describedby", note.id);
+    }
+    dfDollar19(note).text(problem);
+    return false;
+  }
+  tree._editor = null;
+  const oldValue = ed.value;
+  const before = new CustomEvent("data-tree-beforeedit", {
+    bubbles: true,
+    cancelable: true,
+    detail: { record: ed.entry.row, field: ed.field, value, oldValue }
+  });
+  const same = JSON.stringify(value) === JSON.stringify(oldValue) && !ed.editor.patch;
+  if (same || !tree.dispatchEvent(before)) {
+    tree._gen = (tree._gen || 0) + 1;
+    renderItems(tree);
+  } else {
+    const record = writeTreeRecord(tree, ed.id, { ...ed.editor.patch?.(), [ed.field]: value });
+    tree.dispatchEvent(new CustomEvent("data-tree-edit", {
+      bubbles: true,
+      detail: { record, field: ed.field, value, oldValue }
+    }));
+  }
+  if (focus)
+    tree.focus({ preventScroll: true });
+  return true;
 }
 function refresh2(tree, config, previous) {
   if (!tree._source)
     return 0;
+  if (tree._editor && !tree._writing) {
+    tree._writing = true;
+    if (!commitTreeEdit(tree, false))
+      tree._editor = null;
+    tree._writing = false;
+  }
   tree._result = tree._source.query({
     filters: config.filters,
     sorters: config.sorters,
@@ -12699,6 +13478,8 @@ function activate3(tree, index) {
   renderItems(tree);
 }
 function onKeydown3(tree, e) {
+  if (tree._editor && tree._editor.wrap.contains(e.target))
+    return;
   const index = tree._active ?? 0;
   const entry = entryAt(tree, index);
   if (!entry)
@@ -12735,6 +13516,10 @@ function onKeydown3(tree, e) {
       break;
     case "PageUp":
       activate3(tree, index - page);
+      break;
+    case "F2":
+      if (!openTreeEdit(tree, index))
+        return;
       break;
     case "Enter":
     case " ":
@@ -12830,6 +13615,29 @@ df$20.dataTree = {
     activate3(tree, index);
     return true;
   },
+  source: (target) => resolve7(target)._source,
+  edit(target, id) {
+    const tree = resolve7(target);
+    if (!df$20.dataTree.reveal(tree, id))
+      return false;
+    const index = tree._result.entries.findIndex((x) => x.row[tree._source.idField] === id);
+    return openTreeEdit(tree, index);
+  },
+  commit: (target) => commitTreeEdit(resolve7(target)),
+  cancel: (target) => cancelTreeEdit(resolve7(target)),
+  update(target, id, patch) {
+    const tree = resolve7(target);
+    const old = tree._source.rows.find((r) => r[tree._source.idField] === id);
+    if (!old)
+      return null;
+    const record = writeTreeRecord(tree, id, patch);
+    for (const field of Object.keys(patch))
+      tree.dispatchEvent(new CustomEvent("data-tree-edit", {
+        bubbles: true,
+        detail: { record, field, value: patch[field], oldValue: old[field] }
+      }));
+    return record;
+  },
   selected(target) {
     const tree = resolve7(target);
     const id = configOf4(tree).selected ?? null;
@@ -12877,6 +13685,13 @@ function init20() {
     new ResizeObserver(() => renderItems(tree)).observe(tree);
     tree.addEventListener("click", (e) => onClick2(tree, e));
     tree.addEventListener("keydown", (e) => onKeydown3(tree, e));
+    tree.addEventListener("dblclick", (e) => {
+      const item = e.target.closest?.(".data-tree-item");
+      if (!item || !tree._pool.contains(item) || e.target.closest(".data-tree-toggle"))
+        return;
+      if (openTreeEdit(tree, item._index))
+        e.preventDefault();
+    });
     bindComponent(tree, dataTreeApi, { name: tree._source ? "default" : "loading", config });
     dataTreeApi.setState(tree, tree._source ? "default" : "loading", config);
   });
@@ -23530,32 +24345,7 @@ function setAt(obj, path, value) {
   copy[head] = setAt(isGroup(obj) ? obj[head] : undefined, rest, value);
   return copy;
 }
-function typeOf(value, conf) {
-  if (conf?.type)
-    return conf.type;
-  if (conf?.options)
-    return "enum";
-  if (value === null)
-    return "null";
-  if (Array.isArray(value))
-    return "array";
-  if (typeof value === "object")
-    return "object";
-  if (typeof value === "boolean")
-    return "boolean";
-  if (typeof value === "number")
-    return "number";
-  if (typeof value === "string") {
-    if (/^#[0-9a-f]{6}$/i.test(value))
-      return "color";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value))
-      return "date";
-    if (value.includes(`
-`))
-      return "text";
-  }
-  return "string";
-}
+var typeOf = (value, conf) => valueType(value, conf);
 function confOf(root, path) {
   const sc = optionsOf(root).sourceConfig ?? {};
   return sc[pathKey(path)] ?? sc[path[path.length - 1]] ?? null;
@@ -23727,75 +24517,7 @@ function moveFocus(root, from, by) {
   root._current = next.closest("tr").dataset.path;
   next.focus();
 }
-function defaultEditor(type, value, conf) {
-  let el;
-  if (type === "boolean") {
-    el = document.createElement("input");
-    el.type = "checkbox";
-    el.className = "switch";
-    el.setAttribute("role", "switch");
-    el.checked = !!value;
-    return { el, getValue: () => el.checked, immediate: true };
-  }
-  if (type === "enum") {
-    el = document.createElement("select");
-    el.className = "select";
-    el.dataset.size = "xs";
-    for (const opt of conf?.options ?? []) {
-      const o = document.createElement("option");
-      const [v, label] = isGroup(opt) ? [opt.value, opt.label ?? opt.value] : [opt, opt];
-      o.value = String(v);
-      dfDollar45(o).text(String(label));
-      if (v === value)
-        o.selected = true;
-      el.append(o);
-    }
-    const values = (conf?.options ?? []).map((o) => isGroup(o) ? o.value : o);
-    return { el, getValue: () => values.find((v) => String(v) === el.value) ?? el.value, immediate: true };
-  }
-  if (type === "text" || type === "object" || type === "array" || type === "json") {
-    el = document.createElement("textarea");
-    el.className = "textarea";
-    el.rows = type === "text" ? 3 : 5;
-    const json = type !== "text";
-    el.value = json ? JSON.stringify(value, null, 2) : String(value ?? "");
-    return {
-      el,
-      multiline: true,
-      getValue: () => json ? JSON.parse(el.value) : el.value,
-      validate: () => {
-        if (!json)
-          return "";
-        try {
-          JSON.parse(el.value);
-          return "";
-        } catch (error) {
-          return String(error.message ?? error);
-        }
-      }
-    };
-  }
-  el = document.createElement("input");
-  el.className = type === "color" ? "property-grid-color-input" : "input";
-  if (type !== "color")
-    el.dataset.size = "xs";
-  el.type = type === "number" ? "number" : type === "color" ? "color" : type === "date" ? "date" : "text";
-  if (type === "number") {
-    el.step = conf?.step ?? "any";
-    if (conf?.min != null)
-      el.min = conf.min;
-    if (conf?.max != null)
-      el.max = conf.max;
-    el.inputMode = "decimal";
-  }
-  el.value = value == null ? "" : String(value);
-  return {
-    el,
-    immediate: type === "color" || type === "date",
-    getValue: () => type === "number" ? el.value === "" ? null : el.valueAsNumber : type === "null" && el.value === "" ? null : el.value,
-    validate: () => type === "number" && el.value !== "" && Number.isNaN(el.valueAsNumber) ? "not a number" : el.validity && !el.validity.valid ? el.validationMessage : ""
-  };
-}
+var defaultEditor = (type, value, conf) => builtinEditor(type, value, conf, { colorClass: "property-grid-color-input" });
 function editorFor(root, row, value) {
   const conf = confOf(root, row._path);
   const type = row.dataset.type;
@@ -23803,17 +24525,7 @@ function editorFor(root, row, value) {
   const custom = optionsOf(root).getEditorFn?.(row._path[row._path.length - 1], value, ctx);
   if (custom === false)
     return null;
-  if (custom instanceof HTMLElement) {
-    const el = custom;
-    return {
-      el,
-      immediate: el.type === "checkbox" || el.tagName === "SELECT",
-      getValue: () => el.type === "checkbox" ? el.checked : el.type === "number" || el.type === "range" ? el.valueAsNumber : el.value
-    };
-  }
-  if (custom && custom.el)
-    return custom;
-  return defaultEditor(type, value, conf);
+  return asEditor(custom) ?? defaultEditor(type, value, conf);
 }
 function openEditor2(root, path) {
   closeEditor(root);
@@ -23831,47 +24543,10 @@ function openEditor2(root, path) {
   cell.dataset.editing = "";
   dfDollar45(cell).empty().append(wrap);
   root._editor = { path, row, cell, editor, value };
-  const target = editor.el.matches?.("input, select, textarea, button, [tabindex]") ? editor.el : dfDollar45(editor.el).find("input, select, textarea, button, [tabindex]").get(0) ?? editor.el;
-  (editor.focus ?? (() => target.focus?.()))();
-  if (target.select && target.type !== "checkbox" && target.type !== "color" && target.type !== "date")
-    target.select();
+  focusEditor(editor);
   return true;
 }
-function ruleProblem(conf, value) {
-  if (!conf)
-    return "";
-  const say = (fallback) => conf.message || fallback;
-  const empty = value === null || value === undefined || value === "" || Array.isArray(value) && !value.length;
-  if (conf.required && empty)
-    return say("Required");
-  if (empty)
-    return "";
-  if (typeof value === "number") {
-    if (Number.isNaN(value))
-      return say("Not a number");
-    if (conf.integer && !Number.isInteger(value))
-      return say("Must be a whole number");
-    if (conf.min != null && value < conf.min)
-      return say(`Must be at least ${conf.min}`);
-    if (conf.max != null && value > conf.max)
-      return say(`Must be at most ${conf.max}`);
-  }
-  if (typeof value === "string") {
-    if (conf.minLength != null && value.length < conf.minLength)
-      return say(`At least ${conf.minLength} characters`);
-    if (conf.maxLength != null && value.length > conf.maxLength)
-      return say(`At most ${conf.maxLength} characters`);
-    if (conf.pattern && !new RegExp(`^(?:${conf.pattern})$`).test(value))
-      return say("Does not match the expected format");
-  }
-  if (Array.isArray(value)) {
-    if (conf.minItems != null && value.length < conf.minItems)
-      return say(`At least ${conf.minItems}`);
-    if (conf.maxItems != null && value.length > conf.maxItems)
-      return say(`At most ${conf.maxItems}`);
-  }
-  return "";
-}
+var ruleProblem = (conf, value) => editorProblem(conf, value);
 function showProblem(ed, control, problem) {
   control.setAttribute?.("aria-invalid", "true");
   const wrap = dfDollar45(ed.cell).children(".property-grid-editor").get(0) ?? ed.cell;
@@ -23896,7 +24571,7 @@ function commit2(root, then = "stay") {
   const ed = root._editor;
   if (!ed)
     return true;
-  const control = dfDollar45(ed.editor.el).find("input, select, textarea").get(0) ?? ed.editor.el;
+  const control = editorControl(ed.editor);
   const { path, row } = ed;
   const key = row._path[row._path.length - 1];
   let problem = ed.editor.validate?.() ?? "";
@@ -24104,16 +24779,17 @@ function init46() {
     dfDollar45(root).on("keydown", (e) => {
       const t = e.target;
       if (root._editor && root._editor.cell.contains(t)) {
-        if (e.key === "Escape") {
+        const act = editorKey(e, root._editor.editor);
+        if (act === "cancel") {
           e.preventDefault();
           e.stopPropagation();
           const { path } = root._editor;
           root.api.setState("default", { editing: null });
           restoreFocus(root, path, "stay");
-        } else if (e.key === "Enter" && (!(root._editor.editor.multiline || root._editor.editor.ownsEnter) || e.metaKey || e.ctrlKey)) {
+        } else if (act === "commit") {
           e.preventDefault();
           commit2(root);
-        } else if (e.key === "Tab") {
+        } else if (act === "next" || act === "prev") {
           const targets = focusTargets(root);
           const at = targets.findIndex((x) => x.closest("tr") === root._editor.row);
           const edge = e.shiftKey ? at <= 0 : at >= targets.length - 1;
@@ -24161,9 +24837,1372 @@ function init46() {
 init46();
 new MutationObserver(init46).observe(document, { childList: true, subtree: true });
 
-// src/components/data-display/qr-code/qr-code.ts
+// src/components/application/property-tree/property-tree.ts
 var df$47 = defussGlobals();
 var dfDollar46 = defussQuery();
+var propertyTreeStates = ["default", "editing"];
+var DSON_URL = "https://cdn.jsdelivr.net/npm/defuss-dson@1.1.2/dist/index.mjs";
+var dsonModule = null;
+function loadDson(url = DSON_URL) {
+  const vendorUrl = url;
+  dsonModule ??= Promise.resolve().then(() => import(/* @vite-ignore */ vendorUrl)).then((m) => m.DSON ?? m.default);
+  return dsonModule;
+}
+function kindOf2(v) {
+  if (v === null)
+    return "null";
+  const t = typeof v;
+  if (t !== "object")
+    return t;
+  if (Array.isArray(v))
+    return "array";
+  if (v instanceof Map)
+    return "map";
+  if (v instanceof Set)
+    return "set";
+  if (v instanceof Date)
+    return "date";
+  if (v instanceof RegExp)
+    return "regexp";
+  if (v instanceof Error)
+    return "error";
+  if (ArrayBuffer.isView(v))
+    return "typed";
+  return "object";
+}
+var CONTAINERS = new Set(["object", "array", "map", "set"]);
+var isContainer2 = (v) => CONTAINERS.has(kindOf2(v));
+function entries2(v) {
+  const kind = kindOf2(v);
+  if (kind === "array")
+    return v.map((x, i) => [i, i, x]);
+  if (kind === "map")
+    return [...v].map(([k, x], i) => [i, k, x]);
+  if (kind === "set")
+    return [...v].map((x, i) => [i, i, x]);
+  if (kind === "object")
+    return Object.keys(v).map((k) => [k, k, v[k]]);
+  return [];
+}
+var sizeOf2 = (v) => {
+  const kind = kindOf2(v);
+  return kind === "map" || kind === "set" ? v.size : kind === "array" ? v.length : Object.keys(v).length;
+};
+function childAt(c, token) {
+  const kind = kindOf2(c);
+  if (kind === "map")
+    return [...c.values()][token];
+  if (kind === "set")
+    return [...c][token];
+  return c?.[token];
+}
+function keyAt(c, token) {
+  return kindOf2(c) === "map" ? [...c.keys()][token] : token;
+}
+function refill(c, list) {
+  c.clear();
+  if (c instanceof Map)
+    for (const [k, v] of list)
+      c.set(k, v);
+  else
+    for (const v of list)
+      c.add(v);
+}
+function setChild(c, token, value) {
+  const kind = kindOf2(c);
+  if (kind === "map") {
+    const list = [...c];
+    list[token] = [list[token][0], value];
+    refill(c, list);
+  } else if (kind === "set") {
+    const list = [...c];
+    list[token] = value;
+    refill(c, list);
+  } else
+    c[token] = value;
+}
+var pointerOf = (path) => path.map((t) => "/" + String(t).replace(/~/g, "~0").replace(/\//g, "~1")).join("");
+function toPath2(p) {
+  if (Array.isArray(p))
+    return p;
+  if (!p)
+    return [];
+  return p.split("/").slice(1).map((t) => t.replace(/~1/g, "/").replace(/~0/g, "~")).map((t) => /^\d+$/.test(t) ? Number(t) : t);
+}
+function locate(tree, path) {
+  let parent = tree._holder;
+  let token = "value";
+  let node = tree._holder.value;
+  for (const t of path) {
+    if (!isContainer2(node))
+      return null;
+    const tok = kindOf2(node) === "object" ? String(t) : Number(t);
+    parent = node;
+    token = tok;
+    node = childAt(node, tok);
+  }
+  return { parent, token, node };
+}
+function snapshot(c) {
+  const kind = kindOf2(c);
+  if (kind === "map")
+    return { kind, list: [...c] };
+  if (kind === "set")
+    return { kind, list: [...c] };
+  if (kind === "array")
+    return { kind, list: c.slice() };
+  return { kind, list: Object.keys(c).map((k) => [k, c[k]]) };
+}
+function restore2(c, snap) {
+  if (snap.kind === "map" || snap.kind === "set")
+    refill(c, snap.list);
+  else if (snap.kind === "array")
+    c.splice(0, c.length, ...snap.list);
+  else {
+    for (const k of Object.keys(c))
+      delete c[k];
+    for (const [k, v] of snap.list)
+      c[k] = v;
+  }
+}
+function firstPaths(root) {
+  const first = new Map;
+  let level = [[root, []]];
+  while (level.length) {
+    const next = [];
+    for (const [v, path] of level) {
+      if (!isContainer2(v) || first.has(v))
+        continue;
+      first.set(v, pointerOf(path));
+      for (const [token, , child] of entries2(v))
+        if (isContainer2(child))
+          next.push([child, [...path, token]]);
+    }
+    level = next;
+  }
+  return first;
+}
+function summary2(v, kind = kindOf2(v)) {
+  switch (kind) {
+    case "string":
+      return JSON.stringify(v);
+    case "bigint":
+      return `${v}n`;
+    case "date":
+      return Number.isNaN(v.getTime()) ? "Invalid Date" : v.toISOString();
+    case "regexp":
+    case "symbol":
+      return String(v);
+    case "function":
+      return `ƒ ${v.name || "anonymous"}()`;
+    case "error":
+      return `${v.name}: ${v.message}`;
+    case "typed":
+      return `${v.constructor.name}(${v.length ?? v.byteLength}) [${Array.from(v.slice?.(0, 8) ?? []).join(", ")}${(v.length ?? 0) > 8 ? ", ..." : ""}]`;
+    case "array": {
+      const n = v.length;
+      return `[${n} ${n === 1 ? "item" : "items"}]`;
+    }
+    case "map":
+      return `Map(${v.size})`;
+    case "set":
+      return `Set(${v.size})`;
+    case "object": {
+      const n = Object.keys(v).length;
+      return `{${n} ${n === 1 ? "key" : "keys"}}`;
+    }
+    default:
+      return String(v);
+  }
+}
+var keyLabel = (key, parentKind) => parentKind === "map" ? typeof key === "string" ? JSON.stringify(key) : summary2(key) : String(key);
+function buildRows(tree) {
+  const root = tree._holder.value;
+  const open = new Set(configOf7(tree).expanded ?? []);
+  const first = tree._first;
+  const rows = [];
+  const walk = (v, path, depth, key, parentKind) => {
+    const pointer = pointerOf(path);
+    const kind = kindOf2(v);
+    const row = { path, pointer, depth, key, parentKind, value: v, kind };
+    if (CONTAINERS.has(kind)) {
+      const at = first.get(v);
+      if (at !== pointer) {
+        row.isRef = true;
+        row.ref = at;
+        row.cycle = pointer.startsWith(at + "/") || at === "";
+      } else {
+        row.container = true;
+        row.count = sizeOf2(v);
+        row.open = open.has(pointer);
+      }
+    }
+    rows.push(row);
+    if (row.container && row.open)
+      for (const [token, k, child] of entries2(v))
+        walk(child, [...path, token], depth + 1, k, kind);
+  };
+  walk(root, [], 0, null, null);
+  if (tree.hasAttribute("data-hide-root") && rows[0]?.container) {
+    rows.shift();
+    for (const r of rows)
+      r.depth--;
+  }
+  tree._rows = rows;
+}
+var configOf7 = (tree) => tree._config ?? tree.store?.value.config ?? {};
+var optionsOf2 = (tree) => tree._options ?? {};
+var contextOf = (tree, row) => {
+  const at = locate(tree, row.path);
+  return {
+    path: [...row.path],
+    pointer: row.pointer,
+    key: row.key,
+    kind: row.kind,
+    parent: row.path.length ? at?.parent : null,
+    root: tree._holder.value,
+    tree
+  };
+};
+function fillRow(tree, el, row, index) {
+  el._row = row;
+  el._index = index;
+  el.dataset.kind = row.kind;
+  el.style.setProperty("--depth", String(row.depth));
+  el.setAttribute("aria-level", String(row.depth + 1));
+  if (row.container)
+    el.setAttribute("aria-expanded", String(row.open));
+  else
+    el.removeAttribute("aria-expanded");
+  el.toggleAttribute("data-ref", !!row.isRef);
+  delete el.dataset.editing;
+  const [toggle, key, value, type, actions] = el.children;
+  toggle.toggleAttribute("data-leaf", !row.container);
+  key.textContent = row.key === null ? tree.dataset.rootLabel ?? "root" : keyLabel(row.key, row.parentKind);
+  key.dataset.keyKind = row.key === null ? "root" : row.parentKind === "object" ? "key" : row.parentKind === "map" ? "map" : "index";
+  value.textContent = "";
+  value.dataset.kind = row.kind;
+  const custom = !row.isRef && optionsOf2(tree).renderValue?.(value, row.value, contextOf(tree, row));
+  if (!custom) {
+    if (row.isRef) {
+      const link = document.createElement("button");
+      link.type = "button";
+      link.className = "property-tree-ref";
+      link.tabIndex = -1;
+      link.dataset.pointer = row.ref;
+      link.textContent = `${row.cycle ? "cycle" : "ref"} ${row.ref || "/"}`;
+      value.append(link);
+    } else if (row.kind === "string" && /^#[0-9a-f]{6}$/i.test(row.value)) {
+      const swatch = document.createElement("i");
+      swatch.className = "property-tree-swatch";
+      swatch.style.background = row.value;
+      swatch.setAttribute("aria-hidden", "true");
+      value.append(swatch, document.createTextNode(summary2(row.value)));
+    } else
+      value.textContent = summary2(row.value, row.kind);
+  }
+  type.textContent = row.isRef ? "ref" : row.kind === "typed" ? row.value.constructor.name : row.kind;
+  actions.setAttribute("aria-label", `Actions for ${key.textContent}`);
+  const label = key.textContent + ": " + (row.isRef ? `reference to ${row.ref || "the root"}` : summary2(row.value, row.kind));
+  el.setAttribute("aria-label", label);
+}
+function renderRows3(tree) {
+  const pool = tree._pool;
+  if (!pool || !tree._rows)
+    return;
+  const rows = tree._rows;
+  const h = tree._rowHeight;
+  const win = virtualWindow(tree._viewport.scrollTop, tree._viewport.clientHeight, h, rows.length);
+  tree._sizer.style.height = `${sizerHeight(rows.length, h)}px`;
+  while (pool.children.length < win.count) {
+    const el = document.createElement("div");
+    el.className = "property-tree-row";
+    el.setAttribute("role", "treeitem");
+    el.id = `${tree._uid}-row-${pool.children.length}`;
+    for (const part of ["toggle", "key", "value", "type"]) {
+      const span = document.createElement("span");
+      span.className = `property-tree-${part}`;
+      if (part === "toggle" || part === "type")
+        span.setAttribute("aria-hidden", "true");
+      el.append(span);
+    }
+    const actions = document.createElement("button");
+    actions.type = "button";
+    actions.className = "property-tree-actions";
+    actions.tabIndex = -1;
+    actions.setAttribute("aria-haspopup", "menu");
+    el.append(actions);
+    pool.append(el);
+  }
+  while (pool.children.length > win.count)
+    pool.lastElementChild.remove();
+  pool.style.translate = `0 ${win.shift}px`;
+  const selected = configOf7(tree).selected ?? null;
+  let active = null;
+  let edShown = false;
+  for (let i = 0;i < pool.children.length; i++) {
+    const el = pool.children[i];
+    const index = win.first + i;
+    const row = rows[index];
+    const key = `${tree._gen}:${index}`;
+    if (el._key !== key) {
+      el._key = key;
+      fillRow(tree, el, row, index);
+    }
+    const ed = tree._editor;
+    if (ed && ed.pointer === row.pointer) {
+      edShown = true;
+      if (!el.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || document.activeElement === document.body;
+        placeEditor2(el, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
+      }
+    }
+    el.setAttribute("aria-selected", String(row.pointer === selected));
+    el.toggleAttribute("data-active", index === tree._active);
+    if (index === tree._active)
+      active = el;
+  }
+  if (active)
+    tree._viewport.setAttribute("aria-activedescendant", active.id);
+  else
+    tree._viewport.removeAttribute("aria-activedescendant");
+  if (tree._editor && !edShown && !tree._writing)
+    queueMicrotask(() => {
+      if (tree._editor && !commit3(tree, false))
+        cancel(tree, false);
+    });
+}
+function refresh3(tree, structural = true) {
+  if (structural)
+    tree._first = firstPaths(tree._holder.value);
+  buildRows(tree);
+  tree._gen = (tree._gen || 0) + 1;
+  tree._active = Math.max(0, Math.min(tree._rows.length - 1, tree._active ?? 0));
+  renderRows3(tree);
+}
+function activate5(tree, index) {
+  const total = tree._rows?.length ?? 0;
+  if (!total)
+    return;
+  tree._active = Math.max(0, Math.min(total - 1, index));
+  const vp = tree._viewport;
+  vp.scrollTop = scrollIntoViewTop(tree._active, vp.scrollTop, vp.clientHeight, tree._rowHeight, total);
+  renderRows3(tree);
+}
+var indexOf2 = (tree, pointer) => tree._rows.findIndex((r) => r.pointer === pointer);
+function change(tree, detail, containers, apply) {
+  if (tree.hasAttribute("data-readonly"))
+    return false;
+  const before = new CustomEvent("property-tree-beforechange", {
+    bubbles: true,
+    cancelable: true,
+    detail
+  });
+  if (!tree.dispatchEvent(before)) {
+    tree._viewPatch = null;
+    return false;
+  }
+  const unique = [...new Set(containers)];
+  const was = unique.map((c) => [c, snapshot(c)]);
+  apply();
+  const now = unique.map((c) => [c, snapshot(c)]);
+  tree._undo.push({ was, now, detail });
+  tree._redo = [];
+  done(tree, detail);
+  return true;
+}
+function done(tree, detail) {
+  tree._writing = true;
+  const view = tree._viewPatch ?? {};
+  tree._viewPatch = null;
+  propertyTreeApi.setState(tree, "default", {
+    ...view,
+    version: (configOf7(tree).version ?? 0) + 1,
+    editing: null,
+    editingKey: false
+  });
+  refresh3(tree);
+  tree._writing = false;
+  tree.dispatchEvent(new CustomEvent("property-tree-change", { bubbles: true, detail }));
+}
+function undoStep(tree, back) {
+  const from = back ? tree._undo : tree._redo;
+  const step = from.pop();
+  if (!step)
+    return false;
+  for (const [c, snap] of back ? step.was : step.now)
+    restore2(c, snap);
+  (back ? tree._redo : tree._undo).push(step);
+  done(tree, { ...step.detail, op: back ? "undo" : "redo" });
+  return true;
+}
+function convert(value, kind) {
+  const from = kindOf2(value);
+  const text = from === "string" ? value : CONTAINERS.has(from) ? "" : summary2(value, from);
+  switch (kind) {
+    case "string":
+      return from === "string" ? value : text;
+    case "number": {
+      const n = Number(from === "bigint" ? Number(value) : value);
+      return Number.isFinite(n) ? n : 0;
+    }
+    case "boolean":
+      return from === "string" ? value === "true" : !!value;
+    case "null":
+      return null;
+    case "object":
+      return from === "array" ? Object.assign({}, value) : from === "map" ? Object.fromEntries(value) : {};
+    case "array":
+      return from === "object" ? Object.values(value) : from === "set" || from === "map" ? [...value.values()] : [];
+    case "map":
+      return from === "object" ? new Map(Object.entries(value)) : new Map;
+    case "set":
+      return from === "array" ? new Set(value) : new Set;
+    case "date":
+      return new Date(from === "string" || from === "number" ? value : Date.now());
+    case "bigint":
+      try {
+        return BigInt(from === "number" ? Math.trunc(value) : from === "string" ? value : 0);
+      } catch {
+        return 0n;
+      }
+    default:
+      return value;
+  }
+}
+function freeKey(c, name) {
+  const has = (k) => c instanceof Map ? c.has(k) : Object.prototype.hasOwnProperty.call(c, k);
+  if (!has(name))
+    return name;
+  let n = 2;
+  while (has(`${name} ${n}`))
+    n++;
+  return `${name} ${n}`;
+}
+var ops = {
+  set(tree, path, value) {
+    const at = locate(tree, path);
+    if (!at)
+      return false;
+    return change(tree, { op: "set", path, pointer: pointerOf(path), value, oldValue: at.node }, [at.parent], () => setChild(at.parent, at.token, value));
+  },
+  type(tree, path, kind) {
+    const at = locate(tree, path);
+    if (!at || kindOf2(at.node) === kind)
+      return false;
+    const value = convert(at.node, kind);
+    return change(tree, { op: "type", path, pointer: pointerOf(path), value, oldValue: at.node }, [at.parent], () => setChild(at.parent, at.token, value));
+  },
+  rename(tree, path, key) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return false;
+    const c = at.parent;
+    const kind = kindOf2(c);
+    const old = keyAt(c, at.token);
+    if (old === key || kind !== "object" && kind !== "map")
+      return false;
+    const newPath = kind === "object" ? [...path.slice(0, -1), String(key)] : path;
+    return change(tree, { op: "rename", path: newPath, pointer: pointerOf(newPath), value: key, oldValue: old }, [c], () => {
+      if (kind === "map")
+        refill(c, [...c].map(([k, v]) => [k === old ? key : k, v]));
+      else {
+        const list = Object.keys(c).map((k) => [k === old ? String(key) : k, c[k]]);
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+      }
+      const before = pointerOf(path);
+      const after = pointerOf(newPath);
+      if (before !== after)
+        tree._viewPatch = {
+          expanded: (configOf7(tree).expanded ?? []).map((p) => p === before || p.startsWith(before + "/") ? after + p.slice(before.length) : p)
+        };
+    });
+  },
+  add(tree, path, key, value = "", index) {
+    const at = locate(tree, path);
+    if (!at || !isContainer2(at.node))
+      return null;
+    const c = at.node;
+    const kind = kindOf2(c);
+    let token;
+    if (kind === "array")
+      token = index ?? c.length;
+    else if (kind === "set")
+      token = c.size;
+    else if (kind === "map")
+      token = c.size;
+    else
+      token = freeKey(c, key == null ? "key" : String(key));
+    const newPath = [...path, token];
+    const ok = change(tree, { op: "add", path: newPath, pointer: pointerOf(newPath), value, oldValue: undefined }, [c], () => {
+      if (kind === "array")
+        c.splice(token, 0, value);
+      else if (kind === "set")
+        c.add(value);
+      else if (kind === "map")
+        c.set(freeKey(c, key == null ? "key" : key), value);
+      else
+        c[token] = value;
+      const open = new Set(configOf7(tree).expanded ?? []);
+      open.add(pointerOf(path));
+      tree._viewPatch = { expanded: [...open] };
+    });
+    return ok ? newPath : null;
+  },
+  remove(tree, path) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return false;
+    const c = at.parent;
+    const kind = kindOf2(c);
+    return change(tree, { op: "remove", path, pointer: pointerOf(path), value: undefined, oldValue: at.node }, [c], () => {
+      if (kind === "array")
+        c.splice(at.token, 1);
+      else if (kind === "map" || kind === "set")
+        refill(c, [...c].filter((_, i) => i !== at.token));
+      else
+        delete c[at.token];
+    });
+  },
+  duplicate(tree, path) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return null;
+    const c = at.parent;
+    const kind = kindOf2(c);
+    let copy;
+    try {
+      copy = structuredClone(at.node);
+    } catch {
+      copy = at.node;
+    }
+    let newPath = path;
+    const ok = change(tree, { op: "add", path, pointer: pointerOf(path), value: copy, oldValue: undefined }, [c], () => {
+      if (kind === "array") {
+        c.splice(at.token + 1, 0, copy);
+        newPath = [...path.slice(0, -1), at.token + 1];
+      } else if (kind === "set") {
+        const list = [...c];
+        list.splice(at.token + 1, 0, copy);
+        refill(c, list);
+      } else if (kind === "map") {
+        const list = [...c];
+        const k = keyAt(c, at.token);
+        list.splice(at.token + 1, 0, [
+          freeKey(c, typeof k === "string" ? `${k} copy` : `${String(k)} copy`),
+          copy
+        ]);
+        refill(c, list);
+        newPath = [...path.slice(0, -1), at.token + 1];
+      } else {
+        const name = freeKey(c, `${at.token} copy`);
+        const list = Object.keys(c).flatMap((k) => k === at.token ? [
+          [k, c[k]],
+          [name, copy]
+        ] : [[k, c[k]]]);
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+        newPath = [...path.slice(0, -1), name];
+      }
+    });
+    return ok ? newPath : null;
+  },
+  move(tree, path, by) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return null;
+    const c = at.parent;
+    const kind = kindOf2(c);
+    const keys = kind === "object" ? Object.keys(c) : null;
+    const from = keys ? keys.indexOf(at.token) : at.token;
+    const to = from + by;
+    const size = keys ? keys.length : sizeOf2(c);
+    if (to < 0 || to >= size)
+      return null;
+    const newPath = [...path.slice(0, -1), keys ? at.token : to];
+    const ok = change(tree, { op: "move", path: newPath, pointer: pointerOf(newPath), value: to, oldValue: from }, [c], () => {
+      const list = keys ? keys.map((k) => [k, c[k]]) : kind === "array" ? c.slice() : [...c];
+      const [item] = list.splice(from, 1);
+      list.splice(to, 0, item);
+      if (kind === "array")
+        c.splice(0, c.length, ...list);
+      else if (kind === "map" || kind === "set")
+        refill(c, list);
+      else {
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+      }
+    });
+    return ok ? newPath : null;
+  }
+};
+function jsonSafe(v, seen = new Set) {
+  const kind = kindOf2(v);
+  if (kind === "object" || kind === "array") {
+    if (seen.has(v))
+      return false;
+    seen.add(v);
+    return entries2(v).every(([, , x]) => jsonSafe(x, seen));
+  }
+  return kind === "string" || kind === "boolean" || kind === "null" || kind === "number" && Number.isFinite(v);
+}
+function defaultEditor2(row) {
+  const v = row.value;
+  const input = (text, read, check) => {
+    const el = document.createElement("input");
+    el.className = "input";
+    el.dataset.size = "xs";
+    el.value = text;
+    return { el, getValue: () => read(el.value), validate: () => check(el.value) };
+  };
+  switch (row.kind) {
+    case "string":
+    case "number":
+    case "boolean":
+      return builtinEditor(valueType(v), v, null, { colorClass: "property-tree-color-input" });
+    case "null":
+    case "undefined":
+      return input("", (s) => {
+        if (s.trim() === "")
+          return row.kind === "null" ? null : undefined;
+        try {
+          return JSON.parse(s);
+        } catch {
+          return s;
+        }
+      }, () => "");
+    case "bigint":
+      return input(String(v), (s) => BigInt(s.trim()), (s) => /^\s*-?\d+\s*$/.test(s) ? "" : "A whole number");
+    case "date": {
+      const local = Number.isNaN(v.getTime()) ? "" : new Date(v.getTime() - v.getTimezoneOffset() * 60000).toISOString().slice(0, 23);
+      const el = document.createElement("input");
+      el.type = "datetime-local";
+      el.step = "0.001";
+      el.className = "input";
+      el.dataset.size = "xs";
+      el.value = local;
+      return { el, getValue: () => new Date(el.value), validate: () => el.value ? "" : "A date and time" };
+    }
+    case "regexp":
+      return input(String(v), (s) => {
+        const m = /^\/(.*)\/([dgimsuvy]*)$/s.exec(s.trim());
+        return m ? new RegExp(m[1], m[2]) : new RegExp(s);
+      }, (s) => {
+        try {
+          const m = /^\/(.*)\/([dgimsuvy]*)$/s.exec(s.trim());
+          if (m)
+            new RegExp(m[1], m[2]);
+          else
+            new RegExp(s);
+          return "";
+        } catch (e) {
+          return String(e.message);
+        }
+      });
+    case "object":
+    case "array":
+      return jsonSafe(v) ? builtinEditor("json", v) : null;
+    default:
+      return null;
+  }
+}
+function placeEditor2(el, ed) {
+  ed.el = el;
+  el.dataset.editing = ed.key ? "key" : "value";
+  const cell = el.children[ed.key ? 1 : 2];
+  cell.textContent = "";
+  cell.append(ed.wrap);
+}
+function openEditor3(tree, pointer, key = false) {
+  if (tree.hasAttribute("data-readonly"))
+    return false;
+  if (tree._editor && !commit3(tree, false))
+    return false;
+  const path = toPath2(pointer);
+  if (indexOf2(tree, pointer) < 0)
+    reveal(tree, path);
+  const index = indexOf2(tree, pointer);
+  const row = tree._rows[index];
+  if (!row || row.isRef)
+    return false;
+  const ctx = contextOf(tree, row);
+  let editor;
+  if (key) {
+    if (row.key === null || row.parentKind !== "object" && !(row.parentKind === "map" && typeof row.key === "string"))
+      return false;
+    const el = document.createElement("input");
+    el.className = "input";
+    el.dataset.size = "xs";
+    el.value = String(row.key);
+    editor = { el, getValue: () => el.value, validate: () => el.value === "" ? "A key" : "" };
+  } else {
+    const custom = optionsOf2(tree).getEditorFn?.([...row.path], row.value, ctx);
+    if (custom === false)
+      return false;
+    editor = asEditor(custom) ?? defaultEditor2(row);
+  }
+  if (!editor)
+    return false;
+  activate5(tree, index);
+  const wrap = document.createElement("span");
+  wrap.className = "property-tree-editor";
+  wrap.append(editor.el);
+  const ed = { pointer, path: row.path, row, key, editor, wrap, el: null };
+  tree._editor = ed;
+  const el = dfDollar46(tree._pool).children(".property-tree-row").toArray().find((r) => r._index === index);
+  if (el)
+    placeEditor2(el, ed);
+  wrap.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    e.preventDefault();
+    if (act === "cancel")
+      cancel(tree);
+    else if (commit3(tree) && (act === "next" || act === "prev"))
+      activate5(tree, (tree._active ?? 0) + (act === "next" ? 1 : -1));
+  });
+  for (const type of ["click", "dblclick", "pointerdown"])
+    wrap.addEventListener(type, (e) => e.stopPropagation());
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commit3(tree);
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (tree._editor === ed && !wrap.contains(document.activeElement))
+        commit3(tree, false);
+    }, 0);
+  });
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "editing", { editing: pointer, editingKey: key });
+  tree._writing = false;
+  focusEditor(editor);
+  return true;
+}
+function cancel(tree, focus = true) {
+  if (!tree._editor)
+    return;
+  tree._editor = null;
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false });
+  tree._writing = false;
+  tree._gen++;
+  renderRows3(tree);
+  if (focus)
+    tree._viewport.focus({ preventScroll: true });
+}
+function commit3(tree, focus = true) {
+  const ed = tree._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = { ...contextOf(tree, ed.row), kind: ed.key ? "key" : ed.row.kind };
+  if (!problem && ed.key) {
+    const at = locate(tree, ed.path);
+    const c = at?.parent;
+    const taken = c instanceof Map ? c.has(value) : Object.prototype.hasOwnProperty.call(c ?? {}, value);
+    if (value !== ed.row.key && taken)
+      problem = `"${value}" is already a key here`;
+  }
+  if (!problem) {
+    const answer = optionsOf2(tree).validateFn?.([...ed.path], value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    const control = editorControl(ed.editor);
+    control.setAttribute("aria-invalid", "true");
+    let note = dfDollar46(ed.wrap).children(".property-tree-error").get(0);
+    if (!note) {
+      note = document.createElement("span");
+      note.className = "property-tree-error";
+      note.setAttribute("role", "alert");
+      note.id = `pt-error-${Math.random().toString(36).slice(2, 8)}`;
+      ed.wrap.append(note);
+      control.setAttribute("aria-describedby", note.id);
+    }
+    dfDollar46(note).text(problem);
+    return false;
+  }
+  tree._editor = null;
+  let changed;
+  if (ed.key)
+    changed = value !== ed.row.key && ops.rename(tree, ed.path, value);
+  else {
+    const same = value === ed.row.value || typeof value !== "object" && Object.is(value, ed.row.value);
+    changed = !same && ops.set(tree, ed.path, value);
+  }
+  if (!changed)
+    cancel(tree, false);
+  else if (ed.key) {
+    const at = indexOf2(tree, pointerOf(ed.row.parentKind === "object" ? [...ed.path.slice(0, -1), String(value)] : ed.path));
+    if (at >= 0)
+      activate5(tree, at);
+  }
+  if (focus)
+    tree._viewport.focus({ preventScroll: true });
+  return true;
+}
+var TYPES = ["string", "number", "boolean", "null", "object", "array", "map", "set", "date", "bigint"];
+function menuFor(tree, row) {
+  const readonly = tree.hasAttribute("data-readonly");
+  const items = [];
+  const isRoot = row.key === null;
+  if (row.container)
+    items.push({
+      action: "add",
+      label: row.kind === "object" || row.kind === "map" ? "Add property" : "Add item",
+      disabled: readonly
+    });
+  if (row.container)
+    items.push({ action: "toggle", label: row.open ? "Collapse" : "Expand" });
+  if (row.isRef)
+    items.push({ action: "follow", label: "Go to the first appearance" });
+  if (!row.isRef)
+    items.push({ action: "edit", label: "Edit value", disabled: readonly || !defaultEditor2(row) });
+  if (!isRoot && (row.parentKind === "object" || row.parentKind === "map"))
+    items.push({
+      action: "rename",
+      label: "Rename key",
+      disabled: readonly || row.parentKind === "map" && typeof row.key !== "string"
+    });
+  if (!isRoot) {
+    items.push({ action: "duplicate", label: "Duplicate", disabled: readonly, sep: true });
+    items.push({ action: "up", label: "Move up", disabled: readonly });
+    items.push({ action: "down", label: "Move down", disabled: readonly });
+  }
+  if (!row.isRef)
+    TYPES.forEach((t, i) => items.push({ action: `type:${t}`, label: `As ${t}`, checked: row.kind === t, disabled: readonly, sep: i === 0 }));
+  items.push({ action: "copy-path", label: "Copy path", sep: true });
+  items.push({ action: "copy-json", label: "Copy as JSON" });
+  if (!isRoot)
+    items.push({ action: "remove", label: "Delete", disabled: readonly, sep: true });
+  return items;
+}
+function openMenu3(tree, index, anchor) {
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  activate5(tree, index);
+  const menu = tree._menu;
+  menu.textContent = "";
+  for (const item of menuFor(tree, row)) {
+    if (item.sep && menu.children.length) {
+      const sep = document.createElement("div");
+      sep.className = "property-tree-menu-separator";
+      sep.setAttribute("role", "separator");
+      menu.append(sep);
+    }
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "property-tree-menu-item";
+    b.dataset.action = item.action;
+    b.setAttribute("role", item.checked !== undefined ? "menuitemradio" : "menuitem");
+    if (item.checked !== undefined)
+      b.setAttribute("aria-checked", String(item.checked));
+    b.disabled = !!item.disabled;
+    b.tabIndex = -1;
+    b.textContent = item.label;
+    menu.append(b);
+  }
+  menu._pointer = row.pointer;
+  const el = anchor ?? dfDollar46(tree._pool).children(".property-tree-row").toArray().find((r) => r._index === index)?.lastElementChild;
+  if (el) {
+    for (const r of dfDollar46(tree._pool).find(".property-tree-actions").toArray())
+      r.style.removeProperty("anchor-name");
+    el.style.setProperty("anchor-name", `--${tree._uid}-menu`);
+    el.setAttribute("aria-expanded", "true");
+    menu._anchor = el;
+  }
+  menu.style.setProperty("position-anchor", `--${tree._uid}-menu`);
+  if (!menu.matches(":popover-open"))
+    menu.showPopover();
+  dfDollar46(menu).children("button:not(:disabled)").get(0)?.focus();
+}
+async function runAction(tree, pointer, action) {
+  const index = indexOf2(tree, pointer);
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  const path = row.path;
+  if (action === "add") {
+    const added = ops.add(tree, path, row.kind === "map" ? "key" : "key", "");
+    if (added) {
+      const p = pointerOf(added);
+      openEditor3(tree, p, row.kind === "object" || row.kind === "map");
+    }
+  } else if (action === "toggle")
+    toggle(tree, pointer);
+  else if (action === "follow")
+    reveal(tree, toPath2(row.ref), true);
+  else if (action === "edit")
+    openEditor3(tree, pointer);
+  else if (action === "rename")
+    openEditor3(tree, pointer, true);
+  else if (action === "duplicate") {
+    const p = ops.duplicate(tree, path);
+    if (p)
+      activate5(tree, indexOf2(tree, pointerOf(p)));
+  } else if (action === "up" || action === "down") {
+    const p = ops.move(tree, path, action === "up" ? -1 : 1);
+    if (p)
+      activate5(tree, indexOf2(tree, pointerOf(p)));
+  } else if (action.startsWith("type:"))
+    ops.type(tree, path, action.slice(5));
+  else if (action === "remove")
+    ops.remove(tree, path);
+  else if (action === "copy-path")
+    await navigator.clipboard?.writeText(pointer || "/").catch(() => {});
+  else if (action === "copy-json")
+    await navigator.clipboard?.writeText(toJson(row.value, 2)).catch(() => {});
+  if (!tree._editor)
+    tree._viewport.focus({ preventScroll: true });
+}
+function toJson(value, space) {
+  const first = firstPaths(value);
+  const seen = new Set;
+  const plain = (v, pointer) => {
+    const kind = kindOf2(v);
+    if (CONTAINERS.has(kind)) {
+      if (seen.has(v) || first.get(v) !== pointer)
+        return { $ref: first.get(v) || "#" };
+      seen.add(v);
+    }
+    switch (kind) {
+      case "array":
+        return v.map((x, i) => plain(x, `${pointer}/${i}`));
+      case "set":
+        return [...v].map((x, i) => plain(x, `${pointer}/${i}`));
+      case "map":
+        return Object.fromEntries([...v].map(([k, x], i) => [String(k), plain(x, `${pointer}/${i}`)]));
+      case "object":
+        return Object.fromEntries(Object.keys(v).map((k) => [k, plain(v[k], `${pointer}/${k.replace(/~/g, "~0").replace(/\//g, "~1")}`)]));
+      case "bigint":
+        return String(v);
+      case "date":
+        return Number.isNaN(v.getTime()) ? null : v.toISOString();
+      case "regexp":
+        return String(v);
+      case "typed":
+        return Array.from(v);
+      case "undefined":
+      case "function":
+      case "symbol":
+        return null;
+      case "error":
+        return { name: v.name, message: v.message };
+      default:
+        return v;
+    }
+  };
+  return JSON.stringify(plain(value, ""), null, space);
+}
+function setOpen(tree, pointers) {
+  tree._writing = true;
+  propertyTreeApi.setState(tree, tree.store.value.name, { expanded: pointers });
+  tree._writing = false;
+  refresh3(tree, false);
+}
+function toggle(tree, pointer, open) {
+  const set = new Set(configOf7(tree).expanded ?? []);
+  const now = open ?? !set.has(pointer);
+  if (now)
+    set.add(pointer);
+  else
+    for (const p of [...set])
+      if (p === pointer || p.startsWith(pointer + "/"))
+        set.delete(p);
+  setOpen(tree, [...set]);
+}
+function reveal(tree, path, select = false) {
+  const set = new Set(configOf7(tree).expanded ?? []);
+  for (let i = 0;i < path.length; i++)
+    set.add(pointerOf(path.slice(0, i)));
+  setOpen(tree, [...set]);
+  const index = indexOf2(tree, pointerOf(path));
+  if (index < 0)
+    return false;
+  activate5(tree, index);
+  if (select)
+    selectRow(tree, index);
+  return true;
+}
+function selectRow(tree, index) {
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  tree._writing = true;
+  propertyTreeApi.setState(tree, tree.store.value.name, { selected: row.pointer });
+  tree._writing = false;
+  renderRows3(tree);
+}
+function applyMarkup46(el, state) {
+  dfDollar46(el).attr("data-editing", state.name === "editing" && state.config?.editing != null ? String(state.config.editing) : null);
+}
+function triggerStateChange47(tree, state, incoming) {
+  tree._config = state.config ?? {};
+  applyMarkup46(tree, state);
+  if (tree._writing || !tree._holder)
+    return;
+  if ("expanded" in (incoming ?? {}) || "version" in (incoming ?? {}))
+    refresh3(tree, "version" in (incoming ?? {}));
+  else
+    renderRows3(tree);
+  if (state.name === "editing" && state.config?.editing != null) {
+    if (tree._editor?.pointer !== state.config.editing || tree._editor?.key !== !!state.config.editingKey) {
+      if (!openEditor3(tree, state.config.editing, !!state.config.editingKey))
+        queueMicrotask(() => propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false }));
+    }
+  } else if (tree._editor)
+    cancel(tree, false);
+}
+var propertyTreeApi = componentState({
+  component: "property-tree",
+  states: propertyTreeStates,
+  mergeConfig: true,
+  apply: (tree, state, _previous, incoming) => triggerStateChange47(tree, state, incoming),
+  markup: (el, state) => applyMarkup46(el, state)
+});
+df$47.propertyTreeApi = propertyTreeApi;
+df$47.propertyTreeStates = propertyTreeStates;
+var resolve20 = (target) => typeof target === "string" ? dfDollar46(target).get(0) : target;
+function setValue(tree, value) {
+  tree._holder = { value };
+  tree._undo = [];
+  tree._redo = [];
+  tree._active = 0;
+  tree._editor = null;
+  const open = isContainer2(value) ? [""] : [];
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "default", {
+    expanded: open,
+    selected: null,
+    editing: null,
+    editingKey: false,
+    version: 0
+  });
+  tree._writing = false;
+  refresh3(tree);
+}
+df$47.propertyTree = {
+  configure(target, options = {}) {
+    const tree = resolve20(target);
+    if (!tree)
+      return null;
+    const { value, ...rest } = options;
+    tree._options = { ...tree._options, ...rest };
+    if ("value" in options) {
+      if (!tree.store)
+        tree._pendingValue = { value };
+      else
+        setValue(tree, value);
+    } else if (tree._holder)
+      refresh3(tree);
+    return tree;
+  },
+  setValue(target, value) {
+    const tree = resolve20(target);
+    if (!tree.store)
+      tree._pendingValue = { value };
+    else
+      setValue(tree, value);
+  },
+  value: (target) => resolve20(target)._holder?.value,
+  json: (target, space) => toJson(resolve20(target)._holder?.value, space),
+  async dson(target) {
+    const tree = resolve20(target);
+    const DSON = await loadDson(optionsOf2(tree).urls?.dson);
+    return DSON.stringify(tree._holder?.value);
+  },
+  get: (target, path) => locate(resolve20(target), toPath2(path))?.node,
+  set: (target, path, value) => ops.set(resolve20(target), toPath2(path), value),
+  add: (target, path, key, value, index) => ops.add(resolve20(target), toPath2(path), key, value === undefined ? "" : value, index),
+  remove: (target, path) => ops.remove(resolve20(target), toPath2(path)),
+  rename: (target, path, key) => ops.rename(resolve20(target), toPath2(path), key),
+  setType: (target, path, kind) => ops.type(resolve20(target), toPath2(path), kind),
+  undo: (target) => undoStep(resolve20(target), true),
+  redo: (target) => undoStep(resolve20(target), false),
+  edit: (target, path, key = false) => openEditor3(resolve20(target), pointerOf(toPath2(path)), key),
+  commit: (target) => commit3(resolve20(target)),
+  cancel: (target) => cancel(resolve20(target)),
+  reveal: (target, path) => reveal(resolve20(target), toPath2(path), true),
+  expandAll(target, depth = Infinity) {
+    const tree = resolve20(target);
+    const out = [];
+    const first = tree._first;
+    const walk = (v, path) => {
+      const pointer = pointerOf(path);
+      if (!isContainer2(v) || first.get(v) !== pointer || path.length > depth - 1)
+        return;
+      out.push(pointer);
+      for (const [t, , x] of entries2(v))
+        walk(x, [...path, t]);
+    };
+    walk(tree._holder.value, []);
+    setOpen(tree, out);
+  },
+  collapseAll(target) {
+    setOpen(resolve20(target), [""]);
+  }
+};
+var uid4 = 0;
+function onKeydown4(tree, e) {
+  if (e.target.closest?.(".property-tree-editor, .property-tree-menu"))
+    return;
+  const index = tree._active ?? 0;
+  const row = tree._rows?.[index];
+  if (!row)
+    return;
+  const page = Math.max(1, Math.floor(tree._viewport.clientHeight / tree._rowHeight) - 1);
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && (e.key === "z" || e.key === "Z")) {
+    e.preventDefault();
+    undoStep(tree, !e.shiftKey);
+    return;
+  }
+  if (mod && (e.key === "y" || e.key === "Y")) {
+    e.preventDefault();
+    undoStep(tree, false);
+    return;
+  }
+  switch (e.key) {
+    case "ArrowDown":
+      if (e.altKey) {
+        const p = ops.move(tree, row.path, 1);
+        if (p)
+          activate5(tree, indexOf2(tree, pointerOf(p)));
+      } else
+        activate5(tree, index + 1);
+      break;
+    case "ArrowUp":
+      if (e.altKey) {
+        const p = ops.move(tree, row.path, -1);
+        if (p)
+          activate5(tree, indexOf2(tree, pointerOf(p)));
+      } else
+        activate5(tree, index - 1);
+      break;
+    case "ArrowRight":
+      if (row.container && !row.open)
+        toggle(tree, row.pointer, true);
+      else if (row.container)
+        activate5(tree, index + 1);
+      break;
+    case "ArrowLeft":
+      if (row.container && row.open)
+        toggle(tree, row.pointer, false);
+      else if (row.path.length) {
+        const parent = indexOf2(tree, pointerOf(row.path.slice(0, -1)));
+        if (parent >= 0)
+          activate5(tree, parent);
+      }
+      break;
+    case "Home":
+      activate5(tree, 0);
+      break;
+    case "End":
+      activate5(tree, tree._rows.length - 1);
+      break;
+    case "PageDown":
+      activate5(tree, index + page);
+      break;
+    case "PageUp":
+      activate5(tree, index - page);
+      break;
+    case " ":
+      selectRow(tree, index);
+      break;
+    case "Enter":
+      if (row.isRef)
+        reveal(tree, toPath2(row.ref), true);
+      else if (row.container && !mod && !e.shiftKey)
+        toggle(tree, row.pointer);
+      else if (mod && row.container)
+        runAction(tree, row.pointer, "add");
+      else
+        openEditor3(tree, row.pointer, e.shiftKey);
+      break;
+    case "F2":
+      if (!openEditor3(tree, row.pointer, e.shiftKey))
+        return;
+      break;
+    case "Insert":
+      runAction(tree, row.container ? row.pointer : pointerOf(row.path.slice(0, -1)), "add");
+      break;
+    case "Delete":
+      ops.remove(tree, row.path);
+      break;
+    case "Backspace":
+      if (!mod)
+        return;
+      ops.remove(tree, row.path);
+      break;
+    case "d":
+    case "D":
+      if (!mod)
+        return;
+      runAction(tree, row.pointer, "duplicate");
+      break;
+    case "ContextMenu":
+      openMenu3(tree, index);
+      break;
+    case "F10":
+      if (!e.shiftKey)
+        return;
+      openMenu3(tree, index);
+      break;
+    default:
+      return;
+  }
+  e.preventDefault();
+}
+function onMenuKey2(tree, e) {
+  const items = dfDollar46(tree._menu).children("button:not(:disabled)").toArray();
+  const at = items.indexOf(document.activeElement);
+  const go = { ArrowDown: at + 1, ArrowUp: at - 1, Home: 0, End: items.length - 1 }[e.key];
+  if (go !== undefined) {
+    e.preventDefault();
+    items[(go + items.length) % items.length]?.focus();
+  } else if (e.key === "Escape" || e.key === "Tab") {
+    e.preventDefault();
+    tree._menu.hidePopover();
+    tree._viewport.focus({ preventScroll: true });
+  }
+}
+function init47() {
+  dfDollar46(".property-tree:not([data-init])").toArray().forEach((tree) => {
+    tree.dataset.init = "";
+    tree._uid = tree.id || `property-tree-${++uid4}`;
+    const viewport = document.createElement("div");
+    viewport.className = "property-tree-viewport";
+    viewport.setAttribute("role", "tree");
+    viewport.tabIndex = 0;
+    viewport.setAttribute("aria-label", tree.getAttribute("aria-label") || "Value");
+    if (tree.hasAttribute("data-readonly"))
+      viewport.setAttribute("aria-readonly", "true");
+    const sizer = document.createElement("div");
+    sizer.className = "property-tree-sizer";
+    const pool = document.createElement("div");
+    pool.className = "property-tree-rows";
+    pool.setAttribute("role", "presentation");
+    sizer.append(pool);
+    viewport.append(sizer);
+    const menu = document.createElement("div");
+    menu.className = "property-tree-menu";
+    menu.setAttribute("popover", "");
+    menu.setAttribute("role", "menu");
+    menu.setAttribute("aria-label", "Node actions");
+    dfDollar46(tree).append(viewport).append(menu);
+    tree._viewport = viewport;
+    tree._sizer = sizer;
+    tree._pool = pool;
+    tree._menu = menu;
+    tree._rowHeight = parseFloat(getComputedStyle(tree).getPropertyValue("--property-tree-row-height")) || 28;
+    tree._undo = [];
+    tree._redo = [];
+    let queued = false;
+    viewport.addEventListener("scroll", () => {
+      if (queued)
+        return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        renderRows3(tree);
+      });
+    }, { passive: true });
+    new ResizeObserver(() => renderRows3(tree)).observe(viewport);
+    viewport.addEventListener("keydown", (e) => onKeydown4(tree, e));
+    viewport.addEventListener("click", (e) => {
+      const t = e.target;
+      const el = t.closest?.(".property-tree-row");
+      if (!el || !pool.contains(el))
+        return;
+      tree._active = el._index;
+      if (t.closest(".property-tree-actions"))
+        return openMenu3(tree, el._index, t.closest(".property-tree-actions"));
+      if (t.closest(".property-tree-ref"))
+        return reveal(tree, toPath2(el._row.ref), true);
+      if (t.closest(".property-tree-toggle") && el._row.container)
+        return toggle(tree, el._row.pointer);
+      selectRow(tree, el._index);
+    });
+    viewport.addEventListener("dblclick", (e) => {
+      const t = e.target;
+      const el = t.closest?.(".property-tree-row");
+      if (!el || !pool.contains(el) || t.closest(".property-tree-toggle, .property-tree-actions"))
+        return;
+      const onKey = !!t.closest(".property-tree-key");
+      if (openEditor3(tree, el._row.pointer, onKey && el._row.key !== null))
+        e.preventDefault();
+      else if (el._row.container)
+        toggle(tree, el._row.pointer);
+    });
+    menu.addEventListener("click", (e) => {
+      const b = e.target.closest?.(".property-tree-menu-item");
+      if (!b || b.disabled)
+        return;
+      menu.hidePopover();
+      runAction(tree, menu._pointer, b.dataset.action);
+    });
+    menu.addEventListener("keydown", (e) => onMenuKey2(tree, e));
+    menu.addEventListener("toggle", (e) => {
+      if (e.newState === "closed")
+        menu._anchor?.setAttribute("aria-expanded", "false");
+    });
+    const script = dfDollar46(tree).children("script.property-tree-source").get(0);
+    const config = { expanded: [], selected: null, editing: null, editingKey: false, version: 0 };
+    bindComponent(tree, propertyTreeApi, { name: "default", config });
+    if (tree._pendingValue) {
+      setValue(tree, tree._pendingValue.value);
+      delete tree._pendingValue;
+    } else if (script && script.type === "application/dson") {
+      tree.dataset.loading = "";
+      setValue(tree, undefined);
+      loadDson(optionsOf2(tree).urls?.dson).then((DSON) => {
+        if (tree._holder.value === undefined)
+          setValue(tree, DSON.parse(script.textContent || "null"));
+      }).catch((error) => console.error("[property-tree] DSON source", error)).finally(() => delete tree.dataset.loading);
+    } else {
+      let value = {};
+      try {
+        if (script)
+          value = JSON.parse(script.textContent || "null");
+      } catch (error) {
+        console.error("[property-tree] invalid source JSON", error);
+      }
+      setValue(tree, value);
+    }
+  });
+}
+init47();
+new MutationObserver(init47).observe(document, { childList: true, subtree: true });
+
+// src/components/data-display/qr-code/qr-code.ts
+var df$48 = defussGlobals();
+var dfDollar47 = defussQuery();
 var qrcodegen;
 ((qrcodegen2) => {
 
@@ -24770,18 +26809,18 @@ var ERROR_MESSAGES = {
 };
 var INPUT_KEYS = ["value", "ecc", "version", "label", "size", "variant"];
 var CONFIG_KEYS = new Set([...INPUT_KEYS, "message", "actualVersion", "moduleCount", "errorCode"]);
-var partsOf2 = (el, part) => dfDollar46(el).find(":scope > .qr-code-" + part).toArray();
-var attr2 = (el, name) => dfDollar46(el).attr(name);
+var partsOf2 = (el, part) => dfDollar47(el).find(":scope > .qr-code-" + part).toArray();
+var attr2 = (el, name) => dfDollar47(el).attr(name);
 function writeAttribute(el, name, value) {
   if (attr2(el, name) !== value)
-    dfDollar46(el).attr(name, value);
+    dfDollar47(el).attr(name, value);
 }
 function addPart(el, markup) {
-  const caption = dfDollar46(el).find(":scope > figcaption:last-child");
+  const caption = dfDollar47(el).find(":scope > figcaption:last-child");
   if (caption.length)
     caption.before(markup);
   else
-    dfDollar46(el).append(markup);
+    dfDollar47(el).append(markup);
 }
 function validVersion2(value) {
   return value === "auto" || typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 40;
@@ -24905,7 +26944,7 @@ function encodeGeometry(config, key) {
     markup: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + extent + " " + extent + '" width="' + extent + '" height="' + extent + '" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet" shape-rendering="crispEdges"><rect width="' + extent + '" height="' + extent + '" fill="#fff"></rect><path d="' + runs.join("") + '" fill="#000"></path></svg>'
   };
 }
-function applyMarkup46(el, stateName, source, defaults) {
+function applyMarkup47(el, stateName, source, defaults) {
   if (!qrCodeStates.includes(stateName))
     throw new Error("qr-code: unknown state " + stateName);
   const config = normalizeConfig(source, defaults);
@@ -24966,19 +27005,19 @@ function applyMarkup46(el, stateName, source, defaults) {
     writeAttribute(symbol, "role", "img");
     writeAttribute(symbol, "aria-label", config.label);
     const markup = geometry?.markup ?? "";
-    if (dfDollar46(symbol).html() !== markup)
-      dfDollar46(symbol).html(markup);
-    dfDollar46(symbol).prop("hidden", name !== "default");
+    if (dfDollar47(symbol).html() !== markup)
+      dfDollar47(symbol).html(markup);
+    dfDollar47(symbol).prop("hidden", name !== "default");
   }
   for (const status of statuses) {
-    if (dfDollar46(status).text() !== (config.message ?? ""))
-      dfDollar46(status).text(config.message ?? "");
-    dfDollar46(status).prop("hidden", name === "default");
+    if (dfDollar47(status).text() !== (config.message ?? ""))
+      dfDollar47(status).text(config.message ?? "");
+    dfDollar47(status).prop("hidden", name === "default");
   }
-  dfDollar46(el).attr("data-state-name", name);
+  dfDollar47(el).attr("data-state-name", name);
   return { name, config };
 }
-function triggerStateChange47(el, stateName, config, previous, incoming) {
+function triggerStateChange48(el, stateName, config, previous, incoming) {
   validateConfig2(incoming);
   const next = { ...config };
   if (stateName !== previous.name && !Object.hasOwn(incoming, "message"))
@@ -24986,20 +27025,20 @@ function triggerStateChange47(el, stateName, config, previous, incoming) {
   if (stateName !== previous.name && !Object.hasOwn(incoming, "errorCode"))
     delete next.errorCode;
   el._qrCodeDefaults ??= authoredInputs(el).config;
-  el._qrCodeState = applyMarkup46(el, stateName, next, el._qrCodeDefaults);
+  el._qrCodeState = applyMarkup47(el, stateName, next, el._qrCodeDefaults);
 }
 var qrCodeApi = componentState({
   component: "qr-code",
   states: qrCodeStates,
   mergeConfig: true,
-  apply: (el, state, previous, incoming) => triggerStateChange47(el, state.name, state.config, previous, incoming),
+  apply: (el, state, previous, incoming) => triggerStateChange48(el, state.name, state.config, previous, incoming),
   read: (el, state) => el._qrCodeState ? { name: el._qrCodeState.name, config: { ...el._qrCodeState.config } } : state,
   markup: (el, state) => {
-    applyMarkup46(el, state.name, state.config, authoredInputs(el).config);
+    applyMarkup47(el, state.name, state.config, authoredInputs(el).config);
   }
 });
-df$47.qrCodeApi = qrCodeApi;
-df$47.qrCodeStates = qrCodeStates;
+df$48.qrCodeApi = qrCodeApi;
+df$48.qrCodeStates = qrCodeStates;
 function updateAttributes(el, requested) {
   const previous = el._qrCodeState;
   if (!previous || !el._qrCodeBoundApi)
@@ -25018,8 +27057,8 @@ function updateAttributes(el, requested) {
   }
   qrCodeApi.setState(el, name, config);
 }
-function init47() {
-  for (const el of dfDollar46(".qr-code:not([data-init])").toArray()) {
+function init48() {
+  for (const el of dfDollar47(".qr-code:not([data-init])").toArray()) {
     el.dataset.init = "";
     const read = authoredInputs(el);
     const saved = el._qrCodeState;
@@ -25045,9 +27084,9 @@ function init47() {
 function rootsIn(node) {
   if (!(node instanceof Element))
     return [];
-  return [...dfDollar46(node).filter(".qr-code").toArray(), ...dfDollar46(node).find(".qr-code").toArray()];
+  return [...dfDollar47(node).filter(".qr-code").toArray(), ...dfDollar47(node).find(".qr-code").toArray()];
 }
-init47();
+init48();
 new MutationObserver((records) => {
   const changed = new Map;
   let added = false;
@@ -25072,30 +27111,30 @@ new MutationObserver((records) => {
           if (el.api === bound)
             delete el.api;
           delete el._qrCodeBoundApi;
-          dfDollar46(el).attr("data-init", null);
+          dfDollar47(el).attr("data-init", null);
         }
     }
   }
   if (added)
-    init47();
+    init48();
   for (const [el, fields] of changed)
     if (el.isConnected)
       updateAttributes(el, fields);
 }).observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: [...INPUT_ATTRIBUTES, "data-state-name"] });
 
 // src/components/questionnaire/questionnaire/questionnaire.ts
-var df$48 = defussGlobals();
-var dfDollar47 = defussQuery();
+var df$49 = defussGlobals();
+var dfDollar48 = defussQuery();
 var questionnaireStates = ["default", "answering", "review", "submitted"];
 var LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-var stepsOf = (root) => dfDollar47(root).find(".questionnaire-step[data-step]").toArray();
+var stepsOf = (root) => dfDollar48(root).find(".questionnaire-step[data-step]").toArray();
 var stepById = (root, id) => root._flow?.byId.get(id) ?? null;
-var titleOf2 = (step) => (dfDollar47(step).find(".questionnaire-title").get(0)?.textContent ?? step.dataset.step).trim();
-var controlsOf2 = (step) => dfDollar47(step).find("input[name], select[name], textarea[name]").toArray().filter((c) => c.type !== "hidden" || c.dataset.answer !== undefined);
+var titleOf2 = (step) => (dfDollar48(step).find(".questionnaire-title").get(0)?.textContent ?? step.dataset.step).trim();
+var controlsOf2 = (step) => dfDollar48(step).find("input[name], select[name], textarea[name]").toArray().filter((c) => c.type !== "hidden" || c.dataset.answer !== undefined);
 var isEnd = (step) => !!step && step.hasAttribute("data-end");
 function rulesOf(root) {
   let authored = {};
-  const script = dfDollar47(root).find("script.questionnaire-rules").get(0);
+  const script = dfDollar48(root).find("script.questionnaire-rules").get(0);
   if (script) {
     try {
       authored = JSON.parse(script.textContent || "{}");
@@ -25244,10 +27283,10 @@ var ruleText = (rule) => {
   return list.map((c) => `${c.field} ${c.op ?? "eq"}${c.value === undefined ? "" : " " + (typeof c.value === "object" && c.value && "field" in c.value ? c.value.field : JSON.stringify(c.value))}`).join(Array.isArray(w) || w.all ? " and " : " or ");
 };
 function choiceText(control) {
-  const label = control.closest("label") || control.id && dfDollar47(`label[for="${CSS.escape(control.id)}"]`).get(0);
+  const label = control.closest("label") || control.id && dfDollar48(`label[for="${CSS.escape(control.id)}"]`).get(0);
   if (!label)
     return control.value;
-  const own = dfDollar47(label).find(".questionnaire-choice-label").get(0);
+  const own = dfDollar48(label).find(".questionnaire-choice-label").get(0);
   return (own ?? label).textContent.trim() || control.getAttribute("aria-label") || control.value;
 }
 function reachable(root, answers, skipped) {
@@ -25366,14 +27405,14 @@ function invalidOf(root, step, answers) {
   return null;
 }
 function errorEl(step) {
-  let el = dfDollar47(step).find(".questionnaire-error").get(0);
+  let el = dfDollar48(step).find(".questionnaire-error").get(0);
   if (!el) {
     el = document.createElement("p");
     el.className = "questionnaire-error";
     el.id = `${step.closest(".questionnaire").id || "questionnaire"}-${step.dataset.step}-error`;
     el.setAttribute("role", "alert");
     el.hidden = true;
-    dfDollar47(step).append(el);
+    dfDollar48(step).append(el);
   }
   return el;
 }
@@ -25390,7 +27429,7 @@ function showInvalid(step, problem) {
   }
 }
 function clearInvalid(step) {
-  const el = dfDollar47(step).find(".questionnaire-error").get(0);
+  const el = dfDollar48(step).find(".questionnaire-error").get(0);
   if (el) {
     el.hidden = true;
     el.textContent = "";
@@ -25407,7 +27446,7 @@ function landed(root, walk) {
     return "review";
   return walk.index === 0 && walk.step === root._flow.start ? "default" : "answering";
 }
-function applyMarkup47(root, state) {
+function applyMarkup48(root, state) {
   const config = state.config || {};
   const steps = stepsOf(root);
   const start = root.dataset.start || steps[0]?.dataset.step;
@@ -25419,25 +27458,25 @@ function applyMarkup47(root, state) {
   const submitted = state.name === "submitted";
   const step = steps.find((s) => s.dataset.step === current);
   for (const s of steps)
-    dfDollar47(s).attr("hidden", !submitted && s === step ? null : "");
-  for (const block of dfDollar47(root).find(".questionnaire-block").toArray()) {
-    dfDollar47(block).attr("hidden", !submitted && step && block.contains(step) ? null : "");
+    dfDollar48(s).attr("hidden", !submitted && s === step ? null : "");
+  for (const block of dfDollar48(root).find(".questionnaire-block").toArray()) {
+    dfDollar48(block).attr("hidden", !submitted && step && block.contains(step) ? null : "");
   }
-  const button = (name) => dfDollar47(root).find(`[data-questionnaire="${name}"]`).toArray();
+  const button = (name) => dfDollar48(root).find(`[data-questionnaire="${name}"]`).toArray();
   const end = isEnd(step);
   for (const b of button("back"))
-    dfDollar47(b).attr("hidden", submitted || state.name === "default" ? "" : null);
+    dfDollar48(b).attr("hidden", submitted || state.name === "default" ? "" : null);
   for (const b of button("next"))
-    dfDollar47(b).attr("hidden", submitted || end ? "" : null);
+    dfDollar48(b).attr("hidden", submitted || end ? "" : null);
   for (const b of button("submit"))
-    dfDollar47(b).attr("hidden", submitted || !end ? "" : null);
+    dfDollar48(b).attr("hidden", submitted || !end ? "" : null);
   for (const b of button("skip"))
-    dfDollar47(b).attr("hidden", submitted || !step?.hasAttribute("data-optional") ? "" : null);
-  for (const n of dfDollar47(root).find(".questionnaire-actions").toArray())
-    dfDollar47(n).attr("hidden", submitted ? "" : null);
-  for (const c of dfDollar47(root).find(".questionnaire-complete").toArray())
-    dfDollar47(c).attr("hidden", submitted ? null : "");
-  dfDollar47(root).attr("data-state", state.name);
+    dfDollar48(b).attr("hidden", submitted || !step?.hasAttribute("data-optional") ? "" : null);
+  for (const n of dfDollar48(root).find(".questionnaire-actions").toArray())
+    dfDollar48(n).attr("hidden", submitted ? "" : null);
+  for (const c of dfDollar48(root).find(".questionnaire-complete").toArray())
+    dfDollar48(c).attr("hidden", submitted ? null : "");
+  dfDollar48(root).attr("data-state", state.name);
 }
 function remainingFrom(root, id) {
   const queue = [[id, 0]];
@@ -25476,7 +27515,7 @@ function remainingBranches(root, id) {
   return false;
 }
 function renderProgress(root) {
-  const host = dfDollar47(root).find(".questionnaire-progress").get(0);
+  const host = dfDollar48(root).find(".questionnaire-progress").get(0);
   if (!host)
     return;
   const walk = cfgOf(root);
@@ -25507,15 +27546,15 @@ function renderProgress(root) {
   const endNow = isEnd(stepById(root, walk.step));
   const total = Math.max(1, done + remaining);
   const percent = walk.submitted || endNow ? 100 : Math.round(done / total * 100);
-  const bar = dfDollar47(host).find(".questionnaire-bar").get(0);
+  const bar = dfDollar48(host).find(".questionnaire-bar").get(0);
   bar.value = percent;
   bar.setAttribute("aria-label", `${percent}% done`);
-  const label = dfDollar47(host).find(".questionnaire-progress-label").get(0);
+  const label = dfDollar48(host).find(".questionnaire-progress-label").get(0);
   const branchy = remainingBranches(root, walk.step);
   label.textContent = walk.submitted ? "Done" : endNow ? "Review your answers" : `Question ${done + 1} of ${branchy ? "about " : ""}${total}`;
   const currentBlock = stepById(root, walk.step)?.closest(".questionnaire-block")?.dataset.block;
   const visitedBlocks = new Set(walk.history.slice(0, walk.index).map((id) => stepById(root, id)?.closest(".questionnaire-block")?.dataset.block));
-  for (const chip of dfDollar47(host).find(".questionnaire-block-chip").toArray()) {
+  for (const chip of dfDollar48(host).find(".questionnaire-block-chip").toArray()) {
     const id = chip.dataset.block;
     const status = walk.submitted ? "done" : id === currentBlock ? "current" : visitedBlocks.has(id) ? "done" : "upcoming";
     chip.dataset.status = status;
@@ -25526,7 +27565,7 @@ function renderProgress(root) {
   }
 }
 function renderTrail(root) {
-  const host = dfDollar47(root).find(".questionnaire-trail").get(0) || root.id && dfDollar47(`.questionnaire-trail[data-for="${CSS.escape(root.id)}"]`).get(0);
+  const host = dfDollar48(root).find(".questionnaire-trail").get(0) || root.id && dfDollar48(`.questionnaire-trail[data-for="${CSS.escape(root.id)}"]`).get(0);
   if (!host)
     return;
   if (!root.contains(host) && !host._wired) {
@@ -25588,7 +27627,7 @@ function answerText(root, step, answers) {
 function renderSummary(root) {
   const walk = cfgOf(root);
   const step = stepById(root, walk.step);
-  const host = step && dfDollar47(step).find(".questionnaire-summary").get(0);
+  const host = step && dfDollar48(step).find(".questionnaire-summary").get(0);
   if (!host)
     return;
   host.textContent = "";
@@ -25618,16 +27657,16 @@ function renderSummary(root) {
   host.append(list);
 }
 function notify(root, text, action) {
-  let host = dfDollar47(root).find(".questionnaire-notice").get(0);
+  let host = dfDollar48(root).find(".questionnaire-notice").get(0);
   if (!host) {
     host = document.createElement("div");
     host.className = "questionnaire-notice";
     host.setAttribute("role", "status");
-    const first = dfDollar47(root).find(".questionnaire-block, .questionnaire-step").get(0);
+    const first = dfDollar48(root).find(".questionnaire-block, .questionnaire-step").get(0);
     if (first)
-      dfDollar47(first).before(host);
+      dfDollar48(first).before(host);
     else
-      dfDollar47(root).append(host);
+      dfDollar48(root).append(host);
   }
   host.textContent = "";
   if (!text) {
@@ -25651,7 +27690,7 @@ function keyHints(root) {
   if (root.dataset.shortcuts === "none")
     return;
   for (const step of root._flow.steps) {
-    const choices = dfDollar47(step).find(".questionnaire-choice").toArray();
+    const choices = dfDollar48(step).find(".questionnaire-choice").toArray();
     choices.forEach((choice, i) => {
       if (!choice.dataset.key)
         choice.dataset.key = root.dataset.shortcuts === "digits" ? String(i + 1) : LETTERS[i] ?? "";
@@ -25685,12 +27724,12 @@ function show3(root, id, focus = true) {
   walk.step = id;
   walk.entered = readStep(step);
   const name = landed(root, walk);
-  applyMarkup47(root, { name, config: { step: id } });
+  applyMarkup48(root, { name, config: { step: id } });
   root.dataset.stateName = name;
   clearInvalid(step);
   paint7(root);
   if (focus) {
-    const target = controlsOf2(step).find((c) => c.type !== "radio" || c.checked) || controlsOf2(step)[0] || dfDollar47(root).find('[data-questionnaire="submit"]').get(0);
+    const target = controlsOf2(step).find((c) => c.type !== "radio" || c.checked) || controlsOf2(step)[0] || dfDollar48(root).find('[data-questionnaire="submit"]').get(0);
     target?.focus({ preventScroll: true });
     step.scrollIntoView?.({ block: "nearest" });
   }
@@ -25820,7 +27859,7 @@ async function submit(root) {
   }
   root.removeAttribute("data-busy");
   walk.submitted = true;
-  applyMarkup47(root, { name: "submitted", config: { step: walk.step } });
+  applyMarkup48(root, { name: "submitted", config: { step: walk.step } });
   root.dataset.stateName = "submitted";
   notify(root, "");
   paint7(root);
@@ -25831,7 +27870,7 @@ async function submit(root) {
   }));
   return true;
 }
-function triggerStateChange48(root, state, incoming) {
+function triggerStateChange49(root, state, incoming) {
   const walk = cfgOf(root);
   if (!walk)
     return;
@@ -25876,7 +27915,7 @@ function triggerStateChange48(root, state, incoming) {
       break;
   }
   const name = landed(root, walk);
-  applyMarkup47(root, { name, config: { step: walk.step } });
+  applyMarkup48(root, { name, config: { step: walk.step } });
   root.dataset.stateName = name;
   paint7(root);
   if (root._draft)
@@ -25886,7 +27925,7 @@ var questionnaireApi = componentState({
   component: "questionnaire",
   states: questionnaireStates,
   mergeConfig: true,
-  apply: (root, state, _previous, incoming) => triggerStateChange48(root, state, incoming),
+  apply: (root, state, _previous, incoming) => triggerStateChange49(root, state, incoming),
   read: (root, state) => {
     const walk = cfgOf(root);
     if (!walk)
@@ -25903,10 +27942,10 @@ var questionnaireApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup47(el, state)
+  markup: (el, state) => applyMarkup48(el, state)
 });
-df$48.questionnaireApi = questionnaireApi;
-df$48.questionnaireStates = questionnaireStates;
+df$49.questionnaireApi = questionnaireApi;
+df$49.questionnaireStates = questionnaireStates;
 function analyze(root) {
   const errors = [];
   const warnings = [];
@@ -26123,7 +28162,7 @@ function toDiagram(root, { title = "" } = {}) {
   };
 }
 function linkDiagram(root, figure) {
-  const diagram = df$48.diagram;
+  const diagram = df$49.diagram;
   if (!diagram?.build)
     throw new Error("questionnaire.linkDiagram: the diagram component is not loaded (df$.shadcn.diagram)");
   figure._questionnaireUnlink?.();
@@ -26179,47 +28218,47 @@ function linkDiagram(root, figure) {
     }
     refuse(to, "unreached");
   };
-  dfDollar47(figure).on("diagram-activate", onActivate);
+  dfDollar48(figure).on("diagram-activate", onActivate);
   const off = root.store.subscribe(draw);
   draw();
   const unlink = () => {
     off?.();
-    dfDollar47(figure).off("diagram-activate", onActivate);
+    dfDollar48(figure).off("diagram-activate", onActivate);
     delete figure._questionnaireUnlink;
   };
   figure._questionnaireUnlink = unlink;
   return unlink;
 }
-var resolve20 = (target) => typeof target === "string" ? dfDollar47(target).get(0) : target;
-df$48.questionnaire = {
+var resolve21 = (target) => typeof target === "string" ? dfDollar48(target).get(0) : target;
+df$49.questionnaire = {
   configure(target, config = {}) {
-    const root = resolve20(target);
+    const root = resolve21(target);
     root._config = { ...root._config, ...config };
     if (root._flow)
       root._flow.rules = rulesOf(root);
     if (config.persist && root._walk)
       attachDraft(root, config.persist);
   },
-  next: (target) => advance(resolve20(target)),
-  back: (target) => back(resolve20(target)),
-  skip: (target) => advance(resolve20(target), { skip: true }),
-  goTo: (target, id) => goTo2(resolve20(target), id),
-  restart: (target) => restart(resolve20(target)),
-  submit: (target) => submit(resolve20(target)),
-  answers: (target) => ({ ...cfgOf(resolve20(target))?.answers }),
+  next: (target) => advance(resolve21(target)),
+  back: (target) => back(resolve21(target)),
+  skip: (target) => advance(resolve21(target), { skip: true }),
+  goTo: (target, id) => goTo2(resolve21(target), id),
+  restart: (target) => restart(resolve21(target)),
+  submit: (target) => submit(resolve21(target)),
+  answers: (target) => ({ ...cfgOf(resolve21(target))?.answers }),
   history: (target) => {
-    const walk = cfgOf(resolve20(target));
+    const walk = cfgOf(resolve21(target));
     return walk ? walk.history.slice(0, walk.index + 1) : [];
   },
-  nextOf: (target, stepId, answers) => nextOf2(resolve20(target), stepId, answers ?? cfgOf(resolve20(target)).answers),
-  analyze: (target) => analyze(resolve20(target)),
-  toMermaid: (target) => toMermaid(resolve20(target)),
-  toDiagram: (target, options) => toDiagram(resolve20(target), options),
-  linkDiagram: (target, figure) => linkDiagram(resolve20(target), resolve20(figure))
+  nextOf: (target, stepId, answers) => nextOf2(resolve21(target), stepId, answers ?? cfgOf(resolve21(target)).answers),
+  analyze: (target) => analyze(resolve21(target)),
+  toMermaid: (target) => toMermaid(resolve21(target)),
+  toDiagram: (target, options) => toDiagram(resolve21(target), options),
+  linkDiagram: (target, figure) => linkDiagram(resolve21(target), resolve21(figure))
 };
 function attachDraft(root, config) {
   root._draft?.destroy();
-  const where = viewPersistence(root, "questionnaire", String(dfDollar47(".questionnaire").toArray().indexOf(root)), config || {});
+  const where = viewPersistence(root, "questionnaire", String(dfDollar48(".questionnaire").toArray().indexOf(root)), config || {});
   root._draft = where ? persisted(where.key, null, {
     area: where.area,
     validate: (v) => v === null || typeof v === "object" && !Array.isArray(v)
@@ -26237,7 +28276,7 @@ function onKey4(e) {
   if (!root && !onPage)
     return;
   if (!root) {
-    const live = dfDollar47(".questionnaire[data-init]").toArray().filter((q) => q._walk && !q._walk.submitted && q.checkVisibility());
+    const live = dfDollar48(".questionnaire[data-init]").toArray().filter((q) => q._walk && !q._walk.submitted && q.checkVisibility());
     root = live.includes(lastActive) ? lastActive : live.length === 1 ? live[0] : null;
   }
   if (!root?._walk || root._walk.submitted || t.matches?.(TYPING))
@@ -26257,11 +28296,11 @@ function onKey4(e) {
     return;
   const key = e.key.toLowerCase();
   let input = null;
-  const choice = dfDollar47(step).find(".questionnaire-choice").toArray().find((c) => c.dataset.key?.toLowerCase() === key);
+  const choice = dfDollar48(step).find(".questionnaire-choice").toArray().find((c) => c.dataset.key?.toLowerCase() === key);
   if (choice)
-    input = dfDollar47(choice).find('input[type="radio"], input[type="checkbox"]').get(0);
-  else if (/^[1-9]$/.test(key) && !dfDollar47(step).find(".questionnaire-choice").get(0)) {
-    input = dfDollar47(step).find('input[type="radio"]').toArray()[Number(key) - 1] ?? null;
+    input = dfDollar48(choice).find('input[type="radio"], input[type="checkbox"]').get(0);
+  else if (/^[1-9]$/.test(key) && !dfDollar48(step).find(".questionnaire-choice").get(0)) {
+    input = dfDollar48(step).find('input[type="radio"]').toArray()[Number(key) - 1] ?? null;
   }
   if (!input || input.disabled)
     return;
@@ -26274,8 +28313,8 @@ if (!document.__questionnaireKeys) {
   document.__questionnaireKeys = true;
   document.addEventListener("keydown", onKey4);
 }
-function init48() {
-  dfDollar47(".questionnaire:not([data-init])").toArray().forEach((root) => {
+function init49() {
+  dfDollar48(".questionnaire:not([data-init])").toArray().forEach((root) => {
     root.dataset.init = "";
     readFlow(root);
     if (!root._flow.steps.length)
@@ -26343,7 +28382,7 @@ function init48() {
         return;
       if (e.target.classList?.contains("questionnaire-other") && e.target.value) {
         const holder = e.target.closest(".questionnaire-choice");
-        const choice = holder && dfDollar47(holder).find('input[type="radio"], input[type="checkbox"]').get(0);
+        const choice = holder && dfDollar48(holder).find('input[type="radio"], input[type="checkbox"]').get(0);
         if (choice)
           choice.checked = true;
       }
@@ -26373,12 +28412,12 @@ function init48() {
       notify(root, "Your answers from earlier are back.", { name: "restart", label: "Start over" });
   });
 }
-init48();
-new MutationObserver(init48).observe(document, { childList: true, subtree: true });
+init49();
+new MutationObserver(init49).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/radial-progress/radial-progress.ts
-var df$49 = defussGlobals();
-var dfDollar48 = defussQuery();
+var df$50 = defussGlobals();
+var dfDollar49 = defussQuery();
 var radialProgressStates = ["default", "indeterminate", "complete"];
 var SELECTOR2 = ".radial-progress";
 var reducedMotion6 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -26417,7 +28456,7 @@ function text2(el) {
   }
 }
 function labelTarget(el) {
-  const slot = dfDollar48(el).find(":scope > .radial-progress-value").get(0);
+  const slot = dfDollar49(el).find(":scope > .radial-progress-value").get(0);
   if (slot)
     return slot;
   return el.children.length === 0 ? el : null;
@@ -26446,15 +28485,15 @@ function stopTween2(el) {
   el._raf = 0;
   el.removeAttribute("data-running");
 }
-function setValue(el, v) {
+function setValue2(el, v) {
   if (!el.hasAttribute("aria-valuemin"))
     el.setAttribute("aria-valuemin", "0");
   el.setAttribute("aria-valuenow", String(round5(v)));
   paint8(el);
 }
-function commit3(el, v) {
+function commit4(el, v) {
   const before = el.dataset.stateName;
-  setValue(el, v);
+  setValue2(el, v);
   const done = v >= maxOf2(el);
   el.dataset.stateName = done ? "complete" : "default";
   el.dispatchEvent(new CustomEvent("progress:change", {
@@ -26468,38 +28507,38 @@ function tween2(el, to, duration) {
   stopTween2(el);
   const from = valueOf3(el) ?? 0;
   if (!(duration > 0) || reducedMotion6() || from === to)
-    return commit3(el, to);
+    return commit4(el, to);
   const t0 = performance.now();
   el.dataset.stateName = "default";
   el.setAttribute("data-running", "");
   const frame = (now) => {
     const k = Math.min(1, (now - t0) / duration);
     if (k < 1) {
-      setValue(el, from + (to - from) * k);
+      setValue2(el, from + (to - from) * k);
       el._raf = requestAnimationFrame(frame);
     } else {
       stopTween2(el);
-      commit3(el, to);
+      commit4(el, to);
     }
   };
   el._raf = requestAnimationFrame(frame);
 }
 var stepOf2 = (el) => parseFloat(el.dataset.step || "") || maxOf2(el) / 10;
 var durationOf2 = (el) => parseFloat(el.dataset.duration || "") || 3000;
-function applyMarkup48(el, stateName, config) {
+function applyMarkup49(el, stateName, config) {
   const authored = valueOf3(el);
   el._authorValuetext = el.hasAttribute("aria-valuetext") && !el.dataset.format && !el.dataset.template;
   if (!el.hasAttribute("aria-valuemin"))
-    dfDollar48(el).attr("aria-valuemin", "0");
+    dfDollar49(el).attr("aria-valuemin", "0");
   if (config?.max != null && Number(config.max) !== maxOf2(el))
-    dfDollar48(el).attr("aria-valuemax", String(config.max));
+    dfDollar49(el).attr("aria-valuemax", String(config.max));
   if (stateName === "indeterminate") {
-    dfDollar48(el).attr("aria-valuenow", null);
+    dfDollar49(el).attr("aria-valuenow", null);
     paint8(el);
   } else
-    setValue(el, stateName === "complete" ? maxOf2(el) : clamp8(el, config?.value != null ? config.value : authored ?? 0));
+    setValue2(el, stateName === "complete" ? maxOf2(el) : clamp8(el, config?.value != null ? config.value : authored ?? 0));
 }
-function triggerStateChange49(el, stateName, config) {
+function triggerStateChange50(el, stateName, config) {
   switch (stateName) {
     case "default": {
       if (config.max != null && Number(config.max) !== maxOf2(el))
@@ -26509,7 +28548,7 @@ function triggerStateChange49(el, stateName, config) {
         tween2(el, to, config.duration);
       else {
         stopTween2(el);
-        commit3(el, to);
+        commit4(el, to);
       }
       break;
     }
@@ -26524,7 +28563,7 @@ function triggerStateChange49(el, stateName, config) {
         tween2(el, maxOf2(el), config.duration);
       else {
         stopTween2(el);
-        commit3(el, maxOf2(el));
+        commit4(el, maxOf2(el));
       }
       break;
   }
@@ -26532,7 +28571,7 @@ function triggerStateChange49(el, stateName, config) {
 var radialProgressApi = componentState({
   component: "radial-progress",
   states: radialProgressStates,
-  apply: (el, state) => triggerStateChange49(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange50(el, state.name, state.config),
   read: (el, state) => {
     const v = valueOf3(el);
     return {
@@ -26540,10 +28579,10 @@ var radialProgressApi = componentState({
       config: { ...state.config, value: v, max: maxOf2(el), percent: v == null ? null : v / maxOf2(el) }
     };
   },
-  markup: (el, state) => applyMarkup48(el, state.name, state.config)
+  markup: (el, state) => applyMarkup49(el, state.name, state.config)
 });
-df$49.radialProgressApi = radialProgressApi;
-df$49.radialProgressStates = radialProgressStates;
+df$50.radialProgressApi = radialProgressApi;
+df$50.radialProgressStates = radialProgressStates;
 function run2(el, command) {
   const now = valueOf3(el) ?? 0;
   switch (command) {
@@ -26564,7 +28603,7 @@ function run2(el, command) {
       break;
     case "play": {
       if (now >= maxOf2(el))
-        setValue(el, 0);
+        setValue2(el, 0);
       const rest = 1 - (valueOf3(el) ?? 0) / maxOf2(el);
       radialProgressApi.setState(el, "default", { value: maxOf2(el), duration: durationOf2(el) * rest });
       break;
@@ -26572,14 +28611,14 @@ function run2(el, command) {
     case "pause": {
       const held = valueOf3(el) ?? 0;
       stopTween2(el);
-      commit3(el, held);
+      commit4(el, held);
       break;
     }
   }
 }
 var COMMANDS2 = ["reset", "increment", "decrement", "complete", "indeterminate", "play", "pause"];
-function init49() {
-  dfDollar48(`${SELECTOR2}:not([data-init])`).toArray().forEach((el) => {
+function init50() {
+  dfDollar49(`${SELECTOR2}:not([data-init])`).toArray().forEach((el) => {
     el.dataset.init = "";
     bindComponent(el, radialProgressApi);
     el._authorValuetext = el.hasAttribute("aria-valuetext") && !el.dataset.format && !el.dataset.template;
@@ -26607,7 +28646,7 @@ if (!("commandForElement" in HTMLButtonElement.prototype) && !document.__radialP
   document.__radialProgressCommandInit = true;
   document.addEventListener("click", (e) => {
     const btn = e.target instanceof Element ? e.target.closest('button[commandfor][command^="--"]') : null;
-    const el = btn && dfDollar48("#" + CSS.escape(btn.getAttribute("commandfor"))).get(0);
+    const el = btn && dfDollar49("#" + CSS.escape(btn.getAttribute("commandfor"))).get(0);
     if (el?.matches(`${SELECTOR2}[data-init]`))
       run2(el, btn.getAttribute("command").slice(2));
   });
@@ -26622,12 +28661,12 @@ new MutationObserver((records) => {
     }
   }
 }).observe(document, { attributes: true, subtree: true, attributeFilter: ["aria-valuenow", "aria-valuemax"] });
-init49();
-new MutationObserver(init49).observe(document, { childList: true, subtree: true });
+init50();
+new MutationObserver(init50).observe(document, { childList: true, subtree: true });
 
 // src/components/application/resizer/resizer.ts
-var df$50 = defussGlobals();
-var dfDollar49 = defussQuery();
+var df$51 = defussGlobals();
+var dfDollar50 = defussQuery();
 var resizerStates = ["default"];
 var HANDLES = ["n", "e", "s", "w", "ne", "nw", "se", "sw"];
 var CLASS_NUMBERS = Array.from({ length: 81 }, (_, i) => i + 16);
@@ -26751,8 +28790,8 @@ function applySize(wrapper, axis, px) {
     }
   }));
 }
-function applyMarkup49(_el, _stateName) {}
-function triggerStateChange50(wrapper, stateName, config = {}) {
+function applyMarkup50(_el, _stateName) {}
+function triggerStateChange51(wrapper, stateName, config = {}) {
   if (stateName !== "default")
     return;
   if (config.width !== undefined || wrapper._defaultSize)
@@ -26763,7 +28802,7 @@ function triggerStateChange50(wrapper, stateName, config = {}) {
 var resizerApi = componentState({
   component: "resizer",
   states: resizerStates,
-  apply: (wrapper, state) => triggerStateChange50(wrapper, state.name, state.config),
+  apply: (wrapper, state) => triggerStateChange51(wrapper, state.name, state.config),
   read: (wrapper, state) => {
     return {
       name: wrapper.dataset.stateName || "default",
@@ -26775,10 +28814,10 @@ var resizerApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup49(el, state.name)
+  markup: (el, state) => applyMarkup50(el, state.name)
 });
-df$50.resizerApi = resizerApi;
-df$50.resizerStates = resizerStates;
+df$51.resizerApi = resizerApi;
+df$51.resizerStates = resizerStates;
 var HANDLE_LABEL = {
   n: "top edge",
   s: "bottom edge",
@@ -26809,13 +28848,13 @@ function makeHandle(wrapper, h) {
 }
 function syncHandles(wrapper) {
   const want = handleSet(wrapper);
-  for (const el of Array.from(dfDollar49(wrapper).find(":scope > .resizer-handle").toArray())) {
+  for (const el of Array.from(dfDollar50(wrapper).find(":scope > .resizer-handle").toArray())) {
     if (!want.includes(el.dataset.handle))
       el.remove();
   }
   for (const h of want) {
-    if (!dfDollar49(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
-      dfDollar49(wrapper).append(makeHandle(wrapper, h));
+    if (!dfDollar50(wrapper).find(`:scope > .resizer-handle[data-handle="${h}"]`).get(0))
+      dfDollar50(wrapper).append(makeHandle(wrapper, h));
   }
 }
 function handleKeys(wrapper, handle, ev) {
@@ -26879,8 +28918,8 @@ function startDrag(wrapper, handle, ev) {
   handle.addEventListener("pointercancel", onUp);
   handle.addEventListener("lostpointercapture", onUp);
 }
-function init50() {
-  const fresh = dfDollar49(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
+function init51() {
+  const fresh = dfDollar50(".resizer:not([data-init])").toArray().filter((wrapper) => wrapper instanceof HTMLElement).filter((wrapper) => {
     wrapper.dataset.init = "";
     return !!targetOf(wrapper);
   });
@@ -26909,27 +28948,27 @@ function init50() {
     wrapper.addEventListener("resizer-reset", () => resizerApi.setState(wrapper, "default"));
   });
 }
-init50();
-new MutationObserver(init50).observe(document, { childList: true, subtree: true });
+init51();
+new MutationObserver(init51).observe(document, { childList: true, subtree: true });
 
 // src/components/forms-inputs/search-filter/search-filter.ts
-var df$51 = defussGlobals();
-var dfDollar50 = defussQuery();
+var df$52 = defussGlobals();
+var dfDollar51 = defussQuery();
 var searchFilterStates = ["default", "filled", "searching"];
-function setValue2(box, value) {
+function setValue3(box, value) {
   const field = box._field;
   if (field.value === value)
     return;
   field.value = value;
   field.dispatchEvent(new Event("input", { bubbles: true }));
 }
-function applyMarkup50(el, stateName) {
-  const field = dfDollar50(el).children("input");
+function applyMarkup51(el, stateName) {
+  const field = dfDollar51(el).children("input");
   if (!field.attr("enterkeyhint"))
     field.attr("enterkeyhint", "search");
   field.attr("aria-busy", stateName === "searching" ? "true" : null);
 }
-function triggerStateChange51(box, stateName, config) {
+function triggerStateChange52(box, stateName, config) {
   const field = box._field;
   const value = typeof config.value === "string" ? config.value : undefined;
   if (stateName === "searching")
@@ -26938,12 +28977,12 @@ function triggerStateChange51(box, stateName, config) {
     field.removeAttribute("aria-busy");
   switch (stateName) {
     case "default":
-      setValue2(box, value ?? "");
+      setValue3(box, value ?? "");
       break;
     case "filled":
     case "searching":
       if (value !== undefined)
-        setValue2(box, value);
+        setValue3(box, value);
       break;
   }
 }
@@ -26952,21 +28991,21 @@ var searchFilterApi = componentState({
   states: searchFilterStates,
   apply: (box, state) => {
     box.dataset.stateName = state.name;
-    triggerStateChange51(box, state.name, state.config);
+    triggerStateChange52(box, state.name, state.config);
   },
-  markup: (el, state) => applyMarkup50(el, state.name)
+  markup: (el, state) => applyMarkup51(el, state.name)
 });
-df$51.searchFilterApi = searchFilterApi;
-df$51.searchFilterStates = searchFilterStates;
+df$52.searchFilterApi = searchFilterApi;
+df$52.searchFilterStates = searchFilterStates;
 function clear2(box) {
   searchFilterApi.setState(box, "default", {});
   box._field.focus();
   box.dispatchEvent(new CustomEvent("search-clear", { bubbles: true }));
 }
-function init51() {
-  dfDollar50(".search-box:not([data-init])").toArray().forEach((box) => {
+function init52() {
+  dfDollar51(".search-box:not([data-init])").toArray().forEach((box) => {
     box.dataset.init = "";
-    const field = dfDollar50(box).find(":scope > input").get(0);
+    const field = dfDollar51(box).find(":scope > input").get(0);
     if (!field)
       return;
     box._field = field;
@@ -26988,7 +29027,7 @@ function init51() {
         clear2(box);
       }
     });
-    dfDollar50(box).find(":scope > .search-box-clear").get(0)?.addEventListener("click", () => clear2(box));
+    dfDollar51(box).find(":scope > .search-box-clear").get(0)?.addEventListener("click", () => clear2(box));
     box.addEventListener("mousedown", (e) => {
       if (e.target !== field && !e.target.closest("button, a")) {
         e.preventDefault();
@@ -26999,22 +29038,22 @@ function init51() {
     searchFilterApi.setState(box, field.value === "" ? "default" : "filled", {});
   });
 }
-init51();
-new MutationObserver(init51).observe(document, { childList: true, subtree: true });
+init52();
+new MutationObserver(init52).observe(document, { childList: true, subtree: true });
 
 // src/components/chat/session/session.ts
-var df$52 = defussGlobals();
-var dfDollar51 = defussQuery();
+var df$53 = defussGlobals();
+var dfDollar52 = defussQuery();
 var sessionStates = ["default", "detached", "streaming"];
 var num9 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
   return Number.isFinite(v) ? v : fallback;
 };
 var reduced4 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-var resolve21 = (t) => typeof t === "string" ? dfDollar51("#" + CSS.escape(t)).get(0) ?? dfDollar51(t).get(0) : t;
+var resolve22 = (t) => typeof t === "string" ? dfDollar52("#" + CSS.escape(t)).get(0) ?? dfDollar52(t).get(0) : t;
 var parts2 = (s) => ({
-  viewport: dfDollar51(s).find(":scope > .session-viewport").get(0),
-  content: dfDollar51(s).find(":scope > .session-viewport > .session-content").get(0)
+  viewport: dfDollar52(s).find(":scope > .session-viewport").get(0),
+  content: dfDollar52(s).find(":scope > .session-viewport > .session-content").get(0)
 });
 var fromEnd = (v) => v.scrollHeight - v.scrollTop - v.clientHeight;
 function scrollViewport(s, top, smooth) {
@@ -27041,7 +29080,7 @@ function measure2(s) {
     s.setAttribute("data-scrollable", tokens);
   else
     s.removeAttribute("data-scrollable");
-  dfDollar51(s).find(".session-scroll-button").toArray().forEach((b) => {
+  dfDollar52(s).find(".session-scroll-button").toArray().forEach((b) => {
     const active = b.dataset.to === "start" ? start : end;
     b.dataset.active = String(active);
     b.inert = !active;
@@ -27101,7 +29140,7 @@ function scrollToStart(s, { smooth = true } = {}) {
   scrollViewport(s, 0, smooth);
 }
 function scrollToMessage(s, id, { smooth = true } = {}) {
-  const item = dfDollar51(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
+  const item = dfDollar52(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
   if (!item)
     return false;
   s.removeAttribute("data-stick");
@@ -27109,12 +29148,12 @@ function scrollToMessage(s, id, { smooth = true } = {}) {
   hold(s, () => anchorTop(s, item), smooth ? 900 : 400);
   return true;
 }
-function applyMarkup51(el, stateName) {
+function applyMarkup52(el, stateName) {
   const { content } = parts2(el);
   if (content)
-    dfDollar51(content).attr("aria-busy", stateName === "streaming" ? "true" : null);
+    dfDollar52(content).attr("aria-busy", stateName === "streaming" ? "true" : null);
 }
-function triggerStateChange52(s, stateName, config) {
+function triggerStateChange53(s, stateName, config) {
   const { content } = s._parts;
   if (stateName === "streaming")
     content.setAttribute("aria-busy", "true");
@@ -27142,12 +29181,12 @@ var sessionApi = componentState({
   states: sessionStates,
   apply: (s, state) => {
     s.dataset.stateName = state.name;
-    triggerStateChange52(s, state.name, state.config);
+    triggerStateChange53(s, state.name, state.config);
   },
-  markup: (el, state) => applyMarkup51(el, state.name)
+  markup: (el, state) => applyMarkup52(el, state.name)
 });
-df$52.sessionApi = sessionApi;
-df$52.sessionStates = sessionStates;
+df$53.sessionApi = sessionApi;
+df$53.sessionStates = sessionStates;
 function onItems(s, records) {
   const { viewport } = s._parts;
   const before = s._height ?? viewport.scrollHeight;
@@ -27215,7 +29254,7 @@ function track(s) {
   const { viewport, content } = s._parts;
   const top = viewport.getBoundingClientRect().top;
   const bottom = top + viewport.clientHeight;
-  const items = Array.from(dfDollar51(content).find(":scope > .session-item").toArray());
+  const items = Array.from(dfDollar52(content).find(":scope > .session-item").toArray());
   const visible = items.filter((it) => {
     const r = it.getBoundingClientRect();
     return r.bottom > top && r.top < bottom;
@@ -27281,8 +29320,8 @@ function follow4(s, options = {}) {
   else
     sessionApi.setState(s, "default", options);
 }
-function init52() {
-  dfDollar51(".session:not([data-init])").toArray().forEach((s) => {
+function init53() {
+  dfDollar52(".session:not([data-init])").toArray().forEach((s) => {
     const p = parts2(s);
     if (!p.viewport || !p.content)
       return;
@@ -27312,7 +29351,7 @@ function init52() {
     new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
     new ResizeObserver(() => onResize(s)).observe(content);
     new ResizeObserver(() => measure2(s)).observe(viewport);
-    dfDollar51(s).find(".session-scroll-button").toArray().forEach((b) => {
+    dfDollar52(s).find(".session-scroll-button").toArray().forEach((b) => {
       b.addEventListener("click", () => b.dataset.to === "start" ? scrollToStart(s) : follow4(s));
     });
     if (s.hasAttribute("data-drop"))
@@ -27321,7 +29360,7 @@ function init52() {
     s.setAttribute("data-pending-scroll", "");
     s.dataset.stateName = "default";
     const where = s.dataset.defaultPosition || "end";
-    const last = [...dfDollar51(content).find(":scope > .session-item[data-anchor]").toArray()].pop();
+    const last = [...dfDollar52(content).find(":scope > .session-item[data-anchor]").toArray()].pop();
     if (where === "start")
       s._opening = () => 0;
     else if (where === "last-anchor" && last)
@@ -27352,49 +29391,49 @@ function toItem(content, { id, anchor } = {}) {
     item.setAttribute("data-anchor", "");
   return item;
 }
-df$52.session = {
+df$53.session = {
   append(target, content, options) {
-    const s = resolve21(target);
+    const s = resolve22(target);
     const item = toItem(content, options);
     s?._parts?.content.append(item);
     return item;
   },
   prepend(target, content, options) {
-    const s = resolve21(target);
+    const s = resolve22(target);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
     return items;
   },
   scrollToEnd: (target, options) => {
-    const s = resolve21(target);
+    const s = resolve22(target);
     if (s)
       follow4(s, options);
   },
   scrollToStart: (target, options) => {
-    const s = resolve21(target);
+    const s = resolve22(target);
     if (s)
       scrollToStart(s, options);
   },
   scrollToMessage: (target, id, options) => {
-    const s = resolve21(target);
+    const s = resolve22(target);
     return s ? scrollToMessage(s, id, options) : false;
   },
   isAtEnd: (target) => {
-    const s = resolve21(target);
+    const s = resolve22(target);
     return !!s && fromEnd(s._parts.viewport) <= num9(s, "threshold", 48);
   }
 };
-init52();
-new MutationObserver(init52).observe(document, { childList: true, subtree: true });
+init53();
+new MutationObserver(init53).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/sheet/sheet.ts
-var df$53 = defussGlobals();
-var dfDollar52 = defussQuery();
+var df$54 = defussGlobals();
+var dfDollar53 = defussQuery();
 var sheetStates = ["default", "open"];
-function applyMarkup52(el, stateName) {
-  dfDollar52(el).attr("open", stateName === "open" ? "" : null);
+function applyMarkup53(el, stateName) {
+  dfDollar53(el).attr("open", stateName === "open" ? "" : null);
 }
-function triggerStateChange53(sheet, stateName, _config) {
+function triggerStateChange54(sheet, stateName, _config) {
   switch (stateName) {
     case "default":
       if (sheet.open)
@@ -27410,16 +29449,16 @@ var shown5 = (sheet) => sheet.open ? "open" : "default";
 var sheetApi = componentState({
   component: "sheet",
   states: sheetStates,
-  apply: (sheet, state) => triggerStateChange53(sheet, state.name, state.config),
+  apply: (sheet, state) => triggerStateChange54(sheet, state.name, state.config),
   read: (sheet, state) => ({ name: shown5(sheet), config: state.config }),
-  markup: (el, state) => applyMarkup52(el, state.name)
+  markup: (el, state) => applyMarkup53(el, state.name)
 });
-df$53.sheetApi = sheetApi;
-df$53.sheetStates = sheetStates;
-function init53() {
-  dfDollar52("[data-sheet-trigger]:not([data-init])").toArray().forEach((trigger) => {
+df$54.sheetApi = sheetApi;
+df$54.sheetStates = sheetStates;
+function init54() {
+  dfDollar53("[data-sheet-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const sheet = dfDollar52("#" + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
+    const sheet = dfDollar53("#" + CSS.escape(trigger.dataset.sheetTrigger)).get(0);
     if (!sheet)
       return;
     trigger.addEventListener("click", () => {
@@ -27427,14 +29466,14 @@ function init53() {
       sheet.showModal();
     });
   });
-  dfDollar52("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
+  dfDollar53("dialog.sheet:not([data-init])").toArray().forEach((sheet) => {
     sheet.dataset.init = "";
     bindComponent(sheet, sheetApi, { name: shown5(sheet), config: {} });
     sheet.addEventListener("click", (e) => {
       if (e.target === sheet)
         sheet.close();
     });
-    dfDollar52(sheet).find("[data-sheet-close]").toArray().forEach((btn) => {
+    dfDollar53(sheet).find("[data-sheet-close]").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         sheet.close();
       });
@@ -27447,17 +29486,17 @@ function init53() {
     });
   });
 }
-init53();
-new MutationObserver(init53).observe(document, { childList: true, subtree: true });
+init54();
+new MutationObserver(init54).observe(document, { childList: true, subtree: true });
 
 // src/components/application/sidebar/sidebar.ts
-var df$54 = defussGlobals();
-var dfDollar53 = defussQuery();
+var df$55 = defussGlobals();
+var dfDollar54 = defussQuery();
 var sidebarStates = ["default", "collapsed"];
-function applyMarkup53(el, stateName) {
-  dfDollar53(el).attr("data-state", stateName === "collapsed" ? "collapsed" : "expanded");
+function applyMarkup54(el, stateName) {
+  dfDollar54(el).attr("data-state", stateName === "collapsed" ? "collapsed" : "expanded");
 }
-function triggerStateChange54(sidebar, stateName, _config) {
+function triggerStateChange55(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = "expanded";
@@ -27472,7 +29511,7 @@ var sidebarApi = componentState({
   states: sidebarStates,
   apply: (sidebar, state) => {
     sidebar._pinned = true;
-    triggerStateChange54(sidebar, state.name, state.config);
+    triggerStateChange55(sidebar, state.name, state.config);
   },
   read: (sidebar, state) => {
     return {
@@ -27480,18 +29519,18 @@ var sidebarApi = componentState({
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup53(el, state.name)
+  markup: (el, state) => applyMarkup54(el, state.name)
 });
-df$54.sidebarApi = sidebarApi;
-df$54.sidebarStates = sidebarStates;
-function init54() {
-  dfDollar53(".app-sidebar:not([data-init])").toArray().forEach((sidebar) => {
+df$55.sidebarApi = sidebarApi;
+df$55.sidebarStates = sidebarStates;
+function init55() {
+  dfDollar54(".app-sidebar:not([data-init])").toArray().forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
     sidebar._pinned = !!sidebar.dataset.stateName;
     bindComponent(sidebar, sidebarApi);
     const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : ".sidebar-trigger";
-    dfDollar53(triggerId).toArray().forEach((trigger) => {
+    dfDollar54(triggerId).toArray().forEach((trigger) => {
       trigger.addEventListener("click", () => {
         const state = sidebar.dataset.state === "collapsed" ? "expanded" : "collapsed";
         sidebar.dataset.state = state;
@@ -27501,15 +29540,15 @@ function init54() {
     document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
     autoCollapseSidebar(sidebar);
   });
-  dfDollar53("[data-sidebar-mobile]:not([data-init])").toArray().forEach((trigger) => {
+  dfDollar54("[data-sidebar-mobile]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const dialog = dfDollar53("#" + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
+    const dialog = dfDollar54("#" + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
     if (!dialog)
       return;
     trigger.addEventListener("click", () => {
       dialog.showModal();
     });
-    dfDollar53(dialog).find(".sidebar-mobile-close").toArray().forEach((btn) => {
+    dfDollar54(dialog).find(".sidebar-mobile-close").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         dialog.close();
       });
@@ -27545,14 +29584,14 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     });
   });
 }
-init54();
-new MutationObserver(init54).observe(document, { childList: true, subtree: true });
+init55();
+new MutationObserver(init55).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
     if (!(e.metaKey || e.ctrlKey) || e.key !== "b")
       return;
-    const sidebar = dfDollar53(".app-sidebar").get(0);
+    const sidebar = dfDollar54(".app-sidebar").get(0);
     if (!sidebar)
       return;
     e.preventDefault();
@@ -27563,8 +29602,8 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/forms-inputs/slider/slider.ts
-var df$55 = defussGlobals();
-var dfDollar54 = defussQuery();
+var df$56 = defussGlobals();
+var dfDollar55 = defussQuery();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -27595,7 +29634,7 @@ var hasFormat = (el) => {
 function outputsOf2(el) {
   if (!el.id)
     return [];
-  return [...dfDollar54("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
+  return [...dfDollar55("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
 }
 function emojiThumb(el) {
   const list = (el.dataset.thumbEmoji || "").trim().split(/\s+/).filter(Boolean);
@@ -27631,7 +29670,7 @@ function updateSliderValue(el) {
     }
   }
 }
-var rangeInputs = (range) => [...dfDollar54(range).find(":scope > .slider").toArray()].slice(0, 2);
+var rangeInputs = (range) => [...dfDollar55(range).find(":scope > .slider").toArray()].slice(0, 2);
 function paintRange(range) {
   const [lo, hi] = rangeInputs(range);
   if (!lo || !hi)
@@ -27667,11 +29706,11 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function applyMarkup54(el, stateName) {
+function applyMarkup55(el, stateName) {
   if (stateName === "disabled")
-    dfDollar54(el).attr("disabled", "");
+    dfDollar55(el).attr("disabled", "");
 }
-function triggerStateChange55(el, stateName, config) {
+function triggerStateChange56(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -27687,23 +29726,23 @@ function triggerStateChange55(el, stateName, config) {
 var sliderApi = componentState({
   component: "slider",
   states: sliderStates,
-  apply: (el, state) => triggerStateChange55(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange56(el, state.name, state.config),
   read: (el, state) => {
     return {
       name: el.disabled ? "disabled" : "default",
       config: { ...state.config, value: el.value }
     };
   },
-  markup: (el, state) => applyMarkup54(el, state.name)
+  markup: (el, state) => applyMarkup55(el, state.name)
 });
-df$55.sliderApi = sliderApi;
-df$55.sliderStates = sliderStates;
-function init55() {
-  dfDollar54(".slider-range:not([data-init])").toArray().forEach((range) => {
+df$56.sliderApi = sliderApi;
+df$56.sliderStates = sliderStates;
+function init56() {
+  dfDollar55(".slider-range:not([data-init])").toArray().forEach((range) => {
     range.dataset.init = "";
     initRange(range);
   });
-  dfDollar54(".slider:not([data-init])").toArray().forEach((el) => {
+  dfDollar55(".slider:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     el._defaultDisabled = el.disabled;
     bindComponent(el, sliderApi);
@@ -27713,33 +29752,33 @@ function init55() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init55();
-new MutationObserver(init55).observe(document, { childList: true, subtree: true });
+init56();
+new MutationObserver(init56).observe(document, { childList: true, subtree: true });
 
 // src/components/data-display/sortable/sortable.ts
-var df$56 = defussGlobals();
-var dfDollar55 = defussQuery();
+var df$57 = defussGlobals();
+var dfDollar56 = defussQuery();
 var sortableStates = ["default"];
 var drag = null;
-var sortableLabels = (list) => dfDollar55(list).find(".sortable-item").map((item) => dfDollar55(item).find("span:not(.sortable-handle):not(.sortable-moves)").text().trim());
-function applyMarkup55(_el, _stateName) {}
-function triggerStateChange56(list, stateName, config) {
+var sortableLabels = (list) => dfDollar56(list).find(".sortable-item").map((item) => dfDollar56(item).find("span:not(.sortable-handle):not(.sortable-moves)").text().trim());
+function applyMarkup56(_el, _stateName) {}
+function triggerStateChange57(list, stateName, config) {
   if (stateName !== "default")
     return;
-  dfDollar55(list).append(list._defaultOrder ?? []);
+  dfDollar56(list).append(list._defaultOrder ?? []);
   list._syncMoves?.();
   if (config?.index !== undefined) {
-    const item = dfDollar55(list).find(".sortable-item")[Number(config.index)];
+    const item = dfDollar56(list).find(".sortable-item")[Number(config.index)];
     list._setActive?.(item);
   }
 }
 var sortableApi = componentState({
   component: "sortable",
   states: sortableStates,
-  apply: (list, state) => triggerStateChange56(list, state.name, state.config),
+  apply: (list, state) => triggerStateChange57(list, state.name, state.config),
   read: (list, state) => {
-    const items = Array.from(dfDollar55(list).find(".sortable-item"));
-    const active = dfDollar55(list).find(".sortable-item[data-active]")[0];
+    const items = Array.from(dfDollar56(list).find(".sortable-item"));
+    const active = dfDollar56(list).find(".sortable-item[data-active]")[0];
     return {
       name: list.dataset.stateName || "default",
       config: {
@@ -27749,12 +29788,12 @@ var sortableApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup55(el, state.name)
+  markup: (el, state) => applyMarkup56(el, state.name)
 });
-df$56.sortableApi = sortableApi;
-df$56.sortableStates = sortableStates;
-function init56() {
-  dfDollar55(".sortable:not([data-init])").toArray().forEach((list) => {
+df$57.sortableApi = sortableApi;
+df$57.sortableStates = sortableStates;
+function init57() {
+  dfDollar56(".sortable:not([data-init])").toArray().forEach((list) => {
     list.dataset.init = "";
     bindComponent(list, sortableApi);
     const isHorizontal = list.dataset.orientation === "horizontal";
@@ -27768,19 +29807,19 @@ function init56() {
       liveRegion.className = "sortable-live";
       liveRegion.setAttribute("aria-live", "assertive");
       liveRegion.setAttribute("role", "status");
-      dfDollar55(list).after(liveRegion);
+      dfDollar56(list).after(liveRegion);
     }
     function announce(msg) {
-      dfDollar55(liveRegion).text("");
+      dfDollar56(liveRegion).text("");
       requestAnimationFrame(() => {
-        dfDollar55(liveRegion).text(msg);
+        dfDollar56(liveRegion).text(msg);
       });
     }
     function getItems() {
-      return Array.from(dfDollar55(list).find('.sortable-item:not([aria-disabled="true"])'));
+      return Array.from(dfDollar56(list).find('.sortable-item:not([aria-disabled="true"])'));
     }
     function getAllItems() {
-      return Array.from(dfDollar55(list).find(".sortable-item"));
+      return Array.from(dfDollar56(list).find(".sortable-item"));
     }
     const isLocked = (el) => el.getAttribute("aria-disabled") === "true";
     const listName = () => list.getAttribute("aria-label") || "the list";
@@ -27805,7 +29844,7 @@ function init56() {
       const k = fixed.slice(0, slot).filter((f) => !f).length;
       movable.splice(k, 0, item);
       let m = 0;
-      dfDollar55(list).append(all.map((el, i) => fixed[i] ? el : movable[m++]));
+      dfDollar56(list).append(all.map((el, i) => fixed[i] ? el : movable[m++]));
       return slot;
     }
     function syncMoves() {
@@ -27813,12 +29852,12 @@ function init56() {
       const free = all.map((el) => !isLocked(el));
       all.forEach((item, i) => {
         const label = getItemLabel(item);
-        dfDollar55(item).find(".sortable-move").each(function() {
+        dfDollar56(item).find(".sortable-move").each(function() {
           const up = this.dataset.move === "up";
           const room = up ? free.slice(0, i).some(Boolean) : free.slice(i + 1).some(Boolean);
-          dfDollar55(this).prop("disabled", isLocked(item) || !room);
+          dfDollar56(this).prop("disabled", isLocked(item) || !room);
           if (!this.hasAttribute("aria-label") || this.dataset.autoLabel !== undefined) {
-            dfDollar55(this).attr("aria-label", `Move ${label} ${up ? "up" : "down"}`).data("autoLabel", "");
+            dfDollar56(this).attr("aria-label", `Move ${label} ${up ? "up" : "down"}`).data("autoLabel", "");
           }
         });
       });
@@ -27838,9 +29877,9 @@ function init56() {
       const all = getAllItems();
       const before = all[Math.max(0, index)];
       if (before)
-        dfDollar55(before).before(item);
+        dfDollar56(before).before(item);
       else
-        dfDollar55(list).append(item);
+        dfDollar56(list).append(item);
       const slot = getAllItems().indexOf(item);
       announce(`${getItemLabel(item)}, moved to ${listName()}, position ${slot + 1} of ${getAllItems().length}`);
       setActive(item, focus);
@@ -27855,7 +29894,7 @@ function init56() {
     list._released = (item) => {
       const items = getItems();
       if (items.length && !items.some((el) => el.getAttribute("tabindex") === "0")) {
-        dfDollar55(items[0]).attr("tabindex", "0");
+        dfDollar56(items[0]).attr("tabindex", "0");
       }
       if (!items.length)
         list.removeAttribute("data-active-index");
@@ -27867,17 +29906,17 @@ function init56() {
     };
     const groupLists = () => {
       const group = list.dataset.group;
-      return group ? Array.from(dfDollar55(".sortable[data-group]").toArray()).filter((l) => l.dataset.group === group) : [list];
+      return group ? Array.from(dfDollar56(".sortable[data-group]").toArray()).filter((l) => l.dataset.group === group) : [list];
     };
     function getActiveItem() {
-      return dfDollar55(list).find(".sortable-item[data-active]")[0];
+      return dfDollar56(list).find(".sortable-item[data-active]")[0];
     }
     function setActive(item, focus = true) {
       getAllItems().forEach((el) => {
-        dfDollar55(el).data("active", null).attr("tabindex", "-1");
+        dfDollar56(el).data("active", null).attr("tabindex", "-1");
       });
       if (item) {
-        dfDollar55(item).data("active", "").attr("tabindex", "0");
+        dfDollar56(item).data("active", "").attr("tabindex", "0");
         list.dataset.activeIndex = String(getItems().indexOf(item));
         if (focus)
           item.focus();
@@ -27889,34 +29928,34 @@ function init56() {
     list._defaultOrder = getAllItems();
     function getItemLabel(item) {
       const clone = item.cloneNode(true);
-      dfDollar55(clone).find(".sortable-handle, .sortable-moves, .sortable-move").toArray().forEach((el) => el.remove());
+      dfDollar56(clone).find(".sortable-handle, .sortable-moves, .sortable-move").toArray().forEach((el) => el.remove());
       return clone.textContent.trim();
     }
     const allItems = getAllItems();
     allItems.forEach((item, i) => {
-      dfDollar55(item).attr("tabindex", i === 0 ? "0" : "-1");
+      dfDollar56(item).attr("tabindex", i === 0 ? "0" : "-1");
     });
     syncMoves();
     const accepts = () => !!drag && (drag.from === list || !!list.dataset.group && list.dataset.group === drag.from.dataset.group);
     const clearOver = () => {
-      dfDollar55(list).find("[data-over]").data("over", null);
-      dfDollar55(list).data("over", null);
+      dfDollar56(list).find("[data-over]").data("over", null);
+      dfDollar56(list).data("over", null);
     };
     list.addEventListener("dragstart", (e) => {
       const item = e.target.closest?.(".sortable-item");
       if (!item || !list.contains(item) || isLocked(item))
         return;
       drag = { item, from: list };
-      dfDollar55(item).data("dragging", "");
+      dfDollar56(item).data("dragging", "");
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.setData("text/plain", "");
     });
     list.addEventListener("dragend", () => {
       if (drag)
-        dfDollar55(drag.item).data("dragging", null);
+        dfDollar56(drag.item).data("dragging", null);
       groupLists().forEach((l) => {
-        dfDollar55(l).data("over", null);
-        dfDollar55(l).find("[data-over]").data("over", null);
+        dfDollar56(l).data("over", null);
+        dfDollar56(l).find("[data-over]").data("over", null);
       });
       drag = null;
     });
@@ -27933,9 +29972,9 @@ function init56() {
         const rect = item.getBoundingClientRect();
         const midpoint = isHorizontal ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
         const pos = isHorizontal ? e.clientX : e.clientY;
-        dfDollar55(item).data("over", pos < midpoint ? "before" : "after");
+        dfDollar56(item).data("over", pos < midpoint ? "before" : "after");
       } else {
-        dfDollar55(list).data("over", "end");
+        dfDollar56(list).data("over", "end");
       }
     });
     list.addEventListener("dragleave", (e) => {
@@ -27946,8 +29985,8 @@ function init56() {
       if (!accepts())
         return;
       e.preventDefault();
-      const target = dfDollar55(list).find(".sortable-item[data-over]")[0];
-      const position = target ? dfDollar55(target).data("over") : "end";
+      const target = dfDollar56(list).find(".sortable-item[data-over]")[0];
+      const position = target ? dfDollar56(target).data("over") : "end";
       clearOver();
       const { item: dragged, from } = drag;
       const all = getAllItems();
@@ -27976,13 +30015,13 @@ function init56() {
       if (slot < 0)
         return;
       moved(item, slot, false);
-      const target = button.disabled ? dfDollar55(item).find(`.sortable-move[data-move="${button.dataset.move === "up" ? "down" : "up"}"]`).get(0) : button;
+      const target = button.disabled ? dfDollar56(item).find(`.sortable-move[data-move="${button.dataset.move === "up" ? "down" : "up"}"]`).get(0) : button;
       target?.focus();
     });
     list.addEventListener("keydown", (e) => {
       if (e.target.closest?.(".sortable-move"))
         return;
-      const active = getActiveItem() || dfDollar55(list).find('.sortable-item[tabindex="0"]')[0];
+      const active = getActiveItem() || dfDollar56(list).find('.sortable-item[tabindex="0"]')[0];
       if (!active)
         return;
       const items = getItems();
@@ -28029,19 +30068,19 @@ function init56() {
     });
   });
 }
-init56();
-new MutationObserver(init56).observe(document, { childList: true, subtree: true });
+init57();
+new MutationObserver(init57).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/steps/steps.ts
-var df$57 = defussGlobals();
-var dfDollar56 = defussQuery();
+var df$58 = defussGlobals();
+var dfDollar57 = defussQuery();
 var stepsStates = ["default"];
 var numAttr5 = (el, key, fallback) => {
   const v = parseInt(el.dataset[key] ?? "", 10);
   return Number.isFinite(v) ? v : fallback;
 };
 function renderSteps(ol) {
-  const items = Array.from(dfDollar56(ol).find(".step").toArray());
+  const items = Array.from(dfDollar57(ol).find(".step").toArray());
   if (items.length === 0)
     return;
   const total = items.length;
@@ -28063,7 +30102,7 @@ function renderSteps(ol) {
       item.removeAttribute("aria-current");
   });
 }
-function applyMarkup56(ol, config = {}) {
+function applyMarkup57(ol, config = {}) {
   if (config.activeStep !== undefined && numAttr5(ol, "activeStep", 1) !== Number(config.activeStep))
     ol.dataset.activeStep = String(config.activeStep);
   if (config.errorStep !== undefined && numAttr5(ol, "errorStep", 0) !== Number(config.errorStep)) {
@@ -28077,7 +30116,7 @@ function applyMarkup56(ol, config = {}) {
   if (ol.hasAttribute("data-active-step"))
     renderSteps(ol);
 }
-function triggerStateChange57(ol, stateName, config = {}) {
+function triggerStateChange58(ol, stateName, config = {}) {
   if (stateName !== "default")
     return;
   const a = config.activeStep ?? config.step ?? config.page;
@@ -28102,7 +30141,7 @@ function triggerStateChange57(ol, stateName, config = {}) {
 var stepsApi = componentState({
   component: "steps",
   states: stepsStates,
-  apply: (ol, state) => triggerStateChange57(ol, state.name, state.config),
+  apply: (ol, state) => triggerStateChange58(ol, state.name, state.config),
   read: (ol, state) => {
     return {
       name: ol.dataset.stateName || "default",
@@ -28115,12 +30154,12 @@ var stepsApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup56(el, state.config)
+  markup: (el, state) => applyMarkup57(el, state.config)
 });
-df$57.stepsApi = stepsApi;
-df$57.stepsStates = stepsStates;
-function init57() {
-  dfDollar56(".steps:not([data-init])").toArray().forEach((ol) => {
+df$58.stepsApi = stepsApi;
+df$58.stepsStates = stepsStates;
+function init58() {
+  dfDollar57(".steps:not([data-init])").toArray().forEach((ol) => {
     ol.dataset.init = "";
     bindComponent(ol, stepsApi);
     if (ol.hasAttribute("data-active-step"))
@@ -28136,7 +30175,7 @@ function init57() {
       const item = e.target.closest(".step[data-clickable]");
       if (!item || !ol.contains(item))
         return;
-      const items = Array.from(dfDollar56(ol).find(".step").toArray());
+      const items = Array.from(dfDollar57(ol).find(".step").toArray());
       ol.dataset.activeStep = String(items.indexOf(item) + 1);
       delete ol.dataset.errorStep;
     });
@@ -28151,19 +30190,19 @@ function init57() {
     });
   });
 }
-init57();
-new MutationObserver(init57).observe(document, { childList: true, subtree: true });
+init58();
+new MutationObserver(init58).observe(document, { childList: true, subtree: true });
 
 // src/components/data-display/table/table.ts
-var df$58 = defussGlobals();
-var dfDollar57 = defussQuery();
+var df$59 = defussGlobals();
+var dfDollar58 = defussQuery();
 var tableStates = ["default", "sorted", "selected"];
 var bodyOf = (table) => table.tBodies[0];
 var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
-var rowBox = (row) => dfDollar57(row).find(':scope > .table-select input[type="checkbox"]').get(0);
-var headBox = (table) => dfDollar57(table.tHead).find('.table-select input[type="checkbox"]').get(0);
+var rowBox = (row) => dfDollar58(row).find(':scope > .table-select input[type="checkbox"]').get(0);
+var headBox = (table) => dfDollar58(table.tHead).find('.table-select input[type="checkbox"]').get(0);
 function enhanceHead(table) {
-  dfDollar57(table.tHead).find(".table-sort").each((_i, btn) => {
+  dfDollar58(table.tHead).find(".table-sort").each((_i, btn) => {
     const th = btn.closest("th");
     if (th && !th.hasAttribute("aria-sort"))
       th.setAttribute("aria-sort", "none");
@@ -28193,7 +30232,7 @@ function sortBy(table, col, direction) {
   });
   body.append(...rows);
   [...table.tHead?.rows[0]?.cells ?? []].forEach((th, i) => {
-    if (dfDollar57(th).find(".table-sort").get(0))
+    if (dfDollar58(th).find(".table-sort").get(0))
       th.setAttribute("aria-sort", i === col ? direction : "none");
   });
   table._sort = { column: col, direction };
@@ -28202,7 +30241,7 @@ function unsort(table) {
   const body = bodyOf(table);
   if (body && table._original)
     body.append(...table._original.filter((r) => r.parentElement === body));
-  dfDollar57(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
+  dfDollar58(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
   table._sort = null;
 }
 function syncSelection(table, announce = true) {
@@ -28246,13 +30285,13 @@ function announceMove(table, row) {
   }));
 }
 function moved(table, row) {
-  dfDollar57(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
+  dfDollar58(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
   table._sort = null;
   announceMove(table, row);
 }
 function initReorder(table) {
   let dragged = null;
-  const clear = () => dfDollar57(table).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
+  const clear = () => dfDollar58(table).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
   table.addEventListener("pointerdown", (e) => {
     const handle = e.target.closest?.(".table-handle");
     if (handle)
@@ -28281,15 +30320,15 @@ function initReorder(table) {
     }
   });
   table.addEventListener("drop", (e) => {
-    const row = dfDollar57(table).find("tbody > tr[data-drop]").get(0);
+    const row = dfDollar58(table).find("tbody > tr[data-drop]").get(0);
     if (!dragged || !row)
       return;
     e.preventDefault();
     const ref = row.dataset.drop === "before" ? row : row.nextSibling;
     if (ref)
-      dfDollar57(ref).before(dragged);
+      dfDollar58(ref).before(dragged);
     else
-      dfDollar57(row.parentElement).append(dragged);
+      dfDollar58(row.parentElement).append(dragged);
     clear();
     moved(table, dragged);
   });
@@ -28313,9 +30352,9 @@ function initReorder(table) {
       return;
     const ref = e.key === "ArrowUp" ? sib : sib.nextSibling;
     if (ref)
-      dfDollar57(ref).before(row);
+      dfDollar58(ref).before(row);
     else
-      dfDollar57(row.parentElement).append(row);
+      dfDollar58(row.parentElement).append(row);
     e.target.focus();
     moved(table, row);
   });
@@ -28330,7 +30369,7 @@ function measureLocks(table) {
   for (let i = 1;i < n; i++)
     table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
 }
-function triggerStateChange58(table, stateName, config) {
+function triggerStateChange59(table, stateName, config) {
   switch (stateName) {
     case "default":
       unsort(table);
@@ -28358,7 +30397,7 @@ function triggerStateChange58(table, stateName, config) {
 var tableApi = componentState({
   component: "table",
   states: tableStates,
-  apply: (table, state) => triggerStateChange58(table, state.name, state.config),
+  apply: (table, state) => triggerStateChange59(table, state.name, state.config),
   read: (table, state) => {
     const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
     return {
@@ -28368,20 +30407,20 @@ var tableApi = componentState({
   },
   markup: (el, state) => {
     enhanceHead(el);
-    triggerStateChange58(el, state.name, state.config);
+    triggerStateChange59(el, state.name, state.config);
   }
 });
-df$58.tableApi = tableApi;
-df$58.tableStates = tableStates;
-function init58() {
-  dfDollar57("table.table:not([data-init])").toArray().forEach((table) => {
+df$59.tableApi = tableApi;
+df$59.tableStates = tableStates;
+function init59() {
+  dfDollar58("table.table:not([data-init])").toArray().forEach((table) => {
     table.dataset.init = "";
     table.dataset.stateName = "default";
     table._original = bodyRows(table);
     table._sort = null;
     bindComponent(table, tableApi);
     enhanceHead(table);
-    dfDollar57(table.tHead).find(".table-sort").toArray().forEach((btn) => {
+    dfDollar58(table.tHead).find(".table-sort").toArray().forEach((btn) => {
       const th = btn.closest("th");
       btn.addEventListener("click", () => {
         const col = th.cellIndex;
@@ -28398,10 +30437,10 @@ function init58() {
         }));
       });
     });
-    const pre = dfDollar57(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
+    const pre = dfDollar58(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
     if (pre)
       sortBy(table, pre.cellIndex, pre.getAttribute("aria-sort"));
-    if (dfDollar57(table).find('.table-select input[type="checkbox"]').get(0)) {
+    if (dfDollar58(table).find('.table-select input[type="checkbox"]').get(0)) {
       let last = null;
       table.addEventListener("click", (e) => {
         const box = e.target.closest?.('.table-select input[type="checkbox"]');
@@ -28432,7 +30471,7 @@ function init58() {
       });
       syncSelection(table, false);
     }
-    if (dfDollar57(table).find(".table-handle").get(0))
+    if (dfDollar58(table).find(".table-handle").get(0))
       initReorder(table);
     if (table.dataset.lockStart) {
       measureLocks(table);
@@ -28444,29 +30483,29 @@ function init58() {
     }
   });
 }
-init58();
-new MutationObserver(init58).observe(document, { childList: true, subtree: true });
+init59();
+new MutationObserver(init59).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/tabs/tabs.ts
-var df$59 = defussGlobals();
-var dfDollar58 = defussQuery();
+var df$60 = defussGlobals();
+var dfDollar59 = defussQuery();
 var tabsStates = ["default", "active", "disabled"];
 var ICON = ":scope > :is(svg, img, i, .tab-icon)";
 var LUCIDE_NAME = /^[a-z][a-z0-9-]*$/;
 var iconOf = (tab) => {
-  const icon = dfDollar58(tab).find(ICON).get(0);
+  const icon = dfDollar59(tab).find(ICON).get(0);
   if (!icon)
     return "";
   return icon.getAttribute("data-lucide") ?? icon.textContent.trim();
 };
 var labelOf5 = (tab) => {
-  const label = dfDollar58(tab).find(":scope > .tab-label").get(0);
+  const label = dfDollar59(tab).find(":scope > .tab-label").get(0);
   if (label)
     return label.textContent.trim();
   return Array.from(tab.childNodes).filter((n) => n.nodeType === Node.TEXT_NODE).map((n) => n.textContent).join("").trim();
 };
 var setLabel = (tab, text) => {
-  const label = dfDollar58(tab).find(":scope > .tab-label").get(0);
+  const label = dfDollar59(tab).find(":scope > .tab-label").get(0);
   if (label) {
     label.textContent = text;
     return;
@@ -28478,7 +30517,7 @@ var setLabel = (tab, text) => {
   tab.append(document.createTextNode(text));
 };
 var setIcon = (tab, icon) => {
-  dfDollar58(tab).find(ICON).get(0)?.remove();
+  dfDollar59(tab).find(ICON).get(0)?.remove();
   if (!icon)
     return;
   const el = document.createElement(LUCIDE_NAME.test(icon) ? "i" : "span");
@@ -28500,21 +30539,21 @@ var applyContent = (tab, config) => {
 };
 var triggersOf2 = (el) => {
   const list = el.getAttribute("role") === "tablist" ? el : el.closest('[role="tablist"]');
-  return Array.from(dfDollar58(list).find('[role="tab"]').toArray());
+  return Array.from(dfDollar59(list).find('[role="tab"]').toArray());
 };
 var activateTab = (tab, triggers) => {
   triggers.forEach((t) => {
     t.setAttribute("aria-selected", "false");
     t.setAttribute("tabindex", "-1");
     t.dataset.stateName = t.disabled ? "disabled" : "default";
-    const panel = dfDollar58("#" + CSS.escape(t.getAttribute("aria-controls"))).get(0);
+    const panel = dfDollar59("#" + CSS.escape(t.getAttribute("aria-controls"))).get(0);
     if (panel)
       panel.hidden = true;
   });
   tab.setAttribute("aria-selected", "true");
   tab.removeAttribute("tabindex");
   tab.dataset.stateName = "active";
-  const panel = dfDollar58("#" + CSS.escape(tab.getAttribute("aria-controls"))).get(0);
+  const panel = dfDollar59("#" + CSS.escape(tab.getAttribute("aria-controls"))).get(0);
   if (panel)
     panel.hidden = false;
 };
@@ -28537,7 +30576,7 @@ var restoreTab = (tab) => {
   tab.dataset.stateName = tabName(tab);
 };
 var authoredTab = (triggers) => triggers.find((t) => t._authored.selected) || triggers.find((t) => !t.disabled);
-function triggerStateChange59(el, stateName, config) {
+function triggerStateChange60(el, stateName, config) {
   const triggers = triggersOf2(el);
   const isList = el.getAttribute("role") === "tablist";
   const reenter = Object.keys(config).length > 0 && tabsApi.getState(el).name === stateName;
@@ -28609,34 +30648,34 @@ function triggerStateChange59(el, stateName, config) {
   applyContent(tab, config);
 }
 var selectMarkup = (tab, triggers) => {
-  triggers.forEach((t) => dfDollar58(t).attr("aria-selected", "false").attr("tabindex", "-1"));
-  dfDollar58(tab).attr("aria-selected", "true").attr("tabindex", null);
+  triggers.forEach((t) => dfDollar59(t).attr("aria-selected", "false").attr("tabindex", "-1"));
+  dfDollar59(tab).attr("aria-selected", "true").attr("tabindex", null);
 };
-var selectedOf = (t) => dfDollar58(t).attr("aria-selected") === "true";
-var disabledOf = (t) => dfDollar58(t).attr("disabled") != null;
+var selectedOf = (t) => dfDollar59(t).attr("aria-selected") === "true";
+var disabledOf = (t) => dfDollar59(t).attr("disabled") != null;
 function listMarkup(list, stateName, config) {
-  const triggers = dfDollar58(list).find('[role="tab"]').toArray();
+  const triggers = dfDollar59(list).find('[role="tab"]').toArray();
   if (stateName === "default") {
     const tab = triggers.find(selectedOf) || triggers.find((t) => !disabledOf(t));
     if (tab)
       selectMarkup(tab, triggers);
   } else if (stateName === "disabled")
-    triggers.forEach((t) => dfDollar58(t).attr("disabled", ""));
+    triggers.forEach((t) => dfDollar59(t).attr("disabled", ""));
   const pick = typeof config?.index === "number" ? triggers[config.index] : typeof config?.id === "string" ? triggers.find((t) => t.id === config.id) : null;
   if (pick && !disabledOf(pick))
     selectMarkup(pick, triggers);
 }
 function tabMarkup(tab, stateName, config) {
   if (stateName === "active")
-    dfDollar58(tab).attr("disabled", null).attr("aria-selected", "true").attr("tabindex", null);
+    dfDollar59(tab).attr("disabled", null).attr("aria-selected", "true").attr("tabindex", null);
   else
-    dfDollar58(tab).attr("disabled", stateName === "disabled" ? "" : null);
+    dfDollar59(tab).attr("disabled", stateName === "disabled" ? "" : null);
   applyContent(tab, config ?? {});
 }
 var tabsApi = componentState({
   component: "tabs",
   states: tabsStates,
-  apply: (el, state, _previous, incoming) => triggerStateChange59(el, state.name, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange60(el, state.name, incoming),
   read: (el, state) => {
     if (el.getAttribute("role") === "tablist") {
       const triggers = triggersOf2(el);
@@ -28653,12 +30692,12 @@ var tabsApi = componentState({
   markup: (el, state) => (el.getAttribute("role") === "tablist" ? listMarkup : tabMarkup)(el, state.name, state.config),
   mergeConfig: true
 });
-df$59.tabsApi = tabsApi;
-df$59.tabsStates = tabsStates;
-function init59() {
-  dfDollar58('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
+df$60.tabsApi = tabsApi;
+df$60.tabsStates = tabsStates;
+function init60() {
+  dfDollar59('[role="tablist"]:not([data-init]):has(.tab-trigger)').toArray().forEach((tablist) => {
     tablist.dataset.init = "";
-    const triggers = Array.from(dfDollar58(tablist).find('[role="tab"]').toArray());
+    const triggers = Array.from(dfDollar59(tablist).find('[role="tab"]').toArray());
     triggers.forEach((t) => {
       t._authored = {
         selected: t.getAttribute("aria-selected") === "true",
@@ -28737,30 +30776,30 @@ function revealFragment() {
   }
   if (!id || id.startsWith("/"))
     return;
-  const target = dfDollar58("#" + CSS.escape(id)).get(0);
+  const target = dfDollar59("#" + CSS.escape(id)).get(0);
   if (!target)
     return;
   const hidden = [];
-  const panelOf = (el) => el ? dfDollar58(el).closest('[role="tabpanel"]').get(0) : undefined;
+  const panelOf = (el) => el ? dfDollar59(el).closest('[role="tabpanel"]').get(0) : undefined;
   for (let panel = panelOf(target);panel; panel = panelOf(panel.parentElement))
     if (panel.hidden)
       hidden.unshift(panel);
   if (!hidden.length)
     return;
   for (const panel of hidden) {
-    const tab = dfDollar58('[role="tab"][aria-controls="' + CSS.escape(panel.id) + '"]').get(0);
-    const tablist = tab && dfDollar58(tab).closest('[role="tablist"]').get(0);
+    const tab = dfDollar59('[role="tab"][aria-controls="' + CSS.escape(panel.id) + '"]').get(0);
+    const tablist = tab && dfDollar59(tab).closest('[role="tablist"]').get(0);
     if (!tab || tab.disabled || !tablist)
       return;
-    activateTab(tab, dfDollar58(tablist).find('[role="tab"]').toArray());
+    activateTab(tab, dfDollar59(tablist).find('[role="tab"]').toArray());
   }
   target.scrollIntoView();
 }
 var fragmentsBound = false;
 function initAll() {
-  const before = dfDollar58('[role="tablist"][data-init]').length;
-  init59();
-  if (dfDollar58('[role="tablist"][data-init]').length !== before)
+  const before = dfDollar59('[role="tablist"][data-init]').length;
+  init60();
+  if (dfDollar59('[role="tablist"][data-init]').length !== before)
     revealFragment();
   if (!fragmentsBound) {
     fragmentsBound = true;
@@ -28771,8 +30810,8 @@ initAll();
 new MutationObserver(initAll).observe(document, { childList: true, subtree: true });
 
 // src/components/multimedia/tacho/tacho.ts
-var df$60 = defussGlobals();
-var dfDollar59 = defussQuery();
+var df$61 = defussGlobals();
+var dfDollar60 = defussQuery();
 var tachoStates = ["default", "idle"];
 var NAMES = {
   sharp: ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"],
@@ -28793,7 +30832,7 @@ var num10 = (v, fallback) => {
 var esc15 = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c);
 var r2 = (v) => String(Math.round(v * 100) / 100);
 var runtimeOf6 = (el) => el._tacho;
-var meterOf = (el) => dfDollar59(el).children("meter.tacho-meter").get(0) ?? undefined;
+var meterOf = (el) => dfDollar60(el).children("meter.tacho-meter").get(0) ?? undefined;
 function rangeOf3(meter) {
   const min = num10(meter.getAttribute("min"), 0);
   const max = Math.max(min, num10(meter.getAttribute("max"), 1));
@@ -28959,10 +30998,10 @@ function dialMarkup(el, meter) {
 }
 function redraw2(el) {
   const rt = runtimeOf6(el);
-  const svg = dfDollar59(dialMarkup(el, rt.meter)).get(0);
-  dfDollar59(rt.dial).replaceWith(svg);
+  const svg = dfDollar60(dialMarkup(el, rt.meter)).get(0);
+  dfDollar60(rt.dial).replaceWith(svg);
   rt.dial = svg;
-  rt.needle = dfDollar59(svg).find(".tacho-needle").get(0);
+  rt.needle = dfDollar60(svg).find(".tacho-needle").get(0);
   point(el);
   writeAngle(el);
 }
@@ -28971,7 +31010,7 @@ function writeAngle(el) {
   const sweep = sweepOf(el);
   const t = `rotate(${r2(-sweep / 2 + rt.p * sweep)})`;
   if (rt.needle.getAttribute("transform") !== t)
-    dfDollar59(rt.needle).attr("transform", t);
+    dfDollar60(rt.needle).attr("transform", t);
 }
 var reduced5 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
 function point(el) {
@@ -29025,8 +31064,8 @@ function settle4(rt) {
   for (const done of waiting)
     done();
 }
-var textOf2 = (el, sel) => dfDollar59(el).children(sel).text();
-function applyMarkup57(el, stateName, config) {
+var textOf2 = (el, sel) => dfDollar60(el).children(sel).text();
+function applyMarkup58(el, stateName, config) {
   const meter = meterOf(el);
   if (!meter)
     return;
@@ -29034,11 +31073,11 @@ function applyMarkup57(el, stateName, config) {
     const r = rangeOf3(meter);
     const v = String(Number(clamp10(Number(config.value), r.min, r.max).toPrecision(12)));
     if (meter.getAttribute("value") !== v)
-      dfDollar59(meter).attr("value", v);
+      dfDollar60(meter).attr("value", v);
   }
   const r = rangeOf3(meter);
   const write = (sel, text) => {
-    const node = dfDollar59(el).children(sel);
+    const node = dfDollar60(el).children(sel);
     if (node.length && text !== undefined && node.text() !== text)
       node.text(text);
   };
@@ -29050,15 +31089,15 @@ function applyMarkup57(el, stateName, config) {
   const caption = config.caption ?? textOf2(el, ".tacho-caption");
   const spoken = typeof config.text === "string" ? [label, text, caption].filter(Boolean).join(", ") : text;
   if (meter.getAttribute("aria-valuetext") !== spoken)
-    dfDollar59(meter).attr("aria-valuetext", spoken || null);
+    dfDollar60(meter).attr("aria-valuetext", spoken || null);
   const zone = zoneOf(r, r.value);
   if (el.getAttribute("data-zone") !== zone)
-    dfDollar59(el).attr("data-zone", zone);
+    dfDollar60(el).attr("data-zone", zone);
   const idle = stateName === "idle" ? "" : null;
   if (el.getAttribute("data-idle") !== idle)
-    dfDollar59(el).attr("data-idle", idle);
+    dfDollar60(el).attr("data-idle", idle);
 }
-function configOf7(el) {
+function configOf8(el) {
   const rt = runtimeOf6(el);
   return {
     value: rangeOf3(rt.meter).value,
@@ -29071,11 +31110,11 @@ function show4(el, stateName, incoming) {
   const rt = runtimeOf6(el);
   if ("text" in incoming)
     rt.text = typeof incoming.text === "string" ? incoming.text : null;
-  const before = JSON.stringify(configOf7(el)) + rt.status;
+  const before = JSON.stringify(configOf8(el)) + rt.status;
   rt.status = stateName;
-  applyMarkup57(el, stateName, { ...configOf7(el), ...incoming, text: rt.text });
+  applyMarkup58(el, stateName, { ...configOf8(el), ...incoming, text: rt.text });
   point(el);
-  const now = configOf7(el);
+  const now = configOf8(el);
   if (JSON.stringify(now) + rt.status === before)
     return;
   el.dispatchEvent(new CustomEvent("tacho-change", {
@@ -29089,9 +31128,9 @@ function show4(el, stateName, incoming) {
     }
   }));
 }
-function triggerStateChange60(el, stateName, config, incoming) {
+function triggerStateChange61(el, stateName, config, incoming) {
   if (!runtimeOf6(el))
-    applyMarkup57(el, stateName, config);
+    applyMarkup58(el, stateName, config);
   else
     show4(el, stateName, incoming);
   return;
@@ -29100,22 +31139,22 @@ var tachoApi = componentState({
   component: "tacho",
   states: tachoStates,
   mergeConfig: true,
-  apply: (el, state, _previous, incoming) => triggerStateChange60(el, state.name, state.config, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange61(el, state.name, state.config, incoming),
   read: (el, state) => {
     const rt = runtimeOf6(el);
     if (!rt)
       return state;
     const c = state.config;
-    const now = configOf7(el);
+    const now = configOf8(el);
     if (rt.status === state.name && c.value === now.value && c.label === now.label && c.text === now.text && c.caption === now.caption)
       return state;
     return { name: rt.status, config: now };
   },
-  markup: (el, state) => applyMarkup57(el, state.name, state.config),
+  markup: (el, state) => applyMarkup58(el, state.name, state.config),
   events: ["tacho-change"]
 });
-df$60.tachoApi = tachoApi;
-df$60.tachoStates = tachoStates;
+df$61.tachoApi = tachoApi;
+df$61.tachoStates = tachoStates;
 function midiOf(name) {
   const m = /^\s*([A-Ga-g])([#♯b♭]?)(-?\d+)\s*$/.exec(name);
   if (!m)
@@ -29224,20 +31263,20 @@ function listenFrame(el) {
   }
   l.frame = requestAnimationFrame(() => listenFrame(el));
 }
-function init60() {
-  dfDollar59(".tacho:not([data-init])").toArray().forEach((el) => {
+function init61() {
+  dfDollar60(".tacho:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     const meter = meterOf(el);
     if (!meter)
       return;
-    const dial = dfDollar59(dialMarkup(el, meter)).get(0);
-    dfDollar59(meter).before(dial);
+    const dial = dfDollar60(dialMarkup(el, meter)).get(0);
+    dfDollar60(meter).before(dial);
     const authored = textOf2(el, ".tacho-value").trim();
     const r = rangeOf3(meter);
     const rt = {
       meter,
       dial,
-      needle: dfDollar59(dial).find(".tacho-needle").get(0),
+      needle: dfDollar60(dial).find(".tacho-needle").get(0),
       status: el.hasAttribute("data-idle") ? "idle" : "default",
       text: authored && authored !== formatted(el, meter, r.value, false) ? authored : null,
       p: fractionOf(r, restOf(el, r)),
@@ -29249,9 +31288,9 @@ function init60() {
       listen: null
     };
     el._tacho = rt;
-    applyMarkup57(el, rt.status, configOf7(el));
+    applyMarkup58(el, rt.status, configOf8(el));
     point(el);
-    bindComponent(el, tachoApi, { name: rt.status, config: configOf7(el) });
+    bindComponent(el, tachoApi, { name: rt.status, config: configOf8(el) });
     new MutationObserver((records) => {
       const scale = records.some((m) => m.attributeName !== "value" && m.attributeName !== "aria-valuetext");
       if (scale)
@@ -29259,11 +31298,11 @@ function init60() {
       if (records.some((m) => m.attributeName === "value"))
         show4(el, rt.status, {});
       else if (scale)
-        applyMarkup57(el, rt.status, configOf7(el));
+        applyMarkup58(el, rt.status, configOf8(el));
     }).observe(meter, { attributes: true, attributeFilter: ["value", "min", "max", "low", "high", "optimum"] });
     new MutationObserver(() => {
       redraw2(el);
-      applyMarkup57(el, rt.status, configOf7(el));
+      applyMarkup58(el, rt.status, configOf8(el));
     }).observe(el, {
       attributes: true,
       attributeFilter: [
@@ -29287,20 +31326,20 @@ if (!document.__tachoInit) {
     const field = e.target;
     if (!node || !(field instanceof HTMLInputElement))
       return;
-    const el = dfDollar59(`#${CSS.escape(node.getAttribute("data-tacho-for") ?? "")}`).get(0);
+    const el = dfDollar60(`#${CSS.escape(node.getAttribute("data-tacho-for") ?? "")}`).get(0);
     if (!el?._tacho || !Number.isFinite(field.valueAsNumber))
       return;
     el.api?.setState("default", { value: field.valueAsNumber });
   });
 }
-var resolve22 = (target) => {
-  const el = typeof target === "string" ? dfDollar59(target).get(0) : target;
+var resolve23 = (target) => {
+  const el = typeof target === "string" ? dfDollar60(target).get(0) : target;
   const tacho = el?.closest?.(".tacho");
   return tacho?._tacho ? tacho : undefined;
 };
-df$60.tacho = {
+df$61.tacho = {
   value: (target, value) => {
-    const el = resolve22(target);
+    const el = resolve23(target);
     if (!el)
       return NaN;
     if (value !== undefined && Number.isFinite(value))
@@ -29308,11 +31347,11 @@ df$60.tacho = {
     return rangeOf3(runtimeOf6(el).meter).value;
   },
   tune: (target, frequency, options) => {
-    const el = resolve22(target);
+    const el = resolve23(target);
     return el ? tuneTo(el, frequency, options) : null;
   },
   listen: (target, source, options = {}) => {
-    const el = resolve22(target);
+    const el = resolve23(target);
     if (!el)
       return null;
     const rt = runtimeOf6(el);
@@ -29338,7 +31377,7 @@ df$60.tacho = {
   pitch: (frequency, options) => pitchOf(frequency, options),
   detect: (samples, sampleRate) => detectPitch(samples, sampleRate),
   settled: (target) => {
-    const el = resolve22(target);
+    const el = resolve23(target);
     if (!el || !runtimeOf6(el).frame)
       return Promise.resolve();
     return new Promise((done) => runtimeOf6(el).waiting.push(done));
@@ -29347,61 +31386,61 @@ df$60.tacho = {
     if (!name || typeof format !== "function")
       return;
     FORMATS3[name] = format;
-    for (const el of dfDollar59(`.tacho[data-init][data-format="${CSS.escape(name)}"]`).toArray())
+    for (const el of dfDollar60(`.tacho[data-init][data-format="${CSS.escape(name)}"]`).toArray())
       if (el._tacho) {
         redraw2(el);
-        applyMarkup57(el, runtimeOf6(el).status, configOf7(el));
+        applyMarkup58(el, runtimeOf6(el).status, configOf8(el));
       }
   }
 };
-init60();
-new MutationObserver(init60).observe(document, { childList: true, subtree: true });
+init61();
+new MutationObserver(init61).observe(document, { childList: true, subtree: true });
 
 // src/components/data-display/teaser/teaser.ts
-var df$61 = defussGlobals();
-var dfDollar60 = defussQuery();
+var df$62 = defussGlobals();
+var dfDollar61 = defussQuery();
 var teaserStates = ["default", "played"];
 function partsOf3(el) {
-  const template = dfDollar60(el).find("template.teaser-content");
-  return { teaser: dfDollar60(el).html() ?? "", content: template.length ? template.html() ?? "" : "" };
+  const template = dfDollar61(el).find("template.teaser-content");
+  return { teaser: dfDollar61(el).html() ?? "", content: template.length ? template.html() ?? "" : "" };
 }
-function applyMarkup58(el, stateName, parts) {
+function applyMarkup59(el, stateName, parts) {
   const played = stateName === "played";
   if (played === el.hasAttribute("data-played"))
     return;
   const markup = played ? parts.content : parts.teaser;
-  dfDollar60(el).morph(markup);
+  dfDollar61(el).morph(markup);
   settleTemplates(el, markup);
-  dfDollar60(el).attr("data-played", played ? "" : null);
+  dfDollar61(el).attr("data-played", played ? "" : null);
 }
-function triggerStateChange61(el, stateName) {
-  applyMarkup58(el, stateName, el._teaser ?? partsOf3(el));
+function triggerStateChange62(el, stateName) {
+  applyMarkup59(el, stateName, el._teaser ?? partsOf3(el));
 }
 var teaserApi = componentState({
   component: "teaser",
   states: teaserStates,
-  apply: (el, state) => triggerStateChange61(el, state.name),
+  apply: (el, state) => triggerStateChange62(el, state.name),
   read: (el, state) => ({ name: el.hasAttribute("data-played") ? "played" : "default", config: state.config }),
-  markup: (el, state) => applyMarkup58(el, state.name, partsOf3(el))
+  markup: (el, state) => applyMarkup59(el, state.name, partsOf3(el))
 });
-df$61.teaserApi = teaserApi;
-df$61.teaserStates = teaserStates;
+df$62.teaserApi = teaserApi;
+df$62.teaserStates = teaserStates;
 function focusContent(el) {
-  const first = dfDollar60(el).find('a[href], button, input, select, textarea, iframe, video[controls], [tabindex]:not([tabindex="-1"])').get(0);
+  const first = dfDollar61(el).find('a[href], button, input, select, textarea, iframe, video[controls], [tabindex]:not([tabindex="-1"])').get(0);
   if (first) {
     first.focus({ preventScroll: true });
     return;
   }
-  dfDollar60(el).attr("tabindex", "-1");
+  dfDollar61(el).attr("tabindex", "-1");
   el.focus({ preventScroll: true });
 }
-function init61() {
-  dfDollar60(".teaser:not([data-init])").each((_i, node) => {
+function init62() {
+  dfDollar61(".teaser:not([data-init])").each((_i, node) => {
     const el = node;
-    dfDollar60(el).data("init", "");
+    dfDollar61(el).data("init", "");
     el._teaser = partsOf3(el);
     bindComponent(el, teaserApi, { name: el.hasAttribute("data-played") ? "played" : "default", config: {} });
-    dfDollar60(el).on("click", (e) => {
+    dfDollar61(el).on("click", (e) => {
       if (el.hasAttribute("data-played"))
         return;
       const control = e.target.closest("a, button, input, select, textarea, summary, [contenteditable]");
@@ -29412,12 +31451,12 @@ function init61() {
     });
   });
 }
-init61();
-new MutationObserver(init61).observe(document, { childList: true, subtree: true });
+init62();
+new MutationObserver(init62).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/theme-switcher/theme-switcher.ts
-var df$62 = defussGlobals();
-var dfDollar61 = defussQuery();
+var df$63 = defussGlobals();
+var dfDollar62 = defussQuery();
 var themeSwitcherStates = ["default", "open"];
 var STORAGE_KEY = "defuss-shadcn-color-theme";
 var LINK_ID = "theme-css";
@@ -29427,13 +31466,13 @@ var remembered = () => chosen ??= persisted(STORAGE_KEY, "default");
 function themeHref(root, id) {
   if (root.dataset.themeBase)
     return `${root.dataset.themeBase}/${id}.css`;
-  const tokens = dfDollar61("#tokens-css").get(0) || dfDollar61('link[href*="default-semantic-tokens.css"]').get(0);
+  const tokens = dfDollar62("#tokens-css").get(0) || dfDollar62('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens)
     return new URL(`../${id}.css`, sheetUrl(tokens)).href;
   return `${id}.css`;
 }
 function applyThemeId(root, id) {
-  let link = dfDollar61("#" + CSS.escape(LINK_ID)).get(0);
+  let link = dfDollar62("#" + CSS.escape(LINK_ID)).get(0);
   if (!id || id === "default") {
     link?.remove();
     remembered().set("default");
@@ -29455,11 +31494,11 @@ function applyThemeId(root, id) {
   link.rel = "stylesheet";
   link.dataset.themeId = id;
   link.href = themeHref(root, id);
-  const tokens = dfDollar61("#tokens-css").get(0) || dfDollar61('link[href*="default-semantic-tokens.css"]').get(0);
+  const tokens = dfDollar62("#tokens-css").get(0) || dfDollar62('link[href*="default-semantic-tokens.css"]').get(0);
   if (tokens)
-    dfDollar61(tokens).after(link);
+    dfDollar62(tokens).after(link);
   else
-    dfDollar61(document.head).append(link);
+    dfDollar62(document.head).append(link);
   loadTheme(id, themeHref(root, id).replace(/\.css(?=$|[?#])/, ".json")).catch(() => {
     return;
   });
@@ -29467,24 +31506,24 @@ function applyThemeId(root, id) {
   document.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { id } }));
 }
 function syncTrigger(root, id) {
-  const $root = dfDollar61(root);
+  const $root = dfDollar62(root);
   const trigger = $root.find(".theme-switcher-trigger")[0];
   const items = Array.from($root.find(".theme-switcher-item"));
   const active = items.find((i) => i.dataset.themeId === id);
-  items.forEach((i) => dfDollar61(i).attr("aria-checked", i === active ? "true" : "false"));
+  items.forEach((i) => dfDollar62(i).attr("aria-checked", i === active ? "true" : "false"));
   if (!trigger)
     return;
-  const dot = dfDollar61(trigger).find(".theme-switcher-dot")[0];
-  const label = dfDollar61(trigger).find(".theme-switcher-label")[0];
+  const dot = dfDollar62(trigger).find(".theme-switcher-dot")[0];
+  const label = dfDollar62(trigger).find(".theme-switcher-label")[0];
   const first = active?.dataset.themeColors?.split(",")[0]?.trim();
   if (dot)
-    dfDollar61(dot).css("background", first || "");
+    dfDollar62(dot).css("background", first || "");
   if (label && (active || id === "default"))
-    dfDollar61(label).text(active?.dataset.themeLabel || "Default");
+    dfDollar62(label).text(active?.dataset.themeLabel || "Default");
   root.dataset.themeId = id;
 }
-function applyMarkup59(_el, _stateName) {}
-function triggerStateChange62(menu, stateName, _config) {
+function applyMarkup60(_el, _stateName) {}
+function triggerStateChange63(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -29499,8 +31538,8 @@ function triggerStateChange62(menu, stateName, _config) {
 var themeSwitcherApi = Object.assign(componentState({
   component: "theme-switcher",
   states: themeSwitcherStates,
-  apply: (menu, state) => triggerStateChange62(menu, state.name, state.config),
-  markup: (el, state) => applyMarkup59(el, state.name)
+  apply: (menu, state) => triggerStateChange63(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup60(el, state.name)
 }), {
   select(menu, id) {
     const root = menu.closest(".theme-switcher");
@@ -29509,22 +31548,22 @@ var themeSwitcherApi = Object.assign(componentState({
     applyThemeId(root, id);
   }
 });
-df$62.themeSwitcherApi = themeSwitcherApi;
-df$62.themeSwitcherStates = themeSwitcherStates;
-function init62() {
-  dfDollar61(".theme-switcher-menu:not([data-init])").toArray().forEach((menu) => {
+df$63.themeSwitcherApi = themeSwitcherApi;
+df$63.themeSwitcherStates = themeSwitcherStates;
+function init63() {
+  dfDollar62(".theme-switcher-menu:not([data-init])").toArray().forEach((menu) => {
     menu.dataset.init = "";
     const root = menu.closest(".theme-switcher");
-    const trigger = (root ? dfDollar61(root).find(".theme-switcher-trigger").get(0) : undefined) ?? (menu.id && dfDollar61(`[popovertarget="${menu.id}"]`).get(0));
-    const getItems = () => Array.from(dfDollar61(menu).find(".theme-switcher-item").toArray());
+    const trigger = (root ? dfDollar62(root).find(".theme-switcher-trigger").get(0) : undefined) ?? (menu.id && dfDollar62(`[popovertarget="${menu.id}"]`).get(0));
+    const getItems = () => Array.from(dfDollar62(menu).find(".theme-switcher-item").toArray());
     if (trigger) {
       const anchorId = `--theme-switcher-${menu.id || "menu"}`;
-      dfDollar61(trigger).css("anchorName", anchorId);
-      dfDollar61(menu).css("positionAnchor", anchorId);
+      dfDollar62(trigger).css("anchorName", anchorId);
+      dfDollar62(menu).css("positionAnchor", anchorId);
     }
     menu.addEventListener("toggle", () => {
       if (trigger)
-        dfDollar61(trigger).attr("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
+        dfDollar62(trigger).attr("aria-expanded", menu.matches(":popover-open") ? "true" : "false");
       if (menu.matches(":popover-open")) {
         const first = getItems()[0];
         first?.focus();
@@ -29536,10 +31575,10 @@ function init62() {
       }
     });
     getItems().forEach((item) => {
-      const holder = dfDollar61(item).find(".theme-switcher-dots").get(0);
+      const holder = dfDollar62(item).find(".theme-switcher-dots").get(0);
       if (holder && !holder.childElementCount) {
         const spans = (item.dataset.themeColors || "").split(",").slice(0, 5).map((c) => c.trim()).filter(Boolean).map((c) => `<span style="background:${c}"></span>`).join("");
-        dfDollar61(holder).html(spans);
+        dfDollar62(holder).html(spans);
       }
     });
     menu.addEventListener("click", (e) => {
@@ -29569,59 +31608,59 @@ function init62() {
     });
     bindComponent(menu, themeSwitcherApi);
     if (root) {
-      const initial = dfDollar61("#" + CSS.escape(LINK_ID)).get(0)?.dataset.themeId || remembered().value || "default";
-      if (initial !== "default" || dfDollar61("#" + CSS.escape(LINK_ID)).get(0))
+      const initial = dfDollar62("#" + CSS.escape(LINK_ID)).get(0)?.dataset.themeId || remembered().value || "default";
+      if (initial !== "default" || dfDollar62("#" + CSS.escape(LINK_ID)).get(0))
         syncTrigger(root, initial);
     }
   });
 }
 document.addEventListener(THEME_EVENT, (e) => {
   const id = e.detail?.id || "default";
-  dfDollar61(".theme-switcher").toArray().forEach((root) => syncTrigger(root, id));
+  dfDollar62(".theme-switcher").toArray().forEach((root) => syncTrigger(root, id));
 });
-init62();
-new MutationObserver(init62).observe(document, { childList: true, subtree: true });
+init63();
+new MutationObserver(init63).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/toast/toast.ts
-var df$63 = defussGlobals();
-var dfDollar62 = defussQuery();
+var df$64 = defussGlobals();
+var dfDollar63 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup60(_el, _stateName) {}
-function triggerStateChange63(container, stateName, _config) {
+function applyMarkup61(_el, _stateName) {}
+function triggerStateChange64(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar62(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar63(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange63(container, state.name, state.config);
+    triggerStateChange64(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar62(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar63(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup60(el, state.name)
+  markup: (el, state) => applyMarkup61(el, state.name)
 });
-df$63.toastApi = toastApi;
-df$63.toastStates = toastStates;
+df$64.toastApi = toastApi;
+df$64.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar62("#toast-container").get(0);
+var toastContainer = dfDollar63("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar62(document.body).append(toastContainer);
+  dfDollar63(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar62(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar63(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -29652,7 +31691,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar62(el).remove();
+      dfDollar63(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -29666,7 +31705,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar62(el).remove();
+    dfDollar63(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -29697,29 +31736,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar62(contentEl).append(dfDollar62(icons[variant]));
+    dfDollar63(contentEl).append(dfDollar63(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar62(p).text(title);
-    dfDollar62(textDiv).append(p);
+    dfDollar63(p).text(title);
+    dfDollar63(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar62(p).text(description);
-    dfDollar62(textDiv).append(p);
+    dfDollar63(p).text(description);
+    dfDollar63(textDiv).append(p);
   }
-  dfDollar62(contentEl).append(textDiv);
+  dfDollar63(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar62(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar62(contentEl).append(closeBtn);
+  dfDollar63(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar63(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -29729,9 +31768,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar62(el).append(host);
+    dfDollar63(el).append(host);
   }
-  dfDollar62(host).append(contentEl);
+  dfDollar63(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -29740,15 +31779,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar62(actionBtn).text(action.label);
-    dfDollar62(actionsDiv).append(actionBtn);
-    dfDollar62(host).append(actionsDiv);
+    dfDollar63(actionBtn).text(action.label);
+    dfDollar63(actionsDiv).append(actionBtn);
+    dfDollar63(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar62(toastContainer).append(el);
+  dfDollar63(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -29759,13 +31798,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar62(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar63(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init63() {
-  dfDollar62("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init64() {
+  dfDollar63("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -29814,8 +31853,8 @@ function init63() {
     });
   });
 }
-init63();
-new MutationObserver(init63).observe(document.body, { childList: true, subtree: true });
+init64();
+new MutationObserver(init64).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -29835,59 +31874,59 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar62(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar63(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$63.toast = toastActions;
+df$64.toast = toastActions;
 
 // src/components/actions/toggle/toggle.ts
-var df$64 = defussGlobals();
-var dfDollar63 = defussQuery();
+var df$65 = defussGlobals();
+var dfDollar64 = defussQuery();
 var toggleStates = ["default", "pressed"];
-function applyMarkup61(toggle, stateName, defaultPressed) {
-  dfDollar63(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
+function applyMarkup62(toggle, stateName, defaultPressed) {
+  dfDollar64(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
 }
-function triggerStateChange64(toggle, stateName, _config) {
-  applyMarkup61(toggle, stateName, toggle._defaultPressed ?? "false");
+function triggerStateChange65(toggle, stateName, _config) {
+  applyMarkup62(toggle, stateName, toggle._defaultPressed ?? "false");
 }
 var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
-  apply: (toggle, state) => triggerStateChange64(toggle, state.name, state.config),
+  apply: (toggle, state) => triggerStateChange65(toggle, state.name, state.config),
   read: (toggle, state) => ({
-    name: dfDollar63(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    name: dfDollar64(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
     config: state.config
   }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
-    applyMarkup61(toggle, state.name, authored ? authored[1] : "false");
+    applyMarkup62(toggle, state.name, authored ? authored[1] : "false");
   }
 });
-df$64.toggleApi = toggleApi;
-df$64.toggleStates = toggleStates;
-function init64() {
-  dfDollar63(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
-    dfDollar63(toggle).data("init", "");
-    toggle._defaultPressed = dfDollar63(toggle).attr("aria-pressed") || "false";
+df$65.toggleApi = toggleApi;
+df$65.toggleStates = toggleStates;
+function init65() {
+  dfDollar64(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
+    dfDollar64(toggle).data("init", "");
+    toggle._defaultPressed = dfDollar64(toggle).attr("aria-pressed") || "false";
     bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === "true" ? "pressed" : "default", config: {} });
-    dfDollar63(toggle).on("click", () => {
-      dfDollar63(toggle).attr("aria-pressed", String(dfDollar63(toggle).attr("aria-pressed") !== "true"));
+    dfDollar64(toggle).on("click", () => {
+      dfDollar64(toggle).attr("aria-pressed", String(dfDollar64(toggle).attr("aria-pressed") !== "true"));
     });
   });
 }
-init64();
-new MutationObserver(init64).observe(document, { childList: true, subtree: true });
+init65();
+new MutationObserver(init65).observe(document, { childList: true, subtree: true });
 
 // src/components/actions/toggle-group/toggle-group.ts
-var df$65 = defussGlobals();
-var dfDollar64 = defussQuery();
+var df$66 = defussGlobals();
+var dfDollar65 = defussQuery();
 var toggleGroupStates = ["default", "disabled"];
-function applyMarkup62(el, stateName) {
-  dfDollar64(el).attr("data-disabled", stateName === "disabled" ? "" : null);
+function applyMarkup63(el, stateName) {
+  dfDollar65(el).attr("data-disabled", stateName === "disabled" ? "" : null);
 }
-function triggerStateChange65(group, stateName, _config) {
+function triggerStateChange66(group, stateName, _config) {
   switch (stateName) {
     case "default":
       group.removeAttribute("data-disabled");
@@ -29900,23 +31939,23 @@ function triggerStateChange65(group, stateName, _config) {
 var toggleGroupApi = componentState({
   component: "toggle-group",
   states: toggleGroupStates,
-  apply: (group, state) => triggerStateChange65(group, state.name, state.config),
+  apply: (group, state) => triggerStateChange66(group, state.name, state.config),
   read: (group, state) => {
     return {
       name: group.hasAttribute("data-disabled") ? "disabled" : "default",
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup62(el, state.name)
+  markup: (el, state) => applyMarkup63(el, state.name)
 });
-df$65.toggleGroupApi = toggleGroupApi;
-df$65.toggleGroupStates = toggleGroupStates;
-function init65() {
-  dfDollar64(".toggle-group:not([data-init])").toArray().forEach((group) => {
+df$66.toggleGroupApi = toggleGroupApi;
+df$66.toggleGroupStates = toggleGroupStates;
+function init66() {
+  dfDollar65(".toggle-group:not([data-init])").toArray().forEach((group) => {
     group.dataset.init = "";
     bindComponent(group, toggleGroupApi);
     const type = group.getAttribute("data-type") || "single";
-    const getToggles = () => Array.from(dfDollar64(group).find(".toggle:not(:disabled)").toArray());
+    const getToggles = () => Array.from(dfDollar65(group).find(".toggle:not(:disabled)").toArray());
     const initTabindex = () => {
       const toggles = getToggles();
       if (toggles.length === 0)
@@ -29976,15 +32015,15 @@ function init65() {
     });
   });
 }
-init65();
-new MutationObserver(init65).observe(document, { childList: true, subtree: true });
+init66();
+new MutationObserver(init66).observe(document, { childList: true, subtree: true });
 
 // src/components/actions/toolbar/toolbar.ts
-var df$66 = defussGlobals();
-var dfDollar65 = defussQuery();
+var df$67 = defussGlobals();
+var dfDollar66 = defussQuery();
 var toolbarStates = ["default"];
-function applyMarkup63(_el, _stateName) {}
-function triggerStateChange66(toolbar, items, stateName, config) {
+function applyMarkup64(_el, _stateName) {}
+function triggerStateChange67(toolbar, items, stateName, config) {
   if (stateName !== "default" || items.length === 0)
     return;
   const target = items[Math.min(Number(config?.focus ?? 0), items.length - 1)] || items[0];
@@ -29997,7 +32036,7 @@ var toolbarApi = componentState({
   states: toolbarStates,
   apply: (toolbar, state) => {
     const items = toolbarItems(toolbar);
-    triggerStateChange66(toolbar, items, state.name, state.config);
+    triggerStateChange67(toolbar, items, state.name, state.config);
   },
   read: (toolbar, state) => {
     const items = toolbarItems(toolbar);
@@ -30007,13 +32046,13 @@ var toolbarApi = componentState({
       config: { ...state.config, rovingIndex: idx }
     };
   },
-  markup: (el, state) => applyMarkup63(el, state.name)
+  markup: (el, state) => applyMarkup64(el, state.name)
 });
-df$66.toolbarApi = toolbarApi;
-df$66.toolbarStates = toolbarStates;
-var toolbarItems = (toolbar) => Array.from(dfDollar65(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray());
-function init66() {
-  dfDollar65('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
+df$67.toolbarApi = toolbarApi;
+df$67.toolbarStates = toolbarStates;
+var toolbarItems = (toolbar) => Array.from(dfDollar66(toolbar).find('button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])').toArray());
+function init67() {
+  dfDollar66('.toolbar[role="toolbar"]:not([data-init])').toArray().forEach((toolbar) => {
     toolbar.dataset.init = "";
     bindComponent(toolbar, toolbarApi);
     const items = toolbarItems(toolbar);
@@ -30051,15 +32090,15 @@ function init66() {
     });
   });
 }
-init66();
-new MutationObserver(init66).observe(document, { childList: true, subtree: true });
+init67();
+new MutationObserver(init67).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/tooltip/tooltip.ts
-var df$67 = defussGlobals();
-var dfDollar66 = defussQuery();
+var df$68 = defussGlobals();
+var dfDollar67 = defussQuery();
 var tooltipStates = ["default", "visible"];
-function applyMarkup64(_el, _stateName) {}
-function triggerStateChange67(tip, stateName, _config) {
+function applyMarkup65(_el, _stateName) {}
+function triggerStateChange68(tip, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -30075,11 +32114,11 @@ function triggerStateChange67(tip, stateName, _config) {
 var tooltipApi = componentState({
   component: "tooltip",
   states: tooltipStates,
-  apply: (tip, state) => triggerStateChange67(tip, state.name, state.config),
-  markup: (el, state) => applyMarkup64(el, state.name)
+  apply: (tip, state) => triggerStateChange68(tip, state.name, state.config),
+  markup: (el, state) => applyMarkup65(el, state.name)
 });
-df$67.tooltipApi = tooltipApi;
-df$67.tooltipStates = tooltipStates;
+df$68.tooltipApi = tooltipApi;
+df$68.tooltipStates = tooltipStates;
 var DELAY_DEFAULT = 700;
 var CLOSE_DELAY_DEFAULT = 0;
 var GROUP_TIMEOUT = 400;
@@ -30095,10 +32134,10 @@ function scheduleGroupReset() {
     groupOpen = false;
   }, GROUP_TIMEOUT);
 }
-function init67() {
-  dfDollar66("[data-tooltip-trigger]:not([data-init])").toArray().forEach((trigger) => {
+function init68() {
+  dfDollar67("[data-tooltip-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const tip = dfDollar66("#" + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
+    const tip = dfDollar67("#" + CSS.escape(trigger.dataset.tooltipTrigger)).get(0);
     if (!tip)
       return;
     const anchorId = `--tooltip-${tip.id}`;
@@ -30135,17 +32174,17 @@ function init67() {
     trigger.addEventListener("focus", show);
     trigger.addEventListener("blur", hide);
   });
-  dfDollar66(".tooltip[popover]:not([data-init])").toArray().forEach((tip) => {
+  dfDollar67(".tooltip[popover]:not([data-init])").toArray().forEach((tip) => {
     tip.dataset.init = "";
     bindComponent(tip, tooltipApi);
   });
 }
-init67();
-new MutationObserver(init67).observe(document, { childList: true, subtree: true });
+init68();
+new MutationObserver(init68).observe(document, { childList: true, subtree: true });
 if (!document.__tooltipScrollInit) {
   document.__tooltipScrollInit = true;
   document.addEventListener("scroll", () => {
-    dfDollar66(".tooltip:popover-open").toArray().forEach((tip) => {
+    dfDollar67(".tooltip:popover-open").toArray().forEach((tip) => {
       try {
         tip.hidePopover();
       } catch {}
@@ -30154,13 +32193,13 @@ if (!document.__tooltipScrollInit) {
 }
 
 // src/components/data-display/tree-view/tree-view.ts
-var df$68 = defussGlobals();
-var dfDollar67 = defussQuery();
+var df$69 = defussGlobals();
+var dfDollar68 = defussQuery();
 var treeViewStates = ["default", "expanded"];
-function applyMarkup65(el, stateName) {
-  dfDollar67(el).attr("open", stateName === "expanded" ? "" : null);
+function applyMarkup66(el, stateName) {
+  dfDollar68(el).attr("open", stateName === "expanded" ? "" : null);
 }
-function triggerStateChange68(details, stateName, _config) {
+function triggerStateChange69(details, stateName, _config) {
   switch (stateName) {
     case "default":
       details.open = false;
@@ -30173,28 +32212,28 @@ function triggerStateChange68(details, stateName, _config) {
 var treeViewApi = componentState({
   component: "tree-view",
   states: treeViewStates,
-  apply: (details, state) => triggerStateChange68(details, state.name, state.config),
+  apply: (details, state) => triggerStateChange69(details, state.name, state.config),
   read: (details, state) => {
     return {
       name: details.open ? "expanded" : "default",
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup65(el, state.name)
+  markup: (el, state) => applyMarkup66(el, state.name)
 });
-df$68.treeViewApi = treeViewApi;
-df$68.treeViewStates = treeViewStates;
+df$69.treeViewApi = treeViewApi;
+df$69.treeViewStates = treeViewStates;
 var itemOf = (row) => row.closest('[role="treeitem"]');
 var isDisabled2 = (item) => item?.getAttribute("aria-disabled") === "true";
 function selectItem(tree, item) {
   if (!item || isDisabled2(item) || item.getAttribute("aria-selected") === "true")
     return;
-  dfDollar67(tree).find('[role="treeitem"][aria-selected="true"]').toArray().forEach((other) => other.setAttribute("aria-selected", "false"));
+  dfDollar68(tree).find('[role="treeitem"][aria-selected="true"]').toArray().forEach((other) => other.setAttribute("aria-selected", "false"));
   item.setAttribute("aria-selected", "true");
   tree.dispatchEvent(new CustomEvent("tree-select", { bubbles: true, detail: { item } }));
 }
-var checkOf = (item) => item ? dfDollar67(item).find(":scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check").get(0) : undefined;
-var childItems = (item) => [...dfDollar67(item).find(":scope > details > .tree-group").get(0)?.children ?? []].filter((li) => li.matches('[role="treeitem"]'));
+var checkOf = (item) => item ? dfDollar68(item).find(":scope > .tree-leaf > .tree-check, :scope > details > .tree-branch-trigger > .tree-check").get(0) : undefined;
+var childItems = (item) => [...dfDollar68(item).find(":scope > details > .tree-group").get(0)?.children ?? []].filter((li) => li.matches('[role="treeitem"]'));
 var cascades = (tree) => tree.dataset.checkable !== "independent";
 function checkDown(item, checked) {
   for (const child of childItems(item)) {
@@ -30221,14 +32260,14 @@ function rollUp(tree, item) {
   }
 }
 function syncAria(tree) {
-  dfDollar67(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+  dfDollar68(tree).find('[role="treeitem"]').toArray().forEach((item) => {
     const box = checkOf(item);
     if (box)
       item.setAttribute("aria-checked", box.indeterminate ? "mixed" : String(box.checked));
   });
 }
 function checkedValues(tree) {
-  return [...dfDollar67(tree).find(".tree-check").toArray()].filter((b) => b.checked && !b.indeterminate).map((b) => b.value !== "on" ? b.value : dfDollar67(b).closest('[role="treeitem"]').find(":scope > * > span:last-child, :scope > details > summary > span:last-child").get(0)?.textContent ?? "");
+  return [...dfDollar68(tree).find(".tree-check").toArray()].filter((b) => b.checked && !b.indeterminate).map((b) => b.value !== "on" ? b.value : dfDollar68(b).closest('[role="treeitem"]').find(":scope > * > span:last-child, :scope > details > summary > span:last-child").get(0)?.textContent ?? "");
 }
 function onCheck(tree, item) {
   const box = checkOf(item);
@@ -30247,9 +32286,9 @@ function onCheck(tree, item) {
 }
 function initChecks(tree) {
   let n = 0;
-  dfDollar67(tree).find(".tree-check").toArray().forEach((box) => {
+  dfDollar68(tree).find(".tree-check").toArray().forEach((box) => {
     if (!box.hasAttribute("aria-label") && !box.hasAttribute("aria-labelledby")) {
-      const label = dfDollar67(box.parentElement).find(":scope > span:last-child").get(0);
+      const label = dfDollar68(box.parentElement).find(":scope > span:last-child").get(0);
       if (label) {
         label.id ||= `${tree.id || "tree"}-lbl-${n++}-${Math.random().toString(36).slice(2, 7)}`;
         box.setAttribute("aria-labelledby", label.id);
@@ -30257,12 +32296,12 @@ function initChecks(tree) {
     }
   });
   if (cascades(tree)) {
-    dfDollar67(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+    dfDollar68(tree).find('[role="treeitem"]').toArray().forEach((item) => {
       const b = checkOf(item);
       if (b?.checked)
         checkDown(item, true);
     });
-    const leaves = [...dfDollar67(tree).find('[role="treeitem"]').toArray()].filter((i) => !childItems(i).length);
+    const leaves = [...dfDollar68(tree).find('[role="treeitem"]').toArray()].filter((i) => !childItems(i).length);
     leaves.forEach((leaf) => rollUp(tree, leaf));
   }
   syncAria(tree);
@@ -30273,7 +32312,7 @@ function initChecks(tree) {
   });
 }
 function clearDrop(tree) {
-  dfDollar67(tree).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
+  dfDollar68(tree).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
 }
 function announceMove2(tree, item) {
   const parentItem = item.parentElement.closest('[role="treeitem"]');
@@ -30285,7 +32324,7 @@ function announceMove2(tree, item) {
 }
 function initSortable(tree) {
   let dragged = null;
-  const rows = () => dfDollar67(tree).find(".tree-branch-trigger, .tree-leaf").toArray();
+  const rows = () => dfDollar68(tree).find(".tree-branch-trigger, .tree-leaf").toArray();
   rows().forEach((row) => {
     if (!isDisabled2(itemOf(row)))
       row.draggable = true;
@@ -30322,27 +32361,27 @@ function initSortable(tree) {
       clearDrop(tree);
   });
   tree.addEventListener("drop", (e) => {
-    const row = dfDollar67(tree).find("[data-drop]").get(0);
+    const row = dfDollar68(tree).find("[data-drop]").get(0);
     if (!dragged || !row)
       return;
     e.preventDefault();
     const target = itemOf(row);
     const where = row.dataset.drop;
     if (where === "inside") {
-      const details = dfDollar67(target).find(":scope > details").get(0);
+      const details = dfDollar68(target).find(":scope > details").get(0);
       details.open = true;
-      dfDollar67(details).find(":scope > .tree-group").get(0).append(dragged);
+      dfDollar68(details).find(":scope > .tree-group").get(0).append(dragged);
     } else {
       const ref = where === "before" ? target : target.nextSibling;
       if (ref)
-        dfDollar67(ref).before(dragged);
+        dfDollar68(ref).before(dragged);
       else
-        dfDollar67(target.parentElement).append(dragged);
+        dfDollar68(target.parentElement).append(dragged);
     }
     clearDrop(tree);
     announceMove2(tree, dragged);
     if (tree.hasAttribute("data-checkable") && cascades(tree)) {
-      dfDollar67(tree).find('[role="treeitem"]').toArray().forEach((i) => {
+      dfDollar68(tree).find('[role="treeitem"]').toArray().forEach((i) => {
         if (!childItems(i).length)
           rollUp(tree, i);
       });
@@ -30363,18 +32402,18 @@ function moveByKey(tree, row, dir) {
     return;
   const ref = dir < 0 ? sib : sib.nextSibling;
   if (ref)
-    dfDollar67(ref).before(item);
+    dfDollar68(ref).before(item);
   else
-    dfDollar67(item.parentElement).append(item);
+    dfDollar68(item.parentElement).append(item);
   row.focus();
   announceMove2(tree, item);
 }
-function init68() {
-  dfDollar67('.tree[role="tree"]:not([data-init])').toArray().forEach((tree) => {
+function init69() {
+  dfDollar68('.tree[role="tree"]:not([data-init])').toArray().forEach((tree) => {
     tree.dataset.init = "";
     const selectable = tree.hasAttribute("data-selectable");
     if (selectable) {
-      dfDollar67(tree).find('[role="treeitem"]').toArray().forEach((item) => {
+      dfDollar68(tree).find('[role="treeitem"]').toArray().forEach((item) => {
         if (!isDisabled2(item) && !item.hasAttribute("aria-selected"))
           item.setAttribute("aria-selected", "false");
       });
@@ -30401,7 +32440,7 @@ function init68() {
         onCheck(tree, item);
       }
     });
-    dfDollar67(tree).find(".tree-branch").toArray().forEach((details) => {
+    dfDollar68(tree).find(".tree-branch").toArray().forEach((details) => {
       const treeitem = details.closest('[role="treeitem"]');
       if (!treeitem)
         return;
@@ -30415,7 +32454,7 @@ function init68() {
       const target = e.target.closest(".tree-branch-trigger, .tree-leaf");
       if (!target)
         return;
-      const allItems = Array.from(dfDollar67(tree).find(".tree-branch-trigger, .tree-leaf").toArray());
+      const allItems = Array.from(dfDollar68(tree).find(".tree-branch-trigger, .tree-leaf").toArray());
       const visibleItems = allItems.filter((item) => item.checkVisibility());
       const index = visibleItems.indexOf(target);
       if (e.altKey && tree.hasAttribute("data-sortable") && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
@@ -30487,12 +32526,12 @@ function init68() {
     });
   });
 }
-init68();
-new MutationObserver(init68).observe(document, { childList: true, subtree: true });
+init69();
+new MutationObserver(init69).observe(document, { childList: true, subtree: true });
 
 // src/components/primitives/typewriter/typewriter.ts
-var df$69 = defussGlobals();
-var dfDollar68 = defussQuery();
+var df$70 = defussGlobals();
+var dfDollar69 = defussQuery();
 var typewriterStates = ["default", "paused", "done"];
 var num11 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
@@ -30580,8 +32619,8 @@ function run3(tw, delay = 0) {
   else
     go();
 }
-function applyMarkup66(_el, _stateName) {}
-function triggerStateChange69(tw, stateName, config, previous) {
+function applyMarkup67(_el, _stateName) {}
+function triggerStateChange70(tw, stateName, config, previous) {
   const count = tw._sources.length;
   const asked = config.index === undefined || config.index === "" ? NaN : Number(config.index);
   const pick = Number.isInteger(asked) ? Math.min(Math.max(asked, 0), count - 1) : undefined;
@@ -30614,14 +32653,14 @@ var typewriterApi = componentState({
   states: typewriterStates,
   apply: (tw, state, previous) => {
     tw.dataset.stateName = state.name;
-    triggerStateChange69(tw, state.name, state.config, previous.name);
+    triggerStateChange70(tw, state.name, state.config, previous.name);
   },
-  markup: (el, state) => applyMarkup66(el, state.name)
+  markup: (el, state) => applyMarkup67(el, state.name)
 });
-df$69.typewriterApi = typewriterApi;
-df$69.typewriterStates = typewriterStates;
-function init69() {
-  dfDollar68(".typewriter:not([data-init])").toArray().forEach((tw) => {
+df$70.typewriterApi = typewriterApi;
+df$70.typewriterStates = typewriterStates;
+function init70() {
+  dfDollar69(".typewriter:not([data-init])").toArray().forEach((tw) => {
     tw.dataset.init = "";
     const children = Array.from(tw.children);
     if (!children.length)
@@ -30649,7 +32688,7 @@ function init69() {
       tw._sources.forEach((s) => {
         const g = document.createElement("span");
         g.textContent = s.text;
-        dfDollar68(ghost).append(g);
+        dfDollar69(ghost).append(g);
       });
       tw.append(ghost);
     }
@@ -30670,53 +32709,53 @@ function init69() {
     }
   });
 }
-init69();
-new MutationObserver(init69).observe(document, { childList: true, subtree: true });
+init70();
+new MutationObserver(init70).observe(document, { childList: true, subtree: true });
 
 // src/components/multimedia/video/video.ts
-var df$70 = defussGlobals();
-var dfDollar69 = defussQuery();
+var df$71 = defussGlobals();
+var dfDollar70 = defussQuery();
 var videoStates = ["default", "playing"];
-function applyMarkup67(el, stateName, config) {
+function applyMarkup68(el, stateName, config) {
   mediaMarkup(el, "video", stateName, config);
 }
-function triggerStateChange70(el, stateName, config, incoming) {
+function triggerStateChange71(el, stateName, config, incoming) {
   return mediaApply(el, "video", stateName, config, incoming);
 }
 var videoApi = componentState({
   component: "video",
   states: videoStates,
   mergeConfig: true,
-  apply: (el, state, _previous, incoming) => triggerStateChange70(el, state.name, state.config, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange71(el, state.name, state.config, incoming),
   read: (el) => {
     const { playing, config } = mediaRead(el);
     const { time, duration, rate, volume, muted, captions } = config;
     return { name: playing ? "playing" : "default", config: { time, duration, rate, volume, muted, captions } };
   },
-  markup: (el, state) => applyMarkup67(el, state.name, state.config)
+  markup: (el, state) => applyMarkup68(el, state.name, state.config)
 });
-df$70.videoApi = videoApi;
-df$70.videoStates = videoStates;
-function init70() {
-  dfDollar69(".video:not([data-init])").toArray().forEach((el) => {
+df$71.videoApi = videoApi;
+df$71.videoStates = videoStates;
+function init71() {
+  dfDollar70(".video:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     bindComponent(el, videoApi);
     bindMedia(el, "video", () => videoApi.getState(el));
   });
 }
-var resolve23 = (target) => typeof target === "string" ? dfDollar69(target).get(0) : target;
+var resolve24 = (target) => typeof target === "string" ? dfDollar70(target).get(0) : target;
 var now4 = (el) => mediaRead(el).playing ? "playing" : "default";
-df$70.video = {
+df$71.video = {
   play: async (target) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (el?.api)
       await el.api.setState("playing");
   },
   pause: (target) => {
-    resolve23(target)?.api?.setState("default");
+    resolve24(target)?.api?.setState("default");
   },
   toggle: (target) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (!el?.api)
       return false;
     const next = now4(el) === "playing" ? "default" : "playing";
@@ -30724,41 +32763,41 @@ df$70.video = {
     return next === "playing";
   },
   seek: (target, time) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (el?.api)
       el.api.setState(now4(el), { time });
   },
   skip: (target, seconds) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (el?.api)
       el.api.setState(now4(el), { time: mediaRead(el).config.time + seconds });
   },
   mute: (target, muted) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (el?.api)
       el.api.setState(now4(el), { muted: muted ?? !mediaRead(el).config.muted });
   },
   volume: (target, volume) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (el?.api)
       el.api.setState(now4(el), { volume });
   },
   rate: (target, rate) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (el?.api)
       el.api.setState(now4(el), { rate });
   },
   captions: (target, key) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (el?.api)
       el.api.setState(now4(el), { captions: key ?? (mediaRead(el).config.captions ? "" : true) });
   },
   tracks: (target, tracks, replace) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     return el?.api ? mediaTracks(el, "video", tracks, replace) : [];
   },
   fullscreen: async (target) => {
-    const el = resolve23(target);
+    const el = resolve24(target);
     if (!el)
       return;
     if (document.fullscreenElement === el)
@@ -30771,12 +32810,12 @@ df$70.video = {
       });
   }
 };
-init70();
-new MutationObserver(init70).observe(document, { childList: true, subtree: true });
+init71();
+new MutationObserver(init71).observe(document, { childList: true, subtree: true });
 
 // src/components/big-data/virtual-list/virtual-list.ts
-var df$71 = defussGlobals();
-var dfDollar70 = defussQuery();
+var df$72 = defussGlobals();
+var dfDollar71 = defussQuery();
 var virtualListStates = ["default", "loading", "empty"];
 var columnsOf = (list) => Math.max(1, parseInt(list.dataset.columns || "1", 10) || 1);
 var itemCount = (list) => list._source ? list._result.entries.length : list._count;
@@ -30788,7 +32827,7 @@ function fill2(list, el, index) {
   const entry = list._result.entries[index];
   list._render(el, entry.row, { index, ...entry.meta });
 }
-function renderRows3(list) {
+function renderRows4(list) {
   const rows = list._rows;
   if (!rows)
     return;
@@ -30800,7 +32839,7 @@ function renderRows3(list) {
     const row = document.createElement("div");
     row.className = "virtual-list-row";
     row.setAttribute("role", cols > 1 ? "row" : "listitem");
-    dfDollar70(rows).append(row);
+    dfDollar71(rows).append(row);
   }
   while (rows.children.length > pool) {
     rows.lastElementChild.remove();
@@ -30824,7 +32863,7 @@ function renderRows3(list) {
       const cell = document.createElement("div");
       cell.className = "virtual-list-cell";
       cell.setAttribute("role", "gridcell");
-      dfDollar70(row).append(cell);
+      dfDollar71(row).append(cell);
     }
     for (let c = 0;c < cols; c++) {
       const cell = row.children[c];
@@ -30844,10 +32883,10 @@ function renderRows3(list) {
 var defaultRenderRow = (row, index) => {
   row.textContent = `Row ${index + 1}`;
 };
-function applyMarkup68(el, stateName) {
-  dfDollar70(el).attr("data-state", stateName).attr("aria-busy", stateName === "loading" ? "true" : null);
+function applyMarkup69(el, stateName) {
+  dfDollar71(el).attr("data-state", stateName).attr("aria-busy", stateName === "loading" ? "true" : null);
 }
-function refresh3(list, config) {
+function refresh4(list, config) {
   if (list._source)
     list._result = list._source.query({ filters: config.filters, sorters: config.sorters });
   const sizer = list._rows?.parentElement;
@@ -30862,19 +32901,19 @@ function refresh3(list, config) {
   }
   return itemCount(list);
 }
-function triggerStateChange71(list, stateName, config, incoming = config) {
-  if (list._source && stateName !== "loading" && !refresh3(list, config) && stateName === "default")
+function triggerStateChange72(list, stateName, config, incoming = config) {
+  if (list._source && stateName !== "loading" && !refresh4(list, config) && stateName === "default")
     stateName = "empty";
   list.dataset.state = stateName;
   list.dataset.stateName = stateName;
   switch (stateName) {
     case "default":
       list.removeAttribute("aria-busy");
-      renderRows3(list);
+      renderRows4(list);
       if (typeof incoming.index === "number") {
         const item = Math.floor(Math.max(0, Math.min(itemCount(list) - 1, incoming.index)) / columnsOf(list));
         list.scrollTop = scrollTopFor(item, list.clientHeight, list._rowHeight, rowCount(list));
-        renderRows3(list);
+        renderRows4(list);
       }
       break;
     case "loading":
@@ -30889,18 +32928,18 @@ var virtualListApi = componentState({
   component: "virtual-list",
   states: virtualListStates,
   mergeConfig: true,
-  apply: (list, state, _previous, incoming) => triggerStateChange71(list, state.name, state.config, incoming),
-  markup: (el, state) => applyMarkup68(el, state.name)
+  apply: (list, state, _previous, incoming) => triggerStateChange72(list, state.name, state.config, incoming),
+  markup: (el, state) => applyMarkup69(el, state.name)
 });
-df$71.virtualListApi = virtualListApi;
-df$71.virtualListStates = virtualListStates;
-df$71.virtualList = {
+df$72.virtualListApi = virtualListApi;
+df$72.virtualListStates = virtualListStates;
+df$72.virtualList = {
   setData(list, count, renderRow) {
     list._source = null;
     list._count = Math.max(0, Math.floor(count) || 0);
     if (renderRow)
       list._renderRow = renderRow;
-    refresh3(list, {});
+    refresh4(list, {});
     if (list.store)
       virtualListApi.setState(list, list._count ? "default" : "empty");
   },
@@ -30926,7 +32965,7 @@ df$71.virtualList = {
 };
 if (!document.__virtualListQueryInit) {
   document.__virtualListQueryInit = true;
-  const target = (el, attr) => dfDollar70("#" + CSS.escape(el.getAttribute(attr))).get(0);
+  const target = (el, attr) => dfDollar71("#" + CSS.escape(el.getAttribute(attr))).get(0);
   document.addEventListener("input", (e) => {
     const input = e.target.closest?.("[data-virtual-list-filter]");
     const list = input && target(input, "data-virtual-list-filter");
@@ -30934,7 +32973,7 @@ if (!document.__virtualListQueryInit) {
       return;
     clearTimeout(list._filterTimer);
     list._filterTimer = setTimeout(() => {
-      const filters = dfDollar70(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray().map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, el.dataset.kind || "text")).filter(Boolean);
+      const filters = dfDollar71(`[data-virtual-list-filter="${CSS.escape(list.id)}"]`).toArray().map((el) => parseFilter(el.dataset.field || list._source.idField, el.value, el.dataset.kind || "text")).filter(Boolean);
       virtualListApi.setState(list, "default", { filters });
     }, 150);
   });
@@ -30949,20 +32988,20 @@ if (!document.__virtualListQueryInit) {
     });
   });
 }
-function init71() {
-  dfDollar70(".virtual-list:not([data-init])").toArray().forEach((list) => {
+function init72() {
+  dfDollar71(".virtual-list:not([data-init])").toArray().forEach((list) => {
     list.dataset.init = "";
-    let sizer = dfDollar70(list).find(".virtual-list-sizer").get(0);
+    let sizer = dfDollar71(list).find(".virtual-list-sizer").get(0);
     if (!sizer) {
       sizer = document.createElement("div");
       sizer.className = "virtual-list-sizer";
-      dfDollar70(list).append(sizer);
+      dfDollar71(list).append(sizer);
     }
-    let rows = dfDollar70(sizer).find(".virtual-list-rows").get(0);
+    let rows = dfDollar71(sizer).find(".virtual-list-rows").get(0);
     if (!rows) {
       rows = document.createElement("div");
       rows.className = "virtual-list-rows";
-      dfDollar70(sizer).append(rows);
+      dfDollar71(sizer).append(rows);
     }
     list._rows = rows;
     list._renderRow = list._renderRow || defaultRenderRow;
@@ -30985,12 +33024,12 @@ function init71() {
       requestAnimationFrame(() => {
         queued = false;
         if (list.dataset.state !== "loading" && list.dataset.state !== "empty")
-          renderRows3(list);
+          renderRows4(list);
       });
     }, { passive: true });
     new ResizeObserver(() => {
       if (list.dataset.state !== "loading" && list.dataset.state !== "empty")
-        renderRows3(list);
+        renderRows4(list);
     }).observe(list);
     bindComponent(list, virtualListApi);
     if (list._source)
@@ -30999,23 +33038,23 @@ function init71() {
       virtualListApi.setState(list, list._count ? "default" : "empty");
   });
 }
-init71();
-new MutationObserver(init71).observe(document, { childList: true, subtree: true });
+init72();
+new MutationObserver(init72).observe(document, { childList: true, subtree: true });
 
 // src/components/application/window/window.ts
-var df$72 = defussGlobals();
-var dfDollar71 = defussQuery();
+var df$73 = defussGlobals();
+var dfDollar72 = defussQuery();
 var windowStates = ["default", "maximized", "minimized", "closed"];
 var topZ = 10;
 var KEEP = 48;
-var resolve24 = (target) => typeof target === "string" ? dfDollar71("#" + CSS.escape(target)).get(0) ?? dfDollar71(target).get(0) : target;
-var titleOf3 = (w) => dfDollar71(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
+var resolve25 = (target) => typeof target === "string" ? dfDollar72("#" + CSS.escape(target)).get(0) ?? dfDollar72(target).get(0) : target;
+var titleOf3 = (w) => dfDollar72(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 function moveTo(w, x, y) {
   const parent = w.offsetParent;
-  const bar = dfDollar71(w).find(".window-titlebar").get(0);
+  const bar = dfDollar72(w).find(".window-titlebar").get(0);
   if (parent) {
-    const ctl = dfDollar71(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
+    const ctl = dfDollar72(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
     const maxX = parent.clientWidth - KEEP - ctl;
     const minX = KEEP + ctl - w.offsetWidth;
     const maxY = parent.clientHeight - (bar?.offsetHeight ?? KEEP);
@@ -31026,6 +33065,7 @@ function moveTo(w, x, y) {
   w.style.setProperty("--window-y", `${Math.round(y)}px`);
   return { x: Math.round(x), y: Math.round(y) };
 }
+var deskOf = (w) => w.parentElement?.closest(".window-manager, .window-desktop") ?? document;
 function raise(w) {
   if (!w.open)
     return;
@@ -31033,8 +33073,8 @@ function raise(w) {
     return;
   topZ += 1;
   w.style.zIndex = String(topZ);
-  dfDollar71(".window[data-active]").toArray().forEach((o) => {
-    if (o !== w)
+  dfDollar72(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+    if (o !== w && deskOf(o) === deskOf(w))
       o.removeAttribute("data-active");
   });
   w.setAttribute("data-active", "");
@@ -31048,8 +33088,9 @@ function showQuietly(w) {
   else if (w.contains(document.activeElement))
     document.activeElement.blur();
 }
-function activateTopmost() {
-  const open = Array.from(dfDollar71(".window[open]").toArray());
+function activateTopmost(closed) {
+  const desk = deskOf(closed);
+  const open = dfDollar72(desk).find(".window[open]").toArray().filter((o) => deskOf(o) === desk);
   if (!open.length)
     return;
   const top = open.reduce((a, b) => Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a);
@@ -31069,16 +33110,16 @@ function restoreSize(w) {
   w.style.height = w._stash.height;
   w._stash = null;
 }
-function applyMarkup69(el, stateName) {
+function applyMarkup70(el, stateName) {
   const open = stateName !== "closed";
-  dfDollar71(el).attr("open", open ? "" : null);
-  dfDollar71(el).attr("data-maximized", stateName === "maximized" ? "" : null);
-  dfDollar71(el).attr("data-minimized", stateName === "minimized" ? "" : null);
-  dfDollar71(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar71(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar72(el).attr("open", open ? "" : null);
+  dfDollar72(el).attr("data-maximized", stateName === "maximized" ? "" : null);
+  dfDollar72(el).attr("data-minimized", stateName === "minimized" ? "" : null);
+  dfDollar72(el).find(".window-maximize").attr("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
+  dfDollar72(el).find(".window-minimize").attr("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
-function triggerStateChange72(w, stateName, config) {
-  const maxBtn = dfDollar71(w).find(".window-maximize").get(0);
+function triggerStateChange73(w, stateName, config) {
+  const maxBtn = dfDollar72(w).find(".window-maximize").get(0);
   if (stateName !== "closed" && !w.open)
     showQuietly(w);
   switch (stateName) {
@@ -31110,23 +33151,23 @@ function triggerStateChange72(w, stateName, config) {
   }
   if (maxBtn)
     maxBtn.setAttribute("aria-label", stateName === "maximized" ? "Restore" : "Maximize");
-  dfDollar71(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
+  dfDollar72(w).find(".window-minimize").get(0)?.setAttribute("aria-label", stateName === "minimized" ? "Restore" : "Minimize");
 }
 var windowApi = componentState({
   component: "window",
   states: windowStates,
   apply: (w, state) => {
     w.dataset.stateName = state.name;
-    triggerStateChange72(w, state.name, state.config);
+    triggerStateChange73(w, state.name, state.config);
   },
   read: (w, state) => {
     const name = !w.open ? "closed" : w.dataset.stateName || "default";
     return { name, config: name === "closed" ? {} : state.config };
   },
-  markup: (el, state) => applyMarkup69(el, state.name)
+  markup: (el, state) => applyMarkup70(el, state.name)
 });
-df$72.windowApi = windowApi;
-df$72.windowStates = windowStates;
+df$73.windowApi = windowApi;
+df$73.windowStates = windowStates;
 function bindDrag(w, bar) {
   bar.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || e.target.closest("button, a, input, select, textarea"))
@@ -31167,17 +33208,17 @@ function bindDrag(w, bar) {
     w.dispatchEvent(new CustomEvent("window-move", { bubbles: true, detail: posOf(w) }));
   });
 }
-function init72() {
-  dfDollar71("dialog.window:not([data-init])").toArray().forEach((w) => {
+function init73() {
+  dfDollar72("dialog.window:not([data-init])").toArray().forEach((w) => {
     w.dataset.init = "";
-    const bar = dfDollar71(w).find(":scope > .window-titlebar").get(0);
+    const bar = dfDollar72(w).find(":scope > .window-titlebar").get(0);
     if (bar) {
       if (!bar.hasAttribute("tabindex"))
         bar.tabIndex = 0;
       bindDrag(w, bar);
     }
     if (!w.hasAttribute("aria-labelledby") && !w.hasAttribute("aria-label")) {
-      const title = dfDollar71(w).find(".window-title").get(0);
+      const title = dfDollar72(w).find(".window-title").get(0);
       if (title) {
         if (!title.id)
           title.id = `window-title-${Math.random().toString(36).slice(2, 8)}`;
@@ -31186,12 +33227,12 @@ function init72() {
     }
     w.addEventListener("pointerdown", () => raise(w), true);
     w.addEventListener("focusin", () => raise(w));
-    dfDollar71(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
-    dfDollar71(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
+    dfDollar72(w).find(".window-maximize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {}));
+    dfDollar72(w).find(".window-close").get(0)?.addEventListener("click", (e) => {
       e.preventDefault();
       windowApi.setState(w, "closed", {});
     });
-    dfDollar71(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
+    dfDollar72(w).find(".window-minimize").get(0)?.addEventListener("click", () => windowApi.setState(w, w.hasAttribute("data-minimized") ? "default" : "minimized", {}));
     w.addEventListener("close", () => {
       if (w.open)
         return;
@@ -31199,16 +33240,19 @@ function init72() {
       w.removeAttribute("data-active");
       w.removeAttribute("data-maximized");
       w.removeAttribute("data-minimized");
-      activateTopmost();
+      activateTopmost(w);
     });
     bindComponent(w, windowApi);
     const initial = !w.open ? "closed" : w.hasAttribute("data-maximized") ? "maximized" : w.hasAttribute("data-minimized") ? "minimized" : "default";
     w.dataset.stateName = initial;
-    dfDollar71(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
-    dfDollar71(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
+    dfDollar72(w).find(".window-maximize").attr("aria-label", initial === "maximized" ? "Restore" : "Maximize");
+    dfDollar72(w).find(".window-minimize").attr("aria-label", initial === "minimized" ? "Restore" : "Minimize");
     if (w.open) {
       w.style.zIndex = String(++topZ);
-      dfDollar71(".window[data-active]").toArray().forEach((o) => o.removeAttribute("data-active"));
+      dfDollar72(deskOf(w)).find(".window[data-active]").toArray().forEach((o) => {
+        if (deskOf(o) === deskOf(w))
+          o.removeAttribute("data-active");
+      });
       w.setAttribute("data-active", "");
     }
   });
@@ -31231,7 +33275,7 @@ function create(options = {}) {
     focus = true,
     flush = false
   } = options;
-  const host = resolve24(parent) ?? dfDollar71(".window-desktop").get(0) ?? document.body;
+  const host = resolve25(parent) ?? dfDollar72(".window-desktop").get(0) ?? document.body;
   const w = document.createElement("dialog");
   w.className = "window";
   if (id)
@@ -31240,7 +33284,7 @@ function create(options = {}) {
     w.dataset.chrome = chrome;
   if (resizable)
     w.setAttribute("data-resizable", "");
-  const count = dfDollar71(host).find(":scope > .window").toArray().length;
+  const count = dfDollar72(host).find(":scope > .window").toArray().length;
   w.style.setProperty("--window-x", typeof x === "number" ? `${x}px` : x ?? `${24 + count % 8 * 28}px`);
   w.style.setProperty("--window-y", typeof y === "number" ? `${y}px` : y ?? `${24 + count % 8 * 28}px`);
   if (width !== undefined)
@@ -31291,7 +33335,7 @@ function create(options = {}) {
     w.append(s);
   }
   host.append(w);
-  init72();
+  init73();
   showQuietly(w);
   if (focus)
     windowApi.setState(w, "default", {});
@@ -31299,7 +33343,7 @@ function create(options = {}) {
     globalThis.lucide?.createIcons?.();
   return w;
 }
-var list2 = (scope, all = false) => dfDollar71(resolve24(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
+var list2 = (scope, all = false) => dfDollar72(resolve25(scope) ?? document).find(all ? ".window" : ".window[open]").toArray();
 function cascade(scope, step = 28) {
   list2(scope).sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)).forEach((w, i) => {
     windowApi.setState(w, "default", {});
@@ -31328,29 +33372,29 @@ function tile(scope) {
 var windowActions = {
   create,
   open: (target, config = {}) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (w)
       windowApi.setState(w, "default", config);
     return w;
   },
   close: (target) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (w)
       windowApi.setState(w, "closed", {});
     return w;
   },
   focus: (target) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (w?.open)
       raise(w);
     return w;
   },
   move: (target, x, y) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     return w ? moveTo(w, x, y) : null;
   },
   resize: (target, width, height) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (!w)
       return null;
     w.style.width = "";
@@ -31361,38 +33405,38 @@ var windowActions = {
     return w;
   },
   maximize: (target) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (w)
       windowApi.setState(w, "maximized", {});
     return w;
   },
   minimize: (target) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (w)
       windowApi.setState(w, "minimized", {});
     return w;
   },
   restore: (target) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (w)
       windowApi.setState(w, "default", {});
     return w;
   },
   toggleMaximize: (target) => {
-    const w = resolve24(target);
+    const w = resolve25(target);
     if (w)
       windowApi.setState(w, w.hasAttribute("data-maximized") ? "default" : "maximized", {});
     return w;
   },
-  active: () => dfDollar71(".window[open][data-active]").get(0),
+  active: () => dfDollar72(".window[open][data-active]").toArray().reduce((a, b) => !a || Number(b.style.zIndex || 0) > Number(a.style.zIndex || 0) ? b : a, undefined),
   list: list2,
   cascade,
   tile
 };
-df$72.win = windowActions;
-init72();
-new MutationObserver(init72).observe(document, { childList: true, subtree: true });
+df$73.win = windowActions;
+init73();
+new MutationObserver(init73).observe(document, { childList: true, subtree: true });
 
-//# debugId=C767C41AE779AA0564756E2164756E21
+//# debugId=654D7FCDF02E4D4E64756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

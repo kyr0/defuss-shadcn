@@ -42,6 +42,10 @@ export const EXTRA_BUNDLES = {
     // the Terminal - xterm.js with its addons and stylesheet loads from its pinned builds with the first terminal; a
     // part of the Mockup section (the Code Mockup, CSS only, stays in all.*)
     terminal: ['terminal'],
+    // the Desktop section: the window and desktop managers, the taskbar with its Start Button, Start Menu and Tray, the
+    // logon screen and the Desktop with its looks - their remade icons, wallpapers and the pixel font ride along as data
+    // URIs, so it stays out of all.* (the Window itself, in Application, stays there)
+    desktop: ['window-manager', 'desktop-manager', 'taskbar', 'tray', 'start-button', 'start-menu', 'logon', 'desktop'],
 };
 /** The extra bundle a component ships in, or null when it rides in all.*. */
 export function extraBundleOf(component) {

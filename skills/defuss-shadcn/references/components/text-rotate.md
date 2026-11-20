@@ -2,7 +2,7 @@
 name: Text Rotate
 type: ATM
 section: primitives
-why: One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and keyframes picked by the line count (:has()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
+why: One line at a time from a short list, rolling on an infinite CSS loop - a one-line window (1lh) and one animation for any number of lines (registered counters, sibling-count()); no JavaScript, pauses on hover, readable by assistive tech as the full list.
 when: A headline or sentence whose key word cycles ("Build faster / safer / together"), rotating taglines, a live-looking status word. For content the user must read at their own pace use a carousel or a list; for a number that counts use countdown.
 where: dist/components/text-rotate/text-rotate.css
 supportedStates: default
@@ -12,15 +12,16 @@ supportedStates: default
 
 ## Native basis
 
-A `<span class="text-rotate">` around one `<span>` of 2-6 lines (each a child
-element). The outer span is a one-line window (`height: 1lh; overflow:
+A `<span class="text-rotate">` around one `<span>` of lines - two or more, any
+number (each a child element). The outer span is a one-line window (`height: 1lh; overflow:
 hidden`); a CSS animation moves the inner stack from line to line and back to
 the first. Same markup as daisyUI's text-rotate.
 
 ## Native Web APIs
 
 - [`lh` unit](https://developer.mozilla.org/en-US/docs/Web/CSS/length#lh) - the window is exactly one line, at any font-size / line-height
-- [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has) - counts the lines and picks the matching keyframes
+- [`@property`](https://developer.mozilla.org/en-US/docs/Web/CSS/@property) - registered counters that animate: the round's progress (in `steps(n)`) and the roll of each slot; the line shown and every move are computed from them
+- [`sibling-count()` / `sibling-index()`](https://developer.mozilla.org/en-US/docs/Web/CSS/sibling-count) - the line count and a line's place, for any number; where a browser lacks them, `:has()` / `:nth-child()` rules count up to 40 lines
 - [CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) + [`animation-play-state`](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-play-state) - the loop, paused on hover / focus
 - [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) - no rolling, the first line stays
 
@@ -54,7 +55,7 @@ the first. Same markup as daisyUI's text-rotate.
 </p>
 ```
 
-- 2 - 6 lines; each line is one child element (a span, a strong, an emoji...)
+- 2 lines or more (20 work as well as 3); each line is one child element (a span, a strong, an emoji...)
   and stays on one line (`nowrap`).
 - The window is as wide as the widest line; it inherits font, size, weight,
   color and line-height from the text around it (`lh` sizing).
@@ -94,7 +95,7 @@ Hover or keyboard focus inside pauses the loop by default;
 | --- | --- |
 | Screen readers | Every line stays in the DOM - the full list is read, no live-region churn |
 | Motion | `prefers-reduced-motion: reduce` stops the loop; the first line stays |
-| Reading time | Hover / focus pauses it; keep lines short and the round ≥ 6s |
+| Reading time | Hover / focus pauses it; keep lines short and the round at least 6s |
 
 ## Notes
 
@@ -104,4 +105,5 @@ Hover or keyboard focus inside pauses the loop by default;
 - CSS only - there is nothing to initialize, and it works in any static page.
 - Keep the first line meaningful: it is what reduced-motion users and
   no-animation contexts see.
-- More than 6 lines: split the idea, or use a carousel.
+- Many lines share one round: raise `--text-rotate-duration` with the count
+  (about 2s a line), or split the idea.

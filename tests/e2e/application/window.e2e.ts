@@ -50,11 +50,13 @@ try {
         api: typeof (w as any).api?.setState,
         labelled: document.getElementById(w.getAttribute('aria-labelledby')!)?.textContent,
         tab: (w.querySelector('.window-titlebar') as HTMLElement).tabIndex,
-        active: document.querySelectorAll('.window[data-active]').length,
+        // the front window is per desktop: #desk has one, #desk2's maximized window is the other
+        active: document.querySelectorAll('#desk .window[data-active]').length,
+        desks: document.querySelectorAll('.window[data-active]').length,
         dialogs: Array.from(document.querySelectorAll('dialog.window')).every((d) => typeof (d as any).api?.setState === 'function'),
       };
     });
-    assert.deepEqual(r, { api: 'function', labelled: 'Notes', tab: 0, active: 1, dialogs: true });
+    assert.deepEqual(r, { api: 'function', labelled: 'Notes', tab: 0, active: 1, desks: 2, dialogs: true });
     assert.equal(await state('w1'), 'default');
     assert.equal(await state('w-closed'), 'closed');
     assert.equal(await state('w-max'), 'maximized');
@@ -69,7 +71,8 @@ try {
     await page.click('#w1-body');
     const zs = await Promise.all(['w1', 'w-mac', 'w-linux', 'w-retro'].map(z));
     assert.equal(zs[0], Math.max(...zs), `z ${zs}`);
-    assert.equal(await page.$$eval('.window[data-active]', (l) => l.map((e) => e.id).join()), 'w1');
+    assert.equal(await page.$$eval('#desk .window[data-active]', (l) => l.map((e) => e.id).join()), 'w1');
+    assert.equal(await page.getAttribute('#w-max', 'data-active'), '', 'another desktop keeps its front window');
     assert.deepEqual(await page.evaluate(() => (globalThis as any).__focus), ['Notes']);
     const inactive = await page.$eval('#w-mac > .window-titlebar', (e) => getComputedStyle(e).color);
     const active = await page.$eval('#w1 > .window-titlebar', (e) => getComputedStyle(e).color);
@@ -162,10 +165,10 @@ try {
     assert.equal(await page.$eval('#w1', (e) => (e as HTMLDialogElement).open), false);
     assert.equal(await page.evaluate(() => (document.getElementById('w1') as any).api.getState().name), 'closed', 'getState knows at once');
     await page.waitForFunction(() => document.getElementById('w1')!.dataset.stateName === 'closed');
-    assert.equal(await page.$$eval('.window[data-active]', (l) => l.length), 1, 'the next window took over');
+    assert.equal(await page.$$eval('#desk .window[data-active]', (l) => l.length), 1, 'the next window took over');
     await api('w1', 'default');
     assert.equal(await page.$eval('#w1', (e) => (e as HTMLDialogElement).open), true);
-    assert.equal(await page.$$eval('.window[data-active]', (l) => l.map((e) => e.id).join()), 'w1');
+    assert.equal(await page.$$eval('#desk .window[data-active]', (l) => l.map((e) => e.id).join()), 'w1');
   });
 
   await check('State API: default { x, y } moves, maximized / minimized / closed land; getState; unknown throws', async () => {

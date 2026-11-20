@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop Manager e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/desktop-manager/desktop-manager.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; display: grid; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: six icons on a 360px-high surface (four rows of 92px cells: two columns), a small
+       variant and a large one on a wallpaper -->
+  <div class="desktop-manager" id="dm" role="listbox" aria-multiselectable="true" aria-label="Desktop" style="width: 640px; height: 400px;">
+    <div class="desktop-icon" id="i-computer" role="option" aria-selected="false" data-value="computer">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">Computer</span>
+    </div>
+    <div class="desktop-icon" id="i-documents" role="option" aria-selected="false" data-value="documents">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">Documents</span>
+    </div>
+    <div class="desktop-icon" id="i-pictures" role="option" aria-selected="false" data-value="pictures">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">Pictures</span>
+    </div>
+    <div class="desktop-icon" id="i-trash" role="option" aria-selected="false" data-value="trash">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">Recycle Bin</span>
+    </div>
+    <div class="desktop-icon" id="i-notes" role="option" aria-selected="false" data-value="notes">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">Notes</span>
+    </div>
+    <div class="desktop-icon" id="i-terminal" role="option" aria-selected="false" data-value="terminal">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">Terminal</span>
+    </div>
+  </div>
+
+  <div class="desktop-manager" id="dm-sm" data-size="sm" role="listbox" aria-multiselectable="true" aria-label="Small icons" style="width: 640px; height: 160px;">
+    <div class="desktop-icon" role="option" aria-selected="true" data-value="a">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">Selected at start</span>
+    </div>
+  </div>
+
+  <div class="desktop-manager" id="dm-lg" data-size="lg" data-on-wallpaper role="listbox" aria-multiselectable="true" aria-label="Large icons" style="width: 640px; height: 160px; --desktop-wallpaper: linear-gradient(135deg, #1e3a8a, #0f766e);">
+    <div class="desktop-icon" role="option" aria-selected="false" data-value="b">
+      <span class="desktop-icon-image"><svg viewBox="0 0 16 16"><rect width="16" height="16" /></svg></span>
+      <span class="desktop-icon-label">On a wallpaper</span>
+    </div>
+  </div>
+
+  <script type="module" src="/dist/components/core.js"></script>
+  <script type="module" src="/dist/components/desktop-manager/desktop-manager.js"></script>
+</body>
+</html>

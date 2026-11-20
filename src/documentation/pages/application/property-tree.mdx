@@ -1,0 +1,374 @@
+---
+title: "Property Tree"
+description: "Property Tree component - the Property Grid's in-place editing for a whole linked structure: JSON or DSON (Map, Set, Date, BigInt, RegExp, shared nodes, cycles) as a windowed tree; values, keys, types and entries edit in place, every edit one undo step."
+slug: "property-tree"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, DocText, H2, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="property-tree" title="Property Tree" component="property-tree">
+  The <DocLink href="property-grid.html">Property Grid</DocLink>'s editing for a whole structure: one value - a JSON document, or with DSON a graph of objects with Maps, Sets, Dates, BigInts and references - as a tree of key / value rows, as deep and as wide as it is. Only the open branches have rows and only the rows on screen exist, so a hundred thousand nodes open at once. Values, keys and types edit in place with the same editors as the Property Grid, entries are added, removed, duplicated and moved, and every edit is one undo step. A node that appears twice stays one node: the tree shows it once and links every later appearance to it.
+</PageHeader>
+
+<SkillPanel component="property-tree">
+  <SkillField label="Native basis">
+<SkillText>An ARIA <code>role="tree"</code> viewport with <code>aria-activedescendant</code> over a window of rows; the value edits in place (references stay references); the editors are the shared cell editors - <code>.input</code>, <code>.switch</code>, <code>.select</code>, <code>.textarea</code>, native colour and date inputs.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Popover_API" title="the actions menu"><code>popover</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning" title="the menu at its row's button"><code>anchor()</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone" title="Duplicate keeps cycles and shared nodes"><code>structuredClone()</code></ApiPill>
+    <ApiPill href="https://www.rfc-editor.org/rfc/rfc6901" title="every node's address"><code>JSON Pointer</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.property-tree</code>
+    <code>.property-tree-source</code>
+    <code>.property-tree-row</code>
+    <code>.property-tree-key</code>
+    <code>.property-tree-value</code>
+    <code>.property-tree-ref</code>
+    <code>.property-tree-editor</code>
+    <code>.property-tree-menu</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText><code>data-variant="comfortable"</code>, <code>data-readonly</code>, <code>data-hide-root</code>, <code>data-root-label</code>, <code>data-frame="none"</code></SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="A configuration" height="26" hint="Double-click a value (or press Enter / F2 on the active row) to edit it: text, numbers, a switch for booleans, a colour, a date; Enter writes it, Escape keeps it. Double-click a key (Shift + F2) to rename it. The dots at a row's end open its actions: add a property or an item, duplicate, move, change the type, delete. Ctrl / Cmd + Z undoes, Ctrl / Cmd + Shift + Z redoes."
+<div
+  class="property-tree"
+  id="pt-config"
+  aria-label="Service configuration"
+  style="block-size: 22rem; max-width: 36rem"
+  data-state-demo
+>
+  <script type="application/json" class="property-tree-source">
+    {
+      "service": "checkout",
+      "replicas": 3,
+      "public": true,
+      "accent": "#3b82f6",
+      "launched": "2025-03-14",
+      "owner": { "team": "Payments", "oncall": ["ada@example.com", "grace@example.com"] },
+      "limits": {
+        "rps": 1200,
+        "burst": 300,
+        "regions": { "eu-west-1": { "weight": 2 }, "us-east-1": { "weight": 1 } }
+      },
+      "features": [
+        { "name": "wallets", "enabled": true },
+        { "name": "split-payments", "enabled": false, "rollout": 0.25 }
+      ],
+      "notes": null
+    }
+  </script>
+</div>
+```
+
+<H2 id="custom-editors">Custom editors and validation</H2>
+
+<DocText>The hooks are the Property Grid's: <code>getEditorFn(path, value, ctx)</code> hands in any editor - an element or the shared editor contract <code>&#123; el, getValue, validate?, focus?, immediate? &#125;</code> - or <code>false</code> to keep a value from editing; <code>validateFn(path, value, ctx)</code> refuses a value (or a new key, <code>ctx.kind === 'key'</code>) with a message; <code>renderValue(el, value, ctx)</code> draws a value.</DocText>
+
+```html example label="Custom editors" schema="none" height="26" hint="Every task's priority edits as a Rating (a pick writes it at once) and shows as stars through renderValue; its status edits as a Select of the workflow's states and shows as a Badge; its progress edits as a Slider. validateFn refuses a port outside 1024-65535 and a key with a space; getEditorFn keeps every id from editing (false)."
+<div class="property-tree" id="pt-custom" aria-label="Project" style="block-size: 22rem; max-width: 38rem">
+  <script type="application/json" class="property-tree-source">
+    {
+      "project": "Atlas",
+      "port": 8443,
+      "tasks": [
+        { "id": "T-1", "title": "Design the API", "status": "done", "priority": 5, "progress": 100 },
+        { "id": "T-2", "title": "Write the client", "status": "doing", "priority": 4, "progress": 60 },
+        { "id": "T-3", "title": "Load test", "status": "todo", "priority": 2, "progress": 0 }
+      ]
+    }
+  </script>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const states = { todo: 'outline', doing: 'secondary', done: 'default' };
+    const key = (ctx) => ctx.path[ctx.path.length - 1];
+    const inTask = (ctx) => ctx.path[0] === 'tasks' && ctx.path.length === 3;
+    df$.shadcn.propertyTree.configure('#pt-custom', {
+      renderValue: (el, value, ctx) => {
+        if (!inTask(ctx)) return false;
+        if (key(ctx) === 'priority') {
+          const stars = document.createElement('span');
+          stars.className = 'rating';
+          stars.dataset.readonly = '';
+          stars.dataset.size = 'sm';
+          stars.style.setProperty('--rating-value', value);
+          stars.setAttribute('role', 'img');
+          stars.setAttribute('aria-label', value + ' of 5');
+          el.append(stars);
+          return true;
+        }
+        if (key(ctx) === 'status') {
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.dataset.variant = states[value] ?? 'outline';
+          badge.textContent = value;
+          el.append(badge);
+          return true;
+        }
+        return false;
+      },
+      getEditorFn: (path, value, ctx) => {
+        if (key(ctx) === 'id') return false;
+        if (!inTask(ctx)) return null;
+        if (key(ctx) === 'priority') {
+          const el = document.createElement('fieldset');
+          el.className = 'rating';
+          el.dataset.size = 'sm';
+          el.setAttribute('aria-label', 'Priority');
+          const name = 'prio-' + path.join('-');
+          for (let n = 1; n <= 5; n++) {
+            const item = document.createElement('label');
+            item.className = 'rating-item';
+            const input = document.createElement('input');
+            input.className = 'rating-input';
+            input.type = 'radio';
+            input.name = name;
+            input.value = String(n);
+            input.checked = n === value;
+            input.setAttribute('aria-label', n + (n === 1 ? ' star' : ' stars'));
+            item.append(input);
+            el.append(item);
+          }
+          return {
+            el,
+            immediate: true,
+            getValue: () => Number(el.querySelector('input:checked')?.value ?? value),
+            focus: () => (el.querySelector('input:checked') ?? el.querySelector('input')).focus(),
+          };
+        }
+        if (key(ctx) === 'status') {
+          const el = document.createElement('select');
+          el.className = 'select';
+          el.dataset.size = 'xs';
+          for (const s of Object.keys(states)) el.append(new Option(s, s, false, s === value));
+          return el;
+        }
+        if (key(ctx) === 'progress') {
+          const el = document.createElement('input');
+          el.type = 'range';
+          el.className = 'slider';
+          el.min = '0';
+          el.max = '100';
+          el.step = '5';
+          el.value = String(value);
+          el.setAttribute('aria-label', 'Progress');
+          return { el, getValue: () => el.valueAsNumber };
+        }
+        return null;
+      },
+      validateFn: (path, value, ctx) => {
+        if (ctx.kind === 'key' && /\s/.test(value)) return 'A key without spaces';
+        if (key(ctx) === 'port' && (value < 1024 || value > 65535)) return 'A port from 1024 to 65535';
+      },
+    });
+  });
+</script>
+```
+
+<H2 id="variants">Variants</H2>
+
+```html example label="Comfortable rows" schema="none" height="16" hint="data-variant='comfortable' gives every row more room (34px); --property-tree-key-width sets the key column."
+<div
+  class="property-tree"
+  id="pt-comfortable"
+  aria-label="Profile"
+  data-variant="comfortable"
+  style="block-size: 14rem; max-width: 30rem; --property-tree-key-width: 30%"
+>
+  <script type="application/json" class="property-tree-source">
+    {
+      "name": "Ada Lovelace",
+      "born": "1815-12-10",
+      "languages": ["English", "French"],
+      "notes": "Wrote the first\nprogram."
+    }
+  </script>
+</div>
+```
+
+<H2 id="linked">Linked structures (DSON)</H2>
+
+<DocText>JSON cannot say that two places hold the same object, or hold a Map, a Set, a Date or a BigInt. <a class="link" href="https://www.npmjs.com/package/defuss-dson">DSON</a> can: a <code>script type="application/dson"</code> source is read with defuss-dson (loaded on first use, pinned). The tree shows each node once; a later appearance is a <code>ref</code> link to the first, a node that contains itself a <code>cycle</code> link. Edits change the value in place, so an edit shows everywhere the node appears.</DocText>
+
+```html example label="A session with references" schema="none" height="26" hint="The session names one team twice - /team and /user/team - and the team's lead is the user: the tree shows each node at its shallowest place and links the others (/user/team is a ref to /team, /team/lead a ref to /user) - click one to go there. Rename the team under /team and /user/team shows the new name too (one node). roles is a Set, prefs a Map, quota a BigInt, pattern a RegExp, joined a Date - each edits as its kind. The text below is dson() after every edit."
+<div class="property-tree" id="pt-session" aria-label="Session" style="block-size: 20rem; max-width: 36rem">
+  <script type="application/dson" class="property-tree-source">
+[[2,[[1,2],[11,12],[15,16],[21,22],[23,24],[7,8]]],[0,"user"],[2,[[3,4],[5,6],[7,8]]],[0,"name"],[0,"Ada"],[0,"joined"],[3,"2024-03-01T09:00:00.000Z"],[0,"team"],[2,[[3,9],[10,2]]],[0,"Platform"],[0,"lead"],[0,"roles"],[6,[13,14]],[0,"admin"],[0,"editor"],[0,"prefs"],[5,[[17,18],[19,20]]],[0,"theme"],[0,"dark"],[0,"density"],[0,"compact"],[0,"quota"],[8,"9007199254740993"],[0,"pattern"],[4,{"source":"^ord-\\d+$","flags":"i"}]]
+  </script>
+</div>
+<pre class="text-xs" style="margin-block-start: 0.5rem; white-space: pre-wrap; word-break: break-all; max-height: 7rem; overflow: auto"><code id="pt-session-out">Edit a value to see the DSON.</code></pre>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tree = document.getElementById('pt-session');
+    tree.addEventListener('property-tree-change', async () => {
+      document.getElementById('pt-session-out').textContent = await df$.shadcn.propertyTree.dson(tree);
+    });
+  });
+</script>
+```
+
+```html example label="Any value from script" schema="none" height="24" hint="configure({ value }) takes any structure: here a graph of three services that depend on each other (checkout and billing name each other), a Map of their ports, a typed array and a meta record that points back at the whole value (a cycle link). json() writes it with { $ref: pointer } for a node seen before - press Copy as JSON in a row's menu, or read it below."
+<div
+  class="property-tree"
+  id="pt-graph"
+  aria-label="Service graph"
+  data-root-label="services"
+  style="block-size: 18rem; max-width: 36rem"
+></div>
+<pre class="text-xs" style="margin-block-start: 0.5rem; max-height: 8rem; overflow: auto"><code id="pt-graph-out"></code></pre>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkout = { name: 'checkout', dependsOn: [] };
+    const billing = { name: 'billing', dependsOn: [checkout] };
+    const search = { name: 'search', dependsOn: [] };
+    checkout.dependsOn.push(billing, search);
+    const value = {
+      services: [checkout, billing, search],
+      ports: new Map([
+        ['checkout', 8080],
+        ['billing', 8081],
+        ['search', 9200],
+      ]),
+      checksum: new Uint8Array([222, 173, 190, 239]),
+      updated: new Date('2026-11-20T08:30:00Z'),
+    };
+    value.meta = { owner: 'platform', root: value };
+    const tree = document.getElementById('pt-graph');
+    const show = () => (document.getElementById('pt-graph-out').textContent = df$.shadcn.propertyTree.json(tree, 2));
+    df$.shadcn.propertyTree.configure(tree, { value });
+    df$.shadcn.propertyTree.expandAll(tree, 3);
+    show();
+    tree.addEventListener('property-tree-change', show);
+  });
+</script>
+```
+
+<H2 id="large">A hundred thousand nodes</H2>
+
+```html example label="100,000 nodes" schema="none" height="24" hint="A catalog of 1,000 products, each with its fields, tags, dimensions and 16 stock records - 111,000 nodes. Only the open branches have rows and only the rows on screen exist: expand everything (the button) and scroll - the tree keeps a window of some thirty rows. Edits stay instant."
+<div class="flex gap-2 mb-2">
+  <button class="btn" data-variant="outline" data-size="sm" id="pt-big-open">Expand everything</button>
+  <button class="btn" data-variant="outline" data-size="sm" id="pt-big-close">Collapse</button>
+  <output class="text-sm text-muted-foreground" id="pt-big-count" style="align-self: center"></output>
+</div>
+<div class="property-tree" id="pt-big" aria-label="Catalog" style="block-size: 20rem"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const colors = ['#2563eb', '#16a34a', '#dc2626', '#9333ea'];
+    const products = Array.from({ length: 1000 }, (_, i) => ({
+      sku: 'P-' + String(i + 1).padStart(5, '0'),
+      name: 'Product ' + (i + 1),
+      price: Math.round((5 + ((i * 53) % 900) / 10) * 100) / 100,
+      active: i % 7 !== 0,
+      color: colors[i % colors.length],
+      released: '2026-' + String(1 + (i % 12)).padStart(2, '0') + '-15',
+      tags: ['tag-' + (i % 13), 'tag-' + (i % 7)],
+      dimensions: { w: 10 + (i % 40), h: 5 + (i % 20), d: 2 + (i % 9) },
+      stock: Array.from({ length: 16 }, (_, k) => ({
+        store: 'S' + (k + 1),
+        units: (i * (k + 3)) % 250,
+        reserved: (i + k) % 9,
+        bin: 'B' + ((i + k) % 40),
+        audited: k % 3 === 0,
+      })),
+    }));
+    const tree = document.getElementById('pt-big');
+    df$.shadcn.propertyTree.configure(tree, { value: { products } });
+    const rows = () =>
+      (document.getElementById('pt-big-count').textContent =
+        tree.querySelectorAll('.property-tree-row').length + ' row elements in the DOM');
+    document.getElementById('pt-big-open').addEventListener('click', () => {
+      df$.shadcn.propertyTree.expandAll(tree);
+      rows();
+    });
+    document.getElementById('pt-big-close').addEventListener('click', () => {
+      df$.shadcn.propertyTree.collapseAll(tree);
+      rows();
+    });
+    rows();
+  });
+</script>
+```
+
+<H2 id="inspector">A read-only inspector</H2>
+
+```html example label="Inspecting a response" schema="none" height="22" hint="data-readonly turns the tree into an inspector: nothing edits and the actions are gone, but every branch folds, references link, and the arrows walk the rows. data-hide-root starts at the root's children. Send another request to see a new value replace the old one (setValue)."
+<button class="btn mb-2" data-variant="outline" data-size="sm" id="pt-inspect-send">Send the request again</button>
+<div
+  class="property-tree"
+  id="pt-inspect"
+  aria-label="Response"
+  data-readonly
+  data-hide-root
+  style="block-size: 16rem; max-width: 36rem"
+></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    let n = 0;
+    const response = () => {
+      n++;
+      return {
+        status: 200,
+        headers: { 'content-type': 'application/json', 'x-request-id': 'req-' + (1000 + n) },
+        body: {
+          page: n,
+          items: Array.from({ length: 4 }, (_, i) => ({
+            id: n * 10 + i,
+            title: 'Item ' + (n * 10 + i),
+            score: Math.round(((i + 1) * 17 * n) % 100) / 10,
+          })),
+        },
+        timing: { dns: 4, connect: 12, ttfb: 40 + n, total: 61 + n },
+      };
+    };
+    const tree = document.getElementById('pt-inspect');
+    df$.shadcn.propertyTree.configure(tree, { value: response() });
+    df$.shadcn.propertyTree.expandAll(tree, 2);
+    document.getElementById('pt-inspect-send').addEventListener('click', () => {
+      df$.shadcn.propertyTree.setValue(tree, response());
+      df$.shadcn.propertyTree.expandAll(tree, 2);
+    });
+  });
+</script>
+```
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, bound on each tree:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - the rows of the open branches</li>
+    <li><code>editing</code> - one editor open (<code>config.editing</code> is its node's JSON Pointer, <code>editingKey: true</code> its key; <code>data-editing</code> on the tree)</li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The config is the view: <code>&#123; expanded, selected, editing, editingKey, version &#125;</code> - <code>version</code> counts the edits, so <code>el.store.subscribe</code> hears each one; the value is <code>df$.shadcn.propertyTree.value(el)</code>. The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/property-tree-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/property-tree.schema.json"><code>property-tree.schema.json</code></a> by <code>bun run verify</code>:
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `editing` | `string` | `—` | `—` | The JSON Pointer of the node open in its editor - `setState('editing', { editing: '/replicas' })`; mirrored as `data-editing` on the tree. |
+```
+
+</StatesSection>
+
+<ApiSection component="property-tree" />
+
+<SourceFiles component="property-tree" section="css" />
+
+<SourceFiles component="property-tree" section="js" jsTitle="JS" />
+
+</DocPage>

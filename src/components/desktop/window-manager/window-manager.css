@@ -1,0 +1,17 @@
+/* -- Window Manager component -------------------------------------
+   The area one desktop's windows live in. It adds no chrome of its own: the
+   windows are Window components, a taskbar renders the manager's model. With
+   a taskbar bound (data-taskbar, set by the Taskbar) a minimized window leaves
+   the desktop for its taskbar button instead of rolling up to its title bar. */
+
+@layer components {
+  .window-manager {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .window-manager[data-taskbar] .window[data-minimized] {
+    display: none;
+  }
+}

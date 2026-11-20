@@ -276,6 +276,115 @@ try {
     assert.deepEqual(await minimized(['rw1', 'rw2', 'rw3']), [true, true, false], 'opening the third minimizes the second');
   });
 
+  await check('deep navigation: data-levels - each level its own width, the region their sum; push folds the earlier ones (data-keep), the room goes to the center', async () => {
+    const minimized = (ids: string[]) =>
+      page.evaluate((list) => list.map((id) => document.getElementById(id)!.hasAttribute('data-minimized')), ids);
+    await page.evaluate(() => {
+      (globalThis as any).__lv = [];
+      document.getElementById('lv-stack')!.addEventListener('border-layout-stack-change', (e: any) =>
+        (globalThis as any).__lv.push([e.detail.panels.map((p: HTMLElement) => p.id).join(), e.detail.open.map((p: HTMLElement) => p.id).join()]));
+    });
+    const [w1, w2, west, c] = [await rect('#lv1'), await rect('#lv2'), await rect('#lv-stack'), await rect('#lv-c')];
+    assert.deepEqual([w1.w, w2.w], [150, 160], 'each level keeps its --panel-size');
+    assert.ok(Math.abs(west.w - (150 + 160 + 1)) <= 2, `the region is their sum: ${west.w}`);
+    assert.ok(Math.abs(c.w + west.w - 900) <= 3, 'the center takes the rest');
+    await page.evaluate(() =>
+      (globalThis as any).df$.shadcn.borderLayout.push(
+        'lv-stack',
+        '<section class="card panel" id="lv3" style="--panel-size:170px" aria-labelledby="lv3-t"><header class="panel-header"><h3 class="panel-title" id="lv3-t">Details</h3></header><div class="panel-body">details</div></section>',
+      ),
+    );
+    await page.waitForFunction(() => document.getElementById('lv1')!.hasAttribute('data-minimized'));
+    assert.deepEqual(await minimized(['lv1', 'lv2', 'lv3']), [true, false, false], 'keep 2: the outermost folds to its bar');
+    const [b1, w3, west2] = [await rect('#lv1'), await rect('#lv3'), await rect('#lv-stack')];
+    assert.ok(b1.w < 60, `a bar: ${b1.w}`);
+    assert.equal(w3.w, 170);
+    assert.ok(west2.w < 150 + 160 + 170, 'the folded level gave its room to the center');
+    assert.equal(await page.$eval('#lv1 > .panel-header', (h) => getComputedStyle(h).writingMode), 'vertical-rl');
+    await page.waitForFunction(() => (globalThis as any).__lv.some((r: string[]) => r[0] === 'lv1,lv2,lv3' && r[1] === 'lv2,lv3'));
+    assert.deepEqual(
+      await page.evaluate(() => (globalThis as any).df$.shadcn.borderLayout.levels('lv-stack').open.map((p: HTMLElement) => p.id)),
+      ['lv2', 'lv3'],
+    );
+  });
+
+  await check('deep navigation: data-drill - a folded level is a breadcrumb: a click on its bar or Enter on it drops the deeper levels; pop() goes back by index or id', async () => {
+    const ids = () => page.$$eval('#lv-stack > .panel', (p) => p.map((x) => x.id));
+    assert.deepEqual(
+      await page.$eval('#lv1 > .panel-header', (h) => [h.getAttribute('role'), h.getAttribute('aria-label'), (h as HTMLElement).tabIndex]),
+      ['button', 'Back to Sections', 0],
+    );
+    await page.click('#lv1-t');
+    await page.waitForFunction(() => document.querySelectorAll('#lv-stack > .panel').length === 1);
+    assert.deepEqual(await ids(), ['lv1']);
+    assert.equal(await page.$eval('#lv1', (p) => p.hasAttribute('data-minimized')), false, 'the level opens');
+    assert.equal(await page.$$eval('#lv-stack > .border-layout-stack-divider', (d) => d.length), 0, 'its dividers go with them');
+    assert.equal(await page.$eval('#lv1 > .panel-header', (h) => h.getAttribute('role')), null, 'an open level is no breadcrumb');
+    // push two, then Enter on the folded first one
+    await page.evaluate(() => {
+      const bl = (globalThis as any).df$.shadcn.borderLayout;
+      const make = (id: string, t: string) =>
+        `<section class="card panel" id="${id}" style="--panel-size:140px" aria-labelledby="${id}-t"><header class="panel-header"><h3 class="panel-title" id="${id}-t">${t}</h3></header><div class="panel-body">${t}</div></section>`;
+      bl.push('lv-stack', make('x2', 'Two'));
+      bl.push('lv-stack', make('x3', 'Three'));
+    });
+    await page.waitForFunction(() => document.getElementById('lv1')!.hasAttribute('data-minimized'));
+    await page.focus('#lv1 > .panel-header');
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.querySelectorAll('#lv-stack > .panel').length === 1);
+    assert.deepEqual(await ids(), ['lv1']);
+    // pop by id: back to the second level, the third goes
+    const popped = await page.evaluate(() => {
+      const bl = (globalThis as any).df$.shadcn.borderLayout;
+      const make = (id: string) =>
+        `<section class="card panel" id="${id}" style="--panel-size:140px" aria-labelledby="${id}-t"><header class="panel-header"><h3 class="panel-title" id="${id}-t">${id}</h3></header><div class="panel-body">${id}</div></section>`;
+      bl.push('lv-stack', make('y2'));
+      bl.push('lv-stack', make('y3'));
+      return [bl.pop('lv-stack', 'y2')?.id, bl.pop('lv-stack', 'nope'), bl.pop('nope', 0)];
+    });
+    assert.deepEqual(popped, ['y2', null, null]);
+    await page.waitForFunction(() => document.querySelectorAll('#lv-stack > .panel').length === 2);
+    assert.deepEqual(await ids(), ['lv1', 'y2']);
+    await page.evaluate(() => (globalThis as any).df$.shadcn.borderLayout.pop('lv-stack', 0));
+    await page.waitForFunction(() => document.querySelectorAll('#lv-stack > .panel').length === 1);
+  });
+
+  await check('deep navigation: the divider after a level resizes that level alone - the region grows, the center gives way', async () => {
+    await page.evaluate(() => {
+      const make = (id: string) =>
+        `<section class="card panel" id="${id}" style="--panel-size:140px" aria-labelledby="${id}-t"><header class="panel-header"><h3 class="panel-title" id="${id}-t">${id}</h3></header><div class="panel-body">${id}</div></section>`;
+      (globalThis as any).df$.shadcn.borderLayout.push('lv-stack', make('z2'));
+    });
+    await page.waitForSelector('#lv-stack > .border-layout-stack-divider:not([aria-disabled="true"])');
+    const before = [(await rect('#lv1')).w, (await rect('#z2')).w, (await rect('#lv-stack')).w];
+    await page.focus('#lv-stack > .border-layout-stack-divider');
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(50);
+    const after = [(await rect('#lv1')).w, (await rect('#z2')).w, (await rect('#lv-stack')).w];
+    assert.equal(after[0], before[0] + 20, 'the level grows');
+    assert.equal(after[1], before[1], 'the next level keeps its width');
+    assert.equal(after[2], before[2] + 20, 'the region grows with it');
+    assert.equal(await page.$eval('#lv-stack > .border-layout-stack-divider', (d) => d.getAttribute('aria-valuenow')), String(after[0]));
+  });
+
+  await check('deep navigation on the east side: the levels run from the edge toward the center; ArrowLeft widens a level', async () => {
+    assert.deepEqual(
+      await page.evaluate(() => ['le1', 'le2', 'le3'].map((id) => document.getElementById(id)!.hasAttribute('data-minimized'))),
+      [true, false, false],
+      'three authored open with keep 2: the outermost folds',
+    );
+    const [e1, e2, e3, c] = [await rect('#le1'), await rect('#le2'), await rect('#le3'), await rect('#lve-c')];
+    assert.ok(e1.x > e2.x && e2.x > e3.x && e3.x > c.x, `edge to center: ${e1.x} ${e2.x} ${e3.x}`);
+    assert.deepEqual([e2.w, e3.w], [130, 140]);
+    // the divider after the second level (between it and the third, nearer the center)
+    await page.focus('#lve-stack > .border-layout-stack-divider:nth-of-type(2)');
+    await page.keyboard.press('ArrowLeft');
+    await page.waitForTimeout(50);
+    assert.equal((await rect('#le2')).w, 140, 'the second level grows toward the center');
+    assert.equal((await rect('#le3')).w, 140, 'the third keeps its width');
+  });
+
   await check('data-save: sizes and folded regions survive a reload', async () => {
     await page.focus('#sv-w > .resizer-handle');
     await page.keyboard.press('ArrowRight');

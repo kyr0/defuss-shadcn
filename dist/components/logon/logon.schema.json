@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "name": "logon",
+  "states": {
+    "signed-in": {
+      "type": "boolean",
+      "default": false,
+      "target": {
+        "kind": "selector",
+        "selector": ".logon"
+      },
+      "mutation": {
+        "kind": "api",
+        "name": "signed-in"
+      },
+      "observation": {
+        "kind": "attribute",
+        "name": "data-state-name"
+      },
+      "editor": {
+        "component": "checkbox"
+      }
+    }
+  },
+  "actions": {}
+}

@@ -249,10 +249,11 @@ try {
     const r = await page.evaluate((bundles) => {
       const api = (globalThis as any).df$.shadcn.codeExample;
       const each = Object.fromEntries(Object.values(bundles).flat().map((m) => [m, api.bundlesFor(`<div class="${m}"></div>`)]));
-      return { each, none: api.bundlesFor('<button class="btn">Save</button>'), both: api.bundlesFor('<figure class="math-renderer"></figure><figure class="mermaid-diagram"></figure>') };
+      return { each, none: api.bundlesFor('<button class="btn">Save</button>'), window: api.bundlesFor('<div class="window-desktop"><dialog class="window"></dialog></div>'), both: api.bundlesFor('<figure class="math-renderer"></figure><figure class="mermaid-diagram"></figure>') };
     }, EXTRA_BUNDLES as Record<string, string[]>);
     for (const [b, members] of Object.entries(EXTRA_BUNDLES)) for (const m of members) assert.deepEqual(r.each[m], [b], m);
     assert.deepEqual(r.none, []);
+    assert.deepEqual(r.window, [], 'a Window example (window-desktop) needs no desktop bundle');
     assert.deepEqual(r.both, ['mermaid', 'math'], 'in the list\'s order');
   });
 
