@@ -26,6 +26,8 @@ taskbar's click rule and "show desktop".
 - [`<dialog>` `close` event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/close_event) - heard on the way down (it does not bubble)
 - [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent) - `window-manager-change`
 - [`queueMicrotask()`](https://developer.mozilla.org/en-US/docs/Web/API/queueMicrotask) - one change event per burst of mutations
+- [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel) - `data-share`: the browser windows that show the same page talk to each other, no server
+- [`MouseEvent.screenX`](https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/screenX) / [`Window.screenX`](https://developer.mozilla.org/en-US/docs/Web/API/Window/screenX) - windows are placed in screen coordinates across browser windows
 
 ---
 
@@ -66,6 +68,8 @@ taskbar's click rule and "show desktop".
 |-----------|--------|
 | `data-taskbar` | Set by a bound Taskbar: minimized windows are hidden (their taskbar buttons bring them back) |
 | `data-desktop-shown` | The `desktop` state: every window was minimized by "show desktop" |
+| `data-share="name"` | One desktop across browser windows: every browser window showing the page with the same name takes part (see Notes) |
+| `data-share-remote` | Set by the runtime on a window shown here only while another browser window drags it (inert, not in the model) |
 
 ## States
 
@@ -162,5 +166,21 @@ where it is when a window opens or minimizes.
 - The front window is per desktop: two managers on one page each keep one
   active window (Window marks `data-active` within its nearest
   `.window-manager` / `.window-desktop`).
-- The manager never moves, sizes or styles a window; `cascade()` and
-  `tile()` are `df$.shadcn.win.cascade` / `tile` inside the manager.
+- The manager never moves, sizes or styles a window itself; `cascade()` and
+  `tile()` are `df$.shadcn.win.cascade` / `tile` inside the manager, and
+  sharing places windows through `df$.shadcn.win.move` / `resize`.
+- **Across browser windows** (`data-share="name"`): open the same page in a
+  second browser window beside the first and they are one desktop. A window
+  dragged past the edge shows in the browser window it moves over (the part
+  beyond this one's edge, `data-share-remote`, inert); dropped there, that
+  browser window takes it - its own copy of the window (the same id) opens at
+  the same place on the screen, with the same size and the values of its
+  fields (the text in a Notepad) - and this one closes it. Dropped where no
+  browser window is, it comes back inside its desktop. While it is shared, a
+  drag may leave the desktop (Window reads `data-share`). Only windows both
+  pages hold (by id) travel; a window created by script on one page stays.
+  The browser windows talk over a `BroadcastChannel` named after
+  `data-share` - same origin, no server; a sandboxed frame (a docs card) has
+  none and the desktop stays where it is. Positions: a pointer event measures
+  where the viewport sits on the screen, the browser frame is estimated until
+  the first one.

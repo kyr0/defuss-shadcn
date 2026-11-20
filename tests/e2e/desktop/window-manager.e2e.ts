@@ -7,7 +7,9 @@ import { assertRenderContract } from '../lib/render-contract.ts';
  * Why: the window manager is the model a taskbar renders - which windows are open, in what order, which is in
  * front. These checks drive real windows on the real dist/ files: the model and its change event follow opening,
  * closing, focusing, minimizing and renaming; toggle() is the taskbar rule; "show desktop" minimizes every window
- * and brings the same ones back; two managers on one page keep separate front windows; both states land.
+ * and brings the same ones back; two managers on one page keep separate front windows; both states land; with
+ * data-share two real browser windows side by side hand a window over (it shows in both while it moves, the one it is
+ * dropped on takes it with its text) and a window dropped outside every browser window comes back.
  */
 
 const server = startServer();
@@ -142,6 +144,62 @@ try {
     const xs = await page.$$eval('#wm1 .window[open]', (ws) => ws.map((w) => (w as HTMLElement).offsetLeft));
     assert.ok(new Set(xs).size === xs.length, 'stepped: ' + xs.join(' '));
     assert.equal(await page.$eval('#w-other', (w) => (w as HTMLElement).style.getPropertyValue('--window-x')), other);
+  });
+
+  await check('across browser windows (data-share): a window dragged onto the browser window beside moves there', async () => {
+    // two browser windows side by side on one screen, the same page in each
+    const ctx = await browser.newContext({ viewport: null });
+    try {
+      const [a, b] = [await ctx.newPage(), await ctx.newPage()];
+      for (const [p, left] of [
+        [a, 0],
+        [b, 900],
+      ] as const) {
+        const cdp = await ctx.newCDPSession(p);
+        const { windowId } = await cdp.send('Browser.getWindowForTarget');
+        await cdp.send('Browser.setWindowBounds', { windowId, bounds: { left, top: 0, width: 900, height: 820 } });
+        await p.goto(`${server.url}/tests/e2e/desktop/window-manager.e2e-fixture.html`);
+        await p.waitForSelector('#wm-share[data-init]');
+      }
+      await b.evaluate(() => (document.querySelector('#w-share') as HTMLDialogElement).close());
+      await a.fill('#w-share textarea', 'travels along');
+      const bar = (await a.locator('#w-share .window-title').boundingBox())!;
+      const [x0, y0] = [bar.x + 20, bar.y + bar.height / 2];
+      await a.mouse.move(x0, y0);
+      await a.mouse.down();
+      for (let dx = 60; dx <= 900; dx += 60) await a.mouse.move(x0 + dx, y0);
+      // while it moves, the browser window beside shows it - not as one of its own windows yet
+      await b.waitForSelector('#w-share[open][data-share-remote]');
+      assert.deepEqual(
+        await b.evaluate(() => (globalThis as any).df$.shadcn.windowManager.windows('#wm-share').map((w: any) => w.id)),
+        [],
+      );
+      await a.mouse.up();
+      await b.waitForSelector('#w-share[open]:not([data-share-remote])');
+      await a.waitForFunction(() => !(document.querySelector('#w-share') as HTMLDialogElement).open);
+      assert.equal(await b.inputValue('#w-share textarea'), 'travels along');
+      // the same place on the screen: dragged 900px right from x 40, the browser window beside starts 900px right
+      const left = await b.evaluate(() => (document.querySelector('#w-share') as HTMLElement).offsetLeft);
+      assert.ok(Math.abs(left - 40) < 30, `placed at ${left}`);
+      assert.deepEqual(
+        await b.evaluate(() => (globalThis as any).df$.shadcn.windowManager.windows('#wm-share').map((w: any) => w.id)),
+        ['w-share'],
+      );
+      // dropped where no browser window is (below both), it comes back inside its own desktop
+      const bar2 = (await b.locator('#w-share .window-title').boundingBox())!;
+      await b.mouse.move(bar2.x + 20, bar2.y + 5);
+      await b.mouse.down();
+      for (let dy = 100; dy <= 1000; dy += 100) await b.mouse.move(bar2.x + 20, bar2.y + 5 + dy);
+      await b.mouse.up();
+      await b.waitForFunction(() => {
+        const w = document.querySelector('#w-share') as HTMLElement;
+        const m = document.querySelector('#wm-share') as HTMLElement;
+        return (w as HTMLDialogElement).open && w.offsetTop < m.clientHeight;
+      });
+      assert.equal(await a.evaluate(() => (document.querySelector('#w-share') as HTMLDialogElement).open), false);
+    } finally {
+      await ctx.close();
+    }
   });
 
   await check('render() contract: both states', async () => {

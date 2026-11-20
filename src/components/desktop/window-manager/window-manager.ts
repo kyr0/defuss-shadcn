@@ -81,7 +81,7 @@ const stateOf = (w: HTMLDialogElement): string =>
 /** The manager's open windows, in the order they opened (a window that closes and opens again goes last). */
 function entries(m: HTMLElement): WindowManagerEntry[] {
   return own(m)
-    .filter((w) => w.open)
+    .filter((w) => w.open && !w.hasAttribute('data-share-remote'))
     .sort((a, b) => (a._wmOpened ?? 0) - (b._wmOpened ?? 0))
     .map((w) => ({
       id: w.id,
@@ -236,6 +236,156 @@ const tile = (target: string | HTMLElement): void => {
 export const windowManagerActions = { windows, active, toggle, showDesktop, cascade, tile };
 df$.windowManager = windowManagerActions;
 
+// -- Across browser windows (data-share) ----------------------------------------------------------------------------
+// Every browser window that shows the same page with the same data-share name is one desktop: a window dragged over
+// another browser window shows there while it moves (the part beyond this one's edge), and the browser window it is
+// dropped on takes it - opens its own copy (same id) at that place with the same size and field values, and this one
+// closes. The browser windows talk over a BroadcastChannel and place windows in SCREEN coordinates; a page loaded in
+// each is all it needs, no server. Dropped where no browser window takes it, the window comes back inside.
+// VERIFIED: (window-manager.e2e "across browser windows") two Chromium windows side by side hand a window over.
+
+/** Where this viewport's top-left corner is on the screen, in CSS px. */
+let calibrated: { x: number; y: number; sx: number; sy: number } | null = null;
+// a pointer event knows the exact offset (screen - client); kept relative to the window position, so a moved browser
+// window stays right until the next pointer event measures it again
+addEventListener(
+  'pointermove',
+  (e) => (calibrated = { x: e.screenX - e.clientX, y: e.screenY - e.clientY, sx: screenX, sy: screenY }),
+  { capture: true, passive: true },
+);
+const viewportOrigin = () =>
+  calibrated
+    ? { x: calibrated.x + screenX - calibrated.sx, y: calibrated.y + screenY - calibrated.sy }
+    : // before any pointer event: the browser's frame estimated (the toolbars above, equal borders at the sides)
+      { x: screenX + (outerWidth - innerWidth) / 2, y: screenY + outerHeight - innerHeight };
+
+interface ScreenBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+const screenBox = (el: Element): ScreenBox => {
+  const r = el.getBoundingClientRect();
+  const o = viewportOrigin();
+  return { x: o.x + r.left, y: o.y + r.top, w: r.width, h: r.height };
+};
+const inside = (b: ScreenBox, p: { x: number; y: number }) =>
+  p.x >= b.x && p.x < b.x + b.w && p.y >= b.y && p.y < b.y + b.h;
+const overlaps = (a: ScreenBox, b: ScreenBox) =>
+  a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+
+/** This page among the browser windows (a message from itself is ignored). */
+const PEER = Math.random().toString(36).slice(2);
+
+/** The values of a window's fields, in document order - the text in a Notepad goes along. */
+const fieldsOf = (w: HTMLElement) =>
+  dfDollar(w)
+    .find<HTMLInputElement>('input, textarea, select')
+    .toArray()
+    .map((el) => (el.type === 'checkbox' || el.type === 'radio' ? el.checked : el.value));
+const setFields = (w: HTMLElement, values: unknown[]) => {
+  const els = dfDollar(w).find<HTMLInputElement>('input, textarea, select').toArray();
+  if (els.length !== values.length) return;
+  els.forEach((el, i) => {
+    if (el.type === 'checkbox' || el.type === 'radio') el.checked = !!values[i];
+    else el.value = String(values[i] ?? '');
+  });
+};
+
+/** Shows a window where another browser window has it: placed in screen coordinates, sized like there. */
+function place(m: HTMLElement, w: HTMLDialogElement, box: ScreenBox, bounded: boolean) {
+  const desk = screenBox(m);
+  win()?.resize(w, box.w, box.h);
+  win()?.move(w, box.x - desk.x, box.y - desk.y, bounded);
+}
+
+/** A window only shown here while another browser window drags it goes away again. */
+function dropRemote(w: HTMLDialogElement) {
+  if (!w.hasAttribute('data-share-remote')) return;
+  w.removeAttribute('data-share-remote');
+  w.inert = false;
+  win()?.close(w);
+}
+
+function share(m: HTMLElement) {
+  let channel: BroadcastChannel;
+  try {
+    channel = new BroadcastChannel('defuss-shadcn:window-manager:' + m.dataset.share);
+  } catch {
+    return; // an opaque origin (a sandboxed frame) has no channel: the desktop stays in this browser window
+  }
+  const post = (msg: Record<string, unknown>) => channel.postMessage({ ...msg, from: PEER });
+  const byIdHere = (id: string) => own(m).find((w) => w.id === id);
+  let last = { x: 0, y: 0 };
+  let dragged = '';
+  let frame = 0;
+
+  // this browser window drags: the others follow the window's place on the screen
+  m.addEventListener('pointermove', (e) => {
+    const w = (e.target as Element).closest?.('dialog.window[data-dragging]') as HTMLDialogElement | null;
+    if (!w || managerOf(w) !== m) return;
+    last = { x: e.screenX, y: e.screenY };
+    dragged = w.id;
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      post({ type: 'move', id: w.id, box: screenBox(w), desk: screenBox(m) });
+    });
+  });
+  m.addEventListener('window-move', (e) => {
+    const w = e.target as HTMLDialogElement;
+    if (w.id !== dragged || managerOf(w) !== m) return;
+    dragged = '';
+    cancelAnimationFrame(frame);
+    frame = 0;
+    const desk = screenBox(m);
+    post({ type: 'drop', id: w.id, box: screenBox(w), desk, point: last, fields: fieldsOf(w) });
+    if (inside(desk, last)) return;
+    // dropped outside this browser window: wait for one to take it, else bring it back inside
+    clearTimeout(w._shareWait);
+    w._shareWait = setTimeout(() => win()?.move(w, w.offsetLeft, w.offsetTop), 400);
+  });
+
+  channel.onmessage = ({ data }) => {
+    if (!data || data.from === PEER) return;
+    const w = byIdHere(data.id);
+    if (!w) return; // a window this page does not hold is not handed over
+    if (data.type === 'take') {
+      if (data.to !== PEER) return;
+      clearTimeout(w._shareWait);
+      w.removeAttribute('data-dragging');
+      win()?.close(w);
+      return;
+    }
+    const desk = screenBox(m);
+    const openHere = w.open && !w.hasAttribute('data-share-remote');
+    if (data.type === 'move') {
+      if (openHere) return; // already open here: it moves only when it is dropped here
+      if (!overlaps(desk, data.box)) return dropRemote(w);
+      if (!w.open) {
+        w.setAttribute('data-share-remote', '');
+        w.inert = true;
+        win()?.open(w);
+      }
+      place(m, w, data.box, false);
+      return;
+    }
+    if (data.type === 'drop') {
+      const mine = inside(desk, data.point) && !inside(data.desk, data.point);
+      if (!mine) return dropRemote(w);
+      w.removeAttribute('data-share-remote');
+      w.inert = false;
+      if (!w.open) win()?.open(w);
+      place(m, w, data.box, true);
+      setFields(w, data.fields ?? []);
+      win()?.focus(w);
+      later(m);
+      channel.postMessage({ type: 'take', id: w.id, to: data.from, from: PEER });
+    }
+  };
+}
+
 function init() {
   dfDollar('.window-manager:not([data-init])')
     .toArray()
@@ -254,6 +404,7 @@ function init() {
       });
       // close does not bubble: listen on the way down
       m.addEventListener('close', () => later(m), true);
+      if (m.dataset.share) share(m);
       later(m);
     });
 }

@@ -2454,6 +2454,13 @@
         background: #f0f0f0;
         box-shadow: 0 0 0 1px rgb(255 255 255 / 0.7);
       }
+      /* a folder (its Desktop Manager) is white to the glass frame - no grey band, no inner border */
+      & > .window-body[data-flush]:has(> .desktop-manager) {
+        padding: 0;
+        border: 0;
+        background: #fff;
+        box-shadow: none;
+      }
       & > .window-toolbar {
         border: 1px solid #888;
         border-bottom: 0;
@@ -2935,6 +2942,10 @@
 
   /* the period looks keep the bar's buttons at its start (centring is the modern look's), a menubar inside a window is
      flat, a text field is white, the clock shows the time alone where the bar is one line high */
+  /* a window's menubar row is as high as the menubar: the toolbar's own 2.25rem minimum centred it with a gap above */
+  .desktop:is([data-variant="winxp"], [data-variant="win7"]) .window > .window-toolbar:has(> .menubar) {
+    min-height: 0;
+  }
   .desktop[data-variant] {
     & .taskbar[data-align="center"] {
       & > :first-child {

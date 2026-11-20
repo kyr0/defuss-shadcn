@@ -419,7 +419,7 @@ interface DefussShadcnRegistry {
     open(target: string | HTMLElement, config?: { x?: number; y?: number }): HTMLDialogElement | null;
     close(target: string | HTMLElement): HTMLDialogElement | null;
     focus(target: string | HTMLElement): HTMLDialogElement | null;
-    move(target: string | HTMLElement, x: number, y: number): { x: number; y: number } | null;
+    move(target: string | HTMLElement, x: number, y: number, bounded?: boolean): { x: number; y: number } | null;
     resize(target: string | HTMLElement, width: number | string, height?: number | string): HTMLDialogElement | null;
     maximize(target: string | HTMLElement): HTMLDialogElement | null;
     minimize(target: string | HTMLElement): HTMLDialogElement | null;

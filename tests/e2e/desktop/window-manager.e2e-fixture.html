@@ -67,6 +67,19 @@
     </dialog>
   </div>
 
+  <!-- one desktop across browser windows: every browser window showing this page with data-share="e2e" -->
+  <div class="window-desktop window-manager" id="wm-share" data-share="e2e" style="width: 720px; height: 160px;">
+    <dialog class="window" id="w-share" open style="--window-x: 40px; --window-y: 20px; --window-w: 220px;">
+      <header class="window-titlebar">
+        <h2 class="window-title">Shared note</h2>
+        <form method="dialog" class="window-controls">
+          <button class="window-close" aria-label="Close"></button>
+        </form>
+      </header>
+      <div class="window-body" data-flush><textarea aria-label="Note"></textarea></div>
+    </dialog>
+  </div>
+
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/window/window.js"></script>
   <script type="module" src="/dist/components/window-manager/window-manager.js"></script>

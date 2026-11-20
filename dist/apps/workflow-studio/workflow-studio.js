@@ -9647,10 +9647,10 @@ var KEEP = 48;
 var resolve6 = (target) => typeof target === "string" ? dfDollar14("#" + CSS.escape(target)).get(0) ?? dfDollar14(target).get(0) : target;
 var titleOf2 = (w) => dfDollar14(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
-function moveTo(w, x, y) {
+function moveTo(w, x, y, bounded = true) {
   const parent = w.offsetParent;
   const bar = dfDollar14(w).find(".window-titlebar").get(0);
-  if (parent) {
+  if (parent && bounded) {
     const ctl = dfDollar14(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
     const maxX = parent.clientWidth - KEEP - ctl;
     const minX = KEEP + ctl - w.offsetWidth;
@@ -9777,7 +9777,8 @@ function bindDrag(w, bar) {
     const { clientX: sx, clientY: sy } = e;
     bar.setPointerCapture(e.pointerId);
     w.setAttribute("data-dragging", "");
-    const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy);
+    const free = !!w.closest("[data-share]");
+    const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy, !free);
     const onUp = () => {
       bar.removeEventListener("pointermove", onMove);
       bar.removeEventListener("pointerup", onUp);
@@ -9986,9 +9987,9 @@ var windowActions = {
       raise(w);
     return w;
   },
-  move: (target, x, y) => {
+  move: (target, x, y, bounded = true) => {
     const w = resolve6(target);
-    return w ? moveTo(w, x, y) : null;
+    return w ? moveTo(w, x, y, bounded) : null;
   },
   resize: (target, width, height) => {
     const w = resolve6(target);
@@ -15495,6 +15496,6 @@ new MutationObserver((records) => {
     init15();
 }).observe(document, { childList: true, subtree: true });
 
-//# debugId=E4A58AFC0F5DEE4564756E2164756E21
+//# debugId=56598DFF68A90C0964756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=workflow-studio.js.map

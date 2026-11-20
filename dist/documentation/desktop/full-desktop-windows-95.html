@@ -20,7 +20,7 @@
 </head>
 <body>
 <div class="desktop" id="w95-desktop" data-variant="win95" style="height: var(--scaffold-height, 34rem)">
-  <div class="window-desktop window-manager" id="w95-desk">
+  <div class="window-desktop window-manager" id="w95-desk" data-share="w95-desk">
     <div class="desktop-manager" data-on-wallpaper role="listbox" aria-multiselectable="true" aria-label="Desktop">
       <div class="desktop-icon" role="option" data-value="w95-computer">
         <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="computer"></span></span>
@@ -345,6 +345,10 @@ today the desktop changed its look and nothing else changed.</textarea>
         <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="settings"></span></span>
         <span class="start-menu-label">Settings</span>
       </button>
+      <button class="start-menu-item" type="button" data-value="new-browser-window">
+        <span class="start-menu-icon"><span class="desktop-glyph" data-glyph="computer"></span></span>
+        <span class="start-menu-label">New browser window</span>
+      </button>
     </div>
     <p class="start-menu-empty" hidden>No programs match</p>
     <div class="start-menu-foot">
@@ -397,7 +401,18 @@ today the desktop changed its look and nothing else changed.</textarea>
   document.addEventListener('DOMContentLoaded', () => {
     const root = document.querySelector('#w95-desktop');
     const logon = root.querySelector('.logon');
+    // one desktop across browser windows (the manager's data-share): another browser window beside this one shows
+    // the same page, and a window dragged over to it moves there. A docs card is a sandboxed frame - no second window
+    const another = root.querySelector('[data-value="new-browser-window"]');
+    if (self !== top) another.hidden = true;
+    const newBrowserWindow = () =>
+      globalThis.open(
+        location.href,
+        '_blank',
+        `popup,left=${screenX + outerWidth},top=${screenY},width=${outerWidth},height=${outerHeight}`,
+      );
     const open = (value) => {
+      if (value === 'new-browser-window') return newBrowserWindow();
       if (value === 'logoff' || value === 'shutdown') return df$.shadcn.logon.lock(logon);
       if (value) df$.shadcn.win.open(value);
     };

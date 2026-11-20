@@ -10760,10 +10760,10 @@ var KEEP = 48;
 var resolve7 = (target) => typeof target === "string" ? dfDollar23("#" + CSS.escape(target)).get(0) ?? dfDollar23(target).get(0) : target;
 var titleOf = (w) => dfDollar23(w).find(".window-title").get(0)?.textContent?.trim() ?? "";
 var posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
-function moveTo(w, x, y) {
+function moveTo(w, x, y, bounded = true) {
   const parent = w.offsetParent;
   const bar = dfDollar23(w).find(".window-titlebar").get(0);
-  if (parent) {
+  if (parent && bounded) {
     const ctl = dfDollar23(w).find(".window-controls").get(0)?.offsetWidth ?? 0;
     const maxX = parent.clientWidth - KEEP - ctl;
     const minX = KEEP + ctl - w.offsetWidth;
@@ -10890,7 +10890,8 @@ function bindDrag(w, bar) {
     const { clientX: sx, clientY: sy } = e;
     bar.setPointerCapture(e.pointerId);
     w.setAttribute("data-dragging", "");
-    const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy);
+    const free = !!w.closest("[data-share]");
+    const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy, !free);
     const onUp = () => {
       bar.removeEventListener("pointermove", onMove);
       bar.removeEventListener("pointerup", onUp);
@@ -11099,9 +11100,9 @@ var windowActions = {
       raise(w);
     return w;
   },
-  move: (target, x, y) => {
+  move: (target, x, y, bounded = true) => {
     const w = resolve7(target);
-    return w ? moveTo(w, x, y) : null;
+    return w ? moveTo(w, x, y, bounded) : null;
   },
   resize: (target, width, height) => {
     const w = resolve7(target);
@@ -11158,7 +11159,7 @@ var own2 = (m) => dfDollar24(m).find("dialog.window").toArray().filter((w) => ma
 var seq = 0;
 var stateOf = (w) => !w.open ? "closed" : w.hasAttribute("data-minimized") ? "minimized" : w.hasAttribute("data-maximized") ? "maximized" : "default";
 function entries2(m) {
-  return own2(m).filter((w) => w.open).sort((a, b) => (a._wmOpened ?? 0) - (b._wmOpened ?? 0)).map((w) => ({
+  return own2(m).filter((w) => w.open && !w.hasAttribute("data-share-remote")).sort((a, b) => (a._wmOpened ?? 0) - (b._wmOpened ?? 0)).map((w) => ({
     id: w.id,
     title: dfDollar24(w).find(".window-title").get(0)?.textContent?.trim() ?? "",
     icon: dfDollar24(w).find(".window-icon").attr("data-lucide") ?? "",
@@ -11266,6 +11267,125 @@ var tile2 = (target) => {
 };
 var windowManagerActions = { windows, active: active2, toggle, showDesktop, cascade: cascade2, tile: tile2 };
 df$24.windowManager = windowManagerActions;
+var calibrated = null;
+addEventListener("pointermove", (e) => calibrated = { x: e.screenX - e.clientX, y: e.screenY - e.clientY, sx: screenX, sy: screenY }, { capture: true, passive: true });
+var viewportOrigin = () => calibrated ? { x: calibrated.x + screenX - calibrated.sx, y: calibrated.y + screenY - calibrated.sy } : { x: screenX + (outerWidth - innerWidth) / 2, y: screenY + outerHeight - innerHeight };
+var screenBox = (el) => {
+  const r = el.getBoundingClientRect();
+  const o = viewportOrigin();
+  return { x: o.x + r.left, y: o.y + r.top, w: r.width, h: r.height };
+};
+var inside = (b, p) => p.x >= b.x && p.x < b.x + b.w && p.y >= b.y && p.y < b.y + b.h;
+var overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+var PEER = Math.random().toString(36).slice(2);
+var fieldsOf = (w) => dfDollar24(w).find("input, textarea, select").toArray().map((el) => el.type === "checkbox" || el.type === "radio" ? el.checked : el.value);
+var setFields = (w, values) => {
+  const els = dfDollar24(w).find("input, textarea, select").toArray();
+  if (els.length !== values.length)
+    return;
+  els.forEach((el, i) => {
+    if (el.type === "checkbox" || el.type === "radio")
+      el.checked = !!values[i];
+    else
+      el.value = String(values[i] ?? "");
+  });
+};
+function place(m, w, box, bounded) {
+  const desk = screenBox(m);
+  win()?.resize(w, box.w, box.h);
+  win()?.move(w, box.x - desk.x, box.y - desk.y, bounded);
+}
+function dropRemote(w) {
+  if (!w.hasAttribute("data-share-remote"))
+    return;
+  w.removeAttribute("data-share-remote");
+  w.inert = false;
+  win()?.close(w);
+}
+function share(m) {
+  let channel;
+  try {
+    channel = new BroadcastChannel("defuss-shadcn:window-manager:" + m.dataset.share);
+  } catch {
+    return;
+  }
+  const post = (msg) => channel.postMessage({ ...msg, from: PEER });
+  const byIdHere = (id) => own2(m).find((w) => w.id === id);
+  let last = { x: 0, y: 0 };
+  let dragged = "";
+  let frame = 0;
+  m.addEventListener("pointermove", (e) => {
+    const w = e.target.closest?.("dialog.window[data-dragging]");
+    if (!w || managerOf3(w) !== m)
+      return;
+    last = { x: e.screenX, y: e.screenY };
+    dragged = w.id;
+    if (frame)
+      return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      post({ type: "move", id: w.id, box: screenBox(w), desk: screenBox(m) });
+    });
+  });
+  m.addEventListener("window-move", (e) => {
+    const w = e.target;
+    if (w.id !== dragged || managerOf3(w) !== m)
+      return;
+    dragged = "";
+    cancelAnimationFrame(frame);
+    frame = 0;
+    const desk = screenBox(m);
+    post({ type: "drop", id: w.id, box: screenBox(w), desk, point: last, fields: fieldsOf(w) });
+    if (inside(desk, last))
+      return;
+    clearTimeout(w._shareWait);
+    w._shareWait = setTimeout(() => win()?.move(w, w.offsetLeft, w.offsetTop), 400);
+  });
+  channel.onmessage = ({ data }) => {
+    if (!data || data.from === PEER)
+      return;
+    const w = byIdHere(data.id);
+    if (!w)
+      return;
+    if (data.type === "take") {
+      if (data.to !== PEER)
+        return;
+      clearTimeout(w._shareWait);
+      w.removeAttribute("data-dragging");
+      win()?.close(w);
+      return;
+    }
+    const desk = screenBox(m);
+    const openHere = w.open && !w.hasAttribute("data-share-remote");
+    if (data.type === "move") {
+      if (openHere)
+        return;
+      if (!overlaps(desk, data.box))
+        return dropRemote(w);
+      if (!w.open) {
+        w.setAttribute("data-share-remote", "");
+        w.inert = true;
+        win()?.open(w);
+      }
+      place(m, w, data.box, false);
+      return;
+    }
+    if (data.type === "drop") {
+      const mine = inside(desk, data.point) && !inside(data.desk, data.point);
+      if (!mine)
+        return dropRemote(w);
+      w.removeAttribute("data-share-remote");
+      w.inert = false;
+      if (!w.open)
+        win()?.open(w);
+      place(m, w, data.box, true);
+      setFields(w, data.fields ?? []);
+      win()?.focus(w);
+      later(m);
+      channel.postMessage({ type: "take", id: w.id, to: data.from, from: PEER });
+    }
+  };
+}
 function init24() {
   dfDollar24(".window-manager:not([data-init])").toArray().forEach((m) => {
     m.dataset.init = "";
@@ -11279,12 +11399,14 @@ function init24() {
       attributeFilter: ["open", "data-active", "data-minimized", "data-maximized", "id"]
     });
     m.addEventListener("close", () => later(m), true);
+    if (m.dataset.share)
+      share(m);
     later(m);
   });
 }
 init24();
 new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
-//# debugId=32DFC745B63CDC1A64756E2164756E21
+//# debugId=D07110817919AB1E64756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

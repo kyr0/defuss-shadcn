@@ -4,7 +4,7 @@ description: "Window Manager component - the model of one desktop's windows (ope
 slug: "window-manager"
 ---
 
-import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
+import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection, ApiSection, DocLink, DocText, SkillField, SkillText, SkillRow, ApiPill } from "../../lib/components/index";
 
 <DocPage meta={meta}>
 
@@ -159,6 +159,16 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       <div class="window-body">Desktop B</div>
     </dialog>
   </div>
+</div>
+```
+
+## Across browser windows
+
+<DocText>With <code>data-share="name"</code> on the manager, every browser window that shows the page is part of one desktop - after neo.mjs's shared dialogs, kept small. Drag a window past the edge of one browser window and it shows in the browser window beside it while it moves; drop it there and that one takes it, with its size, its place on the screen and the text in its fields. The browser windows talk over a <code>BroadcastChannel</code>, so it needs no server - only the same page in each. A docs card is a sandboxed frame without one, so try it full screen: open a Desktop look (<DocLink href="desktop-windows-xp.html">Windows XP</DocLink>, <DocLink href="desktop-modern.html">Modern</DocLink> ...) with "Open full screen", then "New browser window" in its start menu opens a second one beside it. The <DocLink href="scaffold-desktop.html">Desktop</DocLink> scaffold shares its windows too.</DocText>
+
+```html
+<div class="window-desktop window-manager" id="desk" data-share="desk">
+  <dialog class="window" id="notes" open>…</dialog>
 </div>
 ```
 

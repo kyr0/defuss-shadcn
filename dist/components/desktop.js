@@ -15,7 +15,7 @@ var own = (m) => dfDollar(m).find("dialog.window").toArray().filter((w) => manag
 var seq = 0;
 var stateOf = (w) => !w.open ? "closed" : w.hasAttribute("data-minimized") ? "minimized" : w.hasAttribute("data-maximized") ? "maximized" : "default";
 function entries(m) {
-  return own(m).filter((w) => w.open).sort((a, b) => (a._wmOpened ?? 0) - (b._wmOpened ?? 0)).map((w) => ({
+  return own(m).filter((w) => w.open && !w.hasAttribute("data-share-remote")).sort((a, b) => (a._wmOpened ?? 0) - (b._wmOpened ?? 0)).map((w) => ({
     id: w.id,
     title: dfDollar(w).find(".window-title").get(0)?.textContent?.trim() ?? "",
     icon: dfDollar(w).find(".window-icon").attr("data-lucide") ?? "",
@@ -123,6 +123,125 @@ var tile = (target) => {
 };
 var windowManagerActions = { windows, active, toggle, showDesktop, cascade, tile };
 df$.windowManager = windowManagerActions;
+var calibrated = null;
+addEventListener("pointermove", (e) => calibrated = { x: e.screenX - e.clientX, y: e.screenY - e.clientY, sx: screenX, sy: screenY }, { capture: true, passive: true });
+var viewportOrigin = () => calibrated ? { x: calibrated.x + screenX - calibrated.sx, y: calibrated.y + screenY - calibrated.sy } : { x: screenX + (outerWidth - innerWidth) / 2, y: screenY + outerHeight - innerHeight };
+var screenBox = (el) => {
+  const r = el.getBoundingClientRect();
+  const o = viewportOrigin();
+  return { x: o.x + r.left, y: o.y + r.top, w: r.width, h: r.height };
+};
+var inside = (b, p) => p.x >= b.x && p.x < b.x + b.w && p.y >= b.y && p.y < b.y + b.h;
+var overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+var PEER = Math.random().toString(36).slice(2);
+var fieldsOf = (w) => dfDollar(w).find("input, textarea, select").toArray().map((el) => el.type === "checkbox" || el.type === "radio" ? el.checked : el.value);
+var setFields = (w, values) => {
+  const els = dfDollar(w).find("input, textarea, select").toArray();
+  if (els.length !== values.length)
+    return;
+  els.forEach((el, i) => {
+    if (el.type === "checkbox" || el.type === "radio")
+      el.checked = !!values[i];
+    else
+      el.value = String(values[i] ?? "");
+  });
+};
+function place(m, w, box, bounded) {
+  const desk = screenBox(m);
+  win()?.resize(w, box.w, box.h);
+  win()?.move(w, box.x - desk.x, box.y - desk.y, bounded);
+}
+function dropRemote(w) {
+  if (!w.hasAttribute("data-share-remote"))
+    return;
+  w.removeAttribute("data-share-remote");
+  w.inert = false;
+  win()?.close(w);
+}
+function share(m) {
+  let channel;
+  try {
+    channel = new BroadcastChannel("defuss-shadcn:window-manager:" + m.dataset.share);
+  } catch {
+    return;
+  }
+  const post = (msg) => channel.postMessage({ ...msg, from: PEER });
+  const byIdHere = (id) => own(m).find((w) => w.id === id);
+  let last = { x: 0, y: 0 };
+  let dragged = "";
+  let frame = 0;
+  m.addEventListener("pointermove", (e) => {
+    const w = e.target.closest?.("dialog.window[data-dragging]");
+    if (!w || managerOf(w) !== m)
+      return;
+    last = { x: e.screenX, y: e.screenY };
+    dragged = w.id;
+    if (frame)
+      return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      post({ type: "move", id: w.id, box: screenBox(w), desk: screenBox(m) });
+    });
+  });
+  m.addEventListener("window-move", (e) => {
+    const w = e.target;
+    if (w.id !== dragged || managerOf(w) !== m)
+      return;
+    dragged = "";
+    cancelAnimationFrame(frame);
+    frame = 0;
+    const desk = screenBox(m);
+    post({ type: "drop", id: w.id, box: screenBox(w), desk, point: last, fields: fieldsOf(w) });
+    if (inside(desk, last))
+      return;
+    clearTimeout(w._shareWait);
+    w._shareWait = setTimeout(() => win()?.move(w, w.offsetLeft, w.offsetTop), 400);
+  });
+  channel.onmessage = ({ data }) => {
+    if (!data || data.from === PEER)
+      return;
+    const w = byIdHere(data.id);
+    if (!w)
+      return;
+    if (data.type === "take") {
+      if (data.to !== PEER)
+        return;
+      clearTimeout(w._shareWait);
+      w.removeAttribute("data-dragging");
+      win()?.close(w);
+      return;
+    }
+    const desk = screenBox(m);
+    const openHere = w.open && !w.hasAttribute("data-share-remote");
+    if (data.type === "move") {
+      if (openHere)
+        return;
+      if (!overlaps(desk, data.box))
+        return dropRemote(w);
+      if (!w.open) {
+        w.setAttribute("data-share-remote", "");
+        w.inert = true;
+        win()?.open(w);
+      }
+      place(m, w, data.box, false);
+      return;
+    }
+    if (data.type === "drop") {
+      const mine = inside(desk, data.point) && !inside(data.desk, data.point);
+      if (!mine)
+        return dropRemote(w);
+      w.removeAttribute("data-share-remote");
+      w.inert = false;
+      if (!w.open)
+        win()?.open(w);
+      place(m, w, data.box, true);
+      setFields(w, data.fields ?? []);
+      win()?.focus(w);
+      later(m);
+      channel.postMessage({ type: "take", id: w.id, to: data.from, from: PEER });
+    }
+  };
+}
 function init() {
   dfDollar(".window-manager:not([data-init])").toArray().forEach((m) => {
     m.dataset.init = "";
@@ -136,6 +255,8 @@ function init() {
       attributeFilter: ["open", "data-active", "data-minimized", "data-maximized", "id"]
     });
     m.addEventListener("close", () => later(m), true);
+    if (m.dataset.share)
+      share(m);
     later(m);
   });
 }
@@ -1141,5 +1262,5 @@ function init6() {
 init6();
 new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
-//# debugId=4066DACA8D62524F64756E2164756E21
+//# debugId=D813263BE89E603164756E2164756E21
 //# sourceMappingURL=desktop.js.map

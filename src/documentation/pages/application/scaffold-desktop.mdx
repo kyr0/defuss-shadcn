@@ -501,8 +501,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     min-height: 0;
     padding: 0.75rem 1rem;
     border: 0;
-    background: var(--card);
-    color: var(--card-foreground);
+    background: var(--background);
+    color: var(--foreground);
     font-family: var(--font-mono);
     font-size: calc(0.875rem * var(--os-zoom, 1));
     line-height: 1.6;
@@ -579,12 +579,63 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   .os-calc-value[data-long] {
     font-size: 1.75rem;
   }
+  /* a period look: the calculator of its time - a white read-out field (the result centred in it) over the look's
+     own buttons, as on the Desktop look pages */
+  .os.desktop[data-variant] {
+    & .os-calc-body {
+      background: none;
+    }
+    & .os-calc-display {
+      align-content: center;
+      gap: 0.125rem;
+      min-height: 3.25rem;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid var(--input);
+      background: var(--background);
+      color: var(--foreground);
+    }
+    & .os-calc-expr {
+      min-height: 0;
+      font-size: 0.75rem;
+      &:empty {
+        display: none;
+      }
+    }
+    & .os-calc-value {
+      font-size: 1.5rem;
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1.2;
+    }
+    & .os-calc-value[data-long] {
+      font-size: 1.125rem;
+    }
+    & .os-key {
+      height: 2rem;
+      padding: 0;
+      font-size: inherit;
+      font-weight: 400;
+    }
+    & .os-key[data-variant='outline'] {
+      background: revert-layer;
+      font-weight: 400;
+    }
+  }
+  .os.desktop:is([data-variant='win98'], [data-variant='win95']) .os-calc-display {
+    border: 0;
+    box-shadow:
+      inset -1px -1px #fff,
+      inset 1px 1px #808080,
+      inset -2px -2px #dfdfdf,
+      inset 2px 2px #0a0a0a;
+  }
   .os-calc-keys {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0.25rem;
   }
   .os-key {
+    min-width: 0;
     height: 2.75rem;
     font-size: 1rem;
     font-weight: 500;
@@ -614,12 +665,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       color: var(--muted-foreground);
     }
     & .input {
-      height: 2rem;
       padding-inline-start: 2rem;
-      border-radius: 999px;
-      background: color-mix(in oklch, var(--muted) 70%, transparent);
-      font-size: 0.8125rem;
     }
+  }
+  .os.desktop:not([data-variant]) .os-br-address .input {
+    height: 2rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--muted) 70%, transparent);
+    font-size: 0.8125rem;
   }
   .os-br-view {
     position: relative;
@@ -1123,7 +1176,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 >
   <div class="os-wall-layer" aria-hidden="true"></div>
 
-  <div class="window-desktop window-manager os-desktop" id="os-desk">
+  <div class="window-desktop window-manager os-desktop" id="os-desk" data-share="os-desk">
     <div
       class="os-surface"
       data-context-menu="os-ctx"
@@ -2430,6 +2483,15 @@ Things to try:
         </li>
       </ul>
     </div>
+    <!-- the power buttons in the corner: the same data-power actions as the taskbar's power menu -->
+    <div class="logon-power">
+      <button class="btn" data-variant="ghost" type="button" data-logon-power="restart" data-power="restart"
+        ><i data-lucide="rotate-cw"></i> <span data-i18n-target="lock-restart">Restart</span></button
+      >
+      <button class="btn" data-variant="ghost" type="button" data-logon-power="shutdown" data-power="shutdown"
+        ><i data-lucide="power"></i> <span data-i18n-target="lock-shutdown">Shut down</span></button
+      >
+    </div>
   </div>
   <div class="os-power-screen" data-os-screen hidden
     ><div class="spinner" role="status" aria-label="Working"></div><p data-os-screen-text>Restarting</p></div
@@ -3083,6 +3145,10 @@ Things to try:
   <template data-i18n-for="power-restart" data-i18n-locale="de">Neu starten</template>
   <template data-i18n-for="power-shutdown" data-i18n-locale="en">Shut down</template>
   <template data-i18n-for="power-shutdown" data-i18n-locale="de">Herunterfahren</template>
+  <template data-i18n-for="lock-restart" data-i18n-locale="en">Restart</template>
+  <template data-i18n-for="lock-restart" data-i18n-locale="de">Neu starten</template>
+  <template data-i18n-for="lock-shutdown" data-i18n-locale="en">Shut down</template>
+  <template data-i18n-for="lock-shutdown" data-i18n-locale="de">Herunterfahren</template>
   <template data-i18n-for="qs-airplane" data-i18n-locale="en">Airplane mode</template>
   <template data-i18n-for="qs-airplane" data-i18n-locale="de">Flugmodus</template>
   <template data-i18n-for="qs-saver" data-i18n-locale="en">Battery saver</template>

@@ -34,12 +34,13 @@ const posOf = (w) => ({ x: w.offsetLeft, y: w.offsetTop });
 /**
  * Moves a window, keeping it reachable: at least KEEP px of GRABBABLE title
  * bar stay inside the desktop - the controls don't count, so a window pushed
- * to an edge never shows only its buttons.
+ * to an edge never shows only its buttons. bounded = false places it as given
+ * (a window shown across two browser windows - the Window Manager's data-share).
  */
-function moveTo(w, x, y) {
+function moveTo(w, x, y, bounded = true) {
     const parent = w.offsetParent;
     const bar = dfDollar(w).find('.window-titlebar').get(0);
-    if (parent) {
+    if (parent && bounded) {
         const ctl = dfDollar(w).find('.window-controls').get(0)?.offsetWidth ?? 0;
         const maxX = parent.clientWidth - KEEP - ctl;
         const minX = KEEP + ctl - w.offsetWidth;
@@ -206,7 +207,10 @@ function bindDrag(w, bar) {
         const sx = e.clientX, sy = e.clientY;
         bar.setPointerCapture(e.pointerId);
         w.setAttribute('data-dragging', '');
-        const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy);
+        // a desktop that shares its windows with other browser windows (data-share) lets a drag leave it: the browser
+        // window it is dropped on takes the window; the Window Manager keeps it otherwise
+        const free = !!w.closest('[data-share]');
+        const onMove = (m) => moveTo(w, start.x + m.clientX - sx, start.y + m.clientY - sy, !free);
         const onUp = () => {
             bar.removeEventListener('pointermove', onMove);
             bar.removeEventListener('pointerup', onUp);
@@ -486,11 +490,12 @@ export const windowActions = {
      * @param target - the .window element, its id or a selector
      * @param x - the left edge, px
      * @param y - the top edge, px
-     * @returns where it landed (kept reachable inside its desktop), null when the target matches none
+     * @param bounded - keep it reachable inside its desktop (default); false places it as given, partly outside too
+     * @returns where it landed, null when the target matches none
      */
-    move: (target, x, y) => {
+    move: (target, x, y, bounded = true) => {
         const w = resolve(target);
-        return w ? moveTo(w, x, y) : null;
+        return w ? moveTo(w, x, y, bounded) : null;
     },
     /**
      * Size it: width (and height) as px numbers or CSS lengths.
