@@ -22,10 +22,10 @@
   "unitTestFiles": 52,
   "withJs": 91,
   "withoutJs": 180,
-  "totalSize": 4860209,
-  "totalSizeMinified": 2452688,
-  "totalSizeGz": 1365777,
-  "totalSizeGzMinified": 794478,
+  "totalSize": 4860513,
+  "totalSizeMinified": 2452797,
+  "totalSizeGz": 1365863,
+  "totalSizeGzMinified": 794497,
   "bundle": {
     "jsSize": 1240829,
     "jsSizeMinified": 722055,
@@ -140,12 +140,12 @@
     "desktop": {
       "jsSize": 46770,
       "jsSizeMinified": 28529,
-      "cssSize": 139002,
-      "cssSizeMinified": 104308,
-      "totalSizeGz": 45763,
-      "totalSizeGzMinified": 37445,
+      "cssSize": 139306,
+      "cssSizeMinified": 104417,
+      "totalSizeGz": 45849,
+      "totalSizeGzMinified": 37461,
       "jsSizeGzMinified": 8669,
-      "cssSizeGzMinified": 28776
+      "cssSizeGzMinified": 28792
     }
   },
   "sections": {
@@ -764,12 +764,12 @@
       ],
       "jsSize": 46770,
       "jsSizeMinified": 28529,
-      "cssSize": 139002,
-      "cssSizeMinified": 104308,
-      "totalSizeGz": 45763,
-      "totalSizeGzMinified": 37445,
+      "cssSize": 139306,
+      "cssSizeMinified": 104417,
+      "totalSizeGz": 45849,
+      "totalSizeGzMinified": 37461,
       "jsSizeGzMinified": 8669,
-      "cssSizeGzMinified": 28776
+      "cssSizeGzMinified": 28792
     },
     "chat": {
       "heading": "Chat",
@@ -1058,7 +1058,7 @@
     "count": 28,
     "minGzMinified": 5000,
     "maxGzMinified": 66114,
-    "meanGzMinified": 22719
+    "meanGzMinified": 22720
   },
   "components": {
     "about-intro": {
@@ -1951,12 +1951,12 @@
       "withJs": false,
       "jsSize": 0,
       "jsSizeMinified": 0,
-      "cssSize": 118434,
-      "cssSizeMinified": 92072,
-      "totalSizeGz": 29387,
-      "totalSizeGzMinified": 25387,
-      "totalSize": 118434,
-      "totalSizeMinified": 92072
+      "cssSize": 118738,
+      "cssSizeMinified": 92181,
+      "totalSizeGz": 29473,
+      "totalSizeGzMinified": 25406,
+      "totalSize": 118738,
+      "totalSizeMinified": 92181
     },
     "desktop-manager": {
       "name": "desktop-manager",
@@ -4841,12 +4841,12 @@
       ],
       "jsSize": 406407,
       "jsSizeMinified": 230275,
-      "cssSize": 571903,
-      "cssSizeMinified": 373572,
-      "totalSizeGz": 205345,
-      "totalSizeGzMinified": 140003,
+      "cssSize": 572207,
+      "cssSizeMinified": 373681,
+      "totalSizeGz": 205420,
+      "totalSizeGzMinified": 140017,
       "jsSizeGzMinified": 73107,
-      "cssSizeGzMinified": 66896
+      "cssSizeGzMinified": 66910
     },
     "document-editor": {
       "page": "scaffold-document-editor",

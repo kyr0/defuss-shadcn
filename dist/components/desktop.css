@@ -2970,7 +2970,15 @@
      navy highlight, a bevelled grey menu; XP the same rows on a white menu with the Luna blue; 7 a 22px row with an
      icon gutter, a pale blue rounded highlight. The menus are popovers, but they stay inside the .desktop in the DOM,
      so the look reaches them. */
+  /* a window's menus hang from its menu bar (the Menubar's own 0.5rem gap is for a bar on a page): 2px in the modern
+     look, flush in the period ones */
+  .desktop .window .menubar > .dropdown-content {
+    margin-top: 2px;
+  }
   .desktop[data-variant] {
+    & .window .menubar > .dropdown-content {
+      margin-top: 0;
+    }
     & .window .window-toolbar:has(> .menubar) {
       padding: 0;
       border: 0;
