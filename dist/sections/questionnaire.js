@@ -1122,6 +1122,7 @@ df$.questionnaire = {
       attachDraft(root, config.persist);
   },
   next: (target) => advance(resolve(target)),
+  test: (condition, answers) => when({ when: condition }, answers ?? {}),
   back: (target) => back(resolve(target)),
   skip: (target) => advance(resolve(target), { skip: true }),
   goTo: (target, id) => goTo(resolve(target), id),
@@ -1297,5 +1298,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=CAC2D73C8D4F3A2F64756E2164756E21
+//# debugId=389EB2CC2B69B7A764756E2164756E21
 //# sourceMappingURL=questionnaire.js.map

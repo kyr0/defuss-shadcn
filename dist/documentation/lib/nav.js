@@ -385,6 +385,9 @@ export const NAV = [
             { label: 'Marker', href: 'marker.html' },
             { label: 'Message', href: 'message.html' },
             { label: 'Session', href: 'session.html' },
+            { label: 'Chat Components', href: 'chat-components.html' },
+            { label: 'Component Schema', href: 'component-schema.html', type: 'ORG' },
+            { label: 'Chat Scripts', href: 'chat-scripts.html', type: 'ORG' },
         ] },
     { heading: 'Mockup', icon: 'terminal', items: [
             { label: 'Code', href: 'mockup-code.html' },

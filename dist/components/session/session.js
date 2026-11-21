@@ -133,11 +133,19 @@ function anchorSpace(s) {
 /** Where an anchored item settles: near the top, a peek of the previous one. */
 const anchorTop = (s, item) => item.offsetTop - num(s, 'peek', 48);
 // -- Imperative scrolling ----------------------------------------------------
+/** An explicit scroll ends a hold on an opening or anchored position (VERIFIED: scrollToEnd within 900 ms of an
+ *  anchored turn was pulled back to the turn by the next resize). */
+function endHold(s) {
+    clearTimeout(s._holdTimer);
+    s._opening = null;
+}
 function scrollToEnd(s, { smooth = true } = {}) {
+    endHold(s);
     s.setAttribute('data-stick', '');
     scrollViewport(s, s._parts.viewport.scrollHeight, smooth);
 }
 function scrollToStart(s, { smooth = true } = {}) {
+    endHold(s);
     s.removeAttribute('data-stick');
     scrollViewport(s, 0, smooth);
 }
@@ -216,6 +224,16 @@ df$.sessionStates = sessionStates;
  */
 function onItems(s, records) {
     const { viewport } = s._parts;
+    // a row removed under an anchored turn (a typing indicator) shrinks the scroll range before the room
+    // under the turn is measured again - the browser clamps the position and the view jumps up (VERIFIED:
+    // a scripted chat lost 63px per reply). Measure the room now and put the reader back where they were.
+    if (s._anchor && records.some((r) => r.removedNodes.length)) {
+        const top = s._top ?? viewport.scrollTop;
+        anchorSpace(s);
+        // the anchored turn itself removed: nothing to keep in place
+        if (s._anchor && Math.abs(viewport.scrollTop - top) > 1)
+            scrollViewport(s, top, false);
+    }
     const before = s._height ?? viewport.scrollHeight;
     let prepended = false;
     let appended = false;
@@ -249,6 +267,23 @@ function onItems(s, records) {
         });
         settle(s);
         return;
+    }
+    if (appended) {
+        // an appended row would lay out at the contain-intrinsic-size placeholder first and grow a frame later -
+        // the transcript jumped by the rest of its height (VERIFIED: a 214px card row measured 56px for one
+        // frame). Render it once at its real size; 'auto' remembers that size afterwards.
+        const added = records
+            .filter((r) => r.nextSibling === null)
+            .flatMap((r) => [...r.addedNodes])
+            .filter((n) => n.nodeType === 1);
+        added.forEach((n) => {
+            n.style.contentVisibility = 'visible';
+        });
+        requestAnimationFrame(() => requestAnimationFrame(() => added.forEach((n) => {
+            n.style.contentVisibility = '';
+            if (!n.getAttribute('style'))
+                n.removeAttribute('style');
+        })));
     }
     if (anchored) {
         s._anchor = anchored;
@@ -395,6 +430,7 @@ function init() {
         if (!content.hasAttribute('aria-relevant'))
             content.setAttribute('aria-relevant', 'additions');
         viewport.addEventListener('scroll', () => {
+            s._top = viewport.scrollTop;
             if (s.hasAttribute('data-autoscrolling'))
                 return track(s);
             s._opening = null; // the reader moved - the opening position is theirs now

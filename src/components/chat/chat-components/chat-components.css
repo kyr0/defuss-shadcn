@@ -1,0 +1,285 @@
+@layer components {
+  /* A Component Schema document shown in a chat: a Card of content, fields and actions inside a message. */
+  .chat-components {
+    display: block;
+    /* a definite width: inside a shrink-to-fit message a percentage alone resolves to nothing */
+    inline-size: 34rem;
+    max-inline-size: 100%;
+
+    & > script {
+      display: none;
+    }
+  }
+
+  .chat-components-card {
+    text-align: start;
+  }
+
+  .chat-components-content {
+    display: grid;
+    gap: 1rem;
+    min-inline-size: 0;
+
+    & > :is(p, ul, ol, dl) {
+      margin: 0;
+    }
+  }
+
+  .chat-components-text {
+    line-height: 1.55;
+    text-wrap: pretty;
+
+    & code {
+      font-family: var(--font-mono);
+      font-size: 0.875em;
+    }
+  }
+
+  .chat-components-list {
+    padding-inline-start: 1.25rem;
+    display: grid;
+    gap: 0.25rem;
+    line-height: 1.5;
+  }
+
+  .chat-components-field {
+    display: grid;
+    gap: 0.375rem;
+    min-inline-size: 0;
+
+    & > .label {
+      margin: 0;
+    }
+  }
+
+  .chat-components-hint {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  /* a radio / checkbox group and a rating: a fieldset with its legend as the label */
+  .chat-components-group {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-inline-size: 0;
+
+    & > legend {
+      padding: 0;
+      margin-block-end: 0.5rem;
+    }
+  }
+
+  .chat-components-choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    & > input:is(.radio, .checkbox) {
+      margin-block-start: 0.125rem;
+      flex: none;
+    }
+
+    & > label {
+      display: grid;
+      gap: 0.125rem;
+      font-size: 0.875rem;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    /* "Other": its text field follows the choice */
+    &[data-other] {
+      flex-wrap: wrap;
+      align-items: center;
+
+      & > .chat-components-other {
+        flex: 1 1 10rem;
+        inline-size: auto;
+        min-inline-size: 0;
+      }
+    }
+  }
+
+  .chat-components-choice-description {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  .chat-components-switch {
+    flex-wrap: wrap;
+
+    & > .chat-components-hint {
+      flex-basis: 100%;
+    }
+  }
+
+  .chat-components-slider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    & > .slider {
+      flex: 1;
+      min-inline-size: 0;
+    }
+  }
+
+  .chat-components-output {
+    min-inline-size: 3ch;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.875rem;
+    text-align: end;
+  }
+
+  /* facts: a definition list of label / value rows (also the answers of a questionnaire) */
+  .chat-components-facts {
+    display: grid;
+    gap: 0;
+    font-size: 0.875rem;
+
+    & > div {
+      display: grid;
+      grid-template-columns: minmax(6rem, 40%) 1fr;
+      gap: 0.75rem;
+      padding-block: 0.5rem;
+      border-block-end: 1px solid var(--border);
+
+      &:last-child {
+        border-block-end: 0;
+      }
+    }
+
+    & dt {
+      color: var(--muted-foreground);
+    }
+
+    & dd {
+      margin: 0;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /* a plan: numbered steps, optionally each with a checkbox */
+  .chat-components-plan {
+    display: grid;
+    gap: 0.625rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    counter-reset: chat-plan;
+
+    & > li {
+      display: grid;
+      grid-template-columns: 1.5rem 1fr;
+      gap: 0.5rem;
+      align-items: start;
+      counter-increment: chat-plan;
+
+      &::before {
+        content: counter(chat-plan);
+        display: grid;
+        place-items: center;
+        inline-size: 1.5rem;
+        block-size: 1.5rem;
+        border-radius: 999px;
+        background: var(--muted);
+        color: var(--muted-foreground);
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      & > label {
+        display: grid;
+        gap: 0.125rem;
+        cursor: pointer;
+      }
+    }
+
+    &[data-checkable] > li {
+      grid-template-columns: 1.5rem auto 1fr;
+
+      & > .checkbox {
+        margin-block-start: 0.25rem;
+      }
+    }
+  }
+
+  .chat-components-plan-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .chat-components-plan-description {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  .chat-components-questionnaire {
+    max-inline-size: none;
+  }
+
+  .chat-components-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* answered or cancelled: only the chosen action stays, marked */
+  .chat-components[data-answered] {
+    & .chat-components-actions > [data-chat-action]:not([data-chosen]) {
+      display: none;
+    }
+
+    & [data-chat-action][data-chosen] {
+      opacity: 1;
+      pointer-events: none;
+
+      &::before {
+        content: "\2713";
+        margin-inline-end: 0.25rem;
+      }
+    }
+
+    & .chat-components-content :is(input, select, textarea):disabled {
+      opacity: 1;
+      cursor: default;
+    }
+  }
+
+  .chat-components[data-answered="cancelled"] .chat-components-content {
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat-components * {
+      transition: none;
+      animation: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    .chat-components-hint,
+    .chat-components-choice-description,
+    .chat-components-plan-description,
+    .chat-components-facts dt {
+      color: var(--foreground);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .chat-components-plan > li::before {
+      border: 1px solid CanvasText;
+    }
+
+    .chat-components[data-answered] [data-chat-action][data-chosen] {
+      border: 2px solid Highlight;
+    }
+  }
+}

@@ -55,7 +55,32 @@ const api = Bun.serve({
     if (url.pathname !== '/v1/chat/completions') return new Response('not found', { status: 404, headers: cors });
     const body = await req.json();
     requests.push({ auth: req.headers.get('authorization'), body });
-    const parts = [
+    const last = String(body.messages.at(-1)?.content ?? '');
+    const card = {
+      version: 1,
+      id: 'seats',
+      title: 'Seats',
+      body: [{ type: 'number', name: 'seats', label: 'Seats', min: 1, required: true }],
+      actions: [{ id: 'ok', label: 'Order', submit: true }],
+    };
+    const args = JSON.stringify(card);
+    const scripted = /card please/.test(last)
+      ? [
+          { content: 'One question:' },
+          { tool_calls: [{ index: 0, id: 'call_1', type: 'function', function: { name: 'show_', arguments: '' } }] },
+          { tool_calls: [{ index: 0, function: { name: 'components', arguments: args.slice(0, 30) } }] },
+          { tool_calls: [{ index: 0, function: { arguments: args.slice(30) } }] },
+        ]
+      : /fence please/.test(last)
+        ? [
+            { content: 'Pick one:\n\n```ui::component-schema\n' },
+            { content: args.slice(0, 40) },
+            { content: args.slice(40) + '\n```\n' },
+          ]
+        : /```json/.test(last)
+          ? [{ content: 'Got your answer.' }]
+          : null;
+    const parts = scripted ?? [
       { reasoning_content: 'The user greets; ' },
       { reasoning_content: 'answer briefly.' },
       { content: 'Hello from ' },
@@ -377,6 +402,130 @@ try {
     assert.equal(await page.$$eval('.file-drop-item', (l) => l.length), 0);
   });
 
+  await check(
+    'Examples: the sidebar lists conversations with Chat Components; an answered card shows its answers read only',
+    async () => {
+      assert.deepEqual(
+        await page.$$eval('[data-ac-group="examples"] .sidebar-link', (l) =>
+          l.map((x) => (x.textContent || '').trim()),
+        ),
+        [
+          'Confirm a release plan',
+          'Budget for the redesign',
+          'Book a table',
+          'A project brief, step by step',
+          'Pick a plan (quick replies)',
+          'Feedback, answered',
+          'Support bot (Chat Script)',
+          'Pizza order (Chat Script)',
+        ],
+      );
+      await page.click('[data-ac-chat="ex-deploy"] .sidebar-link');
+      await page.waitForSelector('.ac-session .chat-components[data-init] .chat-components-plan');
+      assert.equal(await page.$eval('.ac-session .chat-components', (c: any) => c.dataset.stateName), 'answered');
+      assert.deepEqual(
+        await page.$$eval('.ac-session .chat-components [name="steps"]', (l: any[]) =>
+          l.map((i) => `${i.value}:${i.checked}:${i.disabled}`),
+        ),
+        ['backup:true:true', 'migrate:true:true', 'canary:true:true', 'all:false:true'],
+      );
+      assert.equal(await lastAnswer(page), 'Scheduled for 22:00: 3 steps. I will post here when the canary is live.');
+    },
+  );
+
+  await check(
+    'a card in an example: answering it writes your turn and the demo model replies; the card stays answered after a reload',
+    async () => {
+      await page.click('[data-ac-chat="ex-booking"] .sidebar-link');
+      await page.waitForSelector('.ac-session .chat-components[data-init] input[name="day"]');
+      await page.fill('.ac-session input[name="day"]', '2026-12-04');
+      await page.click('.ac-session [data-chat-action="book"]');
+      await page.waitForSelector('[data-ac-send][data-streaming]');
+      await idle(page);
+      assert.deepEqual(await turns(page), ['user', 'assistant', 'user', 'assistant']);
+      assert.equal(
+        await page.$eval('.ac-session .session-item:nth-last-child(2) .bubble-content', (b) => b.textContent),
+        'Day: 2026-12-04; Time: 19:30; Guests: 2; Seating: -',
+      );
+      assert.match(
+        await lastAnswer(page),
+        /^Thanks - noted: Day: 2026-12-04; Time: 19:30; Guests: 2; Seating: -\.\s*Booked - a confirmation is on its way\.$/,
+      );
+      await page.reload();
+      await page.waitForSelector('.ac-session .chat-components[data-init]');
+      assert.equal(await page.$eval('.ac-session .chat-components', (c: any) => c.dataset.stateName), 'answered');
+      assert.equal(await page.$eval('.ac-session input[name="day"]', (i: any) => i.value), '2026-12-04');
+    },
+  );
+
+  await check(
+    'a question that needs a structured answer gets a card from the demo model (a marker while the fence streams in)',
+    async () => {
+      await page.click('[data-ac-new]');
+      await page.evaluate(() => {
+        const seen = new MutationObserver(() => {
+          if (document.querySelector('.ac-session .marker [data-shimmer]')?.textContent === 'Preparing a card...') {
+            (globalThis as any).__cardMarker = true;
+            seen.disconnect();
+          }
+        });
+        seen.observe(document.querySelector('.ac-session')!, { childList: true, subtree: true, characterData: true });
+      });
+      await ask(page, 'Which plan should we take?');
+      assert.equal(await page.evaluate(() => (globalThis as any).__cardMarker), true);
+      await page.click('.ac-session .session-item:last-child [data-chat-action="compare"]');
+      await page.waitForSelector('[data-ac-send][data-streaming]');
+      await idle(page);
+      assert.match(await lastAnswer(page), /Starter: one workspace/);
+    },
+  );
+
+  await check(
+    'a Chat Script as a chat: the bot says its lines and asks with cards, branches on the answer, keeps the run across a reload',
+    async () => {
+      await page.click('[data-ac-chat="ex-support"] .sidebar-link');
+      await page.waitForSelector('.ac-session .chat-components[data-init] [data-chat-action="refund"]');
+      assert.equal(await page.textContent('[data-ac-model-name]'), 'Ada (script)');
+      assert.equal(
+        await page.$$eval('.ac-session .message-footer', (l) => l.length),
+        0,
+        'no generation actions on scripted turns',
+      );
+      await page.click('.ac-session [data-chat-action="refund"]');
+      await page.waitForSelector('.ac-session .chat-components[data-init] input[name="order"]');
+      await page.fill('.ac-session input[name="order"]', 'NW-4711');
+      await page.fill('.ac-session .chat-components:has(input[name="order"]) .number-input input[type="text"]', '150');
+      await page.click('.ac-session [data-chat-action="request"]');
+      await page.waitForFunction(() =>
+        /Jonas emails you about order NW-4711/.test(document.querySelector('.ac-session')!.textContent || ''),
+      );
+      // a script follows the end of the conversation: the window stays filled, no room reserved under an answer
+      await page.waitForSelector('.ac-session [data-chat-action="yes"]');
+      await page.waitForTimeout(400);
+      const fill = await page.$eval('.ac-session .session-viewport', (v) => ({
+        fromEnd: Math.round(v.scrollHeight - v.scrollTop - v.clientHeight),
+        pad: (v.querySelector('.session-content') as HTMLElement).style.paddingBlockEnd,
+      }));
+      assert.deepEqual(fill, { fromEnd: 0, pad: '' });
+      // typed text the node does not route: the fallback
+      await page.waitForSelector('.ac-session [data-chat-action="yes"]');
+      await page.fill('[data-ac-composer] .textarea', 'hmm');
+      await page.keyboard.press('Enter');
+      await page.waitForFunction(() =>
+        /Pick one of the buttons above/.test(document.querySelector('.ac-session')!.textContent || ''),
+      );
+      const before = await turns(page);
+      await page.reload();
+      await page.waitForSelector('.ac-session .chat-components[data-init] [data-chat-action="yes"]');
+      assert.deepEqual(await turns(page), before, 'the transcript is kept');
+      await page.click('.ac-session [data-chat-action="yes"]');
+      await page.waitForFunction(
+        () => document.querySelectorAll('.ac-session [data-chat-action="refund"]').length === 2,
+      );
+      await page.click('[data-ac-new]');
+    },
+  );
+
   await check('the model picker: Echo repeats the message', async () => {
     await page.click('.ac-model');
     await page.click('#ac-models [data-value="echo"]');
@@ -472,10 +621,52 @@ try {
       assert.equal(r.body.model, 'stub-model');
       assert.equal(r.body.stream, true);
       assert.equal(r.body.temperature, 0.7);
-      assert.deepEqual(r.body.messages, [
-        { role: 'system', content: 'You are a helpful assistant.' },
-        { role: 'user', content: 'Hello there' },
-      ]);
+      assert.equal(r.body.messages.length, 2);
+      assert.equal(r.body.messages[1].content, 'Hello there');
+      assert.equal(r.body.messages[0].role, 'system');
+      assert.match(
+        r.body.messages[0].content,
+        /^You are a helpful assistant\.\n\nWhen a structured answer .* ui::component-schema /,
+      );
+      assert.equal(r.body.tools.length, 1);
+      assert.equal(r.body.tools[0].function.name, 'show_components');
+      assert.equal(r.body.tools[0].function.parameters.title, 'Component Schema');
+      // a tool call becomes a card (the same fence, stored with the answer); its answer goes back as text + JSON
+      await ask(page, 'A card please');
+      await page.waitForSelector(
+        '.ac-session .session-item:last-child .chat-components[data-init] input[name="seats"]',
+      );
+      assert.equal(
+        (await page.textContent('.ac-session .session-item:last-child .bubble-content'))?.trim(),
+        'One question:',
+      );
+      await page.fill('.ac-session .session-item:last-child input[name="seats"]', '12');
+      await page.click('.ac-session .session-item:last-child [data-chat-action="ok"]');
+      await page.waitForSelector('[data-ac-send][data-streaming]');
+      await idle(page);
+      assert.equal(await lastAnswer(page), 'Got your answer.');
+      const sent = requests.at(-1)!.body.messages;
+      assert.match(
+        sent.at(-2).content,
+        /^One question:\n\n```ui::component-schema\n\{"version":1,"id":"seats"/,
+        'the history carries the card as a fence',
+      );
+      assert.equal(
+        sent.at(-1).content,
+        'Seats: 12\n\n```json\n{"id":"seats","action":"ok","answers":{"seats":12}}\n```',
+      );
+      // a fence written in pieces: a marker while it is open, the card once it closes
+      await ask(page, 'A fence please');
+      assert.equal(
+        await page.$$eval('.ac-session .session-item:last-child .chat-components input[name="seats"]', (l) => l.length),
+        1,
+      );
+      // without the switch: no tool, no card instructions
+      await page.click('#ac-tool');
+      await ask(page, 'Hello again');
+      assert.equal(requests.at(-1)!.body.tools, undefined);
+      assert.equal(requests.at(-1)!.body.messages[0].content, 'You are a helpful assistant.');
+      await page.click('#ac-tool');
       // a picture goes to the API as an image_url part beside the text
       await page.setInputFiles('[data-ac-file]', [PHOTO]);
       await page.waitForFunction(() => document.querySelectorAll('.file-drop-item').length === 1);
@@ -544,6 +735,20 @@ try {
     await page.click('#ac-settings [data-dialog-close]');
   });
 
+  await check(
+    'light / dark: the Swap at the top of the sidebar switches the page and the Settings switch follows',
+    async () => {
+      const dark = () => page.evaluate(() => document.documentElement.classList.contains('dark'));
+      const before = await dark();
+      await page.click('.ac-nav .sidebar-header .ac-mode');
+      assert.equal(await dark(), !before);
+      assert.equal(await page.$eval('[data-ac-mode]', (i: any) => i.checked), !before);
+      assert.equal(await page.$eval('[data-ac-dark]', (i: any) => i.checked), !before);
+      await page.click('.ac-nav .sidebar-header .ac-mode');
+      assert.equal(await dark(), before);
+    },
+  );
+
   await check('chats and settings are kept across a reload', async () => {
     const titles = await page.$$eval('.ac-nav .ac-chat .sidebar-link', (r) =>
       r.map((x) => (x.textContent || '').trim()),
@@ -591,6 +796,19 @@ try {
     await page.click('[data-ac-confirm-ok]');
     await page.waitForFunction(() => !document.querySelector('.ac-nav .ac-chat'));
     assert.equal(await page.$$eval('[data-ac-group]', (g) => g.every((x) => (x as HTMLElement).hidden)), true);
+    // deleted examples stay deleted after a reload
+    await page.reload();
+    await page.waitForSelector('[data-ac-list]');
+    await page.waitForTimeout(300);
+    assert.equal(await page.$$eval('.ac-nav .ac-chat', (l) => l.length), 0);
+  });
+
+  await check('chats kept from a visit before the examples existed get the Examples group once', async () => {
+    // VERIFIED (the maintainer's browser): stored chats from an earlier visit never showed the seeded examples
+    await page.evaluate(() => localStorage.removeItem('lumen:examples'));
+    await page.reload();
+    await page.waitForSelector('[data-ac-group="examples"]:not([hidden]) .ac-chat');
+    assert.equal(await page.$$eval('[data-ac-group="examples"] .ac-chat', (l) => l.length), 8);
   });
 
   await check('the page ran without errors', async () => {

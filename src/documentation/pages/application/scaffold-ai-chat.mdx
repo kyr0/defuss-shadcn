@@ -1,6 +1,6 @@
 ---
 title: "AI Chat"
-description: "Application scaffold: an Open WebUI-style AI chat - chats by day in a sidebar, a model picker, images, audio, video and files as attachments, voice messages, streamed Markdown answers with thinking, copy, edit, regenerate and ratings, chat controls for the system prompt and sampling, an OpenAI-compatible connection and a sign-in - built only from the shipped components."
+description: "Application scaffold: an Open WebUI-style AI chat - chats by day in a sidebar, a model picker, images, audio, video and files as attachments, voice messages, answers that ask with Chat Components cards and scripted example chats, streamed Markdown answers with thinking, copy, edit, regenerate and ratings, chat controls for the system prompt and sampling, an OpenAI-compatible connection and a sign-in - built only from the shipped components."
 slug: "scaffold-ai-chat"
 ---
 
@@ -59,6 +59,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     justify-content: space-between;
     padding: 0.625rem 0.5rem 0.625rem 0.875rem;
     border-bottom: 0;
+  }
+  .ac-header-tools {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
   .ac .sidebar-logo {
     gap: 0.5rem;
@@ -663,17 +668,30 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             /></svg></span
         ><span class="sidebar-logo-text">Lumen</span></a
       >
-      <button
-        class="btn"
-        data-variant="ghost"
-        data-size="icon-sm"
-        type="button"
-        data-sidebar-trigger="ac-nav"
-        aria-label="Close sidebar"
-        data-i18n-aria-label-en="Close sidebar"
-        data-i18n-aria-label-de="Seitenleiste schließen"
-        ><i data-lucide="panel-left-close"></i
-      ></button>
+      <div class="ac-header-tools">
+        <label class="swap ac-mode" data-variant="rotate" data-size="sm">
+          <input
+            type="checkbox"
+            data-ac-mode
+            aria-label="Dark mode"
+            data-i18n-aria-label-en="Dark mode"
+            data-i18n-aria-label-de="Dunkelmodus"
+          />
+          <span class="swap-on" aria-hidden="true"><i data-lucide="moon"></i></span>
+          <span class="swap-off" aria-hidden="true"><i data-lucide="sun"></i></span>
+        </label>
+        <button
+          class="btn"
+          data-variant="ghost"
+          data-size="icon-sm"
+          type="button"
+          data-sidebar-trigger="ac-nav"
+          aria-label="Close sidebar"
+          data-i18n-aria-label-en="Close sidebar"
+          data-i18n-aria-label-de="Seitenleiste schließen"
+          ><i data-lucide="panel-left-close"></i
+        ></button>
+      </div>
     </div>
     <div class="ac-nav-tools">
       <a class="btn ac-new" data-variant="ghost" href="#/" data-router-link data-ac-new
@@ -695,6 +713,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       /></div>
     </div>
     <div class="sidebar-content" data-ac-list>
+      <details class="sidebar-group" open data-ac-group="examples">
+        <summary><span data-i18n-target="grp-examples">Examples</span><i data-lucide="chevron-right"></i></summary>
+        <nav
+          class="sidebar-nav"
+          aria-label="Example chats"
+          data-i18n-aria-label-en="Example chats"
+          data-i18n-aria-label-de="Beispiel-Chats"
+        ></nav>
+      </details>
       <details class="sidebar-group" open data-ac-group="pinned">
         <summary><span data-i18n-target="grp-pinned">Pinned</span><i data-lucide="chevron-right"></i></summary>
         <nav
@@ -1148,6 +1175,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             <p class="ac-hint" data-i18n-target="api-hint"
               >Requests go from this browser to the URL; the server must allow it (CORS).</p
             >
+            <div class="switch-item flex items-center gap-2"
+              ><input class="switch" type="checkbox" role="switch" id="ac-tool" name="componentTool" checked /><label
+                for="ac-tool"
+                data-i18n-target="p-tool"
+                >Chat components (cards and the tool)</label
+              ></div
+            >
           </fieldset>
         </fieldset>
         <div class="separator" role="separator"></div>
@@ -1399,6 +1433,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
   <template data-i18n-for="new-chat" data-i18n-locale="en">New chat</template>
   <template data-i18n-for="new-chat" data-i18n-locale="de">Neuer Chat</template>
+  <template data-i18n-for="grp-examples" data-i18n-locale="en">Examples</template>
+  <template data-i18n-for="grp-examples" data-i18n-locale="de">Beispiele</template>
+  <template data-i18n-for="p-tool" data-i18n-locale="en">Chat components (cards and the tool)</template>
+  <template data-i18n-for="p-tool" data-i18n-locale="de">Chat-Komponenten (Karten und das Tool)</template>
   <template data-i18n-for="grp-pinned" data-i18n-locale="en">Pinned</template>
   <template data-i18n-for="grp-pinned" data-i18n-locale="de">Angeheftet</template>
   <template data-i18n-for="grp-today" data-i18n-locale="en">Today</template>
@@ -1624,6 +1662,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         tokens: (n, r, s) => `${n} tokens · ${r} tokens/s · ${s} s`,
         fine: 'Lumen answers from a demo model in this page. Check important information.',
         fineApi: (u) => `Answers come from ${u}. Check important information.`,
+        preparingCard: 'Preparing a card...',
+        cardError: (e) => `The card's JSON does not parse: ${e}`,
+        noted: (s) => `Thanks - noted: **${s}**.`,
       },
       de: {
         untitled: 'Neuer Chat',
@@ -1674,6 +1715,9 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         tokens: (n, r, s) => `${n} Tokens · ${r} Tokens/s · ${s} s`,
         fine: 'Lumen antwortet mit einem Demo-Modell in dieser Seite. Prüfe wichtige Informationen.',
         fineApi: (u) => `Die Antworten kommen von ${u}. Prüfe wichtige Informationen.`,
+        preparingCard: 'Bereite eine Karte vor...',
+        cardError: (e) => `Das JSON der Karte lässt sich nicht lesen: ${e}`,
+        noted: (s) => `Danke - notiert: **${s}**.`,
       },
     };
     const lang = () => (app.getAttribute('lang') || 'en').slice(0, 2);
@@ -1775,6 +1819,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       maxTokens: 2048,
       enableThinking: false,
       enterSends: true,
+      componentTool: true,
     };
     const DAY = 86400000;
     const now = Date.now();
@@ -1785,7 +1830,405 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       at,
       ...extra,
     });
+    // -- Chat Components: Component Schema documents the demo model answers with (and the examples use)
+    const FENCE = df$.shadcn.chatComponents.fence;
+    const fenceOf = (spec) => '```' + FENCE + '\n' + JSON.stringify(spec, null, 1) + '\n```';
+    const CARDS = {
+      deploy: {
+        version: 1,
+        id: 'deploy',
+        title: 'Confirm the release plan',
+        description: 'Release 2.4 tonight at 22:00 - untick a step to leave it out.',
+        body: [
+          {
+            type: 'plan',
+            name: 'steps',
+            label: 'Steps',
+            steps: [
+              { id: 'backup', title: 'Back up the database', description: 'A snapshot, kept 30 days' },
+              { id: 'migrate', title: 'Run the migrations', description: 'About 4 minutes read-only' },
+              { id: 'canary', title: 'Canary to 5 % of traffic' },
+              { id: 'all', title: 'Everyone after an hour' },
+            ],
+          },
+        ],
+        actions: [
+          { id: 'confirm', label: 'Confirm', submit: true },
+          { id: 'later', label: 'Not tonight', variant: 'outline', cancel: true },
+        ],
+      },
+      budget: {
+        version: 1,
+        id: 'budget',
+        title: 'Budget and start',
+        body: [
+          {
+            type: 'currency',
+            name: 'budget',
+            label: 'Budget',
+            currency: 'EUR',
+            locale: 'de-DE',
+            required: true,
+            max: 100000,
+          },
+          { type: 'number', name: 'weeks', label: 'Weeks', min: 1, max: 52, default: 6, unit: 'weeks' },
+          {
+            type: 'radio',
+            name: 'start',
+            label: 'Start',
+            required: true,
+            options: [
+              { value: 'now', label: 'Right away' },
+              { value: 'q1', label: 'Next quarter' },
+            ],
+            other: 'Another time',
+          },
+        ],
+        actions: [{ id: 'confirm', label: 'Confirm', submit: true }],
+      },
+      booking: {
+        version: 1,
+        id: 'booking',
+        title: 'A table at Oktav',
+        body: [
+          { type: 'date', name: 'day', label: 'Day', required: true },
+          { type: 'input', name: 'time', label: 'Time', inputType: 'time', required: true, default: '19:30' },
+          { type: 'number', name: 'guests', label: 'Guests', min: 1, max: 12, default: 2 },
+          { type: 'select', name: 'area', label: 'Seating', options: ['Inside', 'Terrace', 'At the bar'] },
+        ],
+        actions: [
+          { id: 'book', label: 'Book', submit: true },
+          { id: 'call', label: 'I would rather call', variant: 'outline', reply: 'Please give me the phone number.' },
+        ],
+      },
+      brief: {
+        version: 1,
+        id: 'brief',
+        title: 'Project brief',
+        body: [
+          {
+            type: 'questionnaire',
+            title: 'Project brief',
+            steps: [
+              {
+                id: 'kind',
+                title: 'What are we building?',
+                fields: [
+                  {
+                    type: 'radio',
+                    name: 'kind',
+                    label: 'Kind',
+                    required: true,
+                    options: [
+                      { value: 'site', label: 'A website' },
+                      { value: 'app', label: 'An app', goto: 'platforms' },
+                    ],
+                    other: 'Something else',
+                  },
+                ],
+              },
+              {
+                id: 'pages',
+                title: 'About how many pages?',
+                next: 'budget',
+                fields: [{ type: 'number', name: 'pages', label: 'Pages', min: 1, required: true }],
+              },
+              {
+                id: 'platforms',
+                title: 'Which platforms?',
+                fields: [
+                  { type: 'checkbox', name: 'platforms', label: 'Platforms', options: ['iOS', 'Android', 'Web'] },
+                ],
+              },
+              {
+                id: 'budget',
+                title: 'Your budget',
+                fields: [
+                  {
+                    type: 'currency',
+                    name: 'budget',
+                    label: 'Budget',
+                    currency: 'USD',
+                    locale: 'en-US',
+                    required: true,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        actions: [{ id: 'send', label: 'Send the brief', submit: true }],
+      },
+      feedback: {
+        version: 1,
+        id: 'feedback',
+        title: 'How did I do?',
+        body: [
+          { type: 'rating', name: 'score', label: 'Your rating', required: true },
+          {
+            type: 'checkbox',
+            name: 'helped',
+            label: 'What helped?',
+            options: ['Fast', 'Clear', 'Friendly'],
+            other: 'Something else',
+          },
+          { type: 'textarea', name: 'comment', label: 'Comment', lines: 2 },
+        ],
+        actions: [{ id: 'send', label: 'Send', submit: true }],
+      },
+      plans: {
+        version: 1,
+        id: 'plans',
+        body: [{ type: 'text', text: 'Which plan suits your team?' }],
+        actions: [
+          { id: 'starter', label: 'Starter', reply: 'The Starter plan' },
+          { id: 'team', label: 'Team', reply: 'The Team plan', variant: 'secondary' },
+          { id: 'compare', label: 'Compare them', reply: 'Compare the plans for me', variant: 'outline' },
+        ],
+      },
+      request: {
+        version: 1,
+        id: 'request',
+        title: 'Equipment request',
+        body: [
+          { type: 'input', name: 'email', label: 'Email', inputType: 'email', required: true },
+          { type: 'select', name: 'device', label: 'Device', options: ['Laptop', 'Monitor', 'Phone'], required: true },
+          { type: 'currency', name: 'budget', label: 'Budget', currency: 'EUR', locale: 'de-DE' },
+          { type: 'checkbox', name: 'extras', label: 'Extras', options: ['Dock', 'Keyboard', 'Mouse'] },
+          { type: 'switch', name: 'urgent', label: 'Urgent' },
+          { type: 'slider', name: 'share', label: 'Team share', min: 0, max: 100, step: 10, default: 50, unit: '%' },
+          { type: 'date', name: 'needed', label: 'Needed by' },
+        ],
+        actions: [{ id: 'send', label: 'Send request', submit: true }],
+      },
+    };
+    // what the demo model says when a card's answer comes back
+    const AFTER = {
+      deploy: (a) =>
+        `Scheduled for 22:00: ${(a.answers.steps || []).length} steps. I will post here when the canary is live.`,
+      budget: () => 'Good - I will draft a plan within that budget and send it tomorrow.',
+      booking: (a) =>
+        a.reply ? 'Call us on +49 30 1234 5678 - between 11:00 and 22:00.' : 'Booked - a confirmation is on its way.',
+      brief: () => 'Thanks for the brief. A designer and a developer will look at it and reply within two days.',
+      feedback: () => 'Thank you - that helps us get better.',
+      plans: (a) =>
+        a.action === 'compare'
+          ? 'Starter: one workspace, 5 GB. Team: shared projects, 100 GB, admin roles.'
+          : 'Done - switched. You can change it any time.',
+      request: () => 'Your request is with purchasing - you hear back within three working days.',
+    };
+    // -- Chat Scripts: conversations without a language model (the Examples group runs them)
+    const SCRIPTS = {
+      support: {
+        bot: 'Ada (script)',
+        script: {
+          version: 1,
+          start: 'hello',
+          fallback: 'Pick one of the buttons above - or tell me in a few words.',
+          nodes: {
+            hello: {
+              say: [
+                'Hi, I am Ada from Northwind support - a scripted bot, no language model.',
+                'What can I help you with?',
+              ],
+              ask: {
+                version: 1,
+                id: 'topic',
+                actions: [
+                  { id: 'billing', label: 'An invoice', reply: 'A question about an invoice' },
+                  { id: 'refund', label: 'A refund', reply: 'I would like a refund', variant: 'secondary' },
+                  { id: 'other', label: 'Something else', reply: 'Something else', variant: 'outline' },
+                ],
+              },
+              match: [
+                { pattern: 'refund|money back', goto: 'refund' },
+                { pattern: 'invoice|bill', goto: 'invoice' },
+              ],
+              branches: [
+                { when: { field: 'topic', value: 'billing' }, goto: 'invoice' },
+                { when: { field: 'topic', value: 'refund' }, goto: 'refund' },
+              ],
+              next: 'other',
+            },
+            invoice: { say: 'Sure. What is the invoice number?', input: 'invoice', next: 'invoiceDone' },
+            invoiceDone: {
+              say: 'Thanks - invoice **{{invoice}}** is with our billing team. You get an answer by email today.',
+              next: 'again',
+            },
+            refund: {
+              say: 'I can start a refund right here.',
+              ask: {
+                version: 1,
+                id: 'refundCard',
+                title: 'Refund',
+                body: [
+                  { type: 'input', name: 'order', label: 'Order number', required: true, placeholder: 'NW-1234' },
+                  {
+                    type: 'currency',
+                    name: 'amount',
+                    label: 'Amount',
+                    currency: 'EUR',
+                    locale: 'de-DE',
+                    required: true,
+                  },
+                  {
+                    type: 'select',
+                    name: 'reason',
+                    label: 'Reason',
+                    options: ['Damaged', 'Wrong item', 'Changed my mind'],
+                  },
+                ],
+                actions: [{ id: 'request', label: 'Request refund', submit: true }],
+              },
+              branches: [{ when: { field: 'amount', op: 'gte', value: 100 }, goto: 'manager' }],
+              next: 'refundDone',
+            },
+            manager: {
+              say: 'Refunds of 100 € or more need a manager - Jonas emails you about order {{order}} within a day.',
+              next: 'again',
+            },
+            refundDone: {
+              say: 'Done: the refund for order {{order}} is on its way (3 to 5 working days).',
+              next: 'again',
+            },
+            other: { say: 'Tell me in a sentence - I will pass it on.', input: 'issue', next: 'otherDone' },
+            otherDone: { say: 'Got it. A colleague picks this up and replies by email.', next: 'again' },
+            again: {
+              say: 'Anything else?',
+              ask: { version: 1, id: 'again', actions: [{ id: 'yes', label: 'Start over', reply: 'Start over' }] },
+              next: 'hello',
+            },
+          },
+        },
+      },
+      pizza: {
+        bot: 'Forno (script)',
+        script: {
+          version: 1,
+          start: 'size',
+          nodes: {
+            size: {
+              say: 'Welcome to Forno! What size?',
+              ask: {
+                version: 1,
+                id: 'sizeCard',
+                body: [
+                  {
+                    type: 'radio',
+                    name: 'size',
+                    label: 'Size',
+                    required: true,
+                    options: [
+                      { value: 'small', label: 'Small', description: '26 cm - 8 €' },
+                      { value: 'large', label: 'Large', description: '32 cm - 11 €' },
+                    ],
+                  },
+                ],
+                actions: [{ id: 'next', label: 'Next', submit: true }],
+              },
+              next: 'toppings',
+            },
+            toppings: {
+              say: 'Toppings? Pick as many as you like.',
+              ask: {
+                version: 1,
+                id: 'toppingsCard',
+                body: [
+                  {
+                    type: 'checkbox',
+                    name: 'toppings',
+                    label: 'Toppings',
+                    options: ['Basil', 'Mushrooms', 'Olives', 'Chili'],
+                    other: 'Something else',
+                  },
+                  { type: 'number', name: 'count', label: 'How many pizzas?', min: 1, max: 10, default: 1 },
+                ],
+                actions: [{ id: 'next', label: 'Next', submit: true }],
+              },
+              next: 'confirm',
+            },
+            confirm: {
+              say: '{{count}} × {{size}} with {{toppings}}. Shall I send it to the kitchen?',
+              ask: {
+                version: 1,
+                id: 'confirmCard',
+                actions: [
+                  { id: 'yes', label: 'Order', reply: 'Order it' },
+                  { id: 'change', label: 'Change', reply: 'Let me change it', variant: 'outline' },
+                ],
+              },
+              branches: [{ when: { field: 'confirmCard', value: 'change' }, goto: 'size' }],
+              next: 'done',
+            },
+            done: {
+              say: 'In the oven - about 20 minutes. Buon appetito!',
+              ask: { version: 1, id: 'again', actions: [{ id: 'again', label: 'Order again', reply: 'Order again' }] },
+              next: 'size',
+            },
+          },
+        },
+      },
+    };
+    const example = (id, title, at, messages, extra = {}) => ({
+      id,
+      title,
+      example: true,
+      pinned: false,
+      model: 'lumen-8b',
+      at,
+      // an answer names the model that wrote it
+      messages: messages.map((m) => (m.role === 'assistant' ? { model: 'lumen-8b', ...m } : m)),
+      ...extra,
+    });
+    const examples = () => [
+      example('ex-deploy', 'Confirm a release plan', now - 1000, [
+        msg('user', 'Deploy release 2.4 tonight', now - 1000),
+        msg(
+          'assistant',
+          'Here is the plan - confirm it and I will schedule it:\n\n' + fenceOf(CARDS.deploy),
+          now - 990,
+          { forms: { 0: { action: 'confirm', answers: { steps: ['backup', 'migrate', 'canary'] } } } },
+        ),
+        msg('user', 'Steps: Back up the database, Run the migrations, Canary to 5 % of traffic', now - 980, {
+          answer: { id: 'deploy', action: 'confirm' },
+        }),
+        msg('assistant', 'Scheduled for 22:00: 3 steps. I will post here when the canary is live.', now - 970),
+      ]),
+      example('ex-budget', 'Budget for the redesign', now - 2000, [
+        msg('user', 'Can you start the redesign?', now - 2000),
+        msg(
+          'assistant',
+          'Yes. Two things first - the budget and when to start:\n\n' + fenceOf(CARDS.budget),
+          now - 1990,
+        ),
+      ]),
+      example('ex-booking', 'Book a table', now - 3000, [
+        msg('user', 'Book a table for Friday', now - 3000),
+        msg('assistant', fenceOf(CARDS.booking), now - 2990),
+      ]),
+      example('ex-brief', 'A project brief, step by step', now - 4000, [
+        msg('user', 'I need a quote for a project', now - 4000),
+        msg('assistant', 'Three quick questions, one at a time:\n\n' + fenceOf(CARDS.brief), now - 3990),
+      ]),
+      example('ex-plans', 'Pick a plan (quick replies)', now - 5000, [
+        msg('user', 'Which plan should we take?', now - 5000),
+        msg('assistant', fenceOf(CARDS.plans), now - 4990),
+      ]),
+      example('ex-feedback', 'Feedback, answered', now - 6000, [
+        msg('user', 'Thanks, that fixed it!', now - 6000),
+        msg('assistant', 'Glad to hear it. Would you rate this chat?\n\n' + fenceOf(CARDS.feedback), now - 5990, {
+          forms: { 0: { action: 'send', answers: { score: 5, helped: ['Fast', 'Clear'], comment: 'Spot on.' } } },
+        }),
+        msg('user', 'Your rating: 5 of 5; What helped?: Fast, Clear; Comment: Spot on.', now - 5980, {
+          answer: { id: 'feedback', action: 'send' },
+        }),
+        msg('assistant', 'Thank you - that helps us get better.', now - 5970),
+      ]),
+      example('ex-support', 'Support bot (Chat Script)', now - 7000, [], { script: 'support' }),
+      example('ex-pizza', 'Pizza order (Chat Script)', now - 8000, [], { script: 'pizza' }),
+    ];
     const seed = () => [
+      ...examples(),
       {
         id: 'welcome',
         title: 'What can Lumen do?',
@@ -1868,6 +2311,16 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       },
     ];
     const chats = $.store.persisted('lumen:chats', seed(), { validate: (v) => Array.isArray(v) });
+    // the seed reaches only an empty store: chats kept from an earlier visit get the examples once per
+    // EXAMPLES version (VERIFIED: a browser with older chats never showed the Examples group); one deleted stays deleted
+    const EXAMPLES = 1;
+    const examplesSeen = $.store.persisted('lumen:examples', 0, { validate: (v) => Number.isInteger(v) });
+    if (examplesSeen.value < EXAMPLES) {
+      const have = new Set((Array.isArray(chats.value) ? chats.value : []).map((c) => c.id));
+      const missing = examples().filter((c) => !have.has(c.id));
+      if (missing.length) chats.set([...missing, ...(Array.isArray(chats.value) ? chats.value : [])]);
+      examplesSeen.set(EXAMPLES);
+    }
     const prefs = $.store.persisted('lumen:settings', DEFAULTS, {
       validate: (v) => !!v && typeof v === 'object' && !Array.isArray(v),
     });
@@ -2001,7 +2454,39 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         shownText(m)
           ? `<div class="bubble" data-variant="secondary"><div class="bubble-content">${esc(shownText(m)).replace(/\n/g, '<br>')}</div></div>`
           : ''
-      }<div class="message-footer" data-reveal="hover">${footBtn('edit', ICON.edit, tr('edit'))}${footBtn('copy', ICON.copy, tr('copy'))}${footBtn('delete', ICON.remove, tr('remove'))}</div></div></div>`;
+      }${m.script ? '' : `<div class="message-footer" data-reveal="hover">${footBtn('edit', ICON.edit, tr('edit'))}${footBtn('copy', ICON.copy, tr('copy'))}${footBtn('delete', ICON.remove, tr('remove'))}</div>`}</div></div>`;
+    const mdBubble = (md, marked, extra = '') =>
+      md.trim() || extra
+        ? `<div class="bubble" data-variant="ghost"><div class="bubble-content ac-md">${md.trim() ? toHtml(md, marked) : ''}${extra}</div></div>`
+        : '';
+    // an answer's Markdown and its cards: text in ghost bubbles, each closed fence a Chat Components element
+    const answerBody = (m, marked) => {
+      const cc = df$.shadcn.chatComponents;
+      const text = m.content || '';
+      const parts = [];
+      let at = 0;
+      cc.fences(text).forEach((f, i) => {
+        parts.push({ md: text.slice(at, f.start) });
+        if (!f.closed)
+          parts.push({
+            html: `<div class="marker" role="status"><span class="marker-content" data-shimmer>${esc(tr('preparingCard'))}</span></div>`,
+          });
+        else if (!f.spec)
+          parts.push({
+            html: `<div class="alert" data-variant="destructive" role="alert"><div class="alert-content"><p class="alert-description">${esc(tr('cardError', f.error))}</p></div></div>`,
+          });
+        else parts.push({ html: cc.markup(f.spec, { id: `${m.id}-f${i}`, answers: m.forms?.[i] ?? null }) });
+        at = f.end;
+      });
+      parts.push({ md: text.slice(at) });
+      // "Stopped" ends the last text, as it ends a plain answer
+      const stopped = m.stopped ? `<p class="ac-info">${esc(tr('stopped'))}</p>` : '';
+      const last = parts.map((p) => 'md' in p && p.md.trim()).lastIndexOf(true);
+      const out = parts
+        .map((p, i) => ('html' in p ? p.html : mdBubble(p.md, marked, i === last ? stopped : '')))
+        .join('');
+      return (last < 0 ? mdBubble('', marked, stopped) : '') + out || mdBubble('', marked, ' ');
+    };
     const thinkBlock = (m) =>
       m.thinking
         ? `<details class="ac-think"${m.streaming === 'think' ? ' open' : ''}><summary class="marker"><span class="marker-icon" aria-hidden="true">${ICON.spark}</span><span class="marker-content"${m.streaming === 'think' ? ' data-shimmer' : ''}>${esc(m.streaming === 'think' ? tr('thinking') : tr('thought', Math.max(1, Math.round(m.thinkSeconds || 1))))}</span></summary><div class="ac-think-body">${esc(m.thinking)}</div></details>`
@@ -2012,18 +2497,19 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       const error = m.error
         ? `<div class="alert" data-variant="destructive" role="alert"><div class="alert-content"><h5 class="alert-title">${esc(tr('failed'))}</h5><p class="alert-description">${esc(m.error)}</p></div></div>`
         : '';
-      const footer = m.streaming
-        ? ''
-        : `<div class="message-footer" data-reveal="hover">${footBtn('copy', ICON.copy, tr('copy'))}${footBtn('read', ICON.read, tr('readAloud'))}${footBtn('info', ICON.info, tr('info'), ` aria-expanded="${m.showInfo ? 'true' : 'false'}"`)}${footBtn('good', ICON.good, tr('good'), ` aria-pressed="${m.rating === 'good'}"`)}${footBtn('bad', ICON.bad, tr('bad'), ` aria-pressed="${m.rating === 'bad'}"`)}${footBtn('regenerate', ICON.regenerate, tr('regenerate'))}</div>${
-            m.showInfo && m.stats
-              ? `<div class="ac-info" data-ac-info>${esc(model)} · ${esc(tr('tokens', m.stats.tokens, Math.round(m.stats.tokens / Math.max(m.stats.seconds, 0.05)), m.stats.seconds.toFixed(1)))}</div>`
-              : ''
-          }`;
+      const footer =
+        m.streaming || m.script
+          ? ''
+          : `<div class="message-footer" data-reveal="hover">${footBtn('copy', ICON.copy, tr('copy'))}${footBtn('read', ICON.read, tr('readAloud'))}${footBtn('info', ICON.info, tr('info'), ` aria-expanded="${m.showInfo ? 'true' : 'false'}"`)}${footBtn('good', ICON.good, tr('good'), ` aria-pressed="${m.rating === 'good'}"`)}${footBtn('bad', ICON.bad, tr('bad'), ` aria-pressed="${m.rating === 'bad'}"`)}${footBtn('regenerate', ICON.regenerate, tr('regenerate'))}</div>${
+              m.showInfo && m.stats
+                ? `<div class="ac-info" data-ac-info>${esc(model)} · ${esc(tr('tokens', m.stats.tokens, Math.round(m.stats.tokens / Math.max(m.stats.seconds, 0.05)), m.stats.seconds.toFixed(1)))}</div>`
+                : ''
+            }`;
       return `<div class="message ac-turn"><div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback ac-mark">${ICON.spark}</span></span></div><div class="message-content"><div class="message-header"><span class="message-name">${esc(model)}</span><time class="message-time" datetime="${new Date(m.at).toISOString()}">${time(m.at)}</time></div>${thinkBlock(m)}${
         waiting
           ? `<div class="marker" role="status"><span class="marker-content" data-shimmer>${esc(tr('thinking'))}</span></div>`
           : ''
-      }${m.content || !m.streaming ? `<div class="bubble" data-variant="ghost"><div class="bubble-content ac-md">${toHtml(m.content || (m.stopped ? '' : ''), marked)}${m.stopped ? `<p class="ac-info">${esc(tr('stopped'))}</p>` : ''}</div></div>` : ''}${error}${footer}</div></div>`;
+      }${m.content || !m.streaming ? answerBody(m, marked) : ''}${error}${footer}</div></div>`;
     };
     const turn = (m, marked) => (m.role === 'user' ? userTurn(m) : assistantTurn(m, marked));
 
@@ -2152,11 +2638,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         messages
           .map(
             (m) =>
-              `<div class="session-item" data-message-id="${m.id}"${m.role === 'user' ? ' data-anchor' : ''}>${turn(m, marked)}</div>`,
+              `<div class="session-item" data-message-id="${m.id}"${m.role === 'user' && !c?.script ? ' data-anchor' : ''}>${turn(m, marked)}</div>`,
           )
           .join(''),
       );
-      $('[data-ac-model-name]').text(modelName(c?.model || conf().model));
+      $('[data-ac-model-name]').text(c?.script ? SCRIPTS[c.script].bot : modelName(c?.model || conf().model));
+      if (c?.script) startScript(c);
       requestAnimationFrame(() => session.scrollToEnd(chat, { smooth: false }));
     };
     const renderMessage = async (chatId, messageId) => {
@@ -2171,6 +2658,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
     // -- the chat list: grouped by day, filtered by the search
     const groupOf = (c) => {
+      if (c.example) return 'examples';
       if (c.pinned) return 'pinned';
       const start = new Date();
       start.setHours(0, 0, 0, 0);
@@ -2252,7 +2740,28 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       }
       return `- **${a.name}** - ${a.type || 'a file'}, ${bytes(a.size)}; the demo model cannot open this kind of file`;
     };
-    const demoAnswer = (model, question, system, files = []) => {
+    const CARD_FOR = [
+      [/\b(deploy|release|migrat\w*)\b/, 'deploy'],
+      [/\b(budget|quote|cost)\b/, 'budget'],
+      [/\b(book|reserv\w*)\b/, 'booking'],
+      [/\b(brief|project|questionnaire|survey)\b/, 'brief'],
+      [/\b(rate|rating|feedback)\b/, 'feedback'],
+      [/\b(which plan|pricing|subscription)\b/, 'plans'],
+      [/\b(form|card|request|equipment)\b/, 'request'],
+    ];
+    const demoAnswer = (model, question, system, files = [], answer = null) => {
+      if (answer && model !== 'echo')
+        return {
+          thinking: 'The user answered the card. Confirm what was chosen and say what happens next.',
+          text: `${tr('noted', question.split('\n')[0])}\n\n${AFTER[answer.id]?.(answer) ?? 'I will take it from here.'}`,
+        };
+      const card =
+        model === 'echo' || files.length ? null : CARD_FOR.find(([re]) => re.test(question.toLowerCase()))?.[1];
+      if (card)
+        return {
+          thinking: `A structured answer helps here - show a card (${card}) instead of asking in prose.`,
+          text: `Let us settle it in one card:\n\n${fenceOf(CARDS[card])}`,
+        };
       if (files.length) {
         const about = `${files.length === 1 ? 'One attachment' : `${files.length} attachments`}:\n\n${files.map(describe).join('\n')}`;
         if (model === 'echo')
@@ -2309,7 +2818,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       });
     async function* demoStream(model, history, settings, signal) {
       const last = [...history].reverse().find((m) => m.role === 'user');
-      const { text, thinking } = demoAnswer(model, last?.content || '', settings.systemPrompt, last?.files || []);
+      const { text, thinking } = demoAnswer(
+        model,
+        last?.display ?? last?.content ?? '',
+        settings.systemPrompt,
+        last?.files || [],
+        last?.answer || null,
+      );
       const pace = Math.round((MODELS[model]?.pace || 14) * (0.6 + settings.temperature * 0.3));
       await wait(350, signal);
       if (settings.enableThinking) for (const t of tokens(thinking)) yield (await wait(pace, signal), { think: t });
@@ -2317,6 +2832,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       for (const t of tokens(text).slice(0, limit)) yield (await wait(pace, signal), { text: t });
     }
     const apiContent = (m) => {
+      if (m.role === 'user' && m.answer)
+        return `${m.display ?? m.content}\n\n\`\`\`json\n${JSON.stringify(m.answer)}\n\`\`\``;
       if (m.role !== 'user' || !m.files?.length) return m.content;
       const text = [
         m.content,
@@ -2332,8 +2849,13 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     };
     async function* apiStream(history, settings, signal) {
       const url = settings.baseUrl.replace(/\/+$/, '') + '/chat/completions';
+      const cc = df$.shadcn.chatComponents;
+      const cards = settings.componentTool
+        ? `\n\nWhen a structured answer from the user helps (confirming a plan, an amount, choices, a date, a short form, several questions), show a card: call the show_components tool, or write a fenced block whose info string is ${cc.fence} with a Component Schema document - JSON: { "version": 1, "title", "body": [nodes], "actions": [{ "id", "label", "submit" | "reply" | "cancel" }] }. Nodes: text, list, table, facts, plan, alert, divider; fields input, textarea, number, currency, select, radio, checkbox, switch, slider, rating, date (each with a name and a label); one questionnaire with steps. The user's answers arrive as the next message.`
+        : '';
+      const system = (settings.systemPrompt || '') + cards;
       const messages = [
-        ...(settings.systemPrompt ? [{ role: 'system', content: settings.systemPrompt }] : []),
+        ...(system ? [{ role: 'system', content: system }] : []),
         ...history.map((m) => ({ role: m.role, content: apiContent(m) })),
       ];
       const res = await fetch(url, {
@@ -2354,15 +2876,22 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           presence_penalty: settings.presencePenalty,
           max_tokens: settings.maxTokens,
           chat_template_kwargs: { enable_thinking: settings.enableThinking },
+          ...(settings.componentTool ? { tools: [cc.tool()] } : {}),
         }),
       });
       if (!res.ok || !res.body) throw new Error(`${res.status} ${res.statusText || 'error'} - ${url}`);
       const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
       let buffer = '';
       let inThink = false;
+      // tool calls stream in pieces: name and arguments per index, written as a fence at the end
+      const calls = [];
+      const flush = function* () {
+        for (const c of calls)
+          if (c?.name === 'show_components') yield { text: `\n\n\`\`\`${cc.fence}\n${c.args}\n\`\`\`\n` };
+      };
       for (;;) {
         const { done, value } = await reader.read();
-        if (done) return;
+        if (done) return yield* flush();
         buffer += value;
         let nl;
         while ((nl = buffer.indexOf('\n')) >= 0) {
@@ -2370,7 +2899,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
           buffer = buffer.slice(nl + 1);
           if (!line.startsWith('data:')) continue;
           const data = line.slice(5).trim();
-          if (data === '[DONE]') return;
+          if (data === '[DONE]') return yield* flush();
           let delta;
           try {
             delta = JSON.parse(data).choices?.[0]?.delta;
@@ -2378,6 +2907,11 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
             continue;
           }
           if (delta?.reasoning_content || delta?.reasoning) yield { think: delta.reasoning_content || delta.reasoning };
+          for (const tc of delta?.tool_calls || []) {
+            const c = (calls[tc.index ?? 0] ??= { name: '', args: '' });
+            c.name += tc.function?.name || '';
+            c.args += tc.function?.arguments || '';
+          }
           // a model that thinks inline wraps it in think tags
           let text = delta?.content || '';
           while (text) {
@@ -2482,9 +3016,15 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     const stop = () => run?.abort.abort();
 
     // -- sending: a new chat is made on the first message, the question anchors, the answer streams
-    const send = async (text) => {
+    const send = async (text, cardAnswer = null) => {
       text = text.trim();
       if ((!text && !attachments.length) || run) return;
+      const scripted = current && find(current)?.script;
+      if (scripted) {
+        $(input).val('');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        return scripts.get(current)?.run.reply(text);
+      }
       const files = attachments;
       attachments = [];
       renderAttachments();
@@ -2511,6 +3051,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         display: text,
         files,
         at,
+        ...(cardAnswer ? { answer: cardAnswer } : {}),
       };
       const answer = {
         id: 'm' + at.toString(36) + 'a',
@@ -2536,6 +3077,117 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
       renderList();
       generate(id, answer.id);
     };
+    // -- a card's answer: stored on its message (it renders answered), then the reader's turn or the script's
+    $(chat).on('chat-components-answer', (e) => {
+      const card = e.target;
+      const row = card.closest('[data-message-id]');
+      const c = current && find(current);
+      if (!row || !c) return;
+      const index = Number(card.id.split('-f').pop());
+      const result = JSON.parse(JSON.stringify(card.api.getState().config));
+      update(
+        c.id,
+        (x) => (
+          (x.messages = x.messages.map((m) =>
+            m.id === row.dataset.messageId ? { ...m, forms: { ...(m.forms || {}), [index]: result } } : m,
+          )),
+          x
+        ),
+      );
+      const d = e.detail;
+      if (c.script) return scripts.get(c.id)?.run.answer(d);
+      send(d.summary, { id: d.id, action: d.action, answers: d.answers, ...(d.reply ? { reply: d.reply } : {}) });
+    });
+
+    // -- Chat Scripts: a run per script chat writes its turns into the chat through hooks
+    const scripts = new Map();
+    let typing = null;
+    let typingOff = 0;
+    const dropTyping = () => {
+      clearTimeout(typingOff);
+      typing?.remove();
+      typing = null;
+    };
+    function startScript(c) {
+      if (scripts.has(c.id)) return;
+      const { bot, script } = SCRIPTS[c.script];
+      const chatId = c.id;
+      const keep = () => queueMicrotask(() => update(chatId, (x) => ((x.scriptState = entry.run.state()), x)));
+      // synchronous: a turn lands in the order the script writes it (an awaited append put the typing row
+      // above the reader's answer - VERIFIED: removing it moved the anchored answer and the view with it)
+      const push = (m) => {
+        update(chatId, (x) => ((x.messages = [...x.messages, m]), (x.at = Math.max(x.at, m.at)), x));
+        keep();
+        if (chatId !== current) return;
+        chat.removeAttribute('data-empty');
+        // a script answers at once and in short turns: the transcript follows its end, so the window stays
+        // filled (an anchored answer at the top left most of it empty - the maintainer 2026-11-21);
+        // the reader's own turn brings them to the end, the bot's turns follow from there
+        session.append(chat, turn(m, entry.marked), { id: m.id });
+        dropTyping();
+        if (m.role === 'user') session.scrollToEnd(chat);
+      };
+      let n = 0;
+      const id = (role) => 'm' + Date.now().toString(36) + (n++).toString(36) + role[0];
+      const entry = {
+        run: df$.shadcn.chatScript.create(
+          script,
+          {
+            say: (text) =>
+              push({
+                id: id('assistant'),
+                role: 'assistant',
+                content: text,
+                model: 'script',
+                modelName: bot,
+                script: true,
+                at: Date.now(),
+              }),
+            ask: (spec) =>
+              push({
+                id: id('assistant'),
+                role: 'assistant',
+                content: fenceOf(spec),
+                model: 'script',
+                modelName: bot,
+                script: true,
+                at: Date.now(),
+              }),
+            user: (text) => push({ id: id('user'), role: 'user', content: text, script: true, at: Date.now() }),
+            typing: (on) => {
+              if (chatId !== current) return;
+              // off: the next turn takes the indicator's place in the same task (removed a task earlier, the
+              // transcript dipped by its height for a frame); a short timer drops it when no turn follows
+              clearTimeout(typingOff);
+              if (!on) {
+                typingOff = setTimeout(dropTyping, 100);
+                return;
+              }
+              typing?.remove();
+              typing = on
+                ? session.append(
+                    chat,
+                    `<div class="message ac-turn"><div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback ac-mark">${ICON.spark}</span></span></div><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content" role="status" aria-label="${esc(bot)}"><span class="bubble-typing" aria-hidden="true"><span></span><span></span><span></span></span></div></div></div></div>`,
+                  )
+                : null;
+            },
+            rewind: (rows) => {
+              update(chatId, (x) => ((x.messages = x.messages.slice(0, rows)), x));
+              keep();
+              if (chatId === current) renderChat();
+            },
+          },
+          c.scriptState || null,
+        ),
+      };
+      scripts.set(chatId, entry);
+      // Markdown first, so every turn after it appends at once
+      loadMarked().then((marked) => {
+        entry.marked = marked;
+        entry.run.start();
+      });
+    }
+
     // a user turn shows what was typed; the attached files ride along to the model
     const shownText = (m) => m.display ?? m.content;
 
@@ -2876,11 +3528,19 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
         fillSettings();
       });
     $('[data-ac-enter]').on('change', (e) => setConf({ enterSends: e.currentTarget.checked }));
-    $('[data-ac-dark]').on('change', (e) => {
+    // light / dark: the sidebar's Swap and the Settings switch write the one class every token reads
+    const showMode = () => {
+      const dark = document.documentElement.classList.contains('dark');
+      $('[data-ac-dark], [data-ac-mode]').each((_i, el) => {
+        el.checked = dark;
+      });
+    };
+    $('[data-ac-dark], [data-ac-mode]').on('change', (e) => {
       document.documentElement.classList.toggle('dark', e.currentTarget.checked);
+      showMode();
       dispatchEvent(new CustomEvent('defuss-theme-change'));
     });
-    $('[data-ac-dark]').get(0).checked = document.documentElement.classList.contains('dark');
+    showMode();
     $('[data-ac-search]').on('input', renderList);
 
     // -- attachments: chips above the text; the + button, a paste, a drop on the conversation or a voice message add them
@@ -3024,6 +3684,8 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   <li><strong>Controls</strong> - the system prompt and the sampling parameters of the example (temperature, top P, top K, repetition and presence penalty, max tokens, thinking) as <DocLink href="slider.html">Sliders</DocLink> with <code>&lt;output&gt;</code>, a number <DocLink href="input.html">Input</DocLink> and a <DocLink href="switch.html">Switch</DocLink>; the form is the settings store.</li>
   <li><strong>Composer</strong> - the <DocLink href="textarea.html">Textarea</DocLink> group grows with the text; <kbd class="kbd">↵</kbd> sends, <kbd class="kbd">⇧</kbd> <kbd class="kbd">↵</kbd> breaks the line (Settings can swap it); the <DocLink href="toggle.html">Toggle</DocLink> turns thinking on.</li>
   <li><strong>Attachments</strong> - any file, from the + button, a paste or a drop on the conversation (the Session's <code>data-drop</code> and its <code>session-drop</code> event), shows as a <DocLink href="file-input.html">File Input</DocLink> chip with a thumbnail and its size or length. Sent, a picture is a media <DocLink href="bubble.html">Bubble</DocLink> (<code>data-media</code>) that opens in a <DocLink href="dialog.html">Dialog</DocLink>, audio and video play in the <DocLink href="audio.html">Audio</DocLink> and <DocLink href="video.html">Video</DocLink> players, documents are <DocLink href="message.html">Message</DocLink> attachment cards that download. The microphone button records a voice message with <code>MediaRecorder</code>. The demo model measures what it gets (size, length, the average colour of a picture, the lines of a text); an API gets pictures as <code>image_url</code> parts, text files as text. Pictures are kept with the chat (scaled to 1280 px, WebP); audio, video and other files live for the visit and say so after a reload.</li>
+  <li><strong>Chat Components</strong> - an answer can ask with a card: a <DocLink href="component-schema.html">Component Schema</DocLink> document in a <code>ui::component-schema</code> fence becomes <DocLink href="chat-components.html">Chat Components</DocLink> (amounts, choices, dates, a plan to confirm, a questionnaire, quick replies). Answering it stores the answer on the message - the card renders answered from then on - and sends your turn: the answer's sentence, and for an API the JSON too. The demo model answers card-shaped questions with one (try "book a table" or "deploy release 2.4"); in API mode the system prompt describes the fence and the request offers the <code>show_components</code> tool - a tool call is stored as the same fence, so the history replays on any server. Controls › Connection turns both off.</li>
+  <li><strong>Examples</strong> - the sidebar's first group holds conversations to try: cards answered and still open, and two <DocLink href="chat-scripts.html">Chat Scripts</DocLink> - a support bot and a pizza order that run without a language model. A script runs through <code>chatScript.create(script, hooks)</code>, so its turns land in the chat's store like any other and the run continues after a reload.</li>
   <li><strong>State</strong> - chats and settings are <code>df$.store.persisted</code> stores: kept in the browser on the full-screen page, in memory inside the docs card.</li>
   <li><strong>Routing</strong> - <a href="https://dom-router.defuss.org" target="_blank" rel="noopener">defuss-dom-router</a> in hash mode: <code>#/</code> a new chat, <code>#/c/:id</code> a chat, <code>#/auth</code> the sign-in (Sign out leads there; the demo account is on the card). See <DocLink href="routing.html">Client-side Routing</DocLink>.</li>
   <li><strong>Translation</strong> - <a href="https://i18n.defuss.org" target="_blank" rel="noopener">defuss-i18n</a>: Settings › Language switches the chrome between English and German; what the script writes (message actions, chat menus, dialogs) follows from its own table. See <DocLink href="translation.html">Translation</DocLink>.</li>

@@ -7265,11 +7265,17 @@ function anchorSpace(s) {
   }
 }
 var anchorTop = (s, item) => item.offsetTop - num2(s, "peek", 48);
+function endHold(s) {
+  clearTimeout(s._holdTimer);
+  s._opening = null;
+}
 function scrollToEnd(s, { smooth = true } = {}) {
+  endHold(s);
   s.setAttribute("data-stick", "");
   scrollViewport(s, s._parts.viewport.scrollHeight, smooth);
 }
 function scrollToStart(s, { smooth = true } = {}) {
+  endHold(s);
   s.removeAttribute("data-stick");
   scrollViewport(s, 0, smooth);
 }
@@ -7323,6 +7329,12 @@ df$8.sessionApi = sessionApi;
 df$8.sessionStates = sessionStates;
 function onItems(s, records) {
   const { viewport } = s._parts;
+  if (s._anchor && records.some((r) => r.removedNodes.length)) {
+    const top = s._top ?? viewport.scrollTop;
+    anchorSpace(s);
+    if (s._anchor && Math.abs(viewport.scrollTop - top) > 1)
+      scrollViewport(s, top, false);
+  }
   const before = s._height ?? viewport.scrollHeight;
   let prepended = false;
   let appended = false;
@@ -7350,6 +7362,17 @@ function onItems(s, records) {
     });
     settle(s);
     return;
+  }
+  if (appended) {
+    const added = records.filter((r) => r.nextSibling === null).flatMap((r) => [...r.addedNodes]).filter((n) => n.nodeType === 1);
+    added.forEach((n) => {
+      n.style.contentVisibility = "visible";
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => added.forEach((n) => {
+      n.style.contentVisibility = "";
+      if (!n.getAttribute("style"))
+        n.removeAttribute("style");
+    })));
   }
   if (anchored) {
     s._anchor = anchored;
@@ -7473,6 +7496,7 @@ function init8() {
     if (!content.hasAttribute("aria-relevant"))
       content.setAttribute("aria-relevant", "additions");
     viewport.addEventListener("scroll", () => {
+      s._top = viewport.scrollTop;
       if (s.hasAttribute("data-autoscrolling"))
         return track(s);
       s._opening = null;
@@ -7820,6 +7844,6 @@ var toastActions = {
 };
 df$9.toast = toastActions;
 
-//# debugId=2B7F74F5D39AFB9664756E2164756E21
+//# debugId=DB49F9C95402D1D364756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=messenger.js.map

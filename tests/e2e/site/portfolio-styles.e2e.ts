@@ -254,7 +254,7 @@ try {
       assert.deepEqual(missing, [], 'blocks the style is made of');
       if (slug !== 'portfolio-minimal') {
         // the palette set on the root reaches the blocks: --primary inside is the style's, a plain .btn wears it
-        const c = await p.evaluate((r) => {
+        const c = await p.evaluate(async (r) => {
           const paint = (host: Element) => {
             const probe = document.createElement('span');
             probe.style.background = 'var(--primary)';
@@ -265,6 +265,7 @@ try {
           };
           const el = document.querySelector(r)!;
           const btn = el.querySelector('.btn:not([data-variant]):not(.pf-cta)');
+          await Promise.all((btn?.getAnimations() ?? []).map((x) => x.finished.catch(() => null)));
           return {
             own: paint(el),
             site: paint(document.body),

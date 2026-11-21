@@ -1,0 +1,400 @@
+---
+title: "Component Schema"
+description: "The Component Schema - a JSON document that describes a chat card: content nodes, fields (text, numbers, money, choices, yes / no, dates, ratings), one multi-step questionnaire and actions or quick replies; checked by validate(), published as a JSON Schema and an OpenAI-style tool, written by language models in ui::component-schema fences."
+slug: "component-schema"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="component-schema" title="Component Schema" component="chat-components">
+  The document <DocLink href="chat-components.html">Chat Components</DocLink> shows. A Component Schema document describes one card in JSON - what it says, what it asks and which buttons it offers - and nothing about markup: scripts, back ends and language models write it, the runtime turns it into the system's own components. Not to be confused with a component's <em>state</em> schema (<code>*.schema.json</code>, the machine contract of its State API): this one describes a piece of UI to build.
+</PageHeader>
+
+<H2 id="document">The document</H2>
+
+<DocText>A card is an object with a version, optional title and description, a <code>body</code> of nodes and its <code>actions</code>. Every text is plain text - inline <code>**bold**</code>, <code>*emphasis*</code> and backticks for code are the only formatting; anything that looks like HTML is shown as written.</DocText>
+
+<div class="table-container">
+<table class="table">
+<thead><tr class="table-row"><th class="table-head">Key</th><th class="table-head">Type</th><th class="table-head">Meaning</th></tr></thead>
+<tbody>
+<tr class="table-row"><td class="table-cell"><code>schema</code></td><td class="table-cell"><code>"component-schema"</code></td><td class="table-cell">Marks the document (optional)</td></tr>
+<tr class="table-row"><td class="table-cell"><code>version</code></td><td class="table-cell"><code>1</code></td><td class="table-cell">The format's version (missing: read as 1, with a warning)</td></tr>
+<tr class="table-row"><td class="table-cell"><code>id</code></td><td class="table-cell">string</td><td class="table-cell">Names the card - its answer carries it; a Chat Script stores the action under it</td></tr>
+<tr class="table-row"><td class="table-cell"><code>title</code>, <code>description</code></td><td class="table-cell">string</td><td class="table-cell">The card's header</td></tr>
+<tr class="table-row"><td class="table-cell"><code>body</code></td><td class="table-cell">node[]</td><td class="table-cell">What the card shows, top to bottom</td></tr>
+<tr class="table-row"><td class="table-cell"><code>actions</code></td><td class="table-cell">action[]</td><td class="table-cell">Its buttons - default: one Send when it has fields</td></tr>
+</tbody>
+</table>
+</div>
+
+<H2 id="content-nodes">Content nodes</H2>
+
+<div class="table-container">
+<table class="table">
+<thead><tr class="table-row"><th class="table-head">type</th><th class="table-head">Keys</th><th class="table-head">Renders</th></tr></thead>
+<tbody>
+<tr class="table-row"><td class="table-cell"><code>text</code></td><td class="table-cell"><code>text</code>, <code>title</code></td><td class="table-cell">A paragraph (the title in bold before it)</td></tr>
+<tr class="table-row"><td class="table-cell"><code>list</code></td><td class="table-cell"><code>items</code>, <code>ordered</code></td><td class="table-cell">A bulleted or numbered list</td></tr>
+<tr class="table-row"><td class="table-cell"><code>table</code></td><td class="table-cell"><code>columns</code>, <code>rows</code>, <code>label</code> (caption)</td><td class="table-cell">The <DocLink href="table.html">Table</DocLink></td></tr>
+<tr class="table-row"><td class="table-cell"><code>facts</code></td><td class="table-cell"><code>facts: [&#123; label, value &#125;]</code></td><td class="table-cell">Label / value rows</td></tr>
+<tr class="table-row"><td class="table-cell"><code>plan</code></td><td class="table-cell"><code>steps: [&#123; id, title, description &#125;]</code>, <code>name</code></td><td class="table-cell">Numbered steps; with a <code>name</code> each has a checkbox (ticked) and the plan answers the ticked step ids</td></tr>
+<tr class="table-row"><td class="table-cell"><code>alert</code></td><td class="table-cell"><code>title</code>, <code>text</code>, <code>tone</code> (<code>default</code>, <code>destructive</code>)</td><td class="table-cell">The <DocLink href="alert.html">Alert</DocLink></td></tr>
+<tr class="table-row"><td class="table-cell"><code>divider</code></td><td class="table-cell">-</td><td class="table-cell">The <DocLink href="separator.html">Separator</DocLink></td></tr>
+</tbody>
+</table>
+</div>
+
+```html example label="A release card" schema="none" hint="Every content node in one card: text with inline formatting, a numbered list, a table, facts, a plan, a divider and an alert."
+<div class="chat-components" id="cs-content">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "title": "Release 2.4 is ready",
+      "description": "Built from `main` at 14:02.",
+      "body": [
+        { "type": "text", "text": "**3 services** changed, **no** database migration." },
+        { "type": "list", "ordered": true, "items": ["Faster search", "Dark mode for the editor", "Fixed CSV export"] },
+        {
+          "type": "table",
+          "label": "Tests",
+          "columns": ["Suite", "Passed", "Time"],
+          "rows": [
+            ["unit", 1284, "41 s"],
+            ["e2e", 212, "6 min"]
+          ]
+        },
+        {
+          "type": "facts",
+          "facts": [
+            { "label": "Bundle", "value": "214 KB (-3 %)" },
+            { "label": "Coverage", "value": "87 %" }
+          ]
+        },
+        {
+          "type": "plan",
+          "steps": [
+            { "title": "Canary to 5 %" },
+            { "title": "Everyone after an hour", "description": "if the error rate stays flat" }
+          ]
+        },
+        { "type": "divider" },
+        {
+          "type": "alert",
+          "tone": "destructive",
+          "title": "One flaky test",
+          "text": "`checkout.e2e` failed once and passed on retry."
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="fields">Fields</H2>
+
+<DocText>Every field has a <code>name</code> (its answer's key: letters, digits, <code>-</code> and <code>_</code>), a <code>label</code>, an optional <code>hint</code>, <code>required</code> and a <code>default</code>. The answer's type follows the field.</DocText>
+
+<div class="table-container">
+<table class="table">
+<thead><tr class="table-row"><th class="table-head">type</th><th class="table-head">Keys</th><th class="table-head">Component</th><th class="table-head">Answer</th></tr></thead>
+<tbody>
+<tr class="table-row"><td class="table-cell"><code>input</code></td><td class="table-cell"><code>inputType</code> (<code>text</code>, <code>email</code>, <code>url</code>, <code>tel</code>, <code>time</code>), <code>placeholder</code>, <code>minLength</code>, <code>maxLength</code>, <code>pattern</code></td><td class="table-cell"><DocLink href="input.html">Input</DocLink></td><td class="table-cell">string</td></tr>
+<tr class="table-row"><td class="table-cell"><code>textarea</code></td><td class="table-cell"><code>lines</code>, <code>placeholder</code>, <code>minLength</code>, <code>maxLength</code></td><td class="table-cell"><DocLink href="textarea.html">Textarea</DocLink></td><td class="table-cell">string</td></tr>
+<tr class="table-row"><td class="table-cell"><code>number</code></td><td class="table-cell"><code>min</code>, <code>max</code>, <code>step</code>, <code>unit</code></td><td class="table-cell"><DocLink href="number-input.html">Number Input</DocLink></td><td class="table-cell">number</td></tr>
+<tr class="table-row"><td class="table-cell"><code>currency</code></td><td class="table-cell"><code>currency</code> (ISO 4217), <code>locale</code>, <code>min</code>, <code>max</code></td><td class="table-cell">Number Input with the currency mask</td><td class="table-cell">number</td></tr>
+<tr class="table-row"><td class="table-cell"><code>select</code></td><td class="table-cell"><code>options</code>, <code>placeholder</code></td><td class="table-cell"><DocLink href="select.html">Select</DocLink></td><td class="table-cell">string</td></tr>
+<tr class="table-row"><td class="table-cell"><code>radio</code></td><td class="table-cell"><code>options</code>, <code>other</code></td><td class="table-cell"><DocLink href="radio.html">Radio Group</DocLink></td><td class="table-cell">string</td></tr>
+<tr class="table-row"><td class="table-cell"><code>checkbox</code></td><td class="table-cell"><code>options</code> (a group), <code>other</code>; without options: one box</td><td class="table-cell"><DocLink href="checkbox.html">Checkbox</DocLink></td><td class="table-cell">string[] / boolean</td></tr>
+<tr class="table-row"><td class="table-cell"><code>switch</code></td><td class="table-cell">-</td><td class="table-cell"><DocLink href="switch.html">Switch</DocLink></td><td class="table-cell">boolean</td></tr>
+<tr class="table-row"><td class="table-cell"><code>slider</code></td><td class="table-cell"><code>min</code>, <code>max</code>, <code>step</code>, <code>unit</code></td><td class="table-cell"><DocLink href="slider.html">Slider</DocLink></td><td class="table-cell">number</td></tr>
+<tr class="table-row"><td class="table-cell"><code>rating</code></td><td class="table-cell"><code>max</code> (stars, default 5)</td><td class="table-cell"><DocLink href="rating.html">Rating</DocLink></td><td class="table-cell">number</td></tr>
+<tr class="table-row"><td class="table-cell"><code>date</code></td><td class="table-cell"><code>min</code>, <code>max</code> (YYYY-MM-DD)</td><td class="table-cell"><DocLink href="date-picker.html">Date Picker</DocLink></td><td class="table-cell">string</td></tr>
+</tbody>
+</table>
+</div>
+
+<DocText>Options are texts (value and label at once) or <code>&#123; value, label, description &#125;</code>. <code>other</code> adds a free-text choice: it answers <code>"other"</code> under the field's name and the text under <code>&lt;name&gt;Other</code>. An empty field answers <code>null</code>.</DocText>
+
+```html example label="Numbers and money" schema="none" hint="A currency field formats per its locale as you type (de-DE: 1.234,50 €; ja-JP: no minor unit), a number with steppers and a unit, a slider with its value beside it. Send prints the answers - all numbers."
+<div class="chat-components" id="cs-numbers">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "title": "Quote",
+      "body": [
+        {
+          "type": "currency",
+          "name": "net",
+          "label": "Net price",
+          "currency": "EUR",
+          "locale": "de-DE",
+          "default": 1234.5
+        },
+        { "type": "currency", "name": "yen", "label": "In yen", "currency": "JPY", "locale": "ja-JP" },
+        { "type": "number", "name": "weight", "label": "Weight", "min": 0, "step": 0.5, "unit": "kg", "default": 2.5 },
+        { "type": "slider", "name": "discount", "label": "Discount", "min": 0, "max": 30, "step": 5, "unit": "%" }
+      ]
+    }
+  </script>
+</div>
+<pre class="text-xs" id="cs-numbers-out" style="white-space: pre-wrap; margin-top: 1rem"></pre>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('cs-numbers').addEventListener('chat-components-answer', (e) => {
+      document.getElementById('cs-numbers-out').textContent = JSON.stringify(e.detail.answers, null, 2);
+    });
+  });
+</script>
+```
+
+```html example label="Choices" schema="none" hint="A select, a radio group whose options carry descriptions, a checkbox group with Other (typing picks it) and a single box."
+<div class="chat-components" id="cs-choices">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "title": "Your workspace",
+      "body": [
+        {
+          "type": "select",
+          "name": "region",
+          "label": "Data region",
+          "placeholder": "Pick a region",
+          "options": [
+            { "value": "eu", "label": "Europe (Frankfurt)" },
+            { "value": "us", "label": "United States (Ohio)" }
+          ],
+          "required": true
+        },
+        {
+          "type": "radio",
+          "name": "plan",
+          "label": "Plan",
+          "default": "team",
+          "options": [
+            { "value": "solo", "label": "Solo", "description": "One person, all features" },
+            { "value": "team", "label": "Team", "description": "Up to 25 people" },
+            { "value": "org", "label": "Organisation", "description": "SSO and audit log" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "name": "apps",
+          "label": "Connect",
+          "options": ["GitHub", "Slack", "Google Drive"],
+          "other": "Another app"
+        },
+        { "type": "checkbox", "name": "news", "label": "Send me the monthly product news" }
+      ]
+    }
+  </script>
+</div>
+```
+
+```html example label="Text, dates, yes and no" schema="none" hint="A pattern (a postcode of five digits), a URL, a time, a date with bounds, a switch and a rating of ten - the browser checks the pattern and the URL before Send."
+<div class="chat-components" id="cs-text">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "title": "Delivery details",
+      "body": [
+        {
+          "type": "input",
+          "name": "postcode",
+          "label": "Postcode",
+          "pattern": "[0-9]{5}",
+          "hint": "Five digits",
+          "required": true
+        },
+        { "type": "input", "name": "site", "label": "Website", "inputType": "url", "placeholder": "https://" },
+        { "type": "date", "name": "day", "label": "Day", "min": "2026-11-23", "max": "2026-12-23" },
+        { "type": "input", "name": "from", "label": "From", "inputType": "time", "default": "09:00" },
+        { "type": "switch", "name": "ring", "label": "Ring the bell" },
+        { "type": "rating", "name": "mood", "label": "How urgent, 1 to 10?", "max": 10 }
+      ],
+      "actions": [{ "id": "save", "label": "Save", "submit": true }]
+    }
+  </script>
+</div>
+```
+
+<H2 id="questionnaire">The questionnaire</H2>
+
+<DocText>One <code>questionnaire</code> node turns the card into a <DocLink href="questionnaire.html">Questionnaire</DocLink>. Its <code>steps</code> each have an <code>id</code>, a <code>title</code>, an optional <code>description</code>, their <code>fields</code> (and text), <code>optional</code> (offers Skip) and <code>next</code>. A choice's <code>goto</code> leads to a step; <code>branches</code> are the Questionnaire's rules (<DocLink href="questionnaire-branching.html">Branching</DocLink>), by step id: <code>&#123; when: [&#123; field, op, value &#125;], goto &#125;</code>. <code>autoAdvance</code> moves on once a single choice is picked; <code>review</code> titles the review step that ends it. A card with a questionnaire asks only through it - the submit action's label becomes its Send.</DocText>
+
+```html example label="Branching by rule" schema="none" height="44" hint="Teams of 50 or more take the enterprise step (a branch rule, gte 50); smaller teams go straight to the contact step. The comment step is optional (Skip)."
+<div class="chat-components" id="cs-q">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "id": "sales",
+      "title": "Talk to sales",
+      "body": [
+        {
+          "type": "questionnaire",
+          "title": "Talk to sales",
+          "autoAdvance": true,
+          "steps": [
+            {
+              "id": "size",
+              "title": "How large is your team?",
+              "fields": [{ "type": "number", "name": "size", "label": "People", "min": 1, "required": true }]
+            },
+            {
+              "id": "contact",
+              "title": "How can we reach you?",
+              "next": "comment",
+              "fields": [{ "type": "input", "name": "email", "label": "Email", "inputType": "email", "required": true }]
+            },
+            {
+              "id": "enterprise",
+              "title": "Which do you need?",
+              "next": "contact",
+              "fields": [
+                {
+                  "type": "checkbox",
+                  "name": "needs",
+                  "label": "Needs",
+                  "options": ["SSO", "Audit log", "On-premises"],
+                  "other": "Something else"
+                }
+              ]
+            },
+            {
+              "id": "comment",
+              "title": "Anything else?",
+              "optional": true,
+              "fields": [{ "type": "textarea", "name": "comment", "label": "Comment" }]
+            }
+          ],
+          "branches": { "size": [{ "when": [{ "field": "size", "op": "gte", "value": 50 }], "goto": "enterprise" }] },
+          "review": "Is this right?"
+        }
+      ],
+      "actions": [{ "id": "send", "label": "Send to sales", "submit": true }]
+    }
+  </script>
+</div>
+```
+
+<H2 id="actions">Actions</H2>
+
+<div class="table-container">
+<table class="table">
+<thead><tr class="table-row"><th class="table-head">Key</th><th class="table-head">Meaning</th></tr></thead>
+<tbody>
+<tr class="table-row"><td class="table-cell"><code>id</code>, <code>label</code></td><td class="table-cell">Names the action in the answer; the button's text</td></tr>
+<tr class="table-row"><td class="table-cell"><code>variant</code></td><td class="table-cell">The <DocLink href="button.html">Button</DocLink> variant: <code>default</code>, <code>secondary</code>, <code>outline</code>, <code>ghost</code>, <code>destructive</code></td></tr>
+<tr class="table-row"><td class="table-cell"><code>submit</code></td><td class="table-cell">Checks the fields and sends the answers</td></tr>
+<tr class="table-row"><td class="table-cell"><code>reply</code></td><td class="table-cell">A quick reply: it answers with this text (no fields read)</td></tr>
+<tr class="table-row"><td class="table-cell"><code>cancel</code></td><td class="table-cell">Closes the card unanswered (the <code>cancelled</code> state)</td></tr>
+</tbody>
+</table>
+</div>
+
+<DocText>Every action finishes the card with <code>chat-components-answer</code>: <code>&#123; id, action, answers, reply, summary &#125;</code>. The <code>summary</code> is one sentence - "Budget: 1.200,00 €; Start: On Monday", or the reply's text - for the transcript and for the model.</DocText>
+
+<H2 id="validation">Validation</H2>
+
+<DocText><code>df$.shadcn.chatComponents.validate(spec)</code> returns every problem with its JSON path. Errors - an unknown type, a field without a name or with a name used twice, a select without options, a <code>goto</code> to no step, a min above its max, two questionnaires - keep the card from showing; unknown keys are warnings, so a newer model's extra keys break nothing. Hand the errors back to the model and it can repair its document.</DocText>
+
+```html example label="Try a document" schema="none" height="56" hint="Edit the JSON: the problems update as you type and the card beside them shows what it renders. Try an unknown type, remove a name, or add a key the schema does not know (a warning only)."
+<div class="flex flex-wrap gap-4">
+  <div class="flex flex-col gap-2" style="flex: 1 1 18rem; min-width: 0">
+    <label class="label" for="cs-try">Component Schema document</label>
+    <textarea class="textarea" id="cs-try" rows="14" spellcheck="false" style="font-family: var(--font-mono); font-size: 0.8125rem">
+{
+  "version": 1,
+  "title": "Shipping",
+  "body": [
+    { "type": "radio", "name": "speed", "label": "Speed", "options": ["Standard", "Express"] },
+    { "type": "number", "name": "parcels", "label": "Parcels", "min": 1, "max": 5 },
+    { "type": "sticker", "name": "fun" }
+  ],
+  "colour": "teal"
+}</textarea>
+    <ul class="text-sm" id="cs-try-problems" style="margin: 0; padding-inline-start: 1.25rem"></ul>
+  </div>
+  <div id="cs-try-card" style="flex: 1 1 18rem; min-width: 0"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const field = document.getElementById('cs-try');
+    const list = document.getElementById('cs-try-problems');
+    const card = document.getElementById('cs-try-card');
+    const show = () => {
+      let spec;
+      list.textContent = '';
+      try {
+        spec = JSON.parse(field.value);
+      } catch (e) {
+        list.append(Object.assign(document.createElement('li'), { textContent: 'JSON: ' + e.message }));
+        return;
+      }
+      const problems = df$.shadcn.chatComponents.validate(spec);
+      for (const p of problems)
+        list.append(
+          Object.assign(document.createElement('li'), {
+            textContent: `${p.level}: ${p.path || 'document'} - ${p.message}`,
+          }),
+        );
+      if (!problems.length) list.append(Object.assign(document.createElement('li'), { textContent: 'No problems.' }));
+      card.textContent = '';
+      df$(card).append(df$(df$.shadcn.chatComponents.markup(spec, { id: 'cs-try-preview' })));
+    };
+    field.addEventListener('input', show);
+    show();
+  });
+</script>
+```
+
+<H2 id="language-models">Language models: fences and tools</H2>
+
+<DocText>A model can write the document two ways. <strong>In Markdown</strong>, as a fenced block with the info string <code>ui::component-schema</code> - any model can do it, and it streams: <code>fences(markdown)</code> finds each block, <code>closed: false</code> while it is still being written. <strong>As a tool call</strong>: <code>tool()</code> is an OpenAI-style function tool (<code>show_components</code>) whose parameters are the document's JSON Schema (<code>jsonSchema()</code>, draft 2020-12, built from the same tables <code>validate()</code> reads). The <DocLink href="scaffold-ai-chat.html">AI Chat</DocLink> scaffold offers both, and turns a tool call into the same fence in its stored message, so the history replays on any server.</DocText>
+
+```html example label="The fence and the tool" schema="none" height="48" hint="The system prompt a page can give a model, and the tool definition as JSON - both generated, so they always match what the runtime accepts."
+<div class="flex flex-col gap-3">
+  <div class="flex gap-2">
+    <button class="btn" type="button" data-variant="outline" id="cs-show-prompt">System prompt</button>
+    <button class="btn" type="button" data-variant="outline" id="cs-show-tool">Tool definition</button>
+    <button class="btn" type="button" data-variant="outline" id="cs-show-schema">JSON Schema</button>
+  </div>
+  <pre class="text-xs" id="cs-out" style="white-space: pre-wrap; max-height: 24rem; overflow: auto; margin: 0"></pre>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cc = df$.shadcn.chatComponents;
+    const out = document.getElementById('cs-out');
+    const prompt = [
+      'When you need a structured answer from the user, show a card instead of asking in prose:',
+      'write a fenced block whose info string is ' + cc.fence + ' and whose body is a Component Schema document.',
+      'Example:',
+      '```' + cc.fence,
+      JSON.stringify({
+        version: 1,
+        title: 'Budget',
+        body: [{ type: 'currency', name: 'budget', label: 'Budget', currency: 'EUR', required: true }],
+        actions: [{ id: 'ok', label: 'Confirm', submit: true }],
+      }),
+      '```',
+      'The user answers in the card; you get the answers as the next message.',
+    ].join('\n');
+    document.getElementById('cs-show-prompt').addEventListener('click', () => (out.textContent = prompt));
+    document
+      .getElementById('cs-show-tool')
+      .addEventListener('click', () => (out.textContent = JSON.stringify(cc.tool(), null, 2)));
+    document
+      .getElementById('cs-show-schema')
+      .addEventListener('click', () => (out.textContent = JSON.stringify(cc.jsonSchema(), null, 2)));
+    out.textContent = prompt;
+  });
+</script>
+```
+
+<SourceFiles component="chat-components" section="css" />
+
+<SourceFiles component="chat-components" section="js" jsTitle="JS" />
+
+</DocPage>

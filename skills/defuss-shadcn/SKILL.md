@@ -9,7 +9,7 @@ description: Build UI prototypes and pages with defuss-shadcn - shadcn-style com
 
 # defuss-shadcn 0.9.16 - Agent Skill
 
-271 components (180 CSS-only, 91 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
+272 components (180 CSS-only, 92 with a small ES module) built on native HTML elements, themed entirely by CSS custom properties (tweakcn-compatible tokens). You write **plain HTML markup** with the documented classes and `data-*` attributes; the shipped CSS styles it and the shipped JS wires behavior from those attributes. There is nothing to compile.
 
 ## 0. Quick start - do exactly this, in this order
 
@@ -291,7 +291,7 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
   - [API Documentation](../../src/documentation/pages/application/scaffold-api-docs.mdx) - Application scaffold: an API reference in the style of the big developer portals - guides, resources with their object schemas, one page per endpoint with parameters, responses and code samples in curl, JavaScript and Python, a Try it form answered by an in-browser sandbox, and a search over every endpoint with defuss-search; routed with defuss-dom-router and in English and German with defuss-i18n.
   - [Calendar](../../src/documentation/pages/application/scaffold-calendar.mdx) - Application scaffold: an Apple-Calendar-style calendar - day, week, month and year views, calendars by colour, events with repeats, a week start and calendar weeks you choose - and Find a time, where every person gets a calendar of their own colour, the slots everyone is free light up and a Doodle-style poll books the best one.
   - [Workflow Studio](../../src/documentation/pages/application/scaffold-workflow-studio.mdx) - Application scaffold: an n8n- and ComfyUI-style workflow studio with six apps you can run - an AI agent crew with prompts and external data, a route planner that calls its traffic service twice, a three.js scene graph with shader and animation subworkflows, an order-to-cash process that hands schemaful objects from step to step, a hand-built neural network of 973 weights and biases that computes A + B, A - B, A × B and A ÷ B, and the complete form logic of the BDI-II questionnaire; built only from the shipped components.
-  - [AI Chat](../../src/documentation/pages/application/scaffold-ai-chat.mdx) - Application scaffold: an Open WebUI-style AI chat - chats by day in a sidebar, a model picker, images, audio, video and files as attachments, voice messages, streamed Markdown answers with thinking, copy, edit, regenerate and ratings, chat controls for the system prompt and sampling, an OpenAI-compatible connection and a sign-in - built only from the shipped components.
+  - [AI Chat](../../src/documentation/pages/application/scaffold-ai-chat.mdx) - Application scaffold: an Open WebUI-style AI chat - chats by day in a sidebar, a model picker, images, audio, video and files as attachments, voice messages, answers that ask with Chat Components cards and scripted example chats, streamed Markdown answers with thinking, copy, edit, regenerate and ratings, chat controls for the system prompt and sampling, an OpenAI-compatible connection and a sign-in - built only from the shipped components.
 
 ### Desktop
 
@@ -300,6 +300,11 @@ Each link is the page's source (MDX: frontmatter + prose + ` ```html example ` f
 - [Windows XP Look](../../src/documentation/pages/desktop/desktop-windows-xp.mdx) - The blue title bars with their rounded tops, beige windows, the green start button on a blue bar, the start menu with the user on a blue banner, pinned programs on white and all programs on light blue, the welcome screen with the users right of a divider, a sky over a green hill. Remade from scratch - the hill, the icons and the start mark are our own.
 - [Windows 98 Look](../../src/documentation/pages/desktop/desktop-windows-98.mdx) - Bevelled grey on teal: gradient title bars, raised buttons that press in, sunken fields, the start menu with its brand strip up the side and folders that cascade, a pixel font, 16-colour icons. Remade from scratch on the system's components; the pixel font is the CC BY-SA 'Pixelated MS Sans Serif' by lou.
 - [Windows 95 Look](../../src/documentation/pages/desktop/desktop-windows-95.mdx) - Where it started: the same bevelled grey as 98 with solid navy title bars, a grey brand strip in the start menu and the teal desktop. Remade from scratch on the system's components, with the CC BY-SA pixel font.
+
+### Chat
+
+- [Component Schema](../../src/documentation/pages/chat/component-schema.mdx) - The Component Schema - a JSON document that describes a chat card: content nodes, fields (text, numbers, money, choices, yes / no, dates, ratings), one multi-step questionnaire and actions or quick replies; checked by validate(), published as a JSON Schema and an OpenAI-style tool, written by language models in ui::component-schema fences.
+- [Chat Scripts](../../src/documentation/pages/chat/chat-scripts.mdx) - Chat Scripts - scripted conversations without a language model: a JSON graph of nodes that say lines, ask with Chat Components or for free text, and branch on the answers; run in a Session with a typing indicator and a composer, or through hooks into your own transcript; back, restart and kept across reloads.
 
 ### Presentations
 
@@ -1221,6 +1226,12 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 - **Why:** A native scroll region with a role="log" transcript - the keyboard scrolls it, a screen reader hears new messages; the runtime only decides where the scroll goes - follow the live edge, let go when the reader scrolls away, keep the place when history loads, anchor new turns - and turns dropped files into an event.
 - **When:** A whole chat or assistant conversation - messages (message + bubble + marker) in a transcript that scrolls, with a composer (textarea-group) below. A short static exchange takes a plain .message-list; a feed of cards takes a list.
 - **States:** `default`, `detached`, `streaming` · **Skill:** [references/components/session.md](references/components/session.md) · **Examples:** [src/documentation/pages/chat/session.mdx](../../src/documentation/pages/chat/session.mdx)
+
+#### Chat Components · ORG · JS
+
+- **Why:** A Component Schema document is plain JSON a script or a language model writes; the runtime turns it into the system's own components - a Card with Inputs, Number Inputs (currency), Selects, Radio Groups, Checkboxes, Switches, Sliders, Ratings, date fields or a whole Questionnaire - so a chat asks with real, accessible form controls and gets typed answers back.
+- **When:** A chat (bot, assistant, scripted conversation) needs a structured answer - confirm a plan, enter an amount, pick from choices, fill a short form, walk a multi-step questionnaire, tap a quick reply. A plain Form or Questionnaire outside a conversation; a Bubble for text only.
+- **States:** `default`, `answered`, `cancelled` · **Skill:** [references/components/chat-components.md](references/components/chat-components.md) · **Examples:** [src/documentation/pages/chat/chat-components.mdx](../../src/documentation/pages/chat/chat-components.mdx)
 
 ### Mockup
 

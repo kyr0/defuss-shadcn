@@ -1499,6 +1499,15 @@ df$.questionnaire = {
    */
   next: (target: string | HTMLElement): boolean => advance(resolve(target)),
   /**
+   * Evaluate a rule's when against answers - the grammar of branches and asserts, for code that branches the same way
+   * (Chat Scripts).
+   * @param condition - one condition, a list (all must hold) or { any } / { all }
+   * @param answers - the answers it reads
+   * @returns true when it holds
+   */
+  test: (condition: QuestionnaireWhen, answers: QuestionnaireAnswers): boolean =>
+    when({ when: condition }, answers ?? {}),
+  /**
    * Back one step along the branch history.
    * @param target - the .questionnaire element or its selector
    * @returns false on the first step

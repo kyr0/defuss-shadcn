@@ -1,9 +1,9 @@
 {
-  "total": 271,
+  "total": 272,
   "byType": {
     "ATM": 84,
     "MOL": 41,
-    "ORG": 7,
+    "ORG": 8,
     "BLK": 135,
     "TPL": 4
   },
@@ -18,23 +18,23 @@
     "Website": 36
   },
   "tokens": 52,
-  "examples": 2041,
+  "examples": 2064,
   "unitTestFiles": 52,
-  "withJs": 91,
+  "withJs": 92,
   "withoutJs": 180,
-  "totalSize": 4885280,
-  "totalSizeMinified": 2466488,
-  "totalSizeGz": 1371568,
-  "totalSizeGzMinified": 797767,
+  "totalSize": 4956380,
+  "totalSizeMinified": 2503261,
+  "totalSizeGz": 1390387,
+  "totalSizeGzMinified": 810046,
   "bundle": {
-    "jsSize": 1240903,
-    "jsSizeMinified": 722080,
-    "cssSize": 1645705,
-    "cssSizeMinified": 953240,
-    "totalSizeGz": 622428,
-    "totalSizeGzMinified": 395760,
-    "jsSizeGzMinified": 226927,
-    "cssSizeGzMinified": 168833
+    "jsSize": 1291407,
+    "jsSizeMinified": 755244,
+    "cssSize": 1651404,
+    "cssSizeMinified": 956703,
+    "totalSizeGz": 636595,
+    "totalSizeGzMinified": 406961,
+    "jsSizeGzMinified": 237376,
+    "cssSizeGzMinified": 169585
   },
   "core": {
     "jsSize": 189596,
@@ -310,13 +310,13 @@
         "sections/questionnaire.css",
         "sections/questionnaire.js"
       ],
-      "jsSize": 48190,
-      "jsSizeMinified": 28081,
+      "jsSize": 48264,
+      "jsSizeMinified": 28111,
       "cssSize": 11170,
       "cssSizeMinified": 7126,
-      "totalSizeGz": 15012,
-      "totalSizeGzMinified": 11472,
-      "jsSizeGzMinified": 9551,
+      "totalSizeGz": 15038,
+      "totalSizeGzMinified": 11486,
+      "jsSizeGzMinified": 9565,
       "cssSizeGzMinified": 1921
     },
     "data-display": {
@@ -777,12 +777,14 @@
         "bubble",
         "marker",
         "message",
-        "session"
+        "session",
+        "chat-components"
       ],
       "needs": [
         "Primitives",
         "Actions",
         "Forms & Inputs",
+        "Questionnaire",
         "Data Display",
         "Feedback & Status"
       ],
@@ -790,14 +792,14 @@
         "sections/chat.css",
         "sections/chat.js"
       ],
-      "jsSize": 13770,
-      "jsSizeMinified": 8451,
-      "cssSize": 31564,
-      "cssSizeMinified": 18632,
-      "totalSizeGz": 10963,
-      "totalSizeGzMinified": 7290,
-      "jsSizeGzMinified": 3120,
-      "cssSizeGzMinified": 4170
+      "jsSize": 64432,
+      "jsSizeMinified": 41682,
+      "cssSize": 37263,
+      "cssSizeMinified": 22095,
+      "totalSizeGz": 25350,
+      "totalSizeGzMinified": 18724,
+      "jsSizeGzMinified": 13816,
+      "cssSizeGzMinified": 4908
     },
     "mockup": {
       "heading": "Mockup",
@@ -1058,7 +1060,7 @@
     "count": 28,
     "minGzMinified": 5000,
     "maxGzMinified": 66114,
-    "meanGzMinified": 22821
+    "meanGzMinified": 23230
   },
   "components": {
     "about-intro": {
@@ -1619,6 +1621,19 @@
       "totalSizeGzMinified": 5126,
       "totalSize": 40077,
       "totalSizeMinified": 12661
+    },
+    "chat-components": {
+      "name": "chat-components",
+      "type": "ORG",
+      "withJs": true,
+      "jsSize": 63249,
+      "jsSizeMinified": 32739,
+      "cssSize": 5631,
+      "cssSizeMinified": 3482,
+      "totalSizeGz": 18169,
+      "totalSizeGzMinified": 12134,
+      "totalSize": 68880,
+      "totalSizeMinified": 36221
     },
     "checkbox": {
       "name": "checkbox",
@@ -3366,14 +3381,14 @@
       "name": "questionnaire",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 67903,
-      "jsSizeMinified": 28150,
+      "jsSize": 68304,
+      "jsSizeMinified": 28180,
       "cssSize": 11107,
       "cssSizeMinified": 7077,
-      "totalSizeGz": 20508,
-      "totalSizeGzMinified": 11440,
-      "totalSize": 79010,
-      "totalSizeMinified": 35227
+      "totalSizeGz": 20639,
+      "totalSizeGzMinified": 11454,
+      "totalSize": 79411,
+      "totalSizeMinified": 35257
     },
     "quick-links": {
       "name": "quick-links",
@@ -3717,14 +3732,14 @@
       "name": "session",
       "type": "ORG",
       "withJs": true,
-      "jsSize": 22277,
-      "jsSizeMinified": 8521,
+      "jsSize": 24096,
+      "jsSizeMinified": 9043,
       "cssSize": 6407,
       "cssSizeMinified": 3335,
-      "totalSizeGz": 8772,
-      "totalSizeGzMinified": 4264,
-      "totalSize": 28684,
-      "totalSizeMinified": 11856
+      "totalSizeGz": 9291,
+      "totalSizeGzMinified": 4395,
+      "totalSize": 30503,
+      "totalSizeMinified": 12378
     },
     "session-item": {
       "name": "session-item",
@@ -4657,13 +4672,13 @@
         "toast",
         "typography"
       ],
-      "jsSize": 280153,
-      "jsSizeMinified": 155010,
+      "jsSize": 280960,
+      "jsSizeMinified": 155537,
       "cssSize": 294409,
       "cssSizeMinified": 190914,
-      "totalSizeGz": 117181,
-      "totalSizeGzMinified": 76906,
-      "jsSizeGzMinified": 51409,
+      "totalSizeGz": 117317,
+      "totalSizeGzMinified": 77021,
+      "jsSizeGzMinified": 51524,
       "cssSizeGzMinified": 25497
     },
     "issue-tracker": {
@@ -5060,6 +5075,8 @@
         "bubble",
         "button",
         "card",
+        "chat-components",
+        "checkbox",
         "combobox",
         "dialog",
         "dropdown",
@@ -5071,7 +5088,11 @@
         "marker",
         "message",
         "mockup-code",
+        "number-input",
+        "questionnaire",
         "radio",
+        "rating",
+        "select",
         "separator",
         "session",
         "sidebar",
@@ -5086,14 +5107,14 @@
         "typography",
         "video"
       ],
-      "jsSize": 305137,
-      "jsSizeMinified": 169622,
-      "cssSize": 402171,
-      "cssSizeMinified": 246566,
-      "totalSizeGz": 144045,
-      "totalSizeGzMinified": 90709,
-      "jsSizeGzMinified": 55395,
-      "cssSizeGzMinified": 35314
+      "jsSize": 412749,
+      "jsSizeMinified": 235784,
+      "cssSize": 441034,
+      "cssSizeMinified": 266448,
+      "totalSizeGz": 179650,
+      "totalSizeGzMinified": 115045,
+      "jsSizeGzMinified": 76317,
+      "cssSizeGzMinified": 38728
     }
   }
 }

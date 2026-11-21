@@ -520,6 +520,16 @@ In the **source repository** additionally: `screenshots/{light,dark}/{name}.png`
 **Screenshots:** screenshots/{light,dark}/chart.png
 **Skill:** [components/charts/chart/component-skill.md](components/charts/chart/component-skill.md)
 
+## Chat Components
+
+**Type:** ORG
+**Why:** A Component Schema document is plain JSON a script or a language model writes; the runtime turns it into the system's own components - a Card with Inputs, Number Inputs (currency), Selects, Radio Groups, Checkboxes, Switches, Sliders, Ratings, date fields or a whole Questionnaire - so a chat asks with real, accessible form controls and gets typed answers back.
+**When:** A chat (bot, assistant, scripted conversation) needs a structured answer - confirm a plan, enter an amount, pick from choices, fill a short form, walk a multi-step questionnaire, tap a quick reply. A plain Form or Questionnaire outside a conversation; a Bubble for text only.
+**Files:** dist/components/chat-components/chat-components.css + dist/components/chat-components/chat-components.js
+**Supported states:** default, answered, cancelled
+**Screenshots:** screenshots/{light,dark}/chat-components.png, screenshots/{light,dark}/chat-components-answered.png, screenshots/{light,dark}/chat-components-cancelled.png
+**Skill:** [components/chat/chat-components/component-skill.md](components/chat/chat-components/component-skill.md)
+
 ## Checkbox
 
 **Type:** ATM

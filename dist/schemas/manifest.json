@@ -11,6 +11,7 @@
     "border-layout": "./border-layout.schema.json",
     "calendar": "./calendar.schema.json",
     "carousel": "./carousel.schema.json",
+    "chat-components": "./chat-components.schema.json",
     "checkbox": "./checkbox.schema.json",
     "chord-chart": "./chord-chart.schema.json",
     "code-example": "./code-example.schema.json",

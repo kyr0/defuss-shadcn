@@ -4,6 +4,9 @@
     {
       "version": "unreleased",
       "created": [
+        "chat-components",
+        "chat-scripts",
+        "component-schema",
         "desktop",
         "desktop-manager",
         "desktop-modern",
@@ -41,9 +44,11 @@
         "dropdown",
         "index",
         "property-grid",
+        "questionnaire",
         "routing",
         "scaffold-desktop",
         "scaffold-notes",
+        "session",
         "system-in-numbers",
         "text-rotate",
         "translation",

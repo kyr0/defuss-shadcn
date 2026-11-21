@@ -1,0 +1,590 @@
+---
+title: "Chat Components"
+description: "Chat Components - a chat asks with the system's own components: a Component Schema document (JSON from a script or a language model) becomes a card with inputs, amounts, choices, dates, ratings, a multi-step questionnaire or quick replies, and the answers come back typed."
+slug: "chat-components"
+---
+
+import { DocPage, PageHeader, SkillPanel, SourceFiles, StatesSection, DocLink, DocText, H2, SkillField, SkillText, SkillRow, ApiPill, ApiSection } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="chat-components" title="Chat Components" component="chat-components">
+  A chat that asks with real components. A bot, an assistant or a <DocLink href="chat-scripts.html">scripted conversation</DocLink> writes a <DocLink href="component-schema.html">Component Schema</DocLink> document - plain JSON - and the reader sees a <DocLink href="card.html">Card</DocLink> with <DocLink href="input.html">Inputs</DocLink>, <DocLink href="number-input.html">amounts</DocLink>, <DocLink href="select.html">Selects</DocLink>, <DocLink href="radio.html">choices</DocLink>, <DocLink href="switch.html">Switches</DocLink>, <DocLink href="slider.html">Sliders</DocLink>, <DocLink href="rating.html">Ratings</DocLink>, dates, a whole <DocLink href="questionnaire.html">Questionnaire</DocLink> or quick replies. The answer comes back as typed JSON and one readable sentence for the transcript. Every text in the document stays text, so a language model's output cannot inject markup.
+</PageHeader>
+
+<SkillPanel component="chat-components">
+  <SkillField label="Native basis">
+<SkillText>A <code>&lt;div class="chat-components"&gt;</code> holding its document in a JSON <code>&lt;script&gt;</code>; the runtime writes a <code>&lt;form class="card"&gt;</code> of native controls (or a Questionnaire form) and checks them with the browser's constraint validation.</SkillText>
+  </SkillField>
+
+  <SkillField label="Web Platform APIs">
+<SkillRow>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation" title="required, min / max, pattern, email"><code>Constraint validation</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent/submitter" title="which action sent the card"><code>SubmitEvent.submitter</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset" title="choice groups named by their label"><code>&lt;fieldset&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/output" title="a slider's value"><code>&lt;output&gt;</code></ApiPill>
+    <ApiPill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat" title="amounts in the answer sentence"><code>Intl.NumberFormat</code></ApiPill>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Classes">
+<SkillRow>
+    <code>.chat-components</code>
+    <code>.chat-components-schema</code>
+    <code>.chat-components-answers</code>
+    <code>.chat-components-body</code>
+  </SkillRow>
+  </SkillField>
+
+  <SkillField label="Data attributes">
+<SkillText>Set by the runtime: <code>data-answered</code> (<code>answered</code>, <code>cancelled</code>), <code>data-invalid</code>, <code>data-chat-action</code> / <code>data-chosen</code> (actions); event <code>chat-components-answer</code>; API <code>df$.shadcn.chatComponents</code> (<code>validate</code>, <code>markup</code>, <code>mount</code>, <code>answers</code>, <code>summary</code>, <code>jsonSchema</code>, <code>tool</code>, <code>fences</code>).</SkillText>
+  </SkillField>
+</SkillPanel>
+
+```html example label="Chat Components" hint="A plan to confirm: untick a step you do not want, then Confirm - or Not now. The answer is the card's state (answered / cancelled, on the State tab) and the chat-components-answer event."
+<div class="chat-components" id="cc-plan" data-state-demo>
+  <script type="application/json" class="chat-components-schema">
+    {
+      "schema": "component-schema",
+      "version": 1,
+      "id": "migration",
+      "title": "Confirm the migration plan",
+      "description": "I will run these steps **in order** tonight at 22:00.",
+      "body": [
+        {
+          "type": "plan",
+          "name": "steps",
+          "label": "Steps",
+          "steps": [
+            { "id": "backup", "title": "Back up the database", "description": "A snapshot, kept for 30 days" },
+            { "id": "migrate", "title": "Run the migrations", "description": "About 4 minutes of read-only mode" },
+            { "id": "verify", "title": "Verify the services" }
+          ]
+        }
+      ],
+      "actions": [
+        { "id": "confirm", "label": "Confirm", "submit": true },
+        { "id": "later", "label": "Not now", "variant": "outline", "cancel": true }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="quick-replies">Quick replies</H2>
+
+<DocText>An action with <code>reply</code> answers with its text - the reader taps instead of typing. A card without fields is just text and buttons.</DocText>
+
+```html example label="Pick a plan" schema="none" hint="Tap a plan: the card keeps the chosen one marked, the others go."
+<div class="chat-components" id="cc-quick">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "id": "plan",
+      "body": [{ "type": "text", "text": "Which plan suits your team? You can change it any time." }],
+      "actions": [
+        { "id": "starter", "label": "Starter", "reply": "The Starter plan, please" },
+        { "id": "team", "label": "Team", "reply": "The Team plan", "variant": "secondary" },
+        { "id": "compare", "label": "Compare plans", "reply": "Can you compare the plans?", "variant": "outline" }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="questionnaire">A multi-step questionnaire</H2>
+
+<DocText>A <code>questionnaire</code> node is the <DocLink href="questionnaire.html">Questionnaire</DocLink>: one step at a time, branches by choice (<code>goto</code>) or by rule (<code>branches</code>), free text under Other, a review with Edit before it sends. Its Send is the card's submit action.</DocText>
+
+```html example label="A project brief" schema="none" height="44" hint="An app asks for platforms, a website for its pages (goto) - both end with a budget in US dollars. Something else takes your own words. Check your answers, then Send the brief: the card shows them as a list."
+<div class="chat-components" id="cc-brief">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "id": "brief",
+      "title": "Project brief",
+      "description": "Three quick questions.",
+      "body": [
+        {
+          "type": "questionnaire",
+          "title": "Project brief",
+          "steps": [
+            {
+              "id": "kind",
+              "title": "What are we building?",
+              "fields": [
+                {
+                  "type": "radio",
+                  "name": "kind",
+                  "label": "Kind",
+                  "required": true,
+                  "options": [
+                    { "value": "site", "label": "A website" },
+                    { "value": "app", "label": "An app", "goto": "platforms" }
+                  ],
+                  "other": "Something else"
+                }
+              ]
+            },
+            {
+              "id": "pages",
+              "title": "About how many pages?",
+              "next": "budget",
+              "fields": [
+                { "type": "number", "name": "pages", "label": "Pages", "min": 1, "max": 200, "required": true }
+              ]
+            },
+            {
+              "id": "platforms",
+              "title": "Which platforms?",
+              "fields": [
+                { "type": "checkbox", "name": "platforms", "label": "Platforms", "options": ["iOS", "Android", "Web"] }
+              ]
+            },
+            {
+              "id": "budget",
+              "title": "Your budget",
+              "description": "A range is fine - we will talk about it.",
+              "fields": [
+                {
+                  "type": "currency",
+                  "name": "budget",
+                  "label": "Budget",
+                  "currency": "USD",
+                  "locale": "en-US",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "actions": [
+        { "id": "send", "label": "Send the brief", "submit": true },
+        { "id": "later", "label": "Later", "variant": "ghost", "cancel": true }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="content">Content cards</H2>
+
+<DocText>Not every card asks. Text, lists, a <DocLink href="table.html">Table</DocLink>, facts, a plan and an <DocLink href="alert.html">Alert</DocLink> make a read-only card - an order summary, a status, a result.</DocText>
+
+```html example label="An order summary" schema="none" hint="Content only: no fields, no actions - the card is the answer."
+<div class="chat-components" id="cc-order">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "title": "Your order #4821",
+      "description": "Paid on 21 November, ships **tomorrow**.",
+      "body": [
+        {
+          "type": "table",
+          "label": "Items",
+          "columns": ["Item", "Qty", "Price"],
+          "rows": [
+            ["Desk lamp", 1, "$39.90"],
+            ["Notebook A5", 3, "$13.50"]
+          ]
+        },
+        {
+          "type": "facts",
+          "facts": [
+            { "label": "Total", "value": "$53.40" },
+            { "label": "Delivery", "value": "Express, Friday" },
+            { "label": "To", "value": "12 Harbour Street" }
+          ]
+        },
+        { "type": "divider" },
+        { "type": "alert", "title": "Two parcels", "text": "The lamp ships from another warehouse." }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="booking">Booking a table</H2>
+
+```html example label="A table at Oktav" schema="none" height="40" hint="A date with a lower bound, a time (inputType time), a party size with steppers, a select and a note. Book checks the required fields."
+<div class="chat-components" id="cc-booking">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "id": "booking",
+      "title": "Book a table at Oktav",
+      "body": [
+        { "type": "date", "name": "day", "label": "Day", "min": "2026-11-21", "required": true },
+        { "type": "input", "name": "time", "label": "Time", "inputType": "time", "required": true, "default": "19:30" },
+        { "type": "number", "name": "guests", "label": "Guests", "min": 1, "max": 12, "default": 2, "unit": "people" },
+        { "type": "select", "name": "area", "label": "Seating", "options": ["Inside", "Terrace", "At the bar"] },
+        {
+          "type": "textarea",
+          "name": "note",
+          "label": "Anything we should know?",
+          "lines": 2,
+          "placeholder": "Allergies, a birthday ..."
+        }
+      ],
+      "actions": [
+        { "id": "book", "label": "Book", "submit": true },
+        {
+          "id": "call",
+          "label": "I would rather call",
+          "variant": "outline",
+          "reply": "Please give me your phone number."
+        }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="feedback">Feedback</H2>
+
+```html example label="Feedback after a support chat" schema="none" hint="A rating (1 to 5 stars), what helped (a checkbox group with an Other text) and a comment."
+<div class="chat-components" id="cc-feedback">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "id": "feedback",
+      "title": "How did we do?",
+      "body": [
+        { "type": "rating", "name": "score", "label": "Your rating", "required": true },
+        {
+          "type": "checkbox",
+          "name": "helped",
+          "label": "What helped?",
+          "options": ["Fast answer", "Clear steps", "Friendly tone"],
+          "other": "Something else"
+        },
+        { "type": "textarea", "name": "comment", "label": "Comment", "lines": 2 }
+      ],
+      "actions": [
+        { "id": "send", "label": "Send feedback", "submit": true },
+        { "id": "skip", "label": "Skip", "variant": "ghost", "cancel": true }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="approval">An approval</H2>
+
+```html example label="Approve an expense" schema="none" hint="Facts to read, an amount you may lower (a currency field with a default and a max), a switch and three actions: approve sends the fields, reject and ask send a reply."
+<div class="chat-components" id="cc-expense">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "id": "expense",
+      "title": "Expense report #118",
+      "description": "Submitted by Lena Ortiz for the Berlin offsite.",
+      "body": [
+        {
+          "type": "facts",
+          "facts": [
+            { "label": "Hotel", "value": "2 nights, 312,00 €" },
+            { "label": "Train", "value": "89,90 €" },
+            { "label": "Meals", "value": "64,20 €" }
+          ]
+        },
+        {
+          "type": "currency",
+          "name": "approved",
+          "label": "Approve",
+          "currency": "EUR",
+          "locale": "de-DE",
+          "default": 466.1,
+          "max": 466.1,
+          "required": true
+        },
+        { "type": "switch", "name": "advance", "label": "Pay with the next salary", "default": true }
+      ],
+      "actions": [
+        { "id": "approve", "label": "Approve", "submit": true },
+        { "id": "reject", "label": "Reject", "variant": "destructive", "reply": "Rejected - please call me." },
+        { "id": "ask", "label": "Ask a question", "variant": "outline", "reply": "Can you send the receipts?" }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="invalid">An invalid document</H2>
+
+<DocText>A document with errors never becomes a half-working form: the card is a destructive <DocLink href="alert.html">Alert</DocLink> that names each problem by its JSON path - what a model needs to repair it. <code>validate(spec)</code> returns the same list; unknown keys are warnings only.</DocText>
+
+```html example label="Invalid" schema="none" hint="An unknown type, a select without options and a name used twice."
+<div class="chat-components" id="cc-invalid">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "body": [
+        { "type": "colorwheel", "name": "color" },
+        { "type": "select", "name": "size", "label": "Size" },
+        { "type": "input", "name": "size", "label": "Size again" }
+      ]
+    }
+  </script>
+</div>
+```
+
+<H2 id="fields">Every field</H2>
+
+<DocText>Each field type renders the component its page documents. The answers are typed by the document - numbers, amounts, booleans, lists, <code>null</code> for an empty field - and the card checks them with the browser's own validation before it sends.</DocText>
+
+```html example label="A request with every field" schema="none" height="76" hint="Fill in the request and Send - required fields and the email are checked by the browser first. The JSON below is what chat-components-answer carries: amounts and numbers as numbers, the switch as true / false, the checkbox group as a list."
+<div class="chat-components" id="cc-fields">
+  <script type="application/json" class="chat-components-schema">
+    {
+      "version": 1,
+      "id": "request",
+      "title": "Equipment request",
+      "description": "Everything the purchasing team needs.",
+      "body": [
+        {
+          "type": "input",
+          "name": "email",
+          "label": "Your email",
+          "inputType": "email",
+          "required": true,
+          "placeholder": "you@example.com"
+        },
+        {
+          "type": "currency",
+          "name": "budget",
+          "label": "Budget",
+          "currency": "USD",
+          "locale": "en-US",
+          "required": true
+        },
+        { "type": "number", "name": "units", "label": "Units", "min": 1, "max": 20, "step": 1, "default": 2 },
+        {
+          "type": "select",
+          "name": "kind",
+          "label": "Device",
+          "options": ["Laptop", "Monitor", { "value": "phone", "label": "Phone" }],
+          "required": true
+        },
+        {
+          "type": "radio",
+          "name": "os",
+          "label": "System",
+          "options": ["macOS", "Windows", "Linux"],
+          "default": "macOS"
+        },
+        { "type": "checkbox", "name": "extras", "label": "Extras", "options": ["Dock", "Keyboard", "Mouse"] },
+        { "type": "switch", "name": "urgent", "label": "Urgent" },
+        {
+          "type": "slider",
+          "name": "share",
+          "label": "Team share",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "default": 50,
+          "unit": "%"
+        },
+        { "type": "rating", "name": "priority", "label": "Priority" },
+        { "type": "date", "name": "needed", "label": "Needed by" },
+        { "type": "textarea", "name": "note", "label": "Note", "lines": 2, "maxLength": 300 },
+        { "type": "checkbox", "name": "policy", "label": "I read the equipment policy", "required": true }
+      ],
+      "actions": [{ "id": "send", "label": "Send request", "submit": true }]
+    }
+  </script>
+</div>
+<pre class="text-xs" id="cc-fields-out" style="white-space: pre-wrap; margin-top: 1rem"></pre>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('cc-fields').addEventListener('chat-components-answer', (e) => {
+      document.getElementById('cc-fields-out').textContent = JSON.stringify(e.detail, null, 2);
+    });
+  });
+</script>
+```
+
+<H2 id="conversation">In a conversation</H2>
+
+<DocText>The element sits in a <DocLink href="message.html">Message</DocLink> like a bubble does. When the reader answers, the page writes their turn - the answer's <code>summary</code> - and replies. A language model gets the same sentence and the JSON answers.</DocText>
+
+```html example label="Asking for a budget" schema="none" height="40" hint="Enter an amount (the Number Input's currency mask formats it as you type), pick when to start - or type another day under Other - and Confirm. The answer becomes your turn; the bot answers with what it understood."
+<section class="session" id="cc-chat" aria-label="Chat with Ada" style="height: 32rem">
+  <div class="session-viewport" aria-label="Messages">
+    <div class="session-content">
+      <div class="session-item">
+        <div class="message">
+          <div class="message-avatar"
+            ><span class="avatar" data-size="sm"><span class="avatar-fallback">AI</span></span></div
+          >
+          <div class="message-content">
+            <div class="bubble" data-variant="secondary"
+              ><div class="bubble-content">I can start the redesign. Two things first:</div></div
+            >
+            <div class="chat-components" id="cc-chat-budget">
+              <script type="application/json" class="chat-components-schema">
+                {
+                  "version": 1,
+                  "id": "budget",
+                  "title": "Budget and start",
+                  "body": [
+                    {
+                      "type": "currency",
+                      "name": "budget",
+                      "label": "Budget",
+                      "currency": "EUR",
+                      "locale": "de-DE",
+                      "required": true,
+                      "max": 50000,
+                      "hint": "Up to 50.000 €"
+                    },
+                    {
+                      "type": "radio",
+                      "name": "start",
+                      "label": "Start",
+                      "required": true,
+                      "options": [
+                        { "value": "now", "label": "Right away" },
+                        { "value": "monday", "label": "On Monday" }
+                      ],
+                      "other": "Another day"
+                    }
+                  ],
+                  "actions": [{ "id": "confirm", "label": "Confirm", "submit": true }]
+                }
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chat = document.getElementById('cc-chat');
+    const row = (html, end) =>
+      df$.shadcn.session.append(
+        chat,
+        end
+          ? '<div class="message" data-align="end"><div class="message-content"><div class="bubble"><div class="bubble-content"></div></div></div></div>'
+          : '<div class="message"><div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback">AI</span></span></div><div class="message-content"><div class="bubble" data-variant="secondary"><div class="bubble-content"></div></div></div></div>',
+      );
+    const say = (text, end) => df$(row('', end)).find('.bubble-content').text(text);
+    chat.addEventListener('chat-components-answer', (e) => {
+      say(e.detail.summary, true);
+      const a = e.detail.answers;
+      const when = a.start === 'other' ? a.startOther : a.start === 'now' ? 'right away' : 'on Monday';
+      setTimeout(() => say(`Noted: ${a.budget.toLocaleString('de-DE')} € and we start ${when}.`), 500);
+    });
+  });
+</script>
+```
+
+<H2 id="answered">Answered cards</H2>
+
+<DocText>A transcript loaded later shows its cards as they were answered: a <code>chat-components-answers</code> script (or <code>markup(spec, &#123; answers &#125;)</code>, or <code>setState('answered', ...)</code>) starts the card answered - the fields read only, the chosen action marked.</DocText>
+
+```html example label="Answered" schema="none" hint="Two cards from an earlier conversation: one answered, one cancelled."
+<div class="flex flex-col gap-4">
+  <div class="chat-components" id="cc-done">
+    <script type="application/json" class="chat-components-schema">
+      {
+        "version": 1,
+        "title": "Delivery",
+        "body": [
+          { "type": "radio", "name": "slot", "label": "Slot", "options": ["Morning", "Afternoon", "Evening"] },
+          { "type": "number", "name": "floor", "label": "Floor", "min": 0 }
+        ],
+        "actions": [{ "id": "save", "label": "Save", "submit": true }]
+      }
+    </script>
+    <script type="application/json" class="chat-components-answers">
+      { "action": "save", "answers": { "slot": "Evening", "floor": 3 } }
+    </script>
+  </div>
+  <div class="chat-components" id="cc-dropped">
+    <script type="application/json" class="chat-components-schema">
+      {
+        "version": 1,
+        "body": [{ "type": "text", "text": "Shall I book the flight too?" }],
+        "actions": [
+          { "id": "yes", "label": "Yes", "reply": "Yes, book it" },
+          { "id": "no", "label": "No thanks", "variant": "outline", "cancel": true }
+        ]
+      }
+    </script>
+    <script type="application/json" class="chat-components-answers">
+      { "action": "no" }
+    </script>
+  </div>
+</div>
+```
+
+<H2 id="markdown">From a language model's Markdown</H2>
+
+<DocText>A model writes the document in a fenced block whose info string is <code>ui::component-schema</code>. <code>fences(markdown)</code> finds each one - also while the answer still streams (<code>closed: false</code>) - and <code>markup(spec)</code> makes the element. See <DocLink href="component-schema.html">Component Schema</DocLink> for the tool-call way.</DocText>
+
+````html example label="Rendering a model's fence" schema="none" height="44" hint="Edit the answer and Render: the text around the fence stays text, the fence becomes a card. Break the JSON and the card says where."
+<div class="flex flex-col gap-3">
+  <textarea class="textarea" id="cc-md" rows="9" aria-label="A model's answer">
+Sure - let me know how many seats you need:
+
+```ui::component-schema
+{"version": 1, "id": "seats", "title": "Seats", "body": [{"type": "number", "name": "seats", "label": "Seats", "min": 1, "max": 500, "required": true}, {"type": "select", "name": "billing", "label": "Billing", "options": ["Monthly", "Yearly"]}]}
+```
+
+I will prepare the quote right after.</textarea>
+  <button class="btn" type="button" id="cc-md-render" style="justify-self: start">Render</button>
+  <div class="flex flex-col gap-3" id="cc-md-out"></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const out = document.getElementById('cc-md-out');
+    const render = () => {
+      const text = document.getElementById('cc-md').value;
+      out.textContent = '';
+      let at = 0;
+      for (const f of df$.shadcn.chatComponents.fences(text)) {
+        const before = text.slice(at, f.start).trim();
+        if (before) out.append(Object.assign(document.createElement('p'), { textContent: before }));
+        df$(out).append(df$(df$.shadcn.chatComponents.markup(f.spec ?? { version: 1, body: [{ type: 'oops' }] })));
+        at = f.end;
+      }
+      const after = text.slice(at).trim();
+      if (after) out.append(Object.assign(document.createElement('p'), { textContent: after }));
+    };
+    document.getElementById('cc-md-render').addEventListener('click', render);
+    render();
+  });
+</script>
+````
+
+<StatesSection>
+  <p class="text-sm text-muted-foreground m-0 mb-3">Named states via the shared State API, driven per card through the bound <code>api</code>:</p>
+  <ul class="text-sm text-muted-foreground m-0 mb-3 ps-5">
+    <li><code>default</code> - open: the fields can be answered, every action shows</li>
+    <li><code>answered</code> - sent: <code>\{ action, answers \}</code> - the fields keep the answers read only, the chosen action stays marked</li>
+    <li><code>cancelled</code> - closed without an answer: <code>\{ action \}</code></li>
+  </ul>
+  <p class="text-sm text-muted-foreground">The first example carries <code>data-state-demo</code>; <code>bun run screenshots</code> drives it via <code>el.api.setState(name)</code> and captures <code>screenshots/\{mode\}/chat-components-\{state\}.png</code>.</p>
+
+Machine contract - verified against <a class="link" href="../schemas/chat-components.schema.json"><code>chat-components.schema.json</code></a> by <code>bun run verify</code>. The card's document is the other schema on this page: the <DocLink href="component-schema.html">Component Schema</DocLink>.
+
+```states
+| State | Type | Values | Default | Description |
+| --- | --- | --- | --- | --- |
+| `answered` | `boolean` | `true`, `false` | `false` | Sent - the fields keep the answers read only, the chosen action stays marked. |
+| `cancelled` | `boolean` | `true`, `false` | `false` | Closed without an answer. |
+```
+
+</StatesSection>
+
+<ApiSection component="chat-components" />
+
+<SourceFiles component="chat-components" section="css" />
+
+<SourceFiles component="chat-components" section="js" jsTitle="JS" />
+
+</DocPage>

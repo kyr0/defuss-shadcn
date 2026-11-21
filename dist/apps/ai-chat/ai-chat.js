@@ -5616,12 +5616,1117 @@ function init3() {
 init3();
 new MutationObserver(init3).observe(document, { childList: true, subtree: true });
 
-// src/components/forms-inputs/combobox/combobox.ts
+// src/components/chat/chat-components/chat-components.ts
 var df$4 = defussGlobals();
 var dfDollar4 = defussQuery();
+var FENCE = "ui::component-schema";
+var FIELD_TYPES = [
+  "input",
+  "textarea",
+  "number",
+  "currency",
+  "select",
+  "radio",
+  "checkbox",
+  "switch",
+  "slider",
+  "rating",
+  "date"
+];
+var CONTENT_TYPES = ["text", "list", "table", "facts", "plan", "alert", "divider"];
+var NODE_TYPES = [...CONTENT_TYPES, ...FIELD_TYPES, "questionnaire"];
+var NAME_RE = /^[A-Za-z][\w-]*$/;
+var NODE_KEYS = new Set([
+  "type",
+  "name",
+  "label",
+  "hint",
+  "text",
+  "title",
+  "tone",
+  "items",
+  "ordered",
+  "columns",
+  "rows",
+  "facts",
+  "steps",
+  "required",
+  "default",
+  "placeholder",
+  "inputType",
+  "min",
+  "max",
+  "step",
+  "unit",
+  "currency",
+  "locale",
+  "minLength",
+  "maxLength",
+  "pattern",
+  "lines",
+  "options",
+  "other",
+  "branches",
+  "autoAdvance",
+  "review"
+]);
+var isField = (n) => FIELD_TYPES.includes(n?.type) || n?.type === "plan" && !!n.name;
+function validate(spec) {
+  const out = [];
+  const err = (path, message) => out.push({ path, message, level: "error" });
+  const warn = (path, message) => out.push({ path, message, level: "warning" });
+  if (!spec || typeof spec !== "object" || Array.isArray(spec)) {
+    err("", "a Component Schema document is a JSON object");
+    return out;
+  }
+  if (spec.schema !== undefined && spec.schema !== "component-schema")
+    err("schema", 'must be "component-schema"');
+  if (spec.version === undefined)
+    warn("version", "missing - read as 1");
+  else if (spec.version !== 1)
+    err("version", `version ${JSON.stringify(spec.version)} is not supported (1)`);
+  for (const k of ["id", "title", "description"])
+    if (spec[k] !== undefined && typeof spec[k] !== "string")
+      err(k, "must be a string");
+  for (const k of Object.keys(spec))
+    if (!["schema", "version", "id", "title", "description", "body", "actions"].includes(k))
+      warn(k, "unknown key, ignored");
+  const names = new Set;
+  const body = spec.body ?? [];
+  if (!Array.isArray(body))
+    err("body", "must be a list of nodes");
+  else {
+    const steps = new Set;
+    const nodeCheck = (n, path, inStep = false, stepIds = null) => {
+      if (!n || typeof n !== "object" || Array.isArray(n))
+        return err(path, "a node is an object");
+      if (!NODE_TYPES.includes(n.type))
+        return err(`${path}.type`, `unknown type ${JSON.stringify(n.type)}`);
+      for (const k of Object.keys(n))
+        if (!NODE_KEYS.has(k))
+          warn(`${path}.${k}`, "unknown key, ignored");
+      if (inStep && !isField(n) && n.type !== "text")
+        err(`${path}.type`, "a questionnaire step holds fields and text");
+      if (isField(n)) {
+        if (typeof n.name !== "string" || !NAME_RE.test(n.name))
+          err(`${path}.name`, "a field needs a name (letters, digits, - and _, starting with a letter)");
+        else if (names.has(n.name))
+          err(`${path}.name`, `the name "${n.name}" is used twice`);
+        else
+          names.add(n.name);
+        if (n.label !== undefined && typeof n.label !== "string")
+          err(`${path}.label`, "must be a string");
+      }
+      const str = (k) => n[k] !== undefined && typeof n[k] !== "string" && err(`${path}.${k}`, "must be a string");
+      ["text", "title", "hint", "placeholder", "unit", "other", "pattern", "review"].forEach(str);
+      if ((n.type === "text" || n.type === "alert") && typeof n.text !== "string" && typeof n.title !== "string")
+        err(`${path}.text`, "missing");
+      if (n.type === "list" && (!Array.isArray(n.items) || !n.items.length))
+        err(`${path}.items`, "a list of texts");
+      if (n.type === "table") {
+        if (!Array.isArray(n.columns) || !n.columns.length)
+          err(`${path}.columns`, "a list of headings");
+        if (!Array.isArray(n.rows))
+          err(`${path}.rows`, "a list of rows");
+        else
+          n.rows.forEach((r, i) => {
+            if (!Array.isArray(r))
+              err(`${path}.rows[${i}]`, "a row is a list of cells");
+          });
+      }
+      if (n.type === "facts" && (!Array.isArray(n.facts) || !n.facts.length))
+        err(`${path}.facts`, "a list of { label, value }");
+      if (n.type === "plan" && (!Array.isArray(n.steps) || !n.steps.length))
+        err(`${path}.steps`, "a list of steps");
+      if (n.type === "plan" && Array.isArray(n.steps))
+        n.steps.forEach((s, i) => {
+          if (!s || typeof s.title !== "string")
+            err(`${path}.steps[${i}].title`, "missing");
+        });
+      if (["select", "radio"].includes(n.type) && (!Array.isArray(n.options) || !n.options.length))
+        err(`${path}.options`, "a list of choices");
+      if (n.options !== undefined) {
+        if (!Array.isArray(n.options))
+          err(`${path}.options`, "a list of choices");
+        else {
+          const seen = new Set;
+          n.options.forEach((o, i) => {
+            const v = typeof o === "string" ? o : o?.value;
+            if (typeof v !== "string" || !v)
+              err(`${path}.options[${i}]`, "a choice is a text or { value, label }");
+            else if (seen.has(v))
+              err(`${path}.options[${i}].value`, `"${v}" twice`);
+            else
+              seen.add(v);
+            if (o && typeof o === "object" && o.goto !== undefined && stepIds && !stepIds.has(o.goto))
+              err(`${path}.options[${i}].goto`, `no step "${o.goto}"`);
+          });
+        }
+      }
+      if (n.type === "currency" && (typeof n.currency !== "string" || !/^[A-Z]{3}$/.test(n.currency)))
+        err(`${path}.currency`, "an ISO 4217 code such as EUR");
+      if (n.inputType !== undefined && !["text", "email", "url", "tel", "time"].includes(n.inputType))
+        err(`${path}.inputType`, "text, email, url, tel or time");
+      if (n.tone !== undefined && !["default", "destructive"].includes(n.tone))
+        err(`${path}.tone`, "default or destructive");
+      if (typeof n.min === "number" && typeof n.max === "number" && n.min > n.max)
+        err(`${path}.min`, "above max");
+      if (n.pattern !== undefined)
+        try {
+          new RegExp(n.pattern);
+        } catch {
+          err(`${path}.pattern`, "not a regular expression");
+        }
+      if (n.type === "questionnaire") {
+        if (inStep)
+          return err(path, "a questionnaire does not nest");
+        if (!Array.isArray(n.steps) || !n.steps.length)
+          return err(`${path}.steps`, "a list of steps");
+        const ids = new Set;
+        n.steps.forEach((s, i) => {
+          if (!s || typeof s.id !== "string" || !NAME_RE.test(s.id))
+            err(`${path}.steps[${i}].id`, "a step needs an id");
+          else if (ids.has(s.id) || s.id === "review")
+            err(`${path}.steps[${i}].id`, `"${s.id}" twice or reserved`);
+          else
+            ids.add(s.id);
+        });
+        n.steps.forEach((s, i) => {
+          const sp = `${path}.steps[${i}]`;
+          if (!s)
+            return;
+          if (typeof s.title !== "string")
+            err(`${sp}.title`, "missing");
+          if (s.next !== undefined && !ids.has(s.next) && s.next !== "review")
+            err(`${sp}.next`, `no step "${s.next}"`);
+          if (!Array.isArray(s.fields) || !s.fields.some(isField))
+            err(`${sp}.fields`, "a step asks with fields");
+          else
+            s.fields.forEach((f, j) => nodeCheck(f, `${sp}.fields[${j}]`, true, ids));
+        });
+        if (n.branches !== undefined) {
+          if (typeof n.branches !== "object" || Array.isArray(n.branches))
+            err(`${path}.branches`, "an object by step id");
+          else
+            for (const [id, list] of Object.entries(n.branches)) {
+              if (!ids.has(id))
+                err(`${path}.branches.${id}`, `no step "${id}"`);
+              if (!Array.isArray(list))
+                err(`${path}.branches.${id}`, "a list of { when, goto }");
+              else
+                list.forEach((b, i) => {
+                  if (!b || b.when === undefined)
+                    err(`${path}.branches.${id}[${i}].when`, "missing");
+                  if (!b || !ids.has(b.goto) && b.goto !== "review")
+                    err(`${path}.branches.${id}[${i}].goto`, `no step "${b?.goto}"`);
+                });
+            }
+        }
+        for (const s of n.steps)
+          steps.add(s?.id);
+      }
+    };
+    body.forEach((n, i) => nodeCheck(n, `body[${i}]`));
+    const q = body.filter((n) => n?.type === "questionnaire");
+    if (q.length > 1)
+      err("body", "one questionnaire per card");
+    if (q.length && body.some(isField))
+      err("body", "a card with a questionnaire asks only through it");
+  }
+  if (spec.actions !== undefined) {
+    if (!Array.isArray(spec.actions))
+      err("actions", "a list of { id, label }");
+    else {
+      const ids = new Set;
+      spec.actions.forEach((a, i) => {
+        const p = `actions[${i}]`;
+        if (!a || typeof a !== "object")
+          return err(p, "an action is { id, label }");
+        if (typeof a.id !== "string" || !a.id)
+          err(`${p}.id`, "missing");
+        else if (ids.has(a.id))
+          err(`${p}.id`, `"${a.id}" twice`);
+        else
+          ids.add(a.id);
+        if (typeof a.label !== "string" || !a.label)
+          err(`${p}.label`, "missing");
+        if (a.reply !== undefined && typeof a.reply !== "string")
+          err(`${p}.reply`, "must be a string");
+        if (a.variant !== undefined && !["default", "secondary", "outline", "ghost", "destructive"].includes(a.variant))
+          err(`${p}.variant`, "a Button variant");
+      });
+    }
+  }
+  return out;
+}
+var esc2 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+var inline = (v) => esc2(v).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>");
+var attr = (name, v) => v === undefined || v === null || v === false ? "" : v === true ? ` ${name}` : ` ${name}="${esc2(v)}"`;
+var optionsOf = (n) => (n.options ?? []).map((o) => typeof o === "string" ? { value: o, label: o } : { ...o, label: o.label ?? o.value });
+var actionsOf = (spec) => spec.actions?.length ? spec.actions : (spec.body ?? []).some((n) => isField(n) || n?.type === "questionnaire") ? [{ id: "submit", label: "Send", submit: true }] : [];
+var scriptJson = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
+function hintOf(n, id) {
+  return n.hint ? `<p class="chat-components-hint" id="${id}-hint">${inline(n.hint)}</p>` : "";
+}
+var described = (n, id) => n.hint ? ` aria-describedby="${id}-hint"` : "";
+function choices(n, id, kind, inStep) {
+  const list = optionsOf(n);
+  const def = n.default;
+  const checked = (v) => Array.isArray(def) ? def.includes(v) : def === v;
+  const cls = kind === "radio" ? 'class="radio"' : 'class="checkbox"';
+  const rows = list.map((o, i) => {
+    const cid = `${id}-${i}`;
+    const own = `type="${kind}" name="${esc2(n.name)}" value="${esc2(o.value)}"${attr("checked", checked(o.value))}${attr("required", kind === "radio" && n.required && i === 0)}`;
+    if (inStep)
+      return `<label class="questionnaire-choice"><input ${own}${attr("data-goto", o.goto)}><span class="questionnaire-choice-label">${esc2(o.label)}</span></label>`;
+    const text = `<span class="chat-components-choice-label">${esc2(o.label)}</span>${o.description ? `<span class="chat-components-choice-description">${esc2(o.description)}</span>` : ""}`;
+    return `<div class="chat-components-choice"><input ${cls} id="${cid}" ${own}><label for="${cid}">${text}</label></div>`;
+  });
+  if (n.other) {
+    const cid = `${id}-other`;
+    const otherName = `${n.name}Other`;
+    rows.push(inStep ? `<label class="questionnaire-choice"><input type="${kind}" name="${esc2(n.name)}" value="other"><span class="questionnaire-choice-label">${esc2(n.other)}</span><input class="questionnaire-other" name="${esc2(otherName)}" aria-label="${esc2(n.other)}"></label>` : `<div class="chat-components-choice" data-other><input ${cls} type="${kind}" name="${esc2(n.name)}" id="${cid}" value="other"><label for="${cid}"><span class="chat-components-choice-label">${esc2(n.other)}</span></label><input class="input chat-components-other" data-size="sm" name="${esc2(otherName)}" aria-label="${esc2(n.other)}"></div>`);
+  }
+  if (inStep)
+    return `<div class="questionnaire-choices">${rows.join("")}</div>${hintOf(n, id)}`;
+  return `<fieldset class="chat-components-group" data-field="${esc2(n.name)}"${described(n, id)}><legend class="label">${esc2(n.label ?? n.name)}</legend>${rows.join("")}${hintOf(n, id)}</fieldset>`;
+}
+function fieldMarkup(n, prefix, inStep = false) {
+  const id = `${prefix}-${n.name}`;
+  const label = `<label class="label" for="${id}">${esc2(n.label ?? n.name)}</label>`;
+  const wrap = (control) => `<div class="${inStep ? "questionnaire-field" : "chat-components-field"}" data-field="${esc2(n.name)}">${label}${control}${hintOf(n, id)}</div>`;
+  const def = n.default ?? undefined;
+  const common = `id="${id}" name="${esc2(n.name)}"${attr("required", n.required)}${described(n, id)}`;
+  switch (n.type) {
+    case "input":
+      return wrap(`<input class="input" type="${n.inputType ?? "text"}" ${common}${attr("placeholder", n.placeholder)}${attr("value", def)}${attr("minlength", n.minLength)}${attr("maxlength", n.maxLength)}${attr("pattern", n.pattern)}>`);
+    case "textarea":
+      return wrap(`<textarea class="textarea" rows="${Number(n.lines) || 3}" ${common}${attr("placeholder", n.placeholder)}${attr("minlength", n.minLength)}${attr("maxlength", n.maxLength)}>${esc2(def ?? "")}</textarea>`);
+    case "date":
+      return wrap(`<input class="input" type="date" ${common}${attr("min", n.min)}${attr("max", n.max)}${attr("value", def)}>`);
+    case "number":
+      return wrap(`<div class="number-input"><button type="button" data-action="decrement" aria-label="Decrease">−</button><input type="number" ${common}${attr("min", n.min)}${attr("max", n.max)}${attr("step", n.step)}${attr("value", def)}${attr("placeholder", n.placeholder)}>${n.unit ? `<label class="number-input-unit" for="${id}">${esc2(n.unit)}</label>` : ""}<button type="button" data-action="increment" aria-label="Increase">+</button></div>`);
+    case "currency":
+      return wrap(`<div class="number-input" data-currency="${esc2(n.currency)}"${attr("data-locale", n.locale)}${attr("data-min", n.min)}${attr("data-max", n.max)}><input type="text" id="${id}"${attr("required", n.required)}${described(n, id)}${attr("value", def)}${attr("placeholder", n.placeholder)}><input type="hidden" name="${esc2(n.name)}" data-number-output data-answer></div>`);
+    case "select":
+      return wrap(`<select class="select" ${common}><option value=""${attr("selected", def === undefined)}>${esc2(n.placeholder ?? "Choose ...")}</option>${optionsOf(n).map((o) => `<option value="${esc2(o.value)}"${attr("selected", def === o.value)}${attr("data-goto", inStep ? o.goto : undefined)}>${esc2(o.label)}</option>`).join("")}</select>`);
+    case "radio":
+      return choices(n, id, "radio", inStep);
+    case "checkbox":
+      if (n.options)
+        return choices(n, id, "checkbox", inStep);
+      return `<div class="chat-components-choice" data-field="${esc2(n.name)}"><input class="checkbox" type="checkbox" ${common}${attr("checked", def === true)}><label for="${id}"><span class="chat-components-choice-label">${esc2(n.label ?? n.name)}</span></label>${hintOf(n, id)}</div>`;
+    case "switch":
+      return `<div class="switch-item chat-components-switch" data-field="${esc2(n.name)}"><input class="switch" type="checkbox" role="switch" ${common}${attr("checked", def === true)}><label for="${id}">${esc2(n.label ?? n.name)}</label>${hintOf(n, id)}</div>`;
+    case "slider": {
+      const min = n.min ?? 0;
+      const max = n.max ?? 100;
+      const value = def ?? min;
+      return wrap(`<div class="chat-components-slider"><input class="slider" type="range" ${common}${attr("min", min)}${attr("max", max)}${attr("step", n.step)}${attr("data-unit", n.unit)} value="${esc2(value)}"><output for="${id}" class="chat-components-output">${esc2(value)}</output></div>`);
+    }
+    case "rating": {
+      const stars = Math.max(1, Math.min(10, Number(n.max) || 5));
+      const items = Array.from({ length: stars }, (_, i) => {
+        const v = i + 1;
+        return `<label class="rating-item"><input class="rating-input" type="radio" name="${esc2(n.name)}" value="${v}" aria-label="${v} ${v === 1 ? "star" : "stars"}"${attr("checked", def === v)}${attr("required", n.required && i === 0)}></label>`;
+      }).join("");
+      if (inStep)
+        return `<div class="rating" role="radiogroup" aria-label="${esc2(n.label ?? n.name)}">${items}</div>${hintOf(n, id)}`;
+      return `<fieldset class="chat-components-group" data-field="${esc2(n.name)}"><legend class="label">${esc2(n.label ?? n.name)}</legend><div class="rating" role="radiogroup" aria-label="${esc2(n.label ?? n.name)}">${items}</div>${hintOf(n, id)}</fieldset>`;
+    }
+    default:
+      return "";
+  }
+}
+function contentMarkup(n, prefix) {
+  switch (n.type) {
+    case "text":
+      return `<p class="chat-components-text">${n.title ? `<strong>${esc2(n.title)}</strong> ` : ""}${inline(n.text ?? "")}</p>`;
+    case "list": {
+      const tag = n.ordered ? "ol" : "ul";
+      return `<${tag} class="chat-components-list">${n.items.map((i) => `<li>${inline(i)}</li>`).join("")}</${tag}>`;
+    }
+    case "table":
+      return `<div class="table-container"><table class="table">${n.label ? `<caption class="table-caption">${esc2(n.label)}</caption>` : ""}<thead><tr class="table-row">${n.columns.map((c) => `<th class="table-head">${esc2(c)}</th>`).join("")}</tr></thead><tbody>${n.rows.map((r) => `<tr class="table-row">${r.map((c) => `<td class="table-cell"${typeof c === "number" ? " data-numeric" : ""}>${esc2(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    case "facts":
+      return `<dl class="chat-components-facts">${n.facts.map((f) => `<div><dt>${esc2(f.label)}</dt><dd>${esc2(f.value)}</dd></div>`).join("")}</dl>`;
+    case "plan": {
+      const rows = n.steps.map((s, i) => {
+        const text = `<span class="chat-components-plan-title">${inline(s.title)}</span>${s.description ? `<span class="chat-components-plan-description">${inline(s.description)}</span>` : ""}`;
+        if (!n.name)
+          return `<li>${text}</li>`;
+        const cid = `${prefix}-${n.name}-${i}`;
+        const value = s.id ?? String(i + 1);
+        const on = Array.isArray(n.default) ? n.default.includes(value) : true;
+        return `<li><input class="checkbox" type="checkbox" name="${esc2(n.name)}" id="${cid}" value="${esc2(value)}"${attr("checked", on)}><label for="${cid}">${text}</label></li>`;
+      });
+      return `<ol class="chat-components-plan"${n.name ? ` data-field="${esc2(n.name)}" data-checkable` : ""}${n.label ? ` aria-label="${esc2(n.label)}"` : ""}>${rows.join("")}</ol>`;
+    }
+    case "alert":
+      return `<div class="alert"${n.tone === "destructive" ? ' data-variant="destructive"' : ""}><div class="alert-content">${n.title ? `<h5 class="alert-title">${esc2(n.title)}</h5>` : ""}${n.text ? `<p class="alert-description">${inline(n.text)}</p>` : ""}</div></div>`;
+    case "divider":
+      return '<hr class="separator">';
+    default:
+      return "";
+  }
+}
+function questionnaireMarkup(n, prefix, submitLabel) {
+  const q = `${prefix}-q`;
+  const steps = n.steps.map((s) => {
+    const fields = (s.fields ?? []).map((f) => f.type === "text" ? contentMarkup(f, q) : fieldMarkup(f, q, true)).join("");
+    return `<fieldset class="questionnaire-step" data-step="${esc2(s.id)}"${attr("data-next", s.next)}${attr("data-optional", !!s.optional)}><legend class="questionnaire-title">${esc2(s.title)}</legend>${s.description ? `<p class="questionnaire-description">${inline(s.description)}</p>` : ""}${fields}</fieldset>`;
+  }).join("");
+  const validate = {};
+  for (const s of n.steps)
+    for (const f of s.fields ?? [])
+      if (f.type === "currency" && f.required)
+        (validate[s.id] ??= []).push({
+          assert: [{ field: f.name, op: "answered" }],
+          message: "Enter an amount.",
+          field: f.name
+        });
+  const rules = { branches: n.branches ?? {}, validate };
+  return `<form class="questionnaire chat-components-questionnaire" id="${q}" aria-label="${esc2(n.title ?? "Questions")}" data-persist="none"${attr("data-auto-advance", !!n.autoAdvance)}><div class="questionnaire-progress"></div>${steps}<fieldset class="questionnaire-step" data-step="review" data-end><legend class="questionnaire-title">${esc2(n.review ?? "Check your answers")}</legend><div class="questionnaire-summary"></div></fieldset><div class="questionnaire-actions"><button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button><button class="btn" data-variant="outline" type="submit" data-questionnaire="skip">Skip</button><button class="btn" type="submit" data-questionnaire="next">Continue</button><button class="btn" type="submit" data-questionnaire="submit">${esc2(submitLabel)}</button></div><script type="application/json" class="questionnaire-rules">${scriptJson(rules)}</script></form>`;
+}
+function cardMarkup(spec, prefix) {
+  const body = spec.body ?? [];
+  const q = body.find((n) => n.type === "questionnaire");
+  const actions = actionsOf(spec);
+  const submit = actions.find((a) => a.submit);
+  const header = spec.title || spec.description ? `<div class="card-header">${spec.title ? `<h3 class="card-title">${esc2(spec.title)}</h3>` : ""}${spec.description ? `<p class="card-description">${inline(spec.description)}</p>` : ""}</div>` : "";
+  const content = body.map((n) => n.type === "questionnaire" ? questionnaireMarkup(n, prefix, submit?.label ?? "Send") : isField(n) && n.type !== "plan" ? fieldMarkup(n, prefix) : contentMarkup(n, prefix)).join("");
+  const shown = q ? actions.filter((a) => !a.submit) : actions;
+  const buttons = shown.map((a) => `<button class="btn" type="${a.submit ? "submit" : "button"}" data-chat-action="${esc2(a.id)}"${a.variant && a.variant !== "default" ? ` data-variant="${esc2(a.variant)}"` : ""}>${esc2(a.label)}</button>`).join("");
+  const footer = buttons ? `<div class="card-footer chat-components-actions">${buttons}</div>` : "";
+  const answers = `<dl class="chat-components-facts chat-components-answers" hidden></dl>`;
+  const tag = q ? "div" : "form";
+  return `<${tag} class="card chat-components-card" data-size="sm"${spec.title ? ` aria-labelledby="${prefix}-title"` : ""}>${header.replace('class="card-title"', `class="card-title" id="${prefix}-title"`)}<div class="card-content chat-components-content">${content}${answers}</div>${footer}</${tag}>`;
+}
+function markup(spec, { id = "", answers = null } = {}) {
+  const ident = id || `cc-${Math.random().toString(36).slice(2, 8)}`;
+  const label = typeof spec?.title === "string" ? ` aria-label="${esc2(spec.title)}"` : "";
+  const answered = answers ? `<script type="application/json" class="chat-components-answers">${scriptJson(answers)}</script>` : "";
+  return `<div class="chat-components" id="${esc2(ident)}"${label}><script type="application/json" class="chat-components-schema">${scriptJson(spec)}</script>${answered}</div>`;
+}
+function fieldsOf(spec) {
+  const out = new Map;
+  const walk = (list) => {
+    for (const n of list ?? []) {
+      if (n?.type === "questionnaire")
+        for (const s of n.steps ?? [])
+          walk(s.fields);
+      else if (isField(n))
+        out.set(n.name, n);
+    }
+  };
+  walk(spec?.body);
+  return out;
+}
+var toNumber = (v) => v === "" || v === null || v === undefined || Number.isNaN(Number(v)) ? null : Number(v);
+function typed(n, v) {
+  if (v === undefined)
+    return null;
+  switch (n.type) {
+    case "number":
+    case "currency":
+    case "slider":
+    case "rating":
+      return Array.isArray(v) ? null : toNumber(v);
+    case "switch":
+      return v === true || v === "on" || v === "true";
+    case "checkbox":
+      if (!n.options)
+        return v === true || v === "on" || v === "true";
+      return Array.isArray(v) ? v.map(String) : v ? [String(v)] : [];
+    case "plan":
+      return Array.isArray(v) ? v.map(String) : v ? [String(v)] : [];
+    default:
+      return v === "" || v === null ? null : Array.isArray(v) ? v.map(String) : String(v);
+  }
+}
+function readAnswers(root) {
+  const spec = root._spec;
+  const out = {};
+  const body = root._body;
+  const controls = (name) => dfDollar4(body).find(`[name="${CSS.escape(name)}"]`).toArray();
+  for (const [name, n] of fieldsOf(spec)) {
+    const list = controls(name);
+    if (!list.length)
+      continue;
+    let v;
+    const first = list[0];
+    if (first.type === "radio")
+      v = list.find((c) => c.checked)?.value ?? null;
+    else if (first.type === "checkbox")
+      v = n.options || n.type === "plan" ? list.filter((c) => c.checked).map((c) => c.value) : first.checked;
+    else
+      v = first.value;
+    out[name] = typed(n, v);
+    if (n.other) {
+      const text = controls(`${name}Other`)[0]?.value ?? "";
+      const picked = Array.isArray(out[name]) ? out[name].includes("other") : out[name] === "other";
+      if (picked)
+        out[`${name}Other`] = text || null;
+    }
+  }
+  return out;
+}
+function writeAnswers(root, answers) {
+  const body = root._body;
+  for (const [name, n] of fieldsOf(root._spec)) {
+    if (!(name in answers))
+      continue;
+    const v = answers[name];
+    const list = dfDollar4(body).find(`[name="${CSS.escape(name)}"]`).toArray();
+    for (const c of list) {
+      if (c.type === "radio")
+        c.checked = String(v) === c.value;
+      else if (c.type === "checkbox")
+        c.checked = Array.isArray(v) ? v.includes(c.value) : v === true;
+      else if (n.type === "currency") {
+        const wrapper = c.closest(".number-input");
+        if (wrapper?.api)
+          wrapper.api.setState("default", { value: v });
+        else
+          c.value = v == null ? "" : String(v);
+      } else if (String(c.value) !== String(v ?? ""))
+        c.value = v == null ? "" : String(v);
+    }
+    if (n.other && answers[`${name}Other`] != null) {
+      const other = dfDollar4(body).find(`[name="${CSS.escape(name + "Other")}"]`).get(0);
+      if (other)
+        other.value = String(answers[`${name}Other`]);
+    }
+    if (n.type === "slider")
+      dfDollar4(body).find(`input[name="${CSS.escape(name)}"]`).get(0)?.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+}
+function answerText(n, v, answers) {
+  if (v === null || v === undefined || Array.isArray(v) && !v.length)
+    return "-";
+  const label = (x) => x === "other" && n.other ? answers[`${n.name}Other`] || n.other : n.type === "plan" ? n.steps.find((s, i) => (s.id ?? String(i + 1)) === x)?.title ?? x : optionsOf(n).find((o) => o.value === x)?.label ?? x;
+  switch (n.type) {
+    case "currency":
+      try {
+        return new Intl.NumberFormat(n.locale || undefined, { style: "currency", currency: n.currency }).format(v);
+      } catch {
+        return `${v} ${n.currency}`;
+      }
+    case "switch":
+      return v ? "Yes" : "No";
+    case "checkbox":
+      return n.options ? v.map(label).join(", ") : v ? "Yes" : "No";
+    case "rating":
+      return `${v} of ${Number(n.max) || 5}`;
+    case "number":
+    case "slider":
+      return `${v}${n.unit ? ` ${n.unit}` : ""}`;
+    case "select":
+    case "radio":
+      return label(v);
+    case "plan":
+      return v.map(label).join(", ");
+    default:
+      return String(v);
+  }
+}
+function summary(spec, answers, action = "") {
+  const fields = fieldsOf(spec);
+  const parts = [];
+  for (const [name, n] of fields) {
+    if (!(name in answers))
+      continue;
+    parts.push(`${n.label ?? name}: ${answerText(n, answers[name], answers)}`);
+  }
+  const act = actionsOf(spec ?? {}).find((a) => a.id === action);
+  if (!parts.length)
+    return act?.reply ?? act?.label ?? action;
+  return parts.join("; ");
+}
+function answersMarkup(spec, answers) {
+  const rows = [];
+  for (const [name, n] of fieldsOf(spec))
+    if (name in answers)
+      rows.push(`<div><dt>${esc2(n.label ?? name)}</dt><dd>${esc2(answerText(n, answers[name], answers))}</dd></div>`);
+  return rows.join("");
+}
+var chatComponentsStates = ["default", "answered", "cancelled"];
+function applyMarkup4(root, name) {
+  dfDollar4(root).attr("data-answered", name === "default" ? null : name);
+}
+function triggerStateChange4(root, name, config = {}) {
+  applyMarkup4(root, name);
+  const body = root._body;
+  if (!body || root._invalid)
+    return;
+  const open = name === "default";
+  if (name === "answered" && config.answers)
+    writeAnswers(root, config.answers);
+  for (const c of dfDollar4(body).find("input, select, textarea, button").toArray()) {
+    if (c.closest(".questionnaire-actions") && !open)
+      continue;
+    c.disabled = !open && !c.matches("[data-chat-action]");
+  }
+  for (const b of dfDollar4(body).find("[data-chat-action]").toArray()) {
+    const chosen = !open && b.dataset.chatAction === config.action;
+    b.toggleAttribute("data-chosen", chosen);
+    b.disabled = !open;
+    if (chosen)
+      b.setAttribute("aria-pressed", "true");
+    else
+      b.removeAttribute("aria-pressed");
+  }
+  const q = dfDollar4(body).find(".chat-components-questionnaire").get(0);
+  const list = dfDollar4(body).find(".chat-components-answers").get(0);
+  if (q)
+    q.hidden = !open;
+  if (list) {
+    const rows = name === "answered" && q ? answersMarkup(root._spec, config.answers ?? {}) : "";
+    dfDollar4(list).html(rows);
+    list.hidden = !rows;
+  }
+}
+var chatComponentsApi = componentState({
+  component: "chat-components",
+  states: chatComponentsStates,
+  apply: (root, state) => triggerStateChange4(root, state.name, state.config),
+  markup: (root, state) => applyMarkup4(root, state.name)
+});
+df$4.chatComponentsApi = chatComponentsApi;
+df$4.chatComponentsStates = chatComponentsStates;
+function scriptOf(root, cls) {
+  const s = dfDollar4(root).children(`script.${cls}`).get(0);
+  if (!s)
+    return;
+  try {
+    return JSON.parse(s.textContent || "null");
+  } catch (error) {
+    return { __parseError: String(error.message ?? error) };
+  }
+}
+function finish(root, action, answers) {
+  const spec = root._spec;
+  const result = action.cancel ? { action: action.id } : { action: action.id, answers };
+  root.api.setState(action.cancel ? "cancelled" : "answered", result);
+  const detail = {
+    id: spec.id ?? "",
+    action: action.id,
+    answers: action.cancel ? {} : answers,
+    reply: action.reply ?? null,
+    summary: action.cancel || action.reply ? action.reply ?? action.label : summary(spec, answers, action.id)
+  };
+  root.dispatchEvent(new CustomEvent("chat-components-answer", { bubbles: true, detail }));
+}
+function build(root) {
+  const spec = scriptOf(root, "chat-components-schema");
+  root._spec = spec && !spec.__parseError ? spec : null;
+  const problems = spec?.__parseError ? [{ path: "", message: `the JSON does not parse: ${spec.__parseError}`, level: "error" }] : validate(spec);
+  root._problems = problems;
+  const errors = problems.filter((p) => p.level === "error");
+  root._invalid = errors.length > 0;
+  root.toggleAttribute("data-invalid", root._invalid);
+  let body = dfDollar4(root).children(".chat-components-body").get(0);
+  if (!body) {
+    body = document.createElement("div");
+    body.className = "chat-components-body";
+    root.append(body);
+  }
+  root._body = body;
+  if (root._invalid) {
+    dfDollar4(body).html(`<div class="alert" data-variant="destructive" role="alert"><div class="alert-content"><h5 class="alert-title">This card cannot be shown</h5><p class="alert-description">${errors.slice(0, 4).map((e) => esc2(`${e.path || "document"}: ${e.message}`)).join("<br>")}</p></div></div>`);
+    return;
+  }
+  root._uid ??= root.id || `cc-${Math.random().toString(36).slice(2, 8)}`;
+  dfDollar4(body).html(cardMarkup(spec, root._uid));
+}
+function init4() {
+  dfDollar4(".chat-components:not([data-init])").each((_i, root) => {
+    dfDollar4(root).data("init", "");
+    build(root);
+    const answered = scriptOf(root, "chat-components-answers");
+    const start = answered && !answered.__parseError ? { name: answered.answers || !answered.action ? "answered" : "cancelled", config: answered } : { name: "default", config: {} };
+    if (start.name !== "default")
+      triggerStateChange4(root, start.name, start.config);
+    bindComponent(root, chatComponentsApi, start);
+    dfDollar4(root).on("submit", (e) => {
+      const form = e.target.closest("form");
+      if (!form?.classList.contains("chat-components-card"))
+        return;
+      e.preventDefault();
+      const id = e.submitter?.dataset.chatAction;
+      const action = actionsOf(root._spec).find((a) => a.id === id) ?? actionsOf(root._spec).find((a) => a.submit);
+      if (action)
+        finish(root, action, readAnswers(root));
+    });
+    dfDollar4(root).on("click", (e) => {
+      const b = e.target.closest?.("button[data-chat-action]");
+      if (!b || b.type === "submit" || !root.contains(b))
+        return;
+      const action = actionsOf(root._spec).find((a) => a.id === b.dataset.chatAction);
+      if (action)
+        finish(root, action, action.cancel || action.reply ? {} : readAnswers(root));
+    });
+    dfDollar4(root).on("questionnaire-submit", (e) => {
+      const action = actionsOf(root._spec).find((a) => a.submit) ?? { id: "submit", label: "Send", submit: true };
+      const raw = e.detail?.answers ?? {};
+      const answers = {};
+      for (const [name, n] of fieldsOf(root._spec)) {
+        if (name in raw)
+          answers[name] = typed(n, raw[name]);
+        if (n.other && raw[`${name}Other`])
+          answers[`${name}Other`] = String(raw[`${name}Other`]);
+      }
+      finish(root, action, answers);
+    });
+    dfDollar4(root).on("input", (e) => {
+      const t = e.target;
+      if (t.classList?.contains("chat-components-other") && t.value) {
+        const choice = dfDollar4(t).closest("[data-other]").find('input[value="other"]').get(0);
+        if (choice)
+          choice.checked = true;
+      }
+    });
+  });
+}
+var resolve2 = (target) => typeof target === "string" ? dfDollar4(target).get(0) : target;
+function jsonSchema() {
+  const str = { type: "string" };
+  const option = {
+    anyOf: [
+      str,
+      {
+        type: "object",
+        required: ["value"],
+        properties: { value: str, label: str, description: str, goto: str }
+      }
+    ]
+  };
+  const node = {
+    type: "object",
+    required: ["type"],
+    properties: {
+      type: { enum: NODE_TYPES },
+      name: { type: "string", pattern: NAME_RE.source },
+      label: str,
+      hint: str,
+      text: str,
+      title: str,
+      tone: { enum: ["default", "destructive"] },
+      items: { type: "array", items: str },
+      ordered: { type: "boolean" },
+      columns: { type: "array", items: str },
+      rows: { type: "array", items: { type: "array", items: { type: ["string", "number"] } } },
+      facts: {
+        type: "array",
+        items: {
+          type: "object",
+          required: ["label", "value"],
+          properties: { label: str, value: { type: ["string", "number"] } }
+        }
+      },
+      steps: {
+        type: "array",
+        items: {
+          type: "object",
+          required: ["title"],
+          properties: {
+            id: str,
+            title: str,
+            description: str,
+            fields: { type: "array", items: { $ref: "#/$defs/node" } },
+            optional: { type: "boolean" },
+            next: str
+          }
+        }
+      },
+      required: { type: "boolean" },
+      default: { type: ["string", "number", "boolean", "array", "null"] },
+      placeholder: str,
+      inputType: { enum: ["text", "email", "url", "tel", "time"] },
+      min: { type: ["number", "string"] },
+      max: { type: ["number", "string"] },
+      step: { type: "number" },
+      unit: str,
+      currency: { type: "string", pattern: "^[A-Z]{3}$" },
+      locale: str,
+      minLength: { type: "integer" },
+      maxLength: { type: "integer" },
+      pattern: str,
+      lines: { type: "integer" },
+      options: { type: "array", items: option },
+      other: str,
+      branches: {
+        type: "object",
+        additionalProperties: {
+          type: "array",
+          items: { type: "object", required: ["when", "goto"], properties: { when: {}, goto: str } }
+        }
+      },
+      autoAdvance: { type: "boolean" },
+      review: str
+    }
+  };
+  return {
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    title: "Component Schema",
+    description: "A card a chat shows with the system components: content (text, list, table, facts, plan, alert, divider), fields (input, textarea, number, currency, select, radio, checkbox, switch, slider, rating, date) or one multi-step questionnaire, and actions or quick replies. Every text is plain text with inline **bold**, *emphasis* and `code`.",
+    type: "object",
+    required: ["version"],
+    properties: {
+      schema: { const: "component-schema" },
+      version: { const: 1 },
+      id: str,
+      title: str,
+      description: str,
+      body: { type: "array", items: { $ref: "#/$defs/node" } },
+      actions: {
+        type: "array",
+        items: {
+          type: "object",
+          required: ["id", "label"],
+          properties: {
+            id: str,
+            label: str,
+            variant: { enum: ["default", "secondary", "outline", "ghost", "destructive"] },
+            submit: { type: "boolean" },
+            reply: str,
+            cancel: { type: "boolean" }
+          }
+        }
+      }
+    },
+    $defs: { node }
+  };
+}
+function fences(markdown) {
+  const out = [];
+  const re = /^([ \t]*)(`{3,}|~{3,})[ \t]*ui::component-schema[ \t]*$/gm;
+  let m;
+  while (m = re.exec(markdown)) {
+    const start = m.index;
+    const fence = m[2];
+    const from = m.index + m[0].length + 1;
+    const close = new RegExp(`^[ \\t]*${fence[0] === "`" ? "`" : "~"}{${fence.length},}[ \\t]*$`, "m");
+    const rest = markdown.slice(from);
+    const c = close.exec(rest);
+    const source = c ? rest.slice(0, c.index) : rest;
+    const end = c ? from + c.index + c[0].length : markdown.length;
+    let spec = null;
+    let error = "";
+    if (c)
+      try {
+        spec = JSON.parse(source);
+      } catch (e) {
+        error = String(e.message ?? e);
+      }
+    out.push({
+      start,
+      end: Math.min(end + (markdown[end] === `
+` ? 1 : 0), markdown.length),
+      source,
+      spec,
+      closed: !!c,
+      error
+    });
+    re.lastIndex = end;
+  }
+  return out;
+}
+df$4.chatComponents = {
+  fence: FENCE,
+  validate: (spec) => validate(spec),
+  markup: (spec, options) => markup(spec, options ?? {}),
+  mount(target, spec) {
+    const root = resolve2(target);
+    const script = dfDollar4(root).children("script.chat-components-schema").get(0);
+    if (script)
+      dfDollar4(script).text(JSON.stringify(spec));
+    build(root);
+    root.api?.setState("default", {});
+  },
+  answers: (target) => readAnswers(resolve2(target)),
+  summary: (spec, answers, action) => summary(spec, answers ?? {}, action ?? ""),
+  jsonSchema: () => jsonSchema(),
+  tool: (name) => ({
+    type: "function",
+    function: {
+      name: name || "show_components",
+      description: "Show the user a card in the chat: content, fields to answer (text, numbers, money, choices, dates, ratings), a multi-step questionnaire, or buttons and quick replies. The answers come back as the next user message.",
+      parameters: jsonSchema()
+    }
+  }),
+  fences: (markdown) => fences(String(markdown ?? ""))
+};
+var fill = (text, answers) => String(text ?? "").replace(/\{\{\s*([\w-]+)\s*\}\}/g, (_m, k) => answers[k] == null ? "" : Array.isArray(answers[k]) ? answers[k].join(", ") : String(answers[k]));
+var wait2 = (ms) => new Promise((r) => setTimeout(r, ms));
+var reducedMotion2 = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+function testWhen(when, answers) {
+  const q = df$4.questionnaire;
+  if (!q?.test)
+    throw new Error("chat-script: branches need the Questionnaire (df$.shadcn.questionnaire.test)");
+  return q.test(when, answers);
+}
+function createRun(script, hooks = {}, saved, delay = true) {
+  const st = saved ? structuredClone(saved) : { node: script.start, answers: {}, history: [], waiting: "busy", rows: 0, marks: [] };
+  const emit = (fn, ...args) => {
+    if (fn === "say" || fn === "ask" || fn === "user")
+      st.rows++;
+    hooks[fn]?.(...args);
+  };
+  const pause = async (text) => {
+    if (!delay || reducedMotion2())
+      return;
+    emit("typing", true);
+    await wait2(Math.min(1400, 350 + String(text).length * 12));
+    emit("typing", false);
+  };
+  const nextOf = (node) => {
+    for (const b of node.branches ?? [])
+      if (testWhen(b.when, st.answers))
+        return b.goto;
+    return node.next ?? null;
+  };
+  async function enter(id) {
+    const node = id ? script.nodes[id] : null;
+    if (!id || !node) {
+      st.waiting = "end";
+      emit("end", { ...st.answers }, [...st.history]);
+      return;
+    }
+    st.node = id;
+    st.history.push(id);
+    st.marks.push({ rows: st.rows, answers: { ...st.answers } });
+    st.waiting = "busy";
+    emit("step", id, { ...st.answers });
+    const lines = node.say === undefined ? [] : Array.isArray(node.say) ? node.say : [node.say];
+    for (const line of lines) {
+      await pause(line);
+      emit("say", fill(line, st.answers), id);
+    }
+    if (node.ask) {
+      await pause("");
+      emit("ask", node.ask, id);
+      st.waiting = "components";
+    } else if (node.input)
+      st.waiting = "text";
+    else if (node.end) {
+      st.waiting = "end";
+      emit("end", { ...st.answers }, [...st.history]);
+    } else
+      await enter(nextOf(node));
+  }
+  const routed = (node, text) => node.match?.find((m) => m.pattern === undefined ? true : new RegExp(m.pattern, "i").test(text))?.goto ?? null;
+  const run = {
+    start: async () => {
+      if (saved && st.history.length)
+        return;
+      await enter(script.start);
+    },
+    reply: async (text) => {
+      const node = script.nodes[st.node];
+      const value = String(text ?? "").trim();
+      if (!value || !node || st.waiting === "busy" || st.waiting === "end")
+        return;
+      emit("user", value, st.node);
+      const route = routed(node, value);
+      if (st.waiting === "text") {
+        st.answers[node.input] = value;
+        await enter(route ?? nextOf(node));
+      } else if (route)
+        await enter(route);
+      else {
+        await pause("");
+        emit("say", script.fallback ?? "Please answer with the card above.", st.node);
+      }
+    },
+    answer: async (detail) => {
+      const node = script.nodes[st.node];
+      if (!node || st.waiting !== "components")
+        return;
+      emit("user", detail.summary, st.node);
+      Object.assign(st.answers, detail.answers ?? {});
+      st.answers[node.ask?.id || st.node] = detail.action;
+      await enter(nextOf(node));
+    },
+    back: async () => {
+      if (st.waiting === "busy")
+        return false;
+      const asks = (id) => !!(script.nodes[id]?.ask || script.nodes[id]?.input);
+      let i = st.history.length - 1;
+      if (st.waiting !== "end")
+        i--;
+      while (i >= 0 && !asks(st.history[i]))
+        i--;
+      if (i < 0)
+        return false;
+      const id = st.history[i];
+      const mark = st.marks[i];
+      st.history = st.history.slice(0, i);
+      st.marks = st.marks.slice(0, i);
+      st.answers = { ...mark.answers };
+      st.rows = mark.rows;
+      hooks.rewind?.(mark.rows);
+      await enter(id);
+      return true;
+    },
+    restart: async () => {
+      st.answers = {};
+      st.history = [];
+      st.marks = [];
+      st.rows = 0;
+      hooks.rewind?.(0);
+      await enter(script.start);
+    },
+    state: () => structuredClone(st)
+  };
+  return run;
+}
+function botRow(html, bot, row = true) {
+  return `<div class="message${row ? " chat-script-row" : ""}"><div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback">${esc2(bot.initials ?? "B")}</span></span></div><div class="message-content">${html}</div></div>`;
+}
+var bubble = (text, variant = "secondary") => `<div class="bubble"${variant ? ` data-variant="${variant}"` : ""}><div class="bubble-content">${inline(text)}</div></div>`;
+function runInSession(target, script, options = {}) {
+  const session = resolve2(target);
+  const S = df$4.session;
+  const bot = { name: "Bot", initials: "B", ...options.bot };
+  const log = [];
+  const stored = options.persist ? persisted(options.persist, null, {
+    validate: (v) => v === null || typeof v === "object" && Array.isArray(v.log)
+  }) : null;
+  const save = () => queueMicrotask(() => stored?.set({ log: structuredClone(log), state: run.state() }));
+  let typingRow = null;
+  let cards = 0;
+  const write = (entry) => {
+    let html = "";
+    if (entry.kind === "say")
+      html = botRow(bubble(entry.text), bot);
+    else if (entry.kind === "user")
+      html = `<div class="message chat-script-row" data-align="end"><div class="message-content">${bubble(entry.text, "")}</div></div>`;
+    else if (entry.kind === "ask")
+      html = botRow(markup(entry.spec, { id: `${session.id || "chat"}-card-${++cards}`, answers: entry.result ?? null }), bot);
+    const item = S.append(session, html);
+    const row = dfDollar4(item).find(".chat-script-row").get(0) ?? item;
+    row._chatScript = entry;
+    return row;
+  };
+  const rows = () => dfDollar4(session).find(".chat-script-row").toArray();
+  const hooks = {
+    say: (text, node) => {
+      const e = { kind: "say", text, node };
+      log.push(e);
+      write(e);
+      save();
+    },
+    user: (text, node) => {
+      const e = { kind: "user", text, node };
+      log.push(e);
+      write(e);
+      save();
+    },
+    ask: (spec, node) => {
+      const e = { kind: "ask", spec, node };
+      log.push(e);
+      write(e);
+      save();
+    },
+    typing: (on) => {
+      if (on && !typingRow)
+        typingRow = S.append(session, botRow(`<div class="bubble" data-variant="secondary"><div class="bubble-content" role="status" aria-label="${esc2(bot.name)} is typing"><span class="bubble-typing" aria-hidden="true"><span></span><span></span><span></span></span></div></div>`, bot, false));
+      else if (!on && typingRow) {
+        (typingRow.closest(".session-item") ?? typingRow).remove();
+        typingRow = null;
+      }
+    },
+    rewind: (n) => {
+      log.length = n;
+      rows().slice(n).forEach((r) => (r.closest(".session-item") ?? r).remove());
+      save();
+    },
+    step: (node, answers) => options.on?.step?.(node, answers),
+    end: (answers, history) => {
+      save();
+      options.on?.end?.(answers, history);
+    }
+  };
+  const saved = stored?.value;
+  if (saved?.log?.length) {
+    log.push(...saved.log);
+    for (const e of saved.log)
+      write(e);
+  }
+  const run = createRun(script, hooks, saved?.state ?? null, options.delay !== false);
+  const onAnswer = (e) => {
+    const detail = e.detail;
+    const card = e.target.closest(".chat-components");
+    const entry = card?.closest(".chat-script-row")?._chatScript;
+    if (!entry || entry !== [...log].reverse().find((x) => x.kind === "ask"))
+      return;
+    entry.result = card.api?.getState().config ?? null;
+    run.answer(detail);
+  };
+  session.addEventListener("chat-components-answer", onAnswer);
+  const composer = options.composer ? resolve2(options.composer) : null;
+  if (composer) {
+    const field = dfDollar4(composer).find('textarea, input[type="text"]').get(0);
+    composer.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = field?.value ?? "";
+      if (!text.trim())
+        return;
+      field.value = "";
+      run.reply(text);
+    });
+    field?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        composer.requestSubmit?.();
+      }
+    });
+  }
+  run.start();
+  return run;
+}
+df$4.chatScript = {
+  create: (script, hooks, state) => createRun(script, hooks ?? {}, state ?? null),
+  run: (target, script, options) => runInSession(target, script, options ?? {}),
+  validate(script) {
+    const out = [];
+    const err = (path, message) => out.push({ path, message, level: "error" });
+    if (!script || typeof script !== "object")
+      return [{ path: "", message: "a script is an object", level: "error" }];
+    const nodes = script.nodes ?? {};
+    if (!nodes[script.start])
+      err("start", `no node "${script.start}"`);
+    for (const [id, n] of Object.entries(nodes)) {
+      const p = `nodes.${id}`;
+      for (const to of [n.next, ...(n.branches ?? []).map((b) => b.goto), ...(n.match ?? []).map((m) => m.goto)])
+        if (to !== undefined && !nodes[to])
+          err(p, `leads to "${to}", which does not exist`);
+      if (!n.ask && !n.input && !n.end && !n.next && !n.branches?.length)
+        err(p, "leads nowhere: next, branches or end");
+      if (n.ask)
+        for (const q of validate(n.ask))
+          out.push({ ...q, path: `${p}.ask${q.path ? "." + q.path : ""}` });
+      for (const [i, m] of (n.match ?? []).entries())
+        if (m.pattern !== undefined)
+          try {
+            new RegExp(m.pattern, "i");
+          } catch {
+            err(`${p}.match[${i}].pattern`, "not a regular expression");
+          }
+    }
+    return out;
+  }
+};
+init4();
+new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+
+// src/components/forms-inputs/combobox/combobox.ts
+var df$5 = defussGlobals();
+var dfDollar5 = defussQuery();
 var comboboxStates = ["default", "open"];
-function applyMarkup4(_el, _stateName) {}
-function triggerStateChange4(popover, stateName, _config) {
+function applyMarkup5(_el, _stateName) {}
+function triggerStateChange5(popover, stateName, _config) {
   switch (stateName) {
     case "default":
       popover._close?.();
@@ -5634,9 +6739,9 @@ function triggerStateChange4(popover, stateName, _config) {
 var comboboxApi = componentState({
   component: "combobox",
   states: comboboxStates,
-  apply: (popover, state) => triggerStateChange4(popover, state.name, state.config),
+  apply: (popover, state) => triggerStateChange5(popover, state.name, state.config),
   read: (popover, state) => {
-    const selected = Array.from(dfDollar4(popover).find('[role="option"][aria-selected="true"]').toArray());
+    const selected = Array.from(dfDollar5(popover).find('[role="option"][aria-selected="true"]').toArray());
     const labels = selected.map((o) => o.textContent?.trim() ?? "");
     return {
       name: popover.matches(":popover-open") ? "open" : "default",
@@ -5648,15 +6753,15 @@ var comboboxApi = componentState({
       }
     };
   },
-  markup: (el, state) => applyMarkup4(el, state.name)
+  markup: (el, state) => applyMarkup5(el, state.name)
 });
-df$4.comboboxApi = comboboxApi;
-df$4.comboboxStates = comboboxStates;
-var esc2 = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+df$5.comboboxApi = comboboxApi;
+df$5.comboboxStates = comboboxStates;
+var esc3 = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 var idPart = (t) => t.replace(/[^\w-]/g, "_");
 var comboSeq = 0;
 function hideEmptyGroups(listbox) {
-  dfDollar4(listbox).find(".combobox-group-label").each((_i, label) => {
+  dfDollar5(listbox).find(".combobox-group-label").each((_i, label) => {
     let next = label.nextElementSibling;
     let groupHasVisible = false;
     while (next && !next.classList.contains("combobox-group-label") && !next.classList.contains("combobox-separator")) {
@@ -5664,34 +6769,34 @@ function hideEmptyGroups(listbox) {
         groupHasVisible = true;
       next = next.nextElementSibling;
     }
-    dfDollar4(label).prop("hidden", !groupHasVisible);
+    dfDollar5(label).prop("hidden", !groupHasVisible);
   });
-  dfDollar4(listbox).find(".combobox-separator").each((_i, sep) => {
+  dfDollar5(listbox).find(".combobox-separator").each((_i, sep) => {
     const prev = sep.previousElementSibling;
     const next = sep.nextElementSibling;
-    dfDollar4(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
+    dfDollar5(sep).prop("hidden", Boolean(prev && prev.hidden || next && next.hidden));
   });
 }
 function initTags(wrapper) {
-  const field = dfDollar4(wrapper).find(".combobox-field").get(0);
-  const input = dfDollar4(wrapper).find(".combobox-field-input").get(0);
-  const popover = dfDollar4(wrapper).find(".combobox-content").get(0);
-  const listbox = dfDollar4(wrapper).find('[role="listbox"]').get(0);
+  const field = dfDollar5(wrapper).find(".combobox-field").get(0);
+  const input = dfDollar5(wrapper).find(".combobox-field-input").get(0);
+  const popover = dfDollar5(wrapper).find(".combobox-content").get(0);
+  const listbox = dfDollar5(wrapper).find('[role="listbox"]').get(0);
   if (!field || !input || !popover || !listbox)
     return;
-  const empty = dfDollar4(wrapper).find(".combobox-empty").get(0);
+  const empty = dfDollar5(wrapper).find(".combobox-empty").get(0);
   const creatable = wrapper.hasAttribute("data-creatable");
   const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
-  const options = () => Array.from(dfDollar4(listbox).find('[role="option"]:not(.combobox-create)').toArray());
+  const options = () => Array.from(dfDollar5(listbox).find('[role="option"]:not(.combobox-create)').toArray());
   const valueOf = (o) => o.dataset.value ?? o.textContent.trim();
   const labelOf = (o) => o.textContent.trim();
-  dfDollar4(listbox).attr("aria-multiselectable", "true");
+  dfDollar5(listbox).attr("aria-multiselectable", "true");
   const anchorId = `--combobox-${uid}`;
-  dfDollar4(field).css("anchorName", anchorId);
-  dfDollar4(popover).css("positionAnchor", anchorId);
+  dfDollar5(field).css("anchorName", anchorId);
+  dfDollar5(popover).css("positionAnchor", anchorId);
   const tags = document.createElement("span");
   tags.className = "combobox-tags";
-  dfDollar4(input).before(tags);
+  dfDollar5(input).before(tags);
   let createRow = null;
   if (creatable) {
     createRow = document.createElement("div");
@@ -5700,31 +6805,31 @@ function initTags(wrapper) {
     createRow.setAttribute("role", "option");
     createRow.setAttribute("aria-selected", "false");
     createRow.hidden = true;
-    dfDollar4(listbox).prepend(createRow);
+    dfDollar5(listbox).prepend(createRow);
   }
   let highlighted = null;
   const highlight = (el) => {
     if (highlighted)
-      dfDollar4(highlighted).data("highlighted", null);
+      dfDollar5(highlighted).data("highlighted", null);
     highlighted = el;
     if (el) {
-      dfDollar4(el).data("highlighted", "");
+      dfDollar5(el).data("highlighted", "");
       el.scrollIntoView({ block: "nearest" });
-      dfDollar4(input).attr("aria-activedescendant", el.id);
+      dfDollar5(input).attr("aria-activedescendant", el.id);
     } else
-      dfDollar4(input).attr("aria-activedescendant", null);
+      dfDollar5(input).attr("aria-activedescendant", null);
   };
-  const visible = () => dfDollar4(listbox).find('[role="option"]').toArray().filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
+  const visible = () => dfDollar5(listbox).find('[role="option"]').toArray().filter((o) => !o.hidden && o.getAttribute("aria-disabled") !== "true");
   const isOpen = () => popover.matches(":popover-open");
   const open = () => {
     if (!isOpen())
       safeShowPopover(popover);
-    dfDollar4(input).attr("aria-expanded", "true");
+    dfDollar5(input).attr("aria-expanded", "true");
   };
   const close = () => {
     if (isOpen())
       popover.hidePopover();
-    dfDollar4(input).attr("aria-expanded", "false");
+    dfDollar5(input).attr("aria-expanded", "false");
     highlight(null);
   };
   popover._open = () => {
@@ -5740,7 +6845,7 @@ function initTags(wrapper) {
     let any = false;
     for (const o of options()) {
       const match = !q || labelOf(o).toLowerCase().includes(q);
-      dfDollar4(o).prop("hidden", !match);
+      dfDollar5(o).prop("hidden", !match);
       if (match)
         any = true;
       if (q && labelOf(o).toLowerCase() === q)
@@ -5748,13 +6853,13 @@ function initTags(wrapper) {
     }
     if (createRow) {
       const showCreate = !!text && !exact;
-      dfDollar4(createRow).prop("hidden", !showCreate);
+      dfDollar5(createRow).prop("hidden", !showCreate);
       if (showCreate)
-        dfDollar4(createRow).text(`Create "${text}"`);
+        dfDollar5(createRow).text(`Create "${text}"`);
     }
     hideEmptyGroups(listbox);
     if (empty)
-      dfDollar4(empty).prop("hidden", any || !!createRow && !createRow.hidden);
+      dfDollar5(empty).prop("hidden", any || !!createRow && !createRow.hidden);
     highlight(exact ?? (createRow && !createRow.hidden ? createRow : !creatable ? visible()[0] ?? null : null));
   };
   const render = (announce = true, created = null) => {
@@ -5762,7 +6867,7 @@ function initTags(wrapper) {
     const labels = chosen.map(labelOf);
     const values = chosen.map(valueOf);
     const name = wrapper.dataset.name;
-    dfDollar4(tags).morph(labels.map((label, i) => `<span class="combobox-tag" id="${uid}-tag-${idPart(values[i])}">${esc2(label)}<button type="button" class="combobox-tag-remove" data-value="${esc2(values[i])}" aria-label="Remove ${esc2(label)}" tabindex="-1"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc2(name)}" value="${esc2(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+    dfDollar5(tags).morph(labels.map((label, i) => `<span class="combobox-tag" id="${uid}-tag-${idPart(values[i])}">${esc3(label)}<button type="button" class="combobox-tag-remove" data-value="${esc3(values[i])}" aria-label="Remove ${esc3(label)}" tabindex="-1"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc3(name)}" value="${esc3(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
     if (input.dataset.placeholder === undefined)
       input.dataset.placeholder = input.placeholder;
     input.placeholder = labels.length ? "" : input.dataset.placeholder;
@@ -5788,24 +6893,24 @@ function initTags(wrapper) {
         option.dataset.value = text;
         option.dataset.created = "";
         option.id = `${uid}-opt-${idPart(text)}-${options().length}`;
-        dfDollar4(option).text(text);
-        const firstGroup = dfDollar4(listbox).find(".combobox-group-label").get(0);
+        dfDollar5(option).text(text);
+        const firstGroup = dfDollar5(listbox).find(".combobox-group-label").get(0);
         if (firstGroup)
-          dfDollar4(firstGroup).before(option);
+          dfDollar5(firstGroup).before(option);
         else
-          dfDollar4(listbox).append(option);
+          dfDollar5(listbox).append(option);
         row = option;
         created = text;
       }
-      dfDollar4(row).attr("aria-selected", "true");
+      dfDollar5(row).attr("aria-selected", "true");
     } else if (row) {
       if (row.getAttribute("aria-disabled") === "true")
         return;
       const on = row.getAttribute("aria-selected") === "true";
-      dfDollar4(row).attr("aria-selected", on && !text ? "false" : "true");
+      dfDollar5(row).attr("aria-selected", on && !text ? "false" : "true");
     } else
       return;
-    dfDollar4(input).val("");
+    dfDollar5(input).val("");
     render(true, created);
     filter();
     input.focus();
@@ -5824,7 +6929,7 @@ function initTags(wrapper) {
       return;
     const option = options().find((o) => valueOf(o) === btn.dataset.value);
     if (option)
-      dfDollar4(option).attr("aria-selected", "false");
+      dfDollar5(option).attr("aria-selected", "false");
     render();
     filter();
     input.focus();
@@ -5868,7 +6973,7 @@ function initTags(wrapper) {
         if (!last)
           break;
         e.preventDefault();
-        dfDollar4(last).attr("aria-selected", "false");
+        dfDollar5(last).attr("aria-selected", "false");
         render();
         filter();
         break;
@@ -5898,17 +7003,17 @@ function initTags(wrapper) {
       close();
   });
   popover.addEventListener("toggle", () => {
-    dfDollar4(input).attr("aria-expanded", String(isOpen()));
+    dfDollar5(input).attr("aria-expanded", String(isOpen()));
   });
 }
-function init4() {
-  dfDollar4(".combobox:not([data-init])").toArray().forEach((wrapper) => {
+function init5() {
+  dfDollar5(".combobox:not([data-init])").toArray().forEach((wrapper) => {
     wrapper.dataset.init = "";
     if (wrapper.hasAttribute("data-tags")) {
       initTags(wrapper);
       return;
     }
-    const $wrapper = dfDollar4(wrapper);
+    const $wrapper = dfDollar5(wrapper);
     const $trigger = $wrapper.find(".combobox-trigger");
     const $value = $wrapper.find(".combobox-value");
     const $popover = $wrapper.find(".combobox-content");
@@ -5931,8 +7036,8 @@ function init4() {
     clearBtn.type = "button";
     clearBtn.className = "combobox-clear";
     clearBtn.setAttribute("aria-label", "Clear selection");
-    dfDollar4(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
-    dfDollar4(clearBtn).css("positionAnchor", anchorId);
+    dfDollar5(clearBtn).html('<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+    dfDollar5(clearBtn).css("positionAnchor", anchorId);
     $trigger.after(clearBtn);
     const multiple = wrapper.hasAttribute("data-multiple");
     const uid = wrapper.id || popover.id || `dfcb-${++comboSeq}`;
@@ -5942,19 +7047,19 @@ function init4() {
       tags = document.createElement("div");
       tags.className = "combobox-tags";
       tags.setAttribute("role", "list");
-      tags.setAttribute("aria-label", `Selected ${trigger.getAttribute("aria-label") || dfDollar4("#" + CSS.escape(trigger.getAttribute("aria-labelledby") || "")).get(0)?.textContent?.trim() || "options"}`);
-      dfDollar4(clearBtn).after(tags);
+      tags.setAttribute("aria-label", `Selected ${trigger.getAttribute("aria-label") || dfDollar5("#" + CSS.escape(trigger.getAttribute("aria-labelledby") || "")).get(0)?.textContent?.trim() || "options"}`);
+      dfDollar5(clearBtn).after(tags);
       tags.addEventListener("click", (e) => {
         const btn = e.target.closest(".combobox-tag-remove");
         if (!btn)
           return;
         const option = Array.from(allItems).find((o) => (o.dataset.value ?? o.textContent.trim()) === btn.dataset.value);
-        const all = dfDollar4(tags).find(".combobox-tag-remove").toArray();
+        const all = dfDollar5(tags).find(".combobox-tag-remove").toArray();
         const at = all.indexOf(btn);
         if (option)
-          dfDollar4(option).attr("aria-selected", "false");
+          dfDollar5(option).attr("aria-selected", "false");
         renderSelection();
-        const rest = dfDollar4(tags).find(".combobox-tag-remove").toArray();
+        const rest = dfDollar5(tags).find(".combobox-tag-remove").toArray();
         (rest[Math.min(at, rest.length - 1)] ?? trigger).focus();
       });
     }
@@ -5969,7 +7074,7 @@ function init4() {
         $value.text(placeholder).attr("data-placeholder", placeholder);
       if (tags) {
         const name = wrapper.dataset.name;
-        dfDollar4(tags).morph(labels.map((label, i) => `<span class="combobox-tag" role="listitem" id="${uid}-tag-${idPart(values[i])}">${esc2(label)}<button type="button" class="combobox-tag-remove" data-value="${esc2(values[i])}" aria-label="Remove ${esc2(label)}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc2(name)}" value="${esc2(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
+        dfDollar5(tags).morph(labels.map((label, i) => `<span class="combobox-tag" role="listitem" id="${uid}-tag-${idPart(values[i])}">${esc3(label)}<button type="button" class="combobox-tag-remove" data-value="${esc3(values[i])}" aria-label="Remove ${esc3(label)}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></span>`).join("") + (name ? values.map((v) => `<input type="hidden" name="${esc3(name)}" value="${esc3(v)}" id="${uid}-input-${idPart(v)}">`).join("") : ""));
       }
       if (announce)
         wrapper.dispatchEvent(new CustomEvent("combobox:change", { bubbles: true, detail: { values, labels } }));
@@ -6005,7 +7110,7 @@ function init4() {
       let hasVisible = false;
       allItems.forEach((item) => {
         const match = !q || item.textContent.trim().toLowerCase().includes(q);
-        dfDollar4(item).prop("hidden", !match);
+        dfDollar5(item).prop("hidden", !match);
         if (match)
           hasVisible = true;
       });
@@ -6024,7 +7129,7 @@ function init4() {
       if (index < 0 || index >= items.length)
         return;
       highlighted = index;
-      dfDollar4(items[index]).data("highlighted", "");
+      dfDollar5(items[index]).data("highlighted", "");
       items[index].scrollIntoView({ block: "nearest" });
       $search.attr("aria-activedescendant", items[index].id);
     };
@@ -6032,13 +7137,13 @@ function init4() {
       if (item.getAttribute("aria-disabled") === "true")
         return;
       if (multiple) {
-        dfDollar4(item).attr("aria-selected", item.getAttribute("aria-selected") === "true" ? "false" : "true");
+        dfDollar5(item).attr("aria-selected", item.getAttribute("aria-selected") === "true" ? "false" : "true");
         renderSelection();
         searchInput.focus();
         return;
       }
       allItems.attr("aria-selected", "false");
-      dfDollar4(item).attr("aria-selected", "true");
+      dfDollar5(item).attr("aria-selected", "true");
       renderSelection();
       close();
     };
@@ -6092,7 +7197,7 @@ function init4() {
           if (!last)
             break;
           e.preventDefault();
-          dfDollar4(last).attr("aria-selected", "false");
+          dfDollar5(last).attr("aria-selected", "false");
           renderSelection();
           break;
         }
@@ -6118,17 +7223,17 @@ function init4() {
     });
   });
 }
-init4();
-new MutationObserver(init4).observe(document, { childList: true, subtree: true });
+init5();
+new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
 // src/components/overlays/dialog/dialog.ts
-var df$5 = defussGlobals();
-var dfDollar5 = defussQuery();
+var df$6 = defussGlobals();
+var dfDollar6 = defussQuery();
 var dialogStates = ["default", "open"];
-function applyMarkup5(dialog, stateName) {
-  dfDollar5(dialog).attr("open", stateName === "open" ? "" : null);
+function applyMarkup6(dialog, stateName) {
+  dfDollar6(dialog).attr("open", stateName === "open" ? "" : null);
 }
-function triggerStateChange5(dialog, stateName, _config) {
+function triggerStateChange6(dialog, stateName, _config) {
   switch (stateName) {
     case "default":
       if (dialog.open)
@@ -6144,16 +7249,16 @@ var shown2 = (dialog) => dialog.open ? "open" : "default";
 var dialogApi = componentState({
   component: "dialog",
   states: dialogStates,
-  apply: (dialog, state) => triggerStateChange5(dialog, state.name, state.config),
+  apply: (dialog, state) => triggerStateChange6(dialog, state.name, state.config),
   read: (dialog, state) => ({ name: shown2(dialog), config: state.config }),
-  markup: (el, state) => applyMarkup5(el, state.name)
+  markup: (el, state) => applyMarkup6(el, state.name)
 });
-df$5.dialogApi = dialogApi;
-df$5.dialogStates = dialogStates;
-function init5() {
-  dfDollar5("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
+df$6.dialogApi = dialogApi;
+df$6.dialogStates = dialogStates;
+function init6() {
+  dfDollar6("[data-dialog-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const dialog = dfDollar5("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
+    const dialog = dfDollar6("#" + CSS.escape(trigger.dataset.dialogTrigger)).get(0);
     if (!dialog)
       return;
     trigger.addEventListener("click", () => {
@@ -6161,14 +7266,14 @@ function init5() {
       dialog.showModal();
     });
   });
-  dfDollar5("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
-    dfDollar5(dialog).data("init", "");
+  dfDollar6("dialog:not(.alert-dialog):not(.sheet):not(.command):not(.window):not(.cookie-consent-dialog):not([data-init])").toArray().forEach((dialog) => {
+    dfDollar6(dialog).data("init", "");
     bindComponent(dialog, dialogApi, { name: shown2(dialog), config: {} });
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog)
         dialog.close();
     });
-    dfDollar5(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
+    dfDollar6(dialog).find("[data-dialog-close]").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         dialog.close();
       });
@@ -6181,17 +7286,17 @@ function init5() {
     });
   });
 }
-init5();
-new MutationObserver(init5).observe(document, { childList: true, subtree: true });
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/dropdown/dropdown.ts
-var df$6 = defussGlobals();
-var dfDollar6 = defussQuery();
+var df$7 = defussGlobals();
+var dfDollar7 = defussQuery();
 var dropdownStates = ["default", "open"];
 var ITEM = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]';
 var isDisabled = (el) => el.disabled || el.getAttribute("aria-disabled") === "true";
-var itemsOf = (menu) => Array.from(dfDollar6(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
-var subOf = (trigger) => dfDollar6(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
+var itemsOf = (menu) => Array.from(dfDollar7(menu).find(ITEM).toArray()).filter((i) => i.closest('[role="menu"]') === menu && !isDisabled(i));
+var subOf = (trigger) => dfDollar7(trigger).closest(".dropdown-sub").children(".dropdown-sub-content").get(0) ?? null;
 var rootOf2 = (menu) => {
   let m = menu;
   while (m?.parentElement?.closest(".dropdown-content[popover]"))
@@ -6200,8 +7305,8 @@ var rootOf2 = (menu) => {
 };
 var HOVER_OPEN = 120;
 var HOVER_CLOSE = 220;
-function applyMarkup6(_el, _stateName) {}
-function triggerStateChange6(menu, stateName, _config) {
+function applyMarkup7(_el, _stateName) {}
+function triggerStateChange7(menu, stateName, _config) {
   switch (stateName) {
     case "default":
       try {
@@ -6216,11 +7321,11 @@ function triggerStateChange6(menu, stateName, _config) {
 var dropdownApi = componentState({
   component: "dropdown",
   states: dropdownStates,
-  apply: (menu, state) => triggerStateChange6(menu, state.name, state.config),
-  markup: (el, state) => applyMarkup6(el, state.name)
+  apply: (menu, state) => triggerStateChange7(menu, state.name, state.config),
+  markup: (el, state) => applyMarkup7(el, state.name)
 });
-df$6.dropdownApi = dropdownApi;
-df$6.dropdownStates = dropdownStates;
+df$7.dropdownApi = dropdownApi;
+df$7.dropdownStates = dropdownStates;
 var anchorSeq = 0;
 function highlight(menu, item, focus = true) {
   itemsOf(menu).forEach((i) => {
@@ -6252,7 +7357,7 @@ function activate(menu, item) {
   }
   if (role === "menuitemradio") {
     const group = item.closest('[role="group"]') ?? menu;
-    dfDollar6(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
+    dfDollar7(group).find('[role="menuitemradio"]').toArray().forEach((r) => {
       if (r.closest('[role="menu"]') === menu)
         r.setAttribute("aria-checked", String(r === item));
     });
@@ -6295,7 +7400,7 @@ function wireMenu(menu) {
     return;
   menu._wired = true;
   const own = (e) => e.target instanceof Element && e.target.closest('[role="menu"]') === menu;
-  const openSubs = () => Array.from(dfDollar6(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
+  const openSubs = () => Array.from(dfDollar7(menu).find(".dropdown-sub-content").toArray()).filter((s) => s.parentElement.closest('[role="menu"]') === menu && s.matches(":popover-open"));
   menu.addEventListener("mousemove", (e) => {
     if (!own(e))
       return;
@@ -6413,8 +7518,8 @@ function wireMenu(menu) {
   });
 }
 function wireSub(wrap) {
-  const trigger = dfDollar6(wrap).find(":scope > .dropdown-sub-trigger").get(0);
-  const sub = dfDollar6(wrap).find(":scope > .dropdown-sub-content").get(0);
+  const trigger = dfDollar7(wrap).find(":scope > .dropdown-sub-trigger").get(0);
+  const sub = dfDollar7(wrap).find(":scope > .dropdown-sub-content").get(0);
   if (!trigger || !sub || sub._subWired)
     return;
   sub._subWired = true;
@@ -6452,10 +7557,10 @@ function wireSub(wrap) {
     highlight(parent, trigger, false);
   });
 }
-function init6() {
-  dfDollar6("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
+function init7() {
+  dfDollar7("[data-dropdown-trigger]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const menu = dfDollar6("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
+    const menu = dfDollar7("#" + CSS.escape(trigger.dataset.dropdownTrigger)).get(0);
     if (!menu)
       return;
     const anchorId = `--dropdown-${menu.id}`;
@@ -6484,28 +7589,28 @@ function init6() {
         });
         const active = document.activeElement;
         const other = active instanceof Element && active !== trigger ? active.closest("[data-dropdown-trigger]") : null;
-        const otherOpen = other ? dfDollar6("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
+        const otherOpen = other ? dfDollar7("#" + CSS.escape(other.getAttribute("data-dropdown-trigger"))).get(0)?.matches(":popover-open") : false;
         if (!otherOpen && (!active || active === document.body || menu.contains(active) || other))
           trigger.focus({ preventScroll: true });
       }
     });
     wireMenu(menu);
-    dfDollar6(menu).find(".dropdown-sub").toArray().forEach(wireSub);
+    dfDollar7(menu).find(".dropdown-sub").toArray().forEach(wireSub);
   });
-  dfDollar6(".dropdown-sub").toArray().forEach(wireSub);
-  dfDollar6(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
+  dfDollar7(".dropdown-sub").toArray().forEach(wireSub);
+  dfDollar7(".dropdown-content[popover]:not(.dropdown-sub-content):not([data-init])").toArray().forEach((menu) => {
     menu.dataset.init = "";
     bindComponent(menu, dropdownApi);
   });
 }
-init6();
-new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+init7();
+new MutationObserver(init7).observe(document, { childList: true, subtree: true });
 
 // src/components/forms-inputs/file-input/file-input.ts
-var df$7 = defussGlobals();
-var dfDollar7 = defussQuery();
+var df$8 = defussGlobals();
+var dfDollar8 = defussQuery();
 var fileInputStates = ["default", "dragover", "selected", "error"];
-var inputOf = (el) => dfDollar7(el).find(".file-drop-input").get(0);
+var inputOf = (el) => dfDollar8(el).find(".file-drop-input").get(0);
 function accepts(input, file) {
   const list = (input.accept || "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
   if (!list.length)
@@ -6539,12 +7644,12 @@ function setFiles(input, files) {
 }
 function renderList(el) {
   const input = inputOf(el);
-  const list = dfDollar7(el).find(".file-drop-list").get(0);
+  const list = dfDollar8(el).find(".file-drop-list").get(0);
   if (!list)
     return;
   (el._urls || []).forEach((u) => URL.revokeObjectURL(u));
   el._urls = [];
-  dfDollar7(list).empty().append([...input.files].map((file, i) => {
+  dfDollar8(list).empty().append([...input.files].map((file, i) => {
     const li = document.createElement("li");
     li.className = "file-drop-item";
     const thumb = document.createElement("span");
@@ -6569,7 +7674,7 @@ function renderList(el) {
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "file-drop-remove";
-    dfDollar7(remove).html(ICON_X);
+    dfDollar8(remove).html(ICON_X);
     remove.setAttribute("aria-label", `Remove ${file.name}`);
     remove.addEventListener("click", () => {
       setFiles(input, [...input.files].filter((_, k) => k !== i));
@@ -6585,7 +7690,7 @@ function renderList(el) {
 }
 function apply(el, rejected, quiet = false) {
   const input = inputOf(el);
-  const err = dfDollar7(el).find(".file-drop-error").get(0);
+  const err = dfDollar8(el).find(".file-drop-error").get(0);
   const message = rejected.length ? `Not added: ${rejected.map((r) => `${r.file.name} (${r.why})`).join(", ")}` : "";
   if (err) {
     err.textContent = message;
@@ -6627,8 +7732,8 @@ function onPick(el) {
   el._kept = out;
   apply(el, rejected);
 }
-function applyMarkup7(el, stateName, config) {
-  const err = dfDollar7(el).find(".file-drop-error").first();
+function applyMarkup8(el, stateName, config) {
+  const err = dfDollar8(el).find(".file-drop-error").first();
   if (!err.get(0))
     return;
   err.attr("role", "alert");
@@ -6637,7 +7742,7 @@ function applyMarkup7(el, stateName, config) {
   else if (stateName !== "dragover")
     err.text("");
 }
-function triggerStateChange7(el, stateName, config) {
+function triggerStateChange8(el, stateName, config) {
   const input = inputOf(el);
   switch (stateName) {
     case "default":
@@ -6656,7 +7761,7 @@ function triggerStateChange7(el, stateName, config) {
       break;
     }
     case "error": {
-      const err = dfDollar7(el).find(".file-drop-error").get(0);
+      const err = dfDollar8(el).find(".file-drop-error").get(0);
       if (err)
         err.textContent = config?.message || "Not added: archive.zip (type)";
       el.dataset.stateName = "error";
@@ -6667,7 +7772,7 @@ function triggerStateChange7(el, stateName, config) {
 var fileInputApi = componentState({
   component: "file-input",
   states: fileInputStates,
-  apply: (el, state) => triggerStateChange7(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange8(el, state.name, state.config),
   read: (el, state) => {
     const input = inputOf(el);
     return {
@@ -6676,25 +7781,25 @@ var fileInputApi = componentState({
         ...state.config,
         count: input.files.length,
         files: [...input.files].map((f) => f.name),
-        ...el.dataset.stateName === "error" ? { message: dfDollar7(el).find(".file-drop-error").text() } : {}
+        ...el.dataset.stateName === "error" ? { message: dfDollar8(el).find(".file-drop-error").text() } : {}
       }
     };
   },
-  markup: (el, state) => applyMarkup7(el, state.name, state.config)
+  markup: (el, state) => applyMarkup8(el, state.name, state.config)
 });
-df$7.fileInputApi = fileInputApi;
-df$7.fileInputStates = fileInputStates;
-function init7() {
-  dfDollar7(".file-drop:not([data-init])").toArray().forEach((el) => {
+df$8.fileInputApi = fileInputApi;
+df$8.fileInputStates = fileInputStates;
+function init8() {
+  dfDollar8(".file-drop:not([data-init])").toArray().forEach((el) => {
     const input = inputOf(el);
     if (!input)
       return;
     el.dataset.init = "";
     el.dataset.stateName = "default";
     el._kept = [];
-    dfDollar7(el).find(".file-drop-error").attr("role", "alert");
+    dfDollar8(el).find(".file-drop-error").attr("role", "alert");
     bindComponent(el, fileInputApi);
-    const zone = dfDollar7(el).find(".file-drop-zone").get(0) || el;
+    const zone = dfDollar8(el).find(".file-drop-zone").get(0) || el;
     let depth = 0;
     zone.addEventListener("dragenter", (e) => {
       if (!e.dataTransfer?.types.includes("Files") || input.disabled)
@@ -6719,12 +7824,12 @@ function init7() {
     });
   });
 }
-init7();
-new MutationObserver(init7).observe(document, { childList: true, subtree: true });
+init8();
+new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
 // src/components/navigation/language-switcher/language-switcher.ts
-var df$8 = defussGlobals();
-var dfDollar8 = defussQuery();
+var df$9 = defussGlobals();
+var dfDollar9 = defussQuery();
 var languageSwitcherStates = ["default", "open"];
 var SEED = `af Afrikaans|Afrikaans|za
 am Amharic|አማርኛ|et
@@ -6846,8 +7951,8 @@ var ALIAS = { he: "iw", nb: "no", tl: "fil" };
 var settings = {
   flags: "https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/flags/{shape}/{region}.svg"
 };
-var resolve2 = (t) => typeof t === "string" ? dfDollar8("#" + CSS.escape(t)).get(0) ?? dfDollar8(t).get(0) : t;
-var esc3 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+var resolve3 = (t) => typeof t === "string" ? dfDollar9("#" + CSS.escape(t)).get(0) ?? dfDollar9(t).get(0) : t;
+var esc4 = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 function partsOf(tag) {
   try {
     const l = new Intl.Locale(tag);
@@ -6951,8 +8056,8 @@ function flagHtml(el, tag) {
   const region = regionFor(el, tag);
   const shape = ["square", "circle", "squircle"].includes(el.dataset.flagShape || "") ? "1x1" : "4x3";
   const url = region ? settings.flags.replace("{shape}", shape).replace("{region}", region) : "";
-  const image = region ? ` data-region="${esc3(region)}" style="--language-switcher-flag: url('${esc3(url)}')"` : "";
-  return `<span class="language-switcher-flag" data-code="${esc3(partsOf(tag).language.toUpperCase())}"${image} aria-hidden="true"></span>`;
+  const image = region ? ` data-region="${esc4(region)}" style="--language-switcher-flag: url('${esc4(url)}')"` : "";
+  return `<span class="language-switcher-flag" data-code="${esc4(partsOf(tag).language.toUpperCase())}"${image} aria-hidden="true"></span>`;
 }
 var GLOBE = '<svg class="language-switcher-icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>';
 var CHEVRON = '<svg class="combobox-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>';
@@ -6960,7 +8065,7 @@ function faceHtml(el, tag) {
   const display = el.dataset.display || "label";
   const flag = flagHtml(el, tag) || (display === "icon" ? GLOBE : "");
   const text = display === "icon" ? "" : display === "code" ? codeLabel(tag) : el.dataset.names === "ui" ? nameIn(tag, valueOf(el)) : nameIn(tag, tag);
-  return `${flag}${text ? `<span class="language-switcher-label" lang="${esc3(tag)}" dir="${dirOf(tag)}">${esc3(text)}</span>` : ""}`;
+  return `${flag}${text ? `<span class="language-switcher-label" lang="${esc4(tag)}" dir="${dirOf(tag)}">${esc4(text)}</span>` : ""}`;
 }
 var labelOf = (el) => el.dataset.label || el.getAttribute("aria-label") || "Language";
 var ariaOf = (el, tag) => `${labelOf(el)}: ${nameIn(tag, tag)}`;
@@ -6974,33 +8079,33 @@ function namesOf(el, tag, ui) {
 }
 var optionInner = (el, tag, ui) => {
   const n = namesOf(el, tag, ui);
-  return `${flagHtml(el, tag)}<span class="language-switcher-name" lang="${esc3(n.lang)}" dir="${dirOf(n.lang)}">${esc3(n.name)}</span><span class="language-switcher-alt" lang="${esc3(n.altLang)}" dir="${dirOf(n.altLang)}"${n.alt ? "" : " hidden"}>${esc3(n.alt)}</span>`;
+  return `${flagHtml(el, tag)}<span class="language-switcher-name" lang="${esc4(n.lang)}" dir="${dirOf(n.lang)}">${esc4(n.name)}</span><span class="language-switcher-alt" lang="${esc4(n.altLang)}" dir="${dirOf(n.altLang)}"${n.alt ? "" : " hidden"}>${esc4(n.alt)}</span>`;
 };
 function comboboxHtml(el, uid) {
   const languages = languagesOf(el);
   const value = valueOf(el, languages);
   const search = el.dataset.search || "Search languages...";
-  const options = languages.map((tag) => `<div role="option" id="${uid}-${idPart2(tag)}" class="combobox-item language-switcher-option" data-value="${esc3(tag)}" aria-selected="${tag === value}">${optionInner(el, tag, value)}</div>`).join("");
+  const options = languages.map((tag) => `<div role="option" id="${uid}-${idPart2(tag)}" class="combobox-item language-switcher-option" data-value="${esc4(tag)}" aria-selected="${tag === value}">${optionInner(el, tag, value)}</div>`).join("");
   const icon = (el.dataset.display || "label") === "icon";
-  return `<div class="combobox language-switcher-combobox" data-ce-chrome${el.dataset.size ? ` data-size="${esc3(el.dataset.size)}"` : ""}>
-<button type="button" class="btn combobox-trigger" data-variant="${esc3(el.dataset.buttonVariant || "ghost")}"${icon ? ' data-size="icon"' : ""} aria-haspopup="listbox" aria-expanded="false" aria-label="${esc3(ariaOf(el, value))}" aria-controls="${uid}-popover"><span class="combobox-value">${faceHtml(el, value)}</span>${icon ? "" : CHEVRON}</button>
+  return `<div class="combobox language-switcher-combobox" data-ce-chrome${el.dataset.size ? ` data-size="${esc4(el.dataset.size)}"` : ""}>
+<button type="button" class="btn combobox-trigger" data-variant="${esc4(el.dataset.buttonVariant || "ghost")}"${icon ? ' data-size="icon"' : ""} aria-haspopup="listbox" aria-expanded="false" aria-label="${esc4(ariaOf(el, value))}" aria-controls="${uid}-popover"><span class="combobox-value">${faceHtml(el, value)}</span>${icon ? "" : CHEVRON}</button>
 <div id="${uid}-popover" class="combobox-content language-switcher-content" popover>
-<div class="combobox-search"${languages.length > 7 ? "" : " data-quiet"}><input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="${uid}-listbox" aria-activedescendant="" aria-autocomplete="list" placeholder="${esc3(search)}" aria-label="${esc3(search)}"></div>
-<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc3(labelOf(el))}"><div class="combobox-empty" hidden>${esc3(el.dataset.empty || "No language found.")}</div>${options}</div>
+<div class="combobox-search"${languages.length > 7 ? "" : " data-quiet"}><input class="combobox-search-input" type="text" role="combobox" autocomplete="off" aria-expanded="true" aria-controls="${uid}-listbox" aria-activedescendant="" aria-autocomplete="list" placeholder="${esc4(search)}" aria-label="${esc4(search)}"></div>
+<div id="${uid}-listbox" role="listbox" class="combobox-listbox" aria-label="${esc4(labelOf(el))}"><div class="combobox-empty" hidden>${esc4(el.dataset.empty || "No language found.")}</div>${options}</div>
 </div>
 </div>`;
 }
 function swapHtml(el) {
   const value = valueOf(el);
-  return `<label class="swap language-switcher-swap"${el.dataset.swap === "fade" ? "" : ` data-variant="${esc3(el.dataset.swap || "flip")}"`} data-ce-chrome${el.dataset.size ? ` data-size="${esc3(el.dataset.size)}"` : ""}>
-<input type="checkbox" role="button" aria-label="${esc3(swapLabel(el, value))}">
+  return `<label class="swap language-switcher-swap"${el.dataset.swap === "fade" ? "" : ` data-variant="${esc4(el.dataset.swap || "flip")}"`} data-ce-chrome${el.dataset.size ? ` data-size="${esc4(el.dataset.size)}"` : ""}>
+<input type="checkbox" role="button" aria-label="${esc4(swapLabel(el, value))}">
 <span class="swap-off">${faceHtml(el, value)}</span>
 <span class="swap-on">${faceHtml(el, nextOf(el, value))}</span>
 </label>`;
 }
 function menuHtml(el) {
   const value = valueOf(el);
-  return `<div class="language-switcher-menu" data-ce-chrome>${languagesOf(el).map((tag) => `<button type="button" class="dropdown-item dropdown-radio language-switcher-item" role="menuitemradio" tabindex="-1" aria-checked="${tag === value}" data-value="${esc3(tag)}">${optionInner(el, tag, value)}</button>`).join("")}</div>`;
+  return `<div class="language-switcher-menu" data-ce-chrome>${languagesOf(el).map((tag) => `<button type="button" class="dropdown-item dropdown-radio language-switcher-item" role="menuitemradio" tabindex="-1" aria-checked="${tag === value}" data-value="${esc4(tag)}">${optionInner(el, tag, value)}</button>`).join("")}</div>`;
 }
 var swapLabel = (el, value) => {
   const next = nextOf(el, value);
@@ -7022,17 +8127,17 @@ var STRUCTURE = [
   "swap"
 ];
 var structureOf = (el) => STRUCTURE.map((k) => el.dataset[k] ?? "").join("|");
-var chromeOf = (el) => dfDollar8(el).children("[data-ce-chrome]").get(0);
+var chromeOf = (el) => dfDollar9(el).children("[data-ce-chrome]").get(0);
 function draw2(el) {
   const uid = el.id ? `${el.id}-ls` : el._lsId ??= `language-switcher-${++sequence}`;
   const focused = el.contains(document.activeElement);
-  dfDollar8(el).children("[data-ce-chrome]").remove();
+  dfDollar9(el).children("[data-ce-chrome]").remove();
   const variant = el.dataset.variant;
-  dfDollar8(el).append(dfDollar8(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
+  dfDollar9(el).append(dfDollar9(variant === "swap" ? swapHtml(el) : variant === "menu" ? menuHtml(el) : comboboxHtml(el, uid)));
   el._lsStructure = structureOf(el);
   el._lsValue = valueOf(el);
   if (focused)
-    dfDollar8(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
+    dfDollar9(el).find('.combobox-trigger, .swap > input, .language-switcher-item[aria-checked="true"]').get(0)?.focus();
 }
 var sequence = 0;
 function update(el) {
@@ -7041,7 +8146,7 @@ function update(el) {
   const value = valueOf(el);
   const changed = el._lsValue !== value;
   el._lsValue = value;
-  const chrome = dfDollar8(chromeOf(el));
+  const chrome = dfDollar9(chromeOf(el));
   if (el.dataset.variant === "swap") {
     const input = chrome.find(":scope > input").get(0);
     if (changed) {
@@ -7049,7 +8154,7 @@ function update(el) {
       chrome.find(`:scope > ${shown}`).html(faceHtml(el, value));
       chrome.find(`:scope > ${hidden}`).html(faceHtml(el, nextOf(el, value)));
     }
-    dfDollar8(input).attr("aria-label", swapLabel(el, value));
+    dfDollar9(input).attr("aria-label", swapLabel(el, value));
     return;
   }
   if (el.dataset.variant === "menu") {
@@ -7057,7 +8162,7 @@ function update(el) {
       return;
     chrome.find(".language-switcher-item").each((_i, item) => {
       const tag = item.dataset.value || "";
-      dfDollar8(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
+      dfDollar9(item).attr("aria-checked", String(tag === value)).html(optionInner(el, tag, value));
     });
     return;
   }
@@ -7068,7 +8173,7 @@ function update(el) {
   chrome.find(".combobox-value").html(faceHtml(el, value)).attr("data-placeholder", null);
   chrome.find(".language-switcher-option").each((_i, option) => {
     const tag = option.dataset.value || "";
-    dfDollar8(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
+    dfDollar9(option).attr("aria-selected", String(tag === value)).html(optionInner(el, tag, value));
   });
 }
 function choose(el, tag, announce = true) {
@@ -7078,7 +8183,7 @@ function choose(el, tag, announce = true) {
     return false;
   const previous = valueOf(el, languages);
   if (el.dataset.value !== next)
-    dfDollar8(el).attr("data-value", next);
+    dfDollar9(el).attr("data-value", next);
   update(el);
   if (announce && next !== previous)
     el.dispatchEvent(new CustomEvent("language-change", {
@@ -7087,7 +8192,7 @@ function choose(el, tag, announce = true) {
     }));
   return true;
 }
-var popoverOf = (el) => dfDollar8(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
+var popoverOf = (el) => dfDollar9(el).find(":scope > .language-switcher-combobox > .combobox-content").get(0);
 var isOpen = (el) => {
   try {
     return !!popoverOf(el)?.matches(":popover-open");
@@ -7095,20 +8200,20 @@ var isOpen = (el) => {
     return false;
   }
 };
-function applyMarkup8(el, _name, config) {
+function applyMarkup9(el, _name, config) {
   const languages = languagesOf(el);
   const value = languages.find((l) => l.toLowerCase() === String(config?.value ?? "").toLowerCase());
   if (value)
-    dfDollar8(el).attr("data-value", value);
+    dfDollar9(el).attr("data-value", value);
 }
-function triggerStateChange8(el, name, config) {
+function triggerStateChange9(el, name, config) {
   if (config?.value)
     choose(el, config.value, false);
   const popover = popoverOf(el);
   if (!popover)
     return;
   if (name === "open" && !isOpen(el))
-    dfDollar8(el).find(".combobox-trigger").get(0)?.click();
+    dfDollar9(el).find(".combobox-trigger").get(0)?.click();
   else if (name !== "open" && isOpen(el))
     popover.hidePopover();
 }
@@ -7116,26 +8221,26 @@ var languageSwitcherApi = componentState({
   component: "language-switcher",
   states: languageSwitcherStates,
   mergeConfig: true,
-  apply: (el, state) => triggerStateChange8(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange9(el, state.name, state.config),
   read: (el) => ({ name: isOpen(el) ? "open" : "default", config: { value: valueOf(el) } }),
-  markup: (el, state) => applyMarkup8(el, state.name, state.config)
+  markup: (el, state) => applyMarkup9(el, state.name, state.config)
 });
-df$8.languageSwitcherApi = languageSwitcherApi;
-df$8.languageSwitcherStates = languageSwitcherStates;
-function init8() {
-  dfDollar8(".language-switcher:not([data-init])").each((_i, el) => {
+df$9.languageSwitcherApi = languageSwitcherApi;
+df$9.languageSwitcherStates = languageSwitcherStates;
+function init9() {
+  dfDollar9(".language-switcher:not([data-init])").each((_i, el) => {
     el.dataset.init = "";
     if (!el.dataset.value || valueOf(el) !== el.dataset.value)
-      dfDollar8(el).attr("data-value", valueOf(el));
+      dfDollar9(el).attr("data-value", valueOf(el));
     draw2(el);
-    dfDollar8(el).on("combobox:change", (e) => {
+    dfDollar9(el).on("combobox:change", (e) => {
       const value = e.detail?.values?.[0];
       el._lsValue = "";
       if (!value || !choose(el, value))
         update(el);
       languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
     });
-    dfDollar8(el).on("change", (e) => {
+    dfDollar9(el).on("change", (e) => {
       const input = e.target;
       if (!input.matches(".language-switcher-swap > input") || input.closest(".language-switcher") !== el)
         return;
@@ -7151,13 +8256,13 @@ function init8() {
         update(el);
       languageSwitcherApi.commit(el, "default", { value: valueOf(el) });
     };
-    dfDollar8(el).on("dropdown:select", (e) => pick(e.detail?.item));
-    dfDollar8(el).on("click", (e) => {
+    dfDollar9(el).on("dropdown:select", (e) => pick(e.detail?.item));
+    dfDollar9(el).on("click", (e) => {
       const item = e.target?.closest?.(".language-switcher-item");
       if (item && !item.closest('[role="menu"]'))
         pick(item);
     });
-    dfDollar8(el).on("keydown", (e) => {
+    dfDollar9(el).on("keydown", (e) => {
       const input = e.target;
       if (e.key !== "Enter" || !input.matches?.(".language-switcher-swap > input"))
         return;
@@ -7175,19 +8280,19 @@ var OBSERVED = [
   "aria-label",
   ...STRUCTURE.map((k) => "data-" + k.replace(/[A-Z]/g, (c) => "-" + c.toLowerCase()))
 ];
-df$8.languageSwitcher = {
+df$9.languageSwitcher = {
   languages: () => LANGUAGES.map((l) => ({ ...l })),
   name: (tag, locale) => nameIn(tag, locale ?? tag),
   region: (tag) => partsOf(tag).region || seedOf(tag)?.region || "",
   choose: (target, tag) => {
-    const el = resolve2(target);
+    const el = resolve3(target);
     if (!el || !choose(el, tag))
       return false;
     languageSwitcherApi.commit(el, isOpen(el) ? "open" : "default", { value: valueOf(el) });
     return true;
   },
   bind: (target, i18n) => {
-    const el = resolve2(target);
+    const el = resolve3(target);
     if (!el || !i18n)
       return () => {};
     const follow = (locale) => {
@@ -7212,22 +8317,1558 @@ df$8.languageSwitcher = {
       settings.flags = options.flags;
   }
 };
-init8();
-new MutationObserver(init8).observe(document, { childList: true, subtree: true });
+init9();
+new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+
+// src/components/forms-inputs/number-input/number-input.ts
+var df$10 = defussGlobals();
+var dfDollar10 = defussQuery();
+var numberInputStates = ["default"];
+var getInput = (wrapper) => dfDollar10(wrapper).find('input:not([type="hidden"])').get(0);
+function currencyConfig(wrapper) {
+  const currency = String(wrapper.dataset.currency || "USD").toUpperCase();
+  const locale = wrapper.dataset.locale || textLocale(wrapper);
+  const currencyDisplay = wrapper.dataset.currencyDisplay || "symbol";
+  const money = new Intl.NumberFormat(locale, { style: "currency", currency, currencyDisplay });
+  const parts = money.formatToParts(1234567.5);
+  const index = (type) => parts.findIndex((p) => p.type === type);
+  const fraction = money.resolvedOptions().maximumFractionDigits ?? 2;
+  return {
+    locale,
+    currency,
+    fraction,
+    decimal: parts.find((p) => p.type === "decimal")?.value ?? ".",
+    symbol: parts.find((p) => p.type === "currency")?.value ?? currency,
+    prefix: index("currency") < index("integer"),
+    grouping: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }),
+    fixed: new Intl.NumberFormat(locale, { minimumFractionDigits: fraction, maximumFractionDigits: fraction })
+  };
+}
+function parseMoney(text, cfg) {
+  let dec = text.lastIndexOf(cfg.decimal);
+  if (dec < 0 && cfg.fraction > 0) {
+    const alt = cfg.decimal === "," ? "." : ",";
+    const i = text.lastIndexOf(alt);
+    if (i >= 0 && /^\d*$/.test(text.slice(i + 1)) && text.length - i - 1 <= cfg.fraction)
+      dec = i;
+  }
+  if (cfg.fraction === 0)
+    dec = -1;
+  const int = (dec < 0 ? text : text.slice(0, dec)).replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  const frac = dec < 0 ? null : text.slice(dec + 1).replace(/\D/g, "").slice(0, cfg.fraction);
+  return { int, frac };
+}
+var moneyText = (int, frac, cfg) => (int ? cfg.grouping.format(BigInt(int)) : frac !== null ? "0" : "") + (frac !== null ? cfg.decimal + frac : "");
+var moneyValue = ({ int, frac }) => {
+  if (!int && !frac)
+    return "";
+  const f = (frac ?? "").replace(/0+$/, "");
+  return `${int || "0"}${f ? "." + f : ""}`;
+};
+function maskMoney(wrapper, input, cfg) {
+  const raw = input.value;
+  const caret = input.selectionStart ?? raw.length;
+  const digitsBefore = raw.slice(0, caret).replace(/\D/g, "").length;
+  const parsed = parseMoney(raw, cfg);
+  const text = moneyText(parsed.int, parsed.frac, cfg);
+  if (text !== raw) {
+    input.value = text;
+    let pos = 0;
+    for (let seen = 0;pos < text.length && seen < digitsBefore; pos++)
+      if (/\d/.test(text[pos]))
+        seen++;
+    if (text[pos] === cfg.decimal && raw.slice(0, caret).match(/[.,]$/))
+      pos++;
+    input.setSelectionRange(pos, pos);
+  }
+  wrapper._moneyExact = moneyValue(parsed);
+  writeMoneyOutput(wrapper, wrapper._moneyExact);
+}
+function commitMoney(wrapper, input, cfg, number = null, remember = true) {
+  const value = number ?? moneyValue(parseMoney(input.value, cfg));
+  if (remember)
+    wrapper._moneyExact = value === "" || !Number.isFinite(Number(value)) ? "" : String(Number(value));
+  if (value === "" || !Number.isFinite(Number(value))) {
+    input.value = "";
+    writeMoneyOutput(wrapper, "");
+    return;
+  }
+  input.value = cfg.fixed.format(Number(value));
+  writeMoneyOutput(wrapper, moneyValue(parseMoney(input.value, cfg)));
+}
+function writeMoneyOutput(wrapper, value) {
+  wrapper.dataset.value = value;
+  dfDollar10(wrapper).find("input[data-number-output]").toArray().forEach((out) => {
+    if (out.value === value)
+      return;
+    out.value = value;
+    out.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+function placeCurrencySymbol(wrapper, input, cfg) {
+  let unit = dfDollar10(wrapper).find(".number-input-unit").get(0);
+  if (!unit) {
+    unit = document.createElement("label");
+    unit.className = "number-input-unit";
+    if (input.id)
+      unit.htmlFor = input.id;
+  }
+  unit.textContent = cfg.symbol;
+  if (cfg.prefix && unit.nextElementSibling !== input)
+    input.before(unit);
+  if (!cfg.prefix && input.nextElementSibling !== unit)
+    input.after(unit);
+}
+function setupCurrency(wrapper, input) {
+  const cfg = currencyConfig(wrapper);
+  wrapper._money = cfg;
+  placeCurrencySymbol(wrapper, input, cfg);
+  input.setAttribute("inputmode", cfg.fraction > 0 ? "decimal" : "numeric");
+  if (wrapper._moneyExact !== undefined) {
+    commitMoney(wrapper, input, cfg, wrapper._moneyExact, false);
+    return;
+  }
+  const authored = (input.getAttribute("value") ?? "").trim();
+  const machine = /^\d+(\.\d+)?$/.test(authored) ? authored : moneyValue(parseMoney(authored, cfg));
+  commitMoney(wrapper, input, cfg, machine === "" ? "" : machine);
+}
+function formatDecimals(wrapper, input) {
+  const d = parseInt(wrapper.dataset.decimals ?? "", 10);
+  if (!Number.isFinite(d) || d < 0 || input.value === "")
+    return;
+  const n = input.valueAsNumber;
+  if (!Number.isFinite(n))
+    return;
+  const fixed = n.toFixed(d);
+  if (input.value !== fixed)
+    input.value = fixed;
+}
+function applyMarkup10(_el, _stateName) {}
+function triggerStateChange10(wrapper, config) {
+  const input = getInput(wrapper);
+  if (!input)
+    return;
+  if (wrapper._money) {
+    const machine = config?.number !== undefined ? config.number : config?.value;
+    if (machine === undefined)
+      return;
+    commitMoney(wrapper, input, wrapper._money, machine === "" ? "" : String(machine));
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+    return;
+  }
+  if (config?.value === undefined)
+    return;
+  input.value = String(config.value);
+  formatDecimals(wrapper, input);
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new Event("change", { bubbles: true }));
+}
+var numberInputApi = componentState({
+  component: "number-input",
+  states: numberInputStates,
+  apply: (wrapper, state) => triggerStateChange10(wrapper, state.config),
+  read: (wrapper, state) => {
+    const input = getInput(wrapper);
+    return {
+      name: wrapper.dataset.stateName || "default",
+      config: {
+        ...state.config,
+        value: input ? input.value : "",
+        ...wrapper._money ? { number: wrapper.dataset.value ?? "", currency: wrapper._money.currency, locale: wrapper._money.locale } : {}
+      }
+    };
+  },
+  markup: (el, state) => applyMarkup10(el, state.name)
+});
+df$10.numberInputApi = numberInputApi;
+df$10.numberInputStates = numberInputStates;
+function init10() {
+  dfDollar10(".number-input:not([data-init])").toArray().forEach((wrapper) => {
+    wrapper.dataset.init = "";
+    bindComponent(wrapper, numberInputApi);
+    const input = getInput(wrapper);
+    const decBtn = dfDollar10(wrapper).find('[data-action="decrement"]').get(0);
+    const incBtn = dfDollar10(wrapper).find('[data-action="increment"]').get(0);
+    if (!input)
+      return;
+    if (wrapper.hasAttribute("data-currency")) {
+      setupCurrency(wrapper, input);
+      input.addEventListener("input", (e) => {
+        if (e.isComposing)
+          return;
+        maskMoney(wrapper, input, wrapper._money);
+      });
+      input.addEventListener("blur", () => {
+        commitMoney(wrapper, input, wrapper._money);
+      });
+      const nudge = (direction) => {
+        const step = Number(input.dataset.step || 1);
+        const min = input.dataset.min === undefined ? -Infinity : Number(input.dataset.min);
+        const max = input.dataset.max === undefined ? Infinity : Number(input.dataset.max);
+        const current = Number(moneyValue(parseMoney(input.value, wrapper._money)) || 0);
+        const next = Math.min(max, Math.max(min, Math.round((current + direction * step) * 1e6) / 1e6));
+        commitMoney(wrapper, input, wrapper._money, String(next));
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          nudge(e.key === "ArrowUp" ? 1 : -1);
+        }
+      });
+      if (decBtn)
+        decBtn.addEventListener("click", () => {
+          nudge(-1);
+        });
+      if (incBtn)
+        incBtn.addEventListener("click", () => {
+          nudge(1);
+        });
+      new MutationObserver(() => {
+        setupCurrency(wrapper, input);
+      }).observe(wrapper, {
+        attributes: true,
+        attributeFilter: ["data-locale", "data-currency", "data-currency-display"]
+      });
+      return;
+    }
+    formatDecimals(wrapper, input);
+    input.addEventListener("change", () => {
+      formatDecimals(wrapper, input);
+    });
+    const update = (direction) => {
+      try {
+        if (direction > 0)
+          input.stepUp();
+        else
+          input.stepDown();
+        formatDecimals(wrapper, input);
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      } catch {}
+    };
+    if (decBtn)
+      decBtn.addEventListener("click", () => {
+        update(-1);
+      });
+    if (incBtn)
+      incBtn.addEventListener("click", () => {
+        update(1);
+      });
+  });
+}
+init10();
+new MutationObserver(init10).observe(document, { childList: true, subtree: true });
+
+// src/components/questionnaire/questionnaire/questionnaire.ts
+var df$11 = defussGlobals();
+var dfDollar11 = defussQuery();
+var questionnaireStates = ["default", "answering", "review", "submitted"];
+var LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var stepsOf = (root) => dfDollar11(root).find(".questionnaire-step[data-step]").toArray();
+var stepById = (root, id) => root._flow?.byId.get(id) ?? null;
+var titleOf = (step) => (dfDollar11(step).find(".questionnaire-title").get(0)?.textContent ?? step.dataset.step).trim();
+var controlsOf2 = (step) => dfDollar11(step).find("input[name], select[name], textarea[name]").toArray().filter((c) => c.type !== "hidden" || c.dataset.answer !== undefined);
+var isEnd = (step) => !!step && step.hasAttribute("data-end");
+function rulesOf(root) {
+  let authored = {};
+  const script = dfDollar11(root).find("script.questionnaire-rules").get(0);
+  if (script) {
+    try {
+      authored = JSON.parse(script.textContent || "{}");
+    } catch (error) {
+      console.warn(`questionnaire #${root.id}: the rules are not JSON -`, error);
+    }
+  }
+  const config = root._config || {};
+  return {
+    branches: { ...authored.branches, ...config.branches },
+    validate: { ...authored.validate, ...config.validate }
+  };
+}
+function readFlow(root) {
+  const steps = stepsOf(root);
+  const byId = new Map(steps.map((s) => [s.dataset.step, s]));
+  const blocks = [];
+  for (const step of steps) {
+    const block = step.closest(".questionnaire-block");
+    const id = block?.dataset.block || "";
+    if (!blocks.some((b) => b.id === id))
+      blocks.push({ id, title: block?.dataset.title || "", el: block });
+  }
+  root._flow = { steps, byId, blocks, rules: rulesOf(root), start: root.dataset.start || steps[0]?.dataset.step };
+}
+var operand2 = (value, answers) => value && typeof value === "object" && !Array.isArray(value) && ("field" in value) ? answers[value.field] : value;
+var lower2 = (v) => String(v ?? "").toLowerCase();
+function compare2(a, b) {
+  const na = typeof a === "number" ? a : a === "" || a == null ? NaN : Number(a);
+  const nb = typeof b === "number" ? b : b === "" || b == null ? NaN : Number(b);
+  if (!Number.isNaN(na) && !Number.isNaN(nb))
+    return na - nb;
+  const sa = String(a);
+  const sb = String(b);
+  return sa < sb ? -1 : sa > sb ? 1 : 0;
+}
+var isEmpty = (v) => v === undefined || v === null || v === "" || Array.isArray(v) && v.length === 0;
+function holds(cond, answers) {
+  const v = answers[cond.field];
+  const target = operand2(cond.value, answers);
+  switch (cond.op) {
+    case "answered":
+      return !isEmpty(v);
+    case "empty":
+      return isEmpty(v);
+    case "neq":
+      return Array.isArray(v) ? !v.includes(target) : lower2(v) !== lower2(target);
+    case "gt":
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) > 0;
+    case "gte":
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) >= 0;
+    case "lt":
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) < 0;
+    case "lte":
+      return !isEmpty(v) && !isEmpty(target) && compare2(v, target) <= 0;
+    case "in":
+      return (Array.isArray(target) ? target : [target]).some((t) => Array.isArray(v) ? v.includes(t) : lower2(v) === lower2(t));
+    case "includes":
+      return Array.isArray(v) ? v.includes(target) : lower2(v).includes(lower2(target));
+    case "contains":
+      return lower2(v).includes(lower2(target));
+    case "startsWith":
+      return lower2(v).startsWith(lower2(target));
+    case "endsWith":
+      return lower2(v).endsWith(lower2(target));
+    default:
+      return Array.isArray(v) ? v.includes(target) : lower2(v) === lower2(target);
+  }
+}
+function when(rule, answers) {
+  const w = rule.when ?? [];
+  if (Array.isArray(w))
+    return w.every((c) => holds(c, answers));
+  if (Array.isArray(w.any))
+    return w.any.some((c) => holds(c, answers));
+  if (Array.isArray(w.all))
+    return w.all.every((c) => holds(c, answers));
+  return holds(w, answers);
+}
+function gotoOf(step, answers) {
+  for (const control of controlsOf2(step)) {
+    if ((control.type === "radio" || control.type === "checkbox") && control.dataset.goto) {
+      const v = answers[control.name];
+      if (Array.isArray(v) ? v.includes(control.value) : v === control.value || control.type === "checkbox" && v === true)
+        return control.dataset.goto;
+    }
+    if (control.tagName === "SELECT") {
+      const option = [...control.options].find((o) => o.value === answers[control.name] && o.dataset.goto);
+      if (option)
+        return option.dataset.goto;
+    }
+  }
+  return null;
+}
+function nextOf2(root, stepId, answers) {
+  const step = stepById(root, stepId);
+  if (!step || isEnd(step))
+    return null;
+  const picked = gotoOf(step, answers);
+  if (picked)
+    return picked;
+  for (const rule of root._flow.rules.branches[stepId] ?? [])
+    if (when(rule, answers))
+      return rule.goto;
+  return defaultNext(root, step);
+}
+function defaultNext(root, step) {
+  if (step.dataset.next)
+    return step.dataset.next;
+  const steps = root._flow.steps;
+  return steps[steps.indexOf(step) + 1]?.dataset.step ?? null;
+}
+function edgesOf(root, step) {
+  const out = [];
+  const seen = new Set;
+  const add = (to, label, kind) => {
+    if (!to || seen.has(to))
+      return;
+    seen.add(to);
+    out.push({ to, label, kind });
+  };
+  if (isEnd(step))
+    return out;
+  let exhaustive = false;
+  const radios = controlsOf2(step).filter((c) => c.type === "radio");
+  for (const c of controlsOf2(step)) {
+    if ((c.type === "radio" || c.type === "checkbox") && c.dataset.goto)
+      add(c.dataset.goto, choiceText(c), "choice");
+    if (c.tagName === "SELECT") {
+      for (const o of c.options)
+        if (o.dataset.goto)
+          add(o.dataset.goto, o.textContent.trim(), "choice");
+    }
+  }
+  if (radios.length && radios.every((r) => r.dataset.goto) && radios.some((r) => r.required))
+    exhaustive = true;
+  for (const rule of root._flow.rules.branches[step.dataset.step] ?? [])
+    add(rule.goto, ruleText(rule), "rule");
+  if (!exhaustive)
+    add(defaultNext(root, step), "", "next");
+  return out;
+}
+var ruleText = (rule) => {
+  const w = rule.when ?? [];
+  const list = Array.isArray(w) ? w : w.any ?? w.all ?? [w];
+  return list.map((c) => `${c.field} ${c.op ?? "eq"}${c.value === undefined ? "" : " " + (typeof c.value === "object" && c.value && "field" in c.value ? c.value.field : JSON.stringify(c.value))}`).join(Array.isArray(w) || w.all ? " and " : " or ");
+};
+function choiceText(control) {
+  const label = control.closest("label") || control.id && dfDollar11(`label[for="${CSS.escape(control.id)}"]`).get(0);
+  if (!label)
+    return control.value;
+  const own = dfDollar11(label).find(".questionnaire-choice-label").get(0);
+  return (own ?? label).textContent.trim() || control.getAttribute("aria-label") || control.value;
+}
+function reachable(root, answers, skipped) {
+  const seen = new Set;
+  const stack = [root._flow.start];
+  while (stack.length) {
+    const id = stack.pop();
+    if (!id || seen.has(id))
+      continue;
+    seen.add(id);
+    const step = stepById(root, id);
+    if (!step || isEnd(step))
+      continue;
+    if (skipped.includes(id))
+      stack.push(defaultNext(root, step));
+    else if (answeredStep(step, answers))
+      stack.push(nextOf2(root, id, answers));
+    else
+      for (const e of edgesOf(root, step))
+        stack.push(e.to);
+  }
+  return seen;
+}
+var answeredStep = (step, answers) => {
+  const names = [...new Set(controlsOf2(step).map((c) => c.name))];
+  return names.length === 0 || names.some((n) => !isEmpty(answers[n]));
+};
+function readStep(step) {
+  const out = {};
+  const groups = new Map;
+  for (const c of controlsOf2(step)) {
+    if (!groups.has(c.name))
+      groups.set(c.name, []);
+    groups.get(c.name).push(c);
+  }
+  for (const [name, list] of groups) {
+    const first = list[0];
+    let value;
+    if (first.type === "radio")
+      value = list.find((c) => c.checked)?.value ?? null;
+    else if (first.type === "checkbox")
+      value = list.length > 1 || first.dataset.multiple !== undefined ? list.filter((c) => c.checked).map((c) => c.value) : first.checked;
+    else if (first.tagName === "SELECT" && first.multiple)
+      value = [...first.selectedOptions].map((o) => o.value);
+    else if (first.type === "number" || first.type === "range")
+      value = first.value === "" ? null : Number(first.value);
+    else
+      value = first.value;
+    out[name] = value;
+  }
+  return out;
+}
+function writeStep(step, answers) {
+  for (const c of controlsOf2(step)) {
+    const v = answers[c.name];
+    if (c.type === "radio")
+      c.checked = v === c.value;
+    else if (c.type === "checkbox")
+      c.checked = Array.isArray(v) ? v.includes(c.value) : v === true;
+    else if (c.tagName === "SELECT" && c.multiple)
+      for (const o of c.options)
+        o.selected = Array.isArray(v) && v.includes(o.value);
+    else
+      c.value = v == null ? "" : String(v);
+  }
+}
+function mergeAnswers(answers, stepAnswers) {
+  const next = { ...answers };
+  for (const [k, v] of Object.entries(stepAnswers)) {
+    if (isEmpty(v) || v === false)
+      delete next[k];
+    else
+      next[k] = v;
+  }
+  return next;
+}
+function clearStep(step, answers) {
+  const next = { ...answers };
+  for (const c of controlsOf2(step))
+    delete next[c.name];
+  writeStep(step, next);
+  return next;
+}
+function invalidOf(root, step, answers) {
+  for (const c of controlsOf2(step)) {
+    if (!c.checkValidity())
+      return { control: c, message: c.validationMessage };
+  }
+  const boxes = controlsOf2(step).filter((c) => c.type === "checkbox");
+  const min = Number(step.dataset.min || 0);
+  const max = Number(step.dataset.max || Infinity);
+  if (boxes.length && (min || Number.isFinite(max))) {
+    const n = boxes.filter((c) => c.checked).length;
+    if (n < min)
+      return { control: boxes[0], message: min === 1 ? "Choose at least one." : `Choose at least ${min}.` };
+    if (n > max)
+      return { control: boxes[0], message: `Choose at most ${max}.` };
+  }
+  const id = step.dataset.step;
+  const rules = root._flow.rules.validate[id];
+  if (Array.isArray(rules)) {
+    for (const rule of rules) {
+      const asserts = rule.assert ?? [];
+      const ok = Array.isArray(asserts) ? asserts.every((c) => holds(c, answers)) : when({ when: asserts }, answers);
+      if (!ok)
+        return {
+          control: rule.field ? controlsOf2(step).find((c) => c.name === rule.field) : null,
+          message: rule.message || "Check this answer."
+        };
+    }
+  } else if (typeof rules === "function") {
+    const message = rules(answers, readStep(step));
+    if (message)
+      return { control: null, message: String(message) };
+  }
+  return null;
+}
+function errorEl(step) {
+  let el = dfDollar11(step).find(".questionnaire-error").get(0);
+  if (!el) {
+    el = document.createElement("p");
+    el.className = "questionnaire-error";
+    el.id = `${step.closest(".questionnaire").id || "questionnaire"}-${step.dataset.step}-error`;
+    el.setAttribute("role", "alert");
+    el.hidden = true;
+    dfDollar11(step).append(el);
+  }
+  return el;
+}
+function showInvalid(step, problem) {
+  const el = errorEl(step);
+  el.textContent = problem.message;
+  el.hidden = false;
+  step.setAttribute("aria-invalid", "true");
+  step.setAttribute("aria-describedby", el.id);
+  const target = problem.control || controlsOf2(step)[0];
+  if (target) {
+    target.setAttribute("aria-invalid", "true");
+    target.focus({ preventScroll: false });
+  }
+}
+function clearInvalid(step) {
+  const el = dfDollar11(step).find(".questionnaire-error").get(0);
+  if (el) {
+    el.hidden = true;
+    el.textContent = "";
+  }
+  step.removeAttribute("aria-invalid");
+  for (const c of controlsOf2(step))
+    c.removeAttribute("aria-invalid");
+}
+var cfgOf = (root) => root._walk;
+function landed(root, walk) {
+  if (walk.submitted)
+    return "submitted";
+  if (isEnd(stepById(root, walk.step)))
+    return "review";
+  return walk.index === 0 && walk.step === root._flow.start ? "default" : "answering";
+}
+function applyMarkup11(root, state) {
+  const config = state.config || {};
+  const steps = stepsOf(root);
+  const start = root.dataset.start || steps[0]?.dataset.step;
+  let current = config.step || start;
+  if (state.name === "default")
+    current = start;
+  if (state.name === "review" && !isEnd(steps.find((s) => s.dataset.step === current)))
+    current = steps.find((s) => s.hasAttribute("data-end"))?.dataset.step ?? current;
+  const submitted = state.name === "submitted";
+  const step = steps.find((s) => s.dataset.step === current);
+  for (const s of steps)
+    dfDollar11(s).attr("hidden", !submitted && s === step ? null : "");
+  for (const block of dfDollar11(root).find(".questionnaire-block").toArray()) {
+    dfDollar11(block).attr("hidden", !submitted && step && block.contains(step) ? null : "");
+  }
+  const button = (name) => dfDollar11(root).find(`[data-questionnaire="${name}"]`).toArray();
+  const end = isEnd(step);
+  for (const b of button("back"))
+    dfDollar11(b).attr("hidden", submitted || state.name === "default" ? "" : null);
+  for (const b of button("next"))
+    dfDollar11(b).attr("hidden", submitted || end ? "" : null);
+  for (const b of button("submit"))
+    dfDollar11(b).attr("hidden", submitted || !end ? "" : null);
+  for (const b of button("skip"))
+    dfDollar11(b).attr("hidden", submitted || !step?.hasAttribute("data-optional") ? "" : null);
+  for (const n of dfDollar11(root).find(".questionnaire-actions").toArray())
+    dfDollar11(n).attr("hidden", submitted ? "" : null);
+  for (const c of dfDollar11(root).find(".questionnaire-complete").toArray())
+    dfDollar11(c).attr("hidden", submitted ? null : "");
+  dfDollar11(root).attr("data-state", state.name);
+}
+function remainingFrom(root, id) {
+  const queue = [[id, 0]];
+  const seen = new Set([id]);
+  while (queue.length) {
+    const [at, d] = queue.shift();
+    const step = stepById(root, at);
+    if (!step || isEnd(step))
+      return d;
+    for (const e of edgesOf(root, step)) {
+      if (!seen.has(e.to)) {
+        seen.add(e.to);
+        queue.push([e.to, d + 1]);
+      }
+    }
+  }
+  return 0;
+}
+function remainingBranches(root, id) {
+  const seen = new Set;
+  const stack = [id];
+  while (stack.length) {
+    const at = stack.pop();
+    if (seen.has(at))
+      continue;
+    seen.add(at);
+    const step = stepById(root, at);
+    if (!step)
+      continue;
+    const out = edgesOf(root, step);
+    if (out.length > 1)
+      return true;
+    for (const e of out)
+      stack.push(e.to);
+  }
+  return false;
+}
+function renderProgress(root) {
+  const host = dfDollar11(root).find(".questionnaire-progress").get(0);
+  if (!host)
+    return;
+  const walk = cfgOf(root);
+  if (!host._built) {
+    host._built = true;
+    const bar = document.createElement("progress");
+    bar.className = "questionnaire-bar";
+    bar.max = 100;
+    const label = document.createElement("span");
+    label.className = "questionnaire-progress-label";
+    const blocks = document.createElement("ol");
+    blocks.className = "questionnaire-blocks";
+    for (const b of root._flow.blocks) {
+      if (!b.title)
+        continue;
+      const li = document.createElement("li");
+      li.className = "questionnaire-block-chip";
+      li.dataset.block = b.id;
+      li.textContent = b.title;
+      blocks.append(li);
+    }
+    host.append(label, bar);
+    if (blocks.children.length)
+      host.append(blocks);
+  }
+  const done = walk.submitted ? walk.history.length : walk.index;
+  const remaining = walk.submitted ? 0 : remainingFrom(root, walk.step);
+  const endNow = isEnd(stepById(root, walk.step));
+  const total = Math.max(1, done + remaining);
+  const percent = walk.submitted || endNow ? 100 : Math.round(done / total * 100);
+  const bar = dfDollar11(host).find(".questionnaire-bar").get(0);
+  bar.value = percent;
+  bar.setAttribute("aria-label", `${percent}% done`);
+  const label = dfDollar11(host).find(".questionnaire-progress-label").get(0);
+  const branchy = remainingBranches(root, walk.step);
+  label.textContent = walk.submitted ? "Done" : endNow ? "Review your answers" : `Question ${done + 1} of ${branchy ? "about " : ""}${total}`;
+  const currentBlock = stepById(root, walk.step)?.closest(".questionnaire-block")?.dataset.block;
+  const visitedBlocks = new Set(walk.history.slice(0, walk.index).map((id) => stepById(root, id)?.closest(".questionnaire-block")?.dataset.block));
+  for (const chip of dfDollar11(host).find(".questionnaire-block-chip").toArray()) {
+    const id = chip.dataset.block;
+    const status = walk.submitted ? "done" : id === currentBlock ? "current" : visitedBlocks.has(id) ? "done" : "upcoming";
+    chip.dataset.status = status;
+    if (status === "current")
+      chip.setAttribute("aria-current", "step");
+    else
+      chip.removeAttribute("aria-current");
+  }
+}
+function renderTrail(root) {
+  const host = dfDollar11(root).find(".questionnaire-trail").get(0) || root.id && dfDollar11(`.questionnaire-trail[data-for="${CSS.escape(root.id)}"]`).get(0);
+  if (!host)
+    return;
+  if (!root.contains(host) && !host._wired) {
+    host._wired = true;
+    host.addEventListener("click", (e) => {
+      const go = e.target.closest?.("[data-questionnaire-go]")?.dataset.questionnaireGo;
+      if (go)
+        goTo(root, go);
+    });
+  }
+  const walk = cfgOf(root);
+  host.textContent = "";
+  const list = document.createElement("ol");
+  list.className = "questionnaire-trail-list";
+  walk.history.forEach((id, i) => {
+    const step = stepById(root, id);
+    if (!step || isEnd(step))
+      return;
+    const li = document.createElement("li");
+    li.dataset.status = i < walk.index ? "done" : i === walk.index ? "current" : "ahead";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "questionnaire-trail-item";
+    button.dataset.questionnaireGo = id;
+    if (i === walk.index)
+      button.setAttribute("aria-current", "step");
+    const q = document.createElement("span");
+    q.className = "questionnaire-trail-question";
+    q.textContent = titleOf(step);
+    const a = document.createElement("span");
+    a.className = "questionnaire-trail-answer";
+    a.textContent = answerText2(root, step, walk.answers) || (walk.skipped.includes(id) ? "Skipped" : "—");
+    button.append(q, a);
+    li.append(button);
+    list.append(li);
+  });
+  host.append(list);
+}
+function answerText2(root, step, answers) {
+  const parts = [];
+  const names = [...new Set(controlsOf2(step).map((c) => c.name))];
+  for (const name of names) {
+    const v = answers[name];
+    if (isEmpty(v))
+      continue;
+    const controls = controlsOf2(step).filter((c) => c.name === name);
+    const first = controls[0];
+    if (first.type === "radio" || first.type === "checkbox") {
+      const picked = controls.filter((c) => Array.isArray(v) ? v.includes(c.value) : v === c.value || v === true);
+      parts.push(picked.map(choiceText).join(", "));
+    } else if (first.tagName === "SELECT") {
+      const values = Array.isArray(v) ? v : [v];
+      parts.push([...first.options].filter((o) => values.includes(o.value)).map((o) => o.textContent.trim()).join(", "));
+    } else
+      parts.push(String(v));
+  }
+  return parts.filter(Boolean).join(" · ");
+}
+function renderSummary(root) {
+  const walk = cfgOf(root);
+  const step = stepById(root, walk.step);
+  const host = step && dfDollar11(step).find(".questionnaire-summary").get(0);
+  if (!host)
+    return;
+  host.textContent = "";
+  const list = document.createElement("dl");
+  list.className = "questionnaire-summary-list";
+  for (const id of walk.history.slice(0, walk.index)) {
+    const s = stepById(root, id);
+    if (!s || isEnd(s) || !controlsOf2(s).length)
+      continue;
+    const row = document.createElement("div");
+    row.className = "questionnaire-summary-row";
+    const dt = document.createElement("dt");
+    dt.textContent = titleOf(s);
+    const dd = document.createElement("dd");
+    const text = document.createElement("span");
+    text.textContent = answerText2(root, s, walk.answers) || "Skipped";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "questionnaire-edit";
+    edit.dataset.questionnaireGo = id;
+    edit.textContent = "Edit";
+    edit.setAttribute("aria-label", `Edit: ${titleOf(s)}`);
+    dd.append(text, edit);
+    row.append(dt, dd);
+    list.append(row);
+  }
+  host.append(list);
+}
+function notify(root, text, action) {
+  let host = dfDollar11(root).find(".questionnaire-notice").get(0);
+  if (!host) {
+    host = document.createElement("div");
+    host.className = "questionnaire-notice";
+    host.setAttribute("role", "status");
+    const first = dfDollar11(root).find(".questionnaire-block, .questionnaire-step").get(0);
+    if (first)
+      dfDollar11(first).before(host);
+    else
+      dfDollar11(root).append(host);
+  }
+  host.textContent = "";
+  if (!text) {
+    host.hidden = true;
+    return;
+  }
+  host.hidden = false;
+  const span = document.createElement("span");
+  span.textContent = text;
+  host.append(span);
+  if (action) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "questionnaire-notice-action";
+    b.dataset.questionnaire = action.name;
+    b.textContent = action.label;
+    host.append(b);
+  }
+}
+function keyHints(root) {
+  if (root.dataset.shortcuts === "none")
+    return;
+  for (const step of root._flow.steps) {
+    const choices = dfDollar11(step).find(".questionnaire-choice").toArray();
+    choices.forEach((choice, i) => {
+      if (!choice.dataset.key)
+        choice.dataset.key = root.dataset.shortcuts === "digits" ? String(i + 1) : LETTERS[i] ?? "";
+    });
+  }
+}
+function paint(root) {
+  renderProgress(root);
+  renderTrail(root);
+  renderSummary(root);
+}
+function record(root, name) {
+  const walk = cfgOf(root);
+  const config = {
+    step: walk.step,
+    answers: walk.answers,
+    history: walk.history,
+    index: walk.index,
+    skipped: walk.skipped
+  };
+  if (root.store)
+    questionnaireApi.commit(root, name ?? landed(root, walk), config);
+  if (root._draft)
+    root._draft.set(walk.submitted ? null : config);
+}
+function show(root, id, focus = true) {
+  const walk = cfgOf(root);
+  const step = stepById(root, id);
+  if (!step)
+    return;
+  walk.step = id;
+  walk.entered = readStep(step);
+  const name = landed(root, walk);
+  applyMarkup11(root, { name, config: { step: id } });
+  root.dataset.stateName = name;
+  clearInvalid(step);
+  paint(root);
+  if (focus) {
+    const target = controlsOf2(step).find((c) => c.type !== "radio" || c.checked) || controlsOf2(step)[0] || dfDollar11(root).find('[data-questionnaire="submit"]').get(0);
+    target?.focus({ preventScroll: true });
+    step.scrollIntoView?.({ block: "nearest" });
+  }
+}
+function advance(root, { skip = false } = {}) {
+  const walk = cfgOf(root);
+  const step = stepById(root, walk.step);
+  if (!step || isEnd(step))
+    return false;
+  const before = walk.answers;
+  const mine = readStep(step);
+  let answers = skip ? clearStep(step, before) : mergeAnswers(before, mine);
+  if (!skip) {
+    const problem = invalidOf(root, step, answers);
+    if (problem) {
+      showInvalid(step, problem);
+      root.dispatchEvent(new CustomEvent("questionnaire-invalid", {
+        bubbles: true,
+        detail: { step: walk.step, message: problem.message }
+      }));
+      return false;
+    }
+  }
+  clearInvalid(step);
+  const skipped = skip ? [...new Set([...walk.skipped, walk.step])] : walk.skipped.filter((s) => s !== walk.step);
+  const was = mergeAnswers({}, walk.entered || {});
+  const now = mergeAnswers({}, skip ? {} : mine);
+  const changed = Object.keys({ ...was, ...now }).filter((k) => JSON.stringify(was[k]) !== JSON.stringify(now[k]));
+  const to = skip ? defaultNext(root, step) : nextOf2(root, walk.step, answers);
+  if (!to || !stepById(root, to)) {
+    console.warn(`questionnaire #${root.id}: step "${walk.step}" leads nowhere (${to ?? "no next step"})`);
+    return false;
+  }
+  const ahead = walk.history[walk.index + 1];
+  let history = walk.history;
+  if (ahead !== to || changed.length)
+    history = [...walk.history.slice(0, walk.index + 1), to];
+  const cleared = [];
+  if (changed.length) {
+    for (const s of root._flow.steps) {
+      const deps = (s.dataset.dependsOn || "").split(",").map((x) => x.trim()).filter(Boolean);
+      if (s !== step && deps.some((d) => changed.includes(d)) && answeredStep(s, answers) && controlsOf2(s).length) {
+        answers = clearStep(s, answers);
+        cleared.push(s.dataset.step);
+      }
+    }
+    const path = reachable(root, answers, skipped);
+    for (const s of root._flow.steps) {
+      const id = s.dataset.step;
+      if (path.has(id) || !controlsOf2(s).length || !answeredStep(s, answers) || cleared.includes(id))
+        continue;
+      answers = clearStep(s, answers);
+      cleared.push(id);
+    }
+  }
+  walk.answers = answers;
+  walk.skipped = skipped.filter((s) => !cleared.includes(s));
+  walk.history = history;
+  walk.index += 1;
+  if (cleared.length) {
+    notify(root, `${cleared.length === 1 ? "1 later answer was" : cleared.length + " later answers were"} cleared - they depended on "${titleOf(step)}".`);
+    root.dispatchEvent(new CustomEvent("questionnaire-invalidate", {
+      bubbles: true,
+      detail: { cause: walk.step, changed, cleared }
+    }));
+  } else
+    notify(root, "");
+  show(root, to);
+  record(root);
+  root.dispatchEvent(new CustomEvent("questionnaire-step", {
+    bubbles: true,
+    detail: { step: to, from: history[walk.index - 1], answers }
+  }));
+  return true;
+}
+function back(root) {
+  const walk = cfgOf(root);
+  if (walk.index <= 0)
+    return false;
+  const step = stepById(root, walk.step);
+  if (step && !isEnd(step))
+    walk.answers = mergeAnswers(walk.answers, readStep(step));
+  walk.index -= 1;
+  show(root, walk.history[walk.index]);
+  record(root);
+  return true;
+}
+function goTo(root, id) {
+  const walk = cfgOf(root);
+  const at = walk.history.indexOf(id);
+  if (at < 0)
+    return false;
+  walk.index = at;
+  show(root, id);
+  record(root);
+  return true;
+}
+function restart(root) {
+  const walk = cfgOf(root);
+  for (const s of root._flow.steps)
+    writeStep(s, {});
+  walk.answers = {};
+  walk.history = [root._flow.start];
+  walk.index = 0;
+  walk.skipped = [];
+  walk.submitted = false;
+  notify(root, "");
+  show(root, root._flow.start);
+  record(root, "default");
+}
+async function submit(root) {
+  const walk = cfgOf(root);
+  if (!isEnd(stepById(root, walk.step)))
+    return advance(root);
+  const path = new Set(walk.history.slice(0, walk.index + 1));
+  const names = new Set(root._flow.steps.filter((s) => path.has(s.dataset.step)).flatMap((s) => controlsOf2(s).map((c) => c.name)));
+  const answers = Object.fromEntries(Object.entries(walk.answers).filter(([k]) => names.has(k)));
+  const onSubmit = root._config?.onSubmit;
+  root.toggleAttribute("data-busy", true);
+  try {
+    if (onSubmit)
+      await onSubmit(answers, { history: walk.history.slice(0, walk.index + 1) });
+  } catch (error) {
+    root.removeAttribute("data-busy");
+    notify(root, `Could not send: ${error?.message || error}`);
+    return false;
+  }
+  root.removeAttribute("data-busy");
+  walk.submitted = true;
+  applyMarkup11(root, { name: "submitted", config: { step: walk.step } });
+  root.dataset.stateName = "submitted";
+  notify(root, "");
+  paint(root);
+  record(root, "submitted");
+  root.dispatchEvent(new CustomEvent("questionnaire-submit", {
+    bubbles: true,
+    detail: { answers, history: walk.history.slice(0, walk.index + 1) }
+  }));
+  return true;
+}
+function triggerStateChange11(root, state, incoming) {
+  const walk = cfgOf(root);
+  if (!walk)
+    return;
+  if (incoming.answers && typeof incoming.answers === "object") {
+    walk.answers = { ...incoming.answers };
+    for (const s of root._flow.steps)
+      writeStep(s, walk.answers);
+  }
+  walk.submitted = false;
+  const go = (id) => {
+    if (!stepById(root, id))
+      return;
+    const at = walk.history.indexOf(id);
+    if (at >= 0)
+      walk.index = at;
+    else {
+      walk.history = [...walk.history.slice(0, walk.index + 1), id];
+      walk.index = walk.history.length - 1;
+    }
+    walk.step = id;
+  };
+  switch (state.name) {
+    case "default":
+      walk.index = 0;
+      walk.history = walk.history.length ? walk.history : [root._flow.start];
+      walk.step = walk.history[0];
+      break;
+    case "answering":
+      if (incoming.step)
+        go(incoming.step);
+      else if (walk.index === 0)
+        go(nextOf2(root, walk.step, walk.answers) || defaultNext(root, stepById(root, walk.step)));
+      break;
+    case "review": {
+      const end = incoming.step && isEnd(stepById(root, incoming.step)) ? incoming.step : root._flow.steps.find(isEnd)?.dataset.step;
+      if (end)
+        go(end);
+      break;
+    }
+    case "submitted":
+      walk.submitted = true;
+      break;
+  }
+  const name = landed(root, walk);
+  applyMarkup11(root, { name, config: { step: walk.step } });
+  root.dataset.stateName = name;
+  paint(root);
+  if (root._draft)
+    root._draft.set(walk.submitted ? null : { step: walk.step, answers: walk.answers, history: walk.history, index: walk.index, skipped: walk.skipped });
+}
+var questionnaireApi = componentState({
+  component: "questionnaire",
+  states: questionnaireStates,
+  mergeConfig: true,
+  apply: (root, state, _previous, incoming) => triggerStateChange11(root, state, incoming),
+  read: (root, state) => {
+    const walk = cfgOf(root);
+    if (!walk)
+      return state;
+    return {
+      name: landed(root, walk),
+      config: {
+        ...state.config,
+        step: walk.step,
+        answers: walk.answers,
+        history: walk.history,
+        index: walk.index,
+        skipped: walk.skipped
+      }
+    };
+  },
+  markup: (el, state) => applyMarkup11(el, state)
+});
+df$11.questionnaireApi = questionnaireApi;
+df$11.questionnaireStates = questionnaireStates;
+function analyze(root) {
+  const errors = [];
+  const warnings = [];
+  const steps = root._flow.steps;
+  const ids = new Set(steps.map((s) => s.dataset.step));
+  const edges = new Map(steps.map((s) => [s.dataset.step, edgesOf(root, s)]));
+  const start = root._flow.start;
+  if (!ids.has(start))
+    errors.push(`the start step "${start}" does not exist`);
+  for (const [from, list] of edges)
+    for (const e of list)
+      if (!ids.has(e.to))
+        errors.push(`"${from}" leads to "${e.to}", which does not exist`);
+  for (const s of steps)
+    if (!isEnd(s) && !(edges.get(s.dataset.step) || []).length)
+      errors.push(`"${s.dataset.step}" is a dead end - give it a next step or data-end`);
+  if (!steps.some(isEnd))
+    errors.push("no step is an end (data-end)");
+  const color = new Map;
+  const stack = [];
+  const visit = (id) => {
+    color.set(id, 1);
+    stack.push(id);
+    for (const e of edges.get(id) || []) {
+      if (!ids.has(e.to))
+        continue;
+      if (color.get(e.to) === 1)
+        errors.push(`a cycle: ${[...stack.slice(stack.indexOf(e.to)), e.to].join(" → ")}`);
+      else if (!color.get(e.to))
+        visit(e.to);
+    }
+    stack.pop();
+    color.set(id, 2);
+  };
+  if (ids.has(start))
+    visit(start);
+  for (const s of steps)
+    if (!color.get(s.dataset.step))
+      warnings.push(`"${s.dataset.step}" is unreachable from "${start}"`);
+  if (ids.has(start) && ![...color.keys()].some((id) => isEnd(stepById(root, id))))
+    errors.push(`no end can be reached from "${start}"`);
+  const fieldOwner = new Map;
+  for (const s of steps)
+    for (const c of controlsOf2(s))
+      fieldOwner.set(c.name, s.dataset.step);
+  const fieldsIn = (w) => (Array.isArray(w) ? w : w?.any ?? w?.all ?? (w ? [w] : [])).flatMap((c) => [c.field, c.value && typeof c.value === "object" && "field" in c.value ? c.value.field : null]).filter(Boolean);
+  for (const [id, rules] of Object.entries(root._flow.rules.branches)) {
+    if (!ids.has(id))
+      errors.push(`branches for "${id}", which does not exist`);
+    for (const rule of rules)
+      for (const f of fieldsIn(rule.when))
+        if (!fieldOwner.has(f))
+          errors.push(`a branch on "${id}" reads "${f}", which no step asks`);
+  }
+  for (const [id, rules] of Object.entries(root._flow.rules.validate)) {
+    if (!ids.has(id))
+      errors.push(`validation for "${id}", which does not exist`);
+    if (Array.isArray(rules)) {
+      for (const rule of rules)
+        for (const f of fieldsIn(rule.assert))
+          if (!fieldOwner.has(f))
+            errors.push(`an assertion on "${id}" reads "${f}", which no step asks`);
+    }
+  }
+  for (const s of steps)
+    for (const d of (s.dataset.dependsOn || "").split(",").map((x) => x.trim()).filter(Boolean)) {
+      if (!fieldOwner.has(d))
+        errors.push(`"${s.dataset.step}" depends on "${d}", which no step asks`);
+    }
+  {
+    const reach = [...color.keys()];
+    const preds = new Map(reach.map((id) => [id, []]));
+    for (const id of reach)
+      for (const e of edges.get(id) || [])
+        if (preds.has(e.to))
+          preds.get(e.to).push(id);
+    const all = new Set(reach);
+    const dom = new Map(reach.map((id) => [id, id === start ? new Set([start]) : new Set(all)]));
+    for (let changed = true;changed; ) {
+      changed = false;
+      for (const id of reach) {
+        if (id === start)
+          continue;
+        const ps = preds.get(id);
+        const inter = new Set(ps.length ? ps.map((p) => dom.get(p)).reduce((a, b) => new Set([...a].filter((x) => b.has(x)))) : []);
+        inter.add(id);
+        if (inter.size !== dom.get(id).size) {
+          dom.set(id, inter);
+          changed = true;
+        }
+      }
+    }
+    const required = (id) => controlsOf2(stepById(root, id)).filter((c) => c.required).map((c) => c.name);
+    const guaranteed = (id) => new Set([...dom.get(id) ?? []].filter((d) => d !== id).flatMap(required));
+    const reads = (id, field, what) => {
+      if (fieldOwner.has(field) && fieldOwner.get(field) !== id && dom.has(id) && !guaranteed(id).has(field))
+        warnings.push(`${what} on "${id}" reads "${field}" - a path can reach "${id}" without it`);
+    };
+    for (const [id, rules] of Object.entries(root._flow.rules.branches))
+      for (const rule of rules)
+        for (const f of fieldsIn(rule.when))
+          reads(id, f, "a branch");
+    for (const [id, rules] of Object.entries(root._flow.rules.validate))
+      if (Array.isArray(rules))
+        for (const rule of rules)
+          for (const f of fieldsIn(rule.assert))
+            reads(id, f, "an assertion");
+  }
+  const nodes = steps.map((s) => ({
+    id: s.dataset.step,
+    title: titleOf(s),
+    end: isEnd(s),
+    block: s.closest(".questionnaire-block")?.dataset.block || ""
+  }));
+  const list = [...edges].flatMap(([from, l]) => l.map((e) => ({ from, ...e })));
+  return {
+    ok: errors.length === 0,
+    errors: [...new Set(errors)],
+    warnings: [...new Set(warnings)],
+    nodes,
+    edges: list
+  };
+}
+function toMermaid(root) {
+  const { nodes, edges } = analyze(root);
+  const walk = cfgOf(root);
+  const visited = new Set(walk ? walk.history.slice(0, walk.index + 1) : []);
+  const safe = (id) => "q_" + id.replace(/[^A-Za-z0-9_]/g, "_");
+  const text = (t) => t.replace(/["\n]/g, " ").slice(0, 48);
+  const lines = ["flowchart TD"];
+  for (const n of nodes)
+    lines.push(`  ${safe(n.id)}${n.end ? `(["${text(n.title)}"])` : `["${text(n.title)}"]`}`);
+  const styled = [];
+  edges.forEach((e, i) => {
+    lines.push(`  ${safe(e.from)} -->${e.label ? `|"${text(e.label)}"|` : ""} ${safe(e.to)}`);
+    const a = walk?.history.indexOf(e.from) ?? -1;
+    if (a >= 0 && a < (walk?.index ?? 0) && walk.history[a + 1] === e.to)
+      styled.push(i);
+  });
+  lines.push("  classDef visited stroke-width:2px;");
+  lines.push("  classDef current stroke-width:3px,stroke-dasharray:4 2;");
+  const done = [...visited].filter((id) => id !== walk?.step);
+  if (done.length)
+    lines.push(`  class ${done.map(safe).join(",")} visited;`);
+  if (walk)
+    lines.push(`  class ${safe(walk.step)} current;`);
+  if (styled.length)
+    lines.push(`  linkStyle ${styled.join(",")} stroke-width:3px;`);
+  return lines.join(`
+`);
+}
+function toDiagram(root, { title = "" } = {}) {
+  const { nodes, edges } = analyze(root);
+  const walk = cfgOf(root);
+  const start = root._flow.start;
+  const rank = new Map([[start, 0]]);
+  for (let pass = 0;pass <= nodes.length; pass++) {
+    let moved = false;
+    for (const e of edges) {
+      if (!rank.has(e.from))
+        continue;
+      const r = rank.get(e.from) + 1;
+      if ((rank.get(e.to) ?? -1) < r) {
+        rank.set(e.to, r);
+        moved = true;
+      }
+    }
+    if (!moved)
+      break;
+  }
+  let bottom = Math.max(0, ...rank.values());
+  for (const n of nodes)
+    if (!rank.has(n.id))
+      rank.set(n.id, ++bottom);
+  const rows = new Map;
+  for (const n of nodes) {
+    const r = rank.get(n.id);
+    if (!rows.has(r))
+      rows.set(r, []);
+    rows.get(r).push(n.id);
+  }
+  const cols = Math.max(1, ...[...rows.values()].map((ids) => ids.length));
+  const col = new Map;
+  for (const ids of rows.values())
+    ids.forEach((id, i) => col.set(id, Math.floor((cols - ids.length) / 2) + i + 1));
+  const taken = walk ? walk.history.slice(0, walk.index + 1) : [];
+  const walked = new Set(taken.slice(1).map((to, i) => `${taken[i]}->${to}`));
+  const last = taken.length > 1 ? `${taken[taken.length - 2]}->${taken[taken.length - 1]}` : "";
+  return {
+    type: "flow",
+    ...title ? { title } : {},
+    cols,
+    interactive: true,
+    nodes: nodes.map((n) => ({
+      id: n.id,
+      name: n.title || n.id,
+      ...n.id === start ? { eyebrow: "Start" } : n.end ? { eyebrow: "End" } : {},
+      col: col.get(n.id),
+      row: rank.get(n.id) + 1,
+      ...n.end ? { shape: "pill" } : {},
+      ...walk && n.id === walk.step ? { tone: "accent" } : taken.includes(n.id) ? { tone: "muted" } : {}
+    })),
+    edges: edges.map((e) => {
+      const ref = `${e.from}->${e.to}`;
+      return {
+        from: e.from,
+        to: e.to,
+        ...e.label ? { label: e.label } : {},
+        ...rank.get(e.to) - rank.get(e.from) > 1 && col.get(e.to) === col.get(e.from) ? { curve: "around" } : {},
+        ...walked.has(ref) ? { tone: "accent" } : { line: "dashed" },
+        ...ref === last ? { flow: true } : {}
+      };
+    })
+  };
+}
+function linkDiagram(root, figure) {
+  const diagram = df$11.diagram;
+  if (!diagram?.build)
+    throw new Error("questionnaire.linkDiagram: the diagram component is not loaded (df$.shadcn.diagram)");
+  figure._questionnaireUnlink?.();
+  let syncing = false;
+  let drawn = "";
+  const focus = () => {
+    syncing = true;
+    try {
+      if (figure.api?.getState().name === "active")
+        figure.api.setState("default");
+    } finally {
+      syncing = false;
+    }
+  };
+  const draw = () => {
+    const walk = cfgOf(root);
+    if (!walk)
+      return;
+    const key = `${walk.step}|${walk.history.join(",")}|${walk.index}`;
+    if (key === drawn)
+      return;
+    drawn = key;
+    diagram.build(figure, toDiagram(root, { title: figure.getAttribute("aria-label") || "" }));
+    focus();
+  };
+  const refuse = (to, reason) => {
+    const walk = cfgOf(root);
+    focus();
+    const step = stepById(root, walk.step);
+    const target = stepById(root, to);
+    if (reason === "unreached")
+      notify(root, `"${target ? titleOf(target) : to}" is not reachable yet - answer "${step ? titleOf(step) : walk.step}" first.`);
+    root.dispatchEvent(new CustomEvent("questionnaire-jump-refused", {
+      bubbles: true,
+      detail: { to, step: walk.step, reason }
+    }));
+  };
+  const onActivate = (e) => {
+    if (syncing)
+      return;
+    const walk = cfgOf(root);
+    const to = e.detail?.kind === "node" ? e.detail.ref : null;
+    if (!walk || !to || to === walk.step)
+      return void focus();
+    if (walk.history.includes(to))
+      return void goTo(root, to);
+    const step = stepById(root, walk.step);
+    const answers = step && !isEnd(step) ? mergeAnswers(walk.answers, readStep(step)) : walk.answers;
+    if (to === nextOf2(root, walk.step, answers)) {
+      if (!advance(root))
+        refuse(to, "invalid");
+      return;
+    }
+    refuse(to, "unreached");
+  };
+  dfDollar11(figure).on("diagram-activate", onActivate);
+  const off = root.store.subscribe(draw);
+  draw();
+  const unlink = () => {
+    off?.();
+    dfDollar11(figure).off("diagram-activate", onActivate);
+    delete figure._questionnaireUnlink;
+  };
+  figure._questionnaireUnlink = unlink;
+  return unlink;
+}
+var resolve4 = (target) => typeof target === "string" ? dfDollar11(target).get(0) : target;
+df$11.questionnaire = {
+  configure(target, config = {}) {
+    const root = resolve4(target);
+    root._config = { ...root._config, ...config };
+    if (root._flow)
+      root._flow.rules = rulesOf(root);
+    if (config.persist && root._walk)
+      attachDraft(root, config.persist);
+  },
+  next: (target) => advance(resolve4(target)),
+  test: (condition, answers) => when({ when: condition }, answers ?? {}),
+  back: (target) => back(resolve4(target)),
+  skip: (target) => advance(resolve4(target), { skip: true }),
+  goTo: (target, id) => goTo(resolve4(target), id),
+  restart: (target) => restart(resolve4(target)),
+  submit: (target) => submit(resolve4(target)),
+  answers: (target) => ({ ...cfgOf(resolve4(target))?.answers }),
+  history: (target) => {
+    const walk = cfgOf(resolve4(target));
+    return walk ? walk.history.slice(0, walk.index + 1) : [];
+  },
+  nextOf: (target, stepId, answers) => nextOf2(resolve4(target), stepId, answers ?? cfgOf(resolve4(target)).answers),
+  analyze: (target) => analyze(resolve4(target)),
+  toMermaid: (target) => toMermaid(resolve4(target)),
+  toDiagram: (target, options) => toDiagram(resolve4(target), options),
+  linkDiagram: (target, figure) => linkDiagram(resolve4(target), resolve4(figure))
+};
+function attachDraft(root, config) {
+  root._draft?.destroy();
+  const where = viewPersistence(root, "questionnaire", String(dfDollar11(".questionnaire").toArray().indexOf(root)), config || {});
+  root._draft = where ? persisted(where.key, null, {
+    area: where.area,
+    validate: (v) => v === null || typeof v === "object" && !Array.isArray(v)
+  }) : null;
+  return root._draft?.value ?? null;
+}
+var lastActive = null;
+var TYPING = 'input[type="text"], input[type="email"], input[type="number"], input[type="search"], input[type="url"], input[type="tel"], input[type="password"], input[type="date"], input:not([type]), textarea, select, [contenteditable]';
+function onKey(e) {
+  if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.isComposing)
+    return;
+  const t = e.target;
+  let root = t.closest?.(".questionnaire");
+  const onPage = !root && (t === document.body || t === document.documentElement || t === document);
+  if (!root && !onPage)
+    return;
+  if (!root) {
+    const live = dfDollar11(".questionnaire[data-init]").toArray().filter((q) => q._walk && !q._walk.submitted && q.checkVisibility());
+    root = live.includes(lastActive) ? lastActive : live.length === 1 ? live[0] : null;
+  }
+  if (!root?._walk || root._walk.submitted || t.matches?.(TYPING))
+    return;
+  const step = stepById(root, root._walk.step);
+  if (!step)
+    return;
+  if (e.key === "Enter" && onPage) {
+    e.preventDefault();
+    if (isEnd(step))
+      submit(root);
+    else
+      advance(root);
+    return;
+  }
+  if (root.dataset.shortcuts === "none" || e.key.length !== 1)
+    return;
+  const key = e.key.toLowerCase();
+  let input = null;
+  const choice = dfDollar11(step).find(".questionnaire-choice").toArray().find((c) => c.dataset.key?.toLowerCase() === key);
+  if (choice)
+    input = dfDollar11(choice).find('input[type="radio"], input[type="checkbox"]').get(0);
+  else if (/^[1-9]$/.test(key) && !dfDollar11(step).find(".questionnaire-choice").get(0)) {
+    input = dfDollar11(step).find('input[type="radio"]').toArray()[Number(key) - 1] ?? null;
+  }
+  if (!input || input.disabled)
+    return;
+  e.preventDefault();
+  lastActive = root;
+  input.click();
+  input.focus({ preventScroll: true });
+}
+if (!document.__questionnaireKeys) {
+  document.__questionnaireKeys = true;
+  document.addEventListener("keydown", onKey);
+}
+function init11() {
+  dfDollar11(".questionnaire:not([data-init])").toArray().forEach((root) => {
+    root.dataset.init = "";
+    readFlow(root);
+    if (!root._flow.steps.length)
+      return;
+    root.setAttribute("novalidate", "");
+    keyHints(root);
+    root._walk = {
+      step: root._flow.start,
+      answers: {},
+      history: [root._flow.start],
+      index: 0,
+      skipped: [],
+      submitted: false
+    };
+    const draft = attachDraft(root, root._config?.persist);
+    let restored = false;
+    if (draft && draft.history?.length && stepById(root, draft.step)) {
+      const walk = root._walk;
+      walk.answers = draft.answers || {};
+      walk.history = draft.history.filter((id) => stepById(root, id));
+      walk.index = Math.min(Math.max(0, draft.index ?? 0), walk.history.length - 1);
+      walk.step = walk.history[walk.index];
+      walk.skipped = draft.skipped || [];
+      for (const s of root._flow.steps)
+        writeStep(s, walk.answers);
+      restored = walk.index > 0 || Object.keys(walk.answers).length > 0;
+    }
+    const analysis = analyze(root);
+    if (!analysis.ok)
+      console.warn(`questionnaire #${root.id || "?"}: the flow has problems -`, analysis.errors);
+    root.toggleAttribute("data-flow-invalid", !analysis.ok);
+    root.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const action = e.submitter?.dataset.questionnaire;
+      if (action === "skip")
+        advance(root, { skip: true });
+      else if (action === "back")
+        back(root);
+      else if (isEnd(stepById(root, cfgOf(root).step)))
+        submit(root);
+      else
+        advance(root);
+    });
+    root.addEventListener("click", (e) => {
+      const action = e.target.closest?.("[data-questionnaire]")?.dataset.questionnaire;
+      const go = e.target.closest?.("[data-questionnaire-go]")?.dataset.questionnaireGo;
+      if (go)
+        return goTo(root, go);
+      if (e.target.closest?.('button[type="submit"], input[type="submit"]'))
+        return;
+      if (action === "back")
+        back(root);
+      else if (action === "next")
+        advance(root);
+      else if (action === "skip")
+        advance(root, { skip: true });
+      else if (action === "restart")
+        restart(root);
+      else if (action === "dismiss")
+        notify(root, "");
+    });
+    const keep = (e) => {
+      const step = e.target.closest?.(".questionnaire-step");
+      if (!step || step.dataset.step !== cfgOf(root).step)
+        return;
+      if (e.target.classList?.contains("questionnaire-other") && e.target.value) {
+        const holder = e.target.closest(".questionnaire-choice");
+        const choice = holder && dfDollar11(holder).find('input[type="radio"], input[type="checkbox"]').get(0);
+        if (choice)
+          choice.checked = true;
+      }
+      cfgOf(root).answers = mergeAnswers(cfgOf(root).answers, readStep(step));
+      clearInvalid(step);
+      record(root);
+      if (e.type === "change" && e.target.type === "radio" && root.hasAttribute("data-auto-advance") && controlsOf2(step).every((c) => c.type === "radio")) {
+        clearTimeout(root._auto);
+        root._auto = setTimeout(() => advance(root), 280);
+      }
+    };
+    root.addEventListener("input", keep);
+    root.addEventListener("change", keep);
+    root.addEventListener("focusin", () => {
+      lastActive = root;
+    });
+    root.addEventListener("pointerdown", () => {
+      lastActive = root;
+    });
+    bindComponent(root, questionnaireApi, {
+      name: "default",
+      config: { step: root._flow.start, answers: {}, history: [root._flow.start], index: 0, skipped: [] }
+    });
+    show(root, root._walk.step, false);
+    record(root);
+    if (restored)
+      notify(root, "Your answers from earlier are back.", { name: "restart", label: "Start over" });
+  });
+}
+init11();
+new MutationObserver(init11).observe(document, { childList: true, subtree: true });
 
 // src/components/chat/session/session.ts
-var df$9 = defussGlobals();
-var dfDollar9 = defussQuery();
+var df$12 = defussGlobals();
+var dfDollar12 = defussQuery();
 var sessionStates = ["default", "detached", "streaming"];
 var num2 = (el, key, fallback) => {
   const v = parseFloat(el.dataset[key]);
   return Number.isFinite(v) ? v : fallback;
 };
 var reduced = () => globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-var resolve3 = (t) => typeof t === "string" ? dfDollar9("#" + CSS.escape(t)).get(0) ?? dfDollar9(t).get(0) : t;
+var resolve5 = (t) => typeof t === "string" ? dfDollar12("#" + CSS.escape(t)).get(0) ?? dfDollar12(t).get(0) : t;
 var parts = (s) => ({
-  viewport: dfDollar9(s).find(":scope > .session-viewport").get(0),
-  content: dfDollar9(s).find(":scope > .session-viewport > .session-content").get(0)
+  viewport: dfDollar12(s).find(":scope > .session-viewport").get(0),
+  content: dfDollar12(s).find(":scope > .session-viewport > .session-content").get(0)
 });
 var fromEnd = (v) => v.scrollHeight - v.scrollTop - v.clientHeight;
 function scrollViewport(s, top, smooth) {
@@ -7254,7 +9895,7 @@ function measure(s) {
     s.setAttribute("data-scrollable", tokens);
   else
     s.removeAttribute("data-scrollable");
-  dfDollar9(s).find(".session-scroll-button").toArray().forEach((b) => {
+  dfDollar12(s).find(".session-scroll-button").toArray().forEach((b) => {
     const active = b.dataset.to === "start" ? start : end;
     b.dataset.active = String(active);
     b.inert = !active;
@@ -7305,16 +9946,22 @@ function anchorSpace(s) {
   }
 }
 var anchorTop = (s, item) => item.offsetTop - num2(s, "peek", 48);
+function endHold(s) {
+  clearTimeout(s._holdTimer);
+  s._opening = null;
+}
 function scrollToEnd(s, { smooth = true } = {}) {
+  endHold(s);
   s.setAttribute("data-stick", "");
   scrollViewport(s, s._parts.viewport.scrollHeight, smooth);
 }
 function scrollToStart(s, { smooth = true } = {}) {
+  endHold(s);
   s.removeAttribute("data-stick");
   scrollViewport(s, 0, smooth);
 }
 function scrollToMessage(s, id, { smooth = true } = {}) {
-  const item = dfDollar9(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
+  const item = dfDollar12(s._parts.content).find(`.session-item[data-message-id="${CSS.escape(id)}"]`).get(0);
   if (!item)
     return false;
   s.removeAttribute("data-stick");
@@ -7322,12 +9969,12 @@ function scrollToMessage(s, id, { smooth = true } = {}) {
   hold(s, () => anchorTop(s, item), smooth ? 900 : 400);
   return true;
 }
-function applyMarkup9(el, stateName) {
+function applyMarkup12(el, stateName) {
   const { content } = parts(el);
   if (content)
-    dfDollar9(content).attr("aria-busy", stateName === "streaming" ? "true" : null);
+    dfDollar12(content).attr("aria-busy", stateName === "streaming" ? "true" : null);
 }
-function triggerStateChange9(s, stateName, config) {
+function triggerStateChange12(s, stateName, config) {
   const { content } = s._parts;
   if (stateName === "streaming")
     content.setAttribute("aria-busy", "true");
@@ -7355,14 +10002,20 @@ var sessionApi = componentState({
   states: sessionStates,
   apply: (s, state) => {
     s.dataset.stateName = state.name;
-    triggerStateChange9(s, state.name, state.config);
+    triggerStateChange12(s, state.name, state.config);
   },
-  markup: (el, state) => applyMarkup9(el, state.name)
+  markup: (el, state) => applyMarkup12(el, state.name)
 });
-df$9.sessionApi = sessionApi;
-df$9.sessionStates = sessionStates;
+df$12.sessionApi = sessionApi;
+df$12.sessionStates = sessionStates;
 function onItems(s, records) {
   const { viewport } = s._parts;
+  if (s._anchor && records.some((r) => r.removedNodes.length)) {
+    const top = s._top ?? viewport.scrollTop;
+    anchorSpace(s);
+    if (s._anchor && Math.abs(viewport.scrollTop - top) > 1)
+      scrollViewport(s, top, false);
+  }
   const before = s._height ?? viewport.scrollHeight;
   let prepended = false;
   let appended = false;
@@ -7390,6 +10043,17 @@ function onItems(s, records) {
     });
     settle(s);
     return;
+  }
+  if (appended) {
+    const added = records.filter((r) => r.nextSibling === null).flatMap((r) => [...r.addedNodes]).filter((n) => n.nodeType === 1);
+    added.forEach((n) => {
+      n.style.contentVisibility = "visible";
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => added.forEach((n) => {
+      n.style.contentVisibility = "";
+      if (!n.getAttribute("style"))
+        n.removeAttribute("style");
+    })));
   }
   if (anchored) {
     s._anchor = anchored;
@@ -7428,7 +10092,7 @@ function track(s) {
   const { viewport, content } = s._parts;
   const top = viewport.getBoundingClientRect().top;
   const bottom = top + viewport.clientHeight;
-  const items = Array.from(dfDollar9(content).find(":scope > .session-item").toArray());
+  const items = Array.from(dfDollar12(content).find(":scope > .session-item").toArray());
   const visible = items.filter((it) => {
     const r = it.getBoundingClientRect();
     return r.bottom > top && r.top < bottom;
@@ -7494,8 +10158,8 @@ function follow(s, options = {}) {
   else
     sessionApi.setState(s, "default", options);
 }
-function init9() {
-  dfDollar9(".session:not([data-init])").toArray().forEach((s) => {
+function init12() {
+  dfDollar12(".session:not([data-init])").toArray().forEach((s) => {
     const p = parts(s);
     if (!p.viewport || !p.content)
       return;
@@ -7513,6 +10177,7 @@ function init9() {
     if (!content.hasAttribute("aria-relevant"))
       content.setAttribute("aria-relevant", "additions");
     viewport.addEventListener("scroll", () => {
+      s._top = viewport.scrollTop;
       if (s.hasAttribute("data-autoscrolling"))
         return track(s);
       s._opening = null;
@@ -7525,7 +10190,7 @@ function init9() {
     new MutationObserver((records) => onItems(s, records)).observe(content, { childList: true });
     new ResizeObserver(() => onResize(s)).observe(content);
     new ResizeObserver(() => measure(s)).observe(viewport);
-    dfDollar9(s).find(".session-scroll-button").toArray().forEach((b) => {
+    dfDollar12(s).find(".session-scroll-button").toArray().forEach((b) => {
       b.addEventListener("click", () => b.dataset.to === "start" ? scrollToStart(s) : follow(s));
     });
     if (s.hasAttribute("data-drop"))
@@ -7534,7 +10199,7 @@ function init9() {
     s.setAttribute("data-pending-scroll", "");
     s.dataset.stateName = "default";
     const where = s.dataset.defaultPosition || "end";
-    const last = [...dfDollar9(content).find(":scope > .session-item[data-anchor]").toArray()].pop();
+    const last = [...dfDollar12(content).find(":scope > .session-item[data-anchor]").toArray()].pop();
     if (where === "start")
       s._opening = () => 0;
     else if (where === "last-anchor" && last)
@@ -7565,49 +10230,49 @@ function toItem(content, { id, anchor } = {}) {
     item.setAttribute("data-anchor", "");
   return item;
 }
-df$9.session = {
+df$12.session = {
   append(target, content, options) {
-    const s = resolve3(target);
+    const s = resolve5(target);
     const item = toItem(content, options);
     s?._parts?.content.append(item);
     return item;
   },
   prepend(target, content, options) {
-    const s = resolve3(target);
+    const s = resolve5(target);
     const items = (Array.isArray(content) ? content : [content]).map((c) => toItem(c, options));
     s?._parts?.content.prepend(...items);
     return items;
   },
   scrollToEnd: (target, options) => {
-    const s = resolve3(target);
+    const s = resolve5(target);
     if (s)
       follow(s, options);
   },
   scrollToStart: (target, options) => {
-    const s = resolve3(target);
+    const s = resolve5(target);
     if (s)
       scrollToStart(s, options);
   },
   scrollToMessage: (target, id, options) => {
-    const s = resolve3(target);
+    const s = resolve5(target);
     return s ? scrollToMessage(s, id, options) : false;
   },
   isAtEnd: (target) => {
-    const s = resolve3(target);
+    const s = resolve5(target);
     return !!s && fromEnd(s._parts.viewport) <= num2(s, "threshold", 48);
   }
 };
-init9();
-new MutationObserver(init9).observe(document, { childList: true, subtree: true });
+init12();
+new MutationObserver(init12).observe(document, { childList: true, subtree: true });
 
 // src/components/application/sidebar/sidebar.ts
-var df$10 = defussGlobals();
-var dfDollar10 = defussQuery();
+var df$13 = defussGlobals();
+var dfDollar13 = defussQuery();
 var sidebarStates = ["default", "collapsed"];
-function applyMarkup10(el, stateName) {
-  dfDollar10(el).attr("data-state", stateName === "collapsed" ? "collapsed" : "expanded");
+function applyMarkup13(el, stateName) {
+  dfDollar13(el).attr("data-state", stateName === "collapsed" ? "collapsed" : "expanded");
 }
-function triggerStateChange10(sidebar, stateName, _config) {
+function triggerStateChange13(sidebar, stateName, _config) {
   switch (stateName) {
     case "default":
       sidebar.dataset.state = "expanded";
@@ -7622,7 +10287,7 @@ var sidebarApi = componentState({
   states: sidebarStates,
   apply: (sidebar, state) => {
     sidebar._pinned = true;
-    triggerStateChange10(sidebar, state.name, state.config);
+    triggerStateChange13(sidebar, state.name, state.config);
   },
   read: (sidebar, state) => {
     return {
@@ -7630,18 +10295,18 @@ var sidebarApi = componentState({
       config: state.config
     };
   },
-  markup: (el, state) => applyMarkup10(el, state.name)
+  markup: (el, state) => applyMarkup13(el, state.name)
 });
-df$10.sidebarApi = sidebarApi;
-df$10.sidebarStates = sidebarStates;
-function init10() {
-  dfDollar10(".app-sidebar:not([data-init])").toArray().forEach((sidebar) => {
+df$13.sidebarApi = sidebarApi;
+df$13.sidebarStates = sidebarStates;
+function init13() {
+  dfDollar13(".app-sidebar:not([data-init])").toArray().forEach((sidebar) => {
     sidebar.dataset.init = "";
     sidebar._defaultState = sidebar.dataset.state || "expanded";
     sidebar._pinned = !!sidebar.dataset.stateName;
     bindComponent(sidebar, sidebarApi);
     const triggerId = sidebar.id ? `[data-sidebar-trigger="${sidebar.id}"]` : ".sidebar-trigger";
-    dfDollar10(triggerId).toArray().forEach((trigger) => {
+    dfDollar13(triggerId).toArray().forEach((trigger) => {
       trigger.addEventListener("click", () => {
         const state = sidebar.dataset.state === "collapsed" ? "expanded" : "collapsed";
         sidebar.dataset.state = state;
@@ -7651,15 +10316,15 @@ function init10() {
     document.__sidebarAutoRo?.observe(sidebar.parentElement ?? sidebar);
     autoCollapseSidebar(sidebar);
   });
-  dfDollar10("[data-sidebar-mobile]:not([data-init])").toArray().forEach((trigger) => {
+  dfDollar13("[data-sidebar-mobile]:not([data-init])").toArray().forEach((trigger) => {
     trigger.dataset.init = "";
-    const dialog = dfDollar10("#" + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
+    const dialog = dfDollar13("#" + CSS.escape(trigger.dataset.sidebarMobile)).get(0);
     if (!dialog)
       return;
     trigger.addEventListener("click", () => {
       dialog.showModal();
     });
-    dfDollar10(dialog).find(".sidebar-mobile-close").toArray().forEach((btn) => {
+    dfDollar13(dialog).find(".sidebar-mobile-close").toArray().forEach((btn) => {
       btn.addEventListener("click", () => {
         dialog.close();
       });
@@ -7695,14 +10360,14 @@ if (typeof ResizeObserver !== "undefined" && !document.__sidebarAutoRo) {
     });
   });
 }
-init10();
-new MutationObserver(init10).observe(document, { childList: true, subtree: true });
+init13();
+new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 if (!document.__sidebarKbInit) {
   document.__sidebarKbInit = true;
   bindGlobalKeys((e) => {
     if (!(e.metaKey || e.ctrlKey) || e.key !== "b")
       return;
-    const sidebar = dfDollar10(".app-sidebar").get(0);
+    const sidebar = dfDollar13(".app-sidebar").get(0);
     if (!sidebar)
       return;
     e.preventDefault();
@@ -7713,8 +10378,8 @@ if (!document.__sidebarKbInit) {
 }
 
 // src/components/forms-inputs/slider/slider.ts
-var df$11 = defussGlobals();
-var dfDollar11 = defussQuery();
+var df$14 = defussGlobals();
+var dfDollar14 = defussQuery();
 var sliderStates = ["default", "disabled"];
 function percentOf(el) {
   const min = parseFloat(el.min || 0);
@@ -7745,7 +10410,7 @@ var hasFormat = (el) => {
 function outputsOf(el) {
   if (!el.id)
     return [];
-  return [...dfDollar11("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
+  return [...dfDollar14("output[for]").toArray()].filter((o) => o.htmlFor.contains(el.id));
 }
 function emojiThumb(el) {
   const list = (el.dataset.thumbEmoji || "").trim().split(/\s+/).filter(Boolean);
@@ -7781,7 +10446,7 @@ function updateSliderValue(el) {
     }
   }
 }
-var rangeInputs = (range) => [...dfDollar11(range).find(":scope > .slider").toArray()].slice(0, 2);
+var rangeInputs = (range) => [...dfDollar14(range).find(":scope > .slider").toArray()].slice(0, 2);
 function paintRange(range) {
   const [lo, hi] = rangeInputs(range);
   if (!lo || !hi)
@@ -7817,11 +10482,11 @@ function initRange(range) {
     });
   paintRange(range);
 }
-function applyMarkup11(el, stateName) {
+function applyMarkup14(el, stateName) {
   if (stateName === "disabled")
-    dfDollar11(el).attr("disabled", "");
+    dfDollar14(el).attr("disabled", "");
 }
-function triggerStateChange11(el, stateName, config) {
+function triggerStateChange14(el, stateName, config) {
   switch (stateName) {
     case "default":
       el.disabled = el._defaultDisabled ?? false;
@@ -7837,23 +10502,23 @@ function triggerStateChange11(el, stateName, config) {
 var sliderApi = componentState({
   component: "slider",
   states: sliderStates,
-  apply: (el, state) => triggerStateChange11(el, state.name, state.config),
+  apply: (el, state) => triggerStateChange14(el, state.name, state.config),
   read: (el, state) => {
     return {
       name: el.disabled ? "disabled" : "default",
       config: { ...state.config, value: el.value }
     };
   },
-  markup: (el, state) => applyMarkup11(el, state.name)
+  markup: (el, state) => applyMarkup14(el, state.name)
 });
-df$11.sliderApi = sliderApi;
-df$11.sliderStates = sliderStates;
-function init11() {
-  dfDollar11(".slider-range:not([data-init])").toArray().forEach((range) => {
+df$14.sliderApi = sliderApi;
+df$14.sliderStates = sliderStates;
+function init14() {
+  dfDollar14(".slider-range:not([data-init])").toArray().forEach((range) => {
     range.dataset.init = "";
     initRange(range);
   });
-  dfDollar11(".slider:not([data-init])").toArray().forEach((el) => {
+  dfDollar14(".slider:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     el._defaultDisabled = el.disabled;
     bindComponent(el, sliderApi);
@@ -7863,19 +10528,19 @@ function init11() {
     el.addEventListener("input", () => updateSliderValue(el));
   });
 }
-init11();
-new MutationObserver(init11).observe(document, { childList: true, subtree: true });
+init14();
+new MutationObserver(init14).observe(document, { childList: true, subtree: true });
 
 // src/components/data-display/table/table.ts
-var df$12 = defussGlobals();
-var dfDollar12 = defussQuery();
+var df$15 = defussGlobals();
+var dfDollar15 = defussQuery();
 var tableStates = ["default", "sorted", "selected"];
 var bodyOf = (table) => table.tBodies[0];
 var bodyRows = (table) => [...bodyOf(table)?.rows ?? []];
-var rowBox = (row) => dfDollar12(row).find(':scope > .table-select input[type="checkbox"]').get(0);
-var headBox = (table) => dfDollar12(table.tHead).find('.table-select input[type="checkbox"]').get(0);
+var rowBox = (row) => dfDollar15(row).find(':scope > .table-select input[type="checkbox"]').get(0);
+var headBox = (table) => dfDollar15(table.tHead).find('.table-select input[type="checkbox"]').get(0);
 function enhanceHead(table) {
-  dfDollar12(table.tHead).find(".table-sort").each((_i, btn) => {
+  dfDollar15(table.tHead).find(".table-sort").each((_i, btn) => {
     const th = btn.closest("th");
     if (th && !th.hasAttribute("aria-sort"))
       th.setAttribute("aria-sort", "none");
@@ -7905,7 +10570,7 @@ function sortBy(table, col, direction) {
   });
   body.append(...rows);
   [...table.tHead?.rows[0]?.cells ?? []].forEach((th, i) => {
-    if (dfDollar12(th).find(".table-sort").get(0))
+    if (dfDollar15(th).find(".table-sort").get(0))
       th.setAttribute("aria-sort", i === col ? direction : "none");
   });
   table._sort = { column: col, direction };
@@ -7914,7 +10579,7 @@ function unsort(table) {
   const body = bodyOf(table);
   if (body && table._original)
     body.append(...table._original.filter((r) => r.parentElement === body));
-  dfDollar12(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
+  dfDollar15(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
   table._sort = null;
 }
 function syncSelection(table, announce = true) {
@@ -7958,13 +10623,13 @@ function announceMove(table, row) {
   }));
 }
 function moved(table, row) {
-  dfDollar12(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
+  dfDollar15(table.tHead).find("[aria-sort]").attr("aria-sort", "none");
   table._sort = null;
   announceMove(table, row);
 }
 function initReorder(table) {
   let dragged = null;
-  const clear = () => dfDollar12(table).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
+  const clear = () => dfDollar15(table).find("[data-drop]").toArray().forEach((r) => r.removeAttribute("data-drop"));
   table.addEventListener("pointerdown", (e) => {
     const handle = e.target.closest?.(".table-handle");
     if (handle)
@@ -7993,15 +10658,15 @@ function initReorder(table) {
     }
   });
   table.addEventListener("drop", (e) => {
-    const row = dfDollar12(table).find("tbody > tr[data-drop]").get(0);
+    const row = dfDollar15(table).find("tbody > tr[data-drop]").get(0);
     if (!dragged || !row)
       return;
     e.preventDefault();
     const ref = row.dataset.drop === "before" ? row : row.nextSibling;
     if (ref)
-      dfDollar12(ref).before(dragged);
+      dfDollar15(ref).before(dragged);
     else
-      dfDollar12(row.parentElement).append(dragged);
+      dfDollar15(row.parentElement).append(dragged);
     clear();
     moved(table, dragged);
   });
@@ -8025,9 +10690,9 @@ function initReorder(table) {
       return;
     const ref = e.key === "ArrowUp" ? sib : sib.nextSibling;
     if (ref)
-      dfDollar12(ref).before(row);
+      dfDollar15(ref).before(row);
     else
-      dfDollar12(row.parentElement).append(row);
+      dfDollar15(row.parentElement).append(row);
     e.target.focus();
     moved(table, row);
   });
@@ -8042,7 +10707,7 @@ function measureLocks(table) {
   for (let i = 1;i < n; i++)
     table.style.setProperty(`--table-lock-${i}`, `${first.cells[i - 1]?.getBoundingClientRect().width ?? 0}px`);
 }
-function triggerStateChange12(table, stateName, config) {
+function triggerStateChange15(table, stateName, config) {
   switch (stateName) {
     case "default":
       unsort(table);
@@ -8070,7 +10735,7 @@ function triggerStateChange12(table, stateName, config) {
 var tableApi = componentState({
   component: "table",
   states: tableStates,
-  apply: (table, state) => triggerStateChange12(table, state.name, state.config),
+  apply: (table, state) => triggerStateChange15(table, state.name, state.config),
   read: (table, state) => {
     const selected = bodyRows(table).flatMap((r, i) => r.getAttribute("aria-selected") === "true" ? [i] : []);
     return {
@@ -8080,20 +10745,20 @@ var tableApi = componentState({
   },
   markup: (el, state) => {
     enhanceHead(el);
-    triggerStateChange12(el, state.name, state.config);
+    triggerStateChange15(el, state.name, state.config);
   }
 });
-df$12.tableApi = tableApi;
-df$12.tableStates = tableStates;
-function init12() {
-  dfDollar12("table.table:not([data-init])").toArray().forEach((table) => {
+df$15.tableApi = tableApi;
+df$15.tableStates = tableStates;
+function init15() {
+  dfDollar15("table.table:not([data-init])").toArray().forEach((table) => {
     table.dataset.init = "";
     table.dataset.stateName = "default";
     table._original = bodyRows(table);
     table._sort = null;
     bindComponent(table, tableApi);
     enhanceHead(table);
-    dfDollar12(table.tHead).find(".table-sort").toArray().forEach((btn) => {
+    dfDollar15(table.tHead).find(".table-sort").toArray().forEach((btn) => {
       const th = btn.closest("th");
       btn.addEventListener("click", () => {
         const col = th.cellIndex;
@@ -8110,10 +10775,10 @@ function init12() {
         }));
       });
     });
-    const pre = dfDollar12(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
+    const pre = dfDollar15(table.tHead).find('th[aria-sort="ascending"], th[aria-sort="descending"]').get(0);
     if (pre)
       sortBy(table, pre.cellIndex, pre.getAttribute("aria-sort"));
-    if (dfDollar12(table).find('.table-select input[type="checkbox"]').get(0)) {
+    if (dfDollar15(table).find('.table-select input[type="checkbox"]').get(0)) {
       let last = null;
       table.addEventListener("click", (e) => {
         const box = e.target.closest?.('.table-select input[type="checkbox"]');
@@ -8144,7 +10809,7 @@ function init12() {
       });
       syncSelection(table, false);
     }
-    if (dfDollar12(table).find(".table-handle").get(0))
+    if (dfDollar15(table).find(".table-handle").get(0))
       initReorder(table);
     if (table.dataset.lockStart) {
       measureLocks(table);
@@ -8156,49 +10821,49 @@ function init12() {
     }
   });
 }
-init12();
-new MutationObserver(init12).observe(document, { childList: true, subtree: true });
+init15();
+new MutationObserver(init15).observe(document, { childList: true, subtree: true });
 
 // src/components/feedback-status/toast/toast.ts
-var df$13 = defussGlobals();
-var dfDollar13 = defussQuery();
+var df$16 = defussGlobals();
+var dfDollar16 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup12(_el, _stateName) {}
-function triggerStateChange13(container, stateName, _config) {
+function applyMarkup15(_el, _stateName) {}
+function triggerStateChange16(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar13(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar16(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange13(container, state.name, state.config);
+    triggerStateChange16(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar13(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar16(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup12(el, state.name)
+  markup: (el, state) => applyMarkup15(el, state.name)
 });
-df$13.toastApi = toastApi;
-df$13.toastStates = toastStates;
+df$16.toastApi = toastApi;
+df$16.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar13("#toast-container").get(0);
+var toastContainer = dfDollar16("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar13(document.body).append(toastContainer);
+  dfDollar16(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar13(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar16(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -8229,7 +10894,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar13(el).remove();
+      dfDollar16(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -8243,7 +10908,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar13(el).remove();
+    dfDollar16(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -8274,29 +10939,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar13(contentEl).append(dfDollar13(icons[variant]));
+    dfDollar16(contentEl).append(dfDollar16(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar13(p).text(title);
-    dfDollar13(textDiv).append(p);
+    dfDollar16(p).text(title);
+    dfDollar16(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar13(p).text(description);
-    dfDollar13(textDiv).append(p);
+    dfDollar16(p).text(description);
+    dfDollar16(textDiv).append(p);
   }
-  dfDollar13(contentEl).append(textDiv);
+  dfDollar16(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar13(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar13(contentEl).append(closeBtn);
+  dfDollar16(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar16(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -8306,9 +10971,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar13(el).append(host);
+    dfDollar16(el).append(host);
   }
-  dfDollar13(host).append(contentEl);
+  dfDollar16(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -8317,15 +10982,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar13(actionBtn).text(action.label);
-    dfDollar13(actionsDiv).append(actionBtn);
-    dfDollar13(host).append(actionsDiv);
+    dfDollar16(actionBtn).text(action.label);
+    dfDollar16(actionsDiv).append(actionBtn);
+    dfDollar16(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar13(toastContainer).append(el);
+  dfDollar16(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -8336,13 +11001,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar13(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar16(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init13() {
-  dfDollar13("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init16() {
+  dfDollar16("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -8391,8 +11056,8 @@ function init13() {
     });
   });
 }
-init13();
-new MutationObserver(init13).observe(document.body, { childList: true, subtree: true });
+init16();
+new MutationObserver(init16).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -8412,95 +11077,95 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar13(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar16(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$13.toast = toastActions;
+df$16.toast = toastActions;
 
 // src/components/actions/toggle/toggle.ts
-var df$14 = defussGlobals();
-var dfDollar14 = defussQuery();
+var df$17 = defussGlobals();
+var dfDollar17 = defussQuery();
 var toggleStates = ["default", "pressed"];
-function applyMarkup13(toggle, stateName, defaultPressed) {
-  dfDollar14(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
+function applyMarkup16(toggle, stateName, defaultPressed) {
+  dfDollar17(toggle).attr("aria-pressed", stateName === "pressed" ? "true" : defaultPressed);
 }
-function triggerStateChange14(toggle, stateName, _config) {
-  applyMarkup13(toggle, stateName, toggle._defaultPressed ?? "false");
+function triggerStateChange17(toggle, stateName, _config) {
+  applyMarkup16(toggle, stateName, toggle._defaultPressed ?? "false");
 }
 var toggleApi = componentState({
   component: "toggle",
   states: toggleStates,
-  apply: (toggle, state) => triggerStateChange14(toggle, state.name, state.config),
+  apply: (toggle, state) => triggerStateChange17(toggle, state.name, state.config),
   read: (toggle, state) => ({
-    name: dfDollar14(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
+    name: dfDollar17(toggle).attr("aria-pressed") === "true" ? "pressed" : "default",
     config: state.config
   }),
   markup: (toggle, state) => {
     const authored = state.model.attrs.find(([name]) => name === "aria-pressed");
-    applyMarkup13(toggle, state.name, authored ? authored[1] : "false");
+    applyMarkup16(toggle, state.name, authored ? authored[1] : "false");
   }
 });
-df$14.toggleApi = toggleApi;
-df$14.toggleStates = toggleStates;
-function init14() {
-  dfDollar14(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
-    dfDollar14(toggle).data("init", "");
-    toggle._defaultPressed = dfDollar14(toggle).attr("aria-pressed") || "false";
+df$17.toggleApi = toggleApi;
+df$17.toggleStates = toggleStates;
+function init17() {
+  dfDollar17(".toggle:not([data-init]):not(.toggle-group .toggle)").each((_i, toggle) => {
+    dfDollar17(toggle).data("init", "");
+    toggle._defaultPressed = dfDollar17(toggle).attr("aria-pressed") || "false";
     bindComponent(toggle, toggleApi, { name: toggle._defaultPressed === "true" ? "pressed" : "default", config: {} });
-    dfDollar14(toggle).on("click", () => {
-      dfDollar14(toggle).attr("aria-pressed", String(dfDollar14(toggle).attr("aria-pressed") !== "true"));
+    dfDollar17(toggle).on("click", () => {
+      dfDollar17(toggle).attr("aria-pressed", String(dfDollar17(toggle).attr("aria-pressed") !== "true"));
     });
   });
 }
-init14();
-new MutationObserver(init14).observe(document, { childList: true, subtree: true });
+init17();
+new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
 // src/components/multimedia/video/video.ts
-var df$15 = defussGlobals();
-var dfDollar15 = defussQuery();
+var df$18 = defussGlobals();
+var dfDollar18 = defussQuery();
 var videoStates = ["default", "playing"];
-function applyMarkup14(el, stateName, config) {
+function applyMarkup17(el, stateName, config) {
   mediaMarkup(el, "video", stateName, config);
 }
-function triggerStateChange15(el, stateName, config, incoming) {
+function triggerStateChange18(el, stateName, config, incoming) {
   return mediaApply(el, "video", stateName, config, incoming);
 }
 var videoApi = componentState({
   component: "video",
   states: videoStates,
   mergeConfig: true,
-  apply: (el, state, _previous, incoming) => triggerStateChange15(el, state.name, state.config, incoming),
+  apply: (el, state, _previous, incoming) => triggerStateChange18(el, state.name, state.config, incoming),
   read: (el) => {
     const { playing, config } = mediaRead(el);
     const { time, duration, rate, volume, muted, captions } = config;
     return { name: playing ? "playing" : "default", config: { time, duration, rate, volume, muted, captions } };
   },
-  markup: (el, state) => applyMarkup14(el, state.name, state.config)
+  markup: (el, state) => applyMarkup17(el, state.name, state.config)
 });
-df$15.videoApi = videoApi;
-df$15.videoStates = videoStates;
-function init15() {
-  dfDollar15(".video:not([data-init])").toArray().forEach((el) => {
+df$18.videoApi = videoApi;
+df$18.videoStates = videoStates;
+function init18() {
+  dfDollar18(".video:not([data-init])").toArray().forEach((el) => {
     el.dataset.init = "";
     bindComponent(el, videoApi);
     bindMedia(el, "video", () => videoApi.getState(el));
   });
 }
-var resolve4 = (target) => typeof target === "string" ? dfDollar15(target).get(0) : target;
+var resolve6 = (target) => typeof target === "string" ? dfDollar18(target).get(0) : target;
 var now2 = (el) => mediaRead(el).playing ? "playing" : "default";
-df$15.video = {
+df$18.video = {
   play: async (target) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (el?.api)
       await el.api.setState("playing");
   },
   pause: (target) => {
-    resolve4(target)?.api?.setState("default");
+    resolve6(target)?.api?.setState("default");
   },
   toggle: (target) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (!el?.api)
       return false;
     const next = now2(el) === "playing" ? "default" : "playing";
@@ -8508,41 +11173,41 @@ df$15.video = {
     return next === "playing";
   },
   seek: (target, time) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (el?.api)
       el.api.setState(now2(el), { time });
   },
   skip: (target, seconds) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (el?.api)
       el.api.setState(now2(el), { time: mediaRead(el).config.time + seconds });
   },
   mute: (target, muted) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (el?.api)
       el.api.setState(now2(el), { muted: muted ?? !mediaRead(el).config.muted });
   },
   volume: (target, volume) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (el?.api)
       el.api.setState(now2(el), { volume });
   },
   rate: (target, rate) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (el?.api)
       el.api.setState(now2(el), { rate });
   },
   captions: (target, key) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (el?.api)
       el.api.setState(now2(el), { captions: key ?? (mediaRead(el).config.captions ? "" : true) });
   },
   tracks: (target, tracks, replace) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     return el?.api ? mediaTracks(el, "video", tracks, replace) : [];
   },
   fullscreen: async (target) => {
-    const el = resolve4(target);
+    const el = resolve6(target);
     if (!el)
       return;
     if (document.fullscreenElement === el)
@@ -8555,9 +11220,9 @@ df$15.video = {
       });
   }
 };
-init15();
-new MutationObserver(init15).observe(document, { childList: true, subtree: true });
+init18();
+new MutationObserver(init18).observe(document, { childList: true, subtree: true });
 
-//# debugId=302776FF2E91B8AA64756E2164756E21
+//# debugId=55A6B67024D61FAA64756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=ai-chat.js.map

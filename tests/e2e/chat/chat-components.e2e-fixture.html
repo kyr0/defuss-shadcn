@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Components e2e fixture</title>
+  <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css">
+  <link rel="stylesheet" href="/dist/components/all.css">
+  <style>
+    /* spacing only - never properties the checks assert */
+    body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; display: grid; gap: 1rem; max-width: 40rem; }
+    .session { height: 420px; }
+  </style>
+</head>
+<body>
+  <!-- mirrors the doc page: a plan to confirm (a checkable plan, Confirm / Not now) -->
+  <div class="chat-components" id="cc-plan">
+    <script type="application/json" class="chat-components-schema">
+      {"schema": "component-schema", "version": 1, "id": "migration", "title": "Confirm the migration plan", "description": "I will run these steps **in order**.",
+       "body": [{"type": "plan", "name": "steps", "label": "Steps", "steps": [{"id": "backup", "title": "Back up the database"}, {"id": "migrate", "title": "Run the migrations", "description": "About 4 minutes"}, {"id": "verify", "title": "Verify the services"}]}],
+       "actions": [{"id": "confirm", "label": "Confirm", "submit": true}, {"id": "cancel", "label": "Not now", "variant": "outline", "cancel": true}]}
+    </script>
+  </div>
+
+  <!-- every field type -->
+  <div class="chat-components" id="cc-fields">
+    <script type="application/json" class="chat-components-schema">
+      {"version": 1, "id": "request", "title": "Budget request",
+       "body": [
+         {"type": "currency", "name": "budget", "label": "Budget", "currency": "EUR", "locale": "de-DE", "required": true, "hint": "Up to 50.000 €", "max": 50000},
+         {"type": "number", "name": "hours", "label": "Hours per week", "min": 1, "max": 40, "step": 1, "unit": "h", "default": 20},
+         {"type": "input", "name": "email", "label": "Email", "inputType": "email", "required": true, "placeholder": "you@example.com"},
+         {"type": "textarea", "name": "reason", "label": "Reason", "lines": 2},
+         {"type": "select", "name": "team", "label": "Team", "options": ["Platform", "Design", {"value": "data", "label": "Data & ML"}]},
+         {"type": "radio", "name": "start", "label": "Start", "options": [{"value": "now", "label": "Now"}, {"value": "monday", "label": "On Monday", "description": "after the release"}], "other": "Another day", "required": true},
+         {"type": "checkbox", "name": "tools", "label": "Tools", "options": ["Figma", "Linear", "Notion"]},
+         {"type": "checkbox", "name": "terms", "label": "I accept the travel policy", "required": true},
+         {"type": "switch", "name": "remote", "label": "Remote", "default": true},
+         {"type": "slider", "name": "confidence", "label": "Confidence", "min": 0, "max": 100, "step": 10, "default": 70, "unit": "%"},
+         {"type": "rating", "name": "priority", "label": "Priority", "max": 5},
+         {"type": "date", "name": "due", "label": "Due date", "min": "2026-01-01"}
+       ]}
+    </script>
+  </div>
+
+  <!-- quick replies -->
+  <div class="chat-components" id="cc-quick">
+    <script type="application/json" class="chat-components-schema">
+      {"version": 1, "body": [{"type": "text", "text": "Which plan suits you?"}], "actions": [{"id": "starter", "label": "Starter", "reply": "The Starter plan, please"}, {"id": "team", "label": "Team", "reply": "The Team plan", "variant": "outline"}]}
+    </script>
+  </div>
+
+  <!-- a questionnaire: a branch by choice, a free-text Other, a currency step -->
+  <div class="chat-components" id="cc-q">
+    <script type="application/json" class="chat-components-schema">
+      {"version": 1, "id": "intake", "title": "Project intake",
+       "body": [{"type": "questionnaire", "title": "Project intake", "steps": [
+         {"id": "kind", "title": "What are we building?", "fields": [{"type": "radio", "name": "kind", "required": true, "options": [{"value": "site", "label": "A website"}, {"value": "app", "label": "An app", "goto": "platform"}], "other": "Something else"}]},
+         {"id": "pages", "title": "How many pages?", "next": "budget", "fields": [{"type": "number", "name": "pages", "min": 1, "required": true}]},
+         {"id": "platform", "title": "Which platforms?", "fields": [{"type": "checkbox", "name": "platforms", "options": ["iOS", "Android", "Web"]}]},
+         {"id": "budget", "title": "Your budget", "fields": [{"type": "currency", "name": "budget", "currency": "USD", "locale": "en-US", "required": true}]}
+       ]}],
+       "actions": [{"id": "send", "label": "Send the brief", "submit": true}, {"id": "later", "label": "Later", "variant": "ghost", "cancel": true}]}
+    </script>
+  </div>
+
+  <!-- content only -->
+  <div class="chat-components" id="cc-content">
+    <script type="application/json" class="chat-components-schema">
+      {"version": 1, "title": "Your order", "body": [
+        {"type": "text", "text": "Ordered **2 items** with `express` delivery."},
+        {"type": "list", "items": ["Desk lamp", "Notebook"], "ordered": true},
+        {"type": "table", "label": "Items", "columns": ["Item", "Price"], "rows": [["Desk lamp", 39.9], ["Notebook", 4.5]]},
+        {"type": "facts", "facts": [{"label": "Total", "value": "44,40 €"}, {"label": "Arrives", "value": "Friday"}]},
+        {"type": "divider"},
+        {"type": "alert", "title": "Heads up", "text": "The lamp ships separately."}
+      ]}
+    </script>
+  </div>
+
+  <!-- authored answered -->
+  <div class="chat-components" id="cc-answered">
+    <script type="application/json" class="chat-components-schema">
+      {"version": 1, "title": "Delivery", "body": [{"type": "radio", "name": "slot", "label": "Slot", "options": ["Morning", "Evening"]}, {"type": "number", "name": "floor", "label": "Floor"}]}
+    </script>
+    <script type="application/json" class="chat-components-answers">{"action": "submit", "answers": {"slot": "Evening", "floor": 3}}</script>
+  </div>
+
+  <!-- invalid -->
+  <div class="chat-components" id="cc-invalid">
+    <script type="application/json" class="chat-components-schema">
+      {"version": 1, "body": [{"type": "slider-xl", "name": "x"}, {"type": "select", "name": "y"}]}
+    </script>
+  </div>
+
+  <!-- hostile text stays text -->
+  <div class="chat-components" id="cc-xss">
+    <script type="application/json" class="chat-components-schema">
+      {"version": 1, "title": "<img src=x onerror=\"globalThis.__pwned=1\">", "body": [{"type": "text", "text": "<script>globalThis.__pwned=2<\/script>**bold**"}, {"type": "input", "name": "x", "label": "x\" onfocus=\"globalThis.__pwned=3", "placeholder": "\"><img src=x onerror=globalThis.__pwned=5>"}, {"type": "select", "name": "s", "label": "<b>s</b>", "options": [{"value": "\"><svg onload=globalThis.__pwned=4>", "label": "<i>o</i>"}]}]}
+    </script>
+  </div>
+
+  <!-- a session for Chat Scripts, with a composer -->
+  <section class="session" id="chat" aria-label="Support">
+    <div class="session-viewport"><div class="session-content"></div></div>
+    <div class="session-footer">
+      <form class="textarea-group" data-layout="inline" id="composer" aria-label="Message composer">
+        <textarea class="textarea" name="text" rows="1" aria-label="Message"></textarea>
+        <button class="btn" type="submit">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <script type="module" src="/dist/components/all.js"></script>
+</body>
+</html>

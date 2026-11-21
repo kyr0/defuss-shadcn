@@ -45,63 +45,134 @@ try {
   const attr = (sel: string, a: string) => page.$eval(sel, (e, n) => e.getAttribute(n), a);
   const settle = () => page.waitForTimeout(120);
   const append = (id: string, text: string, anchor = false) =>
-    page.evaluate(([i, t, a]) => (globalThis as any).df$.shadcn.session.append(i, `<div class="message"><div class="message-content"><div class="bubble"><div class="bubble-content">${t}</div></div></div></div>`, { id: t, anchor: a }), [id, text, anchor] as const);
+    page.evaluate(
+      ([i, t, a]) =>
+        (globalThis as any).df$.shadcn.session.append(
+          i,
+          `<div class="message"><div class="message-content"><div class="bubble"><div class="bubble-content">${t}</div></div></div></div>`,
+          { id: t, anchor: a },
+        ),
+      [id, text, anchor] as const,
+    );
 
-  await check('init: labelled focusable region around a role="log" transcript; opens at the end, following', async () => {
-    const r = await page.evaluate(() => {
-      const v = document.querySelector('#s1 > .session-viewport')!, c = document.getElementById('s1-content')!;
-      return [v.getAttribute('role'), v.getAttribute('aria-label'), (v as HTMLElement).tabIndex, c.getAttribute('role'), c.getAttribute('aria-relevant'), typeof (document.getElementById('s1') as any).api?.setState];
-    });
-    assert.deepEqual(r, ['region', 'Messages', 0, 'log', 'additions', 'function']);
-    assert.ok(await fromEnd('s1') <= 1, 'at the end');
-    assert.equal(await state('s1'), 'default');
-    assert.equal(await attr('#s1', 'data-stick'), '');
-    assert.equal(await attr('#s1', 'data-scrollable'), 'start');
-    assert.equal(await page.$eval('#s1-end', (b) => (b as HTMLElement).inert), true, 'nothing below: the end button is inert');
-    assert.equal(await page.$eval('#s1-start', (b) => getComputedStyle(b).visibility), 'visible', 'something above: the start button shows');
-  });
+  await check(
+    'init: labelled focusable region around a role="log" transcript; opens at the end, following',
+    async () => {
+      const r = await page.evaluate(() => {
+        const v = document.querySelector('#s1 > .session-viewport')!,
+          c = document.getElementById('s1-content')!;
+        return [
+          v.getAttribute('role'),
+          v.getAttribute('aria-label'),
+          (v as HTMLElement).tabIndex,
+          c.getAttribute('role'),
+          c.getAttribute('aria-relevant'),
+          typeof (document.getElementById('s1') as any).api?.setState,
+        ];
+      });
+      assert.deepEqual(r, ['region', 'Messages', 0, 'log', 'additions', 'function']);
+      assert.ok((await fromEnd('s1')) <= 1, 'at the end');
+      assert.equal(await state('s1'), 'default');
+      assert.equal(await attr('#s1', 'data-stick'), '');
+      assert.equal(await attr('#s1', 'data-scrollable'), 'start');
+      assert.equal(
+        await page.$eval('#s1-end', (b) => (b as HTMLElement).inert),
+        true,
+        'nothing below: the end button is inert',
+      );
+      assert.equal(
+        await page.$eval('#s1-start', (b) => getComputedStyle(b).visibility),
+        'visible',
+        'something above: the start button shows',
+      );
+    },
+  );
 
-  await check('rows skip rendering off screen but do not clip what draws outside them (bubble tails, reactions)', async () => {
-    const r = await page.$eval('#s1 .session-item', (i) => { const cs = getComputedStyle(i); return [cs.contentVisibility, cs.overflowClipMargin]; });
-    assert.deepEqual(r, ['auto', '16px']);
-  });
+  await check(
+    'rows skip rendering off screen but do not clip what draws outside them (bubble tails, reactions)',
+    async () => {
+      const r = await page.$eval('#s1 .session-item', (i) => {
+        const cs = getComputedStyle(i);
+        return [cs.contentVisibility, cs.overflowClipMargin];
+      });
+      assert.deepEqual(r, ['auto', '16px']);
+      // an appended row has its real height at once, never the placeholder's first
+      const appended = await page.evaluate(async () => {
+        const s = document.querySelector('#s-fade') as HTMLElement;
+        const item = (globalThis as any).df$.shadcn.session.append(
+          s,
+          '<div class="message"><div class="message-content"><div class="bubble"><div class="bubble-content" style="height: 300px">tall</div></div></div></div>',
+        );
+        // the first frame that paints it
+        const h = await new Promise<number>((res) =>
+          requestAnimationFrame(() => res(item.getBoundingClientRect().height)),
+        );
+        item.remove();
+        return h;
+      });
+      assert.ok(appended >= 300, `an appended tall row has its height at once (${appended})`);
+    },
+  );
 
   await check('the reader scrolls up: it lets go (detached) and the end button appears', async () => {
-    await page.$eval(vp('s1'), (v) => { v.scrollTop = 100; });
+    await page.$eval(vp('s1'), (v) => {
+      v.scrollTop = 100;
+    });
     await settle();
     assert.equal(await state('s1'), 'detached');
     assert.equal(await attr('#s1', 'data-stick'), null);
-    assert.equal(await page.$eval('#s1-end', (b) => [(b as HTMLElement).inert, getComputedStyle(b).visibility, b.getAttribute('data-active')].join()), 'false,visible,true');
+    assert.equal(
+      await page.$eval('#s1-end', (b) =>
+        [(b as HTMLElement).inert, getComputedStyle(b).visibility, b.getAttribute('data-active')].join(),
+      ),
+      'false,visible,true',
+    );
   });
 
-  await check('while detached a new message does not pull the reader down; the end button brings them back and it follows again', async () => {
-    const before = await top('s1');
-    await append('s1', 'new-while-reading');
-    await settle();
-    assert.equal(await top('s1'), before, 'the reader stays put');
-    await page.click('#s1-end');
-    await settle();
-    assert.ok(await fromEnd('s1') <= 1, 'back at the end');
-    assert.equal(await state('s1'), 'default');
-    await append('s1', 'followed');
-    await settle();
-    assert.ok(await fromEnd('s1') <= 1, 'follows the new message');
-  });
+  await check(
+    'while detached a new message does not pull the reader down; the end button brings them back and it follows again',
+    async () => {
+      const before = await top('s1');
+      await append('s1', 'new-while-reading');
+      await settle();
+      assert.equal(await top('s1'), before, 'the reader stays put');
+      await page.click('#s1-end');
+      await settle();
+      assert.ok((await fromEnd('s1')) <= 1, 'back at the end');
+      assert.equal(await state('s1'), 'default');
+      await append('s1', 'followed');
+      await settle();
+      assert.ok((await fromEnd('s1')) <= 1, 'follows the new message');
+    },
+  );
 
   await check('history prepends above: the visible row does not move', async () => {
-    await page.$eval(vp('s1'), (v) => { v.scrollTop = 200; });
-    await settle();
-    const probe = () => page.evaluate(() => {
-      const v = document.querySelector('#s1 > .session-viewport')!.getBoundingClientRect();
-      const it = [...document.querySelectorAll('#s1-content > .session-item')].find((e) => e.getBoundingClientRect().top >= v.top)!;
-      return { id: (it as HTMLElement).dataset.messageId, y: Math.round(it.getBoundingClientRect().top - v.top) };
+    await page.$eval(vp('s1'), (v) => {
+      v.scrollTop = 200;
     });
+    await settle();
+    const probe = () =>
+      page.evaluate(() => {
+        const v = document.querySelector('#s1 > .session-viewport')!.getBoundingClientRect();
+        const it = [...document.querySelectorAll('#s1-content > .session-item')].find(
+          (e) => e.getBoundingClientRect().top >= v.top,
+        )!;
+        return { id: (it as HTMLElement).dataset.messageId, y: Math.round(it.getBoundingClientRect().top - v.top) };
+      });
     const before = await probe();
-    await page.evaluate(() => (globalThis as any).df$.shadcn.session.prepend('s1', ['<div>old 1</div>', '<div>old 2</div>', '<div>old 3</div>']));
+    await page.evaluate(() =>
+      (globalThis as any).df$.shadcn.session.prepend('s1', [
+        '<div>old 1</div>',
+        '<div>old 2</div>',
+        '<div>old 3</div>',
+      ]),
+    );
     await settle();
     const after = await page.evaluate((id) => {
       const v = document.querySelector('#s1 > .session-viewport')!.getBoundingClientRect();
-      return Math.round(document.querySelector(`#s1-content > [data-message-id="${id}"]`)!.getBoundingClientRect().top - v.top);
+      return Math.round(
+        document.querySelector(`#s1-content > [data-message-id="${id}"]`)!.getBoundingClientRect().top - v.top,
+      );
     }, before.id);
     assert.ok(Math.abs(after - before.y) <= 1, `${before.id} stayed at ${before.y}px (now ${after}px)`);
     assert.equal(await page.$eval('#s1-content', (c) => c.firstElementChild!.textContent), 'old 1');
@@ -124,9 +195,15 @@ try {
     const pad = await page.$eval('#s1-content', (c) => parseFloat((c as HTMLElement).style.paddingBlockEnd) || 0);
     assert.ok(pad > 0, 'anchor space reserved');
     // the reply grows past the window: the reserved room shrinks to nothing
-    await page.evaluate(() => (globalThis as any).df$.shadcn.session.append('s1', '<div style="height:400px">long reply</div>'));
+    await page.evaluate(() =>
+      (globalThis as any).df$.shadcn.session.append('s1', '<div style="height:400px">long reply</div>'),
+    );
     await settle();
-    assert.equal(await page.$eval('#s1-content', (c) => (c as HTMLElement).style.paddingBlockEnd), '', 'no space once the reply fills the window');
+    assert.equal(
+      await page.$eval('#s1-content', (c) => (c as HTMLElement).style.paddingBlockEnd),
+      '',
+      'no space once the reply fills the window',
+    );
   });
 
   await check('streaming: aria-busy on the log; a growing reply keeps the end in view; default ends it', async () => {
@@ -143,67 +220,102 @@ try {
       }, reply);
       await page.waitForTimeout(60);
     }
-    assert.ok(await fromEnd('s1') <= 1, 'followed the growing reply');
+    assert.ok((await fromEnd('s1')) <= 1, 'followed the growing reply');
     assert.equal(await state('s1'), 'streaming');
     await page.evaluate(() => (document.getElementById('s1') as any).api.setState('default'));
     assert.equal(await attr('#s1-content', 'aria-busy'), null);
     assert.equal(await state('s1'), 'default');
   });
 
-  await check('State API: detached { to: "start" } / { to: id }, isAtEnd, scrollToMessage, unknown throws', async () => {
-    await page.evaluate(() => (document.getElementById('s1') as any).api.setState('detached', { to: 'start' }));
-    await settle();
-    assert.equal(await top('s1'), 0);
-    assert.deepEqual(await page.evaluate(() => { const { name, config } = (document.getElementById('s1') as any).api.getState(); return { name, config }; }), { name: 'detached', config: { to: 'start' } });
-    assert.equal(await page.evaluate(() => (globalThis as any).df$.shadcn.session.isAtEnd('s1')), false);
-    const ok = await page.evaluate(() => (globalThis as any).df$.shadcn.session.scrollToMessage('s1', 'a10', { smooth: false }));
-    await settle();
-    const r = await page.evaluate(() => [Math.round((document.querySelector('#s1 > .session-viewport') as HTMLElement).scrollTop), (document.querySelector('[data-message-id="a10"]') as HTMLElement).offsetTop - 48]);
-    assert.equal(ok, true);
-    assert.equal(r[0], r[1]);
-    const threw = await page.evaluate(() => { try { (document.getElementById('s1') as any).api.setState('nope'); return false; } catch { return true; } });
-    assert.equal(threw, true);
-  });
+  await check(
+    'State API: detached { to: "start" } / { to: id }, isAtEnd, scrollToMessage, unknown throws',
+    async () => {
+      await page.evaluate(() => (document.getElementById('s1') as any).api.setState('detached', { to: 'start' }));
+      await settle();
+      assert.equal(await top('s1'), 0);
+      assert.deepEqual(
+        await page.evaluate(() => {
+          const { name, config } = (document.getElementById('s1') as any).api.getState();
+          return { name, config };
+        }),
+        { name: 'detached', config: { to: 'start' } },
+      );
+      assert.equal(await page.evaluate(() => (globalThis as any).df$.shadcn.session.isAtEnd('s1')), false);
+      const ok = await page.evaluate(() =>
+        (globalThis as any).df$.shadcn.session.scrollToMessage('s1', 'a10', { smooth: false }),
+      );
+      await settle();
+      const r = await page.evaluate(() => [
+        Math.round((document.querySelector('#s1 > .session-viewport') as HTMLElement).scrollTop),
+        (document.querySelector('[data-message-id="a10"]') as HTMLElement).offsetTop - 48,
+      ]);
+      assert.equal(ok, true);
+      assert.equal(r[0], r[1]);
+      const threw = await page.evaluate(() => {
+        try {
+          (document.getElementById('s1') as any).api.setState('nope');
+          return false;
+        } catch {
+          return true;
+        }
+      });
+      assert.equal(threw, true);
+    },
+  );
 
-  await check('opening positions: data-default-position="start" at the top, "last-anchor" at the last anchored turn', async () => {
-    assert.equal(await top('s2'), 0);
-    assert.equal(await state('s2'), 'detached');
-    const r = await page.evaluate(() => {
-      const v = document.querySelector('#s3 > .session-viewport') as HTMLElement;
-      const last = [...document.querySelectorAll('#s3 [data-anchor]')].pop() as HTMLElement;
-      return [Math.round(v.scrollTop), Math.min(last.offsetTop - 48, v.scrollHeight - v.clientHeight)];
-    });
-    assert.equal(r[0], r[1]);
-  });
+  await check(
+    'opening positions: data-default-position="start" at the top, "last-anchor" at the last anchored turn',
+    async () => {
+      assert.equal(await top('s2'), 0);
+      assert.equal(await state('s2'), 'detached');
+      const r = await page.evaluate(() => {
+        const v = document.querySelector('#s3 > .session-viewport') as HTMLElement;
+        const last = [...document.querySelectorAll('#s3 [data-anchor]')].pop() as HTMLElement;
+        return [Math.round(v.scrollTop), Math.min(last.offsetTop - 48, v.scrollHeight - v.clientHeight)];
+      });
+      assert.equal(r[0], r[1]);
+    },
+  );
 
-  await check('data-track: session-visibility names the current turn and the visible rows; data-current marks it', async () => {
-    const detail = await page.evaluate(() => new Promise<any>((resolve) => {
-      const s = document.getElementById('s3')!;
-      s.addEventListener('session-visibility', (e: any) => resolve(e.detail), { once: true });
-      (s.querySelector('.session-viewport') as HTMLElement).scrollTop = 0;
-    }));
-    assert.equal(detail.currentAnchorId, 'c1');
-    assert.ok(detail.visibleMessageIds.includes('c1'));
-    assert.equal(await attr('#s3 [data-message-id="c1"]', 'data-current'), '');
-  });
+  await check(
+    'data-track: session-visibility names the current turn and the visible rows; data-current marks it',
+    async () => {
+      const detail = await page.evaluate(
+        () =>
+          new Promise<any>((resolve) => {
+            const s = document.getElementById('s3')!;
+            s.addEventListener('session-visibility', (e: any) => resolve(e.detail), { once: true });
+            (s.querySelector('.session-viewport') as HTMLElement).scrollTop = 0;
+          }),
+      );
+      assert.equal(detail.currentAnchorId, 'c1');
+      assert.ok(detail.visibleMessageIds.includes('c1'));
+      assert.equal(await attr('#s3 [data-message-id="c1"]', 'data-current'), '');
+    },
+  );
 
-  await check('data-drop: dragging files shows the overlay; dropping fires session-drop with the accepted files only', async () => {
-    const r = await page.evaluate(() => {
-      const s = document.getElementById('s4')!;
-      const dt = new DataTransfer();
-      dt.items.add(new File(['x'], 'photo.png', { type: 'image/png' }));
-      dt.items.add(new File(['y'], 'notes.txt', { type: 'text/plain' }));
-      let got: string[] = [];
-      s.addEventListener('session-drop', (e: any) => { got = e.detail.files.map((f: File) => f.name); });
-      const target = s.querySelector('.bubble-content')!;
-      target.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer: dt }));
-      const overlay = getComputedStyle(s, '::after').content;
-      const active = s.hasAttribute('data-drop-active');
-      target.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt }));
-      return { overlay, active, after: s.hasAttribute('data-drop-active'), got };
-    });
-    assert.deepEqual(r, { overlay: '"Drop images"', active: true, after: false, got: ['photo.png'] });
-  });
+  await check(
+    'data-drop: dragging files shows the overlay; dropping fires session-drop with the accepted files only',
+    async () => {
+      const r = await page.evaluate(() => {
+        const s = document.getElementById('s4')!;
+        const dt = new DataTransfer();
+        dt.items.add(new File(['x'], 'photo.png', { type: 'image/png' }));
+        dt.items.add(new File(['y'], 'notes.txt', { type: 'text/plain' }));
+        let got: string[] = [];
+        s.addEventListener('session-drop', (e: any) => {
+          got = e.detail.files.map((f: File) => f.name);
+        });
+        const target = s.querySelector('.bubble-content')!;
+        target.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true, dataTransfer: dt }));
+        const overlay = getComputedStyle(s, '::after').content;
+        const active = s.hasAttribute('data-drop-active');
+        target.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt }));
+        return { overlay, active, after: s.hasAttribute('data-drop-active'), got };
+      });
+      assert.deepEqual(r, { overlay: '"Drop images"', active: true, after: false, got: ['photo.png'] });
+    },
+  );
 
   await check('footer and status: the composer sits under the transcript; the status line is quiet', async () => {
     const r = await page.evaluate(() => {
@@ -213,46 +325,102 @@ try {
     });
     assert.deepEqual(r, { below: true, status: '12px' });
   });
-  await check('data-animate: rows slide in from their own side or fade in place; streamed tokens fade in; reduced motion stops all of it', async () => {
-    const enter = (reduce: boolean) => page.evaluate(async (reduceMotion) => {
+  await check(
+    'data-animate: rows slide in from their own side or fade in place; streamed tokens fade in; reduced motion stops all of it',
+    async () => {
+      const enter = (reduce: boolean) =>
+        page.evaluate(async (reduceMotion) => {
+          const session = (globalThis as any).df$.shadcn.session;
+          const add = (id: string, align: string) =>
+            session.append(
+              id,
+              `<div class="message"${align}><div class="message-content"><div class="bubble"><div class="bubble-content">x</div></div></div></div>`,
+            );
+          const props = (el: Element) =>
+            el
+              .getAnimations()
+              .map((a) => (a as CSSTransition).transitionProperty)
+              .sort();
+          // rows off screen are skipped by content-visibility - nothing would transition
+          // (content-visibility needs a moment to count them on screen after the scroll)
+          document.getElementById('s-slide')!.scrollIntoView({ block: 'start' });
+          await new Promise((r) => setTimeout(r, 150));
+          const sent = add('#s-slide', ' data-align="end"');
+          const reply = add('#s-slide', '');
+          const faded = add('#s-fade', '');
+          const token = document.createElement('span');
+          token.className = 'session-token';
+          token.textContent = 'word ';
+          reply.querySelector('.bubble-content')!.append(token);
+          await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          const out = {
+            sent: props(sent),
+            reply: props(reply),
+            faded: props(faded),
+            token: props(token),
+            sentFrom: '',
+            replyFrom: '',
+          };
+          // the starting side: read the running transition's from-keyframe
+          const from = (el: Element) =>
+            (
+              el.getAnimations().find((a) => (a as CSSTransition).transitionProperty === 'translate') as any
+            )?.effect?.getKeyframes?.()[0]?.translate ?? '';
+          out.sentFrom = from(sent);
+          out.replyFrom = from(reply);
+          for (const el of [sent, reply, faded]) el.remove();
+          return { reduceMotion, ...out };
+        }, reduce);
+      // this context runs with reduced motion (deterministic scrolling) - allow motion for the first half
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      const r = await enter(false);
+      assert.deepEqual(
+        [r.sent, r.reply, r.faded, r.token],
+        [['opacity', 'translate'], ['opacity', 'translate'], ['opacity'], ['opacity']],
+      );
+      assert.ok(r.sentFrom.startsWith('24px') && r.replyFrom.startsWith('-24px'), JSON.stringify(r));
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      const still = await enter(true);
+      await page.emulateMedia({ reducedMotion: null });
+      assert.deepEqual([still.sent, still.reply, still.faded, still.token], [[], [], [], []]);
+    },
+  );
+
+  await check('a row removed under an anchored turn (a typing indicator) keeps the reader in place', async () => {
+    // VERIFIED (a scripted AI Chat conversation): the scroll range shrank before the room under the turn was
+    // measured again, the browser clamped the position and the view jumped up on every reply
+    const r = await page.evaluate(async () => {
       const session = (globalThis as any).df$.shadcn.session;
-      const add = (id: string, align: string) => session.append(id, `<div class="message"${align}><div class="message-content"><div class="bubble"><div class="bubble-content">x</div></div></div></div>`);
-      const props = (el: Element) => el.getAnimations().map((a) => (a as CSSTransition).transitionProperty).sort();
-      // rows off screen are skipped by content-visibility - nothing would transition
-      // (content-visibility needs a moment to count them on screen after the scroll)
-      document.getElementById('s-slide')!.scrollIntoView({ block: 'start' });
-      await new Promise((r) => setTimeout(r, 150));
-      const sent = add('#s-slide', ' data-align="end"');
-      const reply = add('#s-slide', '');
-      const faded = add('#s-fade', '');
-      const token = document.createElement('span');
-      token.className = 'session-token';
-      token.textContent = 'word ';
-      reply.querySelector('.bubble-content')!.append(token);
-      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-      const out = { sent: props(sent), reply: props(reply), faded: props(faded), token: props(token), sentFrom: '', replyFrom: '' };
-      // the starting side: read the running transition's from-keyframe
-      const from = (el: Element) => ((el.getAnimations().find((a) => (a as CSSTransition).transitionProperty === 'translate') as any)?.effect?.getKeyframes?.()[0]?.translate ?? '');
-      out.sentFrom = from(sent);
-      out.replyFrom = from(reply);
-      for (const el of [sent, reply, faded]) el.remove();
-      return { reduceMotion, ...out };
-    }, reduce);
-    // this context runs with reduced motion (deterministic scrolling) - allow motion for the first half
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    const r = await enter(false);
-    assert.deepEqual([r.sent, r.reply, r.faded, r.token], [['opacity', 'translate'], ['opacity', 'translate'], ['opacity'], ['opacity']]);
-    assert.ok(r.sentFrom.startsWith('24px') && r.replyFrom.startsWith('-24px'), JSON.stringify(r));
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    const still = await enter(true);
-    await page.emulateMedia({ reducedMotion: null });
-    assert.deepEqual([still.sent, still.reply, still.faded, still.token], [[], [], [], []]);
+      const row = (text: string) =>
+        `<div class="message"><div class="message-content"><div class="bubble"><div class="bubble-content">${text}</div></div></div></div>`;
+      const s = document.getElementById('s1')!;
+      const vp = s.querySelector('.session-viewport') as HTMLElement;
+      const frames = () => new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+      const asked = session.append(s, row('A question'), { anchor: true });
+      await new Promise((res) => setTimeout(res, 1100)); // the move to the turn and its hold
+      const typing = session.append(s, row('...'));
+      await frames();
+      const before = vp.scrollTop;
+      typing.remove();
+      await frames();
+      const after = vp.scrollTop;
+      const reply = session.append(s, row('An answer'));
+      await frames();
+      const replied = vp.scrollTop;
+      asked.remove();
+      reply.remove();
+      return { before, after, replied };
+    });
+    assert.ok(r.before > 0, JSON.stringify(r));
+    assert.equal(r.after, r.before, 'removing the row below moved the view');
+    assert.equal(r.replied, r.before, 'the reply below moved the view');
   });
 
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
-    await assertRenderContract(page, '.session[id]', ['default','detached','streaming'], { runtimeAttrs: ['data-pending-scroll','data-autoscrolling','style','data-stick'] });
+    await assertRenderContract(page, '.session[id]', ['default', 'detached', 'streaming'], {
+      runtimeAttrs: ['data-pending-scroll', 'data-autoscrolling', 'style', 'data-stick'],
+    });
   });
-
 } finally {
   await browser.close();
   server.stop?.();

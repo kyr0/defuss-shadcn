@@ -1,0 +1,1633 @@
+// -- Chat Components ------------------------------------------------------------
+// A Component Schema document (plain JSON - what a script or a language model writes) shown in a chat as the
+// system's own components: a Card with Inputs, Number Inputs (with currency), Selects, Radio Groups, Checkboxes,
+// Switches, Sliders, Ratings, date fields, a whole Questionnaire, text, lists, tables and plans - and actions or
+// quick replies. The reader answers in place; the answers come back as typed JSON plus a sentence for the transcript.
+// Every text in a document is text: nothing in it becomes markup (a model's output is untrusted input).
+// Plus df$.shadcn.chatScript: scripted conversations - a graph of nodes that say, ask with Chat Components or for
+// free text, and branch on the answers - no language model.
+
+// Shared preamble (AGENTS.md "State API"); the implementation lives in core.js —
+// build.ts rewrites this import into a df$.shadcn.shared binding in dist/.
+import { defussGlobals, defussQuery, componentState, bindComponent, persisted } from '../../../shared/state-api.js';
+
+const df$ = defussGlobals();
+const dfDollar = defussQuery();
+
+// VERIFIED: (verify's component types ratchet - tsc -p tsconfig.components.json) every type this file's API docs
+// state holds against its code.
+
+// -- The Component Schema (version 1) -------------------------------------------------
+
+/** What a node is: content to read (text, list, table, facts, plan, alert, divider), a field to answer, or a
+ *  questionnaire - several steps of fields. */
+type ComponentNodeType =
+  | 'text'
+  | 'list'
+  | 'table'
+  | 'facts'
+  | 'plan'
+  | 'alert'
+  | 'divider'
+  | 'input'
+  | 'textarea'
+  | 'number'
+  | 'currency'
+  | 'select'
+  | 'radio'
+  | 'checkbox'
+  | 'switch'
+  | 'slider'
+  | 'rating'
+  | 'date'
+  | 'questionnaire';
+
+/** One answer: a text, a number, a yes / no, the picked values of a group, null when unanswered. */
+type ComponentAnswer = string | number | boolean | string[] | null;
+
+/** Every answer of a card, by field name. */
+type ComponentAnswers = Record<string, ComponentAnswer>;
+
+/** A choice of a select, a radio group or a checkbox group. */
+interface ComponentOption {
+  /** the answer it gives */
+  value: string;
+  /** what the reader sees (default: the value) */
+  label?: string;
+  /** a second line under the label */
+  description?: string;
+  /** in a questionnaire step: the step this choice leads to */
+  goto?: string;
+}
+
+/** A row of a facts list. */
+interface ComponentFact {
+  /** the term */
+  label: string;
+  /** its value */
+  value: string | number;
+}
+
+/** A step of a plan, or a step of a questionnaire. */
+interface ComponentStep {
+  /** the step's id (a questionnaire's steps need one; a checkable plan answers with them) */
+  id?: string;
+  /** what the step says or asks */
+  title: string;
+  /** a second line under the title */
+  description?: string;
+  /** a questionnaire step: its fields */
+  fields?: ComponentNode[];
+  /** a questionnaire step: may be skipped */
+  optional?: boolean;
+  /** a questionnaire step: the step after it (default: the next one) */
+  next?: string;
+}
+
+/** A branch of a questionnaire: when the answers hold the condition, go to a step. */
+interface ComponentBranch {
+  /** the Questionnaire's condition grammar: { field, op, value }, a list (all hold) or { any } / { all } */
+  when: unknown;
+  /** the step it leads to */
+  goto: string;
+}
+
+/** One node of a card's body. Which fields apply depends on its type - the Component Schema page lists them. */
+interface ComponentNode {
+  /** what the node is */
+  type: ComponentNodeType;
+  /** a field's answer name (letters, digits, - and _); a checkable plan's too */
+  name?: string;
+  /** a field's label; a table's caption */
+  label?: string;
+  /** a short help line under a field */
+  hint?: string;
+  /** the text of a text node or an alert (inline **bold**, *emphasis* and `code`) */
+  text?: string;
+  /** an alert's or a questionnaire's title */
+  title?: string;
+  /** an alert's tone */
+  tone?: 'default' | 'destructive';
+  /** a list's items */
+  items?: string[];
+  /** a list: numbered */
+  ordered?: boolean;
+  /** a table's column headings */
+  columns?: string[];
+  /** a table's rows */
+  rows?: Array<Array<string | number>>;
+  /** a facts list's rows */
+  facts?: ComponentFact[];
+  /** a plan's or a questionnaire's steps */
+  steps?: ComponentStep[];
+  /** a field must be answered */
+  required?: boolean;
+  /** a field's starting answer */
+  default?: ComponentAnswer;
+  /** a field's placeholder text */
+  placeholder?: string;
+  /** an input's kind */
+  inputType?: 'text' | 'email' | 'url' | 'tel' | 'time';
+  /** the lowest number, amount, slider value or date (YYYY-MM-DD) */
+  min?: number | string;
+  /** the highest number, amount, slider value or date; a rating's number of stars (default 5) */
+  max?: number | string;
+  /** a number's or a slider's step */
+  step?: number;
+  /** a number's unit, shown beside it (h, kg, %) */
+  unit?: string;
+  /** a currency field: the ISO 4217 code (EUR, USD, JPY) */
+  currency?: string;
+  /** a currency field: the locale that formats it (default: the page's language) */
+  locale?: string;
+  /** an input's or a textarea's shortest answer */
+  minLength?: number;
+  /** an input's or a textarea's longest answer */
+  maxLength?: number;
+  /** an input's pattern (a regular expression the whole answer must match) */
+  pattern?: string;
+  /** a textarea's height in lines */
+  lines?: number;
+  /** a select's, a radio group's or a checkbox group's choices (a string is value and label) */
+  options?: Array<string | ComponentOption>;
+  /** a radio or checkbox group: the label of a free-text "Other" choice */
+  other?: string;
+  /** a questionnaire: branches per step id, tried before the step's next */
+  branches?: Record<string, ComponentBranch[]>;
+  /** a questionnaire: a single choice moves on once picked */
+  autoAdvance?: boolean;
+  /** a questionnaire: the title of its review step (default "Check your answers") */
+  review?: string;
+}
+
+/** A button of a card. */
+interface ComponentAction {
+  /** names the action in the answer */
+  id: string;
+  /** the button's text */
+  label: string;
+  /** the Button variant */
+  variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+  /** checks the fields and sends the answers */
+  submit?: boolean;
+  /** a quick reply: the text it answers with */
+  reply?: string;
+  /** ends the card without an answer (the cancelled state) */
+  cancel?: boolean;
+}
+
+/** A Component Schema document - what a chat shows: a card of content, fields and actions (version 1). */
+interface ComponentSchema {
+  /** marks the document: "component-schema" */
+  schema?: 'component-schema';
+  /** the format's version: 1 */
+  version: number;
+  /** names the card - its answer carries it */
+  id?: string;
+  /** the card's title */
+  title?: string;
+  /** a line under the title */
+  description?: string;
+  /** what the card shows, top to bottom */
+  body?: ComponentNode[];
+  /** its buttons (default: Send when it has fields) */
+  actions?: ComponentAction[];
+}
+
+/** A problem validate() found. */
+interface ComponentProblem {
+  /** where: a JSON path such as body[2].options */
+  path: string;
+  /** what is wrong */
+  message: string;
+  /** an error keeps the card from showing; a warning is reported only */
+  level: 'error' | 'warning';
+}
+
+/** What chat-components-answer carries. */
+interface ChatComponentsAnswerDetail {
+  /** the document's id ('' without one) */
+  id: string;
+  /** the action that finished the card */
+  action: string;
+  /** the answers, typed by the document's fields */
+  answers: ComponentAnswers;
+  /** a quick reply's text, else null */
+  reply: string | null;
+  /** one readable sentence of the answers - for the transcript and a language model */
+  summary: string;
+}
+
+/** A Component Schema fence found in Markdown. */
+interface ComponentSchemaFence {
+  /** where the fence starts in the text */
+  start: number;
+  /** where it ends (after its closing line; the text's length while it is still open) */
+  end: number;
+  /** the JSON between the fence lines */
+  source: string;
+  /** the parsed document, null when the JSON does not parse */
+  spec: ComponentSchema | null;
+  /** false while the fence is still being written (no closing line yet) */
+  closed: boolean;
+  /** the JSON parse error, '' when it parses */
+  error: string;
+}
+
+/** The info string a Markdown fence carries: ```ui::component-schema */
+const FENCE = 'ui::component-schema';
+
+const FIELD_TYPES = [
+  'input',
+  'textarea',
+  'number',
+  'currency',
+  'select',
+  'radio',
+  'checkbox',
+  'switch',
+  'slider',
+  'rating',
+  'date',
+] as const;
+const CONTENT_TYPES = ['text', 'list', 'table', 'facts', 'plan', 'alert', 'divider'] as const;
+const NODE_TYPES = [...CONTENT_TYPES, ...FIELD_TYPES, 'questionnaire'];
+const NAME_RE = /^[A-Za-z][\w-]*$/;
+const NODE_KEYS = new Set([
+  'type',
+  'name',
+  'label',
+  'hint',
+  'text',
+  'title',
+  'tone',
+  'items',
+  'ordered',
+  'columns',
+  'rows',
+  'facts',
+  'steps',
+  'required',
+  'default',
+  'placeholder',
+  'inputType',
+  'min',
+  'max',
+  'step',
+  'unit',
+  'currency',
+  'locale',
+  'minLength',
+  'maxLength',
+  'pattern',
+  'lines',
+  'options',
+  'other',
+  'branches',
+  'autoAdvance',
+  'review',
+]);
+const isField = (n) => (FIELD_TYPES as readonly string[]).includes(n?.type) || (n?.type === 'plan' && !!n.name);
+
+// -- validate ---------------------------------------------------------------------------
+
+function validate(spec): ComponentProblem[] {
+  const out: ComponentProblem[] = [];
+  const err = (path, message) => out.push({ path, message, level: 'error' });
+  const warn = (path, message) => out.push({ path, message, level: 'warning' });
+  if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
+    err('', 'a Component Schema document is a JSON object');
+    return out;
+  }
+  if (spec.schema !== undefined && spec.schema !== 'component-schema') err('schema', 'must be "component-schema"');
+  if (spec.version === undefined) warn('version', 'missing - read as 1');
+  else if (spec.version !== 1) err('version', `version ${JSON.stringify(spec.version)} is not supported (1)`);
+  for (const k of ['id', 'title', 'description'])
+    if (spec[k] !== undefined && typeof spec[k] !== 'string') err(k, 'must be a string');
+  for (const k of Object.keys(spec))
+    if (!['schema', 'version', 'id', 'title', 'description', 'body', 'actions'].includes(k))
+      warn(k, 'unknown key, ignored');
+  const names = new Set<string>();
+  const body = spec.body ?? [];
+  if (!Array.isArray(body)) err('body', 'must be a list of nodes');
+  else {
+    const steps = new Set<string>();
+    const nodeCheck = (n, path, inStep = false, stepIds: Set<string> | null = null) => {
+      if (!n || typeof n !== 'object' || Array.isArray(n)) return err(path, 'a node is an object');
+      if (!NODE_TYPES.includes(n.type)) return err(`${path}.type`, `unknown type ${JSON.stringify(n.type)}`);
+      for (const k of Object.keys(n)) if (!NODE_KEYS.has(k)) warn(`${path}.${k}`, 'unknown key, ignored');
+      if (inStep && !isField(n) && n.type !== 'text') err(`${path}.type`, 'a questionnaire step holds fields and text');
+      if (isField(n)) {
+        if (typeof n.name !== 'string' || !NAME_RE.test(n.name))
+          err(`${path}.name`, 'a field needs a name (letters, digits, - and _, starting with a letter)');
+        else if (names.has(n.name)) err(`${path}.name`, `the name "${n.name}" is used twice`);
+        else names.add(n.name);
+        if (n.label !== undefined && typeof n.label !== 'string') err(`${path}.label`, 'must be a string');
+      }
+      const str = (k) => n[k] !== undefined && typeof n[k] !== 'string' && err(`${path}.${k}`, 'must be a string');
+      ['text', 'title', 'hint', 'placeholder', 'unit', 'other', 'pattern', 'review'].forEach(str);
+      if ((n.type === 'text' || n.type === 'alert') && typeof n.text !== 'string' && typeof n.title !== 'string')
+        err(`${path}.text`, 'missing');
+      if (n.type === 'list' && (!Array.isArray(n.items) || !n.items.length)) err(`${path}.items`, 'a list of texts');
+      if (n.type === 'table') {
+        if (!Array.isArray(n.columns) || !n.columns.length) err(`${path}.columns`, 'a list of headings');
+        if (!Array.isArray(n.rows)) err(`${path}.rows`, 'a list of rows');
+        else
+          n.rows.forEach((r, i) => {
+            if (!Array.isArray(r)) err(`${path}.rows[${i}]`, 'a row is a list of cells');
+          });
+      }
+      if (n.type === 'facts' && (!Array.isArray(n.facts) || !n.facts.length))
+        err(`${path}.facts`, 'a list of { label, value }');
+      if (n.type === 'plan' && (!Array.isArray(n.steps) || !n.steps.length)) err(`${path}.steps`, 'a list of steps');
+      if (n.type === 'plan' && Array.isArray(n.steps))
+        n.steps.forEach((s, i) => {
+          if (!s || typeof s.title !== 'string') err(`${path}.steps[${i}].title`, 'missing');
+        });
+      if (['select', 'radio'].includes(n.type) && (!Array.isArray(n.options) || !n.options.length))
+        err(`${path}.options`, 'a list of choices');
+      if (n.options !== undefined) {
+        if (!Array.isArray(n.options)) err(`${path}.options`, 'a list of choices');
+        else {
+          const seen = new Set();
+          n.options.forEach((o, i) => {
+            const v = typeof o === 'string' ? o : o?.value;
+            if (typeof v !== 'string' || !v) err(`${path}.options[${i}]`, 'a choice is a text or { value, label }');
+            else if (seen.has(v)) err(`${path}.options[${i}].value`, `"${v}" twice`);
+            else seen.add(v);
+            if (o && typeof o === 'object' && o.goto !== undefined && stepIds && !stepIds.has(o.goto))
+              err(`${path}.options[${i}].goto`, `no step "${o.goto}"`);
+          });
+        }
+      }
+      if (n.type === 'currency' && (typeof n.currency !== 'string' || !/^[A-Z]{3}$/.test(n.currency)))
+        err(`${path}.currency`, 'an ISO 4217 code such as EUR');
+      if (n.inputType !== undefined && !['text', 'email', 'url', 'tel', 'time'].includes(n.inputType))
+        err(`${path}.inputType`, 'text, email, url, tel or time');
+      if (n.tone !== undefined && !['default', 'destructive'].includes(n.tone))
+        err(`${path}.tone`, 'default or destructive');
+      if (typeof n.min === 'number' && typeof n.max === 'number' && n.min > n.max) err(`${path}.min`, 'above max');
+      if (n.pattern !== undefined)
+        try {
+          new RegExp(n.pattern);
+        } catch {
+          err(`${path}.pattern`, 'not a regular expression');
+        }
+      if (n.type === 'questionnaire') {
+        if (inStep) return err(path, 'a questionnaire does not nest');
+        if (!Array.isArray(n.steps) || !n.steps.length) return err(`${path}.steps`, 'a list of steps');
+        const ids = new Set<string>();
+        n.steps.forEach((s, i) => {
+          if (!s || typeof s.id !== 'string' || !NAME_RE.test(s.id))
+            err(`${path}.steps[${i}].id`, 'a step needs an id');
+          else if (ids.has(s.id) || s.id === 'review') err(`${path}.steps[${i}].id`, `"${s.id}" twice or reserved`);
+          else ids.add(s.id);
+        });
+        n.steps.forEach((s, i) => {
+          const sp = `${path}.steps[${i}]`;
+          if (!s) return;
+          if (typeof s.title !== 'string') err(`${sp}.title`, 'missing');
+          if (s.next !== undefined && !ids.has(s.next) && s.next !== 'review') err(`${sp}.next`, `no step "${s.next}"`);
+          if (!Array.isArray(s.fields) || !s.fields.some(isField)) err(`${sp}.fields`, 'a step asks with fields');
+          else s.fields.forEach((f, j) => nodeCheck(f, `${sp}.fields[${j}]`, true, ids));
+        });
+        if (n.branches !== undefined) {
+          if (typeof n.branches !== 'object' || Array.isArray(n.branches))
+            err(`${path}.branches`, 'an object by step id');
+          else
+            for (const [id, list] of Object.entries(n.branches)) {
+              if (!ids.has(id)) err(`${path}.branches.${id}`, `no step "${id}"`);
+              if (!Array.isArray(list)) err(`${path}.branches.${id}`, 'a list of { when, goto }');
+              else
+                list.forEach((b, i) => {
+                  if (!b || b.when === undefined) err(`${path}.branches.${id}[${i}].when`, 'missing');
+                  if (!b || (!ids.has(b.goto) && b.goto !== 'review'))
+                    err(`${path}.branches.${id}[${i}].goto`, `no step "${b?.goto}"`);
+                });
+            }
+        }
+        for (const s of n.steps) steps.add(s?.id);
+      }
+    };
+    body.forEach((n, i) => nodeCheck(n, `body[${i}]`));
+    const q = body.filter((n) => n?.type === 'questionnaire');
+    if (q.length > 1) err('body', 'one questionnaire per card');
+    if (q.length && body.some(isField)) err('body', 'a card with a questionnaire asks only through it');
+  }
+  if (spec.actions !== undefined) {
+    if (!Array.isArray(spec.actions)) err('actions', 'a list of { id, label }');
+    else {
+      const ids = new Set();
+      spec.actions.forEach((a, i) => {
+        const p = `actions[${i}]`;
+        if (!a || typeof a !== 'object') return err(p, 'an action is { id, label }');
+        if (typeof a.id !== 'string' || !a.id) err(`${p}.id`, 'missing');
+        else if (ids.has(a.id)) err(`${p}.id`, `"${a.id}" twice`);
+        else ids.add(a.id);
+        if (typeof a.label !== 'string' || !a.label) err(`${p}.label`, 'missing');
+        if (a.reply !== undefined && typeof a.reply !== 'string') err(`${p}.reply`, 'must be a string');
+        if (a.variant !== undefined && !['default', 'secondary', 'outline', 'ghost', 'destructive'].includes(a.variant))
+          err(`${p}.variant`, 'a Button variant');
+      });
+    }
+  }
+  return out;
+}
+
+// -- render: the document as the system's markup -----------------------------------------
+
+const esc = (v) =>
+  String(v ?? '').replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+  );
+/** inline **bold**, *emphasis* and `code` - on escaped text, so nothing else becomes markup */
+const inline = (v) =>
+  esc(v)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
+const attr = (name, v) =>
+  v === undefined || v === null || v === false ? '' : v === true ? ` ${name}` : ` ${name}="${esc(v)}"`;
+const optionsOf = (n): ComponentOption[] =>
+  (n.options ?? []).map((o) => (typeof o === 'string' ? { value: o, label: o } : { ...o, label: o.label ?? o.value }));
+const actionsOf = (spec): ComponentAction[] =>
+  spec.actions?.length
+    ? spec.actions
+    : (spec.body ?? []).some((n) => isField(n) || n?.type === 'questionnaire')
+      ? [{ id: 'submit', label: 'Send', submit: true }]
+      : [];
+/** JSON inside a <script>: no "</script>" can end it early */
+const scriptJson = (v) => JSON.stringify(v).replace(/</g, '\\u003c');
+
+function hintOf(n, id) {
+  return n.hint ? `<p class="chat-components-hint" id="${id}-hint">${inline(n.hint)}</p>` : '';
+}
+const described = (n, id) => (n.hint ? ` aria-describedby="${id}-hint"` : '');
+
+/** a choice list (radio / checkbox group): plain rows in a card, choice cards in a questionnaire step */
+function choices(n, id, kind, inStep) {
+  const list = optionsOf(n);
+  const def = n.default;
+  const checked = (v) => (Array.isArray(def) ? def.includes(v) : def === v);
+  const cls = kind === 'radio' ? 'class="radio"' : 'class="checkbox"';
+  const rows = list.map((o, i) => {
+    const cid = `${id}-${i}`;
+    const own = `type="${kind}" name="${esc(n.name)}" value="${esc(o.value)}"${attr('checked', checked(o.value))}${attr('required', kind === 'radio' && n.required && i === 0)}`;
+    if (inStep)
+      return `<label class="questionnaire-choice"><input ${own}${attr('data-goto', o.goto)}><span class="questionnaire-choice-label">${esc(o.label)}</span></label>`;
+    const text = `<span class="chat-components-choice-label">${esc(o.label)}</span>${o.description ? `<span class="chat-components-choice-description">${esc(o.description)}</span>` : ''}`;
+    return `<div class="chat-components-choice"><input ${cls} id="${cid}" ${own}><label for="${cid}">${text}</label></div>`;
+  });
+  if (n.other) {
+    const cid = `${id}-other`;
+    const otherName = `${n.name}Other`;
+    rows.push(
+      inStep
+        ? `<label class="questionnaire-choice"><input type="${kind}" name="${esc(n.name)}" value="other"><span class="questionnaire-choice-label">${esc(n.other)}</span><input class="questionnaire-other" name="${esc(otherName)}" aria-label="${esc(n.other)}"></label>`
+        : `<div class="chat-components-choice" data-other><input ${cls} type="${kind}" name="${esc(n.name)}" id="${cid}" value="other"><label for="${cid}"><span class="chat-components-choice-label">${esc(n.other)}</span></label><input class="input chat-components-other" data-size="sm" name="${esc(otherName)}" aria-label="${esc(n.other)}"></div>`,
+    );
+  }
+  if (inStep) return `<div class="questionnaire-choices">${rows.join('')}</div>${hintOf(n, id)}`;
+  return `<fieldset class="chat-components-group" data-field="${esc(n.name)}"${described(n, id)}><legend class="label">${esc(n.label ?? n.name)}</legend>${rows.join('')}${hintOf(n, id)}</fieldset>`;
+}
+
+function fieldMarkup(n, prefix, inStep = false) {
+  const id = `${prefix}-${n.name}`;
+  const label = `<label class="label" for="${id}">${esc(n.label ?? n.name)}</label>`;
+  const wrap = (control) =>
+    `<div class="${inStep ? 'questionnaire-field' : 'chat-components-field'}" data-field="${esc(n.name)}">${label}${control}${hintOf(n, id)}</div>`;
+  const def = n.default ?? undefined;
+  const common = `id="${id}" name="${esc(n.name)}"${attr('required', n.required)}${described(n, id)}`;
+  switch (n.type) {
+    case 'input':
+      return wrap(
+        `<input class="input" type="${n.inputType ?? 'text'}" ${common}${attr('placeholder', n.placeholder)}${attr('value', def)}${attr('minlength', n.minLength)}${attr('maxlength', n.maxLength)}${attr('pattern', n.pattern)}>`,
+      );
+    case 'textarea':
+      return wrap(
+        `<textarea class="textarea" rows="${Number(n.lines) || 3}" ${common}${attr('placeholder', n.placeholder)}${attr('minlength', n.minLength)}${attr('maxlength', n.maxLength)}>${esc(def ?? '')}</textarea>`,
+      );
+    case 'date':
+      return wrap(
+        `<input class="input" type="date" ${common}${attr('min', n.min)}${attr('max', n.max)}${attr('value', def)}>`,
+      );
+    case 'number':
+      return wrap(
+        `<div class="number-input"><button type="button" data-action="decrement" aria-label="Decrease">−</button><input type="number" ${common}${attr('min', n.min)}${attr('max', n.max)}${attr('step', n.step)}${attr('value', def)}${attr('placeholder', n.placeholder)}>${n.unit ? `<label class="number-input-unit" for="${id}">${esc(n.unit)}</label>` : ''}<button type="button" data-action="increment" aria-label="Increase">+</button></div>`,
+      );
+    case 'currency':
+      return wrap(
+        `<div class="number-input" data-currency="${esc(n.currency)}"${attr('data-locale', n.locale)}${attr('data-min', n.min)}${attr('data-max', n.max)}><input type="text" id="${id}"${attr('required', n.required)}${described(n, id)}${attr('value', def)}${attr('placeholder', n.placeholder)}><input type="hidden" name="${esc(n.name)}" data-number-output data-answer></div>`,
+      );
+    case 'select':
+      return wrap(
+        `<select class="select" ${common}><option value=""${attr('selected', def === undefined)}>${esc(n.placeholder ?? 'Choose ...')}</option>${optionsOf(
+          n,
+        )
+          .map(
+            (o) =>
+              `<option value="${esc(o.value)}"${attr('selected', def === o.value)}${attr('data-goto', inStep ? o.goto : undefined)}>${esc(o.label)}</option>`,
+          )
+          .join('')}</select>`,
+      );
+    case 'radio':
+      return choices(n, id, 'radio', inStep);
+    case 'checkbox':
+      if (n.options) return choices(n, id, 'checkbox', inStep);
+      return `<div class="chat-components-choice" data-field="${esc(n.name)}"><input class="checkbox" type="checkbox" ${common}${attr('checked', def === true)}><label for="${id}"><span class="chat-components-choice-label">${esc(n.label ?? n.name)}</span></label>${hintOf(n, id)}</div>`;
+    case 'switch':
+      return `<div class="switch-item chat-components-switch" data-field="${esc(n.name)}"><input class="switch" type="checkbox" role="switch" ${common}${attr('checked', def === true)}><label for="${id}">${esc(n.label ?? n.name)}</label>${hintOf(n, id)}</div>`;
+    case 'slider': {
+      const min = n.min ?? 0;
+      const max = n.max ?? 100;
+      const value = def ?? min;
+      return wrap(
+        `<div class="chat-components-slider"><input class="slider" type="range" ${common}${attr('min', min)}${attr('max', max)}${attr('step', n.step)}${attr('data-unit', n.unit)} value="${esc(value)}"><output for="${id}" class="chat-components-output">${esc(value)}</output></div>`,
+      );
+    }
+    case 'rating': {
+      const stars = Math.max(1, Math.min(10, Number(n.max) || 5));
+      const items = Array.from({ length: stars }, (_, i) => {
+        const v = i + 1;
+        return `<label class="rating-item"><input class="rating-input" type="radio" name="${esc(n.name)}" value="${v}" aria-label="${v} ${v === 1 ? 'star' : 'stars'}"${attr('checked', def === v)}${attr('required', n.required && i === 0)}></label>`;
+      }).join('');
+      if (inStep)
+        return `<div class="rating" role="radiogroup" aria-label="${esc(n.label ?? n.name)}">${items}</div>${hintOf(n, id)}`;
+      return `<fieldset class="chat-components-group" data-field="${esc(n.name)}"><legend class="label">${esc(n.label ?? n.name)}</legend><div class="rating" role="radiogroup" aria-label="${esc(n.label ?? n.name)}">${items}</div>${hintOf(n, id)}</fieldset>`;
+    }
+    default:
+      return '';
+  }
+}
+
+function contentMarkup(n, prefix) {
+  switch (n.type) {
+    case 'text':
+      return `<p class="chat-components-text">${n.title ? `<strong>${esc(n.title)}</strong> ` : ''}${inline(n.text ?? '')}</p>`;
+    case 'list': {
+      const tag = n.ordered ? 'ol' : 'ul';
+      return `<${tag} class="chat-components-list">${n.items.map((i) => `<li>${inline(i)}</li>`).join('')}</${tag}>`;
+    }
+    case 'table':
+      return `<div class="table-container"><table class="table">${n.label ? `<caption class="table-caption">${esc(n.label)}</caption>` : ''}<thead><tr class="table-row">${n.columns.map((c) => `<th class="table-head">${esc(c)}</th>`).join('')}</tr></thead><tbody>${n.rows
+        .map(
+          (r) =>
+            `<tr class="table-row">${r.map((c) => `<td class="table-cell"${typeof c === 'number' ? ' data-numeric' : ''}>${esc(c)}</td>`).join('')}</tr>`,
+        )
+        .join('')}</tbody></table></div>`;
+    case 'facts':
+      return `<dl class="chat-components-facts">${n.facts.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>`;
+    case 'plan': {
+      const rows = n.steps.map((s, i) => {
+        const text = `<span class="chat-components-plan-title">${inline(s.title)}</span>${s.description ? `<span class="chat-components-plan-description">${inline(s.description)}</span>` : ''}`;
+        if (!n.name) return `<li>${text}</li>`;
+        const cid = `${prefix}-${n.name}-${i}`;
+        const value = s.id ?? String(i + 1);
+        const on = Array.isArray(n.default) ? n.default.includes(value) : true;
+        return `<li><input class="checkbox" type="checkbox" name="${esc(n.name)}" id="${cid}" value="${esc(value)}"${attr('checked', on)}><label for="${cid}">${text}</label></li>`;
+      });
+      return `<ol class="chat-components-plan"${n.name ? ` data-field="${esc(n.name)}" data-checkable` : ''}${n.label ? ` aria-label="${esc(n.label)}"` : ''}>${rows.join('')}</ol>`;
+    }
+    case 'alert':
+      return `<div class="alert"${n.tone === 'destructive' ? ' data-variant="destructive"' : ''}><div class="alert-content">${n.title ? `<h5 class="alert-title">${esc(n.title)}</h5>` : ''}${n.text ? `<p class="alert-description">${inline(n.text)}</p>` : ''}</div></div>`;
+    case 'divider':
+      return '<hr class="separator">';
+    default:
+      return '';
+  }
+}
+
+function questionnaireMarkup(n, prefix, submitLabel) {
+  const q = `${prefix}-q`;
+  const steps = n.steps
+    .map((s) => {
+      const fields = (s.fields ?? [])
+        .map((f) => (f.type === 'text' ? contentMarkup(f, q) : fieldMarkup(f, q, true)))
+        .join('');
+      return `<fieldset class="questionnaire-step" data-step="${esc(s.id)}"${attr('data-next', s.next)}${attr('data-optional', !!s.optional)}><legend class="questionnaire-title">${esc(s.title)}</legend>${s.description ? `<p class="questionnaire-description">${inline(s.description)}</p>` : ''}${fields}</fieldset>`;
+    })
+    .join('');
+  // the currency fields' required lives on their visible text input, which the questionnaire does not read
+  const validate = {};
+  for (const s of n.steps)
+    for (const f of s.fields ?? [])
+      if (f.type === 'currency' && f.required)
+        (validate[s.id] ??= []).push({
+          assert: [{ field: f.name, op: 'answered' }],
+          message: 'Enter an amount.',
+          field: f.name,
+        });
+  const rules = { branches: n.branches ?? {}, validate };
+  return `<form class="questionnaire chat-components-questionnaire" id="${q}" aria-label="${esc(n.title ?? 'Questions')}" data-persist="none"${attr('data-auto-advance', !!n.autoAdvance)}><div class="questionnaire-progress"></div>${steps}<fieldset class="questionnaire-step" data-step="review" data-end><legend class="questionnaire-title">${esc(n.review ?? 'Check your answers')}</legend><div class="questionnaire-summary"></div></fieldset><div class="questionnaire-actions"><button class="btn" data-variant="ghost" type="button" data-questionnaire="back">Back</button><button class="btn" data-variant="outline" type="submit" data-questionnaire="skip">Skip</button><button class="btn" type="submit" data-questionnaire="next">Continue</button><button class="btn" type="submit" data-questionnaire="submit">${esc(submitLabel)}</button></div><script type="application/json" class="questionnaire-rules">${scriptJson(rules)}</script></form>`;
+}
+
+/** the card a valid document becomes (the inside of .chat-components) */
+function cardMarkup(spec, prefix) {
+  const body = spec.body ?? [];
+  const q = body.find((n) => n.type === 'questionnaire');
+  const actions = actionsOf(spec);
+  const submit = actions.find((a) => a.submit);
+  const header =
+    spec.title || spec.description
+      ? `<div class="card-header">${spec.title ? `<h3 class="card-title">${esc(spec.title)}</h3>` : ''}${spec.description ? `<p class="card-description">${inline(spec.description)}</p>` : ''}</div>`
+      : '';
+  const content = body
+    .map((n) =>
+      n.type === 'questionnaire'
+        ? questionnaireMarkup(n, prefix, submit?.label ?? 'Send')
+        : isField(n) && n.type !== 'plan'
+          ? fieldMarkup(n, prefix)
+          : contentMarkup(n, prefix),
+    )
+    .join('');
+  // with a questionnaire, its Send is the submit action; the others stay buttons
+  const shown = q ? actions.filter((a) => !a.submit) : actions;
+  const buttons = shown
+    .map(
+      (a) =>
+        `<button class="btn" type="${a.submit ? 'submit' : 'button'}" data-chat-action="${esc(a.id)}"${a.variant && a.variant !== 'default' ? ` data-variant="${esc(a.variant)}"` : ''}>${esc(a.label)}</button>`,
+    )
+    .join('');
+  const footer = buttons ? `<div class="card-footer chat-components-actions">${buttons}</div>` : '';
+  const answers = `<dl class="chat-components-facts chat-components-answers" hidden></dl>`;
+  const tag = q ? 'div' : 'form';
+  return `<${tag} class="card chat-components-card" data-size="sm"${spec.title ? ` aria-labelledby="${prefix}-title"` : ''}>${header.replace('class="card-title"', `class="card-title" id="${prefix}-title"`)}<div class="card-content chat-components-content">${content}${answers}</div>${footer}</${tag}>`;
+}
+
+/** the markup of a whole .chat-components element for a document (what a host appends to a message) */
+function markup(spec, { id = '', answers = null }: { id?: string; answers?: ChatComponentsResult | null } = {}) {
+  const ident = id || `cc-${Math.random().toString(36).slice(2, 8)}`;
+  const label = typeof spec?.title === 'string' ? ` aria-label="${esc(spec.title)}"` : '';
+  const answered = answers
+    ? `<script type="application/json" class="chat-components-answers">${scriptJson(answers)}</script>`
+    : '';
+  return `<div class="chat-components" id="${esc(ident)}"${label}><script type="application/json" class="chat-components-schema">${scriptJson(spec)}</script>${answered}</div>`;
+}
+
+// -- answers ------------------------------------------------------------------------------
+
+/** every field of a document, by name: its node (questionnaire steps included) */
+function fieldsOf(spec): Map<string, ComponentNode> {
+  const out = new Map();
+  const walk = (list) => {
+    for (const n of list ?? []) {
+      if (n?.type === 'questionnaire') for (const s of n.steps ?? []) walk(s.fields);
+      else if (isField(n)) out.set(n.name, n);
+    }
+  };
+  walk(spec?.body);
+  return out;
+}
+
+const toNumber = (v) => (v === '' || v === null || v === undefined || Number.isNaN(Number(v)) ? null : Number(v));
+
+/** an answer in its field's type */
+function typed(n, v): ComponentAnswer {
+  if (v === undefined) return null;
+  switch (n.type) {
+    case 'number':
+    case 'currency':
+    case 'slider':
+    case 'rating':
+      return Array.isArray(v) ? null : toNumber(v);
+    case 'switch':
+      return v === true || v === 'on' || v === 'true';
+    case 'checkbox':
+      if (!n.options) return v === true || v === 'on' || v === 'true';
+      return Array.isArray(v) ? v.map(String) : v ? [String(v)] : [];
+    case 'plan':
+      return Array.isArray(v) ? v.map(String) : v ? [String(v)] : [];
+    default:
+      return v === '' || v === null ? null : Array.isArray(v) ? v.map(String) : String(v);
+  }
+}
+
+/** read the card's fields */
+function readAnswers(root): ComponentAnswers {
+  const spec = root._spec;
+  const out: ComponentAnswers = {};
+  const body = root._body;
+  const controls = (name) =>
+    dfDollar(body)
+      .find<HTMLInputElement>(`[name="${CSS.escape(name)}"]`)
+      .toArray();
+  for (const [name, n] of fieldsOf(spec)) {
+    const list = controls(name);
+    if (!list.length) continue;
+    let v: unknown;
+    const first = list[0];
+    if (first.type === 'radio') v = list.find((c) => c.checked)?.value ?? null;
+    else if (first.type === 'checkbox')
+      v = n.options || n.type === 'plan' ? list.filter((c) => c.checked).map((c) => c.value) : first.checked;
+    else v = first.value;
+    out[name] = typed(n, v);
+    if (n.other) {
+      const text = controls(`${name}Other`)[0]?.value ?? '';
+      const picked = Array.isArray(out[name]) ? (out[name] as string[]).includes('other') : out[name] === 'other';
+      if (picked) out[`${name}Other`] = text || null;
+    }
+  }
+  return out;
+}
+
+/** put answers into the card's fields */
+function writeAnswers(root, answers: ComponentAnswers) {
+  const body = root._body;
+  for (const [name, n] of fieldsOf(root._spec)) {
+    if (!(name in answers)) continue;
+    const v = answers[name];
+    const list = dfDollar(body)
+      .find<HTMLInputElement>(`[name="${CSS.escape(name)}"]`)
+      .toArray();
+    for (const c of list) {
+      if (c.type === 'radio') c.checked = String(v) === c.value;
+      else if (c.type === 'checkbox') c.checked = Array.isArray(v) ? v.includes(c.value) : v === true;
+      else if (n.type === 'currency') {
+        const wrapper = c.closest('.number-input') as HTMLElement | null;
+        if (wrapper?.api) wrapper.api.setState('default', { value: v as number });
+        else c.value = v == null ? '' : String(v);
+      } else if (String(c.value) !== String(v ?? '')) c.value = v == null ? '' : String(v);
+    }
+    if (n.other && answers[`${name}Other`] != null) {
+      const other = dfDollar(body)
+        .find<HTMLInputElement>(`[name="${CSS.escape(name + 'Other')}"]`)
+        .get(0);
+      if (other) other.value = String(answers[`${name}Other`]);
+    }
+    if (n.type === 'slider')
+      dfDollar(body)
+        .find<HTMLInputElement>(`input[name="${CSS.escape(name)}"]`)
+        .get(0)
+        ?.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+/** an answer as the reader reads it */
+function answerText(n, v, answers): string {
+  if (v === null || v === undefined || (Array.isArray(v) && !v.length)) return '-';
+  const label = (x) =>
+    x === 'other' && n.other
+      ? answers[`${n.name}Other`] || n.other
+      : n.type === 'plan'
+        ? (n.steps.find((s, i) => (s.id ?? String(i + 1)) === x)?.title ?? x)
+        : (optionsOf(n).find((o) => o.value === x)?.label ?? x);
+  switch (n.type) {
+    case 'currency':
+      try {
+        return new Intl.NumberFormat(n.locale || undefined, { style: 'currency', currency: n.currency }).format(v);
+      } catch {
+        return `${v} ${n.currency}`;
+      }
+    case 'switch':
+      return v ? 'Yes' : 'No';
+    case 'checkbox':
+      return n.options ? (v as string[]).map(label).join(', ') : v ? 'Yes' : 'No';
+    case 'rating':
+      return `${v} of ${Number(n.max) || 5}`;
+    case 'number':
+    case 'slider':
+      return `${v}${n.unit ? ` ${n.unit}` : ''}`;
+    case 'select':
+    case 'radio':
+      return label(v);
+    case 'plan':
+      return (v as string[]).map(label).join(', ');
+    default:
+      return String(v);
+  }
+}
+
+/** the answers as one sentence: "Budget: €12,000.00; Start: On Monday" */
+function summary(spec, answers: ComponentAnswers, action = ''): string {
+  const fields = fieldsOf(spec);
+  const parts = [];
+  for (const [name, n] of fields) {
+    if (!(name in answers)) continue;
+    parts.push(`${n.label ?? name}: ${answerText(n, answers[name], answers)}`);
+  }
+  const act = actionsOf(spec ?? {}).find((a) => a.id === action);
+  if (!parts.length) return act?.reply ?? act?.label ?? action;
+  return parts.join('; ');
+}
+
+/** the answered card's facts: every answer with its label (shown in place of a questionnaire) */
+function answersMarkup(spec, answers: ComponentAnswers) {
+  const rows = [];
+  for (const [name, n] of fieldsOf(spec))
+    if (name in answers)
+      rows.push(`<div><dt>${esc(n.label ?? name)}</dt><dd>${esc(answerText(n, answers[name], answers))}</dd></div>`);
+  return rows.join('');
+}
+
+// -- the element ---------------------------------------------------------------------------
+
+/** default = open for an answer; answered = sent (the fields keep the answers, read only); cancelled = closed
+ *  without an answer. */
+const chatComponentsStates = ['default', 'answered', 'cancelled'];
+
+/** How a card was finished - the config of the answered and cancelled states. */
+interface ChatComponentsResult {
+  /** the action that finished it */
+  action?: string;
+  /** the answers (answered) */
+  answers?: ComponentAnswers;
+}
+
+/** setState() configs per state. */
+export interface ChatComponentsStateConfigs {
+  /** Open: the fields can be answered, every action shows. */
+  default: {};
+  /** Answered: the fields show the answers read only, the chosen action stays marked. */
+  answered: ChatComponentsResult;
+  /** Cancelled: closed without an answer, the chosen action stays marked. */
+  cancelled: ChatComponentsResult;
+}
+
+/** The markup of a state on the element: data-answered names it (none while open). */
+function applyMarkup(root, name) {
+  dfDollar(root).attr('data-answered', name === 'default' ? null : name);
+}
+
+/** UI side of setState: the state's markup, then the fields, the chosen action and the answers list. */
+function triggerStateChange(root, name, config: ChatComponentsResult = {}) {
+  applyMarkup(root, name);
+  const body = root._body;
+  if (!body || root._invalid) return;
+  const open = name === 'default';
+  if (name === 'answered' && config.answers) writeAnswers(root, config.answers);
+  for (const c of dfDollar(body).find<HTMLInputElement>('input, select, textarea, button').toArray()) {
+    if (c.closest('.questionnaire-actions') && !open) continue;
+    c.disabled = !open && !c.matches('[data-chat-action]');
+  }
+  for (const b of dfDollar(body).find<HTMLButtonElement>('[data-chat-action]').toArray()) {
+    const chosen = !open && b.dataset.chatAction === config.action;
+    b.toggleAttribute('data-chosen', chosen);
+    b.disabled = !open;
+    if (chosen) b.setAttribute('aria-pressed', 'true');
+    else b.removeAttribute('aria-pressed');
+  }
+  const q = dfDollar(body).find('.chat-components-questionnaire').get(0);
+  const list = dfDollar(body).find('.chat-components-answers').get(0);
+  if (q) q.hidden = !open;
+  if (list) {
+    const rows = name === 'answered' && q ? answersMarkup(root._spec, config.answers ?? {}) : '';
+    dfDollar(list).html(rows);
+    list.hidden = !rows;
+  }
+}
+
+/** Registry-level API; pass the element explicitly. Unknown names throw. */
+export const chatComponentsApi = componentState({
+  component: 'chat-components',
+  states: chatComponentsStates,
+  apply: (root, state) => triggerStateChange(root, state.name, state.config),
+  markup: (root, state) => applyMarkup(root, state.name),
+});
+
+df$.chatComponentsApi = chatComponentsApi;
+df$.chatComponentsStates = chatComponentsStates;
+
+/** read a JSON script child */
+function scriptOf(root, cls) {
+  const s = dfDollar(root).children(`script.${cls}`).get(0);
+  if (!s) return undefined;
+  try {
+    return JSON.parse(s.textContent || 'null');
+  } catch (error) {
+    return { __parseError: String((error as Error).message ?? error) };
+  }
+}
+
+/** finish a card: the state, then the event */
+function finish(root, action: ComponentAction, answers: ComponentAnswers) {
+  const spec = root._spec;
+  const result = action.cancel ? { action: action.id } : { action: action.id, answers };
+  root.api.setState(action.cancel ? 'cancelled' : 'answered', result);
+  const detail: ChatComponentsAnswerDetail = {
+    id: spec.id ?? '',
+    action: action.id,
+    answers: action.cancel ? {} : answers,
+    reply: action.reply ?? null,
+    summary: action.cancel || action.reply ? (action.reply ?? action.label) : summary(spec, answers, action.id),
+  };
+  // Fires when the reader finishes a card - an action, a quick reply, or a questionnaire's Send: the answers, typed.
+  root.dispatchEvent(new CustomEvent<ChatComponentsAnswerDetail>('chat-components-answer', { bubbles: true, detail }));
+}
+
+/** build (or rebuild) the card from the element's document */
+function build(root) {
+  const spec = scriptOf(root, 'chat-components-schema');
+  root._spec = spec && !spec.__parseError ? spec : null;
+  const problems = spec?.__parseError
+    ? [{ path: '', message: `the JSON does not parse: ${spec.__parseError}`, level: 'error' } as ComponentProblem]
+    : validate(spec);
+  root._problems = problems;
+  const errors = problems.filter((p) => p.level === 'error');
+  root._invalid = errors.length > 0;
+  root.toggleAttribute('data-invalid', root._invalid);
+  let body = dfDollar(root).children('.chat-components-body').get(0);
+  if (!body) {
+    body = document.createElement('div');
+    body.className = 'chat-components-body';
+    root.append(body);
+  }
+  root._body = body;
+  if (root._invalid) {
+    dfDollar(body).html(
+      `<div class="alert" data-variant="destructive" role="alert"><div class="alert-content"><h5 class="alert-title">This card cannot be shown</h5><p class="alert-description">${errors
+        .slice(0, 4)
+        .map((e) => esc(`${e.path || 'document'}: ${e.message}`))
+        .join('<br>')}</p></div></div>`,
+    );
+    return;
+  }
+  root._uid ??= root.id || `cc-${Math.random().toString(36).slice(2, 8)}`;
+  dfDollar(body).html(cardMarkup(spec, root._uid));
+}
+
+function init() {
+  dfDollar('.chat-components:not([data-init])').each((_i, root) => {
+    dfDollar(root).data('init', '');
+    build(root);
+    const answered = scriptOf(root, 'chat-components-answers');
+    const start =
+      answered && !answered.__parseError
+        ? { name: answered.answers || !answered.action ? 'answered' : 'cancelled', config: answered }
+        : { name: 'default', config: {} };
+    if (start.name !== 'default') triggerStateChange(root, start.name, start.config);
+    bindComponent(root, chatComponentsApi, start);
+    dfDollar(root).on('submit', (e) => {
+      const form = (e.target as HTMLElement).closest('form');
+      if (!form?.classList.contains('chat-components-card')) return;
+      e.preventDefault();
+      const id = ((e as SubmitEvent).submitter as HTMLElement | null)?.dataset.chatAction;
+      const action = actionsOf(root._spec).find((a) => a.id === id) ?? actionsOf(root._spec).find((a) => a.submit);
+      if (action) finish(root, action, readAnswers(root));
+    });
+    dfDollar(root).on('click', (e) => {
+      const b = (e.target as HTMLElement).closest?.<HTMLButtonElement>('button[data-chat-action]');
+      if (!b || b.type === 'submit' || !root.contains(b)) return;
+      const action = actionsOf(root._spec).find((a) => a.id === b.dataset.chatAction);
+      if (action) finish(root, action, action.cancel || action.reply ? {} : readAnswers(root));
+    });
+    dfDollar(root).on('questionnaire-submit', (e) => {
+      const action = actionsOf(root._spec).find((a) => a.submit) ?? { id: 'submit', label: 'Send', submit: true };
+      const raw = (e as CustomEvent).detail?.answers ?? {};
+      const answers: ComponentAnswers = {};
+      for (const [name, n] of fieldsOf(root._spec)) {
+        if (name in raw) answers[name] = typed(n, raw[name]);
+        if (n.other && raw[`${name}Other`]) answers[`${name}Other`] = String(raw[`${name}Other`]);
+      }
+      finish(root, action, answers);
+    });
+    dfDollar(root).on('input', (e) => {
+      const t = e.target as HTMLInputElement;
+      // typing an "Other" text picks its choice
+      if (t.classList?.contains('chat-components-other') && t.value) {
+        const choice = dfDollar(t).closest('[data-other]').find<HTMLInputElement>('input[value="other"]').get(0);
+        if (choice) choice.checked = true;
+      }
+    });
+  });
+}
+
+const resolve = (target) => (typeof target === 'string' ? dfDollar(target).get(0) : target);
+
+/** the Component Schema as a JSON Schema (draft 2020-12) - built from the same tables validate() reads */
+function jsonSchema() {
+  const str = { type: 'string' };
+  const option = {
+    anyOf: [
+      str,
+      {
+        type: 'object',
+        required: ['value'],
+        properties: { value: str, label: str, description: str, goto: str },
+      },
+    ],
+  };
+  const node = {
+    type: 'object',
+    required: ['type'],
+    properties: {
+      type: { enum: NODE_TYPES },
+      name: { type: 'string', pattern: NAME_RE.source },
+      label: str,
+      hint: str,
+      text: str,
+      title: str,
+      tone: { enum: ['default', 'destructive'] },
+      items: { type: 'array', items: str },
+      ordered: { type: 'boolean' },
+      columns: { type: 'array', items: str },
+      rows: { type: 'array', items: { type: 'array', items: { type: ['string', 'number'] } } },
+      facts: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['label', 'value'],
+          properties: { label: str, value: { type: ['string', 'number'] } },
+        },
+      },
+      steps: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['title'],
+          properties: {
+            id: str,
+            title: str,
+            description: str,
+            fields: { type: 'array', items: { $ref: '#/$defs/node' } },
+            optional: { type: 'boolean' },
+            next: str,
+          },
+        },
+      },
+      required: { type: 'boolean' },
+      default: { type: ['string', 'number', 'boolean', 'array', 'null'] },
+      placeholder: str,
+      inputType: { enum: ['text', 'email', 'url', 'tel', 'time'] },
+      min: { type: ['number', 'string'] },
+      max: { type: ['number', 'string'] },
+      step: { type: 'number' },
+      unit: str,
+      currency: { type: 'string', pattern: '^[A-Z]{3}$' },
+      locale: str,
+      minLength: { type: 'integer' },
+      maxLength: { type: 'integer' },
+      pattern: str,
+      lines: { type: 'integer' },
+      options: { type: 'array', items: option },
+      other: str,
+      branches: {
+        type: 'object',
+        additionalProperties: {
+          type: 'array',
+          items: { type: 'object', required: ['when', 'goto'], properties: { when: {}, goto: str } },
+        },
+      },
+      autoAdvance: { type: 'boolean' },
+      review: str,
+    },
+  };
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    title: 'Component Schema',
+    description:
+      'A card a chat shows with the system components: content (text, list, table, facts, plan, alert, divider), fields (input, textarea, number, currency, select, radio, checkbox, switch, slider, rating, date) or one multi-step questionnaire, and actions or quick replies. Every text is plain text with inline **bold**, *emphasis* and `code`.',
+    type: 'object',
+    required: ['version'],
+    properties: {
+      schema: { const: 'component-schema' },
+      version: { const: 1 },
+      id: str,
+      title: str,
+      description: str,
+      body: { type: 'array', items: { $ref: '#/$defs/node' } },
+      actions: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['id', 'label'],
+          properties: {
+            id: str,
+            label: str,
+            variant: { enum: ['default', 'secondary', 'outline', 'ghost', 'destructive'] },
+            submit: { type: 'boolean' },
+            reply: str,
+            cancel: { type: 'boolean' },
+          },
+        },
+      },
+    },
+    $defs: { node },
+  };
+}
+
+/** find ```ui::component-schema fences in Markdown */
+function fences(markdown: string): ComponentSchemaFence[] {
+  const out: ComponentSchemaFence[] = [];
+  const re = /^([ \t]*)(`{3,}|~{3,})[ \t]*ui::component-schema[ \t]*$/gm;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(markdown))) {
+    const start = m.index;
+    const fence = m[2];
+    const from = m.index + m[0].length + 1;
+    const close = new RegExp(`^[ \\t]*${fence[0] === '`' ? '`' : '~'}{${fence.length},}[ \\t]*$`, 'm');
+    const rest = markdown.slice(from);
+    const c = close.exec(rest);
+    const source = c ? rest.slice(0, c.index) : rest;
+    const end = c ? from + c.index + c[0].length : markdown.length;
+    let spec = null;
+    let error = '';
+    if (c)
+      try {
+        spec = JSON.parse(source);
+      } catch (e) {
+        error = String((e as Error).message ?? e);
+      }
+    out.push({
+      start,
+      end: Math.min(end + (markdown[end] === '\n' ? 1 : 0), markdown.length),
+      source,
+      spec,
+      closed: !!c,
+      error,
+    });
+    re.lastIndex = end;
+  }
+  return out;
+}
+
+df$.chatComponents = {
+  /** The Markdown fence info string of a Component Schema document: "ui::component-schema". */
+  fence: FENCE as string,
+  /**
+   * Check a Component Schema document - errors keep a card from showing, warnings (unknown keys) are reported only.
+   * @param spec - the document (any parsed JSON)
+   * @returns the problems, each with its JSON path; empty when the document is fine
+   */
+  validate: (spec: unknown): ComponentProblem[] => validate(spec),
+  /**
+   * The markup of a .chat-components element for a document - append it to a message (Session.append); the
+   * runtime builds the card. Pass answers to show it answered.
+   * @param spec - the Component Schema document
+   * @param options - id: the element's id (generated when missing); answers: { action, answers } to start answered
+   * @returns the element's markup
+   */
+  markup: (spec: ComponentSchema, options?: { id?: string; answers?: ChatComponentsResult | null }): string =>
+    markup(spec, options ?? {}),
+  /**
+   * Show another document in a card: it is rebuilt and opens again.
+   * @param target - the .chat-components element or its selector
+   * @param spec - the new document
+   */
+  mount(target: string | HTMLElement, spec: ComponentSchema): void {
+    const root = resolve(target);
+    const script = dfDollar(root).children('script.chat-components-schema').get(0);
+    if (script) dfDollar(script).text(JSON.stringify(spec));
+    build(root);
+    root.api?.setState('default', {});
+  },
+  /**
+   * The answers the card's fields hold now, typed by the document.
+   * @param target - the .chat-components element or its selector
+   * @returns every field's answer by name
+   */
+  answers: (target: string | HTMLElement): ComponentAnswers => readAnswers(resolve(target)),
+  /**
+   * The answers of a document as one readable sentence.
+   * @param spec - the document
+   * @param answers - its answers
+   * @param action - the action that finished it (a quick reply's text when there are no fields)
+   * @returns a sentence such as "Budget: €12,000.00; Start: On Monday"
+   */
+  summary: (spec: ComponentSchema, answers: ComponentAnswers, action?: string): string =>
+    summary(spec, answers ?? {}, action ?? ''),
+  /**
+   * The Component Schema as a JSON Schema object (draft 2020-12) - for a tool definition or a structured output.
+   * @returns the JSON Schema
+   */
+  jsonSchema: (): Record<string, unknown> => jsonSchema(),
+  /**
+   * An OpenAI-style function tool whose arguments are a Component Schema document.
+   * @param name - the tool's name (default "show_components")
+   * @returns { type: 'function', function: { name, description, parameters } }
+   */
+  tool: (name?: string): Record<string, unknown> => ({
+    type: 'function',
+    function: {
+      name: name || 'show_components',
+      description:
+        'Show the user a card in the chat: content, fields to answer (text, numbers, money, choices, dates, ratings), a multi-step questionnaire, or buttons and quick replies. The answers come back as the next user message.',
+      parameters: jsonSchema(),
+    },
+  }),
+  /**
+   * Find ```ui::component-schema fences in Markdown (an answer while it streams too).
+   * @param markdown - the text
+   * @returns each fence with its place, source, parsed document and whether it is closed
+   */
+  fences: (markdown: string): ComponentSchemaFence[] => fences(String(markdown ?? '')),
+};
+
+// -- Chat Scripts --------------------------------------------------------------------------
+
+/** A free-text route: the first match decides where the conversation goes. */
+interface ChatScriptMatch {
+  /** a regular expression tested on the reader's text (case-insensitive); omitted: any text */
+  pattern?: string;
+  /** the node it leads to */
+  goto: string;
+}
+
+/** A node of a script: what the bot says, how it asks, where it goes next. */
+interface ChatScriptNode {
+  /** the bot's lines ({{name}} is filled from the answers; inline **bold** and `code`) */
+  say?: string | string[];
+  /** ask with Chat Components: a Component Schema document */
+  ask?: ComponentSchema;
+  /** ask for free text: the composer's next message is the answer under this name */
+  input?: string;
+  /** routes for free text (also typed while a card is open) */
+  match?: ChatScriptMatch[];
+  /** the Questionnaire's grammar: the first branch whose when holds is taken */
+  branches?: Array<{ when: unknown; goto: string }>;
+  /** the node after this one */
+  next?: string;
+  /** the conversation ends here */
+  end?: boolean;
+}
+
+/** A scripted conversation (version 1). */
+interface ChatScript {
+  /** the format's version: 1 */
+  version: number;
+  /** names the script */
+  id?: string;
+  /** the first node */
+  start: string;
+  /** the nodes by id */
+  nodes: Record<string, ChatScriptNode>;
+  /** said when the reader types while the bot waits for a card (default: a hint to use it) */
+  fallback?: string;
+}
+
+/** How a script reaches the page - a host keeps its own transcript through these. */
+interface ChatScriptHooks {
+  /** the bot says a line */
+  say?: (text: string, node: string) => void;
+  /** the bot asks with a card */
+  ask?: (spec: ComponentSchema, node: string) => void;
+  /** the reader's turn (their text, or a card's summary) */
+  user?: (text: string, node: string) => void;
+  /** the bot is typing (true) or done (false) */
+  typing?: (on: boolean) => void;
+  /** keep only the first `rows` turns (back() and restart() rewind) */
+  rewind?: (rows: number) => void;
+  /** a node was entered */
+  step?: (node: string, answers: ComponentAnswers) => void;
+  /** the conversation reached an end node */
+  end?: (answers: ComponentAnswers, history: string[]) => void;
+}
+
+/** Where a run stands - what state() returns and create() resumes from. */
+interface ChatScriptState {
+  /** the current node */
+  node: string;
+  /** every answer so far */
+  answers: ComponentAnswers;
+  /** the nodes entered, in order */
+  history: string[];
+  /** what the run waits for */
+  waiting: 'text' | 'components' | 'end' | 'busy';
+  /** the turns written so far (for rewind) */
+  rows: number;
+  /** per history entry: the turns and the answers when it was entered */
+  marks: Array<{ rows: number; answers: ComponentAnswers }>;
+}
+
+/** A running script. */
+interface ChatScriptRun {
+  /** start (or resume from the state given to create) */
+  start: () => Promise<void>;
+  /** the reader typed text: an input's answer, or routed by match */
+  reply: (text: string) => Promise<void>;
+  /** the reader finished the current card (the chat-components-answer detail) */
+  answer: (detail: ChatComponentsAnswerDetail) => Promise<void>;
+  /** back to the last question asked - its turns and answers undone */
+  back: () => Promise<boolean>;
+  /** from the start, with no answers */
+  restart: () => Promise<void>;
+  /** where the run stands (a copy) */
+  state: () => ChatScriptState;
+}
+
+/** How chatScript.run() writes a conversation into a Session. */
+interface ChatScriptRunOptions {
+  /** the composer: a form whose textarea the reader types in (Enter sends) */
+  composer?: string | HTMLElement;
+  /** the bot's name and its avatar letters */
+  bot?: { name?: string; initials?: string };
+  /** typing pauses: false for none (reduced motion has none) */
+  delay?: boolean;
+  /** keep the conversation in storage under this key (local storage) */
+  persist?: string;
+  /** the hooks' extra listeners: step and end */
+  on?: { step?: ChatScriptHooks['step']; end?: ChatScriptHooks['end'] };
+}
+
+const fill = (text, answers) =>
+  String(text ?? '').replace(/\{\{\s*([\w-]+)\s*\}\}/g, (_m, k) =>
+    answers[k] == null ? '' : Array.isArray(answers[k]) ? answers[k].join(', ') : String(answers[k]),
+  );
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+function testWhen(when, answers) {
+  const q = df$.questionnaire as { test?: (w: unknown, a: ComponentAnswers) => boolean } | undefined;
+  if (!q?.test) throw new Error('chat-script: branches need the Questionnaire (df$.shadcn.questionnaire.test)');
+  return q.test(when, answers);
+}
+
+function createRun(
+  script: ChatScript,
+  hooks: ChatScriptHooks = {},
+  saved?: ChatScriptState | null,
+  delay = true,
+): ChatScriptRun {
+  const st: ChatScriptState = saved
+    ? structuredClone(saved)
+    : { node: script.start, answers: {}, history: [], waiting: 'busy', rows: 0, marks: [] };
+  const emit = (fn: keyof ChatScriptHooks, ...args: unknown[]) => {
+    if (fn === 'say' || fn === 'ask' || fn === 'user') st.rows++;
+    (hooks[fn] as ((...a: unknown[]) => void) | undefined)?.(...args);
+  };
+  const pause = async (text) => {
+    if (!delay || reducedMotion()) return;
+    emit('typing', true);
+    await wait(Math.min(1400, 350 + String(text).length * 12));
+    emit('typing', false);
+  };
+  const nextOf = (node: ChatScriptNode) => {
+    for (const b of node.branches ?? []) if (testWhen(b.when, st.answers)) return b.goto;
+    return node.next ?? null;
+  };
+  async function enter(id: string | null) {
+    const node = id ? script.nodes[id] : null;
+    if (!id || !node) {
+      st.waiting = 'end';
+      emit('end', { ...st.answers }, [...st.history]);
+      return;
+    }
+    st.node = id;
+    st.history.push(id);
+    st.marks.push({ rows: st.rows, answers: { ...st.answers } });
+    st.waiting = 'busy';
+    emit('step', id, { ...st.answers });
+    const lines = node.say === undefined ? [] : Array.isArray(node.say) ? node.say : [node.say];
+    for (const line of lines) {
+      await pause(line);
+      emit('say', fill(line, st.answers), id);
+    }
+    if (node.ask) {
+      await pause('');
+      emit('ask', node.ask, id);
+      st.waiting = 'components';
+    } else if (node.input) st.waiting = 'text';
+    else if (node.end) {
+      st.waiting = 'end';
+      emit('end', { ...st.answers }, [...st.history]);
+    } else await enter(nextOf(node));
+  }
+  const routed = (node: ChatScriptNode, text: string) =>
+    node.match?.find((m) => (m.pattern === undefined ? true : new RegExp(m.pattern, 'i').test(text)))?.goto ?? null;
+  const run: ChatScriptRun = {
+    start: async () => {
+      if (saved && st.history.length) return;
+      await enter(script.start);
+    },
+    reply: async (text) => {
+      const node = script.nodes[st.node];
+      const value = String(text ?? '').trim();
+      if (!value || !node || st.waiting === 'busy' || st.waiting === 'end') return;
+      emit('user', value, st.node);
+      const route = routed(node, value);
+      if (st.waiting === 'text') {
+        st.answers[node.input] = value;
+        await enter(route ?? nextOf(node));
+      } else if (route) await enter(route);
+      else {
+        await pause('');
+        emit('say', script.fallback ?? 'Please answer with the card above.', st.node);
+      }
+    },
+    answer: async (detail) => {
+      const node = script.nodes[st.node];
+      if (!node || st.waiting !== 'components') return;
+      emit('user', detail.summary, st.node);
+      Object.assign(st.answers, detail.answers ?? {});
+      st.answers[node.ask?.id || st.node] = detail.action;
+      await enter(nextOf(node));
+    },
+    back: async () => {
+      if (st.waiting === 'busy') return false;
+      const asks = (id) => !!(script.nodes[id]?.ask || script.nodes[id]?.input);
+      // the question before the one waiting now (after the end: the last one)
+      let i = st.history.length - 1;
+      if (st.waiting !== 'end') i--;
+      while (i >= 0 && !asks(st.history[i])) i--;
+      if (i < 0) return false;
+      const id = st.history[i];
+      const mark = st.marks[i];
+      st.history = st.history.slice(0, i);
+      st.marks = st.marks.slice(0, i);
+      st.answers = { ...mark.answers };
+      st.rows = mark.rows;
+      hooks.rewind?.(mark.rows);
+      await enter(id);
+      return true;
+    },
+    restart: async () => {
+      st.answers = {};
+      st.history = [];
+      st.marks = [];
+      st.rows = 0;
+      hooks.rewind?.(0);
+      await enter(script.start);
+    },
+    state: () => structuredClone(st),
+  };
+  return run;
+}
+
+/** a bot row, a reader row, a card row - the Message markup */
+function botRow(html, bot, row = true) {
+  return `<div class="message${row ? ' chat-script-row' : ''}"><div class="message-avatar"><span class="avatar" data-size="sm"><span class="avatar-fallback">${esc(bot.initials ?? 'B')}</span></span></div><div class="message-content">${html}</div></div>`;
+}
+const bubble = (text, variant = 'secondary') =>
+  `<div class="bubble"${variant ? ` data-variant="${variant}"` : ''}><div class="bubble-content">${inline(text)}</div></div>`;
+
+function runInSession(
+  target: string | HTMLElement,
+  script: ChatScript,
+  options: ChatScriptRunOptions = {},
+): ChatScriptRun {
+  const session = resolve(target);
+  const S = df$.session as {
+    append: (s: HTMLElement, html: string, o?: { id?: string; anchor?: boolean }) => HTMLElement;
+  };
+  const bot = { name: 'Bot', initials: 'B', ...options.bot };
+  const log: Array<{
+    kind: string;
+    text?: string;
+    spec?: ComponentSchema;
+    node?: string;
+    result?: ChatComponentsResult;
+  }> = [];
+  // the run's log and state in local storage, through the one way to Web Storage (persisted)
+  const stored = options.persist
+    ? persisted<{ log: typeof log; state: ChatScriptState } | null>(options.persist, null, {
+        validate: (v): v is { log: typeof log; state: ChatScriptState } | null =>
+          v === null || (typeof v === 'object' && Array.isArray((v as { log?: unknown }).log)),
+      })
+    : null;
+  // a microtask later: a hook runs before the run marks what it waits for
+  const save = () => queueMicrotask(() => stored?.set({ log: structuredClone(log), state: run.state() }));
+  let typingRow: HTMLElement | null = null;
+  let cards = 0;
+  const write = (entry) => {
+    let html = '';
+    if (entry.kind === 'say') html = botRow(bubble(entry.text), bot);
+    else if (entry.kind === 'user')
+      html = `<div class="message chat-script-row" data-align="end"><div class="message-content">${bubble(entry.text, '')}</div></div>`;
+    else if (entry.kind === 'ask')
+      html = botRow(
+        markup(entry.spec, { id: `${session.id || 'chat'}-card-${++cards}`, answers: entry.result ?? null }),
+        bot,
+      );
+    const item = S.append(session, html);
+    // append() returns the Session item; the record sits on the row inside it, where an answer looks for it
+    const row = dfDollar(item).find('.chat-script-row').get(0) ?? item;
+    row._chatScript = entry;
+    return row;
+  };
+  const rows = () => dfDollar(session).find('.chat-script-row').toArray();
+  const hooks: ChatScriptHooks = {
+    say: (text, node) => {
+      const e = { kind: 'say', text, node };
+      log.push(e);
+      write(e);
+      save();
+    },
+    user: (text, node) => {
+      const e = { kind: 'user', text, node };
+      log.push(e);
+      write(e);
+      save();
+    },
+    ask: (spec, node) => {
+      const e = { kind: 'ask', spec, node };
+      log.push(e);
+      write(e);
+      save();
+    },
+    typing: (on) => {
+      if (on && !typingRow)
+        typingRow = S.append(
+          session,
+          botRow(
+            `<div class="bubble" data-variant="secondary"><div class="bubble-content" role="status" aria-label="${esc(bot.name)} is typing"><span class="bubble-typing" aria-hidden="true"><span></span><span></span><span></span></span></div></div>`,
+            bot,
+            false,
+          ),
+        );
+      else if (!on && typingRow) {
+        (typingRow.closest('.session-item') ?? typingRow).remove();
+        typingRow = null;
+      }
+    },
+    rewind: (n) => {
+      log.length = n;
+      rows()
+        .slice(n)
+        .forEach((r) => (r.closest('.session-item') ?? r).remove());
+      save();
+    },
+    step: (node, answers) => options.on?.step?.(node, answers),
+    end: (answers, history) => {
+      save();
+      options.on?.end?.(answers, history);
+    },
+  };
+  const saved = stored?.value;
+  if (saved?.log?.length) {
+    log.push(...saved.log);
+    for (const e of saved.log) write(e);
+  }
+  const run = createRun(script, hooks, saved?.state ?? null, options.delay !== false);
+  // the reader's answer to the current card
+  const onAnswer = (e: Event) => {
+    const detail = (e as CustomEvent<ChatComponentsAnswerDetail>).detail;
+    const card = (e.target as HTMLElement).closest('.chat-components') as HTMLElement;
+    const entry = (card?.closest('.chat-script-row') as HTMLElement | null)?._chatScript;
+    if (!entry || entry !== [...log].reverse().find((x) => x.kind === 'ask')) return;
+    entry.result = card.api?.getState().config ?? null;
+    run.answer(detail);
+  };
+  session.addEventListener('chat-components-answer', onAnswer);
+  const composer = options.composer ? resolve(options.composer) : null;
+  if (composer) {
+    const field = dfDollar(composer).find<HTMLTextAreaElement>('textarea, input[type="text"]').get(0);
+    composer.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = field?.value ?? '';
+      if (!text.trim()) return;
+      field.value = '';
+      run.reply(text);
+    });
+    field?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        (composer as HTMLFormElement).requestSubmit?.();
+      }
+    });
+  }
+  run.start();
+  return run;
+}
+
+df$.chatScript = {
+  /**
+   * A script's run driven through hooks - the host keeps its own transcript (say, ask, user, rewind).
+   * @param script - the scripted conversation
+   * @param hooks - how the run reaches the page
+   * @param state - a state() to resume from
+   * @returns the run: start(), reply(), answer(), back(), restart(), state()
+   */
+  create: (script: ChatScript, hooks?: ChatScriptHooks, state?: ChatScriptState | null): ChatScriptRun =>
+    createRun(script, hooks ?? {}, state ?? null),
+  /**
+   * Run a script in a Session: bot rows, a typing indicator, cards, the reader's answers - and a composer for free
+   * text. It starts at once (or resumes what persist kept).
+   * @param target - the .session element or its selector
+   * @param script - the scripted conversation
+   * @param options - composer, bot, delay, echo, persist, on
+   * @returns the run
+   */
+  run: (target: string | HTMLElement, script: ChatScript, options?: ChatScriptRunOptions): ChatScriptRun =>
+    runInSession(target, script, options ?? {}),
+  /**
+   * Check a script: a missing start, nodes leading nowhere, cards that do not validate.
+   * @param script - the scripted conversation
+   * @returns the problems, each with its path
+   */
+  validate(script: ChatScript): ComponentProblem[] {
+    const out: ComponentProblem[] = [];
+    const err = (path, message) => out.push({ path, message, level: 'error' });
+    if (!script || typeof script !== 'object') return [{ path: '', message: 'a script is an object', level: 'error' }];
+    const nodes = script.nodes ?? {};
+    if (!nodes[script.start]) err('start', `no node "${script.start}"`);
+    for (const [id, n] of Object.entries(nodes)) {
+      const p = `nodes.${id}`;
+      for (const to of [n.next, ...(n.branches ?? []).map((b) => b.goto), ...(n.match ?? []).map((m) => m.goto)])
+        if (to !== undefined && !nodes[to]) err(p, `leads to "${to}", which does not exist`);
+      if (!n.ask && !n.input && !n.end && !n.next && !n.branches?.length)
+        err(p, 'leads nowhere: next, branches or end');
+      if (n.ask) for (const q of validate(n.ask)) out.push({ ...q, path: `${p}.ask${q.path ? '.' + q.path : ''}` });
+      for (const [i, m] of (n.match ?? []).entries())
+        if (m.pattern !== undefined)
+          try {
+            new RegExp(m.pattern, 'i');
+          } catch {
+            err(`${p}.match[${i}].pattern`, 'not a regular expression');
+          }
+    }
+    return out;
+  },
+};
+
+init();
+new MutationObserver(init).observe(document, { childList: true, subtree: true });

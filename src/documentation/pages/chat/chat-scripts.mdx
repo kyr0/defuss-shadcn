@@ -1,0 +1,316 @@
+---
+title: "Chat Scripts"
+description: "Chat Scripts - scripted conversations without a language model: a JSON graph of nodes that say lines, ask with Chat Components or for free text, and branch on the answers; run in a Session with a typing indicator and a composer, or through hooks into your own transcript; back, restart and kept across reloads."
+slug: "chat-scripts"
+---
+
+import { DocPage, PageHeader, DocLink, DocText, H2, SourceFiles } from "../../lib/components/index";
+
+<DocPage meta={meta}>
+
+<PageHeader slug="chat-scripts" title="Chat Scripts" component="chat-components">
+  A chat's look and feel without a language model. A script is a graph of nodes: each one says something, asks - with <DocLink href="chat-components.html">Chat Components</DocLink> or for free text - and goes on by the answers, with the <DocLink href="questionnaire-branching.html">Questionnaire's branch rules</DocLink> or by matching what the reader typed. <code>df$.shadcn.chatScript.run(session, script)</code> plays it in a <DocLink href="session.html">Session</DocLink> - bot rows, a typing indicator, cards, the reader's answers, a composer for free text; <code>create(script, hooks)</code> drives your own transcript instead.
+</PageHeader>
+
+<H2 id="script">The script</H2>
+
+<DocText>A script is <code>&#123; version: 1, start, nodes, fallback &#125;</code>. A node may <code>say</code> a line or a list of lines (<code>&#123;&#123;name&#125;&#125;</code> fills in an answer), then <code>ask</code> with a <DocLink href="component-schema.html">Component Schema</DocLink> card or wait for free text with <code>input: "name"</code>. Where it goes: the first <code>match</code> whose <code>pattern</code> (a case-insensitive regular expression) fits the typed text, else the first of its <code>branches</code> whose <code>when</code> holds, else <code>next</code>; <code>end: true</code> ends the conversation. A card's answers join the run's answers, and its action is stored under the card's <code>id</code> (else the node's id) - so a branch can read which quick reply was tapped.</DocText>
+
+```html example label="A support bot" schema="none" height="48" hint="Pick a topic (quick replies), or type freely: 'refund' or 'money back' anywhere takes the refund path (match). Billing asks for the invoice number as free text; a refund asks with a card and branches on the amount (gte 100 needs a manager). Back undoes your last answer, Restart starts over."
+<div class="flex flex-col gap-2">
+  <section class="session" id="cs-support" aria-label="Support chat" style="height: 30rem">
+    <div class="session-viewport" aria-label="Messages"><div class="session-content"></div></div>
+    <div class="session-footer">
+      <form class="textarea-group" data-layout="inline" id="cs-support-composer" aria-label="Message composer">
+        <textarea class="textarea" rows="1" aria-label="Message" placeholder="Type a message ..."></textarea>
+        <button class="btn" type="submit" data-size="sm">Send</button>
+      </form>
+    </div>
+  </section>
+  <div class="flex gap-2">
+    <button class="btn" type="button" data-variant="outline" data-size="sm" id="cs-support-back">Back</button>
+    <button class="btn" type="button" data-variant="ghost" data-size="sm" id="cs-support-restart">Restart</button>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const script = {
+      version: 1,
+      start: 'hello',
+      fallback: 'Pick one of the buttons above - or tell me in a few words.',
+      nodes: {
+        hello: {
+          say: ['Hi, I am Ada from Northwind support.', 'What can I help you with?'],
+          ask: {
+            version: 1,
+            id: 'topic',
+            actions: [
+              { id: 'billing', label: 'An invoice', reply: 'A question about an invoice' },
+              { id: 'refund', label: 'A refund', reply: 'I would like a refund', variant: 'secondary' },
+              { id: 'other', label: 'Something else', reply: 'Something else', variant: 'outline' },
+            ],
+          },
+          match: [
+            { pattern: 'refund|money back', goto: 'refund' },
+            { pattern: 'invoice|bill', goto: 'invoice' },
+          ],
+          branches: [
+            { when: { field: 'topic', value: 'billing' }, goto: 'invoice' },
+            { when: { field: 'topic', value: 'refund' }, goto: 'refund' },
+          ],
+          next: 'other',
+        },
+        invoice: { say: 'Sure. What is the invoice number?', input: 'invoice', next: 'invoiceDone' },
+        invoiceDone: {
+          say: 'Thanks - invoice **{{invoice}}** is with our billing team. You get an answer by email today.',
+          next: 'bye',
+        },
+        refund: {
+          say: 'I can start a refund right here.',
+          ask: {
+            version: 1,
+            id: 'refundCard',
+            title: 'Refund',
+            body: [
+              { type: 'input', name: 'order', label: 'Order number', required: true, placeholder: 'NW-1234' },
+              { type: 'currency', name: 'amount', label: 'Amount', currency: 'EUR', locale: 'de-DE', required: true },
+              {
+                type: 'select',
+                name: 'reason',
+                label: 'Reason',
+                options: ['Damaged', 'Wrong item', 'Changed my mind'],
+              },
+            ],
+            actions: [{ id: 'request', label: 'Request refund', submit: true }],
+          },
+          branches: [{ when: { field: 'amount', op: 'gte', value: 100 }, goto: 'manager' }],
+          next: 'refundDone',
+        },
+        manager: {
+          say: 'Refunds of 100 € or more need a manager - Jonas will email you about order {{order}} within a day.',
+          next: 'bye',
+        },
+        refundDone: { say: 'Done: the refund for order {{order}} is on its way (3 to 5 working days).', next: 'bye' },
+        other: { say: 'Tell me in a sentence - I will pass it on.', input: 'issue', next: 'otherDone' },
+        otherDone: { say: 'Got it. A colleague picks this up and replies by email.', next: 'bye' },
+        bye: { say: 'Anything else? Restart any time.', end: true },
+      },
+    };
+    const run = df$.shadcn.chatScript.run('#cs-support', script, {
+      composer: '#cs-support-composer',
+      bot: { name: 'Ada', initials: 'AD' },
+    });
+    document.getElementById('cs-support-back').addEventListener('click', () => run.back());
+    document.getElementById('cs-support-restart').addEventListener('click', () => run.restart());
+  });
+</script>
+```
+
+<H2 id="cards">Asking with cards</H2>
+
+```html example label="A pizza order" schema="none" height="48" hint="Every question is a card - a radio group, a checkbox group with Other, a number - and the last line fills in the answers. Confirm or change: changing goes back to the size."
+<section class="session" id="cs-pizza" aria-label="Pizza order" style="height: 34rem">
+  <div class="session-viewport" aria-label="Messages"><div class="session-content"></div></div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const script = {
+      version: 1,
+      start: 'size',
+      nodes: {
+        size: {
+          say: 'Welcome to Forno! What size?',
+          ask: {
+            version: 1,
+            id: 'sizeCard',
+            body: [
+              {
+                type: 'radio',
+                name: 'size',
+                label: 'Size',
+                required: true,
+                options: [
+                  { value: 'small', label: 'Small', description: '26 cm - 8 €' },
+                  { value: 'large', label: 'Large', description: '32 cm - 11 €' },
+                ],
+              },
+            ],
+            actions: [{ id: 'next', label: 'Next', submit: true }],
+          },
+          next: 'toppings',
+        },
+        toppings: {
+          say: 'Toppings? Pick as many as you like.',
+          ask: {
+            version: 1,
+            id: 'toppingsCard',
+            body: [
+              {
+                type: 'checkbox',
+                name: 'toppings',
+                label: 'Toppings',
+                options: ['Basil', 'Mushrooms', 'Olives', 'Chili'],
+                other: 'Something else',
+              },
+              { type: 'number', name: 'count', label: 'How many pizzas?', min: 1, max: 10, default: 1 },
+            ],
+            actions: [{ id: 'next', label: 'Next', submit: true }],
+          },
+          next: 'confirm',
+        },
+        confirm: {
+          say: '{{count}} × {{size}} with {{toppings}}. Shall I send it to the kitchen?',
+          ask: {
+            version: 1,
+            id: 'confirmCard',
+            actions: [
+              { id: 'yes', label: 'Order', reply: 'Order it' },
+              { id: 'change', label: 'Change', reply: 'Let me change it', variant: 'outline' },
+            ],
+          },
+          branches: [{ when: { field: 'confirmCard', value: 'change' }, goto: 'size' }],
+          next: 'done',
+        },
+        done: { say: 'In the oven - about 20 minutes. Buon appetito!', end: true },
+      },
+    };
+    df$.shadcn.chatScript.run('#cs-pizza', script, { bot: { name: 'Forno', initials: 'FO' } });
+  });
+</script>
+```
+
+<H2 id="free-text">Free text</H2>
+
+```html example label="Getting to know you" schema="none" height="40" hint="Type your name and press Enter: the bot uses it in its lines. Then any answer containing 'yes', 'sure' or 'ok' takes one path, anything else the other (match with and without a pattern)."
+<section class="session" id="cs-free" aria-label="Onboarding" style="height: 26rem">
+  <div class="session-viewport" aria-label="Messages"><div class="session-content"></div></div>
+  <div class="session-footer">
+    <form class="textarea-group" data-layout="inline" id="cs-free-composer" aria-label="Message composer">
+      <textarea class="textarea" rows="1" aria-label="Message" placeholder="Your answer ..."></textarea>
+      <button class="btn" type="submit" data-size="sm">Send</button>
+    </form>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    df$.shadcn.chatScript.run(
+      '#cs-free',
+      {
+        version: 1,
+        start: 'name',
+        nodes: {
+          name: { say: 'Hello! What should I call you?', input: 'name', next: 'tour' },
+          tour: {
+            say: 'Nice to meet you, **{{name}}**. Want a 30-second tour?',
+            input: 'tourAnswer',
+            match: [{ pattern: '\\b(yes|sure|ok|yep)\\b', goto: 'yes' }, { goto: 'no' }],
+          },
+          yes: {
+            say: ['Great - the sidebar holds your projects.', 'Press ⌘K anywhere to search. That is it!'],
+            end: true,
+          },
+          no: { say: 'No problem, {{name}}. Ask me any time.', end: true },
+        },
+      },
+      { composer: '#cs-free-composer', bot: { name: 'Guide', initials: 'GU' } },
+    );
+  });
+</script>
+```
+
+<H2 id="hooks">Your own transcript</H2>
+
+<DocText><code>create(script, hooks)</code> runs the same graph without touching the page: <code>say</code>, <code>ask</code>, <code>user</code>, <code>typing</code>, <code>rewind</code>, <code>step</code> and <code>end</code> tell you what happens, and <code>reply(text)</code> / <code>answer(detail)</code> feed it. An app with its own store - the <DocLink href="scaffold-ai-chat.html">AI Chat</DocLink> scaffold keeps its chats so - writes the turns its way, and <code>state()</code> saves where the run stands for <code>create(script, hooks, state)</code> to resume.</DocText>
+
+```html example label="Hooks" schema="none" height="36" hint="The same kind of script, written into a plain list by hooks; the event log on the right shows each hook as it is called."
+<div class="flex flex-wrap gap-4">
+  <div class="flex flex-col gap-2" style="flex: 1 1 18rem; min-width: 0">
+    <ol
+      class="text-sm"
+      id="cs-hooks-turns"
+      style="margin: 0; padding-inline-start: 1.25rem; display: grid; gap: 0.5rem"
+    ></ol>
+    <div id="cs-hooks-card"></div>
+  </div>
+  <pre class="text-xs" id="cs-hooks-log" style="flex: 1 1 14rem; white-space: pre-wrap; margin: 0"></pre>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const turns = document.getElementById('cs-hooks-turns');
+    const cardSlot = document.getElementById('cs-hooks-card');
+    const log = document.getElementById('cs-hooks-log');
+    const note = (line) => (log.textContent += line + '\n');
+    const turn = (who, text) =>
+      turns.append(Object.assign(document.createElement('li'), { textContent: `${who}: ${text}` }));
+    const run = df$.shadcn.chatScript.create(
+      {
+        version: 1,
+        start: 'ask',
+        nodes: {
+          ask: {
+            say: 'Coffee or tea?',
+            ask: {
+              version: 1,
+              id: 'drink',
+              actions: [
+                { id: 'coffee', label: 'Coffee', reply: 'Coffee' },
+                { id: 'tea', label: 'Tea', reply: 'Tea', variant: 'outline' },
+              ],
+            },
+            branches: [{ when: { field: 'drink', value: 'tea' }, goto: 'tea' }],
+            next: 'coffee',
+          },
+          coffee: { say: 'One flat white, coming up.', end: true },
+          tea: { say: 'Green or black? Either way: steeping now.', end: true },
+        },
+      },
+      {
+        say: (text) => (note('say'), turn('Bot', text)),
+        user: (text) => (note('user'), turn('You', text)),
+        ask: (spec) => {
+          note('ask ' + spec.id);
+          cardSlot.textContent = '';
+          df$(cardSlot).append(df$(df$.shadcn.chatComponents.markup(spec)));
+        },
+        step: (node) => note('step ' + node),
+        end: (answers) => note('end ' + JSON.stringify(answers)),
+      },
+    );
+    cardSlot.addEventListener('chat-components-answer', (e) => run.answer(e.detail));
+    run.start();
+  });
+</script>
+```
+
+<H2 id="checking">Checking a script</H2>
+
+<DocText><code>chatScript.validate(script)</code> finds a missing start, nodes that lead nowhere or to a node that does not exist, a pattern that is no regular expression, and every problem of the cards inside (with its path, through <code>validate()</code> of the Component Schema).</DocText>
+
+```html example label="Validate" schema="none" hint="A script with four mistakes - and what validate() says about each."
+<pre class="text-xs" id="cs-validate" style="white-space: pre-wrap; margin: 0"></pre>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const problems = df$.shadcn.chatScript.validate({
+      version: 1,
+      start: 'welcome',
+      nodes: {
+        hello: { say: 'Hi', next: 'menu' },
+        menu: {
+          say: 'Pick',
+          ask: { version: 1, body: [{ type: 'select', name: 'dish', label: 'Dish' }] },
+          next: 'checkout',
+        },
+        lost: { say: 'This node leads nowhere' },
+        typo: { input: 'x', match: [{ pattern: '(unclosed', goto: 'hello' }], next: 'hello' },
+      },
+    });
+    document.getElementById('cs-validate').textContent = problems.map((p) => `${p.path}: ${p.message}`).join('\n');
+  });
+</script>
+```
+
+<SourceFiles component="chat-components" section="css" />
+
+<SourceFiles component="chat-components" section="js" jsTitle="JS" />
+
+</DocPage>
