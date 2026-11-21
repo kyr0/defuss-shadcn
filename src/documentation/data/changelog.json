@@ -1,6 +1,22 @@
 {
   "entries": [
     {
+      "version": "v0.9.17",
+      "date": "November 21, 2026",
+      "commits": [
+        "feat(chat): Component Schema + Chat Components + Chat Scripts - chats ask with cards (fields, currency, questionnaires with Other, plans, quick replies; typed answers, validation by JSON path, ui::component-schema fences and a show_components tool), scripted conversations without a model; AI Chat: Examples group (also for stores from earlier visits), cards in answers, the tool in API mode, script chats that follow their end, a light/dark Swap in the sidebar; fix(session): an appended row renders at its real size, a row removed under an anchored turn keeps the reader in place, scrollToEnd/Start end the anchor hold; questionnaire.test()",
+        "feat(ai-chat): attachments - images, audio, video, files and voice messages (paste, drop, MediaRecorder), media bubbles with a preview dialog, Audio/Video players, attachment cards, images to the API as image_url; fix(ai-chat): the store stopped saving after an attachment (undefined fields); fix(property-tree): an unchanged edit closes its editor; fix(docs): opaque site header - Chrome on macOS dropped the blurred header for a frame while scrolling over WebGL examples",
+        "feat(ai-chat): attachments - images, audio, video, files and voice messages (paste, drop, MediaRecorder), media bubbles with a preview dialog, Audio/Video players, attachment cards, images to the API as image_url; fix(ai-chat): the store stopped saving after an attachment (undefined fields); fix(property-tree): an unchanged edit closes its editor",
+        "feat(window-manager): one desktop across browser windows (data-share); fix(desktop): window menus hang from the menu bar, scaffold uses the look designs (white editor and fields, period calculator, menubar gap, lock screen power buttons, 7 folders without grey band), logon contrast, XP labels, 9x frames, 95 start menu",
+        "feat(window-manager): one desktop across browser windows (data-share) - BroadcastChannel, screen coordinates, a dragged window shows in and is taken by the browser window it is dropped on; fix(desktop): scaffold uses the look designs (white editor and fields, period calculator, menubar gap, lock screen power buttons, 7 folders without grey band), logon contrast, XP labels, 9x frames, 95 start menu",
+        "fix(desktop): logon contrast in 7 / XP (muted text, Turn off hover), XP Turn off larger at the right; XP folder labels without the wallpaper shadow; 95 / 98 windows with a thin frame and a sunken folder area; 95 start menu without the side strip; earlier: text-rotate any number of lines, shared cell editors, Data Grid / Data Tree inline editing, Property Tree, Notes, Desktop, Border Layout deep navigation",
+        "feat(workflow): labels kept clear of cards and each other, readable titles when zoomed out, palette data-workflow-types; Workflow Studio - Nodes panel, cards fit their content, app switch during a run, full-screen bundle styles",
+        "feat(calendar): Calendar scaffold - day / week / month / year views, settings for week start and calendar weeks, Find a time with a poll; Calendar shows ISO week numbers, never submits a form, and puts its day dots under the number",
+        "feat(data-grid): column menu (sort, lock, show/hide, reset), drag to move, edge to resize - mouse, keys and touch; kept with the view",
+        "feat(big-data): defuss-dataview 0.6 - locale sort kept, projection and aggregation examples for grids and trees"
+      ]
+    },
+    {
       "version": "v0.9.16",
       "date": "November 16, 2026",
       "commits": [
