@@ -14,7 +14,8 @@
         "feat(calendar): Calendar scaffold - day / week / month / year views, settings for week start and calendar weeks, Find a time with a poll; Calendar shows ISO week numbers, never submits a form, and puts its day dots under the number",
         "feat(data-grid): column menu (sort, lock, show/hide, reset), drag to move, edge to resize - mouse, keys and touch; kept with the view",
         "feat(big-data): defuss-dataview 0.6 - locale sort kept, projection and aggregation examples for grids and trees"
-      ]
+      ],
+      "hash": "e981b405f"
     },
     {
       "version": "v0.9.16",

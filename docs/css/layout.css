@@ -23,8 +23,9 @@ main .h1, main .h2, main .h3, main .h4 { scroll-margin-top: 0; }
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center;
   padding: 0 0.75rem; gap: 1rem;
-  background: oklch(from var(--background) l c h / 0.88);
-  backdrop-filter: blur(14px);
+  /* opaque, no backdrop-filter: over the live examples' WebGL frames Chrome on macOS dropped the blurred header
+     for a frame while scrolling (VERIFIED: a screen recording, tmp/probe-flicker-screen.ts; never without the blur) */
+  background: var(--background);
 }
 
 /* -- Header brand (logo + name) ---------------------------- */

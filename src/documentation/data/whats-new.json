@@ -2,7 +2,7 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.9.17",
       "created": [
         "chat-components",
         "chat-scripts",
@@ -43,6 +43,7 @@
         "dialog",
         "dropdown",
         "index",
+        "installation",
         "property-grid",
         "questionnaire",
         "routing",

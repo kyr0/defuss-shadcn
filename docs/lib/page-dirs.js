@@ -45,6 +45,9 @@ export const STANDALONE_APPS = [
     'scaffold-document-editor',
     'scaffold-knowledge-graph',
     'scaffold-api-docs',
+    'scaffold-calendar',
+    'scaffold-workflow-studio',
+    'scaffold-ai-chat',
 ];
 /** the Website templates: a site needs an address to route - their full-screen page is where the router owns one
  *  (a docs card is an about:srcdoc frame - the Client-side Routing guide) */
@@ -113,6 +116,10 @@ export const INDUSTRY_SITES = [
     'industry-agency',
     'industry-ai',
 ];
+/** The Desktop looks (Desktop › Desktop): one whole desktop each, in the modern look and the 7, XP, 98 and 95 look-alikes
+ *  - each also a full-screen page `desktop/full-<slug>.html` (the maintainer, 2026-11-20: "switch look and feel like back
+ *  in Windows times"). */
+export const DESKTOP_LOOKS = ['desktop-modern', 'desktop-windows-7', 'desktop-windows-xp', 'desktop-windows-98', 'desktop-windows-95'];
 export const STANDALONE_DOCS = [
     'paper',
     'letter',
@@ -122,6 +129,7 @@ export const STANDALONE_DOCS = [
     ...PORTFOLIO_STYLES,
     ...SHOWCASE_SITES,
     ...INDUSTRY_SITES,
+    ...DESKTOP_LOOKS,
 ];
 /** The app name of a scaffold page slug (`scaffold-messenger` → `messenger`) - its bundle is dist/apps/<name>/. */
 export const appName = (slug) => slug.replace(/^scaffold-/, '');

@@ -1,7 +1,7 @@
 // dist/components/chart/chart.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.16") {
+if (!__df$shared || __df$shared.abi !== "0.9.17") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -618,5 +618,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=DD8005075183FF2B64756E2164756E21
+//# debugId=6A1428B6C01F19FF64756E2164756E21
 //# sourceMappingURL=charts.js.map

@@ -1,7 +1,7 @@
 // dist/components/code-example/code-example.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.16") {
+if (!__df$shared || __df$shared.abi !== "0.9.17") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, sheetUrl } = __df$shared;
@@ -1418,7 +1418,7 @@ new MutationObserver(init).observe(document, { childList: true, subtree: true })
 // dist/components/editorjs/editorjs.js
 var __df$core2 = globalThis.df$;
 var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
-if (!__df$shared2 || __df$shared2.abi !== "0.9.16") {
+if (!__df$shared2 || __df$shared2.abi !== "0.9.17") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2 } = __df$shared2;
@@ -1911,5 +1911,5 @@ df$2.editorjs = {
 init2();
 new MutationObserver(init2).observe(document, { childList: true, subtree: true });
 
-//# debugId=36D0CDED3252D3D664756E2164756E21
+//# debugId=8061080E0035651D64756E2164756E21
 //# sourceMappingURL=wysiwyg.js.map
