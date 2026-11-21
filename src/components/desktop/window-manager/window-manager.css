@@ -14,4 +14,117 @@
   .window-manager[data-taskbar] .window[data-minimized] {
     display: none;
   }
+
+  /* -- drawn scroll bars (data-scrollbars="virtual") ---------------------------------------------------------
+     The runtime lays a bar over each scrolling area of a window, in a layer appended to the window; the native bar
+     is hidden and the area's padding keeps the room. These rules are the structure and a thin modern bar; a look
+     (desktop.css) restyles the parts: --window-scrollbar-size, the buttons (shown by giving them a size), the track,
+     the thumb, the corner; --window-scrollbar-inset on an area keeps the bar inside a frame drawn on it. */
+  .window-manager[data-scrollbars="virtual"] .window [data-drawn-scroll] {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .window-manager-scrollbars {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    --window-scrollbar-size: 10px;
+  }
+  .window-manager-scrollbar {
+    position: absolute;
+    display: flex;
+    box-sizing: border-box;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+
+    &[data-axis="y"] {
+      flex-direction: column;
+      width: var(--window-scrollbar-size);
+    }
+    &[data-axis="x"] {
+      height: var(--window-scrollbar-size);
+    }
+    &[hidden] {
+      display: none;
+    }
+  }
+  .window-manager-scrollbar-track {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+  .window-manager-scrollbar-thumb {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--muted-foreground) 45%, transparent);
+    background-clip: content-box;
+    border: 2px solid transparent;
+
+    [data-axis="y"] > .window-manager-scrollbar-track > & {
+      bottom: auto;
+    }
+    [data-axis="x"] > .window-manager-scrollbar-track > & {
+      right: auto;
+    }
+    &:hover,
+    &[data-pressed] {
+      background-color: color-mix(in oklch, var(--muted-foreground) 75%, transparent);
+    }
+  }
+  /* buttons take no room until a look gives them a size */
+  .window-manager-scrollbar-button {
+    flex: none;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      mask: center / contain no-repeat;
+    }
+    [data-axis="y"] > &[data-step="-1"]::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath d='M4 2L7 6H1z'/%3E%3C/svg%3E");
+    }
+    [data-axis="y"] > &[data-step="1"]::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath d='M1 2h6L4 6z'/%3E%3C/svg%3E");
+    }
+    [data-axis="x"] > &[data-step="-1"]::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath d='M6 1v6L2 4z'/%3E%3C/svg%3E");
+    }
+    [data-axis="x"] > &[data-step="1"]::before {
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath d='M2 1l4 3-4 3z'/%3E%3C/svg%3E");
+    }
+  }
+  .window-manager-scrollbar-corner {
+    position: absolute;
+    width: var(--window-scrollbar-size);
+    height: var(--window-scrollbar-size);
+    &[hidden] {
+      display: none;
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  @layer components {
+    .window-manager-scrollbar-thumb {
+      background: ButtonText;
+    }
+    .window-manager-scrollbar-button::before {
+      background: ButtonText;
+    }
+  }
 }

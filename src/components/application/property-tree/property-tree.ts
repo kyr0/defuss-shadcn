@@ -942,6 +942,11 @@ function openEditor(tree, pointer: string, key = false) {
 function cancel(tree, focus = true) {
   if (!tree._editor) return;
   tree._editor = null;
+  closeEditor(tree, focus);
+}
+
+/** the editing state ends and the rows draw again (the editor's row shows its value) */
+function closeEditor(tree, focus) {
   tree._writing = true;
   propertyTreeApi.setState(tree, 'default', { editing: null, editingKey: false });
   tree._writing = false;
@@ -997,7 +1002,7 @@ function commit(tree, focus = true) {
     const same = value === ed.row.value || (typeof value !== 'object' && Object.is(value, ed.row.value));
     changed = !same && ops.set(tree, ed.path, value);
   }
-  if (!changed) cancel(tree, false);
+  if (!changed) closeEditor(tree, false);
   else if (ed.key) {
     // the renamed node stays the active row
     const at = indexOf(

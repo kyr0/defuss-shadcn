@@ -69,6 +69,7 @@ taskbar's click rule and "show desktop".
 | `data-taskbar` | Set by a bound Taskbar: minimized windows are hidden (their taskbar buttons bring them back) |
 | `data-desktop-shown` | The `desktop` state: every window was minimized by "show desktop" |
 | `data-share="name"` | One desktop across browser windows: every browser window showing the page with the same name takes part (see Notes) |
+| `data-scrollbars="virtual"` | Drawn scroll bars in its windows instead of the browser's (see Notes); a look styles them |
 | `data-share-remote` | Set by the runtime on a window shown here only while another browser window drags it (inert, not in the model) |
 
 ## States
@@ -169,6 +170,18 @@ where it is when a window opens or minimizes.
 - The manager never moves, sizes or styles a window itself; `cascade()` and
   `tile()` are `df$.shadcn.win.cascade` / `tile` inside the manager, and
   sharing places windows through `df$.shadcn.win.move` / `resize`.
+- **Drawn scroll bars** (`data-scrollbars="virtual"`): a native scroll
+  bar cannot look like a period one in every browser, so the manager draws
+  its own over each scrolling area of its windows (the body, two levels
+  inside it, a text area): `.window-manager-scrollbar[data-axis]` with two
+  `-button`s, a `-track` and its `-thumb`, plus a `-corner`, in a
+  `.window-manager-scrollbars` layer (`aria-hidden`) appended to the window.
+  The native bar is hidden (`data-drawn-scroll` on the area) and the area's
+  padding keeps the room. The area still scrolls natively (wheel, keys,
+  touch); buttons step 16px, the track pages, the thumb drags, held presses
+  repeat. Without a look it is a thin bar without buttons; the Desktop looks
+  draw the 9x, XP and 7 bars (`--window-scrollbar-size`; an area with a frame
+  drawn on it sets `--window-scrollbar-inset`).
 - **Across browser windows** (`data-share="name"`): open the same page in a
   second browser window beside the first and they are one desktop. A window
   dragged past the edge shows in the browser window it moves over (the part

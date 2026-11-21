@@ -11193,6 +11193,8 @@ var later = (m) => {
   queueMicrotask(() => {
     m._wmQueued = false;
     refresh(m);
+    if (m.dataset.scrollbars === "virtual")
+      requestAnimationFrame(() => drawScrollbars(m));
   });
 };
 var win = () => df$24.win;
@@ -11386,6 +11388,202 @@ function share(m) {
     }
   };
 }
+var SCROLLER_SEL = ".window-body, .window-body > *, .window-body > * > *, textarea";
+var scrolls = (v) => v === "auto" || v === "scroll";
+var span = (cls) => {
+  const el = document.createElement("span");
+  el.className = cls;
+  return el;
+};
+function makeBar(s, axis) {
+  const el = span("window-manager-scrollbar");
+  el.dataset.axis = axis;
+  const dec = span("window-manager-scrollbar-button");
+  dec.dataset.step = "-1";
+  const inc = span("window-manager-scrollbar-button");
+  inc.dataset.step = "1";
+  const track = span("window-manager-scrollbar-track");
+  const thumb = span("window-manager-scrollbar-thumb");
+  track.append(thumb);
+  el.append(dec, track, inc);
+  const pos = axis === "y" ? "scrollTop" : "scrollLeft";
+  const hold = (e, step) => {
+    e.preventDefault();
+    const part = e.currentTarget;
+    part.setPointerCapture(e.pointerId);
+    part.dataset.pressed = "";
+    let timer = 0;
+    const stop = () => {
+      clearTimeout(timer);
+      clearInterval(timer);
+      delete part.dataset.pressed;
+      part.removeEventListener("pointerup", stop);
+      part.removeEventListener("pointercancel", stop);
+    };
+    part.addEventListener("pointerup", stop);
+    part.addEventListener("pointercancel", stop);
+    if (step() === false)
+      return;
+    timer = setTimeout(() => {
+      timer = setInterval(() => step() === false && stop(), 50);
+    }, 300);
+  };
+  for (const b of [dec, inc])
+    b.addEventListener("pointerdown", (e) => hold(e, () => void (s[pos] += Number(b.dataset.step) * 16)));
+  track.addEventListener("pointerdown", (e) => {
+    if (e.target === thumb)
+      return;
+    const at = axis === "y" ? e.clientY : e.clientX;
+    hold(e, () => {
+      const r = thumb.getBoundingClientRect();
+      const [from, to] = axis === "y" ? [r.top, r.bottom] : [r.left, r.right];
+      if (at >= from && at <= to)
+        return false;
+      const page = axis === "y" ? s.clientHeight : s.clientWidth;
+      s[pos] += (at < from ? -1 : 1) * page;
+    });
+  });
+  thumb.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    thumb.setPointerCapture(e.pointerId);
+    thumb.dataset.pressed = "";
+    const start = axis === "y" ? e.clientY : e.clientX;
+    const was = s[pos];
+    const [size, client, length] = axis === "y" ? [s.scrollHeight, s.clientHeight, track.clientHeight - thumb.offsetHeight] : [s.scrollWidth, s.clientWidth, track.clientWidth - thumb.offsetWidth];
+    const move = (m) => {
+      const d = (axis === "y" ? m.clientY : m.clientX) - start;
+      s[pos] = was + d * (size - client) / Math.max(1, length);
+    };
+    const up = () => {
+      delete thumb.dataset.pressed;
+      thumb.removeEventListener("pointermove", move);
+      thumb.removeEventListener("pointerup", up);
+      thumb.removeEventListener("pointercancel", up);
+    };
+    thumb.addEventListener("pointermove", move);
+    thumb.addEventListener("pointerup", up);
+    thumb.addEventListener("pointercancel", up);
+  });
+  return { el, track, thumb };
+}
+function placeThumb(s, bar, axis) {
+  const [size, client, at] = axis === "y" ? [s.scrollHeight, s.clientHeight, s.scrollTop] : [s.scrollWidth, s.clientWidth, s.scrollLeft];
+  const length = axis === "y" ? bar.track.clientHeight : bar.track.clientWidth;
+  const thumb = Math.max(Math.min(length, 12), Math.round(length * client / Math.max(size, 1)));
+  const offset = size > client ? Math.round((length - thumb) * at / (size - client)) : 0;
+  const [lengthProp, offsetProp] = axis === "y" ? ["height", "top"] : ["width", "left"];
+  bar.thumb.style[lengthProp] = thumb + "px";
+  bar.thumb.style[offsetProp] = offset + "px";
+}
+function offsetIn(el, w) {
+  let x = 0;
+  let y = 0;
+  let n = el;
+  while (n && n !== w) {
+    x += n.offsetLeft;
+    y += n.offsetTop;
+    const p = n.offsetParent;
+    if (p && p !== w) {
+      x += p.clientLeft - p.scrollLeft;
+      y += p.clientTop - p.scrollTop;
+    }
+    n = p;
+  }
+  return { x, y };
+}
+function layoutScroll(w, s) {
+  const d = s._drawnScroll;
+  if (!s.getClientRects().length) {
+    d.y.el.hidden = d.x.el.hidden = d.corner.hidden = true;
+    return;
+  }
+  const cs = getComputedStyle(s);
+  const inset = parseFloat(cs.getPropertyValue("--window-scrollbar-inset")) || 0;
+  const thick = parseFloat(getComputedStyle(d.y.el).width) || 16;
+  const wantY = scrolls(cs.overflowY) && s.scrollHeight > s.clientHeight + 1;
+  const wantX = scrolls(cs.overflowX) && s.scrollWidth > s.clientWidth + 1;
+  s.style.paddingInlineEnd = wantY ? "calc(" + d.pad.end + " + " + (thick + inset) + "px)" : "";
+  s.style.paddingBlockEnd = wantX ? "calc(" + d.pad.bottom + " + " + (thick + inset) + "px)" : "";
+  const needY = scrolls(cs.overflowY) && s.scrollHeight > s.clientHeight + 1;
+  const needX = scrolls(cs.overflowX) && s.scrollWidth > s.clientWidth + 1;
+  if (needY !== wantY || needX !== wantX) {
+    s.style.paddingInlineEnd = needY ? "calc(" + d.pad.end + " + " + (thick + inset) + "px)" : "";
+    s.style.paddingBlockEnd = needX ? "calc(" + d.pad.bottom + " + " + (thick + inset) + "px)" : "";
+  }
+  const { x: left, y: top } = offsetIn(s, w);
+  const sr = { width: s.offsetWidth, height: s.offsetHeight };
+  d.y.el.hidden = !needY;
+  d.x.el.hidden = !needX;
+  d.corner.hidden = !needX || !needY;
+  const both = needX && needY ? thick : 0;
+  Object.assign(d.y.el.style, {
+    left: left + sr.width - inset - thick + "px",
+    top: top + inset + "px",
+    height: sr.height - 2 * inset - both + "px"
+  });
+  Object.assign(d.x.el.style, {
+    left: left + inset + "px",
+    top: top + sr.height - inset - thick + "px",
+    width: sr.width - 2 * inset - both + "px"
+  });
+  Object.assign(d.corner.style, {
+    left: left + sr.width - inset - thick + "px",
+    top: top + sr.height - inset - thick + "px"
+  });
+  if (needY)
+    placeThumb(s, d.y, "y");
+  if (needX)
+    placeThumb(s, d.x, "x");
+}
+function drawScrollbars(m) {
+  for (const w of own2(m)) {
+    if (!w.open)
+      continue;
+    for (const s of dfDollar24(w).find(SCROLLER_SEL).toArray()) {
+      if (s.closest(".window-manager-scrollbars, .terminal") || s._drawnScroll === false)
+        continue;
+      if (!s._drawnScroll) {
+        const cs = getComputedStyle(s);
+        if (!scrolls(cs.overflowY) && !scrolls(cs.overflowX)) {
+          s._drawnScroll = false;
+          continue;
+        }
+        let layer = dfDollar24(w).children(".window-manager-scrollbars").get(0);
+        if (!layer) {
+          layer = span("window-manager-scrollbars");
+          layer.setAttribute("aria-hidden", "true");
+          w.append(layer);
+        }
+        const d = {
+          y: makeBar(s, "y"),
+          x: makeBar(s, "x"),
+          corner: span("window-manager-scrollbar-corner"),
+          pad: { end: cs.paddingInlineEnd, bottom: cs.paddingBlockEnd }
+        };
+        layer.append(d.y.el, d.x.el, d.corner);
+        s._drawnScroll = d;
+        s.setAttribute("data-drawn-scroll", "");
+        let frame = 0;
+        const follow = () => {
+          if (frame)
+            return;
+          frame = requestAnimationFrame(() => {
+            frame = 0;
+            layoutScroll(w, s);
+          });
+        };
+        s.addEventListener("scroll", follow, { passive: true });
+        s.addEventListener("input", follow);
+        new ResizeObserver(follow).observe(s);
+        new ResizeObserver(follow).observe(w);
+        w.addEventListener("transitionend", follow);
+        w.addEventListener("animationend", follow);
+        new MutationObserver(follow).observe(s, { childList: true, subtree: true, characterData: true });
+      }
+      layoutScroll(w, s);
+    }
+  }
+}
 function init24() {
   dfDollar24(".window-manager:not([data-init])").toArray().forEach((m) => {
     m.dataset.init = "";
@@ -11407,6 +11605,6 @@ function init24() {
 init24();
 new MutationObserver(init24).observe(document, { childList: true, subtree: true });
 
-//# debugId=D07110817919AB1E64756E2164756E21
+//# debugId=653D84F6714F526664756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=desktop.js.map

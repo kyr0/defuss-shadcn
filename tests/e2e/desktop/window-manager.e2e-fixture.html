@@ -10,6 +10,8 @@
   <style>
     /* spacing only - never properties the checks assert */
     body { font-family: system-ui, sans-serif; padding: 1rem; margin: 0; display: grid; gap: 1rem; }
+    /* the arrow buttons of the drawn bars get a size, as a Desktop look gives them */
+    #wm-share .window-manager-scrollbar-button { width: 10px; height: 10px; }
   </style>
 </head>
 <body>
@@ -68,7 +70,7 @@
   </div>
 
   <!-- one desktop across browser windows: every browser window showing this page with data-share="e2e" -->
-  <div class="window-desktop window-manager" id="wm-share" data-share="e2e" style="width: 720px; height: 160px;">
+  <div class="window-desktop window-manager" id="wm-share" data-share="e2e" data-scrollbars="virtual" style="width: 720px; height: 160px;">
     <dialog class="window" id="w-share" open style="--window-x: 40px; --window-y: 20px; --window-w: 220px;">
       <header class="window-titlebar">
         <h2 class="window-title">Shared note</h2>

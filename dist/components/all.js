@@ -25596,6 +25596,9 @@ function cancel(tree, focus = true) {
   if (!tree._editor)
     return;
   tree._editor = null;
+  closeEditor2(tree, focus);
+}
+function closeEditor2(tree, focus) {
   tree._writing = true;
   propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false });
   tree._writing = false;
@@ -25656,7 +25659,7 @@ function commit3(tree, focus = true) {
     changed = !same && ops.set(tree, ed.path, value);
   }
   if (!changed)
-    cancel(tree, false);
+    closeEditor2(tree, false);
   else if (ed.key) {
     const at = indexOf2(tree, pointerOf(ed.row.parentKind === "object" ? [...ed.path.slice(0, -1), String(value)] : ed.path));
     if (at >= 0)
@@ -33438,6 +33441,6 @@ df$73.win = windowActions;
 init73();
 new MutationObserver(init73).observe(document, { childList: true, subtree: true });
 
-//# debugId=AB7F73C65903FFE464756E2164756E21
+//# debugId=5F87116D0A4D380064756E2164756E21
 /* defuss-shadcn v0.9.16 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

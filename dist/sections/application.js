@@ -2509,6 +2509,9 @@ function cancel(tree, focus = true) {
   if (!tree._editor)
     return;
   tree._editor = null;
+  closeEditor2(tree, focus);
+}
+function closeEditor2(tree, focus) {
   tree._writing = true;
   propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false });
   tree._writing = false;
@@ -2569,7 +2572,7 @@ function commit2(tree, focus = true) {
     changed = !same && ops.set(tree, ed.path, value);
   }
   if (!changed)
-    cancel(tree, false);
+    closeEditor2(tree, false);
   else if (ed.key) {
     const at = indexOf(tree, pointerOf(ed.row.parentKind === "object" ? [...ed.path.slice(0, -1), String(value)] : ed.path));
     if (at >= 0)
@@ -4013,5 +4016,5 @@ df$8.docComments = {
 init8();
 new MutationObserver(init8).observe(document, { childList: true, subtree: true });
 
-//# debugId=0269EA330B5D969D64756E2164756E21
+//# debugId=A600ED1E85072D6664756E2164756E21
 //# sourceMappingURL=application.js.map

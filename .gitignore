@@ -29,7 +29,8 @@ src/documentation/public/js/
 
 # e2e fingerprints of the last passing runs (tests/e2e/run.ts)
 .cache/
-.env
+.env*
+!.env.example
 var/*
 output/*
 input/*

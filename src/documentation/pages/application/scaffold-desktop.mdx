@@ -582,6 +582,10 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   /* a period look: the calculator of its time - a white read-out field (the result centred in it) over the look's
      own buttons, as on the Desktop look pages */
   .os.desktop[data-variant] {
+    /* the text starts where the period's Notepad starts it: the look's few pixels, not the modern 12px / 16px */
+    & .os-ed-text {
+      padding: revert-layer;
+    }
     & .os-calc-body {
       background: none;
     }
@@ -1176,7 +1180,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 >
   <div class="os-wall-layer" aria-hidden="true"></div>
 
-  <div class="window-desktop window-manager os-desktop" id="os-desk" data-share="os-desk">
+  <div class="window-desktop window-manager os-desktop" id="os-desk" data-share="os-desk" data-scrollbars="virtual">
     <div
       class="os-surface"
       data-context-menu="os-ctx"
@@ -3297,6 +3301,10 @@ Things to try:
       else if (k === 'look') {
         if (!['win7', 'winxp', 'win98', 'win95'].includes(v)) app.removeAttribute('data-variant');
         else app.setAttribute('data-variant', v);
+        // lay the desktop out again: Blink makes a scrollbar's arrow buttons (the 9x looks) only on a fresh layout
+        app.style.display = 'none';
+        void app.offsetHeight;
+        app.style.display = '';
       } else app.dataset[k] = v;
       if (k === 'taskbar')
         app.querySelector('.os-taskbar').setAttribute('data-align', v === 'left' ? 'start' : 'center');

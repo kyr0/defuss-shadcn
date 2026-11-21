@@ -6115,6 +6115,12 @@
     color: var(--muted-foreground);
     letter-spacing: 0.05em;
   }
+  /* one highlighted item: a menu that opens under a resting pointer has the item under it hovered and its first item
+     highlighted - the highlight (keys and mouse move it) wins, the hovered one stays plain until the pointer moves */
+  .dropdown-content:has([data-highlighted]) .dropdown-item:hover:not([data-highlighted], :focus-visible, :disabled) {
+    background-color: transparent;
+    color: inherit;
+  }
   /* on a destructive highlight the shortcut follows the item's foreground
      (muted grey on red was unreadable) */
   .dropdown-item[data-variant="destructive"]:is(:hover, [data-highlighted]) .dropdown-shortcut {

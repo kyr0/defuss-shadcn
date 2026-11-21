@@ -162,6 +162,10 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </div>
 ```
 
+## Drawn scroll bars
+
+<DocText>With <code>data-scrollbars="virtual"</code> the manager draws the scroll bars of its windows itself - a browser shows its own bar the way it wants (Firefox and Safari style next to nothing of it), so a period look would end at the scroll bar. Each scrolling area keeps scrolling natively (wheel, keys, touch); the drawn bar follows it, and its arrow buttons, track and thumb drive it. Without a look it is a thin modern bar; the Desktop looks draw the 9x, XP and 7 bars. The Desktop look pages and the <DocLink href="scaffold-desktop.html">Desktop</DocLink> scaffold use it.</DocText>
+
 ## Across browser windows
 
 <DocText>With <code>data-share="name"</code> on the manager, every browser window that shows the page is part of one desktop - after neo.mjs's shared dialogs, kept small. Drag a window past the edge of one browser window and it shows in the browser window beside it while it moves; drop it there and that one takes it, with its size, its place on the screen and the text in its fields. The browser windows talk over a <code>BroadcastChannel</code>, so it needs no server - only the same page in each. A docs card is a sandboxed frame without one, so try it full screen: open a Desktop look (<DocLink href="desktop-windows-xp.html">Windows XP</DocLink>, <DocLink href="desktop-modern.html">Modern</DocLink> ...) with "Open full screen", then "New browser window" in its start menu opens a second one beside it. The <DocLink href="scaffold-desktop.html">Desktop</DocLink> scaffold shares its windows too.</DocText>

@@ -862,6 +862,10 @@ function cancel(tree, focus = true) {
     if (!tree._editor)
         return;
     tree._editor = null;
+    closeEditor(tree, focus);
+}
+/** the editing state ends and the rows draw again (the editor's row shows its value) */
+function closeEditor(tree, focus) {
     tree._writing = true;
     propertyTreeApi.setState(tree, 'default', { editing: null, editingKey: false });
     tree._writing = false;
@@ -924,7 +928,7 @@ function commit(tree, focus = true) {
         changed = !same && ops.set(tree, ed.path, value);
     }
     if (!changed)
-        cancel(tree, false);
+        closeEditor(tree, false);
     else if (ed.key) {
         // the renamed node stays the active row
         const at = indexOf(tree, pointerOf(ed.row.parentKind === 'object' ? [...ed.path.slice(0, -1), String(value)] : ed.path));

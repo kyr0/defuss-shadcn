@@ -39,6 +39,7 @@ body {
 }
 
 /* -- Scrollbar --------------------------------------------- */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* not inside a Desktop look: its period scroll bars are the look's (this sheet is unlayered and would win) */
+:where(:not(.desktop[data-variant], .desktop[data-variant] *))::-webkit-scrollbar { width: 5px; height: 5px; }
+:where(:not(.desktop[data-variant], .desktop[data-variant] *))::-webkit-scrollbar-track { background: transparent; }
+:where(:not(.desktop[data-variant], .desktop[data-variant] *))::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

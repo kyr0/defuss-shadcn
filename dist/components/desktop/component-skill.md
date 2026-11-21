@@ -74,7 +74,7 @@ inside it. Icons are `.desktop-glyph` elements whose art follows the look.
 | `data-variant="win7"` | Glass frames with the close button on a red glass key, the round start orb, a dark glass bar with icon-only window buttons, the two-panel start menu, glossy icons, Segoe UI |
 | `data-variant="winxp"` | The blue title bars and taskbar, the green start button, beige windows, the two-column start menu on a blue banner, the welcome screen, glossy icons, Tahoma |
 | `data-variant="win98"` | Bevelled grey with gradient title bars, the start menu's brand strip, 16-colour icons, the pixel font on teal |
-| `data-variant="win95"` | As 98 with solid title bars and a plain start menu (no brand strip) |
+| `data-variant="win95"` | As 98 with solid title bars and a grey brand strip |
 
 | Glyph (`data-glyph`) |
 |-------|

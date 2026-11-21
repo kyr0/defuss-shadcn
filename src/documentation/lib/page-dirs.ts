@@ -51,6 +51,7 @@ export const STANDALONE_APPS = [
   'scaffold-api-docs',
   'scaffold-calendar',
   'scaffold-workflow-studio',
+  'scaffold-ai-chat',
 ];
 /** the Website templates: a site needs an address to route - their full-screen page is where the router owns one
  *  (a docs card is an about:srcdoc frame - the Client-side Routing guide) */

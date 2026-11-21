@@ -319,3 +319,7 @@
 ```html example part label="Button (sm, disabled)"
 <button class="btn" data-size="sm" type="button" disabled><i data-lucide="calendar-check"></i> Book</button>
 ```
+
+```html example part label="Button (destructive, sm)"
+<button class="btn" data-variant="destructive" data-size="sm" type="button">Delete all</button>
+```

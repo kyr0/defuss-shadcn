@@ -90,7 +90,7 @@ in the top layer; CSS anchor positioning places the menu on its button
 ## Variants
 
 A desktop look (`data-look` on the desktop) arranges the same parts: two
-columns with a user banner, a list with a vertical brand strip (98) or without one (95), a tiled
+columns with a user banner, a list with a vertical brand strip, a tiled
 grid.
 
 ## Interaction

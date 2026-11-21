@@ -1,6 +1,6 @@
 ---
 title: "Windows 95 Look"
-description: "Where it started: the same bevelled grey as 98 with solid navy title bars, a plain start menu without a brand strip and the teal desktop. Remade from scratch on the system's components, with the CC BY-SA pixel font."
+description: "Where it started: the same bevelled grey as 98 with solid navy title bars, a grey brand strip in the start menu and the teal desktop. Remade from scratch on the system's components, with the CC BY-SA pixel font."
 slug: "desktop-windows-95"
 ---
 
@@ -9,7 +9,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 <DocPage meta={meta}>
 
 <PageHeader slug="desktop-windows-95" title="Windows 95 Look" introStyle="max-width:42rem;">
-  Where it started: the same bevelled grey as 98 with solid navy title bars, a plain start menu without a brand strip and the teal desktop. Remade from scratch on the system's components, with the CC BY-SA pixel font. One of the <DocLink href="desktop.html">Desktop</DocLink> looks.
+  Where it started: the same bevelled grey as 98 with solid navy title bars, a grey brand strip in the start menu and the teal desktop. Remade from scratch on the system's components, with the CC BY-SA pixel font. One of the <DocLink href="desktop.html">Desktop</DocLink> looks.
 </PageHeader>
 
 <div class="flex flex-wrap items-center gap-2 mb-6">
@@ -18,7 +18,7 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
 
 ```html example standalone label="Windows 95 desktop" schema="none" hint="Sign in (any password, or Guest), then explore: Start, the icons, the windows. The bar shows a button per open window - the one in front pressed in."
 <div class="desktop" id="w95-desktop" data-variant="win95" style="height: var(--scaffold-height, 34rem)">
-  <div class="window-desktop window-manager" id="w95-desk" data-share="w95-desk">
+  <div class="window-desktop window-manager" id="w95-desk" data-share="w95-desk" data-scrollbars="virtual">
     <div class="desktop-manager" data-on-wallpaper role="listbox" aria-multiselectable="true" aria-label="Desktop">
       <div class="desktop-icon" role="option" data-value="w95-computer">
         <span class="desktop-icon-image"><span class="desktop-glyph" data-glyph="computer"></span></span>

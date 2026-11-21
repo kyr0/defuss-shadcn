@@ -87,6 +87,8 @@ const later = (m) => {
     queueMicrotask(() => {
         m._wmQueued = false;
         refresh(m);
+        if (m.dataset.scrollbars === 'virtual')
+            requestAnimationFrame(() => drawScrollbars(m));
     });
 };
 const win = () => df$.win;
@@ -342,6 +344,225 @@ function share(m) {
             channel.postMessage({ type: 'take', id: w.id, to: data.from, from: PEER });
         }
     };
+}
+// -- Drawn scroll bars (data-scrollbars="virtual") ------------------------------------------------------------------
+// A native scroll bar cannot look like a period one in every browser (Firefox and Safari style next to nothing of
+// it), so a manager with data-scrollbars="virtual" draws its own over every scrolling area of its windows: arrow
+// buttons, a track and a thumb in a layer appended to the window, the native bar hidden, room for the drawn one
+// kept by the area's own padding. The area still scrolls natively (wheel, keys, touch, selection); the drawn bar
+// only follows it and drives it - buttons step 16px, the track pages, the thumb drags, all repeating while held.
+// The look styles the parts (window-manager.css: a thin modern bar; desktop.css: the 9x, XP and 7 bars).
+// VERIFIED: (window-manager.e2e "drawn scroll bars") the thumb follows and drives the scroll, buttons and track step.
+/** The places in a window that may scroll: the body, two levels inside it, any text area. */
+const SCROLLER_SEL = '.window-body, .window-body > *, .window-body > * > *, textarea';
+const scrolls = (v) => v === 'auto' || v === 'scroll';
+const span = (cls) => {
+    const el = document.createElement('span');
+    el.className = cls;
+    return el;
+};
+/** One bar: [button][track [thumb]][button]. */
+function makeBar(s, axis) {
+    const el = span('window-manager-scrollbar');
+    el.dataset.axis = axis;
+    const dec = span('window-manager-scrollbar-button');
+    dec.dataset.step = '-1';
+    const inc = span('window-manager-scrollbar-button');
+    inc.dataset.step = '1';
+    const track = span('window-manager-scrollbar-track');
+    const thumb = span('window-manager-scrollbar-thumb');
+    track.append(thumb);
+    el.append(dec, track, inc);
+    const pos = axis === 'y' ? 'scrollTop' : 'scrollLeft';
+    // held: step now, again after 300 ms, then every 50 ms (a track press pages until the thumb reaches the pointer)
+    const hold = (e, step) => {
+        e.preventDefault();
+        const part = e.currentTarget;
+        part.setPointerCapture(e.pointerId);
+        part.dataset.pressed = '';
+        let timer = 0;
+        const stop = () => {
+            clearTimeout(timer);
+            clearInterval(timer);
+            delete part.dataset.pressed;
+            part.removeEventListener('pointerup', stop);
+            part.removeEventListener('pointercancel', stop);
+        };
+        part.addEventListener('pointerup', stop);
+        part.addEventListener('pointercancel', stop);
+        if (step() === false)
+            return;
+        timer = setTimeout(() => {
+            timer = setInterval(() => step() === false && stop(), 50);
+        }, 300);
+    };
+    for (const b of [dec, inc])
+        b.addEventListener('pointerdown', (e) => hold(e, () => void (s[pos] += Number(b.dataset.step) * 16)));
+    track.addEventListener('pointerdown', (e) => {
+        if (e.target === thumb)
+            return;
+        const at = axis === 'y' ? e.clientY : e.clientX;
+        hold(e, () => {
+            const r = thumb.getBoundingClientRect();
+            const [from, to] = axis === 'y' ? [r.top, r.bottom] : [r.left, r.right];
+            if (at >= from && at <= to)
+                return false;
+            const page = axis === 'y' ? s.clientHeight : s.clientWidth;
+            s[pos] += (at < from ? -1 : 1) * page;
+        });
+    });
+    thumb.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        thumb.setPointerCapture(e.pointerId);
+        thumb.dataset.pressed = '';
+        const start = axis === 'y' ? e.clientY : e.clientX;
+        const was = s[pos];
+        const [size, client, length] = axis === 'y'
+            ? [s.scrollHeight, s.clientHeight, track.clientHeight - thumb.offsetHeight]
+            : [s.scrollWidth, s.clientWidth, track.clientWidth - thumb.offsetWidth];
+        const move = (m) => {
+            const d = (axis === 'y' ? m.clientY : m.clientX) - start;
+            s[pos] = was + (d * (size - client)) / Math.max(1, length);
+        };
+        const up = () => {
+            delete thumb.dataset.pressed;
+            thumb.removeEventListener('pointermove', move);
+            thumb.removeEventListener('pointerup', up);
+            thumb.removeEventListener('pointercancel', up);
+        };
+        thumb.addEventListener('pointermove', move);
+        thumb.addEventListener('pointerup', up);
+        thumb.addEventListener('pointercancel', up);
+    });
+    return { el, track, thumb };
+}
+/** The thumb's length and place on one axis. */
+function placeThumb(s, bar, axis) {
+    const [size, client, at] = axis === 'y' ? [s.scrollHeight, s.clientHeight, s.scrollTop] : [s.scrollWidth, s.clientWidth, s.scrollLeft];
+    const length = axis === 'y' ? bar.track.clientHeight : bar.track.clientWidth;
+    const thumb = Math.max(Math.min(length, 12), Math.round((length * client) / Math.max(size, 1)));
+    const offset = size > client ? Math.round(((length - thumb) * at) / (size - client)) : 0;
+    const [lengthProp, offsetProp] = axis === 'y' ? ['height', 'top'] : ['width', 'left'];
+    bar.thumb.style[lengthProp] = thumb + 'px';
+    bar.thumb.style[offsetProp] = offset + 'px';
+}
+/**
+ * Where an element sits inside the window's padding box (the drawn layer's frame), from layout offsets - unlike a
+ * client rect, these ignore a transform, so a window still scaling in while it opens places its bars right.
+ */
+function offsetIn(el, w) {
+    let x = 0;
+    let y = 0;
+    let n = el;
+    while (n && n !== w) {
+        x += n.offsetLeft;
+        y += n.offsetTop;
+        const p = n.offsetParent;
+        if (p && p !== w) {
+            x += p.clientLeft - p.scrollLeft;
+            y += p.clientTop - p.scrollTop;
+        }
+        n = p;
+    }
+    return { x, y };
+}
+/** Lays a scrolling area's drawn bars over it: which bars it needs, the room they take, their place in the window. */
+function layoutScroll(w, s) {
+    const d = s._drawnScroll;
+    if (!s.getClientRects().length) {
+        d.y.el.hidden = d.x.el.hidden = d.corner.hidden = true; // not shown (a closed view): nothing to draw
+        return;
+    }
+    const cs = getComputedStyle(s);
+    const inset = parseFloat(cs.getPropertyValue('--window-scrollbar-inset')) || 0;
+    // the look's thickness (the bar's CSS width - a hidden bar has no box to measure)
+    const thick = parseFloat(getComputedStyle(d.y.el).width) || 16;
+    // the room first (it changes what overflows), then what overflows with it
+    const wantY = scrolls(cs.overflowY) && s.scrollHeight > s.clientHeight + 1;
+    const wantX = scrolls(cs.overflowX) && s.scrollWidth > s.clientWidth + 1;
+    s.style.paddingInlineEnd = wantY ? 'calc(' + d.pad.end + ' + ' + (thick + inset) + 'px)' : '';
+    s.style.paddingBlockEnd = wantX ? 'calc(' + d.pad.bottom + ' + ' + (thick + inset) + 'px)' : '';
+    const needY = scrolls(cs.overflowY) && s.scrollHeight > s.clientHeight + 1;
+    const needX = scrolls(cs.overflowX) && s.scrollWidth > s.clientWidth + 1;
+    if (needY !== wantY || needX !== wantX) {
+        s.style.paddingInlineEnd = needY ? 'calc(' + d.pad.end + ' + ' + (thick + inset) + 'px)' : '';
+        s.style.paddingBlockEnd = needX ? 'calc(' + d.pad.bottom + ' + ' + (thick + inset) + 'px)' : '';
+    }
+    const { x: left, y: top } = offsetIn(s, w);
+    const sr = { width: s.offsetWidth, height: s.offsetHeight };
+    d.y.el.hidden = !needY;
+    d.x.el.hidden = !needX;
+    d.corner.hidden = !needX || !needY;
+    const both = needX && needY ? thick : 0;
+    Object.assign(d.y.el.style, {
+        left: left + sr.width - inset - thick + 'px',
+        top: top + inset + 'px',
+        height: sr.height - 2 * inset - both + 'px',
+    });
+    Object.assign(d.x.el.style, {
+        left: left + inset + 'px',
+        top: top + sr.height - inset - thick + 'px',
+        width: sr.width - 2 * inset - both + 'px',
+    });
+    Object.assign(d.corner.style, {
+        left: left + sr.width - inset - thick + 'px',
+        top: top + sr.height - inset - thick + 'px',
+    });
+    if (needY)
+        placeThumb(s, d.y, 'y');
+    if (needX)
+        placeThumb(s, d.x, 'x');
+}
+/** Gives every scrolling area of a manager's open windows its drawn bars (once) and lays them out. */
+function drawScrollbars(m) {
+    for (const w of own(m)) {
+        if (!w.open)
+            continue;
+        for (const s of dfDollar(w).find(SCROLLER_SEL).toArray()) {
+            if (s.closest('.window-manager-scrollbars, .terminal') || s._drawnScroll === false)
+                continue;
+            if (!s._drawnScroll) {
+                const cs = getComputedStyle(s);
+                if (!scrolls(cs.overflowY) && !scrolls(cs.overflowX)) {
+                    s._drawnScroll = false; // never scrolls: not looked at again
+                    continue;
+                }
+                let layer = dfDollar(w).children('.window-manager-scrollbars').get(0);
+                if (!layer) {
+                    layer = span('window-manager-scrollbars');
+                    layer.setAttribute('aria-hidden', 'true');
+                    w.append(layer);
+                }
+                const d = {
+                    y: makeBar(s, 'y'),
+                    x: makeBar(s, 'x'),
+                    corner: span('window-manager-scrollbar-corner'),
+                    pad: { end: cs.paddingInlineEnd, bottom: cs.paddingBlockEnd },
+                };
+                layer.append(d.y.el, d.x.el, d.corner);
+                s._drawnScroll = d;
+                s.setAttribute('data-drawn-scroll', '');
+                let frame = 0;
+                const follow = () => {
+                    if (frame)
+                        return;
+                    frame = requestAnimationFrame(() => {
+                        frame = 0;
+                        layoutScroll(w, s);
+                    });
+                };
+                s.addEventListener('scroll', follow, { passive: true });
+                s.addEventListener('input', follow);
+                new ResizeObserver(follow).observe(s);
+                // the window resized, finished its opening animation, the area's content changed (a folder got an icon)
+                new ResizeObserver(follow).observe(w);
+                w.addEventListener('transitionend', follow);
+                w.addEventListener('animationend', follow);
+                new MutationObserver(follow).observe(s, { childList: true, subtree: true, characterData: true });
+            }
+            layoutScroll(w, s);
+        }
+    }
 }
 function init() {
     dfDollar('.window-manager:not([data-init])')

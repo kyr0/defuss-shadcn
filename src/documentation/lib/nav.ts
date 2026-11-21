@@ -384,6 +384,7 @@ export const NAV: NavSection[] = [
         { label: 'API Documentation', href: 'scaffold-api-docs.html', type: 'TPL' },
         { label: 'Calendar', href: 'scaffold-calendar.html', type: 'TPL' },
         { label: 'Workflow Studio', href: 'scaffold-workflow-studio.html', type: 'TPL' },
+        { label: 'AI Chat', href: 'scaffold-ai-chat.html', type: 'TPL' },
       ],
     },
   ]},
