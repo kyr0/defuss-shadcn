@@ -8339,11 +8339,8 @@ function graphExplorerWorker(self: any): void {
         want = Math.min(40, inDeg[idx]),
         sys = leafCluster[idx];
       // the sources nearest first: the system, then the rest of each cluster above it (no reverse index: a scan of
-      // the out-links until enough are found)
-      const ranges = [[cLeafStart[sys], cLeafEnd[sys]]];
-      for (let p = sys, a = cParent[sys]; a >= 0; p = a, a = cParent[a])
-        for (let k = cChildStart[a]; k < cChildStart[a] + cChildCount[a]; k++) if (k !== p) ranges.push(...rangesOf(k));
-      for (const [r0, r1] of ranges) {
+      // the out-links until enough are found; a sibling's ranges are walked only when it is reached)
+      const scan = (r0, r1) => {
         for (let i = r0; i < r1 && inc.length < want; i++)
           for (let e = outStart[i]; e < outStart[i + 1]; e++)
             if (outTarget[e] === idx) {
@@ -8358,8 +8355,12 @@ function graphExplorerWorker(self: any): void {
               });
               break;
             }
-        if (inc.length >= want) break;
-      }
+        return inc.length >= want;
+      };
+      if (!scan(cLeafStart[sys], cLeafEnd[sys]))
+        around: for (let p = sys, a = cParent[sys]; a >= 0; p = a, a = cParent[a])
+          for (let k = cChildStart[a]; k < cChildStart[a] + cChildCount[a]; k++)
+            if (k !== p) for (const [r0, r1] of rangesOf(k)) if (scan(r0, r1)) break around;
       return {
         t: 'details',
         id,
