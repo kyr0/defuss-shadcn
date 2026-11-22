@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { chromium, type Frame, type Page } from 'playwright';
+import { chromium, type Frame } from 'playwright';
+import { exampleFrame } from '../lib/example-frame.ts';
 import { startServer } from '../server.ts';
 
 /**
@@ -23,20 +24,6 @@ async function check(label: string, fn: () => Promise<void>): Promise<void> {
   }
 }
 
-/** the sandbox of the card that holds a selector, once its charts drew */
-async function frameWith(page: Page, sel: string): Promise<Frame> {
-  const cards = page.locator('.code-example');
-  for (let k = 0; k < (await cards.count()); k++) {
-    await cards.nth(k).scrollIntoViewIfNeeded();
-    for (const f of page.frames())
-      if (f !== page.mainFrame() && (await f.$(sel).catch(() => null))) {
-        // a frame booted ahead of its card: bring its card into view - a chart mounts only in view
-        await (await f.frameElement()).scrollIntoViewIfNeeded();
-        return f;
-      }
-  }
-  throw new Error(`no example holds ${sel}`);
-}
 /** waits in a sandbox; a timeout names the step and what the example showed then */
 async function until(f: Frame, step: string, fn: (arg: any) => unknown, arg?: unknown, timeout = 30_000): Promise<void> {
   try {
@@ -63,7 +50,7 @@ try {
   await page.goto(`${server.url}${PAGE}`);
 
   await check('a million orders: four groups that add up to every row; the selects regroup the same chart', async () => {
-    const f = await frameWith(page, '#million');
+    const f = await exampleFrame(page, '#million');
     await f.waitForFunction(() => (document.getElementById('million-info')!.textContent ?? '').startsWith('1,000,000 orders in 4 groups'), null, { timeout: 30_000 });
     const before = await option(f, 'million');
     assert.equal(before.series[0].data.reduce((a: number, b: number) => a + b, 0), 1_000_000);
@@ -82,7 +69,7 @@ try {
   });
 
   await check('buckets: a filled time axis per month (then per week) and a histogram in 10 EUR bins', async () => {
-    const f = await frameWith(page, '#buckets-time');
+    const f = await exampleFrame(page, '#buckets-time');
     await f.waitForFunction(() => (globalThis as any).df$.shadcn.chart.instance(document.getElementById('buckets-size')), null, { timeout: 20_000 });
     const months = (await option(f, 'buckets-time')).dataset[0].source;
     assert.equal(months.length, 12);
@@ -96,7 +83,7 @@ try {
   });
 
   await check('a grid and its charts: a grid filter narrows both charts; a click on a region bar filters the grid', async () => {
-    const f = await frameWith(page, '#cross-grid');
+    const f = await exampleFrame(page, '#cross-grid');
     await until(f, 'the charts drew every order', () => (document.getElementById('cross-info')!.textContent ?? '').startsWith('200,000 of 200,000 orders'));
     await f.selectOption('#cross-grid .data-grid-filter[data-field="channel"]', 'web');
     await until(f, 'the charts follow the channel filter', () => /orders match/.test(document.getElementById('cross-info')!.textContent ?? '') && !(document.getElementById('cross-info')!.textContent ?? '').startsWith('200,000 of'));
@@ -127,7 +114,7 @@ try {
   });
 
   await check('the largest groups and the rest: six countries and one slice for the other eighteen', async () => {
-    const f = await frameWith(page, '#top-countries');
+    const f = await exampleFrame(page, '#top-countries');
     await f.waitForFunction(() => (globalThis as any).df$.shadcn.chart.instance(document.getElementById('top-countries')), null, { timeout: 20_000 });
     const data = (await option(f, 'top-countries')).series[0].data;
     assert.equal(data.length, 7);

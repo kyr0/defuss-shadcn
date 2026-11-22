@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium, type Frame, type Page } from 'playwright';
 import { offlineJsdelivr } from '../lib/vendor-offline.ts';
+import { exampleFrame } from '../lib/example-frame.ts';
 import { startServer } from '../server.ts';
 
 /**
@@ -37,19 +38,6 @@ async function open(path: string, errors: string[]): Promise<Page> {
   return page;
 }
 
-/** the sandbox of the card that holds a selector */
-async function frameWith(page: Page, sel: string): Promise<Frame> {
-  const cards = page.locator('.code-example');
-  for (let k = 0; k < (await cards.count()); k++) {
-    await cards.nth(k).scrollIntoViewIfNeeded();
-    for (const f of page.frames())
-      if (f !== page.mainFrame() && (await f.$(sel).catch(() => null))) {
-        await (await f.frameElement()).scrollIntoViewIfNeeded();
-        return f;
-      }
-  }
-  throw new Error(`no example holds ${sel}`);
-}
 
 /** waits in a sandbox; a timeout names the step and what the outputs showed */
 async function until(f: Frame, step: string, fn: (arg: any) => unknown, arg?: unknown, timeout = 30_000): Promise<void> {
@@ -81,7 +69,7 @@ try {
   const grid = await open('data-grid.html', errors);
 
   await check('projection: computed columns on every row, totals over what the filters match', async () => {
-    const f = await frameWith(grid, '#dg-lines');
+    const f = await exampleFrame(grid, '#dg-lines');
     await until(f, 'the totals of every line', () => document.querySelector('#dg-lines-totals data')?.getAttribute('value') === '100000');
     const rows = await f.evaluate(() => (globalThis as any).df$.shadcn.dataGrid.rows(document.getElementById('dg-lines')));
     assert.equal(rows.length, 100_000);
@@ -101,7 +89,7 @@ try {
   });
 
   await check('a report grid: groups that add up to the filtered orders, regrouped by the select', async () => {
-    const f = await frameWith(grid, '#dg-report');
+    const f = await exampleFrame(grid, '#dg-report');
     const report = () => f.evaluate(() => (globalThis as any).df$.shadcn.dataGrid.source(document.getElementById('dg-report'))?.rows ?? []);
     await until(f, 'eight country groups', () => ((globalThis as any).df$.shadcn.dataGrid.source(document.getElementById('dg-report'))?.rows.length ?? 0) === 8);
     let groups = await report();
@@ -123,7 +111,7 @@ try {
 
   const treeGrid = await open('tree-grid.html', errors);
   await check('an aggregated tree grid: every branch the sum of its children; a year narrows them', async () => {
-    const f = await frameWith(treeGrid, '#tg-sales');
+    const f = await exampleFrame(treeGrid, '#tg-sales');
     const rows = () => f.evaluate(() => (globalThis as any).df$.shadcn.dataGrid.source(document.getElementById('tg-sales'))?.rows ?? []);
     await until(f, 'the tree of every sale', () => /from 200,000 sales/.test(document.getElementById('tg-sales-line')!.textContent ?? ''));
     let all = await rows();
@@ -141,7 +129,7 @@ try {
 
   const tree = await open('data-tree.html', errors);
   await check('an aggregated data tree: labels carry the measures; only slow requests narrows every branch', async () => {
-    const f = await frameWith(tree, '#dt-requests');
+    const f = await exampleFrame(tree, '#dt-requests');
     const rows = () => f.evaluate(() => (document.getElementById('dt-requests') as any)._source?.rows ?? []);
     await until(f, 'every request', () => /^250,000 requests/.test(document.getElementById('dt-requests-line')!.textContent ?? ''));
     let all = await rows();

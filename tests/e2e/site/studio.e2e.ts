@@ -177,16 +177,30 @@ const pointOf = (page: Page, selector: string, inCanvas = false, edge: 'top' | '
     [selector, inCanvas, edge] as const,
   );
 /**
+ * The canvas page's markup once it passes a test, or as it is after `timeout`: a drop lands after the drag's last
+ * mouse event - WebKit's drag session runs on its own, later on a busy machine (a read 300 ms after the release missed
+ * the dropped Alert during the v0.9.18 release, the same file passed alone)
+ */
+async function canvasWhen(page: Page, ok: (html: string) => boolean, timeout = 5000): Promise<string> {
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    const html = (await ve(page, `ve.html('#studio-canvas')`)) as string;
+    if (ok(html) || Date.now() > deadline) return html;
+    await page.waitForTimeout(100);
+  }
+}
+/**
  * Drags two examples into the canvas as a person does, with the mouse: Alert "Destructive" by the grip laid over its
  * preview (WebKit cancels the drag of an element that holds an iframe - the preview's), then Kbd "Combination" straight
  * from its row in the tree (its page's examples load as the pointer comes over the row). Both land in the page, and no
  * row stays a block after its drag.
  */
 async function dragsIn(page: Page): Promise<boolean> {
+  const alert = (h: string) => /class="alert"[^>]*data-variant="destructive"|data-variant="destructive"[^>]*class="alert"/.test(h);
   await pick(page, 'alert', 'Destructive');
   await mouseDrag(page, await pointOf(page, '#studio-samples .studio-sample-grip'), await pointOf(page, 'h1', true, 'bottom'));
-  const html = (await ve(page, `ve.html('#studio-canvas')`)) as string;
-  assert.ok(/class="alert"[^>]*data-variant="destructive"|data-variant="destructive"[^>]*class="alert"/.test(html), `the grip: ${html.slice(0, 400)}`);
+  const html = await canvasWhen(page, alert);
+  assert.ok(alert(html), `the grip: ${html.slice(0, 400)}`);
   const kbd = example('kbd', 'Combination');
   await page.fill('#studio-search', 'Combination');
   const row = `#studio-library [data-example="${kbd.id}"] .tree-leaf`;
@@ -196,7 +210,7 @@ async function dragsIn(page: Page): Promise<boolean> {
   await file;
   const keys = (h: string) => (h.match(/class="kbd"/g) ?? []).length;
   await mouseDrag(page, await pointOf(page, row), await pointOf(page, 'h1', true, 'bottom'));
-  const after = (await ve(page, `ve.html('#studio-canvas')`)) as string;
+  const after = await canvasWhen(page, (h) => keys(h) > keys(html));
   assert.ok(keys(after) > keys(html), `the tree row: ${keys(after)} kbd in the page, ${keys(html)} before`);
   assert.equal(await page.evaluate(() => document.querySelectorAll('#studio-library [data-visual-editor-block]').length), 0, 'no row stays a block');
   return true;
