@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>graph explorer e2e fixture - a page's graph (data-source="external")</title>
+    <link rel="stylesheet" href="/dist/theme/utils/default-semantic-tokens.css" />
+    <link rel="stylesheet" href="/dist/components/all.css" />
+    <link rel="stylesheet" href="/dist/components/graph-explorer/graph-explorer.css" />
+  </head>
+  <body>
+    <!-- an explorer that waits for the page's graph, with the outlets a load() resets and the Live switch it hides;
+         the test serves this page cross-origin isolated (COOP + COEP) so a SharedArrayBuffer exists -->
+    <div class="flex items-center gap-2">
+      <div data-graph-explorer-for="ext" data-graph-explorer-outlet="search"></div>
+      <button
+        class="btn"
+        data-variant="outline"
+        data-size="sm"
+        type="button"
+        aria-pressed="false"
+        data-graph-explorer-for="ext"
+        data-graph-explorer-action="live"
+      >
+        Live mode
+      </button>
+    </div>
+    <div class="grid gap-2" style="grid-template-columns: 12rem minmax(0, 1fr) 16rem; block-size: 30rem">
+      <div class="card overflow-hidden" data-graph-explorer-for="ext" data-graph-explorer-outlet="outline"></div>
+      <div class="graph-explorer" id="ext" data-source="external" aria-label="A page's graph"></div>
+      <div class="card p-3 overflow-auto" data-graph-explorer-for="ext" data-graph-explorer-outlet="details"></div>
+    </div>
+    <script type="module" src="/dist/components/all.js"></script>
+    <script type="module" src="/dist/components/graph-explorer/graph-explorer.js"></script>
+  </body>
+</html>

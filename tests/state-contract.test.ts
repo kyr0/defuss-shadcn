@@ -20,6 +20,9 @@ const FIXTURES = Object.entries(RAW)
   .map(([p]) => ({ path: p, name: /([^/]+)\.e2e-fixture\.html$/.exec(p)![1] }))
   // core-*: the runtime bootstrap's own fixtures (no core, a conflicting df$) - no component state to drive
   .filter((f) => !f.name.startsWith('core-'))
+  // graph-explorer-data: an explorer that waits for the page's graph (data-source="external"); its states follow
+  // once load() gave it one, so settled() waits until then - graph-explorer's own fixture drives the states
+  .filter((f) => f.name !== 'graph-explorer-data')
   .sort((a, b) => a.name.localeCompare(b.name));
 
 type Bound = HTMLElement & {
